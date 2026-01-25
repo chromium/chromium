@@ -30,7 +30,7 @@ using InterstitialThreatType = ::chrome::cros::reporting::proto::
 
 constexpr char kRealtimeReportingUrl[] = "/v1/events";
 
-void ParseLoginEvent(const base::Value::Dict* event_details_json,
+void ParseLoginEvent(const base::DictValue* event_details_json,
                      LoginEvent* event) {
   if (const std::string* url = event_details_json->FindString("url")) {
     event->set_url(*url);
@@ -41,9 +41,9 @@ void ParseLoginEvent(const base::Value::Dict* event_details_json,
   }
 }
 
-void ParsePasswordBreachEvent(const base::Value::Dict* event_details_json,
+void ParsePasswordBreachEvent(const base::DictValue* event_details_json,
                               PasswordBreachEvent* event) {
-  const base::Value::List* identities_json =
+  const base::ListValue* identities_json =
       event_details_json->FindList("identities");
   if (!identities_json) {
     return;
@@ -57,7 +57,7 @@ void ParsePasswordBreachEvent(const base::Value::Dict* event_details_json,
     }
   }
   for (const base::Value& identity_json : *identities_json) {
-    const base::Value::Dict* identity_json_dict = identity_json.GetIfDict();
+    const base::DictValue* identity_json_dict = identity_json.GetIfDict();
     if (!identity_json_dict) {
       continue;
     }
@@ -72,7 +72,7 @@ void ParsePasswordBreachEvent(const base::Value::Dict* event_details_json,
   }
 }
 
-void ParseInterstitialEvent(const base::Value::Dict* event_details_json,
+void ParseInterstitialEvent(const base::DictValue* event_details_json,
                             SafeBrowsingInterstitialEvent* event) {
   if (const std::string* url = event_details_json->FindString("url")) {
     event->set_url(*url);
@@ -97,7 +97,7 @@ void ParseInterstitialEvent(const base::Value::Dict* event_details_json,
 }
 
 void ParseUrlFilteringInterstitialEvent(
-    const base::Value::Dict* event_details_json,
+    const base::DictValue* event_details_json,
     UrlFilteringInterstitialEvent* event) {
   if (const std::string* url = event_details_json->FindString("url")) {
     event->set_url(*url);
@@ -121,12 +121,12 @@ void ParseUrlFilteringInterstitialEvent(
   }
 }
 
-std::optional<Event> ParseEvent(const base::Value::Dict* event_json) {
+std::optional<Event> ParseEvent(const base::DictValue* event_json) {
   if (!event_json) {
     return std::nullopt;
   }
   Event event;
-  const base::Value::Dict* event_details_json;
+  const base::DictValue* event_details_json;
   if ((event_details_json = event_json->FindDict("loginEvent"))) {
     ParseLoginEvent(event_details_json, event.mutable_login_event());
   } else if ((event_details_json =
@@ -155,7 +155,7 @@ std::optional<UploadEventsRequest> ParseUploadEventsRequest(
 
   // Fall back to parsing the legacy JSON event format. For simplicity, ignore
   // fields that aren't asserted by any test.
-  std::optional<base::Value::Dict> request_json = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> request_json = base::JSONReader::ReadDict(
       request.content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!request_json) {
     return std::nullopt;
@@ -169,7 +169,7 @@ std::optional<UploadEventsRequest> ParseUploadEventsRequest(
     device->set_os_platform(*os_platform);
   }
 
-  const base::Value::List* events_json = request_json->FindList("events");
+  const base::ListValue* events_json = request_json->FindList("events");
   if (events_json) {
     for (const base::Value& event_json : *events_json) {
       std::optional<Event> event = ParseEvent(event_json.GetIfDict());

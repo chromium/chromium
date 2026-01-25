@@ -35,7 +35,7 @@ class GuestViewAttachRequest {
   GuestViewAttachRequest(GuestViewContainer* container,
                          content::RenderFrame* render_frame,
                          int guest_instance_id,
-                         base::Value::Dict params,
+                         base::DictValue params,
                          v8::Local<v8::Function> callback,
                          v8::Isolate* isolate);
 
@@ -61,7 +61,7 @@ class GuestViewAttachRequest {
   v8::Global<v8::Function> callback_;
   const raw_ptr<v8::Isolate> isolate_;
   const int guest_instance_id_;
-  const base::Value::Dict params_;
+  const base::DictValue params_;
   mojo::AssociatedRemote<mojom::GuestViewHost> remote_;
 
   base::WeakPtrFactory<GuestViewAttachRequest> weak_ptr_factory_{this};

@@ -41,7 +41,7 @@ class SaasUsageReportingControllerTest : public testing::Test {
 
  protected:
   void SetBrowserUrls(const std::vector<std::string>& urls) {
-    base::Value::List urls_list;
+    base::ListValue urls_list;
     for (const auto& url : urls) {
       urls_list.Append(url);
     }
@@ -50,7 +50,7 @@ class SaasUsageReportingControllerTest : public testing::Test {
   }
 
   void SetProfileUrls(const std::vector<std::string>& urls) {
-    base::Value::List urls_list;
+    base::ListValue urls_list;
     for (const auto& url : urls) {
       urls_list.Append(url);
     }
@@ -58,15 +58,15 @@ class SaasUsageReportingControllerTest : public testing::Test {
                                   std::move(urls_list));
   }
 
-  const base::Value::Dict& GetBrowserReport() {
+  const base::DictValue& GetBrowserReport() {
     return browser_pref_service_.GetDict(kSaasUsageReport);
   }
 
-  const base::Value::Dict& GetProfileReport() {
+  const base::DictValue& GetProfileReport() {
     return profile_pref_service_.GetDict(kSaasUsageReport);
   }
 
-  void VerifyReportEntry(const base::Value::Dict& report,
+  void VerifyReportEntry(const base::DictValue& report,
                          const std::string& domain,
                          int expected_navigation_count,
                          const std::vector<std::string>& expected_protocols) {

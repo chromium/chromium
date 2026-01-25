@@ -44,7 +44,7 @@ constexpr std::array<IconTypeAndName, 4> kIconTypesAndNames{{
     {favicon_base::IconType::kWebManifestIcon, "kWebManifestIcon"},
 }};
 
-std::string FormatJson(const base::Value::List& value) {
+std::string FormatJson(const base::ListValue& value) {
   std::string pretty_printed;
   bool ok = base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &pretty_printed);
@@ -85,9 +85,9 @@ void NTPTilesInternalsMessageHandler::RegisterMessages(
 }
 
 void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!client_->SupportsNTPTiles()) {
-    base::Value::Dict disabled;
+    base::DictValue disabled;
     disabled.Set("topSites", false);
     disabled.Set("popular", false);
     disabled.Set("customLinks", false);
@@ -107,7 +107,7 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
 }
 
 void NTPTilesInternalsMessageHandler::HandleUpdate(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!client_->SupportsNTPTiles()) {
     return;
   }
@@ -115,7 +115,7 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
   DCHECK_EQ(1u, args.size());
   const base::Value& value = args[0];
   DCHECK(value.is_dict());
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
 
   PrefService* prefs = client_->GetPrefs();
 
@@ -168,7 +168,7 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
 }
 
 void NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_EQ(0u, args.size());
   if (!most_visited_sites_ ||
       !most_visited_sites_->DoesSourceExist(ntp_tiles::TileSource::POPULAR)) {
@@ -182,7 +182,7 @@ void NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson(
 
 void NTPTilesInternalsMessageHandler::SendSourceInfo() {
   PrefService* prefs = client_->GetPrefs();
-  base::Value::Dict value;
+  base::DictValue value;
 
   value.Set("topSites",
             most_visited_sites_->DoesSourceExist(TileSource::TOP_SITES));
@@ -227,9 +227,9 @@ void NTPTilesInternalsMessageHandler::SendSourceInfo() {
 void NTPTilesInternalsMessageHandler::SendTiles(
     const NTPTilesVector& tiles,
     const FaviconResultMap& result_map) {
-  base::Value::List sites_list;
+  base::ListValue sites_list;
   for (const NTPTile& tile : tiles) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("title", tile.title);
     entry.Set("url", tile.url.spec());
     entry.Set("source", static_cast<int>(tile.source));
@@ -240,14 +240,14 @@ void NTPTilesInternalsMessageHandler::SendTiles(
       entry.Set("fromMostVisited", tile.from_most_visited);
     }
 
-    base::Value::List icon_list;
+    base::ListValue icon_list;
     for (const auto& type_and_name : kIconTypesAndNames) {
       auto it = result_map.find(
           FaviconResultMap::key_type(tile.url, type_and_name.type_enum));
 
       if (it != result_map.end()) {
         const favicon_base::FaviconRawBitmapResult& result = it->second;
-        base::Value::Dict icon;
+        base::DictValue icon;
         icon.Set("url", result.icon_url.spec());
         icon.Set("type", type_and_name.type_name);
         icon.Set("onDemand", !result.fetched_because_of_page_visit);
@@ -261,7 +261,7 @@ void NTPTilesInternalsMessageHandler::SendTiles(
     sites_list.Append(std::move(entry));
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("sites", std::move(sites_list));
   client_->CallJavascriptFunction("cr.webUIListenerCallback",
                                   base::Value("receive-sites"),

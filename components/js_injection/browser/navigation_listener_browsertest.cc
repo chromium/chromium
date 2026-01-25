@@ -244,7 +244,7 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
   }
 
   void CheckNavigationMessage(HostToken& host, std::string type) {
-    base::Value::Dict expected_dict = base::Value::Dict().Set("type", type);
+    base::DictValue expected_dict = base::DictValue().Set("type", type);
     if (type == NavigationWebMessageSender::kOptedInMessage) {
       expected_dict.Set("supports_start_and_redirect", true);
       expected_dict.Set("supports_history_details", true);
@@ -271,8 +271,8 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
                                   int status_code,
                                   bool previous_page_deleted,
                                   bool load_end) {
-    base::Value::Dict base_message_dict =
-        base::Value::Dict()
+    base::DictValue base_message_dict =
+        base::DictValue()
             .Set("id", base::NumberToString(navigation_id))
             .Set("url", url.spec())
             .Set("isSameDocument", is_same_document)
@@ -284,7 +284,7 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
             .Set("isRestore", false);
 
     // NAVIGATION_STARTED message.
-    base::Value::Dict start_message(base_message_dict.Clone());
+    base::DictValue start_message(base_message_dict.Clone());
     start_message.Set("type",
                       NavigationWebMessageSender::kNavigationStartedMessage);
     listener().WaitForNextMessageForHost(host_before_nav);
@@ -304,8 +304,8 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest,
     }
 
     // NAVIGATION_COMPLETED message.
-    base::Value::Dict complete_message =
-        base::Value::Dict()
+    base::DictValue complete_message =
+        base::DictValue()
             .Set("type",
                  NavigationWebMessageSender::kNavigationCompletedMessage)
             .Set("committed", committed)
@@ -596,16 +596,15 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
 
   // Check that we get the NAVIGATION_STARTED message immediately for the
   // cross-document navigation.
-  base::Value::Dict cross_doc_base_message_dict =
-      base::Value::Dict()
+  base::DictValue cross_doc_base_message_dict =
+      base::DictValue()
           .Set("id", "2")
           .Set("url", navigation_url_2.spec())
           .Set("isSameDocument", false)
           .Set("isPageInitiated", false)
           .Set("isReload", false)
           .Set("isHistory", false);
-  base::Value::Dict cross_doc_start_message(
-      cross_doc_base_message_dict.Clone());
+  base::DictValue cross_doc_start_message(cross_doc_base_message_dict.Clone());
   cross_doc_start_message.Set(
       "type", NavigationWebMessageSender::kNavigationStartedMessage);
   listener().WaitForNextMessageForHost(host);
@@ -659,8 +658,8 @@ IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
 
   // Check that the cross-document navigation finally committed successfully and
   // we finally get a NAVIGATION_COMPLETED message for it.
-  base::Value::Dict cross_doc_complete_message =
-      base::Value::Dict()
+  base::DictValue cross_doc_complete_message =
+      base::DictValue()
           .Set("type", NavigationWebMessageSender::kNavigationCompletedMessage)
           .Set("committed", true)
           .Set("statusCode", 200)

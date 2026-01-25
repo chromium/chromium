@@ -32,7 +32,7 @@ const char kPrivateTopicNameKey[] = "privateTopicName";
 const std::string* GetTopicName(const base::Value& value) {
   if (!value.is_dict())
     return nullptr;
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   if (dict.FindBool("isPublic").value_or(false)) {
     return dict.FindString(kPublicTopicNameKey);
   }
@@ -308,7 +308,7 @@ HttpRequestHeaders PerUserTopicSubscriptionRequest::Builder::BuildHeaders()
 }
 
 std::string PerUserTopicSubscriptionRequest::Builder::BuildBody() const {
-  base::Value::Dict request;
+  base::DictValue request;
 
   request.Set("public_topic_name", topic_);
   if (topic_is_public_)

@@ -249,14 +249,14 @@ class MockCastMessageHandler : public CastMessageHandler {
   MOCK_METHOD(std::optional<int>,
               SendMediaRequest,
               (int channel_id,
-               const base::Value::Dict& body,
+               const base::DictValue& body,
                const std::string& source_id,
                const std::string& destination_id),
               (override));
   MOCK_METHOD(void,
               SendSetVolumeRequest,
               (int channel_id,
-               const base::Value::Dict& body,
+               const base::DictValue& body,
                const std::string& source_id,
                ResultCallback callback),
               (override));

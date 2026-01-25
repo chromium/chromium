@@ -64,7 +64,7 @@ class NetExportFileWriter {
   // of NetExportFileWriter's state changes.
   class StateObserver {
    public:
-    virtual void OnNewState(const base::Value::Dict& state) = 0;
+    virtual void OnNewState(const base::DictValue& state) = 0;
   };
 
   // Struct used to store the results of setting up the default log directory
@@ -122,11 +122,11 @@ class NetExportFileWriter {
   //
   // |polled_data| is a JSON dictionary that will be appended to the end of the
   // log; it's for adding additional info to the log that aren't events.
-  void StopNetLog(base::Value::Dict polled_data = base::Value::Dict());
+  void StopNetLog(base::DictValue polled_data = base::DictValue());
 
-  // Creates a `base::Value::Dict` summary of the state of the
+  // Creates a `base::DictValue` summary of the state of the
   // `NetExportFileWriter`.
-  base::Value::Dict GetState() const;
+  base::DictValue GetState() const;
 
   // Gets the log filepath. |path_callback| will be used to notify the caller
   // when the filepath is retrieved. |path_callback| will be executed with an
@@ -182,7 +182,7 @@ class NetExportFileWriter {
   // logging after the output file has been created.
   void StartNetLogAfterCreateFile(net::NetLogCaptureMode capture_mode,
                                   uint64_t max_file_size,
-                                  base::Value::Dict custom_constants,
+                                  base::DictValue custom_constants,
                                   base::File log_file);
 
   void OnStartResult(net::NetLogCaptureMode capture_mode, int result);

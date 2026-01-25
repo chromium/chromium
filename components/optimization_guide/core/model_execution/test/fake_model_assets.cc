@@ -28,7 +28,7 @@ FakeBaseModelAsset::FakeBaseModelAsset(Content content) {
   CHECK(temp_dir_.CreateUniqueTempDir());
   // Support all performance hints by default.
   supported_performance_hints_ =
-      base::Value::List()
+      base::ListValue()
           .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY)
           .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE)
           .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
@@ -69,13 +69,13 @@ void FakeBaseModelAsset::Write(Content&& content) {
       content.config.SerializeAsString()));
 }
 
-base::Value::Dict FakeBaseModelAsset::Manifest() const {
-  return base::Value::Dict().Set(
-      "BaseModelSpec", base::Value::Dict()
-                           .Set("version", "0.0.1")
-                           .Set("name", "Test")
-                           .Set("supported_performance_hints",
-                                supported_performance_hints_.Clone()));
+base::DictValue FakeBaseModelAsset::Manifest() const {
+  return base::DictValue().Set("BaseModelSpec",
+                               base::DictValue()
+                                   .Set("version", "0.0.1")
+                                   .Set("name", "Test")
+                                   .Set("supported_performance_hints",
+                                        supported_performance_hints_.Clone()));
 }
 
 void FakeBaseModelAsset::SetReadyIn(

@@ -21,10 +21,10 @@ namespace fuchsia_component_support {
 // Null is returned if no config-data exists for the Component.
 // CHECK()s if one or more config files are malformed, or there are duplicate
 // non-dictionary fields in different config files.
-const std::optional<base::Value::Dict>& LoadPackageConfig();
+const std::optional<base::DictValue>& LoadPackageConfig();
 
 // Used to test the implementation of LoadPackageConfig().
-std::optional<base::Value::Dict> LoadConfigFromDirForTest(
+std::optional<base::DictValue> LoadConfigFromDirForTest(
     const base::FilePath& dir);
 
 }  // namespace fuchsia_component_support

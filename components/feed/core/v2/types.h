@@ -90,10 +90,9 @@ struct PersistentMetricsData {
   bool did_scroll_in_visit = false;
 };
 
-base::Value::Dict PersistentMetricsDataToDict(
-    const PersistentMetricsData& data);
+base::DictValue PersistentMetricsDataToDict(const PersistentMetricsData& data);
 PersistentMetricsData PersistentMetricsDataFromDict(
-    const base::Value::Dict& dict);
+    const base::DictValue& dict);
 
 class LoadLatencyTimes {
  public:

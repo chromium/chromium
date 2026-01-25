@@ -259,8 +259,8 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
-  const base::Value::Dict& GetSubscribedTopics() const {
-    const base::Value::Dict* subscribed_topics =
+  const base::DictValue& GetSubscribedTopics() const {
+    const base::DictValue* subscribed_topics =
         pref_service_.GetDict(kTypeSubscribedForInvalidation)
             .FindDict(kProjectId);
     DCHECK(subscribed_topics);
@@ -293,7 +293,7 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
       const std::string& private_topic = std::string(),
       const std::string& token = kFakeInstanceIdToken,
       int http_responce_code = net::HTTP_OK) {
-    base::Value::Dict value;
+    base::DictValue value;
     value.Set("privateTopicName",
               private_topic.empty() ? "test-pr" : private_topic.c_str());
     std::string serialized_response;
@@ -377,7 +377,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldUpdateSubscribedTopics) {
       per_user_topic_subscription_manager->HaveAllRequestsFinishedForTest());
 
   for (const auto& topic : topics) {
-    const base::Value::Dict& subscribed_topics = GetSubscribedTopics();
+    const base::DictValue& subscribed_topics = GetSubscribedTopics();
     const std::string* private_topic_value =
         subscribed_topics.FindString(topic.first);
     ASSERT_NE(private_topic_value, nullptr);
@@ -740,7 +740,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
 
   // Topics were unsubscribed, check that they're not in the prefs.
   for (const auto& topic : unsubscribed_topics) {
-    const base::Value::Dict& subscribed_topics = GetSubscribedTopics();
+    const base::DictValue& subscribed_topics = GetSubscribedTopics();
     const base::Value* private_topic_value =
         subscribed_topics.Find(topic.first);
     ASSERT_EQ(private_topic_value, nullptr);
@@ -748,7 +748,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
 
   // Check that still subscribed topics are still in the prefs.
   for (const auto& topic : still_subscribed_topics) {
-    const base::Value::Dict& subscribed_topics = GetSubscribedTopics();
+    const base::DictValue& subscribed_topics = GetSubscribedTopics();
     const std::string* private_topic_value =
         subscribed_topics.FindString(topic.first);
     ASSERT_NE(private_topic_value, nullptr);
@@ -771,7 +771,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   WaitForTopics(*per_user_topic_subscription_manager, topics);
 
   for (const auto& topic : topics) {
-    const base::Value::Dict& subscribed_topics = GetSubscribedTopics();
+    const base::DictValue& subscribed_topics = GetSubscribedTopics();
     const std::string* private_topic_value =
         subscribed_topics.FindString(topic.first);
     ASSERT_NE(private_topic_value, nullptr);
@@ -793,7 +793,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
                         .FindString(kProjectId));
 
   for (const auto& topic : topics) {
-    const base::Value::Dict& subscribed_topics = GetSubscribedTopics();
+    const base::DictValue& subscribed_topics = GetSubscribedTopics();
     const std::string* private_topic_value =
         subscribed_topics.FindString(topic.first);
     ASSERT_NE(private_topic_value, nullptr);
@@ -830,7 +830,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   // Topics should be removed from prefs even though the unsubscribe requests
   // have not finished.
   for (const auto& topic : unsubscribed_topics) {
-    const base::Value::Dict& subscribed_topics = GetSubscribedTopics();
+    const base::DictValue& subscribed_topics = GetSubscribedTopics();
     const base::Value* private_topic_value =
         subscribed_topics.Find(topic.first);
     ASSERT_EQ(private_topic_value, nullptr);
@@ -838,7 +838,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
 
   // Check that subscribed topics are still in the prefs.
   for (const auto& topic : still_subscribed_topics) {
-    const base::Value::Dict& subscribed_topics = GetSubscribedTopics();
+    const base::DictValue& subscribed_topics = GetSubscribedTopics();
     const std::string* private_topic_value =
         subscribed_topics.FindString(topic.first);
     ASSERT_NE(private_topic_value, nullptr);

@@ -84,7 +84,7 @@ void LogInstallCriteria(
 // list of performance hints in priority order, with highest priority first.
 std::optional<proto::OnDeviceModelPerformanceHint>
 GetBestPerformanceHintForDevice(
-    const base::Value::List* manifest_performance_hints,
+    const base::ListValue* manifest_performance_hints,
     const std::vector<proto::OnDeviceModelPerformanceHint>& prioritized_hints) {
   if (base::FeatureList::IsEnabled(
           on_device_model::features::kOnDeviceModelForceCpuBackend)) {
@@ -116,7 +116,7 @@ GetBestPerformanceHintForDevice(
 // is the list of performance hints in priority order, with highest priority
 // first.
 std::optional<OnDeviceBaseModelSpec> GetOnDeviceBaseModelSpecFromManifest(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const std::vector<proto::OnDeviceModelPerformanceHint>& prioritized_hints) {
   auto* model_spec = manifest.FindDict("BaseModelSpec");
   if (!model_spec) {
@@ -138,15 +138,15 @@ std::optional<OnDeviceBaseModelSpec> GetOnDeviceBaseModelSpecFromManifest(
   return OnDeviceBaseModelSpec(*name, *version, *selected_performance_hint);
 }
 
-base::Value::Dict MakeOverrideManifest() {
+base::DictValue MakeOverrideManifest() {
   auto hints =
-      base::Value::List()
+      base::ListValue()
           .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY)
           .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE)
           .Append(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
-  return base::Value::Dict().Set(
+  return base::DictValue().Set(
       "BaseModelSpec",
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", "override")
           .Set("version", "override")
           .Set("supported_performance_hints", std::move(hints)));
@@ -256,7 +256,7 @@ OnDeviceModelComponentStateManager::~OnDeviceModelComponentStateManager() =
 // static
 bool OnDeviceModelComponentStateManager::VerifyInstallation(
     const base::FilePath& install_dir,
-    const base::Value::Dict& manifest) {
+    const base::DictValue& manifest) {
   for (const base::FilePath::CharType* file_name :
        {kWeightsFile, kOnDeviceModelExecutionConfigFile}) {
     if (!base::PathExists(install_dir.Append(file_name))) {
@@ -309,7 +309,7 @@ OnDeviceModelComponentStateManager::GetDebugState() {
 void OnDeviceModelComponentStateManager::SetReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    const base::Value::Dict& manifest) {
+    const base::DictValue& manifest) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_.reset();
 

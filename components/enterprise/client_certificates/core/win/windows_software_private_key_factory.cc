@@ -106,7 +106,7 @@ void WindowsSoftwarePrivateKeyFactory::LoadPrivateKey(
 }
 
 void WindowsSoftwarePrivateKeyFactory::LoadPrivateKeyFromDict(
-    const base::Value::Dict& serialized_private_key,
+    const base::DictValue& serialized_private_key,
     PrivateKeyCallback callback) {
   std::optional<int> source = serialized_private_key.FindInt(kKeySource);
   auto* encoded_wrapped_private_key = serialized_private_key.FindString(kKey);

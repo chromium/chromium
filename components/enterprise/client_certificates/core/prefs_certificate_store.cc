@@ -79,7 +79,7 @@ void PrefsCertificateStore::CreatePrivateKey(
     const std::string& identity_name,
     base::OnceCallback<void(StoreErrorOr<scoped_refptr<PrivateKey>>)>
         callback) {
-  const base::Value::Dict& identity = pref_service_->GetDict(identity_name);
+  const base::DictValue& identity = pref_service_->GetDict(identity_name);
   if (identity.size() && identity.FindDict(kKeyDetails)->size()) {
     // A private key already exists, this request is therefore treated as a
     // conflict. Only check for the private key, as certificates can be
@@ -197,7 +197,7 @@ void PrefsCertificateStore::OnPrivateKeyCreated(
     return;
   }
 
-  base::Value::Dict identity_to_save;
+  base::DictValue identity_to_save;
   identity_to_save.Set(kKeyDetails, std::move(serialized_private_key));
   pref_service_->SetDict(identity_name, std::move(identity_to_save));
   std::move(callback).Run(private_key);

@@ -444,7 +444,7 @@ void SearchProvider::OnURLLoadComplete(
   // clear if the suggest server will send back sensible results to the
   // request we're constructing here for on-focus inputs.
   if (!input_.IsZeroSuggest() && request_succeeded) {
-    std::optional<base::Value::List> data =
+    std::optional<base::ListValue> data =
         SearchSuggestionParser::DeserializeJsonData(
             SearchSuggestionParser::ExtractJsonData(source,
                                                     std::move(response_body)));

@@ -43,7 +43,7 @@ void ReportUkmForLookalikeUrlBlockingPageIfNeeded(
   }
 }
 
-void PopulateLookalikeUrlBlockingPageStrings(base::Value::Dict& load_time_data,
+void PopulateLookalikeUrlBlockingPageStrings(base::DictValue& load_time_data,
                                              const GURL& safe_url,
                                              const GURL& request_url) {
   PopulateStringsForSharedHTML(load_time_data);
@@ -102,7 +102,7 @@ void PopulateLookalikeUrlBlockingPageStrings(base::Value::Dict& load_time_data,
       lookalikes::GetConsoleMessage(request_url, /*is_new_heuristic=*/false));
 }
 
-void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data) {
+void PopulateStringsForSharedHTML(base::DictValue& load_time_data) {
   load_time_data.Set("lookalike_url", true);
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);

@@ -22,9 +22,9 @@ class OriginTrialsSettingsStorageTest : public testing::Test {
 
   OriginTrialsSettingsStorage* storage() { return storage_.get(); }
 
-  base::Value::List CreateMaxTokensList(uint16_t initial_number) {
-    base::Value::List max_tokens_list =
-        base::Value::List::with_capacity(kOriginMaxDisabledTrialTokens);
+  base::ListValue CreateMaxTokensList(uint16_t initial_number) {
+    base::ListValue max_tokens_list =
+        base::ListValue::with_capacity(kOriginMaxDisabledTrialTokens);
     for (uint16_t i = initial_number;
          i < kOriginMaxDisabledTrialTokens + initial_number; i++) {
       max_tokens_list.Append(base::FormatNumber(i));
@@ -42,27 +42,27 @@ TEST_F(OriginTrialsSettingsStorageTest, EnsureEmptyValidSettingsOnCreation) {
 }
 
 TEST_F(OriginTrialsSettingsStorageTest, DisabledTokensPopulatedInSettings) {
-  storage()->PopulateSettings(base::Value::List().Append("token 1"));
+  storage()->PopulateSettings(base::ListValue().Append("token 1"));
   EXPECT_EQ(storage()->GetSettings()->disabled_tokens,
             std::vector<std::string>({"token 1"}));
 }
 
 TEST_F(OriginTrialsSettingsStorageTest,
        PopulateEmptyConfigResetsExistingConfig) {
-  storage()->PopulateSettings(base::Value::List().Append("token 1"));
+  storage()->PopulateSettings(base::ListValue().Append("token 1"));
   EXPECT_EQ(storage()->GetSettings()->disabled_tokens,
             std::vector<std::string>({"token 1"}));
-  storage()->PopulateSettings(base::Value::List());
+  storage()->PopulateSettings(base::ListValue());
   EXPECT_EQ(storage()->GetSettings()->disabled_tokens,
             std::vector<std::string>({}));
 }
 
 TEST_F(OriginTrialsSettingsStorageTest, CloneDoesNotAffectedSettingsInstorage) {
-  storage()->PopulateSettings(base::Value::List().Append("token 1"));
+  storage()->PopulateSettings(base::ListValue().Append("token 1"));
   // Get the clone of the initial settings
   blink::mojom::OriginTrialsSettingsPtr settings1 = storage()->GetSettings();
   // Add new settings
-  storage()->PopulateSettings(base::Value::List().Append("token a"));
+  storage()->PopulateSettings(base::ListValue().Append("token a"));
   // Get the clone of the new settings
   blink::mojom::OriginTrialsSettingsPtr settings2 = storage()->GetSettings();
   // Settings should be different
@@ -78,14 +78,14 @@ TEST_F(OriginTrialsSettingsStorageTest, MaxDisabledTokensExistInSettings) {
 
 TEST_F(OriginTrialsSettingsStorageTest,
        PopulateWithOverMaxDisabledTokensDoesNotChangeSettings) {
-  base::Value::List disabled_tokens_list_within_limit = CreateMaxTokensList(0);
+  base::ListValue disabled_tokens_list_within_limit = CreateMaxTokensList(0);
   storage()->PopulateSettings(disabled_tokens_list_within_limit);
   std::vector<std::string> initial_disabled_tokens =
       storage()->GetSettings()->disabled_tokens;
 
   // Populate with a new list of disabled tokens. This list has
   // |kOriginMaxDisabledTrialTokens| + 1 items.
-  base::Value::List disabled_tokens_list_over_limit =
+  base::ListValue disabled_tokens_list_over_limit =
       CreateMaxTokensList(kOriginMaxDisabledTrialTokens);
   disabled_tokens_list_over_limit.Append("-1");
   EXPECT_NE(disabled_tokens_list_within_limit, disabled_tokens_list_over_limit);

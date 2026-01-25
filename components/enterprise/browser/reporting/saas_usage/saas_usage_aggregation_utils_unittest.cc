@@ -70,11 +70,11 @@ TEST_P(DomainReportingAggregationUtilsParameterizedTest, Run) {
     }
   }
 
-  const base::Value::Dict& report = pref_service_.GetDict(kSaasUsageReport);
+  const base::DictValue& report = pref_service_.GetDict(kSaasUsageReport);
   ASSERT_EQ(test_case.expected_states.size(), report.size());
 
   for (const auto& [domain, expected] : test_case.expected_states) {
-    const base::Value::Dict* entry = report.FindDict(domain);
+    const base::DictValue* entry = report.FindDict(domain);
     ASSERT_TRUE(entry) << "Report for domain " << domain << " not found.";
 
     EXPECT_EQ(expected.navigation_count,
@@ -82,7 +82,7 @@ TEST_P(DomainReportingAggregationUtilsParameterizedTest, Run) {
     EXPECT_EQ(expected.content_transfer_count,
               entry->FindInt(kContentTransferCount).value_or(0));
 
-    const base::Value::List* protocols = entry->FindList(kEncryptionProtocols);
+    const base::ListValue* protocols = entry->FindList(kEncryptionProtocols);
     ASSERT_TRUE(protocols);
     EXPECT_EQ(expected.encryption_protocols.size(), protocols->size());
     for (const auto& protocol : expected.encryption_protocols) {

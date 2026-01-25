@@ -627,11 +627,11 @@ std::vector<base::Value> SearchAggregatorProvider::CreateMockSearchEngines()
   return engines;
 }
 
-base::Value::Dict SearchAggregatorProvider::CreateMockSearchAggregator(
+base::DictValue SearchAggregatorProvider::CreateMockSearchAggregator(
     bool featured_by_policy) const {
   CHECK(AreMockEnginesValid());
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("short_name", name);
   result.Set("keyword", featured_by_policy ? '@' + shortcut : shortcut);
   result.Set("url", search_url);

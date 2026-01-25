@@ -92,7 +92,7 @@ class LoggerImpl : mojom::Logger {
     std::string session_id;
   };
 
-  static base::Value::Dict AsValue(const Entry& entry);
+  static base::DictValue AsValue(const Entry& entry);
 
   mojo::ReceiverSet<mojom::Logger> receivers_;
   base::circular_deque<Entry> entries_;

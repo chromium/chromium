@@ -535,7 +535,7 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
 
   bool AreMockEnginesValid() const;
   std::vector<base::Value> CreateMockSearchEngines() const;
-  base::Value::Dict CreateMockSearchAggregator(bool featured_by_policy) const;
+  base::DictValue CreateMockSearchAggregator(bool featured_by_policy) const;
 
   // The search engine name, shown in the Omnibox.
   std::string name;

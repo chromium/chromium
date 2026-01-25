@@ -11,7 +11,7 @@
 namespace metrics::structured {
 
 base::Value GetStructuredMetricsSummary(StructuredMetricsService* service) {
-  base::Value::Dict result = base::Value::Dict().Set("enabled", false);
+  base::DictValue result = base::DictValue().Set("enabled", false);
 
 #if BUILDFLAG(IS_CHROMEOS)
   result.Set("crosDeviceId", "-");

@@ -95,7 +95,7 @@ class Rule {
 
   // Returns nullopt if the passed JSON doesn't match the expected schema.
   static std::optional<Rule> Create(const base::Value& value);
-  static std::optional<Rule> Create(const base::Value::Dict& value);
+  static std::optional<Rule> Create(const base::DictValue& value);
 
   // Helpers to help conversions when parsing JSON.
   static Restriction StringToRestriction(const std::string& restriction);
@@ -107,7 +107,7 @@ class Rule {
   // relevant context to `errors. It is assumed `value` has had its schema
   // validated by SchemaValidatingPolicyHandler.
   static bool ValidateRuleValue(const char* policy_name,
-                                const base::Value::Dict& root_value,
+                                const base::DictValue& root_value,
                                 policy::PolicyErrorPath error_path,
                                 policy::PolicyErrorMap* errors);
 
@@ -132,16 +132,16 @@ class Rule {
   // single `Condition` object. This is called on the "root" level of the
   // condition and recursively as needed.
   static std::unique_ptr<const Condition> GetCondition(
-      const base::Value::Dict& value);
+      const base::DictValue& value);
 
   // Helper to parse sub-fields controlling conditions under "sources" and/or
   // "destinations" and combine them into a single `Condition` object.
   static std::unique_ptr<const Condition> GetSourcesAndDestinationsCondition(
-      const base::Value::Dict& value);
+      const base::DictValue& value);
 
   // Helper to parse the JSON list of conditions under a "and" or "or" key.
   static std::vector<std::unique_ptr<const Condition>> GetListConditions(
-      const base::Value::List& value);
+      const base::ListValue& value);
 
   // Helper to parse the following JSON schema:
   // {
@@ -151,13 +151,13 @@ class Rule {
   // For compatibility, unrecognized values are ignored and valid values are
   // still included in the output.
   static base::flat_map<Restriction, Level> GetRestrictions(
-      const base::Value::Dict& value);
+      const base::DictValue& value);
 
   // Helper used to recursively validate a rule. This should only be called by
   // itself and `ValidateRuleValue`.
   static bool ValidateRuleSubValues(
       const char* policy_name,
-      const base::Value::Dict& value,
+      const base::DictValue& value,
       const base::flat_map<Restriction, Level>& restrictions,
       policy::PolicyErrorPath error_path,
       policy::PolicyErrorMap* errors);

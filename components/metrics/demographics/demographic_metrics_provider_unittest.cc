@@ -146,7 +146,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
   void SetDemographicsInPrefs(int birth_year,
                               metrics::UserDemographicsProto_Gender gender) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kSyncDemographicsBirthYearPath, birth_year);
     dict.Set(kSyncDemographicsGenderPath, static_cast<int>(gender));
     pref_service_.SetDict(kSyncDemographicsPrefName, std::move(dict));

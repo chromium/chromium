@@ -41,16 +41,16 @@ namespace {
 //     }
 std::string BuildRequestBody(std::u16string query,
                              const std::vector<int>& suggestion_types) {
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("query", query);
 
-  base::Value::List suggestion_types_list;
+  base::ListValue suggestion_types_list;
   for (const auto& item : suggestion_types) {
     suggestion_types_list.Append(item);
   }
   root.Set("suggestionTypes", std::move(suggestion_types_list));
 
-  base::Value::List experiment_ids_list;
+  base::ListValue experiment_ids_list;
   experiment_ids_list.Append(kEnterpriseSearchAggregatorExperimentId);
   root.Set("experimentIds", std::move(experiment_ids_list));
 

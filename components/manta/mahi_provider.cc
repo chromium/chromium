@@ -94,7 +94,7 @@ void OnServerResponseOrErrorReceived(
     MantaStatus manta_status) {
   if (manta_status.status_code != MantaStatusCode::kOk) {
     CHECK(manta_response == nullptr);
-    std::move(callback).Run(base::Value::Dict(), std::move(manta_status));
+    std::move(callback).Run(base::DictValue(), std::move(manta_status));
     return;
   }
 
@@ -112,14 +112,14 @@ void OnServerResponseOrErrorReceived(
           proto::FilteredReason_Name(manta_response->filtered_data(0).reason())
               .c_str());
     }
-    std::move(callback).Run(base::Value::Dict(),
+    std::move(callback).Run(base::DictValue(),
                             {MantaStatusCode::kBlockedOutputs, message});
     return;
   }
 
   std::move(callback).Run(
-      base::Value::Dict().Set("outputData",
-                              std::move(manta_response->output_data(0).text())),
+      base::DictValue().Set("outputData",
+                            std::move(manta_response->output_data(0).text())),
       std::move(manta_status));
 }
 
@@ -225,7 +225,7 @@ void MahiProvider::Outline(const std::string& input,
                            const std::optional<std::string>& url,
                            MantaGenericCallback done_callback) {
   std::move(done_callback)
-      .Run(base::Value::Dict(),
+      .Run(base::DictValue(),
            {MantaStatusCode::kGenericError, "Unimplemented"});
 }
 

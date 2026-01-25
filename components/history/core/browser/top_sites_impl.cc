@@ -230,7 +230,7 @@ bool TopSitesImpl::IsBlocked(const GURL& url) {
 
 void TopSitesImpl::ClearBlockedUrls() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  pref_service_->SetDict(kBlockedUrlsPrefsKey, base::Value::Dict());
+  pref_service_->SetDict(kBlockedUrlsPrefsKey, base::DictValue());
   ResetThreadSafeCache();
   NotifyTopSitesChanged(TopSitesObserver::ChangeReason::BLOCKED_URLS);
 }

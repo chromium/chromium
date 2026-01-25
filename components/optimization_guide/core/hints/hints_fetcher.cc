@@ -139,7 +139,7 @@ HintsFetcher::~HintsFetcher() {
 // static
 void HintsFetcher::ClearHostsSuccessfullyFetched(PrefService* pref_service) {
   pref_service->SetDict(prefs::kHintsFetcherHostsSuccessfullyFetched,
-                        base::Value::Dict());
+                        base::DictValue());
 }
 
 void HintsFetcher::SetTimeClockForTesting(const base::Clock* time_clock) {
@@ -524,7 +524,7 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
     bool skip_cache) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::Value::Dict& hosts_fetched =
+  const base::DictValue& hosts_fetched =
       pref_service_->GetDict(prefs::kHintsFetcherHostsSuccessfullyFetched);
 
   std::vector<std::string> target_hosts;

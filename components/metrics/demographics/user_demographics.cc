@@ -36,7 +36,7 @@ constexpr auto kDeprecatedDemographicsBirthYearOffsetPrefFlags =
 
 namespace {
 
-const base::Value::Dict& GetDemographicsDict(PrefService* profile_prefs) {
+const base::DictValue& GetDemographicsDict(PrefService* profile_prefs) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40240008): On Ash only, clear sync demographics pref once
   // os-level syncable pref is fully rolled out and Ash drops support for
@@ -103,7 +103,7 @@ bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
 // Gets the synced user's birth year from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-std::optional<int> GetUserBirthYear(const base::Value::Dict& demographics) {
+std::optional<int> GetUserBirthYear(const base::DictValue& demographics) {
   return demographics.FindInt(kSyncDemographicsBirthYearPath);
 }
 
@@ -111,7 +111,7 @@ std::optional<int> GetUserBirthYear(const base::Value::Dict& demographics) {
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
 std::optional<UserDemographicsProto_Gender> GetUserGender(
-    const base::Value::Dict& demographics) {
+    const base::DictValue& demographics) {
   const std::optional<int> gender_int =
       demographics.FindInt(kSyncDemographicsGenderPath);
 
@@ -219,7 +219,7 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
   // user_demographics.h for more details.
 
   // Get the pref that contains the user's birth year and gender.
-  const base::Value::Dict& demographics = GetDemographicsDict(profile_prefs);
+  const base::DictValue& demographics = GetDemographicsDict(profile_prefs);
 
   // Get the user's birth year.
   std::optional<int> birth_year = GetUserBirthYear(demographics);

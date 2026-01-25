@@ -16,15 +16,15 @@
 namespace feed {
 namespace {
 
-base::Value::List VectorToList(const std::vector<base::TimeDelta>& values) {
-  base::Value::List result;
+base::ListValue VectorToList(const std::vector<base::TimeDelta>& values) {
+  base::ListValue result;
   for (base::TimeDelta delta : values) {
     result.Append(base::TimeDeltaToValue(delta));
   }
   return result;
 }
 
-bool ListToVector(const base::Value::List& value,
+bool ListToVector(const base::ListValue& value,
                   std::vector<base::TimeDelta>* result) {
   for (const base::Value& entry : value) {
     std::optional<base::TimeDelta> delta = base::ValueToTimeDelta(entry);
@@ -64,18 +64,18 @@ RequestSchedule& RequestSchedule::operator=(const RequestSchedule&) = default;
 RequestSchedule::RequestSchedule(RequestSchedule&&) = default;
 RequestSchedule& RequestSchedule::operator=(RequestSchedule&&) = default;
 
-base::Value::Dict RequestScheduleToDict(const RequestSchedule& schedule) {
-  base::Value::Dict result;
+base::DictValue RequestScheduleToDict(const RequestSchedule& schedule) {
+  base::DictValue result;
   result.Set("anchor", base::TimeToValue(schedule.anchor_time));
   result.Set("offsets", VectorToList(schedule.refresh_offsets));
   result.Set("type", std::to_underlying(schedule.type));
   return result;
 }
 
-RequestSchedule RequestScheduleFromDict(const base::Value::Dict& value) {
+RequestSchedule RequestScheduleFromDict(const base::DictValue& value) {
   RequestSchedule result;
   std::optional<base::Time> anchor = base::ValueToTime(value.Find("anchor"));
-  const base::Value::List* offsets = value.FindList("offsets");
+  const base::ListValue* offsets = value.FindList("offsets");
   result.type = GetScheduleType(value.Find("type"));
 
   if (!anchor || !offsets || !ListToVector(*offsets, &result.refresh_offsets))

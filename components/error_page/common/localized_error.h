@@ -31,7 +31,7 @@ class LocalizedError {
     PageState& operator=(PageState&& other);
 
     // Strings used within the error page HTML/JS.
-    base::Value::Dict strings;
+    base::DictValue strings;
 
     // Sets whether the error is an offline error. Updates both the C++
     // boolean and the "isOfflineError" string for JavaScript.
@@ -62,12 +62,12 @@ class LocalizedError {
                                 bool is_kiosk_mode,
                                 const std::string& locale,
                                 bool is_blocked_by_extension,
-                                const base::Value::Dict* error_page_params);
+                                const base::DictValue* error_page_params);
 
   // Returns a |PageState| that describes the elements that should be shown on
   // when default offline page is shown.
   static PageState GetPageStateForOverriddenErrorPage(
-      base::Value::Dict string_dict,
+      base::DictValue string_dict,
       int error_code,
       const std::string& error_domain,
       const GURL& failed_url,

@@ -24,7 +24,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace base {
-class Value;
+class DictValue;
 }
 
 namespace signin {
@@ -180,10 +180,10 @@ class WebHistoryService : public KeyedService {
       const net::PartialNetworkTrafficAnnotationTag&
           partial_traffic_annotation);
 
-  // Extracts a JSON-encoded HTTP response into a base::Value::Dict.
+  // Extracts a JSON-encoded HTTP response into a base::DictValue.
   // If `request`'s HTTP response code indicates failure, or if the response
   // body is not JSON, nullopt is returned.
-  static std::optional<base::Value::Dict> ReadResponse(const Request& request);
+  static std::optional<base::DictValue> ReadResponse(const Request& request);
 
   // Called by `request` when a web history query has completed. Unpacks the
   // response and calls `callback`, which is the original callback that was

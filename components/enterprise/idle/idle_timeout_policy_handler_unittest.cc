@@ -121,7 +121,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, JustTimeout) {
 TEST_F(IdleTimeoutPolicyHandlerTest, JustActions) {
   // IdleTimeoutActions is set, but not IdleTimeout.
   SetPolicyValue(policy::key::kIdleTimeoutActions,
-                 base::Value(base::Value::List()));
+                 base::Value(base::ListValue()));
 
   CheckAndApplyPolicySettings();
 
@@ -141,7 +141,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, InvalidTimeoutPolicyType) {
   // Give an integer to a string policy.
   SetPolicyValue(policy::key::kIdleTimeout, base::Value("invalid"));
   SetPolicyValue(policy::key::kIdleTimeoutActions,
-                 base::Value(base::Value::List()));
+                 base::Value(base::ListValue()));
 
   CheckAndApplyPolicySettings();
 
@@ -179,7 +179,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, InvalidActionsPolicyType) {
 TEST_F(IdleTimeoutPolicyHandlerTest, InvalidActionWrongType) {
   // IdleTimeoutActions is a list, but one of the elements is not even a string.
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(5));
-  base::Value::List list;
+  base::ListValue list;
   list.Append("clear_browsing_history");
   list.Append(34);
   SetPolicyValue(policy::key::kIdleTimeoutActions,
@@ -206,7 +206,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, InvalidActionWrongType) {
 
 TEST_F(IdleTimeoutPolicyHandlerTest, ValidConfiguration) {
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
-  base::Value::List list;
+  base::ListValue list;
   list.Append("clear_browsing_history");
   list.Append("clear_cookies_and_other_site_data");
   SetPolicyValue(policy::key::kIdleTimeoutActions,
@@ -235,7 +235,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, OneMinuteMinimum) {
   // Set the policy to 0, which should clamp the pref to 1.
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(0));
   SetPolicyValue(policy::key::kIdleTimeoutActions,
-                 base::Value(base::Value::List()));
+                 base::Value(base::ListValue()));
 
   CheckAndApplyPolicySettings();
 
@@ -255,7 +255,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, ActionNotRecognized) {
   // IdleTimeoutActions is a list, but one of the elements is not recognized
   // as a valid option. Recognized actions are applied, but not the others.
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(5));
-  base::Value::List list;
+  base::ListValue list;
   list.Append("clear_browsing_history");
   list.Append("clear_cookies_and_other_site_data");
   list.Append("added_in_future_version_of_chrome");
@@ -286,7 +286,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, ActionNotRecognized) {
 
 TEST_F(IdleTimeoutPolicyHandlerTest, AllActions) {
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
-  base::Value::List list;
+  base::ListValue list;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   list.Append("close_browsers");
   list.Append("show_profile_picker");
@@ -347,7 +347,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, BrowserSigninDisabled) {
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
   SetPolicyValue(policy::key::kBrowserSignin, base::Value(0));
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append("clear_browsing_history");
   list.Append("clear_cookies_and_other_site_data");
   SetPolicyValue(policy::key::kIdleTimeoutActions,
@@ -385,7 +385,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
   SetPolicyValue(policy::key::kSyncDisabled, base::Value(false));
 
-  base::Value::List list;
+  base::ListValue list;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   list.Append("close_browsers");
   list.Append("show_profile_picker");
@@ -469,7 +469,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest,
   // set.
   prefs().SetBoolean(syncer::prefs::internal::kSyncAutofill, true);
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append("clear_browsing_history");
   list.Append("clear_cookies_and_other_site_data");
 

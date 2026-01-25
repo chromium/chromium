@@ -119,17 +119,17 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
         resource_request = request;
       }));
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("query", base::Value("test"));
 
-  base::Value::List suggestion_types_list;
+  base::ListValue suggestion_types_list;
   std::vector<int> suggestion_types = {1, 2, 3, 5};
   for (const auto& item : suggestion_types) {
     suggestion_types_list.Append(item);
   }
   root.Set("suggestionTypes", std::move(suggestion_types_list));
 
-  base::Value::List experiment_ids_list;
+  base::ListValue experiment_ids_list;
   experiment_ids_list.Append(kEnterpriseSearchAggregatorExperimentId);
   root.Set("experimentIds", std::move(experiment_ids_list));
 
@@ -188,17 +188,17 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
         resource_request = request;
       }));
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("query", base::Value("test"));
 
-  base::Value::List suggestion_types_list;
+  base::ListValue suggestion_types_list;
   std::vector<int> suggestion_types = {2, 3, 5};
   for (const auto& item : suggestion_types) {
     suggestion_types_list.Append(item);
   }
   root.Set("suggestionTypes", std::move(suggestion_types_list));
 
-  base::Value::List experiment_ids_list;
+  base::ListValue experiment_ids_list;
   experiment_ids_list.Append(kEnterpriseSearchAggregatorExperimentId);
   root.Set("experimentIds", std::move(experiment_ids_list));
 

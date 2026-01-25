@@ -394,7 +394,7 @@ class SearchSuggestionParser {
   // Parses JSON response received from the provider, stripping XSSI
   // protection if needed. Returns the parsed data if successful, NULL
   // otherwise.
-  static std::optional<base::Value::List> DeserializeJsonData(
+  static std::optional<base::ListValue> DeserializeJsonData(
       std::string_view json_data);
 
   // The options struct for ParseSuggestResultsWithOptions
@@ -407,7 +407,7 @@ class SearchSuggestionParser {
   // whether the response was received from the keyword provider.
   // Returns whether the appropriate result list members were updated.
   static bool ParseSuggestResults(
-      const base::Value::List& root_list,
+      const base::ListValue& root_list,
       const AutocompleteInput& input,
       const AutocompleteSchemeClassifier& scheme_classifier,
       int default_result_relevance,
@@ -417,7 +417,7 @@ class SearchSuggestionParser {
 
   // ParseSuggestResultsWithOptions with optional values set to their default
   static bool ParseSuggestResults(
-      const base::Value::List& root_list,
+      const base::ListValue& root_list,
       const AutocompleteInput& input,
       const AutocompleteSchemeClassifier& scheme_classifier,
       int default_result_relevance,

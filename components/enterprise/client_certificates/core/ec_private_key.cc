@@ -51,7 +51,7 @@ client_certificates_pb::PrivateKey ECPrivateKey::ToProto() const {
   return private_key;
 }
 
-base::Value::Dict ECPrivateKey::ToDict() const {
+base::DictValue ECPrivateKey::ToDict() const {
   return BuildSerializedPrivateKey(key_.ToPrivateKeyInfo());
 }
 

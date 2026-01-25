@@ -94,9 +94,9 @@ class KeyDataPrefsDelegateTest : public testing::Test {
     std::string_view project_name =
         validators->GetProjectName(project_name_hash).value();
 
-    const base::Value::Dict& keys_dict = prefs_.GetDict(kTestPrefName);
+    const base::DictValue& keys_dict = prefs_.GetDict(kTestPrefName);
 
-    const base::Value::Dict* value = keys_dict.FindDict(project_name);
+    const base::DictValue* value = keys_dict.FindDict(project_name);
 
     std::optional<KeyProto> key = util::CreateKeyProtoFromValue(*value);
 
@@ -126,7 +126,7 @@ class KeyDataPrefsDelegateTest : public testing::Test {
 
     ScopedDictPrefUpdate pref_updater(&prefs_, kTestPrefName);
 
-    base::Value::Dict& dict = pref_updater.Get();
+    base::DictValue& dict = pref_updater.Get();
     const validator::Validators* validators = validator::Validators::Get();
     auto project_name = validators->GetProjectName(project_name_hash);
 
@@ -359,7 +359,7 @@ TEST_F(KeyDataPrefsDelegateTest, Purge) {
   key_data_->Purge();
   EXPECT_EQ(delegate_->proto_.keys().size(), 0ul);
 
-  const base::Value::Dict& keys_dict = prefs_.GetDict(kTestPrefName);
+  const base::DictValue& keys_dict = prefs_.GetDict(kTestPrefName);
   EXPECT_EQ(keys_dict.size(), 0ul);
 }
 

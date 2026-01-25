@@ -151,7 +151,7 @@ void FillCommonCastMessageFields(CastMessage* message,
 }
 
 CastMessage CreateKeepAliveMessage(std::string_view keep_alive_type) {
-  base::Value::Dict type_dict;
+  base::DictValue type_dict;
   type_dict.Set("type", keep_alive_type);
   return CreateCastMessage(kHeartbeatNamespace,
                            base::Value(std::move(type_dict)), kPlatformSenderId,
@@ -268,7 +268,7 @@ bool IsCastReservedNamespace(std::string_view message_namespace) {
   return false;
 }
 
-CastMessageType ParseMessageTypeFromPayload(const base::Value::Dict& payload) {
+CastMessageType ParseMessageTypeFromPayload(const base::DictValue& payload) {
   const std::string* type_string = payload.FindString("type");
   return type_string ? CastMessageTypeFromString(*type_string)
                      : CastMessageType::kOther;
@@ -384,7 +384,7 @@ CastMessage CreateVirtualConnectionRequest(
   dict.Set("type", EnumToString<CastMessageType, CastMessageType::kConnect>());
   dict.Set("userAgent", user_agent);
   dict.Set("connType", connection_type);
-  dict.Set("origin", base::Value::Dict());
+  dict.Set("origin", base::DictValue());
 
   Value::Dict sender_info;
   sender_info.Set("sdkType", kVirtualConnectSdkType);
@@ -450,7 +450,7 @@ CastMessage CreateLaunchRequest(
   dict.Set("requestId", request_id);
   dict.Set("appId", app_id);
   dict.Set("language", locale);
-  base::Value::List supported_app_types_value;
+  base::ListValue supported_app_types_value;
   for (const std::string& type : supported_app_types) {
     supported_app_types_value.Append(type);
   }
@@ -499,7 +499,7 @@ CastMessage CreateCastMessage(const std::string& message_namespace,
   return output;
 }
 
-CastMessage CreateMediaRequest(const base::Value::Dict& body,
+CastMessage CreateMediaRequest(const base::DictValue& body,
                                int request_id,
                                const std::string& source_id,
                                const std::string& destination_id) {
@@ -512,7 +512,7 @@ CastMessage CreateMediaRequest(const base::Value::Dict& body,
                            source_id, destination_id);
 }
 
-CastMessage CreateSetVolumeRequest(const base::Value::Dict& body,
+CastMessage CreateSetVolumeRequest(const base::DictValue& body,
                                    int request_id,
                                    const std::string& source_id) {
   DCHECK(body.FindString("type") &&
@@ -589,8 +589,7 @@ LaunchSessionResponse GetLaunchSessionResponseError(std::string error_msg) {
   return response;
 }
 
-LaunchSessionResponse GetLaunchSessionResponse(
-    const base::Value::Dict& payload) {
+LaunchSessionResponse GetLaunchSessionResponse(const base::DictValue& payload) {
   const std::string* type_string = payload.FindString("type");
   if (!type_string) {
     return LaunchSessionResponse();

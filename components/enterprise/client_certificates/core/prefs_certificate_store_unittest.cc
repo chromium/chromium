@@ -52,8 +52,8 @@ scoped_refptr<net::X509Certificate> LoadTestCert() {
                                  kTestCertFileName);
 }
 
-base::Value::Dict CreateFakeDictKey() {
-  base::Value::Dict key_dict;
+base::DictValue CreateFakeDictKey() {
+  base::DictValue key_dict;
   key_dict.Set(kKey, base::Base64Encode(kFakeWrappedValue));
   key_dict.Set(kKeySource,
                static_cast<int>(PrivateKeySource::kUnexportableKey));
@@ -67,14 +67,14 @@ std::string GetEncodedCertificate(net::X509Certificate& certificate) {
   return pem_encoded_certificate;
 }
 
-base::Value::Dict CreateValidIdentity() {
-  base::Value::Dict identity;
+base::DictValue CreateValidIdentity() {
+  base::DictValue identity;
   identity.Set(kKeyDetails, CreateFakeDictKey());
   return identity;
 }
 
-base::Value::Dict CreateValidIdentity(net::X509Certificate& certificate) {
-  base::Value::Dict identity = CreateValidIdentity();
+base::DictValue CreateValidIdentity(net::X509Certificate& certificate) {
+  base::DictValue identity = CreateValidIdentity();
   identity.Set(kCertificate, GetEncodedCertificate(certificate));
   return identity;
 }
@@ -138,9 +138,9 @@ TEST_F(PrefsCertificateStoreTest, CreatePrivateKey_Success) {
 // attempting to create a private key using an identity name that is already
 // used.
 TEST_F(PrefsCertificateStoreTest, CreatePrivateKey_ConflictFailure) {
-  base::Value::Dict key_dict;
+  base::DictValue key_dict;
   key_dict.Set(kKey, kInvalidKey);
-  base::Value::Dict identity;
+  base::DictValue identity;
   identity.Set(kKeyDetails, std::move(key_dict));
   prefs_.SetDict(kTestIdentityName, std::move(identity));
 
@@ -302,7 +302,7 @@ TEST_F(PrefsCertificateStoreTest, GetIdentity_OnlyPrivateKeySuccess) {
 // properly loaded into memory and returned.
 TEST_F(PrefsCertificateStoreTest, GetIdentity_OnlyCertificateSuccess) {
   auto test_cert = LoadTestCert();
-  base::Value::Dict identity_dict;
+  base::DictValue identity_dict;
   identity_dict.Set(kCertificate, GetEncodedCertificate(*test_cert));
   prefs_.SetDict(kTestIdentityName, std::move(identity_dict));
 
@@ -321,7 +321,7 @@ TEST_F(PrefsCertificateStoreTest, GetIdentity_OnlyCertificateSuccess) {
 // Tests that an identity stored in the prefs with no private key nor
 // certificate can be properly loaded into memory and returned.
 TEST_F(PrefsCertificateStoreTest, GetIdentity_MissingKeyAndCertSuccess) {
-  base::Value::Dict identity_dict;
+  base::DictValue identity_dict;
   identity_dict.Set("test", 1);
   prefs_.SetDict(kTestIdentityName, std::move(identity_dict));
 
@@ -340,7 +340,7 @@ TEST_F(PrefsCertificateStoreTest, GetIdentity_MissingKeyAndCertSuccess) {
 // Tests that an identity stored in the prefs with no details
 // can not be properly loaded into memory and returned.
 TEST_F(PrefsCertificateStoreTest, GetIdentity_NoDetails_Fails) {
-  prefs_.SetDict(kTestIdentityName, base::Value::Dict());
+  prefs_.SetDict(kTestIdentityName, base::DictValue());
 
   base::test::TestFuture<StoreErrorOr<std::optional<ClientIdentity>>>
       test_future;
@@ -376,7 +376,7 @@ TEST_F(PrefsCertificateStoreTest, GetIdentity_LoadPrivateKeyFailure) {
 }
 
 TEST_F(PrefsCertificateStoreTest, DeleteIdentities_Success) {
-  base::Value::Dict identity;
+  base::DictValue identity;
   identity.Set(kCertificate, "some_cert");
   prefs_.SetDict(kTestIdentityName, identity.Clone());
   prefs_.SetDict(kOtherTestIdentityName, identity.Clone());

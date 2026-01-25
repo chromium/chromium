@@ -18,7 +18,7 @@ namespace {
 // Parses an EnterpriseShortcut stored in prefs. Returns nullopt if the data is
 // malformed.
 std::optional<EnterpriseShortcut> EnterpriseShortcutFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* url_string =
       dict.FindString(EnterpriseShortcutsStore::kDictionaryKeyUrl);
   const std::string* title_string =
@@ -97,7 +97,7 @@ EnterpriseShortcutsStore::RetrievePolicyLinks() {
 std::vector<EnterpriseShortcut>
 EnterpriseShortcutsStore::RetrieveLinksFromPrefs(std::string_view pref_path) {
   std::vector<EnterpriseShortcut> links;
-  const base::Value::List& stored_links = prefs_->GetList(pref_path);
+  const base::ListValue& stored_links = prefs_->GetList(pref_path);
   for (const base::Value& link : stored_links) {
     std::optional<EnterpriseShortcut> link_to_add =
         EnterpriseShortcutFromDict(link.GetDict());
@@ -114,9 +114,9 @@ EnterpriseShortcutsStore::RetrieveLinksFromPrefs(std::string_view pref_path) {
 
 void EnterpriseShortcutsStore::StoreLinks(
     const std::vector<EnterpriseShortcut>& links) {
-  base::Value::List new_link_list;
+  base::ListValue new_link_list;
   for (const EnterpriseShortcut& link : links) {
-    base::Value::Dict new_link;
+    base::DictValue new_link;
     new_link.Set(kDictionaryKeyUrl, link.url.spec());
     new_link.Set(kDictionaryKeyTitle, link.title);
     new_link.Set(kDictionaryKeyPolicyOrigin,

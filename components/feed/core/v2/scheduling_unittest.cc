@@ -35,7 +35,7 @@ TEST(RequestSchedule, CanSerialize) {
   schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
   schedule.type = RequestSchedule::Type::kScheduledRefresh;
 
-  const base::Value::Dict schedule_dict = RequestScheduleToDict(schedule);
+  const base::DictValue schedule_dict = RequestScheduleToDict(schedule);
   ASSERT_EQ(R"({
    "anchor": "11644495200000000",
    "offsets": [ "3600000000", "21600000000" ],
@@ -59,7 +59,7 @@ TEST(RequestSchedule, GetScheduleType) {
   EXPECT_EQ(RequestSchedule::Type::kScheduledRefresh,
             RequestScheduleFromDict(RequestScheduleToDict(schedule)).type);
   schedule.type = RequestSchedule::Type::kFeedCloseRefresh;
-  base::Value::Dict schedule_dict = RequestScheduleToDict(schedule);
+  base::DictValue schedule_dict = RequestScheduleToDict(schedule);
   EXPECT_EQ(RequestSchedule::Type::kFeedCloseRefresh,
             RequestScheduleFromDict(schedule_dict).type);
   // Default to kScheduledRefresh if the type isn't valid.

@@ -37,8 +37,8 @@ struct RequestSchedule {
   Type type = Type::kScheduledRefresh;
 };
 
-base::Value::Dict RequestScheduleToDict(const RequestSchedule& schedule);
-RequestSchedule RequestScheduleFromDict(const base::Value::Dict& dict);
+base::DictValue RequestScheduleToDict(const RequestSchedule& schedule);
+RequestSchedule RequestScheduleFromDict(const base::DictValue& dict);
 // Given a schedule, returns the next time a request should be made.
 // Updates |schedule| accordingly. If |schedule| has no fetches remaining,
 // returns a scheduled time using |Config::default_background_refresh_interval|.

@@ -14,15 +14,15 @@ constexpr char kNavigationCount[] = "navigation_count";
 constexpr char kContentTransferCount[] = "content_transfer_count";
 constexpr char kEncryptionProtocols[] = "encryption_protocols";
 
-base::Value::Dict& GetOrCreateEntry(base::Value::Dict& report_dict,
-                                    std::string_view domain) {
-  base::Value::Dict* entry = report_dict.FindDict(domain);
+base::DictValue& GetOrCreateEntry(base::DictValue& report_dict,
+                                  std::string_view domain) {
+  base::DictValue* entry = report_dict.FindDict(domain);
   if (!entry) {
-    base::Value::Dict new_entry =
-        base::Value::Dict()
+    base::DictValue new_entry =
+        base::DictValue()
             .Set(kNavigationCount, 0)
             .Set(kContentTransferCount, 0)
-            .Set(kEncryptionProtocols, base::Value::List());
+            .Set(kEncryptionProtocols, base::ListValue());
     entry = report_dict.Set(domain, std::move(new_entry))->GetIfDict();
   }
   return *entry;
@@ -37,7 +37,7 @@ void RecordNavigation(PrefService* pref_service,
                       std::string_view encryption_protocol) {
   CHECK(pref_service);
   ScopedDictPrefUpdate update(pref_service, kSaasUsageReport);
-  base::Value::Dict& entry = GetOrCreateEntry(*update, domain);
+  base::DictValue& entry = GetOrCreateEntry(*update, domain);
 
   int count = entry.FindInt(kNavigationCount).value_or(0);
   entry.Set(kNavigationCount, count + 1);
@@ -46,7 +46,7 @@ void RecordNavigation(PrefService* pref_service,
     return;
   }
 
-  base::Value::List* protocols = entry.FindList(kEncryptionProtocols);
+  base::ListValue* protocols = entry.FindList(kEncryptionProtocols);
   CHECK(protocols);
 
   if (!protocols->contains(encryption_protocol)) {
@@ -57,7 +57,7 @@ void RecordNavigation(PrefService* pref_service,
 void RecordContentTransfer(PrefService* pref_service, std::string_view domain) {
   CHECK(pref_service);
   ScopedDictPrefUpdate update(pref_service, kSaasUsageReport);
-  base::Value::Dict& entry = GetOrCreateEntry(*update, domain);
+  base::DictValue& entry = GetOrCreateEntry(*update, domain);
 
   int count = entry.FindInt(kContentTransferCount).value_or(0);
   entry.Set(kContentTransferCount, count + 1);

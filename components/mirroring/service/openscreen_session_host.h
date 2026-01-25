@@ -138,7 +138,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Callback by media::cast::VideoSender to set a new target playout delay.
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
 
-  base::Value::Dict GetMirroringStats() const;
+  base::DictValue GetMirroringStats() const;
   void SetSenderStatsForTest(const openscreen::cast::SenderStats& test_stats);
 
  private:

@@ -12,7 +12,7 @@
 
 namespace guest_view {
 
-GuestViewEvent::GuestViewEvent(const std::string& name, base::Value::Dict args)
+GuestViewEvent::GuestViewEvent(const std::string& name, base::DictValue args)
     : name_(name), args_(std::move(args)) {}
 
 GuestViewEvent::~GuestViewEvent() = default;

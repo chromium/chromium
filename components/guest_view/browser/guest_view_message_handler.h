@@ -58,7 +58,7 @@ class GuestViewMessageHandler : public mojom::GuestViewHost {
   // mojom::GuestViewHost
   void AttachToEmbedderFrame(int element_instance_id,
                              int guest_instance_id,
-                             base::Value::Dict params,
+                             base::DictValue params,
                              AttachToEmbedderFrameCallback callback) override;
   void ViewCreated(int view_instance_id,
                    const std::string& view_type,

@@ -44,7 +44,7 @@ class PrivateKey : public base::RefCountedThreadSafe<PrivateKey> {
 
   // Returns a dictionary representation of the current private key which can
   // be serialized and loaded again through the PrivateKeyFactory.
-  virtual base::Value::Dict ToDict() const = 0;
+  virtual base::DictValue ToDict() const = 0;
 
   // Returns the source from where the private key was created.
   PrivateKeySource GetSource() const;
@@ -58,7 +58,7 @@ class PrivateKey : public base::RefCountedThreadSafe<PrivateKey> {
              scoped_refptr<net::SSLPrivateKey> ssl_private_key);
 
   // Builds a dictionary representation of a `key`.
-  base::Value::Dict BuildSerializedPrivateKey(std::vector<uint8_t> key) const;
+  base::DictValue BuildSerializedPrivateKey(std::vector<uint8_t> key) const;
 
   virtual ~PrivateKey();
 

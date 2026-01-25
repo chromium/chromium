@@ -609,8 +609,8 @@ const char* GetIconClassForError(const std::string& error_domain,
              : "icon-generic";
 }
 
-base::Value::Dict SingleEntryDictionary(std::string_view path, int message_id) {
-  base::Value::Dict result;
+base::DictValue SingleEntryDictionary(std::string_view path, int message_id) {
+  base::DictValue result;
   result.Set(path, l10n_util::GetStringUTF16(message_id));
   return result;
 }
@@ -618,7 +618,7 @@ base::Value::Dict SingleEntryDictionary(std::string_view path, int message_id) {
 // Adds a linked suggestion dictionary entry to the suggestions list.
 void AddLinkedSuggestionToList(const int error_code,
                                const std::string& locale,
-                               base::Value::List& suggestions_summary_list) {
+                               base::ListValue& suggestions_summary_list) {
   GURL learn_more_url(kRedirectLoopLearnMoreUrl);
   DCHECK(learn_more_url.is_valid());
   // Add the language parameter to the URL.
@@ -633,7 +633,7 @@ void AddLinkedSuggestionToList(const int error_code,
       base::UTF8ToUTF16(
           base::EscapeForHTML(learn_more_url_with_locale.spec())));
 
-  base::Value::Dict suggestion_list_item;
+  base::DictValue suggestion_list_item;
   suggestion_list_item.Set("summary", suggestion_string);
   suggestions_summary_list.Append(std::move(suggestion_list_item));
 }
@@ -651,13 +651,13 @@ bool IsOnlySuggestion(int suggestions, int suggestion) {
 // Creates a list of suggestions that a user may try to resolve a particular
 // network error. Appears above the fold underneath heading and intro paragraph.
 void GetSuggestionsSummaryList(int error_code,
-                               base::Value::Dict& error_strings,
+                               base::DictValue& error_strings,
                                int suggestions,
                                const std::string& locale,
-                               base::Value::List& suggestions_summary_list,
+                               base::ListValue& suggestions_summary_list,
                                bool can_show_network_diagnostics_dialog,
                                const GURL& failed_url,
-                               const base::Value::Dict* error_page_params) {
+                               const base::DictValue* error_page_params) {
   // Remove the diagnostic tool suggestion if the platform doesn't support it
   // or the url isn't valid.
   if (!can_show_network_diagnostics_dialog || !failed_url.is_valid() ||
@@ -705,7 +705,7 @@ void GetSuggestionsSummaryList(int error_code,
     if (failed_origin.opaque())
       return;
 
-    base::Value::Dict suggestion;
+    base::DictValue suggestion;
     std::string failed_origin_string(failed_origin.Serialize());
     suggestion.Set(
         "summary",
@@ -824,10 +824,10 @@ void GetSuggestionsSummaryList(int error_code,
 }
 
 // Creates a dictionary with "header" and "body" entries and adds it to `list`.
-void AddSuggestionDetailDictionaryToList(base::Value::List& list,
+void AddSuggestionDetailDictionaryToList(base::ListValue& list,
                                          int header_message_id,
                                          int body_message_id) {
-  base::Value::Dict suggestion_list_item;
+  base::DictValue suggestion_list_item;
   if (header_message_id) {
     suggestion_list_item.Set("header",
                              l10n_util::GetStringUTF16(header_message_id));
@@ -841,10 +841,10 @@ void AddSuggestionDetailDictionaryToList(base::Value::List& list,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Creates a dictionary with "header" and "body" entries and adds it to `list`.
-void AddSuggestionDetailDictionaryToList(base::Value::List& list,
+void AddSuggestionDetailDictionaryToList(base::ListValue& list,
                                          std::u16string header_message,
                                          std::u16string body_message) {
-  list.Append(base::Value::Dict()
+  list.Append(base::DictValue()
                   .Set("header", header_message)
                   .Set("body", body_message));
 }
@@ -854,7 +854,7 @@ void AddSuggestionDetailDictionaryToList(base::Value::List& list,
 // the "Details" button.
 void AddSuggestionsDetails(int error_code,
                            int suggestions,
-                           base::Value::List& suggestions_details) {
+                           base::ListValue& suggestions_details) {
   if (suggestions & SUGGEST_CHECK_CONNECTION) {
     AddSuggestionDetailDictionaryToList(
         suggestions_details, IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_HEADER,
@@ -965,7 +965,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
     bool is_kiosk_mode,
     const std::string& locale,
     bool is_blocked_by_extension,
-    const base::Value::Dict* error_page_params) {
+    const base::DictValue* error_page_params) {
   LocalizedError::PageState result;
   result.SetIsOfflineError(
       LocalizedError::IsOfflineError(error_domain, error_code));
@@ -1095,7 +1095,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
   result.strings.Set("iconClass",
                      GetIconClassForError(error_domain, error_code));
 
-  base::Value::Dict heading;
+  base::DictValue heading;
 
   int msg_id = show_game_instructions ? IDS_ERRORPAGES_GAME_INSTRUCTIONS
                                       : options.heading_resource_id;
@@ -1120,7 +1120,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
     return result;
   }
 
-  base::Value::Dict summary;
+  base::DictValue summary;
 
   // Set summary message under the heading.
   std::u16string message;
@@ -1162,13 +1162,13 @@ LocalizedError::PageState LocalizedError::GetPageState(
   }
   result.strings.Set("errorCode", error_code_string);
 
-  base::Value::List suggestions_details;
-  base::Value::List suggestions_summary_list;
+  base::ListValue suggestions_details;
+  base::ListValue suggestions_summary_list;
 
   // Add the reload suggestion, if needed, for pages that didn't come
   // from a post.
   if ((options.buttons & SHOW_BUTTON_RELOAD) && !is_post) {
-    base::Value::Dict reload_button;
+    base::DictValue reload_button;
     result.reload_button_shown = true;
     reload_button.Set("msg",
                       l10n_util::GetStringUTF16(IDS_ERRORPAGES_BUTTON_RELOAD));
@@ -1221,7 +1221,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
 }
 
 LocalizedError::PageState LocalizedError::GetPageStateForOverriddenErrorPage(
-    base::Value::Dict string_dict,
+    base::DictValue string_dict,
     int error_code,
     const std::string& error_domain,
     const GURL& failed_url,

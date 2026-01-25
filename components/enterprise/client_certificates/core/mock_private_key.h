@@ -35,7 +35,7 @@ class MockPrivateKey : public PrivateKey {
               ToProto,
               (),
               (const, override));
-  MOCK_METHOD(base::Value::Dict, ToDict, (), (const, override));
+  MOCK_METHOD(base::DictValue, ToDict, (), (const, override));
 
  protected:
   ~MockPrivateKey() override;

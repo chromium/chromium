@@ -9,7 +9,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace base {
-class Value;
+class DictValue;
 }  // namespace base
 
 namespace lookalikes {
@@ -29,12 +29,12 @@ void ReportUkmForLookalikeUrlBlockingPageIfNeeded(
     bool triggered_by_initial_url);
 
 // Populates |load_time_data| for interstitial HTML.
-void PopulateLookalikeUrlBlockingPageStrings(base::Value::Dict& load_time_data,
+void PopulateLookalikeUrlBlockingPageStrings(base::DictValue& load_time_data,
                                              const GURL& safe_url,
                                              const GURL& request_url);
 
 // Values added to get shared interstitial HTML to play nice.
-void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
+void PopulateStringsForSharedHTML(base::DictValue& load_time_data);
 
 }  // namespace lookalikes
 

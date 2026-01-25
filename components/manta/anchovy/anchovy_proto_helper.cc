@@ -66,7 +66,7 @@ void AnchovyProtoHelper::HandleImageDescriptionResponse(
     MantaStatus manta_status) {
   if (manta_status.status_code != MantaStatusCode::kOk) {
     CHECK(manta_response == nullptr);
-    std::move(callback).Run(base::Value::Dict(), std::move(manta_status));
+    std::move(callback).Run(base::DictValue(), std::move(manta_status));
     return;
   }
 
@@ -75,27 +75,26 @@ void AnchovyProtoHelper::HandleImageDescriptionResponse(
   // An empty response is still an acceptable response.
   if (manta_response->output_data_size() < 1 ||
       !manta_response->output_data(0).has_custom()) {
-    std::move(callback).Run(base::Value::Dict(),
+    std::move(callback).Run(base::DictValue(),
                             {MantaStatusCode::kOk, std::string()});
     return;
   }
 
-  base::Value::List results;
+  base::ListValue results;
   for (const auto& data : manta_response->output_data()) {
     if (data.has_custom()) {
       proto::AnchovyDescription description;
       description.ParseFromString(data.custom().value());
       results.Append(
-          base::Value::Dict()
+          base::DictValue()
               .Set("text", description.text())
               .Set("type", AnchovyDescriptionTypeToString(description.type()))
               .Set("score", data.score()));
     }
   }
 
-  std::move(callback).Run(
-      base::Value::Dict().Set("results", std::move(results)),
-      std::move(manta_status));
+  std::move(callback).Run(base::DictValue().Set("results", std::move(results)),
+                          std::move(manta_status));
 }
 
 }  // namespace manta::anchovy

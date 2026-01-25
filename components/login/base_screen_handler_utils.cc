@@ -11,7 +11,7 @@
 
 namespace login {
 
-StringList ConvertToStringList(const base::Value::List& list) {
+StringList ConvertToStringList(const base::ListValue& list) {
   StringList result;
   for (const auto& val : list)
     result.push_back(val.GetString());

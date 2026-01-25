@@ -46,9 +46,9 @@ void SetPolicyLinks(PrefService* prefs,
                     base::span<const TestCaseItem> test_cases,
                     bool allow_user_edit = false,
                     bool allow_user_delete = false) {
-  base::Value::List links;
+  base::ListValue links;
   for (const auto& test_case : test_cases) {
-    base::Value::Dict link;
+    base::DictValue link;
     link.Set(EnterpriseShortcutsStore::kDictionaryKeyUrl, test_case.url);
     link.Set(EnterpriseShortcutsStore::kDictionaryKeyTitle,
              base::UTF16ToUTF8(test_case.title));
@@ -395,7 +395,7 @@ TEST_F(EnterpriseShortcutsManagerImplTest,
   ASSERT_EQ(FillTestLinks(kOneLinkTestCase), enterprise_shortcuts_->GetLinks());
 
   // Remove the policy. This should notify and clear custom links.
-  prefs_.SetList(prefs::kEnterpriseShortcutsPolicyList, base::Value::List());
+  prefs_.SetList(prefs::kEnterpriseShortcutsPolicyList, base::ListValue());
   EXPECT_TRUE(enterprise_shortcuts_->GetLinks().empty());
 }
 

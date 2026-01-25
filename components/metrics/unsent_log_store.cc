@@ -53,9 +53,9 @@ std::string DecodeFromBase64(const std::string& to_convert) {
 class LogsPrefWriter {
  public:
   // Create a writer that will write unsent logs to |list_value|. |list_value|
-  // should be a base::Value::List representing a pref. Clears the contents of
+  // should be a base::ListValue representing a pref. Clears the contents of
   // |list_value|.
-  explicit LogsPrefWriter(base::Value::List* list_value)
+  explicit LogsPrefWriter(base::ListValue* list_value)
       : list_value_(list_value) {
     DCHECK(list_value);
     list_value->clear();
@@ -70,7 +70,7 @@ class LogsPrefWriter {
   void WriteLogEntry(UnsentLogStore::LogInfo* log) {
     DCHECK(!finished_);
 
-    base::Value::Dict dict_value;
+    base::DictValue dict_value;
     dict_value.Set(kLogHashKey, EncodeToBase64(log->hash));
     dict_value.Set(kLogSignatureKey, EncodeToBase64(log->signature));
     dict_value.Set(kLogDataKey, EncodeToBase64(log->compressed_log_data));
@@ -114,7 +114,7 @@ class LogsPrefWriter {
 
  private:
   // The list where the logs will be written to. This should represent a pref.
-  raw_ptr<base::Value::List> list_value_;
+  raw_ptr<base::ListValue> list_value_;
 
   // Whether or not this writer has finished writing to pref.
   bool finished_ = false;
@@ -129,7 +129,7 @@ class LogsPrefWriter {
   size_t unsent_logs_count_ = 0;
 };
 
-bool GetString(const base::Value::Dict& dict,
+bool GetString(const base::DictValue& dict,
                std::string_view key,
                std::string& out) {
   const std::string* value = dict.FindString(key);
@@ -446,7 +446,7 @@ void UnsentLogStore::SetLogsEventManager(
   logs_event_manager_ = logs_event_manager;
 }
 
-void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
+void UnsentLogStore::ReadLogsFromPrefList(const base::ListValue& list_value) {
   // The below DCHECK ensures that a log from prefs is not loaded multiple
   // times, which is important for the semantics of the NotifyLogsCreated() call
   // below.
@@ -462,7 +462,7 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
   list_.resize(log_count);
 
   for (size_t i = 0; i < log_count; ++i) {
-    const base::Value::Dict* dict = list_value[i].GetIfDict();
+    const base::DictValue* dict = list_value[i].GetIfDict();
     std::unique_ptr<LogInfo> info = std::make_unique<LogInfo>();
     if (!dict || !GetString(*dict, kLogDataKey, info->compressed_log_data) ||
         !GetString(*dict, kLogHashKey, info->hash) ||
@@ -517,7 +517,7 @@ void UnsentLogStore::WriteToMetricsPref(
   }
 
   ScopedDictPrefUpdate update(local_state_, metadata_pref_name_);
-  base::Value::Dict& pref_data = update.Get();
+  base::DictValue& pref_data = update.Get();
   pref_data.Set(kLogUnsentCountKey, unsent_samples_count);
   pref_data.Set(kLogSentCountKey, sent_samples_count);
   // Round up to kb.
@@ -530,7 +530,7 @@ void UnsentLogStore::RecordMetaDataMetrics() {
     return;
   }
 
-  const base::Value::Dict& value = local_state_->GetDict(metadata_pref_name_);
+  const base::DictValue& value = local_state_->GetDict(metadata_pref_name_);
 
   auto unsent_samples_count = value.FindInt(kLogUnsentCountKey);
   auto sent_samples_count = value.FindInt(kLogSentCountKey);

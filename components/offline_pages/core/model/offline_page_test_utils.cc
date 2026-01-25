@@ -34,7 +34,7 @@ size_t GetFileCountInDirectory(const base::FilePath& directory) {
 
 std::ostream& operator<<(std::ostream& out, const OfflinePageItem& item) {
   using base::Value;
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("url", item.url.spec());
   value.Set("offline_id", base::NumberToString(item.offline_id));
   value.Set("client_id", item.client_id.ToString());

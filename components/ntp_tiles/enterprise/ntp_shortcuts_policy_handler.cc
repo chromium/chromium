@@ -42,8 +42,8 @@ bool IsNTPEnterpriseShortcutsEnabled() {
 // saved to prefs, with fields corresponding to `EnterpriseShortcut`. `CHECK`s
 // are safe since this function is only used after policy values are validated.
 base::Value NTPShortcutsDictFromPolicyValue(
-    const base::Value::Dict& policy_dict) {
-  base::Value::Dict dict;
+    const base::DictValue& policy_dict) {
+  base::DictValue dict;
 
   // To align with `EnterpriseShortcut`, use "title" as dictionary key instead
   // of "name".
@@ -134,7 +134,7 @@ bool NTPShortcutsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
   }
 
-  const base::Value::List& shortcuts =
+  const base::ListValue& shortcuts =
       policies.GetValue(policy_name(), base::Value::Type::LIST)->GetList();
 
   if (shortcuts.size() > kMaxNtpShortcuts) {
@@ -147,7 +147,7 @@ bool NTPShortcutsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   base::flat_set<GURL> valid_urls_already_seen;
   base::flat_set<GURL> duplicated_urls;
   for (const base::Value& entry : shortcuts) {
-    const base::Value::Dict& dict = entry.GetDict();
+    const base::DictValue& dict = entry.GetDict();
     const std::string* name = dict.FindString(kName);
     const std::string* url_str = dict.FindString(kUrl);
 
@@ -236,9 +236,9 @@ void NTPShortcutsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
   }
 
-  base::Value::List shortcuts;
+  base::ListValue shortcuts;
   for (const base::Value& item : policy_value->GetList()) {
-    const base::Value::Dict& policy_dict = item.GetDict();
+    const base::DictValue& policy_dict = item.GetDict();
     const std::string* url_str = policy_dict.FindString(kUrl);
     // An entry with a missing, empty, or invalid URL should be ignored.
     if (!url_str) {

@@ -55,8 +55,7 @@ void ZeroSuggestCacheService::StoreZeroSuggestResponse(
 void ZeroSuggestCacheService::ClearCache() {
   // Clear user prefs used for cross-session persistence.
   prefs_->SetString(omnibox::kZeroSuggestCachedResults, "");
-  prefs_->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                  base::Value::Dict());
+  prefs_->SetDict(omnibox::kZeroSuggestCachedResultsWithURL, base::DictValue());
 }
 
 void ZeroSuggestCacheService::AddObserver(Observer* observer) {

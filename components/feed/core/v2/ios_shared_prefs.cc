@@ -54,11 +54,11 @@ int GetNoticeCardClicksCount(const PrefService& pref_service) {
 }
 
 void SetExperiments(const Experiments& experiments, PrefService& pref_service) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& exp : experiments) {
-    base::Value::List list;
+    base::ListValue list;
     for (auto elem : exp.second) {
-      base::Value::Dict group_dict;
+      base::DictValue group_dict;
       group_dict.Set(kNameKey, elem.name);
       group_dict.Set(kIdKey, elem.experiment_id);
       list.Append(std::move(group_dict));
@@ -94,7 +94,7 @@ Experiments GetExperiments(PrefService& pref_service) {
 void MigrateObsoleteFeedExperimentPref_Jun_2024(PrefService* prefs) {
   const base::Value* val =
       prefs->GetUserPrefValue(prefs::kExperimentsV2Deprecated);
-  const base::Value::Dict* old = val ? val->GetIfDict() : nullptr;
+  const base::DictValue* old = val ? val->GetIfDict() : nullptr;
   if (old) {
     Experiments experiments;
     for (const auto kv : *old) {

@@ -167,7 +167,7 @@ int kLowQualityThreshold() {
       .scoring_low_quality_threshold;
 }
 
-// Helper for reading possibly null paths from `base::Value::Dict`.
+// Helper for reading possibly null paths from `base::DictValue`.
 std::string ptr_to_string(const std::string* ptr) {
   return ptr ? *ptr : "";
 }
@@ -282,7 +282,7 @@ const TemplateURL* AdjustTemplateURL(AutocompleteInput* input,
 }
 
 EnterpriseSearchAggregatorProvider::RelevanceData GetServerRelevanceData(
-    const base::Value::Dict& result) {
+    const base::DictValue& result) {
   return {static_cast<int>(result.FindDouble("score").value_or(0) * 1000), 0, 0,
           "server"};
 }
@@ -309,9 +309,9 @@ std::set<std::u16string> GetWords(std::vector<std::string> strings) {
 // Helper for getting a list of lowercase email usernames from the result
 // dictionary.
 const std::vector<std::u16string> GetEmailUsernames(
-    const base::Value::Dict& result) {
+    const base::DictValue& result) {
   std::vector<std::u16string> usernames;
-  const base::Value::List* emails =
+  const base::ListValue* emails =
       result.FindListByDottedPath("document.derivedStructData.emails");
   if (!emails) {
     return usernames;
@@ -850,7 +850,7 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
               &EnterpriseSearchAggregatorProvider::OnJsonParsedIsolated,
               base::Unretained(this), request_index));
     } else {
-      std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      std::optional<base::DictValue> value = base::JSONReader::ReadDict(
           json_data, base::JSON_ALLOW_TRAILING_COMMAS);
       HandleParsedJson(request_index, value);
     }
@@ -862,7 +862,7 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
 void EnterpriseSearchAggregatorProvider::OnJsonParsedIsolated(
     int request_index,
     base::expected<base::Value, std::string> result) {
-  std::optional<base::Value::Dict> value = std::nullopt;
+  std::optional<base::DictValue> value = std::nullopt;
   if (result.has_value() && result.value().is_dict()) {
     value = std::move(result.value().GetDict());
   }
@@ -871,7 +871,7 @@ void EnterpriseSearchAggregatorProvider::OnJsonParsedIsolated(
 
 void EnterpriseSearchAggregatorProvider::HandleParsedJson(
     int request_index,
-    const std::optional<base::Value::Dict>& response_value) {
+    const std::optional<base::DictValue>& response_value) {
   RequestParsed parsed =
       response_value.has_value()
           ? ParseEnterpriseSearchAggregatorSearchResults(
@@ -886,15 +886,14 @@ EnterpriseSearchAggregatorProvider::RequestParsed
 EnterpriseSearchAggregatorProvider::
     ParseEnterpriseSearchAggregatorSearchResults(
         const std::vector<SuggestionType>& suggestion_types,
-        const base::Value::Dict& root_val) {
+        const base::DictValue& root_val) {
   // Break the input into words to avoid redoing this for every match.
   std::set<std::u16string> input_words = GetWords({adjusted_input_.text()});
 
   // Parse the results.
-  const base::Value::List* queryResults = root_val.FindList("querySuggestions");
-  const base::Value::List* peopleResults =
-      root_val.FindList("peopleSuggestions");
-  const base::Value::List* contentResults =
+  const base::ListValue* queryResults = root_val.FindList("querySuggestions");
+  const base::ListValue* peopleResults = root_val.FindList("peopleSuggestions");
+  const base::ListValue* contentResults =
       root_val.FindList("contentSuggestions");
   RequestParsed parsed{};
   if (std::ranges::contains(suggestion_types, SuggestionType::QUERY)) {
@@ -918,7 +917,7 @@ EnterpriseSearchAggregatorProvider::
 EnterpriseSearchAggregatorProvider::RequestParsed
 EnterpriseSearchAggregatorProvider::ParseResultList(
     std::set<std::u16string> input_words,
-    const base::Value::List* results,
+    const base::ListValue* results,
     SuggestionType suggestion_type,
     bool is_navigation) {
   if (!results) {
@@ -935,7 +934,7 @@ EnterpriseSearchAggregatorProvider::ParseResultList(
       continue;
     }
 
-    const base::Value::Dict& result = result_value.GetDict();
+    const base::DictValue& result = result_value.GetDict();
 
     auto url = GetMatchDestinationUrl(result, suggestion_type);
     // All matches must have a URL.
@@ -1036,7 +1035,7 @@ EnterpriseSearchAggregatorProvider::ParseResultList(
 }
 
 std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
-    const base::Value::Dict& result,
+    const base::DictValue& result,
     SuggestionType suggestion_type) const {
   std::string destination_uri =
       ptr_to_string(result.FindString("destinationUri"));
@@ -1056,7 +1055,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
 }
 
 std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
-    const base::Value::Dict& result,
+    const base::DictValue& result,
     SuggestionType suggestion_type) const {
   if (suggestion_type == SuggestionType::PEOPLE) {
     return ptr_to_string(result.FindStringByDottedPath(
@@ -1069,7 +1068,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
 }
 
 std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
-    const base::Value::Dict& result,
+    const base::DictValue& result,
     SuggestionType suggestion_type) const {
   if (suggestion_type == SuggestionType::QUERY) {
     return ptr_to_string(result.FindString("suggestion"));
@@ -1130,7 +1129,7 @@ std::u16string EnterpriseSearchAggregatorProvider::GetLocalizedContentMetadata(
 
 std::vector<std::string>
 EnterpriseSearchAggregatorProvider::GetStrongScoringFields(
-    const base::Value::Dict& result,
+    const base::DictValue& result,
     SuggestionType suggestion_type,
     const std::string& contents,
     const std::string& description,
@@ -1153,7 +1152,7 @@ EnterpriseSearchAggregatorProvider::GetStrongScoringFields(
 
 std::vector<std::string>
 EnterpriseSearchAggregatorProvider::GetWeakScoringFields(
-    const base::Value::Dict& result,
+    const base::DictValue& result,
     SuggestionType suggestion_type) const {
   // Should not return any fields already included in `GetMatchDescription()` &
   // `GetMatchContents()`.

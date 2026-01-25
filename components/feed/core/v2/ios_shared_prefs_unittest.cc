@@ -37,12 +37,12 @@ TEST_F(IOSSharedPrefsTest, TestSetAndGetExperiments) {
 
 TEST_F(IOSSharedPrefsTest, MigrateExperimentsV2) {
   // Save the experiments in the old format.
-  base::Value::Dict dict;
-  base::Value::List list1;
+  base::DictValue dict;
+  base::ListValue list1;
   list1.Append("Group1");
   list1.Append("Group2");
   dict.Set("Trial1", std::move(list1));
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append("Hello");
   dict.Set("Trial2", std::move(list2));
   prefs_.SetDict(prefs::kExperimentsV2Deprecated, std::move(dict));

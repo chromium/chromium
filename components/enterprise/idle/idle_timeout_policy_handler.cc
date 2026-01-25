@@ -128,7 +128,7 @@ void IdleTimeoutActionsPolicyHandler::ApplyPolicySettings(
   DCHECK(policy_value);
 
   // Convert strings to integers (from the ActionType enum).
-  base::Value::List converted_actions;
+  base::ListValue converted_actions;
   for (const base::Value& action : policy_value->GetList()) {
     if (!action.is_string()) {
       continue;
@@ -203,7 +203,7 @@ bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
   const base::Value* value =
       policies.GetValue(this->policy_name(), base::Value::Type::LIST);
   DCHECK(value);
-  base::Value::List clear_data_actions;
+  base::ListValue clear_data_actions;
   for (const base::Value& action : value->GetList()) {
     if (!action.is_string()) {
       continue;

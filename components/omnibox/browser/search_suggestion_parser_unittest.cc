@@ -78,14 +78,14 @@ testing::Matcher<SearchSuggestionParser::SuggestResult> SuggestionIs(
 
 TEST(SearchSuggestionParserTest, DeserializeNonListJsonIsInvalid) {
   std::string json_data = "{}";
-  std::optional<base::Value::List> result =
+  std::optional<base::ListValue> result =
       SearchSuggestionParser::DeserializeJsonData(json_data);
   ASSERT_FALSE(result);
 }
 
 TEST(SearchSuggestionParserTest, DeserializeMalformedJsonIsInvalid) {
   std::string json_data = "} malformed json {";
-  std::optional<base::Value::List> result =
+  std::optional<base::ListValue> result =
       SearchSuggestionParser::DeserializeJsonData(json_data);
   ASSERT_FALSE(result);
 }
@@ -95,7 +95,7 @@ TEST(SearchSuggestionParserTest, DeserializeJsonData) {
   std::optional<base::Value> manifest_value =
       base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(manifest_value);
-  std::optional<base::Value::List> result =
+  std::optional<base::ListValue> result =
       SearchSuggestionParser::DeserializeJsonData(json_data);
   ASSERT_TRUE(result);
   ASSERT_EQ(*manifest_value, *result);
@@ -107,7 +107,7 @@ TEST(SearchSuggestionParserTest, DeserializeWithXssiGuard) {
   std::string json_data = R"([non-json [prefix [{"one": 1}])";
   // Parsing succeeds at:                      ^
 
-  std::optional<base::Value::List> result =
+  std::optional<base::ListValue> result =
       SearchSuggestionParser::DeserializeJsonData(json_data);
   ASSERT_TRUE(result);
 
@@ -121,7 +121,7 @@ TEST(SearchSuggestionParserTest, DeserializeWithTrailingComma) {
   // The comma in this string makes this badly formed JSON, but we explicitly
   // allow for this error in the JSON data.
   std::string json_data = R"([{"one": 1},])";
-  std::optional<base::Value::List> result =
+  std::optional<base::ListValue> result =
       SearchSuggestionParser::DeserializeJsonData(json_data);
   ASSERT_TRUE(result);
 }
@@ -135,7 +135,7 @@ TEST(SearchSuggestionParserTest, DeserializeWithTrailingComma) {
 // ParseSuggestResults:
 
 TEST(SearchSuggestionParserTest, ParseEmptyValueIsInvalid) {
-  base::Value::List root_val;
+  base::ListValue root_val;
   AutocompleteInput input;
   TestSchemeClassifier scheme_classifier;
   int default_result_relevance = 0;

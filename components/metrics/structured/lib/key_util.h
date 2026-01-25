@@ -24,7 +24,7 @@ std::string GenerateNewKey();
 
 // Helper conversion function between Value and KeyProto.
 base::Value CreateValueFromKeyProto(const KeyProto& proto);
-std::optional<KeyProto> CreateKeyProtoFromValue(const base::Value::Dict& value);
+std::optional<KeyProto> CreateKeyProtoFromValue(const base::DictValue& value);
 
 }  // namespace util
 }  // namespace metrics::structured

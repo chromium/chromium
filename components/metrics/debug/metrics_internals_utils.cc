@@ -127,9 +127,9 @@ std::string FormatDate(int64_t timestamp) {
       variations::SeedReaderWriter::ProtoTimeToTime(timestamp));
 }
 
-base::Value::Dict CreateKeyValueDict(std::string_view key,
-                                     std::string_view value) {
-  base::Value::Dict dict;
+base::DictValue CreateKeyValueDict(std::string_view key,
+                                   std::string_view value) {
+  base::DictValue dict;
   dict.Set("key", key);
   dict.Set("value", value);
   return dict;
@@ -138,7 +138,7 @@ base::Value::Dict CreateKeyValueDict(std::string_view key,
 void StoredSeedInfoToKeyValueList(
     base::OnceCallback<void(base::ValueView)> done_callback,
     variations::StoredSeedInfo stored_seed_info) {
-  base::Value::List list;
+  base::ListValue list;
   // We need to encode the seed data so it's valid utf-8.
   list.Append(CreateKeyValueDict("Seed Data",
                                  base::Base64Encode(stored_seed_info.data())));
@@ -167,8 +167,8 @@ void StoredSeedInfoToKeyValueList(
 
 }  // namespace
 
-base::Value::List GetUmaSummary(MetricsService* metrics_service) {
-  base::Value::List list;
+base::ListValue GetUmaSummary(MetricsService* metrics_service) {
+  base::ListValue list;
   list.Append(CreateKeyValueDict("Client ID", metrics_service->GetClientId()));
   // TODO(crbug.com/40238818): Add the server-side client ID.
   list.Append(CreateKeyValueDict(
@@ -183,9 +183,9 @@ base::Value::List GetUmaSummary(MetricsService* metrics_service) {
   return list;
 }
 
-base::Value::List GetVariationsSummary(
+base::ListValue GetVariationsSummary(
     metrics_services_manager::MetricsServicesManager* metrics_service_manager) {
-  base::Value::List list;
+  base::ListValue list;
   std::unique_ptr<variations::ClientFilterableState> state =
       metrics_service_manager->GetVariationsService()
           ->GetClientFilterableStateForVersion();

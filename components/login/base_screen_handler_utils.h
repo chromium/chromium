@@ -15,7 +15,7 @@ namespace login {
 
 using StringList = std::vector<std::string>;
 
-StringList LOGIN_EXPORT ConvertToStringList(const base::Value::List& list);
+StringList LOGIN_EXPORT ConvertToStringList(const base::ListValue& list);
 
 }  // namespace login
 

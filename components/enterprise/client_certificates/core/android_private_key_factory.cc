@@ -100,7 +100,7 @@ void AndroidPrivateKeyFactory::LoadPrivateKey(
 }
 
 void AndroidPrivateKeyFactory::LoadPrivateKeyFromDict(
-    const base::Value::Dict& serialized_private_key,
+    const base::DictValue& serialized_private_key,
     PrivateKeyCallback callback) {
   std::optional<int> source = serialized_private_key.FindInt(kKeySource);
   CHECK(ToPrivateKeySource(*source) == PrivateKeySource::kAndroidKey);

@@ -86,13 +86,13 @@ class PerProjectDictionaryPrefUpdate {
     DCHECK(per_sender_pref_);
   }
 
-  base::Value::Dict& operator*() { return *per_sender_pref_; }
+  base::DictValue& operator*() { return *per_sender_pref_; }
 
-  base::Value::Dict* operator->() { return per_sender_pref_; }
+  base::DictValue* operator->() { return per_sender_pref_; }
 
  private:
   ScopedDictPrefUpdate update_;
-  raw_ptr<base::Value::Dict> per_sender_pref_;
+  raw_ptr<base::DictValue> per_sender_pref_;
 };
 
 // State of the instance ID token when subscription is requested.
@@ -569,7 +569,7 @@ void PerUserTopicSubscriptionManager::DropAllSavedSubscriptionsOnTokenChange(
   // unsubscribe requests - if the token was revoked, the server will drop the
   // subscriptions anyway.)
   PerProjectDictionaryPrefUpdate update(pref_service_, project_id_);
-  *update = base::Value::Dict();
+  *update = base::DictValue();
   topic_to_private_topic_.clear();
   private_topic_to_topic_.clear();
   pending_subscriptions_.clear();

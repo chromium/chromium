@@ -462,24 +462,24 @@ std::string BuildDeletePostData(
 }
 
 WebHistoryService::QueryHistoryResult ParseQueryResponseOldApi(
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   CHECK(!base::FeatureList::IsEnabled(kWebHistoryUseNewApi));
 
   WebHistoryService::QueryHistoryResult query_history_result;
 
-  if (const base::Value::List* events = response.FindList("event")) {
+  if (const base::ListValue* events = response.FindList("event")) {
     query_history_result.visits.reserve(events->size());
 
     for (const base::Value& event : *events) {
-      const base::Value::Dict* event_dict = event.GetIfDict();
+      const base::DictValue* event_dict = event.GetIfDict();
       if (!event_dict) {
         continue;
       }
-      const base::Value::List* results = event_dict->FindList("result");
+      const base::ListValue* results = event_dict->FindList("result");
       if (!results || results->empty()) {
         continue;
       }
-      const base::Value::Dict* result = results->front().GetIfDict();
+      const base::DictValue* result = results->front().GetIfDict();
       if (!result) {
         continue;
       }
@@ -487,7 +487,7 @@ WebHistoryService::QueryHistoryResult ParseQueryResponseOldApi(
       if (!url_str) {
         continue;
       }
-      const base::Value::List* ids = result->FindList("id");
+      const base::ListValue* ids = result->FindList("id");
       if (!ids || ids->empty()) {
         continue;
       }
@@ -503,7 +503,7 @@ WebHistoryService::QueryHistoryResult ParseQueryResponseOldApi(
       // Extract the timestamps of all the visits to this URL.
       // They are referred to as "IDs" by the server.
       for (const base::Value& id : *ids) {
-        const base::Value::Dict* id_dict = id.GetIfDict();
+        const base::DictValue* id_dict = id.GetIfDict();
         const std::string* timestamp_string;
         int64_t timestamp_usec = 0;
         if (!id_dict ||
@@ -544,23 +544,23 @@ WebHistoryService::QueryHistoryResult ParseQueryResponseOldApi(
 }
 
 WebHistoryService::QueryHistoryResult ParseQueryResponseNewApi(
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   CHECK(base::FeatureList::IsEnabled(kWebHistoryUseNewApi));
 
   WebHistoryService::QueryHistoryResult query_history_result;
 
-  const base::Value::List* lookups = response.FindList("lookup");
+  const base::ListValue* lookups = response.FindList("lookup");
   if (!lookups || lookups->empty()) {
     return query_history_result;
   }
 
-  const base::Value::Dict* lookup_dict = lookups->front().GetIfDict();
+  const base::DictValue* lookup_dict = lookups->front().GetIfDict();
   if (!lookup_dict) {
     return query_history_result;
   }
 
   // There should be exactly one lookup in the response.
-  const base::Value::List* history_entries =
+  const base::ListValue* history_entries =
       lookup_dict->FindList("chromeHistory");
   if (!history_entries || history_entries->empty()) {
     return query_history_result;
@@ -569,7 +569,7 @@ WebHistoryService::QueryHistoryResult ParseQueryResponseNewApi(
   query_history_result.visits.reserve(history_entries->size());
 
   for (const base::Value& entry : *history_entries) {
-    const base::Value::Dict* entry_dict = entry.GetIfDict();
+    const base::DictValue* entry_dict = entry.GetIfDict();
     if (!entry_dict) {
       continue;
     }
@@ -614,7 +614,7 @@ WebHistoryService::QueryHistoryResult ParseQueryResponseNewApi(
 }
 
 WebHistoryService::QueryHistoryResult ParseQueryResponse(
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
     return ParseQueryResponseNewApi(response);
   } else {
@@ -666,7 +666,7 @@ std::unique_ptr<WebHistoryService::Request> WebHistoryService::CreateRequest(
 }
 
 // static
-std::optional<base::Value::Dict> WebHistoryService::ReadResponse(
+std::optional<base::DictValue> WebHistoryService::ReadResponse(
     const WebHistoryService::Request& request) {
   if (request.GetResponseCode() != net::HTTP_OK) {
     return std::nullopt;
@@ -799,7 +799,7 @@ void WebHistoryService::QueryHistoryCompletionCallback(
     return;
   }
 
-  std::optional<base::Value::Dict> response = ReadResponse(*request);
+  std::optional<base::DictValue> response = ReadResponse(*request);
   if (!response) {
     std::move(callback).Run(request, std::nullopt);
     return;
@@ -821,7 +821,7 @@ void WebHistoryService::ExpireHistoryCompletionCallback(
     return;
   }
 
-  std::optional<base::Value::Dict> response = ReadResponse(*request);
+  std::optional<base::DictValue> response = ReadResponse(*request);
   if (!response) {
     std::move(callback).Run(/*success=*/false);
     return;
@@ -856,7 +856,7 @@ void WebHistoryService::QueryWebAndAppActivityCompletionCallback(
     return;
   }
 
-  if (std::optional<base::Value::Dict> response = ReadResponse(*request)) {
+  if (std::optional<base::DictValue> response = ReadResponse(*request)) {
     if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
       if (const base::ListValue* facs_setting =
               response->FindList("facsSetting")) {

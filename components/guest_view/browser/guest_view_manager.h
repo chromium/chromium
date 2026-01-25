@@ -77,13 +77,13 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   virtual void AttachGuest(content::ChildProcessId embedder_process_id,
                            int element_instance_id,
                            int guest_instance_id,
-                           const base::Value::Dict& attach_params);
+                           const base::DictValue& attach_params);
   // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
   // version above.
   virtual void AttachGuest(int embedder_process_id,
                            int element_instance_id,
                            int guest_instance_id,
-                           const base::Value::Dict& attach_params);
+                           const base::DictValue& attach_params);
 
   // Indicates whether the |guest| is owned by an extension or Chrome App.
   bool IsOwnedByExtension(const GuestViewBase* guest);
@@ -125,14 +125,14 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   // Creates a guest and has the GuestViewManager assume ownership.
   void CreateGuest(const std::string& view_type,
                    content::RenderFrameHost* owner_rfh,
-                   const base::Value::Dict& create_params,
+                   const base::DictValue& create_params,
                    UnownedGuestCreatedCallback callback);
   // Creates a guest which the caller will own.
   int CreateGuestAndTransferOwnership(
       const std::string& view_type,
       content::RenderFrameHost* owner_rfh,
       scoped_refptr<content::SiteInstance> site_instance,
-      const base::Value::Dict& create_params,
+      const base::DictValue& create_params,
       OwnedGuestCreatedCallback callback);
 
   // Transfers ownership of `guest` to the caller.
@@ -229,7 +229,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   // Dispatches the event with |name| with the provided |args| to the embedder
   // of the given |guest| with |instance_id| for routing.
   void DispatchEvent(const std::string& event_name,
-                     base::Value::Dict args,
+                     base::DictValue args,
                      GuestViewBase* guest,
                      int instance_id);
 

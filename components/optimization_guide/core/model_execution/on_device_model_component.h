@@ -290,7 +290,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
 
   // Returns whether the component installation is valid.
   static bool VerifyInstallation(const base::FilePath& install_dir,
-                                 const base::Value::Dict& manifest);
+                                 const base::DictValue& manifest);
 
   // Returns the current state. Null if the component is not available.
   const OnDeviceModelComponentState* GetState();
@@ -318,7 +318,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   // returns true.
   void SetReady(const base::Version& version,
                 const base::FilePath& install_dir,
-                const base::Value::Dict& manifest);
+                const base::DictValue& manifest);
 
   // Called after the installer is successfully registered.
   void InstallerRegistered(bool is_already_installed);

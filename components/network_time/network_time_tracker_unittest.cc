@@ -424,13 +424,13 @@ TEST_F(NetworkTimeTrackerTest, DeserializeOldFormat) {
   EXPECT_EQ(NetworkTimeTracker::NETWORK_TIME_AVAILABLE,
             tracker_->GetNetworkTime(&out_network_time, nullptr));
   std::optional<double> local, network;
-  const base::Value::Dict& saved_prefs =
+  const base::DictValue& saved_prefs =
       pref_service_.GetDict(prefs::kNetworkTimeMapping);
   local = saved_prefs.FindDouble("local");
   network = saved_prefs.FindDouble("network");
   ASSERT_TRUE(local);
   ASSERT_TRUE(network);
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   prefs.Set("local", *local);
   prefs.Set("network", *network);
   pref_service_.Set(prefs::kNetworkTimeMapping, base::Value(std::move(prefs)));

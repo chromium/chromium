@@ -130,7 +130,7 @@ GuestViewBase* GuestViewManager::GetGuestByInstanceIDSafely(
 void GuestViewManager::AttachGuest(content::ChildProcessId embedder_process_id,
                                    int element_instance_id,
                                    int guest_instance_id,
-                                   const base::Value::Dict& attach_params) {
+                                   const base::DictValue& attach_params) {
   auto* guest_view =
       GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id);
   if (!guest_view)
@@ -154,7 +154,7 @@ void GuestViewManager::AttachGuest(content::ChildProcessId embedder_process_id,
 void GuestViewManager::AttachGuest(int embedder_process_id,
                                    int element_instance_id,
                                    int guest_instance_id,
-                                   const base::Value::Dict& attach_params) {
+                                   const base::DictValue& attach_params) {
   GuestViewManager::AttachGuest(content::ChildProcessId(embedder_process_id),
                                 element_instance_id, guest_instance_id,
                                 attach_params);
@@ -179,7 +179,7 @@ base::WeakPtr<GuestViewManager> GuestViewManager::AsWeakPtr() {
 
 void GuestViewManager::CreateGuest(const std::string& view_type,
                                    content::RenderFrameHost* owner_rfh,
-                                   const base::Value::Dict& create_params,
+                                   const base::DictValue& create_params,
                                    UnownedGuestCreatedCallback callback) {
   OwnedGuestCreatedCallback ownership_transferring_callback = base::BindOnce(
       [](UnownedGuestCreatedCallback callback,
@@ -199,7 +199,7 @@ int GuestViewManager::CreateGuestAndTransferOwnership(
     const std::string& view_type,
     content::RenderFrameHost* owner_rfh,
     scoped_refptr<content::SiteInstance> site_instance,
-    const base::Value::Dict& create_params,
+    const base::DictValue& create_params,
     OwnedGuestCreatedCallback callback) {
   std::unique_ptr<GuestViewBase> guest =
       CreateGuestInternal(owner_rfh, view_type);
@@ -251,7 +251,7 @@ GuestViewManager::CreateGuestWithWebContentsParams(
 
   std::unique_ptr<content::WebContents> guest_web_contents =
       WebContents::Create(guest_create_params);
-  const base::Value::Dict guest_params = base::Value::Dict();
+  const base::DictValue guest_params = base::DictValue();
   guest->SetCreateParams(guest_params, guest_create_params);
   guest->InitWithWebContents(guest_params, guest_web_contents.get());
   ManageOwnership(std::move(guest));
@@ -605,7 +605,7 @@ bool GuestViewManager::IsGuestAvailableToContext(GuestViewBase* guest) {
 }
 
 void GuestViewManager::DispatchEvent(const std::string& event_name,
-                                     base::Value::Dict args,
+                                     base::DictValue args,
                                      GuestViewBase* guest,
                                      int instance_id) {
   // TODO(fsamuel): GuestViewManager should probably do something more useful

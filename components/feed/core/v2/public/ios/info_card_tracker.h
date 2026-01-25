@@ -44,7 +44,7 @@ class InfoCardTracker {
                               int minimum_seconds_between_views);
 
   // Returns a dict containing all InfoCardTrackingStates.
-  const base::Value::Dict& GetInfoCardTrackingStates();
+  const base::DictValue& GetInfoCardTrackingStates();
 
   // Returns the stored tracking state of a given `info_card_type`.
   feedwire::InfoCardTrackingState GetInfoCardTrackingStateFromPref(

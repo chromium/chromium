@@ -122,7 +122,7 @@ TEST_F(FeedbackUtilTest, LogsToStringShouldSkipFeedbackUserCtlConsentKey) {
 }
 
 TEST_F(FeedbackUtilTest, RemoveUrlsFromAutofillData) {
-  base::Value::Dict autofill_data = base::test::ParseJsonDict(
+  base::DictValue autofill_data = base::test::ParseJsonDict(
       R"({
         "formStructures": [
           {
@@ -138,7 +138,7 @@ TEST_F(FeedbackUtilTest, RemoveUrlsFromAutofillData) {
         ]})");
   std::string autofill_data_str = base::WriteJson(autofill_data).value_or("");
 
-  base::Value::List* form_structures = autofill_data.FindList("formStructures");
+  base::ListValue* form_structures = autofill_data.FindList("formStructures");
   ASSERT_TRUE(form_structures);
   for (base::Value& item : *form_structures) {
     auto& dict = item.GetDict();

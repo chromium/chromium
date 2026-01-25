@@ -20,7 +20,7 @@ GuestViewAttachRequest::GuestViewAttachRequest(
     guest_view::GuestViewContainer* container,
     content::RenderFrame* render_frame,
     int guest_instance_id,
-    base::Value::Dict params,
+    base::DictValue params,
     v8::Local<v8::Function> callback,
     v8::Isolate* isolate)
     : container_(container),

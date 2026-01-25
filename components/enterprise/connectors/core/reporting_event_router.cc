@@ -43,10 +43,10 @@ bool IsEventInReportingSettings(const std::string& event,
 
 void AddAnalysisConnectorVerdictToEvent(
     const ContentAnalysisResponse::Result& result,
-    base::Value::Dict& event) {
-  base::Value::List triggered_rule_info;
+    base::DictValue& event) {
+  base::ListValue triggered_rule_info;
   for (const TriggeredRule& trigger : result.triggered_rules()) {
-    base::Value::Dict triggered_rule;
+    base::DictValue triggered_rule;
     triggered_rule.Set(kKeyTriggeredRuleName, trigger.rule_name());
     int rule_id_int = 0;
     if (base::StringToInt(trigger.rule_id(), &rule_id_int)) {
@@ -172,7 +172,7 @@ void ReportingEventRouter::OnLoginEvent(
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, url.spec());
     event.Set(kKeyIsFederated, is_federated);
     if (is_federated) {
@@ -218,13 +218,13 @@ void ReportingEventRouter::OnPasswordBreach(
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::List identities_list;
+    base::ListValue identities_list;
     for (const std::pair<GURL, std::u16string>& i : identities) {
       if (!IsUrlMatched(matcher.get(), i.first)) {
         continue;
       }
 
-      base::Value::Dict identity;
+      base::DictValue identity;
       identity.Set(kKeyPasswordBreachIdentitiesUrl, i.first.spec());
       identity.Set(kKeyPasswordBreachIdentitiesUsername,
                    MaskUsername(i.second));
@@ -237,7 +237,7 @@ void ReportingEventRouter::OnPasswordBreach(
       return;
     }
 
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyTrigger, trigger);
     event.Set(kKeyPasswordBreachIdentities, std::move(identities_list));
 
@@ -268,7 +268,7 @@ void ReportingEventRouter::OnPasswordReuse(const GURL& url,
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, url.spec());
     event.Set(kKeyUserName, user_name);
     event.Set(kKeyIsPhishingUrl, is_phishing_url);
@@ -300,7 +300,7 @@ void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUserName, user_name);
 
     reporting_client_->ReportEventWithTimestampDeprecated(
@@ -340,7 +340,7 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, url.spec());
     EventResult event_result = GetEventResultFromThreatType(threat_type);
     event.Set(kKeyClickedThrough, event_result == EventResult::BYPASSED);
@@ -388,7 +388,7 @@ void ReportingEventRouter::OnSecurityInterstitialProceeded(
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, url.spec());
     event.Set(kKeyReason, reason);
     event.Set(kKeyNetErrorCode, net_error_code);
@@ -433,7 +433,7 @@ void ReportingEventRouter::OnSecurityInterstitialShown(
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, url.spec());
     event.Set(kKeyReason, reason);
     event.Set(kKeyNetErrorCode, net_error_code);
@@ -486,7 +486,7 @@ void ReportingEventRouter::OnUnscannedFileEvent(
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, url.spec());
     event.Set(kKeyTabUrl, tab_url.spec());
     event.Set(kKeySource, source);
@@ -557,7 +557,7 @@ void ReportingEventRouter::OnSensitiveDataEvent(
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, url.spec());
     event.Set(kKeyTabUrl, tab_url.spec());
     event.Set(kKeySource, source);
@@ -666,7 +666,7 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, url.spec());
     event.Set(kKeyTabUrl, tab_url.spec());
     event.Set(kKeySource, source);
@@ -871,7 +871,7 @@ void ReportingEventRouter::OnDataControlsSensitiveDataEvent(
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, url.spec());
     event.Set(kKeyTabUrl, tab_url.spec());
     event.Set(kKeySource, source);
@@ -891,10 +891,10 @@ void ReportingEventRouter::OnDataControlsSensitiveDataEvent(
     }
     event.Set(kKeyEventResult, EventResultToString(event_result));
 
-    base::Value::List triggered_rule_info;
+    base::ListValue triggered_rule_info;
     triggered_rule_info.reserve(triggered_rules.size());
     for (const auto& [index, rule] : triggered_rules) {
-      base::Value::Dict triggered_rule;
+      base::DictValue triggered_rule;
       int rule_id_int = 0;
       if (base::StringToInt(rule.rule_id, &rule_id_int)) {
         triggered_rule.Set(kKeyTriggeredRuleId, rule_id_int);

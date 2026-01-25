@@ -203,7 +203,7 @@ void RealtimeReportingClientBase::ReportEvent(
 void RealtimeReportingClientBase::ReportEventWithTimestampDeprecated(
     const std::string& name,
     const ReportingSettings& settings,
-    base::Value::Dict event,
+    base::DictValue event,
     const base::Time& time,
     bool include_profile_user_name) {
   // TODO(Bug:394403600) - Replace with a DCHECK once all callers are migrated.
@@ -292,13 +292,13 @@ void RealtimeReportingClientBase::FinishUploadSecurityEvent(
 }
 
 void RealtimeReportingClientBase::UploadSecurityEventReportDeprecated(
-    base::Value::Dict event,
+    base::DictValue event,
     policy::CloudPolicyClient* client,
     std::string name,
     const ReportingSettings& settings,
     base::Time time) {
-  base::Value::Dict event_wrapper =
-      base::Value::Dict()
+  base::DictValue event_wrapper =
+      base::DictValue()
           .Set("time", base::TimeFormatAsIso8601(time))
           .Set(name, std::move(event));
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -311,7 +311,7 @@ void RealtimeReportingClientBase::UploadSecurityEventReportDeprecated(
 }
 
 void RealtimeReportingClientBase::OnIpAddressesFetchedDeprecated(
-    base::Value::Dict event_wrapper,
+    base::DictValue event_wrapper,
     policy::CloudPolicyClient* client,
     std::string name,
     const ReportingSettings& settings,
@@ -323,16 +323,16 @@ void RealtimeReportingClientBase::OnIpAddressesFetchedDeprecated(
 }
 
 void RealtimeReportingClientBase::FinishUploadSecurityEventReportDeprecated(
-    base::Value::Dict event_wrapper,
+    base::DictValue event_wrapper,
     policy::CloudPolicyClient* client,
     std::string name,
     const ReportingSettings& settings) {
   DVLOG(1) << "enterprise.connectors: security event: "
            << event_wrapper.DebugString();
 
-  base::Value::Dict report =
+  base::DictValue report =
       policy::RealtimeReportingJobConfiguration::BuildReport(
-          base::Value::List().Append(std::move(event_wrapper)), GetContext());
+          base::ListValue().Append(std::move(event_wrapper)), GetContext());
 
   auto upload_callback =
       base::BindOnce(&RealtimeReportingClientBase::UploadCallbackDeprecated,

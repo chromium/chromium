@@ -68,7 +68,7 @@ class NoStatePrefetchHistory {
   void Clear();
 
   // Retrieves the entries as a list of values which can be displayed.
-  base::Value::List CopyEntriesAsValue() const;
+  base::ListValue CopyEntriesAsValue() const;
 
  private:
   std::list<Entry> entries_;

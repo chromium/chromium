@@ -71,7 +71,7 @@ void SetUserPreferenceForZeroSuggestCachedResponse(
     prefs->SetString(kZeroSuggestCachedResults, response);
   } else {
     // Constrain the cache to a single entry by overwriting the existing value.
-    base::Value::Dict new_dict;
+    base::DictValue new_dict;
     new_dict.Set(page_url, response);
     prefs->SetDict(kZeroSuggestCachedResultsWithURL, std::move(new_dict));
   }
@@ -86,7 +86,7 @@ std::string GetUserPreferenceForZeroSuggestCachedResponse(
     return prefs->GetString(omnibox::kZeroSuggestCachedResults);
   }
 
-  const base::Value::Dict& dictionary =
+  const base::DictValue& dictionary =
       prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
   auto* value_ptr = dictionary.FindString(page_url);
   return value_ptr ? *value_ptr : std::string();

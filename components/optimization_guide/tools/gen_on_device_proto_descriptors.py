@@ -920,7 +920,7 @@ class _ConvertValue:
         out.write(f"""
           bool Convert{msg.iname}(
               const base::Value& object, {msg.cpp_name}& proto) {{
-            const base::Value::Dict* asdict = object.GetIfDict();
+            const base::DictValue* asdict = object.GetIfDict();
             if (!asdict) {{
               return false;
             }}

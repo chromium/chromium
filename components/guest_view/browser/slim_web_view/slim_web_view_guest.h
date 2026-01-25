@@ -36,7 +36,7 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
       content::RenderFrameHost* outer_contents_frame) final;
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
                        scoped_refptr<content::SiteInstance> site_instance,
-                       const base::Value::Dict& create_params,
+                       const base::DictValue& create_params,
                        GuestPageCreatedCallback callback) final;
 };
 

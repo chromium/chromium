@@ -302,8 +302,7 @@ void ZeroSuggestProviderTest::SetUp() {
   // Ensure the prefs-based cache is empty.
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, "");
-  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                 base::Value::Dict());
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL, base::DictValue());
 
   // Ensure the cache is empty.
   ZeroSuggestCacheService* cache_svc = client_->GetZeroSuggestCacheService();
@@ -1057,8 +1056,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Ensure the cache is empty.
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, "");
-  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                 base::Value::Dict());
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL, base::DictValue());
 
   provider_->Start(input, false);
   ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
@@ -1090,8 +1088,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Ensure the cache is empty.
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, "");
-  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                 base::Value::Dict());
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL, base::DictValue());
 
   provider_->Start(input, false);
   ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
@@ -1123,8 +1120,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Ensure the cache is empty.
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, "");
-  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                 base::Value::Dict());
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL, base::DictValue());
 
   provider_->Start(input, false);
   ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
@@ -3006,7 +3002,7 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsPrefsBasedCache) {
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
 
-  base::Value::Dict new_dict;
+  base::DictValue new_dict;
   new_dict.Set("https://www.google.com", json_response);
   prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
                  std::move(new_dict));

@@ -65,11 +65,11 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void WebContentsDestroyed() override;
 
-  void OnDevToolsProtocolExposed(base::Value::Dict);
+  void OnDevToolsProtocolExposed(base::DictValue);
 
-  void OnTargetCrashed(const base::Value::Dict&);
+  void OnTargetCrashed(const base::DictValue&);
 
-  void OnCommandsResult(base::Value::Dict result);
+  void OnCommandsResult(base::DictValue result);
 
   void WriteFile(base::FilePath file_path, std::string base64_file_data);
   void OnWriteFileDone(bool success);

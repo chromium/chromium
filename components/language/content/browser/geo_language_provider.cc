@@ -79,7 +79,7 @@ void GeoLanguageProvider::StartUp(PrefService* const prefs) {
 
   prefs_ = prefs;
 
-  const base::Value::List& cached_languages_list =
+  const base::ListValue& cached_languages_list =
       prefs_->GetList(kCachedGeoLanguagesPref);
   for (const auto& language_value : cached_languages_list) {
     languages_.push_back(language_value.GetString());
@@ -225,7 +225,7 @@ void GeoLanguageProvider::SetGeoLanguages(
   DCHECK_CALLED_ON_VALID_SEQUENCE(creation_sequence_checker_);
   languages_ = languages;
 
-  base::Value::List cache_list;
+  base::ListValue cache_list;
   for (const std::string& language : languages_) {
     cache_list.Append(language);
   }

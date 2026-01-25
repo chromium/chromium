@@ -20,7 +20,7 @@ class MockOriginTrialsSettingsStorage : public OriginTrialsSettingsStorage {
               (const override));
   MOCK_METHOD(void,
               PopulateSettings,
-              (const base::Value::List& disabled_tokens_list),
+              (const base::ListValue& disabled_tokens_list),
               (override));
 };
 

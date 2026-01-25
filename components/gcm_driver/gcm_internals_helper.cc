@@ -22,11 +22,11 @@ namespace gcm_driver {
 
 namespace {
 
-base::Value::List CheckinInfoToList(
+base::ListValue CheckinInfoToList(
     const std::vector<gcm::CheckinActivity>& checkins) {
-  base::Value::List checkin_info;
+  base::ListValue checkin_info;
   for (const gcm::CheckinActivity& checkin : checkins) {
-    base::Value::List row;
+    base::ListValue row;
     row.Append(checkin.time.InMillisecondsFSinceUnixEpoch());
     row.Append(checkin.event);
     row.Append(checkin.details);
@@ -35,11 +35,11 @@ base::Value::List CheckinInfoToList(
   return checkin_info;
 }
 
-base::Value::List ConnectionInfoToList(
+base::ListValue ConnectionInfoToList(
     const std::vector<gcm::ConnectionActivity>& connections) {
-  base::Value::List connection_info;
+  base::ListValue connection_info;
   for (const gcm::ConnectionActivity& connection : connections) {
-    base::Value::List row;
+    base::ListValue row;
     row.Append(connection.time.InMillisecondsFSinceUnixEpoch());
     row.Append(connection.event);
     row.Append(connection.details);
@@ -48,11 +48,11 @@ base::Value::List ConnectionInfoToList(
   return connection_info;
 }
 
-base::Value::List RegistrationInfoToList(
+base::ListValue RegistrationInfoToList(
     const std::vector<gcm::RegistrationActivity>& registrations) {
-  base::Value::List registration_info;
+  base::ListValue registration_info;
   for (const gcm::RegistrationActivity& registration : registrations) {
-    base::Value::List row;
+    base::ListValue row;
     row.Append(registration.time.InMillisecondsFSinceUnixEpoch());
     row.Append(registration.app_id);
     row.Append(registration.source);
@@ -63,11 +63,11 @@ base::Value::List RegistrationInfoToList(
   return registration_info;
 }
 
-base::Value::List ReceivingInfoToList(
+base::ListValue ReceivingInfoToList(
     const std::vector<gcm::ReceivingActivity>& receives) {
-  base::Value::List receive_info;
+  base::ListValue receive_info;
   for (const gcm::ReceivingActivity& receive : receives) {
-    base::Value::List row;
+    base::ListValue row;
     row.Append(receive.time.InMillisecondsFSinceUnixEpoch());
     row.Append(receive.app_id);
     row.Append(receive.from);
@@ -79,11 +79,11 @@ base::Value::List ReceivingInfoToList(
   return receive_info;
 }
 
-base::Value::List SendingInfoToList(
+base::ListValue SendingInfoToList(
     const std::vector<gcm::SendingActivity>& sends) {
-  base::Value::List send_info;
+  base::ListValue send_info;
   for (const gcm::SendingActivity& send : sends) {
-    base::Value::List row;
+    base::ListValue row;
     row.Append(send.time.InMillisecondsFSinceUnixEpoch());
     row.Append(send.app_id);
     row.Append(send.receiver_id);
@@ -95,11 +95,11 @@ base::Value::List SendingInfoToList(
   return send_info;
 }
 
-base::Value::List DecryptionFailureInfoToList(
+base::ListValue DecryptionFailureInfoToList(
     const std::vector<gcm::DecryptionFailureActivity>& failures) {
-  base::Value::List failure_info;
+  base::ListValue failure_info;
   for (const gcm::DecryptionFailureActivity& failure : failures) {
-    base::Value::List row;
+    base::ListValue row;
     row.Append(failure.time.InMillisecondsFSinceUnixEpoch());
     row.Append(failure.app_id);
     row.Append(failure.details);
@@ -110,23 +110,22 @@ base::Value::List DecryptionFailureInfoToList(
 
 }  // namespace
 
-base::Value::Dict SetGCMInternalsInfo(
-    const gcm::GCMClient::GCMStatistics* stats,
-    gcm::GCMProfileService* profile_service,
-    PrefService* prefs) {
-  base::Value::Dict results;
+base::DictValue SetGCMInternalsInfo(const gcm::GCMClient::GCMStatistics* stats,
+                                    gcm::GCMProfileService* profile_service,
+                                    PrefService* prefs) {
+  base::DictValue results;
 
   if (stats) {
     results.Set(kIsRecording, stats->is_recording);
 
-    base::Value::Dict device_info;
+    base::DictValue device_info;
     device_info.Set(kProfileServiceCreated, profile_service != nullptr);
     device_info.Set(kGcmEnabled, true);
     device_info.Set(kGcmClientCreated, stats->gcm_client_created);
     device_info.Set(kGcmClientState, stats->gcm_client_state);
     device_info.Set(kConnectionClientCreated, stats->connection_client_created);
 
-    base::Value::List registered_app_ids;
+    base::ListValue registered_app_ids;
     for (const std::string& app_id : stats->registered_app_ids)
       registered_app_ids.Append(app_id);
 

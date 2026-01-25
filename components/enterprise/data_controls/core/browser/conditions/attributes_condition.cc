@@ -13,8 +13,8 @@ namespace data_controls {
 
 AttributesCondition::~AttributesCondition() = default;
 
-AttributesCondition::AttributesCondition(const base::Value::Dict& value) {
-  const base::Value::List* urls_value = value.FindList(kKeyUrls);
+AttributesCondition::AttributesCondition(const base::DictValue& value) {
+  const base::ListValue* urls_value = value.FindList(kKeyUrls);
   if (urls_value) {
     for (const base::Value& url_pattern : *urls_value) {
       if (!url_pattern.is_string()) {
@@ -37,7 +37,7 @@ AttributesCondition::AttributesCondition(const base::Value::Dict& value) {
   other_profile_ = value.FindBool(kKeyOtherProfile);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  const base::Value::List* components_value = value.FindList(kKeyComponents);
+  const base::ListValue* components_value = value.FindList(kKeyComponents);
   if (components_value) {
     std::set<Component> components;
     for (const auto& component_string : *components_value) {
@@ -133,7 +133,7 @@ std::unique_ptr<Condition> SourceAttributesCondition::Create(
 
 // static
 std::unique_ptr<Condition> SourceAttributesCondition::Create(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   AttributesCondition attributes_condition(value);
   if (!attributes_condition.IsValid()) {
     return nullptr;
@@ -180,7 +180,7 @@ std::unique_ptr<Condition> DestinationAttributesCondition::Create(
 
 // static
 std::unique_ptr<Condition> DestinationAttributesCondition::Create(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   AttributesCondition attributes_condition(value);
   if (!attributes_condition.IsValid()) {
     return nullptr;

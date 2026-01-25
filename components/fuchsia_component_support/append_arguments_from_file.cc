@@ -23,7 +23,7 @@ bool AppendArgumentsFromFile(const base::FilePath& path,
   if (!value) {
     return error_code == JSONFileValueDeserializer::JSON_NO_SUCH_FILE;
   }
-  base::Value::Dict* const dict = value->GetIfDict();
+  base::DictValue* const dict = value->GetIfDict();
   if (!dict) {
     return false;
   }

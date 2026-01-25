@@ -15,11 +15,11 @@ OriginTrialsSettingsStorage::OriginTrialsSettingsStorage() {
 OriginTrialsSettingsStorage::~OriginTrialsSettingsStorage() = default;
 
 void OriginTrialsSettingsStorage::PopulateSettings(
-    const base::Value::List& disabled_tokens_list) {
+    const base::ListValue& disabled_tokens_list) {
   SetDisabledTokens(std::move(disabled_tokens_list));
 }
 void OriginTrialsSettingsStorage::SetDisabledTokens(
-    const base::Value::List& disabled_tokens_list) {
+    const base::ListValue& disabled_tokens_list) {
   if (disabled_tokens_list.size() > kMaxDisabledTokens) {
     LOG(WARNING) << "Input has " << disabled_tokens_list.size()
                  << " disabled tokens, which exceeds max of "

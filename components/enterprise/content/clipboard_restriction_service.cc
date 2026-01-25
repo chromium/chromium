@@ -70,11 +70,11 @@ void ClipboardRestrictionService::UpdateSettings() {
     return;
   }
 
-  const base::Value::Dict& settings =
+  const base::DictValue& settings =
       pref_service_->GetDict(enterprise::content::kCopyPreventionSettings);
-  const base::Value::List* enable = settings.FindList(
+  const base::ListValue* enable = settings.FindList(
       enterprise::content::kCopyPreventionSettingsEnableFieldName);
-  const base::Value::List* disable = settings.FindList(
+  const base::ListValue* disable = settings.FindList(
       enterprise::content::kCopyPreventionSettingsDisableFieldName);
 
   DCHECK(enable);

@@ -19,7 +19,7 @@ namespace {
 constexpr char kCellTokenKey[] = "celltoken";
 constexpr char kLanguageKey[] = "language";
 
-std::optional<std::string> GetLangFromCache(const base::Value::Dict& cache,
+std::optional<std::string> GetLangFromCache(const base::DictValue& cache,
                                             const S2CellId& cell) {
   const std::string* lang_cached = cache.FindString(kLanguageKey);
   if (!lang_cached) {
@@ -73,7 +73,7 @@ std::vector<std::string> UlpLanguageCodeLocator::GetLanguageCodes(
   std::vector<std::string> languages;
 
   ScopedListPrefUpdate update(prefs_, kCachedGeoLanguagesPref);
-  base::Value::List& celllangs_cached = update.Get();
+  base::ListValue& celllangs_cached = update.Get();
   for (size_t index = 0; index < serialized_langtrees_.size(); index++) {
     if (index < celllangs_cached.size()) {
       CHECK(celllangs_cached[index].is_dict());
@@ -89,7 +89,7 @@ std::vector<std::string> UlpLanguageCodeLocator::GetLanguageCodes(
     auto [level, language] =
         GetLevelAndLangFromTree(serialized_langtrees_[index].get(), cell);
     if (level != -1) {
-      auto cache_update = base::Value::Dict()
+      auto cache_update = base::DictValue()
                               .Set(kCellTokenKey, cell.parent(level).ToToken())
                               .Set(kLanguageKey, language);
       if (index < celllangs_cached.size()) {

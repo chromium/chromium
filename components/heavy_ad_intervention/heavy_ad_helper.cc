@@ -21,7 +21,7 @@ std::string PrepareHeavyAdPage(const std::string& application_locale) {
   DCHECK(!html.empty()) << "unable to load template.";
 
   // Populate load time data.
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   load_time_data.Set("type", "HEAVYAD");
   load_time_data.Set(
       "heading", l10n_util::GetStringUTF16(IDS_HEAVY_AD_INTERVENTION_HEADING));

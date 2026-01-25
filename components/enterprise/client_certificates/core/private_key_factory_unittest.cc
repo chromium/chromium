@@ -258,14 +258,14 @@ TEST(PrivateKeyFactoryTest, LoadPrivateKeyFromDict_AllSources_Unexportable) {
   auto os_software_factory = CreateMockedFactory();
   auto software_factory = CreateMockedFactory();
 
-  base::Value::Dict serialized_private_key;
+  base::DictValue serialized_private_key;
   int unexportable_source =
       static_cast<int>(PrivateKeySource::kUnexportableKey);
   serialized_private_key.Set(kKeySource, unexportable_source);
 
   EXPECT_CALL(*unexportable_factory, LoadPrivateKeyFromDict(_, _))
       .WillOnce([&unexportable_source](
-                    const base::Value::Dict& serialized_private_key_param,
+                    const base::DictValue& serialized_private_key_param,
                     PrivateKeyFactory::PrivateKeyCallback callback) {
         EXPECT_EQ(*serialized_private_key_param.FindInt(kKeySource),
                   unexportable_source);
@@ -293,13 +293,13 @@ TEST(PrivateKeyFactoryTest, LoadPrivateKeyFromDict_AllSources_OsSoftware) {
   auto os_software_factory = CreateMockedFactory();
   auto software_factory = CreateMockedFactory();
 
-  base::Value::Dict serialized_private_key;
+  base::DictValue serialized_private_key;
   int expected_source = static_cast<int>(PrivateKeySource::kOsSoftwareKey);
   serialized_private_key.Set(kKeySource, expected_source);
 
   EXPECT_CALL(*os_software_factory, LoadPrivateKeyFromDict(_, _))
       .WillOnce([&expected_source](
-                    const base::Value::Dict& serialized_private_key_param,
+                    const base::DictValue& serialized_private_key_param,
                     PrivateKeyFactory::PrivateKeyCallback callback) {
         EXPECT_EQ(*serialized_private_key_param.FindInt(kKeySource),
                   expected_source);
@@ -333,7 +333,7 @@ TEST(PrivateKeyFactoryTest, LoadPrivateKeyFromDict_MissingKeySource) {
                        std::move(unexportable_factory));
   auto factory = PrivateKeyFactory::Create(std::move(map));
 
-  base::Value::Dict serialized_private_key;
+  base::DictValue serialized_private_key;
   base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
   factory->LoadPrivateKeyFromDict(serialized_private_key,
                                   test_future.GetCallback());
@@ -352,7 +352,7 @@ TEST(PrivateKeyFactoryTest, LoadPrivateKeyFromDict_UnsupportedKeySource) {
                        std::move(unexportable_factory));
   auto factory = PrivateKeyFactory::Create(std::move(map));
 
-  base::Value::Dict serialized_private_key;
+  base::DictValue serialized_private_key;
   serialized_private_key.Set(kKeySource, -1);
   base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
   factory->LoadPrivateKeyFromDict(serialized_private_key,

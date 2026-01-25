@@ -231,7 +231,7 @@ void NetworkTimeTracker::Initialize(
 
   // Finish initialization by checking whether network time mapping data is
   // available in the prefs, and if so, use it to initialize the time tracker.
-  const base::Value::Dict& time_mapping =
+  const base::DictValue& time_mapping =
       pref_service_->GetDict(prefs::kNetworkTimeMapping);
   std::optional<double> time_js = time_mapping.FindDouble(kPrefTime);
   std::optional<double> ticks_js = time_mapping.FindDouble(kPrefTicks);
@@ -305,7 +305,7 @@ void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,
   tracker_.emplace(time_at_last_measurement, ticks_at_last_measurement,
                    network_time_at_last_measurement, network_time_uncertainty);
 
-  base::Value::Dict time_mapping;
+  base::DictValue time_mapping;
   time_mapping.Set(kPrefTime,
                    time_at_last_measurement.InMillisecondsFSinceUnixEpoch());
   time_mapping.Set(
@@ -538,7 +538,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
     return false;
   }
   response.remove_prefix(5);  // Skips leading )]}'\n
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> value = base::JSONReader::ReadDict(
       response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     DVLOG(1) << "not a dictionary";

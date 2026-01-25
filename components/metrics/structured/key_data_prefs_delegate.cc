@@ -64,7 +64,7 @@ void KeyDataPrefsDelegate::Purge() {
 }
 
 void KeyDataPrefsDelegate::LoadKeysFromPrefs() {
-  const base::Value::Dict& keys_pref = local_state_->GetDict(pref_name_);
+  const base::DictValue& keys_pref = local_state_->GetDict(pref_name_);
 
   // Use the validators to get the project name to project hash mapping.
   const validator::Validators* validators = validator::Validators::Get();
@@ -81,7 +81,7 @@ void KeyDataPrefsDelegate::LoadKeysFromPrefs() {
     }
 
     const uint64_t project_hash = (*project_validator)->project_hash();
-    const base::Value::Dict* value_dict = project_keys.GetIfDict();
+    const base::DictValue* value_dict = project_keys.GetIfDict();
     if (!value_dict) {
       LOG(ERROR) << "Key Pref value was expected to be a dict.";
       continue;
@@ -103,7 +103,7 @@ void KeyDataPrefsDelegate::UpdatePrefsByProject(uint64_t project_name_hash,
                                                 const KeyProto& key_proto) {
   ScopedDictPrefUpdate pref_updater(local_state_, pref_name_);
 
-  base::Value::Dict& dict = pref_updater.Get();
+  base::DictValue& dict = pref_updater.Get();
 
   // Get the name of the project for |project_name_hash| to be used to store the
   // keys in prefs.

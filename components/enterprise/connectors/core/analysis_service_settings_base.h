@@ -81,12 +81,12 @@ class AnalysisServiceSettingsBase {
 
   // Helper methods for parsing the raw policy settings input
   // Service provider data must be provided and valid
-  bool TryParseServiceProviderData(const base::Value::Dict& settings_dict,
+  bool TryParseServiceProviderData(const base::DictValue& settings_dict,
                                    const ServiceProviderConfig&);
-  void ParseBlockSettings(const base::Value::Dict& settings_dict);
-  void ParseMinimumDataSize(const base::Value::Dict& settings_dict);
-  void ParseCustomMessages(const base::Value::Dict& settings_dict);
-  void ParseJustificationTags(const base::Value::Dict& settings_dict);
+  void ParseBlockSettings(const base::DictValue& settings_dict);
+  void ParseMinimumDataSize(const base::DictValue& settings_dict);
+  void ParseCustomMessages(const base::DictValue& settings_dict);
+  void ParseJustificationTags(const base::DictValue& settings_dict);
 
   // Returns true if the settings were initialized correctly. If this returns
   // false, then GetAnalysisSettings will always return std::nullopt.
@@ -153,12 +153,12 @@ class AnalysisServiceSettingsBase {
       const PatternSettings& patterns,
       base::MatcherStringPattern::ID match);
 
-  void ParseUrlPatternSettings(const base::Value::List* pattern_settings_list,
+  void ParseUrlPatternSettings(const base::ListValue* pattern_settings_list,
                                bool is_enabled_pattern);
 
   // Updates the states of `matcher_`, `enabled_patterns_settings_` and/or
   // `disabled_patterns_settings_` from a policy value.
-  void AddUrlPatternSettings(const base::Value::Dict& url_settings_dict,
+  void AddUrlPatternSettings(const base::DictValue& url_settings_dict,
                              bool enabled);
 };
 

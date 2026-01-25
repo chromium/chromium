@@ -65,7 +65,7 @@ InternalMessage::InternalMessage(CastMessageType type,
                                  std::string_view source_id,
                                  std::string_view destination_id,
                                  std::string_view message_namespace,
-                                 base::Value::Dict message)
+                                 base::DictValue message)
     : type(type),
       source_id(source_id),
       destination_id(destination_id),
@@ -288,7 +288,7 @@ Result CastMessageHandler::SendAppMessage(int channel_id,
 
 std::optional<int> CastMessageHandler::SendMediaRequest(
     int channel_id,
-    const base::Value::Dict& body,
+    const base::DictValue& body,
     const std::string& source_id,
     const std::string& destination_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -306,7 +306,7 @@ std::optional<int> CastMessageHandler::SendMediaRequest(
 }
 
 void CastMessageHandler::SendSetVolumeRequest(int channel_id,
-                                              const base::Value::Dict& body,
+                                              const base::DictValue& body,
                                               const std::string& source_id,
                                               ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -390,7 +390,7 @@ void CastMessageHandler::HandleCastInternalMessage(
   ASSIGN_OR_RETURN(base::Value value, std::move(parse_result),
                    ReportParseError);
 
-  base::Value::Dict* payload = value.GetIfDict();
+  base::DictValue* payload = value.GetIfDict();
   if (!payload) {
     ReportParseError("Parsed message not a dictionary");
     return;
@@ -572,7 +572,7 @@ void CastMessageHandler::PendingRequests::AddVolumeRequest(
 
 void CastMessageHandler::PendingRequests::HandlePendingRequest(
     int request_id,
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   // Look up an app availability request by its |request_id|.
   auto app_availability_it =
       std::ranges::find(pending_app_availability_requests_, request_id,

@@ -69,7 +69,7 @@ void ECPrivateKeyFactory::LoadPrivateKey(
 }
 
 void ECPrivateKeyFactory::LoadPrivateKeyFromDict(
-    const base::Value::Dict& serialized_private_key,
+    const base::DictValue& serialized_private_key,
     PrivateKeyCallback callback) {
   std::optional<int> source = serialized_private_key.FindInt(kKeySource);
   CHECK(ToPrivateKeySource(*source) == PrivateKeySource::kSoftwareKey);

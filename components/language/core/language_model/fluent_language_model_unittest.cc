@@ -67,7 +67,7 @@ TEST_F(FluentLanguageModelTest, Defaults) {
 }
 
 TEST_F(FluentLanguageModelTest, ThreeBlockedLanguages) {
-  base::Value::List fluent_languages;
+  base::ListValue fluent_languages;
   fluent_languages.Append("fr");
   fluent_languages.Append("ja");
   fluent_languages.Append("en");

@@ -84,7 +84,7 @@ NetExportFileWriter::NetExportFileWriter()
 
 NetExportFileWriter::~NetExportFileWriter() {
   if (net_log_exporter_) {
-    net_log_exporter_->Stop(base::Value::Dict(), base::DoNothing());
+    net_log_exporter_->Stop(base::DictValue(), base::DoNothing());
   }
 }
 
@@ -141,7 +141,7 @@ void NetExportFileWriter::StartNetLog(
 
   network_context->CreateNetLogExporter(
       net_log_exporter_.BindNewPipeAndPassReceiver());
-  base::Value::Dict custom_constants =
+  base::DictValue custom_constants =
       GetPlatformConstantsForNetLog(command_line_string, channel_string);
 
   net_log_exporter_.set_disconnect_handler(base::BindOnce(
@@ -158,7 +158,7 @@ void NetExportFileWriter::StartNetLog(
 void NetExportFileWriter::StartNetLogAfterCreateFile(
     net::NetLogCaptureMode capture_mode,
     uint64_t max_file_size,
-    base::Value::Dict custom_constants,
+    base::DictValue custom_constants,
     base::File output_file) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_EQ(STATE_STARTING_LOG, state_);
@@ -200,7 +200,7 @@ void NetExportFileWriter::OnStartResult(net::NetLogCaptureMode capture_mode,
   }
 }
 
-void NetExportFileWriter::StopNetLog(base::Value::Dict polled_data) {
+void NetExportFileWriter::StopNetLog(base::DictValue polled_data) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (state_ != STATE_LOGGING)
@@ -226,10 +226,10 @@ void NetExportFileWriter::OnConnectionError() {
   ResetExporterThenSetStateNotLogging();
 }
 
-base::Value::Dict NetExportFileWriter::GetState() const {
+base::DictValue NetExportFileWriter::GetState() const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("file", base::UTF16ToUTF8(log_path_.LossyDisplayName()));
 
   std::string_view state_string;
@@ -311,7 +311,7 @@ void NetExportFileWriter::SetDefaultLogBaseDirectoryGetterForTest(
 
 void NetExportFileWriter::NotifyStateObservers() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::Value::Dict state = GetState();
+  base::DictValue state = GetState();
   for (StateObserver& observer : state_observer_list_) {
     observer.OnNewState(state);
   }

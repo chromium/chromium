@@ -39,7 +39,7 @@ constexpr char kKeyClass[] = "class";
 constexpr char kKeyLevel[] = "level";
 
 // Helper to make dictionary parsing code more readable.
-std::string GetStringOrEmpty(const base::Value::Dict& dict, const char* key) {
+std::string GetStringOrEmpty(const base::DictValue& dict, const char* key) {
   const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
@@ -48,7 +48,7 @@ std::string GetStringOrEmpty(const base::Value::Dict& dict, const char* key) {
 // their dictionary. If other attributes are present alongside them, it creates
 // ambiguity as to how the rule is evaluated, and as such this is considered an
 // error in the set policy.
-std::vector<std::string_view> OneOfConditions(const base::Value::Dict& value) {
+std::vector<std::string_view> OneOfConditions(const base::DictValue& value) {
   std::vector<std::string_view> oneof_conditions;
   for (const char* oneof_value :
        {// "and", "or" and "not" need to be the only value at their level as it
@@ -70,7 +70,7 @@ std::vector<std::string_view> OneOfConditions(const base::Value::Dict& value) {
 
 // Returns any condition present in `value` that wouldn't match
 // `OneOfConditions`.
-std::vector<std::string_view> AnyOfConditions(const base::Value::Dict& value) {
+std::vector<std::string_view> AnyOfConditions(const base::DictValue& value) {
   std::vector<std::string_view> anyof_conditions;
   for (const char* anyof_condition :
        {kKeySources, kKeyDestinations, AttributesCondition::kKeyUrls,
@@ -133,7 +133,7 @@ std::optional<Rule> Rule::Create(const base::Value& value) {
 }
 
 // static
-std::optional<Rule> Rule::Create(const base::Value::Dict& value) {
+std::optional<Rule> Rule::Create(const base::DictValue& value) {
   auto condition = GetCondition(value);
   if (!condition) {
     return std::nullopt;
@@ -189,7 +189,7 @@ const std::string& Rule::description() const {
 
 // static
 std::unique_ptr<const Condition> Rule::GetCondition(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   // `value` can hold different condition-related keys, namely:
   // - The "not" key with a sub-dict that is parsed recursively.
   // - The "and" or "not" keys with sub-arrays of conditions parsed recursively.
@@ -198,15 +198,15 @@ std::unique_ptr<const Condition> Rule::GetCondition(
   // by policy validations of the DataControlsRules policy, and as such the
   // precedence in which these keys are parsed here should not matter.
 
-  if (const base::Value::Dict* condition = value.FindDict(kKeyNot)) {
+  if (const base::DictValue* condition = value.FindDict(kKeyNot)) {
     return NotCondition::Create(GetCondition(*condition));
   }
 
-  if (const base::Value::List* condition = value.FindList(kKeyAnd)) {
+  if (const base::ListValue* condition = value.FindList(kKeyAnd)) {
     return AndCondition::Create(GetListConditions(*condition));
   }
 
-  if (const base::Value::List* condition = value.FindList(kKeyOr)) {
+  if (const base::ListValue* condition = value.FindList(kKeyOr)) {
     return OrCondition::Create(GetListConditions(*condition));
   }
 
@@ -218,7 +218,7 @@ std::unique_ptr<const Condition> Rule::GetCondition(
 
 // static
 std::unique_ptr<const Condition> Rule::GetSourcesAndDestinationsCondition(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   // This function will add a `Condition` for each of the following keys found
   // in `value`:
   // - "sources"
@@ -250,7 +250,7 @@ std::unique_ptr<const Condition> Rule::GetSourcesAndDestinationsCondition(
 
 // static
 std::vector<std::unique_ptr<const Condition>> Rule::GetListConditions(
-    const base::Value::List& value) {
+    const base::ListValue& value) {
   std::vector<std::unique_ptr<const Condition>> sub_conditions;
   for (const base::Value& sub_value : value) {
     if (!sub_value.is_dict()) {
@@ -267,8 +267,8 @@ std::vector<std::unique_ptr<const Condition>> Rule::GetListConditions(
 
 // static
 base::flat_map<Rule::Restriction, Rule::Level> Rule::GetRestrictions(
-    const base::Value::Dict& value) {
-  const base::Value::List* restrictions_list = value.FindList(kKeyRestrictions);
+    const base::DictValue& value) {
+  const base::ListValue* restrictions_list = value.FindList(kKeyRestrictions);
   if (!restrictions_list) {
     return {};
   }
@@ -286,7 +286,7 @@ base::flat_map<Rule::Restriction, Rule::Level> Rule::GetRestrictions(
       continue;
     }
 
-    const base::Value::Dict& entry_dict = entry.GetDict();
+    const base::DictValue& entry_dict = entry.GetDict();
     const std::string* class_string = entry_dict.FindString(kKeyClass);
     const std::string* level_string = entry_dict.FindString(kKeyLevel);
     if (!class_string || !level_string) {
@@ -402,7 +402,7 @@ const char* Rule::LevelToString(Level level) {
 
 // static
 bool Rule::ValidateRuleValue(const char* policy_name,
-                             const base::Value::Dict& root_value,
+                             const base::DictValue& root_value,
                              policy::PolicyErrorPath error_path,
                              policy::PolicyErrorMap* errors) {
   auto restrictions = GetRestrictions(root_value);
@@ -420,7 +420,7 @@ bool Rule::ValidateRuleValue(const char* policy_name,
 // static
 bool Rule::ValidateRuleSubValues(
     const char* policy_name,
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     const base::flat_map<Rule::Restriction, Rule::Level>& restrictions,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {

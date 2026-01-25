@@ -16,7 +16,7 @@ namespace login {
 // Class that collects Localized Values for translation.
 class LOGIN_EXPORT LocalizedValuesBuilder {
  public:
-  explicit LocalizedValuesBuilder(base::Value::Dict* dict);
+  explicit LocalizedValuesBuilder(base::DictValue* dict);
 
   // Method to declare localized value. |key| is the i18n key used in html.
   // |message| is text of the message.
@@ -59,7 +59,7 @@ class LOGIN_EXPORT LocalizedValuesBuilder {
 
  private:
   // Not owned.
-  raw_ptr<base::Value::Dict> dict_;
+  raw_ptr<base::DictValue> dict_;
 };
 
 }  // namespace login

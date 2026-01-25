@@ -44,7 +44,7 @@ AnalysisServiceSettingsBase::AnalysisServiceSettingsBase(
 }
 
 bool AnalysisServiceSettingsBase::TryParseServiceProviderData(
-    const base::Value::Dict& settings_dict,
+    const base::DictValue& settings_dict,
     const ServiceProviderConfig& service_provider_config) {
   // The service provider identifier should always be there, and it should match
   // an existing provider.
@@ -68,14 +68,14 @@ bool AnalysisServiceSettingsBase::TryParseServiceProviderData(
 }
 
 void AnalysisServiceSettingsBase::ParseUrlPatternSettings(
-    const base::Value::List* pattern_settings_list,
+    const base::ListValue* pattern_settings_list,
     bool is_enabled_pattern) {
   if (!pattern_settings_list || pattern_settings_list->empty()) {
     return;
   }
 
   for (const base::Value& pattern_setting : *pattern_settings_list) {
-    const base::Value::Dict* pattern_dict = pattern_setting.GetIfDict();
+    const base::DictValue* pattern_dict = pattern_setting.GetIfDict();
     if (!pattern_dict) {
       continue;
     }
@@ -94,7 +94,7 @@ void AnalysisServiceSettingsBase::ParseUrlPatternSettings(
 }
 
 void AnalysisServiceSettingsBase::ParseBlockSettings(
-    const base::Value::Dict& settings_dict) {
+    const base::DictValue& settings_dict) {
   // The block settings are optional, so a default is used if they can't be
   // found.
   block_until_verdict_ =
@@ -116,21 +116,21 @@ void AnalysisServiceSettingsBase::ParseBlockSettings(
 }
 
 void AnalysisServiceSettingsBase::ParseMinimumDataSize(
-    const base::Value::Dict& settings_dict) {
+    const base::DictValue& settings_dict) {
   minimum_data_size_ = settings_dict.FindInt(kKeyMinimumDataSize)
                            .value_or(kDefaultMinimumDataSize);
 }
 
 void AnalysisServiceSettingsBase::ParseCustomMessages(
-    const base::Value::Dict& settings_dict) {
-  const base::Value::List* custom_messages =
+    const base::DictValue& settings_dict) {
+  const base::ListValue* custom_messages =
       settings_dict.FindList(kKeyCustomMessages);
   if (!custom_messages) {
     return;
   }
 
   for (const base::Value& value : *custom_messages) {
-    const base::Value::Dict& dict = value.GetDict();
+    const base::DictValue& dict = value.GetDict();
 
     // As of now, this list will contain one message per tag. At some point,
     // the server may start sending one message per language/tag pair. If this
@@ -159,8 +159,8 @@ void AnalysisServiceSettingsBase::ParseCustomMessages(
 }
 
 void AnalysisServiceSettingsBase::ParseJustificationTags(
-    const base::Value::Dict& settings_dict) {
-  const base::Value::List* require_justification_tags =
+    const base::DictValue& settings_dict) {
+  const base::ListValue* require_justification_tags =
       settings_dict.FindList(kKeyRequireJustificationTags);
   if (!require_justification_tags) {
     return;
@@ -172,7 +172,7 @@ void AnalysisServiceSettingsBase::ParseJustificationTags(
 }
 
 void AnalysisServiceSettingsBase::AddUrlPatternSettings(
-    const base::Value::Dict& url_settings_dict,
+    const base::DictValue& url_settings_dict,
     bool enabled) {
   CHECK(analysis_config_);
   if (enabled) {
@@ -183,7 +183,7 @@ void AnalysisServiceSettingsBase::AddUrlPatternSettings(
 
   URLPatternSettings setting;
 
-  const base::Value::List* tags = url_settings_dict.FindList(kKeyTags);
+  const base::ListValue* tags = url_settings_dict.FindList(kKeyTags);
   if (!tags) {
     return;
   }
@@ -199,7 +199,7 @@ void AnalysisServiceSettingsBase::AddUrlPatternSettings(
   }
 
   // Add the URL patterns to the matcher and store the condition set IDs.
-  const base::Value::List* url_list = url_settings_dict.FindList(kKeyUrlList);
+  const base::ListValue* url_list = url_settings_dict.FindList(kKeyUrlList);
   if (!url_list) {
     return;
   }

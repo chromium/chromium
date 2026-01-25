@@ -44,11 +44,11 @@ bool CopyPreventionSettingsPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       policies.GetValue(policy_name(), base::Value::Type::DICT)->GetDict();
-  const base::Value::List* enable = dict.FindList(
+  const base::ListValue* enable = dict.FindList(
       enterprise::content::kCopyPreventionSettingsEnableFieldName);
-  const base::Value::List* disable = dict.FindList(
+  const base::ListValue* disable = dict.FindList(
       enterprise::content::kCopyPreventionSettingsDisableFieldName);
   if (!enable || !disable) {
     errors->AddError(policy_name(),

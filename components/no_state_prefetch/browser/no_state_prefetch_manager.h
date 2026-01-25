@@ -148,9 +148,9 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Checks whether |url| has been recently navigated to.
   bool HasRecentlyBeenNavigatedTo(Origin origin, const GURL& url);
 
-  // Returns a `base::Value::Dict` object containing the active pages being
+  // Returns a `base::DictValue` object containing the active pages being
   // prerendered, and a history of pages which were prerendered.
-  base::Value::Dict CopyAsDict() const;
+  base::DictValue CopyAsDict() const;
 
   // Clears the data indicated by which bits of clear_flags are set.
   //
@@ -403,9 +403,9 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Adds to the history list.
   void AddToHistory(NoStatePrefetchContents* contents);
 
-  // Returns a new `base::Value::List` representing the pages currently being
+  // Returns a new `base::ListValue` representing the pages currently being
   // prerendered.
-  base::Value::List GetActivePrerenders() const;
+  base::ListValue GetActivePrerenders() const;
 
   // Records the final status a prerender in the case that a
   // NoStatePrefetchContents was never created, adds a NoStatePrefetchHistory

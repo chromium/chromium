@@ -73,7 +73,7 @@ ClientCacheKey ClientCacheKey::FromLocale(std::string locale) {
 }
 
 ModelStoreMetadataEntry::ModelStoreMetadataEntry(
-    const base::Value::Dict* metadata_entry)
+    const base::DictValue* metadata_entry)
     : metadata_entry_(metadata_entry) {}
 
 ModelStoreMetadataEntry::~ModelStoreMetadataEntry() = default;
@@ -275,7 +275,7 @@ void ModelStoreLedger::AddPathToDelete(base::FilePath path) {
   pref_update->Set(FilePathToString(path), true);
 }
 
-const base::Value::Dict& ModelStoreLedger::GetPathsToDelete() const {
+const base::DictValue& ModelStoreLedger::GetPathsToDelete() const {
   return local_state_->GetDict(prefs::localstate::kStoreFilePathsToDelete);
 }
 

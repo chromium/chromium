@@ -36,7 +36,7 @@ class GuestViewManagerDelegate {
   // Dispatches the event with |name| with the provided |args| to the embedder
   // of the given |guest| with |instance_id| for routing.
   virtual void DispatchEvent(const std::string& event_name,
-                             base::Value::Dict args,
+                             base::DictValue args,
                              GuestViewBase* guest,
                              int instance_id) {}
 

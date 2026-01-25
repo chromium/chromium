@@ -26,7 +26,7 @@ class PrefURLListMatcherTest : public ::testing::Test {
   }
 
   void SetPref(const std::vector<std::string>& urls) {
-    base::Value::List urlList;
+    base::ListValue urlList;
     for (const auto& url : urls) {
       urlList.Append(base::Value(url));
     }

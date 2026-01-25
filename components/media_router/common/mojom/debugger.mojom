@@ -13,7 +13,7 @@ interface Debugger {
   ShouldFetchMirroringStats() => (bool should_fetch);
 
   // Sends the current mirroring stats of the current mirroring session.
-  // The stats should be sent as a base::Value::Dict.
+  // The stats should be sent as a base::DictValue.
   // TODO(b/275409476): Handle multiple mirroring sessions at once. If there are
   // multiple mojom pipes all sending stats at once, the most recently sent stat
   // push will be used.

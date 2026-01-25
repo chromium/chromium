@@ -42,7 +42,7 @@ class PrivateKeyFactoryImpl : public PrivateKeyFactory {
   void LoadPrivateKey(
       const client_certificates_pb::PrivateKey& serialized_private_key,
       PrivateKeyCallback callback) override;
-  void LoadPrivateKeyFromDict(const base::Value::Dict& serialized_private_key,
+  void LoadPrivateKeyFromDict(const base::DictValue& serialized_private_key,
                               PrivateKeyCallback callback) override;
 
  private:
@@ -96,7 +96,7 @@ void PrivateKeyFactoryImpl::LoadPrivateKey(
 }
 
 void PrivateKeyFactoryImpl::LoadPrivateKeyFromDict(
-    const base::Value::Dict& serialized_private_key,
+    const base::DictValue& serialized_private_key,
     PrivateKeyCallback callback) {
   std::optional<int> source = serialized_private_key.FindInt(kKeySource);
   if (!source.has_value()) {

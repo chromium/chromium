@@ -81,7 +81,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     policy_ = std::make_unique<OriginTrialsComponentInstallerPolicy>();
   }
 
-  void LoadUpdates(base::Value::Dict manifest) {
+  void LoadUpdates(base::DictValue manifest) {
     if (manifest.empty()) {
       manifest.Set(kManifestOriginTrialsKey, base::Value());
     }
@@ -91,7 +91,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   }
 
   void AddDisabledFeaturesToPrefs(const std::vector<std::string>& features) {
-    base::Value::List disabled_feature_list;
+    base::ListValue disabled_feature_list;
     for (const std::string& feature : features) {
       disabled_feature_list.Append(feature);
     }
@@ -106,7 +106,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     ASSERT_TRUE(local_state()->HasPrefPath(
         embedder_support::prefs::kOriginTrialDisabledFeatures));
 
-    const base::Value::List& disabled_feature_list = local_state()->GetList(
+    const base::ListValue& disabled_feature_list = local_state()->GetList(
         embedder_support::prefs::kOriginTrialDisabledFeatures);
 
     ASSERT_EQ(features.size(), disabled_feature_list.size());
@@ -124,7 +124,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   }
 
   void AddDisabledTokensToPrefs(const std::vector<std::string>& tokens) {
-    base::Value::List disabled_token_list;
+    base::ListValue disabled_token_list;
     for (const std::string& token : tokens) {
       disabled_token_list.Append(token);
     }
@@ -139,7 +139,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     ASSERT_TRUE(local_state()->HasPrefPath(
         embedder_support::prefs::kOriginTrialDisabledTokens));
 
-    const base::Value::List& disabled_token_list = local_state()->GetList(
+    const base::ListValue& disabled_token_list = local_state()->GetList(
         embedder_support::prefs::kOriginTrialDisabledTokens);
 
     ASSERT_EQ(tokens.size(), disabled_token_list.size());
@@ -173,7 +173,7 @@ TEST_F(OriginTrialsComponentInstallerTest,
       local_state()->GetString(embedder_support::prefs::kOriginTrialPublicKey));
 
   // Load with empty section in manifest
-  LoadUpdates(base::Value::Dict());
+  LoadUpdates(base::DictValue());
 
   EXPECT_FALSE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialPublicKey));
@@ -183,7 +183,7 @@ TEST_F(OriginTrialsComponentInstallerTest, PublicKeySetWhenOverrideExists) {
   ASSERT_FALSE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialPublicKey));
 
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.SetByDottedPath(kManifestPublicKeyPath, kNewPublicKey);
   LoadUpdates(std::move(manifest));
 
@@ -198,7 +198,7 @@ TEST_F(OriginTrialsComponentInstallerTest,
       embedder_support::prefs::kOriginTrialDisabledFeatures));
 
   // Load with empty section in manifest
-  LoadUpdates(base::Value::Dict());
+  LoadUpdates(base::DictValue());
 
   EXPECT_FALSE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialDisabledFeatures));
@@ -210,8 +210,8 @@ TEST_F(OriginTrialsComponentInstallerTest,
   ASSERT_TRUE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialDisabledFeatures));
 
-  base::Value::Dict manifest;
-  base::Value::List disabled_feature_list;
+  base::DictValue manifest;
+  base::ListValue disabled_feature_list;
   manifest.SetByDottedPath(kManifestDisabledFeaturesPath,
                            std::move(disabled_feature_list));
 
@@ -225,8 +225,8 @@ TEST_F(OriginTrialsComponentInstallerTest, DisabledFeaturesSetWhenListExists) {
   ASSERT_FALSE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialDisabledFeatures));
 
-  base::Value::Dict manifest;
-  base::Value::List disabled_feature_list;
+  base::DictValue manifest;
+  base::ListValue disabled_feature_list;
   disabled_feature_list.Append(kNewDisabledFeature1);
   manifest.SetByDottedPath(kManifestDisabledFeaturesPath,
                            std::move(disabled_feature_list));
@@ -243,8 +243,8 @@ TEST_F(OriginTrialsComponentInstallerTest,
   ASSERT_TRUE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialDisabledFeatures));
 
-  base::Value::Dict manifest;
-  base::Value::List disabled_feature_list;
+  base::DictValue manifest;
+  base::ListValue disabled_feature_list;
   for (const std::string& feature : kNewDisabledFeatures) {
     disabled_feature_list.Append(feature);
   }
@@ -263,7 +263,7 @@ TEST_F(OriginTrialsComponentInstallerTest,
       embedder_support::prefs::kOriginTrialDisabledTokens));
 
   // Load with empty section in manifest
-  LoadUpdates(base::Value::Dict());
+  LoadUpdates(base::DictValue());
 
   EXPECT_FALSE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialDisabledTokens));
@@ -276,7 +276,7 @@ TEST_F(OriginTrialsComponentInstallerTest,
       embedder_support::prefs::kOriginTrialDisabledTokens));
 
   // Load with disabled tokens key in manifest, but no list values
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.SetByDottedPath(kManifestDisabledTokensPath, base::Value());
 
   LoadUpdates(std::move(manifest));
@@ -291,8 +291,8 @@ TEST_F(OriginTrialsComponentInstallerTest,
   ASSERT_TRUE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialDisabledTokens));
 
-  base::Value::Dict manifest;
-  base::Value::List disabled_token_list;
+  base::DictValue manifest;
+  base::ListValue disabled_token_list;
   manifest.SetByDottedPath(kManifestDisabledTokenSignaturesPath,
                            std::move(disabled_token_list));
 
@@ -306,8 +306,8 @@ TEST_F(OriginTrialsComponentInstallerTest, DisabledTokensSetWhenListExists) {
   ASSERT_FALSE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialDisabledTokens));
 
-  base::Value::Dict manifest;
-  base::Value::List disabled_token_list;
+  base::DictValue manifest;
+  base::ListValue disabled_token_list;
   disabled_token_list.Append(kNewDisabledToken1);
   manifest.SetByDottedPath(kManifestDisabledTokenSignaturesPath,
                            std::move(disabled_token_list));
@@ -324,8 +324,8 @@ TEST_F(OriginTrialsComponentInstallerTest,
   ASSERT_TRUE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialDisabledTokens));
 
-  base::Value::Dict manifest;
-  base::Value::List disabled_token_list;
+  base::DictValue manifest;
+  base::ListValue disabled_token_list;
   for (const std::string& token : kNewDisabledTokens) {
     disabled_token_list.Append(token);
   }
@@ -345,8 +345,8 @@ TEST_F(OriginTrialsComponentInstallerTest, ParametersAddedToCommandLine) {
   AddDisabledTokensToPrefs(kNewDisabledTokens);
 
   embedder_support::MockOriginTrialsSettingsStorage settings_storage;
-  base::Value::List expected_tokens =
-      base::Value::List().Append(kNewDisabledToken1).Append(kNewDisabledToken2);
+  base::ListValue expected_tokens =
+      base::ListValue().Append(kNewDisabledToken1).Append(kNewDisabledToken2);
   EXPECT_CALL(settings_storage,
               PopulateSettings(testing::Eq(std::ref(expected_tokens))));
 
@@ -382,10 +382,10 @@ TEST_F(OriginTrialsComponentInstallerTest, DoesNotOverwriteExistingValues) {
   AddDisabledTokensToPrefs(kNewDisabledTokens);
 
   embedder_support::MockOriginTrialsSettingsStorage settings_storage;
-  base::Value::List expected_tokens = base::Value::List()
-                                          .Append(kExistingDisabledToken1)
-                                          .Append(kExistingDisabledToken2)
-                                          .Append(kExistingDisabledToken3);
+  base::ListValue expected_tokens = base::ListValue()
+                                        .Append(kExistingDisabledToken1)
+                                        .Append(kExistingDisabledToken2)
+                                        .Append(kExistingDisabledToken3);
   EXPECT_CALL(settings_storage,
               PopulateSettings(testing::Eq(std::ref(expected_tokens))));
 

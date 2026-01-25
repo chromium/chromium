@@ -17,7 +17,7 @@ namespace {
 
 const char kStoragePartitionId[] = "partition";
 
-void ParsePartitionParam(const base::Value::Dict& create_params,
+void ParsePartitionParam(const base::DictValue& create_params,
                          std::string* storage_partition_id,
                          bool* persist_storage) {
   const std::string* partition_str =
@@ -88,7 +88,7 @@ void SlimWebViewGuest::MaybeRecreateGuestContents(
 void SlimWebViewGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
     scoped_refptr<content::SiteInstance> site_instance,
-    const base::Value::Dict& create_params,
+    const base::DictValue& create_params,
     GuestPageCreatedCallback callback) {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     // TODO(crbug.com/460804848): Complete the implementation for MPArch.

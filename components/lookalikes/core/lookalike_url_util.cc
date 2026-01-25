@@ -1308,7 +1308,7 @@ bool ShouldBlockBySpoofCheckResult(const DomainInfo& navigated_domain) {
 
 bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
                                  const GURL& url) {
-  const base::Value::List& list =
+  const base::ListValue& list =
       pref_service->GetList(prefs::kLookalikeWarningAllowlistDomains);
 
   for (const auto& domain_val : list) {
@@ -1322,7 +1322,7 @@ bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
 
 void SetEnterpriseAllowlistForTesting(PrefService* pref_service,
                                       const std::vector<std::string>& hosts) {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& host : hosts) {
     list.Append(host);
   }

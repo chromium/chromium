@@ -586,7 +586,7 @@ TEST_F(HintsManagerTest, ProcessHintsWithValidCommandLineOverride) {
       proto::LITE_PAGE_REDIRECT));
   EXPECT_FALSE(hints_manager()->HasLoadedOptimizationAllowlist(
       proto::PERFORMANCE_HINTS));
-  const base::Value::Dict& previous_opt_types_with_filter =
+  const base::DictValue& previous_opt_types_with_filter =
       pref_service()->GetDict(prefs::kPreviousOptimizationTypesWithFilter);
   EXPECT_EQ(2u, previous_opt_types_with_filter.size());
   EXPECT_TRUE(previous_opt_types_with_filter.contains(
@@ -829,7 +829,7 @@ TEST_F(HintsManagerTest, ProcessHintsUpdatePreviousOptTypesWithFilter) {
                          /*is_allowlist=*/true, &config_one);
   ProcessHints(config_one, "1.0.0.0");
 
-  const base::Value::Dict& dic_one =
+  const base::DictValue& dic_one =
       pref_service()->GetDict(prefs::kPreviousOptimizationTypesWithFilter);
   EXPECT_EQ(2u, dic_one.size());
   EXPECT_TRUE(dic_one.contains(optimization_guide::proto::OptimizationType_Name(
@@ -847,7 +847,7 @@ TEST_F(HintsManagerTest, ProcessHintsUpdatePreviousOptTypesWithFilter) {
                          /*is_allowlist=*/false, &config_two);
   ProcessHints(config_two, "2.0.0.0");
 
-  const base::Value::Dict& dic_two =
+  const base::DictValue& dic_two =
       pref_service()->GetDict(prefs::kPreviousOptimizationTypesWithFilter);
   EXPECT_EQ(1u, dic_two.size());
   EXPECT_TRUE(dic_two.contains(optimization_guide::proto::OptimizationType_Name(

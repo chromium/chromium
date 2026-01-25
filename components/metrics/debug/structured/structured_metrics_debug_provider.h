@@ -31,14 +31,14 @@ class StructuredMetricsDebugProvider
   // StructuredMetricsRecorder::Observer:
   void OnEventRecorded(const StructuredEventProto& event) override;
 
-  const base::Value::List& events() const { return events_; }
+  const base::ListValue& events() const { return events_; }
 
  private:
   // Loads the events that are recorded before the page is loaded.
   void LoadRecordedEvents();
 
   // Maintain copy of the events to be displayed by the debug page.
-  base::Value::List events_;
+  base::ListValue events_;
 
   raw_ptr<StructuredMetricsService> service_;
 };

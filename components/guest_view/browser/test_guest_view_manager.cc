@@ -184,7 +184,7 @@ void TestGuestViewManager::AttachGuest(
     content::ChildProcessId embedder_process_id,
     int element_instance_id,
     int guest_instance_id,
-    const base::Value::Dict& attach_params) {
+    const base::DictValue& attach_params) {
   auto* guest_to_attach =
       GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id);
   if (will_attach_callback_)
@@ -203,7 +203,7 @@ void TestGuestViewManager::AttachGuest(
 void TestGuestViewManager::AttachGuest(int embedder_process_id,
                                        int element_instance_id,
                                        int guest_instance_id,
-                                       const base::Value::Dict& attach_params) {
+                                       const base::DictValue& attach_params) {
   AttachGuest(content::ChildProcessId(embedder_process_id), element_instance_id,
               guest_instance_id, attach_params);
 }

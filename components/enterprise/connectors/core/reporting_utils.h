@@ -52,7 +52,7 @@ EventResult GetEventResultFromThreatType(std::string threat_type);
 // events.
 void AddTriggeredRuleInfoToUrlFilteringInterstitialEvent(
     const safe_browsing::RTLookupResponse& response,
-    base::Value::Dict& event);
+    base::DictValue& event);
 
 // Create a URLMatcher representing the filters in
 // `settings.enabled_opt_in_events` for `event_type`. This field of the
@@ -201,11 +201,11 @@ GetDataControlsSensitiveDataEvent(
 std::vector<std::string> GetLocalIpAddresses();
 
 void AddReferrerChainToEvent(const ReferrerChain& referrer_chain,
-                             base::Value::Dict& event);
+                             base::DictValue& event);
 
 void AddFrameUrlChainToEvent(
     const google::protobuf::RepeatedPtrField<std::string>& frame_url_chain,
-    base::Value::Dict& event);
+    base::DictValue& event);
 
 void MaybeTruncateLongUrls(
     ::chrome::cros::reporting::proto::Event& event_variant);

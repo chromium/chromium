@@ -18,7 +18,7 @@ class OriginTrialsSettingsStorage {
 
   // Populates the settings. The settings can come from either CLI flags or the
   // PrefService.
-  virtual void PopulateSettings(const base::Value::List& disabled_tokens_list);
+  virtual void PopulateSettings(const base::ListValue& disabled_tokens_list);
 
   // Provide a snapshot of the settings. The returned settings to callers is a
   // copy and callers can manipulate it without affecting the settings stored in
@@ -26,7 +26,7 @@ class OriginTrialsSettingsStorage {
   virtual blink::mojom::OriginTrialsSettingsPtr GetSettings() const;
 
  private:
-  void SetDisabledTokens(const base::Value::List& disabled_tokens_list);
+  void SetDisabledTokens(const base::ListValue& disabled_tokens_list);
   blink::mojom::OriginTrialsSettings settings_;
 };
 }  // namespace embedder_support

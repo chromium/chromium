@@ -19,8 +19,7 @@ namespace fuchsia_component_support {
 
 namespace {
 
-bool HaveConflicts(const base::Value::Dict& dict1,
-                   const base::Value::Dict& dict2) {
+bool HaveConflicts(const base::DictValue& dict1, const base::DictValue& dict2) {
   for (auto item : dict1) {
     const base::Value* value = dict2.Find(item.first);
     if (!value)
@@ -34,7 +33,7 @@ bool HaveConflicts(const base::Value::Dict& dict1,
   return false;
 }
 
-base::Value::Dict ReadConfigFile(const base::FilePath& path) {
+base::DictValue ReadConfigFile(const base::FilePath& path) {
   std::string file_content;
   bool loaded = base::ReadFileToString(path, &file_content);
   CHECK(loaded) << "Couldn't read config file: " << path;
@@ -48,12 +47,12 @@ base::Value::Dict ReadConfigFile(const base::FilePath& path) {
   return std::move(parsed->GetDict());
 }
 
-std::optional<base::Value::Dict> ReadConfigsFromDir(const base::FilePath& dir) {
+std::optional<base::DictValue> ReadConfigsFromDir(const base::FilePath& dir) {
   base::FileEnumerator configs(dir, false, base::FileEnumerator::FILES,
                                "*.json");
-  std::optional<base::Value::Dict> config;
+  std::optional<base::DictValue> config;
   for (base::FilePath path; !(path = configs.Next()).empty();) {
-    base::Value::Dict path_config = ReadConfigFile(path);
+    base::DictValue path_config = ReadConfigFile(path);
     if (config) {
       CHECK(!HaveConflicts(*config, path_config));
       config->Merge(std::move(path_config));
@@ -67,16 +66,16 @@ std::optional<base::Value::Dict> ReadConfigsFromDir(const base::FilePath& dir) {
 
 }  // namespace
 
-const std::optional<base::Value::Dict>& LoadPackageConfig() {
+const std::optional<base::DictValue>& LoadPackageConfig() {
   // Package configurations do not change at run-time, so read the configuration
   // on the first call and cache the result.
-  static base::NoDestructor<std::optional<base::Value::Dict>> config(
+  static base::NoDestructor<std::optional<base::DictValue>> config(
       ReadConfigsFromDir(base::FilePath("/config/data")));
 
   return *config;
 }
 
-std::optional<base::Value::Dict> LoadConfigFromDirForTest(  // IN-TEST
+std::optional<base::DictValue> LoadConfigFromDirForTest(  // IN-TEST
     const base::FilePath& dir) {
   return ReadConfigsFromDir(dir);
 }

@@ -1241,9 +1241,9 @@ network::mojom::NetworkContext* OpenscreenSessionHost::GetNetworkContext() {
   return network_context_.get();
 }
 
-base::Value::Dict OpenscreenSessionHost::GetMirroringStats() const {
+base::DictValue OpenscreenSessionHost::GetMirroringStats() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return stats_client_ ? stats_client_->GetStats() : base::Value::Dict();
+  return stats_client_ ? stats_client_->GetStats() : base::DictValue();
 }
 
 void OpenscreenSessionHost::SetSenderStatsForTest(

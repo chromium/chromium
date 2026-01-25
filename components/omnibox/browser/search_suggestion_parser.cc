@@ -126,7 +126,7 @@ AutocompleteMatchType::Type GetAutocompleteMatchType(
 // equal in length to `expected_size`, even if the input `subtypes_list` is not
 // valid.
 std::vector<std::vector<int>> ParseMatchSubtypes(
-    const base::Value::List* subtypes_list,
+    const base::ListValue* subtypes_list,
     size_t expected_size) {
   std::vector<std::vector<int>> result(expected_size);
 
@@ -164,7 +164,7 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
   return result;
 }
 
-std::string FindStringOrEmpty(const base::Value::Dict& value, std::string key) {
+std::string FindStringOrEmpty(const base::DictValue& value, std::string key) {
   auto* ptr = value.FindString(key);
   return ptr ? *ptr : "";
 }
@@ -663,7 +663,7 @@ std::string SearchSuggestionParser::ExtractJsonData(
 }
 
 // static
-std::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
+std::optional<base::ListValue> SearchSuggestionParser::DeserializeJsonData(
     std::string_view json_data) {
   // The JSON response should be an array.
   for (size_t response_start_index = json_data.find("["), i = 0;
@@ -683,7 +683,7 @@ std::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
 
 // static
 bool SearchSuggestionParser::ParseSuggestResults(
-    const base::Value::List& root_list,
+    const base::ListValue& root_list,
     const AutocompleteInput& input,
     const AutocompleteSchemeClassifier& scheme_classifier,
     int default_result_relevance,
@@ -715,19 +715,19 @@ bool SearchSuggestionParser::ParseSuggestResults(
   // Reset suggested relevance information.
   results->verbatim_relevance = -1;
 
-  const base::Value::List* suggest_types = nullptr;
-  const base::Value::List* suggest_subtypes = nullptr;
-  const base::Value::List* nav_intents = nullptr;
-  const base::Value::List* relevances = nullptr;
-  const base::Value::List* suggestion_details = nullptr;
-  const base::Value::List* subtype_identifiers = nullptr;
+  const base::ListValue* suggest_types = nullptr;
+  const base::ListValue* suggest_subtypes = nullptr;
+  const base::ListValue* nav_intents = nullptr;
+  const base::ListValue* relevances = nullptr;
+  const base::ListValue* suggestion_details = nullptr;
+  const base::ListValue* subtype_identifiers = nullptr;
   int prefetch_index = -1;
   int prerender_index = -1;
   omnibox::GroupsInfo groups_info;
 
   // Parse the optional key-value pairs from the server (5th element).
   if (root_list.size() > 4u && root_list[4].is_dict()) {
-    const base::Value::Dict& extras = root_list[4].GetDict();
+    const base::DictValue& extras = root_list[4].GetDict();
 
     suggest_types = extras.FindList("google:suggesttype");
 
@@ -761,11 +761,11 @@ bool SearchSuggestionParser::ParseSuggestResults(
     results->field_trial_triggered = field_trial_triggered.value_or(false);
 
     results->experiment_stats_v2s.clear();
-    const base::Value::List* experiment_stats_v2s_list =
+    const base::ListValue* experiment_stats_v2s_list =
         extras.FindList("google:experimentstats");
     if (experiment_stats_v2s_list) {
       for (const auto& experiment_stats_v2_value : *experiment_stats_v2s_list) {
-        const base::Value::Dict* experiment_stats_v2_dict =
+        const base::DictValue* experiment_stats_v2_dict =
             experiment_stats_v2_value.GetIfDict();
         if (!experiment_stats_v2_dict) {
           continue;
@@ -788,7 +788,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     const auto* groups_info_string = extras.FindString("google:groupsinfo");
     DecodeProtoFromBase64<omnibox::GroupsInfo>(groups_info_string, groups_info);
 
-    const base::Value::Dict* client_data = extras.FindDict("google:clientdata");
+    const base::DictValue* client_data = extras.FindDict("google:clientdata");
     if (client_data) {
       prefetch_index = client_data->FindInt("phi").value_or(-1);
       prerender_index = client_data->FindInt("pre").value_or(-1);
@@ -813,7 +813,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     // compose field.
     results->smart_compose_inline_hint.clear();
     // Smart compose response.
-    const base::Value::Dict* smart_compose_data =
+    const base::DictValue* smart_compose_data =
         extras.FindDict("google:smartcompose");
     if (smart_compose_data) {
       // Smart compose completion.
@@ -888,7 +888,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     std::string deletion_url;
     if (suggestion_details && index < suggestion_details->size() &&
         (*suggestion_details)[index].is_dict()) {
-      const base::Value::Dict& suggestion_detail =
+      const base::DictValue& suggestion_detail =
           (*suggestion_details)[index].GetDict();
       deletion_url = FindStringOrEmpty(suggestion_detail, "du");
     }
@@ -943,7 +943,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&
           !(*suggestion_details)[index].GetDict().empty()) {
-        const base::Value::Dict& suggestion_detail =
+        const base::DictValue& suggestion_detail =
             (*suggestion_details)[index].GetDict();
 
         // Rich Suggest Template.
@@ -1103,7 +1103,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
 // static
 bool SearchSuggestionParser::ParseSuggestResults(
-    const base::Value::List& root_list,
+    const base::ListValue& root_list,
     const AutocompleteInput& input,
     const AutocompleteSchemeClassifier& scheme_classifier,
     int default_result_relevance,

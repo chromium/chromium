@@ -58,13 +58,13 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContentType() {
 }
 
 std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
 
-  base::Value::Dict chrome_user_context;
+  base::DictValue chrome_user_context;
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
-  base::Value::Dict risk_data;
+  base::DictValue risk_data;
   risk_data.Set("message_type", "BROWSER_NATIVE_FINGERPRINTING");
   risk_data.Set("encoding_type", "BASE_64");
   risk_data.Set("value", request_details_->risk_data_);
@@ -74,11 +74,11 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
       "client_token",
       base::Value(base::Base64Encode(request_details_->client_token_)));
 
-  base::Value::Dict context;
+  base::DictValue context;
   context.Set("language_code", app_locale_);
   context.Set("billable_service", kFacilitatedPaymentsBillableServiceNumber);
   if (request_details_->billing_customer_number_.has_value()) {
-    base::Value::Dict customer_context;
+    base::DictValue customer_context;
     customer_context.Set(
         "external_customer_id",
         base::NumberToString(
@@ -88,7 +88,7 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
   request_dict.Set("context", std::move(context));
 
   if (request_details_->merchant_payment_page_hostname_.has_value()) {
-    base::Value::Dict merchant_info;
+    base::DictValue merchant_info;
     merchant_info.Set(
         "merchant_checkout_page_url",
         request_details_->merchant_payment_page_hostname_.value());
@@ -99,7 +99,7 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
       "sender_instrument_id",
       base::NumberToString(request_details_->instrument_id_.value()));
 
-  base::Value::Dict payment_details;
+  base::DictValue payment_details;
   if (request_details_->pix_code_.has_value()) {
     // TODO(b/332602034): Pass the payment rail to be used for payment as an
     // enum. In future, some other payment rail could also support Pix codes.
@@ -116,21 +116,21 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
 }
 
 void FacilitatedPaymentsInitiatePaymentRequest::ParseResponse(
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   // The `error` is only set in the absence of the action token.
-  if (const base::Value::Dict* error = response.FindDict("error")) {
+  if (const base::DictValue* error = response.FindDict("error")) {
     if (const std::string* error_message =
             error->FindString("user_error_message")) {
       response_details_->error_message_ = *error_message;
     }
     return;
   }
-  const base::Value::Dict* trigger_purchase_manager =
+  const base::DictValue* trigger_purchase_manager =
       response.FindDict("trigger_purchase_manager");
   if (!trigger_purchase_manager) {
     return;
   }
-  const base::Value::Dict* secure_payload_json =
+  const base::DictValue* secure_payload_json =
       trigger_purchase_manager->FindDict("secure_payload");
   if (!secure_payload_json) {
     return;

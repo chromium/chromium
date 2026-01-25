@@ -141,43 +141,43 @@ class EventReportValidatorBase {
   void SetDoneClosure(base::RepeatingClosure closure);
 
  protected:
-  void ValidateField(const base::Value::Dict* value,
+  void ValidateField(const base::DictValue* value,
                      const std::string& field_key,
                      const std::optional<std::string>& expected_value);
-  void ValidateField(const base::Value::Dict* value,
+  void ValidateField(const base::DictValue* value,
                      const std::string& field_key,
                      const std::optional<std::u16string>& expected_value);
-  void ValidateField(const base::Value::Dict* value,
+  void ValidateField(const base::DictValue* value,
                      const std::string& field_key,
                      const std::optional<int>& expected_value);
-  void ValidateField(const base::Value::Dict* value,
+  void ValidateField(const base::DictValue* value,
                      const std::string& field_key,
                      int expected_value);
-  void ValidateField(const base::Value::Dict* value,
+  void ValidateField(const base::DictValue* value,
                      const std::string& field_key,
                      bool expected_value);
-  void ValidateField(const base::Value::Dict* value,
+  void ValidateField(const base::DictValue* value,
                      const std::string& field_key,
                      int64_t expected_value);
   void ValidateThreatInfo(
-      const base::Value::Dict* value,
+      const base::DictValue* value,
       const chrome::cros::reporting::proto::TriggeredRuleInfo
           expected_rule_info);
   void ValidateReferrer(
-      const base::Value::Dict* value,
+      const base::DictValue* value,
       const chrome::cros::reporting::proto::UrlInfo expected_referrer);
-  void ValidateFederatedOrigin(const base::Value::Dict* value,
+  void ValidateFederatedOrigin(const base::DictValue* value,
                                const std::string& expected_federated_origin);
   void ValidateIdentities(
-      const base::Value::Dict* value,
+      const base::DictValue* value,
       const std::vector<std::pair<std::string, std::u16string>>&
           expected_identities);
-  void ValidateMimeType(const base::Value::Dict* value,
+  void ValidateMimeType(const base::DictValue* value,
                         const std::set<std::string>* expected_mimetypes);
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   void ValidateDataControlsTriggerdRules(
-      const base::Value::Dict* value,
+      const base::DictValue* value,
       const data_controls::Verdict::TriggeredRules& expected_triggered_rules);
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 

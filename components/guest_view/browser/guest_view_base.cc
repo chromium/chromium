@@ -194,7 +194,7 @@ GuestViewBase::~GuestViewBase() {
 
 void GuestViewBase::Init(std::unique_ptr<GuestViewBase> owned_this,
                          scoped_refptr<content::SiteInstance> site_instance,
-                         const base::Value::Dict& create_params,
+                         const base::DictValue& create_params,
                          GuestCreatedCallback callback) {
   if (!GetGuestViewManager()->IsGuestAvailableToContext(this)) {
     // The derived class did not create a WebContents so this class serves no
@@ -210,7 +210,7 @@ void GuestViewBase::Init(std::unique_ptr<GuestViewBase> owned_this,
                                  create_params.Clone(), std::move(callback)));
 }
 
-void GuestViewBase::InitWithWebContents(const base::Value::Dict& create_params,
+void GuestViewBase::InitWithWebContents(const base::DictValue& create_params,
                                         WebContents* guest_web_contents) {
   CHECK(guest_web_contents);
 
@@ -256,7 +256,7 @@ void GuestViewBase::SetGuestPageHolder(
 }
 
 void GuestViewBase::InitWithGuestPageHolder(
-    const base::Value::Dict& create_params,
+    const base::DictValue& create_params,
     content::GuestPageHolder* guest_page_holder) {
   SetGuestPageHolder(guest_page_holder);
 
@@ -282,13 +282,13 @@ void GuestViewBase::InitWithGuestPageHolder(
 }
 
 const std::optional<
-    std::pair<base::Value::Dict, content::WebContents::CreateParams>>&
+    std::pair<base::DictValue, content::WebContents::CreateParams>>&
 GuestViewBase::GetCreateParams() const {
   return create_params_;
 }
 
 void GuestViewBase::SetCreateParams(
-    const base::Value::Dict& create_params,
+    const base::DictValue& create_params,
     const content::WebContents::CreateParams& web_contents_create_params) {
   DCHECK_EQ(web_contents_create_params.browser_context, browser_context());
   DCHECK_EQ(web_contents_create_params.guest_delegate, this);
@@ -310,7 +310,7 @@ void GuestViewBase::DispatchOnResizeEvent(const gfx::Size& old_size,
   }
 
   // Dispatch the onResize event.
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set(kOldWidth, old_size.width());
   args.Set(kOldHeight, old_size.height());
   args.Set(kNewWidth, new_size.width());
@@ -600,7 +600,7 @@ const GURL& GuestViewBase::GetOwnerSiteURL() const {
   return owner_rfh()->GetSiteInstance()->GetSiteURL();
 }
 
-void GuestViewBase::SetAttachParams(const base::Value::Dict& params) {
+void GuestViewBase::SetAttachParams(const base::DictValue& params) {
   attach_params_ = params.Clone();
   view_instance_id_ =
       attach_params_.FindInt(kParameterInstanceId).value_or(view_instance_id_);
@@ -1115,7 +1115,7 @@ void GuestViewBase::RejectGuestCreation(
   }
 }
 
-void GuestViewBase::CompleteInit(base::Value::Dict create_params,
+void GuestViewBase::CompleteInit(base::DictValue create_params,
                                  GuestCreatedCallback callback,
                                  std::unique_ptr<GuestViewBase> owned_this,
                                  GuestPageVariant guest_page) {
@@ -1217,7 +1217,7 @@ double GuestViewBase::GetEmbedderZoomFactor() const {
           embedder_web_contents()));
 }
 
-void GuestViewBase::SetUpSizing(const base::Value::Dict& params) {
+void GuestViewBase::SetUpSizing(const base::DictValue& params) {
   // Read the autosize parameters passed in from the embedder.
   std::optional<bool> auto_size_enabled_opt =
       params.FindBool(kAttributeAutoSize);

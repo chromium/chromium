@@ -90,7 +90,7 @@ std::string LogsToString(const FeedbackCommon::SystemLogsMap& sys_info) {
 }
 
 void RemoveUrlsFromAutofillData(std::string& autofill_metadata) {
-  std::optional<base::Value::Dict> autofill_data = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> autofill_data = base::JSONReader::ReadDict(
       autofill_metadata, base::JSON_ALLOW_TRAILING_COMMAS);
 
   if (!autofill_data) {
@@ -98,7 +98,7 @@ void RemoveUrlsFromAutofillData(std::string& autofill_metadata) {
     return;
   }
 
-  if (base::Value::List* form_structures =
+  if (base::ListValue* form_structures =
           autofill_data->FindList("formStructures")) {
     for (base::Value& item : *form_structures) {
       auto& dict = item.GetDict();

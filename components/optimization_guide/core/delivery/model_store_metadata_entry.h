@@ -34,7 +34,7 @@ class ModelStoreMetadataEntry {
   static constexpr base::TimeDelta kDefaultStoredModelValidDuration =
       base::Days(30);
 
-  explicit ModelStoreMetadataEntry(const base::Value::Dict* metadata_entry);
+  explicit ModelStoreMetadataEntry(const base::DictValue* metadata_entry);
   ModelStoreMetadataEntry(const ModelStoreMetadataEntry&) = default;
   ModelStoreMetadataEntry& operator=(const ModelStoreMetadataEntry&) = delete;
   ~ModelStoreMetadataEntry();
@@ -54,7 +54,7 @@ class ModelStoreMetadataEntry {
 
  private:
   // The root metadata entry for this model.
-  raw_ptr<const base::Value::Dict> metadata_entry_;
+  raw_ptr<const base::DictValue> metadata_entry_;
 };
 
 // The pref updater for ModelStoreMetadataEntry.
@@ -87,7 +87,7 @@ class ModelStoreMetadataEntryUpdater {
   ScopedDictPrefUpdate pref_updater_;
   // The part of the Value owned by |pref_updater_| which backs the entry
   // to be updated.
-  raw_ptr<base::Value::Dict> entry_;
+  raw_ptr<base::DictValue> entry_;
 };
 
 // A ledger that tracks what models should be stored on disk.
@@ -128,7 +128,7 @@ class ModelStoreLedger {
   void AddPathToDelete(base::FilePath path);
 
   // Get all the deferred deletions, keys are paths, values don't matter.
-  const base::Value::Dict& GetPathsToDelete() const;
+  const base::DictValue& GetPathsToDelete() const;
 
   // Remove a deferred deletion.
   void RemovePathToDelete(base::FilePath path);

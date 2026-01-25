@@ -448,7 +448,7 @@ class MostVisitedSitesTest : public ::testing::Test {
     // Updating list value in pref with default gmail URL for unit testing.
     // Also adding migration feature to be enabled for unit test.
     auto defaults =
-        base::Value::List().Append("pjkljhegncpnkpknbcohdijeoejaedia");
+        base::ListValue().Append("pjkljhegncpnkpknbcohdijeoejaedia");
     pref_service_.registry()->RegisterListPref(
         webapps::kWebAppsMigratedPreinstalledApps, std::move(defaults));
 

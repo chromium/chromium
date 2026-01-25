@@ -256,7 +256,7 @@ void TranslationDispatcher::OnResponseJsonParsed(
     return;
   }
 
-  const base::Value::Dict* data_dict =
+  const base::DictValue* data_dict =
       result.value().GetDict().FindDict(kDataKey);
   if (!data_dict) {
     base::UmaHistogramEnumeration(
@@ -267,7 +267,7 @@ void TranslationDispatcher::OnResponseJsonParsed(
     return;
   }
 
-  const base::Value::List* translations_list =
+  const base::ListValue* translations_list =
       data_dict->FindList(kTranslationsKey);
   if (!translations_list || translations_list->empty()) {
     base::UmaHistogramEnumeration(
@@ -278,8 +278,7 @@ void TranslationDispatcher::OnResponseJsonParsed(
     return;
   }
 
-  const base::Value::Dict* translated_text =
-      (*translations_list)[0].GetIfDict();
+  const base::DictValue* translated_text = (*translations_list)[0].GetIfDict();
   if (!translated_text) {
     base::UmaHistogramEnumeration(
         kTranslationDispatcherParseResultHistogram,

@@ -179,9 +179,8 @@ DebugStreamData::~DebugStreamData() = default;
 DebugStreamData::DebugStreamData(const DebugStreamData&) = default;
 DebugStreamData& DebugStreamData::operator=(const DebugStreamData&) = default;
 
-base::Value::Dict PersistentMetricsDataToDict(
-    const PersistentMetricsData& data) {
-  base::Value::Dict dict;
+base::DictValue PersistentMetricsDataToDict(const PersistentMetricsData& data) {
+  base::DictValue dict;
   dict.Set("day_start", base::TimeToValue(data.current_day_start));
   dict.Set("time_spent_in_feed",
            base::TimeDeltaToValue(data.accumulated_time_spent_in_feed));
@@ -195,7 +194,7 @@ base::Value::Dict PersistentMetricsDataToDict(
 }
 
 PersistentMetricsData PersistentMetricsDataFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   PersistentMetricsData result;
   std::optional<base::Time> day_start =
       base::ValueToTime(dict.Find("day_start"));
