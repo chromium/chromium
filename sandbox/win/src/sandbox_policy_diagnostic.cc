@@ -295,9 +295,9 @@ std::string GetPolicyOpcode(const PolicyOpcode* opcode, bool continuation) {
 }
 
 // Uses |service| to index into |policy_rules| returning a list of opcodes.
-base::Value::List GetPolicyOpcodes(const PolicyGlobal* policy_rules,
-                                   IpcTag service) {
-  base::Value::List entry;
+base::ListValue GetPolicyOpcodes(const PolicyGlobal* policy_rules,
+                                 IpcTag service) {
+  base::ListValue entry;
   PolicyBuffer* policy_buffer =
       UNSAFE_TODO(policy_rules->entry[static_cast<size_t>(service)]);
   // Build up rules and emit when we hit an action.
@@ -321,16 +321,16 @@ base::Value::List GetPolicyOpcodes(const PolicyGlobal* policy_rules,
 }
 
 // policy_rules might be nullptr if no rules are defined.
-base::Value::Dict GetPolicyRules(const std::vector<IpcTag>& ipcs,
-                                 const PolicyGlobal* policy_rules) {
-  base::Value::Dict results;
+base::DictValue GetPolicyRules(const std::vector<IpcTag>& ipcs,
+                               const PolicyGlobal* policy_rules) {
+  base::DictValue results;
 
   for (auto ipc : ipcs) {
     if (policy_rules &&
         UNSAFE_TODO(policy_rules->entry[static_cast<size_t>(ipc)])) {
       results.Set(GetIpcTagAsString(ipc), GetPolicyOpcodes(policy_rules, ipc));
     } else {
-      results.Set(GetIpcTagAsString(ipc), base::Value::List());
+      results.Set(GetIpcTagAsString(ipc), base::ListValue());
     }
   }
 
@@ -339,8 +339,8 @@ base::Value::Dict GetPolicyRules(const std::vector<IpcTag>& ipcs,
 
 // `handle_config` is a set of configuration bools - only output things
 // if they are enabled.
-base::Value::List GetHandlesToClose(const HandleCloserConfig& handle_config) {
-  base::Value::List results;
+base::ListValue GetHandlesToClose(const HandleCloserConfig& handle_config) {
+  base::ListValue results;
   if (!handle_config.handle_closer_enabled) {
     return results;
   }
@@ -430,7 +430,7 @@ const std::string& PolicyDiagnostic::JsonString() const {
   if (json_string_)
     return *json_string_;
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kProcessId, base::strict_cast<double>(process_id_));
   dict.Set(kTag, base::Value(tag_));
   dict.Set(kLockdownLevel, GetTokenLevelInEnglish(lockdown_level_));
@@ -445,7 +445,7 @@ const std::string& PolicyDiagnostic::JsonString() const {
   if (app_container_sid_) {
     dict.Set(kAppContainerSid,
              base::AsStringPiece16(GetSidAsString(*app_container_sid_)));
-    base::Value::List caps;
+    base::ListValue caps;
     for (const auto& sid : capabilities_) {
       auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(sid)));
       caps.Append(std::move(sid_value));
@@ -453,7 +453,7 @@ const std::string& PolicyDiagnostic::JsonString() const {
     if (!caps.empty()) {
       dict.Set(kAppContainerCapabilities, std::move(caps));
     }
-    base::Value::List imp_caps;
+    base::ListValue imp_caps;
     for (const auto& sid : initial_capabilities_) {
       auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(sid)));
       imp_caps.Append(std::move(sid_value));
