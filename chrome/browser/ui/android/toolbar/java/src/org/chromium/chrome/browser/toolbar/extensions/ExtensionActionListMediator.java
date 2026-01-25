@@ -33,6 +33,10 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 @NullMarked
 class ExtensionActionListMediator implements Destroyable {
     private final Context mContext;
@@ -91,7 +95,20 @@ class ExtensionActionListMediator implements Destroyable {
         Tab currentTab = mCurrentTabSupplier.get();
         WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
 
-        // O(N^2).
+        // Optimization: Remove items that are no longer present in the new list.
+        // This prevents unnecessary moves if the first item is removed.
+        Set<String> actionIdsSet = new HashSet<>(Arrays.asList(actionIds));
+        for (int i = mModels.size() - 1; i >= 0; i--) {
+            String id = getActionIdForIndex(i);
+            if (!actionIdsSet.contains(id)) {
+                if (id.equals(mCurrentPopupActionId)) {
+                    closePopup();
+                }
+                mModels.removeAt(i);
+            }
+        }
+
+        // O(N) for removals/no-ops; O(N^2) for reordering/insertions.
         int currentModelIndex = 0;
         for (String actionId : actionIds) {
             ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId);
