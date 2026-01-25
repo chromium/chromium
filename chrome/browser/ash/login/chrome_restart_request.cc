@@ -89,7 +89,7 @@ bool IsRunningTest() {
 // - Append/override switches using `new_switches`;
 void DeriveCommandLine(const GURL& start_url,
                        const base::CommandLine& base_command_line,
-                       const base::Value::Dict& new_switches,
+                       const base::DictValue& new_switches,
                        base::CommandLine* command_line) {
   DCHECK_NE(&base_command_line, command_line);
 
@@ -380,7 +380,7 @@ void ChromeRestartRequest::OnRestartJob(base::ScopedFD local_auth_fd,
 void GetOffTheRecordCommandLine(const GURL& start_url,
                                 const base::CommandLine& base_command_line,
                                 base::CommandLine* command_line) {
-  base::Value::Dict otr_switches;
+  base::DictValue otr_switches;
   otr_switches.Set(switches::kGuestSession, std::string());
   otr_switches.Set(::switches::kIncognito, std::string());
   otr_switches.Set(::switches::kLoggingLevel, kGuestModeLoggingLevel);

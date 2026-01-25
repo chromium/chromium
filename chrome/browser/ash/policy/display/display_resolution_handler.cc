@@ -41,7 +41,7 @@ struct DisplayResolutionHandler::InternalDisplaySettings {
   // Get settings for the internal display from
   // |ash::kDeviceDisplayResolution| setting value.
   static std::unique_ptr<InternalDisplaySettings> FromPolicySetting(
-      const base::Value::Dict* pref) {
+      const base::DictValue* pref) {
     const std::optional<int> scale_value =
         pref->FindInt(ash::kDeviceDisplayResolutionKeyInternalScale);
     return scale_value ? std::make_unique<InternalDisplaySettings>(*scale_value)
@@ -105,7 +105,7 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
   // Get settings for the external displays from
   // |ash::kDeviceDisplayResolution| setting value;
   static std::unique_ptr<ExternalDisplaySettings> FromPolicySetting(
-      const base::Value::Dict* pref) {
+      const base::DictValue* pref) {
     auto result = std::make_unique<ExternalDisplaySettings>();
 
     // Scale can be used for both native and non-native modes
@@ -146,7 +146,7 @@ const char* DisplayResolutionHandler::SettingName() {
 // |internal_display_settings_|. Also updates |policy_enabled_| flag.
 void DisplayResolutionHandler::OnSettingUpdate() {
   policy_enabled_ = false;
-  const base::Value::Dict* resolution_pref = nullptr;
+  const base::DictValue* resolution_pref = nullptr;
   ash::CrosSettings::Get()->GetDictionary(ash::kDeviceDisplayResolution,
                                           &resolution_pref);
   if (!resolution_pref)

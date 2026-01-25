@@ -20,7 +20,7 @@ namespace {
 // Both input and output should only contain 1 node id.
 bool PopulateMapFromNamesAndNodes(
     const std::vector<std::string>& names,
-    const base::Value::List& nodes,
+    const base::ListValue& nodes,
     base::flat_map<std::string, int>* name_2_node_map) {
   if (names.size() != 1) {
     DVLOG(1) << "names should contain only 1 string element.";
@@ -51,7 +51,7 @@ bool ParseMetaInfoFromJsonObject(const base::Value& root,
          inputs && outputs);
   DCHECK(root.is_dict());
 
-  const base::Value::Dict& root_dict = root.GetDict();
+  const base::DictValue& root_dict = root.GetDict();
   const std::string* metrics_model_name_value =
       root_dict.FindString("metrics_model_name");
   const std::optional<double> dim_threshold_value =
@@ -71,8 +71,8 @@ bool ParseMetaInfoFromJsonObject(const base::Value& root,
   *expected_feature_size =
       static_cast<size_t>(expected_feature_size_value.value());
 
-  const base::Value::List* input_nodes = root_dict.FindList("input_nodes");
-  const base::Value::List* output_nodes = root_dict.FindList("output_nodes");
+  const base::ListValue* input_nodes = root_dict.FindList("input_nodes");
+  const base::ListValue* output_nodes = root_dict.FindList("output_nodes");
 
   if (!input_nodes || !output_nodes ||
       !PopulateMapFromNamesAndNodes({kSmartDimInputNodeName}, *input_nodes,

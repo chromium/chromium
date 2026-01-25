@@ -604,7 +604,7 @@ void MahiManagerImpl::OpenFeedbackDialog() {
         base::UTF16ToUTF8(current_selected_text_.value()).c_str());
   }
 
-  base::Value::Dict ai_metadata;
+  base::DictValue ai_metadata;
   ai_metadata.Set(feedback::kMahiMetadataKey, "true");
 
   chrome::ShowFeedbackPage(
@@ -616,7 +616,7 @@ void MahiManagerImpl::OpenFeedbackDialog() {
           l10n_util::GetStringUTF16(IDS_MAHI_FEEDBACK_PLACEHOLDER)),
       /*category_tag=*/"mahi",
       /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::Value::Dict(), std::move(ai_metadata));
+      /*autofill_metadata=*/base::DictValue(), std::move(ai_metadata));
 }
 
 void MahiManagerImpl::OpenMahiPanel(int64_t display_id,
@@ -937,7 +937,7 @@ void MahiManagerImpl::OnGetPageContentForQA(
 void MahiManagerImpl::OnMahiProviderSummaryResponse(
     crosapi::mojom::MahiPageInfoPtr request_page_info,
     MahiSummaryCallback summary_callback,
-    base::Value::Dict dict,
+    base::DictValue dict,
     manta::MantaStatus status) {
   latest_summary_ = u"...";
   if (status.status_code != manta::MantaStatusCode::kOk) {
@@ -973,7 +973,7 @@ void MahiManagerImpl::OnMahiProviderElucidationResponse(
     crosapi::mojom::MahiPageInfoPtr request_page_info,
     const std::u16string& selected_text,
     MahiElucidationCallback elucidation_callback,
-    base::Value::Dict dict,
+    base::DictValue dict,
     manta::MantaStatus status) {
   CHECK(current_selected_text_.value_or(u"") == selected_text);
 
@@ -1005,7 +1005,7 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
     crosapi::mojom::MahiPageInfoPtr request_page_info,
     const std::u16string& question,
     MahiAnswerQuestionCallback callback,
-    base::Value::Dict dict,
+    base::DictValue dict,
     manta::MantaStatus status) {
   if (status.status_code != manta::MantaStatusCode::kOk) {
     latest_response_status_ =

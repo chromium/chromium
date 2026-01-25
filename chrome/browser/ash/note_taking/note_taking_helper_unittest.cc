@@ -286,18 +286,18 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> CreateExtension(
       const extensions::ExtensionId& id,
       const std::string& name,
-      std::optional<base::Value::List> permissions,
-      std::optional<base::Value::List> action_handlers) {
-    base::Value::Dict manifest =
-        base::Value::Dict()
+      std::optional<base::ListValue> permissions,
+      std::optional<base::ListValue> action_handlers) {
+    base::DictValue manifest =
+        base::DictValue()
             .Set("name", name)
             .Set("version", "1.0")
             .Set("manifest_version", 2)
-            .Set("app", base::Value::Dict().Set(
-                            "background",
-                            base::Value::Dict().Set(
-                                "scripts",
-                                base::Value::List().Append("background.js"))));
+            .Set("app",
+                 base::DictValue().Set(
+                     "background",
+                     base::DictValue().Set("scripts", base::ListValue().Append(
+                                                          "background.js"))));
 
     if (action_handlers)
       manifest.Set("action_handlers", std::move(*action_handlers));

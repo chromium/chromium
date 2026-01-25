@@ -29,9 +29,8 @@ constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
 constexpr char kPrepareForUpdateDidTransferWifiKey[] = "did_transfer_wifi";
 
 bool ShouldResumeAfterUpdate() {
-  const base::Value::Dict& maybe_info =
-      g_browser_process->local_state()->GetDict(
-          prefs::kResumeQuickStartAfterRebootInfo);
+  const base::DictValue& maybe_info = g_browser_process->local_state()->GetDict(
+      prefs::kResumeQuickStartAfterRebootInfo);
   return maybe_info.FindString(kPrepareForUpdateSessionIdKey) &&
          maybe_info.FindString(kPrepareForUpdateAdvertisingIdKey);
 }
@@ -75,8 +74,8 @@ void SessionContext::CancelResume() {
   is_resume_after_update_ = false;
 }
 
-base::Value::Dict SessionContext::GetPrepareForUpdateInfo() {
-  base::Value::Dict prepare_for_update_info;
+base::DictValue SessionContext::GetPrepareForUpdateInfo() {
+  base::DictValue prepare_for_update_info;
   prepare_for_update_info.Set(kPrepareForUpdateSessionIdKey,
                               base::NumberToString(session_id_));
   prepare_for_update_info.Set(kPrepareForUpdateAdvertisingIdKey,
@@ -116,7 +115,7 @@ void SessionContext::PopulateRandomSessionContext() {
 
 void SessionContext::FetchPersistedSessionContext() {
   PrefService* prefs = g_browser_process->local_state();
-  const base::Value::Dict& session_info =
+  const base::DictValue& session_info =
       prefs->GetDict(prefs::kResumeQuickStartAfterRebootInfo);
 
   const std::string* session_id_str =

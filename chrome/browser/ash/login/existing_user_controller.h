@@ -252,9 +252,8 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Callback invoked when the keyboard layouts available for a public session
   // have been retrieved. Selects the first layout from the list and continues
   // login.
-  void SetPublicSessionKeyboardLayoutAndLogin(
-      const UserContext& user_context,
-      base::Value::List keyboard_layouts);
+  void SetPublicSessionKeyboardLayoutAndLogin(const UserContext& user_context,
+                                              base::ListValue keyboard_layouts);
 
   // Starts the actual login process for a public session. Invoked when all
   // preconditions have been verified.

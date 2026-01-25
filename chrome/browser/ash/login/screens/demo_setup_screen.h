@@ -42,7 +42,7 @@ class DemoSetupScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 

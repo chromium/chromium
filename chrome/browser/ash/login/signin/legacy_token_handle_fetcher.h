@@ -68,7 +68,7 @@ class LegacyTokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   // GaiaOAuthClient::Delegate overrides:
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
-  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
+  void OnGetTokenInfoResponse(const base::DictValue& token_info) override;
 
   void FillForAccessToken(const std::string& access_token,
                           const std::string& refresh_token_hash);

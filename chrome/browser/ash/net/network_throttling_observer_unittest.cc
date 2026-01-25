@@ -58,7 +58,7 @@ TEST_F(NetworkThrottlingObserverTest, ThrottlingChangeCallsShill) {
   constexpr uint32_t upload_rate = 1200;
   constexpr uint32_t download_rate = 2000;
   auto updated_throttling_policy =
-      base::Value::Dict()
+      base::DictValue()
           .Set("enabled", enabled)
           .Set("upload_rate_kbits", static_cast<int>(upload_rate))
           .Set("download_rate_kbits", static_cast<int>(download_rate));

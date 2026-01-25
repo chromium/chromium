@@ -26,10 +26,10 @@ constexpr char kUseKerberosKey[] = "use_kerberos";
 constexpr char kPasswordSaltKey[] = "password_salt";
 
 base::Value ShareToDict(const SmbShareInfo& share) {
-  base::Value::Dict dict = base::Value::Dict()
-                               .Set(kShareUrlKey, share.share_url().ToString())
-                               .Set(kDisplayNameKey, share.display_name())
-                               .Set(kUseKerberosKey, share.use_kerberos());
+  base::DictValue dict = base::DictValue()
+                             .Set(kShareUrlKey, share.share_url().ToString())
+                             .Set(kDisplayNameKey, share.display_name())
+                             .Set(kUseKerberosKey, share.use_kerberos());
   if (!share.username().empty()) {
     dict.Set(kUsernameKey, share.username());
   }
@@ -44,7 +44,7 @@ base::Value ShareToDict(const SmbShareInfo& share) {
   return base::Value(std::move(dict));
 }
 
-std::string GetStringValue(const base::Value::Dict& dict,
+std::string GetStringValue(const base::DictValue& dict,
                            const std::string& key) {
   const std::string* value = dict.FindString(key);
   if (!value) {
@@ -53,7 +53,7 @@ std::string GetStringValue(const base::Value::Dict& dict,
   return *value;
 }
 
-std::vector<uint8_t> GetEncodedBinaryValue(const base::Value::Dict& dict,
+std::vector<uint8_t> GetEncodedBinaryValue(const base::DictValue& dict,
                                            const std::string& key) {
   const std::string* encoded_value = dict.FindString(key);
   if (!encoded_value) {
@@ -68,7 +68,7 @@ std::vector<uint8_t> GetEncodedBinaryValue(const base::Value::Dict& dict,
   return {decoded_value.begin(), decoded_value.end()};
 }
 
-std::optional<SmbShareInfo> DictToShare(const base::Value::Dict& dict) {
+std::optional<SmbShareInfo> DictToShare(const base::DictValue& dict) {
   std::string share_url = GetStringValue(dict, kShareUrlKey);
   if (share_url.empty()) {
     return {};
@@ -99,7 +99,7 @@ void SmbPersistedShareRegistry::Save(const SmbShareInfo& share) {
   ScopedListPrefUpdate pref(profile_->GetPrefs(),
                             prefs::kNetworkFileSharesSavedShares);
 
-  base::Value::List& share_list = pref.Get();
+  base::ListValue& share_list = pref.Get();
   for (base::Value& item : share_list) {
     if (GetStringValue(item.GetDict(), kShareUrlKey) ==
         share.share_url().ToString()) {
@@ -116,7 +116,7 @@ void SmbPersistedShareRegistry::Delete(const SmbUrl& share_url) {
   ScopedListPrefUpdate pref(profile_->GetPrefs(),
                             prefs::kNetworkFileSharesSavedShares);
 
-  base::Value::List& list_update = pref.Get();
+  base::ListValue& list_update = pref.Get();
   for (auto it = list_update.begin(); it != list_update.end(); ++it) {
     if (GetStringValue(it->GetDict(), kShareUrlKey) == share_url.ToString()) {
       list_update.erase(it);

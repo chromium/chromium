@@ -127,7 +127,7 @@ void EuiccStatusUploader::RegisterLocalStatePrefs(
 
 // static
 std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>
-EuiccStatusUploader::ConstructRequestFromStatus(const base::Value::Dict& status,
+EuiccStatusUploader::ConstructRequestFromStatus(const base::DictValue& status,
                                                 bool clear_profile_list) {
   auto upload_request =
       std::make_unique<enterprise_management::UploadEuiccInfoRequest>();
@@ -137,7 +137,7 @@ EuiccStatusUploader::ConstructRequestFromStatus(const base::Value::Dict& status,
   auto* mutable_esim_profiles = upload_request->mutable_esim_profiles();
   for (const auto& esim_profile :
        *status.FindListByDottedPath(kLastUploadedEuiccStatusESimProfilesKey)) {
-    const base::Value::Dict& esim_profile_dict = esim_profile.GetDict();
+    const base::DictValue& esim_profile_dict = esim_profile.GetDict();
     enterprise_management::ESimProfileInfo esim_profile_info;
     esim_profile_info.set_iccid(*esim_profile_dict.FindString(
         kLastUploadedEuiccStatusESimProfilesIccidKey));
@@ -210,13 +210,13 @@ void EuiccStatusUploader::OnEuiccReset(const dbus::ObjectPath& euicc_path) {
   MaybeUploadStatus();
 }
 
-base::Value::Dict EuiccStatusUploader::GetCurrentEuiccStatus() const {
-  auto status = base::Value::Dict().Set(
+base::DictValue EuiccStatusUploader::GetCurrentEuiccStatus() const {
+  auto status = base::DictValue().Set(
       kLastUploadedEuiccStatusEuiccCountKey,
       static_cast<int>(
           ash::HermesManagerClient::Get()->GetAvailableEuiccs().size()));
 
-  base::Value::List esim_profiles;
+  base::ListValue esim_profiles;
 
   for (const auto& esim_profile : ash::NetworkHandler::Get()
                                       ->cellular_esim_profile_handler()
@@ -226,7 +226,7 @@ base::Value::Dict EuiccStatusUploader::GetCurrentEuiccStatus() const {
       continue;
     }
 
-    const base::Value::Dict* esim_metadata =
+    const base::DictValue* esim_metadata =
         ash::NetworkHandler::Get()
             ->managed_cellular_pref_handler()
             ->GetESimMetadata(esim_profile.iccid());
@@ -236,7 +236,7 @@ base::Value::Dict EuiccStatusUploader::GetCurrentEuiccStatus() const {
       continue;
     }
 
-    base::Value::Dict esim_profile_to_add;
+    base::DictValue esim_profile_to_add;
     esim_profile_to_add.Set(kLastUploadedEuiccStatusESimProfilesIccidKey,
                             esim_profile.iccid());
 
@@ -301,7 +301,7 @@ void EuiccStatusUploader::MaybeUploadStatus() {
     return;
   }
 
-  const base::Value::Dict& last_uploaded_pref =
+  const base::DictValue& last_uploaded_pref =
       local_state_->GetDict(kLastUploadedEuiccStatusPref);
   auto current_state = GetCurrentEuiccStatus();
 
@@ -330,7 +330,7 @@ void EuiccStatusUploader::MaybeUploadStatus() {
   }
 }
 
-void EuiccStatusUploader::UploadStatus(base::Value::Dict status) {
+void EuiccStatusUploader::UploadStatus(base::DictValue status) {
   // Do not upload anything until the current upload finishes.
   if (currently_uploading_) {
     return;

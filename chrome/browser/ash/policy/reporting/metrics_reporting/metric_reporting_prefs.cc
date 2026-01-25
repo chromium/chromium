@@ -61,7 +61,7 @@ bool IsAppTypeAllowed(::apps::AppType app_type,
                       const ::reporting::ReportingSettings* reporting_settings,
                       const std::string& policy_setting) {
   CHECK(reporting_settings);
-  const base::Value::List* allowed_app_types;
+  const base::ListValue* allowed_app_types;
   if (!reporting_settings->GetList(policy_setting, &allowed_app_types)) {
     // Policy likely unset. Disallow app usage reporting regardless of app type.
     return false;

@@ -241,7 +241,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   }
 
   void VerifyPolicyList(const char* policy_key,
-                        const base::Value::List& expected_value) {
+                        const base::ListValue& expected_value) {
     const base::Value* value = provider_->Get(policy_key);
     // This prevents tests from crashing if provider returns nullptr.
     ASSERT_TRUE(value);
@@ -400,7 +400,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
 
   void VerifyDevicePrinterList(const char* policy_key,
                                std::vector<std::string>& values) {
-    base::Value::List list;
+    base::ListValue list;
     for (auto const& value : values) {
       list.Append(value);
     }
@@ -732,8 +732,8 @@ TEST_F(DeviceSettingsProviderTest, LegacyDeviceLocalAccounts) {
   BuildAndInstallDevicePolicy();
 
   // On load, the deprecated spec should have been converted to the new format.
-  base::Value::List expected_accounts;
-  base::Value::Dict entry_dict;
+  base::ListValue expected_accounts;
+  base::DictValue entry_dict;
   entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,
                  policy::PolicyBuilder::kFakeUsername);
   entry_dict.Set(
@@ -754,8 +754,8 @@ TEST_F(DeviceSettingsProviderTest,
 
   BuildAndInstallDevicePolicy();
 
-  base::Value::List expected_accounts = base::Value::List().Append(
-      base::Value::Dict()
+  base::ListValue expected_accounts = base::ListValue().Append(
+      base::DictValue()
           .Set(kAccountsPrefDeviceLocalAccountsKeyId,
                kDeviceLocalAccountKioskAccountId)
           .Set(kAccountsPrefDeviceLocalAccountsKeyType,
@@ -780,8 +780,8 @@ TEST_F(DeviceSettingsProviderTest, DeviceLocalAccountsWithEphemeralModeField) {
 
   BuildAndInstallDevicePolicy();
 
-  base::Value::List expected_accounts = base::Value::List().Append(
-      base::Value::Dict()
+  base::ListValue expected_accounts = base::ListValue().Append(
+      base::DictValue()
           .Set(kAccountsPrefDeviceLocalAccountsKeyId,
                kDeviceLocalAccountKioskAccountId)
           .Set(kAccountsPrefDeviceLocalAccountsKeyType,
@@ -842,7 +842,7 @@ TEST_F(DeviceSettingsProviderTest,
 
   BuildAndInstallDevicePolicy();
 
-  base::Value::List signal_strength_telemetry_list;
+  base::ListValue signal_strength_telemetry_list;
   signal_strength_telemetry_list.Append("https_latency");
   signal_strength_telemetry_list.Append("network_telemetry");
   base::Value signal_strength_telemetry_list_value =
@@ -893,7 +893,7 @@ TEST_F(DeviceSettingsProviderTest, EmptyAllowedConnectionTypesForUpdate) {
       {em::AutoUpdateSettingsProto::CONNECTION_TYPE_ETHERNET};
   // Check some meaningful value. Policy should be set.
   SetAutoUpdateConnectionTypes(single_value);
-  base::Value::List allowed_connections;
+  base::ListValue allowed_connections;
   allowed_connections.Append(0);
   VerifyPolicyList(kAllowedConnectionTypesForUpdate, allowed_connections);
 }
@@ -950,8 +950,8 @@ TEST_F(DeviceSettingsProviderTest, DeviceAutoUpdateTimeRestrictionsExtra) {
       "[{\"start\": {\"day_of_week\": \"Monday\", \"hours\": 10, \"minutes\": "
       "50}, \"end\": {\"day_of_week\": \"Wednesday\", \"hours\": 1, "
       "\"minutes\": 20, \"extra\": 50}}]";
-  base::Value::List test_list;
-  base::Value::Dict interval;
+  base::ListValue test_list;
+  base::DictValue interval;
   interval.SetByDottedPath("start.day_of_week", "Monday");
   interval.SetByDottedPath("start.hours", 10);
   interval.SetByDottedPath("start.minutes", 50);
@@ -969,7 +969,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceScheduledUpdateCheckTests) {
       "{\"update_check_time\": {\"hour\": 23, \"minute\": 35}, "
       "\"frequency\": \"DAILY\", \"day_of_week\": \"MONDAY\",  "
       "\"day_of_month\": 15}";
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.SetByDottedPath("update_check_time.hour", 23);
   expected_dict.SetByDottedPath("update_check_time.minute", 35);
   expected_dict.Set("frequency", "DAILY");
@@ -1194,7 +1194,7 @@ TEST_F(DeviceSettingsProviderTest, FeatureFlags) {
   device_policy_->payload().mutable_feature_flags()->add_feature_flags("foo");
   BuildAndInstallDevicePolicy();
 
-  base::Value::List expected_feature_flags;
+  base::ListValue expected_feature_flags;
   expected_feature_flags.Append("foo");
   EXPECT_EQ(expected_feature_flags, provider_->Get(kFeatureFlags)->GetList());
 }
@@ -1204,7 +1204,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceAllowedBluetoothServices) {
       device_policy_->payload().mutable_device_allowed_bluetooth_services();
   proto->add_allowlist("0x1124");
   BuildAndInstallDevicePolicy();
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("0x1124");
   EXPECT_EQ(allowlist,
             provider_->Get(kDeviceAllowedBluetoothServices)->GetList());
@@ -1226,7 +1226,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceScheduledReboot) {
       "{\"reboot_time\": {\"hour\": 22, \"minute\": 30}, "
       "\"frequency\": \"MONTHLY\", \"day_of_week\": \"MONDAY\", "
       "\"day_of_month\": 15}";
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.SetByDottedPath("reboot_time.hour", 22);
   expected_dict.SetByDottedPath("reboot_time.minute", 30);
   expected_dict.Set("frequency", "MONTHLY");
@@ -1405,7 +1405,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListNonempty) {
   BuildAndInstallDevicePolicy();
 
   VerifyPolicyList(kDeviceDlcPredownloadList,
-                   base::Value::List().Append("sane-backends-pfu"));
+                   base::ListValue().Append("sane-backends-pfu"));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListInvalidDlc) {
@@ -1422,7 +1422,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListInvalidDlc) {
 
   // Device setting must contain only the valid DLCs that can be pre downloaded.
   VerifyPolicyList(kDeviceDlcPredownloadList,
-                   base::Value::List().Append("sane-backends-pfu"));
+                   base::ListValue().Append("sane-backends-pfu"));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListDuplicateDlc) {
@@ -1439,7 +1439,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListDuplicateDlc) {
 
   // Device setting must not contain any duplicate values.
   VerifyPolicyList(kDeviceDlcPredownloadList,
-                   base::Value::List().Append("sane-backends-pfu"));
+                   base::ListValue().Append("sane-backends-pfu"));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueSet) {

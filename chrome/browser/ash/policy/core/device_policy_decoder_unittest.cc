@@ -144,13 +144,13 @@ class DevicePolicyDecoderTest : public testing::Test {
 
 base::Value DevicePolicyDecoderTest::GetWallpaperDict() const {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kWallpaperUrlPropertyName, kWallpaperUrlPropertyValue)
           .Set(kWallpaperHashPropertyName, kWallpaperHashPropertyValue));
 }
 
 base::Value DevicePolicyDecoderTest::GetBluetoothServiceAllowedList() const {
-  return base::Value(base::Value::List()
+  return base::Value(base::ListValue()
                          .Append(kValidBluetoothServiceUUID4)
                          .Append(kValidBluetoothServiceUUID8)
                          .Append(kValidBluetoothServiceUUID32));
@@ -494,7 +494,7 @@ TEST_F(DevicePolicyDecoderTest,
       device_policy, key::kReportDeviceSignalStrengthEventDrivenTelemetry);
 
   auto signal_strength_telemetry_list =
-      base::Value::List().Append("network_telemetry").Append("https_latency");
+      base::ListValue().Append("network_telemetry").Append("https_latency");
   device_policy.mutable_device_reporting()
       ->mutable_report_signal_strength_event_driven_telemetry()
       ->add_entries("network_telemetry");
@@ -685,8 +685,8 @@ TEST_F(DevicePolicyDecoderTest,
 
   DecodeDevicePolicyTestHelper(
       device_policy, key::kDeviceLocalAccounts,
-      base::Value(base::Value::List().Append(
-          base::Value::Dict()
+      base::Value(base::ListValue().Append(
+          base::DictValue()
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
                    kDeviceLocalAccountKioskAccountId)
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
@@ -711,8 +711,8 @@ TEST_F(DevicePolicyDecoderTest,
 
   DecodeDevicePolicyTestHelper(
       device_policy, key::kDeviceLocalAccounts,
-      base::Value(base::Value::List().Append(
-          base::Value::Dict()
+      base::Value(base::ListValue().Append(
+          base::DictValue()
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
                    kDeviceLocalAccountKioskAccountId)
               .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
@@ -762,7 +762,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceAuthenticationURLBlocklist) {
           ->mutable_value();
 
   auto blocklist_items =
-      base::Value::List().Append("example.com").Append("*.example.com");
+      base::ListValue().Append("example.com").Append("*.example.com");
 
   for (auto& item : blocklist_items) {
     blocklist->add_entries(item.GetString());
@@ -783,7 +783,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceAuthenticationURLAllowlist) {
       device_policy.mutable_device_authentication_url_allowlist()
           ->mutable_value();
 
-  auto allowlist_items = base::Value::List()
+  auto allowlist_items = base::ListValue()
                              .Append("allow.example.com")
                              .Append("*.allow.example.com");
 
@@ -1032,7 +1032,7 @@ TEST_F(DevicePolicyDecoderTest, DeviceLoginScreenSecurityKeyPermitAttestation) {
       device_policy.mutable_deviceloginscreensecuritykeypermitattestation()
           ->mutable_value();
 
-  auto list_items = base::Value::List().Append("example.com").Append("foo.com");
+  auto list_items = base::ListValue().Append("example.com").Append("foo.com");
 
   for (auto& item : list_items) {
     list->add_entries(item.GetString());

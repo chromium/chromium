@@ -97,13 +97,13 @@ class NetworkDiagnosticsTest : public NetworkDiagnosticsTestHelper {
   void SetUpNameServers(const std::vector<std::string>& name_servers) {
     DCHECK(!wifi_path().empty());
     // Set up the name servers
-    base::Value::List dns_servers;
+    base::ListValue dns_servers;
     for (const std::string& name_server : name_servers) {
       dns_servers.Append(name_server);
     }
 
     // Set up the IP v4 config
-    auto ip_config_v4_properties = base::Value::Dict().Set(
+    auto ip_config_v4_properties = base::DictValue().Set(
         shill::kNameServersProperty, std::move(dns_servers));
     helper()->ip_config_test()->AddIPConfig(kIPv4ConfigPath,
                                             ip_config_v4_properties.Clone());

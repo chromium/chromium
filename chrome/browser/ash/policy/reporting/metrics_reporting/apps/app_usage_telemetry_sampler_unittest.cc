@@ -106,7 +106,7 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
     PrefService* const user_prefs = profile_->GetPrefs();
     if (!user_prefs->HasPrefPath(::apps::kAppUsageTime)) {
       // Create empty dictionary if none exists in the pref store.
-      user_prefs->SetDict(::apps::kAppUsageTime, base::Value::Dict());
+      user_prefs->SetDict(::apps::kAppUsageTime, base::DictValue());
     }
 
     ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(),

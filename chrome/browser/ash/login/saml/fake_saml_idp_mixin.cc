@@ -421,7 +421,7 @@ FakeSamlIdpMixin::BuildResponseForLoginWithDeviceTrust(
   // Device Trust only supports V2 challenges, which are formatted as a JSON
   // object with only one "challenge" property (containing the value from V1).
   // TODO(b:253427534): Update code to handle V1 challenges.
-  base::Value::Dict challenge_value;
+  base::DictValue challenge_value;
   challenge_value.Set("challenge", GetTpmChallengeBase64());
   std::string challenge_json_value;
   EXPECT_TRUE(base::JSONWriter::Write(challenge_value, &challenge_json_value));

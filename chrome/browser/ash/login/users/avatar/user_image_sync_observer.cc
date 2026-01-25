@@ -146,7 +146,7 @@ void UserImageSyncObserver::UpdateSyncedImageFromLocal() {
     return;
   }
   ScopedDictPrefUpdate update(prefs_, kUserImageInfo);
-  base::Value::Dict& dict = update.Get();
+  base::DictValue& dict = update.Get();
   dict.Set(kImageIndex, local_index);
   VLOG(1) << "Saved avatar index " << local_index << " to sync.";
 }
@@ -170,7 +170,7 @@ void UserImageSyncObserver::UpdateLocalImageFromSynced() {
 
 bool UserImageSyncObserver::GetSyncedImageIndex(int* index) {
   *index = user_manager::UserImage::Type::kInvalid;
-  const base::Value::Dict& dict = prefs_->GetDict(kUserImageInfo);
+  const base::DictValue& dict = prefs_->GetDict(kUserImageInfo);
   std::optional<int> maybe_index = dict.FindInt(kImageIndex);
   if (!maybe_index.has_value()) {
     *index = user_manager::UserImage::Type::kInvalid;

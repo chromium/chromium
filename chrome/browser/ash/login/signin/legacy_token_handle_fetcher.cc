@@ -172,7 +172,7 @@ void LegacyTokenHandleFetcher::OnNetworkError(int response_code) {
 }
 
 void LegacyTokenHandleFetcher::OnGetTokenInfoResponse(
-    const base::Value::Dict& token_info) {
+    const base::DictValue& token_info) {
   bool success = false;
   if (!token_info.Find("error")) {
     const std::string* handle = token_info.FindString("token_handle");
@@ -209,7 +209,7 @@ void LegacyTokenHandleFetcher::OnGetTokenHash(
     const std::string& token,
     const std::string& account_manager_stored_hash) {
   PrefService* prefs = profile_->GetPrefs();
-  const base::Value::Dict& token_handle_map = prefs->GetDict(kTokenHandleMap);
+  const base::DictValue& token_handle_map = prefs->GetDict(kTokenHandleMap);
   const std::string* pref_stored_hash_val = token_handle_map.FindString(token);
   if (!pref_stored_hash_val) {
     return;

@@ -92,7 +92,7 @@ TEST_F(PrintingOAuth2IppEndpointTokenFetcherTest, TokenExchangeRequest) {
             "urn:ietf:params:oauth:token-type:access_token");
 
   // Prepare and send the response.
-  base::Value::Dict fields;
+  base::DictValue fields;
   fields.Set("access_token", "endpoint_access_token_swD");
   fields.Set("issued_token_type",
              "urn:ietf:params:oauth:token-type:access_token");
@@ -113,7 +113,7 @@ TEST_F(PrintingOAuth2IppEndpointTokenFetcherTest, TokenExchangeRequestError) {
   // Receive the request and send the response.
   base::flat_map<std::string, std::string> params;
   ASSERT_EQ("", server_.ReceivePOSTWithURLParams(token_url_, params));
-  base::Value::Dict fields;
+  base::DictValue fields;
   fields.Set("access_token", "endpoint_access_token_swD");
   fields.Set("issued_token_type",
              "urn:ietf:params:oauth:token-type:access_token");
@@ -135,7 +135,7 @@ TEST_F(PrintingOAuth2IppEndpointTokenFetcherTest, InvalidAccessToken) {
   // Receive the request and send the response.
   base::flat_map<std::string, std::string> params;
   ASSERT_EQ("", server_.ReceivePOSTWithURLParams(token_url_, params));
-  base::Value::Dict fields;
+  base::DictValue fields;
   fields.Set("error", "invalid_grant");
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_BAD_REQUEST, fields);
 

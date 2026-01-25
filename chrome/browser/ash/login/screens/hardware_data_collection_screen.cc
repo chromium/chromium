@@ -103,7 +103,7 @@ void HWDataCollectionScreen::HideImpl() {
   session_refresher_.reset();
 }
 
-void HWDataCollectionScreen::OnUserAction(const base::Value::List& args) {
+void HWDataCollectionScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionAcceptButtonClicked) {
     HWDataUsageController::Get()->Set(ProfileManager::GetActiveUserProfile(),

@@ -159,7 +159,7 @@ class NetworkTelemetrySamplerBrowserTest
         /*notify_changed=*/true);
     base::RunLoop().RunUntilIdle();
 
-    auto ip_config_properties = base::Value::Dict()
+    auto ip_config_properties = base::DictValue()
                                     .Set(shill::kAddressProperty, kIpAddress)
                                     .Set(shill::kGatewayProperty, kGateway);
     network_handler_test_helper_->ip_config_test()->AddIPConfig(

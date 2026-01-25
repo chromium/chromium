@@ -69,8 +69,8 @@ test::NetworkBuilder CreateNetwork(NetworkType type = NetworkType::kWiFi) {
   return test::NetworkBuilder(type);
 }
 
-base::Value::List ToList(std::vector<CrdSessionType> input) {
-  base::Value::List result;
+base::ListValue ToList(std::vector<CrdSessionType> input) {
+  base::ListValue result;
   for (CrdSessionType type : input) {
     result.Append(static_cast<int>(type));
   }
@@ -79,7 +79,7 @@ base::Value::List ToList(std::vector<CrdSessionType> input) {
 
 MATCHER_P(ListContains, expected_type, "") {
   base::Value expected_value(expected_type);
-  base::Value::List* list = arg;
+  base::ListValue* list = arg;
 
   if (!list) {
     *result_listener << "List is null";
@@ -359,7 +359,7 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
   AddActiveManagedNetwork();
   Result result = CreateAndRunJob();
 
-  const base::Value::List expected = [&]() {
+  const base::ListValue expected = [&]() {
     switch (session_type) {
       case TestSessionType::kNoSession:
         return ToList({
@@ -381,9 +381,9 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
     }
   }();
 
-  const base::Value::List actual = ParseJsonDict(result.payload)
-                                       .EnsureList("supportedCrdSessionTypes")
-                                       ->Clone();
+  const base::ListValue actual = ParseJsonDict(result.payload)
+                                     .EnsureList("supportedCrdSessionTypes")
+                                     ->Clone();
 
   EXPECT_EQ(actual, expected);
 }

@@ -131,7 +131,7 @@ class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
 
     // If the service already exists and has `property_name`, record the initial
     // value.
-    const base::Value::Dict* initial_service_properties =
+    const base::DictValue* initial_service_properties =
         shill_service_client_test_->GetServiceProperties(service_path);
     if (!initial_service_properties) {
       return;
@@ -465,8 +465,8 @@ std::string OncPolicyToSelectClientCert(const std::string& guid,
 // Returns the configured static IP address from `shill_properties`, or an
 // empty string if no static IP address is configured.
 std::string GetStaticIPAddressFromShillProperties(
-    const base::Value::Dict& shill_properties) {
-  const base::Value::Dict* static_ip_config =
+    const base::DictValue& shill_properties) {
+  const base::DictValue* static_ip_config =
       shill_properties.FindDict(shill::kStaticIPConfigProperty);
   if (!static_ip_config) {
     return std::string();
@@ -483,13 +483,13 @@ std::string GetStaticIPAddressFromShillProperties(
 // Returns the configured static name servers from `shill_properties`, or an
 // empty vector if no static name servers are configured.
 std::vector<std::string> GetStaticNameServersFromShillProperties(
-    const base::Value::Dict& shill_properties) {
-  const base::Value::Dict* static_ip_config =
+    const base::DictValue& shill_properties) {
+  const base::DictValue* static_ip_config =
       shill_properties.FindDict(shill::kStaticIPConfigProperty);
   if (!static_ip_config) {
     return {};
   }
-  const base::Value::List* nameservers =
+  const base::ListValue* nameservers =
       static_ip_config->FindList(shill::kNameServersProperty);
   if (!nameservers) {
     return {};
@@ -854,9 +854,9 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
 
   // Extracts the UIData dictionary from the shill UIData property of the
   // service `service_path`.
-  std::optional<base::Value::Dict> GetUIDataDict(
+  std::optional<base::DictValue> GetUIDataDict(
       const std::string& service_path) {
-    const base::Value::Dict* properties =
+    const base::DictValue* properties =
         shill_service_client_test_->GetServiceProperties(service_path);
     if (!properties)
       return {};
@@ -864,7 +864,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
         properties->FindString(shill::kUIDataProperty);
     if (!ui_data_json)
       return {};
-    std::optional<base::Value::Dict> ui_data_value = base::JSONReader::ReadDict(
+    std::optional<base::DictValue> ui_data_value = base::JSONReader::ReadDict(
         *ui_data_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!ui_data_value) {
       return {};
@@ -875,7 +875,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   // Sets the shill UIData property of the service `service_path` to the
   // serialized `ui_data_dict`.
   void SetUIDataDict(const std::string& service_path,
-                     const base::Value::Dict& ui_data_dict) {
+                     const base::DictValue& ui_data_dict) {
     std::string ui_data_json = base::WriteJson(ui_data_dict).value_or("");
     shill_service_client_test_->SetServiceProperty(
         service_path, shill::kUIDataProperty, base::Value(ui_data_json));
@@ -883,8 +883,8 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
 
   // Returns the GUID from the "user_settings" from `ui_data` or an empty string
   // of no "user_settings" or no GUID was found.
-  std::string GetGUIDFromUIData(const base::Value::Dict& ui_data) {
-    const base::Value::Dict* user_settings =
+  std::string GetGUIDFromUIData(const base::DictValue& ui_data) {
+    const base::DictValue* user_settings =
         ui_data.FindDict(kUIDataKeyUserSettings);
     if (!user_settings)
       return std::string();
@@ -895,7 +895,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     return *guid;
   }
 
-  const base::Value::Dict* GetWifiProps(const std::string& guid) {
+  const base::DictValue* GetWifiProps(const std::string& guid) {
     std::optional<std::string> wifi_service;
     wifi_service = shill_service_client_test_->FindServiceMatchingGUID(guid);
     if (wifi_service->empty()) {
@@ -927,7 +927,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   }
 
   const std::string GetWifiStateFromShillClient(const std::string& guid) {
-    const base::Value::Dict* wifi_properties = GetWifiProps(guid);
+    const base::DictValue* wifi_properties = GetWifiProps(guid);
     const std::string* wifi_state =
         wifi_properties->FindString(shill::kStateProperty);
     if (!wifi_state) {
@@ -1148,7 +1148,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   EXPECT_THAT(
       shill_service_client_test_->GetServiceProperties(wifi_service.value()),
       Pointee(DictionaryHasValues(
-          base::Value::Dict()
+          base::DictValue()
               .Set(shill::kAutoConnectProperty, true)
               .Set(shill::kProfileProperty, kSharedProfilePath))));
 
@@ -1221,7 +1221,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   EXPECT_THAT(
       shill_service_client_test_->GetServiceProperties(wifi_service.value()),
       Pointee(DictionaryHasValues(
-          base::Value::Dict()
+          base::DictValue()
               .Set(shill::kGuidProperty, "{user-policy-for-Wifi1}")
               .Set(shill::kAutoConnectProperty, false)
               .Set(shill::kProfileProperty, kUserProfilePath)
@@ -1243,7 +1243,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   EXPECT_THAT(
       shill_service_client_test_->GetServiceProperties(wifi2_service.value()),
       Pointee(DictionaryHasValues(
-          base::Value::Dict()
+          base::DictValue()
               .Set(shill::kAutoConnectProperty, true)
               .Set(shill::kStateProperty, shill::kStateOnline))));
 }
@@ -1956,7 +1956,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     })";
   SetDeviceOpenNetworkConfiguration(kDeviceONC2, /*wait_applied=*/true);
   {
-    const base::Value::Dict* wifi_service_properties =
+    const base::DictValue* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceWifi2);
     ASSERT_TRUE(wifi_service_properties);
     EXPECT_FALSE(wifi_service_properties->Find(shill::kGuidProperty));
@@ -2038,7 +2038,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
               Pointee(DictionaryHasValues(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set(shill::kGuidProperty, "{DeviceLevelWifiGuid}")
                       // Expect that the EAP.Identity has been replaced
                       .Set(shill::kEapIdentityProperty, kSerialNumber))));
@@ -2077,7 +2077,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
               Pointee(DictionaryHasValues(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set(shill::kGuidProperty, "{DeviceLevelWifiGuid}")
                       // Expect that the EAP.Identity has been replaced
                       .Set(shill::kEapIdentityProperty, kExpectedIdentity))));
@@ -2110,7 +2110,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   EXPECT_THAT(shill_service_client_test_->GetServiceProperties(kServiceWifi1),
               Pointee(DictionaryHasValues(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set(shill::kGuidProperty, "{UserLevelWifiGuid}")
                       // Expect that the EAP.Identity has been replaced
                       .Set(shill::kEapIdentityProperty,
@@ -2182,7 +2182,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
 
   // Verify that the Static IP config has been applied.
   {
-    const base::Value::Dict* shill_properties =
+    const base::DictValue* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
     EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
@@ -2218,7 +2218,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
   // Verify that the Static IP is still active, and the custom name server has
   // been applied.
   {
-    const base::Value::Dict* shill_properties =
+    const base::DictValue* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
     EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
@@ -2256,7 +2256,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
 
   // Verify that the Static IP is gone.
   {
-    const base::Value::Dict* shill_properties =
+    const base::DictValue* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
     EXPECT_THAT(GetStaticIPAddressFromShillProperties(*shill_properties),
@@ -2295,9 +2295,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, FixEthernetUIDataGUID) {
   // Set GUID in the "user_settings" part of the UIData dictionary to a
   // inconsistent value.
   {
-    std::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
+    std::optional<base::DictValue> ui_data = GetUIDataDict(kServiceEth);
     ASSERT_TRUE(ui_data);
-    base::Value::Dict* user_settings =
+    base::DictValue* user_settings =
         ui_data->EnsureDict(kUIDataKeyUserSettings);
     user_settings->Set(::onc::network_config::kGUID, "wrong-guid");
     ASSERT_NO_FATAL_FAILURE(SetUIDataDict(kServiceEth, *ui_data));
@@ -2305,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, FixEthernetUIDataGUID) {
 
   // Verify that UIData now has the incorrect GUID.
   {
-    std::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
+    std::optional<base::DictValue> ui_data = GetUIDataDict(kServiceEth);
     ASSERT_TRUE(ui_data);
     EXPECT_NE(GetGUIDFromUIData(*ui_data), kEthernetGuid);
   }
@@ -2335,7 +2335,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, FixEthernetUIDataGUID) {
 
   // Check that GUID in the UIData dictionary has been fixed.
   {
-    std::optional<base::Value::Dict> ui_data = GetUIDataDict(kServiceEth);
+    std::optional<base::DictValue> ui_data = GetUIDataDict(kServiceEth);
     ASSERT_TRUE(ui_data);
     EXPECT_EQ(GetGUIDFromUIData(*ui_data), kEthernetGuid);
   }
@@ -2518,7 +2518,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   // Verify that the Static IP config has been applied.
   {
-    const base::Value::Dict* shill_properties =
+    const base::DictValue* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
     EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
@@ -2552,7 +2552,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
   // Verify that the Static IP is still active.
   {
-    const base::Value::Dict* shill_properties =
+    const base::DictValue* shill_properties =
         shill_service_client_test_->GetServiceProperties(kServiceEth);
     ASSERT_TRUE(shill_properties);
     EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
@@ -2663,7 +2663,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsEnabledTest,
       shill_service_client_test_->FindServiceMatchingGUID(kGuidWifi1);
   ASSERT_TRUE(new_service_path);
   {
-    const base::Value::Dict* shill_properties =
+    const base::DictValue* shill_properties =
         shill_service_client_test_->GetServiceProperties(*new_service_path);
     ASSERT_TRUE(shill_properties);
     EXPECT_THAT(shill_properties->FindString(shill::kEapIdentityProperty),
@@ -2696,7 +2696,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsEnabledTest,
       shill_service_client_test_->FindServiceMatchingGUID(kGuidWifi1);
   ASSERT_TRUE(new_service_path);
   {
-    const base::Value::Dict* shill_properties =
+    const base::DictValue* shill_properties =
         shill_service_client_test_->GetServiceProperties(*new_service_path);
     ASSERT_TRUE(shill_properties);
     EXPECT_THAT(shill_properties->FindString(shill::kEapIdentityProperty),

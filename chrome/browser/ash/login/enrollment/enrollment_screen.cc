@@ -844,7 +844,7 @@ void EnrollmentScreen::OnBrowserRestart() {
   }
 }
 
-void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
+void EnrollmentScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelTPMCheck) {
     OnCancel();

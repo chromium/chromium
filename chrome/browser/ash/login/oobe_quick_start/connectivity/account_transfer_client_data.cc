@@ -21,7 +21,7 @@ Base64UrlString AccountTransferClientData::GetChallengeBase64URLString() {
 }
 
 std::string AccountTransferClientData::CreateJson() {
-  base::Value::Dict fido_collected_client_data;
+  base::DictValue fido_collected_client_data;
   url::Origin origin = url::Origin::Create(GURL(kOrigin));
   fido_collected_client_data.Set(kClientDataOriginKey, origin.Serialize());
   fido_collected_client_data.Set(kClientDataTypeKey, kCtapRequestType);

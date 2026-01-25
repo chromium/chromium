@@ -23,10 +23,10 @@ namespace chromeos {
 
 namespace {
 
-// Explicitly declaring base::Value::Dict is not very convenient and is much
+// Explicitly declaring base::DictValue is not very convenient and is much
 // less readable compared to JSON. Thus using JSONReader to convert JSON to
-// base::Value::Dict.
-base::Value::Dict ConvertJsonToDict(const char json[]) {
+// base::DictValue.
+base::DictValue ConvertJsonToDict(const char json[]) {
   auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
       json, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   EXPECT_TRUE(value_with_error.has_value())
@@ -38,7 +38,7 @@ base::Value::Dict ConvertJsonToDict(const char json[]) {
 
 TEST(ManagedPrintOptionsProtoFromDict, EmptyPrintJobOptions) {
   PrintJobOptions print_job_option_parsed =
-      ManagedPrintOptionsProtoFromDict(base::Value::Dict());
+      ManagedPrintOptionsProtoFromDict(base::DictValue());
   EXPECT_THAT(print_job_option_parsed,
               EqualsProto(PrintJobOptions::default_instance()));
 }
@@ -87,8 +87,7 @@ TEST(ManagedPrintOptionsProtoFromDict, MultipleValidPrintJobOptions) {
       }
     }
   )json";
-  base::Value::Dict print_job_options_dict =
-      ConvertJsonToDict(kPrintJobOptions);
+  base::DictValue print_job_options_dict = ConvertJsonToDict(kPrintJobOptions);
 
   PrintJobOptions print_job_options =
       ManagedPrintOptionsProtoFromDict(print_job_options_dict);
@@ -188,8 +187,7 @@ TEST(ManagedPrintOptionsProtoFromDict, InvalidPrintJobOptions) {
     }
   )json";
 
-  base::Value::Dict print_job_options_dict =
-      ConvertJsonToDict(kPrintJobOptions);
+  base::DictValue print_job_options_dict = ConvertJsonToDict(kPrintJobOptions);
 
   PrintJobOptions print_job_options =
       ManagedPrintOptionsProtoFromDict(print_job_options_dict);

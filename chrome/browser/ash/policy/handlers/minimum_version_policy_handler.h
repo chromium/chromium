@@ -105,7 +105,7 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
     // Method used to create an instance of MinimumVersionRequirement from
     // dictionary if it contains valid version string.
     static std::unique_ptr<MinimumVersionRequirement> CreateInstanceIfValid(
-        const base::Value::Dict& dict);
+        const base::DictValue& dict);
 
     // This is used to compare two MinimumVersionRequirement objects
     // and returns 1 if the first object has version or warning time

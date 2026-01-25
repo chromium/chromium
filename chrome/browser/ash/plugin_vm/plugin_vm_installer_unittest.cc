@@ -205,7 +205,7 @@ class PluginVmInstallerTestBase : public testing::Test {
 
   void SetPluginVmImagePref(std::string url, std::string hash) {
     ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kPluginVmImage);
-    base::Value::Dict& plugin_vm_image = update.Get();
+    base::DictValue& plugin_vm_image = update.Get();
     plugin_vm_image.Set("url", url);
     plugin_vm_image.Set("hash", hash);
   }

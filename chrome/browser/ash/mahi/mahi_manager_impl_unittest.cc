@@ -71,7 +71,7 @@ class FakeMahiProvider : public manta::MahiProvider {
     latest_summary_input_ = input;
     latest_title_ = title;
     latest_url_ = url;
-    std::move(callback).Run(base::Value::Dict().Set("outputData", kFakeSummary),
+    std::move(callback).Run(base::DictValue().Set("outputData", kFakeSummary),
                             {manta::MantaStatusCode::kOk, "Status string ok"});
   }
 
@@ -82,7 +82,7 @@ class FakeMahiProvider : public manta::MahiProvider {
                  manta::MantaGenericCallback callback) override {
     latest_elucidation_input_ = input;
     std::move(callback).Run(
-        base::Value::Dict().Set("outputData", kFakeElucidation),
+        base::DictValue().Set("outputData", kFakeElucidation),
         {manta::MantaStatusCode::kOk, "Status string ok"});
   }
 

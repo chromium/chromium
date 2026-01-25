@@ -37,10 +37,10 @@ constexpr char kPeopleApiBaseURL[] =
 
 // Structure from https://developers.google.com/people/api/rest/v1/people
 std::string GeneratePeopleApiResponse(const std::string& account_locale) {
-  const base::Value::Dict people_api_response = base::Value::Dict().Set(
-      "locales", base::Value::List().Append(
-                     base::Value::Dict()
-                         .Set("metadata", base::Value::Dict().Set(
+  const base::DictValue people_api_response = base::DictValue().Set(
+      "locales", base::ListValue().Append(
+                     base::DictValue()
+                         .Set("metadata", base::DictValue().Set(
                                               "primary", base::Value(true)))
                          .Set("value", base::Value(account_locale))));
   return base::WriteJson(people_api_response).value_or("");

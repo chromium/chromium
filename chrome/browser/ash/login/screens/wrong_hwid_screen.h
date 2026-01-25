@@ -40,7 +40,7 @@ class WrongHWIDScreen : public BaseScreen {
   // BaseScreen implementation:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   base::WeakPtr<WrongHWIDScreenView> view_;
   base::RepeatingClosure exit_callback_;

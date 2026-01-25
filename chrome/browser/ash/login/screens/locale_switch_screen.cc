@@ -74,25 +74,25 @@ class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
       response_body.emplace();
     }
 
-    std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+    std::optional<base::DictValue> value = base::JSONReader::ReadDict(
         *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       LOG(ERROR) << __func__ << " Bad response format";
       std::move(failure_callback_).Run();
       return;
     }
-    base::Value::List* locales_list = value->FindList("locales");
+    base::ListValue* locales_list = value->FindList("locales");
     if (!locales_list) {
       LOG(ERROR) << __func__ << " No locales available";
       std::move(failure_callback_).Run();
       return;
     }
     for (const auto& locale_dict : *locales_list) {
-      const base::Value::Dict* ld = locale_dict.GetIfDict();
+      const base::DictValue* ld = locale_dict.GetIfDict();
       if (!ld) {
         continue;
       }
-      const base::Value::Dict* metadata = ld->FindDict("metadata");
+      const base::DictValue* metadata = ld->FindDict("metadata");
       if (metadata->FindBool("primary")) {
         const std::string* locale = ld->FindString("value");
         std::move(success_callback_).Run(*locale);

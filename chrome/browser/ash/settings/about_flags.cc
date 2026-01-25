@@ -101,7 +101,7 @@ bool OwnerFlagsStorage::SetFlags(const std::set<std::string>& flags) {
   // Also write the flags to device settings so they get applied to the Chrome
   // OS login screen. The device setting is read by session_manager and passed
   // to Chrome via a command line flag on startup.
-  base::Value::List feature_flags_list;
+  base::ListValue feature_flags_list;
   for (const auto& flag : flags) {
     feature_flags_list.Append(flag);
   }

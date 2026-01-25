@@ -27,7 +27,7 @@ bool MultiScreenCapturePolicyHandler::CheckListEntry(const base::Value& value) {
       .has_value();
 }
 
-void MultiScreenCapturePolicyHandler::ApplyList(base::Value::List filtered_list,
+void MultiScreenCapturePolicyHandler::ApplyList(base::ListValue filtered_list,
                                                 PrefValueMap* prefs) {
   prefs->SetValue(capture_policy::kManagedMultiScreenCaptureAllowedForUrls,
                   base::Value(std::move(filtered_list)));

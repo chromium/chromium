@@ -41,7 +41,7 @@ class OSAuthErrorScreen : public BaseOSAuthSetupScreen {
  private:
   // BaseScreen:
   void ShowImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   void OnTokenInvalidated();
 

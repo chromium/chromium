@@ -58,7 +58,7 @@ void PutWallpaperInfoInPrefs(AccountId account_id,
                              const std::string& pref_name) {
   DCHECK(pref_service);
   ScopedDictPrefUpdate wallpaper_update(pref_service, pref_name);
-  base::Value::Dict wallpaper_info_dict = info.ToDict();
+  base::DictValue wallpaper_info_dict = info.ToDict();
   wallpaper_update->Set(account_id.GetUserEmail(),
                         std::move(wallpaper_info_dict));
 }

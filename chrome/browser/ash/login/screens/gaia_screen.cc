@@ -253,7 +253,7 @@ void GaiaScreen::HideImpl() {
   backlights_forced_off_observation_.Reset();
 }
 
-void GaiaScreen::OnUserAction(const base::Value::List& args) {
+void GaiaScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
     WizardContext::GaiaPath gaiaPath = context()->gaia_config.gaia_path;

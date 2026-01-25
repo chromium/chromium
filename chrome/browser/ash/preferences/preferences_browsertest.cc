@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(PreferencesTest, MultiProfiles) {
 
   // Check that changing prefs of the active user doesn't affect prefs of the
   // inactive user.
-  base::Value::Dict prefs_backup =
+  base::DictValue prefs_backup =
       prefs1->GetPreferenceValues(PrefService::INCLUDE_DEFAULTS);
   SetPrefs(prefs2, false);
   CheckSettingsCorrespondToPrefs(prefs2);

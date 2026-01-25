@@ -116,7 +116,7 @@ void SamlConfirmPasswordScreen::ShowPasswordStep(bool retry) {
 
 void SamlConfirmPasswordScreen::HideImpl() {}
 
-void SamlConfirmPasswordScreen::OnUserAction(const base::Value::List& args) {
+void SamlConfirmPasswordScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == "inputPassword") {
     CHECK_EQ(args.size(), 2u);

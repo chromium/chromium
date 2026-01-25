@@ -178,7 +178,7 @@ class DeviceIDTest : public OobeBaseTest,
     std::optional<base::Value> value = base::JSONReader::Read(
         file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(value->is_dict());
-    base::Value::Dict& dictionary = value->GetDict();
+    base::DictValue& dictionary = value->GetDict();
     FakeGaia::RefreshTokenToDeviceIdMap map;
     for (auto item : dictionary) {
       ASSERT_TRUE(item.second.is_string());
@@ -188,7 +188,7 @@ class DeviceIDTest : public OobeBaseTest,
   }
 
   void SaveRefreshTokenToDeviceIdMap() {
-    base::Value::Dict dictionary;
+    base::DictValue dictionary;
     for (const auto& kv :
          fake_gaia_.fake_gaia()->refresh_token_to_device_id_map())
       dictionary.Set(kv.first, kv.second);

@@ -189,11 +189,11 @@ std::u16string GetCurrentTimezoneName() {
 }
 
 // Creates a list of pairs of each timezone's ID and name.
-base::Value::List GetTimezoneList() {
+base::ListValue GetTimezoneList() {
   const auto& timezones = TimezoneSettings::GetInstance()->GetTimezoneList();
-  base::Value::List timezone_list;
+  base::ListValue timezone_list;
   for (const auto& timezone : timezones) {
-    base::Value::List option;
+    base::ListValue option;
     option.Append(TimezoneSettings::GetTimezoneID(*timezone));
     option.Append(GetTimezoneName(*timezone));
     timezone_list.Append(std::move(option));

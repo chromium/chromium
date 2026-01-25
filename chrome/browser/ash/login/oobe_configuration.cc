@@ -50,7 +50,7 @@ bool OobeConfiguration::CheckCompleted() const {
 }
 
 void OobeConfiguration::ResetConfiguration() {
-  configuration_ = base::Value::Dict();
+  configuration_ = base::DictValue();
   if (check_completed_) {
     NotifyObservers();
   }

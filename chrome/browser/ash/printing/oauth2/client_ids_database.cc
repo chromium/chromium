@@ -44,7 +44,7 @@ class ClientIdsDatabaseImpl : public ClientIdsDatabase {
 
  private:
   raw_ptr<PrefService> pref_;
-  base::Value::Dict data_;
+  base::DictValue data_;
 };
 
 std::unique_ptr<ClientIdsDatabase> ClientIdsDatabase::Create() {

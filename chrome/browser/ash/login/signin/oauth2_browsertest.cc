@@ -364,7 +364,7 @@ class OAuth2Test : public OobeBaseTest {
   user_manager::User::OAuthTokenStatus GetOAuthStatusFromLocalState(
       const std::string& email) const {
     PrefService* local_state = g_browser_process->local_state();
-    const base::Value::Dict& prefs_oauth_status =
+    const base::DictValue& prefs_oauth_status =
         local_state->GetDict("OAuthTokenStatus");
 
     std::optional<int> oauth_token_status = prefs_oauth_status.FindInt(email);

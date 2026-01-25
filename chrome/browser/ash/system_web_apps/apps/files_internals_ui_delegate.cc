@@ -70,7 +70,7 @@ void ChromeFilesInternalsUIDelegate::GetDebugJSON(
           base::BindOnce(
               [](base::OnceCallback<void(const base::Value&)> callback,
                  std::vector<JSONKeyValuePair> key_value_pairs) {
-                base::Value::Dict dict;
+                base::DictValue dict;
                 for (auto& kvp : key_value_pairs) {
                   dict.Set(kvp.first, std::move(kvp.second));
                 }
@@ -259,9 +259,9 @@ void ChromeFilesInternalsUIDelegate::SetSmbfsEnableVerboseLogging(
 
 std::string ChromeFilesInternalsUIDelegate::GetOfficeFileHandlers() const {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  const base::Value::Dict& extension_task_prefs =
+  const base::DictValue& extension_task_prefs =
       profile->GetPrefs()->GetDict(prefs::kDefaultTasksBySuffix);
-  base::Value::Dict filtered_prefs;
+  base::DictValue filtered_prefs;
 
   for (const std::string& extension :
        file_manager::file_tasks::WordGroupExtensions()) {

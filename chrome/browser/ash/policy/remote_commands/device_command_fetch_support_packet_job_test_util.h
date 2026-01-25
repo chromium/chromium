@@ -45,7 +45,7 @@ struct SessionInfo {
 //     "requestedPiiTypes": []
 //   }
 // }
-base::Value::Dict GetFetchSupportPacketCommandPayloadDict(
+base::DictValue GetFetchSupportPacketCommandPayloadDict(
     const std::vector<support_tool::DataCollectorType>& data_collectors,
     const std::vector<support_tool::PiiType>& pii_types = {});
 

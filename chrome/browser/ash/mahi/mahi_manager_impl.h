@@ -131,21 +131,21 @@ class MahiManagerImpl : public chromeos::MahiManager,
   void OnMahiProviderSummaryResponse(
       crosapi::mojom::MahiPageInfoPtr request_page_info,
       MahiSummaryCallback summary_callback,
-      base::Value::Dict dict,
+      base::DictValue dict,
       manta::MantaStatus status);
 
   void OnMahiProviderElucidationResponse(
       crosapi::mojom::MahiPageInfoPtr request_page_info,
       const std::u16string& selected_text,
       MahiElucidationCallback elucidation_callback,
-      base::Value::Dict dict,
+      base::DictValue dict,
       manta::MantaStatus status);
 
   void OnMahiProviderQAResponse(
       crosapi::mojom::MahiPageInfoPtr request_page_info,
       const std::u16string& question,
       MahiAnswerQuestionCallback callback,
-      base::Value::Dict dict,
+      base::DictValue dict,
       manta::MantaStatus status);
 
   void CacheCurrentPanelContent(crosapi::mojom::MahiPageInfo request_page_info,

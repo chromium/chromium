@@ -56,7 +56,7 @@ void UserAllowlistCheckScreen::HideImpl() {
   view_->Hide();
 }
 
-void UserAllowlistCheckScreen::OnUserAction(const base::Value::List& args) {
+void UserAllowlistCheckScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionRetry) {
     exit_callback_.Run(Result::RETRY);

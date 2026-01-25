@@ -99,7 +99,7 @@ std::string GetUserLastInputMethodId(const AccountId& account_id) {
 
 void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
   auto* cros_settings = CrosSettings::Get();
-  const base::Value::List* login_screen_input_methods = nullptr;
+  const base::ListValue* login_screen_input_methods = nullptr;
   if (!cros_settings->GetList(kDeviceLoginScreenInputMethods,
                               &login_screen_input_methods) ||
       login_screen_input_methods->empty()) {
@@ -175,7 +175,7 @@ void SetKeyboardSettings(const AccountId& account_id) {
       rate);
 }
 
-std::vector<LocaleItem> FromListValueToLocaleItem(base::Value::List locales) {
+std::vector<LocaleItem> FromListValueToLocaleItem(base::ListValue locales) {
   std::vector<LocaleItem> result;
   for (const auto& locale : locales) {
     if (!locale.is_dict())

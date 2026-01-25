@@ -148,7 +148,7 @@ void MultiDeviceSetupScreen::ShowImpl() {
 
 void MultiDeviceSetupScreen::HideImpl() {}
 
-void MultiDeviceSetupScreen::OnUserAction(const base::Value::List& args) {
+void MultiDeviceSetupScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kAcceptedSetupUserAction) {

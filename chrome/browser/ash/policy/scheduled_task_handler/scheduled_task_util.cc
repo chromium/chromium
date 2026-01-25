@@ -139,12 +139,12 @@ namespace scheduled_task_util {
 std::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
     const base::Value& value,
     const std::string& task_time_field_name) {
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   ScheduledTaskExecutor::ScheduledTaskData result;
   // Parse mandatory values first i.e. hour, minute and frequency of update
   // check. These should always be present due to schema validation at higher
   // layers.
-  const base::Value::Dict* task_time_field_dict =
+  const base::DictValue* task_time_field_dict =
       dict.FindDict(task_time_field_name);
   DCHECK(task_time_field_dict);
   std::optional<int> hour_opt = task_time_field_dict->FindInt("hour");

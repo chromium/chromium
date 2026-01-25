@@ -24,9 +24,9 @@ std::string GetSerialNumber();
 // This is done because events to Chrome Reporting API are sent as json over
 // HTTP, and has different proto definition compare to the proto used to store
 // events locally.
-base::Value::List ConvertExtensionProtoToValue(
+base::ListValue ConvertExtensionProtoToValue(
     const em::ExtensionInstallReportRequest* extension_install_report_request,
-    const base::Value::Dict& context);
+    const base::DictValue& context);
 
 // Converts ExtensionInstallReportLogEvent proto defined in
 // components/policy/proto/device_management_backend.proto to a dictionary value
@@ -34,11 +34,11 @@ base::Value::List ConvertExtensionProtoToValue(
 // google3/chrome/cros/reporting/proto/chrome_extension_install_events.proto.
 // Appends event_id to the event by calculating hash of the (event,
 // |context|) pair, so long as the calculation is possible.
-base::Value::Dict ConvertExtensionEventToValue(
+base::DictValue ConvertExtensionEventToValue(
     const extensions::ExtensionId& extension_id,
     const em::ExtensionInstallReportLogEvent&
         extension_install_report_log_event,
-    const base::Value::Dict& context);
+    const base::DictValue& context);
 
 // Converts AppInstallReportRequest proto defined in
 // components/policy/proto/device_management_backend.proto to a list of
@@ -47,9 +47,9 @@ base::Value::Dict ConvertExtensionEventToValue(
 // This is done because events to Chrome Reporting API are sent as json over
 // HTTP, and has different proto definition compare to the proto used to store
 // events locally.
-base::Value::List ConvertArcAppProtoToValue(
+base::ListValue ConvertArcAppProtoToValue(
     const em::AppInstallReportRequest* app_install_report_request,
-    const base::Value::Dict& context);
+    const base::DictValue& context);
 
 // Converts AppInstallReportLogEvent proto defined in
 // components/policy/proto/device_management_backend.proto to a dictionary value
@@ -57,10 +57,10 @@ base::Value::List ConvertArcAppProtoToValue(
 // google3/chrome/cros/reporting/proto/chrome_app_install_events.proto.
 // Appends event_id to the event by calculating hash of the (event,
 // |context|) pair, so long as the calculation is possible.
-base::Value::Dict ConvertArcAppEventToValue(
+base::DictValue ConvertArcAppEventToValue(
     const std::string& package,
     const em::AppInstallReportLogEvent& app_install_report_log_event,
-    const base::Value::Dict& context);
+    const base::DictValue& context);
 
 reporting::AndroidAppInstallEvent CreateAndroidAppInstallEvent(
     const std::string& package,

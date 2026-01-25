@@ -420,10 +420,10 @@ std::vector<DefaultUserImage> GetCurrentImageSet() {
   return result;
 }
 
-base::Value::List GetCurrentImageSetAsListValue() {
-  base::Value::List image_urls;
+base::ListValue GetCurrentImageSetAsListValue() {
+  base::ListValue image_urls;
   for (auto& user_image : GetCurrentImageSet()) {
-    base::Value::Dict image_data;
+    base::DictValue image_data;
     image_data.Set("index", user_image.index);
     image_data.Set("title", std::move(user_image.title));
     image_data.Set("url", user_image.url.spec());

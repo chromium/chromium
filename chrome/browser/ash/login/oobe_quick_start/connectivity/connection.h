@@ -119,7 +119,7 @@ class Connection
       const Base64UrlString& challenge,
       RequestAccountTransferAssertionCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
-  base::Value::Dict GetPrepareForUpdateInfo() override;
+  base::DictValue GetPrepareForUpdateInfo() override;
   void NotifyPhoneSetupComplete() override;
 
   void DoWaitForUserVerification(size_t attempt_number,

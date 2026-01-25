@@ -160,7 +160,7 @@ bool ChromeOsFeedbackDelegate::IsWifiDebugLogsAllowed(
     return false;
   }
 
-  const base::Value::List& allowed_list =
+  const base::ListValue& allowed_list =
       prefs->GetList(prefs::kUserFeedbackWithLowLevelDebugDataAllowed);
   for (const auto& item : allowed_list) {
     if (item == "all" || item == "wifi") {

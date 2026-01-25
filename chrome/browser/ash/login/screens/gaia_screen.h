@@ -79,7 +79,7 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
   void HandleIdentifierEntered(const std::string& account_identifier);
 

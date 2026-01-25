@@ -49,7 +49,7 @@ void TokenHandleFetcher::OnNetworkError(int response_code) {
 }
 
 void TokenHandleFetcher::OnGetTokenInfoResponse(
-    const base::Value::Dict& token_info) {
+    const base::DictValue& token_info) {
   const base::TimeDelta duration =
       base::TimeTicks::Now() - tokeninfo_response_start_time_;
   base::UmaHistogramTimes("Login.TokenObtainResponseTime", duration);

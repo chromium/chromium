@@ -214,27 +214,27 @@ void SetPropertiesForExistingNetwork(const std::string& guid,
   ASSERT_TRUE(signal.Wait()) << "Failed to set " << config << " for " << guid;
 }
 
-base::Value::Dict GetProperties(const std::string userhash,
-                                const std::string& guid) {
-  base::test::TestFuture<const std::string&, std::optional<base::Value::Dict>,
+base::DictValue GetProperties(const std::string userhash,
+                              const std::string& guid) {
+  base::test::TestFuture<const std::string&, std::optional<base::DictValue>,
                          std::optional<std::string>>
       result;
   managed_network_configuration_handler()->GetProperties(
       userhash, GetServicePath(guid), result.GetCallback());
-  std::optional<base::Value::Dict> properties = std::get<1>(result.Take());
+  std::optional<base::DictValue> properties = std::get<1>(result.Take());
   EXPECT_TRUE(properties.has_value());
   return std::move(properties.value());
 }
 
-base::Value::Dict GetManagedProperties(const std::string userhash,
-                                       const std::string& guid) {
-  base::test::TestFuture<const std::string&, std::optional<base::Value::Dict>,
+base::DictValue GetManagedProperties(const std::string userhash,
+                                     const std::string& guid) {
+  base::test::TestFuture<const std::string&, std::optional<base::DictValue>,
                          std::optional<std::string>>
       result;
   managed_network_configuration_handler()->GetManagedProperties(
       userhash, GetServicePath(guid), result.GetCallback());
 
-  std::optional<base::Value::Dict> properties = std::get<1>(result.Take());
+  std::optional<base::DictValue> properties = std::get<1>(result.Take());
   EXPECT_TRUE(properties.has_value());
   return std::move(properties.value());
 }
@@ -295,14 +295,14 @@ class RollbackNetworkConfigTest : public testing::Test {
   void SetEmptyDevicePolicy() {
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash,
-        /*network_configs_onc=*/base::Value::List(),
-        /*global_network_config=*/base::Value::Dict());
+        /*network_configs_onc=*/base::ListValue(),
+        /*global_network_config=*/base::DictValue());
     task_environment_.RunUntilIdle();
   }
 
   void SetUpDevicePolicyNetworkConfig(const base::Value& network_config) {
-    base::Value::List network_configs_onc;
-    base::Value::Dict global_network_config;
+    base::ListValue network_configs_onc;
+    base::DictValue global_network_config;
     network_configs_onc.Append(network_config.Clone());
     managed_network_configuration_handler()->SetPolicy(
         onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash, network_configs_onc,
@@ -373,7 +373,7 @@ TEST_F(RollbackNetworkConfigTest, OpenWiFiIsPreserved) {
   SimulateRollback();
 
   ASSERT_TRUE(NetworkExists(guid));
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kSecurityNone);
@@ -395,7 +395,7 @@ TEST_F(RollbackNetworkConfigTest, PolicyOpenWiFiIsPreserved) {
   SetUpDevicePolicyNetworkConfig(network);
 
   ASSERT_TRUE(NetworkExists(guid));
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kSecurityNone);
@@ -416,7 +416,7 @@ TEST_F(RollbackNetworkConfigTest, WpaPskWiFiIsPreserved) {
 
   EXPECT_EQ(GetPskPassphrase(guid), OncWiFiGetPassword(network.GetDict()));
 
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWPA_PSK);
@@ -437,7 +437,7 @@ TEST_F(RollbackNetworkConfigTest, WpaPskWiFiWithoutPasswordIsPreserved) {
 
   EXPECT_EQ(GetPskPassphrase(guid), OncWiFiGetPassword(network.GetDict()));
 
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWPA_PSK);
@@ -461,7 +461,7 @@ TEST_F(RollbackNetworkConfigTest, PolicyWpaPskWiFiIsPreserved) {
 
   EXPECT_EQ(GetPskPassphrase(guid), OncWiFiGetPassword(network.GetDict()));
 
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWPA_PSK);
@@ -479,7 +479,7 @@ TEST_F(RollbackNetworkConfigTest, WepPskWiFiIsPreserved) {
   SimulateRollback();
 
   ASSERT_TRUE(NetworkExists(guid));
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWEP_PSK);
@@ -503,7 +503,7 @@ TEST_F(RollbackNetworkConfigTest, PolicyWepPskWiFiIsPreserved) {
   SetUpDevicePolicyNetworkConfig(network);
 
   ASSERT_TRUE(NetworkExists(guid));
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWEP_PSK);
@@ -525,7 +525,7 @@ TEST_F(RollbackNetworkConfigTest, PeapWiFiIsPreserved) {
 
   EXPECT_EQ(GetEapPassphrase(guid), OncGetEapPassword(network.GetDict()));
 
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWPA_EAP);
@@ -556,7 +556,7 @@ TEST_F(RollbackNetworkConfigTest, PolicyPeapWiFiIsPreserved) {
 
   EXPECT_EQ(GetEapPassphrase(guid), OncGetEapPassword(network.GetDict()));
 
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kWPA_EAP);
@@ -582,7 +582,7 @@ TEST_F(RollbackNetworkConfigTest, OpenEthernetIsPreserved) {
 
   ASSERT_TRUE(NetworkExists(guid));
 
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kEthernet);
   EXPECT_TRUE(OncHasNoSecurity(properties));
@@ -604,7 +604,7 @@ TEST_F(RollbackNetworkConfigTest, PolicyOpenEthernetIsPreserved) {
 
   ASSERT_TRUE(NetworkExists(guid));
 
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kEthernet);
   EXPECT_TRUE(OncHasNoSecurity(properties));
@@ -625,7 +625,7 @@ TEST_F(RollbackNetworkConfigTest, PeapEthernetIsPreserved) {
 
   EXPECT_EQ(GetEapPassphrase(guid), OncGetEapPassword(network.GetDict()));
 
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kEthernet);
   EXPECT_EQ(OncEthernetGetAuthentication(properties), onc::ethernet::k8021X);
@@ -655,7 +655,7 @@ TEST_F(RollbackNetworkConfigTest, PolicyPeapEthernetIsPreserved) {
 
   EXPECT_EQ(GetEapPassphrase(guid), OncGetEapPassword(network.GetDict()));
 
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kEthernet);
   EXPECT_EQ(OncEthernetGetAuthentication(properties), onc::ethernet::k8021X);
@@ -681,7 +681,7 @@ TEST_F(RollbackNetworkConfigTest, ConsumerOwnershipKeepsDeviceNetworks) {
   TakeOwnershipAsConsumer();
 
   ASSERT_TRUE(NetworkExists(guid));
-  base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+  base::DictValue properties = GetProperties(kDeviceUserHash, guid);
   ASSERT_EQ(GetStringValue(properties, onc::network_config::kType),
             onc::network_type::kWiFi);
   EXPECT_EQ(OncWiFiGetSecurity(properties), onc::wifi::kSecurityNone);
@@ -719,7 +719,7 @@ TEST_F(RollbackNetworkConfigTest,
   // Essential properties of the configuration may be kept, but at least
   // identity and password should be deleted.
   if (NetworkExists(guid)) {
-    base::Value::Dict properties = GetProperties(kDeviceUserHash, guid);
+    base::DictValue properties = GetProperties(kDeviceUserHash, guid);
     // Shill may only delete the eap part and keep the authentication type, that
     // is okay as well.
     if (OncIsEap(properties) && OncHasEapConfiguration(properties)) {

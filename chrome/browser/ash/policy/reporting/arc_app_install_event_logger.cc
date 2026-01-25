@@ -134,7 +134,7 @@ void ArcAppInstallEventLogger::OnPolicySent(const std::string& policy) {
 
 void ArcAppInstallEventLogger::OnComplianceReportReceived(
     const base::Value* compliance_report) {
-  const base::Value::List* const details =
+  const base::ListValue* const details =
       compliance_report->GetDict().FindList("nonComplianceDetails");
   if (!details) {
     return;
@@ -147,7 +147,7 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
 
   std::set<std::string> noncompliant_apps_in_report;
   for (const auto& detail : *details) {
-    const base::Value::Dict& details_dict = detail.GetDict();
+    const base::DictValue& details_dict = detail.GetDict();
     const std::optional<int> reason =
         details_dict.FindInt("nonComplianceReason");
     if (!reason || *reason != kNonComplianceReasonAppNotInstalled) {
@@ -198,7 +198,7 @@ std::set<std::string> ArcAppInstallEventLogger::GetPackagesFromPref(
 
 void ArcAppInstallEventLogger::SetPref(const std::string& pref_name,
                                        const std::set<std::string>& packages) {
-  base::Value::List value;
+  base::ListValue value;
   for (const std::string& package : packages) {
     value.Append(package);
   }

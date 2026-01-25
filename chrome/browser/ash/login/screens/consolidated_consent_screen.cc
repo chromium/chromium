@@ -229,7 +229,7 @@ void ConsolidatedConsentScreen::ShowImpl() {
       base::BindOnce(&ConsolidatedConsentScreen::OnOwnershipStatusCheckDone,
                      weak_factory_.GetWeakPtr()));
 
-  base::Value::Dict data;
+  base::DictValue data;
 
   // If Privacy Hub is enabled, location ToS will no longer be tied to ARC and
   // instead will affect both ChromeOS and ARC.
@@ -273,7 +273,7 @@ void ConsolidatedConsentScreen::HideImpl() {
   session_refresher_.reset();
 }
 
-void ConsolidatedConsentScreen::OnUserAction(const base::Value::List& args) {
+void ConsolidatedConsentScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kBackDemoButtonClicked) {
     exit_callback_.Run(Result::BACK_DEMO);

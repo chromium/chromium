@@ -65,7 +65,7 @@ void SmartPrivacyProtectionScreen::ShowImpl() {
 
 void SmartPrivacyProtectionScreen::HideImpl() {}
 
-void SmartPrivacyProtectionScreen::OnUserAction(const base::Value::List& args) {
+void SmartPrivacyProtectionScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionFeatureTurnOn) {
     Profile* profile = ProfileManager::GetActiveUserProfile();

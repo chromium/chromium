@@ -30,7 +30,7 @@ std::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
 std::u16string GetCurrentTimezoneName();
 
 // Creates a list of pairs of each timezone's ID and name.
-base::Value::List GetTimezoneList();
+base::ListValue GetTimezoneList();
 
 // Returns true if device is managed and has SystemTimezonePolicy set.
 bool HasSystemTimezonePolicy();

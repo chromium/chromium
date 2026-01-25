@@ -186,7 +186,7 @@ void PasswordSyncTokenFetcher::OnAccessTokenFetchComplete(
 }
 
 void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
-  auto request_data = base::Value::Dict().Set(kTokenTypeKey, kTokenTypeValue);
+  auto request_data = base::DictValue().Set(kTokenTypeKey, kTokenTypeValue);
   std::string request_string;
   if (!base::JSONWriter::Write(request_data, &request_string)) {
     LOG(ERROR) << "Not able to serialize token request body.";
@@ -321,7 +321,7 @@ void PasswordSyncTokenFetcher::OnSimpleLoaderComplete(
 }
 
 void PasswordSyncTokenFetcher::ProcessValidTokenResponse(
-    base::Value::Dict json_response) {
+    base::DictValue json_response) {
   switch (request_type_) {
     case RequestType::kCreateToken: {
       const std::string* sync_token = json_response.FindString(kToken);
@@ -343,7 +343,7 @@ void PasswordSyncTokenFetcher::ProcessValidTokenResponse(
         consumer_->OnApiCallFailed(ErrorType::kGetNoList);
         return;
       }
-      const base::Value::List& list_of_tokens = *token_list_entry;
+      const base::ListValue& list_of_tokens = *token_list_entry;
       if (list_of_tokens.size() > 0) {
         const std::string* sync_token_string =
             list_of_tokens[0].GetDict().FindString(kToken);

@@ -95,7 +95,7 @@ void AddChildScreen::HideImpl() {
   error_screen_->Hide();
 }
 
-void AddChildScreen::OnUserAction(const base::Value::List& args) {
+void AddChildScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionChildSignIn) {
     context()->sign_in_as_child = true;

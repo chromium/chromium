@@ -537,7 +537,7 @@ void SystemProxyManager::OnProxyConfigChanged() {
 bool SystemProxyManager::IsManagedProxyConfigured() {
   DCHECK(NetworkHandler::IsInitialized());
   NetworkHandler* network_handler = NetworkHandler::Get();
-  base::Value::Dict proxy_settings;
+  base::DictValue proxy_settings;
 
   // |ui_proxy_config_service| may be missing in tests. If the device is offline
   // (no network connected) the |DefaultNetwork| is null.

@@ -63,7 +63,7 @@ class ChoobeFlowController {
   // This allows us to resume CHOOBE in case of unexpected shutdown.
   // Precondition: `screen_ids` order should match the relative order of
   // `kOptionalScreens.`
-  void OnScreensSelected(PrefService& prefs, base::Value::List screens_ids);
+  void OnScreensSelected(PrefService& prefs, base::ListValue screens_ids);
 
   // Called once an optional screen is completed, this will reflect later on the
   // screen's tile in CHOOBE screen.

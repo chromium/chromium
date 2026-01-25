@@ -313,7 +313,7 @@ void ErrorScreen::HideImpl() {
   }
 }
 
-void ErrorScreen::OnUserAction(const base::Value::List& args) {
+void ErrorScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionShowCaptivePortalClicked) {
     ShowCaptivePortal();

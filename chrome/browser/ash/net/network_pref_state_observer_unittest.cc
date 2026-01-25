@@ -92,7 +92,7 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
       NetworkHandler::GetUiProxyConfigService();
   ASSERT_TRUE(device_ui_proxy_config_service);
   // There should be no proxy config available.
-  base::Value::Dict ui_proxy_config;
+  base::DictValue ui_proxy_config;
   EXPECT_FALSE(device_ui_proxy_config_service->MergeEnforcedProxyConfig(
       kNetworkId, &ui_proxy_config));
 
@@ -103,12 +103,12 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
       NetworkHandler::GetUiProxyConfigService();
   ASSERT_TRUE(profile_ui_proxy_config_service);
   ASSERT_NE(device_ui_proxy_config_service, profile_ui_proxy_config_service);
-  ui_proxy_config = base::Value::Dict();
+  ui_proxy_config = base::DictValue();
   EXPECT_FALSE(profile_ui_proxy_config_service->MergeEnforcedProxyConfig(
       kNetworkId, &ui_proxy_config));
 
   // Set the profile pref to PAC script mode.
-  auto proxy_config = base::Value::Dict()
+  auto proxy_config = base::DictValue()
                           .Set("mode", ProxyPrefs::kPacScriptProxyModeName)
                           .Set("pac_url", "http://proxy");
   profile->GetPrefs()->Set(proxy_config::prefs::kProxy,

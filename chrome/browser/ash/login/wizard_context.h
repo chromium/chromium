@@ -146,7 +146,7 @@ class WizardContext {
   // version rollback.
   // Set by WizardController.
   // Used by multiple screens.
-  base::Value::Dict configuration;
+  base::DictValue configuration;
 
   // Indicates that enterprise enrollment was triggered early in the OOBE
   // process, so Update screen should be skipped and Enrollment start right

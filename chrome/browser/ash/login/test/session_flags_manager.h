@@ -85,7 +85,7 @@ class SessionFlagsManager {
 
   void LoadStateFromBackingFile();
   void StoreStateToBackingFile();
-  base::Value::List GetSwitchesValueFromArgv(
+  base::ListValue GetSwitchesValueFromArgv(
       const std::vector<std::string>& argv);
 
   // The mode this manager is running in.

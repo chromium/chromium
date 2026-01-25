@@ -35,8 +35,8 @@ constexpr char kRemoteSupportAvailability[] = "remoteSupportAvailability";
 constexpr char kRemoteAccessAvailability[] = "remoteAccessAvailability";
 constexpr char kIsInManagedEnvironment[] = "isInManagedEnvironment";
 
-base::Value::List GetSupportedSessionTypes(bool is_in_managed_environment) {
-  base::Value::List result;
+base::ListValue GetSupportedSessionTypes(bool is_in_managed_environment) {
+  base::ListValue result;
 
   if (UserSessionSupportsRemoteSupport(GetCurrentUserSessionType())) {
     result.Append(static_cast<int>(CrdSessionType::REMOTE_SUPPORT_SESSION));
@@ -107,7 +107,7 @@ void DeviceCommandFetchCrdAvailabilityInfoJob::SendPayload(
     bool is_in_managed_environment) {
   std::string payload =
       base::WriteJson(
-          base::Value::Dict()
+          base::DictValue()
               .Set(kIdleTime, GetDeviceIdleTimeInSeconds())
               .Set(kUserSessionType, GetCurrentUserSessionType())
               .Set(kIsInManagedEnvironment, is_in_managed_environment)

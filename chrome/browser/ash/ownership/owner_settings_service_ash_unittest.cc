@@ -264,7 +264,7 @@ TEST_F(OwnerSettingsServiceAshTest, ForceAllowlist) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersEmptyLists) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(kUserAllowlist);
 
   EXPECT_EQ(0,
@@ -285,7 +285,7 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersEmptyLists) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersAllowList) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(kUserAllowlist);
 
   device_policy_->payload().mutable_user_allowlist()->add_user_allowlist(
@@ -309,7 +309,7 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersAllowList) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersWhiteList) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(kUserAllowlist);
 
   device_policy_->payload().mutable_user_whitelist()->add_user_whitelist(
@@ -333,7 +333,7 @@ TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersWhiteList) {
 }
 
 TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(kUserAllowlist);
 
   device_policy_->payload().mutable_user_allowlist()->add_user_allowlist(
@@ -498,7 +498,7 @@ TEST_F(OwnerSettingsServiceAshTest, AppendList) {
   EXPECT_EQ(provider_->Get(kFeatureFlags), nullptr);
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
   FlushDeviceSettings();
-  auto expected_list = base::Value::List().Append(kListStr1);
+  auto expected_list = base::ListValue().Append(kListStr1);
   EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
 }
 
@@ -508,7 +508,7 @@ TEST_F(OwnerSettingsServiceAshTest, TwoAppendToList) {
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
   FlushDeviceSettings();
-  auto expected_list = base::Value::List().Append(kListStr1).Append(kListStr2);
+  auto expected_list = base::ListValue().Append(kListStr1).Append(kListStr2);
   EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
 }
 
@@ -519,7 +519,7 @@ TEST_F(OwnerSettingsServiceAshTest, AppendSameItemTwiceToList) {
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
   FlushDeviceSettings();
-  auto expected_list = base::Value::List().Append(kListStr2).Append(kListStr2);
+  auto expected_list = base::ListValue().Append(kListStr2).Append(kListStr2);
   EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
 }
 
@@ -530,7 +530,7 @@ TEST_F(OwnerSettingsServiceAshTest, RemoveAndAppendList) {
   EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
   FlushDeviceSettings();
-  auto expected_list = base::Value::List().Append(kListStr1);
+  auto expected_list = base::ListValue().Append(kListStr1);
   EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
 }
 
@@ -551,7 +551,7 @@ TEST_F(OwnerSettingsServiceAshTest, AppendAndRemove2) {
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr1)));
   EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr2)));
   FlushDeviceSettings();
-  auto expected_list = base::Value::List().Append(kListStr1);
+  auto expected_list = base::ListValue().Append(kListStr1);
   EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
 }
 
@@ -563,7 +563,7 @@ TEST_F(OwnerSettingsServiceAshTest, TwoAppendAndRemoveList) {
   EXPECT_TRUE(service_->AppendToList(kFeatureFlags, base::Value(kListStr2)));
   EXPECT_TRUE(service_->RemoveFromList(kFeatureFlags, base::Value(kListStr1)));
   FlushDeviceSettings();
-  auto expected_list = base::Value::List().Append(kListStr2);
+  auto expected_list = base::ListValue().Append(kListStr2);
   EXPECT_EQ(provider_->Get(kFeatureFlags)->Clone(), expected_list);
 }
 

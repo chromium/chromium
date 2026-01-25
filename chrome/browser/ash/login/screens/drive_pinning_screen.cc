@@ -232,7 +232,7 @@ void DrivePinningScreen::ShowImpl() {
     return;
   }
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set(
       "shouldShowReturn",
       ShouldShowChoobeReturnButton(

@@ -40,7 +40,7 @@ void ReportingUserTracker::RegisterPrefs(PrefRegistrySimple* registry) {
 
 bool ReportingUserTracker::ShouldReportUser(
     const std::string& user_email) const {
-  const base::Value::List& reporting_users =
+  const base::ListValue& reporting_users =
       local_state_->GetList(::prefs::kReportingUsers);
   std::string user_email_value(FullyCanonicalize(user_email));
   return reporting_users.contains(user_email_value);
@@ -90,7 +90,7 @@ void ReportingUserTracker::AddReportingUser(const AccountId& account_id) {
 
 void ReportingUserTracker::RemoveReportingUser(const AccountId& account_id) {
   ScopedListPrefUpdate users_update(local_state_, ::prefs::kReportingUsers);
-  base::Value::List& update_list = users_update.Get();
+  base::ListValue& update_list = users_update.Get();
   auto it = std::ranges::find(
       update_list, base::Value(FullyCanonicalize(account_id.GetUserEmail())));
   if (it == update_list.end()) {

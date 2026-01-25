@@ -60,7 +60,7 @@ class HIDDetectionScreen : public BaseScreen,
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   // hid_detection::HidDetectionManager::Delegate:
   void OnHidDetectionStatusChanged(

@@ -168,9 +168,9 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(::prefs::kLocalUserFilesMigrationDestination,
                                "read_only");
   registry->RegisterListPref(prefs::kDnsOverHttpsExcludedDomains,
-                             base::Value::List());
+                             base::ListValue());
   registry->RegisterListPref(prefs::kDnsOverHttpsIncludedDomains,
-                             base::Value::List());
+                             base::ListValue());
 
   RegisterLocalStatePrefs(registry);
 }
@@ -1332,7 +1332,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       reason != REASON_PREF_CHANGED) {
     if (prefs_->IsManagedPreference(::prefs::kParentAccessCodeConfig) &&
         user_->IsChild()) {
-      const base::Value::Dict& value =
+      const base::DictValue& value =
           prefs_->GetDict(::prefs::kParentAccessCodeConfig);
       parent_access::ParentAccessService::Get().UpdateConfigForUser(
           user_->GetAccountId(), value.Clone());

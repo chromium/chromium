@@ -59,7 +59,7 @@ void EnableAdbSideloadingScreen::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kEnableAdbSideloadingRequested, false);
 }
 
-void EnableAdbSideloadingScreen::OnUserAction(const base::Value::List& args) {
+void EnableAdbSideloadingScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelPressed) {
     OnCancel();

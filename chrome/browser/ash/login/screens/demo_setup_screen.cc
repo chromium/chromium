@@ -47,7 +47,7 @@ void DemoSetupScreen::ShowImpl() {
 
 void DemoSetupScreen::HideImpl() {}
 
-void DemoSetupScreen::OnUserAction(const base::Value::List& args) {
+void DemoSetupScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionStartSetup) {
     StartEnrollment();

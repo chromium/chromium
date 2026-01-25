@@ -67,7 +67,7 @@ const gfx::Size kDefaultSecondDisplayResolution(1920, 1080);
 const int kDefaultDisplayScale = 100;
 
 PolicyValue GetPolicySetting() {
-  const base::Value::Dict* resolution_pref = nullptr;
+  const base::DictValue* resolution_pref = nullptr;
   ash::CrosSettings::Get()->GetDictionary(ash::kDeviceDisplayResolution,
                                           &resolution_pref);
   EXPECT_TRUE(resolution_pref) << "DeviceDisplayResolution setting is not set";

@@ -88,7 +88,7 @@ class MarketingOptInScreen : public BaseScreen {
 
  private:
   void OnA11yShelfNavigationButtonPrefChanged();
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
   // Checks whether this user is managed.
   bool IsCurrentUserManaged();
 

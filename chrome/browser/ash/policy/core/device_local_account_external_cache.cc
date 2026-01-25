@@ -24,12 +24,12 @@ namespace chromeos {
 
 namespace {
 
-base::Value::Dict Merge(base::Value::Dict first, base::Value::Dict second) {
+base::DictValue Merge(base::DictValue first, base::DictValue second) {
   first.Merge(std::move(second));
   return first;
 }
 
-std::set<std::string> GetKeys(const base::Value::Dict& dict) {
+std::set<std::string> GetKeys(const base::DictValue& dict) {
   std::set<std::string> keys;
   for (auto [key, _] : dict) {
     keys.insert(key);
@@ -37,9 +37,9 @@ std::set<std::string> GetKeys(const base::Value::Dict& dict) {
   return keys;
 }
 
-base::Value::Dict FilterOnKeys(const base::Value::Dict& dict,
-                               const std::set<std::string>& keys_to_keep) {
-  base::Value::Dict result;
+base::DictValue FilterOnKeys(const base::DictValue& dict,
+                             const std::set<std::string>& keys_to_keep) {
+  base::DictValue result;
   for (auto [key, value] : dict) {
     if (keys_to_keep.contains(key)) {
       result.Set(key, value.Clone());
@@ -77,8 +77,8 @@ void DeviceLocalAccountExternalCache::StartCache(
 }
 
 void DeviceLocalAccountExternalCache::UpdateExtensionsList(
-    base::Value::Dict ash_extensions,
-    base::Value::Dict lacros_extensions) {
+    base::DictValue ash_extensions,
+    base::DictValue lacros_extensions) {
   ash_extension_keys_ = GetKeys(ash_extensions);
   lacros_extension_keys_ = GetKeys(lacros_extensions);
 
@@ -96,7 +96,7 @@ void DeviceLocalAccountExternalCache::StopCache(base::OnceClosure callback) {
     std::move(callback).Run();
   }
 
-  base::Value::Dict empty_prefs;
+  base::DictValue empty_prefs;
   ash_loader_.Run(user_id_, empty_prefs.Clone());
   lacros_loader_.Run(user_id_, empty_prefs.Clone());
 }
@@ -106,7 +106,7 @@ bool DeviceLocalAccountExternalCache::IsCacheRunning() const {
 }
 
 void DeviceLocalAccountExternalCache::OnExtensionListsUpdated(
-    const base::Value::Dict& prefs) {
+    const base::DictValue& prefs) {
   lacros_loader_.Run(user_id_, FilterOnKeys(prefs, lacros_extension_keys_));
   ash_loader_.Run(user_id_, FilterOnKeys(prefs, ash_extension_keys_));
 }
@@ -124,13 +124,13 @@ bool DeviceLocalAccountExternalCache::CanRollbackNow() const {
   return true;
 }
 
-base::Value::Dict
-DeviceLocalAccountExternalCache::GetCachedExtensionsForTesting() const {
+base::DictValue DeviceLocalAccountExternalCache::GetCachedExtensionsForTesting()
+    const {
   return external_cache_->GetCachedExtensions().Clone();
 }
 
 void DeviceLocalAccountExternalCache::SetCacheResponseForTesting(
-    const base::Value::Dict& cached_extensions) {
+    const base::DictValue& cached_extensions) {
   OnExtensionListsUpdated(cached_extensions);
 }
 

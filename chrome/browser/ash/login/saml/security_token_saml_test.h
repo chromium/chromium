@@ -106,7 +106,7 @@ class SecurityTokenSamlTest : public OobeBaseTest {
   void StartObservingLoginUiMessages();
 
   // Called when the Login Screen UI notifies that the PIN dialog is shown.
-  void OnPinDialogShownMessage(const base::Value::List&);
+  void OnPinDialogShownMessage(const base::ListValue&);
 
   // Bypass "signin_screen" feature only enabled for allowlisted extensions.
   extensions::SimpleFeature::ScopedThreadUnsafeAllowlistForTest

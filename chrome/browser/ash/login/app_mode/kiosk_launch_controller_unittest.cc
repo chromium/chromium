@@ -329,7 +329,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
   void CheckLaunchError(KioskAppLaunchError::Error error) {
-    const base::Value::Dict& dict =
+    const base::DictValue& dict =
         TestingBrowserProcess::GetGlobal()->local_state()->GetDict("kiosk");
     EXPECT_THAT(dict.FindInt("launch_error"), Eq(static_cast<int>(error)));
   }
@@ -771,7 +771,7 @@ class KioskLaunchControllerWithExtensionTest
  public:
   void SetForceInstallPolicy(const std::string& extension_id,
                              const std::string& update_url) {
-    base::Value::List list;
+    base::ListValue list;
     list.Append(extension_id + ";" + update_url);
     policy::PolicyMap map;
     map.Set(policy::key::kExtensionInstallForcelist,

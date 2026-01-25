@@ -719,7 +719,7 @@ TEST_F(InputMethodPreferencesTest, MergeAfterSyncing) {
 
 TEST_F(InputMethodPreferencesTest, ConfiguredByPolicyPrefs) {
   const auto input_methods =
-      base::Value::List().Append("xkb:us::eng").Append("xkb:jp::jpn");
+      base::ListValue().Append("xkb:us::eng").Append("xkb:jp::jpn");
 
   InitPreferences();
   // No restriction on allowed input methods, one default is enabled.

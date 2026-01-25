@@ -145,13 +145,13 @@ bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
   if (!parsed_value.has_value()) {
     return false;
   }
-  const base::Value::Dict* parsed_value_dict = parsed_value->GetIfDict();
+  const base::DictValue* parsed_value_dict = parsed_value->GetIfDict();
   if (!parsed_value_dict || parsed_value_dict->size() != 1) {
     return false;
   }
   auto iter = parsed_value_dict->begin();
   const std::string& ip_addr = iter->first;
-  const base::Value::Dict* info = iter->second.GetIfDict();
+  const base::DictValue* info = iter->second.GetIfDict();
   if (!info) {
     return false;
   }

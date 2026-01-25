@@ -11,23 +11,22 @@
 
 namespace policy {
 
-// Creates and returns a base::Value::Dict to represent minimum version
+// Creates and returns a base::DictValue to represent minimum version
 // requirement. |version| - a string containing the minimum required version.
 // |warning| - number of days representing the warning period.
 // |eol_warning| - number of days representing the end of life warning period.
-base::Value::Dict CreateMinimumVersionPolicyRequirement(
+base::DictValue CreateMinimumVersionPolicyRequirement(
     const std::string& version,
     int warning,
     int eol_warning);
 
 // Creates and returns DeviceMinimumVersion policy value.
-base::Value::Dict CreateMinimumVersionPolicyValue(
-    base::Value::List requirements,
-    bool unmanaged_user_restricted);
+base::DictValue CreateMinimumVersionPolicyValue(base::ListValue requirements,
+                                                bool unmanaged_user_restricted);
 
 // Creates and returns DeviceMinimumVersion policy value with a single
 // requirement entry.
-base::Value::Dict CreateMinimumVersionSingleRequirementPolicyValue(
+base::DictValue CreateMinimumVersionSingleRequirementPolicyValue(
     const std::string& version,
     int warning,
     int eol_warning,

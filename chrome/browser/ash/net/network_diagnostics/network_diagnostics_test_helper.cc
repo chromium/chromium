@@ -33,8 +33,8 @@ NetworkDiagnosticsTestHelper::NetworkDiagnosticsTestHelper()
   NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
       /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(),
-      /*global_network_config=*/base::Value::Dict());
+      /*network_configs_onc=*/base::ListValue(),
+      /*global_network_config=*/base::DictValue());
 
   cros_network_config_ = std::make_unique<network_config::CrosNetworkConfig>();
   network_config::OverrideInProcessInstanceForTesting(

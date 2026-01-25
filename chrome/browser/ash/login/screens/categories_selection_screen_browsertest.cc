@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(CategoriesSelectionScreenTest, Next) {
   const auto& selected_categories_ids =
       prefs->GetList(prefs::kOobeCategoriesSelected);
 
-  base::Value::List expected_selected_categories_ids;
+  base::ListValue expected_selected_categories_ids;
 
   expected_selected_categories_ids.Append("oobe_business");
   expected_selected_categories_ids.Append("oobe_entertainment");

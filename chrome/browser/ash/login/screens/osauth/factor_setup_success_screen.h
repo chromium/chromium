@@ -45,7 +45,7 @@ class FactorSetupSuccessScreen : public BaseOSAuthSetupScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   void InspectContext(UserContext* user_context);
   void DoShow();

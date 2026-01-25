@@ -88,7 +88,7 @@ void CryptohomeRecoveryScreen::ShowImpl() {
 
 void CryptohomeRecoveryScreen::HideImpl() {}
 
-void CryptohomeRecoveryScreen::OnUserAction(const base::Value::List& args) {
+void CryptohomeRecoveryScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionReauth) {
     exit_callback_.Run(Result::kGaiaLogin);

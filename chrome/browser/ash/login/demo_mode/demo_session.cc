@@ -457,15 +457,15 @@ bool DemoSession::ShouldShowAppInShelf(const std::string& app_id_or_package) {
 }
 
 // static
-base::Value::List DemoSession::GetCountryList() {
-  base::Value::List country_list;
+base::ListValue DemoSession::GetCountryList() {
+  base::ListValue country_list;
   std::string region(GetDefaultRegion());
   bool country_selected = false;
 
   for (CountryCodeAndFullNamePair pair :
        GetSortedCountryCodeAndNamePairList()) {
     std::string country = pair.country_id;
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("value", country);
     dict.Set("title", pair.country_name);
     if (country == region) {
@@ -480,7 +480,7 @@ base::Value::List DemoSession::GetCountryList() {
   }
 
   if (!country_selected) {
-    base::Value::Dict countryNotSelectedDict;
+    base::DictValue countryNotSelectedDict;
     countryNotSelectedDict.Set("value", DemoSession::kCountryNotSelectedId);
     countryNotSelectedDict.Set(
         "title",

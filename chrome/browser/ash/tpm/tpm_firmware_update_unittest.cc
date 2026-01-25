@@ -283,7 +283,7 @@ class TPMFirmwareUpdateModesEnterpriseTest : public TPMFirmwareUpdateModesTest {
   }
 
   void SetPolicy(const std::set<Mode>& modes) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kSettingsKeyAllowPowerwash, modes.count(Mode::kPowerwash) > 0);
     dict.Set(kSettingsKeyAllowPreserveDeviceState,
              modes.count(Mode::kPreserveDeviceState) > 0);

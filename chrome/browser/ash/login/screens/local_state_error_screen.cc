@@ -33,7 +33,7 @@ void LocalStateErrorScreen::ShowImpl() {
 
 void LocalStateErrorScreen::HideImpl() {}
 
-void LocalStateErrorScreen::OnUserAction(const base::Value::List& args) {
+void LocalStateErrorScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionRestartAndPowerwash) {
     SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());

@@ -235,10 +235,10 @@ void SecureDnsManager::LoadProviders() {
   }
 }
 
-base::Value::Dict SecureDnsManager::GetProviders(
+base::DictValue SecureDnsManager::GetProviders(
     const std::string& mode,
     const std::string& templates) const {
-  base::Value::Dict doh_providers;
+  base::DictValue doh_providers;
 
   if (mode == SecureDnsConfig::kModeOff) {
     return doh_providers;
@@ -342,7 +342,7 @@ void SecureDnsManager::ToggleNetworkMonitoring() {
 }
 
 void SecureDnsManager::OnDoHIncludedDomainsPrefChanged() {
-  base::Value::List included_domains =
+  base::ListValue included_domains =
       local_state_->GetList(prefs::kDnsOverHttpsIncludedDomains).Clone();
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
       shill::kDOHIncludedDomainsProperty,
@@ -351,7 +351,7 @@ void SecureDnsManager::OnDoHIncludedDomainsPrefChanged() {
 }
 
 void SecureDnsManager::OnDoHExcludedDomainsPrefChanged() {
-  base::Value::List excluded_domains =
+  base::ListValue excluded_domains =
       local_state_->GetList(prefs::kDnsOverHttpsExcludedDomains).Clone();
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
       shill::kDOHExcludedDomainsProperty,
@@ -489,9 +489,9 @@ void SecureDnsManager::ResetShillState() {
   }
   auto* handler = NetworkHandler::Get()->network_configuration_handler();
   handler->SetManagerProperty(shill::kDOHIncludedDomainsProperty,
-                              base::Value(base::Value::List()));
+                              base::Value(base::ListValue()));
   handler->SetManagerProperty(shill::kDOHExcludedDomainsProperty,
-                              base::Value(base::Value::List()));
+                              base::Value(base::ListValue()));
   handler->SetManagerProperty(
       shill::kDNSProxyDOHProvidersProperty,
       base::Value(GetProviders(SecureDnsConfig::kModeOff, /*templates=*/"")));

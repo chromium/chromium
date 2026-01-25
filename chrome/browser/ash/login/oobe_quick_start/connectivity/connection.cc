@@ -446,7 +446,7 @@ void Connection::OnUserVerificationPacketDecoded(
   }
 }
 
-base::Value::Dict Connection::GetPrepareForUpdateInfo() {
+base::DictValue Connection::GetPrepareForUpdateInfo() {
   return session_context_->GetPrepareForUpdateInfo();
 }
 

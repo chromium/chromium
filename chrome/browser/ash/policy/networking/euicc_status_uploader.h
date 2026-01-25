@@ -75,7 +75,7 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
 
   // Constructs the proto for the EUICC status request.
   static std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>
-  ConstructRequestFromStatus(const base::Value::Dict& status,
+  ConstructRequestFromStatus(const base::DictValue& status,
                              bool clear_profile_list);
 
   // ash::NetworkPolicyObserver:
@@ -95,9 +95,9 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
   // ash::ManagedCellularPrefHandler:
   void OnManagedCellularPrefChanged() override;
 
-  base::Value::Dict GetCurrentEuiccStatus() const;
+  base::DictValue GetCurrentEuiccStatus() const;
   void MaybeUploadStatus();
-  void UploadStatus(base::Value::Dict status);
+  void UploadStatus(base::DictValue status);
   void OnStatusUploaded(bool should_send_clear_profiles_request, bool success);
   void RetryUpload();
 
@@ -109,7 +109,7 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
 
   bool currently_uploading_ = false;
   // The status that is being uploaded right now.
-  base::Value::Dict attempted_upload_status_;
+  base::DictValue attempted_upload_status_;
   bool is_policy_fetched_ = false;
   IsDeviceActiveCallback is_device_managed_callback_;
 

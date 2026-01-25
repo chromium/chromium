@@ -61,7 +61,7 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // was an error in sending the request, receiving the response, or parsing the
   // response; otherwise, it will hold a response in the API's specified
   // structure.
-  virtual T ParseResponse(const base::Value::Dict* response) = 0;
+  virtual T ParseResponse(const base::DictValue* response) = 0;
 
   // Returns the count of results contained within the specified `result`.
   virtual std::optional<size_t> GetResultCount(const T& result) = 0;
@@ -133,7 +133,7 @@ class GooglePhotosAlbumsFetcher
 
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
-      const base::Value::Dict* response) override;
+      const base::DictValue* response) override;
   std::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
 
@@ -169,7 +169,7 @@ class GooglePhotosSharedAlbumsFetcher
 
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
-      const base::Value::Dict* response) override;
+      const base::DictValue* response) override;
   std::optional<size_t> GetResultCount(
       const GooglePhotosAlbumsCbkArgs& result) override;
 
@@ -200,7 +200,7 @@ class GooglePhotosEnabledFetcher
 
   // GooglePhotosFetcher:
   GooglePhotosEnablementState ParseResponse(
-      const base::Value::Dict* response) override;
+      const base::DictValue* response) override;
   std::optional<size_t> GetResultCount(
       const GooglePhotosEnablementState& result) override;
 
@@ -236,7 +236,7 @@ class GooglePhotosPhotosFetcher
   // GooglePhotosFetcher:
   std::optional<base::Value> CreateErrorResponse(int error_code) override;
   GooglePhotosPhotosCbkArgs ParseResponse(
-      const base::Value::Dict* response) override;
+      const base::DictValue* response) override;
   std::optional<size_t> GetResultCount(
       const GooglePhotosPhotosCbkArgs& result) override;
 

@@ -97,15 +97,15 @@ bool ContainsSameEvents(const Events& expected,
   return true;
 }
 
-base::Value::List ConvertEventsToValue(const Events& events, Profile* profile) {
-  base::Value::Dict context = reporting::GetContext(profile);
-  base::Value::List event_list;
+base::ListValue ConvertEventsToValue(const Events& events, Profile* profile) {
+  base::DictValue context = reporting::GetContext(profile);
+  base::ListValue event_list;
 
   for (auto it = events.begin(); it != events.end(); ++it) {
     const std::string& package = (*it).first;
     for (const em::AppInstallReportLogEvent& app_install_report_log_event :
          (*it).second) {
-      base::Value::Dict wrapper = ConvertArcAppEventToValue(
+      base::DictValue wrapper = ConvertArcAppEventToValue(
           package, app_install_report_log_event, context);
       event_list.Append(std::move(wrapper));
     }
@@ -221,9 +221,9 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
   void AddLogEntryForAllApps() { AddLogEntryForsetOfApps(packages_); }
 
   void BuildReport() {
-    base::Value::List event_list =
+    base::ListValue event_list =
         ConvertEventsToValue(events_, /*profile=*/nullptr);
-    base::Value::Dict context = reporting::GetContext(/*profile=*/nullptr);
+    base::DictValue context = reporting::GetContext(/*profile=*/nullptr);
 
     events_value_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(event_list), std::move(context));
@@ -250,7 +250,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
 
     EXPECT_CALL(cloud_policy_client_,
                 UploadAppInstallReport(MatchEvents(&events_value_), _))
-        .WillOnce([](base::Value::Dict,
+        .WillOnce([](base::DictValue,
                      CloudPolicyClient::ResultCallback callback) {
           std::move(callback).Run(CloudPolicyClient::Result(DM_STATUS_SUCCESS));
         });
@@ -306,7 +306,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
 
   const base::FilePath log_file_path_;
   const std::set<std::string> packages_;
-  base::Value::Dict events_value_;
+  base::DictValue events_value_;
   std::unique_ptr<ash::system::ScopedFakeStatisticsProvider>
       scoped_fake_statistics_provider_;
 
@@ -730,7 +730,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, Clear) {
   log.Add(kPackageNames[0], event_);
   log.Store();
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append("test");
   profile_.GetPrefs()->SetList(arc::prefs::kArcPushInstallAppsRequested,
                                list.Clone());
@@ -766,7 +766,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, RunClearRun) {
   FlushNonDelayedTasks();
   VerifyLogFile();
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append("test");
   profile_.GetPrefs()->SetList(arc::prefs::kArcPushInstallAppsRequested,
                                list.Clone());

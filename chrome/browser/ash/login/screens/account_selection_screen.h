@@ -57,7 +57,7 @@ class AccountSelectionScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   // Safely checks if the UserContext stored in the WizardContext contains all
   // information needed to perform the signin.

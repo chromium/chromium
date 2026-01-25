@@ -35,7 +35,7 @@ void OnGetProperties(base::queue<std::string> service_path_queue,
                      base::flat_map<std::string, int> path_rssi_map,
                      WifiSignalStrengthRssiCallback cb,
                      const std::string& service_path,
-                     std::optional<base::Value::Dict> properties,
+                     std::optional<base::DictValue> properties,
                      std::optional<std::string> error) {
   if (!properties.has_value() || !properties->FindDict(kWiFi) ||
       !properties->FindDict(kWiFi)->FindInt(kSignalStrengthRssi)) {

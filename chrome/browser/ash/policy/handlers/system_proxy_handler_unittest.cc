@@ -77,7 +77,7 @@ class SystemProxyHandlerTest : public testing::Test {
   void SetPolicy(bool system_proxy_enabled,
                  const std::string& system_services_username,
                  const std::string& system_services_password) {
-    auto dict = base::Value::Dict()
+    auto dict = base::DictValue()
                     .Set("system_proxy_enabled", system_proxy_enabled)
                     .Set("system_services_username", system_services_username)
                     .Set("system_services_password", system_services_password);
@@ -88,7 +88,7 @@ class SystemProxyHandlerTest : public testing::Test {
 
   void SetManagedProxy(Profile* profile) {
     // Configure a proxy via user policy.
-    auto proxy_config = base::Value::Dict()
+    auto proxy_config = base::DictValue()
                             .Set("mode", ProxyPrefs::kFixedServersProxyModeName)
                             .Set("server", kProxyAuthUrl);
     profile->GetPrefs()->SetDict(proxy_config::prefs::kProxy,

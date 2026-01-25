@@ -26,7 +26,7 @@ namespace policy {
 
 namespace {
 
-bool GetString(const base::Value::Dict& dict,
+bool GetString(const base::DictValue& dict,
                const char* key,
                std::string* result) {
   const std::string* value = dict.FindString(key);
@@ -155,7 +155,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
   // TODO(crbug.com/40636049): handle TYPE_SAML_PUBLIC_SESSION
   std::vector<DeviceLocalAccount> accounts;
 
-  const base::Value::List* list = nullptr;
+  const base::ListValue* list = nullptr;
   if (!cros_settings->GetList(ash::kAccountsPrefDeviceLocalAccounts, &list)) {
     return accounts;
   }
@@ -169,7 +169,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
       continue;
     }
 
-    const base::Value::Dict& entry_dict = entry.GetDict();
+    const base::DictValue& entry_dict = entry.GetDict();
     std::string account_id;
     if (!GetString(entry_dict, ash::kAccountsPrefDeviceLocalAccountsKeyId,
                    &account_id) ||
@@ -351,10 +351,10 @@ void SetDeviceLocalAccountsForTesting(
     ash::OwnerSettingsServiceAsh* service,
     const std::vector<DeviceLocalAccount>& accounts) {
   // TODO(crbug.com/40636049): handle TYPE_SAML_PUBLIC_SESSION
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& account : accounts) {
     auto entry =
-        base::Value::Dict()
+        base::DictValue()
             .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, account.account_id)
             .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
                  static_cast<int>(account.type))

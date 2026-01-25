@@ -47,7 +47,7 @@ void OnlineAuthenticationScreen::HideImpl() {
   view_->Hide();
 }
 
-void OnlineAuthenticationScreen::OnUserAction(const base::Value::List& args) {
+void OnlineAuthenticationScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::BACK);

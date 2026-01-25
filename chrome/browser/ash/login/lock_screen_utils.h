@@ -32,8 +32,8 @@ void StopEnforcingPolicyInputMethods();
 // Update the keyboard settings for `account_id`.
 void SetKeyboardSettings(const AccountId& account_id);
 
-// Covert a base::Value::List of locale info to a list of ash struct LocaleItem.
-std::vector<LocaleItem> FromListValueToLocaleItem(base::Value::List locales);
+// Covert a base::ListValue of locale info to a list of ash struct LocaleItem.
+std::vector<LocaleItem> FromListValueToLocaleItem(base::ListValue locales);
 
 }  // namespace ash::lock_screen_utils
 

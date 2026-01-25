@@ -47,7 +47,7 @@ class GraduationAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
   void SetGraduationEnablement(bool is_enabled) {
     profile()->GetPrefs()->SetDict(
         ash::prefs::kGraduationEnablementStatus,
-        base::Value::Dict().Set("is_enabled", is_enabled));
+        base::DictValue().Set("is_enabled", is_enabled));
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }

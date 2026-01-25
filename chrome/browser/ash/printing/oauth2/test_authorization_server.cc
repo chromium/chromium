@@ -50,7 +50,7 @@ std::string ExpectEqual(const std::string& name,
 
 // Returns a list with a single element `value`.
 base::Value OneElementArray(const std::string& value) {
-  base::Value::List arr;
+  base::ListValue arr;
   arr.Append(value);
   return base::Value(std::move(arr));
 }
@@ -93,12 +93,12 @@ base::OnceCallback<void(StatusCode, std::string)> BindResult(
   return base::BindOnce(save_results, base::Unretained(&target));
 }
 
-base::Value::Dict BuildMetadata(const std::string& authorization_server_uri,
-                                const std::string& authorization_uri,
-                                const std::string& token_uri,
-                                const std::string& registration_uri,
-                                const std::string& revocation_uri) {
-  base::Value::Dict dict;
+base::DictValue BuildMetadata(const std::string& authorization_server_uri,
+                              const std::string& authorization_uri,
+                              const std::string& token_uri,
+                              const std::string& registration_uri,
+                              const std::string& revocation_uri) {
+  base::DictValue dict;
   dict.Set("issuer", authorization_server_uri);
   dict.Set("authorization_endpoint", authorization_uri);
   dict.Set("token_endpoint", token_uri);
@@ -137,7 +137,7 @@ std::string FakeAuthorizationServer::ReceiveGET(const std::string& url) {
 
 std::string FakeAuthorizationServer::ReceivePOSTWithJSON(
     const std::string& url,
-    base::Value::Dict& out_params) {
+    base::DictValue& out_params) {
   std::string payload;
   auto msg = GetNextRequest("POST", url, "application/json", payload);
   auto content =
@@ -165,9 +165,8 @@ std::string FakeAuthorizationServer::ReceivePOSTWithURLParams(
   return msg;
 }
 
-void FakeAuthorizationServer::ResponseWithJSON(
-    net::HttpStatusCode status,
-    const base::Value::Dict& params) {
+void FakeAuthorizationServer::ResponseWithJSON(net::HttpStatusCode status,
+                                               const base::DictValue& params) {
   CHECK(current_request_);
   std::string response_content;
   CHECK(base::JSONWriter::Write(params, &response_content));

@@ -213,7 +213,7 @@ bool SetIpAddress(const std::string& device_path,
                   const std::string& ipconfig_path,
                   const std::string& ip_address) {
   DevicePropertyObserver property_observer(device_path);
-  base::Value::List ip_configs;
+  base::ListValue ip_configs;
   ip_configs.Append(ipconfig_path);
   ShillDeviceClient::Get()->GetTestInterface()->SetDeviceProperty(
       device_path, shill::kIPConfigsProperty,

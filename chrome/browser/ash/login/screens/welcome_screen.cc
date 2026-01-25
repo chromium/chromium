@@ -411,7 +411,7 @@ void WelcomeScreen::HideImpl() {
   CancelChromeVoxHintIdleDetection();
 }
 
-void WelcomeScreen::OnUserAction(const base::Value::List& args) {
+void WelcomeScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionQuickStartClicked) {
     OnQuickStartClicked();
@@ -655,7 +655,7 @@ void WelcomeScreen::ScheduleResolveLanguageList(
 }
 
 void WelcomeScreen::OnLanguageListResolved(
-    base::Value::List new_language_list,
+    base::ListValue new_language_list,
     const std::string& new_language_list_locale,
     const std::string& new_selected_language) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

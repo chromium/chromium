@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_P(ChoobeScreenTestWithParams, SelectTiles) {
 
   test::OobeJS().ExpectVisiblePath(kDialogPath);
 
-  base::Value::List expected_selected_screens_ids_;
+  base::ListValue expected_selected_screens_ids_;
 
   // Select Screens
   if (is_theme_selection_selected) {

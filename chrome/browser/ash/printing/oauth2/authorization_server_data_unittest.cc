@@ -25,10 +25,10 @@ namespace {
 // Helper function that checks if `value_dict` contains a field `name` with
 // a single-element list that contains a string equals `value`. It doesn't stop
 // execution, just logs errors.
-void ExpectOneElementListOfStrings(const base::Value::Dict& dict,
+void ExpectOneElementListOfStrings(const base::DictValue& dict,
                                    const std::string& name,
                                    const std::string& value) {
-  const base::Value::List* list = dict.FindList(name);
+  const base::ListValue* list = dict.FindList(name);
   ASSERT_TRUE(list);
   ASSERT_EQ(list->size(), 1u);
   ASSERT_TRUE(list->front().is_string());
@@ -98,7 +98,7 @@ TEST(PrintingOAuth2AuthorizationServerDataTest, RegistrationRequest) {
   ASSERT_EQ(
       server.ReceiveGET("https://a.b/.well-known/oauth-authorization-server/c"),
       "");
-  base::Value::Dict params =
+  base::DictValue params =
       BuildMetadata("https://a.b/c", "https://a/auth", "https://b/token",
                     "https://c/reg", "https://d/rev");
   server.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, params);

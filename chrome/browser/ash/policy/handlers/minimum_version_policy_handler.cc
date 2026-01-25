@@ -119,8 +119,7 @@ MinimumVersionRequirement::MinimumVersionRequirement(
       eol_warning_time_(eol_warning) {}
 
 std::unique_ptr<MinimumVersionRequirement>
-MinimumVersionRequirement::CreateInstanceIfValid(
-    const base::Value::Dict& dict) {
+MinimumVersionRequirement::CreateInstanceIfValid(const base::DictValue& dict) {
   const std::string* version = dict.FindString(kChromeOsVersion);
   if (!version)
     return nullptr;
@@ -224,14 +223,14 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
     return;
   }
 
-  const base::Value::Dict* policy_value;
+  const base::DictValue* policy_value;
   if (!cros_settings_->GetDictionary(ash::kDeviceMinimumVersion,
                                      &policy_value)) {
     VLOG(1) << "Revoke policy - policy is unset or value is incorrect.";
     HandleUpdateNotRequired();
     return;
   }
-  const base::Value::List* entries = policy_value->FindList(kRequirements);
+  const base::ListValue* entries = policy_value->FindList(kRequirements);
   if (!entries || entries->empty()) {
     VLOG(1) << "Revoke policy - empty policy requirements.";
     HandleUpdateNotRequired();

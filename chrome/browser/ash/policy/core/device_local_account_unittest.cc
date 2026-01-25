@@ -25,8 +25,8 @@ constexpr char kKioskAppId[] = "kiosk_app_id";
 
 base::Value BuildDeviceLocalAccountsWithOneKioskAppWithEphemeralMode(
     DeviceLocalAccount::EphemeralMode ephemeral_mode) {
-  return base::Value(base::Value::List().Append(
-      base::Value::Dict()
+  return base::Value(base::ListValue().Append(
+      base::DictValue()
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, kAccountId)
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
                static_cast<int>(DeviceLocalAccountType::kKioskApp))
@@ -88,8 +88,8 @@ TEST_F(DeviceLocalAccountTest,
 
 TEST_F(DeviceLocalAccountTest,
        GetDeviceLocalAccountsWithMissingEphemeralModeShouldDefaultToUnset) {
-  SetDeviceLocalAccountsPolicy(base::Value(base::Value::List().Append(
-      base::Value::Dict()
+  SetDeviceLocalAccountsPolicy(base::Value(base::ListValue().Append(
+      base::DictValue()
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, kAccountId)
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
                static_cast<int>(DeviceLocalAccountType::kKioskApp))
@@ -106,8 +106,8 @@ TEST_F(DeviceLocalAccountTest,
 
 TEST_F(DeviceLocalAccountTest,
        GetDeviceLocalAccountsEphemeralModeShouldBeIgnoredForPublicSession) {
-  SetDeviceLocalAccountsPolicy(base::Value(base::Value::List().Append(
-      base::Value::Dict()
+  SetDeviceLocalAccountsPolicy(base::Value(base::ListValue().Append(
+      base::DictValue()
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, kAccountId)
           .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
                static_cast<int>(DeviceLocalAccountType::kPublicSession))

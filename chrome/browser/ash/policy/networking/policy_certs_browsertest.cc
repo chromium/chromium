@@ -609,7 +609,7 @@ class PolicyProvidedCertsForSigninExtensionTest
           test_certs_path.AppendASCII(kRootCaCert), &x509_contents));
     }
 
-    base::Value::Dict onc_dict = BuildONCForExtensionScopedCertificate(
+    base::DictValue onc_dict = BuildONCForExtensionScopedCertificate(
         x509_contents, kSigninScreenExtension1);
     ASSERT_TRUE(base::JSONWriter::Write(
         onc_dict, device_policy()
@@ -663,18 +663,17 @@ class PolicyProvidedCertsForSigninExtensionTest
  private:
   // Builds an ONC policy value that specifies exactly one certificate described
   // by |x509_contents| with Web trust to be used for |extension_id|.
-  base::Value::Dict BuildONCForExtensionScopedCertificate(
+  base::DictValue BuildONCForExtensionScopedCertificate(
       const std::string& x509_contents,
       const std::string& extension_id) {
-    auto onc_cert_scope = base::Value::Dict()
+    auto onc_cert_scope = base::DictValue()
                               .Set(onc::scope::kType, onc::scope::kExtension)
                               .Set(onc::scope::kId, extension_id);
 
-    auto onc_cert_trust_bits =
-        base::Value::List().Append(onc::certificate::kWeb);
+    auto onc_cert_trust_bits = base::ListValue().Append(onc::certificate::kWeb);
 
     auto onc_certificate =
-        base::Value::Dict()
+        base::DictValue()
             .Set(onc::certificate::kGUID, base::Value("guid"))
             .Set(onc::certificate::kType, onc::certificate::kAuthority)
             .Set(onc::certificate::kX509, x509_contents)
@@ -682,9 +681,9 @@ class PolicyProvidedCertsForSigninExtensionTest
             .Set(onc::certificate::kTrustBits, std::move(onc_cert_trust_bits));
 
     auto onc_certificates =
-        base::Value::List().Append(std::move(onc_certificate));
+        base::ListValue().Append(std::move(onc_certificate));
 
-    auto onc_dict = base::Value::Dict()
+    auto onc_dict = base::DictValue()
                         .Set(onc::toplevel_config::kCertificates,
                              std::move(onc_certificates))
                         .Set(onc::toplevel_config::kType,

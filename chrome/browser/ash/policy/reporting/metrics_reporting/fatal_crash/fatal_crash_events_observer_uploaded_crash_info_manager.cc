@@ -182,7 +182,7 @@ Status FatalCrashEventsObserver::UploadedCrashInfoManager::WriteSaveFile()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Value::Dict info;
+  base::DictValue info;
   info.Set(kCreationTimestampMsJsonKey,
            base::NumberToString(
                uploads_log_creation_time_.InMillisecondsSinceUnixEpoch()));

@@ -59,7 +59,7 @@ constexpr char kOsWifiConfigurations[] = "osWifiConfigurations";
 constexpr char kOsWallpaper[] = "osWallpaper";
 
 // This helper function to convert user selected items to UserSelectableOsType.
-void GetUserSelectedSyncOsType(const base::Value::Dict& os_sync_items,
+void GetUserSelectedSyncOsType(const base::DictValue& os_sync_items,
                                syncer::UserSelectableOsTypeSet& os_sync_set) {
   if (os_sync_items.FindBool(kOsApps).value()) {
     os_sync_set.Put(syncer::UserSelectableOsType::kOsApps);
@@ -460,7 +460,7 @@ void SyncConsentScreen::SetProfileSyncEngineInitializedForTesting(bool value) {
 void SyncConsentScreen::OnAshContinue(
     const bool opted_in,
     const bool review_sync,
-    const base::Value::List& consent_description_list,
+    const base::ListValue& consent_description_list,
     const std::string& consent_confirmation) {
   if (!view_ || is_hidden()) {
     return;
@@ -480,7 +480,7 @@ void SyncConsentScreen::OnAshContinue(
 
 void SyncConsentScreen::RecordAllConsents(
     const bool opted_in,
-    const base::Value::List& consent_description_list,
+    const base::ListValue& consent_description_list,
     const std::string& consent_confirmation) {
   auto consent_description =
       ::login::ConvertToStringList(consent_description_list);
@@ -503,19 +503,19 @@ void SyncConsentScreen::RecordAllConsents(
 }
 
 void SyncConsentScreen::OnLacrosContinue(
-    const base::Value::List& consent_description_list,
+    const base::ListValue& consent_description_list,
     const std::string& consent_confirmation) {
   RecordAllConsents(/*opted_in=*/true, consent_description_list,
                     consent_confirmation);
 }
 
-void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
+void SyncConsentScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
     CHECK_EQ(args.size(), 5u);
     const bool opted_in = args[1].GetBool();
     const bool review_sync = args[2].GetBool();
-    const base::Value::List& consent_description_list = args[3].GetList();
+    const base::ListValue& consent_description_list = args[3].GetList();
     const std::string& consent_confirmation = args[4].GetString();
     OnAshContinue(opted_in, review_sync, consent_description_list,
                   consent_confirmation);
@@ -524,7 +524,7 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionLacrosSync) {
     CHECK_EQ(args.size(), 3u);
 
-    const base::Value::List& consent_description_list = args[1].GetList();
+    const base::ListValue& consent_description_list = args[1].GetList();
     const std::string& consent_confirmation = args[2].GetString();
 
     OnLacrosContinue(consent_description_list, consent_confirmation);
@@ -559,10 +559,10 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
   }
   if (action_id == kUserActionLacrosCustom) {
     CHECK_EQ(args.size(), 4u);
-    const base::Value::Dict& osSyncItemsStatus = args[1].GetDict();
+    const base::DictValue& osSyncItemsStatus = args[1].GetDict();
     syncer::UserSelectableOsTypeSet os_sync_set;
 
-    const base::Value::List& consent_description_list = args[2].GetList();
+    const base::ListValue& consent_description_list = args[2].GetList();
     const std::string& consent_confirmation = args[3].GetString();
 
     OnLacrosContinue(consent_description_list, consent_confirmation);

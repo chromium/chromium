@@ -426,7 +426,7 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
       wifi_request_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_wifi_request_json);
   ASSERT_TRUE(parsed_wifi_request_json->is_dict());
-  base::Value::Dict& written_wifi_credentials_request =
+  base::DictValue& written_wifi_credentials_request =
       parsed_wifi_request_json.value().GetDict();
 
   // Try to decode the payload written to Nearby Connections
@@ -445,7 +445,7 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
                              base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_wifi_request_payload_json);
   ASSERT_TRUE(parsed_wifi_request_payload_json->is_dict());
-  base::Value::Dict& wifi_request_payload =
+  base::DictValue& wifi_request_payload =
       parsed_wifi_request_payload_json.value().GetDict();
 
   EXPECT_TRUE(wifi_request_payload.FindBool("request_wifi"));
@@ -509,7 +509,7 @@ TEST_F(ConnectionTest, RequestAccountInfo) {
       ash::quick_start::QuickStartMessage::ReadMessage(
           bootstrap_options_data, QuickStartMessageType::kBootstrapOptions);
   ASSERT_TRUE(read_result.has_value());
-  base::Value::Dict& bootstrap_options = *read_result.value()->GetPayload();
+  base::DictValue& bootstrap_options = *read_result.value()->GetPayload();
 
   // Verify that BootstrapOptions is written as expected.
   EXPECT_EQ(*bootstrap_options.FindInt(kAccountRequirementKey),
@@ -554,7 +554,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   ASSERT_TRUE(get_info_request.has_value());
 
   // Verify that FIDO GetInfo request is written as expected
-  base::Value::Dict* get_info_payload = get_info_request.value()->GetPayload();
+  base::DictValue* get_info_payload = get_info_request.value()->GetPayload();
   std::string get_info_message = *get_info_payload->FindString("fidoMessage");
   std::optional<std::vector<uint8_t>> get_info_command =
       base::Base64Decode(get_info_message);
@@ -684,7 +684,7 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
       ash::quick_start::QuickStartMessage::ReadMessage(
           notify_source_data, QuickStartMessageType::kQuickStartPayload);
   ASSERT_TRUE(read_result.has_value());
-  base::Value::Dict& parsed_payload = *read_result.value()->GetPayload();
+  base::DictValue& parsed_payload = *read_result.value()->GetPayload();
 
   EXPECT_EQ(parsed_payload.FindBool(kNotifySourceOfUpdateMessageKey), true);
 
@@ -1053,7 +1053,7 @@ TEST_F(ConnectionTest, CloseFromUserAbortedNotifiesPhoneWhenAuthenticated) {
       ash::quick_start::QuickStartMessage::ReadMessage(
           notify_source_data, QuickStartMessageType::kBootstrapState);
   ASSERT_TRUE(read_result.has_value());
-  base::Value::Dict& parsed_payload = *read_result.value()->GetPayload();
+  base::DictValue& parsed_payload = *read_result.value()->GetPayload();
 
   EXPECT_EQ(parsed_payload.FindInt(kBootstrapStateKey), kBootstrapStateCancel);
   TestMessageMetrics(
@@ -1085,7 +1085,7 @@ TEST_F(ConnectionTest, NotifyPhoneSetupComplete) {
       ash::quick_start::QuickStartMessage::ReadMessage(
           notify_source_data, QuickStartMessageType::kBootstrapState);
   ASSERT_TRUE(read_result.has_value());
-  base::Value::Dict& parsed_payload = *read_result.value()->GetPayload();
+  base::DictValue& parsed_payload = *read_result.value()->GetPayload();
 
   EXPECT_EQ(parsed_payload.FindInt(kBootstrapStateKey),
             kBootstrapStateComplete);
@@ -1124,7 +1124,7 @@ TEST_P(ConnectionBootstrapOptionsDeviceNameTest, DeviceNames) {
       ash::quick_start::QuickStartMessage::ReadMessage(
           bootstrap_options_data, QuickStartMessageType::kBootstrapOptions);
   ASSERT_TRUE(read_result.has_value());
-  base::Value::Dict& bootstrap_options = *read_result.value()->GetPayload();
+  base::DictValue& bootstrap_options = *read_result.value()->GetPayload();
 
   EXPECT_EQ(*bootstrap_options.FindString(kDeviceNameKey),
             GetParam().device_name);

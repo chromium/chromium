@@ -39,7 +39,7 @@ constexpr char kMaskedString[] = "*** MASKED ***";
 
 // Recursively scrubs dictionaries, masking any values in
 // system_logs::MakeFixedFlatMap.
-void ScrubDictionary(base::Value::Dict& dict) {
+void ScrubDictionary(base::DictValue& dict) {
   for (auto entry : dict) {
     base::Value& value = entry.second;
     if (value.is_dict()) {
@@ -72,14 +72,14 @@ void ShillLogSource::Fetch(SysLogsSourceCallback callback) {
 }
 
 void ShillLogSource::OnGetManagerProperties(
-    std::optional<base::Value::Dict> result) {
+    std::optional<base::DictValue> result) {
   if (!result) {
     LOG(ERROR) << "ManagerPropertiesCallback Failed";
     std::move(callback_).Run(std::make_unique<SystemLogsResponse>());
     return;
   }
 
-  const base::Value::List* devices = result->FindList(shill::kDevicesProperty);
+  const base::ListValue* devices = result->FindList(shill::kDevicesProperty);
   if (devices) {
     for (const base::Value& device : *devices) {
       std::string path = GetString(&device);
@@ -93,8 +93,7 @@ void ShillLogSource::OnGetManagerProperties(
     }
   }
 
-  const base::Value::List* services =
-      result->FindList(shill::kServicesProperty);
+  const base::ListValue* services = result->FindList(shill::kServicesProperty);
   if (services) {
     for (const base::Value& service : *services) {
       std::string path = GetString(&service);
@@ -112,7 +111,7 @@ void ShillLogSource::OnGetManagerProperties(
 }
 
 void ShillLogSource::OnGetDevice(const std::string& device_path,
-                                 std::optional<base::Value::Dict> properties) {
+                                 std::optional<base::DictValue> properties) {
   if (!properties) {
     LOG(ERROR) << "Get Device Properties Failed for : " << device_path;
   } else {
@@ -124,11 +123,11 @@ void ShillLogSource::OnGetDevice(const std::string& device_path,
 
 void ShillLogSource::AddDeviceAndRequestIPConfigs(
     const std::string& device_path,
-    const base::Value::Dict& properties) {
+    const base::DictValue& properties) {
   base::Value* device = devices_.Set(
       device_path, ScrubAndExpandProperties(device_path, properties));
 
-  const base::Value::List* ip_configs =
+  const base::ListValue* ip_configs =
       properties.FindList(shill::kIPConfigsProperty);
   if (!ip_configs) {
     return;
@@ -147,14 +146,13 @@ void ShillLogSource::AddDeviceAndRequestIPConfigs(
                        ip_config_path));
   }
   if (!ip_config_paths_.empty()) {
-    device->GetDict().Set(shill::kIPConfigsProperty, base::Value::Dict{});
+    device->GetDict().Set(shill::kIPConfigsProperty, base::DictValue{});
   }
 }
 
-void ShillLogSource::OnGetIPConfig(
-    const std::string& device_path,
-    const std::string& ip_config_path,
-    std::optional<base::Value::Dict> properties) {
+void ShillLogSource::OnGetIPConfig(const std::string& device_path,
+                                   const std::string& ip_config_path,
+                                   std::optional<base::DictValue> properties) {
   if (!properties) {
     LOG(ERROR) << "Get IPConfig Properties Failed for : " << device_path << ": "
                << ip_config_path;
@@ -168,17 +166,17 @@ void ShillLogSource::OnGetIPConfig(
 
 void ShillLogSource::AddIPConfig(const std::string& device_path,
                                  const std::string& ip_config_path,
-                                 const base::Value::Dict& properties) {
-  base::Value::Dict* device = devices_.FindDict(device_path);
+                                 const base::DictValue& properties) {
+  base::DictValue* device = devices_.FindDict(device_path);
   DCHECK(device);
-  base::Value::Dict* ip_configs = device->FindDict(shill::kIPConfigsProperty);
+  base::DictValue* ip_configs = device->FindDict(shill::kIPConfigsProperty);
   DCHECK(ip_configs);
   ip_configs->Set(ip_config_path,
                   ScrubAndExpandProperties(ip_config_path, properties));
 }
 
 void ShillLogSource::OnGetService(const std::string& service_path,
-                                  std::optional<base::Value::Dict> properties) {
+                                  std::optional<base::DictValue> properties) {
   if (!properties) {
     LOG(ERROR) << "Get Service Properties Failed for : " << service_path;
   } else {
@@ -189,15 +187,15 @@ void ShillLogSource::OnGetService(const std::string& service_path,
   CheckIfDone();
 }
 
-base::Value::Dict ShillLogSource::ScrubAndExpandProperties(
+base::DictValue ShillLogSource::ScrubAndExpandProperties(
     const std::string& object_path,
-    const base::Value::Dict& properties) {
-  base::Value::Dict dict = properties.Clone();
+    const base::DictValue& properties) {
+  base::DictValue dict = properties.Clone();
 
   // Convert UIData from a string to a dictionary.
   std::string* ui_data = dict.FindString(shill::kUIDataProperty);
   if (ui_data) {
-    std::optional<base::Value::Dict> ui_data_dict =
+    std::optional<base::DictValue> ui_data_dict =
         chromeos::onc::ReadDictionaryFromJson(*ui_data);
     if (ui_data_dict.has_value()) {
       dict.Set(shill::kUIDataProperty, std::move(*ui_data_dict));

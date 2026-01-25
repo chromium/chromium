@@ -291,8 +291,7 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
                     "Quick Start after the update.";
     PrefService* prefs = g_browser_process->local_state();
     prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
-    base::Value::Dict info =
-        authenticated_connection_->GetPrepareForUpdateInfo();
+    base::DictValue info = authenticated_connection_->GetPrepareForUpdateInfo();
     prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
     prefs->CommitPendingWrite();
   }

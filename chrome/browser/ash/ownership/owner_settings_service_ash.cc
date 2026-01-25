@@ -275,7 +275,7 @@ bool OwnerSettingsServiceAsh::Set(const std::string& setting,
 // 2: retrieve the list with CrosSettings, be careful
 // - the CrosSettings is on observer of this object
 // - or the list is already written to the disk
-base::Value::List OwnerSettingsServiceAsh::GetListForSetting(
+base::ListValue OwnerSettingsServiceAsh::GetListForSetting(
     const std::string& setting) const {
   auto iter = pending_changes_.find(setting);
   if (iter != pending_changes_.end()) {
@@ -283,20 +283,20 @@ base::Value::List OwnerSettingsServiceAsh::GetListForSetting(
     if (!pending_val->is_list()) {
       LOG(ERROR) << "The " << setting << " setting is not a list!";
       base::debug::DumpWithoutCrashing();
-      return base::Value::List();
+      return base::ListValue();
     }
     return pending_val->GetList().Clone();
   }
   const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
 
   if (old_value == nullptr) {
-    return base::Value::List();
+    return base::ListValue();
   }
 
   if (!old_value->is_list()) {
     LOG(ERROR) << "The " << setting << " setting is not a list!";
     base::debug::DumpWithoutCrashing();
-    return base::Value::List();
+    return base::ListValue();
   }
 
   return old_value->GetList().Clone();
@@ -305,7 +305,7 @@ base::Value::List OwnerSettingsServiceAsh::GetListForSetting(
 bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
                                            const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::Value::List new_value = GetListForSetting(setting);
+  base::ListValue new_value = GetListForSetting(setting);
   new_value.Append(value.Clone());
   return Set(setting, base::Value(std::move(new_value)));
 }
@@ -313,7 +313,7 @@ bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
 bool OwnerSettingsServiceAsh::RemoveFromList(const std::string& setting,
                                              const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::Value::List new_value = GetListForSetting(setting);
+  base::ListValue new_value = GetListForSetting(setting);
   new_value.EraseValue(value);
   return Set(setting, base::Value(std::move(new_value)));
 }
@@ -483,7 +483,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     if (value.is_list()) {
       for (const auto& entry : value.GetList()) {
         if (entry.is_dict()) {
-          const base::Value::Dict& entry_dict = entry.GetDict();
+          const base::DictValue& entry_dict = entry.GetDict();
           em::DeviceLocalAccountInfoProto* account =
               device_local_accounts->add_account();
           const std::string* account_id =

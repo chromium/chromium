@@ -236,7 +236,7 @@ void MarketingBackendConnector::OnSimpleLoaderCompleteInternal(
 }
 
 std::string MarketingBackendConnector::GetRequestContent() {
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
   request_dict.Set("country_code", country_code_);
   request_dict.Set("language", "en");
 

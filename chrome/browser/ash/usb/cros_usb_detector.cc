@@ -706,7 +706,7 @@ void CrosUsbDetector::OnDeviceChecked(
   // If device exists in persistent passthrough dict, skip notifications and
   // connect it to the appropriate guest.
   PrefService* prefs = profile()->GetPrefs();
-  const base::Value::Dict& persistent_passthrough_devices =
+  const base::DictValue& persistent_passthrough_devices =
       prefs->GetDict(guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
 
   const std::string* device = persistent_passthrough_devices.FindString(
@@ -1118,7 +1118,7 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
           guest_os::prefs::kGuestOsUSBPersistentPassthroughEnabled)) {
     ScopedDictPrefUpdate update(
         prefs, guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
-    base::Value::Dict& devices = update.Get();
+    base::DictValue& devices = update.Get();
     std::string device_identifier = UsbDeviceIdentifier(device_info);
     LOG(WARNING) << "After successful connection of " << device_identifier
                  << "to " << guest_id.Serialize()

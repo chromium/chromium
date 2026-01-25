@@ -1405,7 +1405,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
   embedded_test_server()->StartAcceptingConnections();
 
   // Specify an external data reference for the key::kUserAvatarImage policy.
-  base::Value::Dict metadata = test::ConstructExternalDataReference(
+  base::DictValue metadata = test::ConstructExternalDataReference(
       embedded_test_server()->GetURL(kExternalDataPath).spec(), kExternalData);
   std::string policy = base::WriteJson(metadata).value_or("");
   device_local_account_policy_.payload().mutable_useravatarimage()->set_value(
@@ -1521,9 +1521,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
 
   EXPECT_EQ(user_manager::UserImage::Type::kExternal, user->image_index());
   EXPECT_TRUE(ash::test::AreImagesEqual(policy_image, user->GetImage()));
-  const base::Value::Dict& images_pref =
+  const base::DictValue& images_pref =
       g_browser_process->local_state()->GetDict("user_image_info");
-  const base::Value::Dict* image_properties =
+  const base::DictValue* image_properties =
       images_pref.FindDict(account_id_1_.GetUserEmail());
   ASSERT_TRUE(image_properties);
   std::optional<int> image_index = image_properties->FindInt("index");
@@ -2768,14 +2768,14 @@ class MgsDisplayPrefsTest : public DeviceLocalAccountTest,
 
   bool IsMgsAllowedToStoreDisplayProperties() { return GetParam(); }
 
-  const base::Value::Dict* GetDisplayProperties() {
-    const base::Value::Dict& display_properties =
+  const base::DictValue* GetDisplayProperties() {
+    const base::DictValue& display_properties =
         local_state_->GetDict(ash::prefs::kDisplayProperties);
     return display_properties.FindDict(
         base::NumberToString(GetPrimaryDisplay().id()));
   }
 
-  void UpdateDisplayProperties(base::Value::Dict properties) {
+  void UpdateDisplayProperties(base::DictValue properties) {
     ScopedDictPrefUpdate update(local_state_, ash::prefs::kDisplayProperties);
     update->Set(base::NumberToString(GetPrimaryDisplay().id()),
                 std::move(properties));
@@ -2821,7 +2821,7 @@ IN_PROC_BROWSER_TEST_P(MgsDisplayPrefsTest,
   // modes with resolution 1960x1000 and 1000x600.
   UpdateDisplay("1960x1000#1960x1000*1|1000x600*2");
   UpdateDisplayProperties(
-      base::Value::Dict()
+      base::DictValue()
           .Set("rotation", display::Display::Rotation::ROTATE_0)
           .Set("width", 1960)
           .Set("height", 1000));

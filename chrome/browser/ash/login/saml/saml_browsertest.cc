@@ -2142,7 +2142,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLBlocklistNavigationDisallowed) {
       BrowserContextHelper::Get()->GetSigninBrowserContext())
       ->GetPrefs()
       ->SetList(policy::policy_prefs::kUrlBlocklist,
-                base::Value::List().Append(kSAMLLinkedPageURLPattern));
+                base::ListValue().Append(kSAMLLinkedPageURLPattern));
 
   ShowSAMLLoginForm();
 

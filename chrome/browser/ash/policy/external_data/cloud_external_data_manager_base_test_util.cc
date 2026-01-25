@@ -35,16 +35,16 @@ const char kHashKey[] = "hash";
 
 namespace test {
 
-base::Value::Dict ConstructExternalDataReference(const std::string& url,
-                                                 const std::string& data) {
+base::DictValue ConstructExternalDataReference(const std::string& url,
+                                               const std::string& data) {
   const std::string hash = crypto::SHA256HashString(data);
-  base::Value::Dict metadata;
+  base::DictValue metadata;
   metadata.Set(kUrlKey, url);
   metadata.Set(kHashKey, base::HexEncode(hash));
   return metadata;
 }
 
-base::Value::Dict ConstructExternalDataPolicy(
+base::DictValue ConstructExternalDataPolicy(
     const net::test_server::EmbeddedTestServer& test_server,
     const std::string& external_data_path) {
   std::string url =

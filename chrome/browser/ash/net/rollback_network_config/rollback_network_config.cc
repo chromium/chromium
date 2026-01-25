@@ -40,12 +40,12 @@ bool IsDeviceEnterpriseEnrolled() {
   return InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
-bool OncIsPskWiFi(const base::Value::Dict& network) {
+bool OncIsPskWiFi(const base::DictValue& network) {
   return rollback_network_config::OncIsWiFi(network) &&
          rollback_network_config::OncWiFiIsPsk(network);
 }
 
-bool ShouldSaveNetwork(const base::Value::Dict& network) {
+bool ShouldSaveNetwork(const base::DictValue& network) {
   return (rollback_network_config::OncIsSourceDevicePolicy(network) ||
           rollback_network_config::OncIsSourceDevice(network)) &&
          (rollback_network_config::OncHasNoSecurity(network) ||
@@ -69,7 +69,7 @@ NetworkStateHandler* network_state_handler() {
 // if it was a device wide user configured network. In particular this will
 // configure policy-set values as user configured as well.
 void ManagedOncConfigureActivePartAsDeviceWide(
-    base::Value::Dict network,
+    base::DictValue network,
     base::OnceCallback<void(bool)> callback) {
   base::Value network_value(std::move(network));
   rollback_network_config::ManagedOncCollapseToActive(&network_value);
@@ -119,7 +119,7 @@ NetworkStateHandler::NetworkStateList GetDeviceWideWiFiAndEthernetNetworks() {
   return networks;
 }
 
-void ReconfigureUiData(const base::Value::Dict& network_config,
+void ReconfigureUiData(const base::DictValue& network_config,
                        const std::string& guid) {
   const NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
@@ -180,7 +180,7 @@ class RollbackNetworkConfig::Exporter {
  private:
   void OnGetManagedNetworkConfig(base::OnceClosure network_finished,
                                  const std::string& service_path,
-                                 std::optional<base::Value::Dict> properties,
+                                 std::optional<base::DictValue> properties,
                                  std::optional<std::string> error);
 
   void AddPskPassword(base::ScopedClosureRunner exit_call,
@@ -197,7 +197,7 @@ class RollbackNetworkConfig::Exporter {
   void SendNetworkConfigs(ExportCallback callback);
   std::string SerializeNetworkConfigs() const;
 
-  std::vector<base::Value::Dict> network_configs_;
+  std::vector<base::DictValue> network_configs_;
   ExportCallback callback_;
 
   base::WeakPtrFactory<Exporter> weak_factory_{this};
@@ -226,7 +226,7 @@ void RollbackNetworkConfig::Exporter::Export(ExportCallback callback) {
 void RollbackNetworkConfig::Exporter::OnGetManagedNetworkConfig(
     base::OnceClosure network_finished,
     const std::string& service_path,
-    std::optional<base::Value::Dict> managed_network,
+    std::optional<base::DictValue> managed_network,
     std::optional<std::string> error) {
   base::ScopedClosureRunner exit_call(std::move(network_finished));
 
@@ -272,7 +272,7 @@ void RollbackNetworkConfig::Exporter::AddPskPassword(
     LOG(ERROR) << error_name << " " << error_message;
     return;
   }
-  base::Value::Dict* network = &network_configs_[network_idx];
+  base::DictValue* network = &network_configs_[network_idx];
   rollback_network_config::ManagedOncWiFiSetPskPassword(network, *password);
 }
 
@@ -286,7 +286,7 @@ void RollbackNetworkConfig::Exporter::AddEapPassword(
     LOG(ERROR) << error_name << " " << error_message;
     return;
   }
-  base::Value::Dict* network = &network_configs_[network_idx];
+  base::DictValue* network = &network_configs_[network_idx];
   rollback_network_config::ManagedOncSetEapPassword(network, *password);
 }
 
@@ -296,14 +296,14 @@ void RollbackNetworkConfig::Exporter::SendNetworkConfigs(
 }
 
 std::string RollbackNetworkConfig::Exporter::SerializeNetworkConfigs() const {
-  base::Value::List network_config_list;
+  base::ListValue network_config_list;
   for (const auto& network_config : network_configs_) {
     network_config_list.Append(network_config.Clone());
   }
 
   auto complete_network_configuration =
-      base::Value::Dict().Set(onc::toplevel_config::kNetworkConfigurations,
-                              std::move(network_config_list));
+      base::DictValue().Set(onc::toplevel_config::kNetworkConfigurations,
+                            std::move(network_config_list));
   return base::WriteJson(complete_network_configuration).value_or("");
 }
 
@@ -335,7 +335,7 @@ class RollbackNetworkConfig::Importer : public DeviceSettingsService::Observer,
 
   bool IsOwnershipTaken() const;
 
-  std::vector<base::Value::Dict> imported_networks_;
+  std::vector<base::DictValue> imported_networks_;
 
   bool all_networks_successfully_configured = true;
 
@@ -363,7 +363,7 @@ RollbackNetworkConfig::Importer::~Importer() {
 
 void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
                                              ImportCallback callback) {
-  std::optional<base::Value::Dict> managed_onc_network_config =
+  std::optional<base::DictValue> managed_onc_network_config =
       base::JSONReader::ReadDict(network_config,
                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
@@ -372,7 +372,7 @@ void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
     return;
   }
 
-  base::Value::List* network_list = managed_onc_network_config->FindList(
+  base::ListValue* network_list = managed_onc_network_config->FindList(
       onc::toplevel_config::kNetworkConfigurations);
   if (!network_list) {
     std::move(callback).Run(false);
@@ -391,7 +391,7 @@ void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
   bool ownership_taken = IsOwnershipTaken();
 
   for (base::Value& network : *network_list) {
-    base::Value::Dict* network_dict = network.GetIfDict();
+    base::DictValue* network_dict = network.GetIfDict();
     if (!network_dict) {
       continue;
     }
@@ -435,7 +435,7 @@ void RollbackNetworkConfig::Importer::PoliciesApplied(
     return;
   }
 
-  for (const base::Value::Dict& network_config : imported_networks_) {
+  for (const base::DictValue& network_config : imported_networks_) {
     const std::string& guid = rollback_network_config::GetStringValue(
         network_config, onc::network_config::kGUID);
     const NetworkState* network_state =
@@ -458,7 +458,7 @@ void RollbackNetworkConfig::Importer::PoliciesApplied(
 }
 
 void RollbackNetworkConfig::Importer::DeleteImportedPolicyNetworks() {
-  for (const base::Value::Dict& network_config : imported_networks_) {
+  for (const base::DictValue& network_config : imported_networks_) {
     const std::string& guid = rollback_network_config::GetStringValue(
         network_config, onc::network_config::kGUID);
 

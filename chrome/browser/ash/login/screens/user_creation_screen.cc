@@ -129,7 +129,7 @@ void UserCreationScreen::SetChildSetupStep() {
   view_->SetChildSetupStep();
 }
 
-void UserCreationScreen::OnUserAction(const base::Value::List& args) {
+void UserCreationScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionSignIn) {
     context()->sign_in_as_child = false;

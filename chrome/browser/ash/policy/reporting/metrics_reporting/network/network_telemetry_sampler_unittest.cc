@@ -162,7 +162,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
           base::Value(network_data.signal_strength));
       service_client->SetServiceProperty(service_path, shill::kDeviceProperty,
                                          base::Value(device_path));
-      base::Value::Dict network_config_dict;
+      base::DictValue network_config_dict;
       // When kNetworkConfigProperty, IP address is parsed as CIDR address.
       // Thus, add subnet mask to the IP address.
       const std::string cidr_ipv4_address = network_data.ip_address + "/24";
@@ -171,7 +171,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
       network_config_dict.Set(shill::kNetworkConfigIPv4GatewayProperty,
                               network_data.gateway);
       if (!network_data.ipv6_addresses.empty()) {
-        base::Value::List ipv6_addresses;
+        base::ListValue ipv6_addresses;
         for (const auto& ipv6_address : network_data.ipv6_addresses) {
           // Same as ipv4 address, ipv6 address is parsed as CIDR address.
           const std::string cidr_ipv6_address = ipv6_address + "/112";

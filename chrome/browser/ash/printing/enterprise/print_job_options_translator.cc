@@ -79,14 +79,13 @@ std::optional<DPI> DpiFromValue(const base::Value& dpi) {
 
 template <typename OptionType, typename OptionValueType>
 OptionType OptionFromDict(
-    const base::Value::Dict& option_dict,
+    const base::DictValue& option_dict,
     base::RepeatingCallback<std::optional<OptionValueType>(const base::Value&)>
         get_option_value) {
   OptionType option;
 
   const base::Value* default_value = option_dict.Find(kDefaultValue);
-  const base::Value::List* allowed_values =
-      option_dict.FindList(kAllowedValues);
+  const base::ListValue* allowed_values = option_dict.FindList(kAllowedValues);
 
   // Protobuf generates different setter mechanisms (either `set_X()` or
   // `mutable_X()`) based on the field type. `set_X()` is generated for numeric
@@ -242,15 +241,15 @@ std::optional<Printer::PrintOption<OptionValueType>> ParsePrinterJobOption(
 }  // namespace
 
 PrintJobOptions ManagedPrintOptionsProtoFromDict(
-    const base::Value::Dict& print_job_options) {
+    const base::DictValue& print_job_options) {
   PrintJobOptions result;
-  const base::Value::Dict* media_size = print_job_options.FindDict(kMediaSize);
-  const base::Value::Dict* media_type = print_job_options.FindDict(kMediaType);
-  const base::Value::Dict* duplex = print_job_options.FindDict(kDuplex);
-  const base::Value::Dict* color = print_job_options.FindDict(kColor);
-  const base::Value::Dict* dpi = print_job_options.FindDict(kDpi);
-  const base::Value::Dict* quality = print_job_options.FindDict(kQuality);
-  const base::Value::Dict* print_as_image =
+  const base::DictValue* media_size = print_job_options.FindDict(kMediaSize);
+  const base::DictValue* media_type = print_job_options.FindDict(kMediaType);
+  const base::DictValue* duplex = print_job_options.FindDict(kDuplex);
+  const base::DictValue* color = print_job_options.FindDict(kColor);
+  const base::DictValue* dpi = print_job_options.FindDict(kDpi);
+  const base::DictValue* quality = print_job_options.FindDict(kQuality);
+  const base::DictValue* print_as_image =
       print_job_options.FindDict(kPrintAsImage);
 
   if (media_size) {

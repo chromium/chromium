@@ -330,7 +330,7 @@ void TokenHandleUtil::TokenDelegate::RecordTokenCheckResponseTime() {
 }
 
 void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
-    const base::Value::Dict& token_info) {
+    const base::DictValue& token_info) {
   Status outcome = Status::kUnknown;
   if (!token_info.Find("error")) {
     std::optional<int> expires_in = token_info.FindInt("expires_in");

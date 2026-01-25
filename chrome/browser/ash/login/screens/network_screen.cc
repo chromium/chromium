@@ -163,7 +163,7 @@ void NetworkScreen::HideImpl() {
       ->DetachFrontend(this);
 }
 
-void NetworkScreen::OnUserAction(const base::Value::List& args) {
+void NetworkScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionQuickStartButtonClicked) {
     OnQuickStartButtonClicked();
@@ -234,7 +234,7 @@ void NetworkScreen::OnUiUpdateRequested(
     // user that WiFi transfer has failed and that they should try again.
     if (view_) {
       view_->ShowScreenWithData(
-          base::Value::Dict().Set("useQuickStartWiFiErrorStrings", true));
+          base::DictValue().Set("useQuickStartWiFiErrorStrings", true));
     }
   }
 }
@@ -463,7 +463,7 @@ void NetworkScreen::ExitQuickStartFlow(
     if (view_) {
       SetQuickStartButtonVisibility(/*visible=*/true);
       view_->ShowScreenWithData(
-          base::Value::Dict().Set("useQuickStartWiFiErrorStrings", true));
+          base::DictValue().Set("useQuickStartWiFiErrorStrings", true));
     }
     return;
   }
@@ -491,15 +491,14 @@ void NetworkScreen::ShowStepsWhenQuickStartOngoing() {
     const auto credentials = context()->quick_start_wifi_credentials.value();
     context()->quick_start_wifi_credentials.reset();
     ConfigureWifiNetwork(credentials);
-    view_->ShowScreenWithData(
-        base::Value::Dict().Set("ssid", credentials.ssid));
+    view_->ShowScreenWithData(base::DictValue().Set("ssid", credentials.ssid));
   } else {
     // QuickStart is ongoing, but no WiFi credentials have been provided.
     // Customize the UI with a specific subtitle informing the user that they
     // need to connect to a network in order to continue setting up with their
     // Android phone.
     view_->ShowScreenWithData(
-        base::Value::Dict().Set("useQuickStartSubtitle", true));
+        base::DictValue().Set("useQuickStartSubtitle", true));
   }
 }
 

@@ -55,7 +55,7 @@ using remoting::features::kAutoApproveEnterpriseSharedSessions;
 using remoting::features::kEnableCrdSharedSessionToUnattendedDevice;
 using test::TestSessionType;
 
-using Payload = base::Value::Dict;
+using Payload = base::DictValue;
 
 namespace em = ::enterprise_management;
 

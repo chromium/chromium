@@ -22,7 +22,7 @@ namespace chromeos {
 // message.
 COMPONENT_EXPORT(CHROMEOS_PRINTING)
 std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
-    const base::Value::Dict& config);
+    const base::DictValue& config);
 
 // Returns a new printer populated with the fields from `managed_printer` or
 // `std::nullopt` if `managed_printer` does not represent a valid printer

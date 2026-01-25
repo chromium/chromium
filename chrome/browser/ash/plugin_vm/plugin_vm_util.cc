@@ -77,7 +77,7 @@ void SetFakePluginVmPolicy(Profile* profile,
                            const std::string& license_key) {
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               plugin_vm::prefs::kPluginVmImage);
-  base::Value::Dict& dict = update.Get();
+  base::DictValue& dict = update.Get();
   dict.SetByDottedPath(prefs::kPluginVmImageUrlKeyName, image_url);
   dict.SetByDottedPath(prefs::kPluginVmImageHashKeyName, image_hash);
   plugin_vm::PluginVmInstallerFactory::GetForProfile(profile)

@@ -111,7 +111,7 @@ bool GetDeviceManager(std::string* out_manager) {
 // `out_selected_locale`: Output value of the initially selected locale.
 // `out_multiple_locales`: Output value indicates whether we have multiple
 // recommended locales.
-base::Value::List GetPublicSessionLocales(
+base::ListValue GetPublicSessionLocales(
     const std::vector<std::string>* public_session_recommended_locales,
     std::string* out_selected_locale,
     bool* out_multiple_locales) {

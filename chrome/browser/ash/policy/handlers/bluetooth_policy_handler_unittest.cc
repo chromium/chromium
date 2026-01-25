@@ -98,7 +98,7 @@ class BluetoothPolicyHandlerTest : public testing::Test {
         ash::kAllowBluetooth, allow_bluetooth);
   }
 
-  void SetDeviceAllowedBluetoothServices(base::Value::List allowlist) {
+  void SetDeviceAllowedBluetoothServices(base::ListValue allowlist) {
     scoped_testing_cros_settings_.device_settings()->Set(
         ash::kDeviceAllowedBluetoothServices,
         base::Value(std::move(allowlist)));
@@ -155,7 +155,7 @@ TEST_F(BluetoothPolicyHandlerTest, OnDuringStartup) {
 }
 
 TEST_F(BluetoothPolicyHandlerTest, TestSetServiceAllowList) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   const char kTestUuid1[] = "0x1124";
   const char kTestUuid2[] = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
   allowlist.Append(kTestUuid1);
@@ -172,7 +172,7 @@ TEST_F(BluetoothPolicyHandlerTest, TestSetServiceAllowList) {
 }
 
 TEST_F(BluetoothPolicyHandlerTest, TestPolicySettingsWhileBTNotReady) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   const char kTestUuid1[] = "0x1124";
   const char kTestUuid2[] = "0x1108";
   std::vector<device::BluetoothUUID> allowlist_result;

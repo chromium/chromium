@@ -42,8 +42,8 @@ class QuickUnlockUtilsUnitTest : public testing::Test {
     pref_service_factory_.set_user_prefs(pref_store_);
   }
 
-  void SetValues(base::Value::List quick_unlock_modes,
-                 base::Value::List webauthn_factors) {
+  void SetValues(base::ListValue quick_unlock_modes,
+                 base::ListValue webauthn_factors) {
     pref_store_->SetValue(prefs::kQuickUnlockModeAllowlist,
                           base::Value(std::move(quick_unlock_modes)),
                           /*flags=*/0);
@@ -77,8 +77,8 @@ TEST_F(QuickUnlockUtilsUnitTest, DefaultPrefIsEnableAll) {
 }
 
 TEST_F(QuickUnlockUtilsUnitTest, DisableAll) {
-  base::Value::List quick_unlock_none;
-  base::Value::List webauthn_none;
+  base::ListValue quick_unlock_none;
+  base::ListValue webauthn_none;
   SetValues(std::move(quick_unlock_none), std::move(webauthn_none));
   auto pref_service = GetPrefService();
   EXPECT_TRUE(IsPinDisabledByPolicy(pref_service.get(), Purpose::kAny));
@@ -96,9 +96,9 @@ TEST_F(QuickUnlockUtilsUnitTest, DisableAll) {
 // purposes kUnlock and kWebAuthn are independently controlled by the two
 // prefs.
 TEST_F(QuickUnlockUtilsUnitTest, QuickUnlockAllWebAuthnEmpty) {
-  base::Value::List quick_unlock_all;
+  base::ListValue quick_unlock_all;
   quick_unlock_all.Append(kFactorsOptionAll);
-  base::Value::List webauthn_none;
+  base::ListValue webauthn_none;
   SetValues(std::move(quick_unlock_all), std::move(webauthn_none));
   auto pref_service = GetPrefService();
   EXPECT_FALSE(IsPinDisabledByPolicy(pref_service.get(), Purpose::kAny));
@@ -113,8 +113,8 @@ TEST_F(QuickUnlockUtilsUnitTest, QuickUnlockAllWebAuthnEmpty) {
 }
 
 TEST_F(QuickUnlockUtilsUnitTest, QuickUnlockEmptyWebAuthnAll) {
-  base::Value::List quick_unlock_none;
-  base::Value::List webauthn_all;
+  base::ListValue quick_unlock_none;
+  base::ListValue webauthn_all;
   webauthn_all.Append(kFactorsOptionAll);
   SetValues(std::move(quick_unlock_none), std::move(webauthn_all));
   auto pref_service = GetPrefService();
@@ -130,9 +130,9 @@ TEST_F(QuickUnlockUtilsUnitTest, QuickUnlockEmptyWebAuthnAll) {
 }
 
 TEST_F(QuickUnlockUtilsUnitTest, QuickUnlockPinWebAuthnFingerprint) {
-  base::Value::List quick_unlock_pin;
+  base::ListValue quick_unlock_pin;
   quick_unlock_pin.Append(kFactorsOptionPin);
-  base::Value::List webauthn_fingerprint;
+  base::ListValue webauthn_fingerprint;
   webauthn_fingerprint.Append(kFactorsOptionFingerprint);
   SetValues(std::move(quick_unlock_pin), std::move(webauthn_fingerprint));
   auto pref_service = GetPrefService();

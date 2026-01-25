@@ -43,7 +43,7 @@ std::string PolicyPrinterId(const std::string& json) {
 
 namespace {
 
-std::vector<std::string> ConvertToVector(const base::Value::List& list) {
+std::vector<std::string> ConvertToVector(const base::ListValue& list) {
   std::vector<std::string> string_list;
   for (const base::Value& value : list) {
     if (value.is_string()) {
@@ -151,7 +151,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
       // unique so we'll hash the record.  This will not collide with the
       // UUIDs generated for user entries.
       std::string id = printing::PolicyPrinterId(printer_json);
-      base::Value::Dict& printer_dictionary = printer_value.value().GetDict();
+      base::DictValue& printer_dictionary = printer_value.value().GetDict();
       printer_dictionary.Set(chromeos::kPrinterId, id);
 
       auto new_printer =

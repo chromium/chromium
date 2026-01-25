@@ -86,7 +86,7 @@ void ChoobeScreen::SkipScreen() {
   exit_callback_.Run(Result::SKIPPED);
 }
 
-void ChoobeScreen::OnSelect(base::Value::List screens) {
+void ChoobeScreen::OnSelect(base::ListValue screens) {
   WizardController::default_controller()
       ->choobe_flow_controller()
       ->OnScreensSelected(*ProfileManager::GetActiveUserProfile()->GetPrefs(),
@@ -111,7 +111,7 @@ void ChoobeScreen::ShowImpl() {
 
 void ChoobeScreen::HideImpl() {}
 
-void ChoobeScreen::OnUserAction(const base::Value::List& args) {
+void ChoobeScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionSkip) {
     SkipScreen();

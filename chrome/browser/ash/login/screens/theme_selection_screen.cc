@@ -148,7 +148,7 @@ void ThemeSelectionScreen::ShowImpl() {
 
   initial_theme_ = GetSelectedTheme(ProfileManager::GetActiveUserProfile());
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("selectedTheme",
            GetSelectedThemeString(ProfileManager::GetActiveUserProfile()));
   data.Set(
@@ -160,7 +160,7 @@ void ThemeSelectionScreen::ShowImpl() {
 
 void ThemeSelectionScreen::HideImpl() {}
 
-void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
+void ThemeSelectionScreen::OnUserAction(const base::ListValue& args) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   const std::string& action_id = args[0].GetString();
 

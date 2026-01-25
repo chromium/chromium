@@ -52,7 +52,7 @@ std::optional<std::string> ExtractTimezoneFromProto(
 // }
 // This function is used by device_policy_decoder.cc to save "OffHours"
 // policy in PolicyMap.
-std::optional<base::Value::Dict> ConvertOffHoursProtoToValue(
+std::optional<base::DictValue> ConvertOffHoursProtoToValue(
     const enterprise_management::DeviceOffHoursProto& container);
 
 }  // namespace off_hours

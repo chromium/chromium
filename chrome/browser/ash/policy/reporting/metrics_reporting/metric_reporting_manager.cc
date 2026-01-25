@@ -847,7 +847,7 @@ MetricReportingManager::GetTelemetryCollectorsFromSetting(
     std::string_view setting_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::Value::List* telemetry_list = nullptr;
+  const base::ListValue* telemetry_list = nullptr;
   const bool valid = ::ash::CrosSettings::Get()->GetList(
       std::string(setting_name), &telemetry_list);
   if (!valid || !telemetry_list) {

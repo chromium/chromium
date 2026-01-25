@@ -99,7 +99,7 @@ class TargetDeviceConnectionBroker {
 
     // Exposes SessionContext::GetPrepareForUpdateInfo() to the
     // AuthenticatedConnection caller.
-    virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
+    virtual base::DictValue GetPrepareForUpdateInfo() = 0;
 
     virtual void NotifyPhoneSetupComplete() = 0;
 

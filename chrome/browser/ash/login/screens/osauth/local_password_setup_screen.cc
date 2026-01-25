@@ -97,7 +97,7 @@ void LocalPasswordSetupScreen::DoShow() {
               /*is_recovery_flow=*/is_recovery_flow);
 }
 
-void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
+void LocalPasswordSetupScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionInputPassword) {
     CHECK_EQ(args.size(), 2u);

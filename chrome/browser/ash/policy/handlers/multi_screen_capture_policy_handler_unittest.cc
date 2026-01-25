@@ -37,7 +37,7 @@ class MultiScreenCapturePolicyHandlerTest
 TEST_P(MultiScreenCapturePolicyHandlerTest, ListWithErrorsParsed) {
   const MultiScreenCaptureTestParam& test_param = GetParam();
 
-  base::Value::List policy_values;
+  base::ListValue policy_values;
   for (const auto& policy_value : test_param.policy_values) {
     policy_values.Append(base::Value(policy_value));
   }

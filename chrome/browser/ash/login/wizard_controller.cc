@@ -1078,7 +1078,7 @@ void WizardController::OnOwnershipStatusCheckDone(
 
 void WizardController::ShowSignInFatalErrorScreen(
     SignInFatalErrorScreen::Error error,
-    base::Value::Dict params) {
+    base::DictValue params) {
   GetScreen<SignInFatalErrorScreen>()->SetErrorState(error, std::move(params));
   AdvanceToScreen(SignInFatalErrorView::kScreenId);
 }
@@ -1576,7 +1576,7 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
               OobeMetricsHelper::OobeNotCompletedTrigger::kGaiaScreen);
       ShowSignInFatalErrorScreen(
           SignInFatalErrorScreen::Error::kOobeCompletionSkipped,
-          base::Value::Dict());
+          base::DictValue());
       break;
   }
 }
@@ -1674,7 +1674,7 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
     case SamlConfirmPasswordScreen::Result::kTooManyAttempts:
       ShowSignInFatalErrorScreen(
           SignInFatalErrorScreen::Error::kScrapedPasswordVerificationFailure,
-          base::Value::Dict());
+          base::DictValue());
   }
 }
 
@@ -3189,7 +3189,7 @@ void WizardController::PerformOOBECompletedActions(
       // Show a fatal error and do not mark OOBE as completed.
       ShowSignInFatalErrorScreen(
           SignInFatalErrorScreen::Error::kOobeCompletionSkipped,
-          base::Value::Dict());
+          base::DictValue());
       return;
     }
   }

@@ -40,7 +40,7 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
     if (!onc_string.has_value())
       return true;
 
-    std::optional<base::Value::Dict> root_dict =
+    std::optional<base::DictValue> root_dict =
         chromeos::onc::ReadDictionaryFromJson(onc_string.value());
     if (!root_dict.has_value()) {
       out_validation_issues->push_back({policy_name_,

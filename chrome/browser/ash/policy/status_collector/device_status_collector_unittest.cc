@@ -4023,7 +4023,7 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
       if (strlen(fake_network.address) > 0) {
         // Set the IP config.
         auto ip_config_properties =
-            base::Value::Dict()
+            base::DictValue()
                 .Set(shill::kAddressProperty, fake_network.address)
                 .Set(shill::kGatewayProperty, fake_network.gateway);
         const std::string kIPConfigPath = "test_ip_config";

@@ -94,12 +94,12 @@ constexpr char kONCPolicyWifi1Pac[] =
     })";
 constexpr char kExpectedOncPacUrl[] = "http://pac.foo.com/script.pac";
 
-base::Value::Dict GetPacProxyConfig(const std::string& pac_url) {
+base::DictValue GetPacProxyConfig(const std::string& pac_url) {
   return ProxyConfigDictionary::CreatePacScript(pac_url,
                                                 /*pac_mandatory=*/false);
 }
 
-base::Value::Dict GetManualProxyConfig(const std::string& proxy_servers) {
+base::DictValue GetManualProxyConfig(const std::string& proxy_servers) {
   return ProxyConfigDictionary::CreateFixedServers(
       proxy_servers, /*bypass_list=*/std::string());
 }
@@ -121,7 +121,7 @@ class TestAshProxyMonitorObserver : public AshProxyMonitor::Observer {
         this);
   }
 
-  std::tuple<base::Value::Dict, GURL> WaitForUpdate() { return future_.Take(); }
+  std::tuple<base::DictValue, GURL> WaitForUpdate() { return future_.Take(); }
 
   bool AreAllProxyUpdatesRead() { return future_.IsEmpty(); }
 
@@ -137,7 +137,7 @@ class TestAshProxyMonitorObserver : public AshProxyMonitor::Observer {
                          ->GetLatestWpadUrl());
   }
 
-  base::test::RepeatingTestFuture<base::Value::Dict, GURL> future_;
+  base::test::RepeatingTestFuture<base::DictValue, GURL> future_;
 };
 
 class AshProxyMonitorTest : public InProcessBrowserTest {
@@ -205,7 +205,7 @@ class AshProxyMonitorTest : public InProcessBrowserTest {
 
   void SetDhcpWpadUrl(const std::string& dhcp_url,
                       const std::string& service_path) {
-    auto wpad_config = base::Value::Dict().Set(
+    auto wpad_config = base::DictValue().Set(
         shill::kWebProxyAutoDiscoveryUrlProperty, base::Value(dhcp_url));
     const std::string kIPConfigPath = "test_ip_config";
     ash::ShillIPConfigClient::Get()->GetTestInterface()->AddIPConfig(
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(AshProxyMonitorTest, DefaultNetworkChanges) {
   provider_.UpdateChromePolicy(policy);
 
   constexpr char kEmptyWpadUrl[] = "";
-  std::tuple<base::Value::Dict, GURL> result =
+  std::tuple<base::DictValue, GURL> result =
       ash_proxy_monitor_observer_->WaitForUpdate();
   EXPECT_EQ(std::get<0>(result), GetManualProxyConfig("http=proxy.com:3128"));
   EXPECT_EQ(std::get<1>(result), kEmptyWpadUrl);
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(AshProxyMonitorTest, ProxyPrefChanges) {
              base::Value(kPacUrl), nullptr);
   provider_.UpdateChromePolicy(policy);
 
-  std::tuple<base::Value::Dict, GURL> result =
+  std::tuple<base::DictValue, GURL> result =
       ash_proxy_monitor_observer_->WaitForUpdate();
   EXPECT_EQ(std::get<0>(result), GetPacProxyConfig(kPacUrl));
 
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(AshProxyMonitorTest, OrderOfPrecedence) {
              policy::POLICY_SOURCE_CLOUD, base::Value(kONCPolicyWifi0Proxy),
              nullptr);
   provider_.UpdateChromePolicy(policy);
-  std::tuple<base::Value::Dict, GURL> result =
+  std::tuple<base::DictValue, GURL> result =
       ash_proxy_monitor_observer_->WaitForUpdate();
   EXPECT_EQ(std::get<0>(result), GetPacProxyConfig(kPacUrl));
 

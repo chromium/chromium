@@ -90,7 +90,7 @@ DefaultUserImage GetDefaultUserImage(
 // Returns a vector of current |DefaultUserImage|.
 std::vector<DefaultUserImage> GetCurrentImageSet();
 
-base::Value::List GetCurrentImageSetAsListValue();
+base::ListValue GetCurrentImageSetAsListValue();
 
 // Returns the source info of the default user image with specified index.
 // Returns nullopt if there is no source info.

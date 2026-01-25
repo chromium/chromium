@@ -127,16 +127,16 @@ TEST_F(OffHoursParserTest, ConvertOffHoursProtoToValue) {
   SetOffHoursPolicyToProto(
       &proto, OffHoursPolicy(kGmtTimezone, intervals, kDefaultIgnoredPolicies));
 
-  std::optional<base::Value::Dict> off_hours_value =
+  std::optional<base::DictValue> off_hours_value =
       ConvertOffHoursProtoToValue(proto.device_off_hours());
 
-  base::Value::Dict off_hours_expected;
+  base::DictValue off_hours_expected;
   off_hours_expected.Set("timezone", kGmtTimezone);
-  base::Value::List intervals_value;
+  base::ListValue intervals_value;
   for (const auto& interval : intervals)
     intervals_value.Append(interval.ToValue());
   off_hours_expected.Set("intervals", std::move(intervals_value));
-  base::Value::List ignored_policies_value;
+  base::ListValue ignored_policies_value;
   for (const auto& policy : kDefaultIgnoredPolicies)
     ignored_policies_value.Append(policy);
   off_hours_expected.Set("ignored_policy_proto_tags",

@@ -369,7 +369,7 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
   std::string feedback_text =
       wallpaper_handlers::GetFeedbackText(query_and_thumbnail->first, metadata);
 
-  base::Value::Dict ai_metadata;
+  base::DictValue ai_metadata;
   ai_metadata.Set(feedback::kSeaPenMetadataKey, "true");
 
   base::RecordAction(base::UserMetricsAction("SeaPen_FeedbackPressed"));
@@ -382,7 +382,7 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
           l10n_util::GetStringUTF16(IDS_SEA_PEN_FEEDBACK_PLACEHOLDER)),
       /*category_tag=*/std::string(),
       /*extra_diagnostics=*/std::string(),
-      /*autofill_data=*/base::Value::Dict(), std::move(ai_metadata));
+      /*autofill_data=*/base::DictValue(), std::move(ai_metadata));
 }
 
 void PersonalizationAppSeaPenProviderBase::ShouldShowSeaPenIntroductionDialog(

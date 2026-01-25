@@ -59,10 +59,10 @@ void ActivityStorage::PruneActivityPeriods(
 
 void ActivityStorage::TrimActivityPeriods(int64_t min_day_key,
                                           int64_t max_day_key) {
-  base::Value::Dict copy;
+  base::DictValue copy;
 
   ForEachActivityPeriodFromPref(base::BindRepeating(
-      [](base::Value::Dict& copy, int64_t min_day_key, int64_t max_day_key,
+      [](base::DictValue& copy, int64_t min_day_key, int64_t max_day_key,
          int64_t start, int64_t end, const std::string& activity_id) {
         int64_t day_key = start;
         // Remove data that is too old, or too far in the future.
@@ -161,7 +161,7 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
   DCHECK(!end.is_max());
 
   ScopedDictPrefUpdate update(pref_service_, pref_name_);
-  base::Value::Dict& activity_times = update.Get();
+  base::DictValue& activity_times = update.Get();
 
   // Assign the period to day buckets in local time.
   base::Time midnight = GetBeginningOfDay(start);
@@ -185,7 +185,7 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
 
 void ActivityStorage::SetActivityPeriods(
     const std::map<std::string, Activities>& new_activity_periods) {
-  base::Value::Dict copy;
+  base::DictValue copy;
   for (const auto& activity_pair : new_activity_periods) {
     const std::string& activity_id = activity_pair.first;
     const Activities& activities = activity_pair.second;
@@ -249,7 +249,7 @@ bool ActivityStorage::ParseActivityPeriodPrefKey(const std::string& key,
 void ActivityStorage::ForEachActivityPeriodFromPref(
     const base::RepeatingCallback<
         void(const int64_t, const int64_t, const std::string&)>& f) const {
-  const base::Value::Dict& stored_activity_periods =
+  const base::DictValue& stored_activity_periods =
       pref_service_->GetDict(pref_name_);
   for (const auto item : stored_activity_periods) {
     int64_t timestamp;

@@ -452,14 +452,14 @@ class FakeRecommendAppsFetcher : public apps::RecommendAppsFetcher {
 
   // RecommendAppsFetcher:
   void Start() override {
-    base::Value::Dict app;
+    base::DictValue app;
     app.Set("packageName", "test.package");
     app.Set("title", "TestName");
-    base::Value::Dict big_app;
+    base::DictValue big_app;
     big_app.Set("androidApp", std::move(app));
-    base::Value::List app_list;
+    base::ListValue app_list;
     app_list.Append(std::move(big_app));
-    base::Value::Dict response_dict;
+    base::DictValue response_dict;
     response_dict.Set("recommendedApp", std::move(app_list));
     delegate_->OnLoadSuccess(base::Value(std::move(response_dict)));
   }

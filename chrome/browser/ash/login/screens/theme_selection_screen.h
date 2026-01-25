@@ -63,7 +63,7 @@ class ThemeSelectionScreen : public BaseScreen {
   bool ShouldBeSkipped(const WizardContext& context) const override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
   ScreenSummary GetScreenSummary() override;
   std::string RetrieveChoobeSubtitle();
 

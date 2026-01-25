@@ -336,32 +336,31 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
   EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
       .Times(1)
       .WillOnce(Return(nullptr));
-  base::Value::List empty_apn_list;
+  base::ListValue empty_apn_list;
   EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
       .Times(1)
       .WillOnce(Return(&empty_apn_list));
 
   // For the third network, simulate a populated custom APN list.
   auto populated_apn_list =
-      base::Value::List()
-          .Append(base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                          "apn_1"))
-          .Append(base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                          "apn_2"));
+      base::ListValue()
+          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                        "apn_1"))
+          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                        "apn_2"));
   EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid3))
       .Times(1)
       .WillOnce(Return(&populated_apn_list));
 
   // For the first and second networks, the function should update Shill with
   // empty custom APN lists.
-  base::Value::Dict expected_onc_1 =
-      chromeos::network_config::CustomApnListToOnc(kTestCellularGuid1,
-                                                   &empty_apn_list);
+  base::DictValue expected_onc_1 = chromeos::network_config::CustomApnListToOnc(
+      kTestCellularGuid1, &empty_apn_list);
   base::OnceClosure onc_success_callback_1;
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_1,
-                    Truly([&expected_onc_1](const base::Value::Dict& value) {
+                    Truly([&expected_onc_1](const base::DictValue& value) {
                       return expected_onc_1 == value;
                     }),
                     _, _))
@@ -371,14 +370,13 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
             onc_success_callback_1 = std::move(callback);
           }));
 
-  base::Value::Dict expected_onc_2 =
-      chromeos::network_config::CustomApnListToOnc(kTestCellularGuid2,
-                                                   &empty_apn_list);
+  base::DictValue expected_onc_2 = chromeos::network_config::CustomApnListToOnc(
+      kTestCellularGuid2, &empty_apn_list);
   base::OnceClosure onc_success_callback_2;
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_2,
-                    Truly([&expected_onc_2](const base::Value::Dict& value) {
+                    Truly([&expected_onc_2](const base::DictValue& value) {
                       return expected_onc_2 == value;
                     }),
                     _, _))
@@ -389,14 +387,13 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
           }));
 
   // Verify that Shill receives the custom APNs for the third list.
-  base::Value::Dict expected_onc_3 =
-      chromeos::network_config::CustomApnListToOnc(kTestCellularGuid3,
-                                                   &populated_apn_list);
+  base::DictValue expected_onc_3 = chromeos::network_config::CustomApnListToOnc(
+      kTestCellularGuid3, &populated_apn_list);
   base::OnceClosure onc_success_callback_3;
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_3,
-                    Truly([&expected_onc_3](const base::Value::Dict& value) {
+                    Truly([&expected_onc_3](const base::DictValue& value) {
                       return expected_onc_3 == value;
                     }),
                     _, _))
@@ -513,20 +510,19 @@ TEST_F(ApnMigratorTest, MigrateNetworksWithoutCustomApns) {
               GetPreRevampCustomApnList(kTestCellularGuid1))
       .Times(1)
       .WillOnce(Return(nullptr));
-  base::Value::List empty_apn_list;
+  base::ListValue empty_apn_list;
   EXPECT_CALL(*network_metadata_store(),
               GetPreRevampCustomApnList(kTestCellularGuid2))
       .Times(1)
       .WillOnce(Return(&empty_apn_list));
 
   // The function should only update Shill with empty custom APN lists.
-  base::Value::Dict expected_onc_1 =
-      chromeos::network_config::CustomApnListToOnc(kTestCellularGuid1,
-                                                   &empty_apn_list);
+  base::DictValue expected_onc_1 = chromeos::network_config::CustomApnListToOnc(
+      kTestCellularGuid1, &empty_apn_list);
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_1,
-                    Truly([&expected_onc_1](const base::Value::Dict& value) {
+                    Truly([&expected_onc_1](const base::DictValue& value) {
                       return expected_onc_1 == value;
                     }),
                     _, _))
@@ -534,13 +530,12 @@ TEST_F(ApnMigratorTest, MigrateNetworksWithoutCustomApns) {
       .WillOnce(WithArg<2>(
           [&](base::OnceClosure callback) { std::move(callback).Run(); }));
 
-  base::Value::Dict expected_onc_2 =
-      chromeos::network_config::CustomApnListToOnc(kTestCellularGuid2,
-                                                   &empty_apn_list);
+  base::DictValue expected_onc_2 = chromeos::network_config::CustomApnListToOnc(
+      kTestCellularGuid2, &empty_apn_list);
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_2,
-                    Truly([&expected_onc_2](const base::Value::Dict& value) {
+                    Truly([&expected_onc_2](const base::DictValue& value) {
                       return expected_onc_2 == value;
                     }),
                     _, _))
@@ -601,7 +596,7 @@ TEST_F(ApnMigratorTest, SkipMigratingWhenNoChangeInIccids) {
       .WillRepeatedly(Return(false));
 
   const std::string access_point_name = "apn_1";
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, access_point_name));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -632,12 +627,12 @@ TEST_F(ApnMigratorTest, SkipMigratingWhenNoChangeInIccids) {
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           ::onc::cellular::kLastConnectedDefaultApnProperty,
-          base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                  "apn_2")));
+          base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                "apn_2")));
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
@@ -684,11 +679,11 @@ TEST_F(ApnMigratorTest, MigrateNetworkAlreadyMigrating) {
       .WillRepeatedly(Return(false));
 
   auto populated_apn_list =
-      base::Value::List()
-          .Append(base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                          "apn_1"))
-          .Append(base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                          "apn_2"));
+      base::ListValue()
+          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                        "apn_1"))
+          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                        "apn_2"));
   EXPECT_CALL(*network_metadata_store(),
               GetPreRevampCustomApnList(kTestCellularGuid1))
       .Times(1)
@@ -731,7 +726,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkAlreadyMigrating) {
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(0);
   std::move(get_managed_properties_callback)
-      .Run(cellular_service_path_1, base::Value::Dict(),
+      .Run(cellular_service_path_1, base::DictValue(),
            /*error=*/"error");
   base::RunLoop().RunUntilIdle();
 
@@ -775,8 +770,8 @@ TEST_F(ApnMigratorTest, MigrateNetworkNoPropertiesOrNotFound) {
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
       .WillRepeatedly(Return(false));
 
-  auto populated_apn_list = base::Value::List().Append(
-      base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName, "apn_1"));
+  auto populated_apn_list = base::ListValue().Append(
+      base::DictValue().Set(::onc::cellular_apn::kAccessPointName, "apn_1"));
   EXPECT_CALL(*network_metadata_store(),
               GetPreRevampCustomApnList(kTestCellularGuid1))
       .Times(1)
@@ -834,7 +829,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkNoPropertiesOrNotFound) {
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(0);
   std::move(get_managed_properties_callback)
-      .Run(cellular_service_path_1, /*properties=*/base::Value::Dict(),
+      .Run(cellular_service_path_1, /*properties=*/base::DictValue(),
            /*error=*/std::nullopt);
 }
 
@@ -853,8 +848,8 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
       .WillRepeatedly(Return(false));
 
-  auto populated_apn_list = base::Value::List().Append(
-      base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName, "apn_1"));
+  auto populated_apn_list = base::ListValue().Append(
+      base::DictValue().Set(::onc::cellular_apn::kAccessPointName, "apn_1"));
   EXPECT_CALL(*network_metadata_store(),
               GetPreRevampCustomApnList(kTestCellularGuid1))
       .Times(1)
@@ -873,7 +868,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
   TriggerNetworkListChanged();
 
   // During the GetManagedProperties call, set the custom APN list to be empty.
-  base::Value::List empty_apn_list;
+  base::ListValue empty_apn_list;
   EXPECT_CALL(*network_metadata_store(),
               GetPreRevampCustomApnList(kTestCellularGuid1))
       .Times(1)
@@ -882,13 +877,12 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
   // Execute the GetManagedProperties callback, and an attempt to update shill
   // with an empty APN list should be made. Intentionally fail the update to
   // shill.
-  base::Value::Dict expected_onc_1 =
-      chromeos::network_config::CustomApnListToOnc(kTestCellularGuid1,
-                                                   &empty_apn_list);
+  base::DictValue expected_onc_1 = chromeos::network_config::CustomApnListToOnc(
+      kTestCellularGuid1, &empty_apn_list);
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_1,
-                    Truly([&expected_onc_1](const base::Value::Dict& value) {
+                    Truly([&expected_onc_1](const base::DictValue& value) {
                       return expected_onc_1 == value;
                     }),
                     _, _))
@@ -902,7 +896,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(0);
   std::move(get_managed_properties_callback)
-      .Run(cellular_service_path_1, /*properties=*/base::Value::Dict(),
+      .Run(cellular_service_path_1, /*properties=*/base::DictValue(),
            /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
@@ -935,7 +929,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_1,
-                    Truly([&expected_onc_1](const base::Value::Dict& value) {
+                    Truly([&expected_onc_1](const base::DictValue& value) {
                       return expected_onc_1 == value;
                     }),
                     _, _))
@@ -946,7 +940,7 @@ TEST_F(ApnMigratorTest, MigrateNetworkCustomApnRemovedDuringMigration) {
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(1);
   std::move(get_managed_properties_callback)
-      .Run(cellular_service_path_1, /*properties=*/base::Value::Dict(),
+      .Run(cellular_service_path_1, /*properties=*/base::DictValue(),
            /*error=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetCustomApns().empty());
@@ -970,8 +964,8 @@ TEST_F(ApnMigratorTest,
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
       .WillRepeatedly(Return(false));
 
-  auto populated_apn_list = base::Value::List().Append(
-      base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName, "apn_1"));
+  auto populated_apn_list = base::ListValue().Append(
+      base::DictValue().Set(::onc::cellular_apn::kAccessPointName, "apn_1"));
   EXPECT_CALL(*network_metadata_store(),
               GetPreRevampCustomApnList(kTestCellularGuid1))
       .Times(2)
@@ -991,15 +985,15 @@ TEST_F(ApnMigratorTest,
 
   // Execute the GetManagedProperties callback with no selected_apn. Simulate
   // failure to update shill. The network should not be marked as migrated.
-  base::Value::List empty_apn_list;
-  base::Value::Dict expected_onc = chromeos::network_config::CustomApnListToOnc(
+  base::ListValue empty_apn_list;
+  base::DictValue expected_onc = chromeos::network_config::CustomApnListToOnc(
       kTestCellularGuid1, &empty_apn_list);
   base::OnceClosure onc_success_callback;
   network_handler::ErrorCallback onc_failure_callback;
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_1,
-                    Truly([&expected_onc](const base::Value::Dict& value) {
+                    Truly([&expected_onc](const base::DictValue& value) {
                       return expected_onc == value;
                     }),
                     _, _))
@@ -1016,8 +1010,8 @@ TEST_F(ApnMigratorTest,
               AddApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(0);
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
-      ::onc::network_config::kCellular, base::Value::Dict());
+  std::optional<base::DictValue> properties = base::DictValue().Set(
+      ::onc::network_config::kCellular, base::DictValue());
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
@@ -1065,7 +1059,7 @@ TEST_F(ApnMigratorTest,
   EXPECT_CALL(
       *managed_network_configuration_handler(),
       SetProperties(cellular_service_path_1,
-                    Truly([&expected_onc](const base::Value::Dict& value) {
+                    Truly([&expected_onc](const base::DictValue& value) {
                       return expected_onc == value;
                     }),
                     _, _))
@@ -1078,12 +1072,12 @@ TEST_F(ApnMigratorTest,
             onc_failure_callback = std::move(error_callback);
           }));
 
-  properties = base::Value::Dict().Set(
+  properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           ::onc::cellular::kAPN,
-          base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                  "apn_2")));
+          base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                "apn_2")));
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
@@ -1126,7 +1120,7 @@ TEST_F(ApnMigratorTest,
       .WillRepeatedly(Return(false));
 
   const std::string access_point_name = "apn_1";
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, access_point_name));
   EXPECT_CALL(*network_metadata_store(),
               GetPreRevampCustomApnList(kTestCellularGuid1))
@@ -1154,12 +1148,12 @@ TEST_F(ApnMigratorTest,
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           ::onc::cellular::kAPN,
-          base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                  access_point_name)));
+          base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                access_point_name)));
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
@@ -1203,9 +1197,9 @@ TEST_F(ApnMigratorTest,
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
       .WillRepeatedly(Return(false));
   const std::string access_point_name = "apn_1";
-  base::Value::Dict custom_apn;
+  base::DictValue custom_apn;
   custom_apn.Set(::onc::cellular_apn::kAccessPointName, access_point_name);
-  base::Value::List populated_apn_list;
+  base::ListValue populated_apn_list;
   populated_apn_list.Append(std::move(custom_apn));
   EXPECT_CALL(*network_metadata_store(),
               GetPreRevampCustomApnList(kTestCellularGuid1))
@@ -1235,18 +1229,18 @@ TEST_F(ApnMigratorTest,
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict();
+  std::optional<base::DictValue> properties = base::DictValue();
 
-  base::Value::Dict last_connected_attach_apn_dict;
+  base::DictValue last_connected_attach_apn_dict;
   last_connected_attach_apn_dict.Set(::onc::cellular_apn::kAccessPointName,
                                      access_point_name);
-  base::Value::Dict last_connected_default_apn_dict;
+  base::DictValue last_connected_default_apn_dict;
   last_connected_default_apn_dict.Set(::onc::cellular_apn::kAccessPointName,
                                       access_point_name);
 
   // Set the last_connected_attach_apn and last_connected_default_apn. This will
   // cause the APN to be migrated the same as the non-managed case.
-  base::Value::Dict cellular;
+  base::DictValue cellular;
   cellular.Set(::onc::cellular::kLastConnectedAttachApnProperty,
                std::move(last_connected_attach_apn_dict));
   cellular.Set(::onc::cellular::kLastConnectedDefaultApnProperty,
@@ -1299,7 +1293,7 @@ TEST_F(
       .WillRepeatedly(Return(false));
 
   const std::string access_point_name = "apn_1";
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, access_point_name));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -1330,12 +1324,12 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           ::onc::cellular::kLastGoodAPN,
-          base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                  access_point_name)));
+          base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                access_point_name)));
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
@@ -1380,7 +1374,7 @@ TEST_F(
       .WillRepeatedly(Return(false));
 
   const std::string access_point_name = "apn_1";
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, access_point_name));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -1411,12 +1405,12 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           ::onc::cellular::kLastGoodAPN,
-          base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                  "apn_2")));
+          base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                "apn_2")));
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
@@ -1460,7 +1454,7 @@ TEST_F(ApnMigratorTest,
       .WillRepeatedly(Return(false));
 
   const std::string access_point_name = "apn_1";
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, access_point_name));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -1491,15 +1485,15 @@ TEST_F(ApnMigratorTest,
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict()
+      base::DictValue()
           .Set(::onc::cellular::kLastConnectedAttachApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       access_point_name))
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     access_point_name))
           .Set(::onc::cellular::kLastConnectedDefaultApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       access_point_name)));
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     access_point_name)));
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
@@ -1546,7 +1540,7 @@ TEST_F(
       .WillRepeatedly(Return(false));
 
   const std::string access_point_name = "apn_1";
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, access_point_name));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -1577,12 +1571,12 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           ::onc::cellular::kLastConnectedDefaultApnProperty,
-          base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                  access_point_name)));
+          base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                access_point_name)));
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
@@ -1629,7 +1623,7 @@ TEST_F(
       .WillRepeatedly(Return(false));
 
   const std::string access_point_name = "apn_1";
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, access_point_name));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -1660,15 +1654,15 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict()
+      base::DictValue()
           .Set(::onc::cellular::kLastConnectedDefaultApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       access_point_name))
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     access_point_name))
           .Set(::onc::cellular::kLastConnectedAttachApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       std::string())));
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     std::string())));
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),
@@ -1714,7 +1708,7 @@ TEST_F(
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
       .WillRepeatedly(Return(false));
 
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, kAttachAccessPointName));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -1745,22 +1739,22 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict()
+      base::DictValue()
           .Set(::onc::cellular::kLastConnectedAttachApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       kAttachAccessPointName))
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     kAttachAccessPointName))
           .Set(::onc::cellular::kLastConnectedDefaultApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       kDefaultAccessPointName))
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     kDefaultAccessPointName))
           .Set(::onc::cellular::kAPNList,
-               base::Value::List().Append(
-                   base::Value::Dict()
+               base::ListValue().Append(
+                   base::DictValue()
                        .Set(::onc::cellular_apn::kAccessPointName,
                             kDefaultAccessPointName)
                        .Set(::onc::cellular_apn::kApnTypes,
-                            base::Value::List().Append(
+                            base::ListValue().Append(
                                 ::onc::cellular_apn::kApnTypeDefault)))));
 
   std::move(get_managed_properties_callback)
@@ -1818,7 +1812,7 @@ TEST_F(
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
       .WillRepeatedly(Return(false));
 
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, kDefaultAccessPointName));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -1849,22 +1843,22 @@ TEST_F(
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict()
+      base::DictValue()
           .Set(::onc::cellular::kLastConnectedAttachApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       kAttachAccessPointName))
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     kAttachAccessPointName))
           .Set(::onc::cellular::kLastConnectedDefaultApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       kDefaultAccessPointName))
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     kDefaultAccessPointName))
           .Set(::onc::cellular::kAPNList,
-               base::Value::List().Append(
-                   base::Value::Dict()
+               base::ListValue().Append(
+                   base::DictValue()
                        .Set(::onc::cellular_apn::kAccessPointName,
                             kDefaultAccessPointName)
                        .Set(::onc::cellular_apn::kApnTypes,
-                            base::Value::List().Append(
+                            base::ListValue().Append(
                                 ::onc::cellular_apn::kApnTypeDefault)))));
 
   std::move(get_managed_properties_callback)
@@ -1924,7 +1918,7 @@ TEST_F(
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
       .WillRepeatedly(Return(false));
 
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, kAttachAccessPointName));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -1955,22 +1949,22 @@ TEST_F(
       .Times(0);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict()
+      base::DictValue()
           .Set(::onc::cellular::kLastConnectedAttachApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       kAttachAccessPointName))
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     kAttachAccessPointName))
           .Set(::onc::cellular::kLastConnectedDefaultApnProperty,
-               base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                       kDefaultAccessPointName))
+               base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                     kDefaultAccessPointName))
           .Set(::onc::cellular::kAPNList,
-               base::Value::List().Append(
-                   base::Value::Dict()
+               base::ListValue().Append(
+                   base::DictValue()
                        .Set(::onc::cellular_apn::kAccessPointName,
                             kDefaultAccessPointName)
                        .Set(::onc::cellular_apn::kApnTypes,
-                            base::Value::List().Append(
+                            base::ListValue().Append(
                                 ::onc::cellular_apn::kApnTypeDefault)))));
 
   std::move(get_managed_properties_callback)
@@ -2005,7 +1999,7 @@ TEST_F(ApnMigratorTest, MigrateNonManagedNetwork_Default) {
       .WillRepeatedly(Return(false));
 
   const std::string access_point_name = "apn_1";
-  auto populated_apn_list = base::Value::List().Append(base::Value::Dict().Set(
+  auto populated_apn_list = base::ListValue().Append(base::DictValue().Set(
       ::onc::cellular_apn::kAccessPointName, access_point_name));
 
   EXPECT_CALL(*network_metadata_store(),
@@ -2036,12 +2030,12 @@ TEST_F(ApnMigratorTest, MigrateNonManagedNetwork_Default) {
       .Times(1);
   EXPECT_TRUE(GetCustomApns().empty());
 
-  std::optional<base::Value::Dict> properties = base::Value::Dict().Set(
+  std::optional<base::DictValue> properties = base::DictValue().Set(
       ::onc::network_config::kCellular,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           ::onc::cellular::kLastConnectedDefaultApnProperty,
-          base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                  "apn_2")));
+          base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                "apn_2")));
 
   std::move(get_managed_properties_callback)
       .Run(cellular_service_path_1, std::move(properties),

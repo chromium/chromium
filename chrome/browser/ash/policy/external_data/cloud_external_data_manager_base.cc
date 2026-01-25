@@ -424,7 +424,7 @@ void CloudExternalDataManagerBase::SetPolicyStore(
 void AddMetadataFromValue(CloudExternalDataManagerBase::Metadata* metadata,
                           const std::string& policy_name,
                           const std::string& field_name,
-                          const base::Value::Dict& value_dict) {
+                          const base::DictValue& value_dict) {
   const std::string* url = value_dict.FindString(kUrlKey);
   const std::string* hex_hash = value_dict.FindString(kHashKey);
   std::string hash;
@@ -461,8 +461,8 @@ void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
       for (const auto& app :
            it.second.value(base::Value::Type::LIST)->GetList()) {
         if (app.is_dict()) {
-          const base::Value::Dict& dict = app.GetDict();
-          const base::Value::Dict* const icon = dict.FindDict(kCustomIconKey);
+          const base::DictValue& dict = app.GetDict();
+          const base::DictValue* const icon = dict.FindDict(kCustomIconKey);
           const std::string* const url = dict.FindString(kUrlKey);
           if (icon && url) {
             AddMetadataFromValue(metadata.get(), it.first, *url, *icon);

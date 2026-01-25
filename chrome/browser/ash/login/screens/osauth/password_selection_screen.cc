@@ -123,7 +123,7 @@ void PasswordSelectionScreen::HideImpl() {
   is_shown_ = false;
 }
 
-void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
+void PasswordSelectionScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
     exit_callback_.Run(Result::BACK);

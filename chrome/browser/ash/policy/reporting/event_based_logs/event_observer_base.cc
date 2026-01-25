@@ -33,7 +33,7 @@ namespace {
 // never been uploaded before.
 std::optional<base::Time> GetLastUploadTimeOf(const PrefService& local_state,
                                               const std::string& event_name) {
-  const base::Value::Dict& last_upload_times =
+  const base::DictValue& last_upload_times =
       local_state.GetDict(policy::prefs::kEventBasedLogLastUploadTimes);
   const base::Value* event_upload_time = last_upload_times.Find(event_name);
 

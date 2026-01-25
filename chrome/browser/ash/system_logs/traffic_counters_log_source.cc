@@ -38,12 +38,12 @@ std::string GetSourceString(
   return ss.str();
 }
 
-base::Value::List ParseTrafficCounters(
+base::ListValue ParseTrafficCounters(
     const std::vector<chromeos::network_config::mojom::TrafficCounterPtr>&
         traffic_counters) {
-  base::Value::List traffic_counters_list;
+  base::ListValue traffic_counters_list;
   for (const auto& tc : traffic_counters) {
-    base::Value::Dict traffic_counter;
+    base::DictValue traffic_counter;
     traffic_counter.Set(kSource, GetSourceString(tc->source));
     traffic_counter.Set(kRxBytes, static_cast<double>(tc->rx_bytes));
     traffic_counter.Set(kTxBytes, static_cast<double>(tc->tx_bytes));
@@ -100,7 +100,7 @@ void TrafficCountersLogSource::OnGetManagedProperties(
     std::vector<chromeos::network_config::mojom::TrafficCounterPtr>
         traffic_counters,
     chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties) {
-  base::Value::Dict tc_dict;
+  base::DictValue tc_dict;
   tc_dict.Set(kTrafficCountersKey, ParseTrafficCounters(traffic_counters));
   if (managed_properties && managed_properties->traffic_counter_properties &&
       managed_properties->traffic_counter_properties->friendly_date

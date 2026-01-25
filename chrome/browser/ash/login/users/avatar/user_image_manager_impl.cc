@@ -268,7 +268,7 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
 
   if (default_user_image::IsValidIndex(image_index_)) {
     // Load one of the default images. This happens synchronously.
-    if (const base::Value::Dict* image_properties =
+    if (const base::DictValue* image_properties =
             parent_->GetImageProperties()) {
       image_cache_updated_ =
           image_properties->FindBool(kImageCacheUpdated).value_or(false);
@@ -484,8 +484,7 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   base::FilePath old_image_path;
   // Because the user ID (i.e. email address) contains '.', the code here
   // cannot use the dots notation (path expantion) hence is verbose.
-  if (const base::Value::Dict* image_properties =
-          parent_->GetImageProperties()) {
+  if (const base::DictValue* image_properties = parent_->GetImageProperties()) {
     const std::string* value = image_properties->FindString(kImagePathNodeName);
     if (value) {
       old_image_path = base::FilePath::FromUTF8Unsafe(*value);
@@ -516,7 +515,7 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
 
   PrefService* local_state = g_browser_process->local_state();
 
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set(kImagePathNodeName, image_path_.value());
   entry.Set(kImageIndexNodeName, image_index_);
   entry.Set(kImageCacheUpdated, image_cache_updated_);
@@ -524,7 +523,7 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
     entry.Set(kImageURLNodeName, image_url_.spec());
   }
 
-  const base::Value::Dict* existing_value =
+  const base::DictValue* existing_value =
       local_state->GetDict(kUserImageProperties)
           .FindDict(account_id().GetUserEmail());
 
@@ -568,7 +567,7 @@ void UserImageManagerImpl::LoadUserImage() {
     return;
   }
 
-  const base::Value::Dict* image_properties = GetImageProperties();
+  const base::DictValue* image_properties = GetImageProperties();
   if (!image_properties) {
     SetInitialUserImage();
     return;
@@ -962,7 +961,7 @@ void UserImageManagerImpl::DeleteUserImageAndLocalStateEntry(
     const char* prefs_dict_root) {
   ScopedDictPrefUpdate update(g_browser_process->local_state(),
                               prefs_dict_root);
-  const base::Value::Dict* image_properties =
+  const base::DictValue* image_properties =
       update->FindDict(account_id_.GetUserEmail());
   if (!image_properties) {
     return;
@@ -1005,12 +1004,12 @@ void UserImageManagerImpl::TryToCreateImageSyncObserver() {
   }
 }
 
-const base::Value::Dict* UserImageManagerImpl::GetImageProperties() {
+const base::DictValue* UserImageManagerImpl::GetImageProperties() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& prefs_images =
+  const base::DictValue& prefs_images =
       local_state->GetDict(kUserImageProperties);
 
-  const base::Value::Dict* image_properties =
+  const base::DictValue* image_properties =
       prefs_images.FindDict(account_id_.GetUserEmail());
 
   return image_properties;

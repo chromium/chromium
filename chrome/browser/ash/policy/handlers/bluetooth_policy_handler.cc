@@ -136,7 +136,7 @@ void SetJustWorksPairingEnabledFailed() {
 void BluetoothPolicyHandler::SetBluetoothPolicy() {
   // Get the updated policy.
   bool allow_bluetooth = true;
-  const base::Value::List* allowed_services_list = nullptr;
+  const base::ListValue* allowed_services_list = nullptr;
   std::vector<device::BluetoothUUID> allowed_services;
 
   if (!adapter_ || !adapter_->IsInitialized() || !adapter_->IsPresent() ||

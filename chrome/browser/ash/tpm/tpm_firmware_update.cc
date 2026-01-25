@@ -39,7 +39,7 @@ std::set<Mode> GetModesFromSetting(const base::Value* settings) {
     return modes;
   }
 
-  const base::Value::Dict& settings_dict = settings->GetDict();
+  const base::DictValue& settings_dict = settings->GetDict();
   std::optional<bool> allow_powerwash =
       settings_dict.FindBool(kSettingsKeyAllowPowerwash);
   if (allow_powerwash && *allow_powerwash) {
@@ -63,7 +63,7 @@ const char kSettingsKeyAutoUpdateMode[] = "auto-update-mode";
 
 base::Value DecodeSettingsProto(
     const enterprise_management::TPMFirmwareUpdateSettingsProto& settings) {
-  base::Value::Dict result;
+  base::DictValue result;
 
   if (settings.has_allow_user_initiated_powerwash()) {
     result.Set(kSettingsKeyAllowPowerwash,

@@ -69,13 +69,13 @@ TEST(CrosReportingSettingsTest, GetList) {
   CrosReportingSettings cros_reporting_settings;
 
   static constexpr char kListSettingValue[] = "network_telemetry";
-  base::Value::List list_setting;
+  base::ListValue list_setting;
   list_setting.Append(kListSettingValue);
   scoped_testing_cros_settings.device_settings()->Set(
       ::ash::kReportDeviceSignalStrengthEventDrivenTelemetry,
       base::Value(std::move(list_setting)));
 
-  const base::Value::List* list_value = nullptr;
+  const base::ListValue* list_value = nullptr;
   ASSERT_TRUE(cros_reporting_settings.GetList(
       ::ash::kReportDeviceSignalStrengthEventDrivenTelemetry, &list_value));
   ASSERT_THAT(list_value, Not(IsNull()));

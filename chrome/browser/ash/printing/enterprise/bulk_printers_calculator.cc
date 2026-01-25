@@ -70,7 +70,7 @@ std::optional<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
     return std::nullopt;
   }
 
-  const base::Value::List& printer_list = json_blob.GetList();
+  const base::ListValue& printer_list = json_blob.GetList();
   if (printer_list.size() > kMaxRecords) {
     PRINTER_LOG(ERROR) << "Failed to parse printers policy ("
                        << "too many records: " << printer_list.size() << ")";

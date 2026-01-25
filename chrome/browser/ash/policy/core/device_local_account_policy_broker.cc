@@ -86,20 +86,19 @@ std::unique_ptr<CloudPolicyClient> CreateClient(
   return client;
 }
 
-base::Value::Dict GetAshPrefsFromPolicy(const policy::PolicyMap& policy_map) {
+base::DictValue GetAshPrefsFromPolicy(const policy::PolicyMap& policy_map) {
   extensions::ExtensionInstallForceListPolicyHandler policy_handler;
-  return policy_handler.GetPolicyDict(policy_map).value_or(base::Value::Dict());
+  return policy_handler.GetPolicyDict(policy_map).value_or(base::DictValue());
 }
 
-base::Value::Dict GetLacrosPrefsFromPolicy(
-    const policy::PolicyMap& policy_map) {
-  return base::Value::Dict();
+base::DictValue GetLacrosPrefsFromPolicy(const policy::PolicyMap& policy_map) {
+  return base::DictValue();
 }
 
 void SendExtensionsToAsh(
     scoped_refptr<chromeos::DeviceLocalAccountExternalPolicyLoader> loader,
     const std::string& user_id,
-    base::Value::Dict cached_extensions) {
+    base::DictValue cached_extensions) {
   loader->OnExtensionListsUpdated(cached_extensions);
 }
 
@@ -281,8 +280,8 @@ void DeviceLocalAccountPolicyBroker::UpdateExtensionListFromStore() {
       /*lacros_extensions=*/GetLacrosPrefsFromPolicy(store_->policy_map()));
 }
 
-base::Value::Dict
-DeviceLocalAccountPolicyBroker::GetCachedExtensionsForTesting() const {
+base::DictValue DeviceLocalAccountPolicyBroker::GetCachedExtensionsForTesting()
+    const {
   return external_cache_->GetCachedExtensionsForTesting();  // IN-TEST
 }
 

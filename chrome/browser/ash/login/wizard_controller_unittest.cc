@@ -121,11 +121,11 @@ constexpr StaticOobeScreenId kGaiaSigninScreen = GaiaScreenHandler::kScreenId;
 #endif  // !BUILDFLAG(PLATFORM_CFM)
 
 // Converts an arbitrary number of arguments to a list of `base::Value`.
-base::Value::List ToList() {
-  return base::Value::List();
+base::ListValue ToList() {
+  return base::ListValue();
 }
 template <typename A, typename... Args>
-base::Value::List ToList(A&& value, Args&&... values) {
+base::ListValue ToList(A&& value, Args&&... values) {
   auto list = ToList(values...);
   list.Insert(list.begin(), base::Value(std::move(value)));
   return list;
@@ -576,7 +576,7 @@ TEST_F(WizardControllerAfterRollbackTest, ImportNetworkConfigAfterRollback) {
   ASSERT_TRUE(imported_config != nullptr);
   ASSERT_TRUE(imported_config->is_dict());
 
-  const base::Value::List* network_list =
+  const base::ListValue* network_list =
       imported_config->GetDict().FindList("NetworkConfigurations");
   ASSERT_TRUE(network_list);
 

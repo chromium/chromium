@@ -19,25 +19,25 @@
 
 namespace policy::test {
 
-base::Value::Dict GetFetchSupportPacketCommandPayloadDict(
+base::DictValue GetFetchSupportPacketCommandPayloadDict(
     const std::vector<support_tool::DataCollectorType>& data_collectors,
     const std::vector<support_tool::PiiType>& pii_types) {
-  base::Value::Dict support_packet_details;
+  base::DictValue support_packet_details;
   support_packet_details.Set("issueCaseId", "issue_case_id");
   support_packet_details.Set("issueDescription", "issue description");
-  base::Value::List data_collectors_list;
+  base::ListValue data_collectors_list;
   for (const auto& data_collector : data_collectors) {
     data_collectors_list.Append(data_collector);
   }
   support_packet_details.Set("requestedDataCollectors",
                              std::move(data_collectors_list));
-  base::Value::List pii_types_list;
+  base::ListValue pii_types_list;
   for (const auto& pii_type : pii_types) {
     pii_types_list.Append(pii_type);
   }
   support_packet_details.Set("requestedPiiTypes", std::move(pii_types_list));
-  return base::Value::Dict().Set("supportPacketDetails",
-                                 std::move(support_packet_details));
+  return base::DictValue().Set("supportPacketDetails",
+                               std::move(support_packet_details));
 }
 
 void CaptureUpcomingLogUploadEventOnReportingStorage(

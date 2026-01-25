@@ -65,14 +65,14 @@ class DnsResolverPresentRoutineTest : public NetworkDiagnosticsTestHelper {
                         const std::string& type = shill::kTypeIPv4) {
     DCHECK(!wifi_path().empty());
     // Set up the name servers
-    base::Value::List dns_servers;
+    base::ListValue dns_servers;
     for (const std::string& name_server : name_servers) {
       dns_servers.Append(name_server);
     }
 
     // Set up the IP config
     auto ip_config_properties =
-        base::Value::Dict()
+        base::DictValue()
             .Set(shill::kMethodProperty, type)
             .Set(shill::kNameServersProperty, dns_servers.Clone());
     helper()->ip_config_test()->AddIPConfig(kIPConfigPath,

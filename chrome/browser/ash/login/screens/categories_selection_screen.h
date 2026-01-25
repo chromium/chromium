@@ -65,7 +65,7 @@ class CategoriesSelectionScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   void OnResponseReceived(const std::vector<OOBEAppDefinition>& appInfos,
                           const std::vector<OOBEDeviceUseCase>& categories,
@@ -76,7 +76,7 @@ class CategoriesSelectionScreen : public BaseScreen {
   void ExitScreenTimeout();
 
   // Called when the user selects categories on the screen.
-  void OnSelect(base::Value::List selected_use_cases_ids);
+  void OnSelect(base::ListValue selected_use_cases_ids);
 
   std::unique_ptr<base::OneShotTimer> delay_overview_timer_;
   base::TimeDelta delay_overview_step_ = base::Seconds(2);

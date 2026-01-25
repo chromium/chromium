@@ -43,7 +43,7 @@ void OsTrialScreen::ShowImpl() {
 
 void OsTrialScreen::HideImpl() {}
 
-void OsTrialScreen::OnUserAction(const base::Value::List& args) {
+void OsTrialScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionTryNextClicked) {
     exit_callback_.Run(Result::kNextTry);

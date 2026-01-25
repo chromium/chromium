@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(MisconfiguredUserTest,
   ASSERT_TRUE(add_auth_factor_waiter_->Wait());
   PrefService* local_state = g_browser_process->local_state();
   ASSERT_TRUE(local_state->HasPrefPath(kMisconfiguredUserPrefV2));
-  const base::Value::Dict& pref_dict =
+  const base::DictValue& pref_dict =
       local_state->GetDict(kMisconfiguredUserPrefV2);
   std::optional<AccountId> account_id = user_manager::LoadAccountId(pref_dict);
   ASSERT_TRUE(account_id);

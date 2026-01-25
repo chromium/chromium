@@ -1070,7 +1070,7 @@ TEST_P(EventDrivenTelemetryCollectorPoolTest,
        SettingBasedTelemetry_AffiliatedOnly) {
   EventDrivenTelemetryCollectorPoolTestCase test_case = GetParam();
 
-  base::Value::List telemetry_list;
+  base::ListValue telemetry_list;
   telemetry_list.Append("invalid");
   telemetry_list.Append("network_telemetry");
   telemetry_list.Append("https_latency");
