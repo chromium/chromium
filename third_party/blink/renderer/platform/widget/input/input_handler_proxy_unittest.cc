@@ -27,6 +27,7 @@
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/test/mock_input_handler.h"
 #include "components/input/features.h"
+#include "components/viz/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -3156,6 +3157,68 @@ TEST_P(InputHandlerProxyEventQueueTest, DeliverInputWithHighLatencyMode) {
   EXPECT_EQ(0ul, event_queue().size());
   EXPECT_EQ(InputHandlerProxy::DID_HANDLE, event_disposition_recorder_.back());
 
+  testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
+}
+
+TEST_P(InputHandlerProxyEventQueueTest, MomentumScrollEventsTracking) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(::features::kFlingSchedulingImprovements);
+
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now());
+
+  // Re-create the proxy so it picks up the enabled feature.
+  input_handler_proxy_ = std::make_unique<TestInputHandlerProxy>(
+      mock_input_handler_, &mock_client_);
+  constexpr base::TimeDelta kInterval = base::Milliseconds(16);
+
+  SetInputHandlerProxyTickClockForTesting(&tick_clock);
+  SetScrollPredictionEnabled(true);
+
+  // Setup expectations for the scroll sequence.
+  cc::InputHandlerScrollResult did_scroll_result;
+  did_scroll_result.did_scroll = true;
+
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillRepeatedly(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(mock_input_handler_, RecordScrollBegin(_, _))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+      .WillRepeatedly(testing::Return(did_scroll_result));
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput())
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(mock_input_handler_,
+              GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(testing::Return(false));
+
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+  tick_clock.Advance(kInterval);
+
+  // 1. Enqueue a normal GSU. handling_fling_ should be false.
+  HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -10);
+  EXPECT_FALSE(input_handler_proxy_->HandlingFlingForTesting());
+
+  // 2. Enqueue a Fling GSU. handling_fling_ should be true.
+  auto fling_gsu = CreateGestureScrollPinch(
+      WebInputEvent::Type::kGestureScrollUpdate, WebGestureDevice::kTouchscreen,
+      NowTimestampForEvents(), -10);
+  static_cast<WebGestureEvent*>(fling_gsu.get())
+      ->data.scroll_update.inertial_phase =
+      WebGestureEvent::InertialPhaseState::kMomentum;
+  InjectInputEvent(std::move(fling_gsu));
+
+  EXPECT_TRUE(input_handler_proxy_->HandlingFlingForTesting());
+
+  // 3. Process the events.
+  // The `handling_fling_` latch remains true during dispatch..
+  DeliverInputForBeginFrame(tick_clock.NowTicks());
+
+  // If the queue is now empty, the latch should be reset.
+  if (event_queue().empty()) {
+    EXPECT_FALSE(input_handler_proxy_->HandlingFlingForTesting());
+  }
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
 }
 
