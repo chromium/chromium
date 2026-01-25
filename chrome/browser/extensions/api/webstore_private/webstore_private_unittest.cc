@@ -119,11 +119,11 @@ struct ExtensionRequestData {
 void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
                            expected_pending_requests,
                        Profile* profile) {
-  const base::Value::Dict& actual_pending_requests =
+  const base::DictValue& actual_pending_requests =
       profile->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
   ASSERT_EQ(expected_pending_requests.size(), actual_pending_requests.size());
   for (const auto& expected_request : expected_pending_requests) {
-    const base::Value::Dict* actual_pending_request =
+    const base::DictValue* actual_pending_request =
         actual_pending_requests.FindDict(expected_request.first);
     ASSERT_NE(nullptr, actual_pending_request);
 

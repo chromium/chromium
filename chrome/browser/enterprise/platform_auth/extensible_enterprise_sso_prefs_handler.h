@@ -86,7 +86,7 @@ class ExtensibleEnterpriseSSOPrefsHandler {
   static const CFStringRef kOktaSSOTeamID;
 
  private:
-  void OnConfigRead(base::Value::List res);
+  void OnConfigRead(base::ListValue res);
 
   std::unique_ptr<CFPreferencesObserver> cf_preferences_observer_;
   raw_ptr<PrefService> local_state_{nullptr};

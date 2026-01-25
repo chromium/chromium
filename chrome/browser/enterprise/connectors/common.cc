@@ -577,22 +577,22 @@ void ReportDataMaskingEvent(
 
     reporting_client->ReportEvent(std::move(event), settings.value());
   } else {
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set(kKeyUrl, data_masking_event.url);
     event.Set(kKeyTabUrl, std::move(data_masking_event.url));
     event.Set(kKeyEventResult,
               EventResultToString(data_masking_event.event_result));
 
-    base::Value::List triggered_rule_info;
+    base::ListValue triggered_rule_info;
     triggered_rule_info.reserve(data_masking_event.triggered_rule_info.size());
     for (auto& rule : data_masking_event.triggered_rule_info) {
-      base::Value::Dict triggered_rule;
+      base::DictValue triggered_rule;
       triggered_rule.Set(kKeyTriggeredRuleId, std::move(rule.rule_id));
       triggered_rule.Set(kKeyTriggeredRuleName, std::move(rule.rule_name));
 
-      base::Value::List matched_detectors;
+      base::ListValue matched_detectors;
       for (auto& detector : rule.matched_detectors) {
-        base::Value::Dict detector_value;
+        base::DictValue detector_value;
         detector_value.Set(kKeyDetectorId, std::move(detector.detector_id));
         detector_value.Set(kKeyDisplayName, std::move(detector.display_name));
         detector_value.Set(kKeyDetectorType,

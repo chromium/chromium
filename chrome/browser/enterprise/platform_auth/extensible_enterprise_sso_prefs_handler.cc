@@ -35,7 +35,7 @@ namespace {
 
 const CFStringRef kExtensibleSSOPrefName(CFSTR("com.apple.extensiblesso"));
 
-base::Value::List ParseConfiguration(CFPreferencesObserver::Config config) {
+base::ListValue ParseConfiguration(CFPreferencesObserver::Config config) {
   if (!config.extension_id || !config.team_id || !config.hosts) {
     return {};
   }
@@ -62,7 +62,7 @@ base::Value::List ParseConfiguration(CFPreferencesObserver::Config config) {
     return {};
   }
   const CFIndex size = CFArrayGetCount(array);
-  base::Value::List hostnames;
+  base::ListValue hostnames;
   hostnames.reserve(size);
 
   for (CFIndex i = 0; i < size; ++i) {
@@ -80,7 +80,7 @@ base::Value::List ParseConfiguration(CFPreferencesObserver::Config config) {
   return hostnames;
 }
 
-base::Value::List ReadAndParseConfiguration(
+base::ListValue ReadAndParseConfiguration(
     base::OnceCallback<CFPreferencesObserver::Config()> read_callback) {
   CFPreferencesObserver::Config config = std::move(read_callback).Run();
   return ParseConfiguration(std::move(config));
@@ -206,7 +206,7 @@ void ExtensibleEnterpriseSSOPrefsHandler::UpdatePrefs() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead(base::Value::List res) {
+void ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead(base::ListValue res) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_state_->SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts,
                         std::move(res));

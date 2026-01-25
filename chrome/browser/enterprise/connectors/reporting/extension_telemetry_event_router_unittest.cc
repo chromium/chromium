@@ -205,7 +205,7 @@ TEST_P(ExtensionTelemetryEventInstallLocationTest,
        CheckTelemetryEventReported) {
   // Initialize the dictionary outside of the if/else block below, so that the
   // variable won't be destroyed by the time the `EXPECT_CALL` is executed.
-  base::Value::Dict expected_event;
+  base::DictValue expected_event;
 
   if (use_proto_format()) {
     scoped_feature_list_.InitAndEnableFeature(

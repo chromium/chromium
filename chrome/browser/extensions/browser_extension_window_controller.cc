@@ -215,12 +215,11 @@ bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
          allow_dev_tools_windows;
 }
 
-base::Value::Dict
-BrowserExtensionWindowController::CreateWindowValueForExtension(
+base::DictValue BrowserExtensionWindowController::CreateWindowValueForExtension(
     const Extension* extension,
     PopulateTabBehavior populate_tab_behavior,
     mojom::ContextType context) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set(extension_misc::kId, session_id_.id());
   dict.Set(kWindowTypeKey, GetWindowTypeText());
@@ -261,10 +260,10 @@ BrowserExtensionWindowController::CreateWindowValueForExtension(
   return dict;
 }
 
-base::Value::List BrowserExtensionWindowController::CreateTabList(
+base::ListValue BrowserExtensionWindowController::CreateTabList(
     const Extension* extension,
     mojom::ContextType context) const {
-  base::Value::List tab_list;
+  base::ListValue tab_list;
   const int tab_count = tab_list_->GetTabCount();
 
   for (int i = 0; i < tab_count; ++i) {

@@ -247,7 +247,7 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
     // could be tested on all retrieved XHR actions but it would be redundant,
     // so just test once.
     ASSERT_TRUE(action->other());
-    const base::Value::Dict& other = *action->other();
+    const base::DictValue& other = *action->other();
     std::optional<int> dom_verb =
         other.FindInt(activity_log_constants::kActionDomVerb);
     ASSERT_EQ(DomActionType::XHR, dom_verb);
@@ -285,7 +285,7 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
                 ActivityLogPolicy::Util::Serialize(action->args()));
       ASSERT_EQ("http://www.google.co.uk/", action->arg_url().spec());
       ASSERT_TRUE(action->other());
-      const base::Value::Dict& other = *action->other();
+      const base::DictValue& other = *action->other();
       std::optional<int> dom_verb =
           other.FindInt(activity_log_constants::kActionDomVerb);
       ASSERT_EQ(DomActionType::SETTER, dom_verb);
@@ -323,7 +323,7 @@ TEST_F(ActivityLogTest, LogAndFetchActions) {
 TEST_F(ActivityLogTest, LogPrerender) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
@@ -402,8 +402,8 @@ TEST_F(ActivityLogTest, ArgUrlExtraction) {
   // Submit an API call with an embedded URL.
   action = new Action(kExtensionId, now - base::Seconds(3),
                       Action::ACTION_API_CALL, "windows.create");
-  base::Value::List list;
-  auto item = base::Value::Dict().Set("url", "http://www.google.co.uk");
+  base::ListValue list;
+  auto item = base::DictValue().Set("url", "http://www.google.co.uk");
   list.Append(std::move(item));
   action->set_args(std::move(list));
   activity_log->LogAction(action);
@@ -416,7 +416,7 @@ TEST_F(ActivityLogTest, ArgUrlExtraction) {
 TEST_F(ActivityLogTest, UninstalledExtension) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "Test extension")
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))

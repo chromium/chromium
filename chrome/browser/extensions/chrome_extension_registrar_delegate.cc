@@ -353,7 +353,7 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
     const Extension* extension,
     const syncer::StringOrdinal& page_ordinal,
     int install_flags,
-    base::Value::Dict ruleset_install_prefs) {
+    base::DictValue ruleset_install_prefs) {
   const std::string& id = extension->id();
   base::flat_set<int> disable_reasons =
       extension_registrar_->GetDisableReasonsOnInstalled(extension);

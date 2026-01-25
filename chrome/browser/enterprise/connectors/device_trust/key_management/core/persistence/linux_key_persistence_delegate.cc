@@ -143,7 +143,7 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
   }
 
   // Storing key and trust level information.
-  base::Value::Dict keyinfo;
+  base::DictValue keyinfo;
   const std::string encoded_key = base::Base64Encode(wrapped);
   keyinfo.Set(kSigningKeyName, base::Value(encoded_key));
   keyinfo.Set(kSigningKeyTrustLevel, base::Value(trust_level));

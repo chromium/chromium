@@ -33,8 +33,8 @@
 namespace extensions {
 namespace {
 template <class T>
-base::Value::List ToValueList(const std::vector<T>& values) {
-  base::Value::List list;
+base::ListValue ToValueList(const std::vector<T>& values) {
+  base::ListValue list;
   list.reserve(values.size());
   for (const auto& value : values) {
     list.Append(value.ToValue());
@@ -107,7 +107,7 @@ void AutofillPrivateEventRouter::OnEntityInstancesChanged() {
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiReauthRequired);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(ToValueList(
       extensions::autofill_ai_util::
           EntityInstancesToPrivateApiEntityInstancesWithLabels(
@@ -157,7 +157,7 @@ void AutofillPrivateEventRouter::BroadcastCurrentData() {
       extensions::autofill_util::GetAccountInfo(
           personal_data_->address_data_manager());
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(ToValueList(address_list));
   args.Append(ToValueList(credit_card_list));
   args.Append(ToValueList(iban_list));

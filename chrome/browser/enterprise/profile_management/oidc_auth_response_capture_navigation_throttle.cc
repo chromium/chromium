@@ -366,7 +366,7 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
     RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
     return Resume();
   }
-  const base::Value::Dict* parsed_json = result->GetIfDict();
+  const base::DictValue* parsed_json = result->GetIfDict();
 
   if (!parsed_json) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)

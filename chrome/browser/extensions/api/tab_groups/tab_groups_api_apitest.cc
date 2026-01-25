@@ -42,7 +42,7 @@ namespace extensions {
 namespace {
 
 // Runs the chrome.tabGroups.get(groupId) function.
-base::Value::Dict RunTabGroupsGetFunction(
+base::DictValue RunTabGroupsGetFunction(
     content::BrowserContext* browser_context,
     const Extension* extension,
     const std::string& args) {
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunction) {
   int group_id = ExtensionTabUtil::GetGroupId(*group);
   constexpr char kFormatArgs[] = R"([%d])";
   const std::string args = base::StringPrintf(kFormatArgs, group_id);
-  base::Value::Dict group_info =
+  base::DictValue group_info =
       RunTabGroupsGetFunction(profile(), extension.get(), args);
 
   // Group info was returned.

@@ -100,7 +100,7 @@ constexpr char kOriginTrialPublicKeyForTesting[] =
 
 std::string CreateFetchScript(
     const GURL& resource,
-    std::optional<base::Value::Dict> request_init = std::nullopt) {
+    std::optional<base::DictValue> request_init = std::nullopt) {
   const char kFetchScriptTemplate[] = R"(
     fetch($1, $2)
       .then(response => response.text())
@@ -109,7 +109,7 @@ std::string CreateFetchScript(
   )";
   return content::JsReplace(
       kFetchScriptTemplate, resource,
-      request_init ? std::move(*request_init) : base::Value::Dict());
+      request_init ? std::move(*request_init) : base::DictValue());
 }
 
 std::string PopString(content::DOMMessageQueue* message_queue) {
@@ -1301,7 +1301,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     content::DOMMessageQueue message_queue(active_web_contents());
 
-    base::Value::Dict request_init;
+    base::DictValue request_init;
     request_init.SetByDottedPath("trustToken.type", "token-redemption");
 
     EXPECT_TRUE(ExecuteContentScript(
@@ -1326,7 +1326,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     content::DOMMessageQueue message_queue(active_web_contents());
 
-    base::Value::Dict request_init;
+    base::DictValue request_init;
     request_init.SetByDottedPath("trustToken.type", "token-redemption");
 
     EXPECT_TRUE(ExecuteContentScript(
@@ -1515,7 +1515,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // Performs a cross-origin fetch from the background page in "no-cors" mode.
   GURL cross_site_resource(
       embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
-  base::Value::Dict request_init;
+  base::DictValue request_init;
   request_init.Set("mode", "no-cors");
   std::string script =
       CreateFetchScript(cross_site_resource, std::move(request_init));
@@ -1649,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     GURL cross_site_resource2(
         embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
 
-    base::Value::Dict request_init;
+    base::DictValue request_init;
     request_init.Set("method", "GET");
     request_init.Set("mode", "no-cors");
 

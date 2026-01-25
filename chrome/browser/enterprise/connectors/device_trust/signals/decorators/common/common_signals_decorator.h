@@ -22,16 +22,16 @@ class CommonSignalsDecorator : public SignalsDecorator {
   ~CommonSignalsDecorator() override;
 
   // SignalsDecorator:
-  void Decorate(base::Value::Dict& signals,
+  void Decorate(base::DictValue& signals,
                 base::OnceClosure done_closure) override;
 
  private:
-  void OnHardwareInfoRetrieved(base::Value::Dict& signals,
+  void OnHardwareInfoRetrieved(base::DictValue& signals,
                                base::TimeTicks start_time,
                                base::OnceClosure done_closure,
                                base::SysInfo::HardwareInfo hardware_info);
 
-  void UpdateFromCache(base::Value::Dict& signals);
+  void UpdateFromCache(base::DictValue& signals);
 
   // These two signals are fetched asynchronously and their collection can
   // involve expensive operations such as reading from disk. Since these signals

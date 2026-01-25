@@ -632,7 +632,7 @@ ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
   WindowController::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? WindowController::kPopulateTabs
                                 : WindowController::kDontPopulateTabs;
-  base::Value::Dict windows = window_controller->CreateWindowValueForExtension(
+  base::DictValue windows = window_controller->CreateWindowValueForExtension(
       extension(), populate_tab_behavior, source_context_type());
   return RespondNow(WithArguments(std::move(windows)));
 }
@@ -655,7 +655,7 @@ ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
   WindowController::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? WindowController::kPopulateTabs
                                 : WindowController::kDontPopulateTabs;
-  base::Value::Dict windows = window_controller->CreateWindowValueForExtension(
+  base::DictValue windows = window_controller->CreateWindowValueForExtension(
       extension(), populate_tab_behavior, source_context_type());
   return RespondNow(WithArguments(std::move(windows)));
 }
@@ -686,7 +686,7 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
   WindowController::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? WindowController::kPopulateTabs
                                 : WindowController::kDontPopulateTabs;
-  base::Value::Dict windows = ExtensionTabUtil::CreateWindowValueForExtension(
+  base::DictValue windows = ExtensionTabUtil::CreateWindowValueForExtension(
       *last_focused_browser, extension(), populate_tab_behavior,
       source_context_type());
   return RespondNow(WithArguments(std::move(windows)));
@@ -699,7 +699,7 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
 
   tabs_internal::ApiParameterExtractor<windows::GetAll::Params> extractor(
       params);
-  base::Value::List window_list;
+  base::ListValue window_list;
   WindowController::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? WindowController::kPopulateTabs
                                 : WindowController::kDontPopulateTabs;
@@ -1596,21 +1596,21 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     // Note: current_browser may still be null.
   }
 
-  base::Value::List result =
+  base::ListValue result =
       BuildTabList(current_browser, last_active_browser, url_patterns,
                    window_type, window_id, index);
 
   return RespondNow(WithArguments(std::move(result)));
 }
 
-base::Value::List TabsQueryFunction::BuildTabList(
+base::ListValue TabsQueryFunction::BuildTabList(
     BrowserWindowInterface* current_browser,
     BrowserWindowInterface* last_active_browser,
     const URLPatternSet& url_patterns,
     const std::string& window_type,
     int window_id,
     int tab_index) {
-  base::Value::List result;
+  base::ListValue result;
   // Historically, we queried browsers in creation order. Maintain that behavior
   // (for now).
   std::vector<BrowserWindowInterface*> all_browsers =
@@ -2408,7 +2408,7 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
 
   int new_index = params->move_properties.index;
   const auto& window_id = params->move_properties.window_id;
-  base::Value::List tab_values;
+  base::ListValue tab_values;
 
   size_t num_tabs = 0;
   std::string error;
@@ -2450,7 +2450,7 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
 
 bool TabsMoveFunction::MoveTab(int tab_id,
                                int* new_index,
-                               base::Value::List& tab_values,
+                               base::ListValue& tab_values,
                                const std::optional<int>& window_id,
                                std::string* error) {
   WindowController* source_window = nullptr;

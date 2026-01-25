@@ -33,17 +33,17 @@ class BrowserAttestationService : public AttestationService {
   // AttestationService:
   void BuildChallengeResponseForVAChallenge(
       const std::string& challenge,
-      base::Value::Dict signals,
+      base::DictValue signals,
       const std::set<DTCPolicyLevel>& levels,
       AttestationCallback callback) override;
 
  private:
   void OnChallengeParsed(AttestationCallback callback,
-                         base::Value::Dict signals,
+                         base::DictValue signals,
                          const std::string& serialized_signed_challenge);
 
   void OnChallengeValidated(const SignedData& signed_data,
-                            base::Value::Dict signals,
+                            base::DictValue signals,
                             const std::set<DTCPolicyLevel>& levels,
                             AttestationCallback callback,
                             bool is_va_challenge);

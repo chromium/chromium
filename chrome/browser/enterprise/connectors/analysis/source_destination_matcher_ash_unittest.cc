@@ -179,7 +179,7 @@ TEST_F(SourceDestinationMatcherAshTest, NullptrSettingsNoCrash) {
   SourceDestinationMatcherAsh matcher;
 
   size_t id = 0;
-  base::Value::List* settings = nullptr;
+  base::ListValue* settings = nullptr;
   matcher.AddFilters(&id, settings);
   EXPECT_EQ(id, 0u);
 }

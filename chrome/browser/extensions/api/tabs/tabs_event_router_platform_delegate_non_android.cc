@@ -263,10 +263,10 @@ void TabsEventRouterPlatformDelegate::DispatchTabClosingAt(
     int index) {
   int tab_id = ExtensionTabUtil::GetTabId(contents);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(tab_id);
 
-  base::Value::Dict object_args;
+  base::DictValue object_args;
   object_args.Set(tabs_constants::kWindowIdKey,
                   ExtensionTabUtil::GetWindowIdOfTab(contents));
   object_args.Set(tabs_constants::kIsWindowClosingKey,
@@ -290,10 +290,10 @@ void TabsEventRouterPlatformDelegate::DispatchTabDetachedAt(
     return;
   }
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(ExtensionTabUtil::GetTabId(contents));
 
-  base::Value::Dict object_args;
+  base::DictValue object_args;
   object_args.Set(kOldWindowIdKey,
                   ExtensionTabUtil::GetWindowIdOfTab(contents));
   object_args.Set(kOldPositionKey, index);
@@ -308,11 +308,11 @@ void TabsEventRouterPlatformDelegate::DispatchTabDetachedAt(
 void TabsEventRouterPlatformDelegate::DispatchActiveTabChanged(
     WebContents* old_contents,
     WebContents* new_contents) {
-  base::Value::List args;
+  base::ListValue args;
   int tab_id = ExtensionTabUtil::GetTabId(new_contents);
   args.Append(tab_id);
 
-  base::Value::Dict object_args;
+  base::DictValue object_args;
   object_args.Set(tabs_constants::kWindowIdKey,
                   ExtensionTabUtil::GetWindowIdOfTab(new_contents));
   args.Append(object_args.Clone());
@@ -331,7 +331,7 @@ void TabsEventRouterPlatformDelegate::DispatchActiveTabChanged(
                          EventRouter::UserGestureState::kUnknown);
 
   // The onActivated event takes one argument: {windowId, tabId}.
-  base::Value::List on_activated_args;
+  base::ListValue on_activated_args;
   object_args.Set(kTabIdKey, tab_id);
   on_activated_args.Append(std::move(object_args));
   router_->DispatchEvent(
@@ -342,7 +342,7 @@ void TabsEventRouterPlatformDelegate::DispatchActiveTabChanged(
 void TabsEventRouterPlatformDelegate::DispatchTabSelectionChanged(
     TabStripModel* tab_strip_model,
     const ui::ListSelectionModel& old_model) {
-  base::Value::List all_tabs;
+  base::ListValue all_tabs;
 
   for (tabs::TabInterface* tab :
        tab_strip_model->selection_model().selected_tabs()) {
@@ -354,8 +354,8 @@ void TabsEventRouterPlatformDelegate::DispatchTabSelectionChanged(
     all_tabs.Append(tab_id);
   }
 
-  base::Value::List args;
-  base::Value::Dict select_info;
+  base::ListValue args;
+  base::DictValue select_info;
 
   int window_id = -1;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
@@ -391,7 +391,7 @@ void TabsEventRouterPlatformDelegate::DispatchTabReplacedAt(
   // WebContents being swapped.
   const int new_tab_id = ExtensionTabUtil::GetTabId(new_contents);
   const int old_tab_id = ExtensionTabUtil::GetTabId(old_contents);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(new_tab_id);
   args.Append(old_tab_id);
 

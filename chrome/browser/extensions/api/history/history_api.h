@@ -49,7 +49,7 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
   void DispatchEvent(Profile* profile,
                      events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List event_args);
+                     base::ListValue event_args);
 
   raw_ptr<Profile> profile_;
   base::ScopedObservation<history::HistoryService,

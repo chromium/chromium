@@ -41,7 +41,7 @@ bool IsExtensionAllowed(Profile* profile, const Extension* extension) {
     // allowed in chrome/common/extensions/api/_permission_features.json
     return true;
   }
-  const base::Value::List& list =
+  const base::ListValue& list =
       profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
   base::Value value(extension->id());
   return std::ranges::contains(list, value);

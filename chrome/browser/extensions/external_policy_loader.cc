@@ -33,7 +33,7 @@ void ExternalPolicyLoader::OnExtensionManagementSettingsChanged() {
 }
 
 // static
-void ExternalPolicyLoader::AddExtension(base::Value::Dict& dict,
+void ExternalPolicyLoader::AddExtension(base::DictValue& dict,
                                         const std::string& extension_id,
                                         const std::string& update_url) {
   dict.SetByDottedPath(
@@ -43,7 +43,7 @@ void ExternalPolicyLoader::AddExtension(base::Value::Dict& dict,
 }
 
 void ExternalPolicyLoader::StartLoading() {
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   switch (type_) {
     case FORCED: {
       InstallStageTracker* install_stage_tracker =

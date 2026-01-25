@@ -36,7 +36,7 @@ enterprise_management::RemoteCommand CreateCommandProto(
       enterprise_management::RemoteCommand_Type_BROWSER_CLEAR_BROWSING_DATA);
   command_proto.set_command_id(kUniqueID);
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set(kProfilePathField, profile_path);
   root.Set(kClearCacheField, clear_cache);
   root.Set(kClearCookiesField, clear_cookies);
@@ -125,7 +125,7 @@ TEST_F(ClearBrowsingDataJobTest, CanParseWithMissingDataTypes) {
       enterprise_management::RemoteCommand_Type_BROWSER_CLEAR_BROWSING_DATA);
   command_proto.set_command_id(kUniqueID);
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set(kProfilePathField, kTestProfilePath);
 
   std::string payload;
@@ -157,7 +157,7 @@ TEST_F(ClearBrowsingDataJobTest, DontInitWhenMissingProfilePath) {
       enterprise_management::RemoteCommand_Type_BROWSER_CLEAR_BROWSING_DATA);
   command_proto.set_command_id(kUniqueID);
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set(kClearCacheField, true);
   root.Set(kClearCookiesField, true);
 

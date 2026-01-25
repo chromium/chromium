@@ -83,8 +83,8 @@ namespace {
 // URL in |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting. The
 // format of the returned filters corresponds to the "filter" property of the
 // AutoSelectCertificateForUrls policy as documented at policy_templates.json.
-base::Value::List GetCertAutoSelectionFilters(Profile* profile,
-                                              const GURL& requesting_url) {
+base::ListValue GetCertAutoSelectionFilters(Profile* profile,
+                                            const GURL& requesting_url) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value setting = host_content_settings_map->GetWebsiteSetting(
@@ -94,7 +94,7 @@ base::Value::List GetCertAutoSelectionFilters(Profile* profile,
   if (!setting.is_dict())
     return {};
 
-  base::Value::List* filters = setting.GetDict().FindList("filters");
+  base::ListValue* filters = setting.GetDict().FindList("filters");
   if (!filters) {
     // |setting_dict| has the wrong format (e.g. single filter instead of a
     // list of filters). This content setting is only provided by
@@ -112,7 +112,7 @@ base::Value::List GetCertAutoSelectionFilters(Profile* profile,
 // filters. Returns false when there's no valid filter.
 bool CertMatchesSelectionFilters(
     const net::ClientCertIdentity& client_cert,
-    const base::Value::List& auto_selection_filters) {
+    const base::ListValue& auto_selection_filters) {
   for (const auto& filter : auto_selection_filters) {
     if (!filter.is_dict()) {
       // The filter has a wrong format, so ignore it. Note that reporting of
@@ -274,7 +274,7 @@ void AutoSelectCertificates(
     net::ClientCertIdentityList* nonmatching_client_certs) {
   matching_client_certs->clear();
   nonmatching_client_certs->clear();
-  const base::Value::List auto_selection_filters =
+  const base::ListValue auto_selection_filters =
       GetCertAutoSelectionFilters(profile, requesting_url);
   for (auto& client_cert : client_certs) {
     if (CertMatchesSelectionFilters(*client_cert, auto_selection_filters))

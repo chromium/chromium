@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
           .empty())
       << kForceInstallNotEmptyHelp;
 
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
@@ -696,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
 
   ExtensionRegistry* registry = extension_registry();
 
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
@@ -738,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
       temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
       temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
@@ -851,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   EXPECT_TRUE(registrar->IsExtensionEnabled(kExtensionId));
 
   // Setup the force install policy. It should override the location.
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;

@@ -31,9 +31,9 @@ std::string make_path(const std::string& a, const std::string& b) {
   return a + "." + b;
 }
 
-void RemoveDictionaryPath(base::Value::Dict& dict, std::string_view path) {
+void RemoveDictionaryPath(base::DictValue& dict, std::string_view path) {
   std::string_view current_path(path);
-  base::Value::Dict* current_dictionary = &dict;
+  base::DictValue* current_dictionary = &dict;
   size_t delimiter_position = current_path.rfind('.');
   if (delimiter_position != std::string_view::npos) {
     current_dictionary =
@@ -67,7 +67,7 @@ void ExtensionManagementPrefUpdaterBase::UnsetPerExtensionSettings(
 void ExtensionManagementPrefUpdaterBase::ClearPerExtensionSettings(
     const ExtensionId& id) {
   DCHECK(crx_file::id_util::IdIsValid(id));
-  pref_.Set(id, base::Value::Dict());
+  pref_.Set(id, base::DictValue());
 }
 
 // Helper functions for 'installation_mode' manipulation -----------------------
@@ -300,31 +300,31 @@ void ExtensionManagementPrefUpdaterBase::UnsetMinimumVersionRequired(
 
 // Expose a read-only preference to user ---------------------------------------
 
-const base::Value::Dict* ExtensionManagementPrefUpdaterBase::GetPref() {
+const base::DictValue* ExtensionManagementPrefUpdaterBase::GetPref() {
   return &pref_;
 }
 
 // Private section functions ---------------------------------------------------
 
-void ExtensionManagementPrefUpdaterBase::SetPref(base::Value::Dict pref) {
+void ExtensionManagementPrefUpdaterBase::SetPref(base::DictValue pref) {
   pref_ = std::move(pref);
 }
 
-base::Value::Dict ExtensionManagementPrefUpdaterBase::TakePref() {
+base::DictValue ExtensionManagementPrefUpdaterBase::TakePref() {
   return std::move(pref_);
 }
 
 void ExtensionManagementPrefUpdaterBase::ClearList(const std::string& path) {
-  pref_.SetByDottedPath(path, base::Value::List());
+  pref_.SetByDottedPath(path, base::ListValue());
 }
 
 void ExtensionManagementPrefUpdaterBase::AddStringToList(
     const std::string& path,
     const std::string& str) {
-  base::Value::List* list_value_weak = pref_.FindListByDottedPath(path);
+  base::ListValue* list_value_weak = pref_.FindListByDottedPath(path);
   if (!list_value_weak) {
     list_value_weak =
-        &pref_.SetByDottedPath(path, base::Value::List())->GetList();
+        &pref_.SetByDottedPath(path, base::ListValue())->GetList();
   }
   CHECK(!list_value_weak->contains(str));
   list_value_weak->Append(str);
@@ -333,7 +333,7 @@ void ExtensionManagementPrefUpdaterBase::AddStringToList(
 void ExtensionManagementPrefUpdaterBase::RemoveStringFromList(
     const std::string& path,
     const std::string& str) {
-  base::Value::List* list_value = pref_.FindListByDottedPath(path);
+  base::ListValue* list_value = pref_.FindListByDottedPath(path);
   if (list_value)
     CHECK_GT(list_value->EraseValue(base::Value(str)), 0u);
 }
@@ -348,7 +348,7 @@ ExtensionManagementPolicyUpdater::ExtensionManagementPolicyUpdater(
           .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                        std::string()))
           .GetValue(policy::key::kExtensionSettings, base::Value::Type::DICT);
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (policy_value && policy_value->is_dict()) {
     dict = policy_value->GetDict().Clone();
   }

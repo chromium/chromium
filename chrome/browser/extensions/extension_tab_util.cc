@@ -473,16 +473,15 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 }
 
 // static
-base::Value::List ExtensionTabUtil::CreateTabList(
-    BrowserWindowInterface* browser,
-    const Extension* extension,
-    mojom::ContextType context) {
+base::ListValue ExtensionTabUtil::CreateTabList(BrowserWindowInterface* browser,
+                                                const Extension* extension,
+                                                mojom::ContextType context) {
   return WindowControllerFromBrowser(browser)->CreateTabList(extension,
                                                              context);
 }
 
 // static
-base::Value::Dict ExtensionTabUtil::CreateWindowValueForExtension(
+base::DictValue ExtensionTabUtil::CreateWindowValueForExtension(
     BrowserWindowInterface& browser,
     const Extension* extension,
     WindowController::PopulateTabBehavior populate_tab_behavior,

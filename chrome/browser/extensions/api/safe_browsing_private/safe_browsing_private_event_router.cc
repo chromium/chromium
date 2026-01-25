@@ -57,7 +57,7 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    base::Value::List event_value;
+    base::ListValue event_value;
     event_value.Append(params.ToValue());
 
     auto extension_event = std::make_unique<Event>(
@@ -74,7 +74,7 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
     const std::string& user_name) {
   // |event_router_| can be null in tests.
   if (event_router_) {
-    base::Value::List event_value;
+    base::ListValue event_value;
     event_value.Append(user_name);
     auto extension_event = std::make_unique<Event>(
         events::SAFE_BROWSING_PRIVATE_ON_POLICY_SPECIFIED_PASSWORD_CHANGED,
@@ -102,7 +102,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    base::Value::List event_value;
+    base::ListValue event_value;
     event_value.Append(params.ToValue());
 
     auto extension_event = std::make_unique<Event>(
@@ -127,7 +127,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    base::Value::List event_value;
+    base::ListValue event_value;
     event_value.Append(params.ToValue());
 
     auto extension_event = std::make_unique<Event>(
@@ -152,7 +152,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
 
   // |event_router_| can be null in tests.
   if (event_router_) {
-    base::Value::List event_value;
+    base::ListValue event_value;
     event_value.Append(params.ToValue());
 
     auto extension_event = std::make_unique<Event>(

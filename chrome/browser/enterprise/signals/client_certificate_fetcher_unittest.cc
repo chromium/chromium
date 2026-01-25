@@ -107,11 +107,11 @@ class ClientCertificateFetcherTest : public testing::Test {
     return net::FakeClientCertIdentityListFromCertificateList(client_certs_);
   }
 
-  void SetPolicyValueInContentSettings(base::Value::List filters) {
+  void SetPolicyValueInContentSettings(base::ListValue filters) {
     HostContentSettingsMap* m =
         HostContentSettingsMapFactory::GetForProfile(profile());
 
-    base::Value::Dict root;
+    base::DictValue root;
     root.Set("filters", std::move(filters));
 
     m->SetWebsiteSettingDefaultScope(
@@ -120,19 +120,19 @@ class ClientCertificateFetcherTest : public testing::Test {
         base::Value(std::move(root)));
   }
 
-  base::Value::Dict CreateFilterValue(const std::string& issuer,
-                                      const std::string& subject) {
+  base::DictValue CreateFilterValue(const std::string& issuer,
+                                    const std::string& subject) {
     EXPECT_FALSE(issuer.empty() && subject.empty());
 
-    base::Value::Dict filter;
+    base::DictValue filter;
     if (!issuer.empty()) {
-      base::Value::Dict issuer_value;
+      base::DictValue issuer_value;
       issuer_value.Set("CN", issuer);
       filter.Set("ISSUER", std::move(issuer_value));
     }
 
     if (!subject.empty()) {
-      base::Value::Dict subject_value;
+      base::DictValue subject_value;
       subject_value.Set("CN", subject);
       filter.Set("SUBJECT", std::move(subject_value));
     }
@@ -225,7 +225,7 @@ TEST_F(ClientCertificateFetcherTest, ReturnsFirstCertIfMatching) {
   std::unique_ptr<MockClientCertStore> cert_store =
       std::make_unique<MockClientCertStore>();
 
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("", "Client Cert A"));
 
   SetPolicyValueInContentSettings(std::move(filters));
@@ -260,7 +260,7 @@ TEST_F(ClientCertificateFetcherTest, ReturnsSecondCertIfMatching) {
   std::unique_ptr<MockClientCertStore> cert_store =
       std::make_unique<MockClientCertStore>();
 
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("E CA", ""));
 
   SetPolicyValueInContentSettings(std::move(filters));
@@ -295,7 +295,7 @@ TEST_F(ClientCertificateFetcherTest, ReturnsNoCertIfNoFiltersMatch) {
   std::unique_ptr<MockClientCertStore> cert_store =
       std::make_unique<MockClientCertStore>();
 
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("E CA", "Bad Subject"));
 
   SetPolicyValueInContentSettings(std::move(filters));

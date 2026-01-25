@@ -65,10 +65,10 @@ int GetSysInfoCheckboxStringId(content::BrowserContext* browser_context) {
 ChromeFeedbackPrivateDelegate::ChromeFeedbackPrivateDelegate() = default;
 ChromeFeedbackPrivateDelegate::~ChromeFeedbackPrivateDelegate() = default;
 
-base::Value::Dict ChromeFeedbackPrivateDelegate::GetStrings(
+base::DictValue ChromeFeedbackPrivateDelegate::GetStrings(
     content::BrowserContext* browser_context,
     bool from_crash) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
 #define SET_STRING(id, idr) dict.Set(id, l10n_util::GetStringUTF16(idr))
   SET_STRING("pageTitle", from_crash

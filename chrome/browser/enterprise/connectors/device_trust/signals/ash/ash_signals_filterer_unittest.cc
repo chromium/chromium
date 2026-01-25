@@ -23,8 +23,8 @@ constexpr char kFakeSystemDnsServer[] = "fake_system_dns_server";
 
 // Creates a signal payload which contains all device identifying signals and
 // some non device identifying signals.
-base::Value::Dict CreateDeviceSignals() {
-  base::Value::Dict signals;
+base::DictValue CreateDeviceSignals() {
+  base::DictValue signals;
   signals.Set(device_signals::names::kSafeBrowsingProtectionLevel,
               kFakeSafeBrowsingProtectionLevel);
   signals.Set(device_signals::names::kDeviceHostName, kFakeDeviceHostName);
@@ -32,20 +32,20 @@ base::Value::Dict CreateDeviceSignals() {
   signals.Set(device_signals::names::kDisplayName, kFakeDisplayName);
   signals.Set(device_signals::names::kSerialNumber, kFakeSerialNumber);
 
-  base::Value::List imei_list;
+  base::ListValue imei_list;
   imei_list.Append(kFakeImei);
   signals.Set(device_signals::names::kImei, std::move(imei_list));
 
-  base::Value::List mac_addresses_list;
+  base::ListValue mac_addresses_list;
   mac_addresses_list.Append(kFakeMacAddress);
   signals.Set(device_signals::names::kMacAddresses,
               std::move(mac_addresses_list));
 
-  base::Value::List meid_list;
+  base::ListValue meid_list;
   meid_list.Append(kFakeMeid);
   signals.Set(device_signals::names::kMeid, std::move(meid_list));
 
-  base::Value::List system_dns_list;
+  base::ListValue system_dns_list;
   system_dns_list.Append(kFakeSystemDnsServer);
   signals.Set(device_signals::names::kSystemDnsServers,
               std::move(system_dns_list));
@@ -55,8 +55,8 @@ base::Value::Dict CreateDeviceSignals() {
 
 // Creates a small signal payload which does not contain all device identifying
 // signals.
-base::Value::Dict CreateIncompleteDeviceSignals() {
-  base::Value::Dict signals;
+base::DictValue CreateIncompleteDeviceSignals() {
+  base::DictValue signals;
 
   signals.Set(device_signals::names::kSerialNumber, kFakeSerialNumber);
   signals.Set(device_signals::names::kDeviceModel, kFakeDeviceModel);
@@ -64,7 +64,7 @@ base::Value::Dict CreateIncompleteDeviceSignals() {
   return signals;
 }
 
-void ValidateNonDeviceIdentifyingSignals(base::Value::Dict& signals) {
+void ValidateNonDeviceIdentifyingSignals(base::DictValue& signals) {
   EXPECT_EQ(
       *signals.FindInt(device_signals::names::kSafeBrowsingProtectionLevel),
       kFakeSafeBrowsingProtectionLevel);
@@ -72,7 +72,7 @@ void ValidateNonDeviceIdentifyingSignals(base::Value::Dict& signals) {
             kFakeDeviceModel);
 }
 
-void ValidateDeviceIdentifyingSignalsExist(base::Value::Dict& signals) {
+void ValidateDeviceIdentifyingSignalsExist(base::DictValue& signals) {
   EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceHostName),
             kFakeDeviceHostName);
   EXPECT_EQ(*signals.FindString(device_signals::names::kDisplayName),
@@ -80,26 +80,26 @@ void ValidateDeviceIdentifyingSignalsExist(base::Value::Dict& signals) {
   EXPECT_EQ(*signals.FindString(device_signals::names::kSerialNumber),
             kFakeSerialNumber);
 
-  base::Value::List* imei_list = signals.FindList(device_signals::names::kImei);
+  base::ListValue* imei_list = signals.FindList(device_signals::names::kImei);
   EXPECT_EQ(imei_list->size(), 1u);
   EXPECT_EQ(imei_list->front(), kFakeImei);
 
-  base::Value::List* mac_addresses_list =
+  base::ListValue* mac_addresses_list =
       signals.FindList(device_signals::names::kMacAddresses);
   EXPECT_EQ(mac_addresses_list->size(), 1u);
   EXPECT_EQ(mac_addresses_list->front(), kFakeMacAddress);
 
-  base::Value::List* meid_list = signals.FindList(device_signals::names::kMeid);
+  base::ListValue* meid_list = signals.FindList(device_signals::names::kMeid);
   EXPECT_EQ(meid_list->size(), 1u);
   EXPECT_EQ(meid_list->front(), kFakeMeid);
 
-  base::Value::List* system_dns_servers_list =
+  base::ListValue* system_dns_servers_list =
       signals.FindList(device_signals::names::kSystemDnsServers);
   EXPECT_EQ(system_dns_servers_list->size(), 1u);
   EXPECT_EQ(system_dns_servers_list->front(), kFakeSystemDnsServer);
 }
 
-void ValidateDeviceIdentifyingSignalsRemoved(base::Value::Dict& signals) {
+void ValidateDeviceIdentifyingSignalsRemoved(base::DictValue& signals) {
   EXPECT_EQ(signals.Find(device_signals::names::kDeviceHostName), nullptr);
   EXPECT_EQ(signals.Find(device_signals::names::kDisplayName), nullptr);
   EXPECT_EQ(signals.Find(device_signals::names::kImei), nullptr);
@@ -129,7 +129,7 @@ class AshSignalsFiltererTest : public testing::Test {
 // Test that nothing is filtered if the device is managed
 TEST_F(AshSignalsFiltererTest, Filter_DeviceManaged) {
   SetDeviceManagement(true);
-  base::Value::Dict signals = CreateDeviceSignals();
+  base::DictValue signals = CreateDeviceSignals();
 
   AshSignalsFilterer filterer;
   filterer.Filter(signals);
@@ -142,7 +142,7 @@ TEST_F(AshSignalsFiltererTest, Filter_DeviceManaged) {
 // unmanaged.
 TEST_F(AshSignalsFiltererTest, Filter_DeviceUnmanaged) {
   SetDeviceManagement(false);
-  base::Value::Dict signals = CreateDeviceSignals();
+  base::DictValue signals = CreateDeviceSignals();
 
   AshSignalsFilterer filterer;
   filterer.Filter(signals);
@@ -155,7 +155,7 @@ TEST_F(AshSignalsFiltererTest, Filter_DeviceUnmanaged) {
 // unmanaged even if it does not contain all device identifying signals.
 TEST_F(AshSignalsFiltererTest, Filter_DeviceUnmanaged_IncompleteSignals) {
   SetDeviceManagement(false);
-  base::Value::Dict signals = CreateIncompleteDeviceSignals();
+  base::DictValue signals = CreateIncompleteDeviceSignals();
 
   AshSignalsFilterer filterer;
   filterer.Filter(signals);

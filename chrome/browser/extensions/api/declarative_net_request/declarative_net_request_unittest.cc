@@ -89,8 +89,8 @@ using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 template <class T>
-base::Value::List VectorToList(const std::vector<T>& values) {
-  base::Value::List lv;
+base::ListValue VectorToList(const std::vector<T>& values) {
+  base::ListValue lv;
   for (const auto& value : values) {
     lv.Append(value);
   }
@@ -285,8 +285,8 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
                               const std::vector<TestRule>& rules_to_add,
                               RulesetScope scope,
                               const std::string* expected_error = nullptr) {
-    base::Value::List ids_to_remove_value = VectorToList(rule_ids_to_remove);
-    base::Value::List rules_to_add_value = ToListValue(rules_to_add);
+    base::ListValue ids_to_remove_value = VectorToList(rule_ids_to_remove);
+    base::ListValue rules_to_add_value = ToListValue(rules_to_add);
 
     constexpr const char kParams[] = R"(
       [{
@@ -344,7 +344,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
           "ruleIds": $1
         }]
       )";
-      base::Value::List rule_ids_value = VectorToList(rule_ids.value());
+      base::ListValue rule_ids_value = VectorToList(rule_ids.value());
 
       json_args = content::JsReplace(kParams, std::move(rule_ids_value));
     }
@@ -375,8 +375,8 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
       const std::vector<std::string>& ruleset_ids_to_remove,
       const std::vector<std::string>& ruleset_ids_to_add,
       std::optional<std::string> expected_error) {
-    base::Value::List ids_to_remove_value = ToListValue(ruleset_ids_to_remove);
-    base::Value::List ids_to_add_value = ToListValue(ruleset_ids_to_add);
+    base::ListValue ids_to_remove_value = ToListValue(ruleset_ids_to_remove);
+    base::ListValue ids_to_add_value = ToListValue(ruleset_ids_to_add);
 
     constexpr const char kParams[] = R"(
       [{
@@ -430,8 +430,8 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
                                     const std::vector<int>& rule_ids_to_disable,
                                     const std::vector<int>& rule_ids_to_enable,
                                     std::optional<std::string> expected_error) {
-    base::Value::List ids_to_disable = VectorToList(rule_ids_to_disable);
-    base::Value::List ids_to_enable = VectorToList(rule_ids_to_enable);
+    base::ListValue ids_to_disable = VectorToList(rule_ids_to_disable);
+    base::ListValue ids_to_enable = VectorToList(rule_ids_to_enable);
 
     constexpr const char kParams[] = R"([{ "rulesetId": $1,
                                            "disableRuleIds": $2,
@@ -909,7 +909,7 @@ TEST_P(SingleRulesetTest, InvalidRedirectURL) {
 }
 
 TEST_P(SingleRulesetTest, ListNotPassed) {
-  SetRules(base::Value(base::Value::Dict()));
+  SetRules(base::Value(base::DictValue()));
   LoadAndExpectError(kErrorListNotPassed);
 }
 
@@ -1333,8 +1333,8 @@ TEST_P(SingleRulesetTest, SessionRules) {
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
       *extension(), {}, {rule_1, rule_2}, RulesetScope::kSession));
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
-  base::Value::Dict rule_1_value = rule_1.ToValue();
-  base::Value::Dict rule_2_value = rule_2.ToValue();
+  base::DictValue rule_1_value = rule_1.ToValue();
+  base::DictValue rule_2_value = rule_2.ToValue();
   EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(
                                     ::testing::Eq(std::cref(rule_1_value)),
                                     ::testing::Eq(std::cref(rule_2_value))));
@@ -1921,7 +1921,7 @@ TEST_P(MultipleRulesetsTest, ListNotPassed) {
     AddRuleset(
         TestRulesetInfo(kId2, "path2", base::Value(base::Value::Type::DICT)));
 
-    AddRuleset(TestRulesetInfo(kId3, "path3", base::Value::List()));
+    AddRuleset(TestRulesetInfo(kId3, "path3", base::ListValue()));
 
     LoadAndExpectError(kErrorListNotPassed, "path2" /* filename */);
 }

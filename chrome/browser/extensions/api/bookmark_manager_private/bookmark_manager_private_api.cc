@@ -249,7 +249,7 @@ BookmarkManagerPrivateEventRouter::~BookmarkManagerPrivateEventRouter() {
 void BookmarkManagerPrivateEventRouter::DispatchEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List event_args) {
+    base::ListValue event_args) {
   EventRouter::Get(browser_context_)
       ->BroadcastEvent(std::make_unique<Event>(histogram_value, event_name,
                                                std::move(event_args)));
@@ -316,7 +316,7 @@ BookmarkManagerPrivateDragEventRouter::
 void BookmarkManagerPrivateDragEventRouter::DispatchEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List args) {
+    base::ListValue args) {
   EventRouter* event_router = EventRouter::Get(profile_);
   if (!event_router)
     return;

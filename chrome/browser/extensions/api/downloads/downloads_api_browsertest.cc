@@ -193,12 +193,12 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
     // [ { "filename": { "current": "content://...." } } ].
     void MaybeCacheFilename() {
       CHECK(args_.is_list());
-      const base::Value::List& arg_list = args_.GetList();
+      const base::ListValue& arg_list = args_.GetList();
       if (arg_list.empty() || !arg_list[0].is_dict()) {
         return;
       }
-      const base::Value::Dict& main_dict = arg_list[0].GetDict();
-      const base::Value::Dict* filename_dict = main_dict.FindDict("filename");
+      const base::DictValue& main_dict = arg_list[0].GetDict();
+      const base::DictValue* filename_dict = main_dict.FindDict("filename");
       if (!filename_dict) {
         return;
       }
@@ -234,8 +234,8 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
           return false;
         }
 
-        const base::Value::Dict& left_dict = left_value.GetDict();
-        const base::Value::Dict& right_dict = right_value.GetDict();
+        const base::DictValue& left_dict = left_value.GetDict();
+        const base::DictValue& right_dict = right_value.GetDict();
         // Expect that all keys present in both dictionaries are equal. If a key
         // is only present in one of the dictionaries, ignore it. This allows us
         // to verify the properties we care about in the test without needing to
@@ -1082,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
 
   open_function = base::MakeRefCounted<DownloadsOpenFunction>();
   open_function->set_user_gesture(true);
-  base::Value::List args_list;
+  base::ListValue args_list;
   args_list.Append(static_cast<int>(download_item->GetId()));
   open_function->SetArgs(std::move(args_list));
   open_function->set_extension(extension());
@@ -1190,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(result);
   download_item = nullptr;
   ASSERT_TRUE(result->is_list());
-  const base::Value::List& result_list = result->GetList();
+  const base::ListValue& result_list = result->GetList();
   ASSERT_EQ(1UL, result_list.size());
   ASSERT_TRUE(result_list[0].is_int());
   EXPECT_EQ(id, result_list[0].GetInt());
@@ -1689,7 +1689,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(2UL, result_value->GetList().size());
   {
-    const base::Value::Dict& result_dict = result_value->GetList()[0].GetDict();
+    const base::DictValue& result_dict = result_value->GetList()[0].GetDict();
     const std::string* filename = result_dict.FindString("filename");
     ASSERT_TRUE(filename);
     std::optional<bool> is_incognito = result_dict.FindBool("incognito");
@@ -1699,7 +1699,7 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_FALSE(is_incognito.value());
   }
   {
-    const base::Value::Dict& result_dict = result_value->GetList()[1].GetDict();
+    const base::DictValue& result_dict = result_value->GetList()[1].GetDict();
     const std::string* filename = result_dict.FindString("filename");
     ASSERT_TRUE(filename);
     std::optional<bool> is_incognito = result_dict.FindBool("incognito");
@@ -1718,7 +1718,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(1UL, result_value->GetList().size());
   {
-    const base::Value::Dict& result_dict = result_value->GetList()[0].GetDict();
+    const base::DictValue& result_dict = result_value->GetList()[0].GetDict();
     const std::string* filename = result_dict.FindString("filename");
     ASSERT_TRUE(filename);
     EXPECT_TRUE(on_item->GetTargetFilePath() ==

@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, NotInstalled) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetID("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "Fake extension")
                            .Set("version", "1")
                            .Set("manifest_version", 2))
@@ -1034,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   scoped_refptr<const Extension> invalid =
       ExtensionBuilder()
           .SetID(crx_file::id_util::GenerateId("invalid"))
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "Fake extension")
                            .Set("version", "1")
                            .Set("manifest_version", 2))

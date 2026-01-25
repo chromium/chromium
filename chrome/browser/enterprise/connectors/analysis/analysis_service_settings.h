@@ -62,19 +62,19 @@ class AnalysisServiceSettings : public AnalysisServiceSettingsBase {
 
   // Helper methods for parsing the raw policy settings input
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-  void ParseVerificationSignatures(const base::Value::Dict& settings_dict);
+  void ParseVerificationSignatures(const base::DictValue& settings_dict);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   void ParseSourceDestinationPatternSettings(
-      const base::Value::List* pattern_settings_list,
+      const base::ListValue* pattern_settings_list,
       bool is_enabled_pattern);
 
   // Updates the states of `source_destination_matcher_`,
   // `enabled_patterns_settings_` and/or `disabled_patterns_settings_` from a
   // policy value.
   void AddSourceDestinationSettings(
-      const base::Value::Dict& source_destination_settings_value,
+      const base::DictValue& source_destination_settings_value,
       bool enabled);
 
   // A matcher to identify matching pairs of sources and destinations.

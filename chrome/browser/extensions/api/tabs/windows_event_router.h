@@ -77,7 +77,7 @@ class WindowsEventRouter :
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
                      WindowController* window_controller,
-                     base::Value::List args);
+                     base::ListValue args);
   bool HasEventListener(const std::string& event_name);
 
   // The main profile that owns this event router.

@@ -46,7 +46,7 @@ std::unique_ptr<ContentCondition> CreateContentCondition(
     return nullptr;
   }
 
-  const base::Value::Dict& api_condition_dict = api_condition.GetDict();
+  const base::DictValue& api_condition_dict = api_condition.GetDict();
 
   // Verify that we are dealing with a Condition whose type we understand.
   const std::string* instance_type = api_condition_dict.FindString(

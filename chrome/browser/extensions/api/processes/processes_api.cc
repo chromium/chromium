@@ -251,7 +251,7 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
 
   // Get the data of tasks sharing the same process only once.
   std::set<base::ProcessId> seen_processes;
-  base::Value::Dict processes_dictionary;
+  base::DictValue processes_dictionary;
   for (const auto& task_id : task_ids) {
     // We are not interested in tasks, but rather the processes on which they
     // run.
@@ -327,7 +327,7 @@ void ProcessesEventRouter::OnTaskUnresponsive(task_manager::TaskId id) {
 
 void ProcessesEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                          const std::string& event_name,
-                                         base::Value::List event_args) const {
+                                         base::ListValue event_args) const {
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (event_router) {
     std::unique_ptr<Event> event(

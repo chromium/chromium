@@ -55,33 +55,33 @@ class ProxyOverrideRulesTestBase : public MixinBasedPlatformBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  void SetUserProxyOverrideRules(base::Value::List rules) {
+  void SetUserProxyOverrideRules(base::ListValue rules) {
     base::flat_map<std::string, std::optional<base::Value>> policies;
     policies.emplace(policy::key::kProxyOverrideRules,
                      base::Value(std::move(rules)));
     management_context_mixin_->SetCloudUserPolicies(std::move(policies));
   }
 
-  base::Value::Dict CreateProxyRule(
+  base::DictValue CreateProxyRule(
       const std::string& host,
       const std::string& proxy,
-      std::optional<base::Value::List> conditions = std::nullopt) {
-    base::Value::Dict rule;
+      std::optional<base::ListValue> conditions = std::nullopt) {
+    base::DictValue rule;
     rule.Set(proxy_config::kKeyDestinationMatchers,
-             base::Value::List().Append(host));
-    rule.Set(proxy_config::kKeyProxyList, base::Value::List().Append(proxy));
+             base::ListValue().Append(host));
+    rule.Set(proxy_config::kKeyProxyList, base::ListValue().Append(proxy));
     if (conditions) {
       rule.Set(proxy_config::kKeyConditions, std::move(*conditions));
     }
     return rule;
   }
 
-  base::Value::Dict CreateDnsCondition(const std::string& host,
-                                       const std::string& result) {
-    base::Value::Dict dns_probe;
+  base::DictValue CreateDnsCondition(const std::string& host,
+                                     const std::string& result) {
+    base::DictValue dns_probe;
     dns_probe.Set(proxy_config::kKeyHost, host);
     dns_probe.Set(proxy_config::kKeyResult, result);
-    base::Value::Dict condition;
+    base::DictValue condition;
     condition.Set(proxy_config::kKeyDnsProbe, std::move(dns_probe));
     return condition;
   }
@@ -117,7 +117,7 @@ class ProxyOverrideRulesBrowserTest : public ProxyOverrideRulesTestBase {
 // Verifies that a simple rule matching the destination URL correctly routes
 // traffic to the configured proxy (Synchronous path).
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliesRule) {
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString()));
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliesRule) {
 // any rules matching the destination URL, the system falls back to DIRECT
 // (which fails in this test setup because the targeted port is closed).
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, NoRulesMatch) {
-  base::Value::List rules;
+  base::ListValue rules;
   // Rule matches a different host.
   rules.Append(CreateProxyRule(
       "other.com",
@@ -159,12 +159,12 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, NoRulesMatch) {
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest,
                        PrecedenceOverProxySettings) {
   // Configure ProxySettings to use an invalid proxy.
-  base::Value::Dict proxy_settings;
+  base::DictValue proxy_settings;
   proxy_settings.Set(policy::key::kProxyMode, "fixed_servers");
   proxy_settings.Set(policy::key::kProxyServer, "invalid.com:12345");
 
   // Configure ProxyOverrideRules to use the valid proxy for kDestinationHost.
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString()));
@@ -188,11 +188,11 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest,
 // traffic to the proxy (Asynchronous path).
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest,
                        AppliesRuleWithDnsCondition) {
-  base::Value::List conditions;
+  base::ListValue conditions;
   conditions.Append(
       CreateDnsCondition(kResolvableHost, proxy_config::kResultResolved));
 
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString(),
@@ -210,11 +210,11 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest,
 // the list is applied even if subsequent rules also match.
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliesPriority) {
   // Rule 1: Matches destination and DNS condition (Resolved). Valid Proxy.
-  base::Value::List conditions;
+  base::ListValue conditions;
   conditions.Append(
       CreateDnsCondition(kResolvableHost, proxy_config::kResultResolved));
 
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString(),
@@ -237,11 +237,11 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliesPriority) {
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliesPriorityFallback) {
   // Rule 1: Matches destination but DNS condition fails (Unresolvable). Invalid
   // Proxy.
-  base::Value::List conditions;
+  base::ListValue conditions;
   conditions.Append(
       CreateDnsCondition(kUnresolvableHost, proxy_config::kResultResolved));
 
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(kDestinationHost, "PROXY invalid.com:12345",
                                std::move(conditions)));
 
@@ -264,14 +264,14 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliesPriorityFallback) {
 // policy.
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, FallbackToProxySettings) {
   // Configure ProxySettings to use the valid proxy.
-  base::Value::Dict proxy_settings;
+  base::DictValue proxy_settings;
   proxy_settings.Set(policy::key::kProxyMode, "fixed_servers");
   proxy_settings.Set(policy::key::kProxyServer,
                      embedded_test_server()->host_port_pair().ToString());
 
   // Configure ProxyOverrideRules with a rule that does NOT match
   // kDestinationHost.
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule("other.com", "PROXY invalid.com:12345"));
 
   // Apply both policies.
@@ -306,7 +306,7 @@ class ProxyOverrideRulesUnaffiliatedBrowserTest
 // EnableProxyOverrideRulesForAllUsers is not set (default 0).
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesUnaffiliatedBrowserTest,
                        IgnoredByDefault) {
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString()));
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesUnaffiliatedBrowserTest,
                        IgnoredWhenDisabled) {
   SetEnableForAllUsers(false);
 
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString()));
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesUnaffiliatedBrowserTest,
                        AppliedWhenEnabled) {
   SetEnableForAllUsers(true);
 
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString()));
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesUnaffiliatedBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliedWhenDisabled) {
   SetEnableForAllUsers(false);
 
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString()));
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliedWhenDisabled) {
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesBrowserTest, AppliedWhenEnabled) {
   SetEnableForAllUsers(true);
 
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString()));
@@ -407,7 +407,7 @@ class ProxyOverrideRulesUnmanagedDeviceBrowserTest
 // even if EnableProxyOverrideRulesForAllUsers is not set.
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesUnmanagedDeviceBrowserTest,
                        WorksOnUnmanagedDevice) {
-  base::Value::List rules;
+  base::ListValue rules;
   rules.Append(CreateProxyRule(
       kDestinationHost,
       "PROXY " + embedded_test_server()->host_port_pair().ToString()));

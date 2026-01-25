@@ -381,7 +381,7 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(
         printing::features::kApiPrintingMarginsAndScale);
-    base::Value::Dict cjt_ticket = base::test::ParseJsonDict(kCjt);
+    base::DictValue cjt_ticket = base::test::ParseJsonDict(kCjt);
     std::unique_ptr<printing::PrintSettings> settings =
         ParsePrintTicket(std::move(cjt_ticket));
 
@@ -454,7 +454,7 @@ TEST(PrintingApiUtilsTest, ParsePrintTicketFitToPage) {
   for (const auto& test_case : kTestCases) {
     const std::string cjt_json =
         absl::StrFormat(kCjtWithFitToPageTemplate, test_case.fit_to_page_type);
-    base::Value::Dict cjt_ticket = base::test::ParseJsonDict(cjt_json);
+    base::DictValue cjt_ticket = base::test::ParseJsonDict(cjt_json);
     std::unique_ptr<printing::PrintSettings> settings =
         ParsePrintTicket(std::move(cjt_ticket));
     ASSERT_TRUE(settings);
@@ -466,7 +466,7 @@ TEST(PrintingApiUtilsTest, ParsePrintTicketNoFitToPageAndNoMargins) {
   base::test::ScopedFeatureList feature_list(
       printing::features::kApiPrintingMarginsAndScale);
 
-  base::Value::Dict cjt_ticket =
+  base::DictValue cjt_ticket =
       base::test::ParseJsonDict(kCjtNoFitToPageAndMargins);
   std::unique_ptr<printing::PrintSettings> settings =
       ParsePrintTicket(std::move(cjt_ticket));

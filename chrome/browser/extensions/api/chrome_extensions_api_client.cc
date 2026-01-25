@@ -394,11 +394,11 @@ ChromeExtensionsAPIClient::CreateContentRulesRegistry(
 #if BUILDFLAG(IS_CHROMEOS)
 bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
                                                         int pid) const {
-  const base::Value::List* policy_list;
+  const base::ListValue* policy_list;
   if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
     for (const auto& entry : *policy_list) {
-      const base::Value::Dict* entry_dict = entry.GetIfDict();
+      const base::DictValue* entry_dict = entry.GetIfDict();
       if (entry_dict &&
           entry_dict->FindInt(ash::kUsbDetachableAllowlistKeyVid) == vid &&
           entry_dict->FindInt(ash::kUsbDetachableAllowlistKeyPid) == pid) {

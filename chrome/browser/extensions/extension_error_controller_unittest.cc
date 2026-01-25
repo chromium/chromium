@@ -97,7 +97,7 @@ ExtensionErrorUI* CreateMockUI(ExtensionErrorUI::Delegate* delegate) {
 // Builds and returns a simple extension.
 scoped_refptr<const Extension> BuildExtension() {
   return ExtensionBuilder()
-      .SetManifest(base::Value::Dict()
+      .SetManifest(base::DictValue()
                        .Set("name", "My Wonderful Extension")
                        .Set("version", "0.1.1.0")
                        .Set("manifest_version", 2))
@@ -152,7 +152,7 @@ ExtensionErrorControllerUnitTest::AddBlocklistedExtension(
 
 void ExtensionErrorControllerUnitTest::SetBlockExtensionPolicy(
     const Extension* extension) {
-  base::Value::List block_list;
+  base::ListValue block_list;
   if (extension) {
     block_list.Append(extension->id());
   }

@@ -115,9 +115,9 @@ class ExtensionInstallStatusTest : public testing::Test {
   }
 
   void SetPendingList(const std::vector<ExtensionId>& ids) {
-    base::Value::Dict id_values;
+    base::DictValue id_values;
     for (const auto& id : ids) {
-      base::Value::Dict request_data;
+      base::DictValue request_data;
       request_data.Set(extension_misc::kExtensionRequestTimestamp,
                        ::base::TimeToValue(base::Time::Now()));
       id_values.Set(id, std::move(request_data));
@@ -838,7 +838,7 @@ TEST_F(
       profile(), false);
 
   // Grant approval to the extension.
-  base::Value::Dict approved_extensions;
+  base::DictValue approved_extensions;
   approved_extensions.Set(kExtensionId, true);
   profile()->GetPrefs()->SetDict(prefs::kSupervisedUserApprovedExtensions,
                                  std::move(approved_extensions));

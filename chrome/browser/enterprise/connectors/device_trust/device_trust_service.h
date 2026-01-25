@@ -66,7 +66,7 @@ class DeviceTrustService : public KeyedService {
   virtual const std::set<DTCPolicyLevel> Watches(const GURL& url) const;
 
   // Collects device trust signals and returns them via `callback`.
-  void GetSignals(base::OnceCallback<void(base::Value::Dict)> callback);
+  void GetSignals(base::OnceCallback<void(base::DictValue)> callback);
 
   // Parses the `serialized_challenge` and returns its value via `callback`.
   void ParseJsonChallenge(const std::string& serialized_challenge,
@@ -83,7 +83,7 @@ class DeviceTrustService : public KeyedService {
   void OnSignalsCollected(const std::string& challenge,
                           const std::set<DTCPolicyLevel>& levels,
                           DeviceTrustCallback callback,
-                          base::Value::Dict signals);
+                          base::DictValue signals);
   void OnAttestationResponseReceived(
       DeviceTrustCallback callback,
       const AttestationResponse& attestation_response);

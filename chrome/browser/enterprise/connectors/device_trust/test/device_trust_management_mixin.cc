@@ -27,13 +27,13 @@ using ManagementContext = enterprise::test::ManagementContext;
 namespace {
 
 base::Value GetAllowedHostValue(const std::string& url) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(url);
   return base::Value(std::move(list));
 }
 
 base::Value GetEmptyListValue() {
-  return base::Value(base::Value::List());
+  return base::Value(base::ListValue());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

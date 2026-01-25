@@ -106,7 +106,7 @@ std::optional<DefaultPrinterRules> GetDefaultPrinterRules(
   std::optional<base::Value> default_destination_selection_rules_value =
       base::JSONReader::Read(default_destination_selection_rules,
                              base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  base::Value::Dict* default_destination_selection_rules_dict =
+  base::DictValue* default_destination_selection_rules_dict =
       default_destination_selection_rules_value.has_value()
           ? default_destination_selection_rules_value->GetIfDict()
           : nullptr;
@@ -181,7 +181,7 @@ idl::PrinterStatus PrinterStatusToIdl(chromeos::PrinterErrorCode status) {
 }
 
 std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
-    base::Value::Dict ticket) {
+    base::DictValue ticket) {
   cloud_devices::CloudDeviceDescription description;
   if (!description.InitFromValue(std::move(ticket))) {
     LOG(ERROR) << "Unable to initialize CDD from print ticket.";

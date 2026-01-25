@@ -162,7 +162,7 @@ void ExtensionAllowlist::SetExtensionAllowlistAcknowledgeState(
 
 void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
     const ExtensionId& extension_id,
-    const base::Value::Dict& attributes) {
+    const base::DictValue& attributes) {
   const base::Value* allowlist_value = attributes.Find("_esbAllowlist");
 
   ReportExtensionAllowlistOmahaAttribute(allowlist_value);

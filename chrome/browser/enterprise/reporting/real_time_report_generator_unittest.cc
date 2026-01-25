@@ -41,7 +41,7 @@ TEST_F(RealTimeReportGeneratorTest, ExtensionRequest) {
   profile->GetTestingPrefService()->SetManagedPref(
       prefs::kCloudExtensionRequestEnabled, base::Value(true));
 
-  auto requests = base::Value::Dict().Set(extension_id, base::Value::Dict());
+  auto requests = base::DictValue().Set(extension_id, base::DictValue());
   profile->GetTestingPrefService()->SetUserPref(
       prefs::kCloudExtensionRequestIds, std::move(requests));
 

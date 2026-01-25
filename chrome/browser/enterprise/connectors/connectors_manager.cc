@@ -152,7 +152,7 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   const char* pref = AnalysisConnectorPref(connector);
   DCHECK(pref);
 
-  const base::Value::List& policy_value = prefs()->GetList(pref);
+  const base::ListValue& policy_value = prefs()->GetList(pref);
   for (const base::Value& service_settings : policy_value) {
     analysis_connector_settings_[connector].push_back(
         std::make_unique<AnalysisServiceSettings>(service_settings,

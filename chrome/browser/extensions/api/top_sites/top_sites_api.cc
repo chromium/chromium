@@ -40,10 +40,10 @@ ExtensionFunction::ResponseAction TopSitesGetFunction::Run() {
 
 void TopSitesGetFunction::OnMostVisitedURLsAvailable(
     const history::MostVisitedURLList& data) {
-  base::Value::List pages_value;
+  base::ListValue pages_value;
   for (const auto& url : data) {
     if (!url.url.is_empty()) {
-      base::Value::Dict page_value;
+      base::DictValue page_value;
       page_value.Set("url", url.url.spec());
       if (url.title.empty()) {
         page_value.Set("title", url.url.spec());

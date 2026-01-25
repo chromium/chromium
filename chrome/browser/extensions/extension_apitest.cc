@@ -83,7 +83,7 @@ void ExtensionApiTest::SetUpOnMainThread() {
 #endif
 
   DCHECK(!test_config_.get()) << "Previous test did not clear config state.";
-  test_config_ = std::make_unique<base::Value::Dict>();
+  test_config_ = std::make_unique<base::DictValue>();
   test_config_->Set(kTestDataDirectory,
                     net::FilePathToFileURL(test_data_dir_).spec());
 

@@ -26,16 +26,15 @@ namespace extensions {
 
 namespace {
 
-base::Value::List CreateBaseEventArgs(
-    const ExtensionId& extension_id,
-    const std::string& scoped_notification_id) {
+base::ListValue CreateBaseEventArgs(const ExtensionId& extension_id,
+                                    const std::string& scoped_notification_id) {
   // Unscope the notification id before returning it.
   size_t index_of_separator = extension_id.length() + 1;
   DCHECK_LT(index_of_separator, scoped_notification_id.length());
   std::string unscoped_notification_id =
       scoped_notification_id.substr(index_of_separator);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(unscoped_notification_id);
   return args;
 }
@@ -66,7 +65,7 @@ void ExtensionNotificationHandler::OnClose(
   ExtensionId extension_id(GetExtensionId(GURL(origin)));
   DCHECK(!extension_id.empty());
 
-  base::Value::List args = CreateBaseEventArgs(extension_id, notification_id);
+  base::ListValue args = CreateBaseEventArgs(extension_id, notification_id);
   args.Append(by_user);
   SendEvent(profile, extension_id, events::NOTIFICATIONS_ON_CLOSED,
             api::notifications::OnClosed::kEventName, gesture, std::move(args));
@@ -89,7 +88,7 @@ void ExtensionNotificationHandler::OnClick(
   DCHECK(!reply.has_value());
 
   ExtensionId extension_id(GetExtensionId(GURL(origin)));
-  base::Value::List args = CreateBaseEventArgs(extension_id, notification_id);
+  base::ListValue args = CreateBaseEventArgs(extension_id, notification_id);
   if (action_index.has_value())
     args.Append(action_index.value());
   events::HistogramValue histogram_value =
@@ -129,7 +128,7 @@ void ExtensionNotificationHandler::SendEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
     EventRouter::UserGestureState user_gesture,
-    base::Value::List args) {
+    base::ListValue args) {
   if (extension_id.empty())
     return;
 

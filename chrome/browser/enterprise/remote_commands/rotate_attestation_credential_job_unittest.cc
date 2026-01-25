@@ -42,7 +42,7 @@ enterprise_management::RemoteCommand CreateCommand() {
 }
 
 std::string GetPayloadWithNonce() {
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set(kNonceField, kNonceValue);
 
   return base::WriteJson(root).value_or("");

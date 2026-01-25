@@ -30,7 +30,7 @@ const char kMalformedPreferenceWarning[] =
 // Maximum number of characters for a 'blocked_install_message' value.
 const int kBlockedInstallMessageMaxLength = 1000;
 
-bool GetString(const base::Value::Dict& dict,
+bool GetString(const base::DictValue& dict,
                const char* key,
                std::string* result) {
   const std::string* value = dict.FindString(key);
@@ -61,7 +61,7 @@ IndividualSettings::IndividualSettings(
 
 IndividualSettings::~IndividualSettings() = default;
 
-bool IndividualSettings::Parse(const base::Value::Dict& dict,
+bool IndividualSettings::Parse(const base::DictValue& dict,
                                ParsingScope scope) {
   std::string installation_mode_str;
   if (GetString(dict, schema_constants::kInstallationMode,
@@ -134,7 +134,7 @@ bool IndividualSettings::Parse(const base::Value::Dict& dict,
   // for the same reason, we keep the code for now.
   APIPermissionSet parsed_blocked_permissions;
   APIPermissionSet explicitly_allowed_permissions;
-  const base::Value::List* list_value =
+  const base::ListValue* list_value =
       dict.FindList(schema_constants::kAllowedPermissions);
   if (list_value) {
     if (!APIPermissionSet::ParseFromJSON(
@@ -156,10 +156,10 @@ bool IndividualSettings::Parse(const base::Value::Dict& dict,
                                &blocked_permissions);
 
   // Parses list of Match Patterns into a URLPatternSet.
-  auto parse_url_pattern_set = [](const base::Value::Dict& dict,
-                                  const char key[], URLPatternSet* out_value) {
+  auto parse_url_pattern_set = [](const base::DictValue& dict, const char key[],
+                                  URLPatternSet* out_value) {
     // Get the list of URLPatterns.
-    const base::Value::List* host_list_value = dict.FindList(key);
+    const base::ListValue* host_list_value = dict.FindList(key);
     if (host_list_value) {
       if (host_list_value->size() > schema_constants::kMaxItemsURLPatternSet) {
         LOG(WARNING) << "Exceeded maximum number of URL match patterns ("

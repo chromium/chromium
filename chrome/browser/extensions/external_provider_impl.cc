@@ -164,7 +164,7 @@ void ExternalProviderImpl::VisitRegisteredExtension() {
   loader_->StartLoading();
 }
 
-void ExternalProviderImpl::SetPrefs(base::Value::Dict prefs) {
+void ExternalProviderImpl::SetPrefs(base::DictValue prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Check if the service is still alive. It is possible that it went
@@ -214,7 +214,7 @@ void ExternalProviderImpl::NotifyServiceOnExternalExtensionsFound() {
   service_->OnExternalProviderReady(this);
 }
 
-void ExternalProviderImpl::UpdatePrefs(base::Value::Dict prefs) {
+void ExternalProviderImpl::UpdatePrefs(base::DictValue prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(allow_updates_);
 
@@ -299,7 +299,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       continue;
     }
 
-    const base::Value::Dict& extension_dict = pref.second.GetDict();
+    const base::DictValue& extension_dict = pref.second.GetDict();
     const std::string* external_crx = extension_dict.FindString(kExternalCrx);
     std::string external_version;
     const std::string* external_update_url = nullptr;
@@ -343,7 +343,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
     }
 
     // Check that extension supports current browser locale.
-    const base::Value::List* supported_locales =
+    const base::ListValue* supported_locales =
         extension_dict.FindList(kSupportedLocales);
     if (supported_locales) {
       std::vector<std::string> browser_locales = l10n_util::GetParentLocales(
@@ -562,7 +562,7 @@ bool ExternalProviderImpl::HasExtensionWithLocation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_);
   CHECK(ready_);
-  const base::Value::Dict* dict = prefs_->FindDict(id);
+  const base::DictValue* dict = prefs_->FindDict(id);
   if (!dict) {
     return false;
   }
@@ -586,7 +586,7 @@ bool ExternalProviderImpl::GetExtensionDetails(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_);
   CHECK(ready_);
-  const base::Value::Dict* dict = prefs_->FindDict(id);
+  const base::DictValue* dict = prefs_->FindDict(id);
   if (!dict)
     return false;
 
@@ -615,7 +615,7 @@ bool ExternalProviderImpl::GetExtensionDetails(
 }
 
 bool ExternalProviderImpl::HandleMinProfileVersion(
-    const base::Value::Dict& extension,
+    const base::DictValue& extension,
     const std::string& extension_id,
     std::set<std::string>* unsupported_extensions) {
   const std::string* min_profile_created_by_version =
@@ -640,7 +640,7 @@ bool ExternalProviderImpl::HandleMinProfileVersion(
 }
 
 bool ExternalProviderImpl::HandleDoNotInstallForEnterprise(
-    const base::Value::Dict& extension,
+    const base::DictValue& extension,
     const std::string& extension_id,
     std::set<std::string>* unsupported_extensions) {
   std::optional<bool> do_not_install_for_enterprise =

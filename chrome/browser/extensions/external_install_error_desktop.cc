@@ -315,7 +315,7 @@ ExternalInstallErrorDesktop::ExternalInstallErrorDesktop(
 
     PrefService* prefs = profile->GetPrefs();
 
-    const base::Value::List& initial_list =
+    const base::ListValue& initial_list =
         prefs->GetList(pref_names::kInitialInstallList);
 
     if (initial_list.contains(extension_id_)) {

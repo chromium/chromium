@@ -42,7 +42,7 @@ class ReadingListEventRouter : public KeyedService,
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List args);
+                     base::ListValue args);
 
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       reading_list_observation_{this};

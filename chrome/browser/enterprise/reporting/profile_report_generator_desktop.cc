@@ -44,7 +44,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!profile_->GetPrefs()->GetBoolean(prefs::kCloudExtensionRequestEnabled))
     return;
-  const base::Value::Dict& pending_requests =
+  const base::DictValue& pending_requests =
       profile_->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
 
   // In case a corrupted profile prefs causing |pending_requests| to be null.

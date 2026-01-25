@@ -80,7 +80,7 @@ class ComponentLoader : public KeyedService {
 
   // Convenience method for registering a component extension by parsed
   // manifest.
-  ExtensionId Add(base::Value::Dict manifest,
+  ExtensionId Add(base::DictValue manifest,
                   const base::FilePath& root_directory);
 
   // Loads a component extension from file system. Replaces previously added
@@ -162,7 +162,7 @@ class ComponentLoader : public KeyedService {
 
   // Information about a registered component extension.
   struct ComponentExtensionInfo {
-    ComponentExtensionInfo(base::Value::Dict manifest_param,
+    ComponentExtensionInfo(base::DictValue manifest_param,
                            const base::FilePath& root_directory);
 
     ComponentExtensionInfo(const ComponentExtensionInfo&) = delete;
@@ -174,7 +174,7 @@ class ComponentLoader : public KeyedService {
     ComponentExtensionInfo& operator=(ComponentExtensionInfo&& other);
 
     // The parsed contents of the extensions's manifest file.
-    base::Value::Dict manifest;
+    base::DictValue manifest;
 
     // Directory where the extension is stored.
     base::FilePath root_directory;
@@ -186,14 +186,14 @@ class ComponentLoader : public KeyedService {
   explicit ComponentLoader(Profile* profile);
 
   // Parses the given JSON manifest. Returns `std::nullopt` if it cannot be
-  // parsed or if the result is not a base::Value::Dict.
-  std::optional<base::Value::Dict> ParseManifest(
+  // parsed or if the result is not a base::DictValue.
+  std::optional<base::DictValue> ParseManifest(
       std::string_view manifest_contents) const;
 
   ExtensionId Add(std::string_view manifest_contents,
                   const base::FilePath& root_directory,
                   bool skip_allowlist);
-  ExtensionId Add(base::Value::Dict parsed_manifest,
+  ExtensionId Add(base::DictValue parsed_manifest,
                   const base::FilePath& root_directory,
                   bool skip_allowlist);
 
@@ -234,7 +234,7 @@ class ComponentLoader : public KeyedService {
       const std::optional<std::string>& description_string,
       base::OnceClosure done_cb,
       base::OnceClosure error_cb,
-      std::optional<base::Value::Dict> manifest);
+      std::optional<base::DictValue> manifest);
 
   // Finishes loading an extension tts engine.
   void FinishLoadSpeechSynthesisExtension(const ExtensionId& extension_id);

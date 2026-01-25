@@ -525,7 +525,7 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
                                                &window_controller, &error)) {
     return Error(error);
   }
-  base::Value::Dict window_value =
+  base::DictValue window_value =
       window_controller->CreateWindowValueForExtension(
           extension(), WindowController::kPopulateTabs, source_context_type());
   std::optional<api::windows::Window> window =
@@ -732,7 +732,7 @@ void SessionsEventRouter::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
   EventRouter::Get(profile_)->BroadcastEvent(std::make_unique<Event>(
       events::SESSIONS_ON_CHANGED, api::sessions::OnChanged::kEventName,
-      base::Value::List()));
+      base::ListValue()));
 }
 
 void SessionsEventRouter::TabRestoreServiceDestroyed(

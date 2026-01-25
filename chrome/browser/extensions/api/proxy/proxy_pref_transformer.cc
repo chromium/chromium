@@ -32,7 +32,7 @@ std::optional<base::Value> ProxyPrefTransformer::ExtensionToBrowserPref(
   // has been verified already by the extension API to match the schema
   // defined in the extension API JSON.
   CHECK(extension_pref.is_dict());
-  const base::Value::Dict& config = extension_pref.GetDict();
+  const base::DictValue& config = extension_pref.GetDict();
   // Extract the various pieces of information passed to
   // chrome.proxy.settings.set(). Several of these strings will
   // remain blank no respective values have been passed to set().
@@ -59,7 +59,7 @@ std::optional<base::Value> ProxyPrefTransformer::ExtensionToBrowserPref(
     return std::nullopt;
   }
 
-  std::optional<base::Value::Dict> result =
+  std::optional<base::DictValue> result =
       proxy_api_helpers::CreateProxyConfigDict(
           mode_enum, pac_mandatory, pac_url, pac_data, proxy_rules_string,
           bypass_list, &error);
@@ -87,7 +87,7 @@ std::optional<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
   }
 
   // Build a new ProxyConfig instance as defined in the extension API.
-  base::Value::Dict extension_pref;
+  base::DictValue extension_pref;
 
   extension_pref.Set(proxy_api_constants::kProxyConfigMode,
                      ProxyPrefs::ProxyModeToString(mode));
@@ -102,7 +102,7 @@ std::optional<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
       // A PAC URL either point to a PAC script or contain a base64 encoded
       // PAC script. In either case we build a PacScript dictionary as defined
       // in the extension API.
-      std::optional<base::Value::Dict> pac_dict =
+      std::optional<base::DictValue> pac_dict =
           proxy_api_helpers::CreatePacScriptDict(config);
       if (!pac_dict) {
         return std::nullopt;
@@ -113,7 +113,7 @@ std::optional<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
       // Build ProxyRules dictionary according to the extension API.
-      std::optional<base::Value::Dict> proxy_rules_dict =
+      std::optional<base::DictValue> proxy_rules_dict =
           proxy_api_helpers::CreateProxyRulesDict(config);
       if (!proxy_rules_dict) {
         return std::nullopt;

@@ -46,7 +46,7 @@ WindowController::TypeFilter WindowController::GetFilterFromWindowTypes(
 
 // static
 WindowController::TypeFilter WindowController::GetFilterFromWindowTypesValues(
-    const base::Value::List* types) {
+    const base::ListValue* types) {
   WindowController::TypeFilter filter = WindowController::kNoWindowFilter;
   if (!types) {
     return filter;

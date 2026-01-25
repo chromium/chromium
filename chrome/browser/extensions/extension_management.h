@@ -121,10 +121,10 @@ class ExtensionManagement : public KeyedService,
 
   // Returns the force install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
-  base::Value::Dict GetForceInstallList() const;
+  base::DictValue GetForceInstallList() const;
 
   // Like GetForceInstallList(), but returns recommended install list instead.
-  base::Value::Dict GetRecommendedInstallList() const;
+  base::DictValue GetRecommendedInstallList() const;
 
   // Returns `true` if there is at least one extension with
   // `INSTALLATION_ALLOWED` as installation mode. This excludes force installed
@@ -255,7 +255,7 @@ class ExtensionManagement : public KeyedService,
   // `extension_id`. Returns true if it succeeds, otherwise returns false and
   // removes the entry from `settings_by_id_`.
   bool ParseById(const std::string& extension_id,
-                 const base::Value::Dict& subdict);
+                 const base::DictValue& subdict);
 
   // Returns the individual settings for `extension_id` if it exists, otherwise
   // returns nullptr. This method will also lazy load the settings if they're
@@ -276,13 +276,13 @@ class ExtensionManagement : public KeyedService,
 
   // Loads the dictionary preference with name `pref_name` - see
   // `LoadPreference` for more details.
-  const base::Value::Dict* LoadDictPreference(const char* pref_name,
-                                              bool force_managed) const;
+  const base::DictValue* LoadDictPreference(const char* pref_name,
+                                            bool force_managed) const;
 
   // Loads the list preference with name `pref_name` - see `LoadPreference` for
   // more details.
-  const base::Value::List* LoadListPreference(const char* pref_name,
-                                              bool force_managed) const;
+  const base::ListValue* LoadListPreference(const char* pref_name,
+                                            bool force_managed) const;
 
   void OnExtensionPrefChanged();
   void NotifyExtensionManagementPrefChanged();
@@ -297,11 +297,11 @@ class ExtensionManagement : public KeyedService,
 
   // Helper to return an extension install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
-  base::Value::Dict GetInstallListByMode(
+  base::DictValue GetInstallListByMode(
       ManagedInstallationMode installation_mode) const;
 
   // Helper to update `extension_dict` for forced installs.
-  void UpdateForcedExtensions(const base::Value::Dict* extension_dict);
+  void UpdateForcedExtensions(const base::DictValue* extension_dict);
 
   // Helper function to access `settings_by_id_` with `id` as key.
   // Adds a new IndividualSettings entry to `settings_by_id_` if none exists for

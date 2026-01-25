@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
   std::optional<base::Value> result_value =
       base::JSONReader::Read(result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(result_value && result_value->is_dict());
-  base::Value::Dict& app_details = result_value.value().GetDict();
+  base::DictValue& app_details = result_value.value().GetDict();
 
   // extension->manifest() does not contain the id.
   app_details.Remove("id");

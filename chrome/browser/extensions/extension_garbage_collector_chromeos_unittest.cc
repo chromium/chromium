@@ -96,13 +96,13 @@ class ExtensionGarbageCollectorChromeOSUnitTest
         TestingBrowserProcess::GetGlobal()->local_state(),
         ExtensionAssetsManagerChromeOS::kSharedExtensions);
 
-    base::Value::Dict* extension_info_weak = shared_extensions->EnsureDict(id);
+    base::DictValue* extension_info_weak = shared_extensions->EnsureDict(id);
 
-    base::Value::Dict version_info;
+    base::DictValue version_info;
     version_info.Set(ExtensionAssetsManagerChromeOS::kSharedExtensionPath,
                      path.value());
 
-    base::Value::List users;
+    base::ListValue users;
     for (const std::string& user :
          base::SplitString(users_string, ",", base::KEEP_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY)) {
@@ -174,7 +174,7 @@ TEST_F(ExtensionGarbageCollectorChromeOSUnitTest, SharedExtensions) {
 
   EXPECT_TRUE(base::PathExists(path_id2_1));
 
-  const base::Value::Dict& shared_extensions =
+  const base::DictValue& shared_extensions =
       TestingBrowserProcess::GetGlobal()->local_state()->GetDict(
           ExtensionAssetsManagerChromeOS::kSharedExtensions);
 

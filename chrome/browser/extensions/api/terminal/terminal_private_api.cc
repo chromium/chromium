@@ -214,7 +214,7 @@ void NotifyProcessOutput(content::BrowserContext* browser_context,
     return;
   }
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(terminal_id);
   args.Append(output_type);
   args.Append(base::Value(base::as_byte_span(output)));
@@ -234,8 +234,8 @@ void PrefChanged(Profile* profile, const std::string& pref_name) {
   if (!event_router) {
     return;
   }
-  base::Value::List args;
-  base::Value::Dict prefs;
+  base::ListValue args;
+  base::DictValue prefs;
   prefs.Set(pref_name, profile->GetPrefs()->GetValue(pref_name).Clone());
   args.Append(std::move(prefs));
   auto event = std::make_unique<extensions::Event>(
@@ -753,7 +753,7 @@ TerminalPrivateOpenSettingsSubpageFunction::Run() {
 TerminalPrivateGetOSInfoFunction::~TerminalPrivateGetOSInfoFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
-  base::Value::Dict info;
+  base::DictValue info;
   info.Set("tast", extensions::ExtensionRegistry::Get(browser_context())
                        ->enabled_extensions()
                        .Contains(extension_misc::kGuestModeTestExtensionId));
@@ -767,7 +767,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   PrefService* service =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
-  base::Value::Dict result;
+  base::DictValue result;
 
   for (const auto& path : params->paths) {
     // Ignore non-allowed paths.

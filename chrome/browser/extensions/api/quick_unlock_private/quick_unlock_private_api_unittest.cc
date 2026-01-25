@@ -294,7 +294,7 @@ class QuickUnlockPrivateUnitTest
       const std::string& password) {
     auto func = base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenFunction>();
 
-    base::Value::List params;
+    base::ListValue params;
     params.Append(base::Value(password));
     std::optional<base::Value> result =
         RunFunction(std::move(func), std::move(params));
@@ -309,14 +309,14 @@ class QuickUnlockPrivateUnitTest
   std::string RunAuthTokenWithInvalidPassword() {
     auto func = base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenFunction>();
 
-    base::Value::List params;
+    base::ListValue params;
     params.Append(base::Value(kInvalidPassword));
     return RunFunctionAndReturnError(std::move(func), std::move(params));
   }
 
   // Wrapper for chrome.quickUnlockPrivate.setLockScreenEnabled.
   void SetLockScreenEnabled(const std::string& token, bool enabled) {
-    base::Value::List params;
+    base::ListValue params;
     params.Append(token);
     params.Append(enabled);
     RunFunction(
@@ -326,7 +326,7 @@ class QuickUnlockPrivateUnitTest
 
   // Wrapper for chrome.quickUnlockPrivate.setLockScreenEnabled.
   std::string SetLockScreenEnabledWithInvalidToken(bool enabled) {
-    base::Value::List params;
+    base::ListValue params;
     params.Append(kInvalidToken);
     params.Append(enabled);
     return RunFunctionAndReturnError(
@@ -339,7 +339,7 @@ class QuickUnlockPrivateUnitTest
     // Run the function.
     std::optional<base::Value> result = RunFunction(
         base::MakeRefCounted<QuickUnlockPrivateGetAvailableModesFunction>(),
-        base::Value::List());
+        base::ListValue());
 
     // Extract the results.
     QuickUnlockModeList modes;
@@ -358,7 +358,7 @@ class QuickUnlockPrivateUnitTest
   QuickUnlockModeList GetActiveModes() {
     std::optional<base::Value> result = RunFunction(
         base::MakeRefCounted<QuickUnlockPrivateGetActiveModesFunction>(),
-        base::Value::List());
+        base::ListValue());
 
     QuickUnlockModeList modes;
 
@@ -398,7 +398,7 @@ class QuickUnlockPrivateUnitTest
   }
 
   CredentialCheck CheckCredentialUsingPin(const std::string& pin) {
-    base::Value::List params;
+    base::ListValue params;
     params.Append(ToString(QuickUnlockMode::kPin));
     params.Append(pin);
 
@@ -414,7 +414,7 @@ class QuickUnlockPrivateUnitTest
 
   void CheckGetCredentialRequirements(int expected_pin_min_length,
                                       int expected_pin_max_length) {
-    base::Value::List params;
+    base::ListValue params;
     params.Append(ToString(QuickUnlockMode::kPin));
 
     std::optional<base::Value> result =
@@ -430,18 +430,18 @@ class QuickUnlockPrivateUnitTest
     EXPECT_EQ(function_result->max_length, expected_pin_max_length);
   }
 
-  base::Value::List GetSetModesParams(const std::string& token,
-                                      const QuickUnlockModeList& modes,
-                                      const CredentialList& passwords) {
-    base::Value::List params;
+  base::ListValue GetSetModesParams(const std::string& token,
+                                    const QuickUnlockModeList& modes,
+                                    const CredentialList& passwords) {
+    base::ListValue params;
     params.Append(token);
 
-    base::Value::List serialized_modes;
+    base::ListValue serialized_modes;
     for (QuickUnlockMode mode : modes)
       serialized_modes.Append(quick_unlock_private::ToString(mode));
     params.Append(base::Value(std::move(serialized_modes)));
 
-    base::Value::List serialized_passwords;
+    base::ListValue serialized_passwords;
     for (const std::string& password : passwords)
       serialized_passwords.Append(password);
     params.Append(base::Value(std::move(serialized_passwords)));
@@ -453,7 +453,7 @@ class QuickUnlockPrivateUnitTest
   // function to succeed.
   void RunSetModes(const QuickUnlockModeList& modes,
                    const CredentialList& passwords) {
-    base::Value::List params = GetSetModesParams(token_, modes, passwords);
+    base::ListValue params = GetSetModesParams(token_, modes, passwords);
     auto func = base::MakeRefCounted<QuickUnlockPrivateSetModesFunction>();
 
     // Stub out event handling since we are not setting up an event router.
@@ -472,7 +472,7 @@ class QuickUnlockPrivateUnitTest
   // Runs chrome.quickUnlockPrivate.setModes using an invalid token. Expects the
   // function to fail and returns the error.
   std::string RunSetModesWithInvalidToken() {
-    base::Value::List params =
+    base::ListValue params =
         GetSetModesParams(kInvalidToken, {QuickUnlockMode::kPin}, {"111111"});
     auto func = base::MakeRefCounted<QuickUnlockPrivateSetModesFunction>();
 
@@ -612,7 +612,7 @@ class QuickUnlockPrivateUnitTest
  private:
   // Runs the given |func| with the given |params|.
   std::optional<base::Value> RunFunction(scoped_refptr<ExtensionFunction> func,
-                                         base::Value::List params) {
+                                         base::ListValue params) {
     base::RunLoop().RunUntilIdle();
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -624,7 +624,7 @@ class QuickUnlockPrivateUnitTest
 
   // Runs |func| with |params|. Expects and returns an error result.
   std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> func,
-                                        base::Value::List params) {
+                                        base::ListValue params) {
     base::RunLoop().RunUntilIdle();
     api_test_utils::RunFunction(func.get(), std::move(params), profile(),
                                 api_test_utils::FunctionMode::kNone);

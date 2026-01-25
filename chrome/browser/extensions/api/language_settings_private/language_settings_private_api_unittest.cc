@@ -179,8 +179,8 @@ TEST_F(LanguageSettingsPrivateApiTest, GetSpellcheckDictionaryStatusesTest) {
                                                        profile());
   ASSERT_TRUE(actual) << function->GetError();
 
-  base::Value::List expected;
-  base::Value::Dict expected_status;
+  base::ListValue expected;
+  base::DictValue expected_status;
   expected_status.Set("languageCode", "fr");
   expected_status.Set("isReady", false);
   expected_status.Set("isDownloading", true);
@@ -526,15 +526,15 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
   ASSERT_TRUE(result_val) << function->GetError();
   ASSERT_TRUE(result_val->is_dict());
 
-  const base::Value::Dict& result = result_val->GetDict();
-  const base::Value::List* input_methods =
+  const base::DictValue& result = result_val->GetDict();
+  const base::ListValue* input_methods =
       result.FindList("thirdPartyExtensionImes");
   ASSERT_NE(input_methods, nullptr);
   EXPECT_EQ(3u, input_methods->size());
 
   for (auto& input_method_val : *input_methods) {
-    const base::Value::Dict& input_method = input_method_val.GetDict();
-    const base::Value::List* ime_tags_ptr = input_method.FindList("tags");
+    const base::DictValue& input_method = input_method_val.GetDict();
+    const base::ListValue* ime_tags_ptr = input_method.FindList("tags");
     ASSERT_NE(nullptr, ime_tags_ptr);
 
     // Check tags contain input method's display name
@@ -543,7 +543,7 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
         std::ranges::contains(*ime_tags_ptr, CHECK_DEREF(ime_name_ptr)));
 
     // Check tags contain input method's language codes' display names
-    const base::Value::List* ime_language_codes_ptr =
+    const base::ListValue* ime_language_codes_ptr =
         input_method.FindList("languageCodes");
     ASSERT_NE(nullptr, ime_language_codes_ptr);
     for (auto& language_code : *ime_language_codes_ptr) {

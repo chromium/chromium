@@ -303,7 +303,7 @@ void LanguageSettingsPrivateGetLanguageListFunction::
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
   for (auto& language_val : language_list_) {
-    base::Value::Dict& language_val_dict = language_val.GetDict();
+    base::DictValue& language_val_dict = language_val.GetDict();
     const std::string* str = language_val_dict.FindString("code");
     if (str && service->UsesWindowsDictionary(*str)) {
       language_val_dict.Set("supportsSpellcheck", true);
@@ -405,7 +405,7 @@ LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction::Run() {
   std::vector<std::string> languages =
       translate_prefs->GetAlwaysTranslateLanguages();
 
-  base::Value::List always_translate_languages;
+  base::ListValue always_translate_languages;
   for (const auto& entry : languages) {
     always_translate_languages.Append(entry);
   }
@@ -458,7 +458,7 @@ LanguageSettingsPrivateGetNeverTranslateLanguagesFunction::Run() {
   std::vector<std::string> languages =
       translate_prefs->GetNeverTranslateLanguages();
 
-  base::Value::List never_translate_languages;
+  base::ListValue never_translate_languages;
   for (auto& entry : languages) {
     never_translate_languages.Append(std::move(entry));
   }
@@ -570,7 +570,7 @@ void LanguageSettingsPrivateGetSpellcheckWordsFunction::
          "called before OnCustomDictionaryLoaded()";
 }
 
-base::Value::List
+base::ListValue
 LanguageSettingsPrivateGetSpellcheckWordsFunction::GetSpellcheckWords() const {
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
@@ -578,7 +578,7 @@ LanguageSettingsPrivateGetSpellcheckWordsFunction::GetSpellcheckWords() const {
   DCHECK(dictionary->IsLoaded());
 
   // TODO(michaelpg): Sort using app locale.
-  base::Value::List word_list;
+  base::ListValue word_list;
   std::set<std::string> words = dictionary->GetWords();
   word_list.reserve(words.size());
   for (auto it = words.begin(); it != words.end();) {

@@ -42,26 +42,24 @@ using content::BrowserThread;
 
 namespace {
 
-base::Value::Dict MakeExtensionManifest(
-    const base::Value::Dict& manifest_extra) {
-  base::Value::Dict manifest = base::Value::Dict()
-                                   .Set("name", "Extension")
-                                   .Set("version", "1.0")
-                                   .Set("manifest_version", 2);
+base::DictValue MakeExtensionManifest(const base::DictValue& manifest_extra) {
+  base::DictValue manifest = base::DictValue()
+                                 .Set("name", "Extension")
+                                 .Set("version", "1.0")
+                                 .Set("manifest_version", 2);
   manifest.Merge(manifest_extra.Clone());
   return manifest;
 }
 
-base::Value::Dict MakePackagedAppManifest() {
-  return base::Value::Dict()
+base::DictValue MakePackagedAppManifest() {
+  return base::DictValue()
       .Set("name", "Test App Name")
       .Set("version", "2.0")
       .Set("manifest_version", 2)
-      .Set("app",
-           base::Value::Dict().Set(
-               "background",
-               base::Value::Dict().Set(
-                   "scripts", base::Value::List().Append("background.js"))));
+      .Set("app", base::DictValue().Set(
+                      "background",
+                      base::DictValue().Set("scripts", base::ListValue().Append(
+                                                           "background.js"))));
 }
 
 }  // namespace
@@ -151,8 +149,8 @@ ExtensionRegistrar* TestExtensionEnvironment::GetExtensionRegistrar() {
 }
 
 const Extension* TestExtensionEnvironment::MakeExtension(
-    const base::Value::Dict& manifest_extra) {
-  base::Value::Dict manifest = MakeExtensionManifest(manifest_extra);
+    const base::DictValue& manifest_extra) {
+  base::DictValue manifest = MakeExtensionManifest(manifest_extra);
   scoped_refptr<const Extension> result =
       ExtensionBuilder().SetManifest(std::move(manifest)).Build();
   GetExtensionRegistrar()->AddExtension(result.get());
@@ -160,9 +158,9 @@ const Extension* TestExtensionEnvironment::MakeExtension(
 }
 
 const Extension* TestExtensionEnvironment::MakeExtension(
-    const base::Value::Dict& manifest_extra,
+    const base::DictValue& manifest_extra,
     const std::string& id) {
-  base::Value::Dict manifest = MakeExtensionManifest(manifest_extra);
+  base::DictValue manifest = MakeExtensionManifest(manifest_extra);
   scoped_refptr<const Extension> result =
       ExtensionBuilder().SetManifest(std::move(manifest)).SetID(id).Build();
   GetExtensionRegistrar()->AddExtension(result.get());

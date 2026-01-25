@@ -137,8 +137,8 @@ class BrowserAttestationServiceTest : public testing::Test {
         std::make_unique<BrowserAttestationService>(std::move(attesters));
   }
 
-  base::Value::Dict CreateSignals() {
-    base::Value::Dict signals;
+  base::DictValue CreateSignals() {
+    base::DictValue signals;
     signals.Set(device_signals::names::kDisplayName, kDisplayName);
     return signals;
   }

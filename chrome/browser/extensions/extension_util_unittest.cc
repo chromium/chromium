@@ -242,11 +242,11 @@ class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
   }
 
   void SetupForceList(const ExtensionIdList& extension_ids) {
-    base::Value::Dict dict = base::Value::Dict();
+    base::DictValue dict = base::DictValue();
     for (const auto& extension_id : extension_ids) {
       dict.Set(extension_id,
-               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       kExtensionUpdateUrl));
+               base::DictValue().Set(ExternalProviderImpl::kExternalUpdateUrl,
+                                     kExtensionUpdateUrl));
     }
     signin_profile_prefs_->SetManagedPref(pref_names::kInstallForceList,
                                           std::move(dict));

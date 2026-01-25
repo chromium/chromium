@@ -156,7 +156,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // If it failed, what was the error message?
   std::string message_;
 
-  base::Value::Dict* GetTestConfig() { return test_config_.get(); }
+  base::DictValue* GetTestConfig() { return test_config_.get(); }
 
  private:
   void OpenURL(const GURL& url, bool open_in_incognito);
@@ -171,7 +171,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
   // Hold details of the test, set in C++, which can be accessed by
   // javascript using chrome.test.getConfig().
-  std::unique_ptr<base::Value::Dict> test_config_;
+  std::unique_ptr<base::DictValue> test_config_;
 
   // Hold the test WebSocket server.
   std::unique_ptr<net::test_server::EmbeddedTestServer> websocket_server_;

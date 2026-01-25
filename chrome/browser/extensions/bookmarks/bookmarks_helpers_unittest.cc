@@ -331,7 +331,7 @@ TEST_F(ExtensionBookmarksTest, RemoveNodeRecursive) {
 }
 
 TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
-  base::Value::Dict id_to_meta_info_map;
+  base::DictValue id_to_meta_info_map;
   GetMetaInfo(*model_->other_node(), id_to_meta_info_map);
   EXPECT_EQ(8u, id_to_meta_info_map.size());
 
@@ -341,7 +341,7 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
         base::NumberToString(model_->other_node()->id()));
     ASSERT_NE(value, nullptr);
     ASSERT_TRUE(value->is_dict());
-    const base::Value::Dict& dict = value->GetDict();
+    const base::DictValue& dict = value->GetDict();
     EXPECT_EQ(0u, dict.size());
   }
 
@@ -351,7 +351,7 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
         id_to_meta_info_map.Find(base::NumberToString(node_->id()));
     ASSERT_NE(value, nullptr);
     ASSERT_TRUE(value->is_dict());
-    const base::Value::Dict& dict = value->GetDict();
+    const base::DictValue& dict = value->GetDict();
     EXPECT_EQ(2u, dict.size());
     ASSERT_TRUE(dict.FindString("some_key1"));
     EXPECT_EQ("some_value1", *(dict.FindString("some_key1")));
@@ -365,7 +365,7 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
         id_to_meta_info_map.Find(base::NumberToString(folder_->id()));
     ASSERT_NE(value, nullptr);
     ASSERT_TRUE(value->is_dict());
-    const base::Value::Dict& dict = value->GetDict();
+    const base::DictValue& dict = value->GetDict();
     EXPECT_EQ(1u, dict.size());
     ASSERT_TRUE(dict.FindString("some_key1"));
     EXPECT_EQ("some_value1", *(dict.FindString("some_key1")));
@@ -377,7 +377,7 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
         id_to_meta_info_map.Find(base::NumberToString(node2_->id()));
     ASSERT_NE(value, nullptr);
     ASSERT_TRUE(value->is_dict());
-    const base::Value::Dict& dict = value->GetDict();
+    const base::DictValue& dict = value->GetDict();
     EXPECT_EQ(1u, dict.size());
     ASSERT_FALSE(dict.FindString("some_key1"));
     ASSERT_TRUE(dict.FindString("some_key2"));

@@ -175,7 +175,7 @@ class AsyncFunctionRunner {
     response_delegate_ =
         std::make_unique<api_test_utils::SendResponseHelper>(function);
     function->preserve_results_for_testing();
-    base::Value::List parsed_args = base::test::ParseJsonList(args);
+    base::ListValue parsed_args = base::test::ParseJsonList(args);
     function->SetArgs(std::move(parsed_args));
 
     if (!function->extension()) {
@@ -660,7 +660,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
       return GenerateFailureResult(gaia_ids, nullptr)
              << "getAccounts did not return a result.";
     }
-    const base::Value::List* callback_arguments_list =
+    const base::ListValue* callback_arguments_list =
         func->GetResultListForTest();
     if (!callback_arguments_list) {
       return GenerateFailureResult(gaia_ids, nullptr) << "NULL result";
@@ -675,7 +675,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
     if (!(*callback_arguments_list)[0].is_list()) {
       GenerateFailureResult(gaia_ids, nullptr) << "Result was not an array";
     }
-    const base::Value::List& results = (*callback_arguments_list)[0].GetList();
+    const base::ListValue& results = (*callback_arguments_list)[0].GetList();
 
     std::vector<std::string> result_ids;
     for (const base::Value& item : results) {
@@ -697,7 +697,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
 
   testing::AssertionResult GenerateFailureResult(
       const ::std::vector<std::string>& gaia_ids,
-      const base::Value::List* results) {
+      const base::ListValue* results) {
     testing::Message msg("Expected: ");
     for (const std::string& gaia_id : gaia_ids) {
       msg << gaia_id << " ";
@@ -3236,10 +3236,10 @@ class GetAuthTokenFunctionDeviceLocalAccountTest
 
   scoped_refptr<const Extension> CreateTestExtension(const std::string& id) {
     return ExtensionBuilder("Test")
-        .SetManifestKey(
-            "oauth2", base::Value::Dict()
-                          .Set("client_id", "clientId")
-                          .Set("scopes", base::Value::List().Append("scope1")))
+        .SetManifestKey("oauth2",
+                        base::DictValue()
+                            .Set("client_id", "clientId")
+                            .Set("scopes", base::ListValue().Append("scope1")))
         .SetID(id)
         .Build();
   }
@@ -4026,8 +4026,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
 
   profile()->GetPrefs()->SetDict(
       extensions::pref_names::kOAuthRedirectUrls,
-      base::Value::Dict().Set(function->extension()->id(),
-                              base::Value::List().Append(final_url.spec())));
+      base::DictValue().Set(function->extension()->id(),
+                            base::ListValue().Append(final_url.spec())));
   RunFunctionAndWaitForNavigation(function.get(), auth_url, args);
 
   SimulateCustomUrlRedirect(
@@ -4285,7 +4285,7 @@ class OnSignInChangedEventTest : public IdentityTestWithSignin {
   // been added. This is because the order of multiple events firing due to the
   // same underlying state change is undefined in the
   // chrome.identity.onSignInEventChanged() API.
-  void AddExpectedEvent(base::Value::List args) {
+  void AddExpectedEvent(base::ListValue args) {
     expected_events_.insert(
         std::make_unique<Event>(events::IDENTITY_ON_SIGN_IN_CHANGED,
                                 api::identity::OnSignInChanged::kEventName,

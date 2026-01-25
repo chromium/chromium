@@ -146,7 +146,7 @@ BrowserAttestationService::~BrowserAttestationService() = default;
 // - Reply to callback.
 void BrowserAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& challenge,
-    base::Value::Dict signals,
+    base::DictValue signals,
     const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -171,7 +171,7 @@ void BrowserAttestationService::BuildChallengeResponseForVAChallenge(
 
 void BrowserAttestationService::OnChallengeValidated(
     const SignedData& signed_data,
-    base::Value::Dict signals,
+    base::DictValue signals,
     const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback,
     bool is_va_challenge) {

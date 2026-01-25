@@ -60,7 +60,7 @@ namespace {
 
 using tab_groups::TabGroupId;
 
-base::Value::List RunTabGroupsQueryFunction(
+base::ListValue RunTabGroupsQueryFunction(
     content::BrowserContext* browser_context,
     const Extension* extension,
     const std::string& query_info) {
@@ -73,7 +73,7 @@ base::Value::List RunTabGroupsQueryFunction(
   return std::move(*value).TakeList();
 }
 
-base::Value::Dict RunTabGroupsGetFunction(
+base::DictValue RunTabGroupsGetFunction(
     content::BrowserContext* browser_context,
     const Extension* extension,
     const std::string& args) {
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
   const char* kTitleQueryInfo = R"([{"title": "Sample title"}])";
-  base::Value::List groups_list =
+  base::ListValue groups_list =
       RunTabGroupsQueryFunction(profile(), extension.get(), kTitleQueryInfo);
 
   ASSERT_EQ(0u, groups_list.size());
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsQueryTitle) {
 
   // Query by title and verify results.
   const char* kTitleQueryInfo = R"([{"title": "Sample title"}])";
-  base::Value::List groups_list =
+  base::ListValue groups_list =
       RunTabGroupsQueryFunction(profile(), extension.get(), kTitleQueryInfo);
   ASSERT_EQ(1u, groups_list.size());
 
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsQueryColor) {
 
   // Query by color and verify results.
   const char* kColorQueryInfo = R"([{"color": "blue"}])";
-  base::Value::List groups_list =
+  base::ListValue groups_list =
       RunTabGroupsQueryFunction(profile(), extension.get(), kColorQueryInfo);
   ASSERT_EQ(1u, groups_list.size());
 
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupExtensionsBrowserTest,
   {  // Query unshared groups.
     scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-    base::Value::List groups_list =
+    base::ListValue groups_list =
         RunTabGroupsQueryFunction(profile(), extension.get(), not_shared_query);
     ASSERT_EQ(1u, groups_list.size());
 
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupExtensionsBrowserTest,
 
   {  // Query shared groups.
     scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-    base::Value::List groups_list =
+    base::ListValue groups_list =
         RunTabGroupsQueryFunction(profile(), extension.get(), shared_query);
     ASSERT_EQ(0u, groups_list.size());
   }
@@ -376,14 +376,14 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupExtensionsBrowserTest,
 
   {  // Query unshared groups.
     scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-    base::Value::List groups_list =
+    base::ListValue groups_list =
         RunTabGroupsQueryFunction(profile(), extension.get(), not_shared_query);
     ASSERT_EQ(0u, groups_list.size());
   }
 
   {  // Query shared groups.
     scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-    base::Value::List groups_list =
+    base::ListValue groups_list =
         RunTabGroupsQueryFunction(profile(), extension.get(), shared_query);
     ASSERT_EQ(1u, groups_list.size());
 
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsGetSuccess) {
   // Use the TabGroupsGetFunction to get the group object.
   constexpr char kFormatArgs[] = R"([%d])";
   const std::string args = base::StringPrintf(kFormatArgs, group_id);
-  base::Value::Dict group_info =
+  base::DictValue group_info =
       RunTabGroupsGetFunction(profile(), extension.get(), args);
 
   EXPECT_EQ(group_id, *group_info.FindInt("id"));

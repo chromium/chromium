@@ -27,12 +27,12 @@ ExtensionMigrator::ExtensionMigrator(Profile* profile,
 ExtensionMigrator::~ExtensionMigrator() = default;
 
 void ExtensionMigrator::StartLoading() {
-  auto prefs = base::Value::Dict();
+  auto prefs = base::DictValue();
 
   const bool should_have_extension =
       IsAppPresent(old_id_) || IsAppPresent(new_id_);
   if (should_have_extension) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set(ExternalProviderImpl::kExternalUpdateUrl,
               extension_urls::GetWebstoreUpdateUrl().spec());
 

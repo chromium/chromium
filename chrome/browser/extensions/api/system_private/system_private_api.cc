@@ -125,7 +125,7 @@ ExtensionFunction::ResponseAction SystemPrivateGetUpdateStatusFunction::Run() {
   }
 #endif
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kStateKey, state);
   dict.Set(kDownloadProgressKey, download_progress);
   return RespondNow(WithArguments(std::move(dict)));

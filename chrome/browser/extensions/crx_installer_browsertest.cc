@@ -223,7 +223,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     base::ScopedAllowBlockingForTesting allow_io;
     base::FilePath ext_path = test_data_dir_.AppendASCII(manifest_dir);
     std::string error;
-    std::optional<base::Value::Dict> parsed_manifest(
+    std::optional<base::DictValue> parsed_manifest(
         file_util::LoadManifest(ext_path, &error));
     if (!parsed_manifest || !error.empty()) {
       return result;
@@ -277,7 +277,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     ASSERT_TRUE(AddFileToDirectory(temp_dir.GetPath(), bar_html, "world"));
 
     ExtensionBuilder builder;
-    builder.SetManifest(base::Value::Dict()
+    builder.SetManifest(base::DictValue()
                             .Set("name", "My First Extension")
                             .Set("version", version)
                             .Set("manifest_version", 2));

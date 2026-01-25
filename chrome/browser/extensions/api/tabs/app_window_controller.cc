@@ -85,17 +85,17 @@ bool AppWindowController::IsVisibleToTabsAPIForExtension(
   return extension->id() == app_window_->extension_id();
 }
 
-base::Value::Dict AppWindowController::CreateWindowValueForExtension(
+base::DictValue AppWindowController::CreateWindowValueForExtension(
     const Extension* extension,
     PopulateTabBehavior populate_tab_behavior,
     mojom::ContextType context) const {
-  return base::Value::Dict();
+  return base::DictValue();
 }
 
-base::Value::List AppWindowController::CreateTabList(
+base::ListValue AppWindowController::CreateTabList(
     const Extension* extension,
     mojom::ContextType context) const {
-  return base::Value::List();
+  return base::ListValue();
 }
 
 bool AppWindowController::OpenOptionsPage(const Extension* extension,

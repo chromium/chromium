@@ -63,7 +63,7 @@ bool ParseColor(const base::Value& color_value, SkColor& color) {
     return false;
   }
 
-  const base::Value::List& color_list = color_value.GetList();
+  const base::ListValue& color_list = color_value.GetList();
   if (color_list.size() != 4 ||
       std::ranges::any_of(color_list,
                           [](const auto& color) { return !color.is_int(); })) {
@@ -212,7 +212,7 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
 
   // setIcon can take a variant argument: either a dictionary of canvas
   // ImageData, or an icon index.
-  const base::Value::Dict* canvas_set = details_->FindDict("imageData");
+  const base::DictValue* canvas_set = details_->FindDict("imageData");
   if (canvas_set) {
     gfx::ImageSkia icon;
 
@@ -359,7 +359,7 @@ ExtensionActionGetBadgeTextFunction::RunExtensionAction() {
 
 ExtensionFunction::ResponseAction
 ExtensionActionGetBadgeBackgroundColorFunction::RunExtensionAction() {
-  base::Value::List list;
+  base::ListValue list;
   SkColor color = extension_action_->GetBadgeBackgroundColor(tab_id_);
   list.Append(static_cast<int>(SkColorGetR(color)));
   list.Append(static_cast<int>(SkColorGetG(color)));
@@ -370,7 +370,7 @@ ExtensionActionGetBadgeBackgroundColorFunction::RunExtensionAction() {
 
 ExtensionFunction::ResponseAction
 ActionGetBadgeTextColorFunction::RunExtensionAction() {
-  base::Value::List list;
+  base::ListValue list;
   SkColor color = extension_action_->GetBadgeTextColor(tab_id_);
   list.Append(static_cast<int>(SkColorGetR(color)));
   list.Append(static_cast<int>(SkColorGetG(color)));
@@ -401,7 +401,7 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
   // TODO(crbug.com/360916928): Today, no action APIs are compiled.
   // Unfortunately, this means we miss out on the compiled types, which would be
   // rather helpful here.
-  base::Value::Dict ui_settings;
+  base::DictValue ui_settings;
   ui_settings.Set("isOnToolbar", is_pinned);
 
   return RespondNow(WithArguments(std::move(ui_settings)));

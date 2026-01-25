@@ -61,7 +61,7 @@ class RulesRegistryWithCacheTest : public testing::Test {
   void SetUp() override {
     // Note that env_.MakeExtension below also forces the creation of
     // ExtensionService.
-    base::Value::Dict manifest_extra;
+    base::DictValue manifest_extra;
     std::string key;
     CHECK(Extension::ProducePEM("test extension 1", &key));
     manifest_extra.Set(manifest_keys::kPublicKey, key);
@@ -259,7 +259,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
 
   // 2. Test writing behavior.
   {
-    base::Value::List value;
+    base::ListValue value;
     value.Append(base::Value(true));
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   }
@@ -272,7 +272,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   int write_count = store->write_count();
 
   {
-    base::Value::List value;
+    base::ListValue value;
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
     EXPECT_FALSE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
   }
@@ -282,7 +282,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   write_count = store->write_count();
 
   {
-    base::Value::List value;
+    base::ListValue value;
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
     EXPECT_FALSE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
   }
@@ -307,7 +307,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
 TEST_F(RulesRegistryWithCacheTest, EphemeralCacheIsEphemeral) {
   auto cache_delegate = std::make_unique<RulesCacheDelegate>(
       RulesCacheDelegate::Type::kEphemeral);
-  base::Value::List value;
+  base::ListValue value;
   value.Append(base::Value(true));
   cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   content::RunAllTasksUntilIdle();

@@ -29,9 +29,8 @@ std::string MakePrefName(const std::string& extension_id,
 // For each valid extension ID in `extensions_ids`, its creates
 // preferences to set the update URL to the Chrome Web Store and to mark the
 // extension as trusted (i.e., not untrusted).
-base::Value::Dict GenerateExtensionPrefs(
-    const base::Value::List& extensions_ids) {
-  base::Value::Dict prefs;
+base::DictValue GenerateExtensionPrefs(const base::ListValue& extensions_ids) {
+  base::DictValue prefs;
   const std::string web_store_update_url =
       extension_urls::GetWebstoreUpdateUrl().spec();
   for (const auto& extension_id : extensions_ids) {
@@ -74,15 +73,13 @@ InitialExternalExtensionLoader::~InitialExternalExtensionLoader() = default;
 
 void InitialExternalExtensionLoader::StartLoading() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::List& ids =
-      prefs_->GetList(pref_names::kInitialInstallList);
+  const base::ListValue& ids = prefs_->GetList(pref_names::kInitialInstallList);
   LoadFinished(GenerateExtensionPrefs(ids));
 }
 
 void InitialExternalExtensionLoader::OnExtensionsPrefChanged() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::List& ids =
-      prefs_->GetList(pref_names::kInitialInstallList);
+  const base::ListValue& ids = prefs_->GetList(pref_names::kInitialInstallList);
   OnUpdated(GenerateExtensionPrefs(ids));
 }
 

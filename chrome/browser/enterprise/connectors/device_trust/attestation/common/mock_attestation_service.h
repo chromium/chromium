@@ -25,7 +25,7 @@ class MockAttestationService : public AttestationService {
   MOCK_METHOD(void,
               BuildChallengeResponseForVAChallenge,
               (const std::string&,
-               base::Value::Dict,
+               base::DictValue,
                const std::set<DTCPolicyLevel>&,
                AttestationCallback),
               (override));

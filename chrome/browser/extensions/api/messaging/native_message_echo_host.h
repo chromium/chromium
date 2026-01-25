@@ -47,7 +47,7 @@ class NativeMessageEchoHost : public NativeMessageHost {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner() const override;
 
  private:
-  void ProcessEcho(const base::Value::Dict& request);
+  void ProcessEcho(const base::DictValue& request);
   void SendInvalidResponse();
 
   // Counter used to ensure message uniqueness for testing.

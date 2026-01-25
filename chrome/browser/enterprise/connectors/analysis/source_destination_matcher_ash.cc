@@ -29,7 +29,7 @@ bool AllowedFSInfoKey(const std::string& key) {
 // This function checks whether there are no unknown keys in the passed dict.
 // The function returns true if there are no such unknown keys and false if an
 // unknown key is found.
-bool SourceOrDestinationEntryIsValid(const base::Value::Dict* dict) {
+bool SourceOrDestinationEntryIsValid(const base::DictValue* dict) {
   DCHECK(dict);
   for (auto&& [key, _] : *dict) {
     if (!AllowedFSInfoKey(key)) {
@@ -189,7 +189,7 @@ SourceDestinationMatcherAsh::StringToFsType(const std::string& s) {
 
 std::set<SourceDestinationMatcherAsh::FsType>
 SourceDestinationMatcherAsh::ValueListToFsTypes(
-    const base::Value::List* source_or_destination_list) {
+    const base::ListValue* source_or_destination_list) {
   std::set<SourceDestinationMatcherAsh::FsType> fs_types;
   for (const auto& entry : *source_or_destination_list) {
     const auto* dict = entry.GetIfDict();
@@ -260,7 +260,7 @@ SourceDestinationMatcherAsh::~SourceDestinationMatcherAsh() = default;
 
 void SourceDestinationMatcherAsh::AddFilters(
     ID* id,
-    const base::Value::List* settings_list) {
+    const base::ListValue* settings_list) {
   DCHECK(id);
   if (!settings_list) {
     LOG(ERROR) << "No settings list found.";

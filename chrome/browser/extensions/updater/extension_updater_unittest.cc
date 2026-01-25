@@ -226,7 +226,7 @@ class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   void OnExtensionInstalled(const Extension* extension,
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,
-                            base::Value::Dict ruleset_install_prefs) override {}
+                            base::DictValue ruleset_install_prefs) override {}
 };
 
 class MockUpdateService : public UpdateService {
@@ -541,7 +541,7 @@ class ExtensionUpdaterTest : public testing::Test {
       CHECK_EQ(count, 1) << "Can't create two extensions with the same key";
     }
     for (int i = 1; i <= count; i++) {
-      base::Value::Dict manifest;
+      base::DictValue manifest;
       manifest.Set(manifest_keys::kVersion, base::StringPrintf("%d.0.0.0", i));
       manifest.Set(manifest_keys::kName,
                    base::StringPrintf("Extension %d.%d", id, i));
@@ -2644,7 +2644,7 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
 
 TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
   // Add an extension as a pending update with a higher version number.
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set(manifest_keys::kKey, kExtensionManifestKey);
   manifest.Set(manifest_keys::kName, "Fake extension");
   manifest.Set(manifest_keys::kVersion, "1.0.0.1");

@@ -85,7 +85,7 @@ class ChromeExtensionSystem : public ExtensionSystem {
                      InstallUpdateCallback install_update_callback) override;
   void PerformActionBasedOnOmahaAttributes(
       const std::string& extension_id,
-      const base::Value::Dict& attributes) override;
+      const base::DictValue& attributes) override;
 
  private:
   friend class ChromeExtensionSystemSharedFactory;

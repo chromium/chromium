@@ -180,7 +180,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Warned) {
 
   TriggerOnPolicySpecifiedPasswordReuseDetectedEvent(/*warning_shown*/ true);
 
-  base::Value::Dict captured_args =
+  base::DictValue captured_args =
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("https://phishing.com/",
             CHECK_DEREF(captured_args.FindString("url")));
@@ -195,7 +195,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Allowed) {
 
   TriggerOnPolicySpecifiedPasswordReuseDetectedEvent(/*warning_shown*/ false);
 
-  base::Value::Dict captured_args =
+  base::DictValue captured_args =
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("https://phishing.com/",
             CHECK_DEREF(captured_args.FindString("url")));
@@ -220,7 +220,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
 
   TriggerOnDangerousDownloadOpenedEvent();
 
-  base::Value::Dict captured_args =
+  base::DictValue captured_args =
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("https://evil.com/malware.exe",
             CHECK_DEREF(captured_args.FindString("url")));
@@ -239,7 +239,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 
   TriggerOnSecurityInterstitialProceededEvent();
 
-  base::Value::Dict captured_args =
+  base::DictValue captured_args =
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("https://phishing.com/",
             CHECK_DEREF(captured_args.FindString("url")));
@@ -255,7 +255,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSecurityInterstitialShown) {
 
   TriggerOnSecurityInterstitialShownEvent();
 
-  base::Value::Dict captured_args =
+  base::DictValue captured_args =
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("https://phishing.com/",
             CHECK_DEREF(captured_args.FindString("url")));
@@ -271,7 +271,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
 
   // With no primary account, we should not set the username.
   TriggerOnSecurityInterstitialShownEvent();
-  base::Value::Dict captured_args =
+  base::DictValue captured_args =
       event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("", CHECK_DEREF(captured_args.FindString("userName")));
 

@@ -75,7 +75,7 @@ TEST_F(ManagedProfileRequiredPageTest, UnknownManager) {
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents(),
                                                                GURL(kTestUrl)));
 
-  base::Value::Dict load_time_data = test_page.GetLoadTimeDataForTesting();
+  base::DictValue load_time_data = test_page.GetLoadTimeDataForTesting();
   EXPECT_EQ(
       base::UTF8ToUTF16(*load_time_data.FindString("heading")),
       l10n_util::GetStringUTF16(
@@ -92,7 +92,7 @@ TEST_F(ManagedProfileRequiredPageTest, KnownManager) {
       std::make_unique<ManagedProfileRequiredControllerClient>(web_contents(),
                                                                GURL(kTestUrl)));
 
-  base::Value::Dict load_time_data = test_page.GetLoadTimeDataForTesting();
+  base::DictValue load_time_data = test_page.GetLoadTimeDataForTesting();
   EXPECT_EQ(
       base::UTF8ToUTF16(*load_time_data.FindString("heading")),
       l10n_util::GetStringUTF16(

@@ -612,7 +612,7 @@ void WebrtcLoggingPrivateGetLogsDirectoryFunction::FireCallback(
     const std::string& filesystem_id,
     const std::string& base_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("fileSystemId", filesystem_id);
   dict.Set("baseName", base_name);
   Respond(WithArguments(std::move(dict)));

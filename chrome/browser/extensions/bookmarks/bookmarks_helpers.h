@@ -69,7 +69,7 @@ bool RemoveNode(bookmarks::BookmarkModel* model,
 
 // Get meta info from `node` and all it's children recursively.
 void GetMetaInfo(const bookmarks::BookmarkNode& node,
-                 base::Value::Dict& id_to_meta_info_map);
+                 base::DictValue& id_to_meta_info_map);
 
 // Return the API index of `node` among its siblings on the extensions API.
 //

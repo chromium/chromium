@@ -153,14 +153,14 @@ class InitialExternalExtensionLoaderRestartBrowserTest
   }
 
   // Returns current initial install list from the prefs.
-  const base::Value::List& InitialInstallList() {
+  const base::ListValue& InitialInstallList() {
     return profile()->GetPrefs()->GetList(pref_names::kInitialInstallList);
   }
 
   // Adds `kTestExtensionId` to the initial install list (overwriting any
   // previous list to ensure deterministic state).
   void SeedInitialInstallListWithTestExtension() {
-    base::Value::List ids;
+    base::ListValue ids;
     ids.Append(kTestExtensionId);
     profile()->GetPrefs()->SetList(pref_names::kInitialInstallList,
                                    std::move(ids));

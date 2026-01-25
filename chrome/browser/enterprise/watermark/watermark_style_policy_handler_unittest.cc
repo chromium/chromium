@@ -155,7 +155,7 @@ TEST_F(WatermarkStylePolicyHandlerTest, TestValidPolicy) {
                              &value_in_pref));
   int font_size = value_in_pref->GetInt();
 
-  base::Value::Dict pref_dict;
+  base::DictValue pref_dict;
   pref_dict.Set(enterprise_connectors::kWatermarkStyleFillOpacityFieldName,
                 fill_opacity);
   pref_dict.Set(enterprise_connectors::kWatermarkStyleOutlineOpacityFieldName,

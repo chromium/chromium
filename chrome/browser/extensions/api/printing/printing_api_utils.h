@@ -51,7 +51,7 @@ api::printing::PrinterStatus PrinterStatusToIdl(
 // printing::PrintSettings.
 // Returns nullptr in case of invalid ticket.
 std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
-    base::Value::Dict ticket);
+    base::DictValue ticket);
 
 // Checks if given print job settings are compatible with printer capabilities.
 bool CheckSettingsAndCapabilitiesCompatibility(

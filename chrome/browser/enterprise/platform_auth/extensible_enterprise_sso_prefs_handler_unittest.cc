@@ -141,7 +141,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, BasicList) {
   prefs_handler_->UpdatePrefs();
   WaitUntilPrefsChange(hosts.size());
 
-  const base::Value::List& result =
+  const base::ListValue& result =
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts);
   for (const auto& host : hosts) {
     EXPECT_TRUE(result.contains(host));
@@ -152,7 +152,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, WithEmptyList) {
   const std::vector<std::string_view> hosts;
   SetHostsPropertyOverride(hosts);
 
-  base::Value::List default_list;
+  base::ListValue default_list;
   default_list.Append("example.com");
   // Setup a non-empty default value so we can wait until it becomes empty.
   pref_service_.SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts,
@@ -161,7 +161,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, WithEmptyList) {
   prefs_handler_->UpdatePrefs();
   WaitUntilPrefsChange(0);
 
-  const base::Value::List& result =
+  const base::ListValue& result =
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts);
   EXPECT_TRUE(result.empty());
 }
@@ -169,7 +169,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, WithEmptyList) {
 TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, PropertyNotFound) {
   SetHostsPropertyOverride(ScopedPropList());
 
-  base::Value::List default_list;
+  base::ListValue default_list;
   default_list.Append("example.com");
   // Setup a non-empty default value so we can wait until it becomes empty.
   pref_service_.SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts,
@@ -178,7 +178,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, PropertyNotFound) {
   prefs_handler_->UpdatePrefs();
   WaitUntilPrefsChange(0);
 
-  const base::Value::List& result =
+  const base::ListValue& result =
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts);
   EXPECT_TRUE(result.empty());
 }
@@ -198,7 +198,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, InvalidPoperty) {
   prefs_handler_->UpdatePrefs();
   WaitUntilPrefsChange(1);
 
-  const base::Value::List& result =
+  const base::ListValue& result =
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts);
   EXPECT_TRUE(result.contains("example.com"));
 }
@@ -211,7 +211,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, UpdatesOnNotification) {
   SendNotification();
   WaitUntilPrefsChange(hosts.size());
 
-  const base::Value::List& result =
+  const base::ListValue& result =
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts);
   for (const auto& host : hosts) {
     EXPECT_TRUE(result.contains(host));
@@ -226,7 +226,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, CorrectlyStopsListening) {
   SendNotification();
   WaitUntilPrefsChange(hosts.size());
 
-  const base::Value::List& result =
+  const base::ListValue& result =
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts);
   for (const auto& host : hosts) {
     EXPECT_TRUE(result.contains(host));
@@ -241,7 +241,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, CorrectlyStopsListening) {
   SendNotification();
 
   // Make sure that hosts are still the same.
-  const base::Value::List& new_result =
+  const base::ListValue& new_result =
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts);
   for (const auto& host : hosts) {
     EXPECT_TRUE(new_result.contains(host));
@@ -286,7 +286,7 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, StopAndStartAgain) {
   SendNotification();
   WaitUntilPrefsChange(hosts.size());
 
-  const base::Value::List& result =
+  const base::ListValue& result =
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts);
   for (const auto& host : hosts) {
     EXPECT_TRUE(result.contains(host));
@@ -306,7 +306,7 @@ TEST_P(ExtensibleEnterpriseSSOPrefsHandlerConfigTest,
        IgnoredConfigsWithInvalidIDs) {
   const std::vector<std::string_view> hosts = {"example.com", "foo.bar.net"};
 
-  base::Value::List default_list;
+  base::ListValue default_list;
   default_list.Append("example.net");
   // Setup a non-empty default value so we can wait until it becomes empty.
   pref_service_.SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts,
@@ -321,7 +321,7 @@ TEST_P(ExtensibleEnterpriseSSOPrefsHandlerConfigTest,
   prefs_handler_->UpdatePrefs();
   WaitUntilPrefsChange(0);
 
-  const base::Value::List& result =
+  const base::ListValue& result =
       pref_service_.GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts);
   ASSERT_TRUE(result.empty());
 }

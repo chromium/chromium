@@ -93,7 +93,7 @@ bool ExtensionListPolicyHandler::CheckListEntry(const base::Value& value) {
   return crx_file::id_util::IdIsValid(str);
 }
 
-void ExtensionListPolicyHandler::ApplyList(base::Value::List filtered_list,
+void ExtensionListPolicyHandler::ApplyList(base::ListValue filtered_list,
                                            PrefValueMap* prefs) {
   prefs->SetValue(pref_path_, base::Value(std::move(filtered_list)));
 }
@@ -125,7 +125,7 @@ void ExtensionInstallForceListPolicyHandler::ApplyPolicySettings(
 
 bool ExtensionInstallForceListPolicyHandler::ParseList(
     const base::Value* policy_value,
-    base::Value::Dict* extension_dict,
+    base::DictValue* extension_dict,
     policy::PolicyErrorMap* errors) {
   if (!policy_value) {
     return true;
@@ -190,11 +190,11 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
   return true;
 }
 
-std::optional<base::Value::Dict>
+std::optional<base::DictValue>
 ExtensionInstallForceListPolicyHandler::GetPolicyDict(
     const policy::PolicyMap& policies) {
   const base::Value* value = nullptr;
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (CheckAndGetValue(policies, nullptr, &value) && value &&
       ParseList(value, &dict, nullptr)) {
     return dict;
@@ -319,7 +319,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     DCHECK(policy.is_dict());
 
     // Extracts sub dictionary.
-    const base::Value::Dict& sub_dict = policy.GetDict();
+    const base::DictValue& sub_dict = policy.GetDict();
 
     const std::string* installation_mode =
         sub_dict.FindString(schema_constants::kInstallationMode);
@@ -358,7 +358,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     const int extension_scheme_mask =
         URLPattern::GetValidSchemeMaskForExtensions();
     for (const char* key : host_keys) {
-      const base::Value::List* unparsed_urls = sub_dict.FindList(key);
+      const base::ListValue* unparsed_urls = sub_dict.FindList(key);
       if (unparsed_urls != nullptr) {
         for (const auto& url_value : *unparsed_urls) {
           const std::string& unparsed_url = url_value.GetString();
@@ -394,7 +394,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
       }
     }
 
-    const base::Value::List* runtime_blocked_hosts =
+    const base::ListValue* runtime_blocked_hosts =
         sub_dict.FindList(schema_constants::kPolicyBlockedHosts);
     if (runtime_blocked_hosts != nullptr &&
         runtime_blocked_hosts->size() >
@@ -409,7 +409,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
       }
     }
 
-    const base::Value::List* runtime_allowed_hosts =
+    const base::ListValue* runtime_allowed_hosts =
         sub_dict.FindList(schema_constants::kPolicyAllowedHosts);
     if (runtime_allowed_hosts != nullptr &&
         runtime_allowed_hosts->size() >

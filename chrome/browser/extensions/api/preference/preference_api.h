@@ -132,7 +132,7 @@ class GetPreferenceFunction : public PreferenceFunction {
   ResponseAction Run() override;
 
  private:
-  void ProduceGetResult(base::Value::Dict* result,
+  void ProduceGetResult(base::DictValue* result,
                         const base::Value* pref_value,
                         const std::string& level_of_control,
                         const std::string& browser_pref,

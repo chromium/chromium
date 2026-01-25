@@ -43,7 +43,7 @@ class SettingsSyncProcessor {
   ~SettingsSyncProcessor();
 
   // Initializes this with the initial state of sync.
-  void Init(const base::Value::Dict& initial_state);
+  void Init(const base::DictValue& initial_state);
 
   // Sends `changes` to sync.
   std::optional<syncer::ModelError> SendChanges(

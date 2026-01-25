@@ -76,7 +76,7 @@ class IncognitoNavigationThrottleBrowserTest
 
   void SetMandatoryExtensionsForIncognitoNavigation(
       const std::vector<std::string>& extensions) {
-    base::Value::List values;
+    base::ListValue values;
     for (const auto& ids : extensions) {
       values.Append(ids);
     }

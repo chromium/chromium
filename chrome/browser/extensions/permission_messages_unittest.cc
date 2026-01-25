@@ -65,8 +65,8 @@ class PermissionMessagesUnittest : public testing::Test {
 
  protected:
   void CreateAndInstallExtensionWithPermissions(
-      base::Value::List required_permissions,
-      base::Value::List optional_permissions) {
+      base::ListValue required_permissions,
+      base::ListValue optional_permissions) {
     app_ = ExtensionBuilder("Test")
                .SetManifestKey("permissions", std::move(required_permissions))
                .SetManifestKey("optional_permissions",
@@ -129,8 +129,7 @@ class PermissionMessagesUnittest : public testing::Test {
 // other (the 'history' permission has superset permissions).
 TEST_F(PermissionMessagesUnittest, HistoryHidesTabsMessage) {
   CreateAndInstallExtensionWithPermissions(
-      base::Value::List().Append("tabs").Append("history"),
-      base::Value::List());
+      base::ListValue().Append("tabs").Append("history"), base::ListValue());
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -143,9 +142,8 @@ TEST_F(PermissionMessagesUnittest, HistoryHidesTabsMessage) {
 // If an app requests the 'history' permission, but already has the 'tabs'
 // permission, only the new coalesced message is displayed.
 TEST_F(PermissionMessagesUnittest, MixedPermissionMessagesCoalesceOnceGranted) {
-  CreateAndInstallExtensionWithPermissions(
-      base::Value::List().Append("tabs"),
-      base::Value::List().Append("history"));
+  CreateAndInstallExtensionWithPermissions(base::ListValue().Append("tabs"),
+                                           base::ListValue().Append("history"));
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(
@@ -182,9 +180,8 @@ TEST_F(PermissionMessagesUnittest, MixedPermissionMessagesCoalesceOnceGranted) {
 // not affected by this grant.
 TEST_F(PermissionMessagesUnittest,
        AntiTest_PromptCanRequestSubsetOfAlreadyGrantedPermissions) {
-  CreateAndInstallExtensionWithPermissions(
-      base::Value::List().Append("history"),
-      base::Value::List().Append("tabs"));
+  CreateAndInstallExtensionWithPermissions(base::ListValue().Append("history"),
+                                           base::ListValue().Append("tabs"));
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -224,8 +221,7 @@ TEST_F(PermissionMessagesUnittest,
 TEST_F(PermissionMessagesUnittest,
        AntiTest_PromptCanBeEmptyButCausesChangeInPermissions) {
   CreateAndInstallExtensionWithPermissions(
-      base::Value::List().Append("tabs"),
-      base::Value::List().Append("sessions"));
+      base::ListValue().Append("tabs"), base::ListValue().Append("sessions"));
 
   ASSERT_EQ(1U, required_permissions().size());
   EXPECT_EQ(
@@ -271,7 +267,7 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
         u"Access any PVR Mass Storage from HUMAX Co., Ltd. via USB";
 
     auto permission_list =
-        base::Value::List().Append(base::Value::FromUniquePtrValue(
+        base::ListValue().Append(base::Value::FromUniquePtrValue(
             UsbDevicePermissionData(0x02ad, 0x138c, -1, -1).ToValue()));
     base::Value permission_value = base::Value(std::move(permission_list));
 
@@ -286,7 +282,7 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
   {
     const char16_t kMessage[] = u"Access USB devices from HUMAX Co., Ltd.";
 
-    base::Value::List permission_list;
+    base::ListValue permission_list;
     permission_list.Append(base::Value::FromUniquePtrValue(
         UsbDevicePermissionData(0x02ad, 0x138d, -1, -1).ToValue()));
     base::Value permission_value = base::Value(std::move(permission_list));
@@ -302,7 +298,7 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
   {
     const char16_t kMessage[] = u"Access USB devices from an unknown vendor";
 
-    base::Value::List permission_list;
+    base::ListValue permission_list;
     permission_list.Append(base::Value::FromUniquePtrValue(
         UsbDevicePermissionData(0x02ae, 0x138d, -1, -1).ToValue()));
     base::Value permission_value = base::Value(std::move(permission_list));
@@ -326,7 +322,7 @@ TEST_F(USBDevicePermissionMessagesTest, MultipleDevice) {
   });
 
   // Prepare data set
-  base::Value::List permission_list;
+  base::ListValue permission_list;
   permission_list.Append(base::Value::FromUniquePtrValue(
       UsbDevicePermissionData(0x02ad, 0x138c, -1, -1).ToValue()));
   // This device's product ID is not in Chrome's database.

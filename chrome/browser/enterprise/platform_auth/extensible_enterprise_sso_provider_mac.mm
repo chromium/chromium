@@ -125,7 +125,7 @@ void ExtensibleEnterpriseSSOProvider::GetData(
     return;
   }
 
-  const base::Value::List& supported_idps =
+  const base::ListValue& supported_idps =
       g_browser_process->local_state()->GetList(
           prefs::kExtensibleEnterpriseSSOEnabledIdps);
 
@@ -158,9 +158,9 @@ ExtensibleEnterpriseSSOProvider::GetSupportedIdentityProviders() {
 }
 
 // static
-base::Value::List
+base::ListValue
 ExtensibleEnterpriseSSOProvider::GetSupportedIdentityProvidersList() {
-  base::Value::List idps;
+  base::ListValue idps;
   for (const char* idp : kSupportedIdps) {
     idps.Append(idp);
   }

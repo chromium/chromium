@@ -17,7 +17,7 @@ namespace {
 
 base::Value CopyBinaryValueToIntegerList(
     const base::Value::BlobStorage& input) {
-  base::Value::List list;
+  base::ListValue list;
   list.reserve(input.size());
   for (int c : input)
     list.Append(c);

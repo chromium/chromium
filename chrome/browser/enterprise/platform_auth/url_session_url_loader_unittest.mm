@@ -88,7 +88,7 @@ class URLSessionURLLoaderTest : public testing::Test {
     request.url = GURL(url);
     request.method = "POST";
 
-    base::Value::List hosts;
+    base::ListValue hosts;
     hosts.Append(request.url.host());
     TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
         prefs::kExtensibleEnterpriseSSOConfiguredHosts, std::move(hosts));

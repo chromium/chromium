@@ -59,8 +59,8 @@ const char kNotMatchingUrl[] = "http://example.com/";
 const ExtensionId kTestExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
 // Yoinked from manifest_unittest.cc.
-std::optional<base::Value::Dict> LoadManifestFile(const base::FilePath path,
-                                                  std::string* error) {
+std::optional<base::DictValue> LoadManifestFile(const base::FilePath path,
+                                                std::string* error) {
   EXPECT_TRUE(base::PathExists(path));
   JSONFileValueDeserializer deserializer(path);
   std::unique_ptr<base::Value> manifest =
@@ -79,8 +79,7 @@ scoped_refptr<Extension> LoadExtension(const std::string& filename,
              .AppendASCII("manifest_tests")
              .AppendASCII(filename.c_str());
   std::string utf8_error;
-  std::optional<base::Value::Dict> manifest =
-      LoadManifestFile(path, &utf8_error);
+  std::optional<base::DictValue> manifest = LoadManifestFile(path, &utf8_error);
   if (!manifest) {
     *error = base::UTF8ToUTF16(utf8_error);
     return nullptr;

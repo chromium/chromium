@@ -91,7 +91,7 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
       continue;
     }
 
-    const base::Value::Dict& attributes = attributes_value.GetDict();
+    const base::DictValue& attributes = attributes_value.GetDict();
     SAMLProfileAttributes new_attributes;
     if (auto* name_attribute = attributes.FindString(kNameAttributeKey);
         name_attribute) {

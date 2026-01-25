@@ -126,7 +126,7 @@ constexpr int kJsonParseOptions =
     base::JSON_PARSE_CHROMIUM_EXTENSIONS | base::JSON_ALLOW_TRAILING_COMMAS;
 
 TEST(ExtensionListPolicyHandlerTest, CheckPolicySettings) {
-  base::Value::List list;
+  base::ListValue list;
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
   ExtensionListPolicyHandler handler(policy::key::kExtensionInstallBlocklist,
@@ -227,8 +227,8 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsURL) {
 }
 
 TEST(ExtensionListPolicyHandlerTest, ApplyPolicySettings) {
-  base::Value::List policy;
-  base::Value::List expected;
+  base::ListValue policy;
+  base::ListValue expected;
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value = nullptr;
@@ -257,7 +257,7 @@ TEST(ExtensionListPolicyHandlerTest, ApplyPolicySettings) {
 }
 
 TEST(ExtensionInstallForceListPolicyHandlerTest, CheckPolicySettings) {
-  base::Value::List list;
+  base::ListValue list;
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
   ExtensionInstallForceListPolicyHandler handler;
@@ -314,8 +314,8 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, CheckPolicySettings) {
 }
 
 TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
-  base::Value::List policy;
-  base::Value::Dict expected;
+  base::ListValue policy;
+  base::DictValue expected;
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value = nullptr;
@@ -382,7 +382,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
 }
 
 TEST(ExtensionURLPatternListPolicyHandlerTest, CheckPolicySettings) {
-  base::Value::List list;
+  base::ListValue list;
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
   ExtensionURLPatternListPolicyHandler handler(
@@ -440,7 +440,7 @@ TEST(ExtensionURLPatternListPolicyHandlerTest, CheckPolicySettings) {
 }
 
 TEST(ExtensionURLPatternListPolicyHandlerTest, ApplyPolicySettings) {
-  base::Value::List list;
+  base::ListValue list;
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value = nullptr;
@@ -482,7 +482,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   base::Value* value = nullptr;
   ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
-  base::Value::Dict empty_value;
+  base::DictValue empty_value;
   EXPECT_EQ(empty_value, *value);
 }
 
@@ -676,7 +676,7 @@ TEST_F(ExtensionInstallBlockListPolicyHandlerAshTest,
 
   policy_map.Set(policy_key(), policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                 base::Value(base::Value::List()
+                 base::Value(base::ListValue()
                                  .Append("abcdefghijklmnopabcdefghijklmnop")
                                  .Append("*")),
                  nullptr);
@@ -688,9 +688,8 @@ TEST_F(ExtensionInstallBlockListPolicyHandlerAshTest,
   EXPECT_TRUE(prefs.GetValue(pref_name(), &value));
   ASSERT_TRUE(value->is_list());
 
-  auto expected = base::Value::List()
-                      .Append("abcdefghijklmnopabcdefghijklmnop")
-                      .Append("*");
+  auto expected =
+      base::ListValue().Append("abcdefghijklmnopabcdefghijklmnop").Append("*");
   ASSERT_EQ(value->GetList(), expected);
 }
 
@@ -702,7 +701,7 @@ TEST_F(ExtensionInstallForceListPolicyHandlerAshTest,
   policy_map.Set(
       policy_key(), policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
       policy::POLICY_SOURCE_CLOUD,
-      base::Value(base::Value::List()
+      base::Value(base::ListValue()
                       // Add an arbitrary extension.
                       .Append(base::StrCat({"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                                             ";", "http://www.example.com/crx"}))
@@ -726,16 +725,16 @@ TEST_F(ExtensionInstallForceListPolicyHandlerAshTest,
 
   // All extensions should be retained.
   auto expected =
-      base::Value::Dict()
+      base::DictValue()
           .Set("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       "http://www.example.com/crx"))
+               base::DictValue().Set(ExternalProviderImpl::kExternalUpdateUrl,
+                                     "http://www.example.com/crx"))
           .Set(extension_misc::kAccessibilityCommonExtensionId,
-               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       "http://www.access.com/crx"))
+               base::DictValue().Set(ExternalProviderImpl::kExternalUpdateUrl,
+                                     "http://www.access.com/crx"))
           .Set(extension_misc::kGnubbyAppId,
-               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       "http://www.gnubby.com/crx"));
+               base::DictValue().Set(ExternalProviderImpl::kExternalUpdateUrl,
+                                     "http://www.gnubby.com/crx"));
 
   ASSERT_EQ(value->GetDict(), expected);
 }

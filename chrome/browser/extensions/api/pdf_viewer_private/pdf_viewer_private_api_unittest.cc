@@ -226,7 +226,7 @@ TEST_F(PdfViewerPrivateApiUnitTest, GetStreamInfoValid) {
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                        profile());
   ASSERT_TRUE(result);
-  base::Value::Dict* result_dict = result->GetIfDict();
+  base::DictValue* result_dict = result->GetIfDict();
   ASSERT_TRUE(result_dict);
 
   EXPECT_THAT(*result_dict, base::test::IsJson(kExpectedStreamInfo));

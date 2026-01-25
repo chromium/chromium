@@ -101,7 +101,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
   // WebstoreInstallHelper::Delegate:
   void OnWebstoreParseSuccess(const std::string& id,
                               const SkBitmap& icon,
-                              base::Value::Dict parsed_manifest) override;
+                              base::DictValue parsed_manifest) override;
   void OnWebstoreParseFailure(const std::string& id,
                               InstallHelperResultCode result,
                               const std::string& error_message) override;
@@ -166,7 +166,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 
-  std::optional<base::Value::Dict> parsed_manifest_;
+  std::optional<base::DictValue> parsed_manifest_;
   SkBitmap icon_;
 
   // A dummy Extension object we create for the purposes of using

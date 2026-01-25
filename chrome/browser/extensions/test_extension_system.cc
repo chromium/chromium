@@ -283,7 +283,7 @@ void TestExtensionSystem::InstallUpdate(
 
 void TestExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
-    const base::Value::Dict& attributes) {}
+    const base::DictValue& attributes) {}
 
 value_store::TestingValueStore* TestExtensionSystem::value_store() {
   // These tests use TestingValueStore in a way that ensures it only ever mints

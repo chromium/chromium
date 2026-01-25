@@ -93,7 +93,7 @@ void WebrtcAudioPrivateEventService::SignalEvent() {
             mojom::APIPermissionID::kWebrtcAudioPrivate)) {
       std::unique_ptr<Event> event =
           std::make_unique<Event>(events::WEBRTC_AUDIO_PRIVATE_ON_SINKS_CHANGED,
-                                  kEventName, base::Value::List());
+                                  kEventName, base::ListValue());
       router->DispatchEventToExtension(extension_id, std::move(event));
     }
   }

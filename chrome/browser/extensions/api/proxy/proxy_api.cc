@@ -36,7 +36,7 @@ const char kProxyEventOnProxyError[] = "proxy.onProxyError";
 void DispatchEventToContext(void* browser_context_ptr,
                             events::HistogramValue histogram_value,
                             const std::string& event_name,
-                            base::Value::List event_args) {
+                            base::ListValue event_args) {
   if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_ptr)) {
     return;
   }
@@ -67,8 +67,8 @@ ProxyEventRouter::ProxyEventRouter() = default;
 ProxyEventRouter::~ProxyEventRouter() = default;
 
 void ProxyEventRouter::OnProxyError(void* browser_context, int error_code) {
-  base::Value::List args;
-  base::Value::Dict dict;
+  base::ListValue args;
+  base::DictValue dict;
   dict.Set(kProxyEventFatalKey, true);
   dict.Set(kProxyEventErrorKey, net::ErrorToString(error_code));
   dict.Set(kProxyEventDetailsKey, std::string());
@@ -87,8 +87,8 @@ void ProxyEventRouter::OnProxyError(void* browser_context, int error_code) {
 void ProxyEventRouter::OnPACScriptError(void* browser_context,
                                         int line_number,
                                         const std::u16string& error) {
-  base::Value::List args;
-  base::Value::Dict dict;
+  base::ListValue args;
+  base::DictValue dict;
   dict.Set(kProxyEventFatalKey, false);
   dict.Set(kProxyEventErrorKey, net::ErrorToString(net::ERR_PAC_SCRIPT_FAILED));
   std::string error_msg = base::UTF16ToUTF8(error);

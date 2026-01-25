@@ -571,7 +571,7 @@ TEST_F(ChromeAppSortingPageOrdinalMapping,
 class ChromeAppSortingPreinstalledAppsBase : public PrefsPrepopulatedTestBase {
  public:
   ChromeAppSortingPreinstalledAppsBase() {
-    base::Value::Dict simple_dict;
+    base::DictValue simple_dict;
     simple_dict.Set(keys::kVersion, "1.0.0.0");
     simple_dict.Set(keys::kName, "unused");
     simple_dict.SetByDottedPath(keys::kLaunchLocalPath, "fake.html");
@@ -737,7 +737,7 @@ class ChromeAppSortingDefaultOrdinalsBase : public ExtensionPrefsTest {
 
  protected:
   scoped_refptr<Extension> CreateApp(const std::string& name) {
-    base::Value::Dict simple_dict;
+    base::DictValue simple_dict;
     simple_dict.Set(keys::kVersion, "1.0.0.0");
     simple_dict.Set(keys::kName, name);
     simple_dict.SetByDottedPath(keys::kLaunchLocalPath, "fake.html");

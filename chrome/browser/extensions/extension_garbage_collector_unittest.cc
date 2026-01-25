@@ -106,14 +106,14 @@ TEST_F(ExtensionGarbageCollectorUnitTest,
   // Update the path of the installed extension to be accurate for the test.
   {
     ScopedDictPrefUpdate update(profile()->GetPrefs(), pref_names::kExtensions);
-    base::Value::Dict& update_dict = update.Get();
+    base::DictValue& update_dict = update.Get();
     // An unpacked extension installed in the profile dir in production usually
     // has it's full install path written to the "path" key, but since we don't
     // know what the path is during the test (due to variation of test directory
     // location) we need to manually set it during the test. The garbage
     // collection checks this path to determine whether to delete the
     // installation directory.
-    base::Value::Dict* extension_entry = update_dict.FindDict(kExtensionId);
+    base::DictValue* extension_entry = update_dict.FindDict(kExtensionId);
     ASSERT_TRUE(extension_entry);
     extension_entry->Set("path",
                          base::Value(zipped_extension_dir.MaybeAsASCII()));

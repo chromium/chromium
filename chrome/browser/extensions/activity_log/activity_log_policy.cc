@@ -109,7 +109,7 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
   // Clear WebRequest details; only keep a record of which types of
   // modifications were performed.
   if (action->action_type() == Action::ACTION_WEB_REQUEST) {
-    if (base::Value::Dict* details =
+    if (base::DictValue* details =
             action->mutable_other().FindDict(constants::kActionWebRequest)) {
       for (auto detail : *details) {
         details->SetByDottedPath(detail.first, true);

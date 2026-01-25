@@ -166,11 +166,11 @@ class ProfileReportGeneratorTest : public ::testing::Test {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void SetExtensionToPendingList(const std::vector<std::string>& ids) {
-    base::Value::Dict id_values;
+    base::DictValue id_values;
     for (const auto& id : ids) {
       id_values.Set(
           id,
-          base::Value::Dict()
+          base::DictValue()
               .Set(extension_misc::kExtensionRequestTimestamp,
                    ::base::TimeToValue(
                        base::Time::FromMillisecondsSinceUnixEpoch(kFakeTime)))

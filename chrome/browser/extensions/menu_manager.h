@@ -217,12 +217,12 @@ class MenuItem {
   bool SetChecked(bool checked);
 
   // Converts to Value for serialization to preferences.
-  base::Value::Dict ToValue() const;
+  base::DictValue ToValue() const;
 
   // Returns a new MenuItem created from `value`, or NULL if there is
   // an error.
   static std::unique_ptr<MenuItem> Populate(const std::string& extension_id,
-                                            const base::Value::Dict& value,
+                                            const base::DictValue& value,
                                             std::string* error);
 
   // Sets any document and target URL patterns from `properties`.

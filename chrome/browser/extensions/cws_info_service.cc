@@ -171,8 +171,8 @@ BASE_FEATURE(kCWSInfoFastCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
-base::Value::Dict GetDictFromStoreMetadataProto(const StoreMetadata* metadata) {
-  base::Value::Dict dict;
+base::DictValue GetDictFromStoreMetadataProto(const StoreMetadata* metadata) {
+  base::DictValue dict;
   if (!metadata) {
     dict.Set(kIsPresent, false);
   } else {
@@ -200,9 +200,9 @@ bool SaveInfoIfChanged(ExtensionPrefs* extension_prefs,
                        const StoreMetadata* new_info) {
   bool saved = false;
 
-  const base::Value::Dict* saved_dict =
+  const base::DictValue* saved_dict =
       extension_prefs->ReadPrefAsDict(id, kCWSInfo);
-  base::Value::Dict new_dict = GetDictFromStoreMetadataProto(new_info);
+  base::DictValue new_dict = GetDictFromStoreMetadataProto(new_info);
   if (!saved_dict || *saved_dict != new_dict) {
     // The metadata is new or is different from that saved in extension prefs.
     saved = true;
@@ -265,7 +265,7 @@ void CWSInfoService::Shutdown() {
 
 std::optional<bool> CWSInfoService::IsLiveInCWS(
     const Extension& extension) const {
-  const base::Value::Dict* cws_info_dict =
+  const base::DictValue* cws_info_dict =
       extension_prefs_->ReadPrefAsDict(extension.id(), kCWSInfo);
   if (cws_info_dict == nullptr) {
     return std::nullopt;
@@ -278,7 +278,7 @@ std::optional<bool> CWSInfoService::IsLiveInCWS(
 
 std::optional<CWSInfoService::CWSInfo> CWSInfoService::GetCWSInfo(
     const Extension& extension) const {
-  const base::Value::Dict* cws_info_dict =
+  const base::DictValue* cws_info_dict =
       extension_prefs_->ReadPrefAsDict(extension.id(), kCWSInfo);
   if (cws_info_dict == nullptr) {
     return std::nullopt;

@@ -65,7 +65,7 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   void OnExtensionInstalled(const Extension* extension,
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,
-                            base::Value::Dict ruleset_install_prefs) override;
+                            base::DictValue ruleset_install_prefs) override;
 
   Profile* profile() { return profile_; }
 

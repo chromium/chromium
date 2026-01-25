@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(
       BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
 
   ASSERT_TRUE(result.is_dict());
-  const base::Value::Dict& counts = result.GetDict();
+  const base::DictValue& counts = result.GetDict();
 
   // Each listener is invoked only once.
   EXPECT_EQ(1, counts.FindInt("listener1"));

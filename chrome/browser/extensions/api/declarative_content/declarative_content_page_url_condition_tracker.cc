@@ -41,7 +41,7 @@ DeclarativeContentPageUrlPredicate::Create(
     const base::Value& value,
     std::string* error) {
   scoped_refptr<url_matcher::URLMatcherConditionSet> url_matcher_condition_set;
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     *error = base::StringPrintf(kPageUrlInvalidTypeOfParameter,
                                 declarative_content_constants::kPageUrl);

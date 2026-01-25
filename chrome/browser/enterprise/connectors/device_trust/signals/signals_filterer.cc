@@ -6,6 +6,6 @@
 
 namespace enterprise_connectors {
 
-void SignalsFilterer::Filter(base::Value::Dict& signals) {}
+void SignalsFilterer::Filter(base::DictValue& signals) {}
 
 }  // namespace enterprise_connectors

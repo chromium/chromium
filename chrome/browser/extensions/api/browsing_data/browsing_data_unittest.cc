@@ -91,7 +91,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     return remover_->GetLastUsedOriginTypeMaskForTesting();
   }
 
-  uint64_t GetAsMask(const base::Value::Dict* dict,
+  uint64_t GetAsMask(const base::DictValue* dict,
                      std::string path,
                      uint64_t mask_value) {
     std::optional<bool> value = dict->FindBool(path);
@@ -232,8 +232,8 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
         function.get(), std::string("[]"), profile());
 
     ASSERT_TRUE(result->is_dict());
-    const base::Value::Dict& result_dict = result->GetDict();
-    const base::Value::Dict* origin_types =
+    const base::DictValue& result_dict = result->GetDict();
+    const base::DictValue* origin_types =
         result_dict.FindDictByDottedPath("options.originTypes");
 
     ASSERT_TRUE(origin_types);
@@ -243,7 +243,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
         GetAsMask(origin_types, "extension", EXTENSION);
     EXPECT_EQ(expected_origin_type_mask, origin_type_mask);
 
-    const base::Value::Dict* data_to_remove =
+    const base::DictValue* data_to_remove =
         result_dict.FindDict("dataToRemove");
     ASSERT_TRUE(data_to_remove);
     uint64_t removal_mask =
@@ -461,7 +461,7 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
         settings_function.get(), std::string("[]"), profile());
 
     EXPECT_TRUE(result->is_dict());
-    base::Value::Dict* data_to_remove =
+    base::DictValue* data_to_remove =
         result->GetDict().FindDict("dataToRemove");
     ASSERT_TRUE(data_to_remove);
 

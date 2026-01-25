@@ -26,7 +26,7 @@ class JobProfilePicker {
   JobProfilePicker& operator=(const JobProfilePicker&) = delete;
   ~JobProfilePicker();
 
-  bool ParseCommandPayload(const base::Value::Dict& command_payload);
+  bool ParseCommandPayload(const base::DictValue& command_payload);
   Profile* GetProfile();
 
  private:

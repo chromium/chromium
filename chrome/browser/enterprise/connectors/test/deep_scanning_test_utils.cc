@@ -129,7 +129,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
   content_transfer_method_ = expected_content_transfer_method;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
+          [this](bool include_device_info, base::DictValue report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -222,7 +222,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
       .WillRepeatedly(
-          [this](bool include_device_info, base::Value::Dict report,
+          [this](bool include_device_info, base::DictValue report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) { ValidateReport(&report); });
 }
@@ -260,7 +260,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
   }
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
+          [this](bool include_device_info, base::DictValue report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -373,7 +373,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
   user_justification_ = expected_user_justification;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
+          [this](bool include_device_info, base::DictValue report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -400,7 +400,7 @@ void EventReportValidator::ExpectDataMaskingEvent(
       std::move(expected_event));
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
+          [this](bool include_device_info, base::DictValue report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -460,9 +460,10 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
       .WillRepeatedly(
-          [this, barrier_closure](bool include_device_info, base::Value::Dict report,
-                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                     callback) {
+          [this, barrier_closure](
+              bool include_device_info, base::DictValue report,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
             ValidateReport(&report);
             barrier_closure.Run();
           });
@@ -503,11 +504,11 @@ void EventReportValidator::ExpectSensitiveDataEventWarnThenBypass(
   user_justification_ = expected_user_justifications[0];
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce([this, expected_filename](
-                    bool include_device_info, base::Value::Dict report,
+                    bool include_device_info, base::DictValue report,
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) { ValidateReport(&report); })
       .WillOnce([this, expected_filename, expected_user_justifications](
-                    bool include_device_info, base::Value::Dict report,
+                    bool include_device_info, base::DictValue report,
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
         results_[expected_filename] =
@@ -615,11 +616,11 @@ void EventReportValidator::
   content_transfer_method_ = expected_content_transfer_method;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
+          [this](bool include_device_info, base::DictValue report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) { ValidateReport(&report); })
       .WillOnce([this, expected_filename, expected_dlp_verdict](
-                    bool include_device_info, base::Value::Dict report,
+                    bool include_device_info, base::DictValue report,
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
         event_key_ = kKeySensitiveDataEvent;
@@ -665,11 +666,11 @@ void EventReportValidator::
   scan_ids_[expected_filename] = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
+          [this](bool include_device_info, base::DictValue report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) { ValidateReport(&report); })
       .WillOnce([this, expected_filename, expected_threat_type](
-                    bool include_device_info, base::Value::Dict report,
+                    bool include_device_info, base::DictValue report,
                     base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                         callback) {
         event_key_ = kKeyDangerousDownloadEvent;
@@ -741,7 +742,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
   profile_identifier_ = expected_profile_identifier;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .WillOnce(
-          [this](bool include_device_info, base::Value::Dict report,
+          [this](bool include_device_info, base::DictValue report,
                  base::OnceCallback<void(policy::CloudPolicyClient::Result)>
                      callback) {
             ValidateReport(&report);
@@ -764,18 +765,18 @@ void EventReportValidator::ExpectFrameUrlChain(
   frame_urls_ = frame_urls;
 }
 
-void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
+void EventReportValidator::ValidateReport(const base::DictValue* report) {
   DCHECK(report);
 
   // Extract the event list.
-  const base::Value::List* event_list = report->FindList(
+  const base::ListValue* event_list = report->FindList(
       policy::RealtimeReportingJobConfiguration::kEventListKey);
   ASSERT_NE(nullptr, event_list);
 
   // There should only be 1 event per test.
   ASSERT_EQ(1u, event_list->size());
-  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-  const base::Value::Dict* event = wrapper.FindDict(event_key_);
+  const base::DictValue& wrapper = (*event_list)[0].GetDict();
+  const base::DictValue* event = wrapper.FindDict(event_key_);
   ASSERT_NE(nullptr, event);
 
   // The event should match the expected values.
@@ -813,7 +814,7 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
 }
 
 void EventReportValidator::ValidateFederatedOrigin(
-    const base::Value::Dict* value) {
+    const base::DictValue* value) {
   std::optional<bool> is_federated = value->FindBool(kKeyIsFederated);
   const std::string* federated_origin = value->FindString(kKeyFederatedOrigin);
   if (is_federated.has_value() && is_federated.value()) {
@@ -824,8 +825,8 @@ void EventReportValidator::ValidateFederatedOrigin(
   }
 }
 
-void EventReportValidator::ValidateIdentities(const base::Value::Dict* value) {
-  const base::Value::List* identities =
+void EventReportValidator::ValidateIdentities(const base::DictValue* value) {
+  const base::ListValue* identities =
       value->FindList(kKeyPasswordBreachIdentities);
   if (!password_breach_identities_) {
     EXPECT_EQ(nullptr, identities);
@@ -836,8 +837,7 @@ void EventReportValidator::ValidateIdentities(const base::Value::Dict* value) {
     for (const auto& expected_identity : *password_breach_identities_) {
       bool matched = false;
       for (const auto& actual_identity : *identities) {
-        const base::Value::Dict& actual_identity_dict =
-            actual_identity.GetDict();
+        const base::DictValue& actual_identity_dict = actual_identity.GetDict();
         const std::string* url =
             actual_identity_dict.FindString(kKeyPasswordBreachIdentitiesUrl);
         const std::string* actual_username = actual_identity_dict.FindString(
@@ -856,7 +856,7 @@ void EventReportValidator::ValidateIdentities(const base::Value::Dict* value) {
   }
 }
 
-void EventReportValidator::ValidateMimeType(const base::Value::Dict* value) {
+void EventReportValidator::ValidateMimeType(const base::DictValue* value) {
   const std::string* type = value->FindString(kKeyContentType);
   if (mimetypes_) {
     EXPECT_TRUE(mimetypes_->contains(*type))
@@ -867,21 +867,21 @@ void EventReportValidator::ValidateMimeType(const base::Value::Dict* value) {
 }
 
 void EventReportValidator::ValidateDlpVerdict(
-    const base::Value::Dict* value,
+    const base::DictValue* value,
     const ContentAnalysisResponse::Result& result) {
-  const base::Value::List* triggered_rules =
+  const base::ListValue* triggered_rules =
       value->FindList(kKeyTriggeredRuleInfo);
   ASSERT_NE(nullptr, triggered_rules);
   ASSERT_EQ(base::checked_cast<size_t>(result.triggered_rules_size()),
             triggered_rules->size());
   for (size_t i = 0; i < triggered_rules->size(); ++i) {
-    const base::Value::Dict& rule = (*triggered_rules)[i].GetDict();
+    const base::DictValue& rule = (*triggered_rules)[i].GetDict();
     ValidateDlpRule(&rule, result.triggered_rules(i));
   }
 }
 
 void EventReportValidator::ValidateDlpRule(
-    const base::Value::Dict* value,
+    const base::DictValue* value,
     const ContentAnalysisResponse::Result::TriggeredRule& expected_rule) {
   ValidateField(value, kKeyTriggeredRuleName, expected_rule.rule_name());
   if (expected_rule.rule_id().empty()) {
@@ -895,7 +895,7 @@ void EventReportValidator::ValidateDlpRule(
 }
 
 void EventReportValidator::ValidateFilenameMappedAttributes(
-    const base::Value::Dict* value) {
+    const base::DictValue* value) {
   if (filenames_and_hashes_.empty()) {
     ASSERT_FALSE(value->contains(kKeyFileName))
         << "Expected no file name but found "
@@ -941,12 +941,12 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void EventReportValidator::ValidateDataMaskingAttributes(
-    const base::Value::Dict* event) {
+    const base::DictValue* event) {
   if (expected_data_masking_rules_builder_) {
     auto data_masking_rules = std::move(expected_data_masking_rules_builder_)
                                   .Run()
                                   .triggered_rule_info;
-    const base::Value::List* triggered_rules =
+    const base::ListValue* triggered_rules =
         event->FindList(kKeyTriggeredRuleInfo);
     ASSERT_TRUE(triggered_rules);
     ASSERT_EQ(data_masking_rules.size(), triggered_rules->size());
@@ -959,9 +959,8 @@ void EventReportValidator::ValidateDataMaskingAttributes(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-void EventReportValidator::ValidateFrameUrlChain(
-    const base::Value::Dict* value) {
-  const base::Value::List* frame_urls = value->FindList(kKeyIframeUrls);
+void EventReportValidator::ValidateFrameUrlChain(const base::DictValue* value) {
+  const base::ListValue* frame_urls = value->FindList(kKeyIframeUrls);
   if (!frame_urls_.has_value()) {
     EXPECT_TRUE(!frame_urls || frame_urls->empty());
     return;

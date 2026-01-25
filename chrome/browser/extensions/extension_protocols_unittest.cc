@@ -98,16 +98,16 @@ scoped_refptr<const Extension> CreateWebStoreExtension(int manifest_version) {
   return ExtensionBuilder("WebStore")
       .SetManifestVersion(manifest_version)
       .SetManifestKey("icons",
-                      base::Value::Dict().Set("16", "webstore_icon_16.png"))
+                      base::DictValue().Set("16", "webstore_icon_16.png"))
       .SetManifestKey(
           "web_accessible_resources",
           manifest_version == 3
-              ? base::Value::List().Append(
-                    base::Value::Dict()
+              ? base::ListValue().Append(
+                    base::DictValue()
                         .Set("resources",
-                             base::Value::List().Append("webstore_icon_16.png"))
-                        .Set("matches", base::Value::List().Append("*://*/*")))
-              : base::Value::List().Append("webstore_icon_16.png"))
+                             base::ListValue().Append("webstore_icon_16.png"))
+                        .Set("matches", base::ListValue().Append("*://*/*")))
+              : base::ListValue().Append("webstore_icon_16.png"))
       .SetPath(path)
       .SetLocation(mojom::ManifestLocation::kComponent)
       .Build();
@@ -120,16 +120,16 @@ scoped_refptr<const Extension> CreateTestResponseHeaderExtension(
         .SetManifestVersion(manifest_version)
         .SetManifestKey(
             "web_accessible_resources",
-            base::Value::List().Append(
-                base::Value::Dict()
+            base::ListValue().Append(
+                base::DictValue()
                     .Set("resources",
-                         base::Value::List()
+                         base::ListValue()
                              .Append("test.dat")
                              .Append("mime_type_sniffer_test.gif1"))
-                    .Set("matches", base::Value::List().Append("*://*/*"))))
-        .SetManifestKey("background", base::Value::Dict().Set("service_worker",
-                                                              "background.js"))
-        .SetManifestKey("trial_tokens", base::Value::List()
+                    .Set("matches", base::ListValue().Append("*://*/*"))))
+        .SetManifestKey("background", base::DictValue().Set("service_worker",
+                                                            "background.js"))
+        .SetManifestKey("trial_tokens", base::ListValue()
                                             .Append(kValidTrialToken1)
                                             .Append(kValidTrialToken2))
         .SetPath(GetTestPath("response_headers"))
@@ -138,13 +138,12 @@ scoped_refptr<const Extension> CreateTestResponseHeaderExtension(
   return ExtensionBuilder("An extension with web-accessible resources")
       .SetManifestVersion(manifest_version)
       .SetManifestKey("web_accessible_resources",
-                      base::Value::List()
+                      base::ListValue()
                           .Append("test.dat")
                           .Append("mime_type_sniffer_test.gif1"))
-      .SetManifestKey(
-          "background",
-          base::Value::Dict().Set("scripts",
-                                  base::Value::List().Append("background.js")))
+      .SetManifestKey("background",
+                      base::DictValue().Set(
+                          "scripts", base::ListValue().Append("background.js")))
       .SetPath(GetTestPath("response_headers"))
       .Build();
 }
@@ -153,7 +152,7 @@ scoped_refptr<const Extension> CreateTestModuleResponseHeaderExtension(
     int manifest_version) {
   return ExtensionBuilder("A module extension")
       .SetManifestVersion(manifest_version)
-      .SetManifestKey("export", base::Value::Dict())
+      .SetManifestKey("export", base::DictValue())
       .SetPath(GetTestPath("response_headers"))
       .Build();
 }
@@ -165,9 +164,9 @@ scoped_refptr<const Extension> CreateTestModuleImporterResponseHeaderExtension(
     return ExtensionBuilder("A module importer extension")
         .SetManifestVersion(manifest_version)
         .SetManifestKey("import",
-                        base::Value::List().Append(
-                            base::Value::Dict().Set("id", module_extension_id)))
-        .SetManifestKey("trial_tokens", base::Value::List()
+                        base::ListValue().Append(
+                            base::DictValue().Set("id", module_extension_id)))
+        .SetManifestKey("trial_tokens", base::ListValue()
                                             .Append(kValidTrialToken1)
                                             .Append(kValidTrialToken2))
         .SetPath(GetTestPath("response_headers"))
@@ -175,9 +174,8 @@ scoped_refptr<const Extension> CreateTestModuleImporterResponseHeaderExtension(
   }
   return ExtensionBuilder("A module importer extension")
       .SetManifestVersion(manifest_version)
-      .SetManifestKey("import",
-                      base::Value::List().Append(
-                          base::Value::Dict().Set("id", module_extension_id)))
+      .SetManifestKey("import", base::ListValue().Append(base::DictValue().Set(
+                                    "id", module_extension_id)))
       .SetPath(GetTestPath("response_headers"))
       .Build();
 }
@@ -1060,7 +1058,7 @@ TEST_P(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
       })";
   const char* kManifest = manifest_version == 3 ? kManifestV3 : kManifestV2;
   test_dir.WriteManifest(kManifest);
-  base::Value::Dict manifest = base::test::ParseJsonDict(kManifest);
+  base::DictValue manifest = base::test::ParseJsonDict(kManifest);
   ASSERT_FALSE(manifest.empty());
 
   test_dir.WriteFile(FILE_PATH_LITERAL("json_file.json"), "{}");

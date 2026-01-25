@@ -83,14 +83,14 @@ class MessageSender : public ExtensionHostRegistry::Observer {
   }
 
  private:
-  static base::Value::List BuildEventArguments(const bool last_message,
-                                               const std::string& data) {
-    return base::Value::List().Append(
-        base::Value::Dict().Set("lastMessage", last_message).Set("data", data));
+  static base::ListValue BuildEventArguments(const bool last_message,
+                                             const std::string& data) {
+    return base::ListValue().Append(
+        base::DictValue().Set("lastMessage", last_message).Set("data", data));
   }
 
   static std::unique_ptr<Event> BuildEvent(
-      base::Value::List event_args,
+      base::ListValue event_args,
       content::BrowserContext* browser_context,
       GURL event_url) {
     auto event =
@@ -1081,7 +1081,7 @@ class PolyfillSupportMessagingErrorsApiTest
   }
 
  private:
-  base::Value::Dict js_test_config_;
+  base::DictValue js_test_config_;
 };
 
 // Test the sender's promise behavior when there are two listeners and:

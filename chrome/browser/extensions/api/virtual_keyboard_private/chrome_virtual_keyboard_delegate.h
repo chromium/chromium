@@ -78,7 +78,7 @@ class ChromeVirtualKeyboardDelegate
 
   void OnHasInputDevices(OnKeyboardSettingsCallback on_settings_callback,
                          bool has_audio_input_devices);
-  void DispatchConfigChangeEvent(std::optional<base::Value::Dict> settings);
+  void DispatchConfigChangeEvent(std::optional<base::DictValue> settings);
 
   raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<media::AudioSystem> audio_system_;

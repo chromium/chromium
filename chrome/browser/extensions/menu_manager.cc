@@ -77,7 +77,7 @@ const char kVisibleKey[] = "visible";
 // The time by which to delay writing updated menu items to storage.
 constexpr int kWriteDelayInSeconds = 1;
 
-void SetIdKeyValue(base::Value::Dict& properties,
+void SetIdKeyValue(base::DictValue& properties,
                    const char* key,
                    const MenuItem::Id& id) {
   if (id.uid == 0)
@@ -107,7 +107,7 @@ MenuItem::OwnedList MenuItemsFromValue(
   return items;
 }
 
-bool GetStringList(const base::Value::Dict& dict,
+bool GetStringList(const base::DictValue& dict,
                    const std::string& key,
                    std::vector<std::string>* out) {
   const base::Value* value = dict.Find(key);
@@ -116,7 +116,7 @@ bool GetStringList(const base::Value::Dict& dict,
 
   if (!value->is_list())
     return false;
-  const base::Value::List& list = value->GetList();
+  const base::ListValue& list = value->GetList();
 
   for (const auto& pattern : list) {
     if (!pattern.is_string())
@@ -133,7 +133,7 @@ bool GetStringList(const base::Value::Dict& dict,
 void DispatchEventWithGuestView(const MenuItem& item,
                                 const events::HistogramValue& event_type,
                                 const std::string& event_name,
-                                base::Value::List* args,
+                                base::ListValue* args,
                                 content::BrowserContext* context,
                                 WebViewGuest* webview_guest,
                                 EventRouter* event_router) {
@@ -163,7 +163,7 @@ void DispatchEventWithGuestView(const MenuItem& item,
 void DispatchEvent(const MenuItem& item,
                    const events::HistogramValue& event_type,
                    const std::string& event_name,
-                   base::Value::List* args,
+                   base::ListValue* args,
                    content::BrowserContext* context,
                    EventRouter* event_router) {
   auto event = std::make_unique<Event>(event_type, event_name, std::move(*args),
@@ -256,8 +256,8 @@ void MenuItem::AddChild(std::unique_ptr<MenuItem> item) {
   children_.push_back(std::move(item));
 }
 
-base::Value::Dict MenuItem::ToValue() const {
-  base::Value::Dict value;
+base::DictValue MenuItem::ToValue() const {
+  base::DictValue value;
   // Should only be called for extensions with event pages, which only have
   // string IDs for items.
   DCHECK_EQ(0, id_.uid);
@@ -282,7 +282,7 @@ base::Value::Dict MenuItem::ToValue() const {
 
 // static
 std::unique_ptr<MenuItem> MenuItem::Populate(const std::string& extension_id,
-                                             const base::Value::Dict& value,
+                                             const base::DictValue& value,
                                              std::string* error) {
   std::optional<bool> incognito = value.FindBool(kMenuManagerIncognitoKey);
   if (!incognito.has_value())
@@ -678,7 +678,7 @@ void MenuManager::RadioItemSelected(MenuItem* item) {
   }
 }
 
-static void AddURLProperty(base::Value::Dict& dictionary,
+static void AddURLProperty(base::DictValue& dictionary,
                            const std::string& key,
                            const GURL& url) {
   if (!url.is_empty())
@@ -705,7 +705,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
   if (item->type() == MenuItem::RADIO)
     RadioItemSelected(item);
 
-  base::Value::Dict properties;
+  base::DictValue properties;
   SetIdKeyValue(properties, "menuItemId", item->id());
   if (item->parent_id())
     SetIdKeyValue(properties, "parentMenuItemId", *item->parent_id());
@@ -738,7 +738,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
       WebViewGuest::FromRenderFrameHost(render_frame_host);
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(properties));
 
   // Add the tab info to the argument list.

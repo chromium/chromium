@@ -102,7 +102,7 @@ void ExtensionInstallEventRouter::ReportExtensionInstallEvent(
     return;
   }
 
-  base::Value::Dict event;
+  base::DictValue event;
   event.Set(kKeyId, extension->id());
   event.Set(kKeyName, extension->name());
   event.Set(kKeyDescription, extension->description());

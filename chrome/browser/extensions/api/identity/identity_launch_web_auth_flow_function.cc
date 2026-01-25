@@ -212,7 +212,7 @@ void IdentityLaunchWebAuthFlowFunction::InitFinalRedirectURLDomainsForTest(
 
 void IdentityLaunchWebAuthFlowFunction::InitFinalRedirectURLDomains(
     const std::string& extension_id,
-    const base::Value::List* redirect_urls) {
+    const base::ListValue* redirect_urls) {
   if (!final_url_domains_.empty()) {
     return;
   }

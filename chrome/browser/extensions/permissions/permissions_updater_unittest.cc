@@ -50,13 +50,13 @@ namespace extensions {
 namespace {
 
 scoped_refptr<const Extension> CreateExtensionWithOptionalPermissions(
-    base::Value::List optional_permissions,
-    base::Value::List permissions,
+    base::ListValue optional_permissions,
+    base::ListValue permissions,
     const std::string& name) {
   return ExtensionBuilder()
       .SetLocation(mojom::ManifestLocation::kInternal)
       .SetManifest(
-          base::Value::Dict()
+          base::DictValue()
               .Set("name", name)
               .Set("description", "foo")
               .Set("manifest_version", 2)
@@ -219,9 +219,8 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
   {
     // Test revoking optional permissions.
     auto optional_permissions =
-        base::Value::List().Append("tabs").Append("cookies").Append(
-            "management");
-    base::Value::List required_permissions;
+        base::ListValue().Append("tabs").Append("cookies").Append("management");
+    base::ListValue required_permissions;
     required_permissions.Append("topSites");
     scoped_refptr<const Extension> extension =
         CreateExtensionWithOptionalPermissions(std::move(optional_permissions),
@@ -280,9 +279,9 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     URLPatternSet default_policy_allowed_hosts;
     URLPatternSet policy_blocked_hosts;
     URLPatternSet policy_allowed_hosts;
-    base::Value::List optional_permissions;
-    base::Value::List required_permissions =
-        base::Value::List().Append("tabs").Append("http://*/*");
+    base::ListValue optional_permissions;
+    base::ListValue required_permissions =
+        base::ListValue().Append("tabs").Append("http://*/*");
     scoped_refptr<const Extension> extension =
         CreateExtensionWithOptionalPermissions(std::move(optional_permissions),
                                                std::move(required_permissions),
@@ -501,8 +500,8 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissionsWithRuntimeHostPermissions) {
     SCOPED_TRACE(test_name);
     scoped_refptr<const Extension> extension =
         CreateExtensionWithOptionalPermissions(
-            base::Value::List(),
-            base::Value::List().Append(test_case.permission), test_name);
+            base::ListValue(), base::ListValue().Append(test_case.permission),
+            test_name);
     PermissionsUpdater updater(profile());
     updater.InitializePermissions(extension.get());
 
@@ -765,10 +764,9 @@ TEST_F(PermissionsUpdaterTest,
 
   scoped_refptr<const Extension> extension =
       CreateExtensionWithOptionalPermissions(
-          /*optional_permissions=*/base::Value::List().Append("tabs"),
+          /*optional_permissions=*/base::ListValue().Append("tabs"),
           /*permissions=*/
-          base::Value::List().Append("https://example.com/*"),
-          "optional grant");
+          base::ListValue().Append("https://example.com/*"), "optional grant");
   ASSERT_TRUE(extension);
 
   {

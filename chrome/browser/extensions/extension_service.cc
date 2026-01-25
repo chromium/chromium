@@ -155,7 +155,7 @@ constexpr int kAllowUnpublishedExtensions = 0;
 const char kBlockLoadCommandline[] = "command_line";
 
 bool ShouldBlockCommandLineExtension(Profile& profile) {
-  const base::Value::List& list =
+  const base::ListValue& list =
       profile.GetPrefs()->GetList(pref_names::kExtensionInstallTypeBlocklist);
   for (const auto& val : list) {
     if (val.is_string() && val.GetString() == kBlockLoadCommandline) {
@@ -469,7 +469,7 @@ void ExtensionService::LoadSigninProfileTestExtension(const std::string& path) {
 
 void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
-    const base::Value::Dict& attributes) {
+    const base::DictValue& attributes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   omaha_attributes_handler_.PerformActionBasedOnOmahaAttributes(extension_id,
                                                                 attributes);

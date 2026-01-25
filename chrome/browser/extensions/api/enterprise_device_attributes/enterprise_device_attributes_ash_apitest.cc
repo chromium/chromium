@@ -32,13 +32,12 @@ constexpr char kExtensionPath[] =
 constexpr char kExtensionPemPath[] =
     "extensions/api_test/enterprise_device_attributes.pem";
 
-base::Value::Dict BuildCustomArg(
-    const std::string& expected_directory_device_id,
-    const std::string& expected_serial_number,
-    const std::string& expected_asset_id,
-    const std::string& expected_annotated_location,
-    const std::string& expected_hostname) {
-  base::Value::Dict custom_arg;
+base::DictValue BuildCustomArg(const std::string& expected_directory_device_id,
+                               const std::string& expected_serial_number,
+                               const std::string& expected_asset_id,
+                               const std::string& expected_annotated_location,
+                               const std::string& expected_hostname) {
+  base::DictValue custom_arg;
   custom_arg.Set("expectedDirectoryDeviceId", expected_directory_device_id);
   custom_arg.Set("expectedSerialNumber", expected_serial_number);
   custom_arg.Set("expectedAssetId", expected_asset_id);

@@ -101,8 +101,8 @@ class FontSettingsGetFontListFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void FontListHasLoaded(base::Value::List list);
-  ResponseValue CopyFontsToResult(const base::Value::List& fonts);
+  void FontListHasLoaded(base::ListValue list);
+  ResponseValue CopyFontsToResult(const base::ListValue& fonts);
 };
 
 // Base class for extension API functions that clear a browser font pref.

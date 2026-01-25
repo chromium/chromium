@@ -260,7 +260,7 @@ void ExternalPrefLoader::OnPrioritySyncReady(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static.
-base::Value::Dict ExternalPrefLoader::ExtractExtensionPrefs(
+base::DictValue ExternalPrefLoader::ExtractExtensionPrefs(
     base::ValueDeserializer* deserializer,
     const base::FilePath& path) {
   std::string error_msg;
@@ -269,18 +269,18 @@ base::Value::Dict ExternalPrefLoader::ExtractExtensionPrefs(
   if (!extensions) {
     LOG(WARNING) << "Unable to deserialize json data: " << error_msg
                  << " in file " << path.value() << ".";
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   if (extensions->is_dict())
     return std::move(*extensions).TakeDict();
 
   LOG(WARNING) << "Expected a JSON dictionary in file " << path.value() << ".";
-  return base::Value::Dict();
+  return base::DictValue();
 }
 
 void ExternalPrefLoader::LoadOnFileThread() {
-  base::Value::Dict prefs;
+  base::DictValue prefs;
 
   // TODO(skerner): Some values of base_path_id_ will cause
   // base::PathService::Get() to return false, because the path does
@@ -311,8 +311,7 @@ void ExternalPrefLoader::LoadOnFileThread() {
                                 std::move(prefs)));
 }
 
-void ExternalPrefLoader::ReadExternalExtensionPrefFile(
-    base::Value::Dict& prefs) {
+void ExternalPrefLoader::ReadExternalExtensionPrefFile(base::DictValue& prefs) {
   base::FilePath json_file = base_path_.Append(kExternalExtensionJson);
 
   if (!base::PathExists(json_file)) {
@@ -345,7 +344,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
 }
 
 void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
-    base::Value::Dict& prefs) {
+    base::DictValue& prefs) {
   // First list the potential .json candidates.
   std::set<base::FilePath> candidates =
       GetPrefsCandidateFilesFromFolder(base_path_);
@@ -355,9 +354,9 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
   }
 
   // TODO(crbug.com/40887866): Remove this once migration is completed.
-  std::unique_ptr<base::Value::List> default_user_types;
+  std::unique_ptr<base::ListValue> default_user_types;
   if (options_ & USE_USER_TYPE_PROFILE_FILTER) {
-    default_user_types = std::make_unique<base::Value::List>();
+    default_user_types = std::make_unique<base::ListValue>();
     default_user_types->Append(base::Value(apps::kUserTypeUnmanaged));
   }
 

@@ -86,7 +86,7 @@ class TestShillThirdPartyVpnDriverClient
     : public ash::FakeShillThirdPartyVpnDriverClient {
  public:
   void SetParameters(const std::string& object_path_value,
-                     const base::Value::Dict& parameters,
+                     const base::DictValue& parameters,
                      StringCallback callback,
                      ErrorCallback error_callback) override {
     set_parameters_counter_++;
@@ -119,7 +119,7 @@ class TestShillThirdPartyVpnDriverClient
   }
 
   int set_parameters_counter_ = 0;
-  base::Value::Dict parameters_;
+  base::DictValue parameters_;
   int update_connection_state_counter_ = 0;
   uint32_t connection_state_;
   int send_packet_counter_ = 0;
@@ -238,7 +238,7 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
 
   bool HasService(const std::string& service_path) const {
     std::string profile_path;
-    std::optional<base::Value::Dict> properties =
+    std::optional<base::DictValue> properties =
         ash::ShillProfileClient::Get()->GetTestInterface()->GetService(
             service_path, &profile_path);
     return properties.has_value();
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, CheckEvents) {
 IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, ConfigPersistence) {
   EXPECT_FALSE(DoesConfigExist(kTestConfig));
 
-  base::Value::Dict properties;
+  base::DictValue properties;
   properties.Set(shill::kTypeProperty, shill::kTypeVPN);
   properties.Set(shill::kNameProperty, kTestConfig);
   properties.Set(shill::kProviderHostProperty, extension_id());

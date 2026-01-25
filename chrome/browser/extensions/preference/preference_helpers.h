@@ -38,7 +38,7 @@ const char* GetLevelOfControl(Profile* profile,
 void DispatchEventToExtensions(Profile* profile,
                                events::HistogramValue histogram_value,
                                const std::string& event_name,
-                               base::Value::List args,
+                               base::ListValue args,
                                mojom::APIPermissionID permission,
                                bool incognito,
                                const std::string& browser_pref);

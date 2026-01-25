@@ -74,8 +74,8 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   bool IsReady() const override;
   void TriggerOnExternalExtensionFound() override;
-  void SetPrefs(base::Value::Dict prefs) override;
-  void UpdatePrefs(base::Value::Dict prefs) override;
+  void SetPrefs(base::DictValue prefs) override;
+  void UpdatePrefs(base::DictValue prefs) override;
 
   static const char kExternalCrx[];
   static const char kExternalVersion[];
@@ -102,12 +102,12 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   void set_allow_updates(bool allow_updates) { allow_updates_ = allow_updates; }
 
  private:
-  bool HandleMinProfileVersion(const base::Value::Dict& extension,
+  bool HandleMinProfileVersion(const base::DictValue& extension,
                                const std::string& extension_id,
                                std::set<std::string>* unsupported_extensions);
 
   bool HandleDoNotInstallForEnterprise(
-      const base::Value::Dict& extension,
+      const base::DictValue& extension,
       const std::string& extension_id,
       std::set<std::string>* unsupported_extensions);
 
@@ -133,7 +133,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   raw_ptr<VisitorInterface> service_;  // weak
 
   // Dict of the external extensions that are provided by this provider.
-  std::optional<base::Value::Dict> prefs_;
+  std::optional<base::DictValue> prefs_;
 
   // Indicates that the extensions provided by this provider are loaded
   // entirely.

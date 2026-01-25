@@ -64,7 +64,7 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
     auto [loader_receiver, target_factory] = factory_builder.Append();
 
     // Cache configured hosts for a quicker lookup later on.
-    const base::Value::List& configured_hosts_pref =
+    const base::ListValue& configured_hosts_pref =
         g_browser_process->local_state()->GetList(
             prefs::kExtensibleEnterpriseSSOConfiguredHosts);
     base::flat_set<std::string> configured_hosts;

@@ -83,7 +83,7 @@ class ShowExtensionAction : public ContentAction {
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Value::Dict* dict,
+      const base::DictValue* dict,
       std::string* error) {
     // TODO(devlin): We should probably throw an error if the extension has no
     // action specified in the manifest. Currently, this is allowed since
@@ -138,7 +138,7 @@ class SetIcon : public ContentAction {
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Value::Dict* dict,
+      const base::DictValue* dict,
       std::string* error);
 
   // Implementation of ContentAction:
@@ -181,7 +181,7 @@ class SetIcon : public ContentAction {
 };
 
 // Helper for getting JS collections into C++.
-static bool AppendJSStringsToCPPStrings(const base::Value::List& append_strings,
+static bool AppendJSStringsToCPPStrings(const base::ListValue& append_strings,
                                         std::vector<std::string>* append_to) {
   for (const auto& entry : append_strings) {
     if (entry.is_string()) {
@@ -201,7 +201,7 @@ struct ContentActionFactory {
   using FactoryMethod = std::unique_ptr<ContentAction> (*)(
       content::BrowserContext* /* browser_context */,
       const Extension* /* extension */,
-      const base::Value::Dict* /* dict */,
+      const base::DictValue* /* dict */,
       std::string* /* error */);
   // Maps the name of a declarativeContent action type to the factory
   // function creating it.
@@ -246,7 +246,7 @@ RequestContentScript::ScriptData::~ScriptData() = default;
 std::unique_ptr<ContentAction> RequestContentScript::Create(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    const base::Value::Dict* dict,
+    const base::DictValue* dict,
     std::string* error) {
   ScriptData script_data;
   if (!InitScriptData(dict, error, &script_data))
@@ -259,7 +259,7 @@ std::unique_ptr<ContentAction> RequestContentScript::Create(
 }
 
 // static
-bool RequestContentScript::InitScriptData(const base::Value::Dict* dict,
+bool RequestContentScript::InitScriptData(const base::DictValue* dict,
                                           std::string* error,
                                           ScriptData* script_data) {
   const base::Value* css = dict->Find(declarative_content_constants::kCss);
@@ -403,7 +403,7 @@ void RequestContentScript::OnUserScriptLoaderDestroyed(
 std::unique_ptr<ContentAction> SetIcon::Create(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    const base::Value::Dict* dict,
+    const base::DictValue* dict,
     std::string* error) {
   // We can't set a page or action's icon if the extension doesn't have one.
   if (!ActionInfo::GetExtensionActionInfo(extension)) {
@@ -412,7 +412,7 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   }
 
   gfx::ImageSkia icon;
-  const base::Value::Dict* canvas_set = dict->FindDict("imageData");
+  const base::DictValue* canvas_set = dict->FindDict("imageData");
   if (canvas_set &&
       extensions::ParseIconFromCanvasDictionary(*canvas_set, &icon) !=
           extensions::IconParseResult::kSuccess) {
@@ -444,7 +444,7 @@ ContentAction::~ContentAction() = default;
 std::unique_ptr<ContentAction> ContentAction::Create(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    const base::Value::Dict& json_action_dict,
+    const base::DictValue& json_action_dict,
     std::string* error) {
   error->clear();
   const std::string* instance_type = nullptr;

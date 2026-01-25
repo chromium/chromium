@@ -154,7 +154,7 @@ class WebstoreStandaloneInstaller
   }
   Profile* profile() const { return profile_; }
   const std::string& id() const { return id_; }
-  const base::Value::Dict& manifest() const { return manifest_.value(); }
+  const base::DictValue& manifest() const { return manifest_.value(); }
   const Extension* localized_extension_for_display() const {
     return localized_extension_for_display_.get();
   }
@@ -188,7 +188,7 @@ class WebstoreStandaloneInstaller
   // WebstoreInstallHelper::Delegate interface implementation.
   void OnWebstoreParseSuccess(const std::string& id,
                               const SkBitmap& icon,
-                              base::Value::Dict parsed_manifest) override;
+                              base::DictValue parsed_manifest) override;
   void OnWebstoreParseFailure(const std::string& id,
                               InstallHelperResultCode result_code,
                               const std::string& error_message) override;
@@ -232,7 +232,7 @@ class WebstoreStandaloneInstaller
   double average_rating_{0.0};
   std::string localized_rating_count_;
   int rating_count_{0};
-  std::optional<base::Value::Dict> manifest_;
+  std::optional<base::DictValue> manifest_;
   SkBitmap icon_;
 
   // Active install registered with the InstallTracker.

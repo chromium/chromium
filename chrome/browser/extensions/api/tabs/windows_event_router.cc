@@ -43,13 +43,13 @@ constexpr char kWindowTypesKey[] = "windowTypes";
 
 bool ControllerVisibleToListener(WindowController* window_controller,
                                  const Extension* extension,
-                                 const base::Value::Dict* listener_filter) {
+                                 const base::DictValue* listener_filter) {
   if (!window_controller) {
     return false;
   }
 
   // If there is no filter the visibility is based on the extension.
-  const base::Value::List* filter_value = nullptr;
+  const base::ListValue* filter_value = nullptr;
   if (listener_filter) {
     filter_value = listener_filter->FindList(kWindowTypesKey);
   }
@@ -70,8 +70,8 @@ bool WillDispatchWindowEvent(
     BrowserContext* browser_context,
     mojom::ContextType target_context,
     const Extension* extension,
-    const base::Value::Dict* listener_filter,
-    std::optional<base::Value::List>& event_args_out,
+    const base::DictValue* listener_filter,
+    std::optional<base::ListValue>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out,
     bool* dispatch_separate_event_out) {
   bool has_filter =
@@ -103,8 +103,8 @@ bool WillDispatchWindowFocusedEvent(
     BrowserContext* browser_context,
     mojom::ContextType target_context,
     const Extension* extension,
-    const base::Value::Dict* listener_filter,
-    std::optional<base::Value::List>& event_args_out,
+    const base::DictValue* listener_filter,
+    std::optional<base::ListValue>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out,
     bool* dispatch_separate_event_out) {
   int window_id = extension_misc::kUnknownWindowId;
@@ -207,7 +207,7 @@ void WindowsEventRouter::OnWindowControllerAdded(
     return;
   }
 
-  base::Value::List args;
+  base::ListValue args;
   // Since we don't populate tab info here, the context type doesn't matter.
   constexpr WindowController::PopulateTabBehavior populate_behavior =
       WindowController::kDontPopulateTabs;
@@ -232,7 +232,7 @@ void WindowsEventRouter::OnWindowControllerRemoved(
   }
 
   int window_id = window_controller->GetWindowId();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(window_id);
   DispatchEvent(events::WINDOWS_ON_REMOVED, windows::OnRemoved::kEventName,
                 window_controller, std::move(args));
@@ -251,7 +251,7 @@ void WindowsEventRouter::OnWindowBoundsChanged(
     return;
   }
 
-  base::Value::List args;
+  base::ListValue args;
   // Since we don't populate tab info here, the context type doesn't matter.
   constexpr WindowController::PopulateTabBehavior populate_behavior =
       WindowController::kDontPopulateTabs;
@@ -304,7 +304,7 @@ void WindowsEventRouter::OnActiveWindowChanged(
 
   std::unique_ptr<Event> event = std::make_unique<Event>(
       events::WINDOWS_ON_FOCUS_CHANGED, windows::OnFocusChanged::kEventName,
-      base::Value::List());
+      base::ListValue());
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchWindowFocusedEvent, window_controller);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
@@ -313,7 +313,7 @@ void WindowsEventRouter::OnActiveWindowChanged(
 void WindowsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                        const std::string& event_name,
                                        WindowController* window_controller,
-                                       base::Value::List args) {
+                                       base::ListValue args) {
   auto event =
       std::make_unique<Event>(histogram_value, event_name, std::move(args),
                               window_controller->profile());

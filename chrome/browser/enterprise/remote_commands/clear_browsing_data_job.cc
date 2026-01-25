@@ -42,8 +42,8 @@ enum class DataTypes {
 };
 
 std::string CreatePayload(uint64_t failed_data_types) {
-  base::Value::Dict root;
-  base::Value::List failed_types_list;
+  base::DictValue root;
+  base::ListValue failed_types_list;
 
   if (failed_data_types & content::BrowsingDataRemover::DATA_TYPE_CACHE)
     failed_types_list.Append(static_cast<int>(DataTypes::kCache));
@@ -74,7 +74,7 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
     const std::string& command_payload) {
   VLOG_POLICY(2, REMOTE_COMMANDS)
       << "Clear browsing data command payload: " << command_payload;
-  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> root = base::JSONReader::ReadDict(
       command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root)
     return false;

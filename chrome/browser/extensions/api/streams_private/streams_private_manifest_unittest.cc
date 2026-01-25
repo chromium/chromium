@@ -27,11 +27,11 @@ TEST_F(StreamsPrivateManifestTest, ValidMimeTypesHandlerMIMETypes) {
       ExtensionBuilder()
           .SetID(extension_misc::kQuickOfficeExtensionId)
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "MIME type handler test")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 3)
-                  .Set("mime_types", base::Value::List().Append("text/plain")))
+                  .Set("mime_types", base::ListValue().Append("text/plain")))
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -46,11 +46,11 @@ TEST_F(StreamsPrivateManifestTest, MimeTypesHandlerMIMETypesNotAllowlisted) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "MIME types test")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 3)
-                  .Set("mime_types", base::Value::List().Append("text/plain")))
+                  .Set("mime_types", base::ListValue().Append("text/plain")))
           .Build();
 
   ASSERT_TRUE(extension.get());

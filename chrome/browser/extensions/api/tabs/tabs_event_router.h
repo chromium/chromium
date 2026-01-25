@@ -166,7 +166,7 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
   void DispatchEvent(Profile* profile,
                      events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List args,
+                     base::ListValue args,
                      EventRouter::UserGestureState user_gesture);
 
   // TabListInterfaceObserver:

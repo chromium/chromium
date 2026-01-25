@@ -79,11 +79,11 @@ scoped_refptr<Action> Action::Clone() const {
   return clone;
 }
 
-void Action::set_args(std::optional<base::Value::List> args) {
+void Action::set_args(std::optional<base::ListValue> args) {
   args_ = std::move(args);
 }
 
-base::Value::List& Action::mutable_args() {
+base::ListValue& Action::mutable_args() {
   if (!args_)
     args_.emplace();
 
@@ -98,11 +98,11 @@ void Action::set_arg_url(const GURL& arg_url) {
   arg_url_ = arg_url;
 }
 
-void Action::set_other(std::optional<base::Value::Dict> other) {
+void Action::set_other(std::optional<base::DictValue> other) {
   other_ = std::move(other);
 }
 
-base::Value::Dict& Action::mutable_other() {
+base::DictValue& Action::mutable_other() {
   if (!other_)
     other_.emplace();
 
@@ -195,7 +195,7 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
             other()->FindBool(constants::kActionPrerender)) {
       result.other->prerender = *prerender;
     }
-    if (const base::Value::Dict* web_request =
+    if (const base::DictValue* web_request =
             other()->FindDict(constants::kActionWebRequest)) {
       result.other->web_request =
           ActivityLogPolicy::Util::Serialize(*web_request);

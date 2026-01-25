@@ -33,7 +33,7 @@ std::string CheckedGetElementTag(const base::Value& node) {
 
 // Recursively walks an XML node, generating `result` as it goes along.
 void WalkNode(const base::Value& node, DescriptionAndStyles* result) {
-  const base::Value::List* children = data_decoder::GetXmlElementChildren(node);
+  const base::ListValue* children = data_decoder::GetXmlElementChildren(node);
   if (!children)
     return;
 
@@ -108,7 +108,7 @@ bool PopulateEntriesFromNode(const base::Value& root_node,
   if (CheckedGetElementTag(root_node) != "fragment")
     return false;
 
-  const base::Value::List* children =
+  const base::ListValue* children =
       data_decoder::GetXmlElementChildren(root_node);
   if (!children)
     return false;

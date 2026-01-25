@@ -84,7 +84,7 @@ class CookiesEventRouter : public ProfileObserver {
   void DispatchEvent(content::BrowserContext* context,
                      events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List event_args,
+                     base::ListValue event_args,
                      const GURL& cookie_domain);
 
   raw_ptr<Profile> profile_;

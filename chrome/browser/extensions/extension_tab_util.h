@@ -98,9 +98,9 @@ class ExtensionTabUtil {
   static int GetTabId(const content::WebContents* web_contents);
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
 
-  static base::Value::List CreateTabList(BrowserWindowInterface* browser,
-                                         const Extension* extension,
-                                         mojom::ContextType context);
+  static base::ListValue CreateTabList(BrowserWindowInterface* browser,
+                                       const Extension* extension,
+                                       mojom::ContextType context);
 
   static WindowController* GetControllerFromWindowID(
       const ChromeExtensionFunctionDetails& details,
@@ -135,13 +135,13 @@ class ExtensionTabUtil {
                                         const Extension* extension,
                                         TabListInterface* tab_list,
                                         int tab_index);
-  // Creates a base::Value::Dict representing the window for the given
+  // Creates a base::DictValue representing the window for the given
   // `browser`, and scrubs any privacy-sensitive data that `extension` does not
   // have access to. `populate_tab_behavior` determines whether tabs will be
   // populated in the result. `context` is used to determine the
   // ScrubTabBehavior for the populated tabs data.
   // TODO(devlin): Convert this to a api::Windows::Window object.
-  static base::Value::Dict CreateWindowValueForExtension(
+  static base::DictValue CreateWindowValueForExtension(
       BrowserWindowInterface& browser,
       const Extension* extension,
       WindowController::PopulateTabBehavior populate_tab_behavior,

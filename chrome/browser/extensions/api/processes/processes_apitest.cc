@@ -137,8 +137,8 @@ IN_PROC_BROWSER_TEST_F(ProcessesApiTest, GetProcessInfoWithMemory) {
   scoped_refptr<extensions::ProcessesGetProcessInfoFunction> function =
       base::MakeRefCounted<extensions::ProcessesGetProcessInfoFunction>();
 
-  base::Value::List args;
-  base::Value::List process_ids;
+  base::ListValue args;
+  base::ListValue process_ids;
   process_ids.Append(base::checked_cast<int>(base::GetCurrentProcId()));
   args.Append(std::move(process_ids));
   args.Append(true);  // includeMemory.

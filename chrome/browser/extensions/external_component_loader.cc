@@ -39,7 +39,7 @@ ExternalComponentLoader::ExternalComponentLoader(Profile* profile)
 ExternalComponentLoader::~ExternalComponentLoader() = default;
 
 void ExternalComponentLoader::StartLoading() {
-  auto prefs = base::Value::Dict();
+  auto prefs = base::DictValue();
   // Skip in-app payments app on Android. crbug.com/409396604
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
   AddExternalExtension(extension_misc::kInAppPaymentsSupportAppId, prefs);
@@ -70,7 +70,7 @@ void ExternalComponentLoader::StartLoading() {
 
 void ExternalComponentLoader::AddExternalExtension(
     const std::string& extension_id,
-    base::Value::Dict& prefs) {
+    base::DictValue& prefs) {
   if (!IsComponentExtensionAllowlisted(extension_id))
     return;
 

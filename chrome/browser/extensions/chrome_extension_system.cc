@@ -476,7 +476,7 @@ void ChromeExtensionSystem::InstallUpdate(
 
 void ChromeExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
-    const base::Value::Dict& attributes) {
+    const base::DictValue& attributes) {
   extension_service()->PerformActionBasedOnOmahaAttributes(extension_id,
                                                            attributes);
 }

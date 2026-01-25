@@ -29,7 +29,7 @@ std::optional<bool> g_start_scan_confirmation_result = std::nullopt;
 
 bool CanSkipConfirmation(content::BrowserContext* browser_context,
                          const ExtensionId& extension_id) {
-  const base::Value::List& list =
+  const base::ListValue& list =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
           ->GetList(prefs::kDocumentScanAPITrustedExtensions);

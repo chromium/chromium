@@ -129,8 +129,8 @@ namespace {
 bool GenerateInfoSpec(content::BrowserContext* browser_context,
                       const std::string& values,
                       int* result) {
-  // Create a base::Value::List of strings.
-  base::Value::List list;
+  // Create a base::ListValue of strings.
+  base::ListValue list;
   for (const std::string& cur : base::SplitString(
            values, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     list.Append(cur);
@@ -317,7 +317,7 @@ TEST(ExtensionWebRequestHelpersTest,
 }
 
 TEST(ExtensionWebRequestHelpersTest, TestStringToCharList) {
-  base::Value::List list_value;
+  base::ListValue list_value;
   list_value.Append('1');
   list_value.Append('2');
   list_value.Append('3');
@@ -327,7 +327,7 @@ TEST(ExtensionWebRequestHelpersTest, TestStringToCharList) {
   unsigned char char_value[] = {'1', '2', '3', 0xFE, 0xD1};
   std::string string_value(reinterpret_cast<char *>(char_value), 5);
 
-  base::Value::List converted_list = StringToCharList(string_value);
+  base::ListValue converted_list = StringToCharList(string_value);
   EXPECT_EQ(list_value, converted_list);
 
   std::string converted_string;

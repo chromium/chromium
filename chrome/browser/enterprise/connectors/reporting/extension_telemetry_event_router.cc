@@ -58,8 +58,8 @@ void CopyExtensionInfo(const ExtensionInfo& original_extension,
   }
 }
 
-base::Value::Dict CreateExtensionInfoDict(const ExtensionInfo& extension_info) {
-  base::Value::Dict dict;
+base::DictValue CreateExtensionInfoDict(const ExtensionInfo& extension_info) {
+  base::DictValue dict;
   dict.Set(ExtensionTelemetryEventRouter::kKeyId, extension_info.id());
   dict.Set(ExtensionTelemetryEventRouter::kKeyName, extension_info.name());
   dict.Set(ExtensionTelemetryEventRouter::kKeyVersion,
@@ -70,9 +70,9 @@ base::Value::Dict CreateExtensionInfoDict(const ExtensionInfo& extension_info) {
   dict.Set(ExtensionTelemetryEventRouter::kKeyIsFromStore,
            extension_info.is_from_store());
   if (extension_info.file_infos_size() > 0) {
-    base::Value::List file_infos_list;
+    base::ListValue file_infos_list;
     for (const auto& file_info : extension_info.file_infos()) {
-      base::Value::Dict file_info_dict;
+      base::DictValue file_info_dict;
       file_info_dict.Set(ExtensionTelemetryEventRouter::kKeyName,
                          file_info.name());
       file_info_dict.Set(ExtensionTelemetryEventRouter::kKeyHash,
@@ -106,12 +106,12 @@ void CopyCookiesGetAllArgsInfo(const CookiesGetAllInfo& cookies_get_all_info,
   }
 }
 
-base::Value::Dict CreateCookiesGetAllInfoDict(
+base::DictValue CreateCookiesGetAllInfoDict(
     const CookiesGetAllInfo& cookies_get_all_info) {
-  base::Value::List get_all_args_list;
+  base::ListValue get_all_args_list;
   for (const auto& get_all_args_info :
        cookies_get_all_info.get_all_args_info()) {
-    base::Value::Dict get_all_args_dict;
+    base::DictValue get_all_args_dict;
     get_all_args_dict.Set(ExtensionTelemetryEventRouter::kKeyDomain,
                           get_all_args_info.domain());
     get_all_args_dict.Set(ExtensionTelemetryEventRouter::kKeyName,
@@ -132,7 +132,7 @@ base::Value::Dict CreateCookiesGetAllInfoDict(
     get_all_args_list.Append(std::move(get_all_args_dict));
   }
 
-  base::Value::Dict signal_dict;
+  base::DictValue signal_dict;
   signal_dict.Set(ExtensionTelemetryEventRouter::kKeyGetAllArgsInfo,
                   std::move(get_all_args_list));
   return signal_dict;
@@ -152,11 +152,11 @@ void CopyCookiesGetInfo(const CookiesGetInfo& cookies_get_info,
   }
 }
 
-base::Value::Dict CreateCookiesGetInfoDict(
+base::DictValue CreateCookiesGetInfoDict(
     const CookiesGetInfo& cookies_get_info) {
-  base::Value::List get_args_list;
+  base::ListValue get_args_list;
   for (const auto& get_args_info : cookies_get_info.get_args_info()) {
-    base::Value::Dict get_args_dict;
+    base::DictValue get_args_dict;
     get_args_dict.Set(ExtensionTelemetryEventRouter::kKeyName,
                       get_args_info.name());
     get_args_dict.Set(ExtensionTelemetryEventRouter::kKeyUrl,
@@ -169,7 +169,7 @@ base::Value::Dict CreateCookiesGetInfoDict(
     get_args_list.Append(std::move(get_args_dict));
   }
 
-  base::Value::Dict signal_dict;
+  base::DictValue signal_dict;
   signal_dict.Set(ExtensionTelemetryEventRouter::kKeyGetArgsInfo,
                   std::move(get_args_list));
   return signal_dict;
@@ -192,12 +192,12 @@ void CopyRemoteHostContactedInfo(
   }
 }
 
-base::Value::Dict CreateRemoteHostContactedInfoDict(
+base::DictValue CreateRemoteHostContactedInfoDict(
     const RemoteHostContactedInfo& remote_host_contacted_info) {
-  base::Value::List remote_host_info_list;
+  base::ListValue remote_host_info_list;
   for (const auto& remote_host_info :
        remote_host_contacted_info.remote_host()) {
-    base::Value::Dict remote_host_info_dict;
+    base::DictValue remote_host_info_dict;
     remote_host_info_dict.Set(ExtensionTelemetryEventRouter::kKeyUrl,
                               remote_host_info.url());
     remote_host_info_dict.Set(
@@ -214,7 +214,7 @@ base::Value::Dict CreateRemoteHostContactedInfoDict(
     remote_host_info_list.Append(std::move(remote_host_info_dict));
   }
 
-  base::Value::Dict signal_dict;
+  base::DictValue signal_dict;
   signal_dict.Set(ExtensionTelemetryEventRouter::kKeyRemoteHost,
                   std::move(remote_host_info_list));
   return signal_dict;
@@ -234,10 +234,10 @@ void CopyTabsApiInfo(const TabsApiInfo& tabs_api_info,
   }
 }
 
-base::Value::Dict CreateTabsApiInfoDict(const TabsApiInfo& tabs_api_info) {
-  base::Value::List tabs_api_info_list;
+base::DictValue CreateTabsApiInfoDict(const TabsApiInfo& tabs_api_info) {
+  base::ListValue tabs_api_info_list;
   for (const auto& call_detail : tabs_api_info.call_details()) {
-    base::Value::Dict tabs_api_info_dict;
+    base::DictValue tabs_api_info_dict;
     tabs_api_info_dict.Set(ExtensionTelemetryEventRouter::kKeyMethod,
                            TabsApiInfo::ApiMethod_Name(call_detail.method()));
     tabs_api_info_dict.Set(ExtensionTelemetryEventRouter::kKeyNewUrl,
@@ -250,7 +250,7 @@ base::Value::Dict CreateTabsApiInfoDict(const TabsApiInfo& tabs_api_info) {
     tabs_api_info_list.Append(std::move(tabs_api_info_dict));
   }
 
-  base::Value::Dict signal_dict;
+  base::DictValue signal_dict;
   signal_dict.Set(ExtensionTelemetryEventRouter::kKeyCallDetails,
                   std::move(tabs_api_info_list));
   return signal_dict;
@@ -287,13 +287,13 @@ CreateRedactedExtensionTelemetryReportRequestProto(
   return redacted_request;
 }
 
-base::Value::Dict CreateExtensionTelemetryReportDict(
+base::DictValue CreateExtensionTelemetryReportDict(
     const ExtensionTelemetryReportRequest::Report& report) {
-  base::Value::Dict report_dict;
+  base::DictValue report_dict;
   report_dict.Set(ExtensionTelemetryEventRouter::kKeyExtension,
                   CreateExtensionInfoDict(report.extension()));
 
-  base::Value::Dict signals_dict;
+  base::DictValue signals_dict;
   for (const auto& signal : report.signals()) {
     if (signal.has_cookies_get_all_info()) {
       signals_dict.Set(
@@ -318,20 +318,20 @@ base::Value::Dict CreateExtensionTelemetryReportDict(
   return report_dict;
 }
 
-base::Value::Dict CreateExtensionTelemetryReportRequestDict(
+base::DictValue CreateExtensionTelemetryReportRequestDict(
     const ExtensionTelemetryReportRequest& request) {
-  base::Value::List report_list;
+  base::ListValue report_list;
   for (const auto& telemetry_report : request.reports()) {
     report_list.Append(CreateExtensionTelemetryReportDict(telemetry_report));
   }
 
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
   request_dict.Set(ExtensionTelemetryEventRouter::kKeyReports,
                    std::move(report_list));
   request_dict.Set(ExtensionTelemetryEventRouter::kKeyCreationTimeMsec,
                    base::NumberToString(request.creation_timestamp_msec()));
 
-  return base::Value::Dict().Set(
+  return base::DictValue().Set(
       ExtensionTelemetryEventRouter::kKeyExtensionTelemetryReport,
       std::move(request_dict));
 }

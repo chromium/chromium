@@ -256,9 +256,9 @@ void SetAllowFileAccess(const std::string& extension_id,
   ReloadExtension(extension_id, context);
 }
 
-base::Value::Dict GetExtensionInfo(const Extension* extension) {
+base::DictValue GetExtensionInfo(const Extension* extension) {
   DCHECK(extension);
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set("id", extension->id());
   dict.Set("name", extension->name());

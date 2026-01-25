@@ -25,15 +25,15 @@
 //
 // 1. Add your component to the Component enum in
 //    chrome/common/extensions/api/resources_private.idl
-// 2. Create a `base::Value::Dict GetStringsForMyComponent()` method.
+// 2. Create a `base::DictValue GetStringsForMyComponent()` method.
 // 3. Tie in that method to the switch statement in `Run()`.
 
 namespace extensions {
 
 namespace {
 
-base::Value::Dict GetStringsForIdentity() {
-  return base::Value::Dict().Set(
+base::DictValue GetStringsForIdentity() {
+  return base::DictValue().Set(
       "window-title",
       l10n_util::GetStringUTF16(IDS_EXTENSION_CONFIRM_PERMISSIONS));
 }
@@ -50,7 +50,7 @@ ResourcesPrivateGetStringsFunction::~ResourcesPrivateGetStringsFunction() =
 
 ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
   get_strings::Params params = get_strings::Params::Create(args()).value();
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   switch (params.component) {
     case api::resources_private::Component::kIdentity:

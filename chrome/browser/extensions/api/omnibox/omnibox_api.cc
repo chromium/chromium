@@ -66,7 +66,7 @@ std::optional<omnibox::SuggestResult> GetOmniboxDefaultSuggestion(
     return std::nullopt;
   }
 
-  const base::Value::Dict* dict =
+  const base::DictValue* dict =
       prefs->ReadPrefAsDict(extension_id, kOmniboxDefaultSuggestion);
   if (!dict) {
     return std::nullopt;
@@ -84,7 +84,7 @@ bool SetOmniboxDefaultSuggestion(
   if (!prefs)
     return false;
 
-  base::Value::Dict dict = suggestion.ToValue();
+  base::DictValue dict = suggestion.ToValue();
   // Add the content field so that the dictionary can be used to populate an
   // omnibox::SuggestResult.
   dict.Set(kSuggestionContent, base::Value(base::Value::Type::STRING));
@@ -118,7 +118,7 @@ void ExtensionOmniboxEventRouter::OnInputStarted(
     const ExtensionId& extension_id) {
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_STARTED,
                                        omnibox::OnInputStarted::kEventName,
-                                       base::Value::List(), profile);
+                                       base::ListValue(), profile);
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -134,7 +134,7 @@ bool ExtensionOmniboxEventRouter::OnInputChanged(
           extension_id, omnibox::OnInputChanged::kEventName))
     return false;
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(input);
   args.Append(suggest_id);
 
@@ -161,7 +161,7 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
   extensions::ActiveTabPermissionGranter::FromWebContents(web_contents)
       ->GrantIfRequested(extension);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(input);
   if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB)
     args.Append(kForegroundTabDisposition);
@@ -187,7 +187,7 @@ void ExtensionOmniboxEventRouter::OnInputCancelled(
     const ExtensionId& extension_id) {
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_CANCELLED,
                                        omnibox::OnInputCancelled::kEventName,
-                                       base::Value::List(), profile);
+                                       base::ListValue(), profile);
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -196,7 +196,7 @@ void ExtensionOmniboxEventRouter::OnDeleteSuggestion(
     Profile* profile,
     const ExtensionId& extension_id,
     const std::string& suggestion_text) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(suggestion_text);
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_DELETE_SUGGESTION,
@@ -372,11 +372,11 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
         }
         actions.reserve(suggestion.actions->size());
         for (const auto& action : *suggestion.actions) {
-          base::Value::Dict canvas_set =
-              action.icon ? action.icon->ToValue() : base::Value::Dict();
+          base::DictValue canvas_set =
+              action.icon ? action.icon->ToValue() : base::DictValue();
           gfx::ImageSkia image_skia;
           if (!canvas_set.empty()) {
-            base::Value::Dict& image_data = *canvas_set.FindDict("imageData");
+            base::DictValue& image_data = *canvas_set.FindDict("imageData");
             // The image data should have been verified by the pre-validation
             // param update.
             CHECK(!image_data.empty());

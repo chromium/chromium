@@ -73,14 +73,13 @@ class ExtensionNavigationThrottleUnitTest
     // Constructs an extension with accessible.html and accessible_dir/* as
     // accessible resources.
     auto manifest =
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "ext")
             .Set("description", "something")
             .Set("version", "0.1")
             .Set("manifest_version", 2)
-            .Set(
-                "web_accessible_resources",
-                base::Value::List().Append(kAccessible).Append(kAccessibleDir));
+            .Set("web_accessible_resources",
+                 base::ListValue().Append(kAccessible).Append(kAccessibleDir));
     extension_ = ExtensionBuilder()
                      .SetManifest(std::move(manifest))
                      .SetID(crx_file::id_util::GenerateId("foo"))

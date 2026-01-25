@@ -22,7 +22,7 @@ class FakeDeviceTrustConnectorService : public DeviceTrustConnectorService {
       sync_preferences::TestingPrefServiceSyncable* profile_prefs);
   ~FakeDeviceTrustConnectorService() override;
 
-  void UpdateInlinePolicy(base::Value::List new_urls,
+  void UpdateInlinePolicy(base::ListValue new_urls,
                           DTCPolicyLevel policy_level);
 
  private:

@@ -9,7 +9,7 @@
 namespace enterprise_connectors {
 
 base::Value ToListValue(const std::vector<std::string>& string_values) {
-  base::Value::List list_value;
+  base::ListValue list_value;
   for (const auto& string_value : string_values) {
     list_value.Append(string_value);
   }

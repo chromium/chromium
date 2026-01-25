@@ -213,8 +213,8 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
     NOTREACHED();
   }
   std::string font_name = pref->GetValue()->GetString();
-  base::Value::List args;
-  base::Value::Dict dict;
+  base::ListValue args;
+  base::DictValue dict;
   dict.Set(kFontIdKey, font_name);
   dict.Set(kGenericFamilyKey, generic_family);
   dict.Set(kScriptKey, script);
@@ -235,8 +235,8 @@ void FontSettingsEventRouter::OnFontPrefChanged(
       pref_name);
   CHECK(pref);
 
-  base::Value::List args;
-  base::Value::Dict dict;
+  base::ListValue args;
+  base::DictValue dict;
   dict.Set(key, pref->GetValue()->Clone());
   args.Append(std::move(dict));
 
@@ -308,7 +308,7 @@ ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
       extensions::preference_helpers::GetLevelOfControl(profile, extension_id(),
                                                         pref_path, kIncognito);
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set(kFontIdKey, font_name);
   result.Set(kLevelOfControlKey, level_of_control);
   return RespondNow(WithArguments(std::move(result)));
@@ -339,7 +339,7 @@ ExtensionFunction::ResponseAction FontSettingsGetFontListFunction::Run() {
 #if BUILDFLAG(IS_ANDROID)
   // Android does not support a mechanism to get "all installed fonts" like
   // Windows/Mac/Linux.
-  return RespondNow(WithArguments(base::Value::List()));
+  return RespondNow(WithArguments(base::ListValue()));
 #else
   content::GetFontListAsync(
       BindOnce(&FontSettingsGetFontListFunction::FontListHasLoaded, this));
@@ -347,21 +347,20 @@ ExtensionFunction::ResponseAction FontSettingsGetFontListFunction::Run() {
 #endif
 }
 
-void FontSettingsGetFontListFunction::FontListHasLoaded(
-    base::Value::List list) {
+void FontSettingsGetFontListFunction::FontListHasLoaded(base::ListValue list) {
   ExtensionFunction::ResponseValue response = CopyFontsToResult(list);
   Respond(std::move(response));
 }
 
 ExtensionFunction::ResponseValue
 FontSettingsGetFontListFunction::CopyFontsToResult(
-    const base::Value::List& fonts) {
-  base::Value::List result;
+    const base::ListValue& fonts) {
+  base::ListValue result;
   for (const auto& entry : fonts) {
     if (!entry.is_list()) {
       NOTREACHED();
     }
-    const base::Value::List& font_list_value = entry.GetList();
+    const base::ListValue& font_list_value = entry.GetList();
 
     if (font_list_value.size() < 2 || !font_list_value[0].is_string() ||
         !font_list_value[1].is_string()) {
@@ -370,7 +369,7 @@ FontSettingsGetFontListFunction::CopyFontsToResult(
     const std::string& name = font_list_value[0].GetString();
     const std::string& localized_name = font_list_value[1].GetString();
 
-    base::Value::Dict font_name;
+    base::DictValue font_name;
     font_name.Set(kFontIdKey, name);
     font_name.Set(kDisplayNameKey, localized_name);
     result.Append(std::move(font_name));
@@ -403,7 +402,7 @@ ExtensionFunction::ResponseAction GetFontPrefExtensionFunction::Run() {
       extensions::preference_helpers::GetLevelOfControl(
           profile, extension_id(), GetPrefName(), kIncognito);
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set(GetKey(), pref->GetValue()->Clone());
   result.Set(kLevelOfControlKey, level_of_control);
   return RespondNow(WithArguments(std::move(result)));

@@ -81,14 +81,14 @@ static const int kMaxBookmarks = 5;
         static_cast<int>(ImportantReason::REASON_BOUNDARY));                   \
   } while (0)
 
-void RecordIgnore(base::Value::Dict& dict) {
+void RecordIgnore(base::DictValue& dict) {
   int times_ignored = dict.FindInt(kNumTimesIgnoredName).value_or(0);
   dict.Set(kNumTimesIgnoredName, ++times_ignored);
   dict.Set(kTimeLastIgnored, base::Time::Now().InSecondsFSinceUnixEpoch());
 }
 
 // If we should suppress the item with the given dictionary ignored record.
-bool ShouldSuppressItem(base::Value::Dict& dict) {
+bool ShouldSuppressItem(base::DictValue& dict) {
   std::optional<double> last_ignored_time = dict.FindDouble(kTimeLastIgnored);
   if (last_ignored_time) {
     base::TimeDelta diff =
@@ -446,7 +446,7 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
   // We clear our ignore counter for sites that the user chose.
   for (const std::string& excluded_site : excluded_sites) {
     GURL origin("http://" + excluded_site);
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kNumTimesIgnoredName, 0);
     dict.Remove(kTimeLastIgnored);
     map->SetWebsiteSettingDefaultScope(origin, origin,

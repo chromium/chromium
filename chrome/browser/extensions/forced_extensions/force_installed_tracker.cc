@@ -123,7 +123,7 @@ bool ForceInstalledTracker::ProceedIfForcedExtensionsPrefReady() {
   DCHECK(status_ == kWaitingForPolicyService ||
          status_ == kWaitingForInstallForcelistPref);
 
-  const base::Value::Dict& value =
+  const base::DictValue& value =
       pref_service_->GetDict(pref_names::kInstallForceList);
   if (!forced_extensions_pref_ready_ && !value.empty()) {
     forced_extensions_pref_ready_ = true;
@@ -148,7 +148,7 @@ void ForceInstalledTracker::OnForcedExtensionsPrefReady() {
   collector_observation_.Observe(
       InstallStageTrackerFactory::GetForBrowserContext(profile_));
 
-  const base::Value::Dict& value =
+  const base::DictValue& value =
       pref_service_->GetDict(pref_names::kInstallForceList);
 
   // Add each extension to |extensions_|.

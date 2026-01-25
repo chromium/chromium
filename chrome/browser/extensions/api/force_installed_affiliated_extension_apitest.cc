@@ -78,7 +78,7 @@ void ForceInstalledAffiliatedExtensionApiTest::
 void ForceInstalledAffiliatedExtensionApiTest::SetUpOnMainThread() {
   // Log in user that was created with
   // policy::AffiliationTestHelper::PreLoginUser() in the PRE_ test.
-  const base::Value::List& users =
+  const base::ListValue& users =
       g_browser_process->local_state()->GetList("LoggedInUsers");
   if (!users.empty()) {
     policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
@@ -104,7 +104,7 @@ ForceInstalledAffiliatedExtensionApiTest::ForceInstallExtension(
 void ForceInstalledAffiliatedExtensionApiTest::TestExtension(
     Browser* browser,
     const GURL& page_url,
-    const base::Value::Dict& custom_arg_value) {
+    const base::DictValue& custom_arg_value) {
   DCHECK(page_url.is_valid()) << "page_url must be valid";
 
   SetCustomArg(base::WriteJson(custom_arg_value).value_or(""));

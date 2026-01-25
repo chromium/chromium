@@ -290,12 +290,12 @@ class TabsQueryFunction : public ExtensionFunction {
   ~TabsQueryFunction() override = default;
 
   // Builds the list of tab objects to return.
-  base::Value::List BuildTabList(BrowserWindowInterface* current_browser,
-                                 BrowserWindowInterface* last_active_browser,
-                                 const URLPatternSet& url_patterns,
-                                 const std::string& window_type,
-                                 int window_id,
-                                 int tab_index);
+  base::ListValue BuildTabList(BrowserWindowInterface* current_browser,
+                               BrowserWindowInterface* last_active_browser,
+                               const URLPatternSet& url_patterns,
+                               const std::string& window_type,
+                               int window_id,
+                               int tab_index);
 
   bool MatchesWindow(BrowserWindowInterface* candidate_browser,
                      BrowserWindowInterface* current_browser,
@@ -398,7 +398,7 @@ class TabsMoveFunction : public ExtensionFunction {
   ResponseAction Run() override;
   bool MoveTab(int tab_id,
                int* new_index,
-               base::Value::List& tab_values,
+               base::ListValue& tab_values,
                const std::optional<int>& window_id,
                std::string* error);
   DECLARE_EXTENSION_FUNCTION("tabs.move", TABS_MOVE)

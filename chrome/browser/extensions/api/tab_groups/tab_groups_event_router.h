@@ -50,7 +50,7 @@ class TabGroupsEventRouter : public KeyedService {
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List args);
+                     base::ListValue args);
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<EventRouter> event_router_;

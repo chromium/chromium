@@ -29,10 +29,10 @@
 namespace enterprise_incognito {
 namespace {
 std::string GetIncognitoNavigationBlockedErrorPage(
-    base::Value::List blocking_extension,
-    base::Value::List missing_extension) {
+    base::ListValue blocking_extension,
+    base::ListValue missing_extension) {
   auto strings =
-      base::Value::Dict()
+      base::DictValue()
           .Set("incognitoBlockedPageTitle",
                l10n_util::GetPluralStringFUTF16(
                    IDS_INCOGNITO_NAVIGATION_BLOCKED_PAGE_TITLE,
@@ -85,7 +85,7 @@ void IncognitoNavigationThrottle::MaybeCreateAndAdd(
   if (!profile->IsIncognitoProfile()) {
     return;
   }
-  const base::Value::List& mandatory_extensions = profile->GetPrefs()->GetList(
+  const base::ListValue& mandatory_extensions = profile->GetPrefs()->GetList(
       prefs::kMandatoryExtensionsForIncognitoNavigation);
   if (mandatory_extensions.empty()) {
     return;
@@ -128,7 +128,7 @@ void IncognitoNavigationThrottle::ReadMandatoryExtensionsStatus() {
   missing_extensions_.clear();
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_);
-  const base::Value::List& mandatory_extensions = profile_->GetPrefs()->GetList(
+  const base::ListValue& mandatory_extensions = profile_->GetPrefs()->GetList(
       prefs::kMandatoryExtensionsForIncognitoNavigation);
   if (mandatory_extensions.empty()) {
     return;

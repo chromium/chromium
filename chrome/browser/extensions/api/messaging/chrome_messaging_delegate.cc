@@ -52,7 +52,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   // All native messaging hosts are allowed if there is no blocklist.
   if (!pref_service->IsManagedPreference(pref_names::kNativeMessagingBlocklist))
     return allow_result;
-  const base::Value::List& blocklist =
+  const base::ListValue& blocklist =
       pref_service->GetList(pref_names::kNativeMessagingBlocklist);
 
   // Check if the name or the wildcard is in the blocklist.
@@ -63,7 +63,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   // The native messaging host is blocklisted. Check the allowlist.
   if (pref_service->IsManagedPreference(
           pref_names::kNativeMessagingAllowlist)) {
-    const base::Value::List& allowlist =
+    const base::ListValue& allowlist =
         pref_service->GetList(pref_names::kNativeMessagingAllowlist);
     if (allowlist.contains(native_host_name)) {
       return allow_result;
@@ -73,7 +73,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   return PolicyPermission::DISALLOW;
 }
 
-std::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
+std::optional<base::DictValue> ChromeMessagingDelegate::MaybeGetTabInfo(
     content::WebContents* web_contents) {
   // Add info about the opener's tab (if it was a tab).
   if (web_contents && ExtensionTabUtil::GetTabId(web_contents) >= 0) {

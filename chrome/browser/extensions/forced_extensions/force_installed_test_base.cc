@@ -66,20 +66,20 @@ void ForceInstalledTestBase::SetUp() {
 }
 
 void ForceInstalledTestBase::SetupForceList(ExtensionOrigin origin) {
-  base::Value::List list;
+  base::ListValue list;
   const std::string update_url = origin == ExtensionOrigin::kWebStore
                                      ? kExtensionUpdateUrl
                                      : kOffStoreUpdateUrl;
   list.Append(base::StrCat({kExtensionId1, ";", update_url}));
   list.Append(base::StrCat({kExtensionId2, ";", update_url}));
-  base::Value::Dict dict =
-      base::Value::Dict()
+  base::DictValue dict =
+      base::DictValue()
           .Set(kExtensionId1,
-               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       update_url))
+               base::DictValue().Set(ExternalProviderImpl::kExternalUpdateUrl,
+                                     update_url))
           .Set(kExtensionId2,
-               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       update_url));
+               base::DictValue().Set(ExternalProviderImpl::kExternalUpdateUrl,
+                                     update_url));
   prefs_->SetManagedPref(pref_names::kInstallForceList, std::move(dict));
 
   EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
@@ -96,7 +96,7 @@ void ForceInstalledTestBase::SetupForceList(ExtensionOrigin origin) {
 }
 
 void ForceInstalledTestBase::SetupEmptyForceList() {
-  prefs_->SetManagedPref(pref_names::kInstallForceList, base::Value::Dict());
+  prefs_->SetManagedPref(pref_names::kInstallForceList, base::DictValue());
 
   EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
       .WillRepeatedly(testing::Return(true));

@@ -44,12 +44,12 @@ class IncognitoNavigationThrottle : public content::NavigationThrottle {
   // Name of extensions included in the
   // `MandatoryExtensionsForIncognitoNavigation` policy which are not allowed by
   // the user to run in Incognito mode.
-  base::Value::List blocking_extensions_;
+  base::ListValue blocking_extensions_;
 
   // IDs of extensions included in the
   // `MandatoryExtensionsForIncognitoNavigation` policy which are not installed
   // in the browser.
-  base::Value::List missing_extensions_;
+  base::ListValue missing_extensions_;
 
   raw_ptr<Profile> profile_;
 

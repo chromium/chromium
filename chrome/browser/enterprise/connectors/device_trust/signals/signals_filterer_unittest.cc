@@ -15,7 +15,7 @@ constexpr char kFakeSerialNumber[] = "fake_serial_number";
 
 // Test that nothing is filtered
 TEST(SignalsFiltererTest, Filter_DoNothing) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(device_signals::names::kSerialNumber, kFakeSerialNumber);
 
   SignalsFilterer filterer;

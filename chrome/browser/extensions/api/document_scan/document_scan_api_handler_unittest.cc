@@ -142,7 +142,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
   void MarkExtensionTrusted(const ExtensionId extension_id) {
     testing_profile_->GetTestingPrefService()->SetList(
         prefs::kDocumentScanAPITrustedExtensions,
-        base::Value::List().Append(extension_id));
+        base::ListValue().Append(extension_id));
   }
 
   // "Discover" a scanner and return its unguessable token.  After calling this,

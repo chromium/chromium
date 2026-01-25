@@ -47,8 +47,8 @@ bool WillDispatchTabUpdatedEvent(
     content::BrowserContext* browser_context,
     mojom::ContextType target_context,
     const Extension* extension,
-    const base::Value::Dict* listener_filter,
-    std::optional<base::Value::List>& event_args_out,
+    const base::DictValue* listener_filter,
+    std::optional<base::ListValue>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out,
     bool* dispatch_separate_event_out) {
   auto scrub_tab_behavior = ExtensionTabUtil::GetScrubTabBehavior(
@@ -56,9 +56,9 @@ bool WillDispatchTabUpdatedEvent(
   api::tabs::Tab tab_object = ExtensionTabUtil::CreateTabObject(
       contents, scrub_tab_behavior, extension);
 
-  base::Value::Dict tab_value = tab_object.ToValue();
+  base::DictValue tab_value = tab_object.ToValue();
 
-  base::Value::Dict changed_properties;
+  base::DictValue changed_properties;
   for (const auto& property : changed_property_names) {
     if (const base::Value* value = tab_value.Find(property)) {
       changed_properties.Set(property, value->Clone());
@@ -79,14 +79,14 @@ bool WillDispatchTabCreatedEvent(
     content::BrowserContext* browser_context,
     mojom::ContextType target_context,
     const Extension* extension,
-    const base::Value::Dict* listener_filter,
-    std::optional<base::Value::List>& event_args_out,
+    const base::DictValue* listener_filter,
+    std::optional<base::ListValue>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out,
     bool* dispatch_separate_event_out) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);
-  base::Value::Dict tab_value =
+  base::DictValue tab_value =
       ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior, extension)
           .ToValue();
   tab_value.Set(tabs_constants::kSelectedKey, active);
@@ -297,7 +297,7 @@ void TabsEventRouter::DispatchTabUpdatedEvent(
       events::TABS_ON_UPDATED, api::tabs::OnUpdated::kEventName,
       // The event arguments depend on the extension's permission. They are set
       // in WillDispatchTabUpdatedEvent().
-      base::Value::List(), profile);
+      base::ListValue(), profile);
   event->user_gesture = EventRouter::UserGestureState::kNotEnabled;
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabUpdatedEvent, contents,
@@ -311,7 +311,7 @@ void TabsEventRouter::DispatchTabCreatedEvent(content::WebContents* contents,
       Profile::FromBrowserContext(contents->GetBrowserContext());
   auto event = std::make_unique<Event>(events::TABS_ON_CREATED,
                                        api::tabs::OnCreated::kEventName,
-                                       base::Value::List(), profile);
+                                       base::ListValue(), profile);
   event->user_gesture = EventRouter::UserGestureState::kNotEnabled;
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchTabCreatedEvent, contents, active);
@@ -322,7 +322,7 @@ void TabsEventRouter::DispatchEvent(
     Profile* profile,
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List args,
+    base::ListValue args,
     EventRouter::UserGestureState user_gesture) {
   EventRouter* event_router = EventRouter::Get(profile);
   if (!profile_->IsSameOrParent(profile) || !event_router) {
@@ -343,10 +343,10 @@ void TabsEventRouter::OnTabAdded(tabs::TabInterface* tab, int index) {
   if (GetTabEntry(*contents)) {
     // This is a known tab. Dispatch `onAttached`.
     int tab_id = ExtensionTabUtil::GetTabId(contents);
-    base::Value::List args;
+    base::ListValue args;
     args.Append(tab_id);
 
-    base::Value::Dict object_args;
+    base::DictValue object_args;
     object_args.Set(kNewWindowIdKey,
                     base::Value(ExtensionTabUtil::GetWindowIdOfTab(contents)));
     object_args.Set(kNewPositionKey, base::Value(index));
@@ -381,10 +381,10 @@ void TabsEventRouter::OnTabMoved(tabs::TabInterface* tab,
   content::WebContents* web_contents = tab->GetContents();
   CHECK(web_contents);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(ExtensionTabUtil::GetTabId(web_contents));
 
-  base::Value::Dict object_args;
+  base::DictValue object_args;
   object_args.Set(tabs_constants::kWindowIdKey,
                   ExtensionTabUtil::GetWindowIdOfTab(web_contents));
   object_args.Set(kFromIndexKey, from_index);

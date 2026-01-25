@@ -48,8 +48,8 @@ using testing::HasSubstr;
 using ContentActionType = declarative_content_constants::ContentActionType;
 using extensions::mojom::ManifestLocation;
 
-base::Value::Dict SimpleManifest() {
-  return base::Value::Dict()
+base::DictValue SimpleManifest() {
+  return base::DictValue()
       .Set("name", "extension")
       .Set("manifest_version", 2)
       .Set("version", "1.0");
@@ -115,7 +115,7 @@ TEST(DeclarativeContentActionTest, ShowActionWithoutAction) {
 
   // We install a component extension because all other extensions have a
   // required action.
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "extension")
                       .Set("version", "0.1")
                       .Set("manifest_version", 2)
@@ -232,20 +232,20 @@ TEST_P(DeclarativeContentActionIconTest, SetIcon) {
   EXPECT_TRUE(bitmap.tryAllocN32Pixels(19, 19));
   bitmap.eraseARGB(255, 255, 0, 0);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("instanceType", "declarativeContent.SetIcon");
   switch (GetParam()) {
     case ImageDataMode::Base64: {
       std::string data64 =
           base::Base64Encode(skia::mojom::InlineBitmap::Serialize(&bitmap));
-      dict.Set("imageData", base::Value::Dict().Set("19", data64));
+      dict.Set("imageData", base::DictValue().Set("19", data64));
       break;
     }
     case ImageDataMode::Mojo: {
       std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
       // Explicit base::Value() for TYPE_BINARY.
       dict.Set("imageData",
-               base::Value::Dict().Set("19", base::Value(std::move(s))));
+               base::DictValue().Set("19", base::Value(std::move(s))));
       break;
     }
     case ImageDataMode::MojoHuge: {
@@ -262,7 +262,7 @@ TEST_P(DeclarativeContentActionIconTest, SetIcon) {
       std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
       // Explicit base::Value() for TYPE_BINARY.
       dict.Set("imageData",
-               base::Value::Dict().Set("19", base::Value(std::move(s))));
+               base::DictValue().Set("19", base::Value(std::move(s))));
       break;
     }
   }
@@ -320,10 +320,10 @@ TEST(DeclarativeContentActionTest, SetInvisibleIcon) {
   std::string data64 =
       base::Base64Encode(skia::mojom::InlineBitmap::Serialize(&bitmap));
 
-  base::Value::Dict dict =
-      base::Value::Dict()
+  base::DictValue dict =
+      base::DictValue()
           .Set("instanceType", "declarativeContent.SetIcon")
-          .Set("imageData", base::Value::Dict().Set("19", data64));
+          .Set("imageData", base::DictValue().Set("19", data64));
 
   // Expect an error and no instance to be created.
   const Extension* extension = env.MakeExtension(

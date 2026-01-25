@@ -118,9 +118,9 @@ constexpr char kFieldNameKey[] = "fieldName";
 constexpr char kFieldRequired[] = "isRequired";
 
 // Serializes the AddressUiComponent a map from string to base::Value().
-base::Value::Dict AddressUiComponentAsValueMap(
+base::DictValue AddressUiComponentAsValueMap(
     const autofill::AutofillAddressUIComponent& address_ui_component) {
-  base::Value::Dict info;
+  base::DictValue info;
   info.Set(kFieldNameKey, address_ui_component.name);
   info.Set(kFieldTypeKey, FieldTypeToStringView(address_ui_component.field));
   info.Set(kFieldLengthKey,
@@ -366,15 +366,15 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
       /*include_literals=*/false, &lines, &language_code);
   // Convert std::vector<std::vector<::i18n::addressinput::AddressUiComponent>>
   // to AddressComponents
-  base::Value::Dict address_components;
-  base::Value::List rows;
+  base::DictValue address_components;
+  base::ListValue rows;
 
   for (auto& line : lines) {
-    base::Value::List row_values;
+    base::ListValue row_values;
     for (const autofill::AutofillAddressUIComponent& component : line) {
       row_values.Append(AddressUiComponentAsValueMap(component));
     }
-    base::Value::Dict row;
+    base::DictValue row;
     row.Set("row", std::move(row_values));
     rows.Append(std::move(row));
   }

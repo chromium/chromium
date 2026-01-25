@@ -168,18 +168,18 @@ IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
       ManagedBookmarkServiceFactory::GetForProfile(profile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
-  base::Value::List list;
+  base::ListValue list;
   {
-    base::Value::Dict node;
+    base::DictValue node;
     node.Set("name", "Managed Bookmark");
     node.Set("url", "http://www.chromium.org");
     list.Append(std::move(node));
   }
 
   {
-    base::Value::Dict node;
+    base::DictValue node;
     node.Set("name", "Managed Folder");
-    node.Set("children", base::Value::List());
+    node.Set("children", base::ListValue());
     list.Append(std::move(node));
   }
 
@@ -279,7 +279,7 @@ class BookmarksApiEventsTest : public ExtensionApiTest {
   }
 
   // Returns a List of BookmarkTreeNode.
-  base::Value::List GetVisiblePermanentFolders() {
+  base::ListValue GetVisiblePermanentFolders() {
     auto get_function = base::MakeRefCounted<BookmarksGetChildrenFunction>();
     return extensions::api_test_utils::RunFunctionAndReturnSingleResult(
                get_function.get(),

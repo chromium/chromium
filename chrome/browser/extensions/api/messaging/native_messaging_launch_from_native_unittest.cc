@@ -86,13 +86,13 @@ class ExtensionSupportsConnectionFromNativeAppTest : public ::testing::Test {
     if (natively_connectable) {
       manifest_builder.Set(
           manifest_keys::kNativelyConnectable,
-          base::Value::List()
+          base::ListValue()
               .Append(ScopedTestNativeMessagingHost::kHostName)
               .Append(ScopedTestNativeMessagingHost::
                           kSupportsNativeInitiatedConnectionsHostName));
     }
 
-    base::Value::List permissions;
+    base::ListValue permissions;
     if (transient_background_permission) {
       permissions.Append("transientBackground");
     }

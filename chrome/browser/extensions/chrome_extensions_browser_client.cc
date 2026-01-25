@@ -541,7 +541,7 @@ ChromeExtensionsBrowserClient::GetComponentExtensionResourceManager() {
 void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List args,
+    base::ListValue args,
     bool dispatch_to_off_the_record_profiles) {
   event_router_forwarder_->BroadcastEventToRenderers(
       histogram_value, event_name, std::move(args),
@@ -849,7 +849,7 @@ void ChromeExtensionsBrowserClient::AddAPIActionToActivityLog(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   AddAPIActionOrEventToActivityLog(browser_context, extension_id,
                                    Action::ACTION_API_CALL, call_name,
@@ -860,7 +860,7 @@ void ChromeExtensionsBrowserClient::AddEventToActivityLog(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   AddAPIActionOrEventToActivityLog(browser_context, extension_id,
                                    Action::ACTION_API_EVENT, call_name,
@@ -871,7 +871,7 @@ void ChromeExtensionsBrowserClient::AddDOMActionToActivityLog(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const GURL& url,
     const std::u16string& url_title,
     int call_type) {
@@ -894,7 +894,7 @@ void ChromeExtensionsBrowserClient::AddAPIActionOrEventToActivityLog(
     const ExtensionId& extension_id,
     Action::ActionType action_type,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   if (!ShouldLogExtensionAction(browser_context, extension_id)) {
     return;

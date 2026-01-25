@@ -35,7 +35,7 @@ class AttestationService {
   // serialized SignedData proto.
   virtual void BuildChallengeResponseForVAChallenge(
       const std::string& challenge,
-      base::Value::Dict signals,
+      base::DictValue signals,
       const std::set<DTCPolicyLevel>& levels,
       AttestationCallback callback) = 0;
 };

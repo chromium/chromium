@@ -42,11 +42,11 @@ TEST_F(ActivityLogPolicyUtilTest, StripPrivacySensitive) {
 TEST_F(ActivityLogPolicyUtilTest, StripPrivacySensitiveWebRequest) {
   scoped_refptr<Action> action = new Action(
       "punky", base::Time::Now(), Action::ACTION_WEB_REQUEST, "webRequest");
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set(web_request_activity_log_constants::kNewUrlKey,
            "http://www.youtube.com/");
   root.Set(web_request_activity_log_constants::kAddedRequestHeadersKey,
-           base::Value::List());
+           base::ListValue());
   action->mutable_other().Set(activity_log_constants::kActionWebRequest,
                               std::move(root));
 

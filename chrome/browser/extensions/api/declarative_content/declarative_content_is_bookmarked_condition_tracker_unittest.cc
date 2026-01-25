@@ -36,12 +36,12 @@ namespace {
 
 scoped_refptr<const Extension> CreateExtensionWithBookmarksPermission(
     bool include_bookmarks) {
-  base::Value::List permissions;
+  base::ListValue permissions;
   permissions.Append("declarativeContent");
   if (include_bookmarks)
     permissions.Append("bookmarks");
   return ExtensionBuilder()
-      .SetManifest(base::Value::Dict()
+      .SetManifest(base::DictValue()
                        .Set("name", "Test extension")
                        .Set("version", "1.0")
                        .Set("manifest_version", 2)

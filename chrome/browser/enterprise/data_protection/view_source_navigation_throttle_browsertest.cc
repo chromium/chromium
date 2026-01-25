@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
                        BlocklistedUrl) {
   GURL url(embedded_test_server()->GetURL("/simple.html"));
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(url.host());
   browser()->profile()->GetPrefs()->SetList(
       prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
       static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
   GURL url(embedded_test_server()->GetURL("/simple.html"));
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(url.host());
   browser()->profile()->GetPrefs()->SetList(
       prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
       prefs::kDevToolsAvailability,
       static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("example.com");
   browser()->profile()->GetPrefs()->SetList(
       prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
@@ -285,11 +285,11 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
                        AllowlistTakesPrecedence) {
   GURL url(embedded_test_server()->GetURL("/simple.html"));
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(url.host());
   browser()->profile()->GetPrefs()->SetList(
       prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(url.host());
   browser()->profile()->GetPrefs()->SetList(
       prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
@@ -304,11 +304,11 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
                        NoMatchOnLists_DefaultAllowed) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("example.com");
   browser()->profile()->GetPrefs()->SetList(
       prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("something.com");
   browser()->profile()->GetPrefs()->SetList(
       prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));
@@ -328,11 +328,11 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
       prefs::kDevToolsAvailability,
       static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("example.com");
   browser()->profile()->GetPrefs()->SetList(
       prefs::kDeveloperToolsAvailabilityAllowlist, std::move(allowlist));
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("something.com");
   browser()->profile()->GetPrefs()->SetList(
       prefs::kDeveloperToolsAvailabilityBlocklist, std::move(blocklist));

@@ -233,7 +233,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int file_size) {
       content::ChildProcessId::FromUnsafeValue(source_process_id()),
       mhtml_path_);
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("mhtmlFilePath", mhtml_path_.AsUTF8Unsafe());
   response.Set("mhtmlFileLength", file_size);
   response.Set("requestId", request_uuid().AsLowercaseString());

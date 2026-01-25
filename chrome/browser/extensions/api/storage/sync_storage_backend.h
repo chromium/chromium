@@ -77,7 +77,7 @@ class SyncStorageBackend final : public syncer::SyncableService {
   // initializing sync with some initial data if sync enabled.
   SyncableSettingsStorage* GetOrCreateStorageWithSyncData(
       const ExtensionId& extension_id,
-      base::Value::Dict sync_data) const;
+      base::DictValue sync_data) const;
 
   // Creates a new SettingsSyncProcessor for an extension.
   std::unique_ptr<SettingsSyncProcessor> CreateSettingsSyncProcessor(

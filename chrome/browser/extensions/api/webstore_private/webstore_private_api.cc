@@ -319,7 +319,7 @@ ExtensionInstallStatus AddExtensionToPendingList(
   ScopedDictPrefUpdate pending_requests_update(
       profile->GetPrefs(), prefs::kCloudExtensionRequestIds);
   DCHECK(!pending_requests_update->Find(id));
-  base::Value::Dict request_data;
+  base::DictValue request_data;
   request_data.Set(extension_misc::kExtensionRequestTimestamp,
                    ::base::TimeToValue(base::Time::Now()));
   if (!justification.empty()) {
@@ -515,7 +515,7 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
 void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
     const std::string& id,
     const SkBitmap& icon,
-    base::Value::Dict parsed_manifest) {
+    base::DictValue parsed_manifest) {
   CHECK_EQ(details().id, id);
   parsed_manifest_ = std::move(parsed_manifest);
   icon_ = icon;

@@ -28,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OptionsPage) {
   extension_dir.WriteFile(FILE_PATH_LITERAL("options.html"),
                           "<html><body><div>Options Here</div></body></html>");
 
-  extension_dir.WriteManifest(base::Value::Dict()
+  extension_dir.WriteManifest(base::DictValue()
                                   .Set("manifest_version", 2)
                                   .Set("name", "Options Test")
                                   .Set("options_page", "options.html")
@@ -78,10 +78,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       "  chrome.test.sendMessage(tab ? 'tab' : 'embedded');\n"
       "});\n");
   extension_dir.WriteManifest(
-      base::Value::Dict()
+      base::DictValue()
           .Set("manifest_version", 2)
           .Set("name", "Extension for options param test")
-          .Set("options_ui", base::Value::Dict().Set("page", "options.html"))
+          .Set("options_ui", base::DictValue().Set("page", "options.html"))
           .Set("version", "1"));
 
   ExtensionTestMessageListener listener;

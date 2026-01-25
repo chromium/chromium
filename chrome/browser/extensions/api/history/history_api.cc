@@ -171,7 +171,7 @@ void HistoryEventRouter::OnHistoryDeletions(
 void HistoryEventRouter::DispatchEvent(Profile* profile,
                                        events::HistogramValue histogram_value,
                                        const std::string& event_name,
-                                       base::Value::List event_args) {
+                                       base::ListValue event_args) {
   if (profile && EventRouter::Get(profile)) {
     auto event = std::make_unique<Event>(histogram_value, event_name,
                                          std::move(event_args), profile);

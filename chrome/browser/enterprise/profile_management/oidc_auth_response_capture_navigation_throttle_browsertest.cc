@@ -85,7 +85,7 @@ constexpr char kExampleEncodedInfo[] = "EncodedMessageInBase64";
 constexpr char kOidcEnrollmentHistogramName[] = "Enterprise.OidcEnrollment";
 constexpr char kProfileEnrollmentUkm[] = "Enterprise.Profile.Enrollment";
 
-std::string BuildTokenFromDict(const base::Value::Dict& dict) {
+std::string BuildTokenFromDict(const base::DictValue& dict) {
   return base::StringPrintf(
       kTokenTemplate, kDummyHeader,
       base::Base64Encode(base::WriteJson(dict).value()).c_str(),
@@ -116,11 +116,11 @@ std::string BuildOidcResponseUrl(const std::string& oidc_auth_token,
 // tokens
 std::string BuildStandardResponseUrl(const std::string& oidc_state) {
   std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleAuthSubject));
   std::string id_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleIdSubject)
           .Set(kIssuerClaimName, kExampleIdIssuer));
@@ -353,11 +353,11 @@ class OidcAuthResponseCaptureNavigationThrottleTest
                               std::string source_url) {
     base::RunLoop run_loop;
     std::string auth_token = BuildTokenFromDict(
-        base::Value::Dict()
+        base::DictValue()
             .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
             .Set(kSubjectClaimName, kExampleAuthSubject));
     std::string id_token = BuildTokenFromDict(
-        base::Value::Dict()
+        base::DictValue()
             .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
             .Set(kSubjectClaimName, kExampleIdSubject)
             .Set(kIssuerClaimName, kExampleIdIssuer));
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
                        MissingAuthToken) {
   std::string id_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleIdSubject)
           .Set(kIssuerClaimName, kExampleIdIssuer));
@@ -652,7 +652,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
                        MissingIdToken) {
   std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleAuthSubject));
 
@@ -670,10 +670,10 @@ IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 
 IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
                        MissingIdTokenSubClaim) {
-  std::string auth_token = BuildTokenFromDict(base::Value::Dict().Set(
+  std::string auth_token = BuildTokenFromDict(base::DictValue().Set(
       kUserPrincipleNameClaimName, kExampleUserPrincipleName));
   std::string id_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kIssuerClaimName, kExampleIdIssuer));
 
@@ -690,10 +690,10 @@ IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 
 IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
                        MissingIdTokenIssClaim) {
-  std::string auth_token = BuildTokenFromDict(base::Value::Dict().Set(
+  std::string auth_token = BuildTokenFromDict(base::DictValue().Set(
       kUserPrincipleNameClaimName, kExampleUserPrincipleName));
   std::string id_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleIdSubject));
 
@@ -711,8 +711,8 @@ IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
                        EmptyIdJson) {
   std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict().Set(kSubjectClaimName, kExampleAuthSubject));
-  std::string id_token = BuildTokenFromDict(base::Value::Dict());
+      base::DictValue().Set(kSubjectClaimName, kExampleAuthSubject));
+  std::string id_token = BuildTokenFromDict(base::DictValue());
 
   std::string redirection_url =
       BuildOidcResponseUrl(auth_token, id_token, /*oidc_state=*/std::string());
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
                        WrongNumberOfJwtSections) {
   std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleAuthSubject));
 
@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
   // section
   std::string malformed_id_token = base::Base64Encode(
       base::WriteJson(
-          base::Value::Dict()
+          base::DictValue()
               .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
               .Set(kSubjectClaimName, kExampleIdSubject))
           .value());
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
   std::string malformed_id_token = base::StringPrintf(
       kTokenTemplate, kDummyHeader,
       base::WriteJson(
-          base::Value::Dict()
+          base::DictValue()
               .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
               .Set(kSubjectClaimName, kExampleAuthSubject))
           .value()
@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
       kDummySignature);
 
   std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleAuthSubject));
 
@@ -854,11 +854,11 @@ IN_PROC_BROWSER_TEST_P(OidcAuthNavigationThrottleGenericOidcTest,
   base::RunLoop run_loop;
 
   std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleAuthSubject));
   std::string id_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleIdSubject)
           .Set(kIssuerClaimName, kExampleIdIssuer));
@@ -1000,11 +1000,11 @@ IN_PROC_BROWSER_TEST_P(OidcAuthNavigationThrottleProcessResponseTest,
   base::RunLoop run_loop;
 
   std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleAuthSubject));
   std::string id_token = BuildTokenFromDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleIdSubject)
           .Set(kIssuerClaimName, kExampleIdIssuer));

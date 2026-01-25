@@ -41,15 +41,15 @@ class ManagedProfileRequiredPage
   security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
       override;
 
-  base::Value::Dict GetLoadTimeDataForTesting();
+  base::DictValue GetLoadTimeDataForTesting();
 
  protected:
   void CommandReceived(const std::string& command) override;
-  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
+  void PopulateInterstitialStrings(base::DictValue& load_time_data) override;
   void OnInterstitialClosing() override;
 
  private:
-  void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
+  void PopulateStringsForSharedHTML(base::DictValue& load_time_data);
 
   const std::u16string email_;
 };

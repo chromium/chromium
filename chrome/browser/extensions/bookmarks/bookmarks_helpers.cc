@@ -191,13 +191,13 @@ bool RemoveNode(BookmarkModel* model,
 }
 
 void GetMetaInfo(const BookmarkNode& node,
-                 base::Value::Dict& id_to_meta_info_map) {
+                 base::DictValue& id_to_meta_info_map) {
   if (!node.IsVisible()) {
     return;
   }
 
   const BookmarkNode::MetaInfoMap* meta_info = node.GetMetaInfoMap();
-  base::Value::Dict value;
+  base::DictValue value;
   if (meta_info) {
     BookmarkNode::MetaInfoMap::const_iterator itr;
     for (itr = meta_info->begin(); itr != meta_info->end(); ++itr) {

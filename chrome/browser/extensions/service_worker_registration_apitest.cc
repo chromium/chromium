@@ -883,12 +883,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest, ExtensionReinstall) {
     static constexpr char kSwJs[] = "chrome.test.sendMessage('ready');";
     test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), kSwJs);
 
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set("name", "Extension SW reinstall test")
                         .Set("version", "0.1")
                         .Set("manifest_version", 3)
-                        .Set("background", base::Value::Dict().Set(
-                                               "service_worker", "sw.js"));
+                        .Set("background",
+                             base::DictValue().Set("service_worker", "sw.js"));
     builder.SetManifest(std::move(manifest));
     builder.SetPath(test_dir.UnpackedPath());
     builder.SetID(test_extension_id);

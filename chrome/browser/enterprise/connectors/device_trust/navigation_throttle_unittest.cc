@@ -88,8 +88,8 @@ class MockDeviceTrustNavigationHandle : public content::MockNavigationHandle {
   bool is_main_frame_ = true;
 };
 
-base::Value::List GetTrustedUrls() {
-  base::Value::List trusted_urls;
+base::ListValue GetTrustedUrls() {
+  base::ListValue trusted_urls;
   trusted_urls.Append(kTrustedUrl);
   trusted_urls.Append("example2.example.com");
   return trusted_urls;

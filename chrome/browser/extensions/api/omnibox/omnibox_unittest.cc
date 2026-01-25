@@ -48,17 +48,17 @@ void CompareClassification(const ACMatchClassifications& expected,
 // +       ddd
 // = nmmmmndddn
 TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
-  base::Value::List list =
-      base::Value::List().Append(42).Append(base::Value::List().Append(
-          base::Value::Dict()
+  base::ListValue list =
+      base::ListValue().Append(42).Append(base::ListValue().Append(
+          base::DictValue()
               .Set("content", "content")
               .Set("description", "description")
-              .Set("descriptionStyles", base::Value::List()
-                                            .Append(base::Value::Dict()
+              .Set("descriptionStyles", base::ListValue()
+                                            .Append(base::DictValue()
                                                         .Set("type", "match")
                                                         .Set("offset", 1)
                                                         .Set("length", 4))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "dim")
                                                         .Set("offset", 6)
                                                         .Set("length", 3)))));
@@ -81,17 +81,17 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
           params->suggest_results[0].description));
 
   // Same input, but swap the order. Ensure it still works.
-  base::Value::List swap_list =
-      base::Value::List().Append(42).Append(base::Value::List().Append(
-          base::Value::Dict()
+  base::ListValue swap_list =
+      base::ListValue().Append(42).Append(base::ListValue().Append(
+          base::DictValue()
               .Set("content", "content")
               .Set("description", "description")
-              .Set("descriptionStyles", base::Value::List()
-                                            .Append(base::Value::Dict()
+              .Set("descriptionStyles", base::ListValue()
+                                            .Append(base::DictValue()
                                                         .Set("type", "dim")
                                                         .Set("offset", 6)
                                                         .Set("length", 3))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "match")
                                                         .Set("offset", 1)
                                                         .Set("length", 4)))));
@@ -115,29 +115,29 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
 // +  dd
 // = 3773unnnn66
 TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
-  base::Value::List list =
-      base::Value::List().Append(42).Append(base::Value::List().Append(
-          base::Value::Dict()
+  base::ListValue list =
+      base::ListValue().Append(42).Append(base::ListValue().Append(
+          base::DictValue()
               .Set("content", "content")
               .Set("description", "description")
-              .Set("descriptionStyles", base::Value::List()
-                                            .Append(base::Value::Dict()
+              .Set("descriptionStyles", base::ListValue()
+                                            .Append(base::DictValue()
                                                         .Set("type", "url")
                                                         .Set("offset", 0)
                                                         .Set("length", 5))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "dim")
                                                         .Set("offset", 9)
                                                         .Set("length", 2))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "match")
                                                         .Set("offset", 9)
                                                         .Set("length", 2))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "match")
                                                         .Set("offset", 0)
                                                         .Set("length", 4))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "dim")
                                                         .Set("offset", 1)
                                                         .Set("length", 2)))));
@@ -162,29 +162,29 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
 
   // Try moving the "dim/match" style pair at offset 9. Output should be the
   // same.
-  base::Value::List moved_list =
-      base::Value::List().Append(42).Append(base::Value::List().Append(
-          base::Value::Dict()
+  base::ListValue moved_list =
+      base::ListValue().Append(42).Append(base::ListValue().Append(
+          base::DictValue()
               .Set("content", "content")
               .Set("description", "description")
-              .Set("descriptionStyles", base::Value::List()
-                                            .Append(base::Value::Dict()
+              .Set("descriptionStyles", base::ListValue()
+                                            .Append(base::DictValue()
                                                         .Set("type", "url")
                                                         .Set("offset", 0)
                                                         .Set("length", 5))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "match")
                                                         .Set("offset", 0)
                                                         .Set("length", 4))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "dim")
                                                         .Set("offset", 9)
                                                         .Set("length", 2))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "match")
                                                         .Set("offset", 9)
                                                         .Set("length", 2))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "dim")
                                                         .Set("offset", 1)
                                                         .Set("length", 2)))));
@@ -208,29 +208,29 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
 // + ddd
 // = 77777nnnnn
 TEST(ExtensionOmniboxTest, DescriptionStylesCombine2) {
-  base::Value::List list =
-      base::Value::List().Append(42).Append(base::Value::List().Append(
-          base::Value::Dict()
+  base::ListValue list =
+      base::ListValue().Append(42).Append(base::ListValue().Append(
+          base::DictValue()
               .Set("content", "content")
               .Set("description", "description")
-              .Set("descriptionStyles", base::Value::List()
-                                            .Append(base::Value::Dict()
+              .Set("descriptionStyles", base::ListValue()
+                                            .Append(base::DictValue()
                                                         .Set("type", "url")
                                                         .Set("offset", 0)
                                                         .Set("length", 5))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "match")
                                                         .Set("offset", 0)
                                                         .Set("length", 5))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "match")
                                                         .Set("offset", 0)
                                                         .Set("length", 3))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "dim")
                                                         .Set("offset", 2)
                                                         .Set("length", 3))
-                                            .Append(base::Value::Dict()
+                                            .Append(base::DictValue()
                                                         .Set("type", "dim")
                                                         .Set("offset", 0)
                                                         .Set("length", 3)))));
@@ -259,27 +259,27 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine2) {
 // = 77777nnnnn
 TEST(ExtensionOmniboxTest, DefaultSuggestResult) {
   // Default suggestions should not have a content parameter.
-  base::Value::List list = base::Value::List().Append(
-      base::Value::Dict()
+  base::ListValue list = base::ListValue().Append(
+      base::DictValue()
           .Set("description", "description")
-          .Set("descriptionStyles", base::Value::List()
-                                        .Append(base::Value::Dict()
+          .Set("descriptionStyles", base::ListValue()
+                                        .Append(base::DictValue()
                                                     .Set("type", "url")
                                                     .Set("offset", 0)
                                                     .Set("length", 5))
-                                        .Append(base::Value::Dict()
+                                        .Append(base::DictValue()
                                                     .Set("type", "match")
                                                     .Set("offset", 0)
                                                     .Set("length", 5))
-                                        .Append(base::Value::Dict()
+                                        .Append(base::DictValue()
                                                     .Set("type", "match")
                                                     .Set("offset", 0)
                                                     .Set("length", 3))
-                                        .Append(base::Value::Dict()
+                                        .Append(base::DictValue()
                                                     .Set("type", "dim")
                                                     .Set("offset", 2)
                                                     .Set("length", 3))
-                                        .Append(base::Value::Dict()
+                                        .Append(base::DictValue()
                                                     .Set("type", "dim")
                                                     .Set("offset", 0)
                                                     .Set("length", 3))));

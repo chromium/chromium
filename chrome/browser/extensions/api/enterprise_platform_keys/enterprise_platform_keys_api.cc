@@ -179,12 +179,12 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
   }
   DCHECK(result->is_certificates());
 
-  base::Value::List client_certs;
+  base::ListValue client_certs;
   for (std::vector<uint8_t>& cert : result->get_certificates()) {
     client_certs.Append(base::Value(std::move(cert)));
   }
 
-  base::Value::List results;
+  base::ListValue results;
   results.Append(std::move(client_certs));
   Respond(ArgumentList(std::move(results)));
 }

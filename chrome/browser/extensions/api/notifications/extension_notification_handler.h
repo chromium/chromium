@@ -55,7 +55,7 @@ class ExtensionNotificationHandler : public NotificationHandler {
                          events::HistogramValue histogram_value,
                          const std::string& name,
                          EventRouter::UserGestureState user_gesture,
-                         base::Value::List args);
+                         base::ListValue args);
 };
 
 }  // namespace extensions

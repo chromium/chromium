@@ -602,7 +602,7 @@ class EnterpriseReportingPrivateGetCertificateTest
     EXPECT_FALSE(enterprise_util::IsMachinePolicyPref(
         prefs::kManagedAutoSelectCertificateForUrls));
 
-    base::Value::List list;
+    base::ListValue list;
     list.Append(policy_value);
 
     policy::PolicyMap policies;
@@ -619,7 +619,7 @@ class EnterpriseReportingPrivateGetCertificateTest
   void SetUserPolicyValue(const std::string& policy_value) {
     EXPECT_FALSE(enterprise_util::IsMachinePolicyPref(
         prefs::kManagedAutoSelectCertificateForUrls));
-    base::Value::List list;
+    base::ListValue list;
     list.Append(policy_value);
 
     policy::PolicyMap policies;

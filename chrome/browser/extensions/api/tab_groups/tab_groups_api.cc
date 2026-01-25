@@ -118,7 +118,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       api::tab_groups::Query::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::Value::List result_list;
+  base::ListValue result_list;
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
   WindowController* window_controller =

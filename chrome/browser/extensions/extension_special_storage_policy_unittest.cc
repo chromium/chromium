@@ -104,12 +104,12 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
 #elif BUILDFLAG(IS_POSIX)
     base::FilePath path(FILE_PATH_LITERAL("/foo"));
 #endif
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set(keys::kName, "Protected");
     manifest.Set(keys::kVersion, "1");
     manifest.SetByDottedPath(keys::kLaunchWebURL,
                              "http://explicit/protected/start");
-    base::Value::List list;
+    base::ListValue list;
     list.Append("http://explicit/protected");
     list.Append("*://*.wildcards/protected");
     manifest.SetByDottedPath(keys::kWebURLs, std::move(list));
@@ -127,15 +127,15 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
 #elif BUILDFLAG(IS_POSIX)
     base::FilePath path(FILE_PATH_LITERAL("/bar"));
 #endif
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set(keys::kName, "Unlimited");
     manifest.Set(keys::kVersion, "1");
     manifest.SetByDottedPath(keys::kLaunchWebURL,
                              "http://explicit/unlimited/start");
-    base::Value::List list1;
+    base::ListValue list1;
     list1.Append("unlimitedStorage");
     manifest.Set(keys::kPermissions, std::move(list1));
-    base::Value::List list2;
+    base::ListValue list2;
     list2.Append("http://explicit/unlimited");
     list2.Append("*://*.wildcards/unlimited");
     manifest.SetByDottedPath(keys::kWebURLs, std::move(list2));
@@ -153,7 +153,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
 #elif BUILDFLAG(IS_POSIX)
     base::FilePath path(FILE_PATH_LITERAL("/app"));
 #endif
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set(keys::kName, "App");
     manifest.Set(keys::kVersion, "1");
     manifest.SetByDottedPath(keys::kPlatformAppBackgroundPage,

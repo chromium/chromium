@@ -71,7 +71,7 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
   void PerformActionBasedOnOmahaAttributes(const ExtensionId& extension_id,
                                            bool is_malware,
                                            bool is_allowlisted) {
-    auto attributes = base::Value::Dict().Set("_esbAllowlist", is_allowlisted);
+    auto attributes = base::DictValue().Set("_esbAllowlist", is_allowlisted);
     if (is_malware) {
       attributes.Set("_malware", true);
     }
@@ -482,7 +482,7 @@ TEST_F(ExtensionAllowlistUnitTest, MissingAttributeAreIgnored) {
       testing::UnorderedElementsAre(disable_reason::DISABLE_NOT_ALLOWLISTED));
 
   // Simulate an update check with no custom attribute defined.
-  base::Value::Dict attributes;
+  base::DictValue attributes;
   service()->PerformActionBasedOnOmahaAttributes(kExtensionId1, attributes);
   service()->PerformActionBasedOnOmahaAttributes(kExtensionId2, attributes);
 

@@ -19,7 +19,7 @@ class MockSignalsDecorator : public SignalsDecorator {
 
   MOCK_METHOD(void,
               Decorate,
-              (base::Value::Dict&, base::OnceClosure),
+              (base::DictValue&, base::OnceClosure),
               (override));
 };
 

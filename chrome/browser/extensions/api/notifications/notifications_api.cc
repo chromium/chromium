@@ -668,7 +668,7 @@ NotificationsGetAllFunction::RunNotificationsApi() {
   std::set<std::string> notification_ids =
       GetDisplayHelper()->GetNotificationIdsForExtension(extension_->url());
 
-  base::Value::Dict result;
+  base::DictValue result;
 
   for (const auto& entry : notification_ids) {
     result.Set(StripScopeFromIdentifier(extension_->id(), entry), true);

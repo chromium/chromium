@@ -38,7 +38,7 @@ TEST_F(SocketUnitTest, Create) {
   SocketCreateFunction* function = new SocketCreateFunction();
 
   // Run tests
-  std::optional<base::Value::Dict> result =
+  std::optional<base::DictValue> result =
       RunFunctionAndReturnDictionary(function, "[\"tcp\"]");
   ASSERT_TRUE(result);
 }

@@ -49,8 +49,8 @@ scoped_refptr<base::SingleThreadTaskRunner> NativeMessageEchoHost::task_runner()
   return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
-void NativeMessageEchoHost::ProcessEcho(const base::Value::Dict& request) {
-  base::Value::Dict response;
+void NativeMessageEchoHost::ProcessEcho(const base::DictValue& request) {
+  base::DictValue response;
   response.Set("id", ++message_number_);
   response.Set("echo", request.Clone());
   response.Set("caller_url", kOrigins[0]);

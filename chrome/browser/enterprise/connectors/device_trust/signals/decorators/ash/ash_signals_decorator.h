@@ -29,7 +29,7 @@ class AshSignalsDecorator : public SignalsDecorator {
   ~AshSignalsDecorator() override;
 
   // SignalsDecorator:
-  void Decorate(base::Value::Dict& signals,
+  void Decorate(base::DictValue& signals,
                 base::OnceClosure done_closure) override;
 
  private:

@@ -327,7 +327,7 @@ void SidePanelService::DispatchOnClosedEvent(const ExtensionId& extension_id,
     return;
   }
 
-  base::Value::List args;
+  base::ListValue args;
   api::side_panel::PanelClosedInfo info;
   info.window_id = window_id;
   info.tab_id = std::move(tab_id);
@@ -441,7 +441,7 @@ void SidePanelService::DispatchOnOpenedEvent(const ExtensionId& extension_id,
   info.tab_id = std::move(tab_id);
   info.path = path;
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(info.ToValue());
   auto event = std::make_unique<Event>(events::SIDE_PANEL_ON_OPENED,
                                        api::side_panel::OnOpened::kEventName,

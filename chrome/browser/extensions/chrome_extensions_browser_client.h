@@ -172,7 +172,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void BroadcastEventToRenderers(
       events::HistogramValue histogram_value,
       const std::string& event_name,
-      base::Value::List args,
+      base::ListValue args,
       bool dispatch_to_off_the_record_profiles) override;
   ExtensionCache* GetExtensionCache() override;
   bool IsBackgroundUpdateAllowed() override;
@@ -242,17 +242,17 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void AddAPIActionToActivityLog(content::BrowserContext* browser_context,
                                  const ExtensionId& extension_id,
                                  const std::string& call_name,
-                                 base::Value::List args,
+                                 base::ListValue args,
                                  const std::string& extra) override;
   void AddEventToActivityLog(content::BrowserContext* browser_context,
                              const ExtensionId& extension_id,
                              const std::string& call_name,
-                             base::Value::List args,
+                             base::ListValue args,
                              const std::string& extra) override;
   void AddDOMActionToActivityLog(content::BrowserContext* browser_context,
                                  const ExtensionId& extension_id,
                                  const std::string& call_name,
-                                 base::Value::List args,
+                                 base::ListValue args,
                                  const GURL& url,
                                  const std::u16string& url_title,
                                  int call_type) override;
@@ -319,7 +319,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       const ExtensionId& extension_id,
       Action::ActionType action_type,
       const std::string& call_name,
-      base::Value::List args,
+      base::ListValue args,
       const std::string& extra);
 
   // Support for ProcessManager. May be null on some platforms (e.g. Android).

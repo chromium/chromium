@@ -100,7 +100,7 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
   // A wrapper around api_test_utils::RunFunction that runs with
   // the associated browser, no flags, and can take stack-allocated arguments.
   bool RunFunction(const scoped_refptr<ExtensionFunction>& function,
-                   const base::Value::List& args);
+                   const base::ListValue& args);
 
   // Runs the management.setEnabled() function to enable an extension.
   bool RunSetEnabledFunction(content::WebContents* web_contents,
@@ -127,7 +127,7 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
 
 bool ManagementApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   return api_test_utils::RunFunction(function.get(), args.Clone(), profile(),
                                      api_test_utils::FunctionMode::kNone);
 }
@@ -151,7 +151,7 @@ bool ManagementApiUnitTest::RunSetEnabledFunction(
   if (web_contents) {
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   }
-  base::Value::List args;
+  base::ListValue args;
   args.Append(extension_id);
   args.Append(enabled);
   bool result = RunFunction(function, args);
@@ -182,7 +182,7 @@ TEST_F(ManagementApiUnitTest, ManagementSetEnabled) {
   auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
   function->set_extension(source_extension);
 
-  base::Value::List disable_args;
+  base::ListValue disable_args;
   disable_args.Append(extension_id);
   disable_args.Append(false);
 
@@ -191,7 +191,7 @@ TEST_F(ManagementApiUnitTest, ManagementSetEnabled) {
   EXPECT_TRUE(RunFunction(function, disable_args)) << function->GetError();
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
 
-  base::Value::List enable_args;
+  base::ListValue enable_args;
   enable_args.Append(extension_id);
   enable_args.Append(true);
 
@@ -267,7 +267,7 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {
       [this](scoped_refptr<const Extension> source_extension,
              scoped_refptr<const Extension> target_extension) {
         const ExtensionId& id = target_extension->id();
-        base::Value::List args;
+        base::ListValue args;
         args.Append(id);
         args.Append(false /* disable the extension */);
         auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
@@ -322,7 +322,7 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
       [this, component](scoped_refptr<const Extension> source_extension,
                         scoped_refptr<const Extension> target_extension) {
         const ExtensionId& id = target_extension->id();
-        base::Value::List args;
+        base::ListValue args;
         args.Append(id);
         args.Append(true /* enable the extension */);
         auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
@@ -355,7 +355,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
   registrar()->AddExtension(extension.get());
   const ExtensionId& extension_id = extension->id();
 
-  base::Value::List uninstall_args;
+  base::ListValue uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
 
@@ -408,7 +408,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
         extensions::UNINSTALL_SOURCE_CHROME_EXTENSIONS_PAGE, 2);
 
     // Try again, using showConfirmDialog: false.
-    base::Value::Dict options;
+    base::DictValue options;
     options.Set("showConfirmDialog", false);
     uninstall_args.Append(std::move(options));
     function = base::MakeRefCounted<ManagementUninstallFunction>();
@@ -449,7 +449,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   registrar()->AddExtension(extension.get());
   const ExtensionId& extension_id = extension->id();
-  base::Value::List uninstall_args;
+  base::ListValue uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
 
@@ -504,7 +504,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallNewWebstore) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   registrar()->AddExtension(extension.get());
   const ExtensionId& extension_id = extension->id();
-  base::Value::List uninstall_args;
+  base::ListValue uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
 
@@ -540,7 +540,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallProgramatic) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   registrar()->AddExtension(extension.get());
   const ExtensionId& extension_id = extension->id();
-  base::Value::List uninstall_args;
+  base::ListValue uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
   {
@@ -580,7 +580,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
   ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
   auto function = base::MakeRefCounted<ManagementUninstallFunction>();
   function->set_source_context_type(mojom::ContextType::kWebUi);
-  base::Value::List uninstall_args;
+  base::ListValue uninstall_args;
   uninstall_args.Append(id);
   EXPECT_TRUE(RunFunction(function, uninstall_args)) << function->GetError();
 
@@ -597,7 +597,7 @@ TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlocklisted) {
 
   // Test enabling it.
   {
-    base::Value::List enable_args;
+    base::ListValue enable_args;
     enable_args.Append(id);
     enable_args.Append(true);
     auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
@@ -608,7 +608,7 @@ TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlocklisted) {
 
   // Test disabling it
   {
-    base::Value::List disable_args;
+    base::ListValue disable_args;
     disable_args.Append(id);
     disable_args.Append(false);
 
@@ -1279,7 +1279,7 @@ TEST_F(ManagementApiSupervisedUserTest,
   bool is_locally_parent_approved = false;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Simulate a local approval grant for this extension.
-  base::Value::Dict locally_approved;
+  base::DictValue locally_approved;
   locally_approved.Set(extension_id, true);
   profile()->GetPrefs()->SetDict(
       prefs::kSupervisedUserLocallyParentApprovedExtensions,

@@ -56,7 +56,7 @@ class ExtensibleEnterpriseSSOProvider : public PlatformAuthProvider {
       const ExtensibleEnterpriseSSOProvider&) = delete;
 
   static std::set<std::string> GetSupportedIdentityProviders();
-  static base::Value::List GetSupportedIdentityProvidersList();
+  static base::ListValue GetSupportedIdentityProvidersList();
 
   // enterprise_auth::PlatformAuthProvider:
   bool SupportsOriginFiltering() override;

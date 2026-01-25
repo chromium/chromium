@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
 
   std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
       resolve_function.get(), "[\"127.0.0.1\"]", profile()));
-  const base::Value::Dict& dict = result->GetDict();
+  const base::DictValue& dict = result->GetDict();
 
   EXPECT_EQ(net::OK, dict.FindInt("resultCode"));
 
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   std::string function_arguments = base::StringPrintf(R"(["%s"])", kHostname);
   std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
       resolve_function.get(), function_arguments, profile()));
-  const base::Value::Dict& dict = result->GetDict();
+  const base::DictValue& dict = result->GetDict();
 
   EXPECT_EQ(net::OK, dict.FindInt("resultCode"));
 

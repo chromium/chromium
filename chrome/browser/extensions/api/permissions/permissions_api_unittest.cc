@@ -58,7 +58,7 @@ constexpr char kNotInManifestError[] =
 using permissions_test_util::GetPatternsAsStrings;
 
 scoped_refptr<const Extension> CreateExtensionWithPermissions(
-    base::Value::List permissions,
+    base::ListValue permissions,
     const std::string& name,
     bool allow_file_access) {
   int creation_flags = Extension::NO_FLAGS;
@@ -66,7 +66,7 @@ scoped_refptr<const Extension> CreateExtensionWithPermissions(
     creation_flags |= Extension::ALLOW_FILE_ACCESS;
   return ExtensionBuilder()
       .SetLocation(mojom::ManifestLocation::kInternal)
-      .SetManifest(base::Value::Dict()
+      .SetManifest(base::DictValue()
                        .Set("name", name)
                        .Set("description", "foo")
                        .Set("manifest_version", 2)
@@ -125,7 +125,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
                            bool allow_file_access) {
     SCOPED_TRACE(args_string);
     scoped_refptr<const Extension> extension = CreateExtensionWithPermissions(
-        base::Value::List().Append(manifest_permission), "My Extension",
+        base::ListValue().Append(manifest_permission), "My Extension",
         allow_file_access);
     ExtensionPrefs::Get(profile())->SetAllowFileAccess(extension->id(),
                                                        allow_file_access);
@@ -265,13 +265,13 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
       return origins;
     }
 
-    const base::Value::List* results = function->GetResultListForTest();
+    const base::ListValue* results = function->GetResultListForTest();
     if (results->size() != 1u || !(*results)[0].is_dict()) {
       ADD_FAILURE() << "Invalid result value";
       return origins;
     }
 
-    const base::Value::List* origins_value =
+    const base::ListValue* origins_value =
         (*results)[0].GetDict().FindList("origins");
     for (const auto& value : *origins_value) {
       origins.push_back(value.GetString());
@@ -1081,7 +1081,7 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("optional_host_permissions",
-                          base::Value::List().Append("*://*.optional.com/*"))
+                          base::ListValue().Append("*://*.optional.com/*"))
           .Build();
   registrar()->AddExtension(extension.get());
 
@@ -1151,7 +1151,7 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
-                          base::Value::List().Append("*://*.requested.com/*"))
+                          base::ListValue().Append("*://*.requested.com/*"))
           .Build();
   AddExtensionAndGrantPermissions(*extension);
 
@@ -1212,7 +1212,7 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
-                          base::Value::List().Append("*://*.requested.com/*"))
+                          base::ListValue().Append("*://*.requested.com/*"))
           .Build();
   AddExtensionAndWithheldPermissions(*extension);
 
@@ -1311,7 +1311,7 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
-                          base::Value::List().Append("*://*.requested.com/*"))
+                          base::ListValue().Append("*://*.requested.com/*"))
           .Build();
   AddExtensionAndWithheldPermissions(*extension);
 
@@ -1416,7 +1416,7 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
-                          base::Value::List().Append("*://*.requested.com/*"))
+                          base::ListValue().Append("*://*.requested.com/*"))
           .Build();
   AddExtensionAndWithheldPermissions(*extension);
 
@@ -1526,7 +1526,7 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
-                          base::Value::List().Append("*://*.requested.com/*"))
+                          base::ListValue().Append("*://*.requested.com/*"))
           .Build();
   AddExtensionAndWithheldPermissions(*extension);
 

@@ -86,7 +86,7 @@ class EPKPChallengeMachineKeyTest : public EPKPChallengeKeyTestBase {
 const char EPKPChallengeMachineKeyTest::kFuncArgs[] = "[\"Y2hhbGxlbmdl\"]";
 
 TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowlisted) {
-  base::Value::List empty_allowlist;
+  base::ListValue empty_allowlist;
   prefs_->SetList(prefs::kAttestationExtensionAllowlist,
                   std::move(empty_allowlist));
 
@@ -98,7 +98,7 @@ TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowlisted) {
 TEST_F(EPKPChallengeMachineKeyTest, Success) {
   SetMockTpmChallenger();
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
@@ -127,7 +127,7 @@ class EPKPChallengeUserKeyTest : public EPKPChallengeKeyTestBase {
 const char EPKPChallengeUserKeyTest::kFuncArgs[] = "[\"Y2hhbGxlbmdl\", true]";
 
 TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowlisted) {
-  base::Value::List empty_allowlist;
+  base::ListValue empty_allowlist;
   prefs_->SetList(prefs::kAttestationExtensionAllowlist,
                   std::move(empty_allowlist));
 
@@ -139,7 +139,7 @@ TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowlisted) {
 TEST_F(EPKPChallengeUserKeyTest, Success) {
   SetMockTpmChallenger();
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 

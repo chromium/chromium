@@ -111,8 +111,8 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
   }
 
  protected:
-  void AppendTabIdToRequestInfo(base::Value::List* params, int tab_id) {
-    base::Value::Dict request_info;
+  void AppendTabIdToRequestInfo(base::ListValue* params, int tab_id) {
+    base::DictValue request_info;
     request_info.Set("tabId", tab_id);
     params->Append(base::Value(std::move(request_info)));
   }
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   GetAudioDeviceDescriptions(false, &devices);
 
   std::optional<base::Value> result = InvokeGetSinks();
-  const base::Value::List& sink_list = result->GetList();
+  const base::ListValue& sink_list = result->GetList();
 
   std::string result_string;
   JSONWriter::Write(*result, &result_string);
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   for (; ix < sink_list.size() && it != devices.end(); ++ix, ++it) {
     const base::Value& value = sink_list[ix];
     EXPECT_TRUE(value.is_dict());
-    const base::Value::Dict& dict = value.GetDict();
+    const base::DictValue& dict = value.GetDict();
     const std::string* sink_id = dict.FindString("sinkId");
     EXPECT_TRUE(sink_id);
 
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetAssociatedSink) {
     std::string source_id_in_origin = content::GetHMACForMediaDeviceID(
         GetMediaDeviceIDSalt(origin), origin, raw_device_id);
 
-    base::Value::List parameters;
+    base::ListValue parameters;
     parameters.Append(gurl.spec());
     parameters.Append(source_id_in_origin);
     std::string parameter_string;

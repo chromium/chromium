@@ -166,7 +166,7 @@ CrxInstaller::CrxInstaller(content::BrowserContext* context,
     approved_ = true;
     expected_manifest_check_level_ = approval->manifest_check_level;
     if (expected_manifest_check_level_ != ManifestCheckLevel::kNone) {
-      expected_manifest_ = std::make_unique<base::Value::Dict>(
+      expected_manifest_ = std::make_unique<base::DictValue>(
           approval->manifest->value()->Clone());
     }
     expected_id_ = approval->extension_id;
@@ -534,10 +534,10 @@ void CrxInstaller::OnUnpackFailure(const CrxInstallError& error) {
 void CrxInstaller::OnUnpackSuccess(
     const base::FilePath& temp_dir,
     const base::FilePath& extension_dir,
-    std::unique_ptr<base::Value::Dict> original_manifest,
+    std::unique_ptr<base::DictValue> original_manifest,
     const Extension* extension,
     const SkBitmap& install_icon,
-    base::Value::Dict ruleset_install_prefs) {
+    base::DictValue ruleset_install_prefs) {
   DCHECK(GetUnpackerTaskRunner()->RunsTasksInCurrentSequence());
   shared_file_task_runner_->PostTask(
       FROM_HERE,
@@ -550,10 +550,10 @@ void CrxInstaller::OnUnpackSuccess(
 void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
     base::FilePath temp_dir,
     base::FilePath extension_dir,
-    std::unique_ptr<base::Value::Dict> original_manifest,
+    std::unique_ptr<base::DictValue> original_manifest,
     scoped_refptr<const Extension> extension,
     SkBitmap install_icon,
-    base::Value::Dict ruleset_install_prefs) {
+    base::DictValue ruleset_install_prefs) {
   DCHECK(shared_file_task_runner_->RunsTasksInCurrentSequence());
 
   extension_ = extension;

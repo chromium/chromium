@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Parameter) {
   ASSERT_EQ(1u, rules.size());
   ASSERT_EQ(rules[0]->actions.size(), 1u);
 
-  const base::Value::Dict& action_value = rules[0]->actions[0].GetDict();
+  const base::DictValue& action_value = rules[0]->actions[0].GetDict();
   const std::string* action_instance_type =
       action_value.FindString("instanceType");
   ASSERT_TRUE(action_instance_type);

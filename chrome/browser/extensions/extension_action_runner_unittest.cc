@@ -109,13 +109,13 @@ const Extension* ExtensionActionRunnerUnitTest::AddExtension() {
   const ExtensionId kId = crx_file::id_util::GenerateId("all_hosts_extension");
   extension_ =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "all_hosts_extension")
                            .Set("description", "an extension")
                            .Set("manifest_version", 2)
                            .Set("version", "1.0.0")
-                           .Set("permissions", base::Value::List().Append(
-                                                   kAllHostsPermission)))
+                           .Set("permissions",
+                                base::ListValue().Append(kAllHostsPermission)))
           .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(kId)
           .Build();

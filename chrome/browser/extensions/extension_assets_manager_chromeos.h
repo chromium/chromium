@@ -115,7 +115,7 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
   // Clean shared extension with given `id`.
   static bool CleanUpExtension(
       const std::string& id,
-      base::Value::Dict& extension_info,
+      base::DictValue& extension_info,
       std::multimap<std::string, base::FilePath>* live_extension_paths);
 };
 

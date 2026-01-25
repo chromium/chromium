@@ -37,7 +37,7 @@ SettingsSyncProcessor::~SettingsSyncProcessor() {
   DCHECK(IsOnBackendSequence());
 }
 
-void SettingsSyncProcessor::Init(const base::Value::Dict& initial_state) {
+void SettingsSyncProcessor::Init(const base::DictValue& initial_state) {
   DCHECK(IsOnBackendSequence());
   CHECK(!initialized_) << "Init called multiple times";
 

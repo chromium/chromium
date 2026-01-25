@@ -43,7 +43,7 @@ class TestExtensionNotificationHandler : public ExtensionNotificationHandler {
                  events::HistogramValue histogram_value,
                  const std::string& event_name,
                  EventRouter::UserGestureState user_gesture,
-                 base::Value::List args) final {
+                 base::ListValue args) final {
     EXPECT_EQ(event_name_, event_name);
     EXPECT_EQ(extension_id_, extension_id);
     EXPECT_EQ(param_count_, args.size());

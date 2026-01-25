@@ -47,9 +47,9 @@ namespace {
 const char kUnknownActionType[] = "unknownType";
 
 std::unique_ptr<WebRequestActionSet> CreateSetOfActions(const char* json) {
-  base::Value::List parsed_value = base::test::ParseJsonList(json);
+  base::ListValue parsed_value = base::test::ParseJsonList(json);
 
-  base::Value::List actions;
+  base::ListValue actions;
   for (base::Value& entry : parsed_value) {
     CHECK(entry.is_dict());
     actions.Append(std::move(entry));
@@ -171,7 +171,7 @@ TEST(WebRequestActionTest, CreateAction) {
   scoped_refptr<const WebRequestAction> result;
 
   // Test missing instanceType element.
-  base::Value::Dict input;
+  base::DictValue input;
   error.clear();
   result =
       WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
@@ -202,7 +202,7 @@ TEST(WebRequestActionTest, CreateActionSet) {
   bool bad_message = false;
   std::unique_ptr<WebRequestActionSet> result;
 
-  base::Value::List input;
+  base::ListValue input;
 
   // Test empty input.
   error.clear();
@@ -214,12 +214,12 @@ TEST(WebRequestActionTest, CreateActionSet) {
   EXPECT_TRUE(result->actions().empty());
   EXPECT_EQ(std::numeric_limits<int>::min(), result->GetMinimumPriority());
 
-  base::Value::Dict correct_action;
+  base::DictValue correct_action;
   correct_action.Set(keys::kInstanceTypeKey, keys::kIgnoreRulesType);
   correct_action.Set(keys::kLowerPriorityThanKey, 10);
-  base::Value::Dict incorrect_action;
+  base::DictValue incorrect_action;
   incorrect_action.Set(keys::kInstanceTypeKey, kUnknownActionType);
-  base::Value::List wrong_format_action;
+  base::ListValue wrong_format_action;
 
   // Test success.
   input.Append(std::move(correct_action));

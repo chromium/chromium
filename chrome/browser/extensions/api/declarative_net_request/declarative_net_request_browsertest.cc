@@ -557,8 +557,8 @@ class DeclarativeNetRequestBrowserTest
           });
     )";
 
-    base::Value::List ids_to_disable = base::ToValueList(rule_ids_to_disable);
-    base::Value::List ids_to_enable = base::ToValueList(rule_ids_to_enable);
+    base::ListValue ids_to_disable = base::ToValueList(rule_ids_to_disable);
+    base::ListValue ids_to_enable = base::ToValueList(rule_ids_to_enable);
 
     const std::string script = content::JsReplace(
         kScript, ruleset_id, base::Value(std::move(ids_to_disable)),
@@ -600,7 +600,7 @@ class DeclarativeNetRequestBrowserTest
                 : ['expected:', expected, '; actual:', actual].join(''));
           });
     )";
-    base::Value::List expected = base::ToValueList(expected_disabled_rule_ids);
+    base::ListValue expected = base::ToValueList(expected_disabled_rule_ids);
     std::string result = ExecuteScriptInBackgroundPageAndReturnString(
         extension_id,
         content::JsReplace(kScript, ruleset_id_string, std::move(expected)));

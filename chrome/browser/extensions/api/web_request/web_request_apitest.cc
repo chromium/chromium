@@ -202,7 +202,7 @@ class NavigateTabMessageHandler {
     std::optional<base::Value> command =
         base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (command && command->is_dict()) {  // Check the message decoded from JSON
-      base::Value::Dict* data = command->GetDict().FindDict("navigate");
+      base::DictValue* data = command->GetDict().FindDict("navigate");
       if (data) {
         int tab_id = data->FindInt("tabId").value();
         GURL url = GURL(*data->FindString("url"));
@@ -465,7 +465,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
     net::X509Certificate::GetPEMEncoded(certificate->cert_buffer(),
                                         &pem_string);
 
-    base::Value::Dict custom_args;
+    base::DictValue custom_args;
     custom_args.Set("request_url", request_url.spec());
     custom_args.Set("certificate_bytes", std::move(pem_string));
     custom_args.Set("expect_state", std::move(expect_state));
@@ -479,7 +479,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
   }
 
   void RunSecurityInfoInsecureTest(bool use_web_socket, GURL request_url) {
-    base::Value::Dict custom_args;
+    base::DictValue custom_args;
     custom_args.Set("request_url", request_url.spec());
     custom_args.Set("use_web_socket", use_web_socket);
 
@@ -1035,7 +1035,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-  SendCommand("Network.enable", base::Value::Dict(), true);
+  SendCommand("Network.enable", base::DictValue(), true);
   const GURL url(
       embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
 
   // Check that `Network.responseReceived` contains the response header added
   // by the extension
-  base::Value::Dict response_received_result =
+  base::DictValue response_received_result =
       WaitForNotification("Network.responseReceived", false);
   auto* extension_header = response_received_result.FindByDottedPath(
       "response.headers.extensionHeaderName");
@@ -1053,9 +1053,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
 
   // Check that the cookie as specified in the original headers has been set
   auto* get_all_cookies_result =
-      SendCommand("Network.getAllCookies", base::Value::Dict(), true);
-  const base::Value::List* cookies =
-      get_all_cookies_result->FindList("cookies");
+      SendCommand("Network.getAllCookies", base::DictValue(), true);
+  const base::ListValue* cookies = get_all_cookies_result->FindList("cookies");
   ASSERT_TRUE(cookies);
   ASSERT_EQ(cookies->size(), 1u);
   ASSERT_TRUE(cookies->front().is_dict());
@@ -1095,11 +1094,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-  SendCommand("Network.enable", base::Value::Dict(), true);
+  SendCommand("Network.enable", base::DictValue(), true);
 
-  base::Value::Dict enable_params;
-  base::Value::List patterns;
-  base::Value::Dict pattern;
+  base::DictValue enable_params;
+  base::ListValue patterns;
+  base::DictValue pattern;
   pattern.Set("requestStage", "Response");
   patterns.Append(std::move(pattern));
   enable_params.Set("patterns", std::move(patterns));
@@ -1110,13 +1109,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
-  base::Value::Dict request_paused_result =
+  base::DictValue request_paused_result =
       WaitForNotification("Fetch.requestPaused", true);
   std::string* request_id = request_paused_result.FindString("requestId");
 
   // Checks that `Fetch.requestPaused` contains the response headers added by
   // the extension
-  base::Value::List* response_headers =
+  base::ListValue* response_headers =
       request_paused_result.FindListByDottedPath("responseHeaders");
   auto* header_name = response_headers->back().GetDict().FindString("name");
   ASSERT_TRUE(header_name);
@@ -1126,15 +1125,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   ASSERT_EQ(*header_value, "extensionHeaderValue");
 
   // Response headers are replaced by new overrides
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("requestId", *request_id);
-  base::Value::Dict header_1;
+  base::DictValue header_1;
   header_1.Set("name", "firstName");
   header_1.Set("value", "firstValue");
-  base::Value::Dict header_2;
+  base::DictValue header_2;
   header_2.Set("name", "secondName");
   header_2.Set("value", "secondValue");
-  base::Value::List headers;
+  base::ListValue headers;
   headers.Append(std::move(header_1));
   headers.Append(std::move(header_2));
   params.Set("responseHeaders", std::move(headers));
@@ -1144,7 +1143,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
 
   // Check that `Network.responseReceived` contains the response headers as
   // specified via `Fetch.fulfillRequest`
-  base::Value::Dict response_received_result =
+  base::DictValue response_received_result =
       WaitForNotification("Network.responseReceived", false);
   auto* first_header =
       response_received_result.FindByDottedPath("response.headers.firstName");
@@ -1161,9 +1160,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
 
   // Check that the cookie as specified in the original headers has been set
   auto* get_all_cookies_result =
-      SendCommand("Network.getAllCookies", base::Value::Dict(), true);
-  const base::Value::List* cookies =
-      get_all_cookies_result->FindList("cookies");
+      SendCommand("Network.getAllCookies", base::DictValue(), true);
+  const base::ListValue* cookies = get_all_cookies_result->FindList("cookies");
   ASSERT_TRUE(cookies);
   ASSERT_EQ(cookies->size(), 1u);
   auto* cookie_name = cookies->front().GetDict().FindString("name");
@@ -1615,7 +1613,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   GURL url = https_test_server.GetURL("/webrequest/simulate_click.html");
 
-  base::Value::List custom_args;
+  base::ListValue custom_args;
   custom_args.Append(url.spec());
   custom_args.Append(insecure_destination.spec());
 
@@ -1647,7 +1645,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   GURL base_url =
       https_test_server.GetURL("/webrequest/test_redirects_workers/page/");
-  base::Value::Dict custom_args;
+  base::DictValue custom_args;
   custom_args.Set("base_url", base_url.spec());
   std::string config_string = base::WriteJson(custom_args).value_or("");
 
@@ -1977,13 +1975,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
   scoped_refptr<const Extension> hosted_app =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "Some hosted app")
                   .Set("version", "1")
                   .Set("manifest_version", 2)
                   .Set("app",
-                       base::Value::Dict().Set(
-                           "launch", base::Value::Dict().Set(
+                       base::DictValue().Set(
+                           "launch", base::DictValue().Set(
                                          "web_url", hosted_app_url.spec()))))
           .Build();
   extension_registrar()->AddExtension(hosted_app);

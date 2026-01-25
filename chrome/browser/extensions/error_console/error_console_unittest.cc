@@ -82,7 +82,7 @@ TEST_F(ErrorConsoleUnitTest, EnableAndDisableErrorConsole) {
       "ohmmkhmmmpcnpikjeljgnaoabkaalbgc";
   scoped_refptr<const Extension> adt =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "apps dev tools")
                            .Set("version", "0.2.0")
                            .Set("manifest_version", 2))
@@ -196,7 +196,7 @@ TEST_F(ErrorConsoleUnitTest, TestDefaultStoringPrefs) {
   // For this, we need actual extensions.
   scoped_refptr<const Extension> unpacked_extension =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "unpacked")
                            .Set("version", "0.0.1")
                            .Set("manifest_version", 2))
@@ -205,7 +205,7 @@ TEST_F(ErrorConsoleUnitTest, TestDefaultStoringPrefs) {
           .Build();
   scoped_refptr<const Extension> packed_extension =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "packed")
                            .Set("version", "0.0.1")
                            .Set("manifest_version", 2))

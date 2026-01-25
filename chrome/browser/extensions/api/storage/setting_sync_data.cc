@@ -66,7 +66,7 @@ void SettingSyncData::ExtractSyncData(const syncer::SyncData& sync_data) {
   if (!value_) {
     LOG(WARNING) << "Specifics for " << extension_id_ << "/" << key_
                  << " had bad JSON for value: " << extension_specifics.value();
-    value_ = base::Value(base::Value::Dict());
+    value_ = base::Value(base::DictValue());
   }
 }
 

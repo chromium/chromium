@@ -56,7 +56,7 @@ ContextSignalsDecorator::ContextSignalsDecorator(
 
 ContextSignalsDecorator::~ContextSignalsDecorator() = default;
 
-void ContextSignalsDecorator::Decorate(base::Value::Dict& signals,
+void ContextSignalsDecorator::Decorate(base::DictValue& signals,
                                        base::OnceClosure done_closure) {
   context_info_fetcher_->Fetch(base::BindOnce(
       &ContextSignalsDecorator::OnSignalsFetched,
@@ -65,7 +65,7 @@ void ContextSignalsDecorator::Decorate(base::Value::Dict& signals,
 }
 
 void ContextSignalsDecorator::OnSignalsFetched(
-    base::Value::Dict& signals,
+    base::DictValue& signals,
     base::TimeTicks start_time,
     base::OnceClosure done_closure,
     enterprise_signals::ContextInfo context_info) {

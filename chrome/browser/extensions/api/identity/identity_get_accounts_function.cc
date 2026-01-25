@@ -36,7 +36,7 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
   IdentityAPI* identity_api = IdentityAPI::GetFactoryInstance()->Get(profile);
   std::vector<CoreAccountInfo> accounts =
       identity_api->GetAccountsWithRefreshTokensForExtensions();
-  base::Value::List infos;
+  base::ListValue infos;
 
   if (accounts.empty()) {
     return RespondNow(WithArguments(std::move(infos)));

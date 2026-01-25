@@ -201,7 +201,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
 TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
        MaybeProxyRequest_ProxiesAppropriateRequests) {
   PlatformAuthProviderManager::GetInstance().SetEnabled(true, {});
-  base::Value::List hosts;
+  base::ListValue hosts;
   hosts.Append("foobar.example.com");
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
       prefs::kExtensibleEnterpriseSSOConfiguredHosts, std::move(hosts));
@@ -293,7 +293,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
        MaybeProxyRequest_OktaIdpBlocked) {
   PlatformAuthProviderManager::GetInstance().SetEnabled(true, {});
 
-  base::Value::List enabled_idps;
+  base::ListValue enabled_idps;
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
       prefs::kExtensibleEnterpriseSSOEnabledIdps, std::move(enabled_idps));
 
@@ -339,7 +339,7 @@ TEST_P(PlatformAuthProxyingURLLoaderFactoryInterceptTest,
   const GURL url = GURL(params.url);
 
   if (params.should_intercept) {
-    base::Value::List hosts;
+    base::ListValue hosts;
     hosts.Append(url.host());
     TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetList(
         prefs::kExtensibleEnterpriseSSOConfiguredHosts, std::move(hosts));

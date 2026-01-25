@@ -46,9 +46,8 @@ namespace SetPdfPluginAttributes =
 namespace SetPdfDocumentTitle = api::pdf_viewer_private::SetPdfDocumentTitle;
 
 // Check if the current URL is allowed based on a list of allowlisted domains.
-bool IsUrlAllowedToEmbedLocalFiles(
-    const GURL& current_url,
-    const base::Value::List& allowlisted_domains) {
+bool IsUrlAllowedToEmbedLocalFiles(const GURL& current_url,
+                                   const base::ListValue& allowlisted_domains) {
   if (!current_url.is_valid() || !current_url.SchemeIs(url::kHttpsScheme)) {
     return false;
   }

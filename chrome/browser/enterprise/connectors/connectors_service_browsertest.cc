@@ -319,15 +319,15 @@ class ConnectorsServiceAnalysisProfileBrowserTest
 
   // Returns the Value the "normal" reporting workflow uses to validate that it
   // is in sync with the information sent through analysis-reporting.
-  base::Value::Dict ReportingMetadata(bool is_cloud, bool include_device_info) {
-    base::Value::Dict output;
+  base::DictValue ReportingMetadata(bool is_cloud, bool include_device_info) {
+    base::DictValue output;
     output.Set("browser",
                policy::ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                    BuildBrowserDictionary(!is_cloud || include_device_info));
-    base::Value::Dict context = reporting::GetContext(browser()->profile());
+    base::DictValue context = reporting::GetContext(browser()->profile());
     output.Merge(std::move(context));
     if (include_device_info) {
-      base::Value::Dict device;
+      base::DictValue device;
       device.Set("device", policy::ReportingJobConfigurationBase::
                                DeviceDictionaryBuilder ::BuildDeviceDictionary(
                                    kFakeBrowserDMToken, kFakeBrowserClientId));
@@ -348,7 +348,7 @@ class ConnectorsServiceAnalysisProfileBrowserTest
         !profile_reporting ||
         (management_status() == ManagementStatus::kAffiliated && is_cloud);
 #endif
-    base::Value::Dict reporting_metadata =
+    base::DictValue reporting_metadata =
         ReportingMetadata(is_cloud, includes_device_info);
 
     ASSERT_TRUE(metadata.has_browser());
