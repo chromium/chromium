@@ -1,0 +1,38 @@
+This is a testharness.js-based test.
+Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Append h1 to #ancestor: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Append h1 to #ancestor: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Append h2 to #ancestor: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Append h2 to #ancestor: #has_heading_2
+  assert_equals: expected "rgb(255, 165, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Append h2 to #ancestor: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Append h3 to #ancestor: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Append h3 to #ancestor: #has_heading_2
+  assert_equals: expected "rgb(255, 165, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Append h3 to #ancestor: #has_heading_3
+  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Append h3 to #ancestor: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Remove h1 from #ancestor: #has_heading_2
+  assert_equals: expected "rgb(255, 165, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Remove h1 from #ancestor: #has_heading_3
+  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Remove h1 from #ancestor: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Remove h2 from #ancestor: #has_heading_3
+  assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Insert h1 adjacent to #sibling: #has_adjacent_heading_1
+  assert_equals: expected "rgb(0, 0, 255)" but got "rgb(128, 128, 128)"
+[FAIL] Insert h1 adjacent to #sibling: #adjacent_heading_1
+  assert_equals: expected "rgb(128, 0, 128)" but got "rgb(128, 128, 128)"
+[FAIL] Replace div with h1 in #ancestor: #has_heading_1
+  assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+[FAIL] Replace div with h1 in #ancestor: #has_heading_1_2
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+Harness: the test ran to completion.
+

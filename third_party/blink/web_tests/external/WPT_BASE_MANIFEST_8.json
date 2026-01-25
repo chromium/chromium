@@ -405329,6 +405329,10 @@
        "a3cc6d3d8f56fd31c4b19d23af606d7c65487145",
        []
       ],
+      "heading-pseudo-class-in-has-expected.txt": [
+       "c997601a9fb193e0a73e31bcc4446a1ffb41354c",
+       []
+      ],
       "media-loading-pseudo-classes-in-has-expected.txt": [
        "065681d3a804ee058f031e369180e9b025517057",
        []
@@ -572674,6 +572678,13 @@
       ],
       "has-with-pseudo-class.html": [
        "4dc4c1a6a26e6bbbaf299a55b28a45e542ce672b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "heading-pseudo-class-in-has.html": [
+       "661921ae6552e959c00511fc570d748f4f826732",
        [
         null,
         {}
