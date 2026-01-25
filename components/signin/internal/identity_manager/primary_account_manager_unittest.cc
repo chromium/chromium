@@ -486,7 +486,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
                            AccountTrackerService::MIGRATION_NOT_STARTED);
   ScopedListPrefUpdate update(client_prefs, prefs::kAccountInfo);
   update->clear();
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("account_id", email);
   dict.Set("email", email);
   dict.Set("gaia", gaia_id.ToString());
@@ -516,7 +516,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
                            AccountTrackerService::MIGRATION_NOT_STARTED);
   ScopedListPrefUpdate update(client_prefs, prefs::kAccountInfo);
   update->clear();
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("account_id", email);
   dict.Set("email", email);
   dict.Set("gaia", gaia_id.ToString());

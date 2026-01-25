@@ -194,7 +194,7 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   // since we iterate over child nodes already in the calling sites.
   void AppendNodeAndChildrenForDebugging(const bookmarks::BookmarkNode* node,
                                          int index,
-                                         base::Value::List* all_nodes) const;
+                                         base::ListValue* all_nodes) const;
 
   // Controls whether bookmarks should be wiped when sync is stopped.
   const syncer::WipeModelUponSyncDisabledBehavior

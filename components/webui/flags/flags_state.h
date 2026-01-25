@@ -184,8 +184,8 @@ class FlagsState {
   void GetFlagFeatureEntries(
       FlagsStorage* flags_storage,
       FlagAccess access,
-      base::Value::List& supported_entries,
-      base::Value::List& unsupported_entries,
+      base::ListValue& supported_entries,
+      base::ListValue& unsupported_entries,
       base::RepeatingCallback<bool(const FeatureEntry&)> skip_feature_entry);
 
   // Returns the value for the current platform. This is one of the values

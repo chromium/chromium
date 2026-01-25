@@ -524,15 +524,14 @@ void SetExtendedReportingPrefForTests(PrefService* prefs, bool value);
 
 // Set the current configuration being used by the Extension Telemetry Service
 void SetExtensionTelemetryConfig(PrefService& prefs,
-                                 const base::Value::Dict& config);
+                                 const base::DictValue& config);
 
 // Get the current configuration being used by the Extension Telemetry Service
-const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs);
+const base::DictValue& GetExtensionTelemetryConfig(const PrefService& prefs);
 
 // Get the current processed file data stored in the Extension Telemetry
 // Service.
-const base::Value::Dict& GetExtensionTelemetryFileData(
-    const PrefService& prefs);
+const base::DictValue& GetExtensionTelemetryFileData(const PrefService& prefs);
 
 // Sets the last time the Extension Telemetry Service successfully uploaded
 // its data.
@@ -560,12 +559,12 @@ void UpdatePrefsBeforeSecurityInterstitial(PrefService* prefs);
 // Returns a list of preferences to be shown in chrome://safe-browsing. The
 // preferences are passed as an alternating sequence of preference names and
 // values represented as strings.
-base::Value::List GetSafeBrowsingPreferencesList(PrefService* prefs);
+base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs);
 
 // Returns a list of policies to be shown in chrome://safe-browsing. The
 // policies are passed as an alternating sequence of policy names and
 // values represented as strings.
-base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs);
+base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs);
 
 // Returns a list of valid domains that Safe Browsing service trusts.
 void GetSafeBrowsingAllowlistDomainsPref(
@@ -574,7 +573,7 @@ void GetSafeBrowsingAllowlistDomainsPref(
 
 // Helper function to validate and canonicalize a list of domain strings.
 void CanonicalizeDomainList(
-    const base::Value::List& raw_domain_list,
+    const base::ListValue& raw_domain_list,
     std::vector<std::string>* out_canonicalized_domain_list);
 
 // Helper function to determine if |url| matches Safe Browsing allowlist domains

@@ -47,8 +47,8 @@ bool ParseResponse(const std::string& response, bool* is_porn) {
     DLOG(WARNING) << "ParseResponse failed to parse global dictionary";
     return false;
   }
-  const base::Value::Dict& dict = optional_value.value().GetDict();
-  const base::Value::List* classifications_list =
+  const base::DictValue& dict = optional_value.value().GetDict();
+  const base::ListValue* classifications_list =
       dict.FindList("classifications");
   if (!classifications_list) {
     DLOG(WARNING) << "ParseResponse failed to parse classifications list";
@@ -63,7 +63,7 @@ bool ParseResponse(const std::string& response, bool* is_porn) {
     DLOG(WARNING) << "ParseResponse failed to parse classification dict";
     return false;
   }
-  const base::Value::Dict& classification_dict = classification_value.GetDict();
+  const base::DictValue& classification_dict = classification_value.GetDict();
   std::optional<bool> is_porn_opt = classification_dict.FindBool("pornography");
   if (is_porn_opt.has_value())
     *is_porn = is_porn_opt.value();

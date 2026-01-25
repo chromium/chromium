@@ -46,7 +46,7 @@ class GaiaAccountInfoFetcher : public OAuth2AccessTokenManager::Consumer,
                          const GoogleServiceAuthError& error) override;
 
   // gaia::GaiaOAuthClient::Delegate implementation.
-  void OnGetUserInfoResponse(const base::Value::Dict& user_info) override;
+  void OnGetUserInfoResponse(const base::DictValue& user_info) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 

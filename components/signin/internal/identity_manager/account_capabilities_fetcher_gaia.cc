@@ -114,7 +114,7 @@ void AccountCapabilitiesFetcherGaia::OnGetTokenFailure(
 }
 
 void AccountCapabilitiesFetcherGaia::OnGetAccountCapabilitiesResponse(
-    const base::Value::Dict& account_capabilities) {
+    const base::DictValue& account_capabilities) {
   TRACE_EVENT_END(
       "AccountFetcherService",
       /* GetAccountCapabilities */ perfetto::Track::FromPointer(this));

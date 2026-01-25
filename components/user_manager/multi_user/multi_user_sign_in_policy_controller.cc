@@ -108,7 +108,7 @@ void MultiUserSignInPolicyController::OnUserToBeRemoved(
 
 MultiUserSignInPolicy MultiUserSignInPolicyController::GetCachedValue(
     std::string_view user_email) const {
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       local_state_->GetDict(prefs::kCachedMultiProfileUserBehavior);
 
   const std::string* value = dict.FindString(user_email);

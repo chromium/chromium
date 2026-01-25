@@ -165,8 +165,7 @@ KnownUser::KnownUser(PrefService* local_state) : local_state_(local_state) {
 
 KnownUser::~KnownUser() = default;
 
-const base::Value::Dict* KnownUser::FindPrefs(
-    const AccountId& account_id) const {
+const base::DictValue* KnownUser::FindPrefs(const AccountId& account_id) const {
   // UserManager is usually NULL in unit tests.
   if (UserManager::IsInitialized() &&
       UserManager::Get()->IsUserNonCryptohomeDataEphemeral(account_id)) {
@@ -177,12 +176,12 @@ const base::Value::Dict* KnownUser::FindPrefs(
     return nullptr;
   }
 
-  const base::Value::List& known_users = local_state_->GetList(kKnownUsers);
+  const base::ListValue& known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users) {
     if (!element_value.is_dict()) {
       continue;
     }
-    const base::Value::Dict& dict = element_value.GetDict();
+    const base::DictValue& dict = element_value.GetDict();
     if (!AccountIdMatches(account_id, dict)) {
       continue;
     }
@@ -209,7 +208,7 @@ void KnownUser::SetPath(const AccountId& account_id,
     if (!element_value.is_dict()) {
       continue;
     }
-    base::Value::Dict& dict = element_value.GetDict();
+    base::DictValue& dict = element_value.GetDict();
     if (!AccountIdMatches(account_id, dict)) {
       continue;
     }
@@ -226,7 +225,7 @@ void KnownUser::SetPath(const AccountId& account_id,
     return;
   }
 
-  base::Value::Dict new_dict;
+  base::DictValue new_dict;
   new_dict.SetByDottedPath(path, std::move(opt_value).value());
   StoreAccountId(account_id, new_dict);
   update->Append(std::move(new_dict));
@@ -234,7 +233,7 @@ void KnownUser::SetPath(const AccountId& account_id,
 
 const std::string* KnownUser::FindStringPath(const AccountId& account_id,
                                              std::string_view path) const {
-  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
+  const base::DictValue* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict) {
     return nullptr;
   }
@@ -260,7 +259,7 @@ void KnownUser::SetStringPref(const AccountId& account_id,
 
 std::optional<bool> KnownUser::FindBoolPath(const AccountId& account_id,
                                             std::string_view path) const {
-  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
+  const base::DictValue* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict) {
     return std::nullopt;
   }
@@ -287,7 +286,7 @@ void KnownUser::SetBooleanPref(const AccountId& account_id,
 
 std::optional<int> KnownUser::FindIntPath(const AccountId& account_id,
                                           std::string_view path) const {
-  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
+  const base::DictValue* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict) {
     return std::nullopt;
   }
@@ -314,7 +313,7 @@ void KnownUser::SetIntegerPref(const AccountId& account_id,
 
 std::optional<double> KnownUser::FindDoublePath(const AccountId& account_id,
                                                 std::string_view path) const {
-  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
+  const base::DictValue* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict) {
     return std::nullopt;
   }
@@ -348,7 +347,7 @@ bool KnownUser::GetPrefForTest(const AccountId& account_id,
 
 const base::Value* KnownUser::FindPath(const AccountId& account_id,
                                        const std::string& path) const {
-  const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
+  const base::DictValue* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict) {
     return nullptr;
   }
@@ -451,12 +450,12 @@ AccountId KnownUser::GetAccountIdByCryptohomeId(
 std::vector<AccountId> KnownUser::GetKnownAccountIds() {
   std::vector<AccountId> result;
 
-  const base::Value::List& known_users = local_state_->GetList(kKnownUsers);
+  const base::ListValue& known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users) {
     if (!element_value.is_dict()) {
       continue;
     }
-    const base::Value::Dict& dict = element_value.GetDict();
+    const base::DictValue& dict = element_value.GetDict();
     if (std::optional<AccountId> account_id = LoadAccountId(dict)) {
       result.push_back(*account_id);
     }
@@ -573,15 +572,15 @@ std::optional<int> KnownUser::FindReauthReason(
 }
 
 void KnownUser::SetChallengeResponseKeys(const AccountId& account_id,
-                                         base::Value::List value) {
+                                         base::ListValue value) {
   SetPath(account_id, kChallengeResponseKeys, base::Value(std::move(value)));
 }
 
-base::Value::List KnownUser::GetChallengeResponseKeys(
+base::ListValue KnownUser::GetChallengeResponseKeys(
     const AccountId& account_id) {
   const base::Value* value = FindPath(account_id, kChallengeResponseKeys);
   if (!value || !value->is_list()) {
-    return base::Value::List();
+    return base::ListValue();
   }
   return value->GetList().Clone();
 }
@@ -671,14 +670,14 @@ void KnownUser::PinAutosubmitSetBackfillNeededForTests(
 }
 
 void KnownUser::SetAuthFactorCache(const AccountId& account_id,
-                                   base::Value::Dict cache) {
+                                   base::DictValue cache) {
   SetPath(account_id, kAuthFactorPresenceCache, base::Value(std::move(cache)));
 }
 
-base::Value::Dict KnownUser::GetAuthFactorCache(const AccountId& account_id) {
+base::DictValue KnownUser::GetAuthFactorCache(const AccountId& account_id) {
   const auto* value = FindPath(account_id, kAuthFactorPresenceCache);
   if (!value || !value->is_dict()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
   return value->GetDict().Clone();
 }
@@ -757,7 +756,7 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
   }
 
   ScopedListPrefUpdate update(local_state_, kKnownUsers);
-  base::Value::List& update_list = update.Get();
+  base::ListValue& update_list = update.Get();
   for (auto it = update_list.begin(); it != update_list.end(); ++it) {
     if (AccountIdMatches(account_id, it->GetDict())) {
       update_list.erase(it);

@@ -175,17 +175,17 @@ void PartitionedLockManager::RemoveLockId(const PartitionedLockId& lock_id) {
 
 base::Value PartitionedLockManager::ToDebugValue(
     TransformLockIdToStringFn transform) const {
-  base::Value::Dict result;
+  base::DictValue result;
   for (const std::pair<PartitionedLockId, Lock>& id_lock_pair : locks_) {
     const Lock& lock = id_lock_pair.second;
-    base::Value::Dict lock_state;
-    base::Value::List held_locations;
+    base::DictValue lock_state;
+    base::ListValue held_locations;
     for (const base::Location& location : lock.request_locations) {
       held_locations.Append(location.ToString());
     }
     lock_state.Set("held_locations", std::move(held_locations));
 
-    base::Value::List queued_locations;
+    base::ListValue queued_locations;
     for (const LockRequest& request : lock.queue) {
       queued_locations.Append(request.location.ToString());
     }

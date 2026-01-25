@@ -437,7 +437,7 @@ BASE_DECLARE_FEATURE(kVisualFeaturesSizes);
 
 // keep-sorted end
 
-base::Value::List GetFeatureStatusList();
+base::ListValue GetFeatureStatusList();
 
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

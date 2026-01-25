@@ -132,7 +132,7 @@ bool ShortcutEqualsSearchAggregatorProviderKeyword(const std::string& shortcut,
                          base::Value::Type::DICT)) {
     return false;
   }
-  const base::Value::Dict& search_aggregator =
+  const base::DictValue& search_aggregator =
       policies
           .GetValue(key::kEnterpriseSearchAggregatorSettings,
                     base::Value::Type::DICT)

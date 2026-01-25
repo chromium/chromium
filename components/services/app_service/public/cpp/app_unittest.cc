@@ -48,10 +48,10 @@ std::pair<uint64_t, uint64_t> TestValue() {
 }
 
 template <>
-std::pair<base::Value::Dict, base::Value::Dict> TestValue() {
-  base::Value::Dict dict1;
+std::pair<base::DictValue, base::DictValue> TestValue() {
+  base::DictValue dict1;
   dict1.Set("vm_name", "vm_name_value");
-  base::Value::Dict dict2;
+  base::DictValue dict2;
   dict2.Set("container_name", "container_name_value");
   return {std::move(dict1), std::move(dict2)};
 }

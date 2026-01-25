@@ -173,8 +173,8 @@ class TranslatePrefs {
   void BlockLanguage(std::string_view source_language);
   void UnblockLanguage(std::string_view source_language);
   // Returns the languages that should be blocked by default as a
-  // base::Value::List.
-  static base::Value::List GetDefaultBlockedLanguages();
+  // base::ListValue.
+  static base::ListValue GetDefaultBlockedLanguages();
   void ResetBlockedLanguagesToDefault();
   // Prevent empty blocked languages by resetting them to the default value.
   // (crbug.com/902354)

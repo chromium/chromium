@@ -94,7 +94,7 @@ void ActivePrimaryAccountsMetricsRecorder::MarkAccountAsActiveNow(
 void ActivePrimaryAccountsMetricsRecorder::MarkAccountAsManaged(
     const GaiaId& gaia_id,
     bool is_managed_account) {
-  const base::Value::Dict& active_accounts =
+  const base::DictValue& active_accounts =
       local_state_->GetDict(kActiveAccountsPrefName);
   const std::string key = GaiaIdHash::FromGaiaId(gaia_id).ToBase64();
   if (!active_accounts.contains(key)) {
@@ -146,9 +146,9 @@ void ActivePrimaryAccountsMetricsRecorder::EmitMetrics() {
   int accounts_in_28_days = 0;
   int managed_accounts_in_7_days = 0;
   int managed_accounts_in_28_days = 0;
-  const base::Value::Dict& accounts_timestamps =
+  const base::DictValue& accounts_timestamps =
       local_state_->GetDict(kActiveAccountsPrefName);
-  const base::Value::Dict& accounts_managed =
+  const base::DictValue& accounts_managed =
       local_state_->GetDict(kActiveAccountsManagedPrefName);
   for (const auto [gaia_id_hash, last_active] : accounts_timestamps) {
     base::Time last_active_time =
@@ -192,7 +192,7 @@ void ActivePrimaryAccountsMetricsRecorder::EmitMetrics() {
 #if BUILDFLAG(IS_IOS)
   int switches_in_7_days = 0;
   int switches_in_28_days = 0;
-  const base::Value::List& account_switch_timestamps =
+  const base::ListValue& account_switch_timestamps =
       local_state_->GetList(kAccountSwitchTimestampsPrefName);
   for (const base::Value& timestamp : account_switch_timestamps) {
     base::Time switch_time =
@@ -216,7 +216,7 @@ void ActivePrimaryAccountsMetricsRecorder::CleanUpExpiredEntries() {
   const base::Time now = base::Time::Now();
 
   // Clean up all entries older than 28 days.
-  const base::Value::Dict& active_accounts =
+  const base::DictValue& active_accounts =
       local_state_->GetDict(kActiveAccountsPrefName);
   std::set<std::string> gaia_id_hashes_to_remove;
   for (const auto [gaia_id_hash, last_active] : active_accounts) {
@@ -229,7 +229,7 @@ void ActivePrimaryAccountsMetricsRecorder::CleanUpExpiredEntries() {
   // Also clean up any managed-account entries that don't have a corresponding
   // timestamp. That generally shouldn't happen; this is just to ensure no data
   // gets "leaked".
-  const base::Value::Dict& managed_accounts =
+  const base::DictValue& managed_accounts =
       local_state_->GetDict(kActiveAccountsManagedPrefName);
   for (const auto [gaia_id_hash, managed] : managed_accounts) {
     if (!active_accounts.contains(gaia_id_hash)) {
@@ -249,9 +249,9 @@ void ActivePrimaryAccountsMetricsRecorder::CleanUpExpiredEntries() {
   }
 
 #if BUILDFLAG(IS_IOS)
-  const base::Value::List& old_timestamps =
+  const base::ListValue& old_timestamps =
       local_state_->GetList(kAccountSwitchTimestampsPrefName);
-  base::Value::List new_timestamps;
+  base::ListValue new_timestamps;
   for (const base::Value& timestamp : old_timestamps) {
     base::Time switch_time =
         base::ValueToTime(timestamp).value_or(base::Time());

@@ -203,9 +203,9 @@ class TabGroupSyncServiceImplTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kDidEnableSharedTabGroupsInLastSession, true);
     pref_service_.registry()->RegisterDictionaryPref(prefs::kDeletedTabGroupIds,
-                                                     base::Value::Dict());
+                                                     base::DictValue());
     pref_service_.registry()->RegisterDictionaryPref(
-        prefs::kLocallyClosedRemoteTabGroupIds, base::Value::Dict());
+        prefs::kLocallyClosedRemoteTabGroupIds, base::DictValue());
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kEligibleForVersionUpdatedMessage, false);
     pref_service_.registry()->RegisterBooleanPref(

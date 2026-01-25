@@ -305,7 +305,7 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveOne) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
 
   {
-    const base::Value::List& entries_list =
+    const base::ListValue& entries_list =
         prefs_.GetList(prefs::kAboutFlagsEntries);
     ASSERT_EQ(2u, entries_list.size());
 
@@ -320,7 +320,7 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveOne) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, false);
 
   {
-    const base::Value::List& entries_list =
+    const base::ListValue& entries_list =
         prefs_.GetList(prefs::kAboutFlagsEntries);
     ASSERT_EQ(1u, entries_list.size());
     std::string s0 = entries_list[0].GetString();
@@ -333,7 +333,7 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveBoth) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
   {
-    const base::Value::List& entries_list =
+    const base::ListValue& entries_list =
         prefs_.GetList(prefs::kAboutFlagsEntries);
     ASSERT_EQ(2u, entries_list.size());
   }
@@ -342,7 +342,7 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveBoth) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, false);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, false);
   {
-    const base::Value::List& entries_list =
+    const base::ListValue& entries_list =
         prefs_.GetList(prefs::kAboutFlagsEntries);
     EXPECT_TRUE(entries_list.empty());
   }
@@ -649,7 +649,7 @@ TEST_F(FlagsStateTest, PersistAndPrune) {
   EXPECT_FALSE(command_line.HasSwitch(kSwitch3));
 
   // FeatureEntry 3 should show still be persisted in preferences though.
-  const base::Value::List& entries_list =
+  const base::ListValue& entries_list =
       prefs_.GetList(prefs::kAboutFlagsEntries);
   EXPECT_EQ(2U, entries_list.size());
   std::string s0 = entries_list[0].GetString();
@@ -701,7 +701,7 @@ TEST_F(FlagsStateTest, CheckValues) {
 #endif
 
   // And it should persist.
-  const base::Value::List& entries_list =
+  const base::ListValue& entries_list =
       prefs_.GetList(prefs::kAboutFlagsEntries);
   EXPECT_EQ(2U, entries_list.size());
   std::string s0 = entries_list[0].GetString();
@@ -965,8 +965,8 @@ TEST_F(FlagsStateTest, FeatureValues) {
 }
 
 TEST_F(FlagsStateTest, GetFlagFeatureEntries) {
-  base::Value::List supported_entries;
-  base::Value::List unsupported_entries;
+  base::ListValue supported_entries;
+  base::ListValue unsupported_entries;
   flags_state_->GetFlagFeatureEntries(&flags_storage_, kGeneralAccessFlagsOnly,
                                       supported_entries, unsupported_entries,
                                       base::BindRepeating(&SkipFeatureEntry));

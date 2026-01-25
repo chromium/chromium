@@ -57,16 +57,16 @@ constexpr auto kBannerEventKeys = std::to_array<const char*>({
 unsigned int gDaysAfterDismissedToShow = kMinimumBannerBlockedToBannerShown;
 unsigned int gDaysAfterIgnoredToShow = kMinimumDaysBetweenBannerShows;
 
-base::Value::Dict GetOriginAppBannerData(HostContentSettingsMap* settings,
-                                         const GURL& origin_url) {
+base::DictValue GetOriginAppBannerData(HostContentSettingsMap* settings,
+                                       const GURL& origin_url) {
   if (!settings)
-    return base::Value::Dict();
+    return base::DictValue();
 
   base::Value dict = settings->GetWebsiteSetting(
       origin_url, origin_url, ContentSettingsType::APP_BANNER, nullptr);
 
   if (!dict.is_dict())
-    return base::Value::Dict();
+    return base::DictValue();
 
   return std::move(dict.GetDict());
 }
@@ -89,15 +89,14 @@ class AppPrefs {
     if (!dict_) {
       // Don't allow more than kMaxAppsPerSite dictionaries.
       if (origin_dict_.size() < kMaxAppsPerSite) {
-        dict_ =
-            origin_dict_.Set(package_name_or_start_url, base::Value::Dict())
-                ->GetIfDict();
+        dict_ = origin_dict_.Set(package_name_or_start_url, base::DictValue())
+                    ->GetIfDict();
       }
     }
   }
 
   HostContentSettingsMap* settings() { return settings_; }
-  base::Value::Dict* dict() { return dict_; }
+  base::DictValue* dict() { return dict_; }
 
   void Save() {
     DCHECK(dict_);
@@ -110,8 +109,8 @@ class AppPrefs {
  private:
   const raw_ref<const GURL> origin_;
   raw_ptr<HostContentSettingsMap> settings_ = nullptr;
-  base::Value::Dict origin_dict_;
-  raw_ptr<base::Value::Dict> dict_ = nullptr;
+  base::DictValue origin_dict_;
+  raw_ptr<base::DictValue> dict_ = nullptr;
 };
 
 // Reports whether |event| was recorded within the |period| up until |now|.
@@ -164,7 +163,7 @@ std::optional<NextInstallTextAnimation> NextInstallTextAnimation::Get(
   if (!app_prefs.dict())
     return NextInstallTextAnimation{base::Time::Max(), base::TimeDelta::Max()};
 
-  const base::Value::Dict* next_dict =
+  const base::DictValue* next_dict =
       app_prefs.dict()->FindDict(kNextInstallTextAnimation);
   if (!next_dict)
     return std::nullopt;
@@ -188,7 +187,7 @@ void NextInstallTextAnimation::RecordToPrefs(content::WebContents* web_contents,
   if (!app_prefs.dict())
     return;
 
-  base::Value::Dict next_dict;
+  base::DictValue next_dict;
   next_dict.Set(kLastShownKey, base::TimeToValue(last_shown));
   next_dict.Set(kDelayKey, base::TimeDeltaToValue(delay));
   app_prefs.dict()->Set(kNextInstallTextAnimation, std::move(next_dict));

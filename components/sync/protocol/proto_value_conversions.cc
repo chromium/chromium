@@ -122,7 +122,7 @@ namespace {
 //    For example let's say you want to clobber a sensitive field:
 //
 //    base::Value ToValue(const sync_pb::GreenProto& proto) const {
-//      base::Value::Dict value = ToValueDictImpl(proto);
+//      base::DictValue value = ToValueDictImpl(proto);
 //      value.Set("secret", "<clobbered>");
 //      return base::Value(value);
 //    }
@@ -138,7 +138,7 @@ class ToValueVisitor {
  public:
   explicit ToValueVisitor(const ProtoValueConversionOptions& options =
                               ProtoValueConversionOptions(),
-                          base::Value::Dict* value = nullptr)
+                          base::DictValue* value = nullptr)
       : options_(options), value_(value) {}
 
   template <class P>
@@ -155,7 +155,7 @@ class ToValueVisitor {
       const char* field_name,
       const google::protobuf::RepeatedPtrField<std::string>& repeated_field) {
     if (!repeated_field.empty()) {
-      base::Value::List list;
+      base::ListValue list;
       for (const auto& field : repeated_field) {
         list.Append(base::Base64Encode(base::as_byte_span(field)));
       }
@@ -181,7 +181,7 @@ class ToValueVisitor {
              const char* field_name,
              const google::protobuf::RepeatedPtrField<F>& repeated_field) {
     if (!repeated_field.empty()) {
-      base::Value::List list;
+      base::ListValue list;
       for (const auto& field : repeated_field) {
         list.Append(ToValue(field));
       }
@@ -194,7 +194,7 @@ class ToValueVisitor {
              const char* field_name,
              const google::protobuf::RepeatedField<F>& repeated_field) {
     if (!repeated_field.empty()) {
-      base::Value::List list;
+      base::ListValue list;
       for (const auto& field : repeated_field) {
         list.Append(ToValue(field));
       }
@@ -226,7 +226,7 @@ class ToValueVisitor {
 
   // GetUpdateTriggers.
   base::Value ToValue(const sync_pb::GetUpdateTriggers& proto) const {
-    base::Value::Dict dict = ToValueDictImpl(proto);
+    base::DictValue dict = ToValueDictImpl(proto);
     if (!options_.include_full_get_update_triggers) {
       if (!proto.client_dropped_hints()) {
         dict.Remove("client_dropped_hints");
@@ -255,7 +255,7 @@ class ToValueVisitor {
 
   // AutofillWalletSpecifics
   base::Value ToValue(const sync_pb::AutofillWalletSpecifics& proto) const {
-    base::Value::Dict dict = ToValueDictImpl(proto);
+    base::DictValue dict = ToValueDictImpl(proto);
     // TODO(crbug.com/40252694): consider whether the VISIT_SECRET macro in
     // proto_visitors.h could replace this.
     if (proto.type() != sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS) {
@@ -285,8 +285,8 @@ class ToValueVisitor {
 
  private:
   template <class P>
-  base::Value::Dict ToValueDictImpl(const P& proto) const {
-    base::Value::Dict dict;
+  base::DictValue ToValueDictImpl(const P& proto) const {
+    base::DictValue dict;
     ToValueVisitor visitor(options_, &dict);
     VisitProtoFields(visitor, proto);
     return dict;
@@ -320,7 +320,7 @@ class ToValueVisitor {
   }
 
   const ProtoValueConversionOptions options_;
-  const raw_ptr<base::Value::Dict> value_;
+  const raw_ptr<base::DictValue> value_;
 };
 
 }  // namespace

@@ -212,14 +212,14 @@ TEST_F(WalletHttpClientImplTest, SavePass_LoyaltyCard_RequestStructure) {
   ASSERT_TRUE(root.has_value());
   ASSERT_TRUE(root->is_dict());
 
-  const base::Value::Dict& dict = root->GetDict();
+  const base::DictValue& dict = root->GetDict();
 
   // Verify pass
-  const base::Value::Dict* pass_dict = dict.FindDict("pass");
+  const base::DictValue* pass_dict = dict.FindDict("pass");
   ASSERT_TRUE(pass_dict);
 
   // Verify external_id
-  const base::Value::Dict* external_id = pass_dict->FindDict("external_id");
+  const base::DictValue* external_id = pass_dict->FindDict("external_id");
   ASSERT_TRUE(external_id);
   EXPECT_EQ(external_id->FindInt("namespace"), 1);
   const std::string* uuid_str = external_id->FindString("external_id");
@@ -227,7 +227,7 @@ TEST_F(WalletHttpClientImplTest, SavePass_LoyaltyCard_RequestStructure) {
   EXPECT_TRUE(base::Uuid::ParseLowercase(*uuid_str).is_valid());
 
   // Verify loyalty_card
-  const base::Value::Dict* loyalty_card_dict =
+  const base::DictValue* loyalty_card_dict =
       pass_dict->FindDict("loyalty_card");
   ASSERT_TRUE(loyalty_card_dict);
   EXPECT_EQ(*loyalty_card_dict->FindString("merchant_name"), "i1");
@@ -235,9 +235,9 @@ TEST_F(WalletHttpClientImplTest, SavePass_LoyaltyCard_RequestStructure) {
   EXPECT_EQ(*loyalty_card_dict->FindString("program_name"), "p1");
 
   // Verify client_info
-  const base::Value::Dict* client_info = dict.FindDict("client_info");
+  const base::DictValue* client_info = dict.FindDict("client_info");
   ASSERT_TRUE(client_info);
-  const base::Value::Dict* chrome_client_info =
+  const base::DictValue* chrome_client_info =
       client_info->FindDict("chrome_client_info");
   ASSERT_TRUE(chrome_client_info);
   EXPECT_EQ(*chrome_client_info->FindString("version"),

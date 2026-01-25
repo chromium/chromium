@@ -193,8 +193,8 @@ bool DualLayerUserPrefStore::GetValue(std::string_view key,
   return true;
 }
 
-base::Value::Dict DualLayerUserPrefStore::GetValues() const {
-  base::Value::Dict values = local_pref_store_->GetValues();
+base::DictValue DualLayerUserPrefStore::GetValues() const {
+  base::DictValue values = local_pref_store_->GetValues();
 
   for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
     // Filter out prefs which should not be queried from the account store, for
@@ -684,14 +684,14 @@ std::pair<base::Value, base::Value> DualLayerUserPrefStore::UnmergeValue(
     // to be correct, as UnmergeValue() is called by setters which in turn are
     // only called after a type check.
     if (value.is_dict()) {
-      base::Value::Dict local_dict;
+      base::DictValue local_dict;
       if (const base::Value* local_dict_value = nullptr;
           local_pref_store_->GetValue(pref_name, &local_dict_value)) {
         // It is assumed that the local store cannot contain value of incorrect
         // type.
         local_dict = local_dict_value->GetDict().Clone();
       }
-      base::Value::Dict account_dict;
+      base::DictValue account_dict;
       if (const base::Value* account_dict_value = nullptr;
           account_pref_store_->GetValue(pref_name, &account_dict_value)) {
         // It is assumed that the account store cannot contain value of

@@ -81,11 +81,10 @@ class GroupSuggestionsTracker {
 
     // Returns the dictionary representation of the `ShownSuggestion` to be
     // saved into pref.
-    base::Value::Dict ToDict() const;
+    base::DictValue ToDict() const;
 
     // Returns ShownSuggestion extracted from a dictionary representation.
-    static std::optional<ShownSuggestion> FromDict(
-        const base::Value::Dict& dict);
+    static std::optional<ShownSuggestion> FromDict(const base::DictValue& dict);
 
     base::Time time_shown;
     std::vector<int> tab_ids;

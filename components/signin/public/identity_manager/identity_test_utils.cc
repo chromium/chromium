@@ -697,7 +697,7 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const std::string& given_name,
                                           const std::string& locale,
                                           const std::string& picture_url) {
-  base::Value::Dict user_info;
+  base::DictValue user_info;
   user_info.Set("id", gaia.ToString());
   user_info.Set("email", email);
   user_info.Set("hd", hosted_domain);

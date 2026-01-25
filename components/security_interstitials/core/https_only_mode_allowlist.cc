@@ -52,7 +52,7 @@ void HttpsOnlyModeAllowlist::AllowHttpForHost(const std::string& host,
   // directly storing a string value.
   GURL url = GetSecureGURLForHost(host);
   base::Time expiration_time = clock_->Now() + expiration_timeout_;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kHTTPAllowlistExpirationTimeKey, base::TimeToValue(expiration_time));
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::HTTP_ALLOWED,

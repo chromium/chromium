@@ -56,8 +56,7 @@ class SyncPrefsTest : public testing::Test {
     // in KeepAccountSettingsPrefsOnlyForUsers(); see TODOs there.
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.registry()->RegisterDictionaryPref(
-        tab_groups::prefs::kLocallyClosedRemoteTabGroupIds,
-        base::Value::Dict());
+        tab_groups::prefs::kLocallyClosedRemoteTabGroupIds, base::DictValue());
 
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
     gaia_id_ = GaiaId("account_gaia");

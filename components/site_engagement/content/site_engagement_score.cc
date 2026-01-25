@@ -43,16 +43,16 @@ bool DoublesConsideredDifferent(double value1, double value2, double delta) {
   return abs_difference > delta;
 }
 
-base::Value::Dict GetSiteEngagementScoreDictForSettings(
+base::DictValue GetSiteEngagementScoreDictForSettings(
     const HostContentSettingsMap* settings,
     const GURL& origin_url) {
   if (!settings)
-    return base::Value::Dict();
+    return base::DictValue();
 
   base::Value value = settings->GetWebsiteSetting(
       origin_url, origin_url, ContentSettingsType::SITE_ENGAGEMENT, nullptr);
   if (!value.is_dict())
-    return base::Value::Dict();
+    return base::DictValue();
 
   return std::move(value).TakeDict();
 }
@@ -329,7 +329,7 @@ void SiteEngagementScore::SetLastEngagementTime(const base::Time& time) {
   last_engagement_time_ = time;
 }
 
-bool SiteEngagementScore::UpdateScoreDict(base::Value::Dict& score_dict) {
+bool SiteEngagementScore::UpdateScoreDict(base::DictValue& score_dict) {
   double raw_score_orig = score_dict.FindDouble(kRawScoreKey).value_or(0);
   double points_added_today_orig =
       score_dict.FindDouble(kPointsAddedTodayKey).value_or(0);
@@ -366,7 +366,7 @@ bool SiteEngagementScore::UpdateScoreDict(base::Value::Dict& score_dict) {
 SiteEngagementScore::SiteEngagementScore(
     base::Clock* clock,
     const GURL& origin,
-    std::optional<base::Value::Dict> score_dict)
+    std::optional<base::DictValue> score_dict)
     : clock_(clock),
       raw_score_(0),
       points_added_today_(0),

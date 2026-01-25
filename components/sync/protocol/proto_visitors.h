@@ -83,7 +83,7 @@
 // field value.
 //
 // VisitProtoFields() used to implement two distinctive features:
-// 1. Serialization into base::Value::Dict
+// 1. Serialization into base::DictValue
 // 2. Proto memory usage estimation
 //
 // To achieve that it's very important for VisitProtoFields() to be free

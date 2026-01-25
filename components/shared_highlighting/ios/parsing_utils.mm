@@ -18,7 +18,7 @@ BOOL IsValidDictValue(const base::Value* value) {
   return value && value->is_dict() && !value->GetDict().empty();
 }
 
-std::optional<CGRect> ParseRect(const base::Value::Dict* dict) {
+std::optional<CGRect> ParseRect(const base::DictValue* dict) {
   if (!dict || dict->empty()) {
     return std::nullopt;
   }

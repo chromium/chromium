@@ -117,7 +117,7 @@ void NativeGetLocalDataDescriptionsCallback(
 void NativeGetAllNodesCallback(
     JNIEnv* env,
     const base::android::ScopedJavaGlobalRef<jobject>& callback,
-    base::Value::List result) {
+    base::ListValue result) {
   std::string json_string;
   if (!base::JSONWriter::Write(result, &json_string)) {
     DVLOG(1) << "Writing as JSON failed. Passing empty string to Java code.";

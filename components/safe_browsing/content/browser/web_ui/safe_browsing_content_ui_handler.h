@@ -37,13 +37,13 @@ class SafeBrowsingContentUIHandler : public content::WebUIMessageHandler,
     ~ObserverDelegate() override;
 
     // WebUIInfoSingletonEventObserver::Delegate::
-    base::Value::Dict GetFormattedTailoredVerdictOverride() override;
+    base::DictValue GetFormattedTailoredVerdictOverride() override;
     void SendEventToHandler(std::string_view event_name,
                             base::Value value) override;
     void SendEventToHandler(std::string_view event_name,
-                            base::Value::List& list) override;
+                            base::ListValue& list) override;
     void SendEventToHandler(std::string_view event_name,
-                            base::Value::Dict dict) override;
+                            base::DictValue dict) override;
 
    private:
     raw_ref<SafeBrowsingContentUIHandler> handler_;
@@ -67,12 +67,12 @@ class SafeBrowsingContentUIHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
 
   // Get the current referrer chain for a given URL.
-  void GetReferrerChain(const base::Value::List& args);
+  void GetReferrerChain(const base::ListValue& args);
 
 #if BUILDFLAG(IS_ANDROID)
   // Get the referring app info that launches Chroevent_observer_me on Android.
   // Always set to null if it's called from platforms other than Android.
-  void GetReferringAppInfo(const base::Value::List& args);
+  void GetReferringAppInfo(const base::ListValue& args);
 #endif
 
   // Sets the WebUI for testing

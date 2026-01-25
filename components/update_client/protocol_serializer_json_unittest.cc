@@ -41,7 +41,7 @@ TEST(SerializeRequestJSON, Serialize) {
     std::vector<std::string> items = {"id1"};
     test::SetDateLastData(metadata.get(), items, 1234);
 
-    std::vector<base::Value::Dict> events(2);
+    std::vector<base::DictValue> events(2);
     events[0].Set("a", 1);
     events[0].Set("b", "2");
     events[1].Set("error", 0);

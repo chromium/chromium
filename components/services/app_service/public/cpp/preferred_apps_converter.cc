@@ -28,12 +28,12 @@ const char kPreferredAppsKey[] = "preferred_apps";
 const char kVersionKey[] = "version";
 
 base::Value ConvertPreferredAppsToValue(const PreferredApps& preferred_apps) {
-  base::Value::Dict preferred_apps_dict;
+  base::DictValue preferred_apps_dict;
   int version = kVersionSupportsSharing;
   preferred_apps_dict.Set(kVersionKey, version);
-  base::Value::List preferred_apps_list;
+  base::ListValue preferred_apps_list;
   for (auto& preferred_app : preferred_apps) {
-    base::Value::Dict preferred_app_dict;
+    base::DictValue preferred_app_dict;
     preferred_app_dict.Set(kIntentFilterKey,
                            apps_util::ConvertIntentFilterConditionsToList(
                                preferred_app->intent_filter));
@@ -46,7 +46,7 @@ base::Value ConvertPreferredAppsToValue(const PreferredApps& preferred_apps) {
 
 PreferredApps ParseValueToPreferredApps(
     const base::Value& preferred_apps_value) {
-  const base::Value::List* preferred_apps_list = nullptr;
+  const base::ListValue* preferred_apps_list = nullptr;
   if (preferred_apps_value.is_list()) {
     preferred_apps_list = &preferred_apps_value.GetList();
   } else if (preferred_apps_value.is_dict()) {
@@ -61,7 +61,7 @@ PreferredApps ParseValueToPreferredApps(
 
   PreferredApps preferred_apps;
   for (const base::Value& entry_val : *preferred_apps_list) {
-    const base::Value::Dict& entry = entry_val.GetDict();
+    const base::DictValue& entry = entry_val.GetDict();
     const std::string* app_id = entry.FindString(kAppIdKey);
     if (!app_id) {
       DVLOG(0) << "Fail to parse condition value. Cannot find \""

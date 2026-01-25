@@ -26,12 +26,12 @@ EntityData::~EntityData() = default;
 
 EntityData& EntityData::operator=(EntityData&& other) = default;
 
-base::Value::Dict EntityData::ToDictionaryValue() const {
+base::DictValue EntityData::ToDictionaryValue() const {
   // This is used when debugging at sync-internals page. The code in
   // sync_node_browser.js is expecting certain fields names. e.g. CTIME, MTIME,
   // and IS_DIR.
-  base::Value::Dict value =
-      base::Value::Dict()
+  base::DictValue value =
+      base::DictValue()
           .Set("SPECIFICS", EntitySpecificsToValue(specifics))
           .Set("ID", id)
           .Set("CLIENT_TAG_HASH", client_tag_hash.value())

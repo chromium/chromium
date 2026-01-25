@@ -47,14 +47,13 @@ class TestingValueStore : public ValueStore {
   WriteResult Set(WriteOptions options,
                   const std::string& key,
                   const base::Value& value) override;
-  WriteResult Set(WriteOptions options,
-                  const base::Value::Dict& values) override;
+  WriteResult Set(WriteOptions options, const base::DictValue& values) override;
   WriteResult Remove(const std::string& key) override;
   WriteResult Remove(const std::vector<std::string>& keys) override;
   WriteResult Clear() override;
 
  private:
-  base::Value::Dict storage_;
+  base::DictValue storage_;
   int read_count_ = 0;
   int write_count_ = 0;
   ValueStore::Status status_;

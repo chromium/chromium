@@ -54,7 +54,7 @@ namespace {
 void PatchDone(
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::expected<base::FilePath, CategorizedError> result) {
   event_adder.Run(
       MakeSimpleOperationEvent(result, protocol_request::kEventPuff));
@@ -113,7 +113,7 @@ void Patch(
 
 // Runs on the original sequence.
 void CacheLookupDone(
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     scoped_refptr<Patcher> patcher,
     const base::FilePath& patch_file,
     const base::FilePath& temp_dir,
@@ -149,7 +149,7 @@ void CacheLookupDone(
 base::OnceClosure PuffOperation(
     scoped_refptr<CrxCache> crx_cache,
     scoped_refptr<Patcher> patcher,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     const std::string& old_hash,
     const std::string& output_hash,

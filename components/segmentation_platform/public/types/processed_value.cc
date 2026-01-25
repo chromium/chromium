@@ -89,7 +89,7 @@ bool ProcessedValue::operator==(const ProcessedValue& rhs) const {
 }
 
 base::Value ProcessedValue::ToDebugValue() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   switch (type) {
     case Type::UNKNOWN:
       dict.Set("type", "UNKNOWN");

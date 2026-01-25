@@ -611,7 +611,7 @@ class PasswordProtectionServiceBaseTest
         invalid_hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
         nullptr);
 
-    auto verdict_dictionary = base::Value::Dict();
+    auto verdict_dictionary = base::DictValue();
     if (verdict.is_dict()) {
       verdict_dictionary = std::move(verdict).TakeDict();
     }
@@ -620,9 +620,9 @@ class PasswordProtectionServiceBaseTest
             password_protection_service_
                 ->ConvertReusedPasswordAccountTypeToPasswordType(
                     password_type))),
-        base::Value::Dict().Set(
+        base::DictValue().Set(
             "invalid_cache_expression",
-            base::Value::Dict().Set("invalid", "invalid_string")));
+            base::DictValue().Set("invalid", "invalid_string")));
 
     content_setting_map_->SetWebsiteSettingDefaultScope(
         invalid_hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,

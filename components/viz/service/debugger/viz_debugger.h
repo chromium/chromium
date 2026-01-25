@@ -53,7 +53,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
  public:
   // These functions are called on a gpu thread that is not the
   // 'VizCompositorThread' and therefore have mulithreaded considerations.
-  void FilterDebugStream(base::Value::Dict json);
+  void FilterDebugStream(base::DictValue json);
   void StartDebugStream(
       mojo::PendingRemote<mojom::VizDebugOutput> pending_debug_output);
   void StopDebugStream();
@@ -168,7 +168,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
           source_index(source),
           thread_id(thread),
           option(draw_option) {}
-    base::Value::Dict GetDictionaryValue() const;
+    base::DictValue GetDictionaryValue() const;
     int draw_index;
     int source_index;
     int64_t thread_id;

@@ -35,7 +35,7 @@ BadClockUI::~BadClockUI() {
   controller_->metrics_helper()->RecordShutdownMetrics();
 }
 
-void BadClockUI::PopulateStringsForHTML(base::Value::Dict& load_time_data) {
+void BadClockUI::PopulateStringsForHTML(base::DictValue& load_time_data) {
   // Shared with other SSL errors.
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(ssl_info_, time_triggered_,
@@ -46,7 +46,7 @@ void BadClockUI::PopulateStringsForHTML(base::Value::Dict& load_time_data) {
   load_time_data.Set("finalParagraph", "");  // Placeholder.
 }
 
-void BadClockUI::PopulateClockStrings(base::Value::Dict& load_time_data) {
+void BadClockUI::PopulateClockStrings(base::DictValue& load_time_data) {
   load_time_data.Set("bad_clock", true);
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button",

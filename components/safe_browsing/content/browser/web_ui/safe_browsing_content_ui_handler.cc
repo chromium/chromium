@@ -23,7 +23,7 @@ SafeBrowsingContentUIHandler::ObserverDelegate::ObserverDelegate(
 
 SafeBrowsingContentUIHandler::ObserverDelegate::~ObserverDelegate() = default;
 
-base::Value::Dict SafeBrowsingContentUIHandler::ObserverDelegate::
+base::DictValue SafeBrowsingContentUIHandler::ObserverDelegate::
     GetFormattedTailoredVerdictOverride() {
   return handler_->GetFormattedTailoredVerdictOverride();
 }
@@ -36,13 +36,13 @@ void SafeBrowsingContentUIHandler::ObserverDelegate::SendEventToHandler(
 
 void SafeBrowsingContentUIHandler::ObserverDelegate::SendEventToHandler(
     std::string_view event_name,
-    base::Value::List& list) {
+    base::ListValue& list) {
   handler_->NotifyWebUIListener(event_name, list);
 }
 
 void SafeBrowsingContentUIHandler::ObserverDelegate::SendEventToHandler(
     std::string_view event_name,
-    base::Value::Dict dict) {
+    base::DictValue dict) {
   handler_->NotifyWebUIListener(event_name, dict);
 }
 
@@ -79,7 +79,7 @@ void SafeBrowsingContentUIHandler::OnJavascriptDisallowed() {
 }
 
 void SafeBrowsingContentUIHandler::GetReferrerChain(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_GE(args.size(), 2U);
   const std::string& url_string = args[1].GetString();
 
@@ -99,7 +99,7 @@ void SafeBrowsingContentUIHandler::GetReferrerChain(
       GURL(url_string), SessionID::InvalidValue(),
       content::GlobalRenderFrameHostId(), 2, &referrer_chain);
 
-  base::Value::List referrer_list;
+  base::ListValue referrer_list;
   for (const ReferrerChainEntry& entry : referrer_chain) {
     referrer_list.Append(ToValue(entry));
   }
@@ -111,8 +111,8 @@ void SafeBrowsingContentUIHandler::GetReferrerChain(
 
 #if BUILDFLAG(IS_ANDROID)
 void SafeBrowsingContentUIHandler::GetReferringAppInfo(
-    const base::Value::List& args) {
-  base::Value::Dict referring_app_value;
+    const base::ListValue& args) {
+  base::DictValue referring_app_value;
   internal::ReferringAppInfo info =
       WebUIContentInfoSingleton::GetInstance()->GetReferringAppInfo(
           web_ui()->GetWebContents());

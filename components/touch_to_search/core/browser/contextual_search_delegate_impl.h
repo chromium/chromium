@@ -140,7 +140,7 @@ class ContextualSearchDelegateImpl final : public ContextualSearchDelegate {
   // Extracts the start and end location from a mentions list, and sets the
   // integers referenced by |start_result| and |end_result|.
   // |mentions_list| must be a list.
-  void ExtractMentionsStartEnd(const base::Value::List& mentions_list,
+  void ExtractMentionsStartEnd(const base::ListValue& mentions_list,
                                int* start_result,
                                int* end_result) const;
 

@@ -41,9 +41,9 @@ namespace update_client {
 
 namespace {
 
-base::Value::Dict MakeEvent(UpdateClient::PingParams ping_params,
-                            const base::Version& previous_version) {
-  base::Value::Dict event;
+base::DictValue MakeEvent(UpdateClient::PingParams ping_params,
+                          const base::Version& previous_version) {
+  base::DictValue event;
   event.Set("eventtype", ping_params.event_type);
   event.Set("eventresult", ping_params.result);
   if (ping_params.error_code) {
@@ -498,7 +498,7 @@ void UpdateEngine::SendPing(const CrxComponent& crx_component,
                             UpdateClient::PingParams ping_params,
                             Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<base::Value::Dict> events;
+  std::vector<base::DictValue> events;
   events.push_back(MakeEvent(ping_params, crx_component.version));
   ping_manager_->SendPing(
       base::StrCat(

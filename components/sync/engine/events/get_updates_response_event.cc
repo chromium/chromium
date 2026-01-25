@@ -49,7 +49,7 @@ std::string GetUpdatesResponseEvent::GetDetails() const {
   }
 }
 
-base::Value::Dict GetUpdatesResponseEvent::GetProtoMessage(
+base::DictValue GetUpdatesResponseEvent::GetProtoMessage(
     bool include_specifics) const {
   return ClientToServerResponseToValue(
              response_, {.include_specifics = include_specifics,

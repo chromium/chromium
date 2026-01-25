@@ -535,7 +535,7 @@ TEST_F(ContextualSearchDelegateImplTest, ContractSelectionInvalid) {
 }
 
 TEST_F(ContextualSearchDelegateImplTest, ExtractMentionsStartEnd) {
-  base::Value::List mentions_list;
+  base::ListValue mentions_list;
   mentions_list.Append(1);
   mentions_list.Append(2);
   int start = 0;

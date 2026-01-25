@@ -839,7 +839,7 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
       CHECK(!gaia_id.empty());
       ScopedDictPrefUpdate update_selected_types_dict(
           pref_service_, prefs::internal::kSelectedTypesPerAccount);
-      base::Value::Dict* account_settings =
+      base::DictValue* account_settings =
           update_selected_types_dict->EnsureDict(
               signin::GaiaIdHash::FromGaiaId(gaia_id).ToBase64());
 
@@ -992,7 +992,7 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
 
   ScopedDictPrefUpdate update_selected_types_dict(
       pref_service, prefs::internal::kSelectedTypesPerAccount);
-  base::Value::Dict* account_settings = update_selected_types_dict->EnsureDict(
+  base::DictValue* account_settings = update_selected_types_dict->EnsureDict(
       signin::GaiaIdHash::FromGaiaId(gaia_id).ToBase64());
 
   // The values of the "global" data type prefs get copied to the

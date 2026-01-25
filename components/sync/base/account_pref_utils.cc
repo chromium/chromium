@@ -40,7 +40,7 @@ const base::Value* GetAccountKeyedPrefDictEntry(
     std::string_view pref_path,
     const signin::GaiaIdHash& gaia_id_hash,
     std::string_view key) {
-  const base::Value::Dict* account_values =
+  const base::DictValue* account_values =
       pref_service->GetDict(pref_path).FindDict(gaia_id_hash.ToBase64());
   if (!account_values) {
     return nullptr;
@@ -54,7 +54,7 @@ void SetAccountKeyedPrefDictEntry(PrefService* pref_service,
                                   std::string_view key,
                                   base::Value value) {
   ScopedDictPrefUpdate update_account_dict(pref_service, pref_path);
-  base::Value::Dict* account_values =
+  base::DictValue* account_values =
       update_account_dict->EnsureDict(gaia_id_hash.ToBase64());
   account_values->Set(key, std::move(value));
 }
@@ -64,7 +64,7 @@ void RemoveAccountKeyedPrefDictEntry(PrefService* pref_service,
                                      const signin::GaiaIdHash& gaia_id_hash,
                                      std::string_view key) {
   ScopedDictPrefUpdate update_account_dict(pref_service, pref_path);
-  base::Value::Dict* account_values =
+  base::DictValue* account_values =
       update_account_dict->FindDict(gaia_id_hash.ToBase64());
   if (account_values) {
     account_values->Remove(key);

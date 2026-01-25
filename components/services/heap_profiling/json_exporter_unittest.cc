@@ -27,11 +27,11 @@ static constexpr int kNoParent = -1;
 #if !defined(ADDRESS_SANITIZER)
 // Finds the first vm region in the given periodic interval. Returns null on
 // failure.
-const base::Value* FindFirstRegionWithAnyName(const base::Value::Dict& root) {
-  const base::Value::Dict* found_mmaps = root.FindDict("process_mmaps");
+const base::Value* FindFirstRegionWithAnyName(const base::DictValue& root) {
+  const base::DictValue* found_mmaps = root.FindDict("process_mmaps");
   if (!found_mmaps)
     return nullptr;
-  const base::Value::List* found_regions = found_mmaps->FindList("vm_regions");
+  const base::ListValue* found_regions = found_mmaps->FindList("vm_regions");
   if (!found_regions)
     return nullptr;
 
@@ -47,7 +47,7 @@ const base::Value* FindFirstRegionWithAnyName(const base::Value::Dict& root) {
 #endif  // !defined(ADDRESS_SANITIZER)
 
 // Looks up a given string id from the string table. Returns -1 if not found.
-int GetIdFromStringTable(const base::Value::List& strings, const char* text) {
+int GetIdFromStringTable(const base::ListValue& strings, const char* text) {
   for (const auto& string : strings) {
     std::optional<int> string_id = string.GetDict().FindInt("id");
     const std::string* string_text = string.GetDict().FindString("string");
@@ -61,8 +61,7 @@ int GetIdFromStringTable(const base::Value::List& strings, const char* text) {
 
 // Looks up a given string from the string table. Returns empty string if not
 // found.
-std::string GetStringFromStringTable(const base::Value::List& strings,
-                                     int sid) {
+std::string GetStringFromStringTable(const base::ListValue& strings, int sid) {
   for (const auto& string : strings) {
     std::optional<int> string_id = string.GetDict().FindInt("id");
     if (*string_id == sid) {
@@ -75,7 +74,7 @@ std::string GetStringFromStringTable(const base::Value::List& strings,
   return std::string();
 }
 
-int GetNodeWithNameID(const base::Value::List& nodes, int sid) {
+int GetNodeWithNameID(const base::ListValue& nodes, int sid) {
   for (const auto& node : nodes) {
     std::optional<int> node_id = node.GetDict().FindInt("id");
     std::optional<int> node_name_sid = node.GetDict().FindInt("name_sid");
@@ -87,7 +86,7 @@ int GetNodeWithNameID(const base::Value::List& nodes, int sid) {
   return -1;
 }
 
-int GetOffsetForBacktraceID(const base::Value::List& nodes, int id) {
+int GetOffsetForBacktraceID(const base::ListValue& nodes, int id) {
   int offset = 0;
   for (const auto& node : nodes) {
     if (node.GetInt() == id)
@@ -97,9 +96,7 @@ int GetOffsetForBacktraceID(const base::Value::List& nodes, int id) {
   return -1;
 }
 
-bool IsBacktraceInList(const base::Value::List& backtraces,
-                       int id,
-                       int parent) {
+bool IsBacktraceInList(const base::ListValue& backtraces, int id, int parent) {
   for (const auto& backtrace : backtraces) {
     std::optional<int> backtrace_id = backtrace.GetDict().FindInt("id");
     if (!backtrace_id.has_value())
@@ -153,11 +150,11 @@ TEST(ProfilingJsonExporterTest, Simple) {
       base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
 
-  const base::Value::Dict* dict = root->GetIfDict();
+  const base::DictValue* dict = root->GetIfDict();
   ASSERT_TRUE(dict);
 
   // Validate the allocators summary.
-  const base::Value::Dict* malloc_summary =
+  const base::DictValue* malloc_summary =
       dict->FindDictByDottedPath("allocators.malloc");
   ASSERT_TRUE(malloc_summary);
   const std::string* malloc_size =
@@ -169,7 +166,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
   ASSERT_TRUE(malloc_virtual_size);
   EXPECT_EQ("54", *malloc_virtual_size);
 
-  const base::Value::Dict* partition_alloc_summary =
+  const base::DictValue* partition_alloc_summary =
       dict->FindDictByDottedPath("allocators.partition_alloc");
   ASSERT_TRUE(partition_alloc_summary);
   const std::string* partition_alloc_size =
@@ -182,12 +179,12 @@ TEST(ProfilingJsonExporterTest, Simple) {
   ASSERT_TRUE(partition_alloc_virtual_size);
   EXPECT_EQ("14", *partition_alloc_virtual_size);
 
-  const base::Value::Dict* heaps_v2 = dict->FindDict("heaps_v2");
+  const base::DictValue* heaps_v2 = dict->FindDict("heaps_v2");
   ASSERT_TRUE(heaps_v2);
 
   // Retrieve maps and validate their structure.
-  const base::Value::List* nodes = heaps_v2->FindListByDottedPath("maps.nodes");
-  const base::Value::List* strings =
+  const base::ListValue* nodes = heaps_v2->FindListByDottedPath("maps.nodes");
+  const base::ListValue* strings =
       heaps_v2->FindListByDottedPath("maps.strings");
   ASSERT_TRUE(nodes);
   ASSERT_TRUE(strings);
@@ -226,13 +223,13 @@ TEST(ProfilingJsonExporterTest, Simple) {
   EXPECT_TRUE(IsBacktraceInList(*nodes, id3, id2));
 
   // Retrieve the allocations and validate their structure.
-  const base::Value::List* counts =
+  const base::ListValue* counts =
       heaps_v2->FindListByDottedPath("allocators.malloc.counts");
-  const base::Value::List* types =
+  const base::ListValue* types =
       heaps_v2->FindListByDottedPath("allocators.malloc.types");
-  const base::Value::List* sizes =
+  const base::ListValue* sizes =
       heaps_v2->FindListByDottedPath("allocators.malloc.sizes");
-  const base::Value::List* backtraces =
+  const base::ListValue* backtraces =
       heaps_v2->FindListByDottedPath("allocators.malloc.nodes");
 
   ASSERT_TRUE(counts);
@@ -304,7 +301,7 @@ TEST(ProfilingJsonExporterTest, MAYBE_MemoryMaps) {
       base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
 
-  const base::Value::Dict* dict = root->GetIfDict();
+  const base::DictValue* dict = root->GetIfDict();
   ASSERT_TRUE(dict);
 
   const base::Value* region = FindFirstRegionWithAnyName(*dict);
@@ -355,13 +352,13 @@ TEST(ProfilingJsonExporterTest, Context) {
   ASSERT_TRUE(root);
 
   // Retrieve the allocations.
-  const base::Value::Dict* heaps_v2 = root->GetDict().FindDict("heaps_v2");
+  const base::DictValue* heaps_v2 = root->GetDict().FindDict("heaps_v2");
   ASSERT_TRUE(heaps_v2);
 
-  const base::Value::List* counts =
+  const base::ListValue* counts =
       heaps_v2->FindListByDottedPath("allocators.partition_alloc.counts");
   ASSERT_TRUE(counts);
-  const base::Value::List* types =
+  const base::ListValue* types =
       heaps_v2->FindListByDottedPath("allocators.partition_alloc.types");
   ASSERT_TRUE(types);
 
@@ -370,10 +367,10 @@ TEST(ProfilingJsonExporterTest, Context) {
   EXPECT_EQ(3u, counts->size());
   EXPECT_EQ(3u, types->size());
 
-  const base::Value::List* types_map =
+  const base::ListValue* types_map =
       heaps_v2->FindListByDottedPath("maps.types");
   ASSERT_TRUE(types_map);
-  const base::Value::List* strings =
+  const base::ListValue* strings =
       heaps_v2->FindListByDottedPath("maps.strings");
   ASSERT_TRUE(strings);
 
@@ -437,7 +434,7 @@ TEST(ProfilingJsonExporterTest, LargeAllocation) {
                            json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Validate the allocators summary.
-  const base::Value::Dict* malloc_summary =
+  const base::DictValue* malloc_summary =
       parsed_json.GetDict().FindDictByDottedPath("allocators.malloc");
   ASSERT_TRUE(malloc_summary);
   const std::string* malloc_size =
@@ -451,9 +448,9 @@ TEST(ProfilingJsonExporterTest, LargeAllocation) {
 
   // Validate allocators details.
   // heaps_v2.allocators.malloc.sizes.reduce((a,s)=>a+s,0).
-  const base::Value::Dict* malloc =
+  const base::DictValue* malloc =
       parsed_json.GetDict().FindDictByDottedPath("heaps_v2.allocators.malloc");
-  const base::Value::List* malloc_sizes = malloc->FindList("sizes");
+  const base::ListValue* malloc_sizes = malloc->FindList("sizes");
   EXPECT_EQ(1u, malloc_sizes->size());
   EXPECT_EQ(0x9876543210ul, (*malloc_sizes)[0].GetDouble());
 }

@@ -32,7 +32,7 @@ class URL_MATCHER_EXPORT URLMatcherFactory {
   // URLMatcherFactory. Otherwise you leak memory.
   static scoped_refptr<URLMatcherConditionSet> CreateFromURLFilterDictionary(
       URLMatcherConditionFactory* url_matcher_condition_factory,
-      const base::Value::Dict& url_filter_dict,
+      const base::DictValue& url_filter_dict,
       base::MatcherStringPattern::ID id,
       std::string* error);
 

@@ -59,7 +59,7 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListIsIgnoredIfNotConfigured) {
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListIsIgnoredIfNoValuesSet) {
-  base::Value::List list;
+  base::ListValue list;
   pref_service_.SetList(
       prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings,
       std::move(list));
@@ -70,7 +70,7 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListIsIgnoredIfNoValuesSet) {
 
 TEST_F(FileTypePoliciesPolicyUtilTest,
        OverrideListIsIgnoredIfNoDomainsSetForExtension) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
       "txt", {/* empty vector */}));
   pref_service_.SetList(
@@ -82,7 +82,7 @@ TEST_F(FileTypePoliciesPolicyUtilTest,
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanUseWildcards) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(
       CreateNotDangerousOverridePolicyEntryForTesting("txt", {"example.com"}));
   list.Append(
@@ -109,7 +109,7 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanUseWildcards) {
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchExactly) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
       "txt", {"http://www.example.com"}));
   pref_service_.SetList(
@@ -124,7 +124,7 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchExactly) {
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchSubPaths) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
       "txt", {"http://www.example.com"}));
   pref_service_.SetList(
@@ -137,7 +137,7 @@ TEST_F(FileTypePoliciesPolicyUtilTest, OverrideListCanMatchSubPaths) {
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, CanLimitToHTTPS) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
       "txt", {"https://example.com"}));
   pref_service_.SetList(
@@ -156,7 +156,7 @@ TEST_F(FileTypePoliciesPolicyUtilTest, CanLimitToHTTPS) {
 
 TEST_F(FileTypePoliciesPolicyUtilTest,
        OverrideListOnlyWorksForListedExtension) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
       "txt", {"www.example.com"}));
   pref_service_.SetList(
@@ -171,7 +171,7 @@ TEST_F(FileTypePoliciesPolicyUtilTest,
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, ValuesAreNotCaseSensitive) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
       "TxT", {"www.example.com"}));
   pref_service_.SetList(
@@ -186,7 +186,7 @@ TEST_F(FileTypePoliciesPolicyUtilTest, ValuesAreNotCaseSensitive) {
 }
 
 TEST_F(FileTypePoliciesPolicyUtilTest, NormalizesBlobURLs) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
       "txt", {"https://example.com"}));
   pref_service_.SetList(

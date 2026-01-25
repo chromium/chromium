@@ -78,10 +78,10 @@ TEST_F(WebCryptoAesKwTest, ImportKeyEmptyUsage) {
 
 TEST_F(WebCryptoAesKwTest, ImportKeyJwkKeyOpsWrapUnwrap) {
   blink::WebCryptoKey key;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
-  auto& key_ops = dict.Set("key_ops", base::Value::List())->GetList();
+  auto& key_ops = dict.Set("key_ops", base::ListValue())->GetList();
 
   key_ops.Append("wrapKey");
 

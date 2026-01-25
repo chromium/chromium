@@ -47,24 +47,24 @@ enum class PasskeysParsingError {
 // Builds a IOSPasskeyClient::RequestInfo object from the parameters contained
 // in the provided dictionary.
 base::expected<IOSPasskeyClient::RequestInfo, PasskeysParsingError>
-BuildRequestInfo(const base::Value::Dict& dict);
+BuildRequestInfo(const base::DictValue& dict);
 
 // Builds an ExtractAssertionRequestParams object from the parameters contained
 // in the provided dictionary.
 base::expected<AssertionRequestParams, PasskeysParsingError>
 BuildAssertionRequestParams(IOSPasskeyClient::RequestInfo request_info,
-                            const base::Value::Dict& dict);
+                            const base::DictValue& dict);
 
 // Build a RegistrationRequestParams object from the parameters contained in the
 // provided dictionary.
 base::expected<RegistrationRequestParams, PasskeysParsingError>
 BuildRegistrationRequestParams(IOSPasskeyClient::RequestInfo request_info,
-                               const base::Value::Dict& dict);
+                               const base::DictValue& dict);
 
 // Converts an ExtensionOutputData object to the
 // AuthenticationExtensionsClientOutputsJSON structure defined in
 // passkey_controller.ts.
-base::Value::Dict ToAuthenticationExtensionsClientOutputsJSON(
+base::DictValue ToAuthenticationExtensionsClientOutputsJSON(
     passkey_model_utils::ExtensionOutputData extension_output_data);
 
 }  // namespace webauthn

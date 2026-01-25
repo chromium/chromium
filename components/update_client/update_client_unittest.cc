@@ -569,13 +569,13 @@ class MockPingManagerImpl : public PingManager {
 
   void SendPing(const std::string& session_id,
                 const CrxComponent& component,
-                std::vector<base::Value::Dict> events,
+                std::vector<base::DictValue> events,
                 base::OnceClosure callback) override;
 
   const std::vector<PingData>& ping_data() const;
   const std::vector<PingData>& terminal_ping_data() const;
 
-  const std::vector<base::Value::Dict>& events() const;
+  const std::vector<base::DictValue>& events() const;
 
  protected:
   ~MockPingManagerImpl() override;
@@ -583,7 +583,7 @@ class MockPingManagerImpl : public PingManager {
  private:
   std::vector<PingData> ping_data_;
   std::vector<PingData> terminal_ping_data_;
-  std::vector<base::Value::Dict> events_;
+  std::vector<base::DictValue> events_;
 };
 
 MockPingManagerImpl::MockPingManagerImpl(scoped_refptr<Configurator> config)
@@ -593,9 +593,9 @@ MockPingManagerImpl::~MockPingManagerImpl() = default;
 
 void MockPingManagerImpl::SendPing(const std::string& session_id,
                                    const CrxComponent& component,
-                                   std::vector<base::Value::Dict> events,
+                                   std::vector<base::DictValue> events,
                                    base::OnceClosure callback) {
-  for (const base::Value::Dict& event : events) {
+  for (const base::DictValue& event : events) {
     PingData ping_data;
     ping_data.id = component.app_id;
     int event_type = event.FindInt("eventtype").value_or(0);
@@ -649,7 +649,7 @@ MockPingManagerImpl::terminal_ping_data() const {
   return terminal_ping_data_;
 }
 
-const std::vector<base::Value::Dict>& MockPingManagerImpl::events() const {
+const std::vector<base::DictValue>& MockPingManagerImpl::events() const {
   return events_;
 }
 
@@ -2881,7 +2881,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
   EXPECT_EQ(ComponentState::kUpdated, items[5].state);
   EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id);
 
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       config()->GetPrefService()->GetDict("updateclientdata");
   EXPECT_EQ("1.0", CHECK_DEREF(dict.FindStringByDottedPath(
                        "apps.jebgalgnebhfojomionfpkfelancnnkf.pv")));
@@ -4648,7 +4648,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
       downloaded=48141 total=48141 download_time_ms="1000"
       previousversion="0.0" nextversion="1.0"/>
       */
-      const base::Value::Dict& event0 = events()[0];
+      const base::DictValue& event0 = events()[0];
       EXPECT_EQ(14, event0.FindInt("eventtype"));
       EXPECT_EQ(1, event0.FindInt("eventresult"));
       EXPECT_EQ("unknown", CHECK_DEREF(event0.FindString("downloader")));
@@ -4662,21 +4662,21 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
 
       // <event eventtype="63" eventresult="1" previousversion="0.0"
       // nextversion="1.0"/>
-      const base::Value::Dict& event1 = events()[1];
+      const base::DictValue& event1 = events()[1];
       EXPECT_EQ(63, event1.FindInt("eventtype"));
       EXPECT_EQ(1, event1.FindInt("eventresult"));
       EXPECT_EQ("0.0", CHECK_DEREF(event1.FindString("previousversion")));
       EXPECT_EQ("1.0", CHECK_DEREF(event1.FindString("nextversion")));
 
       // <event eventtype="42" eventresult="1" errorcode="1877345072"/>
-      const base::Value::Dict& event2 = events()[2];
+      const base::DictValue& event2 = events()[2];
       EXPECT_EQ(42, event2.FindInt("eventtype"));
       EXPECT_EQ(1, event2.FindInt("eventresult"));
       EXPECT_EQ(1877345072, event2.FindInt("errorcode"));
 
       // <event eventtype="2" eventresult="1" previousversion="0.0"
       // nextversion="1.0"/>
-      const base::Value::Dict& event3 = events()[3];
+      const base::DictValue& event3 = events()[3];
       EXPECT_EQ(2, event3.FindInt("eventtype"));
       EXPECT_EQ(1, event3.FindInt("eventresult"));
       EXPECT_EQ("0.0", CHECK_DEREF(event3.FindString("previousversion")));

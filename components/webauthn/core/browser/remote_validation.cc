@@ -138,7 +138,7 @@ ValidationStatus RemoteValidation::ValidateWellKnownJSON(
     return ValidationStatus::kJsonParseError;
   }
 
-  const base::Value::List* origins = result->FindList("origins");
+  const base::ListValue* origins = result->FindList("origins");
   if (!origins) {
     return ValidationStatus::kJsonParseError;
   }

@@ -115,7 +115,7 @@ std::string CaptivePortalBlockingPage::GetWiFiSSID() const {
 }
 
 void CaptivePortalBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("iconClass", "icon-offline");
   load_time_data.Set("type", "CAPTIVE_PORTAL");
   load_time_data.Set("overridable", false);

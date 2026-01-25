@@ -77,7 +77,7 @@ GURL AppendPreliminaryParamsToDoodleURL(bool gray_background,
 namespace {
 const char kResponsePreamble[] = ")]}'";
 
-GURL ParseUrl(const base::Value::Dict& parent_dict,
+GURL ParseUrl(const base::DictValue& parent_dict,
               const std::string& key,
               const GURL& base_url) {
   const std::string* url_str = parent_dict.FindString(key);
@@ -148,7 +148,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
     return nullptr;
   }
 
-  const base::Value::Dict* ddljson = parsed_json->GetDict().FindDict("ddljson");
+  const base::DictValue* ddljson = parsed_json->GetDict().FindDict("ddljson");
   if (!ddljson) {
     return nullptr;
   }
@@ -180,7 +180,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
   // Check if the main image is animated.
   if (is_animated) {
     // If animated, get the URL for the animated image.
-    const base::Value::Dict* image = ddljson->FindDict("large_image");
+    const base::DictValue* image = ddljson->FindDict("large_image");
     if (!image) {
       return nullptr;
     }
@@ -189,14 +189,14 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
       return nullptr;
     }
 
-    const base::Value::Dict* dark_image = ddljson->FindDict("dark_large_image");
+    const base::DictValue* dark_image = ddljson->FindDict("dark_large_image");
     if (dark_image) {
       logo->metadata.dark_animated_url = ParseUrl(*dark_image, "url", base_url);
     }
   }
 
   if (is_simple || is_animated) {
-    const base::Value::Dict* image = ddljson->FindDict("large_image");
+    const base::DictValue* image = ddljson->FindDict("large_image");
     if (image) {
       if (std::optional<int> width_px = image->FindInt("width")) {
         logo->metadata.width_px = *width_px;
@@ -206,7 +206,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
       }
     }
 
-    const base::Value::Dict* dark_image = ddljson->FindDict("dark_large_image");
+    const base::DictValue* dark_image = ddljson->FindDict("dark_large_image");
     if (dark_image) {
       if (const std::string* background_color =
               dark_image->FindString("background_color")) {

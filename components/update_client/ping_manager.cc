@@ -37,7 +37,7 @@ PingManager::~PingManager() {
 
 void PingManager::SendPing(const std::string& session_id,
                            const CrxComponent& component,
-                           std::vector<base::Value::Dict> events,
+                           std::vector<base::DictValue> events,
                            base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

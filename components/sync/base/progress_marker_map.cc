@@ -11,9 +11,9 @@
 
 namespace syncer {
 
-base::Value::Dict ProgressMarkerMapToValueDict(
+base::DictValue ProgressMarkerMapToValueDict(
     const ProgressMarkerMap& marker_map) {
-  base::Value::Dict value;
+  base::DictValue value;
   for (const auto& [data_type, progress_marker] : marker_map) {
     std::string printable_payload;
     base::EscapeJSONString(progress_marker, false /* put_in_quotes */,

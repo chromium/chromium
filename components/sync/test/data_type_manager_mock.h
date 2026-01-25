@@ -79,7 +79,7 @@ class DataTypeManagerMock : public DataTypeManager {
               (const override));
   MOCK_METHOD(void,
               GetAllNodesForDebugging,
-              (base::OnceCallback<void(base::Value::List)>),
+              (base::OnceCallback<void(base::ListValue)>),
               (const override));
   MOCK_METHOD(void,
               GetEntityCountsForDebugging,

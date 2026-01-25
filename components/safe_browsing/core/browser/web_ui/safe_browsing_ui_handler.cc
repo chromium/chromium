@@ -27,27 +27,27 @@ SafeBrowsingUIHandler::SafeBrowsingUIHandler(
 
 SafeBrowsingUIHandler::~SafeBrowsingUIHandler() = default;
 
-void SafeBrowsingUIHandler::GetExperiments(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetExperiments(const base::ListValue& args) {
   DCHECK(!args.empty());
   const std::string& callback_id = args[0].GetString();
   ResolveCallback(callback_id, GetFeatureStatusList());
 }
 
-void SafeBrowsingUIHandler::GetPrefs(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetPrefs(const base::ListValue& args) {
   DCHECK(!args.empty());
   const std::string& callback_id = args[0].GetString();
   ResolveCallback(callback_id,
                   safe_browsing::GetSafeBrowsingPreferencesList(user_prefs()));
 }
 
-void SafeBrowsingUIHandler::GetPolicies(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetPolicies(const base::ListValue& args) {
   DCHECK(!args.empty());
   const std::string& callback_id = args[0].GetString();
   ResolveCallback(callback_id,
                   safe_browsing::GetSafeBrowsingPoliciesList(user_prefs()));
 }
 
-void SafeBrowsingUIHandler::GetCookie(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetCookie(const base::ListValue& args) {
   DCHECK(!args.empty());
   std::string callback_id = args[0].GetString();
 
@@ -69,14 +69,14 @@ void SafeBrowsingUIHandler::OnGetCookie(
     time = cookies[0].CreationDate().InMillisecondsFSinceUnixEpoch();
   }
 
-  base::Value::List response;
+  base::ListValue response;
   response.Append(std::move(cookie));
   response.Append(time);
 
   ResolveCallback(callback_id, response);
 }
 
-void SafeBrowsingUIHandler::GetSavedPasswords(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetSavedPasswords(const base::ListValue& args) {
   DCHECK(!args.empty());
   const std::string& callback_id = args[0].GetString();
 
@@ -92,7 +92,7 @@ void SafeBrowsingUIHandler::GetSavedPasswordsImpl(
   hash_manager.set_prefs(user_prefs());
   hash_manager.set_local_prefs(delegate_->GetLocalState());
 
-  base::Value::List saved_passwords;
+  base::ListValue saved_passwords;
   for (const password_manager::PasswordHashData& hash_data :
        hash_manager.RetrieveAllPasswordHashes()) {
     saved_passwords.Append(hash_data.username);
@@ -103,8 +103,8 @@ void SafeBrowsingUIHandler::GetSavedPasswordsImpl(
 }
 
 void SafeBrowsingUIHandler::GetDatabaseManagerInfo(
-    const base::Value::List& args) {
-  base::Value::List database_manager_info;
+    const base::ListValue& args) {
+  base::ListValue database_manager_info;
 
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
   const V4LocalDatabaseManager* local_database_manager_instance =
@@ -137,11 +137,11 @@ void SafeBrowsingUIHandler::GetDatabaseManagerInfo(
 }
 
 void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const std::vector<std::pair<std::vector<GURL>, DownloadCheckResult>>&
       urls_checked = web_ui_info_singleton()->download_urls_checked();
 
-  base::Value::List urls_checked_value;
+  base::ListValue urls_checked_value;
   for (const auto& url_and_result : urls_checked) {
     const std::vector<GURL>& urls = url_and_result.first;
     DownloadCheckResult result = url_and_result.second;
@@ -155,11 +155,11 @@ void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
 }
 
 void SafeBrowsingUIHandler::GetSentClientDownloadRequests(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const std::vector<std::unique_ptr<ClientDownloadRequest>>& cdrs =
       web_ui_info_singleton()->client_download_requests_sent();
 
-  base::Value::List cdrs_sent;
+  base::ListValue cdrs_sent;
 
   for (const auto& cdr : cdrs) {
     cdrs_sent.Append(web_ui::SerializeClientDownloadRequest(*cdr));
@@ -171,11 +171,11 @@ void SafeBrowsingUIHandler::GetSentClientDownloadRequests(
 }
 
 void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const std::vector<std::unique_ptr<ClientDownloadResponse>>& cdrs =
       web_ui_info_singleton()->client_download_responses_received();
 
-  base::Value::List cdrs_received;
+  base::ListValue cdrs_received;
 
   for (const auto& cdr : cdrs) {
     cdrs_received.Append(web_ui::SerializeClientDownloadResponse(*cdr));
@@ -187,11 +187,11 @@ void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
 }
 
 void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const std::vector<web_ui::ClientPhishingRequestAndToken>& cprs =
       web_ui_info_singleton()->client_phishing_requests_sent();
 
-  base::Value::List cprs_sent;
+  base::ListValue cprs_sent;
 
   for (const auto& cpr : cprs) {
     cprs_sent.Append(web_ui::SerializeClientPhishingRequest(cpr));
@@ -203,11 +203,11 @@ void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
 }
 
 void SafeBrowsingUIHandler::GetReceivedClientPhishingResponses(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const std::vector<std::unique_ptr<ClientPhishingResponse>>& cprs =
       web_ui_info_singleton()->client_phishing_responses_received();
 
-  base::Value::List cprs_received;
+  base::ListValue cprs_received;
 
   for (const auto& cpr : cprs) {
     cprs_received.Append(web_ui::SerializeClientPhishingResponse(*cpr));
@@ -218,11 +218,11 @@ void SafeBrowsingUIHandler::GetReceivedClientPhishingResponses(
   ResolveCallback(callback_id, cprs_received);
 }
 
-void SafeBrowsingUIHandler::GetSentCSBRRs(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetSentCSBRRs(const base::ListValue& args) {
   const std::vector<std::unique_ptr<ClientSafeBrowsingReportRequest>>& reports =
       web_ui_info_singleton()->csbrrs_sent();
 
-  base::Value::List sent_reports;
+  base::ListValue sent_reports;
 
   for (const auto& report : reports) {
     sent_reports.Append(web_ui::SerializeCSBRR(*report));
@@ -233,11 +233,11 @@ void SafeBrowsingUIHandler::GetSentCSBRRs(const base::Value::List& args) {
   ResolveCallback(callback_id, sent_reports);
 }
 
-void SafeBrowsingUIHandler::GetPGEvents(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetPGEvents(const base::ListValue& args) {
   const std::vector<sync_pb::UserEventSpecifics>& events =
       web_ui_info_singleton()->pg_event_log();
 
-  base::Value::List events_sent;
+  base::ListValue events_sent;
 
   for (const sync_pb::UserEventSpecifics& event : events) {
     events_sent.Append(web_ui::SerializePGEvent(event));
@@ -248,11 +248,11 @@ void SafeBrowsingUIHandler::GetPGEvents(const base::Value::List& args) {
   ResolveCallback(callback_id, events_sent);
 }
 
-void SafeBrowsingUIHandler::GetSecurityEvents(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetSecurityEvents(const base::ListValue& args) {
   const std::vector<sync_pb::GaiaPasswordReuse>& events =
       web_ui_info_singleton()->security_event_log();
 
-  base::Value::List events_sent;
+  base::ListValue events_sent;
 
   for (const sync_pb::GaiaPasswordReuse& event : events) {
     events_sent.Append(web_ui::SerializeSecurityEvent(event));
@@ -263,14 +263,14 @@ void SafeBrowsingUIHandler::GetSecurityEvents(const base::Value::List& args) {
   ResolveCallback(callback_id, events_sent);
 }
 
-void SafeBrowsingUIHandler::GetPGPings(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetPGPings(const base::ListValue& args) {
   const std::vector<web_ui::LoginReputationClientRequestAndToken> requests =
       web_ui_info_singleton()->pg_pings();
 
-  base::Value::List pings_sent;
+  base::ListValue pings_sent;
   for (size_t request_index = 0; request_index < requests.size();
        request_index++) {
-    base::Value::List ping_entry;
+    base::ListValue ping_entry;
     ping_entry.Append(int(request_index));
     ping_entry.Append(SerializePGPing(requests[request_index]));
     pings_sent.Append(std::move(ping_entry));
@@ -281,13 +281,13 @@ void SafeBrowsingUIHandler::GetPGPings(const base::Value::List& args) {
   ResolveCallback(callback_id, pings_sent);
 }
 
-void SafeBrowsingUIHandler::GetPGResponses(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetPGResponses(const base::ListValue& args) {
   const std::map<int, LoginReputationClientResponse> responses =
       web_ui_info_singleton()->pg_responses();
 
-  base::Value::List responses_sent;
+  base::ListValue responses_sent;
   for (const auto& token_and_response : responses) {
-    base::Value::List response_entry;
+    base::ListValue response_entry;
     response_entry.Append(token_and_response.first);
     response_entry.Append(
         web_ui::SerializePGResponse(token_and_response.second));
@@ -299,14 +299,14 @@ void SafeBrowsingUIHandler::GetPGResponses(const base::Value::List& args) {
   ResolveCallback(callback_id, responses_sent);
 }
 
-void SafeBrowsingUIHandler::GetURTLookupPings(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetURTLookupPings(const base::ListValue& args) {
   const std::vector<web_ui::URTLookupRequest> requests =
       web_ui_info_singleton()->urt_lookup_pings();
 
-  base::Value::List pings_sent;
+  base::ListValue pings_sent;
   for (size_t request_index = 0; request_index < requests.size();
        request_index++) {
-    base::Value::List ping_entry;
+    base::ListValue ping_entry;
     ping_entry.Append(static_cast<int>(request_index));
     ping_entry.Append(SerializeURTLookupPing(requests[request_index]));
     pings_sent.Append(std::move(ping_entry));
@@ -317,14 +317,13 @@ void SafeBrowsingUIHandler::GetURTLookupPings(const base::Value::List& args) {
   ResolveCallback(callback_id, pings_sent);
 }
 
-void SafeBrowsingUIHandler::GetURTLookupResponses(
-    const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetURTLookupResponses(const base::ListValue& args) {
   const std::map<int, RTLookupResponse> responses =
       web_ui_info_singleton()->urt_lookup_responses();
 
-  base::Value::List responses_sent;
+  base::ListValue responses_sent;
   for (const auto& token_and_response : responses) {
-    base::Value::List response_entry;
+    base::ListValue response_entry;
     response_entry.Append(token_and_response.first);
     response_entry.Append(
         web_ui::SerializeURTLookupResponse(token_and_response.second));
@@ -336,14 +335,14 @@ void SafeBrowsingUIHandler::GetURTLookupResponses(
   ResolveCallback(callback_id, responses_sent);
 }
 
-void SafeBrowsingUIHandler::GetHPRTLookupPings(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetHPRTLookupPings(const base::ListValue& args) {
   const std::vector<web_ui::HPRTLookupRequest> requests =
       web_ui_info_singleton()->hprt_lookup_pings();
 
-  base::Value::List pings_sent;
+  base::ListValue pings_sent;
   for (size_t request_index = 0; request_index < requests.size();
        request_index++) {
-    base::Value::List ping_entry;
+    base::ListValue ping_entry;
     ping_entry.Append(static_cast<int>(request_index));
     ping_entry.Append(SerializeHPRTLookupPing(requests[request_index]));
     pings_sent.Append(std::move(ping_entry));
@@ -355,13 +354,13 @@ void SafeBrowsingUIHandler::GetHPRTLookupPings(const base::Value::List& args) {
 }
 
 void SafeBrowsingUIHandler::GetHPRTLookupResponses(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const std::map<int, V5::SearchHashesResponse> responses =
       web_ui_info_singleton()->hprt_lookup_responses();
 
-  base::Value::List responses_sent;
+  base::ListValue responses_sent;
   for (const auto& token_and_response : responses) {
-    base::Value::List response_entry;
+    base::ListValue response_entry;
     response_entry.Append(token_and_response.first);
     response_entry.Append(
         web_ui::SerializeHPRTLookupResponse(token_and_response.second));
@@ -373,8 +372,8 @@ void SafeBrowsingUIHandler::GetHPRTLookupResponses(
   ResolveCallback(callback_id, responses_sent);
 }
 
-void SafeBrowsingUIHandler::GetReportingEvents(const base::Value::List& args) {
-  base::Value::List reporting_events;
+void SafeBrowsingUIHandler::GetReportingEvents(const base::ListValue& args) {
+  base::ListValue reporting_events;
   for (const auto& reporting_event :
        web_ui_info_singleton()->reporting_events()) {
     reporting_events.Append(reporting_event.Clone());
@@ -391,11 +390,11 @@ void SafeBrowsingUIHandler::GetReportingEvents(const base::Value::List& args) {
   ResolveCallback(callback_id, reporting_events);
 }
 
-void SafeBrowsingUIHandler::GetLogMessages(const base::Value::List& args) {
+void SafeBrowsingUIHandler::GetLogMessages(const base::ListValue& args) {
   const std::vector<std::pair<base::Time, std::string>>& log_messages =
       web_ui_info_singleton()->log_messages();
 
-  base::Value::List messages_received;
+  base::ListValue messages_received;
   for (const auto& message : log_messages) {
     messages_received.Append(
         web_ui::SerializeLogMessage(message.first, message.second));
@@ -406,8 +405,8 @@ void SafeBrowsingUIHandler::GetLogMessages(const base::Value::List& args) {
   ResolveCallback(callback_id, messages_received);
 }
 
-void SafeBrowsingUIHandler::GetDeepScans(const base::Value::List& args) {
-  base::Value::List pings_sent;
+void SafeBrowsingUIHandler::GetDeepScans(const base::ListValue& args) {
+  base::ListValue pings_sent;
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   for (const auto& token_and_data :
        web_ui_info_singleton()->deep_scan_requests()) {
@@ -422,8 +421,8 @@ void SafeBrowsingUIHandler::GetDeepScans(const base::Value::List& args) {
   ResolveCallback(callback_id, pings_sent);
 }
 
-base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
-  base::Value::Dict override_dict;
+base::DictValue SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
+  base::DictValue override_dict;
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   const char kStatusKey[] = "status";
   const char kOverrideValueKey[] = "override_value";
@@ -447,11 +446,11 @@ base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
 }
 
 void SafeBrowsingUIHandler::SetTailoredVerdictOverride(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_GE(args.size(), 2U);
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   ClientDownloadResponse::TailoredVerdict tv;
-  const base::Value::Dict& input = args[1].GetDict();
+  const base::DictValue& input = args[1].GetDict();
 
   const std::string* tailored_verdict_type =
       input.FindString("tailored_verdict_type");
@@ -476,12 +475,12 @@ void SafeBrowsingUIHandler::SetTailoredVerdictOverride(
 }
 
 void SafeBrowsingUIHandler::GetTailoredVerdictOverride(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   ResolveTailoredVerdictOverrideCallback(args[0].GetString());
 }
 
 void SafeBrowsingUIHandler::ClearTailoredVerdictOverride(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   web_ui_info_singleton()->ClearTailoredVerdictOverride();
 #endif

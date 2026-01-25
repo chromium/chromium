@@ -44,9 +44,9 @@ bool IsAllowUserOverrideFieldEnabled() {
 
 // Converts a site search policy entry `policy_dict` into a dictionary to be
 // saved to prefs, with fields corresponding to `TemplateURLData`.
-base::Value SiteSearchDictFromPolicyValue(const base::Value::Dict& policy_dict,
+base::Value SiteSearchDictFromPolicyValue(const base::DictValue& policy_dict,
                                           bool featured) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   const std::string* name =
       policy_dict.FindString(SiteSearchPolicyHandler::kName);
@@ -161,7 +161,7 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return false;
   }
 
-  const base::Value::List& site_search_providers =
+  const base::ListValue& site_search_providers =
       policies.GetValue(policy_name(), base::Value::Type::LIST)->GetList();
 
   if (site_search_providers.size() > kMaxSiteSearchProviders) {
@@ -186,7 +186,7 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   base::flat_set<std::string> shortcuts_already_seen;
   base::flat_set<std::string> duplicated_shortcuts;
   for (const base::Value& provider : site_search_providers) {
-    const base::Value::Dict& provider_dict = provider.GetDict();
+    const base::DictValue& provider_dict = provider.GetDict();
     const std::string& shortcut = *provider_dict.FindString(kShortcut);
     const std::string& url = *provider_dict.FindString(kUrl);
 
@@ -239,15 +239,15 @@ void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (!policy_value) {
     // Reset site search engines if policy was reset.
     prefs->SetValue(EnterpriseSearchManager::kSiteSearchSettingsPrefName,
-                    base::Value(base::Value::List()));
+                    base::Value(base::ListValue()));
     return;
   }
 
   CHECK(policy_value->is_list());
 
-  base::Value::List providers;
+  base::ListValue providers;
   for (const base::Value& item : policy_value->GetList()) {
-    const base::Value::Dict& policy_dict = item.GetDict();
+    const base::DictValue& policy_dict = item.GetDict();
     const std::string& shortcut = *policy_dict.FindString(kShortcut);
     if (ignored_shortcuts_.find(shortcut) == ignored_shortcuts_.end()) {
       providers.Append(

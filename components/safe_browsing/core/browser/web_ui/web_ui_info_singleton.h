@@ -143,11 +143,11 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // open chrome://safe-browsing tabs.
   void AddToReportingEvents(
       const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
-      const base::Value::Dict& result);
+      const base::DictValue& result);
 
   // Add the reporting event to |reporting_events_| and send it to all the open
   // chrome://safe-browsing tabs.
-  void AddToReportingEvents(const base::Value::Dict& event);
+  void AddToReportingEvents(const base::DictValue& event);
 
   // Clear |reporting_events_| & |upload_event_requests_|.
   void ClearReportingEvents();
@@ -310,13 +310,13 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
     return log_messages_;
   }
 
-  const std::vector<base::Value::Dict>& reporting_events() {
+  const std::vector<base::DictValue>& reporting_events() {
     return reporting_events_;
   }
 
   const std::vector<
       std::pair<::chrome::cros::reporting::proto::UploadEventsRequest,
-                base::Value::Dict>>&
+                base::DictValue>>&
   upload_event_requests() {
     return upload_event_requests_;
   }
@@ -418,9 +418,9 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // List of reporting events logged since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  std::vector<base::Value::Dict> reporting_events_;
+  std::vector<base::DictValue> reporting_events_;
   std::vector<std::pair<::chrome::cros::reporting::proto::UploadEventsRequest,
-                        base::Value::Dict>>
+                        base::DictValue>>
       upload_event_requests_;
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)

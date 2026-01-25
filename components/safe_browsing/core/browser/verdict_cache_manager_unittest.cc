@@ -337,12 +337,12 @@ TEST_F(VerdictCacheManagerTest, TestParseInvalidVerdictEntry) {
   verdict.SerializeToString(&verdict_serialized);
   verdict_serialized = base::Base64Encode(verdict_serialized);
 
-  base::Value::Dict verdict_entry;
+  base::DictValue verdict_entry;
   verdict_entry.Set("cache_creation_time", "invalid_time");
   verdict_entry.Set("verdict_proto", std::move(verdict_serialized));
-  base::Value::Dict verdict_dictionary;
+  base::DictValue verdict_dictionary;
   verdict_dictionary.Set("www.google.com/", std::move(verdict_entry));
-  base::Value::Dict cache_dictionary;
+  base::DictValue cache_dictionary;
   cache_dictionary.Set("2", std::move(verdict_dictionary));
 
   content_setting_map_->SetWebsiteSettingDefaultScope(
@@ -654,12 +654,12 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
   verdict.SerializeToString(&verdict_serialized);
   verdict_serialized = base::Base64Encode(verdict_serialized);
 
-  base::Value::Dict verdict_entry;
+  base::DictValue verdict_entry;
   verdict_entry.Set("cache_creation_time", "invalid_time");
   verdict_entry.Set("verdict_proto", std::move(verdict_serialized));
-  base::Value::Dict verdict_dictionary;
+  base::DictValue verdict_dictionary;
   verdict_dictionary.Set("www.google.com/path", std::move(verdict_entry));
-  base::Value::Dict cache_dictionary;
+  base::DictValue cache_dictionary;
   cache_dictionary.Set("1", std::move(verdict_dictionary));
 
   content_setting_map_->SetWebsiteSettingDefaultScope(
@@ -678,7 +678,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
   base::Value setting_entry = content_setting_map_->GetWebsiteSetting(
       GURL("http://www.google.com/"), GURL(),
       ContentSettingsType::PASSWORD_PROTECTION, nullptr);
-  const base::Value::Dict* setting_dict = setting_entry.GetIfDict();
+  const base::DictValue* setting_dict = setting_entry.GetIfDict();
   ASSERT_TRUE(setting_dict);
   EXPECT_THAT(*setting_dict->FindDict("1"), SizeIs(2u));
 
@@ -1149,7 +1149,7 @@ TEST_F(VerdictCacheManagerTest, TestCleanupWithInvalidRealTimeUrlVerdict) {
   cache_manager_->CacheRealTimeUrlVerdict(response, base::Time::Now());
 
   // Add another entry with corrupted data.
-  base::Value::Dict cache_dictionary;
+  base::DictValue cache_dictionary;
   cache_dictionary.Set("real_time_url_cache_key", base::Value(12345));
   content_setting_map_->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com/"), GURL(),

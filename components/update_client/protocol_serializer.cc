@@ -223,7 +223,7 @@ protocol_request::App MakeProtocolApp(
     std::optional<protocol_request::UpdateCheck> update_check,
     const std::vector<protocol_request::Data>& data,
     std::optional<protocol_request::Ping> ping,
-    std::optional<std::vector<base::Value::Dict>> events) {
+    std::optional<std::vector<base::DictValue>> events) {
   protocol_request::App app;
   app.app_id = app_id;
   app.version = version.GetString();

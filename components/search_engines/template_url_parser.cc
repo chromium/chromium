@@ -183,7 +183,7 @@ void SafeTemplateURLParser::OnXmlParseComplete(
 
     // Get the namespaces used in the XML document, which will be used
     // to access nodes by tag name in GetChildElementsByTag().
-    if (const base::Value::Dict* namespaces = root.GetDict().FindDict(
+    if (const base::DictValue* namespaces = root.GetDict().FindDict(
             data_decoder::mojom::XmlParser::kNamespacesKey)) {
       for (auto item : *namespaces) {
         namespaces_.push_back(item.first);

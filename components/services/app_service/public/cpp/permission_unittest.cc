@@ -40,7 +40,7 @@ TEST_F(PermissionTest, VerifyPermissionsConvert) {
   {
     // Verify the convert function can work for the empty permissions.
     Permissions permissions;
-    base::Value::List list = ConvertPermissionsToList(permissions);
+    base::ListValue list = ConvertPermissionsToList(permissions);
     EXPECT_TRUE(IsEqual(permissions, ConvertListToPermissions(&list)));
   }
 
@@ -52,7 +52,7 @@ TEST_F(PermissionTest, VerifyPermissionsConvert) {
     permissions.push_back(std::make_unique<Permission>(
         PermissionType::kPrinting, /*PermissionValue=*/TriState::kBlock,
         /*is_managed=*/false));
-    base::Value::List list = ConvertPermissionsToList(permissions);
+    base::ListValue list = ConvertPermissionsToList(permissions);
     EXPECT_TRUE(IsEqual(permissions, ConvertListToPermissions(&list)));
   }
 }

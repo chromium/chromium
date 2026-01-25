@@ -302,7 +302,7 @@ class AccountInfo::Builder {
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountInfoTest, CreateWithPossiblyEmptyGaiaId);
   friend std::optional<AccountInfo> signin::DeserializeAccountInfo(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
   // Default constructor is only available to support ongoing migrations.
   // TODO(crbug.com/40268200): remove this after the migration is done.
   Builder();

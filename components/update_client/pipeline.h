@@ -55,7 +55,7 @@ void MakePipeline(
     const std::string& install_data_index,
     scoped_refptr<CrxInstaller> installer,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     CrxDownloader::ProgressCallback download_progress_callback,
     CrxInstaller::ProgressCallback install_progress_callback,
     base::RepeatingCallback<void(const CrxInstaller::Result&)>

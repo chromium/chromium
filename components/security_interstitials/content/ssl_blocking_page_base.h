@@ -40,7 +40,7 @@ class SSLBlockingPageBase
   void OnInterstitialClosing() override;
 
  protected:
-  void PopulateEnhancedProtectionMessage(base::Value::Dict& load_time_data);
+  void PopulateEnhancedProtectionMessage(base::DictValue& load_time_data);
   bool ShouldShowEnhancedProtectionMessage();
 
   bool can_show_enhanced_protection_message_ = false;

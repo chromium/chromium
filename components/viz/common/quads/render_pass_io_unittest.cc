@@ -34,10 +34,10 @@ namespace {
 
 TEST(RenderPassIOTest, Default) {
   auto render_pass0 = CompositorRenderPass::Create();
-  base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
+  base::DictValue dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
   EXPECT_TRUE(render_pass1);
-  base::Value::Dict dict1 = CompositorRenderPassToDict(*render_pass1);
+  base::DictValue dict1 = CompositorRenderPassToDict(*render_pass1);
   EXPECT_EQ(dict0, dict1);
 }
 
@@ -71,7 +71,7 @@ TEST(RenderPassIOTest, FilterOperations) {
         gfx::RectFToSkRect(rrect.rect()), rrect.GetSimpleRadii().x(),
         rrect.GetSimpleRadii().y()));
   }
-  base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
+  base::DictValue dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
   EXPECT_TRUE(render_pass1);
   {
@@ -118,7 +118,7 @@ TEST(RenderPassIOTest, FilterOperations) {
     EXPECT_EQ(SkRect::MakeXYWH(2.f, 3.f, 4.f, 5.f),
               backdrop_filter_as_rect_1.rect());
   }
-  base::Value::Dict dict1 = CompositorRenderPassToDict(*render_pass1);
+  base::DictValue dict1 = CompositorRenderPassToDict(*render_pass1);
   EXPECT_EQ(dict0, dict1);
 }
 
@@ -143,7 +143,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
         /*opacity_f=*/0.5f, SkBlendMode::kDstOver, /*sorting_context=*/101,
         /*layer_id=*/0u, /*fast_rounded_corner=*/true);
   }
-  base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
+  base::DictValue dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
   ASSERT_TRUE(render_pass1);
   {
@@ -189,7 +189,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     EXPECT_EQ(101, sqs1->sorting_context_id);
     EXPECT_TRUE(sqs1->is_fast_rounded_corner);
   }
-  base::Value::Dict dict1 = CompositorRenderPassToDict(*render_pass1);
+  base::DictValue dict1 = CompositorRenderPassToDict(*render_pass1);
   EXPECT_EQ(dict0, dict1);
 }
 
@@ -295,7 +295,7 @@ TEST(RenderPassIOTest, QuadList) {
     }
     DCHECK_EQ(kSharedQuadStateCount, sqs_index + 1);
   }
-  base::Value::Dict dict0 = CompositorRenderPassToDict(*render_pass0);
+  base::DictValue dict0 = CompositorRenderPassToDict(*render_pass0);
   auto render_pass1 = CompositorRenderPassFromDict(dict0);
   EXPECT_TRUE(render_pass1);
   EXPECT_EQ(kSharedQuadStateCount, render_pass1->shared_quad_state_list.size());
@@ -304,7 +304,7 @@ TEST(RenderPassIOTest, QuadList) {
     EXPECT_EQ(kQuadMaterials[ii],
               render_pass1->quad_list.ElementAt(ii)->material);
   }
-  base::Value::Dict dict1 = CompositorRenderPassToDict(*render_pass1);
+  base::DictValue dict1 = CompositorRenderPassToDict(*render_pass1);
   EXPECT_EQ(dict0, dict1);
 }
 
@@ -327,13 +327,13 @@ TEST(RenderPassIOTest, CompositorRenderPassList) {
   CompositorRenderPassList render_pass_list;
   EXPECT_TRUE(
       CompositorRenderPassListFromDict(dict0->GetDict(), &render_pass_list));
-  base::Value::Dict dict1 = CompositorRenderPassListToDict(render_pass_list);
+  base::DictValue dict1 = CompositorRenderPassListToDict(render_pass_list);
   // Since the test file doesn't contain the field
   // 'intersects_damage_under' in its CompositorRenderPassDrawQuad, I'm
   // removing the field on dict1 for the exact comparison to work.
-  base::Value::List* list = dict1.FindList("render_pass_list");
+  base::ListValue* list = dict1.FindList("render_pass_list");
   for (auto& entry : *list) {
-    base::Value::List* quad_list = entry.GetDict().FindList("quad_list");
+    base::ListValue* quad_list = entry.GetDict().FindList("quad_list");
 
     for (auto& quad_entry : *quad_list) {
       if (base::Value* extra_value =
@@ -366,7 +366,7 @@ TEST(RenderPassIOTest, CompositorFrameData) {
   EXPECT_TRUE(list0.has_value());
   std::vector<FrameData> frame_data_list;
   EXPECT_TRUE(FrameDataFromList(list0->GetList(), &frame_data_list));
-  base::Value::List list1 = FrameDataToList(frame_data_list);
+  base::ListValue list1 = FrameDataToList(frame_data_list);
 
   EXPECT_EQ(list0->GetList(), list1);
 }

@@ -208,7 +208,7 @@ class BaseSafeBrowsingErrorUI {
     return std::move(interstitial_interaction_data_);
   }
 
-  virtual void PopulateStringsForHtml(base::Value::Dict& load_time_data) = 0;
+  virtual void PopulateStringsForHtml(base::DictValue& load_time_data) = 0;
   virtual void HandleCommand(SecurityInterstitialCommand command) = 0;
 
   virtual int GetHTMLTemplateId() const = 0;

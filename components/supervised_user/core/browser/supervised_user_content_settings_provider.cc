@@ -105,7 +105,7 @@ SupervisedUserContentSettingsProvider::GetRule(const GURL& primary_url,
 }
 
 void SupervisedUserContentSettingsProvider::OnSupervisedSettingsAvailable(
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   std::vector<ContentSettingsType> to_notify;
   // Entering locked scope to update content settings.
   {

@@ -251,7 +251,7 @@ TEST_F(FileTypePoliciesTest, ChecksInspectionTypeNotDefault) {
 // file types should only override danger level.
 TEST_F(FileTypePoliciesTest, NotDangerousOverrideShouldOnlyOverrideDangerType) {
   policies_.PopulateFromResourceBundle();
-  base::Value::List list;
+  base::ListValue list;
   list.Append(CreateNotDangerousOverridePolicyEntryForTesting(
       "exe", {"http://www.example.com"}));
   pref_service_.SetList(

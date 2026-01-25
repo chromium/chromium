@@ -36,7 +36,7 @@ MITMSoftwareUI::~MITMSoftwareUI() {
   controller_->metrics_helper()->RecordShutdownMetrics();
 }
 
-void MITMSoftwareUI::PopulateStringsForHTML(base::Value::Dict& load_time_data) {
+void MITMSoftwareUI::PopulateStringsForHTML(base::DictValue& load_time_data) {
   // Shared with other SSL errors.
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(
@@ -118,7 +118,7 @@ void MITMSoftwareUI::HandleCommand(SecurityInterstitialCommand command) {
 }
 
 void MITMSoftwareUI::PopulateEnterpriseUserStringsForHTML(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(
@@ -133,7 +133,7 @@ void MITMSoftwareUI::PopulateEnterpriseUserStringsForHTML(
 }
 
 void MITMSoftwareUI::PopulateAtHomeUserStringsForHTML(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set(
       "primaryParagraph",
       l10n_util::GetStringFUTF16(

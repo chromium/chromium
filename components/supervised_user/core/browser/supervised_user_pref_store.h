@@ -52,13 +52,13 @@ class SupervisedUserPrefStore : public PrefStore {
 
   // PrefStore overrides:
   bool GetValue(std::string_view key, const base::Value** value) const override;
-  base::Value::Dict GetValues() const override;
+  base::DictValue GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
 
-  void OnNewSettingsAvailable(const base::Value::Dict& settings);
+  void OnNewSettingsAvailable(const base::DictValue& settings);
 
  private:
   // Local representation of last received the device parental controls state.
@@ -99,7 +99,7 @@ class SupervisedUserPrefStore : public PrefStore {
   base::ObserverList<PrefStore::Observer, true> observers_;
 
   // Last received family link settings.
-  std::optional<base::Value::Dict> family_link_settings_;
+  std::optional<base::DictValue> family_link_settings_;
 
   // Last received device parental controls settings. Default value is
   // semantically equivalent to no value.

@@ -108,23 +108,23 @@ struct ClientPhishingRequestAndToken {
 std::string UserReadableTimeFromMillisSinceEpoch(int64_t time_in_milliseconds);
 void AddStoreInfo(
     const DatabaseManagerInfo::DatabaseInfo::StoreInfo& store_info,
-    base::Value::List& database_info_list);
+    base::ListValue& database_info_list);
 
 void AddDatabaseInfo(const DatabaseManagerInfo::DatabaseInfo& database_info,
-                     base::Value::List& database_info_list);
+                     base::ListValue& database_info_list);
 
 void AddUpdateInfo(const DatabaseManagerInfo::UpdateInfo& update_info,
-                   base::Value::List& database_info_list);
+                   base::ListValue& database_info_list);
 
 void ParseFullHashInfo(
     const FullHashCacheInfo::FullHashCache::CachedHashPrefixInfo::FullHashInfo&
         full_hash_info,
-    base::Value::Dict& full_hash_info_dict);
+    base::DictValue& full_hash_info_dict);
 
 void ParseFullHashCache(const FullHashCacheInfo::FullHashCache& full_hash_cache,
-                        base::Value::List& full_hash_cache_list);
+                        base::ListValue& full_hash_cache_list);
 void ParseFullHashCacheInfo(const FullHashCacheInfo& full_hash_cache_info_proto,
-                            base::Value::List& full_hash_cache_info);
+                            base::ListValue& full_hash_cache_info);
 
 std::string AddFullHashCacheInfo(
     const FullHashCacheInfo& full_hash_cache_info_proto);
@@ -141,14 +141,13 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report);
 std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
                                         DownloadCheckResult result);
 std::string SerializeJson(base::ValueView value);
-base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event);
-base::Value::Dict SerializeSecurityEvent(
-    const sync_pb::GaiaPasswordReuse& event);
+base::DictValue SerializePGEvent(const sync_pb::UserEventSpecifics& event);
+base::DictValue SerializeSecurityEvent(const sync_pb::GaiaPasswordReuse& event);
 #if BUILDFLAG(IS_ANDROID)
 // This serializes the internal::ReferringAppInfo struct (not to be confused
 // with the protobuf message ReferringAppInfo), which contains intermediate
 // information obtained from Java.
-base::Value::Dict SerializeReferringAppInfo(
+base::DictValue SerializeReferringAppInfo(
     const internal::ReferringAppInfo& info);
 #endif
 std::string SerializePGPing(
@@ -159,13 +158,13 @@ std::string SerializeURTLookupResponse(const RTLookupResponse& response);
 std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping);
 std::string SerializeHPRTLookupResponse(
     const V5::SearchHashesResponse& response);
-base::Value::Dict SerializeLogMessage(base::Time timestamp,
-                                      const std::string& message);
-base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event);
-base::Value::Dict SerializeUploadEventsRequest(
+base::DictValue SerializeLogMessage(base::Time timestamp,
+                                    const std::string& message);
+base::DictValue SerializeReportingEvent(const base::DictValue& event);
+base::DictValue SerializeUploadEventsRequest(
     const ::chrome::cros::reporting::proto::UploadEventsRequest&
         upload_events_request,
-    const base::Value::Dict& result);
+    const base::DictValue& result);
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 std::string SerializeContentAnalysisRequest(
     bool per_profile_request,
@@ -175,8 +174,8 @@ std::string SerializeContentAnalysisRequest(
     const enterprise_connectors::ContentAnalysisRequest& request);
 std::string SerializeContentAnalysisResponse(
     const enterprise_connectors::ContentAnalysisResponse& response);
-base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
-                                             const DeepScanDebugData& data);
+base::DictValue SerializeDeepScanDebugData(const std::string& token,
+                                           const DeepScanDebugData& data);
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
         // !BUILDFLAG(IS_ANDROID)
 

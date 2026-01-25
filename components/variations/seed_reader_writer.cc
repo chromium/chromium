@@ -221,7 +221,7 @@ void SetPermanentCountryVersion(PrefService* local_state,
   if (is_safe_seed) {
     local_state->SetString(pref_name, country_code);
   } else {
-    base::Value::List list_value;
+    base::ListValue list_value;
     list_value.Append(version);
     list_value.Append(country_code);
     local_state->SetList(pref_name, std::move(list_value));

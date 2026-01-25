@@ -33,101 +33,101 @@ class SafeBrowsingUIHandler {
   ~SafeBrowsingUIHandler();
 
   // Get the experiments that are currently enabled per Chrome instance.
-  void GetExperiments(const base::Value::List& args);
+  void GetExperiments(const base::ListValue& args);
 
   // Get the Safe Browsing related preferences for the current user.
-  void GetPrefs(const base::Value::List& args);
+  void GetPrefs(const base::ListValue& args);
 
   // Get the Safe Browsing related policies for the current user.
-  void GetPolicies(const base::Value::List& args);
+  void GetPolicies(const base::ListValue& args);
 
   // Get the Safe Browsing cookie.
-  void GetCookie(const base::Value::List& args);
+  void GetCookie(const base::ListValue& args);
 
   // Get the current captured passwords.
-  void GetSavedPasswords(const base::Value::List& args);
+  void GetSavedPasswords(const base::ListValue& args);
 
   // Get the information related to the Safe Browsing database and full hash
   // cache.
-  void GetDatabaseManagerInfo(const base::Value::List& args);
+  void GetDatabaseManagerInfo(const base::ListValue& args);
 
   // Get the download URLs that have been checked since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  void GetDownloadUrlsChecked(const base::Value::List& args);
+  void GetDownloadUrlsChecked(const base::ListValue& args);
 
   // Get the ClientDownloadRequests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetSentClientDownloadRequests(const base::Value::List& args);
+  void GetSentClientDownloadRequests(const base::ListValue& args);
 
   // Get the ClientDownloadResponses that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetReceivedClientDownloadResponses(const base::Value::List& args);
+  void GetReceivedClientDownloadResponses(const base::ListValue& args);
 
   // Get the ClientPhishingRequests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetSentClientPhishingRequests(const base::Value::List& args);
+  void GetSentClientPhishingRequests(const base::ListValue& args);
 
   // Get the ClientPhishingResponses that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetReceivedClientPhishingResponses(const base::Value::List& args);
+  void GetReceivedClientPhishingResponses(const base::ListValue& args);
 
   // Get the ThreatDetails that have been collected since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  void GetSentCSBRRs(const base::Value::List& args);
+  void GetSentCSBRRs(const base::ListValue& args);
 
   // Get the PhishGuard events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetPGEvents(const base::Value::List& args);
+  void GetPGEvents(const base::ListValue& args);
 
   // Get the Security events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetSecurityEvents(const base::Value::List& args);
+  void GetSecurityEvents(const base::ListValue& args);
 
   // Get the PhishGuard pings that have been sent since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  void GetPGPings(const base::Value::List& args);
+  void GetPGPings(const base::ListValue& args);
 
   // Get the PhishGuard responses that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetPGResponses(const base::Value::List& args);
+  void GetPGResponses(const base::ListValue& args);
 
   // Get the URL real time lookup pings that have been sent since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetURTLookupPings(const base::Value::List& args);
+  void GetURTLookupPings(const base::ListValue& args);
 
   // Get the URL real time lookup responses that have been received since the
   // oldest currently open chrome://safe-browsing tab was opened.
-  void GetURTLookupResponses(const base::Value::List& args);
+  void GetURTLookupResponses(const base::ListValue& args);
 
   // Get the hash-prefix real-time lookup pings that have been sent since the
   // oldest currently open chrome://safe-browsing tab was opened.
-  void GetHPRTLookupPings(const base::Value::List& args);
+  void GetHPRTLookupPings(const base::ListValue& args);
 
   // Get the hash-prefix real-time lookup responses that have been received
   // since the oldest currently open chrome://safe-browsing tab was opened.
-  void GetHPRTLookupResponses(const base::Value::List& args);
+  void GetHPRTLookupResponses(const base::ListValue& args);
 
   // Get the list of log messages that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetLogMessages(const base::Value::List& args);
+  void GetLogMessages(const base::ListValue& args);
 
   // Get the reporting events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetReportingEvents(const base::Value::List& args);
+  void GetReportingEvents(const base::ListValue& args);
 
   // Get the deep scanning requests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetDeepScans(const base::Value::List& args);
+  void GetDeepScans(const base::ListValue& args);
 
   // Get the most recently set tailored verdict override, if its setting
   // chrome://safe-browsing tab has not been closed.
-  void GetTailoredVerdictOverride(const base::Value::List& args);
+  void GetTailoredVerdictOverride(const base::ListValue& args);
 
   // Sets the tailored verdict override from args.
-  void SetTailoredVerdictOverride(const base::Value::List& args);
+  void SetTailoredVerdictOverride(const base::ListValue& args);
 
   // Clears the current tailored verdict override.
-  void ClearTailoredVerdictOverride(const base::Value::List& args);
+  void ClearTailoredVerdictOverride(const base::ListValue& args);
 
   // Resolves Javascript requests initiated with returned promises.
   virtual void ResolveCallback(const base::ValueView callback_id,
@@ -147,7 +147,7 @@ class SafeBrowsingUIHandler {
 
  protected:
   // Gets the tailored verdict override in a format for displaying.
-  base::Value::Dict GetFormattedTailoredVerdictOverride();
+  base::DictValue GetFormattedTailoredVerdictOverride();
 
  private:
   // Sends formatted tailored verdict override information to the WebUI.

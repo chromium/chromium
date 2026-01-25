@@ -21,7 +21,7 @@ struct DataTypeActivationResponse;
 // Lives on the UI thread.
 class DataTypeConfigurer {
  public:
-  using AllNodesCallback = base::OnceCallback<void(base::Value::List)>;
+  using AllNodesCallback = base::OnceCallback<void(base::ListValue)>;
 
   // Utility struct for holding ConfigureDataTypes options.
   struct ConfigureParams {

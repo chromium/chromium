@@ -152,7 +152,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
 
   // Called by GaiaAccountInfoFetcher.
   void OnUserInfoFetchSuccess(const CoreAccountId& account_id,
-                              const base::Value::Dict& user_info);
+                              const base::DictValue& user_info);
   void OnUserInfoFetchFailure(const CoreAccountId& account_id);
 
   // Called by AccountCapabilitiesFetcher.

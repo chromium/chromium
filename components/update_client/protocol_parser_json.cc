@@ -24,12 +24,12 @@ namespace update_client {
 
 namespace {
 
-std::string GetValueString(const base::Value::Dict& node, const char* key) {
+std::string GetValueString(const base::DictValue& node, const char* key) {
   const std::string* value = node.FindString(key);
   return value ? *value : std::string();
 }
 
-base::expected<std::string, std::string> Parse(const base::Value::Dict& node,
+base::expected<std::string, std::string> Parse(const base::DictValue& node,
                                                const std::string& key) {
   const std::string* value = node.FindString(key);
   if (!value) {
@@ -39,7 +39,7 @@ base::expected<std::string, std::string> Parse(const base::Value::Dict& node,
 }
 
 base::expected<base::Version, std::string> ParseVersion(
-    const base::Value::Dict& node,
+    const base::DictValue& node,
     const std::string& key) {
   base::expected<std::string, std::string> value = Parse(node, key);
   if (!value.has_value()) {
@@ -53,7 +53,7 @@ base::expected<base::Version, std::string> ParseVersion(
   return version;
 }
 
-std::optional<std::string> ParseOptional(const base::Value::Dict& node,
+std::optional<std::string> ParseOptional(const base::DictValue& node,
                                          const std::string& key) {
   const std::string* value = node.FindString(key);
   if (value) {
@@ -62,7 +62,7 @@ std::optional<std::string> ParseOptional(const base::Value::Dict& node,
   return std::nullopt;
 }
 
-int64_t ParseNumberWithDefault(const base::Value::Dict& node,
+int64_t ParseNumberWithDefault(const base::DictValue& node,
                                const std::string& key,
                                int64_t def) {
   const std::optional<double> value = node.FindDouble(key);
@@ -75,7 +75,7 @@ int64_t ParseNumberWithDefault(const base::Value::Dict& node,
   return def;
 }
 
-std::string ParseWithDefault(const base::Value::Dict& node,
+std::string ParseWithDefault(const base::DictValue& node,
                              const std::string& key,
                              const std::string& def) {
   const std::string* value = node.FindString(key);
@@ -85,11 +85,11 @@ std::string ParseWithDefault(const base::Value::Dict& node,
   return def;
 }
 
-std::string ParseWithDefault(const base::Value::Dict& node,
+std::string ParseWithDefault(const base::DictValue& node,
                              const std::string& outer_key,
                              const std::string& inner_key,
                              const std::string& def) {
-  const base::Value::Dict* outer = node.FindDict(outer_key);
+  const base::DictValue* outer = node.FindDict(outer_key);
   return outer ? ParseWithDefault(*outer, inner_key, def) : def;
 }
 
@@ -98,7 +98,7 @@ base::expected<ProtocolParser::Operation, std::string> ParseOperation(
   if (!node_val.is_dict()) {
     return base::unexpected("'operation' contains a non-dictionary.");
   }
-  const base::Value::Dict& node = node_val.GetDict();
+  const base::DictValue& node = node_val.GetDict();
   ProtocolParser::Operation op;
   base::expected<std::string, std::string> type = Parse(node, "type");
   if (!type.has_value()) {
@@ -111,7 +111,7 @@ base::expected<ProtocolParser::Operation, std::string> ParseOperation(
   op.path = ParseWithDefault(node, "path", {});
   op.arguments = ParseWithDefault(node, "arguments", {});
   op.size = ParseNumberWithDefault(node, "size", 0);
-  if (const base::Value::List* list = node.FindList("urls")) {
+  if (const base::ListValue* list = node.FindList("urls")) {
     for (const base::Value& url_node : *list) {
       if (!url_node.is_dict()) {
         return base::unexpected("url node is not a dict");
@@ -139,8 +139,7 @@ base::expected<ProtocolParser::Pipeline, std::string> ParsePipeline(
   ProtocolParser::Pipeline pipeline;
   pipeline.pipeline_id =
       ParseWithDefault(node_val.GetDict(), "pipeline_id", {});
-  if (const base::Value::List* node =
-          node_val.GetDict().FindList("operations")) {
+  if (const base::ListValue* node = node_val.GetDict().FindList("operations")) {
     for (const base::Value& operation_node : *node) {
       base::expected<ProtocolParser::Operation, std::string> operation =
           ParseOperation(operation_node);
@@ -157,7 +156,7 @@ void ParseData(const base::Value& data_node_val, ProtocolParser::App* result) {
   if (!data_node_val.is_dict()) {
     return;
   }
-  const base::Value::Dict& data_node = data_node_val.GetDict();
+  const base::DictValue& data_node = data_node_val.GetDict();
 
   result->data.emplace_back(
       GetValueString(data_node, "index"), GetValueString(data_node, "#text"));
@@ -170,7 +169,7 @@ bool ParseUpdateCheck(const base::Value* node_val,
     *error = "'updatecheck' node is missing or not a dictionary.";
     return false;
   }
-  const base::Value::Dict& node = node_val->GetDict();
+  const base::DictValue& node = node_val->GetDict();
 
   for (auto [k, v] : node) {
     if (!k.empty() && k.front() == '_' && v.is_string()) {
@@ -201,7 +200,7 @@ bool ParseUpdateCheck(const base::Value* node_val,
       return false;
     }
 
-    if (const base::Value::List* list = node.FindList("pipelines")) {
+    if (const base::ListValue* list = node.FindList("pipelines")) {
       for (const base::Value& pipeline_node : *list) {
         base::expected<ProtocolParser::Pipeline, std::string> pipeline =
             ParsePipeline(pipeline_node);
@@ -227,7 +226,7 @@ bool ParseApp(const base::Value& node_value,
     *error = "'app' is not a dictionary.";
     return false;
   }
-  const base::Value::Dict& node = node_value.GetDict();
+  const base::DictValue& node = node_value.GetDict();
 
   result->cohort = ParseOptional(node, "cohort");
   result->cohort_name = ParseOptional(node, "cohortname");
@@ -246,7 +245,7 @@ bool ParseApp(const base::Value& node_value,
   result->status = status.value();
 
   if (result->status == "ok") {
-    if (const base::Value::List* data_node = node.FindList("data")) {
+    if (const base::ListValue* data_node = node.FindList("data")) {
       std::ranges::for_each(*data_node, [&result](const base::Value& data) {
         ParseData(data, result);
       });
@@ -282,7 +281,7 @@ bool ProtocolParserJSON::DoParse(std::string_view response_json,
     ParseError("JSON read error.");
     return false;
   }
-  const base::Value::Dict* response_node = doc->FindDict("response");
+  const base::DictValue* response_node = doc->FindDict("response");
   if (!response_node) {
     ParseError("Missing 'response' element or 'response' is not a dictionary.");
     return false;
@@ -298,7 +297,7 @@ bool ProtocolParserJSON::DoParse(std::string_view response_json,
     return false;
   }
 
-  const base::Value::Dict* daystart_node = response_node->FindDict("daystart");
+  const base::DictValue* daystart_node = response_node->FindDict("daystart");
   if (daystart_node) {
     const std::optional<int> elapsed_days =
         daystart_node->FindInt("elapsed_days");
@@ -307,7 +306,7 @@ bool ProtocolParserJSON::DoParse(std::string_view response_json,
     }
   }
 
-  const base::Value::List* app_node = response_node->FindList("apps");
+  const base::ListValue* app_node = response_node->FindList("apps");
   if (app_node) {
     for (const auto& app : *app_node) {
       App result;

@@ -96,13 +96,12 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   // Import a public and private keypair from "ec_private_keys.json". It doesn't
   // really matter which one is used since they are all valid. In this case
   // using the first one.
-  base::Value::List private_keys =
-      ReadJsonTestFileAsList("ec_private_keys.json");
+  base::ListValue private_keys = ReadJsonTestFileAsList("ec_private_keys.json");
   const base::Value& key_value = private_keys[0];
   ASSERT_TRUE(key_value.is_dict());
-  const base::Value::Dict& key_dict = key_value.GetDict();
+  const base::DictValue& key_dict = key_value.GetDict();
   blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(key_dict);
-  const base::Value::Dict* key_jwk = key_dict.FindDict("jwk");
+  const base::DictValue* key_jwk = key_dict.FindDict("jwk");
   ASSERT_TRUE(key_jwk);
 
   blink::WebCryptoKey private_key;
@@ -114,7 +113,7 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   // Erase the "d" member so the private key JWK can be used to import the
   // public key (WebCrypto doesn't provide a mechanism for importing a public
   // key given a private key).
-  base::Value::Dict key_jwk_copy = key_jwk->Clone();
+  base::DictValue key_jwk_copy = key_jwk->Clone();
   key_jwk_copy.Remove("d");
   blink::WebCryptoKey public_key;
   ASSERT_EQ(
@@ -152,7 +151,7 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
 // determines what usages to use for the key.
 blink::WebCryptoKeyUsageMask GetExpectedUsagesForKeyImport(
     blink::WebCryptoKeyFormat key_format,
-    const base::Value::Dict& test) {
+    const base::DictValue& test) {
   blink::WebCryptoKeyUsageMask kPublicUsages = blink::kWebCryptoKeyUsageVerify;
   blink::WebCryptoKeyUsageMask kPrivateUsages = blink::kWebCryptoKeyUsageSign;
 
@@ -163,7 +162,7 @@ blink::WebCryptoKeyUsageMask GetExpectedUsagesForKeyImport(
     case blink::kWebCryptoKeyFormatPkcs8:
       return kPrivateUsages;
     case blink::kWebCryptoKeyFormatJwk: {
-      const base::Value::Dict* key = test.FindDict("key");
+      const base::DictValue* key = test.FindDict("key");
       if (!key)
         ADD_FAILURE() << "Missing key property";
       return key->contains("d") ? kPrivateUsages : kPublicUsages;
@@ -176,13 +175,13 @@ blink::WebCryptoKeyUsageMask GetExpectedUsagesForKeyImport(
 
 // Tests importing bad public/private keys in a variety of formats.
 TEST_F(WebCryptoEcdsaTest, ImportBadKeys) {
-  base::Value::List tests = ReadJsonTestFileAsList("bad_ec_keys.json");
+  base::ListValue tests = ReadJsonTestFileAsList("bad_ec_keys.json");
 
   for (const auto& test_value : tests) {
     SCOPED_TRACE(&test_value - &tests[0]);
 
     ASSERT_TRUE(test_value.is_dict());
-    const base::Value::Dict& test = test_value.GetDict();
+    const base::DictValue& test = test_value.GetDict();
 
     blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(test);
     blink::WebCryptoKeyFormat key_format = GetKeyFormatFromJsonTestCase(test);
@@ -205,15 +204,15 @@ TEST_F(WebCryptoEcdsaTest, ImportBadKeys) {
 // The test imports a key first using JWK, and then exporting it to JWK and
 // PKCS8. It does the same thing using PKCS8 as the original source of truth.
 TEST_F(WebCryptoEcdsaTest, ImportExportPrivateKey) {
-  base::Value::List tests = ReadJsonTestFileAsList("ec_private_keys.json");
+  base::ListValue tests = ReadJsonTestFileAsList("ec_private_keys.json");
   for (const auto& test_value : tests) {
     SCOPED_TRACE(&test_value - &tests[0]);
 
     ASSERT_TRUE(test_value.is_dict());
-    const base::Value::Dict& test = test_value.GetDict();
+    const base::DictValue& test = test_value.GetDict();
 
     blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(test);
-    const base::Value::Dict* jwk_dict = test.FindDict("jwk");
+    const base::DictValue* jwk_dict = test.FindDict("jwk");
     ASSERT_TRUE(jwk_dict);
     std::vector<uint8_t> jwk_bytes = MakeJsonVector(*jwk_dict);
     std::vector<uint8_t> pkcs8_bytes = GetBytesFromHexString(

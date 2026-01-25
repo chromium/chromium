@@ -46,7 +46,7 @@ class SyncCycleSnapshot {
   SyncCycleSnapshot(const SyncCycleSnapshot& other);
   ~SyncCycleSnapshot();
 
-  base::Value::Dict ToValue() const;
+  base::DictValue ToValue() const;
 
   std::string ToString() const;
 

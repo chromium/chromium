@@ -65,7 +65,7 @@ SSLErrorUI::~SSLErrorUI() {
   controller_->metrics_helper()->RecordShutdownMetrics();
 }
 
-void SSLErrorUI::PopulateStringsForHTML(base::Value::Dict& load_time_data) {
+void SSLErrorUI::PopulateStringsForHTML(base::DictValue& load_time_data) {
   // Shared with other errors.
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(ssl_info_, time_triggered_,
@@ -113,7 +113,7 @@ int SSLErrorUI::cert_error() const {
   return cert_error_;
 }
 
-void SSLErrorUI::PopulateOverridableStrings(base::Value::Dict& load_time_data) {
+void SSLErrorUI::PopulateOverridableStrings(base::DictValue& load_time_data) {
   DCHECK(soft_override_enabled_);
 
   std::u16string url(common_string_util::GetFormattedHostName(request_url_));
@@ -145,7 +145,7 @@ void SSLErrorUI::PopulateOverridableStrings(base::Value::Dict& load_time_data) {
 }
 
 void SSLErrorUI::PopulateNonOverridableStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   DCHECK(!soft_override_enabled_);
 
   std::u16string url(common_string_util::GetFormattedHostName(request_url_));

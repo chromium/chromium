@@ -23,8 +23,8 @@ class WhatsNewStorageService {
   WhatsNewStorageService& operator=(const WhatsNewStorageService&) = delete;
 
   // Read-only access.
-  virtual const base::Value::List& ReadModuleData() const = 0;
-  virtual const base::Value::Dict& ReadEditionData() const = 0;
+  virtual const base::ListValue& ReadModuleData() const = 0;
+  virtual const base::DictValue& ReadEditionData() const = 0;
   virtual std::optional<int> ReadVersionData() const = 0;
 
   // Get the version this edition was used. Return nullopt if unused.

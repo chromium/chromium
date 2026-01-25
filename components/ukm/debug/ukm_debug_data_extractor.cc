@@ -38,9 +38,9 @@ std::string GetName(const ukm::builders::EntryDecoder& decoder, uint64_t hash) {
   return it->second;
 }
 
-base::Value::Dict ConvertEntryToDict(const ukm::builders::DecodeMap& decode_map,
-                                     const mojom::UkmEntry& entry) {
-  base::Value::Dict entry_dict;
+base::DictValue ConvertEntryToDict(const ukm::builders::DecodeMap& decode_map,
+                                   const mojom::UkmEntry& entry) {
+  base::DictValue entry_dict;
 
   const auto it = decode_map.find(entry.event_hash);
   if (it == decode_map.end()) {
@@ -49,9 +49,9 @@ base::Value::Dict ConvertEntryToDict(const ukm::builders::DecodeMap& decode_map,
   } else {
     entry_dict.Set("name", it->second.name);
 
-    base::Value::List metrics_list;
+    base::ListValue metrics_list;
     for (const auto& metric : entry.metrics) {
-      base::Value::Dict metric_dict;
+      base::DictValue metric_dict;
       metric_dict.Set("name", GetName(it->second, metric.first));
       metric_dict.Set("value",
                       UkmDebugDataExtractor::UInt64AsPairOfInt(metric.second));
@@ -72,7 +72,7 @@ UkmDebugDataExtractor::~UkmDebugDataExtractor() = default;
 base::Value UkmDebugDataExtractor::UInt64AsPairOfInt(uint64_t v) {
   // Convert int64_t to pair of int. Passing int64_t in base::Value is not
   // supported. The pair of int will be passed as a List.
-  base::Value::List int_pair;
+  base::ListValue int_pair;
   int_pair.Append(static_cast<int>((v >> 32) & BIT_FILTER_LAST32));
   int_pair.Append(static_cast<int>(v & BIT_FILTER_LAST32));
   return base::Value(std::move(int_pair));
@@ -84,7 +84,7 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
   if (!ukm_service)
     return {};
 
-  base::Value::Dict ukm_data;
+  base::DictValue ukm_data;
 
   ukm_data.Set("state", ukm_service->recording_enabled_);
   ukm_data.Set("msbb_state", ukm_service->recording_enabled(MSBB));
@@ -106,11 +106,11 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
     source_data[v->source_id].entries.push_back(v.get());
   }
 
-  base::Value::List sources_list;
+  base::ListValue sources_list;
   for (const auto& kv : source_data) {
     const auto* src = kv.second.source.get();
 
-    base::Value::Dict source_dict;
+    base::DictValue source_dict;
     if (src) {
       source_dict.Set("id",
                       UkmDebugDataExtractor::UInt64AsPairOfInt(src->id()));
@@ -121,7 +121,7 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
       source_dict.Set("type", GetSourceIdTypeDebugString(kv.first));
     }
 
-    base::Value::List entries_list;
+    base::ListValue entries_list;
     for (ukm::mojom::UkmEntry* entry : kv.second.entries) {
       entries_list.Append(
           ConvertEntryToDict(ukm_service->GetDecodeMap(), *entry));

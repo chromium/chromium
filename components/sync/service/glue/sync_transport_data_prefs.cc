@@ -158,7 +158,7 @@ void SyncTransportDataPrefs::ClearCurrentSyncingGaiaId(
 std::vector<std::string> SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
     const PrefService* pref_service) {
   std::vector<std::string> result;
-  const base::Value::Dict& data_per_account =
+  const base::DictValue& data_per_account =
       pref_service->GetDict(prefs::internal::kSyncTransportDataPerAccount);
   for (const auto [gaia, data] : data_per_account) {
     if (!data.is_dict()) {

@@ -67,7 +67,7 @@ const struct {
 
 // Adds a |StringValue| to |list| for each platform where |bitmask| indicates
 // whether the entry is available on that platform.
-void AddOsStrings(unsigned bitmask, base::Value::List* list) {
+void AddOsStrings(unsigned bitmask, base::ListValue* list) {
   for (const auto& entry : kBitsToOs) {
     if (bitmask & entry.bit) {
       list->Append(entry.name);
@@ -103,7 +103,7 @@ bool IsDefaultValue(const FeatureEntry& entry,
 }
 
 // Returns the Value::List representing the choice data in the specified entry.
-base::Value::List CreateOptionsData(
+base::ListValue CreateOptionsData(
     const FeatureEntry& entry,
     const std::set<std::string>& enabled_entries) {
   DCHECK(entry.type == FeatureEntry::MULTI_VALUE ||
@@ -115,9 +115,9 @@ base::Value::List CreateOptionsData(
          entry.type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
 #endif  // BUILDFLAG(IS_CHROMEOS)
   );
-  base::Value::List result;
+  base::ListValue result;
   for (int i = 0; i < entry.NumOptions(); ++i) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     const std::string name = entry.NameForOption(i);
     dict.Set("internal_name", name);
     dict.Set("description", entry.DescriptionForOption(i));
@@ -671,8 +671,8 @@ std::vector<std::string> FlagsState::RegisterEnabledFeatureVariationParameters(
 void FlagsState::GetFlagFeatureEntries(
     FlagsStorage* flags_storage,
     FlagAccess access,
-    base::Value::List& supported_entries,
-    base::Value::List& unsupported_entries,
+    base::ListValue& supported_entries,
+    base::ListValue& unsupported_entries,
     base::RepeatingCallback<bool(const FeatureEntry&)> skip_feature_entry) {
   DCHECK(flags_storage);
   std::set<std::string> enabled_entries;
@@ -685,12 +685,12 @@ void FlagsState::GetFlagFeatureEntries(
       continue;
     }
 
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set("internal_name", entry.internal_name);
     data.Set("name", entry.visible_name);
     data.Set("description", entry.visible_description);
 
-    base::Value::List supported_platforms;
+    base::ListValue supported_platforms;
     AddOsStrings(entry.supported_platforms, &supported_platforms);
     data.Set("supported_platforms", std::move(supported_platforms));
     // True if the switch is not currently passed.
@@ -698,7 +698,7 @@ void FlagsState::GetFlagFeatureEntries(
     data.Set("is_default", is_default_value);
 
     if (!entry.links.empty()) {
-      base::Value::List links;
+      base::ListValue links;
       for (auto* link : entry.links) {
         links.Append(link);
       }

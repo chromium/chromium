@@ -654,10 +654,10 @@ VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs() {
 
   base::flat_set<uint64_t> groups = base::flat_set<uint64_t>();
 
-  const base::Value::Dict& profiles_dict =
+  const base::DictValue& profiles_dict =
       local_state()->GetDict(prefs::kVariationsGoogleGroups);
   for (const auto profile : profiles_dict) {
-    const base::Value::List& profile_groups = profile.second.GetList();
+    const base::ListValue& profile_groups = profile.second.GetList();
     for (const auto& group_value : profile_groups) {
       const std::string* group = group_value.GetIfString();
       if (!group || group->empty()) {

@@ -23,10 +23,10 @@ namespace update_client {
 
 namespace {
 
-base::Value::Dict MakeEventActionRun(bool succeeded,
-                                     int error_code,
-                                     int extra_code1) {
-  base::Value::Dict event;
+base::DictValue MakeEventActionRun(bool succeeded,
+                                   int error_code,
+                                   int extra_code1) {
+  base::DictValue event;
   event.Set("eventtype", protocol_request::kEventAction);
   event.Set("eventresult", static_cast<int>(succeeded));
   if (error_code) {
@@ -45,7 +45,7 @@ base::OnceClosure RunAction(
     scoped_refptr<CrxInstaller> installer,
     const std::string& file,
     const std::string& session_id,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     ActionHandler::Callback callback) {
   state_tracker.Run(ComponentState::kRun);
@@ -67,7 +67,7 @@ base::OnceClosure RunAction(
       *crx_path, session_id,
       base::BindOnce(
           [](ActionHandler::Callback callback,
-             base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+             base::RepeatingCallback<void(base::DictValue)> event_adder,
              bool succeeded, int error_code, int extra_code1) {
             event_adder.Run(
                 MakeEventActionRun(succeeded, error_code, extra_code1));

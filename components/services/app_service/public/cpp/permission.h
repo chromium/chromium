@@ -83,7 +83,7 @@ Permissions ClonePermissions(const Permissions& source_permissions);
 COMPONENT_EXPORT(APP_TYPES)
 bool IsEqual(const Permissions& source, const Permissions& target);
 
-// Converts `permission` to base::Value::Dict, e.g.:
+// Converts `permission` to base::DictValue, e.g.:
 // {
 //   "PermissionType": 3,
 //   "TriState": 2,
@@ -91,13 +91,13 @@ bool IsEqual(const Permissions& source, const Permissions& target);
 //   "details": "xyz",
 // }
 COMPONENT_EXPORT(APP_TYPES)
-base::Value::Dict ConvertPermissionToDict(const PermissionPtr& permission);
+base::DictValue ConvertPermissionToDict(const PermissionPtr& permission);
 
-// Converts base::Value::Dict to PermissionPtr.
+// Converts base::DictValue to PermissionPtr.
 COMPONENT_EXPORT(APP_TYPES)
-PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict);
+PermissionPtr ConvertDictToPermission(const base::DictValue& dict);
 
-// Converts `permissions` to base::Value::List, e.g.:
+// Converts `permissions` to base::ListValue, e.g.:
 // {
 //   {
 //     "PermissionType": 3,
@@ -112,11 +112,11 @@ PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict);
 //   },
 // }
 COMPONENT_EXPORT(APP_TYPES)
-base::Value::List ConvertPermissionsToList(const Permissions& permissions);
+base::ListValue ConvertPermissionsToList(const Permissions& permissions);
 
-// Converts base::Value::List to Permissions.
+// Converts base::ListValue to Permissions.
 COMPONENT_EXPORT(APP_TYPES)
-Permissions ConvertListToPermissions(const base::Value::List* list);
+Permissions ConvertListToPermissions(const base::ListValue* list);
 
 }  // namespace apps
 

@@ -85,7 +85,7 @@ class WhatsNewRegistryFeatureParamTest : public testing::Test {
 
  protected:
   std::unique_ptr<WhatsNewRegistry> whats_new_registry_;
-  base::Value::List stored_enabled_modules_;
+  base::ListValue stored_enabled_modules_;
   base::test::ScopedFeatureList feature_list_;
 };
 

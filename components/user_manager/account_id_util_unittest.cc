@@ -38,10 +38,10 @@ class AccountIdUtilTest : public testing::Test {
 };
 
 TEST_F(AccountIdUtilTest, LoadGoogleAccountWithGaiaId) {
-  base::Value::Dict dict = base::Value::Dict()
-                               .Set("account_type", "google")
-                               .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID.ToString());
+  base::DictValue dict = base::DictValue()
+                             .Set("account_type", "google")
+                             .Set("email", kUserEmail)
+                             .Set("gaia_id", kGaiaID.ToString());
   std::optional<AccountId> result = LoadAccountId(dict);
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_valid());
@@ -52,9 +52,8 @@ TEST_F(AccountIdUtilTest, LoadGoogleAccountWithGaiaId) {
 }
 
 TEST_F(AccountIdUtilTest, LoadGoogleAccountWithoutGaiaId) {
-  base::Value::Dict dict = base::Value::Dict()
-                               .Set("account_type", "google")
-                               .Set("email", kUserEmail);
+  base::DictValue dict =
+      base::DictValue().Set("account_type", "google").Set("email", kUserEmail);
   std::optional<AccountId> result = LoadAccountId(dict);
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_valid());
@@ -66,15 +65,15 @@ TEST_F(AccountIdUtilTest, LoadGoogleAccountWithoutGaiaId) {
 // Death test for some reason fails on MSAN bots.
 // TODO(b/325904498): Investigate how DEATH tests should be used.
 TEST_F(AccountIdUtilTest, DISABLED_LoadUnknownAccount) {
-  base::Value::Dict dict = base::Value::Dict()
-                               .Set("account_type", "unknown")
-                               .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID.ToString());
+  base::DictValue dict = base::DictValue()
+                             .Set("account_type", "unknown")
+                             .Set("email", kUserEmail)
+                             .Set("gaia_id", kGaiaID.ToString());
   ASSERT_DEATH({ LoadAccountId(dict); }, "Unknown account type");
 }
 
 TEST_F(AccountIdUtilTest, LoadAccountEmailOnly) {
-  base::Value::Dict dict = base::Value::Dict().Set("email", kUserEmail);
+  base::DictValue dict = base::DictValue().Set("email", kUserEmail);
   std::optional<AccountId> result = LoadAccountId(dict);
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_valid());
@@ -85,50 +84,50 @@ TEST_F(AccountIdUtilTest, LoadAccountEmailOnly) {
 }
 
 TEST_F(AccountIdUtilTest, MatchByCorrectEmail) {
-  base::Value::Dict dict = base::Value::Dict()
-                               .Set("account_type", "google")
-                               .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID.ToString());
+  base::DictValue dict = base::DictValue()
+                             .Set("account_type", "google")
+                             .Set("email", kUserEmail)
+                             .Set("gaia_id", kGaiaID.ToString());
   AccountId id = AccountId::FromUserEmail(kUserEmail);
   ASSERT_TRUE(AccountIdMatches(id, dict));
 }
 
 TEST_F(AccountIdUtilTest, MatchByIncorrectEmail) {
-  base::Value::Dict dict = base::Value::Dict()
-                               .Set("account_type", "google")
-                               .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID.ToString());
+  base::DictValue dict = base::DictValue()
+                             .Set("account_type", "google")
+                             .Set("email", kUserEmail)
+                             .Set("gaia_id", kGaiaID.ToString());
   AccountId id = AccountId::FromUserEmail(kOtherEmail);
   ASSERT_FALSE(AccountIdMatches(id, dict));
 }
 
 TEST_F(AccountIdUtilTest, MatchByGaiaIdSameEmail) {
-  base::Value::Dict dict = base::Value::Dict()
-                               .Set("account_type", "google")
-                               .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID.ToString());
+  base::DictValue dict = base::DictValue()
+                             .Set("account_type", "google")
+                             .Set("email", kUserEmail)
+                             .Set("gaia_id", kGaiaID.ToString());
   AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
   ASSERT_TRUE(AccountIdMatches(id, dict));
 }
 
 TEST_F(AccountIdUtilTest, MatchByGaiaIdOtherEmail) {
-  base::Value::Dict dict = base::Value::Dict()
-                               .Set("account_type", "google")
-                               .Set("email", kUserEmail)
-                               .Set("gaia_id", kGaiaID.ToString());
+  base::DictValue dict = base::DictValue()
+                             .Set("account_type", "google")
+                             .Set("email", kUserEmail)
+                             .Set("gaia_id", kGaiaID.ToString());
   AccountId id = AccountId::FromUserEmailGaiaId(kOtherEmail, kGaiaID);
   ASSERT_TRUE(AccountIdMatches(id, dict));
 }
 
 TEST_F(AccountIdUtilTest, MatchByEmailOnly) {
-  base::Value::Dict dict = base::Value::Dict().Set("email", kUserEmail);
+  base::DictValue dict = base::DictValue().Set("email", kUserEmail);
   AccountId id = AccountId::FromUserEmail(kUserEmail);
   ASSERT_TRUE(AccountIdMatches(id, dict));
 }
 
 TEST_F(AccountIdUtilTest, StoreEmailOnly) {
   AccountId id = AccountId::FromUserEmail(kUserEmail);
-  base::Value::Dict dict;
+  base::DictValue dict;
   StoreAccountId(id, dict);
   EXPECT_EQ(dict.Find("account_type"), nullptr);
   EXPECT_EQ(dict.Find("email")->GetString(), kUserEmail);
@@ -137,7 +136,7 @@ TEST_F(AccountIdUtilTest, StoreEmailOnly) {
 
 TEST_F(AccountIdUtilTest, StoreGoogleAccount) {
   AccountId id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
-  base::Value::Dict dict;
+  base::DictValue dict;
   StoreAccountId(id, dict);
   EXPECT_EQ(dict.Find("account_type")->GetString(), "google");
   EXPECT_EQ(dict.Find("email")->GetString(), kUserEmail);

@@ -753,14 +753,14 @@ LoopbackServer::GetPermanentSyncEntitiesByDataType(DataType data_type) {
   return sync_entities;
 }
 
-base::Value::Dict LoopbackServer::GetEntitiesAsDictForTesting() {
+base::DictValue LoopbackServer::GetEntitiesAsDictForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
 
   // Initialize an empty Value::List for all DataTypes.
   DataTypeSet all_types = DataTypeSet::All();
   for (DataType type : all_types) {
-    dictionary.Set(DataTypeToDebugString(type), base::Value::List());
+    dictionary.Set(DataTypeToDebugString(type), base::ListValue());
   }
 
   for (const auto& [id, entity] : entities_) {
@@ -771,7 +771,7 @@ base::Value::Dict LoopbackServer::GetEntitiesAsDictForTesting() {
       continue;
     }
 
-    base::Value::List* list_value =
+    base::ListValue* list_value =
         dictionary.FindList(DataTypeToDebugString(entity->GetDataType()));
     DCHECK(list_value);
 

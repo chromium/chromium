@@ -122,7 +122,7 @@ base::CallbackListSubscription
 FamilyLinkSettingsService::SubscribeForSettingsChange(
     const SettingsCallback& callback) {
   if (IsReady()) {
-    base::Value::Dict settings = GetSettingsWithDefault();
+    base::DictValue settings = GetSettingsWithDefault();
     callback.Run(std::move(settings));
   }
 
@@ -200,7 +200,7 @@ void FamilyLinkSettingsService::SaveItem(const std::string& key,
                                          base::Value value) {
   // Update the value in our local dict, and push the changes to sync.
   std::string key_suffix = key;
-  base::Value::Dict* dict = nullptr;
+  base::DictValue* dict = nullptr;
   if (sync_processor_) {
     base::RecordAction(UserMetricsAction("ManagedUsers_UploadItem_Syncing"));
     dict = GetDictionaryAndSplitKey(&key_suffix);
@@ -239,7 +239,7 @@ void FamilyLinkSettingsService::SetLocalSetting(std::string_view key,
 }
 
 void FamilyLinkSettingsService::SetLocalSetting(std::string_view key,
-                                                base::Value::Dict dict) {
+                                                base::DictValue dict) {
   local_settings_.Set(key, std::move(dict));
   InformSubscribers();
 }
@@ -301,7 +301,7 @@ FamilyLinkSettingsService::MergeDataAndStartSyncing(
   }
 
   // Getting number of queued items.
-  base::Value::Dict* queued_items = GetQueuedItems();
+  base::DictValue* queued_items = GetQueuedItems();
 
   // Clear all atomic and split settings, then recreate them from Sync data.
   Clear();
@@ -322,7 +322,7 @@ FamilyLinkSettingsService::MergeDataAndStartSyncing(
     }
     std::string name_suffix = supervised_user_setting.name();
     std::string name_key = name_suffix;
-    base::Value::Dict* dict = GetDictionaryAndSplitKey(&name_suffix);
+    base::DictValue* dict = GetDictionaryAndSplitKey(&name_suffix);
     dict->Set(name_suffix, std::move(*value));
     if (seen_keys.find(name_key) == seen_keys.end()) {
       added_sync_keys.insert(name_key);
@@ -341,7 +341,7 @@ FamilyLinkSettingsService::MergeDataAndStartSyncing(
   for (const auto it : *queued_items) {
     std::string key_suffix = it.first;
     std::string name_key = key_suffix;
-    base::Value::Dict* dict = GetDictionaryAndSplitKey(&key_suffix);
+    base::DictValue* dict = GetDictionaryAndSplitKey(&key_suffix);
     SyncData data = CreateSyncDataForSetting(it.first, it.second);
     SyncChange::SyncChangeType change_type = dict->Find(key_suffix)
                                                  ? SyncChange::ACTION_UPDATE
@@ -394,7 +394,7 @@ std::optional<syncer::ModelError> FamilyLinkSettingsService::ProcessSyncChanges(
     const ::sync_pb::ManagedUserSettingSpecifics& supervised_user_setting =
         data.GetSpecifics().managed_user_setting();
     std::string key = supervised_user_setting.name();
-    base::Value::Dict* dict = GetDictionaryAndSplitKey(&key);
+    base::DictValue* dict = GetDictionaryAndSplitKey(&key);
     base::Value* old_value = dict->Find(key);
     base::Value old_value_for_delete;
     SyncChange::SyncChangeType change_type = sync_change.change_type();
@@ -482,30 +482,29 @@ void FamilyLinkSettingsService::OnInitializationCompleted(bool success) {
   InformSubscribers();
 }
 
-const base::Value::Dict& FamilyLinkSettingsService::LocalSettingsForTest()
-    const {
+const base::DictValue& FamilyLinkSettingsService::LocalSettingsForTest() const {
   return local_settings_;
 }
 
-base::Value::Dict* FamilyLinkSettingsService::GetDictionaryAndSplitKey(
+base::DictValue* FamilyLinkSettingsService::GetDictionaryAndSplitKey(
     std::string* key) const {
   size_t pos = key->find_first_of(kSplitSettingKeySeparator);
   if (pos == std::string::npos) {
     return GetAtomicSettings();
   }
 
-  base::Value::Dict* split_settings = GetSplitSettings();
+  base::DictValue* split_settings = GetSplitSettings();
   std::string prefix = key->substr(0, pos);
-  base::Value::Dict* dict = split_settings->EnsureDict(prefix);
+  base::DictValue* dict = split_settings->EnsureDict(prefix);
   key->erase(0, pos + 1);
   return dict;
 }
 
-base::Value::Dict* FamilyLinkSettingsService::GetOrCreateDictionary(
+base::DictValue* FamilyLinkSettingsService::GetOrCreateDictionary(
     std::string_view key) const {
   base::Value* value = nullptr;
   if (!store_->GetMutableValue(key, &value)) {
-    store_->SetValue(key, base::Value(base::Value::Dict()),
+    store_->SetValue(key, base::Value(base::DictValue()),
                      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     store_->GetMutableValue(key, &value);
   }
@@ -513,27 +512,27 @@ base::Value::Dict* FamilyLinkSettingsService::GetOrCreateDictionary(
   return &value->GetDict();
 }
 
-base::Value::Dict* FamilyLinkSettingsService::GetAtomicSettings() const {
+base::DictValue* FamilyLinkSettingsService::GetAtomicSettings() const {
   return GetOrCreateDictionary(kAtomicSettings);
 }
 
-base::Value::Dict* FamilyLinkSettingsService::GetSplitSettings() const {
+base::DictValue* FamilyLinkSettingsService::GetSplitSettings() const {
   return GetOrCreateDictionary(kSplitSettings);
 }
 
-base::Value::Dict* FamilyLinkSettingsService::GetQueuedItems() const {
+base::DictValue* FamilyLinkSettingsService::GetQueuedItems() const {
   return GetOrCreateDictionary(kQueuedItems);
 }
 
-base::Value::Dict FamilyLinkSettingsService::GetSettingsWithDefault() const {
+base::DictValue FamilyLinkSettingsService::GetSettingsWithDefault() const {
   DCHECK(IsReady());
   if (!active_ || initialization_failed_) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
-  base::Value::Dict settings(local_settings_.Clone());
+  base::DictValue settings(local_settings_.Clone());
 
-  base::Value::Dict* atomic_settings = GetAtomicSettings();
+  base::DictValue* atomic_settings = GetAtomicSettings();
   for (const auto it : *atomic_settings) {
     if (!SettingShouldApplyToPrefs(it.first)) {
       continue;
@@ -542,7 +541,7 @@ base::Value::Dict FamilyLinkSettingsService::GetSettingsWithDefault() const {
     settings.Set(it.first, it.second.Clone());
   }
 
-  base::Value::Dict* split_settings = GetSplitSettings();
+  base::DictValue* split_settings = GetSplitSettings();
   for (const auto it : *split_settings) {
     if (!SettingShouldApplyToPrefs(it.first)) {
       continue;
@@ -559,7 +558,7 @@ void FamilyLinkSettingsService::InformSubscribers() {
     return;
   }
 
-  base::Value::Dict settings = GetSettingsWithDefault();
+  base::DictValue settings = GetSettingsWithDefault();
 
   // This check prevents re-emitting the same settings, including empty
   // settings. Main scenario is when this service is inactive but receives new
@@ -589,7 +588,7 @@ WebFilterType FamilyLinkSettingsService::GetWebFilterType() const {
     return WebFilterType::kDisabled;
   }
 
-  base::Value::Dict settings = GetSettingsWithDefault();
+  base::DictValue settings = GetSettingsWithDefault();
   if (GetDefaultFilteringBehavior(settings) == FilteringBehavior::kBlock) {
     return WebFilterType::kCertainSites;
   }
@@ -599,7 +598,7 @@ WebFilterType FamilyLinkSettingsService::GetWebFilterType() const {
 }
 
 FilteringBehavior FamilyLinkSettingsService::GetDefaultFilteringBehavior(
-    const base::Value::Dict& settings) const {
+    const base::DictValue& settings) const {
   // The default value for the default filtering behavior is "allow", including
   // malformed data from remote.
   int value = settings.FindInt(kContentPackDefaultFilteringBehavior)
@@ -615,7 +614,7 @@ FilteringBehavior FamilyLinkSettingsService::GetDefaultFilteringBehavior(
 }
 
 bool FamilyLinkSettingsService::IsSafeSitesEnabled(
-    const base::Value::Dict& settings) const {
+    const base::DictValue& settings) const {
   // In Family Link, safe sites setting defaults to true.
   return settings.FindBool(kSafeSitesEnabled).value_or(true);
 }

@@ -59,7 +59,7 @@ struct TemplateURLData {
                   std::string_view favicon_url,
                   std::string_view encoding,
                   std::u16string_view image_search_branding_label,
-                  const base::Value::List& alternate_urls_list,
+                  const base::ListValue& alternate_urls_list,
                   bool preconnect_to_search_url,
                   bool prefetch_likely_navigations,
                   int prepopulate_id,

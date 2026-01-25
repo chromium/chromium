@@ -79,7 +79,7 @@ class EnterpriseSearchManager {
 
   // Updates the `kSiteSearchSettingsOverriddenKeywordsPrefName` pref based
   // on the provided list of site search engines.
-  void LoadOverriddenKeywordsPref(const base::Value::List& engine_list);
+  void LoadOverriddenKeywordsPref(const base::ListValue& engine_list);
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;

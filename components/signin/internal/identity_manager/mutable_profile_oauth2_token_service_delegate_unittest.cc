@@ -1197,7 +1197,7 @@ class MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest
  public:
   MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest() {
     // Use `GaiaConfig` to force the choice of the access token endpoint.
-    auto config_dict = base::Value::Dict().SetByDottedPath(
+    auto config_dict = base::DictValue().SetByDottedPath(
         "flags.enable_issue_token_fetch", ShouldUseIssueToken());
     scoped_config_override_ = GaiaConfig::SetScopedConfigForTesting(
         std::make_unique<GaiaConfig>(std::move(config_dict)));

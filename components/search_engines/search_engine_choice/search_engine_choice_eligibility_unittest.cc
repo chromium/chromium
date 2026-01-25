@@ -232,7 +232,7 @@ class SearchEngineChoiceEligibilityTest
 // overridden in the intial_preferences file.
 TEST_F(SearchEngineChoiceEligibilityTest,
        DoNotShowChoiceScreenWithProviderListOverride) {
-  base::Value::List override_list;
+  base::ListValue override_list;
   pref_service()->SetList(prefs::kSearchProviderOverrides,
                           override_list.Clone());
 
@@ -258,7 +258,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(DefaultSearchManager::kDisabledByPolicy, true);
   pref_service()->SetManagedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName,
@@ -304,7 +304,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   TemplateURLData data_from_policies;
   data_from_policies.SetURL("test");
-  base::Value::Dict dict = TemplateURLDataToDictionary(data_from_policies);
+  base::DictValue dict = TemplateURLDataToDictionary(data_from_policies);
   dict.Set(
       DefaultSearchManager::kPolicyOrigin,
       static_cast<int>(TemplateURLData::PolicyOrigin::kDefaultSearchProvider));

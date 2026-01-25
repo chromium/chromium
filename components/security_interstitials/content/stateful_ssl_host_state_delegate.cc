@@ -123,7 +123,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
   if (!value.is_dict())
     value = base::Value(base::Value::Type::DICT);
 
-  base::Value::Dict* cert_dict =
+  base::DictValue* cert_dict =
       GetValidCertDecisionsDict(CREATE_DICTIONARY_ENTRIES, value.GetDict());
   // If a a valid certificate dictionary cannot be extracted from the content
   // setting, that means it's in an unknown format. Unfortunately, there's
@@ -194,7 +194,7 @@ StatefulSSLHostStateDelegate::QueryPolicy(
   if (!value.is_dict())
     return DENIED;
 
-  base::Value::Dict* cert_error_dict = GetValidCertDecisionsDict(
+  base::DictValue* cert_error_dict = GetValidCertDecisionsDict(
       DO_NOT_CREATE_DICTIONARY_ENTRIES, value.GetDict());
   if (!cert_error_dict) {
     // This revoke is necessary to clear any old expired setting that may be
@@ -434,9 +434,9 @@ bool StatefulSSLHostStateDelegate::HasCertAllowException(
 // addition to there not being any values in the dictionary). If create_entries
 // is set to |CREATE_DICTIONARY_ENTRIES|, if no dictionary is found or the
 // decisions are expired, a new dictionary will be created.
-base::Value::Dict* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
+base::DictValue* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
     CreateDictionaryEntriesDisposition create_entries,
-    base::Value::Dict& dict) {
+    base::DictValue& dict) {
   // Extract the version of the certificate decision structure from the content
   // setting.
   std::optional<int> version = dict.FindInt(kSSLCertDecisionVersionKey);
@@ -488,7 +488,7 @@ base::Value::Dict* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
   }
 
   // Extract the map of certificate fingerprints to errors from the setting.
-  base::Value::Dict* cert_error_dict =
+  base::DictValue* cert_error_dict =
       dict.FindDict(kSSLCertDecisionCertErrorMapKey);
   if (expired || !cert_error_dict) {
     if (create_entries == DO_NOT_CREATE_DICTIONARY_ENTRIES)

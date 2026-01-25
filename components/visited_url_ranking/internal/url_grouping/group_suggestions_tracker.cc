@@ -89,7 +89,7 @@ GroupSuggestionsTracker::GroupSuggestionsTracker(PrefService* pref_service)
   const auto& old_suggestion_list =
       pref_service_->GetList(kGroupSuggestionsTrackerStatePref);
   base::Time now = base::Time::Now();
-  base::Value::List new_suggestion_list;
+  base::ListValue new_suggestion_list;
   for (const base::Value& old_suggestion : old_suggestion_list) {
     // Not including old suggestions in the new list.
     auto suggestion_optional =
@@ -131,17 +131,17 @@ GroupSuggestionsTracker::ShownSuggestion&
 GroupSuggestionsTracker::ShownSuggestion::operator=(
     GroupSuggestionsTracker::ShownSuggestion&& suggestion) = default;
 
-base::Value::Dict GroupSuggestionsTracker::ShownSuggestion::ToDict() const {
-  base::Value::Dict shown_suggestion_dict;
+base::DictValue GroupSuggestionsTracker::ShownSuggestion::ToDict() const {
+  base::DictValue shown_suggestion_dict;
   shown_suggestion_dict.Set(kGroupSuggestionsTrackerTimeKey,
                             base::TimeToValue(time_shown));
-  base::Value::List suggestion_tab_ids;
+  base::ListValue suggestion_tab_ids;
   for (int tab_id : tab_ids) {
     suggestion_tab_ids.Append(tab_id);
   }
   shown_suggestion_dict.Set(kGroupSuggestionsTrackerUserTabIdsKey,
                             std::move(suggestion_tab_ids));
-  base::Value::List suggestion_host_hashes;
+  base::ListValue suggestion_host_hashes;
   for (int host_hash : host_hashes) {
     suggestion_host_hashes.Append(host_hash);
   }
@@ -154,7 +154,7 @@ base::Value::Dict GroupSuggestionsTracker::ShownSuggestion::ToDict() const {
 
 std::optional<GroupSuggestionsTracker::ShownSuggestion>
 GroupSuggestionsTracker::ShownSuggestion::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   ShownSuggestion suggestion;
   // Populate shown time.
   const base::Value* timestamp_ptr = dict.Find(kGroupSuggestionsTrackerTimeKey);
@@ -240,7 +240,7 @@ void GroupSuggestionsTracker::AddShownSuggestion(
     return now - item.time_shown >
            features::kGroupSuggestionThrottleAgeLimit.Get();
   });
-  base::Value::List new_suggestion_list;
+  base::ListValue new_suggestion_list;
   for (const ShownSuggestion& shown_suggestion : suggestions_) {
     new_suggestion_list.Append(shown_suggestion.ToDict());
   }

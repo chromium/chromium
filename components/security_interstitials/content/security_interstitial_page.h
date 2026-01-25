@@ -74,8 +74,7 @@ class SecurityInterstitialPage {
 
  protected:
   // Populates the strings used to generate the HTML from the template.
-  virtual void PopulateInterstitialStrings(
-      base::Value::Dict& load_time_data) = 0;
+  virtual void PopulateInterstitialStrings(base::DictValue& load_time_data) = 0;
 
   virtual int GetHTMLTemplateId();
 

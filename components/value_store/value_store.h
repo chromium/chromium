@@ -91,7 +91,7 @@ class ValueStore {
   // The result of a read operation (Get).
   class ReadResult {
    public:
-    ReadResult(base::Value::Dict settings, Status status);
+    ReadResult(base::DictValue settings, Status status);
     explicit ReadResult(Status status);
     ReadResult(ReadResult&& other);
     ~ReadResult();
@@ -104,14 +104,14 @@ class ValueStore {
     // be in |settings|.|foo|.
     //
     // Must only be called if there is no error.
-    base::Value::Dict& settings() { return settings_; }
-    base::Value::Dict PassSettings() { return std::move(settings_); }
+    base::DictValue& settings() { return settings_; }
+    base::DictValue PassSettings() { return std::move(settings_); }
     Status PassStatus() { return std::move(status_); }
 
     const Status& status() const { return status_; }
 
    private:
-    base::Value::Dict settings_;
+    base::DictValue settings_;
     Status status_;
   };
 
@@ -186,7 +186,7 @@ class ValueStore {
 
   // Sets multiple keys to new values.
   virtual WriteResult Set(WriteOptions options,
-                          const base::Value::Dict& values) = 0;
+                          const base::DictValue& values) = 0;
 
   // Removes a key from the storage.
   virtual WriteResult Remove(const std::string& key) = 0;

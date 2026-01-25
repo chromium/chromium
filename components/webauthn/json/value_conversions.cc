@@ -50,9 +50,8 @@ bool Base64UrlDecode(std::string_view input, std::string* output) {
 
 // Base64url-decodes the value of `key` from `dict`. Returns `nullopt` if the
 // key isn't present or decoding failed.
-std::optional<std::string> Base64UrlDecodeStringKey(
-    const base::Value::Dict& dict,
-    const std::string& key) {
+std::optional<std::string> Base64UrlDecodeStringKey(const base::DictValue& dict,
+                                                    const std::string& key) {
   const std::string* b64url_data = dict.FindString(key);
   if (!b64url_data) {
     return std::nullopt;
@@ -75,7 +74,7 @@ std::optional<std::string> Base64UrlDecodeStringKey(
 // Returns `{false, std::nullopt}` if the key wasn't found or if decoding the
 // string failed.
 std::tuple<bool, std::optional<std::string>> Base64UrlDecodeOptionalStringKey(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     const std::string& key) {
   const base::Value* value = dict.Find(key);
   if (!value) {
@@ -96,7 +95,7 @@ std::vector<uint8_t> ToByteVector(const std::string& in) {
 }
 
 base::Value ToValue(const device::PublicKeyCredentialRpEntity& relying_party) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("id", relying_party.id);
   // `PublicKeyCredentialEntity.name` is required in the IDL but optional on the
   // mojo struct.
@@ -105,7 +104,7 @@ base::Value ToValue(const device::PublicKeyCredentialRpEntity& relying_party) {
 }
 
 base::Value ToValue(const device::PublicKeyCredentialUserEntity& user) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("id", Base64UrlEncode(user.id));
   // `PublicKeyCredentialEntity.name` is required in the IDL but optional on the
   // mojo struct.
@@ -118,7 +117,7 @@ base::Value ToValue(const device::PublicKeyCredentialUserEntity& user) {
 
 base::Value ToValue(
     const device::PublicKeyCredentialParams::CredentialInfo& params) {
-  base::Value::Dict value;
+  base::DictValue value;
   switch (params.type) {
     case device::CredentialType::kPublicKey:
       value.Set("type", device::kPublicKey);
@@ -128,13 +127,13 @@ base::Value ToValue(
 }
 
 base::Value ToValue(const device::PublicKeyCredentialDescriptor& descriptor) {
-  base::Value::Dict value;
+  base::DictValue value;
   switch (descriptor.credential_type) {
     case device::CredentialType::kPublicKey:
       value.Set("type", device::kPublicKey);
   }
   value.Set("id", Base64UrlEncode(descriptor.id));
-  base::Value::List transports;
+  base::ListValue transports;
   for (const device::FidoTransportProtocol& transport : descriptor.transports) {
     transports.Append(ToString(transport));
   }
@@ -176,7 +175,7 @@ base::Value ToValue(
 
 base::Value ToValue(
     const device::AuthenticatorSelectionCriteria& authenticator_selection) {
-  base::Value::Dict value;
+  base::DictValue value;
   std::optional<std::string> attachment;
   if (authenticator_selection.authenticator_attachment !=
       device::AuthenticatorAttachment::kAny) {
@@ -207,7 +206,7 @@ base::Value ToValue(const device::AttestationConveyancePreference&
 
 base::Value ToValue(const blink::mojom::RemoteDesktopClientOverride&
                         remote_desktop_client_override) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("origin", remote_desktop_client_override.origin.Serialize());
   value.Set("sameOriginWithAncestors",
             remote_desktop_client_override.same_origin_with_ancestors);
@@ -239,7 +238,7 @@ base::Value ToValue(const device::LargeBlobSupport large_blob) {
 }
 
 base::Value ToValue(const device::CableDiscoveryData& cable_authentication) {
-  base::Value::Dict value;
+  base::DictValue value;
   switch (cable_authentication.version) {
     case device::CableDiscoveryData::Version::INVALID:
       NOTREACHED();
@@ -266,7 +265,7 @@ base::Value ToValue(const device::CableDiscoveryData& cable_authentication) {
 
 base::Value ToValue(
     const blink::mojom::SupplementalPubKeysRequestPtr& supplemental_pub_keys) {
-  base::Value::List scopes;
+  base::ListValue scopes;
   if (supplemental_pub_keys->device_scope_requested) {
     scopes.Append("device");
   }
@@ -274,14 +273,14 @@ base::Value ToValue(
     scopes.Append("provider");
   }
 
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("scopes", std::move(scopes));
   if (supplemental_pub_keys->attestation !=
       device::AttestationConveyancePreference::kIndirect) {
     value.Set("attestation", ToValue(supplemental_pub_keys->attestation));
   }
   if (supplemental_pub_keys->attestation_formats.size()) {
-    base::Value::List formats;
+    base::ListValue formats;
     for (const std::string& format :
          supplemental_pub_keys->attestation_formats) {
       formats.Append(format);
@@ -293,7 +292,7 @@ base::Value ToValue(
 }
 
 base::Value ToValue(const std::vector<std::string>& strings) {
-  base::Value::List ret;
+  base::ListValue ret;
   ret.reserve(strings.size());
   for (const auto& string : strings) {
     ret.Append(string);
@@ -339,7 +338,7 @@ InvalidGetAssertionField(const char* field_name) {
 }
 
 base::Value ToValue(const blink::mojom::PRFValuesPtr& prf_input) {
-  base::Value::Dict prf_value;
+  base::DictValue prf_value;
   prf_value.Set("first", Base64UrlEncode(prf_input->first));
   if (prf_input->second) {
     prf_value.Set("second", Base64UrlEncode(*prf_input->second));
@@ -348,7 +347,7 @@ base::Value ToValue(const blink::mojom::PRFValuesPtr& prf_input) {
 }
 
 base::Value ToValue(const std::vector<blink::mojom::Hint>& hints) {
-  base::Value::List ret;
+  base::ListValue ret;
   for (const auto& hint : hints) {
     switch (hint) {
       case blink::mojom::Hint::SECURITY_KEY:
@@ -365,12 +364,12 @@ base::Value ToValue(const std::vector<blink::mojom::Hint>& hints) {
   return base::Value(std::move(ret));
 }
 
-base::Value::Dict ToValue(
+base::DictValue ToValue(
     const blink::mojom::AllAcceptedCredentialsOptions& options) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("userId", Base64UrlEncode(options.user_id));
 
-  base::Value::List accepted_credential_ids;
+  base::ListValue accepted_credential_ids;
   accepted_credential_ids.reserve(options.all_accepted_credentials_ids.size());
   for (const auto& credential_id : options.all_accepted_credentials_ids) {
     accepted_credential_ids.Append(Base64UrlEncode(credential_id));
@@ -379,9 +378,9 @@ base::Value::Dict ToValue(
   return value;
 }
 
-base::Value::Dict ToValue(
+base::DictValue ToValue(
     const blink::mojom::CurrentUserDetailsOptions& options) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("userId", Base64UrlEncode(options.user_id));
   value.Set("name", options.name);
   value.Set("displayName", options.display_name);
@@ -398,17 +397,17 @@ int adjustTimeout(int timeout) {
 
 base::Value ToValue(
     const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("rp", ToValue(options->relying_party));
   value.Set("user", ToValue(options->user));
   value.Set("challenge", Base64UrlEncode(options->challenge));
-  base::Value::List public_key_parameters;
+  base::ListValue public_key_parameters;
   for (const device::PublicKeyCredentialParams::CredentialInfo& params :
        options->public_key_parameters) {
     public_key_parameters.Append(ToValue(params));
   }
   value.Set("pubKeyCredParams", std::move(public_key_parameters));
-  base::Value::List exclude_credentials;
+  base::ListValue exclude_credentials;
   for (const device::PublicKeyCredentialDescriptor& descriptor :
        options->exclude_credentials) {
     exclude_credentials.Append(ToValue(descriptor));
@@ -433,7 +432,7 @@ base::Value ToValue(
     value.Set("timeout", timeout);
   }
 
-  base::Value::Dict extensions;
+  base::DictValue extensions;
 
   if (options->hmac_create_secret) {
     extensions.Set("hmacCreateSecret", true);
@@ -456,7 +455,7 @@ base::Value ToValue(
   }
 
   if (options->large_blob_enable != device::LargeBlobSupport::kNotRequested) {
-    base::Value::Dict large_blob_value;
+    base::DictValue large_blob_value;
     large_blob_value.Set("support", ToValue(options->large_blob_enable));
     extensions.Set("largeBlob", std::move(large_blob_value));
   }
@@ -475,7 +474,7 @@ base::Value ToValue(
   }
 
   if (options->prf_enable) {
-    base::Value::Dict prf_value;
+    base::DictValue prf_value;
     if (options->prf_input) {
       prf_value.Set("eval", ToValue(options->prf_input));
     }
@@ -486,7 +485,7 @@ base::Value ToValue(
   // CredMan and so shouldn't need to be serialized to JSON. But we might end
   // up sending such requests to an enclave.
   if (options->is_payment_credential_creation) {
-    base::Value::Dict payments_value;
+    base::DictValue payments_value;
     payments_value.Set("isPayment", true);
     extensions.Set("payment", std::move(payments_value));
   }
@@ -506,7 +505,7 @@ base::Value ToValue(
 base::Value ToValue(
     const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options) {
   CHECK(!options->extensions.is_null());
-  base::Value::Dict value;
+  base::DictValue value;
   if (options->challenge.has_value()) {
     value.Set("challenge", Base64UrlEncode(*options->challenge));
   } else {
@@ -515,7 +514,7 @@ base::Value ToValue(
   }
   value.Set("rpId", options->relying_party_id);
 
-  base::Value::List allow_credentials;
+  base::ListValue allow_credentials;
   for (const device::PublicKeyCredentialDescriptor& descriptor :
        options->allow_credentials) {
     allow_credentials.Append(ToValue(descriptor));
@@ -533,13 +532,13 @@ base::Value ToValue(
     value.Set("timeout", timeout);
   }
 
-  base::Value::Dict extensions;
+  base::DictValue extensions;
 
   if (options->extensions->appid) {
     extensions.Set("appid", *options->extensions->appid);
   }
 
-  base::Value::List cable_authentication_data;
+  base::ListValue cable_authentication_data;
   for (const device::CableDiscoveryData& cable :
        options->extensions->cable_authentication_data) {
     cable_authentication_data.Append(ToValue(cable));
@@ -554,7 +553,7 @@ base::Value ToValue(
 
   if (options->extensions->large_blob_read ||
       options->extensions->large_blob_write) {
-    base::Value::Dict large_blob_value;
+    base::DictValue large_blob_value;
     if (options->extensions->large_blob_read) {
       large_blob_value.Set("read", true);
     }
@@ -572,8 +571,8 @@ base::Value ToValue(
   }
 
   if (!options->extensions->prf_inputs.empty()) {
-    base::Value::Dict prf_value;
-    base::Value::Dict eval_by_cred;
+    base::DictValue prf_value;
+    base::DictValue eval_by_cred;
     bool is_first = true;
     for (const blink::mojom::PRFValuesPtr& prf_input :
          options->extensions->prf_inputs) {
@@ -609,15 +608,15 @@ base::Value ToValue(
 base::Value ToValue(
     const blink::mojom::PublicKeyCredentialReportOptionsPtr& options) {
   if (options->all_accepted_credentials) {
-    base::Value::Dict value = ToValue(*options->all_accepted_credentials);
+    base::DictValue value = ToValue(*options->all_accepted_credentials);
     value.Set("rpId", options->relying_party_id);
     return base::Value(std::move(value));
   } else if (options->current_user_details) {
-    base::Value::Dict value = ToValue(*options->current_user_details);
+    base::DictValue value = ToValue(*options->current_user_details);
     value.Set("rpId", options->relying_party_id);
     return base::Value(std::move(value));
   } else if (options->unknown_credential_id) {
-    base::Value::Dict value;
+    base::DictValue value;
     value.Set("rpId", options->relying_party_id);
     value.Set("credentialId", Base64UrlEncode(*options->unknown_credential_id));
     return base::Value(std::move(value));
@@ -626,7 +625,7 @@ base::Value ToValue(
 }
 
 std::optional<blink::mojom::PRFValuesPtr> ParsePRFResults(
-    const base::Value::Dict* results) {
+    const base::DictValue* results) {
   const std::optional<std::string> first =
       Base64UrlDecodeStringKey(*results, "first");
   if (!first || first->size() != 32) {
@@ -645,8 +644,8 @@ std::optional<blink::mojom::PRFValuesPtr> ParsePRFResults(
 }
 
 std::optional<blink::mojom::SupplementalPubKeysResponsePtr>
-ParseSupplementalPubKeys(const base::Value::Dict* json) {
-  const base::Value::List* signatures = json->FindList("signatures");
+ParseSupplementalPubKeys(const base::DictValue* json) {
+  const base::ListValue* signatures = json->FindList("signatures");
   if (!signatures || signatures->empty()) {
     return std::nullopt;
   }
@@ -674,7 +673,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     return {nullptr, "value is not a dict"};
   }
 
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   const std::string* type = dict.FindString("type");
   if (!type || *type != device::kPublicKey) {
     return InvalidMakeCredentialField("type");
@@ -702,7 +701,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   }
   response->authenticator_attachment = *authenticator_attachment;
 
-  const base::Value::Dict* attestation_response = dict.FindDict("response");
+  const base::DictValue* attestation_response = dict.FindDict("response");
   if (!attestation_response) {
     return InvalidMakeCredentialField("response");
   }
@@ -775,7 +774,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     response->info->client_data_json = ToByteVector(*client_data_json);
   }
 
-  const base::Value::List* transports =
+  const base::ListValue* transports =
       attestation_response->FindList("transports");
   if (!transports) {
     return InvalidMakeCredentialField("transports");
@@ -791,7 +790,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     }
   }
 
-  const base::Value::Dict* client_extension_results =
+  const base::DictValue* client_extension_results =
       dict.FindDict("clientExtensionResults");
   if (!client_extension_results) {
     return InvalidMakeCredentialField("clientExtensionResults");
@@ -802,7 +801,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     response->echo_cred_blob = true;
     response->cred_blob = *cred_blob;
   }
-  const base::Value::Dict* cred_props =
+  const base::DictValue* cred_props =
       client_extension_results->FindDict("credProps");
   if (cred_props) {
     response->echo_cred_props = true;
@@ -818,7 +817,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     response->echo_hmac_create_secret = true;
     response->hmac_create_secret = *hmac_create_secret;
   }
-  const base::Value::Dict* large_blob =
+  const base::DictValue* large_blob =
       client_extension_results->FindDict("largeBlob");
   if (large_blob) {
     response->echo_large_blob = true;
@@ -828,7 +827,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     }
     response->supports_large_blob = *supported;
   }
-  const base::Value::Dict* prf = client_extension_results->FindDict("prf");
+  const base::DictValue* prf = client_extension_results->FindDict("prf");
   if (prf) {
     response->echo_prf = true;
     const std::optional<bool> enabled = prf->FindBool("enabled");
@@ -837,7 +836,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     }
     response->prf = *enabled;
 
-    const base::Value::Dict* results = prf->FindDict("results");
+    const base::DictValue* results = prf->FindDict("results");
     if (results) {
       std::optional<blink::mojom::PRFValuesPtr> prf_results =
           ParsePRFResults(results);
@@ -847,7 +846,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
       response->prf_results = std::move(*prf_results);
     }
   }
-  const base::Value::Dict* supplemental_pub_keys =
+  const base::DictValue* supplemental_pub_keys =
       client_extension_results->FindDict("supplementalPubKeys");
   if (supplemental_pub_keys) {
     auto maybe_result = ParseSupplementalPubKeys(supplemental_pub_keys);
@@ -866,7 +865,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
     return {nullptr, "value is not a dict"};
   }
 
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   const std::string* type = dict.FindString("type");
   if (!type || *type != device::kPublicKey) {
     return InvalidGetAssertionField("type");
@@ -896,7 +895,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
   }
   response->authenticator_attachment = *authenticator_attachment;
 
-  const base::Value::Dict* assertion_response = dict.FindDict("response");
+  const base::DictValue* assertion_response = dict.FindDict("response");
   if (!assertion_response) {
     return InvalidGetAssertionField("response");
   }
@@ -932,7 +931,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
     response->user_handle = ToByteVector(*opt_user_handle);
   }
 
-  const base::Value::Dict* client_extension_results =
+  const base::DictValue* client_extension_results =
       dict.FindDict("clientExtensionResults");
   if (!client_extension_results) {
     return InvalidGetAssertionField("clientExtensionResults");
@@ -951,7 +950,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
     }
     response->extensions->get_cred_blob = ToByteVector(*cred_blob);
   }
-  const base::Value::Dict* large_blob =
+  const base::DictValue* large_blob =
       client_extension_results->FindDict("largeBlob");
   if (large_blob) {
     response->extensions->echo_large_blob = true;
@@ -969,9 +968,9 @@ GetAssertionResponseFromValue(const base::Value& value) {
       response->extensions->large_blob_written = *written;
     }
   }
-  const base::Value::Dict* prf = client_extension_results->FindDict("prf");
+  const base::DictValue* prf = client_extension_results->FindDict("prf");
   if (prf) {
-    const base::Value::Dict* results = prf->FindDict("results");
+    const base::DictValue* results = prf->FindDict("results");
     if (results) {
       std::optional<blink::mojom::PRFValuesPtr> prf_results =
           ParsePRFResults(results);
@@ -983,7 +982,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
       response->extensions->prf_results = std::move(*prf_results);
     }
   }
-  const base::Value::Dict* supplemental_pub_keys =
+  const base::DictValue* supplemental_pub_keys =
       client_extension_results->FindDict("supplementalPubKeys");
   if (supplemental_pub_keys) {
     auto maybe_result = ParseSupplementalPubKeys(supplemental_pub_keys);

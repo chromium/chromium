@@ -1601,7 +1601,7 @@ TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsWhenEmptyDict) {
       user_data_dir_path());
 
   // Add an empty dict value for the pref.
-  base::Value::Dict google_groups_dict;
+  base::DictValue google_groups_dict;
   local_state()->SetDict(prefs::kVariationsGoogleGroups,
                          std::move(google_groups_dict));
 
@@ -1618,8 +1618,8 @@ TEST_F(FieldTrialCreatorTest,
       user_data_dir_path());
 
   // Add an empty dict value for the pref.
-  base::Value::Dict google_groups_dict;
-  base::Value::List profile_1_groups;
+  base::DictValue google_groups_dict;
+  base::ListValue profile_1_groups;
   google_groups_dict.Set("Profile 1", std::move(profile_1_groups));
   local_state()->SetDict(prefs::kVariationsGoogleGroups,
                          std::move(google_groups_dict));
@@ -1637,8 +1637,8 @@ TEST_F(FieldTrialCreatorTest,
       user_data_dir_path());
 
   // Add an empty dict value for the pref.
-  base::Value::Dict google_groups_dict;
-  base::Value::List profile_1_groups;
+  base::DictValue google_groups_dict;
+  base::ListValue profile_1_groups;
   profile_1_groups.Append("123");
   profile_1_groups.Append("456");
   google_groups_dict.Set("Profile 1", std::move(profile_1_groups));
@@ -1658,8 +1658,8 @@ TEST_F(FieldTrialCreatorTest,
       user_data_dir_path());
 
   // Add an empty dict value for the pref.
-  base::Value::Dict google_groups_dict;
-  base::Value::List profile_1_groups;
+  base::DictValue google_groups_dict;
+  base::ListValue profile_1_groups;
   profile_1_groups.Append("Alice");
   profile_1_groups.Append("Bob");
   google_groups_dict.Set("Profile 1", std::move(profile_1_groups));

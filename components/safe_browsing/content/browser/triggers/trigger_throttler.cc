@@ -156,7 +156,7 @@ void TriggerThrottler::LoadTriggerEventsFromPref() {
     return;
   }
 
-  const base::Value::Dict& event_dict =
+  const base::DictValue& event_dict =
       local_state_prefs_->GetDict(prefs::kSafeBrowsingTriggerEventTimestamps);
   for (auto trigger_pair : event_dict) {
     // Check that the first item in the pair is convertible to a trigger type
@@ -186,9 +186,9 @@ void TriggerThrottler::WriteTriggerEventsToPref() {
     return;
   }
 
-  base::Value::Dict trigger_dict;
+  base::DictValue trigger_dict;
   for (const auto& trigger_item : trigger_events_) {
-    base::Value::List timestamps;
+    base::ListValue timestamps;
     for (const base::Time timestamp : trigger_item.second) {
       timestamps.Append(timestamp.InSecondsFSinceUnixEpoch());
     }

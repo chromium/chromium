@@ -108,8 +108,7 @@ class SyncUserSettingsImplTest : public testing::Test {
     // TODO(crbug.com/368409110): Necessary for a workaround in
     // SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(); see TODO there.
     pref_service_.registry()->RegisterDictionaryPref(
-        tab_groups::prefs::kLocallyClosedRemoteTabGroupIds,
-        base::Value::Dict());
+        tab_groups::prefs::kLocallyClosedRemoteTabGroupIds, base::DictValue());
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
 
     sync_service_crypto_ = std::make_unique<SyncServiceCrypto>(

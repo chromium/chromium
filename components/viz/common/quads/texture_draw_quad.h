@@ -177,7 +177,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // to make TextureDrawQuad use unnormalized coordinates is complete
   friend struct mojo::StructTraits<mojom::TextureQuadStateDataView, DrawQuad>;
   friend void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
-                                    base::Value::Dict* dict);
+                                    base::DictValue* dict);
 
   gfx::RectF tex_coord_rect_;
 

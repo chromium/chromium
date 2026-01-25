@@ -29,7 +29,7 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
   ProgressMarkerMap download_progress_markers;
   download_progress_markers[BOOKMARKS] = "\xef\xb7\xa4";
   download_progress_markers[APPS] = "apps";
-  base::Value::Dict expected_download_progress_markers_value =
+  base::DictValue expected_download_progress_markers_value =
       ProgressMarkerMapToValueDict(download_progress_markers);
 
   const std::string kBirthday = "test_birthday";
@@ -42,13 +42,13 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
       base::Time::Now(), sync_pb::SyncEnums::UNKNOWN_ORIGIN,
       /*poll_interval=*/base::Minutes(30),
       /*has_remaining_local_changes=*/false);
-  base::Value::Dict dict(snapshot.ToValue());
+  base::DictValue dict(snapshot.ToValue());
   EXPECT_EQ(14u, dict.size());
 
   EXPECT_THAT(
       dict,
       base::test::DictionaryHasValues(
-          base::Value::Dict()
+          base::DictValue()
               .Set("birthday", kBirthday)
               // Base64-encoded version of `kBagOfChips`.
               .Set("bagOfChips", "YmFnb2ZjaGlwcwE=")

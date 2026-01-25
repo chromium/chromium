@@ -39,7 +39,7 @@ class MockSubscriber {
  public:
   MOCK_METHOD(void,
               OnNewSettingsAvailable,
-              (const base::Value::Dict& settings),
+              (const base::DictValue& settings),
               ());
 };
 
@@ -95,7 +95,7 @@ class FamilyLinkSettingsServiceTest : public ::testing::Test {
                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   }
 
-  void OnNewSettingsAvailable(const base::Value::Dict& settings) {
+  void OnNewSettingsAvailable(const base::DictValue& settings) {
     if (settings.empty()) {
       settings_.reset();
     } else {
@@ -155,10 +155,10 @@ class FamilyLinkSettingsServiceTest : public ::testing::Test {
   void TearDown() override { settings_service_.Shutdown(); }
 
   base::test::TaskEnvironment task_environment_;
-  base::Value::Dict split_items_;
+  base::DictValue split_items_;
   std::optional<base::Value> atomic_setting_value_;
   FamilyLinkSettingsService settings_service_;
-  std::optional<base::Value::Dict> settings_;
+  std::optional<base::DictValue> settings_;
   base::CallbackListSubscription user_settings_subscription_;
 
   std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_processor_;
@@ -198,7 +198,7 @@ TEST_F(FamilyLinkSettingsServiceTest, ProcessSplitSetting) {
   value = settings_->Find(kSettingsName);
   EXPECT_FALSE(value);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("foo", "bar");
   dict.Set("awesomesauce", true);
   dict.Set("eaudecologne", 4711);
@@ -216,7 +216,7 @@ TEST_F(FamilyLinkSettingsServiceTest, ProcessSplitSetting) {
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value()) << error.value().ToString();
   ASSERT_TRUE(settings_);
-  const base::Value::Dict* settings_dict = settings_->FindDict(kSettingsName);
+  const base::DictValue* settings_dict = settings_->FindDict(kSettingsName);
   ASSERT_TRUE(settings_dict);
   EXPECT_EQ(*settings_dict, dict);
 }
@@ -282,7 +282,7 @@ TEST_F(FamilyLinkSettingsServiceTest, Merge) {
     sync_data.push_back(FamilyLinkSettingsService::CreateSyncDataForSetting(
         kSettingsName, base::Value(kSettingsValue)));
     // Adding 2 SplitSettings from dictionary.
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("foo", "bar");
     dict.Set("eaudecologne", 4711);
     for (const auto item : dict) {
@@ -308,7 +308,7 @@ TEST_F(FamilyLinkSettingsServiceTest, Merge) {
     UploadSplitItem("burp", "baz");
     UploadSplitItem("item", "second");
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("foo", "burp");
     dict.Set("item", "first");
     // Adding 2 SplitSettings from dictionary.
@@ -475,7 +475,7 @@ TEST_F(FamilyLinkSettingsServiceTest, DeactivationClearsConsumingPrefStore) {
 }
 
 TEST_F(FamilyLinkSettingsServiceTest, DeactivationEmitsEmptyNotificationOnce) {
-  base::Value::Dict empty_settings;
+  base::DictValue empty_settings;
 
   MockSubscriber mock_subscriber;
   // Notification sent on subscription.
@@ -505,7 +505,7 @@ TEST_F(FamilyLinkSettingsServiceTest,
   settings_service_.SetActive(false);
 
   MockSubscriber mock_subscriber;
-  base::Value::Dict empty_settings;
+  base::DictValue empty_settings;
 
   EXPECT_CALL(mock_subscriber,
               OnNewSettingsAvailable(testing::Ne(std::ref(empty_settings))))
@@ -528,7 +528,7 @@ TEST_F(FamilyLinkSettingsServiceTest,
 
 TEST_F(FamilyLinkSettingsServiceTest, UpdatesAreSentForEachSettingUpdate) {
   MockSubscriber mock_subscriber;
-  base::Value::Dict empty_settings;
+  base::DictValue empty_settings;
 
   EXPECT_CALL(mock_subscriber,
               OnNewSettingsAvailable(testing::Eq(std::ref(empty_settings))))

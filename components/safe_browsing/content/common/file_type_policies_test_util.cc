@@ -10,9 +10,9 @@ namespace safe_browsing {
 
 namespace {
 
-base::Value::List CreateStringListValueForTest(
+base::ListValue CreateStringListValueForTest(
     const std::vector<std::string>& items) {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& item : items) {
     list.Append(item);
   }
@@ -66,10 +66,10 @@ FileTypePoliciesTestOverlay ScopedMarkAllFilesDangerousForTesting() {
   return file_type_configuration;
 }
 
-base::Value::Dict CreateNotDangerousOverridePolicyEntryForTesting(
+base::DictValue CreateNotDangerousOverridePolicyEntryForTesting(
     const std::string& extension,
     const std::vector<std::string>& domains) {
-  base::Value::Dict out;
+  base::DictValue out;
   out.Set("file_extension", base::Value{extension});
   out.Set("domains", CreateStringListValueForTest(domains));
   return out;

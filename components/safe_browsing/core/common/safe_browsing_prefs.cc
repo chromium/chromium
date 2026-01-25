@@ -359,17 +359,16 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kExternalAppRedirectTimestamps);
 }
 
-const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {
+const base::DictValue& GetExtensionTelemetryConfig(const PrefService& prefs) {
   return prefs.GetDict(prefs::kExtensionTelemetryConfig);
 }
 
-const base::Value::Dict& GetExtensionTelemetryFileData(
-    const PrefService& prefs) {
+const base::DictValue& GetExtensionTelemetryFileData(const PrefService& prefs) {
   return prefs.GetDict(prefs::kExtensionTelemetryFileData);
 }
 
 void SetExtensionTelemetryConfig(PrefService& prefs,
-                                 const base::Value::Dict& config) {
+                                 const base::DictValue& config) {
   prefs.SetDict(prefs::kExtensionTelemetryConfig, config.Clone());
 }
 
@@ -421,8 +420,8 @@ void UpdatePrefsBeforeSecurityInterstitial(PrefService* prefs) {
   prefs->SetBoolean(prefs::kSafeBrowsingSawInterstitialScoutReporting, true);
 }
 
-base::Value::List GetSafeBrowsingPreferencesList(PrefService* prefs) {
-  base::Value::List preferences_list;
+base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
+  base::ListValue preferences_list;
 
   const char* safe_browsing_preferences[] = {
       prefs::kSafeBrowsingEnabled,
@@ -439,9 +438,9 @@ base::Value::List GetSafeBrowsingPreferencesList(PrefService* prefs) {
   return preferences_list;
 }
 
-base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
-  base::Value::List preferences_list;
-  const base::Value::List& allowlist_domains =
+base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs) {
+  base::ListValue preferences_list;
+  const base::ListValue& allowlist_domains =
       prefs->GetList(prefs::kSafeBrowsingAllowlistDomains);
   std::vector<std::string> domain_list;
   CanonicalizeDomainList(allowlist_domains, &domain_list);
@@ -478,13 +477,13 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
 void GetSafeBrowsingAllowlistDomainsPref(
     const PrefService& prefs,
     std::vector<std::string>* out_canonicalized_domain_list) {
-  const base::Value::List& pref_value =
+  const base::ListValue& pref_value =
       prefs.GetList(prefs::kSafeBrowsingAllowlistDomains);
   CanonicalizeDomainList(pref_value, out_canonicalized_domain_list);
 }
 
 void CanonicalizeDomainList(
-    const base::Value::List& raw_domain_list,
+    const base::ListValue& raw_domain_list,
     std::vector<std::string>* out_canonicalized_domain_list) {
   out_canonicalized_domain_list->clear();
   for (const base::Value& value : raw_domain_list) {
@@ -502,7 +501,7 @@ bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
   if (!pref.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains)) {
     return false;
   }
-  const base::Value::List& allowlist =
+  const base::ListValue& allowlist =
       pref.GetList(prefs::kSafeBrowsingAllowlistDomains);
   for (const base::Value& value : allowlist) {
     if (url.DomainIs(value.GetString())) {
@@ -514,7 +513,7 @@ bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
 
 std::vector<std::string> GetURLAllowlistByPolicy(PrefService* pref_service) {
   std::vector<std::string> allowlist_domains;
-  const base::Value::List& allowlist =
+  const base::ListValue& allowlist =
       pref_service->GetList(prefs::kSafeBrowsingAllowlistDomains);
   for (const base::Value& value : allowlist) {
     allowlist_domains.push_back(value.GetString());
@@ -534,7 +533,7 @@ bool MatchesEnterpriseAllowlist(const PrefService& pref,
 
 void GetPasswordProtectionLoginURLsPref(const PrefService& prefs,
                                         std::vector<GURL>* out_login_url_list) {
-  const base::Value::List& pref_value =
+  const base::ListValue& pref_value =
       prefs.GetList(prefs::kPasswordProtectionLoginURLs);
   out_login_url_list->clear();
 #if BUILDFLAG(IS_CHROMEOS)

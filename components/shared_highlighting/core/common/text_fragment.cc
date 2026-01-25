@@ -131,7 +131,7 @@ std::optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
     return std::nullopt;
   }
 
-  const base::Value::Dict& dict = value->GetDict();
+  const base::DictValue& dict = value->GetDict();
   const std::string* text_start = dict.FindString(kFragmentTextStartKey);
   const std::string* text_end = dict.FindString(kFragmentTextEndKey);
   const std::string* prefix = dict.FindString(kFragmentPrefixKey);
@@ -173,7 +173,7 @@ std::string TextFragment::ToEscapedString(EscapedStringFormat format) const {
 }
 
 base::Value TextFragment::ToValue() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   if (prefix_.size())
     dict.Set(kFragmentPrefixKey, prefix_);

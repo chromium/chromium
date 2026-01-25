@@ -42,7 +42,7 @@ void TranslateJavaScriptFeature::StartTranslation(
     return;
   }
 
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(source_language);
   parameters.Append(target_language);
   CallJavaScriptFunction(frame, "translate.startTranslation", parameters);

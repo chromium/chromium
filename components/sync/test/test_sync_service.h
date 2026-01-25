@@ -165,7 +165,7 @@ class TestSyncService : public SyncService {
   void AddProtocolEventObserver(ProtocolEventObserver* observer) override;
   void RemoveProtocolEventObserver(ProtocolEventObserver* observer) override;
   void GetAllNodesForDebugging(
-      base::OnceCallback<void(base::Value::List)> callback) override;
+      base::OnceCallback<void(base::ListValue)> callback) override;
   DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void SendExplicitPassphraseToPlatformClient() override;

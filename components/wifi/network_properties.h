@@ -56,9 +56,9 @@ struct WIFI_EXPORT NetworkProperties {
   Frequency frequency = kFrequencyUnknown;
   FrequencySet frequency_set;
 
-  base::Value::Dict ToValue(bool network_list) const;
+  base::DictValue ToValue(bool network_list) const;
   // Updates only properties set in |value|.
-  bool UpdateFromValue(const base::Value::Dict& value);
+  bool UpdateFromValue(const base::DictValue& value);
   static std::string MacAddressAsString(const uint8_t mac_as_int[6]);
   static bool OrderByType(const NetworkProperties& l,
                           const NetworkProperties& r);

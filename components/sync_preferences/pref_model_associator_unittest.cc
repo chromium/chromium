@@ -165,10 +165,10 @@ class AbstractPreferenceMergeTest : public testing::Test {
  protected:
   AbstractPreferenceMergeTest() = default;
 
-  void SetContentPattern(base::Value::Dict& patterns_dict,
+  void SetContentPattern(base::DictValue& patterns_dict,
                          const std::string& expression,
                          int setting) {
-    base::Value::Dict* expression_dict = patterns_dict.EnsureDict(expression);
+    base::DictValue* expression_dict = patterns_dict.EnsureDict(expression);
     expression_dict->Set("setting", setting);
   }
 
@@ -179,9 +179,9 @@ class AbstractPreferenceMergeTest : public testing::Test {
     ASSERT_TRUE(pref);
     base::Value::Type type = pref->GetType();
     if (type == base::Value::Type::DICT) {
-      pref_service_->SetDict(pref_name, base::Value::Dict());
+      pref_service_->SetDict(pref_name, base::DictValue());
     } else if (type == base::Value::Type::LIST) {
-      pref_service_->SetList(pref_name, base::Value::List());
+      pref_service_->SetList(pref_name, base::ListValue());
     } else {
       FAIL();
     }
@@ -230,7 +230,7 @@ class ListPreferenceMergeTest : public AbstractPreferenceMergeTest {
   std::string server_url1_;
   std::string local_url0_;
   std::string local_url1_;
-  base::Value::List server_url_list_;
+  base::ListValue server_url_list_;
 };
 
 TEST_F(ListPreferenceMergeTest, NotListOrDictionary) {
@@ -263,13 +263,13 @@ TEST_F(ListPreferenceMergeTest, ServerNull) {
       pref_service_->FindPreference(kListPrefName);
   base::Value merged_value(helper::MergePreference(
       client_.get(), pref->name(), *pref->GetValue(), base::Value()));
-  const base::Value::List& local_list_value =
+  const base::ListValue& local_list_value =
       pref_service_->GetList(kListPrefName);
   EXPECT_EQ(merged_value, local_list_value);
 }
 
 TEST_F(ListPreferenceMergeTest, ServerEmpty) {
-  base::Value::List empty_value;
+  base::ListValue empty_value;
   {
     ScopedListPrefUpdate update(pref_service_.get(), kListPrefName);
     update->Append(local_url0_);
@@ -280,7 +280,7 @@ TEST_F(ListPreferenceMergeTest, ServerEmpty) {
   base::Value merged_value(
       helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value(empty_value.Clone())));
-  const base::Value::List& local_list_value =
+  const base::ListValue& local_list_value =
       pref_service_->GetList(kListPrefName);
   EXPECT_EQ(merged_value, local_list_value);
 }
@@ -296,7 +296,7 @@ TEST_F(ListPreferenceMergeTest, ServerCorrupt) {
   base::Value merged_value(
       helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value("corrupt-type")));
-  const base::Value::List& local_list_value =
+  const base::ListValue& local_list_value =
       pref_service_->GetList(kListPrefName);
   EXPECT_EQ(merged_value, local_list_value);
 }
@@ -314,7 +314,7 @@ TEST_F(ListPreferenceMergeTest, Merge) {
       helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value(server_url_list_.Clone())));
 
-  auto expected = base::Value::List()
+  auto expected = base::ListValue()
                       .Append(server_url0_)
                       .Append(server_url1_)
                       .Append(local_url0_)
@@ -336,7 +336,7 @@ TEST_F(ListPreferenceMergeTest, Duplicates) {
       helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value(server_url_list_.Clone())));
 
-  auto expected = base::Value::List()
+  auto expected = base::ListValue()
                       .Append(server_url0_)
                       .Append(server_url1_)
                       .Append(local_url0_);
@@ -350,7 +350,7 @@ TEST_F(ListPreferenceMergeTest, Equals) {
     update->Append(server_url1_);
   }
 
-  base::Value::List original = server_url_list_.Clone();
+  base::ListValue original = server_url_list_.Clone();
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   base::Value merged_value(
@@ -399,7 +399,7 @@ TEST_F(DictionaryPreferenceMergeTest, ServerNull) {
       pref_service_->FindPreference(kDictionaryPrefName);
   base::Value merged_value(helper::MergePreference(
       client_.get(), pref->name(), *pref->GetValue(), base::Value()));
-  const base::Value::Dict& local_dict_value =
+  const base::DictValue& local_dict_value =
       pref_service_->GetDict(kDictionaryPrefName);
   EXPECT_EQ(merged_value, local_dict_value);
 }
@@ -414,7 +414,7 @@ TEST_F(DictionaryPreferenceMergeTest, ServerEmpty) {
       pref_service_->FindPreference(kDictionaryPrefName);
   base::Value merged_value(helper::MergePreference(
       client_.get(), pref->name(), *pref->GetValue(), base::Value()));
-  const base::Value::Dict& local_dict_value =
+  const base::DictValue& local_dict_value =
       pref_service_->GetDict(kDictionaryPrefName);
   EXPECT_EQ(merged_value, local_dict_value);
 }
@@ -430,7 +430,7 @@ TEST_F(DictionaryPreferenceMergeTest, ServerCorrupt) {
   base::Value merged_value(
       helper::MergePreference(client_.get(), pref->name(), *pref->GetValue(),
                               base::Value("corrupt-type")));
-  const base::Value::Dict& local_dict_value =
+  const base::DictValue& local_dict_value =
       pref_service_->GetDict(kDictionaryPrefName);
   EXPECT_EQ(merged_value, local_dict_value);
 }
@@ -446,7 +446,7 @@ TEST_F(DictionaryPreferenceMergeTest, MergeNoConflicts) {
       *pref_service_->FindPreference(kDictionaryPrefName)->GetValue(),
       server_patterns_));
 
-  base::Value::Dict expected;
+  base::DictValue expected;
   SetContentPattern(expected, expression0_, 1);
   SetContentPattern(expected, expression1_, 2);
   SetContentPattern(expected, expression2_, 1);
@@ -468,7 +468,7 @@ TEST_F(DictionaryPreferenceMergeTest, MergeConflicts) {
       *pref_service_->FindPreference(kDictionaryPrefName)->GetValue(),
       server_patterns_));
 
-  base::Value::Dict expected;
+  base::DictValue expected;
   SetContentPattern(expected, expression0_, 1);
   SetContentPattern(expected, expression1_, 2);
   SetContentPattern(expected, expression2_, 1);
@@ -478,14 +478,14 @@ TEST_F(DictionaryPreferenceMergeTest, MergeConflicts) {
 }
 
 TEST_F(DictionaryPreferenceMergeTest, MergeValueToDictionary) {
-  base::Value::Dict local_dict_value;
+  base::DictValue local_dict_value;
   local_dict_value.Set("key", 0);
 
-  base::Value::Dict server_dict_value;
+  base::DictValue server_dict_value;
   server_dict_value.SetByDottedPath("key.subkey", 0);
 
   // TODO(crbug.com/40754070): Migrate MergePreference() to
-  // take a base::Value::Dict.
+  // take a base::DictValue.
   base::Value merged_value(helper::MergePreference(
       client_.get(), kDictionaryPrefName, base::Value(local_dict_value.Clone()),
       base::Value(server_dict_value.Clone())));
@@ -544,7 +544,7 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
         client_.get(), pref, *pref_service_->GetUserPrefValue(pref),
         base::Value(server_url_list_.Clone())));
 
-    auto expected = base::Value::List().Append(url0_).Append(url1_);
+    auto expected = base::ListValue().Append(url0_).Append(url1_);
     return merged_value == expected;
   }
 
@@ -558,7 +558,7 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
         client_.get(), pref, *pref_service_->GetUserPrefValue(pref),
         server_patterns_));
 
-    base::Value::Dict expected;
+    base::DictValue expected;
     SetContentPattern(expected, expression0_, 1);
     SetContentPattern(expected, expression1_, 1);
     return merged_value == expected;
@@ -569,7 +569,7 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
   std::string expression0_;
   std::string expression1_;
   std::string content_type0_;
-  base::Value::List server_url_list_;
+  base::ListValue server_url_list_;
   base::Value server_patterns_{base::Value::Type::DICT};
 };
 

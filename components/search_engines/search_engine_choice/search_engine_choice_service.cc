@@ -151,7 +151,7 @@ bool ShouldRepromptFromFeatureParams(
     return false;
   }
 
-  std::optional<base::Value::Dict> reprompt_params_json =
+  std::optional<base::DictValue> reprompt_params_json =
       base::JSONReader::ReadDict(reprompt_params,
                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   // Not a valid JSON.
@@ -465,7 +465,7 @@ PendingDisplayStateStatus ProcessPendingChoiceScreenDisplayStateInternal(
     regional_capabilities::RegionalCapabilitiesService&
         regional_capabilities_service,
     PrefService& profile_prefs) {
-  const base::Value::Dict& dict = profile_prefs.GetDict(
+  const base::DictValue& dict = profile_prefs.GetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
   std::optional<ChoiceScreenDisplayState> display_state =
       ChoiceScreenDisplayState::FromDict(dict);

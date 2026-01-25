@@ -76,7 +76,7 @@ namespace {
 // (i.e., `value` is no longer valid after this operation). Returns nullopt if
 // the list is malformed or nullptr.
 std::optional<std::vector<std::u16string>> PathListFromValue(
-    base::Value::List* value) {
+    base::ListValue* value) {
   if (!value) {
     return std::nullopt;
   }
@@ -99,7 +99,7 @@ std::optional<ImportedBookmarkEntry> NullEntry() {
 // Transforms a JSON-source Value::Dict representing a single bookmark into an
 // ImportedBookmarkEntry. Returns nullopt if the Value::Dict is invalid.
 std::optional<ImportedBookmarkEntry> BookmarkEntryFromValue(
-    base::Value::Dict dict) {
+    base::DictValue dict) {
   ImportedBookmarkEntry entry;
   entry.in_toolbar = false;  // Not supported.
 
@@ -133,7 +133,7 @@ std::optional<ImportedBookmarkEntry> BookmarkEntryFromValue(
   return entry;
 }
 
-std::vector<ImportedBookmarkEntry> TransformList(base::Value::List list) {
+std::vector<ImportedBookmarkEntry> TransformList(base::ListValue list) {
   std::vector<ImportedBookmarkEntry> result;
   for (base::Value& val : list) {
     if (!val.is_dict()) {
@@ -162,11 +162,11 @@ BookmarkParser::BookmarkParsingResult TranslateJSResult(id result,
     return base::unexpected(
         BookmarkParser::BookmarkParsingError::kParsingFailed);
   }
-  base::Value::Dict dict = std::move(*value_result).TakeDict();
+  base::DictValue dict = std::move(*value_result).TakeDict();
 
   BookmarkParser::ParsedBookmarks parsing_result;
 
-  if (base::Value::List* bookmarks = dict.FindList("bookmarks")) {
+  if (base::ListValue* bookmarks = dict.FindList("bookmarks")) {
     parsing_result.bookmarks = TransformList(std::move(*bookmarks));
   } else {
     return base::unexpected(
@@ -176,7 +176,7 @@ BookmarkParser::BookmarkParsingResult TranslateJSResult(id result,
   // Note: Although Reading List is often omitted from input files, the TS
   // parser is still expected to return an empty list in these cases. Thus, the
   // field is required.
-  if (base::Value::List* reading_list = dict.FindList("readingList")) {
+  if (base::ListValue* reading_list = dict.FindList("readingList")) {
     parsing_result.reading_list = TransformList(std::move(*reading_list));
   } else {
     return base::unexpected(

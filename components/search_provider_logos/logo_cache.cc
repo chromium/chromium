@@ -66,7 +66,7 @@ const char kSimpleType[] = "SIMPLE";
 const char kAnimatedType[] = "ANIMATED";
 const char kInteractiveType[] = "INTERACTIVE";
 
-bool GetTimeValue(const base::Value::Dict& dict,
+bool GetTimeValue(const base::DictValue& dict,
                   const std::string& key,
                   base::Time* time) {
   const std::string* str = dict.FindString(key);
@@ -78,7 +78,7 @@ bool GetTimeValue(const base::Value::Dict& dict,
   return false;
 }
 
-void SetTimeValue(base::Value::Dict& dict,
+void SetTimeValue(base::DictValue& dict,
                   const std::string& key,
                   const base::Time& time) {
   int64_t internal_time_value = time.ToInternalValue();
@@ -225,7 +225,7 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
   if (!value) {
     return nullptr;
   }
-  const base::Value::Dict* dict = value->GetIfDict();
+  const base::DictValue* dict = value->GetIfDict();
   if (!dict) {
     return nullptr;
   }
@@ -330,7 +330,7 @@ void LogoCache::LogoMetadataToString(const LogoMetadata& metadata,
                                      int num_bytes,
                                      int dark_num_bytes,
                                      std::string* str) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kSourceUrlKey, metadata.source_url.spec());
   dict.Set(kFingerprintKey, metadata.fingerprint);
   dict.Set(kTypeKey, LogoTypeToString(metadata.type));

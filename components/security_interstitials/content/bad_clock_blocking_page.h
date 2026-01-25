@@ -57,7 +57,7 @@ class BadClockBlockingPage : public SSLBlockingPageBase {
  protected:
   // SecurityInterstitialPage implementation:
   void CommandReceived(const std::string& command) override;
-  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
+  void PopulateInterstitialStrings(base::DictValue& load_time_data) override;
 
  private:
   const net::SSLInfo ssl_info_;

@@ -66,7 +66,7 @@ BadClockBlockingPage::GetTypeForTesting() {
 }
 
 void BadClockBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   bad_clock_ui_->PopulateStringsForHTML(load_time_data);
 
   PopulateEnhancedProtectionMessage(load_time_data);

@@ -201,7 +201,7 @@ void CommandStorageManager::GetLastSessionCommands(
 
 #if DCHECK_IS_ON()
 base::Value CommandStorageManager::ToDebugValue() const {
-  base::Value::Dict debug_value;
+  base::DictValue debug_value;
   debug_value.Set("use_crypto", use_crypto_);
   for (const std::unique_ptr<SessionCommand>& command : pending_commands_) {
     debug_value.EnsureList("pending_commands")

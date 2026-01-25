@@ -129,7 +129,7 @@ bool SupervisedUserPrefStore::GetValue(std::string_view key,
   return prefs_->GetValue(key, value);
 }
 
-base::Value::Dict SupervisedUserPrefStore::GetValues() const {
+base::DictValue SupervisedUserPrefStore::GetValues() const {
   return prefs_->AsDict();
 }
 
@@ -165,7 +165,7 @@ void SupervisedUserPrefStore::OnDeviceParentalControlsChanged(
 }
 
 void SupervisedUserPrefStore::OnNewSettingsAvailable(
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   family_link_settings_ = settings.Clone();
   RecreatePreferences();
 }

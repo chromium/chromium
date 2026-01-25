@@ -84,7 +84,7 @@ signin::Tribool ParseTribool(std::optional<int> int_value) {
 
 // Returns a non-empty string found in `dict` by `key` or nullptr if a string is
 // not found or `key` contains an empty string.
-const std::string* FindStringIfNonEmpty(const base::Value::Dict& dict,
+const std::string* FindStringIfNonEmpty(const base::DictValue& dict,
                                         std::string_view key) {
   const std::string* value = dict.FindString(key);
   if (!value) {
@@ -96,7 +96,7 @@ const std::string* FindStringIfNonEmpty(const base::Value::Dict& dict,
 }  // namespace
 
 std::optional<AccountInfo> AccountInfoFromUserInfo(
-    const base::Value::Dict& user_info) {
+    const base::DictValue& user_info) {
   // Both |gaia_id| and |email| are required value in the JSON reply, so
   // return empty result if any is missing or is empty.
   const std::string* gaia_id_value =
@@ -150,8 +150,8 @@ std::optional<AccountInfo> AccountInfoFromUserInfo(
 }
 
 std::optional<AccountCapabilities> AccountCapabilitiesFromServerResponse(
-    const base::Value::Dict& account_capabilities) {
-  const base::Value::List* list =
+    const base::DictValue& account_capabilities) {
+  const base::ListValue* list =
       account_capabilities.FindList(server::kAccountCapabilitiesListKey);
   if (!list) {
     return std::nullopt;
@@ -182,9 +182,9 @@ std::optional<AccountCapabilities> AccountCapabilitiesFromServerResponse(
   return AccountCapabilities(std::move(capabilities_map));
 }
 
-base::Value::Dict SerializeAccountCapabilities(
+base::DictValue SerializeAccountCapabilities(
     const AccountCapabilities& account_capabilities) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (std::string_view name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {
     signin::Tribool capability_state =
@@ -195,7 +195,7 @@ base::Value::Dict SerializeAccountCapabilities(
 }
 
 AccountCapabilities DeserializeAccountCapabilities(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   base::flat_map<std::string, bool> capabilities_map;
   for (std::string_view name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {
@@ -207,7 +207,7 @@ AccountCapabilities DeserializeAccountCapabilities(
   return AccountCapabilities(std::move(capabilities_map));
 }
 
-base::Value::Dict SerializeAccountInfo(const AccountInfo& account_info) {
+base::DictValue SerializeAccountInfo(const AccountInfo& account_info) {
   std::string hosted_domain_to_set;
   if (std::optional<std::string_view> hosted_domain =
           account_info.GetHostedDomain()) {
@@ -220,7 +220,7 @@ base::Value::Dict SerializeAccountInfo(const AccountInfo& account_info) {
     avatar_url_to_set = avatar_url->empty() ? local::kNoPictureURLFound
                                             : std::string(*avatar_url);
   }
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(local::kAccountIdKey, account_info.GetAccountId().ToString())
       .Set(local::kAccountEmailKey, account_info.GetEmail())
       .Set(local::kAccountGaiaKey, account_info.GetGaiaId().ToString())
@@ -242,8 +242,7 @@ base::Value::Dict SerializeAccountInfo(const AccountInfo& account_info) {
            SerializeAccountCapabilities(account_info.GetAccountCapabilities()));
 }
 
-std::optional<AccountInfo> DeserializeAccountInfo(
-    const base::Value::Dict& dict) {
+std::optional<AccountInfo> DeserializeAccountInfo(const base::DictValue& dict) {
   const std::string* account_id =
       FindStringIfNonEmpty(dict, local::kAccountIdKey);
   const std::string* email =
@@ -310,7 +309,7 @@ std::optional<AccountInfo> DeserializeAccountInfo(
   }
   builder.SetIsChildAccount(
       ParseTribool(dict.FindInt(local::kAccountChildAttributeKey)));
-  if (const base::Value::Dict* capabilities =
+  if (const base::DictValue* capabilities =
           dict.FindDict(local::kAccountCapabilitiesKey)) {
     builder.UpdateAccountCapabilitiesWith(
         DeserializeAccountCapabilities(*capabilities));

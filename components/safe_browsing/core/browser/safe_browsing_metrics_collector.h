@@ -208,7 +208,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   std::optional<SafeBrowsingMetricsCollector::Event>
   GetLatestEventFromEventTypeFilter(UserState user_state,
                                     EventTypeFilter event_type_filter);
-  const base::Value::Dict* GetSafeBrowsingEventDictionary(UserState user_state);
+  const base::DictValue* GetSafeBrowsingEventDictionary(UserState user_state);
   int GetEventCountSince(UserState user_state,
                          EventType event_type,
                          base::Time since_time);

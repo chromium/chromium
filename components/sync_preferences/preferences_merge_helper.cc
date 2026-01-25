@@ -25,9 +25,9 @@ MergeBehavior GetMergeBehavior(const PrefModelAssociatorClient& client,
 
 }  // namespace
 
-base::Value::List MergeListValues(const base::Value::List& local_value,
-                                  const base::Value::List& server_value) {
-  base::Value::List result = server_value.Clone();
+base::ListValue MergeListValues(const base::ListValue& local_value,
+                                const base::ListValue& server_value) {
+  base::ListValue result = server_value.Clone();
   for (const auto& value : local_value) {
     if (!std::ranges::contains(result, value)) {
       result.Append(value.Clone());
@@ -37,9 +37,9 @@ base::Value::List MergeListValues(const base::Value::List& local_value,
   return result;
 }
 
-base::Value::Dict MergeDictionaryValues(const base::Value::Dict& local_value,
-                                        const base::Value::Dict& server_value) {
-  base::Value::Dict result = server_value.Clone();
+base::DictValue MergeDictionaryValues(const base::DictValue& local_value,
+                                      const base::DictValue& server_value) {
+  base::DictValue result = server_value.Clone();
 
   for (auto it : local_value) {
     // It's not clear whether using a C++17 structured binding here would cause
@@ -113,12 +113,12 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
   NOTREACHED();
 }
 
-std::pair<base::Value::Dict, base::Value::Dict> UnmergeDictionaryValues(
-    base::Value::Dict new_dict,
-    const base::Value::Dict& original_local_dict,
-    const base::Value::Dict& original_account_dict) {
-  base::Value::Dict new_local_dict;
-  base::Value::Dict new_account_dict;
+std::pair<base::DictValue, base::DictValue> UnmergeDictionaryValues(
+    base::DictValue new_dict,
+    const base::DictValue& original_local_dict,
+    const base::DictValue& original_account_dict) {
+  base::DictValue new_local_dict;
+  base::DictValue new_account_dict;
 
   // Keep only keys that exist in the `new_dict`.
   for (auto [k, v] : original_local_dict) {
@@ -137,12 +137,11 @@ std::pair<base::Value::Dict, base::Value::Dict> UnmergeDictionaryValues(
     // If contained value is again a dict, recursively un-merge.
     if (new_dict_value.is_dict()) {
       base::Value local_dict_value(base::Value::Type::DICT);
-      if (base::Value::Dict* local_dict_value_dict =
-              new_local_dict.FindDict(k)) {
+      if (base::DictValue* local_dict_value_dict = new_local_dict.FindDict(k)) {
         local_dict_value = base::Value(std::move(*local_dict_value_dict));
       }
       base::Value account_dict_value(base::Value::Type::DICT);
-      if (base::Value::Dict* account_dict_value_dict =
+      if (base::DictValue* account_dict_value_dict =
               new_account_dict.FindDict(k)) {
         account_dict_value = base::Value(std::move(*account_dict_value_dict));
       }

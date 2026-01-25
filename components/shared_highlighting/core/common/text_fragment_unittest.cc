@@ -22,7 +22,7 @@ TEST(TextFragmentTest, FragmentToValueFromEncodedString) {
   // Success cases
   base::Value result_val = TextFragmentToValue("start");
   ASSERT_TRUE(result_val.is_dict());
-  base::Value::Dict result = std::move(result_val).TakeDict();
+  base::DictValue result = std::move(result_val).TakeDict();
   EXPECT_FALSE(result.contains(kFragmentPrefixKey));
   EXPECT_EQ("start", *result.FindString(kFragmentTextStartKey));
   EXPECT_FALSE(result.contains(kFragmentTextEndKey));

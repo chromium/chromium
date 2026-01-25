@@ -16,17 +16,17 @@ namespace supervised_user {
 
 namespace {
 
-base::Value::Dict GetManualBehaviorHostDict(
+base::DictValue GetManualBehaviorHostDict(
     const FamilyLinkSettingsService& family_link_settings_service) {
-  const base::Value::Dict& local_settings =
+  const base::DictValue& local_settings =
       family_link_settings_service.LocalSettingsForTest();
 
-  if (const base::Value::Dict* dict = local_settings.FindDict(
+  if (const base::DictValue* dict = local_settings.FindDict(
           supervised_user::kContentPackManualBehaviorHosts)) {
     return dict->Clone();
   }
 
-  return base::Value::Dict();
+  return base::DictValue();
 }
 
 }  // namespace
@@ -70,7 +70,7 @@ void PermissionRequestCreatorMock::DelayHandlingForNextRequests() {
 void PermissionRequestCreatorMock::HandleDelayedRequests() {
   DCHECK(delay_handling_);
 
-  base::Value::Dict dict_to_insert =
+  base::DictValue dict_to_insert =
       GetManualBehaviorHostDict(family_link_settings_service_.get());
 
   for (size_t i = last_url_request_handled_index_ + 1; i < url_requests_.size();
@@ -87,7 +87,7 @@ void PermissionRequestCreatorMock::HandleDelayedRequests() {
 
 void PermissionRequestCreatorMock::CreateURLAccessRequestImpl(
     const GURL& url_requested) {
-  base::Value::Dict dict_to_insert =
+  base::DictValue dict_to_insert =
       GetManualBehaviorHostDict(family_link_settings_service_.get());
   dict_to_insert.Set(url_requested.GetHost(), result_);
 

@@ -32,7 +32,7 @@ std::string PollGetUpdatesRequestEvent::GetDetails() const {
   return std::string();
 }
 
-base::Value::Dict PollGetUpdatesRequestEvent::GetProtoMessage(
+base::DictValue PollGetUpdatesRequestEvent::GetProtoMessage(
     bool include_specifics) const {
   return ClientToServerMessageToValue(
              request_, {.include_specifics = include_specifics,

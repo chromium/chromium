@@ -81,7 +81,7 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
   return details;
 }
 
-base::Value::Dict NormalGetUpdatesRequestEvent::GetProtoMessage(
+base::DictValue NormalGetUpdatesRequestEvent::GetProtoMessage(
     bool include_specifics) const {
   return ClientToServerMessageToValue(
              request_, {.include_specifics = include_specifics,

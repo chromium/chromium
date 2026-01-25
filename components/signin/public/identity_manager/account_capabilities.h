@@ -187,11 +187,11 @@ class AccountCapabilities {
 
   friend std::optional<AccountCapabilities>
   signin::AccountCapabilitiesFromServerResponse(
-      const base::Value::Dict& account_capabilities);
-  friend base::Value::Dict signin::SerializeAccountCapabilities(
+      const base::DictValue& account_capabilities);
+  friend base::DictValue signin::SerializeAccountCapabilities(
       const AccountCapabilities& account_capabilities);
   friend AccountCapabilities signin::DeserializeAccountCapabilities(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
   friend class AccountCapabilitiesFetcherGaia;
 #if BUILDFLAG(IS_IOS)
   friend base::span<const std::string_view>

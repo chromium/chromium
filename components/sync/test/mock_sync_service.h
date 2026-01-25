@@ -144,7 +144,7 @@ class MockSyncService : public SyncService {
               (override));
   MOCK_METHOD(void,
               GetAllNodesForDebugging,
-              (base::OnceCallback<void(base::Value::List)> callback),
+              (base::OnceCallback<void(base::ListValue)> callback),
               (override));
   MOCK_METHOD(DataTypeDownloadStatus,
               GetDownloadStatusFor,

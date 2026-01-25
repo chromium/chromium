@@ -1557,7 +1557,7 @@ TabGroupSyncServiceImpl::GetDeletedGroupIdsFromPref() const {
   std::vector<LocalTabGroupID> deleted_ids;
 
   ScopedDictPrefUpdate update(pref_service_, prefs::kDeletedTabGroupIds);
-  base::Value::Dict& pref_data = update.Get();
+  base::DictValue& pref_data = update.Get();
 
   for (const auto [serialized_local_id, serialized_sync_id] : pref_data) {
     auto local_id = LocalTabGroupIDFromString(serialized_local_id);

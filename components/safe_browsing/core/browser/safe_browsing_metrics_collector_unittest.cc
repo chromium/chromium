@@ -48,21 +48,20 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
                            time.ToDeltaSinceWindowsEpoch().InSeconds());
   }
 
-  const base::Value::List& GetTsFromUserStateAndEventType(
-      UserState state,
-      EventType event_type) {
-    const base::Value::Dict& state_dict =
+  const base::ListValue& GetTsFromUserStateAndEventType(UserState state,
+                                                        EventType event_type) {
+    const base::DictValue& state_dict =
         pref_service_.GetDict(prefs::kSafeBrowsingEventTimestamps);
-    const base::Value::Dict* event_dict =
+    const base::DictValue* event_dict =
         state_dict.FindDict(base::NumberToString(static_cast<int>(state)));
     DCHECK(event_dict);
-    const base::Value::List* timestamps = event_dict->FindList(
+    const base::ListValue* timestamps = event_dict->FindList(
         base::NumberToString(static_cast<int>(event_type)));
     DCHECK(timestamps);
     return *timestamps;
   }
 
-  bool IsSortedInChronologicalOrder(const base::Value::List& ts) {
+  bool IsSortedInChronologicalOrder(const base::ListValue& ts) {
     return std::is_sorted(ts.begin(), ts.end(),
                           [](const base::Value& ts_a, const base::Value& ts_b) {
                             return base::ValueToInt64(ts_a).value_or(0) <
@@ -289,7 +288,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
         EventType::DATABASE_INTERSTITIAL_BYPASS);
   }
 
-  const base::Value::List& timestamps = GetTsFromUserStateAndEventType(
+  const base::ListValue& timestamps = GetTsFromUserStateAndEventType(
       UserState::kEnhancedProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
   EXPECT_EQ(30u, timestamps.size());
   EXPECT_TRUE(IsSortedInChronologicalOrder(timestamps));
@@ -318,10 +317,10 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   metrics_collector_->AddSafeBrowsingEventToPref(
       EventType::DATABASE_INTERSTITIAL_BYPASS);
 
-  const base::Value::List& enhanced_timestamps = GetTsFromUserStateAndEventType(
+  const base::ListValue& enhanced_timestamps = GetTsFromUserStateAndEventType(
       UserState::kEnhancedProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
   EXPECT_EQ(1u, enhanced_timestamps.size());
-  const base::Value::List& managed_timestamps = GetTsFromUserStateAndEventType(
+  const base::ListValue& managed_timestamps = GetTsFromUserStateAndEventType(
       UserState::kManaged, EventType::DATABASE_INTERSTITIAL_BYPASS);
   EXPECT_EQ(2u, managed_timestamps.size());
 }
@@ -763,11 +762,11 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   FastForwardAndAddEvent(base::Days(1), EventType::CSD_INTERSTITIAL_BYPASS);
 
   task_environment_.FastForwardBy(base::Days(30));
-  const base::Value::List& db_timestamps = GetTsFromUserStateAndEventType(
+  const base::ListValue& db_timestamps = GetTsFromUserStateAndEventType(
       UserState::kStandardProtection, EventType::DATABASE_INTERSTITIAL_BYPASS);
   // The event is removed from pref because it was logged more than 30 days.
   EXPECT_EQ(0u, db_timestamps.size());
-  const base::Value::List& csd_timestamps = GetTsFromUserStateAndEventType(
+  const base::ListValue& csd_timestamps = GetTsFromUserStateAndEventType(
       UserState::kStandardProtection, EventType::CSD_INTERSTITIAL_BYPASS);
   // The CSD event is still in pref because it was logged less than 30 days.
   EXPECT_EQ(1u, csd_timestamps.size());

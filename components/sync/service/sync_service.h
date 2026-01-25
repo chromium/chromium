@@ -630,7 +630,7 @@ class SyncService : public KeyedService {
   // Asynchronously fetches base::Value representations of all sync nodes and
   // returns them to the specified callback on this thread.
   virtual void GetAllNodesForDebugging(
-      base::OnceCallback<void(base::Value::List)> callback) = 0;
+      base::OnceCallback<void(base::ListValue)> callback) = 0;
 };
 
 }  // namespace syncer

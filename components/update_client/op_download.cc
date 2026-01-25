@@ -67,8 +67,8 @@ const char* DownloaderToString(CrxDownloader::DownloadMetrics::Downloader d) {
   }
 }
 
-base::Value::Dict MakeEvent(const CrxDownloader::DownloadMetrics& dm) {
-  base::Value::Dict event;
+base::DictValue MakeEvent(const CrxDownloader::DownloadMetrics& dm) {
+  base::DictValue event;
   event.Set("eventtype", protocol_request::kEventDownload);
   event.Set("eventresult", static_cast<int>(dm.error == 0));
   event.Set("downloader", DownloaderToString(dm.downloader));
@@ -100,7 +100,7 @@ void DownloadComplete(
     const std::string& id,
     scoped_refptr<CrxDownloader> crx_downloader,
     scoped_refptr<Cancellation> cancellation,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback,
     const CrxDownloader::Result& download_result) {
@@ -148,7 +148,7 @@ void HandleAvailableSpace(
     int64_t size,
     const std::string& hash,
     CrxDownloader::ProgressCallback progress_callback,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback,
     int64_t available_bytes) {
@@ -186,7 +186,7 @@ base::OnceClosure DownloadOperation(
     const std::vector<GURL>& urls,
     int64_t size,
     const std::string& hash,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     CrxDownloader::ProgressCallback progress_callback,
     const base::FilePath& file,

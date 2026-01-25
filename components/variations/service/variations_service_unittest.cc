@@ -745,7 +745,7 @@ TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
       prefs_.ClearPref(prefs::kVariationsPermanentConsistencyCountry);
     } else {
       std::string version_number(version_info::GetVersionNumber());
-      base::Value::List list_value;
+      base::ListValue list_value;
       for (const std::string& component :
            base::SplitString(test.permanent_consistency_country_before, ",",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {

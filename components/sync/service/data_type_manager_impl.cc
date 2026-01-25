@@ -421,13 +421,13 @@ TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
 }
 
 void DataTypeManagerImpl::GetAllNodesForDebugging(
-    base::OnceCallback<void(base::Value::List)> callback) const {
+    base::OnceCallback<void(base::ListValue)> callback) const {
   const DataTypeSet active_types = GetActiveDataTypes();
   if (active_types.empty() || state_ != CONFIGURED) {
     // `GetAllNodesRequestBarrier` only supports waiting for a non-empty set of
     // types, so return empty here if there are no active types. This can happen
     // if no data types have been successfully configured yet.
-    std::move(callback).Run(base::Value::List());
+    std::move(callback).Run(base::ListValue());
     return;
   }
 

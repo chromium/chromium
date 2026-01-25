@@ -269,7 +269,7 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::
       continue;
     }
 
-    const base::Value::Dict& elem_dict = elem.GetDict();
+    const base::DictValue& elem_dict = elem.GetDict();
     const std::string* token = elem_dict.FindString("carryBackToken");
     const std::string* url = elem_dict.FindString("url");
     if (token && url) {

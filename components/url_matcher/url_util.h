@@ -110,7 +110,7 @@ URL_MATCHER_EXPORT void AddFiltersWithLimit(
     url_matcher::URLMatcher* matcher,
     bool allow,
     base::MatcherStringPattern::ID* id,
-    const base::Value::List& patterns,
+    const base::ListValue& patterns,
     std::map<base::MatcherStringPattern::ID, FilterComponents>* filters =
         nullptr,
     size_t max_filters = kMaxFiltersAllowed);
@@ -139,7 +139,7 @@ URL_MATCHER_EXPORT void AddFiltersWithLimit(
 
 URL_MATCHER_EXPORT void AddAllowFiltersWithLimit(
     url_matcher::URLMatcher* matcher,
-    const base::Value::List& patterns,
+    const base::ListValue& patterns,
     size_t max_filters = kMaxFiltersAllowed);
 
 URL_MATCHER_EXPORT void AddAllowFiltersWithLimit(

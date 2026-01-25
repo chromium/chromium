@@ -223,7 +223,7 @@ TEST_F(SodaInstallerImplChromeOSTest, ConchInLiveCaptionFullList) {
   soda_installer_impl_.reset();
   soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
   std::vector<std::string> enabled_and_available_languages;
-  std::vector<base::Value::Dict> available_language_packs;
+  std::vector<base::DictValue> available_language_packs;
   {
     auto enabled_languages = GetInstance()->GetLiveCaptionEnabledLanguages();
     auto available_languages = GetInstance()->GetAvailableLanguages();

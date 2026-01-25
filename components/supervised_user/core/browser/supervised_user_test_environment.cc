@@ -76,11 +76,11 @@ void SetManualFilter(std::string_view content_pack_setting,
                      std::string_view entry,
                      bool allowlist,
                      FamilyLinkSettingsService& settings_service) {
-  const base::Value::Dict& local_settings =
+  const base::DictValue& local_settings =
       settings_service.LocalSettingsForTest();
-  base::Value::Dict dict_to_insert;
+  base::DictValue dict_to_insert;
 
-  if (const base::Value::Dict* dict_value =
+  if (const base::DictValue* dict_value =
           local_settings.FindDict(content_pack_setting)) {
     dict_to_insert = dict_value->Clone();
   }

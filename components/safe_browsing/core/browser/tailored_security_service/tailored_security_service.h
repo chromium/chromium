@@ -137,7 +137,7 @@ class TailoredSecurityService : public KeyedService {
   size_t GetNumberOfPendingTailoredSecurityServiceRequests();
 
   // Extracts a JSON-encoded HTTP response into a dictionary.
-  static base::Value::Dict ReadResponse(Request* request);
+  static base::DictValue ReadResponse(Request* request);
 
   // Unpacks the response and calls `callback`. Called by a `Request` when a
   // tailored security service query sequence has completed. When `success` is

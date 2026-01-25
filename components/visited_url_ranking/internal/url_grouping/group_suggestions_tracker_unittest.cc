@@ -73,8 +73,8 @@ class GroupSuggestionsTrackerTest : public testing::Test {
     ASSERT_EQ(suggestions.size(), suggestion_list.size());
     for (unsigned i = 0; i < suggestions.size(); ++i) {
       const GroupSuggestion& suggestion = suggestions[i];
-      const base::Value::Dict& suggestion_dic = suggestion_list[i].GetDict();
-      const base::Value::List& dic_tab_id_list =
+      const base::DictValue& suggestion_dic = suggestion_list[i].GetDict();
+      const base::ListValue& dic_tab_id_list =
           suggestion_dic
               .Find(GroupSuggestionsTracker::
                         kGroupSuggestionsTrackerUserTabIdsKey)
@@ -94,11 +94,9 @@ class GroupSuggestionsTrackerTest : public testing::Test {
     ASSERT_EQ(expected_host_hashes_list.size(), suggestion_list_pref.size());
 
     for (size_t i = 0; i < suggestion_list_pref.size(); ++i) {
-      const base::Value::Dict& suggestion_dic =
-          suggestion_list_pref[i].GetDict();
-      const base::Value::List* dic_host_hashes_list_ptr =
-          suggestion_dic.FindList(
-              GroupSuggestionsTracker::kGroupSuggestionsTrackerHostHashesKey);
+      const base::DictValue& suggestion_dic = suggestion_list_pref[i].GetDict();
+      const base::ListValue* dic_host_hashes_list_ptr = suggestion_dic.FindList(
+          GroupSuggestionsTracker::kGroupSuggestionsTrackerHostHashesKey);
       ASSERT_TRUE(dic_host_hashes_list_ptr)
           << "Host hashes key not found for suggestion " << i;
 

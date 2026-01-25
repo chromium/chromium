@@ -2065,7 +2065,7 @@ void SyncServiceImpl::RemoveProtocolEventObserver(
 }
 
 void SyncServiceImpl::GetAllNodesForDebugging(
-    base::OnceCallback<void(base::Value::List)> callback) {
+    base::OnceCallback<void(base::ListValue)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   data_type_manager_->GetAllNodesForDebugging(std::move(callback));

@@ -428,7 +428,7 @@ void AddFiltersWithLimit(
     URLMatcher* matcher,
     bool allow,
     base::MatcherStringPattern::ID* id,
-    const base::Value::List& patterns,
+    const base::ListValue& patterns,
     std::map<base::MatcherStringPattern::ID, FilterComponents>* filters,
     size_t max_filters) {
   URLMatcherConditionSet::Vector all_conditions;
@@ -493,7 +493,7 @@ void AddFiltersWithLimit(
 }
 
 void AddAllowFiltersWithLimit(url_matcher::URLMatcher* matcher,
-                              const base::Value::List& patterns,
+                              const base::ListValue& patterns,
                               size_t max_filters) {
   base::MatcherStringPattern::ID id(0);
   AddFiltersWithLimit(matcher, true, &id, patterns, /*filters= */ nullptr,

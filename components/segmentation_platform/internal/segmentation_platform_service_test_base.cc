@@ -156,9 +156,9 @@ void SegmentationPlatformServiceTestBase::DestroyPlatform() {
 
 void SegmentationPlatformServiceTestBase::SetUpPrefs() {
   ScopedDictPrefUpdate update(&pref_service_, kSegmentationResultPref);
-  base::Value::Dict& dictionary = update.Get();
+  base::DictValue& dictionary = update.Get();
 
-  base::Value::Dict segmentation_result;
+  base::DictValue segmentation_result;
   segmentation_result.Set("segment_id",
                           SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   dictionary.Set(kTestSegmentationKey1, std::move(segmentation_result));

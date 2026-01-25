@@ -57,7 +57,7 @@ class DataTypeController {
 
   using StopCallback = base::OnceClosure;
 
-  using AllNodesCallback = base::OnceCallback<void(base::Value::List)>;
+  using AllNodesCallback = base::OnceCallback<void(base::ListValue)>;
 
   using TypeMap = std::map<DataType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;

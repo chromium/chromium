@@ -15,7 +15,8 @@
 #include "components/variations/service/variations_service.h"
 
 namespace base {
-class Value;
+class DictValue;
+class ListValue;
 class ValueView;
 }  // namespace base
 
@@ -38,13 +39,12 @@ class TranslateInternalsHandler {
 
   // Returns a dictionary of languages where each key is a language
   // code and each value is a language name in the locale.
-  static base::Value::Dict GetLanguages();
+  static base::DictValue GetLanguages();
 
   virtual TranslateClient* GetTranslateClient() = 0;
   virtual variations::VariationsService* GetVariationsService() = 0;
   // Registers to handle |message| from JavaScript with |callback|.
-  using MessageCallback =
-      base::RepeatingCallback<void(const base::Value::List&)>;
+  using MessageCallback = base::RepeatingCallback<void(const base::ListValue&)>;
   virtual void RegisterMessageCallback(std::string_view message,
                                        MessageCallback callback) = 0;
 
@@ -71,26 +71,25 @@ class TranslateInternalsHandler {
 
   // Handles the Javascript message 'removePrefItem'. This message is sent
   // when UI requests to remove an item in the preference.
-  void OnRemovePrefItem(const base::Value::List& args);
+  void OnRemovePrefItem(const base::ListValue& args);
 
   // Handles the JavaScript message 'setRecentTargetLanguage'. This message is
   // sent when the UI requests to change the 'translate_recent_target'
   // preference.
-  void OnSetRecentTargetLanguage(const base::Value::List& args);
+  void OnSetRecentTargetLanguage(const base::ListValue& args);
 
   // Handles the Javascript message 'overrideCountry'. This message is sent
   // when UI requests to override the stored country.
-  void OnOverrideCountry(const base::Value::List& country);
+  void OnOverrideCountry(const base::ListValue& country);
 
   // Handles the Javascript message 'requestInfo'. This message is sent
   // when UI needs to show information concerned with the translation.
   // For now, this returns only prefs to Javascript.
   // |args| is not used.
-  void OnRequestInfo(const base::Value::List& args);
+  void OnRequestInfo(const base::ListValue& args);
 
   // Sends a message to Javascript.
-  void SendMessageToJs(std::string_view message,
-                       const base::Value::Dict& value);
+  void SendMessageToJs(std::string_view message, const base::DictValue& value);
 
   // Sends the current preference to Javascript.
   void SendPrefsToJs();

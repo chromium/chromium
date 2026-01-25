@@ -54,7 +54,7 @@ class SupervisedUserContentSettingsProvider
 
  private:
   // Callback on receiving settings from the supervised user settings service.
-  void OnSupervisedSettingsAvailable(const base::Value::Dict& settings);
+  void OnSupervisedSettingsAvailable(const base::DictValue& settings);
 
   content_settings::GlobalValueMap value_map_;
 

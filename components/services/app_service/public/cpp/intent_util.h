@@ -139,7 +139,7 @@ base::Value ConvertIntentToValue(const apps::IntentPtr& intent);
 
 // Converts base::Value to Intent. Returns nullptr for invalid base::Values.
 apps::IntentPtr ConvertValueToIntent(base::Value&& value);
-apps::IntentPtr ConvertDictToIntent(const base::Value::Dict& dict);
+apps::IntentPtr ConvertDictToIntent(const base::DictValue& dict);
 
 // Calculates the least general mime type that matches all of the given ones.
 // E.g., for ["image/jpeg", "image/png"] it will be "image/*". ["text/html",

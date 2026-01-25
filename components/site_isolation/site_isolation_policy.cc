@@ -269,7 +269,7 @@ void SiteIsolationPolicy::PersistUserTriggeredIsolatedOrigin(
   ScopedListPrefUpdate update(
       user_prefs::UserPrefs::Get(context),
       site_isolation::prefs::kUserTriggeredIsolatedOrigins);
-  base::Value::List& list = update.Get();
+  base::ListValue& list = update.Get();
   std::string value(origin.Serialize());
   if (!list.contains(value)) {
     list.Append(value);
@@ -286,7 +286,7 @@ void SiteIsolationPolicy::PersistWebTriggeredIsolatedOrigin(
   ScopedDictPrefUpdate update(
       user_prefs::UserPrefs::Get(context),
       site_isolation::prefs::kWebTriggeredIsolatedOrigins);
-  base::Value::Dict& dict = update.Get();
+  base::DictValue& dict = update.Get();
 
   // Add the origin.  If it already exists, this will just update the
   // timestamp.
@@ -366,7 +366,7 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
     if (!expired_entries.empty()) {
       ScopedDictPrefUpdate update(pref_service,
                                   prefs::kWebTriggeredIsolatedOrigins);
-      base::Value::Dict& updated_dict = update.Get();
+      base::DictValue& updated_dict = update.Get();
       for (const auto& entry : expired_entries) {
         updated_dict.Remove(entry);
       }

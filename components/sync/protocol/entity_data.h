@@ -99,8 +99,8 @@ struct EntityData {
   // SyncEntity for details.
   std::optional<sync_pb::DeletionOrigin> deletion_origin;
 
-  // Dumps all info into a base::Value::Dict and returns it.
-  base::Value::Dict ToDictionaryValue() const;
+  // Dumps all info into a base::DictValue and returns it.
+  base::DictValue ToDictionaryValue() const;
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;

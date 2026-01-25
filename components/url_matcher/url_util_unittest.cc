@@ -80,7 +80,7 @@ bool MatchFilters(const std::vector<std::string>& patterns,
                   const std::string& url) {
   // Add the pattern to the matcher.
   URLMatcher matcher;
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& pattern : patterns)
     list.Append(pattern);
   AddAllowFiltersWithLimit(&matcher, list);

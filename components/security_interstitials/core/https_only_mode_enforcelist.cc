@@ -54,7 +54,7 @@ void HttpsOnlyModeEnforcelist::EnforceForHost(const std::string& host,
   // We want to count how many HTTPS-enforced hosts accumulate over time, so
   // use a dictionary here.
   GURL url = GetSecureGURLForHost(host);
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kEnabledKey, true);
   dict.Set(kAdditionTimestamp, base::TimeToValue(clock_->Now()));
 
@@ -83,7 +83,7 @@ void HttpsOnlyModeEnforcelist::UnenforceForHost(const std::string& host,
       url, url, ContentSettingsType::HTTPS_ENFORCED, nullptr);
   DCHECK(value.is_dict());
 
-  base::Value::Dict& dict = value.GetDict();
+  base::DictValue& dict = value.GetDict();
   dict.Set(kEnabledKey, false);
 
   // Record the duration HTTPS was enforced on this host.

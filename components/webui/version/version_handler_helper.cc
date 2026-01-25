@@ -48,7 +48,7 @@ std::string SeedTypeToUiString(variations::SeedType seed_type) {
   }
 }
 
-base::Value::List GetVariationsList() {
+base::ListValue GetVariationsList() {
   std::vector<std::string> variations;
   base::FieldTrial::ActiveGroups active_groups;
   // Include low anonymity trial groups in the version string, as it is only
@@ -79,7 +79,7 @@ base::Value::List GetVariationsList() {
                     synthetic_field_trials.end());
 #endif
 
-  base::Value::List variations_list;
+  base::ListValue variations_list;
   for (std::string& variation : variations) {
     variations_list.Append(std::move(variation));
   }

@@ -21,12 +21,12 @@ namespace {
 class WebCryptoShaTest : public WebCryptoTestBase {};
 
 TEST_F(WebCryptoShaTest, DigestSampleSets) {
-  base::Value::List tests = ReadJsonTestFileAsList("sha.json");
+  base::ListValue tests = ReadJsonTestFileAsList("sha.json");
 
   for (const auto& test_value : tests) {
     SCOPED_TRACE(&test_value - &tests[0]);
     ASSERT_TRUE(test_value.is_dict());
-    const base::Value::Dict& test = test_value.GetDict();
+    const base::DictValue& test = test_value.GetDict();
 
     blink::WebCryptoAlgorithm test_algorithm =
         GetDigestAlgorithm(test, "algorithm");

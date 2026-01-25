@@ -85,7 +85,7 @@ TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_ToDict) {
       /*includes_non_regional_set_engine=*/false,
       /*selected_engine_index=*/1);
 
-  base::Value::Dict dict = display_state.ToDict();
+  base::DictValue dict = display_state.ToDict();
   EXPECT_THAT(
       *dict.FindList("search_engines"),
       testing::ElementsAre(SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
@@ -104,7 +104,7 @@ TEST_F(SearchEngineChoiceUtilsTest,
       /*is_current_default_search_presented=*/false,
       /*includes_non_regional_set_engine=*/false);
 
-  base::Value::Dict dict = display_state.ToDict();
+  base::DictValue dict = display_state.ToDict();
   EXPECT_THAT(
       *dict.FindList("search_engines"),
       testing::ElementsAre(SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
@@ -115,7 +115,7 @@ TEST_F(SearchEngineChoiceUtilsTest,
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_FromDict) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("country_id", kFranceCountryId.Serialize());
   dict.Set("selected_engine_index", 0);
   auto* search_engines = dict.EnsureList("search_engines");
@@ -135,7 +135,7 @@ TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_FromDict) {
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_FromDict_Errors) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   EXPECT_FALSE(ChoiceScreenDisplayState::FromDict(dict).has_value());
 
   dict.Set("country_id", kFranceCountryId.Serialize());

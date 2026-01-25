@@ -139,7 +139,7 @@ class DefaultSearchManager
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Save default search provider pref values into the map provided.
-  static void AddPrefValueToMap(base::Value::Dict value,
+  static void AddPrefValueToMap(base::DictValue value,
                                 PrefValueMap* pref_value_map);
 
   // Testing code can call this with |disabled| set to true to cause
@@ -228,9 +228,8 @@ class DefaultSearchManager
 
   // Detects DSE tampering by comparing the DSE pref to
   // a mirrored copy and resets the DSE pref if needed.
-  void HandleDefaultSearchEngineTampering(
-      const base::Value::Dict& url_dict,
-      const base::Value::Dict& mirrored_dict);
+  void HandleDefaultSearchEngineTampering(const base::DictValue& url_dict,
+                                          const base::DictValue& mirrored_dict);
 
   // Determines if there has been a recent pref reset (i.e., within the last
   // hour).

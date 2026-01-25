@@ -55,7 +55,7 @@ BackgroundTracingStateManager& BackgroundTracingStateManager::GetInstance() {
 void BackgroundTracingStateManager::Initialize() {
   DCHECK(local_state_);
 
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       local_state_->GetDict(kBackgroundTracingSessionState);
 
   auto* scenarios = dict.FindList(kTracingEnabledScenariosKey);
@@ -79,10 +79,10 @@ void BackgroundTracingStateManager::SaveState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(local_state_);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   if (!enabled_scenarios_.empty()) {
-    base::Value::List scenarios;
+    base::ListValue scenarios;
     for (const auto& scenario_name : enabled_scenarios_) {
       scenarios.Append(scenario_name);
     }

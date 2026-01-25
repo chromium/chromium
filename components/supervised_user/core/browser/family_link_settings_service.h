@@ -66,7 +66,7 @@ class FamilyLinkSettingsService : public KeyedService,
   // A callback whose first parameter is a dictionary containing all Family Link
   // user settings. If the dictionary is empty, it means that the service is
   // inactive, i.e. the user is not supervised.
-  using SettingsCallbackType = void(const base::Value::Dict&);
+  using SettingsCallbackType = void(const base::DictValue&);
   using SettingsCallback = base::RepeatingCallback<SettingsCallbackType>;
   using SettingsCallbackList =
       base::RepeatingCallbackList<SettingsCallbackType>;
@@ -157,7 +157,7 @@ class FamilyLinkSettingsService : public KeyedService,
 
   // Sets the setting with the given `key` to `value`.
   void SetLocalSetting(std::string_view key, base::Value value);
-  void SetLocalSetting(std::string_view key, base::Value::Dict dict);
+  void SetLocalSetting(std::string_view key, base::DictValue dict);
 
   // Removes the setting for `key`.
   void RemoveLocalSetting(std::string_view key);
@@ -192,7 +192,7 @@ class FamilyLinkSettingsService : public KeyedService,
 
   bool IsCustomPassphraseAllowed() const;
 
-  const base::Value::Dict& LocalSettingsForTest() const;
+  const base::DictValue& LocalSettingsForTest() const;
 
   // Returns the type of web filter that is applied to the current profile.
   WebFilterType GetWebFilterType() const;
@@ -201,25 +201,25 @@ class FamilyLinkSettingsService : public KeyedService,
   // Returns parsed logical value for the default filtering behavior setting,
   // considering its default value.
   FilteringBehavior GetDefaultFilteringBehavior(
-      const base::Value::Dict& settings) const;
+      const base::DictValue& settings) const;
 
   // Returns parsed logical value for the safe sites setting, considering its
   // default value.
-  bool IsSafeSitesEnabled(const base::Value::Dict& settings) const;
+  bool IsSafeSitesEnabled(const base::DictValue& settings) const;
 
   // Returns the dictionary where a given Sync item should be stored, depending
   // on whether the Family Link user setting is atomic or split. In case of a
   // split setting, the split setting prefix of |key| is removed, so that |key|
   // can be used to update the returned dictionary.
-  base::Value::Dict* GetDictionaryAndSplitKey(std::string* key) const;
-  base::Value::Dict* GetOrCreateDictionary(std::string_view key) const;
-  base::Value::Dict* GetAtomicSettings() const;
-  base::Value::Dict* GetSplitSettings() const;
-  base::Value::Dict* GetQueuedItems() const;
+  base::DictValue* GetDictionaryAndSplitKey(std::string* key) const;
+  base::DictValue* GetOrCreateDictionary(std::string_view key) const;
+  base::DictValue* GetAtomicSettings() const;
+  base::DictValue* GetSplitSettings() const;
+  base::DictValue* GetQueuedItems() const;
 
   // Returns a dictionary with all Family Link user settings if the service is
   // active, or empty dictionary otherwise.
-  base::Value::Dict GetSettingsWithDefault() const;
+  base::DictValue GetSettingsWithDefault() const;
 
   // Sends the settings to all subscribers if settings have changed since the
   // last time a notification was sent.
@@ -233,13 +233,13 @@ class FamilyLinkSettingsService : public KeyedService,
 
   bool initialization_failed_;
 
-  std::optional<base::Value::Dict> last_notified_settings_;
+  std::optional<base::DictValue> last_notified_settings_;
 
   // Set when WaitUntilReadyToSync() is invoked before initialization completes.
   base::OnceClosure wait_until_ready_to_sync_cb_;
 
   // A set of local settings that are fixed and not configured remotely.
-  base::Value::Dict local_settings_;
+  base::DictValue local_settings_;
 
   SettingsCallbackList settings_callback_list_;
 

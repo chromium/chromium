@@ -166,8 +166,7 @@ CrxInstaller::Result InstallFunctionWrapper(
                                   : InstallError::GENERIC_ERROR);
 }
 
-std::optional<base::Value::Dict> ReadManifest(
-    const base::FilePath& unpack_path) {
+std::optional<base::DictValue> ReadManifest(const base::FilePath& unpack_path) {
   base::FilePath manifest =
       unpack_path.Append(FILE_PATH_LITERAL("manifest.json"));
   if (!base::PathExists(manifest)) {

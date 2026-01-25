@@ -74,9 +74,9 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
   return output;
 }
 
-base::Value::Dict BuildRequestInfoDict(const std::string* frame_id,
-                                       const std::string* request_id) {
-  base::Value::Dict request_info_dict;
+base::DictValue BuildRequestInfoDict(const std::string* frame_id,
+                                     const std::string* request_id) {
+  base::DictValue request_info_dict;
 
   if (frame_id) {
     request_info_dict.Set(kFrameId, *frame_id);
@@ -128,12 +128,12 @@ struct TestRequestParams {
   }
 
   // Builds a dictionary based on the structure's parameters.
-  base::Value::Dict BuildDict() const {
-    base::Value::Dict request_params_dict;
+  base::DictValue BuildDict() const {
+    base::DictValue request_params_dict;
 
     // Common request parameters dictionary.
     if (has_request_dict) {
-      base::Value::Dict request_dict;
+      base::DictValue request_dict;
 
       if (challenge.has_value()) {
         request_dict.Set(kChallenge, *challenge);
@@ -148,7 +148,7 @@ struct TestRequestParams {
 
     // Relying party entity dictionary.
     if (has_rp_entity_dict) {
-      base::Value::Dict rp_entity_dict;
+      base::DictValue rp_entity_dict;
 
       if (rp_id.has_value()) {
         rp_entity_dict.Set(kId, *rp_id);
@@ -159,7 +159,7 @@ struct TestRequestParams {
 
     // User entity dictionary.
     if (has_user_entity_dict) {
-      base::Value::Dict user_entity_dict;
+      base::DictValue user_entity_dict;
 
       if (user_id.has_value()) {
         user_entity_dict.Set(kId, *user_id);
@@ -169,7 +169,7 @@ struct TestRequestParams {
     }
 
     if (credential_list_name.has_value()) {
-      base::Value::Dict credential_dict;
+      base::DictValue credential_dict;
 
       if (credential_type.has_value()) {
         credential_dict.Set(kType, *credential_type);
@@ -181,17 +181,17 @@ struct TestRequestParams {
 
       request_params_dict.Set(
           *credential_list_name,
-          base::Value::List().Append(std::move(credential_dict)));
+          base::ListValue().Append(std::move(credential_dict)));
     }
 
     if (has_extensions) {
-      base::Value::Dict extensions_dict;
+      base::DictValue extensions_dict;
 
-      base::Value::Dict prf_dict;
+      base::DictValue prf_dict;
 
       bool has_prf_input = prf_input1.has_value() || prf_input2.has_value();
       if (has_prf_input) {
-        base::Value::Dict prf_eval;
+        base::DictValue prf_eval;
 
         if (prf_input1.has_value()) {
           prf_eval.Set(device::kExtensionPRFFirst, *prf_input1);
@@ -205,9 +205,9 @@ struct TestRequestParams {
 
       bool has_prf_per_credential = per_credential_id.has_value();
       if (has_prf_per_credential) {
-        base::Value::Dict prf_eval_by_credential;
+        base::DictValue prf_eval_by_credential;
 
-        base::Value::Dict prf_eval;
+        base::DictValue prf_eval;
         if (per_credential_prf_input1.has_value() ||
             per_credential_prf_input2.has_value()) {
           if (per_credential_prf_input1.has_value()) {
@@ -273,7 +273,7 @@ struct TestRequestParams {
 };
 
 // Verifies that the dictionary produces the desired RequestInfo parsing error.
-void VerifyRequestInfoError(const base::Value::Dict& dict,
+void VerifyRequestInfoError(const base::DictValue& dict,
                             PasskeysParsingError error) {
   auto request_info = BuildRequestInfo(dict);
   ASSERT_FALSE(request_info.has_value());
@@ -580,7 +580,7 @@ TEST_F(PasskeyRequestParserTest, PRFInputTooLarge) {
 
 TEST_F(PasskeyRequestParserTest, NoError) {
   TestRequestParams params;
-  base::Value::Dict dict = params.BuildDict();
+  base::DictValue dict = params.BuildDict();
 
   auto assertion_request_params =
       BuildAssertionRequestParams(ValidRequestInfo(), dict);
@@ -596,7 +596,7 @@ TEST_F(PasskeyRequestParserTest, ToAuthenticationExtensionsClientOutputsJSON) {
 
   // Test case 1: Empty prf_result.
   extension_output_data.prf_result = {};
-  base::Value::Dict dict =
+  base::DictValue dict =
       ToAuthenticationExtensionsClientOutputsJSON(extension_output_data);
   EXPECT_TRUE(dict.empty());
 
@@ -605,10 +605,10 @@ TEST_F(PasskeyRequestParserTest, ToAuthenticationExtensionsClientOutputsJSON) {
   extension_output_data.prf_result = prf_result_32;
   dict = ToAuthenticationExtensionsClientOutputsJSON(extension_output_data);
   EXPECT_FALSE(dict.empty());
-  const base::Value::Dict* prf_dict = dict.FindDict(device::kExtensionPRF);
+  const base::DictValue* prf_dict = dict.FindDict(device::kExtensionPRF);
   ASSERT_TRUE(prf_dict);
   EXPECT_TRUE(prf_dict->FindBool(device::kExtensionPRFEnabled).value_or(false));
-  const base::Value::Dict* results =
+  const base::DictValue* results =
       prf_dict->FindDict(device::kExtensionPRFResults);
   ASSERT_TRUE(results);
   const std::string* first = results->FindString(device::kExtensionPRFFirst);

@@ -159,7 +159,7 @@ base::OnceClosure RunOperation(
     scoped_refptr<CrxInstaller> installer,
     const std::string& file,
     const std::string& session_id,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     const base::FilePath& previous_operation_output,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
@@ -215,12 +215,12 @@ Operation SkipIfCached(
 // Creates an operation queue to replace the existing queue that always fails
 // for cases where a pipeline is impossible to process.
 std::queue<Operation> MakeErrorOperations(
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     CategorizedError error,
     const int event_type) {
   std::queue<Operation> error_ops;
   error_ops.push(base::BindOnce(
-      [](base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+      [](base::RepeatingCallback<void(base::DictValue)> event_adder,
          CategorizedError error, const int event_type, const base::FilePath&,
          base::OnceCallback<void(
              base::expected<base::FilePath, CategorizedError>)> callback)
@@ -249,7 +249,7 @@ std::queue<Operation> MakeOperations(
     const std::string& install_data_index,
     scoped_refptr<CrxInstaller> installer,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     CrxDownloader::ProgressCallback download_progress_callback,
     CrxInstaller::ProgressCallback install_progress_callback,
     base::RepeatingCallback<void(const CrxInstaller::Result&)>
@@ -364,7 +364,7 @@ void MakePipeline(
     const std::string& install_data_index,
     scoped_refptr<CrxInstaller> installer,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     CrxDownloader::ProgressCallback download_progress_callback,
     CrxInstaller::ProgressCallback install_progress_callback,
     base::RepeatingCallback<void(const CrxInstaller::Result&)>
@@ -434,8 +434,8 @@ void MakePipeline(
             crx_format, id, pk_hash, install_data_index, installer,
             state_tracker,
             base::BindRepeating(
-                [](base::RepeatingCallback<void(base::Value::Dict)> event_adder,
-                   const std::string& pipeline_id, base::Value::Dict event) {
+                [](base::RepeatingCallback<void(base::DictValue)> event_adder,
+                   const std::string& pipeline_id, base::DictValue event) {
                   event.Set("pipeline_id", pipeline_id);
                   event_adder.Run(std::move(event));
                 },

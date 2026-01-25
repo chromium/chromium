@@ -117,16 +117,16 @@ TEST(SessionBindingUtilsTest,
   base::Value actual_payload =
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
-  base::Value::Dict expected_header =
-      base::Value::Dict().Set("alg", "ES256").Set("typ", "jwt");
-  base::Value::Dict expected_payload =
-      base::Value::Dict()
+  base::DictValue expected_header =
+      base::DictValue().Set("alg", "ES256").Set("typ", "jwt");
+  base::DictValue expected_payload =
+      base::DictValue()
           .Set("sub", "test_client_id")
           .Set("aud", "https://accounts.google.com/RegisterKey")
           // Base64UrlEncode(SHA256("test_auth_code"));
           .Set("jti", "TQurqawiFBU95_obuobFjt-aOhaU14_YdtMTCEjyTkM")
           .Set("iat", 17280000)
-          .Set("key", base::Value::Dict()
+          .Set("key", base::DictValue()
                           .Set("kty",
                                "accounts.google.com/.well-known/kty/"
                                "SubjectPublicKeyInfo")
@@ -154,14 +154,14 @@ TEST(SessionBindingUtilsTest,
   base::Value actual_payload =
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
-  base::Value::Dict expected_header =
-      base::Value::Dict().Set("alg", "RS256").Set("typ", "jwt");
-  base::Value::Dict expected_payload =
-      base::Value::Dict()
+  base::DictValue expected_header =
+      base::DictValue().Set("alg", "RS256").Set("typ", "jwt");
+  base::DictValue expected_payload =
+      base::DictValue()
           .Set("aud", "https://accounts.google.com/RegisterKey")
           .Set("jti", "test_challenge")
           .Set("iat", 17280000)
-          .Set("key", base::Value::Dict()
+          .Set("key", base::DictValue()
                           .Set("kty",
                                "accounts.google.com/.well-known/kty/"
                                "SubjectPublicKeyInfo")
@@ -199,13 +199,13 @@ TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
   base::Value actual_payload =
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
-  base::Value::Dict expected_header =
-      base::Value::Dict()
+  base::DictValue expected_header =
+      base::DictValue()
           .Set("alg", "ES256")
           .Set("typ", "jwt")
           .Set("schema", "DEVICE_BOUND_SESSION_CREDENTIALS_ASSERTION");
-  base::Value::Dict expected_payload =
-      base::Value::Dict()
+  base::DictValue expected_payload =
+      base::DictValue()
           .Set("sub", "test_client_id")
           .Set("aud", "https://accounts.google.com/VerifyKey")
           .Set("jti", "test_challenge")
@@ -215,7 +215,7 @@ TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
   if (UseEphemeralKey()) {
     expected_payload.Set(
         "ephemeral_key",
-        base::Value::Dict()
+        base::DictValue()
             .Set(
                 "kty",
                 "type.googleapis.com/google.crypto.tink.EciesAeadHkdfPublicKey")

@@ -54,10 +54,10 @@ class WebUIInfoSingletonEventObserverImpl
       const V5::SearchHashesResponse& response) override;
   void NotifyLogMessageJsListener(const base::Time& timestamp,
                                   const std::string& message) override;
-  void NotifyReportingEventJsListener(const base::Value::Dict& event) override;
+  void NotifyReportingEventJsListener(const base::DictValue& event) override;
   void NotifyReportingEventJsListener(
       const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
-      const base::Value::Dict& result) override;
+      const base::DictValue& result) override;
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   void NotifyDeepScanJsListener(
       const std::string& token,

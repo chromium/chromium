@@ -9,7 +9,7 @@
 
 namespace security_interstitials {
 
-void AdjustFontSize(base::Value::Dict& load_time_data,
+void AdjustFontSize(base::DictValue& load_time_data,
                     float font_size_multiplier) {
   std::string* value = load_time_data.FindString("fontsize");
   CHECK(value);

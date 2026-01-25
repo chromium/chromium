@@ -38,7 +38,7 @@ class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
       supervised_user::DeviceParentalControls& device_parental_controls);
   ~SupervisedUserPrefStoreFixture() override;
 
-  base::Value::Dict* changed_prefs() { return &changed_prefs_; }
+  base::DictValue* changed_prefs() { return &changed_prefs_; }
 
   bool initialization_completed() const { return initialization_completed_; }
 
@@ -48,7 +48,7 @@ class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
 
  private:
   scoped_refptr<SupervisedUserPrefStore> pref_store_;
-  base::Value::Dict changed_prefs_;
+  base::DictValue changed_prefs_;
   bool initialization_completed_;
 };
 
@@ -162,16 +162,15 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_EQ(0u, fixture.changed_prefs()->size());
 
   // kSupervisedModeManualHosts can be configured by the custodian.
-  base::Value::Dict hosts;
+  base::DictValue hosts;
   hosts.Set("example.com", true);
   hosts.Set("moose.org", false);
   service_.SetLocalSetting(supervised_user::kContentPackManualBehaviorHosts,
                            hosts.Clone());
   EXPECT_EQ(1u, fixture.changed_prefs()->size());
 
-  base::Value::Dict* manual_hosts =
-      fixture.changed_prefs()->FindDictByDottedPath(
-          prefs::kSupervisedUserManualHosts);
+  base::DictValue* manual_hosts = fixture.changed_prefs()->FindDictByDottedPath(
+      prefs::kSupervisedUserManualHosts);
   ASSERT_TRUE(manual_hosts);
   EXPECT_TRUE(*manual_hosts == hosts);
 
@@ -337,7 +336,7 @@ TEST_F(SupervisedUserPrefStoreTest, InactiveSettingsServiceDoesNotAffectPrefs) {
 
   // After set search is set, one pref is expected to change.
   device_parental_controls_.SetSearchContentFiltersEnabledForTesting(true);
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   EXPECT_EQ(2u, fixture.changed_prefs()->size());
   EXPECT_TRUE(fixture.changed_prefs()->FindBoolByDottedPath(
       policy::policy_prefs::kForceGoogleSafeSearch));

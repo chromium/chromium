@@ -31,7 +31,7 @@ class Unzipper;
 // callback.
 base::OnceClosure XzOperation(
     std::unique_ptr<Unzipper> unzipper,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     const base::FilePath& in_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>

@@ -133,8 +133,8 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Compares the old and new states of a dictionary to identify changes and
   // notifies observers only if the changes are remote.
   void ProcessRemoteUpdates(const std::string& cross_device_pref_name,
-                            const base::Value::Dict& old_dict,
-                            const base::Value::Dict& new_dict);
+                            const base::DictValue& old_dict,
+                            const base::DictValue& new_dict);
 
   // Attempts to parse the dictionary `entry` (if provided) associated with
   // `remote_device_info` and notifies observers if successful. If `entry` is
@@ -142,7 +142,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // `remote_device_info` is guaranteed to be valid for the duration of the
   // synchronous observer calls.
   void NotifyRemotePrefChanged(const std::string& cross_device_pref_name,
-                               const base::Value::Dict* entry,
+                               const base::DictValue* entry,
                                const syncer::DeviceInfo& remote_device_info);
 
   // Checks if local device info became ready and performs initial sync if so.
@@ -214,7 +214,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Cache of the last known state for each cross-device dictionary.
   // Used to identify changes when a pref is updated on a remote device.
   // Maps `cross_device_pref_name` -> dictionary value.
-  base::flat_map<std::string, base::Value::Dict> cross_device_storage_cache_;
+  base::flat_map<std::string, base::DictValue> cross_device_storage_cache_;
 
   // Set of Cache GUIDs for devices that have available `DeviceInfo` from the
   // tracker and are considered active (i.e., not expired). A device is active

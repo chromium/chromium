@@ -1266,12 +1266,12 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
                      .Set("gaia", gaia_alpha.ToString()));
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_beta)
                      .Set("email", email_beta)
                      .Set("gaia", gaia_beta.ToString()));
@@ -1308,12 +1308,12 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
                      .Set("gaia", gaia_alpha.ToString()));
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_beta)
                      .Set("email", email_beta)
                      .Set("gaia", ""));
@@ -1350,18 +1350,18 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
                      .Set("gaia", gaia_alpha.ToString()));
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_beta)
                      .Set("email", email_beta)
                      .Set("gaia", gaia_beta.ToString()));
 
   // Succeed miggrated account.
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", gaia_alpha.ToString())
                      .Set("email", email_alpha)
                      .Set("gaia", gaia_alpha.ToString()));
@@ -1631,12 +1631,12 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", gaia_alpha.ToString())
                      .Set("email", email_alpha)
                      .Set("gaia", gaia_alpha.ToString()));
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", gaia_beta.ToString())
                      .Set("email", email_beta)
                      .Set("gaia", gaia_beta.ToString()));
@@ -1658,12 +1658,12 @@ TEST_F(AccountTrackerServiceTest, Migrate_CountOfLoadedAccounts_TwoAccounts) {
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
                      .Set("gaia", gaia_alpha.ToString()));
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_beta)
                      .Set("email", email_beta)
                      .Set("gaia", gaia_beta.ToString()));
@@ -1685,14 +1685,14 @@ TEST_F(AccountTrackerServiceTest,
 
   ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
 
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_alpha)
                      .Set("email", email_alpha)
                      .Set("gaia", gaia_alpha.ToString()));
 
   // This account is invalid because the account_id is a non-canonicalized
   // version of the email.
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("account_id", email_foobar)
                      .Set("email", email_foobar)
                      .Set("gaia", gaia_foobar.ToString()));

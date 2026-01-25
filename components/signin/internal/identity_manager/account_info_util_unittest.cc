@@ -22,18 +22,18 @@
 namespace signin {
 
 namespace {
-// Returns a base::Value::Dict corresponding to the user info as would be
+// Returns a base::DictValue corresponding to the user info as would be
 // returned by gaia server with provided values (if null is passed for a value,
 // it will not be set in the returned user_info object).
-base::Value::Dict CreateUserInfoWithValues(const char* email,
-                                           const char* gaia,
-                                           const char* hosted_domain,
-                                           const char* full_name,
-                                           const char* given_name,
-                                           const char* locale,
-                                           const char* picture_url,
-                                           const char* sub = nullptr) {
-  base::Value::Dict user_info;
+base::DictValue CreateUserInfoWithValues(const char* email,
+                                         const char* gaia,
+                                         const char* hosted_domain,
+                                         const char* full_name,
+                                         const char* given_name,
+                                         const char* locale,
+                                         const char* picture_url,
+                                         const char* sub = nullptr) {
+  base::DictValue user_info;
   if (email) {
     user_info.Set("email", base::Value(email));
   }
@@ -69,13 +69,13 @@ base::Value::Dict CreateUserInfoWithValues(const char* email,
   return user_info;
 }
 
-base::Value::Dict CreateAccountCapabilitiesValue(
+base::DictValue CreateAccountCapabilitiesValue(
     const std::vector<std::pair<std::string, bool>>& capabilities) {
-  base::Value::Dict dict;
-  base::Value* list = dict.Set("accountCapabilities", base::Value::List());
+  base::DictValue dict;
+  base::Value* list = dict.Set("accountCapabilities", base::ListValue());
 
   for (const auto& capability : capabilities) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("name", capability.first);
     entry.Set("booleanValue", capability.second);
     list->GetList().Append(std::move(entry));
@@ -311,9 +311,9 @@ TEST(AccountInfoUtilTest,
 
 TEST(AccountInfoUtilTest,
      AccountCapabilitiesFromServerResponse_NonBooleanValue) {
-  base::Value::Dict dict;
-  base::Value* list = dict.Set("accountCapabilities", base::Value::List());
-  base::Value::Dict entry;
+  base::DictValue dict;
+  base::Value* list = dict.Set("accountCapabilities", base::ListValue());
+  base::DictValue entry;
   entry.Set(
       "name",
       kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
@@ -332,8 +332,8 @@ TEST(AccountInfoUtilTest,
 
 TEST(AccountInfoUtilTest,
      AccountCapabilitiesFromServerResponse_DoesNotContainList) {
-  base::Value::Dict dict;
-  dict.Set("accountCapabilities", base::Value::Dict());
+  base::DictValue dict;
+  dict.Set("accountCapabilities", base::DictValue());
 
   std::optional<AccountCapabilities> capabilities =
       AccountCapabilitiesFromServerResponse(dict);
@@ -342,9 +342,9 @@ TEST(AccountInfoUtilTest,
 }
 
 TEST(AccountInfoUtilTest, AccountCapabilitiesFromServerResponse_NameNotFound) {
-  base::Value::Dict dict;
-  base::Value* list = dict.Set("accountCapabilities", base::Value::List());
-  base::Value::Dict entry;
+  base::DictValue dict;
+  base::Value* list = dict.Set("accountCapabilities", base::ListValue());
+  base::DictValue entry;
   entry.Set("booleanValue", true);
   list->GetList().Append(std::move(entry));
 
@@ -361,7 +361,7 @@ TEST(AccountInfoUtilTest, SerializeAndDeserializeAccountCapabilities) {
   mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       false);
 
-  base::Value::Dict dict = SerializeAccountCapabilities(capabilities);
+  base::DictValue dict = SerializeAccountCapabilities(capabilities);
   AccountCapabilities deserialized_capabilities =
       DeserializeAccountCapabilities(dict);
 
@@ -376,13 +376,13 @@ TEST(AccountInfoUtilTest, SerializeAndDeserializeAccountCapabilities) {
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountCapabilities_Empty) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   AccountCapabilities capabilities = DeserializeAccountCapabilities(dict);
   EXPECT_FALSE(capabilities.AreAnyCapabilitiesKnown());
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountCapabilities_UnknownCapability) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("unknown_capability", 1);
   AccountCapabilities capabilities = DeserializeAccountCapabilities(dict);
   EXPECT_FALSE(capabilities.AreAnyCapabilitiesKnown());
@@ -394,7 +394,7 @@ TEST(AccountInfoUtilTest, DeserializeAccountCapabilities_UnknownCapability) {
 // The dictionary format in this test shouldn't be modified unless there is a
 // clear migration path to a new format.
 TEST(AccountInfoUtilTest, DeserializeAccountCapabilities_FormatStability) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("accountcapabilities/guydolldmfya", 0)
                   .Set("accountcapabilities/gi2tklldmfya", 1);
 
@@ -431,7 +431,7 @@ TEST(AccountInfoUtilTest, SerializeAndDeserializeAccountInfo) {
           .UpdateAccountCapabilitiesWith(capabilities)
           .Build();
 
-  base::Value::Dict dict = SerializeAccountInfo(account_info);
+  base::DictValue dict = SerializeAccountInfo(account_info);
   std::optional<AccountInfo> deserialized_account_info =
       DeserializeAccountInfo(dict);
 
@@ -473,11 +473,11 @@ TEST(AccountInfoUtilTest, SerializeAndDeserializeAccountInfo) {
 // The dictionary format in this test shouldn't be modified unless there is a
 // clear migration path to a new format.
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_FormatStability) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("access_point", 31)
                   .Set("account_id", "test_account_id")
                   .Set("accountcapabilities",
-                       base::Value::Dict()
+                       base::DictValue()
                            .Set("accountcapabilities/guydolldmfya", 0)
                            .Set("accountcapabilities/gi2tklldmfya", 1))
                   .Set("email", "test@example.com")
@@ -524,7 +524,7 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_FormatStability) {
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_Minimal) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("account_id", "test_account_id")
                   .Set("gaia", "gaia_id")
                   .Set("email", "test@example.org");
@@ -541,12 +541,12 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_Minimal) {
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_EmptyDict) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   EXPECT_EQ(DeserializeAccountInfo(dict), std::nullopt);
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoAccountId) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("account_id", "")
                   .Set("gaia", "gaia_id")
                   .Set("email", "test@example.org");
@@ -554,7 +554,7 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoAccountId) {
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoGaia) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("account_id", "test_account_id")
                   .Set("gaia", "")
                   .Set("email", "test@example.org");
@@ -571,7 +571,7 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoGaia) {
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoEmail) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("account_id", "test_account_id")
                   .Set("gaia", "gaia_id")
                   .Set("email", "");
@@ -580,7 +580,7 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_NoEmail) {
 
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_EmptyStringValues) {
   // Tests that empty strings in the dictionary are ignored.
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("account_id", "test_account_id")
                   .Set("gaia", "gaia_id")
                   .Set("email", "test@example.org")
@@ -604,7 +604,7 @@ TEST(AccountInfoUtilTest, DeserializeAccountInfo_EmptyStringValues) {
 }
 
 TEST(AccountInfoUtilTest, DeserializeAccountInfo_SentinelValues) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("account_id", "test_account_id")
                   .Set("gaia", "gaia_id")
                   .Set("email", "test@example.org")

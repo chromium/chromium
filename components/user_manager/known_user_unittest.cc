@@ -57,7 +57,7 @@ class KnownUserTest : public testing::Test {
 
   PrefService* local_state() { return &local_state_; }
 
-  const base::Value::Dict* FindPrefs(const AccountId& account_id) {
+  const base::DictValue* FindPrefs(const AccountId& account_id) {
     return KnownUser(local_state()).FindPrefs(account_id);
   }
 
@@ -79,7 +79,7 @@ TEST_F(KnownUserTest, FindPrefsExisting) {
   const std::string kCustomPrefName = "custom_pref";
   known_user.SetStringPref(kDefaultAccountId, kCustomPrefName, "value");
 
-  const base::Value::Dict* value = FindPrefs(kDefaultAccountId);
+  const base::DictValue* value = FindPrefs(kDefaultAccountId);
   ASSERT_TRUE(value);
 
   const std::string* pref_value = value->FindString(kCustomPrefName);
@@ -351,7 +351,7 @@ TEST_F(KnownUserTest, ChallengeResponseKeys) {
   KnownUser known_user(local_state());
   EXPECT_TRUE(known_user.GetChallengeResponseKeys(kDefaultAccountId).empty());
 
-  base::Value::List challenge_response_keys;
+  base::ListValue challenge_response_keys;
   challenge_response_keys.Append("key1");
   known_user.SetChallengeResponseKeys(kDefaultAccountId,
                                       challenge_response_keys.Clone());

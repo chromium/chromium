@@ -70,7 +70,7 @@ void GaiaAccountInfoFetcher::OnGetTokenFailure(
 }
 
 void GaiaAccountInfoFetcher::OnGetUserInfoResponse(
-    const base::Value::Dict& user_info) {
+    const base::DictValue& user_info) {
   TRACE_EVENT_INSTANT("AccountFetcherService", "OnGetUserInfoResponse",
                       perfetto::Track::FromPointer(this), "account_id",
                       account_id_.ToString());

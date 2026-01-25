@@ -240,7 +240,7 @@ bool SodaInstaller::IsAnyLanguagePackInstalledForTesting() const {
 void SodaInstaller::RegisterRegisteredLanguagePackPref(
     PrefRegistrySimple* registry) {
   // TODO: Default to one of the user's languages.
-  base::Value::List default_languages;
+  base::ListValue default_languages;
   default_languages.Append(base::Value(kUsEnglishLocale));
   registry->RegisterListPref(prefs::kSodaRegisteredLanguagePacks,
                              std::move(default_languages));

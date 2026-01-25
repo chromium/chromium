@@ -68,14 +68,14 @@ std::string UserReadableTimeFromMillisSinceEpoch(int64_t time_in_milliseconds) {
 
 void AddStoreInfo(
     const DatabaseManagerInfo::DatabaseInfo::StoreInfo& store_info,
-    base::Value::List& database_info_list) {
+    base::ListValue& database_info_list) {
   if (store_info.has_file_name()) {
     database_info_list.Append(store_info.file_name());
   } else {
     database_info_list.Append("Unknown store");
   }
 
-  base::Value::List store_info_list;
+  base::ListValue store_info_list;
   if (store_info.has_file_size_bytes()) {
     store_info_list.Append(
         "Size (in bytes): " +
@@ -116,7 +116,7 @@ void AddStoreInfo(
 }
 
 void AddDatabaseInfo(const DatabaseManagerInfo::DatabaseInfo& database_info,
-                     base::Value::List& database_info_list) {
+                     base::ListValue& database_info_list) {
   if (database_info.has_database_size_bytes()) {
     database_info_list.Append("Database size (in bytes)");
     database_info_list.Append(
@@ -130,7 +130,7 @@ void AddDatabaseInfo(const DatabaseManagerInfo::DatabaseInfo& database_info,
 }
 
 void AddUpdateInfo(const DatabaseManagerInfo::UpdateInfo& update_info,
-                   base::Value::List& database_info_list) {
+                   base::ListValue& database_info_list) {
   if (update_info.has_network_status_code()) {
     // Network status of the last GetUpdate().
     database_info_list.Append("Last update network status code");
@@ -151,7 +151,7 @@ void AddUpdateInfo(const DatabaseManagerInfo::UpdateInfo& update_info,
 void ParseFullHashInfo(
     const FullHashCacheInfo::FullHashCache::CachedHashPrefixInfo::FullHashInfo&
         full_hash_info,
-    base::Value::Dict& full_hash_info_dict) {
+    base::DictValue& full_hash_info_dict) {
   if (full_hash_info.has_positive_expiry()) {
     full_hash_info_dict.Set(
         "Positive expiry",
@@ -180,8 +180,8 @@ void ParseFullHashInfo(
 }
 
 void ParseFullHashCache(const FullHashCacheInfo::FullHashCache& full_hash_cache,
-                        base::Value::List& full_hash_cache_list) {
-  base::Value::Dict full_hash_cache_parsed;
+                        base::ListValue& full_hash_cache_list) {
+  base::DictValue full_hash_cache_parsed;
 
   if (full_hash_cache.has_hash_prefix()) {
     std::string hash_prefix;
@@ -201,16 +201,16 @@ void ParseFullHashCache(const FullHashCacheInfo::FullHashCache& full_hash_cache,
 
   for (const auto& full_hash_info_it :
        full_hash_cache.cached_hash_prefix_info().full_hash_info()) {
-    base::Value::Dict full_hash_info_dict;
+    base::DictValue full_hash_info_dict;
     ParseFullHashInfo(full_hash_info_it, full_hash_info_dict);
     full_hash_cache_list.Append(std::move(full_hash_info_dict));
   }
 }
 
 void ParseFullHashCacheInfo(const FullHashCacheInfo& full_hash_cache_info_proto,
-                            base::Value::List& full_hash_cache_info) {
+                            base::ListValue& full_hash_cache_info) {
   if (full_hash_cache_info_proto.has_number_of_hits()) {
-    base::Value::Dict number_of_hits;
+    base::DictValue number_of_hits;
     number_of_hits.Set("Number of cache hits",
                        full_hash_cache_info_proto.number_of_hits());
     full_hash_cache_info.Append(std::move(number_of_hits));
@@ -219,7 +219,7 @@ void ParseFullHashCacheInfo(const FullHashCacheInfo& full_hash_cache_info_proto,
   // Record FullHashCache list.
   for (const auto& full_hash_cache_it :
        full_hash_cache_info_proto.full_hash_cache()) {
-    base::Value::List full_hash_cache_list;
+    base::ListValue full_hash_cache_list;
     ParseFullHashCache(full_hash_cache_it, full_hash_cache_list);
     full_hash_cache_info.Append(std::move(full_hash_cache_list));
   }
@@ -227,7 +227,7 @@ void ParseFullHashCacheInfo(const FullHashCacheInfo& full_hash_cache_info_proto,
 
 std::string AddFullHashCacheInfo(
     const FullHashCacheInfo& full_hash_cache_info_proto) {
-  base::Value::List full_hash_cache;
+  base::ListValue full_hash_cache;
   ParseFullHashCacheInfo(full_hash_cache_info_proto, full_hash_cache);
   return SerializeJson(full_hash_cache);
 }
@@ -260,8 +260,8 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
 
 std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
                                         DownloadCheckResult result) {
-  base::Value::Dict url_and_result;
-  base::Value::List urls_value;
+  base::DictValue url_and_result;
+  base::ListValue urls_value;
   for (const GURL& url : urls) {
     urls_value.Append(url.spec());
   }
@@ -277,14 +277,14 @@ std::string SerializeJson(base::ValueView value) {
       .value_or(std::string());
 }
 
-base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event) {
-  base::Value::Dict result;
+base::DictValue SerializePGEvent(const sync_pb::UserEventSpecifics& event) {
+  base::DictValue result;
 
   base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(event.event_time_usec()));
   result.Set("time", timestamp.InMillisecondsFSinceUnixEpoch());
 
-  base::Value::Dict event_dict;
+  base::DictValue event_dict;
 
   // Nominally only one of the following if() statements would be true.
   // Note that top-level path is either password_captured, or one of the fields
@@ -333,11 +333,11 @@ base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event) {
   return result;
 }
 
-base::Value::Dict SerializeSecurityEvent(
+base::DictValue SerializeSecurityEvent(
     const sync_pb::GaiaPasswordReuse& event) {
-  base::Value::Dict result;
+  base::DictValue result;
 
-  base::Value::Dict event_dict;
+  base::DictValue event_dict;
   if (event.has_reuse_lookup()) {
     event_dict.SetByDottedPath(
         "reuse_lookup.lookup_result",
@@ -356,9 +356,9 @@ base::Value::Dict SerializeSecurityEvent(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::Value::Dict SerializeReferringAppInfo(
+base::DictValue SerializeReferringAppInfo(
     const internal::ReferringAppInfo& info) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("referring_app_source",
            ReferringAppInfo_ReferringAppSource_Name(info.referring_app_source));
   dict.Set("referring_app_info", info.referring_app_name);
@@ -394,10 +394,10 @@ std::string SerializeURTLookupResponse(const RTLookupResponse& response) {
 }
 
 std::string SerializeHPRTLookupPing(const HPRTLookupRequest& ping) {
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
 
-  base::Value::Dict inner_request_dict;
-  base::Value::List encoded_hash_prefixes;
+  base::DictValue inner_request_dict;
+  base::ListValue encoded_hash_prefixes;
   for (const auto& hash_prefix : ping.inner_request.hash_prefixes()) {
     std::string encoded_hash_prefix;
     base::Base64UrlEncode(hash_prefix,
@@ -424,9 +424,9 @@ std::string SerializeHPRTLookupResponse(
   return SerializeJson(ToValue(response));
 }
 
-base::Value::Dict SerializeLogMessage(base::Time timestamp,
-                                      const std::string& message) {
-  base::Value::Dict result;
+base::DictValue SerializeLogMessage(base::Time timestamp,
+                                    const std::string& message) {
+  base::DictValue result;
   result.Set("time", timestamp.InMillisecondsFSinceUnixEpoch());
   result.Set("message", message);
   return result;
@@ -434,17 +434,17 @@ base::Value::Dict SerializeLogMessage(base::Time timestamp,
 
 // TODO(crbug.com/443997643): Delete when
 // UploadRealtimeReportingEventsUsingProto is cleaned up.
-base::Value::Dict SerializeReportingEvent(const base::Value::Dict& event) {
-  base::Value::Dict result;
+base::DictValue SerializeReportingEvent(const base::DictValue& event) {
+  base::DictValue result;
   result.Set("message", SerializeJson(event));
   return result;
 }
 
-base::Value::Dict SerializeUploadEventsRequest(
+base::DictValue SerializeUploadEventsRequest(
     const ::chrome::cros::reporting::proto::UploadEventsRequest&
         upload_events_request,
-    const base::Value::Dict& result) {
-  base::Value::Dict message;
+    const base::DictValue& result) {
+  base::DictValue message;
 #if BUILDFLAG(IS_ANDROID)
   message.Set("request",
               base::EscapeNonASCII(upload_events_request.SerializeAsString()));
@@ -454,7 +454,7 @@ base::Value::Dict SerializeUploadEventsRequest(
 #endif
   message.Set("response", result.Clone());
 
-  base::Value::Dict wrapper;
+  base::DictValue wrapper;
   wrapper.Set("message", SerializeJson(message));
   auto& event = upload_events_request.events()[0];
   wrapper.Set("timeMillis",
@@ -477,7 +477,7 @@ std::string SerializeContentAnalysisRequest(
     const enterprise_connectors::ContentAnalysisRequest& request) {
   base::Value request_value = ToValue(request);
   CHECK(request_value.is_dict());
-  base::Value::Dict& request_dict = request_value.GetDict();
+  base::DictValue& request_dict = request_value.GetDict();
   request_dict.Set("access_token", access_token_truncated);
   request_dict.Set("upload_info", upload_info);
   request_dict.Set("upload_url", upload_url);
@@ -489,9 +489,9 @@ std::string SerializeContentAnalysisResponse(
   return SerializeJson(ToValue(response));
 }
 
-base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
-                                             const DeepScanDebugData& data) {
-  base::Value::Dict value;
+base::DictValue SerializeDeepScanDebugData(const std::string& token,
+                                           const DeepScanDebugData& data) {
+  base::DictValue value;
   value.Set("token", token);
 
   if (!data.request_time.is_null()) {

@@ -94,16 +94,16 @@ ChoiceScreenDisplayState::ChoiceScreenDisplayState(
 
 ChoiceScreenDisplayState::~ChoiceScreenDisplayState() = default;
 
-base::Value::Dict ChoiceScreenDisplayState::ToDict() const {
+base::DictValue ChoiceScreenDisplayState::ToDict() const {
   // TODO(crbug.com/454023518): Non-regional set engine support is not currently
   // expected to result in uploading nor locally caching display metrics.
   CHECK(!includes_non_regional_set_engine);
 
-  auto dict = base::Value::Dict();
+  auto dict = base::DictValue();
 
   dict.Set(kDisplayStateCountryIdKey, country_id.Serialize());
 
-  base::Value::List* search_engines_array =
+  base::ListValue* search_engines_array =
       dict.EnsureList(kDisplayStateSearchEnginesKey);
   for (SearchEngineType search_engine_type : search_engines) {
     search_engines_array->Append(static_cast<int>(search_engine_type));
@@ -119,14 +119,14 @@ base::Value::Dict ChoiceScreenDisplayState::ToDict() const {
 
 // static
 std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   std::optional<int> parsed_country_code =
       dict.FindInt(kDisplayStateCountryIdKey);
   std::optional<CountryId> parsed_country_id;
   if (parsed_country_code.has_value()) {
     parsed_country_id = CountryId::Deserialize(parsed_country_code.value());
   }
-  const base::Value::List* parsed_search_engines =
+  const base::ListValue* parsed_search_engines =
       dict.FindList(kDisplayStateSearchEnginesKey);
   std::optional<int> parsed_selected_engine_index =
       dict.FindInt(kDisplayStateSelectedEngineIndexKey);

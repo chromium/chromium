@@ -41,7 +41,7 @@ class FileTypePoliciesTestOverlay {
 
 FileTypePoliciesTestOverlay ScopedMarkAllFilesDangerousForTesting();
 
-base::Value::Dict CreateNotDangerousOverridePolicyEntryForTesting(
+base::DictValue CreateNotDangerousOverridePolicyEntryForTesting(
     const std::string& extension,
     const std::vector<std::string>& domains);
 

@@ -69,7 +69,7 @@ MITMSoftwareBlockingPage::GetTypeForTesting() {
 }
 
 void MITMSoftwareBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   mitm_software_ui_->PopulateStringsForHTML(load_time_data);
 
   PopulateEnhancedProtectionMessage(load_time_data);

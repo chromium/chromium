@@ -76,31 +76,31 @@ std::string GetGaiaCookiesStateAsString(const GaiaCookiesState state) {
   }
 }
 
-void AddSection(base::Value::List& parent_list,
-                base::Value::List section_content,
+void AddSection(base::ListValue& parent_list,
+                base::ListValue section_content,
                 const std::string& title) {
-  base::Value::Dict section;
+  base::DictValue section;
   section.Set("title", title);
   section.Set("data", std::move(section_content));
   parent_list.Append(std::move(section));
 }
 
-void AddSectionEntry(base::Value::List& section_list,
+void AddSectionEntry(base::ListValue& section_list,
                      const std::string& field_name,
                      const std::string& field_status,
                      const std::string& field_time = "") {
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set("label", field_name);
   entry.Set("status", field_status);
   entry.Set("time", field_time);
   section_list.Append(std::move(entry));
 }
 
-void AddCookieEntry(base::Value::List& accounts_list,
+void AddCookieEntry(base::ListValue& accounts_list,
                     const std::string& field_email,
                     const GaiaId& field_gaia_id,
                     const std::string& field_valid) {
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set("email", field_email);
   entry.Set("gaia_id", field_gaia_id.ToString());
   entry.Set("valid", field_valid);
@@ -378,7 +378,7 @@ void AboutSigninInternals::NotifyObservers() {
     return;
   }
 
-  base::Value::Dict signin_status_value = signin_status_.ToValue(
+  base::DictValue signin_status_value = signin_status_.ToValue(
       identity_manager_, signin_error_controller_, client_,
       account_consistency_, account_reconcilor_);
 
@@ -387,7 +387,7 @@ void AboutSigninInternals::NotifyObservers() {
   }
 }
 
-base::Value::Dict AboutSigninInternals::GetSigninStatus() {
+base::DictValue AboutSigninInternals::GetSigninStatus() {
   return signin_status_.ToValue(identity_manager_, signin_error_controller_,
                                 client_, account_consistency_,
                                 account_reconcilor_);
@@ -534,7 +534,7 @@ void AboutSigninInternals::OnAccountsInCookieUpdated(
     return;
   }
 
-  base::Value::List cookie_info;
+  base::ListValue cookie_info;
   for (const auto& signed_in_account :
        accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()) {
     AddCookieEntry(cookie_info, signed_in_account.raw_email,
@@ -548,7 +548,7 @@ void AboutSigninInternals::OnAccountsInCookieUpdated(
                    std::string());
   }
 
-  base::Value::Dict cookie_status_dict;
+  base::DictValue cookie_status_dict;
   cookie_status_dict.Set("cookie_info", std::move(cookie_info));
   // Update the observers that the cookie's accounts are updated.
   for (auto& observer : signin_observers_) {
@@ -577,8 +577,8 @@ void AboutSigninInternals::TokenInfo::Invalidate() {
   removed_ = true;
 }
 
-base::Value::Dict AboutSigninInternals::TokenInfo::ToValue() const {
-  base::Value::Dict token_info;
+base::DictValue AboutSigninInternals::TokenInfo::ToValue() const {
+  base::DictValue token_info;
   token_info.Set("service", consumer_id);
 
   std::string scopes_str;
@@ -665,17 +665,17 @@ void AboutSigninInternals::SigninStatus::AddRefreshTokenEvent(
   refresh_token_events.push_back(event);
 }
 
-base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
+base::DictValue AboutSigninInternals::SigninStatus::ToValue(
     signin::IdentityManager* identity_manager,
     SigninErrorController* signin_error_controller,
     SigninClient* signin_client,
     signin::AccountConsistencyMethod account_consistency,
     AccountReconcilor* account_reconcilor) {
-  base::Value::List signin_info;
+  base::ListValue signin_info;
 
   // A summary of signin related info first.
   {
-    base::Value::List basic_info;
+    base::ListValue basic_info;
     AddSectionEntry(basic_info, "Account Consistency",
                     GetAccountConsistencyDescription(account_consistency));
     AddSectionEntry(basic_info, "Signin Status",
@@ -748,7 +748,7 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
 #if !BUILDFLAG(IS_CHROMEOS)
   // Time and status information of the possible sign in types.
   {
-    base::Value::List detailed_info;
+    base::ListValue detailed_info;
     for (signin_internals_util::TimedSigninStatusField i =
              signin_internals_util::TIMED_FIELDS_BEGIN;
          i < signin_internals_util::TIMED_FIELDS_END; ++i) {
@@ -792,13 +792,13 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  base::Value::Dict signin_status;
+  base::DictValue signin_status;
   signin_status.Set("signin_info", std::move(signin_info));
 
   // Token information for all services.
-  base::Value::List token_info;
+  base::ListValue token_info;
   for (auto& it : token_info_map) {
-    base::Value::List token_details;
+    base::ListValue token_details;
     std::sort(it.second.begin(), it.second.end(), TokenInfo::LessThan);
     for (const std::unique_ptr<TokenInfo>& token : it.second) {
       token_details.Append(token->ToValue());
@@ -809,16 +809,16 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
   signin_status.Set("token_info", std::move(token_info));
 
   // Account info section
-  base::Value::List account_info_section;
+  base::ListValue account_info_section;
   const std::vector<CoreAccountInfo>& accounts_with_refresh_tokens =
       identity_manager->GetAccountsWithRefreshTokens();
   if (accounts_with_refresh_tokens.size() == 0) {
-    base::Value::Dict no_token_entry;
+    base::DictValue no_token_entry;
     no_token_entry.Set("accountId", "No token in Token Service.");
     account_info_section.Append(std::move(no_token_entry));
   } else {
     for (const CoreAccountInfo& account_info : accounts_with_refresh_tokens) {
-      base::Value::Dict entry;
+      base::DictValue entry;
       entry.Set("accountId", account_info.account_id.ToString());
       // TODO(crbug.com/41434401): Remove this field once the token
       // service is internally consistent on all platforms.
@@ -841,9 +841,9 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
   signin_status.Set("accountInfo", std::move(account_info_section));
 
   // Refresh token events section
-  base::Value::List refresh_token_events_value;
+  base::ListValue refresh_token_events_value;
   for (const auto& event : refresh_token_events) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("accountId", event.account_id.ToString());
     entry.Set("timestamp", base::TimeFormatAsIso8601(event.timestamp));
     entry.Set("type", event.GetTypeAsString());

@@ -70,7 +70,7 @@ class TranslateController : public web::WebStateUserData<TranslateController> {
                         const std::string& target_language);
 
   // Called when a JavaScript command is received.
-  void OnJavascriptCommandReceived(const base::Value::Dict& payload);
+  void OnJavascriptCommandReceived(const base::DictValue& payload);
 
  private:
   TranslateController(web::WebState* web_state);
@@ -96,8 +96,8 @@ class TranslateController : public web::WebStateUserData<TranslateController> {
 
   // Methods to handle specific JavaScript commands.
   // The command is ignored if `payload` format is unexpected.
-  void OnTranslateReady(const base::Value::Dict& payload);
-  void OnTranslateComplete(const base::Value::Dict& payload);
+  void OnTranslateReady(const base::DictValue& payload);
+  void OnTranslateComplete(const base::DictValue& payload);
 
   // The main frame of `web_state_`, if any.
   web::WebFrame* GetMainWebFrame();

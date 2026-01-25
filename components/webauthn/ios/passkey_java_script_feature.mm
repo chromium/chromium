@@ -100,7 +100,7 @@ std::string Base64UrlEncode(std::string_view input) {
 // Returns std::nullopt on any non log event or invalid log event.
 std::optional<PasskeyTabHelper::WebAuthenticationIOSContentAreaEvent>
 ReadLogEventType(const std::string& event,
-                 const base::Value::Dict& dict,
+                 const base::DictValue& dict,
                  const PasskeyTabHelper& tab_helper) {
   if (event == kLogGetRequest) {
     return kGetRequested;
@@ -195,7 +195,7 @@ PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame,
                                                std::string_view request_id) {
   CallJavaScriptFunction(web_frame, "passkey.deferToRenderer",
-                         base::Value::List().Append(request_id));
+                         base::ListValue().Append(request_id));
 }
 
 void PasskeyJavaScriptFeature::ResolveAttestationRequest(
@@ -205,7 +205,7 @@ void PasskeyJavaScriptFeature::ResolveAttestationRequest(
     AttestationData attestation_data) {
   CallJavaScriptFunction(
       web_frame, "passkey.resolveAttestationRequest",
-      base::Value::List()
+      base::ListValue()
           .Append(request_id)
           .Append(Base64UrlEncode(credential_id))
           .Append(Base64UrlEncode(attestation_data.attestation_object))
@@ -223,7 +223,7 @@ void PasskeyJavaScriptFeature::ResolveAssertionRequest(
     AssertionData assertion_data) {
   CallJavaScriptFunction(
       web_frame, "passkey.resolveAssertionRequest",
-      base::Value::List()
+      base::ListValue()
           .Append(request_id)
           .Append(Base64UrlEncode(credential_id))
           .Append(Base64UrlEncode(assertion_data.signature))
@@ -264,7 +264,7 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict& dict = body->GetDict();
+  const base::DictValue& dict = body->GetDict();
   const std::string* event = dict.FindString(kEvent);
   if (!event || event->empty()) {
     return;

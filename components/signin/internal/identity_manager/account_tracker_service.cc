@@ -259,7 +259,7 @@ void AccountTrackerService::StopTrackingAccount(
 
 void AccountTrackerService::SetAccountInfoFromUserInfo(
     const CoreAccountId& account_id,
-    const base::Value::Dict& user_info) {
+    const base::DictValue& user_info) {
   DCHECK(accounts_.contains(account_id));
   AccountInfo& account_info = accounts_[account_id];
 
@@ -581,10 +581,10 @@ void AccountTrackerService::OnAccountImageUpdated(
     return;
   }
 
-  base::Value::Dict* dict = nullptr;
+  base::DictValue* dict = nullptr;
   ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   for (base::Value& value : *update) {
-    base::Value::Dict* maybe_dict = value.GetIfDict();
+    base::DictValue* maybe_dict = value.GetIfDict();
     if (maybe_dict) {
       const std::string* account_key =
           maybe_dict->FindString(signin::kAccountIdKey);
@@ -611,10 +611,10 @@ void AccountTrackerService::RemoveAccountImageFromDisk(
 }
 
 void AccountTrackerService::LoadFromPrefs() {
-  const base::Value::List& list = pref_service_->GetList(prefs::kAccountInfo);
+  const base::ListValue& list = pref_service_->GetList(prefs::kAccountInfo);
   std::set<CoreAccountId> to_remove;
   for (size_t i = 0; i < list.size(); ++i) {
-    const base::Value::Dict* dict = list[i].GetIfDict();
+    const base::DictValue* dict = list[i].GetIfDict();
     if (!dict) {
       continue;
     }
@@ -683,11 +683,11 @@ void AccountTrackerService::LoadFromPrefs() {
                            accounts_.size());
 }
 
-base::Value::Dict* AccountTrackerService::FindOrCreateDictForAccount(
+base::DictValue* AccountTrackerService::FindOrCreateDictForAccount(
     ScopedListPrefUpdate& update,
     const CoreAccountId& account_id) {
   for (base::Value& value : *update) {
-    base::Value::Dict* dict = value.GetIfDict();
+    base::DictValue* dict = value.GetIfDict();
     if (dict) {
       const std::string* account_key = dict->FindString(signin::kAccountIdKey);
       if (account_key && *account_key == account_id.ToString()) {
@@ -696,8 +696,8 @@ base::Value::Dict* AccountTrackerService::FindOrCreateDictForAccount(
     }
   }
 
-  update->Append(base::Value::Dict());
-  base::Value::Dict* new_dict = &update->back().GetDict();
+  update->Append(base::DictValue());
+  base::DictValue* new_dict = &update->back().GetDict();
   new_dict->Set(signin::kAccountIdKey, account_id.ToString());
   return new_dict;
 }
@@ -708,7 +708,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   }
 
   ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  base::Value::Dict* dict =
+  base::DictValue* dict =
       FindOrCreateDictForAccount(update, account_info.account_id);
   dict->Merge(signin::SerializeAccountInfo(account_info));
 }

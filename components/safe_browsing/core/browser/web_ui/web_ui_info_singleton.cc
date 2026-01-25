@@ -302,7 +302,7 @@ void WebUIInfoSingleton::ClearLogMessages() {
 
 void WebUIInfoSingleton::AddToReportingEvents(
     const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
-    const base::Value::Dict& result) {
+    const base::DictValue& result) {
   if (!HasListener()) {
     return;
   }
@@ -317,7 +317,7 @@ void WebUIInfoSingleton::AddToReportingEvents(
 
 // TODO(crbug.com/443997643): Delete when
 // UploadRealtimeReportingEventsUsingProto is cleaned up.
-void WebUIInfoSingleton::AddToReportingEvents(const base::Value::Dict& event) {
+void WebUIInfoSingleton::AddToReportingEvents(const base::DictValue& event) {
   if (!HasListener()) {
     return;
   }
@@ -331,9 +331,9 @@ void WebUIInfoSingleton::AddToReportingEvents(const base::Value::Dict& event) {
 }
 
 void WebUIInfoSingleton::ClearReportingEvents() {
-  std::vector<base::Value::Dict>().swap(reporting_events_);
+  std::vector<base::DictValue>().swap(reporting_events_);
   std::vector<std::pair<::chrome::cros::reporting::proto::UploadEventsRequest,
-                        base::Value::Dict>>()
+                        base::DictValue>>()
       .swap(upload_event_requests_);
 }
 

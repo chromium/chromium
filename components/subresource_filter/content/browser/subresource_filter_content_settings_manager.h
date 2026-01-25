@@ -23,7 +23,7 @@ namespace subresource_filter {
 // This class contains helpers to get/set content and website settings related
 // to subresource filtering.
 //
-// Site metadata is stored in two formats as a base::Value::Dict:
+// Site metadata is stored in two formats as a base::DictValue:
 // -  V1 (or legacy) metadata, which uses the presence of metadata to indicate
 //    activation due to safe browsing and may store additional data for
 //    the time since UI was shown, see OnDidShowUI. The absence of metadata
@@ -77,7 +77,7 @@ class SubresourceFilterContentSettingsManager {
   void AllowlistSite(const GURL& url);
 
   // Public for testing.
-  std::optional<base::Value::Dict> GetSiteMetadata(const GURL& url) const;
+  std::optional<base::DictValue> GetSiteMetadata(const GURL& url) const;
 
   // Specific logic for more intelligent UI.
   void OnDidShowUI(const GURL& url);
@@ -106,7 +106,7 @@ class SubresourceFilterContentSettingsManager {
       const GURL& url,
       bool is_activated,
       ActivationSource activation_source,
-      std::optional<base::Value::Dict> additional_metadata = std::nullopt);
+      std::optional<base::DictValue> additional_metadata = std::nullopt);
 
   // Returns the activation status based on the |url|'s site metadata. See
   // class comment for information on the metadata data model.
@@ -132,17 +132,17 @@ class SubresourceFilterContentSettingsManager {
 
   // Overwrites existing site metadata for testing.
   void SetSiteMetadataForTesting(const GURL& url,
-                                 std::optional<base::Value::Dict> dict);
+                                 std::optional<base::DictValue> dict);
 
  private:
-  void SetSiteMetadata(const GURL& url, std::optional<base::Value::Dict> dict);
+  void SetSiteMetadata(const GURL& url, std::optional<base::DictValue> dict);
 
-  base::Value::Dict CreateMetadataDictWithActivation(bool is_activated);
+  base::DictValue CreateMetadataDictWithActivation(bool is_activated);
 
   // Whether the site metadata stored in |dict| is being persisted with an
   // expiry time set by an ads intervention.
   bool ShouldDeleteDataWithNoActivation(
-      const std::optional<base::Value::Dict>& dict,
+      const std::optional<base::DictValue>& dict,
       ActivationSource activation_source);
 
   raw_ptr<HostContentSettingsMap> settings_map_;

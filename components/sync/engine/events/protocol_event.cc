@@ -10,8 +10,8 @@ ProtocolEvent::ProtocolEvent() = default;
 
 ProtocolEvent::~ProtocolEvent() = default;
 
-base::Value::Dict ProtocolEvent::ToValue(bool include_specifics) const {
-  return base::Value::Dict()
+base::DictValue ProtocolEvent::ToValue(bool include_specifics) const {
+  return base::DictValue()
       .Set("time", GetTimestamp().InMillisecondsFSinceUnixEpoch())
       .Set("type", GetType())
       .Set("details", GetDetails())

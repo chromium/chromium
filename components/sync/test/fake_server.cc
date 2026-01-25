@@ -382,7 +382,7 @@ void FakeServer::FlushToDisk() {
   loopback_server_->FlushToDisk();
 }
 
-base::Value::Dict FakeServer::GetEntitiesAsDictForTesting() {
+base::DictValue FakeServer::GetEntitiesAsDictForTesting() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return loopback_server_->GetEntitiesAsDictForTesting();
 }

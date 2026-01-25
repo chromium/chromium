@@ -558,7 +558,7 @@ std::optional<base::Time> SigninMetricsService::GetTimeOfWebSignin(
     return std::nullopt;
   }
 
-  const base::Value::Dict& web_signin_account_start_time_dict =
+  const base::DictValue& web_signin_account_start_time_dict =
       pref_service_->GetDict(kWebSigninAccountStartTimesPref);
 
   // This value only exists if the initial signin was from a web signin

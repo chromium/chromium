@@ -71,7 +71,7 @@ bool SpellingServiceClient::RequestTextCheck(
   DCHECK(pref);
 
   std::string dictionary;
-  const base::Value::List& dicts_list =
+  const base::ListValue& dicts_list =
       pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
   if (0u < dicts_list.size() && dicts_list[0].is_string())
     dictionary = dicts_list[0].GetString();
@@ -249,7 +249,7 @@ bool SpellingServiceClient::ParseResponse(
   //    }
   //  }
 
-  std::optional<base::Value::Dict> value =
+  std::optional<base::DictValue> value =
       base::JSONReader::ReadDict(data, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!value) {
     return false;
@@ -264,7 +264,7 @@ bool SpellingServiceClient::ParseResponse(
   // Retrieve the array of Misspelling objects. When the input text does not
   // have misspelled words, it returns an empty JSON. (In this case, its HTTP
   // status is 200.) We just return true for this case.
-    const base::Value::List* misspellings =
+    const base::ListValue* misspellings =
         value->FindListByDottedPath(kMisspellingsRestPath);
 
     if (!misspellings) {
@@ -282,7 +282,7 @@ bool SpellingServiceClient::ParseResponse(
 
     std::optional<int> start = misspelling_dict->FindInt("charStart");
     std::optional<int> length = misspelling_dict->FindInt("charLength");
-    const base::Value::List* suggestions =
+    const base::ListValue* suggestions =
         misspelling_dict->FindList("suggestions");
     if (!start || !length || !suggestions) {
       return false;

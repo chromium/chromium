@@ -70,7 +70,7 @@ const char* StringForAllocatorType(uint32_t type) {
 // Writes the top-level allocators section. This section is used by the tracing
 // UI to show a small summary for each allocator. It's necessary as a
 // placeholder to allow the stack-viewing UI to be shown.
-base::Value::Dict BuildAllocatorsSummary(const AllocationMap& allocations) {
+base::DictValue BuildAllocatorsSummary(const AllocationMap& allocations) {
   // Aggregate stats for each allocator type.
   std::array<size_t, kAllocatorCount> total_size = {};
   std::array<size_t, kAllocatorCount> total_count = {};
@@ -80,44 +80,44 @@ base::Value::Dict BuildAllocatorsSummary(const AllocationMap& allocations) {
     total_count[index] += alloc_pair.second.count;
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   for (int i = 0; i < kAllocatorCount; i++) {
     const char* alloc_type = StringForAllocatorType(i);
 
     // Overall sizes.
-    base::Value::Dict sizes;
+    base::DictValue sizes;
     sizes.Set("type", "scalar");
     sizes.Set("units", "bytes");
     sizes.Set("value", base::StringPrintf("%zx", total_size[i]));
 
-    base::Value::Dict attrs;
+    base::DictValue attrs;
     attrs.Set("virtual_size", sizes.Clone());
     attrs.Set("size", std::move(sizes));
 
-    base::Value::Dict allocator;
+    base::DictValue allocator;
     allocator.Set("attrs", std::move(attrs));
     result.Set(alloc_type, std::move(allocator));
 
     // Allocated objects.
-    base::Value::Dict shim_allocated_objects_count;
+    base::DictValue shim_allocated_objects_count;
     shim_allocated_objects_count.Set("type", "scalar");
     shim_allocated_objects_count.Set("units", "objects");
     shim_allocated_objects_count.Set("value",
                                      base::StringPrintf("%zx", total_count[i]));
 
-    base::Value::Dict shim_allocated_objects_size;
+    base::DictValue shim_allocated_objects_size;
     shim_allocated_objects_size.Set("type", "scalar");
     shim_allocated_objects_size.Set("units", "bytes");
     shim_allocated_objects_size.Set("value",
                                     base::StringPrintf("%zx", total_size[i]));
 
-    base::Value::Dict allocated_objects_attrs;
+    base::DictValue allocated_objects_attrs;
     allocated_objects_attrs.Set("shim_allocated_objects_count",
                                 std::move(shim_allocated_objects_count));
     allocated_objects_attrs.Set("shim_allocated_objects_size",
                                 std::move(shim_allocated_objects_size));
 
-    base::Value::Dict allocated_objects;
+    base::DictValue allocated_objects;
     allocated_objects.Set("attrs", std::move(allocated_objects_attrs));
     result.Set(alloc_type + std::string("/allocated_objects"),
                std::move(allocated_objects));
@@ -259,11 +259,11 @@ int AppendBacktraceStrings(const AllocationSite& alloc,
   return parent;  // Last item is the top of this stack.
 }
 
-base::Value::List BuildStrings(const StringTable& string_table) {
-  base::Value::List strings;
+base::ListValue BuildStrings(const StringTable& string_table) {
+  base::ListValue strings;
   strings.reserve(string_table.size());
   for (const auto& string_pair : string_table) {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set("id", string_pair.second);
     item.Set("string", string_pair.first);
     strings.Append(std::move(item));
@@ -271,11 +271,11 @@ base::Value::List BuildStrings(const StringTable& string_table) {
   return strings;
 }
 
-base::Value::List BuildMapNodes(const BacktraceTable& nodes) {
-  base::Value::List items;
+base::ListValue BuildMapNodes(const BacktraceTable& nodes) {
+  base::ListValue items;
   items.reserve(nodes.size());
   for (const auto& node_pair : nodes) {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set("id", node_pair.second);
     item.Set("name_sid", node_pair.first.string_id());
     if (node_pair.first.parent() != BacktraceNode::kNoParent)
@@ -285,11 +285,11 @@ base::Value::List BuildMapNodes(const BacktraceTable& nodes) {
   return items;
 }
 
-base::Value::List BuildTypeNodes(const std::map<int, int>& type_to_string) {
-  base::Value::List items;
+base::ListValue BuildTypeNodes(const std::map<int, int>& type_to_string) {
+  base::ListValue items;
   items.reserve(type_to_string.size());
   for (const auto& pair : type_to_string) {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set("id", pair.first);
     item.Set("name_sid", pair.second);
     items.Append(std::move(item));
@@ -297,12 +297,12 @@ base::Value::List BuildTypeNodes(const std::map<int, int>& type_to_string) {
   return items;
 }
 
-base::Value::Dict BuildAllocations(const AllocationMap& allocations,
-                                   const AllocationToNodeId& alloc_to_node_id) {
-  std::array<base::Value::List, kAllocatorCount> counts;
-  std::array<base::Value::List, kAllocatorCount> sizes;
-  std::array<base::Value::List, kAllocatorCount> types;
-  std::array<base::Value::List, kAllocatorCount> nodes;
+base::DictValue BuildAllocations(const AllocationMap& allocations,
+                                 const AllocationToNodeId& alloc_to_node_id) {
+  std::array<base::ListValue, kAllocatorCount> counts;
+  std::array<base::ListValue, kAllocatorCount> sizes;
+  std::array<base::ListValue, kAllocatorCount> types;
+  std::array<base::ListValue, kAllocatorCount> nodes;
 
   for (const auto& alloc : allocations) {
     int allocator = static_cast<int>(alloc.first.allocator);
@@ -314,9 +314,9 @@ base::Value::Dict BuildAllocations(const AllocationMap& allocations,
     nodes[allocator].Append(alloc_to_node_id.at(&alloc.first));
   }
 
-  base::Value::Dict allocators;
+  base::DictValue allocators;
   for (uint32_t i = 0; i < kAllocatorCount; i++) {
-    base::Value::Dict allocator;
+    base::DictValue allocator;
     allocator.Set("counts", std::move(counts[i]));
     allocator.Set("sizes", std::move(sizes[i]));
     allocator.Set("types", std::move(types[i]));
@@ -332,13 +332,13 @@ ExportParams::ExportParams() = default;
 ExportParams::~ExportParams() = default;
 
 std::string ExportMemoryMapsAndV2StackTraceToJSON(ExportParams* params) {
-  base::Value::Dict result;
+  base::DictValue result;
 
   result.Set("level_of_detail", "detailed");
   result.Set("process_mmaps", BuildMemoryMaps(*params));
   result.Set("allocators", BuildAllocatorsSummary(params->allocs));
 
-  base::Value::Dict heaps_v2;
+  base::DictValue heaps_v2;
 
   // Output Heaps_V2 format version. Currently "1" is the only valid value.
   heaps_v2.Set("version", 1);
@@ -360,7 +360,7 @@ std::string ExportMemoryMapsAndV2StackTraceToJSON(ExportParams* params) {
   }
 
   // Maps section.
-  base::Value::Dict maps;
+  base::DictValue maps;
   maps.Set("strings", BuildStrings(string_table));
   maps.Set("nodes", BuildMapNodes(nodes));
   maps.Set("types", BuildTypeNodes(context_to_string_id_map));

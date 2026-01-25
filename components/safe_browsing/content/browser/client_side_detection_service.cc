@@ -501,7 +501,7 @@ bool ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
 
   phishing_report_times_.push_back(timestamp);
 
-  base::Value::List time_list;
+  base::ListValue time_list;
   for (const base::Time& report_time : phishing_report_times_) {
     time_list.Append(base::Value(report_time.InSecondsFSinceUnixEpoch()));
   }

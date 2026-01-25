@@ -37,12 +37,12 @@ class WebUIInfoSingletonEventObserver {
     explicit Delegate();
     virtual ~Delegate();
 
-    virtual base::Value::Dict GetFormattedTailoredVerdictOverride() = 0;
+    virtual base::DictValue GetFormattedTailoredVerdictOverride() = 0;
 
     virtual void SendEventToHandler(std::string_view event_name,
                                     base::Value value) = 0;
     virtual void SendEventToHandler(std::string_view event_name,
-                                    base::Value::List& list) = 0;
+                                    base::ListValue& list) = 0;
     virtual void SendEventToHandler(std::string_view event_name,
                                     base::Value ::Dict dict) = 0;
   };
@@ -133,11 +133,10 @@ class WebUIInfoSingletonEventObserver {
 
   // Called when any new reporting events are sent while one or more WebUI tabs
   // are open.
-  virtual void NotifyReportingEventJsListener(
-      const base::Value::Dict& event) = 0;
+  virtual void NotifyReportingEventJsListener(const base::DictValue& event) = 0;
   virtual void NotifyReportingEventJsListener(
       const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
-      const base::Value::Dict& result) = 0;
+      const base::DictValue& result) = 0;
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   // Called when any deep scans are updated while one or more WebUI

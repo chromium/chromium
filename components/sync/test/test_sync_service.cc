@@ -422,7 +422,7 @@ void TestSyncService::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {}
 
 void TestSyncService::GetAllNodesForDebugging(
-    base::OnceCallback<void(base::Value::List)> callback) {}
+    base::OnceCallback<void(base::ListValue)> callback) {}
 
 SyncService::DataTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
     DataType type) const {

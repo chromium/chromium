@@ -255,7 +255,7 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
 
 void AccountFetcherService::OnUserInfoFetchSuccess(
     const CoreAccountId& account_id,
-    const base::Value::Dict& user_info) {
+    const base::DictValue& user_info) {
   account_tracker_service_->SetAccountInfoFromUserInfo(account_id, user_info);
   auto it = user_info_fetch_start_times_.find(account_id);
   if (it != user_info_fetch_start_times_.end()) {

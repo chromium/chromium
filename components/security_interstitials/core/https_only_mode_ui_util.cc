@@ -15,7 +15,7 @@ using InterstitialReason =
     security_interstitials::https_only_mode::InterstitialReason;
 
 void PopulateHttpsOnlyModeStringsForBlockingPage(
-    base::Value::Dict& load_time_data,
+    base::DictValue& load_time_data,
     const GURL& url,
     const security_interstitials::https_only_mode::HttpInterstitialState&
         interstitial_state,
@@ -77,7 +77,7 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
 }
 
 void PopulateHttpsOnlyModeStringsForSharedHTML(
-    base::Value::Dict& load_time_data,
+    base::DictValue& load_time_data,
     bool august2024_refresh_enabled) {
   load_time_data.Set("type", "HTTPS_ONLY");
   load_time_data.Set("overridable", false);

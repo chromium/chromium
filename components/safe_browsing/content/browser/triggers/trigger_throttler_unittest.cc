@@ -180,7 +180,7 @@ TEST_F(TriggerThrottlerTest, TriggerQuotaPersistence) {
 
   // Check the pref directly, it should reflect the events for each trigger.
   PrefService* prefs = get_pref_service();
-  const base::Value::Dict& event_dict =
+  const base::DictValue& event_dict =
       prefs->GetDict(prefs::kSafeBrowsingTriggerEventTimestamps);
 
   const std::string kAdSampleKey = "2";

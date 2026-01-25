@@ -40,7 +40,7 @@ BlockedInterceptionUI::~BlockedInterceptionUI() {
 }
 
 void BlockedInterceptionUI::PopulateStringsForHTML(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   // Shared with other SSL errors.
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(

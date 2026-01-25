@@ -18,7 +18,7 @@ namespace version_ui {
 std::string SeedTypeToUiString(variations::SeedType seed_type);
 
 // Returns the list of variations to be displayed on the chrome:://version page.
-base::Value::List GetVariationsList();
+base::ListValue GetVariationsList();
 
 // Returns the variations information in command line format to be displayed on
 // the chrome:://version page.

@@ -14,15 +14,15 @@
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
-VIZ_COMMON_EXPORT base::Value::Dict CompositorRenderPassToDict(
+VIZ_COMMON_EXPORT base::DictValue CompositorRenderPassToDict(
     const CompositorRenderPass& render_pass);
 VIZ_COMMON_EXPORT std::unique_ptr<CompositorRenderPass>
-CompositorRenderPassFromDict(const base::Value::Dict& dict);
+CompositorRenderPassFromDict(const base::DictValue& dict);
 
-VIZ_COMMON_EXPORT base::Value::Dict CompositorRenderPassListToDict(
+VIZ_COMMON_EXPORT base::DictValue CompositorRenderPassListToDict(
     const CompositorRenderPassList& render_pass_list);
 VIZ_COMMON_EXPORT bool CompositorRenderPassListFromDict(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     CompositorRenderPassList* render_pass_list);
 
 VIZ_COMMON_EXPORT const char* BlendModeToString(SkBlendMode blend_mode);
@@ -46,10 +46,10 @@ struct VIZ_COMMON_EXPORT FrameData {
 
 // These functions (de)serialize data about CompositorFrames for multiple
 // surfaces, represented as arrays of `FrameData`s.
-VIZ_COMMON_EXPORT base::Value::List FrameDataToList(
+VIZ_COMMON_EXPORT base::ListValue FrameDataToList(
     const std::vector<FrameData>& frame_data_list);
 VIZ_COMMON_EXPORT bool FrameDataFromList(
-    const base::Value::List& list,
+    const base::ListValue& list,
     std::vector<FrameData>* frame_data_list);
 }  // namespace viz
 

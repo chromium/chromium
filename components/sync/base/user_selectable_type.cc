@@ -226,9 +226,9 @@ DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).data_type_group;
 }
 
-base::Value::List UserSelectableTypeSetToValueList(
+base::ListValue UserSelectableTypeSetToValueList(
     syncer::UserSelectableTypeSet user_selected_types) {
-  base::Value::List value_list;
+  base::ListValue value_list;
   for (syncer::UserSelectableType type : user_selected_types) {
     if (const char* name = syncer::GetUserSelectableTypeName(type)) {
       value_list.Append(name);
@@ -238,7 +238,7 @@ base::Value::List UserSelectableTypeSetToValueList(
 }
 
 syncer::UserSelectableTypeSet ValueListToUserSelectableTypeSet(
-    const base::Value::List& value_list) {
+    const base::ListValue& value_list) {
   syncer::UserSelectableTypeSet user_selected_types;
   for (const base::Value& value : value_list) {
     if (!value.is_string()) {
@@ -319,9 +319,9 @@ DataType UserSelectableOsTypeToCanonicalDataType(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).canonical_data_type;
 }
 
-base::Value::List UserSelectableOsTypeSetToValueList(
+base::ListValue UserSelectableOsTypeSetToValueList(
     syncer::UserSelectableOsTypeSet user_selected_types) {
-  base::Value::List value_list;
+  base::ListValue value_list;
   for (syncer::UserSelectableOsType type : user_selected_types) {
     if (const char* name = syncer::GetUserSelectableOsTypeName(type)) {
       value_list.Append(name);
@@ -331,7 +331,7 @@ base::Value::List UserSelectableOsTypeSetToValueList(
 }
 
 syncer::UserSelectableOsTypeSet ValueListToUserSelectableOsTypeSet(
-    const base::Value::List& value_list) {
+    const base::ListValue& value_list) {
   syncer::UserSelectableOsTypeSet user_selected_os_types;
   for (const base::Value& value : value_list) {
     if (!value.is_string()) {

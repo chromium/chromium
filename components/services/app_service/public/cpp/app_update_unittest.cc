@@ -147,7 +147,7 @@ class AppUpdateTest : public testing::Test {
   std::optional<std::string> expect_selected_locale_;
   bool expect_selected_locale_changed_;
 
-  std::optional<base::Value::Dict> expect_extra_;
+  std::optional<base::DictValue> expect_extra_;
   bool expect_extra_changed_;
 
   void ExpectNoChange() {
@@ -1287,7 +1287,7 @@ class AppUpdateTest : public testing::Test {
     // Extra tests.
 
     if (state) {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("vm_name", "vm_name_value");
       state->SetExtraField("vm_name", "vm_name_value");
       expect_extra_ = std::move(dict);
@@ -1296,7 +1296,7 @@ class AppUpdateTest : public testing::Test {
     }
 
     if (delta) {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("container_name", "container_name_value");
       delta->SetExtraField("container_name", "container_name_value");
       expect_extra_ = std::move(dict);

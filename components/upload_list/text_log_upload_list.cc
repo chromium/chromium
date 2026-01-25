@@ -78,7 +78,7 @@ bool CheckFieldOutOfRange(const std::string* time_string,
   return true;
 }
 
-bool CheckJsonUploadListOutOfRange(const base::Value::Dict& dict,
+bool CheckJsonUploadListOutOfRange(const base::DictValue& dict,
                                    const base::Time& begin,
                                    const base::Time& end) {
   const std::string* upload_time_string =
@@ -193,7 +193,7 @@ std::unique_ptr<UploadList::UploadInfo> TextLogUploadList::TryParseCsvLogEntry(
 }
 
 std::unique_ptr<UploadList::UploadInfo> TextLogUploadList::TryParseJsonLogEntry(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   // Parse upload_id.
   const base::Value* upload_id_value = dict.Find(kJsonLogKeyUploadId);
   if (upload_id_value && !upload_id_value->is_string())

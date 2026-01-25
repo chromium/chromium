@@ -398,7 +398,7 @@ TEST_F(WebTriggeredIsolatedOriginsPolicyTest, UpdatedMaxSize) {
   ScopedDictPrefUpdate update(
       user_prefs::UserPrefs::Get(browser_context()),
       site_isolation::prefs::kWebTriggeredIsolatedOrigins);
-  base::Value::Dict& dict = update.Get();
+  base::DictValue& dict = update.Get();
   dict.Set("https://foo1.com", base::TimeToValue(base::Time::Now()));
   dict.Set("https://foo2.com", base::TimeToValue(base::Time::Now()));
   dict.Set("https://foo3.com", base::TimeToValue(base::Time::Now()));
@@ -499,7 +499,7 @@ TEST_F(PasswordSiteIsolationPolicyTest, ApplyPersistedIsolatedOrigins) {
   // Add foo.com and bar.com to stored isolated origins.
   {
     ScopedListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
-    base::Value::List& list = update.Get();
+    base::ListValue& list = update.Get();
     list.Append("http://foo.com");
     list.Append("https://bar.com");
   }

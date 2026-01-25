@@ -60,7 +60,7 @@ int FakeDataTypeControllerDelegate::clear_metadata_count() const {
 }
 
 void FakeDataTypeControllerDelegate::SetNodesForDebugging(
-    base::Value::List nodes) {
+    base::ListValue nodes) {
   all_nodes_for_debugging_ = std::move(nodes);
 }
 

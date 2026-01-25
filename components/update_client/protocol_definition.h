@@ -169,7 +169,7 @@ struct App {
   std::optional<Ping> ping;
 
   // Progress/result pings.
-  std::optional<std::vector<base::Value::Dict>> events;
+  std::optional<std::vector<base::DictValue>> events;
 
   std::vector<std::string> cached_hashes;
 };

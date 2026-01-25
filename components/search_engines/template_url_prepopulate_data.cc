@@ -59,8 +59,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetOverriddenTemplateURLData(
     PrefService& prefs) {
   std::vector<std::unique_ptr<TemplateURLData>> t_urls;
 
-  const base::Value::List& list =
-      prefs.GetList(prefs::kSearchProviderOverrides);
+  const base::ListValue& list = prefs.GetList(prefs::kSearchProviderOverrides);
 
   for (const base::Value& engine : list) {
     if (engine.is_dict()) {

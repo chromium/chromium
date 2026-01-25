@@ -18,13 +18,12 @@ namespace security_interstitials::common_string_util {
 std::u16string GetFormattedHostName(const GURL& gurl);
 
 // For SSL-related errors that share a basic structure.
-void PopulateSSLLayoutStrings(int cert_error,
-                              base::Value::Dict& load_time_data);
+void PopulateSSLLayoutStrings(int cert_error, base::DictValue& load_time_data);
 
 // For SSL-related errors that provide debugging information.
 void PopulateSSLDebuggingStrings(const net::SSLInfo& ssl_info,
                                  base::Time time_triggered,
-                                 base::Value::Dict& load_time_data);
+                                 base::DictValue& load_time_data);
 
 }  // namespace security_interstitials::common_string_util
 

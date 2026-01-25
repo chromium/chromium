@@ -352,7 +352,7 @@ void VizMainImpl::RequestBeginFrameForGpuService(bool toggle) {
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
-void VizMainImpl::FilterDebugStream(base::Value::Dict filter_data) {
+void VizMainImpl::FilterDebugStream(base::DictValue filter_data) {
   VizDebugger::GetInstance()->FilterDebugStream(std::move(filter_data));
 }
 

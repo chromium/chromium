@@ -138,8 +138,8 @@ class WhatsNewRegistryTest : public testing::Test {
   }
 
  protected:
-  base::Value::List stored_enabled_modules_;
-  base::Value::Dict stored_used_editions_;
+  base::ListValue stored_enabled_modules_;
+  base::DictValue stored_used_editions_;
   std::unique_ptr<WhatsNewRegistry> whats_new_registry_;
   base::test::ScopedFeatureList feature_list_;
 };

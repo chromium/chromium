@@ -27,7 +27,7 @@ std::string CreateJsonLine(const std::string& origin,
                            const std::string& request_url,
                            const std::string& request_type,
                            const std::string& site_rank) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set("origin", origin);
   dictionary.Set("request_url", request_url);
   dictionary.Set("request_type", request_type);

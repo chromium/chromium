@@ -229,7 +229,7 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
 void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
   ScopedDictPrefUpdate update(pref_service_,
                               prefs::kSafeBrowsingEventTimestamps);
-  base::Value::Dict& mutable_state_dict = update.Get();
+  base::DictValue& mutable_state_dict = update.Get();
 
   for (auto state_map : mutable_state_dict) {
     for (auto event_map : state_map.second.GetDict()) {
@@ -314,10 +314,10 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
     EventType event_type) {
   ScopedDictPrefUpdate update(pref_service_,
                               prefs::kSafeBrowsingEventTimestamps);
-  base::Value::Dict& mutable_state_dict = update.Get();
-  base::Value::Dict* event_dict =
+  base::DictValue& mutable_state_dict = update.Get();
+  base::DictValue* event_dict =
       mutable_state_dict.EnsureDict(UserStateToPrefKey(user_state));
-  base::Value::List* timestamps =
+  base::ListValue* timestamps =
       event_dict->EnsureList(EventTypeToPrefKey(event_type));
 
   // Remove the oldest timestamp if the length of the timestamps hits the limit.
@@ -344,10 +344,10 @@ void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
   }
 }
 
-const base::Value::Dict*
+const base::DictValue*
 SafeBrowsingMetricsCollector::GetSafeBrowsingEventDictionary(
     UserState user_state) {
-  const base::Value::Dict& state_dict =
+  const base::DictValue& state_dict =
       pref_service_->GetDict(prefs::kSafeBrowsingEventTimestamps);
 
   return state_dict.FindDict(UserStateToPrefKey(user_state));
@@ -357,14 +357,14 @@ std::optional<SafeBrowsingMetricsCollector::Event>
 SafeBrowsingMetricsCollector::GetLatestEventFromEventType(
     UserState user_state,
     EventType event_type) {
-  const base::Value::Dict* event_dict =
+  const base::DictValue* event_dict =
       GetSafeBrowsingEventDictionary(user_state);
 
   if (!event_dict) {
     return std::nullopt;
   }
 
-  const base::Value::List* timestamps =
+  const base::ListValue* timestamps =
       event_dict->FindList(EventTypeToPrefKey(event_type));
 
   if (timestamps && timestamps->size() > 0) {
@@ -420,7 +420,7 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
 
 void SafeBrowsingMetricsCollector::
     LogThrottledEnhancedProtectionDisabledMetrics() {
-  const base::Value::Dict* event_dict =
+  const base::DictValue* event_dict =
       GetSafeBrowsingEventDictionary(UserState::kEnhancedProtection);
   if (!event_dict) {
     return;
@@ -461,12 +461,12 @@ void SafeBrowsingMetricsCollector::
 int SafeBrowsingMetricsCollector::GetEventCountSince(UserState user_state,
                                                      EventType event_type,
                                                      base::Time since_time) {
-  const base::Value::Dict* event_dict =
+  const base::DictValue* event_dict =
       GetSafeBrowsingEventDictionary(user_state);
   if (!event_dict) {
     return 0;
   }
-  const base::Value::List* timestamps =
+  const base::ListValue* timestamps =
       event_dict->FindList(EventTypeToPrefKey(event_type));
   if (!timestamps) {
     return 0;

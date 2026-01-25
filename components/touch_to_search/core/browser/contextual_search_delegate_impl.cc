@@ -529,7 +529,7 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
     return;
   }
 
-  const base::Value::Dict* dict = root->GetIfDict();
+  const base::DictValue* dict = root->GetIfDict();
   if (!dict) {
     return;
   }
@@ -557,7 +557,7 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
 
   // Extract mentions for selection expansion.
   if (!field_trial_->IsDecodeMentionsDisabled()) {
-    const base::Value::List* mentions_list =
+    const base::ListValue* mentions_list =
         dict->FindList(kContextualSearchMentionsKey);
     // Note that because we've deserialized the json and it's not used later, we
     // can just take the list without worrying about putting it back.
@@ -645,7 +645,7 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
 // Extract the Start/End of the mentions in the surrounding text
 // for selection-expansion.
 void ContextualSearchDelegateImpl::ExtractMentionsStartEnd(
-    const base::Value::List& mentions_list,
+    const base::ListValue& mentions_list,
     int* start_result,
     int* end_result) const {
   if (mentions_list.size() >= 1 && mentions_list[0].is_int()) {

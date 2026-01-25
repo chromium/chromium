@@ -109,8 +109,8 @@ class FakeDataTypeConfigurer : public DataTypeConfigurer {
 
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override {
     // Set up one dummy Nigori node, using an empty dictionary.
-    base::Value::List nigori_nodes;
-    nigori_nodes.Append(base::Value::Dict());
+    base::ListValue nigori_nodes;
+    nigori_nodes.Append(base::DictValue());
     std::move(callback).Run(std::move(nigori_nodes));
   }
 
@@ -2063,16 +2063,16 @@ TEST_F(DataTypeManagerImplTest, ShouldGetAllNodesForDebugging) {
 
   // Set up three dummy bookmark nodes. Three is only chosen to rule out that
   // the test passes based on the number of bookmark nodes.
-  base::Value::List bookmark_nodes;
-  bookmark_nodes.Append(base::Value::Dict());
-  bookmark_nodes.Append(base::Value::Dict());
-  bookmark_nodes.Append(base::Value::Dict());
+  base::ListValue bookmark_nodes;
+  bookmark_nodes.Append(base::DictValue());
+  bookmark_nodes.Append(base::DictValue());
+  bookmark_nodes.Append(base::DictValue());
   GetController(BOOKMARKS)->model()->SetNodesForDebugging(
       std::move(bookmark_nodes));
 
   // The result should include two entries: one for bookmarks and one for
   // Nigori.
-  base::MockCallback<base::OnceCallback<void(base::Value::List)>>
+  base::MockCallback<base::OnceCallback<void(base::ListValue)>>
       mock_completion_callback;
   EXPECT_CALL(
       mock_completion_callback,
@@ -2092,7 +2092,7 @@ TEST_F(DataTypeManagerImplTest, ShouldReturnNoDebuggingNodesWhileConfiguring) {
   ASSERT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
 
   // While configuring, an empty list of nodes should be returned.
-  base::MockCallback<base::OnceCallback<void(base::Value::List)>>
+  base::MockCallback<base::OnceCallback<void(base::ListValue)>>
       mock_completion_callback;
   EXPECT_CALL(mock_completion_callback, Run(IsEmpty()));
 

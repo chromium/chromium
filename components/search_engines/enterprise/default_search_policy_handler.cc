@@ -29,7 +29,7 @@ namespace {
 void SetListInPref(const PolicyMap& policies,
                    const char* policy_name,
                    const char* key,
-                   base::Value::Dict& dict) {
+                   base::DictValue& dict) {
   const base::Value* policy_value =
       policies.GetValue(policy_name, base::Value::Type::LIST);
   dict.Set(key, policy_value ? policy_value->Clone()
@@ -40,7 +40,7 @@ void SetListInPref(const PolicyMap& policies,
 void SetStringInPref(const PolicyMap& policies,
                      const char* policy_name,
                      const char* key,
-                     base::Value::Dict& dict) {
+                     base::DictValue& dict) {
   const base::Value* policy_value =
       policies.GetValue(policy_name, base::Value::Type::STRING);
   dict.Set(key, policy_value ? policy_value->GetString() : std::string());
@@ -49,7 +49,7 @@ void SetStringInPref(const PolicyMap& policies,
 void SetBooleanInPref(const PolicyMap& policies,
                       const char* policy_name,
                       const char* key,
-                      base::Value::Dict& dict) {
+                      base::DictValue& dict) {
   const base::Value* policy_value =
       policies.GetValue(policy_name, base::Value::Type::BOOLEAN);
   dict.SetByDottedPath(key, policy_value && policy_value->GetBool());
@@ -140,7 +140,7 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
 
   if (DefaultSearchProviderIsDisabled(policies)) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(DefaultSearchManager::kDisabledByPolicy, true);
     DefaultSearchManager::AddPrefValueToMap(std::move(dict), prefs);
     return;
@@ -154,7 +154,7 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (!DefaultSearchURLIsValid(policies, &dummy, &url))
     return;
 
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   // Set pref values for policies affecting the default
   // search provider, which are listed in kDefaultSearchPolicyDataMap.

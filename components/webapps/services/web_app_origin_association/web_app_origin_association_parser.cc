@@ -30,7 +30,7 @@ bool UrlIsWithinScope(const GURL& url, const url::Origin& extended_origin) {
 }
 
 std::optional<GURL> ParseExtendedScope(
-    const base::Value::Dict& extended_scope_info,
+    const base::DictValue& extended_scope_info,
     const url::Origin& associate_origin) {
   const std::string* extended_scope_ptr =
       extended_scope_info.FindString(kExtendedScope);
@@ -49,7 +49,7 @@ std::optional<GURL> ParseExtendedScope(
   return associate_extended_url;
 }
 
-ParsedAssociations ParseAssociatedWebApps(const base::Value::Dict& root_dict,
+ParsedAssociations ParseAssociatedWebApps(const base::DictValue& root_dict,
                                           const url::Origin& origin) {
   ParsedAssociations result;
   if (root_dict.empty()) {

@@ -13,8 +13,8 @@ class MockWhatsNewStorageService : public whats_new::WhatsNewStorageService {
   MockWhatsNewStorageService();
   ~MockWhatsNewStorageService() override;
 
-  MOCK_METHOD(const base::Value::List&, ReadModuleData, (), (const override));
-  MOCK_METHOD(const base::Value::Dict&, ReadEditionData, (), (const, override));
+  MOCK_METHOD(const base::ListValue&, ReadModuleData, (), (const override));
+  MOCK_METHOD(const base::DictValue&, ReadEditionData, (), (const, override));
   MOCK_METHOD(std::optional<int>, ReadVersionData, (), (const, override));
   MOCK_METHOD(std::optional<int>,
               GetUsedVersion,

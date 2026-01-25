@@ -27,35 +27,35 @@ class WifiServiceFuchsia : public WiFiService {
   void UnInitialize() override { NOTIMPLEMENTED_LOG_ONCE(); }
 
   void GetProperties(const std::string& network_guid,
-                     base::Value::Dict* properties,
+                     base::DictValue* properties,
                      std::string* error) override {
     *error = kErrorNotImplemented;
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   void GetManagedProperties(const std::string& network_guid,
-                            base::Value::Dict* managed_properties,
+                            base::DictValue* managed_properties,
                             std::string* error) override {
     *error = kErrorNotImplemented;
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   void GetState(const std::string& network_guid,
-                base::Value::Dict* properties,
+                base::DictValue* properties,
                 std::string* error) override {
     *error = kErrorNotImplemented;
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   void SetProperties(const std::string& network_guid,
-                     base::Value::Dict properties,
+                     base::DictValue properties,
                      std::string* error) override {
     *error = kErrorNotImplemented;
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   void CreateNetwork(bool shared,
-                     base::Value::Dict properties,
+                     base::DictValue properties,
                      std::string* network_guid,
                      std::string* error) override {
     *error = kErrorNotImplemented;
@@ -64,7 +64,7 @@ class WifiServiceFuchsia : public WiFiService {
 
   void GetVisibleNetworks(const std::string& network_type,
                           bool include_details,
-                          base::Value::List* network_list) override {
+                          base::ListValue* network_list) override {
     NOTIMPLEMENTED_LOG_ONCE();
   }
 

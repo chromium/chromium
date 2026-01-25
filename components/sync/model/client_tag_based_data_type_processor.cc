@@ -1403,11 +1403,11 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
 
   std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
   if (!batch) {
-    std::move(callback).Run(base::Value::List());
+    std::move(callback).Run(base::ListValue());
     return;
   }
 
-  base::Value::List all_nodes;
+  base::ListValue all_nodes;
   std::string type_string = DataTypeToDebugString(type_);
 
   while (batch->HasNext()) {
@@ -1428,7 +1428,7 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
       data->client_tag_hash = entity->GetClientTagHash();
     }
 
-    base::Value::Dict node = data->ToDictionaryValue();
+    base::DictValue node = data->ToDictionaryValue();
     node.Set("dataType", type_string);
     // Copy the whole metadata message into the dictionary (if existing).
     if (entity != nullptr) {
@@ -1445,7 +1445,7 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
   // sync_node_browser.js uses dataType to check if root node is parent of real
   // data node. NON_UNIQUE_NAME will be the name of node to display.
-  auto rootnode = base::Value::Dict()
+  auto rootnode = base::DictValue()
                       .Set("PARENT_ID", "r")
                       .Set("UNIQUE_SERVER_TAG", type_string)
                       .Set("IS_DIR", true)

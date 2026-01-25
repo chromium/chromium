@@ -260,10 +260,10 @@ TEST_F(WebCryptoHmacTest, ImportKeyEmptyUsage) {
 
 TEST_F(WebCryptoHmacTest, ImportKeyJwkKeyOpsSignVerify) {
   blink::WebCryptoKey key;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
-  dict.Set("key_ops", base::Value::List());
+  dict.Set("key_ops", base::ListValue());
   dict.FindList("key_ops")->Append("sign");
 
   EXPECT_EQ(Status::Success(),
@@ -288,13 +288,13 @@ TEST_F(WebCryptoHmacTest, ImportKeyJwkKeyOpsSignVerify) {
 // Test 'use' inconsistent with 'key_ops'.
 TEST_F(WebCryptoHmacTest, ImportKeyJwkUseInconsisteWithKeyOps) {
   blink::WebCryptoKey key;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
   dict.Set("alg", "HS256");
   dict.Set("use", "sig");
 
-  base::Value::List key_ops;
+  base::ListValue key_ops;
   key_ops.Append("sign");
   key_ops.Append("verify");
   key_ops.Append("encrypt");
@@ -312,7 +312,7 @@ TEST_F(WebCryptoHmacTest, ImportKeyJwkUseInconsisteWithKeyOps) {
 // Test JWK composite 'sig' use
 TEST_F(WebCryptoHmacTest, ImportKeyJwkUseSig) {
   blink::WebCryptoKey key;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
   dict.Set("use", "sig");
@@ -340,7 +340,7 @@ TEST_F(WebCryptoHmacTest, ImportJwkInputConsistency) {
   blink::WebCryptoAlgorithm algorithm =
       CreateHmacImportAlgorithmNoLength(blink::kWebCryptoAlgorithmIdSha256);
   blink::WebCryptoKeyUsageMask usages = blink::kWebCryptoKeyUsageVerify;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "l3nZEgZCeX8XRwJdWyK3rGB8qwjhdY8vOkbIvh4lxTuMao9Y_--hdg");
   std::vector<uint8_t> json_vec = MakeJsonVector(dict);
@@ -460,7 +460,7 @@ TEST_F(WebCryptoHmacTest, ImportJwkHappy) {
   // Import a symmetric key JWK and HMAC-SHA256 sign()
   // Uses the first SHA256 test vector from the HMAC sample set above.
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("alg", "HS256");
   dict.Set("use", "sig");
@@ -624,7 +624,7 @@ TEST_F(WebCryptoHmacTest, ImportRawKeyTruncation) {
 
 // The same test as above, but using the JWK format.
 TEST_F(WebCryptoHmacTest, ImportJwkKeyTruncation) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "sf8");  // 0xB1FF
 

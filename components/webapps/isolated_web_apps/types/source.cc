@@ -58,7 +58,7 @@ bool IwaSourceProxy::operator==(const IwaSourceProxy& other) const = default;
 
 base::Value IwaSourceProxy::ToDebugValue() const {
   return base::Value(
-      base::Value::Dict().Set("proxy_url", proxy_url_.GetDebugString()));
+      base::DictValue().Set("proxy_url", proxy_url_.GetDebugString()));
 }
 
 std::ostream& operator<<(std::ostream& os, const IwaSourceProxy& source) {
@@ -136,7 +136,7 @@ IwaSourceBundleProdModeWithFileOp IwaSourceBundle::WithProdModeFileOp(
 
 base::Value IwaSourceBundle::ToDebugValue() const {
   return base::Value(
-      base::Value::Dict().Set("path", base::FilePathToValue(path_)));
+      base::DictValue().Set("path", base::FilePathToValue(path_)));
 }
 
 std::ostream& operator<<(std::ostream& os, const IwaSourceBundle& source) {
@@ -173,7 +173,7 @@ IwaSourceBundleWithMode::WithFileOp(
 }
 
 base::Value IwaSourceBundleWithMode::ToDebugValue() const {
-  return base::Value(base::Value::Dict()
+  return base::Value(base::DictValue()
                          .Set("path", base::FilePathToValue(path_))
                          .Set("dev_mode", dev_mode_));
 }
@@ -196,7 +196,7 @@ IwaSourceBundleDevModeWithFileOp IwaSourceBundleDevMode::WithFileOp(
 }
 
 base::Value IwaSourceBundleDevMode::ToDebugValue() const {
-  return base::Value(base::Value::Dict()
+  return base::Value(base::DictValue()
                          .Set("path", base::FilePathToValue(path_))
                          .Set("dev_mode", true));
 }
@@ -219,7 +219,7 @@ IwaSourceBundleProdModeWithFileOp IwaSourceBundleProdMode::WithFileOp(
 }
 
 base::Value IwaSourceBundleProdMode::ToDebugValue() const {
-  return base::Value(base::Value::Dict()
+  return base::Value(base::DictValue()
                          .Set("path", base::FilePathToValue(path_))
                          .Set("dev_mode", false));
 }
@@ -263,7 +263,7 @@ bool IwaSourceBundleWithModeAndFileOp::dev_mode() const {
 
 base::Value IwaSourceBundleWithModeAndFileOp::ToDebugValue() const {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("path", base::FilePathToValue(path_))
           .Set("mode_and_file_op", base::ToString(mode_and_file_op_)));
 }
@@ -283,7 +283,7 @@ bool IwaSourceBundleDevModeWithFileOp::operator==(
     const IwaSourceBundleDevModeWithFileOp& other) const = default;
 
 base::Value IwaSourceBundleDevModeWithFileOp::ToDebugValue() const {
-  return base::Value(base::Value::Dict()
+  return base::Value(base::DictValue()
                          .Set("path", base::FilePathToValue(path_))
                          .Set("file_op", base::ToString(file_op_)));
 }
@@ -304,7 +304,7 @@ bool IwaSourceBundleProdModeWithFileOp::operator==(
     const IwaSourceBundleProdModeWithFileOp& other) const = default;
 
 base::Value IwaSourceBundleProdModeWithFileOp::ToDebugValue() const {
-  return base::Value(base::Value::Dict()
+  return base::Value(base::DictValue()
                          .Set("path", base::FilePathToValue(path_))
                          .Set("file_op", base::ToString(file_op_)));
 }

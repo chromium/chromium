@@ -97,7 +97,7 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
   ASSERT_EQ(1u, web_ui_.call_data().size());
   EXPECT_EQ(web_ui_.call_data()[0]->arg1()->GetString(),
             "hprt-lookup-pings-update");
-  const base::Value::List& request_data =
+  const base::ListValue& request_data =
       web_ui_.call_data()[0]->arg2()->GetList();
   EXPECT_EQ(request_data[0].GetInt(), token.value());
   EXPECT_EQ(base::test::ParseJson(request_data[1].GetString()),
@@ -142,7 +142,7 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
   ASSERT_EQ(2u, web_ui_.call_data().size());
   EXPECT_EQ(web_ui_.call_data()[1]->arg1()->GetString(),
             "hprt-lookup-responses-update");
-  const base::Value::List& response_data =
+  const base::ListValue& response_data =
       web_ui_.call_data()[1]->arg2()->GetList();
   EXPECT_EQ(response_data[0].GetInt(), token.value());
   EXPECT_EQ(base::test::ParseJson(response_data[1].GetString()),
@@ -169,25 +169,25 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
 )!"));
 
   // Simulate JS calling getHPRTLookupPings and validate call_data.
-  base::Value::List call_args;
+  base::ListValue call_args;
   call_args.Append("dummy-callback-id-1");
   web_ui_.HandleReceivedMessage("getHPRTLookupPings", call_args);
   ASSERT_EQ(3u, web_ui_.call_data().size());
   EXPECT_EQ(web_ui_.call_data()[2]->arg1()->GetString(), "dummy-callback-id-1");
   EXPECT_EQ(web_ui_.call_data()[2]->arg2()->GetBool(), true);
-  const base::Value::List& request_pings =
+  const base::ListValue& request_pings =
       web_ui_.call_data()[2]->arg3()->GetList();
   ASSERT_EQ(request_pings.size(), 1u);
   EXPECT_EQ(request_pings[0], request_data);
 
   // Simulate JS calling getHPRTLookupResponses and validate call_data.
-  base::Value::List call_args2;
+  base::ListValue call_args2;
   call_args2.Append("dummy-callback-id-2");
   web_ui_.HandleReceivedMessage("getHPRTLookupResponses", call_args2);
   ASSERT_EQ(4u, web_ui_.call_data().size());
   EXPECT_EQ(web_ui_.call_data()[3]->arg1()->GetString(), "dummy-callback-id-2");
   EXPECT_EQ(web_ui_.call_data()[3]->arg2()->GetBool(), true);
-  const base::Value::List& response_pings =
+  const base::ListValue& response_pings =
       web_ui_.call_data()[3]->arg3()->GetList();
   ASSERT_EQ(response_pings.size(), 1u);
   EXPECT_EQ(response_pings[0], response_data);

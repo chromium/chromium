@@ -125,7 +125,7 @@ void SharedHighlightingDataDrivenTest::GenerateResults(const std::string& input,
       base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_input.has_value() && parsed_input->is_dict());
 
-  base::Value::Dict& input_dict = parsed_input->GetDict();
+  base::DictValue& input_dict = parsed_input->GetDict();
   html_file_name = *input_dict.FindString(kHtmlFileNameField);
   start_parent_id = input_dict.FindString(kStartParentIdField);
   start_offset_in_parent = *input_dict.FindInt(kStartOffsetInParentField);

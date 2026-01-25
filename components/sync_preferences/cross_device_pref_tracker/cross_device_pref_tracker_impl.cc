@@ -258,7 +258,7 @@ bool DeviceMatchesFilter(const syncer::DeviceInfo& device_info,
 // Helper to parse a cross-device pref entry into the internal
 // `TimestampedPrefValueInternal` representation.
 std::optional<TimestampedPrefValueInternal> ParseCrossDevicePrefEntry(
-    const base::Value::Dict& cross_device_entry,
+    const base::DictValue& cross_device_entry,
     const syncer::DeviceInfo& device_info) {
   const base::Value* value = cross_device_entry.Find(kValueKey);
 
@@ -310,10 +310,10 @@ void ValidatePrefMapping(const PrefService* tracked_pref_service,
 // Constructs the dictionary entry for the cross-device storage pref.
 // Handles the logic for setting timestamps based on whether the change was
 // observed locally.
-base::Value::Dict BuildCrossDevicePrefEntry(
+base::DictValue BuildCrossDevicePrefEntry(
     const base::Value& value,
     std::optional<base::Time> observed_change_time) {
-  base::Value::Dict entry;
+  base::DictValue entry;
 
   entry.Set(kValueKey, value.Clone());
 
@@ -385,9 +385,9 @@ void ApplyPrefChangeToCrossDevice(
 
   const base::Value& current_value =
       tracked_pref_service->GetValue(tracked_pref_name);
-  const base::Value::Dict& cross_device_dict =
+  const base::DictValue& cross_device_dict =
       profile_pref_service->GetDict(cross_device_pref_name);
-  const base::Value::Dict* existing_cross_device_entry =
+  const base::DictValue* existing_cross_device_entry =
       cross_device_dict.FindDict(cache_guid.value());
 
   // Optimization: Minimize writes to the syncable pref to reduce sync traffic,
@@ -410,7 +410,7 @@ void ApplyPrefChangeToCrossDevice(
   // If the value changed, it's an observed change (even if value is the same),
   // or if no entry exists, the update must proceed.
 
-  base::Value::Dict entry =
+  base::DictValue entry =
       BuildCrossDevicePrefEntry(current_value, observed_change_time);
 
   ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
@@ -437,7 +437,7 @@ GetCrossDeviceEntriesMatchingDeviceFilter(
     return {};
   }
 
-  const base::Value::Dict& cross_device_dict =
+  const base::DictValue& cross_device_dict =
       profile_pref_service.GetDict(cross_device_pref_name);
 
   std::vector<TimestampedPrefValueInternal> matching_cross_device_entries;
@@ -781,14 +781,14 @@ void CrossDevicePrefTrackerImpl::OnCrossDevicePrefChanged(
   CHECK(profile_pref_service_);
   std::string pref_name(cross_device_pref_name_view);
 
-  const base::Value::Dict& new_dict = profile_pref_service_->GetDict(pref_name);
+  const base::DictValue& new_dict = profile_pref_service_->GetDict(pref_name);
 
   auto cache_it = cross_device_storage_cache_.find(pref_name);
 
   // This should not happen as the cache is initialized with all tracked prefs.
   CHECK(cache_it != cross_device_storage_cache_.end());
 
-  const base::Value::Dict& old_dict = cache_it->second;
+  const base::DictValue& old_dict = cache_it->second;
 
   // Optimization: Check if the dictionaries are identical before proceeding.
   if (old_dict == new_dict) {
@@ -807,8 +807,8 @@ void CrossDevicePrefTrackerImpl::OnCrossDevicePrefChanged(
 
 void CrossDevicePrefTrackerImpl::ProcessRemoteUpdates(
     const std::string& cross_device_pref_name,
-    const base::Value::Dict& old_dict,
-    const base::Value::Dict& new_dict) {
+    const base::DictValue& old_dict,
+    const base::DictValue& new_dict) {
   CHECK(device_info_sync_service_);
   syncer::DeviceInfoTracker* device_info_tracker =
       device_info_sync_service_->GetDeviceInfoTracker();
@@ -828,14 +828,14 @@ void CrossDevicePrefTrackerImpl::ProcessRemoteUpdates(
       continue;
     }
 
-    const base::Value::Dict* new_entry = new_entry_value.GetIfDict();
+    const base::DictValue* new_entry = new_entry_value.GetIfDict();
 
     // Skip malformed entries.
     if (!new_entry) {
       continue;
     }
 
-    const base::Value::Dict* old_entry = old_dict.FindDict(cache_guid);
+    const base::DictValue* old_entry = old_dict.FindDict(cache_guid);
 
     // Check if the entry is new or updated by comparing the dictionaries.
     if (!old_entry || *old_entry != *new_entry) {
@@ -888,7 +888,7 @@ void CrossDevicePrefTrackerImpl::ProcessRemoteUpdates(
 
 void CrossDevicePrefTrackerImpl::NotifyRemotePrefChanged(
     const std::string& cross_device_pref_name,
-    const base::Value::Dict* entry,
+    const base::DictValue* entry,
     const syncer::DeviceInfo& remote_device_info) {
   // Default constructed value signifies deletion (null value and null time).
   TimestampedPrefValue timestamped_value;
@@ -1023,7 +1023,7 @@ void CrossDevicePrefTrackerImpl::NotifyObserversOfExistingPrefsForNewDevices(
     const std::vector<const syncer::DeviceInfo*>& new_devices) {
   for (const auto& [pref_name, dict_value] : cross_device_storage_cache_) {
     for (const syncer::DeviceInfo* device_info : new_devices) {
-      const base::Value::Dict* entry = dict_value.FindDict(device_info->guid());
+      const base::DictValue* entry = dict_value.FindDict(device_info->guid());
 
       if (entry) {
         // Found an existing pref value for the newly available device.

@@ -209,13 +209,13 @@ void Component::SetUpdateCheckResult(std::optional<ProtocolParser::App> result,
   }
 }
 
-base::Value::Dict WrapFingerprint(const std::string& fp) {
-  base::Value::Dict wrapper;
+base::DictValue WrapFingerprint(const std::string& fp) {
+  base::DictValue wrapper;
   wrapper.Set("fingerprint", fp);
   return wrapper;
 }
 
-void Component::AppendEvent(base::Value::Dict event) {
+void Component::AppendEvent(base::DictValue event) {
   if (previous_version().IsValid()) {
     event.Set("previousversion", previous_version().GetString());
   }
@@ -242,8 +242,8 @@ base::TimeDelta Component::GetUpdateDuration() const {
   return std::min(update_cost, update_context_->config->UpdateDelay());
 }
 
-base::Value::Dict Component::MakeEventUpdateComplete() const {
-  base::Value::Dict event;
+base::DictValue Component::MakeEventUpdateComplete() const {
+  base::DictValue event;
   event.Set("eventtype", update_context_->is_install
                              ? protocol_request::kEventInstall
                              : protocol_request::kEventUpdate);
@@ -267,8 +267,8 @@ base::Value::Dict Component::MakeEventUpdateComplete() const {
   return event;
 }
 
-std::vector<base::Value::Dict> Component::GetEvents() const {
-  std::vector<base::Value::Dict> events;
+std::vector<base::DictValue> Component::GetEvents() const {
+  std::vector<base::DictValue> events;
   for (const auto& event : events_) {
     events.push_back(event.Clone());
   }

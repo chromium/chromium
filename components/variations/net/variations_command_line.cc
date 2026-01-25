@@ -115,7 +115,7 @@ std::string GenerateParam(const std::string& param_key,
   return "";
 }
 
-std::string GetStringFromDict(const base::Value::Dict& dict,
+std::string GetStringFromDict(const base::DictValue& dict,
                               std::string_view key) {
   const std::string* s = dict.FindString(key);
   return s ? *s : std::string();
@@ -279,7 +279,7 @@ std::optional<VariationsCommandLine> VariationsCommandLine::ReadFromString(
   if (!value) {
     return std::nullopt;
   }
-  base::Value::Dict* dict = value->GetIfDict();
+  base::DictValue* dict = value->GetIfDict();
   if (!dict) {
     return std::nullopt;
   }
@@ -305,8 +305,8 @@ bool VariationsCommandLine::WriteToFile(const base::FilePath& file_path) const {
 }
 
 bool VariationsCommandLine::WriteToString(std::string* serialized_json) const {
-  base::Value::Dict dict =
-      base::Value::Dict()
+  base::DictValue dict =
+      base::DictValue()
           .Set(::switches::kForceFieldTrials, field_trial_states)
           .Set(switches::kForceFieldTrialParams, field_trial_params)
           .Set(::switches::kEnableFeatures, enable_features)

@@ -46,7 +46,7 @@ std::string CommitRequestEvent::GetDetails() const {
       num_items_, DataTypeSetToDebugString(contributing_types_).c_str());
 }
 
-base::Value::Dict CommitRequestEvent::GetProtoMessage(
+base::DictValue CommitRequestEvent::GetProtoMessage(
     bool include_specifics) const {
   return ClientToServerMessageToValue(
              request_, {.include_specifics = include_specifics,

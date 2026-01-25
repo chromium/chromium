@@ -59,10 +59,10 @@ FlagMetadataMap LoadFlagMetadata() {
 
   FlagMetadataMap metadata;
   for (const auto& entry_val : metadata_json.GetList()) {
-    const base::Value::Dict& entry = entry_val.GetDict();
+    const base::DictValue& entry = entry_val.GetDict();
     std::string name = *entry.FindString("name");
     std::vector<std::string> owners;
-    if (const base::Value::List* e = entry.FindList("owners")) {
+    if (const base::ListValue* e = entry.FindList("owners")) {
       for (const auto& owner : *e) {
         owners.push_back(owner.GetString());
       }

@@ -52,8 +52,8 @@ TranslateInternalsHandler::TranslateInternalsHandler() {
 TranslateInternalsHandler::~TranslateInternalsHandler() = default;
 
 // static.
-base::Value::Dict TranslateInternalsHandler::GetLanguages() {
-  base::Value::Dict dict;
+base::DictValue TranslateInternalsHandler::GetLanguages() {
+  base::DictValue dict;
 
   const std::string app_locale =
       translate::TranslateDownloadManager::GetInstance()->application_locale();
@@ -89,7 +89,7 @@ void TranslateInternalsHandler::RegisterMessageCallbacks() {
 
 void TranslateInternalsHandler::AddLanguageDetectionDetails(
     const translate::LanguageDetectionDetails& details) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("has_run_lang_detection", details.has_run_lang_detection);
   dict.Set("time", details.time.InMillisecondsFSinceUnixEpoch());
   dict.Set("url", details.url.spec());
@@ -107,7 +107,7 @@ void TranslateInternalsHandler::AddLanguageDetectionDetails(
 
 void TranslateInternalsHandler::OnTranslateError(
     const translate::TranslateErrorDetails& details) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("time", details.time.InMillisecondsFSinceUnixEpoch());
   dict.Set("url", details.url.spec());
   dict.Set("error", std::to_underlying(details.error));
@@ -118,7 +118,7 @@ void TranslateInternalsHandler::OnTranslateInit(
     const translate::TranslateInitDetails& details) {
   if (!GetTranslateClient()->IsTranslatableURL(details.url))
     return;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("time", details.time.InMillisecondsFSinceUnixEpoch());
   dict.Set("url", details.url.spec());
 
@@ -150,7 +150,7 @@ void TranslateInternalsHandler::OnTranslateInit(
 
 void TranslateInternalsHandler::OnTranslateEvent(
     const translate::TranslateEventDetails& details) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("time", details.time.InMillisecondsFSinceUnixEpoch());
   dict.Set("filename", details.filename);
   dict.Set("line", details.line);
@@ -158,8 +158,7 @@ void TranslateInternalsHandler::OnTranslateEvent(
   SendMessageToJs("translateEventDetailsAdded", dict);
 }
 
-void TranslateInternalsHandler::OnRemovePrefItem(
-    const base::Value::List& args) {
+void TranslateInternalsHandler::OnRemovePrefItem(const base::ListValue& args) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       GetTranslateClient()->GetTranslatePrefs();
 
@@ -192,7 +191,7 @@ void TranslateInternalsHandler::OnRemovePrefItem(
 }
 
 void TranslateInternalsHandler::OnSetRecentTargetLanguage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       GetTranslateClient()->GetTranslatePrefs();
 
@@ -205,8 +204,7 @@ void TranslateInternalsHandler::OnSetRecentTargetLanguage(
   SendPrefsToJs();
 }
 
-void TranslateInternalsHandler::OnOverrideCountry(
-    const base::Value::List& args) {
+void TranslateInternalsHandler::OnOverrideCountry(const base::ListValue& args) {
   if (args[0].is_string()) {
     const std::string& country = args[0].GetString();
     variations::VariationsService* variations_service = GetVariationsService();
@@ -215,16 +213,14 @@ void TranslateInternalsHandler::OnOverrideCountry(
   }
 }
 
-void TranslateInternalsHandler::OnRequestInfo(
-    const base::Value::List& /*args*/) {
+void TranslateInternalsHandler::OnRequestInfo(const base::ListValue& /*args*/) {
   SendPrefsToJs();
   SendSupportedLanguagesToJs();
   SendCountryToJs(false);
 }
 
-void TranslateInternalsHandler::SendMessageToJs(
-    std::string_view message,
-    const base::Value::Dict& value) {
+void TranslateInternalsHandler::SendMessageToJs(std::string_view message,
+                                                const base::DictValue& value) {
   const char func[] = "cr.webUIListenerCallback";
   base::Value message_data(message);
   base::ValueView args[] = {message_data, value};
@@ -247,7 +243,7 @@ void TranslateInternalsHandler::SendPrefsToJs() {
       translate::TranslatePrefs::kPrefTranslateAcceptedCount,
   };
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const char* key : keys) {
     const PrefService::Preference* pref = prefs->FindPreference(key);
     if (pref)
@@ -269,11 +265,11 @@ void TranslateInternalsHandler::SendSupportedLanguagesToJs() {
   base::Time last_updated =
       translate::TranslateDownloadManager::GetSupportedLanguagesLastUpdated();
 
-  base::Value::List languages_list;
+  base::ListValue languages_list;
   for (std::string& lang : languages)
     languages_list.Append(std::move(lang));
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("languages", std::move(languages_list));
   dict.Set("last_updated", last_updated.InMillisecondsFSinceUnixEpoch());
   SendMessageToJs("supportedLanguagesUpdated", dict);
@@ -288,7 +284,7 @@ void TranslateInternalsHandler::SendCountryToJs(bool was_updated) {
   country = variations_service->GetStoredPermanentCountry();
   overridden_country = variations_service->GetOverriddenPermanentCountry();
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (!country.empty()) {
     dict.Set("country", country);
     dict.Set("update", was_updated);
