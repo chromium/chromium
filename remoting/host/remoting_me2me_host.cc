@@ -423,17 +423,17 @@ class HostProcess : public ConfigWatcher::Delegate,
                     int line_number) override;
 
   // mojom::RemotingHostControl implementation.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   void ApplyHostConfig(base::DictValue serialized_config) override;
+#endif
+#if BUILDFLAG(IS_WIN)
   void InitializePairingRegistry(
       ::mojo::PlatformHandle privileged_handle,
       ::mojo::PlatformHandle unprivileged_handle) override;
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void BindChromotingHostServices(
       mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
       int peer_pid) override;
-#endif
 
 #if BUILDFLAG(IS_MAC)
   void ConnectAgentProcessBroker();
@@ -1248,12 +1248,14 @@ void HostProcess::BindRemotingHostControl(
 
 #endif
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 void HostProcess::ApplyHostConfig(base::DictValue config) {
   DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
   OnConfigParsed(std::move(config));
 }
+#endif
 
+#if BUILDFLAG(IS_WIN)
 void HostProcess::InitializePairingRegistry(
     ::mojo::PlatformHandle privileged_handle,
     ::mojo::PlatformHandle unprivileged_handle) {
@@ -1290,7 +1292,6 @@ void HostProcess::InitializePairingRegistry(
 
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void HostProcess::BindChromotingHostServices(
     mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
     int peer_pid) {
@@ -1309,8 +1310,6 @@ void HostProcess::BindChromotingHostServices(
   }
   host_->BindChromotingHostServices(std::move(receiver), peer_pid);
 }
-
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
 

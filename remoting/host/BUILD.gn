@@ -108,13 +108,17 @@ source_set("common_headers") {
     "audio_silence_detector.h",
     "audio_volume_filter.h",
     "basic_desktop_environment.h",
+    "config_watcher.h",
     "create_desktop_interaction_strategy_factory.h",
+    "daemon_process.h",
     "delegating_desktop_display_info_monitor.h",
     "desktop_and_cursor_conditional_composer.h",
     "desktop_display_info_monitor.h",
     "desktop_environment.h",
     "desktop_resizer_proxy.h",
     "evaluate_capability.h",
+    "host_status_monitor.h",
+    "host_status_observer.h",
     "legacy_interaction_strategy.h",
     "persistent_display_layout_manager.h",
     "polling_desktop_display_info_monitor.h",
@@ -131,6 +135,7 @@ source_set("common_headers") {
     "//ipc",
     "//remoting/base",
     "//remoting/host/base",
+    "//remoting/host/mojom",
     "//remoting/protocol",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
@@ -360,7 +365,6 @@ static_library("common") {
     "cloud_heartbeat_service_client.h",
     "config_file_watcher.cc",
     "config_file_watcher.h",
-    "config_watcher.h",
     "continue_window.cc",
     "continue_window.h",
     "corp_heartbeat_service_client.cc",
@@ -377,7 +381,6 @@ static_library("common") {
     "cursor_visibility_notifier.cc",
     "cursor_visibility_notifier.h",
     "daemon_process.cc",
-    "daemon_process.h",
     "delegating_desktop_display_info_monitor.cc",
     "desktop_and_cursor_conditional_composer.cc",
     "desktop_process.cc",
@@ -417,8 +420,6 @@ static_library("common") {
     "host_secret.cc",
     "host_secret.h",
     "host_status_monitor.cc",
-    "host_status_monitor.h",
-    "host_status_observer.h",
     "host_window.cc",
     "host_window.h",
     "host_window_proxy.cc",
@@ -582,6 +583,7 @@ static_library("common") {
 
   if (is_linux) {
     sources += [
+      "daemon_process_linux.cc",
       "host_wtmpdb_logger.cc",
       "host_wtmpdb_logger.h",
     ]

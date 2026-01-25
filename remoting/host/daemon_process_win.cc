@@ -135,7 +135,7 @@ class DaemonProcessWin : public DaemonProcess {
   std::unique_ptr<DesktopSession> DoCreateDesktopSession(
       int terminal_id,
       const ScreenResolution& resolution,
-      bool virtual_terminal) override;
+      bool is_curtained) override;
   void DoCrashNetworkProcess(const base::Location& location) override;
   void LaunchNetworkProcess() override;
   void SendHostConfigToNetworkProcess(
@@ -260,10 +260,10 @@ bool DaemonProcessWin::OnDesktopSessionAgentAttached(
 std::unique_ptr<DesktopSession> DaemonProcessWin::DoCreateDesktopSession(
     int terminal_id,
     const ScreenResolution& resolution,
-    bool virtual_terminal) {
+    bool is_curtained) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  if (virtual_terminal) {
+  if (is_curtained) {
     return DesktopSessionWin::CreateForVirtualTerminal(
         caller_task_runner(), io_task_runner(), this, terminal_id, resolution);
   } else {

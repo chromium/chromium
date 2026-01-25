@@ -147,6 +147,7 @@ source_set("platform_impls") {
     "curtain_mode_wayland.cc",
     "curtain_mode_wayland.h",
     "curtain_mode_x11.cc",
+    "daemon_process_main.cc",
     "desktop_display_info_loader_linux.cc",
     "desktop_display_info_loader_x11.cc",
     "desktop_display_info_loader_x11.h",

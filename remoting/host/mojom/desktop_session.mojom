@@ -240,7 +240,7 @@ interface DesktopSessionManager {
   // establishing IPC channels between the daemon, desktop, and network
   // processes.
   CreateDesktopSession(int32 terminal_id, ScreenResolution screen_resolution,
-                       bool is_virtual_terminal);
+                       bool is_curtained);
 
   // Closes the desktop session identified by |terminal_id|. This involves
   // terminating the desktop agent process and removing any references to the

@@ -184,7 +184,7 @@ DaemonProcess::DaemonProcess(
 
 void DaemonProcess::CreateDesktopSession(int terminal_id,
                                          const ScreenResolution& resolution,
-                                         bool virtual_terminal) {
+                                         bool is_curtained) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   // Validate the supplied terminal ID. An attempt to create a desktop session
@@ -201,7 +201,7 @@ void DaemonProcess::CreateDesktopSession(int terminal_id,
 
   // Create the desktop session.
   std::unique_ptr<DesktopSession> session =
-      DoCreateDesktopSession(terminal_id, resolution, virtual_terminal);
+      DoCreateDesktopSession(terminal_id, resolution, is_curtained);
   if (!session) {
     LOG(ERROR) << "Failed to create a desktop session.";
     SendTerminalDisconnected(terminal_id);

@@ -181,7 +181,7 @@ bool IpcDesktopEnvironmentFactory::SupportsAudioCapture() const {
 void IpcDesktopEnvironmentFactory::ConnectTerminal(
     DesktopSessionProxy* desktop_session_proxy,
     const ScreenResolution& resolution,
-    bool virtual_terminal) {
+    bool is_curtained) {
   DCHECK(network_task_runner_->BelongsToCurrentThread());
 
   int id = next_id_++;
@@ -192,8 +192,7 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
 
   VLOG(1) << "Network: registered desktop environment " << id;
 
-  desktop_session_manager_->CreateDesktopSession(id, resolution,
-                                                 virtual_terminal);
+  desktop_session_manager_->CreateDesktopSession(id, resolution, is_curtained);
 }
 
 void IpcDesktopEnvironmentFactory::DisconnectTerminal(
