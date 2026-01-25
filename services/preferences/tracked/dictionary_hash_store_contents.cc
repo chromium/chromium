@@ -17,7 +17,7 @@ const char kSuperMACPref[] = "protection.super_mac";
 }
 
 DictionaryHashStoreContents::DictionaryHashStoreContents(
-    base::Value::Dict& storage)
+    base::DictValue& storage)
     : storage_(storage) {}
 
 bool DictionaryHashStoreContents::IsCopyable() const {
@@ -41,7 +41,7 @@ void DictionaryHashStoreContents::Reset() {
 
 bool DictionaryHashStoreContents::GetMac(const std::string& path,
                                          std::string* out_value) {
-  const base::Value::Dict* macs_dict = GetContents();
+  const base::DictValue* macs_dict = GetContents();
   if (!macs_dict)
     return false;
 
@@ -61,10 +61,10 @@ bool DictionaryHashStoreContents::GetSplitMacs(
   DCHECK(split_macs);
   DCHECK(split_macs->empty());
 
-  const base::Value::Dict* macs_dict = GetContents();
+  const base::DictValue* macs_dict = GetContents();
   if (!macs_dict)
     return false;
-  const base::Value::Dict* split_macs_dict =
+  const base::DictValue* split_macs_dict =
       macs_dict->FindDictByDottedPath(path);
   if (!split_macs_dict)
     return false;
@@ -80,30 +80,30 @@ bool DictionaryHashStoreContents::GetSplitMacs(
 
 void DictionaryHashStoreContents::SetMac(const std::string& path,
                                          const std::string& value) {
-  base::Value::Dict* macs_dict = GetMutableContents(true);
+  base::DictValue* macs_dict = GetMutableContents(true);
   macs_dict->SetByDottedPath(path, value);
 }
 
 void DictionaryHashStoreContents::SetSplitMac(const std::string& path,
                                               const std::string& split_path,
                                               const std::string& value) {
-  base::Value::Dict* macs_dict = GetMutableContents(true);
-  base::Value::Dict* split_dict = macs_dict->FindDictByDottedPath(path);
+  base::DictValue* macs_dict = GetMutableContents(true);
+  base::DictValue* split_dict = macs_dict->FindDictByDottedPath(path);
   if (!split_dict) {
     split_dict =
-        &macs_dict->SetByDottedPath(path, base::Value::Dict())->GetDict();
+        &macs_dict->SetByDottedPath(path, base::DictValue())->GetDict();
   }
   split_dict->Set(split_path, value);
 }
 
 void DictionaryHashStoreContents::ImportEntry(const std::string& path,
                                               const base::Value* in_value) {
-  base::Value::Dict* macs_dict = GetMutableContents(true);
+  base::DictValue* macs_dict = GetMutableContents(true);
   macs_dict->SetByDottedPath(path, in_value->Clone());
 }
 
 bool DictionaryHashStoreContents::RemoveEntry(const std::string& path) {
-  base::Value::Dict* macs_dict = GetMutableContents(false);
+  base::DictValue* macs_dict = GetMutableContents(false);
   if (macs_dict)
     return macs_dict->RemoveByDottedPath(path);
 
@@ -122,16 +122,15 @@ void DictionaryHashStoreContents::SetSuperMac(const std::string& super_mac) {
   storage_->SetByDottedPath(kSuperMACPref, super_mac);
 }
 
-const base::Value::Dict* DictionaryHashStoreContents::GetContents() const {
+const base::DictValue* DictionaryHashStoreContents::GetContents() const {
   return storage_->FindDictByDottedPath(kPreferenceMACs);
 }
 
-base::Value::Dict* DictionaryHashStoreContents::GetMutableContents(
+base::DictValue* DictionaryHashStoreContents::GetMutableContents(
     bool create_if_null) {
-  base::Value::Dict* macs_dict =
-      storage_->FindDictByDottedPath(kPreferenceMACs);
+  base::DictValue* macs_dict = storage_->FindDictByDottedPath(kPreferenceMACs);
   if (!macs_dict && create_if_null) {
-    macs_dict = &storage_->SetByDottedPath(kPreferenceMACs, base::Value::Dict())
+    macs_dict = &storage_->SetByDottedPath(kPreferenceMACs, base::DictValue())
                      ->GetDict();
   }
   return macs_dict;

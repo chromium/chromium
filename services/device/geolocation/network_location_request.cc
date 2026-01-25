@@ -99,13 +99,13 @@ void RecordUmaAccuracy(int accuracy) {
 // string parameter.
 GURL FormRequestURL(const std::string& api_key);
 
-base::Value::Dict FormUploadData(const WifiData& wifi_data,
-                                 const base::Time& wifi_timestamp);
+base::DictValue FormUploadData(const WifiData& wifi_data,
+                               const base::Time& wifi_timestamp);
 
 // Attempts to create `LocationResponseResult` from the network request
 // response. Detects and indicates various failure cases.
 LocationResponseResult CreateResultFromResponse(
-    const base::Value::Dict& response_body,
+    const base::DictValue& response_body,
     const base::Time& wifi_timestamp,
     const GURL& server_url);
 
@@ -117,14 +117,14 @@ mojom::GeopositionResultPtr CreateGeopositionErrorResult(
 // Returns a `mojom::GeopositionPtr` containing the position estimate in
 // `response_body`, or `nullptr` if no valid fix was received. The timestamp
 // for the returned estimate is set to `wifi_timestamp`.
-mojom::GeopositionPtr CreateGeoposition(const base::Value::Dict& response_body,
+mojom::GeopositionPtr CreateGeoposition(const base::DictValue& response_body,
                                         const base::Time& wifi_timestamp);
 void AddWifiData(const WifiData& wifi_data,
                  int age_milliseconds,
-                 base::Value::Dict& request);
+                 base::DictValue& request);
 
 std::vector<mojom::AccessPointDataPtr> RequestToMojom(
-    const base::Value::Dict& request_dict,
+    const base::DictValue& request_dict,
     const base::Time& wifi_timestamp) {
   const auto* access_points_list = request_dict.FindList(kWifiAccessPointsKey);
   if (!access_points_list) {
@@ -158,7 +158,7 @@ std::vector<mojom::AccessPointDataPtr> RequestToMojom(
 }
 
 mojom::NetworkLocationResponsePtr ResponseToMojom(
-    const base::Value::Dict& response_dict) {
+    const base::DictValue& response_dict) {
   const auto* location_dict = response_dict.FindDict(kLocationString);
   if (location_dict) {
     auto latitude = location_dict->FindDouble(kLatitudeString);
@@ -311,7 +311,7 @@ void NetworkLocationRequest::OnRequestComplete(
                       "Unexpected response type "
                    << response_result->type();
     } else {
-      base::Value::Dict response_data = std::move(*response_result).TakeDict();
+      base::DictValue response_data = std::move(*response_result).TakeDict();
       result = CreateResultFromResponse(response_data, wifi_timestamp_,
                                         url_loader_->GetFinalURL());
     }
@@ -360,8 +360,8 @@ GURL FormRequestURL(const std::string& api_key) {
   return url;
 }
 
-base::Value::Dict FormUploadData(const WifiData& wifi_data,
-                                 const base::Time& wifi_timestamp) {
+base::DictValue FormUploadData(const WifiData& wifi_data,
+                               const base::Time& wifi_timestamp) {
   int age = std::numeric_limits<int32_t>::min();  // Invalid so AddInteger()
                                                   // will ignore.
   if (!wifi_timestamp.is_null()) {
@@ -371,28 +371,28 @@ base::Value::Dict FormUploadData(const WifiData& wifi_data,
       age = static_cast<int>(delta_ms);
   }
 
-  base::Value::Dict request;
+  base::DictValue request;
   AddWifiData(wifi_data, age, request);
   return request;
 }
 
 void AddString(std::string_view property_name,
                const std::string& value,
-               base::Value::Dict& dict) {
+               base::DictValue& dict) {
   if (!value.empty())
     dict.Set(property_name, value);
 }
 
 void AddInteger(std::string_view property_name,
                 int value,
-                base::Value::Dict& dict) {
+                base::DictValue& dict) {
   if (value != std::numeric_limits<int32_t>::min())
     dict.Set(property_name, value);
 }
 
 void AddWifiData(const WifiData& wifi_data,
                  int age_milliseconds,
-                 base::Value::Dict& request) {
+                 base::DictValue& request) {
   if (wifi_data.access_point_data.empty())
     return;
 
@@ -403,12 +403,12 @@ void AddWifiData(const WifiData& wifi_data,
   for (const auto& ap_data : wifi_data.access_point_data)
     access_points_by_signal_strength.insert(&ap_data);
 
-  base::Value::List wifi_access_point_list;
+  base::ListValue wifi_access_point_list;
   for (auto* ap_data : access_points_by_signal_strength) {
     if (ap_data->mac_address.empty()) {
       continue;
     }
-    base::Value::Dict wifi_dict;
+    base::DictValue wifi_dict;
     AddString(kMacAddressKey, ap_data->mac_address, wifi_dict);
     AddInteger(kSignalStrengthKey, ap_data->radio_signal_strength, wifi_dict);
     AddInteger(kAgeKey, age_milliseconds, wifi_dict);
@@ -442,7 +442,7 @@ mojom::GeopositionResultPtr CreateGeopositionErrorResult(
 }
 
 LocationResponseResult CreateResultFromResponse(
-    const base::Value::Dict& response_body,
+    const base::DictValue& response_body,
     const base::Time& wifi_timestamp,
     const GURL& server_url) {
   // We use the timestamp from the wifi data that was used to generate
@@ -473,7 +473,7 @@ LocationResponseResult CreateResultFromResponse(
       NetworkLocationRequestResult::kSuccess, std::move(response));
 }
 
-mojom::GeopositionPtr CreateGeoposition(const base::Value::Dict& response_body,
+mojom::GeopositionPtr CreateGeoposition(const base::DictValue& response_body,
                                         const base::Time& wifi_timestamp) {
   DCHECK(!wifi_timestamp.is_null());
 
@@ -494,7 +494,7 @@ mojom::GeopositionPtr CreateGeoposition(const base::Value::Dict& response_body,
     return mojom::Geoposition::New();
   }
 
-  const base::Value::Dict* location_object = location_value->GetIfDict();
+  const base::DictValue* location_object = location_value->GetIfDict();
   if (!location_object) {
     if (!location_value->is_none()) {
       VLOG(1) << "CreateGeoposition() : Unexpected location type "

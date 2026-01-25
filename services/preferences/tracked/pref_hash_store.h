@@ -45,9 +45,9 @@ class PrefHashStore {
   // store. PrefHashStoreTransaction typically uses this internally but it's
   // also exposed for users that want to compute MACs ahead of time for
   // asynchronous operations.
-  virtual base::Value::Dict ComputeSplitMacs(
+  virtual base::DictValue ComputeSplitMacs(
       const std::string& path,
-      const base::Value::Dict* split_values) = 0;
+      const base::DictValue* split_values) = 0;
 
   // Computes the OS-encrypted hash for a given path and value.
   // Requires a non-null |encryptor|.
@@ -60,14 +60,14 @@ class PrefHashStore {
   // Requires a non-null |encryptor|.
   virtual std::string ComputeEncryptedHash(
       const std::string& path,
-      const base::Value::Dict* dict,
+      const base::DictValue* dict,
       const os_crypt_async::Encryptor* encryptor) = 0;
 
   // Computes the OS-encrypted hashes for a dictionary split across
   // multiple keys. Requires a non-null |encryptor|.
-  virtual base::Value::Dict ComputeSplitEncryptedHashes(
+  virtual base::DictValue ComputeSplitEncryptedHashes(
       const std::string& path,
-      const base::Value::Dict* split_values,
+      const base::DictValue* split_values,
       const os_crypt_async::Encryptor* encryptor) = 0;
 };
 

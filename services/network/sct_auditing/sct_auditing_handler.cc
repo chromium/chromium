@@ -187,7 +187,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
 std::optional<std::string> SCTAuditingHandler::SerializeData() {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
-  base::Value::List reports;
+  base::ListValue reports;
   for (const auto& kv : pending_reporters_) {
     auto reporter_key = kv.first;
     auto* reporter = kv.second.get();
@@ -197,7 +197,7 @@ std::optional<std::string> SCTAuditingHandler::SerializeData() {
     serialized_report = base::Base64Encode(serialized_report);
 
     auto report_entry =
-        base::Value::Dict()
+        base::DictValue()
             .Set(kReporterKeyKey, reporter_key.ToString())
             .Set(kBackoffEntryKey,
                  net::BackoffEntrySerializer::SerializeToList(
@@ -230,7 +230,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
 
   size_t num_reporters_deserialized = 0u;
   for (base::Value& sct_entry : value->GetList()) {
-    base::Value::Dict* entry_dict = sct_entry.GetIfDict();
+    base::DictValue* entry_dict = sct_entry.GetIfDict();
     if (!sct_entry.is_dict()) {
       continue;
     }
@@ -239,7 +239,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
     std::string* report_string = entry_dict->FindString(kReportKey);
     const std::optional<base::Value> sct_metadata_value =
         entry_dict->Extract(kSCTHashdanceMetadataKey);
-    const base::Value::List* backoff_entry_value =
+    const base::ListValue* backoff_entry_value =
         entry_dict->FindList(kBackoffEntryKey);
     const std::optional<bool> counted_towards_report_limit =
         entry_dict->FindBool(kAlreadyCountedKey);

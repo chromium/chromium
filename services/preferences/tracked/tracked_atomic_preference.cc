@@ -47,7 +47,7 @@ void TrackedAtomicPreference::OnNewValue(
 }
 
 bool TrackedAtomicPreference::EnforceAndReport(
-    base::Value::Dict& pref_store_contents,
+    base::DictValue& pref_store_contents,
     PrefHashStoreTransaction* transaction,
     PrefHashStoreTransaction* external_validation_transaction,
     const os_crypt_async::Encryptor* encryptor) const {
@@ -83,7 +83,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
       reset_action == TrackedPreferenceHelper::DO_RESET_LEGACY ||
       reset_action == TrackedPreferenceHelper::DO_RESET_ENCRYPTED) {
     if (value) {
-      base::Value::List* reset_prefs_list =
+      base::ListValue* reset_prefs_list =
           pref_store_contents.EnsureList(user_prefs::kTrackedPreferencesReset);
       if (!reset_prefs_list->contains(pref_path_)) {
         reset_prefs_list->Append(pref_path_);

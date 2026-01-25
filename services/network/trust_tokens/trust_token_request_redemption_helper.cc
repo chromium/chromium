@@ -27,8 +27,8 @@ namespace network {
 
 namespace {
 
-base::Value::Dict CreateLogValue(std::string_view outcome) {
-  return base::Value::Dict().Set("outcome", outcome);
+base::DictValue CreateLogValue(std::string_view outcome) {
+  return base::DictValue().Set("outcome", outcome);
 }
 
 // Define convenience aliases for the NetLogEventTypes for brevity.

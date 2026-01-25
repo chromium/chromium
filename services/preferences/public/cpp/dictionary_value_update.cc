@@ -15,7 +15,7 @@
 namespace prefs {
 
 DictionaryValueUpdate::DictionaryValueUpdate(UpdateCallback report_update,
-                                             base::Value::Dict* value,
+                                             base::DictValue* value,
                                              std::vector<std::string> path)
     : report_update_(std::move(report_update)),
       value_(value),
@@ -78,9 +78,9 @@ void DictionaryValueUpdate::SetString(std::string_view path,
 
 std::unique_ptr<DictionaryValueUpdate> DictionaryValueUpdate::SetDictionary(
     std::string_view path,
-    base::Value::Dict in_value) {
+    base::DictValue in_value) {
   RecordPath(path);
-  base::Value::Dict& dictionary_value =
+  base::DictValue& dictionary_value =
       value_->SetByDottedPath(path, std::move(in_value))->GetDict();
 
   return std::make_unique<DictionaryValueUpdate>(
@@ -110,9 +110,9 @@ void DictionaryValueUpdate::SetWithoutPathExpansion(std::string_view key,
 std::unique_ptr<DictionaryValueUpdate>
 DictionaryValueUpdate::SetDictionaryWithoutPathExpansion(
     std::string_view path,
-    base::Value::Dict in_value) {
+    base::DictValue in_value) {
   RecordKey(path);
-  base::Value::Dict& dictionary_value =
+  base::DictValue& dictionary_value =
       value_->Set(path, std::move(in_value))->GetDict();
 
   std::vector<std::string> full_path = path_;
@@ -166,8 +166,8 @@ bool DictionaryValueUpdate::GetString(std::string_view path,
 
 bool DictionaryValueUpdate::GetDictionary(
     std::string_view path,
-    const base::Value::Dict** out_value) const {
-  const base::Value::Dict* dict = value_->FindDictByDottedPath(path);
+    const base::DictValue** out_value) const {
+  const base::DictValue* dict = value_->FindDictByDottedPath(path);
   if (!dict) {
     return false;
   }
@@ -181,7 +181,7 @@ bool DictionaryValueUpdate::GetDictionary(
 bool DictionaryValueUpdate::GetDictionary(
     std::string_view path,
     std::unique_ptr<DictionaryValueUpdate>* out_value) {
-  base::Value::Dict* dict = value_->FindDictByDottedPath(path);
+  base::DictValue* dict = value_->FindDictByDottedPath(path);
   if (!dict) {
     return false;
   }
@@ -195,7 +195,7 @@ bool DictionaryValueUpdate::GetDictionary(
 bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
     std::string_view key,
     std::unique_ptr<DictionaryValueUpdate>* out_value) {
-  base::Value::Dict* dictionary_value = value_->FindDict(key);
+  base::DictValue* dictionary_value = value_->FindDict(key);
   if (!dictionary_value) {
     return false;
   }
@@ -209,9 +209,9 @@ bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
 
 bool DictionaryValueUpdate::GetListWithoutPathExpansion(
     std::string_view key,
-    base::Value::List** out_value) {
+    base::ListValue** out_value) {
   RecordKey(key);
-  base::Value::List* list = value_->FindList(key);
+  base::ListValue* list = value_->FindList(key);
   if (!list) {
     return false;
   }
@@ -223,7 +223,7 @@ bool DictionaryValueUpdate::GetListWithoutPathExpansion(
 
 bool DictionaryValueUpdate::Remove(std::string_view path) {
   std::string_view current_path(path);
-  base::Value::Dict* current_dictionary = value_;
+  base::DictValue* current_dictionary = value_;
   size_t delimiter_position = current_path.rfind('.');
   if (delimiter_position != std::string_view::npos) {
     current_dictionary = value_->FindDictByDottedPath(
@@ -255,12 +255,12 @@ bool DictionaryValueUpdate::RemoveWithoutPathExpansion(std::string_view key,
   return true;
 }
 
-base::Value::Dict* DictionaryValueUpdate::AsDict() {
+base::DictValue* DictionaryValueUpdate::AsDict() {
   RecordSplitPath(std::vector<std::string_view>());
   return value_;
 }
 
-const base::Value::Dict* DictionaryValueUpdate::AsConstDict() const {
+const base::DictValue* DictionaryValueUpdate::AsConstDict() const {
   return value_;
 }
 

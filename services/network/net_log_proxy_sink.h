@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogProxySink
                 const net::NetLogSource& net_log_source,
                 net::NetLogEventPhase phase,
                 base::TimeTicks time,
-                base::Value::Dict params) override;
+                base::DictValue params) override;
 
  private:
   mojo::RemoteSet<network::mojom::NetLogProxySource> proxy_source_remotes_;

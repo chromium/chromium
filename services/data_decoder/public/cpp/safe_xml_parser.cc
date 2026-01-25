@@ -15,7 +15,7 @@
 
 namespace data_decoder {
 
-const base::Value::List* GetXmlElementChildren(const base::Value& element) {
+const base::ListValue* GetXmlElementChildren(const base::Value& element) {
   if (!element.is_dict())
     return nullptr;
   return element.GetDict().FindList(mojom::XmlParser::kChildrenKey);
@@ -56,7 +56,7 @@ bool GetXmlElementTagName(const base::Value& element, std::string* tag_name) {
 
 bool GetXmlElementText(const base::Value& element, std::string* text) {
   DCHECK(text);
-  const base::Value::List* children = GetXmlElementChildren(element);
+  const base::ListValue* children = GetXmlElementChildren(element);
   if (!children)
     return false;
 
@@ -86,7 +86,7 @@ bool GetXmlElementNamespacePrefix(const base::Value& element,
   }
 
   prefix->clear();
-  const base::Value::Dict* namespaces =
+  const base::DictValue* namespaces =
       element.GetDict().FindDict(mojom::XmlParser::kNamespacesKey);
   if (!namespaces)
     return false;
@@ -104,7 +104,7 @@ bool GetXmlElementNamespacePrefix(const base::Value& element,
 
 int GetXmlElementChildrenCount(const base::Value& element,
                                const std::string& name) {
-  const base::Value::List* children = GetXmlElementChildren(element);
+  const base::ListValue* children = GetXmlElementChildren(element);
   if (!children)
     return 0;
   int child_count = 0;
@@ -120,7 +120,7 @@ int GetXmlElementChildrenCount(const base::Value& element,
 
 const base::Value* GetXmlElementChildWithType(const base::Value& element,
                                               const std::string& type) {
-  const base::Value::List* children = GetXmlElementChildren(element);
+  const base::ListValue* children = GetXmlElementChildren(element);
   if (!children)
     return nullptr;
   for (const base::Value& value : *children) {
@@ -134,7 +134,7 @@ const base::Value* GetXmlElementChildWithType(const base::Value& element,
 
 const base::Value* GetXmlElementChildWithTag(const base::Value& element,
                                              const std::string& tag) {
-  const base::Value::List* children = GetXmlElementChildren(element);
+  const base::ListValue* children = GetXmlElementChildren(element);
   if (!children)
     return nullptr;
   for (const base::Value& value : *children) {
@@ -149,7 +149,7 @@ bool GetAllXmlElementChildrenWithTag(
     const base::Value& element,
     const std::string& tag,
     std::vector<const base::Value*>* children_out) {
-  const base::Value::List* children = GetXmlElementChildren(element);
+  const base::ListValue* children = GetXmlElementChildren(element);
   if (!children)
     return false;
   bool found = false;
@@ -199,7 +199,7 @@ std::string GetXmlElementAttribute(const base::Value& element,
   if (!element.is_dict())
     return "";
 
-  const base::Value::Dict* attributes =
+  const base::DictValue* attributes =
       element.GetDict().FindDict(mojom::XmlParser::kAttributesKey);
   if (!attributes)
     return "";

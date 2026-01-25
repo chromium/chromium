@@ -22,7 +22,7 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
 // TODO(sammc): This should move somewhere more appropriate in the longer term.
 void InitializeMasterPrefsTracking(
     prefs::mojom::TrackedPersistentPrefStoreConfigurationPtr configuration,
-    base::Value::Dict& master_prefs,
+    base::DictValue& master_prefs,
     os_crypt_async::OSCryptAsync* os_crypt);
 
 #endif  // SERVICES_PREFERENCES_TRACKED_TRACKED_PERSISTENT_PREF_STORE_FACTORY_H_

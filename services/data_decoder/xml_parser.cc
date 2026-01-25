@@ -63,9 +63,9 @@ bool GetTextFromNode(XmlReader* xml_reader,
   return false;
 }
 
-base::Value::Dict CreateTextNode(const std::string& text,
-                                 TextNodeType node_type) {
-  base::Value::Dict element;
+base::DictValue CreateTextNode(const std::string& text,
+                               TextNodeType node_type) {
+  base::DictValue element;
   element.Set(mojom::XmlParser::kTypeKey,
               node_type == TextNodeType::kText
                   ? mojom::XmlParser::kTextNodeType
@@ -75,8 +75,8 @@ base::Value::Dict CreateTextNode(const std::string& text,
 }
 
 // Creates and returns new element node with the tag name |name|.
-base::Value::Dict CreateNewElement(const std::string& name) {
-  base::Value::Dict element;
+base::DictValue CreateNewElement(const std::string& name) {
+  base::DictValue element;
   element.Set(mojom::XmlParser::kTypeKey, mojom::XmlParser::kElementType);
   element.Set(mojom::XmlParser::kTagKey, name);
   return element;
@@ -84,34 +84,34 @@ base::Value::Dict CreateNewElement(const std::string& name) {
 
 // Adds |child| as a child of |element|, creating the children list if
 // necessary. Returns a ponter to |child|.
-base::Value::Dict* AddChildToElement(base::Value::Dict& element,
-                                     base::Value::Dict child) {
+base::DictValue* AddChildToElement(base::DictValue& element,
+                                   base::DictValue child) {
   DCHECK(!element.contains(mojom::XmlParser::kChildrenKey) ||
          element.FindList(mojom::XmlParser::kChildrenKey));
-  base::Value::List* children =
+  base::ListValue* children =
       element.EnsureList(mojom::XmlParser::kChildrenKey);
   children->Append(std::move(child));
   return &children->back().GetDict();
 }
 
-void PopulateNamespaces(base::Value::Dict& node_value, XmlReader* xml_reader) {
+void PopulateNamespaces(base::DictValue& node_value, XmlReader* xml_reader) {
   NamespaceMap namespaces;
   if (!xml_reader->GetAllDeclaredNamespaces(&namespaces) || namespaces.empty())
     return;
 
-  base::Value::Dict namespace_dict;
+  base::DictValue namespace_dict;
   for (const auto& ns : namespaces) {
     namespace_dict.Set(ns.first, ns.second);
   }
   node_value.Set(mojom::XmlParser::kNamespacesKey, std::move(namespace_dict));
 }
 
-void PopulateAttributes(base::Value::Dict& node_value, XmlReader* xml_reader) {
+void PopulateAttributes(base::DictValue& node_value, XmlReader* xml_reader) {
   AttributeMap attributes;
   if (!xml_reader->GetAllNodeAttributes(&attributes) || attributes.empty())
     return;
 
-  base::Value::Dict attribute_dict;
+  base::DictValue attribute_dict;
   for (const auto& attribute : attributes) {
     attribute_dict.Set(attribute.first, base::Value(attribute.second));
   }
@@ -148,7 +148,7 @@ void XmlParser::Parse(const std::string& xml,
   }
 
   base::Value root_element;
-  std::vector<base::Value::Dict*> element_stack;
+  std::vector<base::DictValue*> element_stack;
   while (xml_reader.Read()) {
     if (xml_reader.IsClosingElement()) {
       if (element_stack.empty()) {
@@ -162,10 +162,10 @@ void XmlParser::Parse(const std::string& xml,
 
     std::string text;
     TextNodeType text_node_type = TextNodeType::kText;
-    base::Value::Dict* current_element =
+    base::DictValue* current_element =
         element_stack.empty() ? nullptr : element_stack.back();
     bool push_new_node_to_stack = false;
-    base::Value::Dict new_element;
+    base::DictValue new_element;
     if (GetTextFromNode(&xml_reader, &text, &text_node_type)) {
       if (!base::IsStringUTF8(text)) {
         ReportError(std::move(callback), "Invalid XML: invalid UTF8 text.",
@@ -190,7 +190,7 @@ void XmlParser::Parse(const std::string& xml,
       continue;
     }
 
-    base::Value::Dict* new_element_ptr;
+    base::DictValue* new_element_ptr;
     if (current_element) {
       new_element_ptr =
           AddChildToElement(*current_element, std::move(new_element));

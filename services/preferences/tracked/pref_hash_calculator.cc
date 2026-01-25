@@ -27,17 +27,17 @@
 
 namespace {
 
-void RemoveEmptyValueDictEntries(base::Value::Dict& dict);
-void RemoveEmptyValueListEntries(base::Value::List& list);
+void RemoveEmptyValueDictEntries(base::DictValue& dict);
+void RemoveEmptyValueListEntries(base::ListValue& list);
 
 // Removes empty Dict and List Values from |dict|, potentially nested.
 // This function may leave |dict| empty, and |dict| may be empty when passed in.
-void RemoveEmptyValueDictEntries(base::Value::Dict& dict) {
+void RemoveEmptyValueDictEntries(base::DictValue& dict) {
   auto it = dict.begin();
   while (it != dict.end()) {
     base::Value& value = it->second;
     if (value.is_list()) {
-      base::Value::List& sub_list = value.GetList();
+      base::ListValue& sub_list = value.GetList();
       RemoveEmptyValueListEntries(sub_list);
       if (sub_list.empty()) {
         it = dict.erase(it);
@@ -45,7 +45,7 @@ void RemoveEmptyValueDictEntries(base::Value::Dict& dict) {
       }
     }
     if (value.is_dict()) {
-      base::Value::Dict& sub_dict = value.GetDict();
+      base::DictValue& sub_dict = value.GetDict();
       RemoveEmptyValueDictEntries(sub_dict);
       if (sub_dict.empty()) {
         it = dict.erase(it);
@@ -58,12 +58,12 @@ void RemoveEmptyValueDictEntries(base::Value::Dict& dict) {
 
 // Removes empty Dict and List Values from |list|, potentially nested.
 // This function may leave |list| empty, and |list| may be empty when passed in.
-void RemoveEmptyValueListEntries(base::Value::List& list) {
+void RemoveEmptyValueListEntries(base::ListValue& list) {
   auto it = list.begin();
   while (it != list.end()) {
     base::Value& item = *it;
     if (item.is_list()) {
-      base::Value::List& sub_list = item.GetList();
+      base::ListValue& sub_list = item.GetList();
       RemoveEmptyValueListEntries(sub_list);
       if (sub_list.empty()) {
         it = list.erase(it);
@@ -71,7 +71,7 @@ void RemoveEmptyValueListEntries(base::Value::List& list) {
       }
     }
     if (item.is_dict()) {
-      base::Value::Dict& sub_dict = item.GetDict();
+      base::DictValue& sub_dict = item.GetDict();
       RemoveEmptyValueDictEntries(sub_dict);
       if (sub_dict.empty()) {
         it = list.erase(it);
@@ -86,11 +86,11 @@ void RemoveEmptyValueListEntries(base::Value::List& list) {
 // is an empty string. This method can be expensive and its result should be
 // re-used rather than recomputed where possible.
 
-std::string ValueAsString(const base::Value::Dict* value) {
+std::string ValueAsString(const base::DictValue* value) {
   if (!value)
     return std::string();
 
-  base::Value::Dict dict = value->Clone();
+  base::DictValue dict = value->Clone();
   RemoveEmptyValueDictEntries(dict);
   return base::WriteJson(dict).value_or(std::string());
 }
@@ -119,7 +119,7 @@ std::string PrefHashCalculator::Calculate(const std::string& path,
 }
 
 std::string PrefHashCalculator::Calculate(const std::string& path,
-                                          const base::Value::Dict* dict) const {
+                                          const base::DictValue* dict) const {
   return HmacSign(path, ValueAsString(dict));
 }
 
@@ -132,7 +132,7 @@ PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
 
 PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
     const std::string& path,
-    const base::Value::Dict* dict,
+    const base::DictValue* dict,
     const std::string& digest_string) const {
   return Validate(path, ValueAsString(dict), digest_string);
 }
@@ -171,7 +171,7 @@ std::optional<std::string> PrefHashCalculator::CalculateEncryptedHash(
 
 std::optional<std::string> PrefHashCalculator::CalculateEncryptedHash(
     const std::string& path,
-    const base::Value::Dict* dict,
+    const base::DictValue* dict,
     const os_crypt_async::Encryptor* encryptor) const {
   DCHECK(encryptor);
 

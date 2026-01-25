@@ -133,7 +133,7 @@ SerializeTrustTokenParametersAndConstructExpectation(
   auto trust_token_params = mojom::TrustTokenParams::New();
 
   auto parameters =
-      base::Value::Dict()
+      base::DictValue()
           .Set("version", input.version)
           .Set("operation", TrustTokenEnumToString(input.operation));
   trust_token_params->operation = input.operation;
@@ -145,7 +145,7 @@ SerializeTrustTokenParametersAndConstructExpectation(
   }
 
   if (input.issuer_specs.has_value()) {
-    base::Value::List issuers;
+    base::ListValue issuers;
     for (const std::string& issuer_spec : *input.issuer_specs) {
       issuers.Append(issuer_spec);
       trust_token_params->issuers.push_back(
@@ -159,7 +159,7 @@ SerializeTrustTokenParametersAndConstructExpectation(
 
 std::string WrapKeyCommitmentsForIssuers(
     base::flat_map<url::Origin, std::string_view> issuers_and_commitments) {
-  base::Value::Dict to_serialize;
+  base::DictValue to_serialize;
   for (const auto& [issuer, commitment] : issuers_and_commitments) {
     // guard against accidentally passing an origin without a unique
     // serialization

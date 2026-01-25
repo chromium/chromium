@@ -79,10 +79,10 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
   void StoreHash(const std::string& path, const base::Value* value) override;
   ValueState CheckSplitValue(
       const std::string& path,
-      const base::Value::Dict* initial_split_value,
+      const base::DictValue* initial_split_value,
       std::vector<std::string>* invalid_keys) const override;
   void StoreSplitHash(const std::string& path,
-                      const base::Value::Dict* split_value) override;
+                      const base::DictValue* split_value) override;
   bool HasHash(const std::string& path) const override;
   void ImportHash(const std::string& path, const base::Value* hash) override;
   void ClearHash(const std::string& path) override;
@@ -98,7 +98,7 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
 
   // Stores the new split Encrypted Hashes. Requires the encryptor.
   void StoreSplitEncryptedHash(const std::string& path,
-                               const base::Value::Dict* split_value) override;
+                               const base::DictValue* split_value) override;
 
   // Clears only the Encrypted Hash for the path.
   void ClearEncryptedHash(const std::string& path) override;
@@ -120,7 +120,7 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
   // Helper for CheckSplitValue to handle validation logic.
   ValueState CheckSplitValueInternal(
       const std::string& path,
-      const base::Value::Dict* initial_split_value,
+      const base::DictValue* initial_split_value,
       bool has_encrypted_hashes,
       const std::map<std::string, std::string>& split_encrypted_hashes,
       bool has_mac_hashes,
@@ -158,22 +158,22 @@ std::string PrefHashStoreImpl::ComputeMac(const std::string& path,
 
 // Computes the legacy MAC for a dictionary.
 std::string PrefHashStoreImpl::ComputeMac(const std::string& path,
-                                          const base::Value::Dict* dict) {
+                                          const base::DictValue* dict) {
   return pref_hash_calculator_.Calculate(path, dict);
 }
 
 // Computes the split legacy MACs.
-base::Value::Dict PrefHashStoreImpl::ComputeSplitMacs(
+base::DictValue PrefHashStoreImpl::ComputeSplitMacs(
     const std::string& path,
-    const base::Value::Dict* split_values) {
+    const base::DictValue* split_values) {
   if (!split_values)
-    return base::Value::Dict();
+    return base::DictValue();
 
   std::string keyed_path(path);
   keyed_path.push_back('.');
   const size_t common_part_length = keyed_path.length();
 
-  base::Value::Dict split_macs;
+  base::DictValue split_macs;
 
   for (const auto item : *split_values) {
     // Keep the common part from the old |keyed_path| and replace the key to
@@ -201,7 +201,7 @@ std::string PrefHashStoreImpl::ComputeEncryptedHash(
 // Computes the encrypted hash for a dictionary.
 std::string PrefHashStoreImpl::ComputeEncryptedHash(
     const std::string& path,
-    const base::Value::Dict* dict,
+    const base::DictValue* dict,
     const os_crypt_async::Encryptor* encryptor) {
   DCHECK(encryptor);
   std::optional<std::string> result_opt =
@@ -211,22 +211,22 @@ std::string PrefHashStoreImpl::ComputeEncryptedHash(
 }
 
 // Computes split encrypted hashes.
-base::Value::Dict PrefHashStoreImpl::ComputeSplitEncryptedHashes(
+base::DictValue PrefHashStoreImpl::ComputeSplitEncryptedHashes(
     const std::string& path,
-    const base::Value::Dict* split_values,
+    const base::DictValue* split_values,
     const os_crypt_async::Encryptor* encryptor) {
   if (!encryptor) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
   if (!split_values || split_values->empty()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   std::string keyed_path(path);
   keyed_path.push_back('.');
   const size_t common_part_length = keyed_path.length();
 
-  base::Value::Dict split_encrypted_hashes;
+  base::DictValue split_encrypted_hashes;
   for (const auto item : *split_values) {
     keyed_path.replace(common_part_length, std::string::npos, item.first);
 
@@ -267,7 +267,7 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::
     ~PrefHashStoreTransactionImpl() {
   if (super_mac_dirty_ && outer_->use_super_mac_) {
     // Get the dictionary of hashes (or NULL if it doesn't exist).
-    const base::Value::Dict* hashes_dict = contents_->GetContents();
+    const base::DictValue* hashes_dict = contents_->GetContents();
     contents_->SetSuperMac(outer_->ComputeMac("", hashes_dict));
   }
 }
@@ -425,7 +425,7 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreEncryptedHash(
 ValueState
 PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
     const std::string& path,
-    const base::Value::Dict* initial_split_value,
+    const base::DictValue* initial_split_value,
     bool has_encrypted_hashes,
     const std::map<std::string, std::string>& split_encrypted_hashes,
     bool has_mac_hashes,
@@ -551,7 +551,7 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
 
 ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValue(
     const std::string& path,
-    const base::Value::Dict* initial_split_value,
+    const base::DictValue* initial_split_value,
     std::vector<std::string>* invalid_keys) const {
   // Attempt to retrieve both types of split hashes.
   std::map<std::string, std::string> split_encrypted_hashes;
@@ -567,11 +567,11 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValue(
 
 void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitHash(
     const std::string& path,
-    const base::Value::Dict* split_value) {
+    const base::DictValue* split_value) {
   contents_->RemoveEntry(path);
 
   if (split_value) {
-    base::Value::Dict split_macs = outer_->ComputeSplitMacs(path, split_value);
+    base::DictValue split_macs = outer_->ComputeSplitMacs(path, split_value);
 
     for (const auto item : split_macs) {
       DCHECK(item.second.is_string());
@@ -584,7 +584,7 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitHash(
 
 void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitEncryptedHash(
     const std::string& path,
-    const base::Value::Dict* split_value) {
+    const base::DictValue* split_value) {
   // Encrypted hash requires the encryptor.
   if (!encryptor_) {
     return;
@@ -597,7 +597,7 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitEncryptedHash(
   const std::string encrypted_hash_base_key = GetEncryptedHashKey(path);
 
   if (split_value) {
-    base::Value::Dict split_encrypted_hashes =
+    base::DictValue split_encrypted_hashes =
         outer_->ComputeSplitEncryptedHashes(path, split_value, encryptor_);
 
     for (const auto item : split_encrypted_hashes) {
@@ -647,7 +647,7 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::ImportHash(
 
   } else if (hash->is_dict()) {
     // --- Case 2: Input is a dict ---
-    const base::Value::Dict& dict = hash->GetDict();
+    const base::DictValue& dict = hash->GetDict();
 
     // Handle MAC part
     const std::string* mac_str_ptr = dict.FindString(kImportMacKey);

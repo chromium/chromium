@@ -109,12 +109,12 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // Initializes the PrefHashStore with hashes of the tracked preferences in
   // |pref_store_contents|. |pref_store_contents| will be the |storage| passed
   // to PrefHashStore::BeginTransaction().
-  void Initialize(base::Value::Dict& pref_store_contents);
+  void Initialize(base::DictValue& pref_store_contents);
 
   // PrefFilter remaining implementation.
   void FilterUpdate(std::string_view path) override;
   OnWriteCallbackPair FilterSerializeData(
-      base::Value::Dict& pref_store_contents) override;
+      base::DictValue& pref_store_contents) override;
 
   void OnStoreDeletionFromDisk() override;
 
@@ -140,7 +140,7 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // InterceptablePrefFilter implementation.
   void FinalizeFilterOnLoad(
       PostFilterOnLoadCallback post_filter_on_load_callback,
-      base::Value::Dict pref_store_contents,
+      base::DictValue pref_store_contents,
       bool prefs_altered) override;
 
   base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() override;
@@ -148,20 +148,20 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // Helper function to generate FilterSerializeData()'s pre-write and
   // post-write callbacks. The returned callbacks are thread-safe.
   OnWriteCallbackPair GetOnWriteSynchronousCallbacks(
-      base::Value::Dict& pref_store_contents);
+      base::DictValue& pref_store_contents);
 
   // Clears the MACs contained in |external_validation_hash_store_contents|
   // which are present in |paths_to_clear|.
   static void ClearFromExternalStore(
       HashStoreContents* external_validation_hash_store_contents,
-      const base::Value::Dict* changed_paths_and_macs);
+      const base::DictValue* changed_paths_and_macs);
 
   // Flushes the MACs contained in |changed_paths_and_mac| to
   // external_hash_store_contents if |write_success|, otherwise discards the
   // changes.
   static void FlushToExternalStore(
       std::unique_ptr<HashStoreContents> external_hash_store_contents,
-      std::unique_ptr<base::Value::Dict> changed_paths_and_macs,
+      std::unique_ptr<base::DictValue> changed_paths_and_macs,
       bool write_success);
 
   void OnEncryptorReceived(os_crypt_async::Encryptor encryptor) override;
@@ -175,19 +175,19 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   //     found to be invalid and were reset during the initial synchronous
   //     validation pass. These paths will be skipped.
   void DeferredEncryptorRevalidation(
-      base::Value::Dict pref_store_contents_at_load,
+      base::DictValue pref_store_contents_at_load,
       const std::set<std::string>& already_reset_paths);
 
   // Logs the metric of the number of preferences that were reset. Ensures this
   // metric is only logged once per filter instance.
   void MaybeRecordTrackedPreferenceResetCount(
-      const base::Value::Dict& pref_store_contents);
+      const base::DictValue& pref_store_contents);
 
   // Applies resets found during any validation pass to the live PrefService.
   // This is posted as a task to run after PrefService initialization is
   // complete.
   void UpdateTrackedPreferencesResetListInPrefStore(
-      const base::Value::Dict& pref_store_contents_at_load);
+      const base::DictValue& pref_store_contents_at_load);
 
   // Callback to be invoked only once (and subsequently reset) on the next
   // FilterOnLoad event. It will be allowed to modify the |prefs| handed to

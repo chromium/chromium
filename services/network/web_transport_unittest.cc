@@ -593,7 +593,7 @@ TEST_F(WebTransportTest, ConnectLNAPermissionDenied) {
   std::vector<net::NetLogEntry> entries = net_log_observer().GetEntriesWithType(
       net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
   ASSERT_THAT(entries, SizeIs(1));
-  const base::Value::Dict& params = entries[0].params;
+  const base::DictValue& params = entries[0].params;
   EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
   EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
   EXPECT_THAT(params.FindString("result"), Pointee(Eq("denied")));
@@ -636,7 +636,7 @@ TEST_F(WebTransportTest, ConnectLNAPermissionGranted) {
   std::vector<net::NetLogEntry> entries = net_log_observer().GetEntriesWithType(
       net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
   ASSERT_THAT(entries, SizeIs(1));
-  const base::Value::Dict& params = entries[0].params;
+  const base::DictValue& params = entries[0].params;
   EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
   EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
   EXPECT_THAT(params.FindString("result"), Pointee(Eq("granted")));

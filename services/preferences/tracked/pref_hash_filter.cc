@@ -67,7 +67,7 @@ std::vector<const char*>* GetDeprecatedPrefs() {
 }
 
 void CleanupDeprecatedTrackedPreferences(
-    base::Value::Dict& pref_store_contents,
+    base::DictValue& pref_store_contents,
     PrefHashStoreTransaction* hash_store_transaction) {
   for (const char* key : *GetDeprecatedPrefs()) {
     pref_store_contents.RemoveByDottedPath(key);
@@ -230,7 +230,7 @@ void PrefHashFilter::SetResetTimeForTesting(PrefService* user_prefs,
                         base::NumberToString(time.ToInternalValue()));
 }
 
-void PrefHashFilter::Initialize(base::Value::Dict& pref_store_contents) {
+void PrefHashFilter::Initialize(base::DictValue& pref_store_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DictionaryHashStoreContents dictionary_contents(pref_store_contents);
   std::unique_ptr<PrefHashStoreTransaction> hash_store_transaction(
@@ -266,7 +266,7 @@ void PrefHashFilter::OnEncryptorReceived(os_crypt_async::Encryptor encryptor) {
 // disk. This is required as storing the hash everytime a pref's value changes
 // is too expensive (see perf regression @ http://crbug.com/331273).
 PrefFilter::OnWriteCallbackPair PrefHashFilter::FilterSerializeData(
-    base::Value::Dict& pref_store_contents) {
+    base::DictValue& pref_store_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefFilter::OnWriteCallbackPair callback_pair =
       GetOnWriteSynchronousCallbacks(pref_store_contents);
@@ -331,7 +331,7 @@ void PrefHashFilter::OnStoreDeletionFromDisk() {
 
 void PrefHashFilter::FinalizeFilterOnLoad(
     PostFilterOnLoadCallback post_filter_on_load_callback,
-    base::Value::Dict pref_store_contents,
+    base::DictValue pref_store_contents,
     bool prefs_altered) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::set<std::string> reset_paths;
@@ -421,7 +421,7 @@ void PrefHashFilter::FinalizeFilterOnLoad(
 }
 
 void PrefHashFilter::DeferredEncryptorRevalidation(
-    base::Value::Dict pref_store_contents_at_load,
+    base::DictValue pref_store_contents_at_load,
     const std::set<std::string>& already_reset_paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(encryptor_.has_value());
@@ -518,7 +518,7 @@ base::WeakPtr<InterceptablePrefFilter> PrefHashFilter::AsWeakPtr() {
 }
 
 void PrefHashFilter::UpdateTrackedPreferencesResetListInPrefStore(
-    const base::Value::Dict& pref_store_contents_at_load) {
+    const base::DictValue& pref_store_contents_at_load) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This task should only run after PrefService is created.
   if (!pref_service_) {
@@ -528,7 +528,7 @@ void PrefHashFilter::UpdateTrackedPreferencesResetListInPrefStore(
     return;
   }
 
-  const base::Value::List* reset_list = pref_store_contents_at_load.FindList(
+  const base::ListValue* reset_list = pref_store_contents_at_load.FindList(
       user_prefs::kTrackedPreferencesReset);
   if (reset_list) {
     pref_service_->SetList(user_prefs::kTrackedPreferencesReset,
@@ -541,7 +541,7 @@ void PrefHashFilter::UpdateTrackedPreferencesResetListInPrefStore(
 // static
 void PrefHashFilter::ClearFromExternalStore(
     HashStoreContents* external_validation_hash_store_contents,
-    const base::Value::Dict* changed_paths_and_macs) {
+    const base::DictValue* changed_paths_and_macs) {
   DCHECK(changed_paths_and_macs);
   DCHECK(!changed_paths_and_macs->empty());
 
@@ -553,7 +553,7 @@ void PrefHashFilter::ClearFromExternalStore(
 // static
 void PrefHashFilter::FlushToExternalStore(
     std::unique_ptr<HashStoreContents> external_validation_hash_store_contents,
-    std::unique_ptr<base::Value::Dict> changed_paths_and_macs,
+    std::unique_ptr<base::DictValue> changed_paths_and_macs,
     bool write_success) {
   DCHECK(changed_paths_and_macs);
   DCHECK(!changed_paths_and_macs->empty());
@@ -565,7 +565,7 @@ void PrefHashFilter::FlushToExternalStore(
     const std::string& changed_path = item.first;
 
     if (item.second.is_dict()) {
-      const base::Value::Dict& split_values = item.second.GetDict();
+      const base::DictValue& split_values = item.second.GetDict();
       for (const auto inner_item : split_values) {
         const std::string* mac = inner_item.second.GetIfString();
         bool is_string = !!mac;
@@ -583,14 +583,14 @@ void PrefHashFilter::FlushToExternalStore(
 }
 
 PrefFilter::OnWriteCallbackPair PrefHashFilter::GetOnWriteSynchronousCallbacks(
-    base::Value::Dict& pref_store_contents) {
+    base::DictValue& pref_store_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (changed_paths_.empty() || !external_validation_hash_store_pair_) {
     return std::make_pair(base::OnceClosure(),
                           base::OnceCallback<void(bool success)>());
   }
 
-  auto changed_paths_macs = std::make_unique<base::Value::Dict>();
+  auto changed_paths_macs = std::make_unique<base::DictValue>();
 
   for (ChangedPathsMap::const_iterator it = changed_paths_.begin();
        it != changed_paths_.end(); ++it) {
@@ -608,7 +608,7 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::GetOnWriteSynchronousCallbacks(
         break;
       }
       case TrackedPreferenceType::SPLIT: {
-        const base::Value::Dict* dict =
+        const base::DictValue* dict =
             pref_store_contents.FindDictByDottedPath(changed_path);
         changed_paths_macs->Set(
             changed_path,
@@ -630,7 +630,7 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::GetOnWriteSynchronousCallbacks(
   // copies as it will be executed in sequence before the second callback,
   // which owns the pointers.
   HashStoreContents* raw_contents = hash_store_contents_copy.get();
-  base::Value::Dict* raw_changed_paths_macs = changed_paths_macs.get();
+  base::DictValue* raw_changed_paths_macs = changed_paths_macs.get();
 
   return std::make_pair(
       base::BindOnce(&ClearFromExternalStore, base::Unretained(raw_contents),
@@ -646,11 +646,11 @@ void PrefHashFilter::SetOnDeferredRevalidationCompleteForTesting(
 }
 
 void PrefHashFilter::MaybeRecordTrackedPreferenceResetCount(
-    const base::Value::Dict& pref_store_contents) {
+    const base::DictValue& pref_store_contents) {
   if (reset_metric_recorded_) {
     return;
   }
-  const base::Value::List* reset_list =
+  const base::ListValue* reset_list =
       pref_store_contents.FindList(user_prefs::kTrackedPreferencesReset);
   UMA_HISTOGRAM_COUNTS_100("Settings.TrackedPreferenceResets.Count",
                            reset_list ? reset_list->size() : 0);

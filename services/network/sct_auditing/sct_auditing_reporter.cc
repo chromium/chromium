@@ -149,7 +149,7 @@ constexpr int kMaxRetries = 15;
 // static
 std::optional<SCTAuditingReporter::SCTHashdanceMetadata>
 SCTAuditingReporter::SCTHashdanceMetadata::FromValue(const base::Value& value) {
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     return std::nullopt;
   }
@@ -191,7 +191,7 @@ SCTAuditingReporter::SCTHashdanceMetadata::operator=(SCTHashdanceMetadata&&) =
 
 base::Value SCTAuditingReporter::SCTHashdanceMetadata::ToValue() const {
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kLeafHashKey, base::Base64Encode(base::as_byte_span(leaf_hash)))
           .Set(kIssuedKey, base::TimeToValue(issued))
           .Set(kLogIdKey, base::Base64Encode(base::as_byte_span(log_id)))
@@ -373,7 +373,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
     return;
   }
 
-  std::optional<base::Value::Dict> result = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> result = base::JSONReader::ReadDict(
       *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
@@ -417,16 +417,16 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   }
 
   // Find the corresponding log entry.
-  const base::Value::List* logs = result->FindList(kLookupLogStatusKey);
+  const base::ListValue* logs = result->FindList(kLookupLogStatusKey);
   if (!logs) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();
     return;
   }
 
-  const base::Value::Dict* found_log = nullptr;
+  const base::DictValue* found_log = nullptr;
   for (const auto& log : *logs) {
-    const base::Value::Dict* log_dict = log.GetIfDict();
+    const base::DictValue* log_dict = log.GetIfDict();
     if (!log_dict) {
       RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
       MaybeRetryRequest();
@@ -475,8 +475,7 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
     return;
   }
 
-  const base::Value::List* suffix_value =
-      result->FindList(kLookupHashSuffixKey);
+  const base::ListValue* suffix_value = result->FindList(kLookupHashSuffixKey);
   if (!suffix_value) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();

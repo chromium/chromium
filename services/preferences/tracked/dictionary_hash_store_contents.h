@@ -19,7 +19,7 @@ class DictionaryHashStoreContents : public HashStoreContents {
  public:
   // Constructs a DictionaryHashStoreContents that reads from and writes to
   // |storage|.
-  explicit DictionaryHashStoreContents(base::Value::Dict& storage);
+  explicit DictionaryHashStoreContents(base::DictValue& storage);
 
   DictionaryHashStoreContents(const DictionaryHashStoreContents&) = delete;
   DictionaryHashStoreContents& operator=(const DictionaryHashStoreContents&) =
@@ -40,16 +40,16 @@ class DictionaryHashStoreContents : public HashStoreContents {
   void ImportEntry(const std::string& path,
                    const base::Value* in_value) override;
   bool RemoveEntry(const std::string& path) override;
-  const base::Value::Dict* GetContents() const override;
+  const base::DictValue* GetContents() const override;
   std::string GetSuperMac() const override;
   void SetSuperMac(const std::string& super_mac) override;
 
  private:
-  const raw_ref<base::Value::Dict> storage_;
+  const raw_ref<base::DictValue> storage_;
 
   // Helper function to get a mutable version of the macs from |storage_|,
   // creating it if needed and |create_if_null| is true.
-  base::Value::Dict* GetMutableContents(bool create_if_null);
+  base::DictValue* GetMutableContents(bool create_if_null);
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_

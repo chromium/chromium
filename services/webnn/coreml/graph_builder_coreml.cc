@@ -772,9 +772,9 @@ size_t GetGruGateIndex(GruGate gate, mojom::GruWeightLayout layout) {
   // Creates a Manifest.json file that contains the package information. The
   // coremltools definition is here
   // https://github.com/apple/coremltools/blob/169d0ac7657c60e0d96e08612727ac51ab68c431/modelpackage/src/ModelPackage.hpp.
-  base::Value::Dict metadata;
-  base::Value::Dict item_info_entries;
-  base::Value::Dict model_info;
+  base::DictValue metadata;
+  base::DictValue item_info_entries;
+  base::DictValue model_info;
   model_info.Set(kManifestItemAuthorKey, kManifestItemAuthorValue);
   model_info.Set(kManifestItemDescriptionKey, kManifestModelDescriptionValue);
   model_info.Set(kManifestItemNameKey, kManifestModelValue);
@@ -786,7 +786,7 @@ size_t GetGruGateIndex(GruGate gate, mojom::GruWeightLayout layout) {
       base::Uuid::GenerateRandomV4().AsLowercaseString());
   item_info_entries.Set(model_identifier, std::move(model_info));
 
-  base::Value::Dict weights_info;
+  base::DictValue weights_info;
   weights_info.Set(kManifestItemAuthorKey, kManifestItemAuthorValue);
   weights_info.Set(kManifestItemDescriptionKey,
                    kManifestWeightsDescriptionValue);

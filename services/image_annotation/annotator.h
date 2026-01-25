@@ -221,7 +221,7 @@ class Annotator : public mojom::Annotator {
   // Called once a response comes back from anchovy_provider_.
   void OnMantaResponseReceived(const RequestKey& request_key,
                                base::Time request_time,
-                               base::Value::Dict dict,
+                               base::DictValue dict,
                                manta::MantaStatus status);
 
   // Called when the data decoder service provides parsed JSON data for a server

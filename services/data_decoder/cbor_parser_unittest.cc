@@ -57,19 +57,19 @@ TEST_F(CborToValueTest, SuccesfulParseValues) {
           "Array",  // [100, false, "string", {"k": "v"}]
           {0x84, 0x18, 0x64, 0xF4, 0x66, 0x73, 0x74, 0x72, 0x69, 0x6E, 0x67,
            0xA1, 0x61, 0x6B, 0x61, 0x76},
-          base::Value(base::Value::List()
+          base::Value(base::ListValue()
                           .Append(100)
                           .Append(false)
                           .Append("string")
-                          .Append(base::Value::Dict().Set("k", "v"))),
+                          .Append(base::DictValue().Set("k", "v"))),
       },
       {"Map",  // {"bool": true, "array": [100], "number": 100}
        {0xA3, 0x64, 0x62, 0x6F, 0x6F, 0x6C, 0xF5, 0x65, 0x61,
         0x72, 0x72, 0x61, 0x79, 0x81, 0x18, 0x64, 0x66, 0x6E,
         0x75, 0x6D, 0x62, 0x65, 0x72, 0x18, 0x64},
-       base::Value(base::Value::Dict()
+       base::Value(base::DictValue()
                        .Set("bool", true)
-                       .Set("array", base::Value::List().Append(100))
+                       .Set("array", base::ListValue().Append(100))
                        .Set("number", 100))},
       {"SimpleBooleanTrue", {0xF5}, base::Value(true)},
       {"SimpleBooleanFalse", {0xF4}, base::Value(false)},

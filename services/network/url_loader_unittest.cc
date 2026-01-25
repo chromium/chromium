@@ -1797,7 +1797,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
 
   ASSERT_THAT(entries, SizeIs(1));
 
-  const base::Value::Dict& params = entries[0].params;
+  const base::DictValue& params = entries[0].params;
 
   EXPECT_THAT(params.FindString("client_address_space"),
               Pointee(Eq("loopback")));
@@ -1827,7 +1827,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckFailure) {
 
   ASSERT_THAT(entries, SizeIs(1));
 
-  const base::Value::Dict params = std::move(entries[0].params);
+  const base::DictValue params = std::move(entries[0].params);
 
   EXPECT_THAT(params.FindString("client_address_space"), Pointee(Eq("public")));
 
@@ -1858,7 +1858,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSameOrigin) {
 
   ASSERT_THAT(entries, SizeIs(1));
 
-  const base::Value::Dict& params = entries[0].params;
+  const base::DictValue& params = entries[0].params;
 
   EXPECT_THAT(params.FindString("client_address_space"), Pointee(Eq("public")));
 
@@ -1915,7 +1915,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionDenied) {
       net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
   ASSERT_THAT(entries, SizeIs(2));
   {
-    const base::Value::Dict& params = entries[0].params;
+    const base::DictValue& params = entries[0].params;
 
     EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
 
@@ -1925,7 +1925,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionDenied) {
   }
 
   {
-    const base::Value::Dict& params = entries[1].params;
+    const base::DictValue& params = entries[1].params;
 
     EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
 
@@ -1963,7 +1963,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionGranted) {
       net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
   ASSERT_THAT(entries, SizeIs(2));
   {
-    const base::Value::Dict& params = entries[0].params;
+    const base::DictValue& params = entries[0].params;
 
     EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
 
@@ -1973,7 +1973,7 @@ TEST_F(URLLoaderTest, SecurePublicToLoopbackPermissionGranted) {
   }
 
   {
-    const base::Value::Dict& params = entries[1].params;
+    const base::DictValue& params = entries[1].params;
 
     EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
 

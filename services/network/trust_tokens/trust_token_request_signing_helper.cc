@@ -42,7 +42,7 @@ const char kRedemptionRecordHeaderRedemptionRecordKey[] = "redemption-record";
 void LogOutcome(const net::NetLogWithSource& log, std::string_view outcome) {
   log.EndEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_SIGNING,
-      [outcome]() { return base::Value::Dict().Set("outcome", outcome); });
+      [outcome]() { return base::DictValue().Set("outcome", outcome); });
 }
 
 }  // namespace

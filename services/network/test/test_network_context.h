@@ -141,11 +141,11 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      base::Value::Dict body) override {}
+      base::DictValue body) override {}
   void QueueEnterpriseReport(const std::string& type,
                              const std::string& group,
                              const GURL& url,
-                             base::Value::Dict body) override {}
+                             base::DictValue body) override {}
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {}

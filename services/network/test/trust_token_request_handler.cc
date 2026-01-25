@@ -149,8 +149,7 @@ TrustTokenRequestHandler::~TrustTokenRequestHandler() = default;
 std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   base::AutoLock lock(mutex_);
 
-
-  base::Value::Dict dict;
+  base::DictValue dict;
   const std::string protocol_string = internal::ProtocolVersionToString(
       mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb);
   dict.SetByDottedPath(protocol_string + ".protocol_version",

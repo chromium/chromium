@@ -127,7 +127,7 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
                   net::NetLogEventType::
                       LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED,
                   [&] {
-                    return base::Value::Dict()
+                    return base::DictValue()
                         .Set("address_space",
                              IPAddressSpaceToStringPiece(address_space))
                         .Set("transport_type",
@@ -195,7 +195,7 @@ PrivateNetworkAccessUrlLoaderInterceptor::DoCheck(
   mojom::IPAddressSpace client_address_space = checker_.ClientAddressSpace();
 
   net_log.AddEvent(net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
-    return base::Value::Dict()
+    return base::DictValue()
         .Set("client_address_space",
              IPAddressSpaceToStringPiece(client_address_space))
         .Set("resource_address_space",

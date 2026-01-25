@@ -251,9 +251,9 @@ const net::NetworkAnonymizationKey kNak_ =
     net::NetworkAnonymizationKey::CreateTransient();
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-void StoreValue(base::Value::Dict* result,
+void StoreValue(base::DictValue* result,
                 base::OnceClosure callback,
-                base::Value::Dict value) {
+                base::DictValue value) {
   *result = std::move(value);
   std::move(callback).Run();
 }
@@ -649,7 +649,7 @@ class NetworkContextTest : public testing::Test {
   int GetSocketCountFromClientSocketPool(
       NetworkContext* context,
       const net::ClientSocketPool::GroupId& group) {
-    base::Value::Dict pool_info =
+    base::DictValue pool_info =
         context->url_request_context()
             ->http_transaction_factory()
             ->GetSession()
@@ -660,25 +660,22 @@ class NetworkContextTest : public testing::Test {
             .TakeDict();
 
     // "groups" dictionary should always exist.
-    const base::Value::Dict& groups_dict = *pool_info.FindDict("groups");
+    const base::DictValue& groups_dict = *pool_info.FindDict("groups");
 
     // The dictionary for the requested group may not exist.
-    const base::Value::Dict* group_dict =
-        groups_dict.FindDict(group.ToString());
+    const base::DictValue* group_dict = groups_dict.FindDict(group.ToString());
     if (!group_dict) {
       return 0;
     }
 
     int count = group_dict->FindInt("active_socket_count").value_or(0);
 
-    const base::Value::List* idle_sockets =
-        group_dict->FindList("idle_sockets");
+    const base::ListValue* idle_sockets = group_dict->FindList("idle_sockets");
     if (idle_sockets) {
       count += idle_sockets->size();
     }
 
-    const base::Value::List* connect_jobs =
-        group_dict->FindList("connect_jobs");
+    const base::ListValue* connect_jobs = group_dict->FindList("connect_jobs");
     if (idle_sockets) {
       count += connect_jobs->size();
     }
@@ -1072,7 +1069,7 @@ TEST_F(NetworkContextTest, QueueReport) {
       net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
   network_context->QueueReport(kType_, kGroup_, kUrl_, kReportingSource_, kNak_,
-                               base::Value::Dict());
+                               base::DictValue());
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
       network_context->url_request_context()->reporting_service()->GetReports();
@@ -1096,7 +1093,7 @@ TEST_F(NetworkContextTest, QueueEnterpriseReport) {
       net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
   network_context->QueueEnterpriseReport(kType_, kGroup_, kUrl_,
-                                         base::Value::Dict());
+                                         base::DictValue());
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
       network_context->url_request_context()->reporting_service()->GetReports();
@@ -1150,9 +1147,9 @@ TEST_F(NetworkContextTest, QueueReportAfterNetworkRevocation) {
   const std::string revoked_type = "revoked_type";
   const std::string allowed_type = "allowed_type";
   network_context->QueueReport(revoked_type, kGroup_, kUrl_, kReportingSource_,
-                               revoked_anonymization_key, base::Value::Dict());
+                               revoked_anonymization_key, base::DictValue());
   network_context->QueueReport(allowed_type, kGroup_, kUrl_, kReportingSource_,
-                               allowed_anonymization_key, base::Value::Dict());
+                               allowed_anonymization_key, base::DictValue());
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports =
       network_context->url_request_context()->reporting_service()->GetReports();
   ASSERT_EQ(1u, reports.size());
@@ -2869,10 +2866,10 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
   GURL domain("http://google.com");
   network_context->url_request_context()->reporting_service()->QueueReport(
       domain, std::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
-      "group", "type", base::Value::Dict(), 0,
+      "group", "type", base::DictValue(), 0,
       net::ReportingTargetType::kDeveloper);
   network_context->QueueEnterpriseReport("type", "group", domain,
-                                         base::Value::Dict());
+                                         base::DictValue());
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
   reporting_cache->GetReports(&reports);
@@ -2901,12 +2898,12 @@ TEST_F(NetworkContextTest, ClearReportingCacheReportsWithFilter) {
   GURL url1("http://google.com");
   reporting_service->QueueReport(url1, std::nullopt,
                                  net::NetworkAnonymizationKey(), "Mozilla/1.0",
-                                 "group", "type", base::Value::Dict(), 0,
+                                 "group", "type", base::DictValue(), 0,
                                  net::ReportingTargetType::kDeveloper);
   GURL url2("http://chromium.org");
   reporting_service->QueueReport(url2, std::nullopt,
                                  net::NetworkAnonymizationKey(), "Mozilla/1.0",
-                                 "group", "type", base::Value::Dict(), 0,
+                                 "group", "type", base::DictValue(), 0,
                                  net::ReportingTargetType::kDeveloper);
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
@@ -2942,12 +2939,12 @@ TEST_F(NetworkContextTest,
   GURL url1("http://192.168.0.1");
   reporting_service->QueueReport(url1, std::nullopt,
                                  net::NetworkAnonymizationKey(), "Mozilla/1.0",
-                                 "group", "type", base::Value::Dict(), 0,
+                                 "group", "type", base::DictValue(), 0,
                                  net::ReportingTargetType::kDeveloper);
   GURL url2("http://192.168.0.2");
   reporting_service->QueueReport(url2, std::nullopt,
                                  net::NetworkAnonymizationKey(), "Mozilla/1.0",
-                                 "group", "type", base::Value::Dict(), 0,
+                                 "group", "type", base::DictValue(), 0,
                                  net::ReportingTargetType::kDeveloper);
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>> reports;
@@ -3894,7 +3891,7 @@ TEST_F(NetworkContextTest, CreateNetLogExporter) {
 
   net::TestCompletionCallback start_callback;
   net_log_exporter->Start(
-      std::move(out_file), base::Value::Dict().Set(kKeyEarly, kValEarly),
+      std::move(out_file), base::DictValue().Set(kKeyEarly, kValEarly),
       net::NetLogCaptureMode::kDefault, 100 * 1024, start_callback.callback());
   EXPECT_EQ(net::OK, start_callback.WaitForResult());
 
@@ -3902,7 +3899,7 @@ TEST_F(NetworkContextTest, CreateNetLogExporter) {
   const char kValLate[] = "snowval";
 
   net::TestCompletionCallback stop_callback;
-  net_log_exporter->Stop(base::Value::Dict().Set(kKeyLate, kValLate),
+  net_log_exporter->Stop(base::DictValue().Set(kKeyLate, kValLate),
                          stop_callback.callback());
   EXPECT_EQ(net::OK, stop_callback.WaitForResult());
 
@@ -3937,14 +3934,13 @@ TEST_F(NetworkContextTest, CreateNetLogExporterUnbounded) {
   ASSERT_TRUE(out_file.IsValid());
 
   net::TestCompletionCallback start_callback;
-  net_log_exporter->Start(std::move(out_file), base::Value::Dict(),
-                          net::NetLogCaptureMode::kDefault,
-                          mojom::NetLogExporter::kUnlimitedFileSize,
-                          start_callback.callback());
+  net_log_exporter->Start(
+      std::move(out_file), base::DictValue(), net::NetLogCaptureMode::kDefault,
+      mojom::NetLogExporter::kUnlimitedFileSize, start_callback.callback());
   EXPECT_EQ(net::OK, start_callback.WaitForResult());
 
   net::TestCompletionCallback stop_callback;
-  net_log_exporter->Stop(base::Value::Dict(), stop_callback.callback());
+  net_log_exporter->Stop(base::DictValue(), stop_callback.callback());
   EXPECT_EQ(net::OK, stop_callback.WaitForResult());
 
   // Check that file got written.
@@ -3968,7 +3964,7 @@ TEST_F(NetworkContextTest, CreateNetLogExporterErrors) {
       net_log_exporter.BindNewPipeAndPassReceiver());
 
   net::TestCompletionCallback stop_callback;
-  net_log_exporter->Stop(base::Value::Dict(), stop_callback.callback());
+  net_log_exporter->Stop(base::DictValue(), stop_callback.callback());
   EXPECT_EQ(net::ERR_UNEXPECTED, stop_callback.WaitForResult());
 
   base::FilePath temp_path;
@@ -3978,7 +3974,7 @@ TEST_F(NetworkContextTest, CreateNetLogExporterErrors) {
   ASSERT_TRUE(temp_file.IsValid());
 
   net::TestCompletionCallback start_callback;
-  net_log_exporter->Start(std::move(temp_file), base::Value::Dict(),
+  net_log_exporter->Start(std::move(temp_file), base::DictValue(),
                           net::NetLogCaptureMode::kDefault, 100 * 1024,
                           start_callback.callback());
   EXPECT_EQ(net::OK, start_callback.WaitForResult());
@@ -3991,7 +3987,7 @@ TEST_F(NetworkContextTest, CreateNetLogExporterErrors) {
   ASSERT_TRUE(temp_file2.IsValid());
 
   net::TestCompletionCallback start_callback2;
-  net_log_exporter->Start(std::move(temp_file2), base::Value::Dict(),
+  net_log_exporter->Start(std::move(temp_file2), base::DictValue(),
                           net::NetLogCaptureMode::kDefault, 100 * 1024,
                           start_callback2.callback());
   EXPECT_EQ(net::ERR_UNEXPECTED, start_callback2.WaitForResult());
@@ -4035,7 +4031,7 @@ TEST_F(NetworkContextTest, DestroyNetLogExporterWhileCreatingScratchDir) {
                        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   ASSERT_TRUE(temp_file.IsValid());
 
-  net_log_exporter->Start(std::move(temp_file), base::Value::Dict(),
+  net_log_exporter->Start(std::move(temp_file), base::DictValue(),
                           net::NetLogCaptureMode::kDefault, 100,
                           base::BindOnce([](int) {}));
   net_log_exporter = nullptr;
@@ -6219,7 +6215,7 @@ TEST_F(NetworkContextTest, GetHSTSState) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
-  base::Value::Dict state;
+  base::DictValue state;
   {
     base::RunLoop run_loop;
     network_context->GetHSTSState(
@@ -6282,11 +6278,10 @@ TEST_F(NetworkContextTest, ForceReloadProxyConfig) {
       start_param = result;
       run_loop.Quit();
     });
-    net_log_exporter->Start(std::move(net_log_file),
-                            /*extra_constants=*/base::Value::Dict(),
-                            net::NetLogCaptureMode::kDefault,
-                            network::mojom::NetLogExporter::kUnlimitedFileSize,
-                            start_callback);
+    net_log_exporter->Start(
+        std::move(net_log_file),
+        /*extra_constants=*/base::DictValue(), net::NetLogCaptureMode::kDefault,
+        network::mojom::NetLogExporter::kUnlimitedFileSize, start_callback);
     run_loop.Run();
     EXPECT_EQ(net::OK, start_param);
   }
@@ -6305,7 +6300,7 @@ TEST_F(NetworkContextTest, ForceReloadProxyConfig) {
       run_loop.Quit();
     });
     net_log_exporter->Stop(
-        /*polled_data=*/base::Value::Dict(), stop_callback);
+        /*polled_data=*/base::DictValue(), stop_callback);
     run_loop.Run();
     EXPECT_EQ(net::OK, stop_param);
   }

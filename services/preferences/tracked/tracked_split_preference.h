@@ -47,7 +47,7 @@ class TrackedSplitPreference : public TrackedPreference {
                   PrefHashStoreTransaction* transaction,
                   const os_crypt_async::Encryptor* encryptor) const override;
   bool EnforceAndReport(
-      base::Value::Dict& pref_store_contents,
+      base::DictValue& pref_store_contents,
       PrefHashStoreTransaction* transaction,
       PrefHashStoreTransaction* external_validation_transaction,
       const os_crypt_async::Encryptor* encryptor) const override;

@@ -15,7 +15,7 @@ InterceptablePrefFilter::~InterceptablePrefFilter() = default;
 
 void InterceptablePrefFilter::FilterOnLoad(
     PostFilterOnLoadCallback post_filter_on_load_callback,
-    base::Value::Dict pref_store_contents) {
+    base::DictValue pref_store_contents) {
   if (filter_on_load_interceptor_.is_null()) {
     FinalizeFilterOnLoad(std::move(post_filter_on_load_callback),
                          std::move(pref_store_contents), false);

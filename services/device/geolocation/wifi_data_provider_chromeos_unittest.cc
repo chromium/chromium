@@ -44,7 +44,7 @@ class GeolocationChromeOsWifiDataProviderTest : public testing::Test {
   void AddAccessPoints(int ssids, int aps_per_ssid) {
     for (int i = 0; i < ssids; ++i) {
       for (int j = 0; j < aps_per_ssid; ++j) {
-        base::Value::Dict properties;
+        base::DictValue properties;
         std::string mac_address = base::StringPrintf(
             "%02X:%02X:%02X:%02X:%02X:%02X", i, j, 3, 4, 5, 6);
         std::string channel = base::NumberToString(i * 10 + j);

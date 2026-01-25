@@ -110,7 +110,7 @@ TEST(NetLogProxySink, TestMultipleObservers) {
       base::TimeTicks() + base::Milliseconds(10);
   base::TimeTicks source1_event0_time =
       source1_start_time + base::Milliseconds(1);
-  auto source1_event0_params = base::Value::Dict().Set("hello", "world");
+  auto source1_event0_params = base::DictValue().Set("hello", "world");
   proxy_sink_remote->AddEntry(
       static_cast<uint32_t>(net::NetLogEventType::REQUEST_ALIVE),
       net::NetLogSource(net::NetLogSourceType::URL_REQUEST, 1U,

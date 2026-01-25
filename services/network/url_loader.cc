@@ -498,7 +498,7 @@ URLLoader::URLLoader(
                       net::NetLogEventType::
                           LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED,
                       [&] {
-                        return base::Value::Dict()
+                        return base::DictValue()
                             .Set("address_space",
                                  IPAddressSpaceToStringPiece(address_space))
                             .Set("transport_type",

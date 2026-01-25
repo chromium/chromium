@@ -313,7 +313,7 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
   state->net_log.AddEvent(
       net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST_DATA,
       [&](net::NetLogCaptureMode capture_mode) {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("byte_count", static_cast<int>(bhttp_payload.size()));
         if (net::NetLogCaptureIncludesSocketBytes(capture_mode)) {
           dict.Set("bytes", net::NetLogBinaryValue(bhttp_payload.data(),
@@ -405,7 +405,7 @@ void ObliviousHttpRequestHandler::RespondWithError(
   CHECK(state_iter != client_state_.end());
   RequestState* state = state_iter->second.get();
   state->net_log.EndEvent(net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST, [&] {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("net_error", error_code);
     if (outer_response_error_code) {
       params.Set("outer_response_error_code",
@@ -461,7 +461,7 @@ void ObliviousHttpRequestHandler::OnRequestComplete(
   state->net_log.AddEvent(
       net::NetLogEventType::OBLIVIOUS_HTTP_RESPONSE_DATA,
       [&](net::NetLogCaptureMode capture_mode) {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("byte_count", static_cast<int>(maybe_payload->size()));
         if (net::NetLogCaptureIncludesSocketBytes(capture_mode)) {
           dict.Set("bytes", net::NetLogBinaryValue(maybe_payload->data(),
@@ -530,7 +530,7 @@ void ObliviousHttpRequestHandler::NotifyComplete(
       state->net_log, net::NetLogEventType::OBLIVIOUS_HTTP_RESPONSE_HEADERS,
       headers.get());
   state->net_log.EndEvent(net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST, [&] {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("net_error", net::OK);
     params.Set("inner_response_code", inner_response_code);
     return params;

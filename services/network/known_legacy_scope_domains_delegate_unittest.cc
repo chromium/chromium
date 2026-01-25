@@ -23,7 +23,7 @@ TEST(KnownLegacyScopeDomainsPrefDelegateTest, WriteAndReadPrefs) {
   // Verify that the pref is empty to begin with.
   ASSERT_EQ(delegate.GetLegacyDomains().size(), 0u);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("example.com", base::Value());
   dict.Set("example2.com", base::Value());
   delegate.SetLegacyDomains(std::move(dict));

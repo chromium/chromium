@@ -1352,7 +1352,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   network_service_->StartNetLog(
       std::move(log_file), net::FileNetLogObserver::kNoLimit,
       net::NetLogCaptureMode::kDefault,
-      base::Value::Dict().Set("amiatest", "iamatest"), std::nullopt);
+      base::DictValue().Set("amiatest", "iamatest"), std::nullopt);
   CreateNetworkContext();
   LoadURL(test_server()->GetURL("/echo"));
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -1363,7 +1363,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   // |log_file| is closed on another thread, so have to wait for that to happen.
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
+  base::DictValue log_dict = base::test::ParseJsonDictFromFile(log_path);
   ASSERT_EQ(*log_dict.FindStringByDottedPath("constants.amiatest"), "iamatest");
 
   // The log should have a "polledData" list.
@@ -1386,7 +1386,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLogBounded) {
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   network_service_->StartNetLog(std::move(log_file), kMaxSizeBytes,
                                 net::NetLogCaptureMode::kEverything,
-                                base::Value::Dict(), std::nullopt);
+                                base::DictValue(), std::nullopt);
   CreateNetworkContext();
 
   // Through trial and error it was found that this looping navigation results
@@ -1406,7 +1406,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLogBounded) {
   // |log_file| is closed on another thread, so have to wait for that to happen.
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
+  base::DictValue log_dict = base::test::ParseJsonDictFromFile(log_path);
 
   base::File log_file_read(log_path,
                            base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -1455,13 +1455,13 @@ TEST_F(NetworkServiceTestWithServiceMockTime, StartsNetLogWithDuration) {
   network_service_->StartNetLog(
       std::move(log_file), net::FileNetLogObserver::kNoLimit,
       net::NetLogCaptureMode::kDefault,
-      base::Value::Dict().Set("amiatest", "iamatest"), log_duration);
+      base::DictValue().Set("amiatest", "iamatest"), log_duration);
   CreateNetworkContext();
   LoadURL(test_server()->GetURL("/echo"));
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
   task_environment_.FastForwardBy(log_duration);
 
-  base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
+  base::DictValue log_dict = base::test::ParseJsonDictFromFile(log_path);
   ASSERT_EQ(*log_dict.FindStringByDottedPath("constants.amiatest"), "iamatest");
 
   // The log should have a "polledData" list.
