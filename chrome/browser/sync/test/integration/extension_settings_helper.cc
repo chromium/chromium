@@ -35,7 +35,7 @@ std::string ToJson(base::ValueView value) {
   return json;
 }
 
-void GetAllSettingsOnBackendSequence(base::Value::Dict* out,
+void GetAllSettingsOnBackendSequence(base::DictValue* out,
                                      base::WaitableEvent* signal,
                                      value_store::ValueStore* storage) {
   EXPECT_TRUE(extensions::GetBackendTaskRunner()->RunsTasksInCurrentSequence());
@@ -43,10 +43,10 @@ void GetAllSettingsOnBackendSequence(base::Value::Dict* out,
   signal->Signal();
 }
 
-base::Value::Dict GetAllSettings(Profile* profile, const std::string& id) {
+base::DictValue GetAllSettings(Profile* profile, const std::string& id) {
   base::WaitableEvent signal(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
-  base::Value::Dict settings;
+  base::DictValue settings;
   extensions::StorageFrontend::Get(profile)->RunWithStorage(
       ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(id),
       extensions::settings_namespace::SYNC,
@@ -68,8 +68,8 @@ bool AreSettingsSame(Profile* expected_profile, Profile* actual_profile) {
   for (extensions::ExtensionSet::const_iterator it = extensions.begin();
        it != extensions.end(); ++it) {
     const std::string& id = (*it)->id();
-    base::Value::Dict expected(GetAllSettings(expected_profile, id));
-    base::Value::Dict actual(GetAllSettings(actual_profile, id));
+    base::DictValue expected(GetAllSettings(expected_profile, id));
+    base::DictValue actual(GetAllSettings(actual_profile, id));
     if (expected != actual) {
       ADD_FAILURE() << "Expected " << ToJson(expected) << " got "
                     << ToJson(actual);
@@ -79,7 +79,7 @@ bool AreSettingsSame(Profile* expected_profile, Profile* actual_profile) {
   return same;
 }
 
-void SetSettingsOnBackendSequence(const base::Value::Dict* settings,
+void SetSettingsOnBackendSequence(const base::DictValue* settings,
                                   base::WaitableEvent* signal,
                                   value_store::ValueStore* storage) {
   EXPECT_TRUE(extensions::GetBackendTaskRunner()->RunsTasksInCurrentSequence());
@@ -91,7 +91,7 @@ void SetSettingsOnBackendSequence(const base::Value::Dict* settings,
 
 void SetExtensionSettings(Profile* profile,
                           const std::string& id,
-                          const base::Value::Dict& settings) {
+                          const base::DictValue& settings) {
   base::WaitableEvent signal(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
   extensions::StorageFrontend::Get(profile)->RunWithStorage(
@@ -102,7 +102,7 @@ void SetExtensionSettings(Profile* profile,
 }
 
 void SetExtensionSettingsForAllProfiles(const std::string& id,
-                                        const base::Value::Dict& settings) {
+                                        const base::DictValue& settings) {
   for (int i = 0; i < test()->num_clients(); ++i) {
     SetExtensionSettings(test()->GetProfile(i), id, settings);
   }

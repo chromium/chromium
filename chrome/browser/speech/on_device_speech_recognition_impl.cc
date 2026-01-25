@@ -350,11 +350,11 @@ void OnDeviceSpeechRecognitionImpl::SetOnDeviceLanguageDownloaded(
 
   // Initialize a list to store data, if none exists.
   if (!on_device_languages_downloaded_value.is_dict()) {
-    on_device_languages_downloaded_value = base::Value(base::Value::Dict());
+    on_device_languages_downloaded_value = base::Value(base::DictValue());
   }
 
   // Update or initialize the list of targets for the source language.
-  base::Value::List* on_device_languages_downloaded_list =
+  base::ListValue* on_device_languages_downloaded_list =
       on_device_languages_downloaded_value.GetDict().EnsureList(
           kOnDeviceLanguagesDownloadedKey);
   if (!on_device_languages_downloaded_list->contains(language)) {

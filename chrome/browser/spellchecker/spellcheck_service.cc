@@ -332,7 +332,7 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
     PrefService* prefs) {
   // Ensure that spellcheck is enabled for the first language in the
   // accept languages list.
-  base::Value::List user_dictionaries =
+  base::ListValue user_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries).Clone();
   std::vector<std::string> user_languages =
       base::SplitString(prefs->GetString(language::prefs::kAcceptLanguages),
@@ -434,13 +434,13 @@ void SpellcheckService::LoadDictionaries() {
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
   DCHECK(prefs);
 
-  const base::Value::List& user_dictionaries =
+  const base::ListValue& user_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries);
-  const base::Value::List& forced_dictionaries =
+  const base::ListValue& forced_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckForcedDictionaries);
 
   // Build a lookup of blocked dictionaries to skip loading them.
-  const base::Value::List& blocked_dictionaries =
+  const base::ListValue& blocked_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
   absl::flat_hash_set<std::string_view> blocked_dictionaries_lookup;
   blocked_dictionaries_lookup.reserve(blocked_dictionaries.size());

@@ -90,14 +90,14 @@ bool HasNonDefaultBrowserColorScheme(
              ThemeService::BrowserColorScheme::kSystem;
 }
 
-std::optional<base::Value::Dict> NtpBackgroundDictFromSpecifics(
+std::optional<base::DictValue> NtpBackgroundDictFromSpecifics(
     const sync_pb::ThemeSpecifics& theme_specifics) {
   if (!theme_specifics.has_ntp_background()) {
     return std::nullopt;
   }
   const sync_pb::NtpCustomBackground& ntp_background =
       theme_specifics.ntp_background();
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (ntp_background.has_url()) {
     dict.Set(kNtpCustomBackgroundURL, ntp_background.url());
   }
@@ -132,7 +132,7 @@ std::optional<base::Value::Dict> NtpBackgroundDictFromSpecifics(
 }
 
 sync_pb::NtpCustomBackground SpecificsNtpBackgroundFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   sync_pb::NtpCustomBackground ntp_background;
   if (const std::string* value = dict.FindString(kNtpCustomBackgroundURL)) {
     ntp_background.set_url(*value);
@@ -638,7 +638,7 @@ ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
 
   PrefService* prefs = profile_->GetPrefs();
   // NTP background can exist along with the other (non-extension) themes.
-  if (std::optional<base::Value::Dict> dict =
+  if (std::optional<base::DictValue> dict =
           NtpBackgroundDictFromSpecifics(new_specs);
       dict && !dict->empty()) {
     DVLOG(1) << "Applying custom NTP background";

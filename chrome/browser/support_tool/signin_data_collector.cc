@@ -86,7 +86,7 @@ void SigninDataCollector::CollectDataAndDetectPII(
   AboutSigninInternals* about_signin_internals =
       AboutSigninInternalsFactory::GetForProfile(profile_);
   // See AboutSigninInternals::SigninStatus::ToValue.
-  base::Value::Dict status = about_signin_internals->GetSigninStatus();
+  base::DictValue status = about_signin_internals->GetSigninStatus();
   base::JSONWriter::WriteWithOptions(
       status, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signin_status_);
 

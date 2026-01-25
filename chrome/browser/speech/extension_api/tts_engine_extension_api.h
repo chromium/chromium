@@ -91,9 +91,9 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
   }
 
  protected:
-  base::Value::List BuildSpeakArgs(content::TtsUtterance* utterance,
-                                   const content::VoiceData& voice);
-  base::Value::List BuildLanguagePackArgs(
+  base::ListValue BuildSpeakArgs(content::TtsUtterance* utterance,
+                                 const content::VoiceData& voice);
+  base::ListValue BuildLanguagePackArgs(
       const std::string& lang,
       const std::string& client_id,
       tts_engine_events::TtsClientSource source);

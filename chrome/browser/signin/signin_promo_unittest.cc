@@ -216,7 +216,7 @@ class ShowPromoTest : public testing::Test {
       extensions::mojom::ManifestLocation location =
           extensions::mojom::ManifestLocation::kInternal) {
     extension_ = extensions::ExtensionBuilder()
-                     .SetManifest(base::Value::Dict()
+                     .SetManifest(base::DictValue()
                                       .Set("name", "test")
                                       .Set("manifest_version", 2)
                                       .Set("version", "1.0.0"))

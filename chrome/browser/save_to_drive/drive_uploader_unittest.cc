@@ -288,7 +288,7 @@ class FetchParentFolderTest : public DriveUploaderTest {
 };
 
 TEST_F(FetchParentFolderTest, Success) {
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("id", kTestFileId);
   response.Set("name", kTestFolderName);
   std::optional<std::string> response_string = base::WriteJson(response);
@@ -312,7 +312,7 @@ TEST_F(FetchParentFolderTest, InternalError) {
 }
 
 TEST_F(FetchParentFolderTest, MissingId) {
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("name", kTestFolderName);
   std::optional<std::string> response_string = base::WriteJson(response);
   ASSERT_TRUE(response_string.has_value());
@@ -321,7 +321,7 @@ TEST_F(FetchParentFolderTest, MissingId) {
 }
 
 TEST_F(FetchParentFolderTest, MissingName) {
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("id", kTestFileId);
   std::optional<std::string> response_string = base::WriteJson(response);
   ASSERT_TRUE(response_string.has_value());

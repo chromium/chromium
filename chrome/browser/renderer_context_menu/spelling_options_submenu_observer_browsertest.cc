@@ -58,7 +58,7 @@ class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
         use_spellchecking_service);
     menu()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
                                   accept_languages);
-    base::Value::List dictionaries_value;
+    base::ListValue dictionaries_value;
     for (const std::string& dict : dictionaries) {
       dictionaries_value.Append(dict);
     }
@@ -71,7 +71,7 @@ class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
                          const std::vector<std::string>& dictionaries) {
     EXPECT_EQ(spellcheck_enabled, menu()->GetPrefs()->GetBoolean(
                                       spellcheck::prefs::kSpellCheckEnable));
-    base::Value::List dictionaries_value;
+    base::ListValue dictionaries_value;
     for (const std::string& dict : dictionaries) {
       dictionaries_value.Append(dict);
     }

@@ -108,7 +108,7 @@ TEST(TtsControllerDelegateImplTest, GetPreferredVoiceIdsForUtterance) {
   TestingPrefServiceSimple pref_service;
   // Uses default pref voices.
   auto lang_to_voices =
-      base::Value::Dict()
+      base::DictValue()
           .Set("es", "{\"name\":\"Voice7\",\"extension\":\"id7\"}")
           .Set("he", "{\"name\":\"Voice8\",\"extension\":\"id8\"}")
           .Set("noLanguageCode", "{\"name\":\"Android\",\"extension\":\"x\"}");

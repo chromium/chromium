@@ -39,7 +39,7 @@ const std::set<redaction::PIIType> kExpectedPIITypes = {
     redaction::PIIType::kEmail, redaction::PIIType::kURL,
     redaction::PIIType::kGaiaID};
 
-void ReadExportedFile(base::Value::Dict* signin, base::FilePath file_path) {
+void ReadExportedFile(base::DictValue* signin, base::FilePath file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::string file_contents;
   ASSERT_TRUE(base::ReadFileToString(file_path, &file_contents));
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(SigninDataCollectorBrowserTestAsh, CollectSigninStatus) {
   EXPECT_EQ(error, std::nullopt);
 
   // Review the file contents.
-  base::Value::Dict json_result;
+  base::DictValue json_result;
   ASSERT_NO_FATAL_FAILURE(ReadExportedFile(&json_result, output_file));
   EXPECT_FALSE(json_result.empty());
 }

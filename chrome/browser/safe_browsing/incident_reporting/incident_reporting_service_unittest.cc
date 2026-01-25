@@ -268,11 +268,10 @@ class IncidentReportingServiceTest : public testing::TestWithParam<bool> {
   // without safe browsing enabled. An incident will be created within
   // PreProfileAdd if requested. |incidents_sent|, if provided, will be set
   // in the profile's preference.
-  TestingProfile* CreateProfile(
-      const std::string& profile_name,
-      SafeBrowsingDisposition safe_browsing_opt_in,
-      OnProfileAdditionAction on_addition_action,
-      std::optional<base::Value::Dict> incidents_sent) {
+  TestingProfile* CreateProfile(const std::string& profile_name,
+                                SafeBrowsingDisposition safe_browsing_opt_in,
+                                OnProfileAdditionAction on_addition_action,
+                                std::optional<base::DictValue> incidents_sent) {
     // Create prefs for the profile with safe browsing enabled or not.
     std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs(
         new sync_preferences::TestingPrefServiceSyncable);
@@ -1381,11 +1380,11 @@ TEST_P(IncidentReportingServiceTest, CleanLegacyPruneState) {
       static_cast<int>(safe_browsing::IncidentType::TRACKED_PREFERENCE)));
 
   // Set up a prune state dict with data to be cleared (and not).
-  base::Value::Dict incidents_sent;
-  base::Value::Dict type_dict;
+  base::DictValue incidents_sent;
+  base::DictValue type_dict;
   type_dict.Set("foo", "47");
   incidents_sent.Set(blocklist_load_type, std::move(type_dict));
-  type_dict = base::Value::Dict();
+  type_dict = base::DictValue();
   type_dict.Set("bar", "43");
   incidents_sent.Set(preference_type, std::move(type_dict));
 
@@ -1398,7 +1397,7 @@ TEST_P(IncidentReportingServiceTest, CleanLegacyPruneState) {
   // Let all tasks run.
   task_environment_.FastForwardUntilNoTasksRemain();
 
-  const base::Value::Dict& new_state =
+  const base::DictValue& new_state =
       profile->GetPrefs()->GetDict(prefs::kSafeBrowsingIncidentsSent);
   // The legacy value must be gone.
   ASSERT_FALSE(new_state.Find(blocklist_load_type));

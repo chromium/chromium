@@ -211,7 +211,7 @@ void OpenUrl(content::WebContents* current_web_contents,
 
 int64_t GetNavigationIDFromPrefsByOrigin(PrefService* prefs,
                                          const Origin& origin) {
-  const base::Value::Dict& unhandled_sync_password_reuses =
+  const base::DictValue& unhandled_sync_password_reuses =
       prefs->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
 
   const base::Value* navigation_id_value =
@@ -1001,7 +1001,7 @@ void ChromePasswordProtectionService::OnGaiaPasswordChanged(
     const std::string& username,
     bool is_other_gaia_password) {
   profile_->GetPrefs()->SetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses,
-                                base::Value::Dict());
+                                base::DictValue());
   if (!is_other_gaia_password)
     MaybeLogPasswordCapture(/*did_log_in=*/true);
   for (auto& observer : observer_list_)

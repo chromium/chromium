@@ -322,7 +322,7 @@ std::string NameToPublicKey(const std::string& name) {
 scoped_refptr<Extension> CreateExtension(const base::FilePath& base_dir,
                                          const std::string& name,
                                          Manifest::Type type) {
-  base::Value::Dict source;
+  base::DictValue source;
   source.SetByDottedPath(extensions::manifest_keys::kName, name);
   const std::string& public_key = NameToPublicKey(name);
   source.SetByDottedPath(extensions::manifest_keys::kPublicKey, public_key);
@@ -334,21 +334,21 @@ scoped_refptr<Extension> CreateExtension(const base::FilePath& base_dir,
       break;
     case Manifest::TYPE_THEME:
       source.SetByDottedPath(extensions::manifest_keys::kTheme,
-                             base::Value::Dict());
+                             base::DictValue());
       break;
     case Manifest::TYPE_HOSTED_APP:
     case Manifest::TYPE_LEGACY_PACKAGED_APP:
       source.SetByDottedPath(extensions::manifest_keys::kApp,
-                             base::Value::Dict());
+                             base::DictValue());
       source.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
                              "http://www.example.com");
       break;
     case Manifest::TYPE_PLATFORM_APP: {
       source.SetByDottedPath(extensions::manifest_keys::kApp,
-                             base::Value::Dict());
+                             base::DictValue());
       source.SetByDottedPath(extensions::manifest_keys::kPlatformAppBackground,
-                             base::Value::Dict());
-      base::Value::List scripts;
+                             base::DictValue());
+      base::ListValue scripts;
       scripts.Append("main.js");
       source.SetByDottedPath(
           extensions::manifest_keys::kPlatformAppBackgroundScripts,

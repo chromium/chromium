@@ -19,7 +19,7 @@ std::string GetDateString(base::Time now) {
 }  // namespace
 
 DailyNavigationCounter::DailyNavigationCounter(
-    base::Value::Dict* dict,
+    base::DictValue* dict,
     base::Clock* clock,
     size_t rolling_window_duration_in_days,
     size_t save_interval)

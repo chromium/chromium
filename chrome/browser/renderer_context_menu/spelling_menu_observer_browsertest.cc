@@ -36,7 +36,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     Reset(false);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-    base::Value::List dictionary;
+    base::ListValue dictionary;
     dictionary.Append("en-US");
     menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                                 std::move(dictionary));
@@ -141,7 +141,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     menu()->GetPrefs()->SetBoolean(
         spellcheck::prefs::kSpellCheckUseSpellingService, true);
     // Force a non-empty and non-"en" locale so SUGGEST is available.
-    base::Value::List dictionary;
+    base::ListValue dictionary;
     dictionary.Append("fr");
     menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                                 std::move(dictionary));
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, EnableSpellingService) {
   menu()->GetPrefs()->SetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
-  base::Value::List dictionary;
+  base::ListValue dictionary;
   menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                               std::move(dictionary));
 
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
   // Force a non-empty locale so SPELLCHECK is available.
-  base::Value::List dictionary;
+  base::ListValue dictionary;
   dictionary.Append("en");
   menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                               std::move(dictionary));
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
   // Force a non-empty locale so SUGGEST normally would be available.
-  base::Value::List dictionary;
+  base::ListValue dictionary;
   dictionary.Append("en");
   menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                               std::move(dictionary));

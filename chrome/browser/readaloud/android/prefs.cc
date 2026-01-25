@@ -56,8 +56,7 @@ static void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,
   PrefService* prefs =
       PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
 
-  const base::Value::Dict& dict =
-      prefs->GetDict(prefs::kReadAloudVoiceSettings);
+  const base::DictValue& dict = prefs->GetDict(prefs::kReadAloudVoiceSettings);
   for (auto [language, value] : dict) {
     jni_zero::MapPut(env, j_output_map, language, value.GetString());
   }

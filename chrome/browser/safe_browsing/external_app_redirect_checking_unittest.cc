@@ -102,7 +102,7 @@ TEST_F(ExternalAppRedirectCheckingTest,
 
 TEST_F(ExternalAppRedirectCheckingTest,
        ShouldReportExternalAppRedirect_RecentAppVisit) {
-  base::Value::Dict initial_timestamps;
+  base::DictValue initial_timestamps;
   initial_timestamps.Set("test_app", base::TimeToValue(base::Time::Now()));
   profile().GetPrefs()->SetDict(prefs::kExternalAppRedirectTimestamps,
                                 std::move(initial_timestamps));
@@ -151,7 +151,7 @@ TEST(ExternalAppRedirectChecking, LogExternalAppRedirectTimestamp) {
   RegisterProfilePrefs(pref_service.registry());
 
   ASSERT_EQ(pref_service.GetDict(prefs::kExternalAppRedirectTimestamps),
-            base::Value::Dict());
+            base::DictValue());
 
   LogExternalAppRedirectTimestamp(pref_service, "test.app");
 
@@ -174,7 +174,7 @@ TEST(ExternalAppRedirectChecking, CleanupExternalAppRedirectTimestamps) {
   TestingPrefServiceSimple pref_service;
   RegisterProfilePrefs(pref_service.registry());
 
-  base::Value::Dict initial_timestamps;
+  base::DictValue initial_timestamps;
   initial_timestamps.Set("test_app", base::TimeToValue(base::Time::Now()));
   initial_timestamps.Set(
       "expired_app", base::TimeToValue(base::Time::Now() - base::Days(100)));

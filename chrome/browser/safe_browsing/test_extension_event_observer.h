@@ -39,7 +39,7 @@ class TestExtensionEventObserver
 
  private:
   // The arguments passed for the last observed event.
-  base::Value::List latest_event_args_;
+  base::ListValue latest_event_args_;
   std::string latest_event_name_;
 };
 

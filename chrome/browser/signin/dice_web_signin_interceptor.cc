@@ -1525,7 +1525,7 @@ void DiceWebSigninInterceptor::RecordChromeSigninNumberOfDismissesForAccount(
 
 bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
     const std::string& email) const {
-  const base::Value::Dict& pref_data = profile_->GetPrefs()->GetDict(
+  const base::DictValue& pref_data = profile_->GetPrefs()->GetDict(
       prefs::kProfileCreationInterceptionDeclined);
   std::optional<int> declined_count =
       pref_data.FindInt(GetPersistentEmailHash(email));

@@ -113,7 +113,7 @@ TEST_F(SSLConfigServiceManagerTest, GoodDisabledCipherSuites) {
 
   EXPECT_TRUE(initial_config_->disabled_cipher_suites.empty());
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append("0x0004");
   list.Append("0x0005");
   local_state.SetUserPref(prefs::kCipherSuiteBlacklist, std::move(list));
@@ -140,7 +140,7 @@ TEST_F(SSLConfigServiceManagerTest, BadDisabledCipherSuites) {
 
   EXPECT_TRUE(initial_config_->disabled_cipher_suites.empty());
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append("0x0004");
   list.Append("TLS_NOT_WITH_A_CIPHER_SUITE");
   list.Append("0x0005");
@@ -235,7 +235,7 @@ TEST_F(SSLConfigServiceManagerTest, H2ClientCertCoalescingPref) {
   std::unique_ptr<SSLConfigServiceManager> config_manager =
       SetUpConfigServiceManager(&local_state);
 
-  base::Value::List patterns;
+  base::ListValue patterns;
   // Patterns expected to be canonicalized.
   patterns.Append("canon.example");
   patterns.Append(".NonCanon.example");

@@ -259,7 +259,7 @@ int GetSampleCountForHistogram(const std::string& histogram_name) {
   histogram->WriteJSON(
       &json_output,
       base::JSONVerbosityLevel::JSON_VERBOSITY_LEVEL_OMIT_BUCKETS);
-  std::optional<base::Value::Dict> json_dict = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> json_dict = base::JSONReader::ReadDict(
       json_output, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json_dict) {
     LOG(ERROR) << "Error parsing JSON of histogram data";
@@ -5176,24 +5176,24 @@ class SharedStorageExtensionBrowserTest
     extensions::TestExtensionDir test_dir;
 
     auto manifest =
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "Shared Storage Header Modifier")
             .Set("version", "1")
             .Set("manifest_version", 3)
             .Set("permissions",
-                 base::Value::List()
+                 base::ListValue()
                      .Append("declarativeNetRequest")
                      .Append("declarativeNetRequestWithHostAccess"))
-            .Set("host_permissions", base::Value::List().Append("<all_urls>"))
+            .Set("host_permissions", base::ListValue().Append("<all_urls>"))
             .Set("background",
-                 base::Value::Dict().Set("service_worker", "background.js"));
+                 base::DictValue().Set("service_worker", "background.js"));
 
     test_dir.WriteManifest(manifest);
 
     std::string operation = value_to_set ? "set" : "remove";
 
     auto request_header_dict =
-        base::Value::Dict()
+        base::DictValue()
             .Set("header", "Sec-Shared-Storage-Data-Origin")
             .Set("operation", operation);
 
@@ -5201,19 +5201,19 @@ class SharedStorageExtensionBrowserTest
       request_header_dict.Set("value", *value_to_set);
     }
 
-    auto rules = base::Value::List().Append(
-        base::Value::Dict()
+    auto rules = base::ListValue().Append(
+        base::DictValue()
             .Set("id", 1)
             .Set("priority", 1)
             .Set("condition",
-                 base::Value::Dict().Set(
+                 base::DictValue().Set(
                      "resourceTypes",
-                     base::Value::List().Append("script").Append("other")))
-            .Set("action", base::Value::Dict()
-                               .Set("type", "modifyHeaders")
-                               .Set("requestHeaders",
-                                    base::Value::List().Append(
-                                        std::move(request_header_dict)))));
+                     base::ListValue().Append("script").Append("other")))
+            .Set("action",
+                 base::DictValue()
+                     .Set("type", "modifyHeaders")
+                     .Set("requestHeaders", base::ListValue().Append(std::move(
+                                                request_header_dict)))));
 
     std::string background_js =
         content::JsReplace(kBackgroundJSTemplate, std::move(rules));

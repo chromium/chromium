@@ -44,13 +44,13 @@ class UnusedSitePermissionsBridgeTest : public testing::Test {
   }
 
   void AddRevokedPermissions() {
-    base::Value::List revoked_permissions_list;
+    base::ListValue revoked_permissions_list;
     for (ContentSettingsType type : kUnusedPermissionList) {
       revoked_permissions_list.Append(
           UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(type));
     }
-    auto dict = base::Value::Dict().Set(permissions::kRevokedKey,
-                                        revoked_permissions_list.Clone());
+    auto dict = base::DictValue().Set(permissions::kRevokedKey,
+                                      revoked_permissions_list.Clone());
 
     hcsm_->SetWebsiteSettingDefaultScope(
         GURL(kUnusedTestSite), GURL(kUnusedTestSite),

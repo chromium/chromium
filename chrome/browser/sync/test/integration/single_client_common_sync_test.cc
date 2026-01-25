@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPolicySyncTest,
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::BOOKMARKS));
 
-  base::Value::List disabled_types;
+  base::ListValue disabled_types;
   disabled_types.Append("bookmarks");
   policy::PolicyMap policies;
   policies.Set(policy::key::kSyncTypesListDisabled,

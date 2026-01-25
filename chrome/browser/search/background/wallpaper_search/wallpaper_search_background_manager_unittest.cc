@@ -117,7 +117,7 @@ class WallpaperSearchBackgroundManagerTest : public testing::Test {
 
 TEST_F(WallpaperSearchBackgroundManagerTest, GetHistory) {
   // Fill history pref.
-  base::Value::List history = base::Value::List();
+  base::ListValue history = base::ListValue();
   std::vector<HistoryEntry> history_entries;
   for (int i = 0; i < 3; i++) {
     base::Token temp_token = base::Token::CreateRandom();
@@ -127,7 +127,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest, GetHistory) {
     entry.style = "foobar" + base::NumberToString(i);
     history_entries.push_back(entry);
     history.Append(
-        base::Value::Dict()
+        base::DictValue()
             .Set(kWallpaperSearchHistoryId, temp_token.ToString())
             .Set(kWallpaperSearchHistorySubject, entry.subject.value())
             .Set(kWallpaperSearchHistoryMood, entry.mood.value())
@@ -323,11 +323,11 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SaveCurrentBackgroundToHistory) {
   wallpaper_search_background_manager().SaveCurrentBackgroundToHistory(entry);
   task_environment().RunUntilIdle();
 
-  const base::Value::List& history =
+  const base::ListValue& history =
       pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
   ASSERT_EQ(history.size(), 1u);
   ASSERT_TRUE(history.front().is_dict());
-  const base::Value::Dict& history_dict = history.front().GetDict();
+  const base::DictValue& history_dict = history.front().GetDict();
   const base::Value* id = history_dict.Find(kWallpaperSearchHistoryId);
   const base::Value* subject =
       history_dict.Find(kWallpaperSearchHistorySubject);
@@ -348,13 +348,13 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SaveCurrentBackgroundToHistory) {
 TEST_F(WallpaperSearchBackgroundManagerTest,
        SaveCurrentBackgroundToHistory_FullHistory) {
   // Fill history and create files.
-  base::Value::List history = base::Value::List();
+  base::ListValue history = base::ListValue();
   std::vector<base::Token> tokens;
   for (int i = 0; i < 6; ++i) {
     base::Token temp_token = base::Token::CreateRandom();
     tokens.push_back(temp_token);
-    history.Append(base::Value::Dict().Set(kWallpaperSearchHistoryId,
-                                           temp_token.ToString()));
+    history.Append(base::DictValue().Set(kWallpaperSearchHistoryId,
+                                         temp_token.ToString()));
     base::WriteFile(GetFilePathForBackground(temp_token), "hi");
   }
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
@@ -373,11 +373,11 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   task_environment().RunUntilIdle();
 
   // Check that the history is still 6 long and the first entry is the new one.
-  const base::Value::List& new_history =
+  const base::ListValue& new_history =
       pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
   ASSERT_EQ(new_history.size(), 6u);
   ASSERT_TRUE(new_history.front().is_dict());
-  const base::Value::Dict& history_dict = new_history.front().GetDict();
+  const base::DictValue& history_dict = new_history.front().GetDict();
   const base::Value* id = history_dict.Find(kWallpaperSearchHistoryId);
   const base::Value* subject =
       history_dict.Find(kWallpaperSearchHistorySubject);
@@ -404,12 +404,12 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
 TEST_F(WallpaperSearchBackgroundManagerTest,
        SaveCurrentBackgroundToHistory_AlreadyInHistory) {
   // Fill history and create files.
-  base::Value::List history = base::Value::List();
+  base::ListValue history = base::ListValue();
   std::vector<base::Token> tokens;
   for (int i = 0; i < 6; ++i) {
     base::Token temp_token = base::Token::CreateRandom();
     tokens.push_back(temp_token);
-    history.Append(base::Value::Dict()
+    history.Append(base::DictValue()
                        .Set(kWallpaperSearchHistoryId, temp_token.ToString())
                        .Set(kWallpaperSearchHistorySubject,
                             "foo" + base::NumberToString(i)));
@@ -433,11 +433,11 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   // Check that the history is still 6 long and in the correct order.
   // |theme_token| should be at the front and everything else
   // is the same relative order as before.
-  const base::Value::List& new_history =
+  const base::ListValue& new_history =
       pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
   ASSERT_EQ(new_history.size(), 6u);
   ASSERT_TRUE(new_history.front().is_dict());
-  const base::Value::Dict& first_history_dict = new_history.front().GetDict();
+  const base::DictValue& first_history_dict = new_history.front().GetDict();
   const base::Value* first_id =
       first_history_dict.Find(kWallpaperSearchHistoryId);
   const base::Value* first_subject =
@@ -458,7 +458,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
     // the entry we are looking at will be one index back in |tokens| vs
     // |new_history|.
     ASSERT_TRUE(new_history[i].is_dict());
-    const base::Value::Dict& history_dict = new_history[i].GetDict();
+    const base::DictValue& history_dict = new_history[i].GetDict();
     const base::Value* id = history_dict.Find(kWallpaperSearchHistoryId);
     const base::Value* subject =
         history_dict.Find(kWallpaperSearchHistorySubject);
@@ -488,13 +488,13 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
 TEST_F(WallpaperSearchBackgroundManagerTest,
        SaveCurrentBackgroundToHistory_LastInHistory) {
   // Fill history and create files.
-  base::Value::List history = base::Value::List();
+  base::ListValue history = base::ListValue();
   std::vector<base::Token> tokens;
   for (int i = 0; i < 6; ++i) {
     base::Token temp_token = base::Token::CreateRandom();
     tokens.push_back(temp_token);
-    history.Append(base::Value::Dict().Set(kWallpaperSearchHistoryId,
-                                           temp_token.ToString()));
+    history.Append(base::DictValue().Set(kWallpaperSearchHistoryId,
+                                         temp_token.ToString()));
     base::WriteFile(GetFilePathForBackground(temp_token), "hi");
   }
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
@@ -513,7 +513,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
   // Check that the history is still 6 long and in the correct order.
   // |theme_token| should be at the front and everything else
   // is the same relative order as before.
-  const base::Value::List& new_history =
+  const base::ListValue& new_history =
       pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
   ASSERT_EQ(new_history.size(), 6u);
   ASSERT_TRUE(new_history.front().is_dict());
@@ -550,7 +550,7 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
           HistoryEntry(base::Token::CreateRandom()));
   task_environment().RunUntilIdle();
 
-  const base::Value::List& history =
+  const base::ListValue& history =
       pref_service().GetList(prefs::kNtpWallpaperSearchHistory);
   EXPECT_EQ(history.size(), 0u);
   EXPECT_FALSE(response.has_value());
@@ -578,13 +578,13 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
 TEST_F(WallpaperSearchBackgroundManagerTest,
        RemoveWallpaperSearchBackground_History) {
   // Fill history and create files.
-  base::Value::List history = base::Value::List();
+  base::ListValue history = base::ListValue();
   std::vector<base::Token> tokens;
   for (int i = 0; i < 6; ++i) {
     base::Token temp_token = base::Token::CreateRandom();
     tokens.push_back(temp_token);
-    history.Append(base::Value::Dict().Set(kWallpaperSearchHistoryId,
-                                           temp_token.ToString()));
+    history.Append(base::DictValue().Set(kWallpaperSearchHistoryId,
+                                         temp_token.ToString()));
     base::WriteFile(GetFilePathForBackground(temp_token), "hi");
   }
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
@@ -619,12 +619,12 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
 // Test that looping through history doesn't crash if the value is the wrong.
 // shape.
 // Example: The pref used to be a list of token strings and is now a list of
-//          |base::Value::Dict|. If we run into the old form, we do not want
+//          |base::DictValue|. If we run into the old form, we do not want
 //          to crash.
 TEST_F(WallpaperSearchBackgroundManagerTest,
        NoCrashIfHistoryContainsIllformedData) {
   // Fill and set history with a token string instead of dict.
-  base::Value::List history = base::Value::List();
+  base::ListValue history = base::ListValue();
   base::Token token = base::Token::CreateRandom();
   history.Append(token.ToString());
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
@@ -644,15 +644,14 @@ TEST_F(WallpaperSearchBackgroundManagerTest, NotifyAboutHistory) {
 
   // Add mock observer to observer list and update history pref.
   wallpaper_search_background_manager().AddObserver(observer.get());
-  base::Value::List history =
-      base::Value::List().Append(base::Value::Dict().Set(
-          kWallpaperSearchHistoryId, base::Token::CreateRandom().ToString()));
+  base::ListValue history = base::ListValue().Append(base::DictValue().Set(
+      kWallpaperSearchHistoryId, base::Token::CreateRandom().ToString()));
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
 
   // Remove mock observer to observer list and update history pref.
   // This shouldn't create another call to OnHistoryUpdated().
   wallpaper_search_background_manager().RemoveObserver(observer.get());
-  history = base::Value::List().Append(base::Value::Dict().Set(
+  history = base::ListValue().Append(base::DictValue().Set(
       kWallpaperSearchHistoryId, base::Token::CreateRandom().ToString()));
   pref_service().SetList(prefs::kNtpWallpaperSearchHistory, std::move(history));
 }

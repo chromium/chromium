@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
       extensions::ExtensionBuilder("An extension").Build();
   CHECK(extension);
 
-  base::Value::Dict approved_extensions;
+  base::DictValue approved_extensions;
   approved_extensions.Set(extension->id(), true);
   profile()->GetPrefs()->SetDict(prefs::kSupervisedUserApprovedExtensions,
                                  std::move(approved_extensions));

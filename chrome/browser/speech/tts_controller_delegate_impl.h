@@ -41,7 +41,7 @@ class TtsControllerDelegateImpl : public content::TtsControllerDelegate {
 
   virtual const PrefService* GetPrefService(content::TtsUtterance* utterance);
 
-  const base::Value::Dict* GetLangToVoicePref(content::TtsUtterance* utterance);
+  const base::DictValue* GetLangToVoicePref(content::TtsUtterance* utterance);
 
   friend struct base::DefaultSingletonTraits<TtsControllerDelegateImpl>;
 };

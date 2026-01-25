@@ -49,10 +49,9 @@ const char kPrefStringValueCnsa2[] = "cnsa2";
 // National Security Algorithm Suite versions 1.0 and 2.0 (CNSA 1.0 and 2.0).
 const char kPrefStringValueCnsa[] = "cnsa";
 
-// Converts a `base::Value::List` of StringValues into a vector of strings. Any
+// Converts a `base::ListValue` of StringValues into a vector of strings. Any
 // values which cannot be converted will be skipped.
-std::vector<std::string> ValueListToStringVector(
-    const base::Value::List& list) {
+std::vector<std::string> ValueListToStringVector(const base::ListValue& list) {
   std::vector<std::string> results;
   results.reserve(list.size());
   for (const auto& entry : list) {
@@ -297,7 +296,7 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
 
 void SSLConfigServiceManager::OnDisabledCipherSuitesChange(
     PrefService* local_state) {
-  const base::Value::List& list =
+  const base::ListValue& list =
       local_state->GetList(prefs::kCipherSuiteBlacklist);
   disabled_cipher_suites_ = ParseCipherSuites(ValueListToStringVector(list));
 }

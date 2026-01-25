@@ -37,26 +37,26 @@ void MutateSomeSettings(
     const std::string& extension2) {
   {
     // Write to extension0 from profile 0 but not profile 1.
-    base::Value::Dict settings;
+    base::DictValue settings;
     settings.Set("asdf", base::StringPrintf("asdfasdf-%d", seed));
     SetExtensionSettings(test()->verifier(), extension0, settings);
     SetExtensionSettings(test()->GetProfile(0), extension0, settings);
   }
   {
     // Write the same data to extension1 from both profiles.
-    base::Value::Dict settings;
+    base::DictValue settings;
     settings.Set("asdf", base::StringPrintf("asdfasdf-%d", seed));
     settings.Set("qwer", base::StringPrintf("qwerqwer-%d", seed));
     SetExtensionSettingsForAllProfiles(extension1, settings);
   }
   {
     // Write different data to extension2 from each profile.
-    base::Value::Dict settings0;
+    base::DictValue settings0;
     settings0.Set("zxcv", base::StringPrintf("zxcvzxcv-%d", seed));
     SetExtensionSettings(test()->verifier(), extension2, settings0);
     SetExtensionSettings(test()->GetProfile(0), extension2, settings0);
 
-    base::Value::Dict settings1;
+    base::DictValue settings1;
     settings1.Set("1324", base::StringPrintf("12341234-%d", seed));
     settings1.Set("5687", base::StringPrintf("56785678-%d", seed));
     SetExtensionSettings(test()->verifier(), extension2, settings1);
@@ -111,9 +111,9 @@ IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsSyncTest,
   // settings, sync.
   // Leave extension0 empty.
   SetExtensionSettingsForAllProfiles(extension1,
-                                     base::Value::Dict().Set("foo", "bar"));
+                                     base::DictValue().Set("foo", "bar"));
   SetExtensionSettingsForAllProfiles(
-      extension2, base::Value::Dict().Set("foo", "bar").Set("baz", "qux"));
+      extension2, base::DictValue().Set("foo", "bar").Set("baz", "qux"));
 
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
@@ -143,11 +143,11 @@ IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsSyncTest,
   // (empty, nonempty) and (nonempty, nonempty) configurations. We can't
   // test (nonempty, nonempty) because the merging will provide
   // unpredictable results, so test (empty, empty).
-  base::Value::Dict settings1;
+  base::DictValue settings1;
   settings1.Set("foo", "bar");
   SetExtensionSettings(test()->verifier(), extension1, settings1);
   SetExtensionSettings(test()->GetProfile(0), extension1, settings1);
-  base::Value::Dict settings2;
+  base::DictValue settings2;
   settings2.Set("foo", "bar");
   settings2.Set("baz", "qux");
   SetExtensionSettings(test()->verifier(), extension2, settings2);

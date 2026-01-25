@@ -94,16 +94,16 @@ class BrowserThemePackTest : public ::testing::Test {
 
   void VerifyColorMap(const std::map<int, SkColor>& color_map);
   void LoadColorJSON(const std::string& json);
-  void LoadColorDictionary(const base::Value::Dict* value);
+  void LoadColorDictionary(const base::DictValue* value);
   void LoadTintJSON(const std::string& json);
-  void LoadTintDictionary(const base::Value::Dict* value);
+  void LoadTintDictionary(const base::DictValue* value);
   void LoadDisplayPropertiesJSON(const std::string& json);
-  void LoadDisplayPropertiesDictionary(const base::Value::Dict* value);
+  void LoadDisplayPropertiesDictionary(const base::DictValue* value);
   void ParseThemeImages(const extensions::ThemeInfo::ThemeImages* value,
                         TestFilePathMap* out_file_paths);
   void ResetTabGroupColorPaletteShades();
   void LoadTabGroupColorPaletteShadesJSON(const std::string& json);
-  void LoadTabGroupColorPaletteShadesDictionary(const base::Value::Dict* value);
+  void LoadTabGroupColorPaletteShadesDictionary(const base::DictValue* value);
   void VerifyTabGroupColorPaletteShades();
   bool LoadRawBitmapsTo(const TestFilePathMap& out_file_paths);
 
@@ -219,7 +219,7 @@ void BrowserThemePackTest::LoadColorJSON(const std::string& json) {
            ->GetDict());
 }
 
-void BrowserThemePackTest::LoadColorDictionary(const base::Value::Dict* value) {
+void BrowserThemePackTest::LoadColorDictionary(const base::DictValue* value) {
   theme_pack_->SetColorsFromJSON(value);
   theme_pack_->GenerateFrameColorsFromTints();
 }
@@ -230,7 +230,7 @@ void BrowserThemePackTest::LoadTintJSON(const std::string& json) {
            ->GetDict());
 }
 
-void BrowserThemePackTest::LoadTintDictionary(const base::Value::Dict* value) {
+void BrowserThemePackTest::LoadTintDictionary(const base::DictValue* value) {
   theme_pack_->SetTintsFromJSON(value);
 }
 
@@ -241,7 +241,7 @@ void BrowserThemePackTest::LoadDisplayPropertiesJSON(const std::string& json) {
 }
 
 void BrowserThemePackTest::LoadDisplayPropertiesDictionary(
-    const base::Value::Dict* value) {
+    const base::DictValue* value) {
   theme_pack_->SetDisplayPropertiesFromJSON(value);
 }
 
@@ -268,7 +268,7 @@ void BrowserThemePackTest::LoadTabGroupColorPaletteShadesJSON(
 }
 
 void BrowserThemePackTest::LoadTabGroupColorPaletteShadesDictionary(
-    const base::Value::Dict* value) {
+    const base::DictValue* value) {
   theme_pack_->SetTabGroupColorPaletteShadesFromJSON(value);
 }
 

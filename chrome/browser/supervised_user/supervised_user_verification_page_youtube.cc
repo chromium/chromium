@@ -42,7 +42,7 @@ SupervisedUserVerificationPageForYouTube::GetTypeForTesting() {
 }
 
 void SupervisedUserVerificationPageForYouTube::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   if (is_main_frame_) {
     load_time_data.Set("type", "SUPERVISED_USER_VERIFY");
   } else {
@@ -68,4 +68,3 @@ void SupervisedUserVerificationPageForYouTube::PopulateInterstitialStrings(
                      l10n_util::GetStringUTF16(
                          IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON));
 }
-

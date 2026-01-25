@@ -243,7 +243,7 @@ class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
       const std::vector<std::string>& expect_languages) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    base::Value::List languages_list =
+    base::ListValue languages_list =
         content::EvalJs(web_contents, "navigator.languages")
             .TakeValue()
             .TakeList();

@@ -78,7 +78,7 @@ constexpr char kCachedSecSessionChallengeResponse[] =
 
 MATCHER_P3(JwtHasExpectedFields, session_id, challenge, destination_url, "") {
   std::string_view jwt = arg;
-  std::optional<base::Value::Dict> payload_dict =
+  std::optional<base::DictValue> payload_dict =
       signin::ExtractPayloadFromJwt(jwt);
   if (!payload_dict) {
     *result_listener << "Couldn't parse payload from JWT: " << jwt;
@@ -87,7 +87,7 @@ MATCHER_P3(JwtHasExpectedFields, session_id, challenge, destination_url, "") {
 
   *result_listener << " with payload " << payload_dict->DebugString();
   return testing::ExplainMatchResult(
-      base::test::DictionaryHasValues(base::Value::Dict()
+      base::test::DictionaryHasValues(base::DictValue()
                                           .Set("sub", session_id)
                                           .Set("jti", challenge)
                                           .Set("aud", destination_url.spec())),

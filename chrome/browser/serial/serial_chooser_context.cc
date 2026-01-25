@@ -80,13 +80,13 @@ base::UnguessableToken DecodeToken(std::string_view input) {
   return token.value();
 }
 
-bool IsPolicyGrantedObject(const base::Value::Dict& object) {
+bool IsPolicyGrantedObject(const base::DictValue& object) {
   return object.size() == 1 && object.contains(kPortNameKey);
 }
 
 base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
                                        uint16_t product_id) {
-  base::Value::Dict object;
+  base::DictValue object;
 #if !BUILDFLAG(IS_ANDROID)
   const char* product_name =
       device::UsbIds::GetProductName(vendor_id, product_id);
@@ -117,7 +117,7 @@ base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
 }
 
 base::Value VendorIdToValue(uint16_t vendor_id) {
-  base::Value::Dict object;
+  base::DictValue object;
 #if !BUILDFLAG(IS_ANDROID)
   const char* vendor_name = device::UsbIds::GetVendorName(vendor_id);
   if (vendor_name) {
@@ -156,9 +156,9 @@ SerialChooserContext::SerialChooserContext(Profile* profile)
 SerialChooserContext::~SerialChooserContext() = default;
 
 // static
-base::Value::Dict SerialChooserContext::PortInfoToValue(
+base::DictValue SerialChooserContext::PortInfoToValue(
     const device::mojom::SerialPortInfo& port) {
-  base::Value::Dict value;
+  base::DictValue value;
   if (port.display_name && !port.display_name->empty()) {
     value.Set(kPortNameKey, *port.display_name);
   } else {
@@ -195,7 +195,7 @@ base::Value::Dict SerialChooserContext::PortInfoToValue(
 }
 
 std::string SerialChooserContext::GetKeyForObject(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   if (!IsValidObject(object))
     return std::string();
 
@@ -223,7 +223,7 @@ std::string SerialChooserContext::GetKeyForObject(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-bool SerialChooserContext::IsValidObject(const base::Value::Dict& object) {
+bool SerialChooserContext::IsValidObject(const base::DictValue& object) {
   if (IsPolicyGrantedObject(object)) {
     return true;
   }
@@ -255,7 +255,7 @@ bool SerialChooserContext::IsValidObject(const base::Value::Dict& object) {
 }
 
 std::u16string SerialChooserContext::GetObjectDisplayName(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   const std::string* name = object.FindString(kPortNameKey);
   DCHECK(name);
   return base::UTF8ToUTF16(*name);
@@ -280,7 +280,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
         if (port_it == port_info_.end())
           continue;
 
-        base::Value::Dict port = PortInfoToValue(*port_it->second);
+        base::DictValue port = PortInfoToValue(*port_it->second);
         objects.push_back(std::make_unique<Object>(
             origin, std::move(port), SettingSource::kUser, IsOffTheRecord()));
       }
@@ -311,7 +311,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     if (policy->all_ports_policy().contains(origin)) {
-      base::Value::Dict object;
+      base::DictValue object;
       object.Set(kPortNameKey, l10n_util::GetStringUTF16(
                                    IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
@@ -365,7 +365,7 @@ SerialChooserContext::GetAllGrantedObjects() {
       }
     }
 
-    base::Value::Dict object;
+    base::DictValue object;
     object.Set(kPortNameKey, l10n_util::GetStringUTF16(
                                  IDS_SERIAL_POLICY_DESCRIPTION_FOR_ANY_PORT));
     for (const auto& origin : policy->all_ports_policy()) {
@@ -380,7 +380,7 @@ SerialChooserContext::GetAllGrantedObjects() {
 
 void SerialChooserContext::RevokeObjectPermission(
     const url::Origin& origin,
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   RevokeObjectPermissionInternal(origin, object, /*revoked_by_website=*/false);
 }
 
@@ -397,7 +397,7 @@ void SerialChooserContext::RevokePortPermissionWebInitiated(
 
 void SerialChooserContext::RevokeObjectPermissionInternal(
     const url::Origin& origin,
-    const base::Value::Dict& object,
+    const base::DictValue& object,
     bool revoked_by_website = false) {
   const std::string* token = object.FindString(kTokenKey);
   if (!token) {
@@ -431,7 +431,7 @@ void SerialChooserContext::GrantPortPermission(
   port_info_.insert({port.token, port.Clone()});
 
   if (CanStorePersistentEntry(port)) {
-    base::Value::Dict value = PortInfoToValue(port);
+    base::DictValue value = PortInfoToValue(port);
     GrantObjectPermission(origin, std::move(value));
     return;
   }
@@ -472,7 +472,7 @@ bool SerialChooserContext::HasPortPermission(
   std::vector<std::unique_ptr<Object>> object_list =
       ObjectPermissionContextBase::GetGrantedObjects(origin);
   for (const auto& object : object_list) {
-    const base::Value::Dict& device = object->value;
+    const base::DictValue& device = object->value;
 
     // Objects provided by the parent class can be assumed valid.
     DCHECK(IsValidObject(device));

@@ -305,9 +305,9 @@ TEST_F(RenderViewContextMenuExtensionsTest,
                   &MenuManagerFactory::BuildServiceInstanceForTesting))));
 
   const Extension* extension1 = environment().MakeExtension(
-      base::Value::Dict(), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+      base::DictValue(), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   const Extension* extension2 = environment().MakeExtension(
-      base::Value::Dict(), "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+      base::DictValue(), "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 
   // Create two items in two extensions with same title.
   ASSERT_TRUE(
@@ -523,7 +523,7 @@ class RenderViewContextMenuDlpPrefsTest
         .AddRestriction(data_controls::kRestrictionClipboard,
                         data_controls::kLevelBlock);
 
-    base::Value::List rules;
+    base::ListValue rules;
     rules.Append(rule.Create());
     TestingBrowserProcess::GetGlobal()->local_state()->SetList(
         policy::policy_prefs::kDlpRulesList, std::move(rules));

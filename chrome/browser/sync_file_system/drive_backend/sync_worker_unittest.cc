@@ -220,7 +220,7 @@ TEST_F(SyncWorkerTest, UpdateRegisteredApps) {
   for (int i = 0; i < 3; i++) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
-            .SetManifest(base::Value::Dict()
+            .SetManifest(base::DictValue()
                              .Set("name", "foo")
                              .Set("version", "1.0")
                              .Set("manifest_version", 2))

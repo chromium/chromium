@@ -359,10 +359,10 @@ std::unique_ptr<HttpResponse> HandleOAuth2TokenExchangeURL(
   std::unique_ptr<BlockedHttpResponse> http_response =
       std::make_unique<BlockedHttpResponse>(callback);
 
-  base::Value::Dict response = base::Value::Dict()
-                                   .Set("access_token", "access_token")
-                                   .Set("refresh_token", "new_refresh_token")
-                                   .Set("expires_in", 9999);
+  base::DictValue response = base::DictValue()
+                                 .Set("access_token", "access_token")
+                                 .Set("refresh_token", "new_refresh_token")
+                                 .Set("expires_in", 9999);
 
   // If the request contains binding registration token, include successful
   // binding result in the response and verify that the client passed the
@@ -2042,7 +2042,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   // Ensure that there are not deleted profiles before running this test.
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::Value::List& deleted_profiles =
+  const base::ListValue& deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   ASSERT_TRUE(deleted_profiles.empty());
 
@@ -2072,7 +2072,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
     run_loop.Run();
   }
 
-  const base::Value::List& deleted_profiles =
+  const base::ListValue& deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   EXPECT_EQ(1U, deleted_profiles.size());
 

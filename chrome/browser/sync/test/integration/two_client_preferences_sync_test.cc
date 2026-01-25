@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest,
   ChangeIntegerPref(0, prefs::kRestoreOnStartup, 0);
   ASSERT_TRUE(IntegerPrefMatchChecker(prefs::kRestoreOnStartup).Wait());
 
-  base::Value::List urls;
+  base::ListValue urls;
   urls.Append("http://www.google.com/");
   urls.Append("http://www.flickr.com/");
   ChangeIntegerPref(0, prefs::kRestoreOnStartup, 4);

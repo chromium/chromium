@@ -655,7 +655,7 @@ SyncServiceImplHarness::GetLocalDataDescriptionAndWait(
 std::string SyncServiceImplHarness::GetServiceStatus() {
   // This method is only used in test code for debugging purposes, so it's fine
   // to include sensitive data in ConstructAboutInformation().
-  base::Value::Dict value = syncer::sync_ui_util::ConstructAboutInformation(
+  base::DictValue value = syncer::sync_ui_util::ConstructAboutInformation(
       syncer::sync_ui_util::IncludeSensitiveData(true), service(),
       chrome::GetChannelName(chrome::WithExtendedStable(true)));
   std::string service_status;

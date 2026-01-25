@@ -92,7 +92,7 @@ void ExtensionTestingProfile::AddExtension(
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetID(extension_id)
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", extension_name)
                            .Set("version", version)
                            .Set("manifest_version", 2)
@@ -115,7 +115,7 @@ void ExtensionTestingProfile::AddExtension(
 
 void ExtensionTestingProfile::SetInstallSignature(
     extensions::InstallSignature signature) {
-  base::Value::Dict signature_dict = signature.ToDict();
+  base::DictValue signature_dict = signature.ToDict();
   extension_prefs_->SetInstallSignature(&signature_dict);
 }
 

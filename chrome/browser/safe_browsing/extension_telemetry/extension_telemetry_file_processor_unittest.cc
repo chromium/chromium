@@ -114,12 +114,12 @@ class ExtensionTelemetryFileProcessorTest : public ::testing::Test {
 TEST_F(ExtensionTelemetryFileProcessorTest, ProcessesExtension) {
   SetUpExtensionFiles();
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set(kManifestFile, kManifestFile);
   expected_dict.Set(kJavaScriptFile1, HashContent(kJavaScriptFile1));
   expected_dict.Set(kJavaScriptFile2, HashContent(kJavaScriptFile2));
@@ -136,25 +136,25 @@ TEST_F(ExtensionTelemetryFileProcessorTest,
   // Empty root path
   base::FilePath empty_root;
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(empty_root)
       .Then(future.GetCallback());
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   EXPECT_EQ(future.Get(), expected_dict);
 }
 
 TEST_F(ExtensionTelemetryFileProcessorTest,
        IgnoresExtensionWithMissingManifestFile) {
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   EXPECT_EQ(future.Get(), expected_dict);
 }
 
@@ -162,13 +162,13 @@ TEST_F(ExtensionTelemetryFileProcessorTest,
        IgnoresExtensionWithEmptyManifestFile) {
   WriteEmptyFile(extension_root_dir_, "manifest.json");
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   EXPECT_EQ(future.Get(), expected_dict);
 }
 
@@ -178,13 +178,13 @@ TEST_F(ExtensionTelemetryFileProcessorTest,
   // Add extension_root_dir/html_file_1.html file
   WriteExtensionFile(extension_root_dir_, kHTMLFile1, kHTMLFile1);
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set(kManifestFile, kManifestFile);
   expected_dict.Set(kJavaScriptFile1, HashContent(kJavaScriptFile1));
   expected_dict.Set(kJavaScriptFile2, HashContent(kJavaScriptFile2));
@@ -202,13 +202,13 @@ TEST_F(ExtensionTelemetryFileProcessorTest, IgnoresEmptyFiles) {
   WriteEmptyFile(extension_root_dir_, "empty_file_1.js");
   WriteEmptyFile(extension_root_dir_, "empty_file_2.js");
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set(kManifestFile, kManifestFile);
   expected_dict.Set(kJavaScriptFile1, HashContent(kJavaScriptFile1));
   expected_dict.Set(kJavaScriptFile2, HashContent(kJavaScriptFile2));
@@ -226,13 +226,13 @@ TEST_F(ExtensionTelemetryFileProcessorTest, IgnoresUnapplicableFiles) {
   WriteExtensionFile(extension_root_dir_, "file.json", "file.json");
   WriteExtensionFile(extension_root_dir_, "file", "file");
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set(kManifestFile, kManifestFile);
   expected_dict.Set(kJavaScriptFile1, HashContent(kJavaScriptFile1));
   expected_dict.Set(kJavaScriptFile2, HashContent(kJavaScriptFile2));
@@ -251,14 +251,14 @@ TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxFilesToReadLimit) {
       .AsyncCall(&ExtensionTelemetryFileProcessor::SetMaxFilesToReadForTest)
       .WithArgs(3);
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
   task_environment_.RunUntilIdle();
 
   // Only 3 files are read.
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set(kManifestFile, kManifestFile);
   expected_dict.Set(kJavaScriptFile1, HashContent(kJavaScriptFile1));
   expected_dict.Set(kJavaScriptFile2, HashContent(kJavaScriptFile2));
@@ -273,14 +273,14 @@ TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxNumFilesLimit) {
       .AsyncCall(&ExtensionTelemetryFileProcessor::SetMaxFilesToProcessForTest)
       .WithArgs(4);
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
   task_environment_.RunUntilIdle();
 
   // JS/HTML type prioritized.
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set(kManifestFile, kManifestFile);
   expected_dict.Set(kJavaScriptFile1, HashContent(kJavaScriptFile1));
   expected_dict.Set(kJavaScriptFile2, HashContent(kJavaScriptFile2));
@@ -306,7 +306,7 @@ TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxFileSizeLimit) {
       .AsyncCall(&ExtensionTelemetryFileProcessor::SetMaxFileSizeBytesForTest)
       .WithArgs(max_file_size);
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
@@ -317,7 +317,7 @@ TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxFileSizeLimit) {
   EXPECT_TRUE(file_size.has_value());
   ASSERT_GT(file_size.value(), max_file_size);
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set(kManifestFile, kManifestFile);
   expected_dict.Set(kJavaScriptFile1, HashContent(kJavaScriptFile1));
   expected_dict.Set(kJavaScriptFile2, HashContent(kJavaScriptFile2));
@@ -335,13 +335,13 @@ TEST_F(ExtensionTelemetryFileProcessorTest,
   WriteExtensionFile(extension_root_dir_, "file_1.Js", kJavaScriptFile1);
   WriteExtensionFile(extension_root_dir_, "file_2.cSS", kCSSFile2);
 
-  base::test::TestFuture<base::Value::Dict> future;
+  base::test::TestFuture<base::DictValue> future;
   processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(extension_root_dir_)
       .Then(future.GetCallback());
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set(kManifestFile, kManifestFile);
   expected_dict.Set("file_1.Js", HashContent(kJavaScriptFile1));
   expected_dict.Set("file_2.cSS", HashContent(kCSSFile2));

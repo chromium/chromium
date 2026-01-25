@@ -763,21 +763,19 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   devtools_client.SendCommandSync(
       "Browser.setPermission",
-      base::Value::Dict()
+      base::DictValue()
           .Set("setting", "granted")
-          .Set("permission",
-               base::Value::Dict().Set("name", "storage-access")));
+          .Set("permission", base::DictValue().Set("name", "storage-access")));
   test_storage_access(/*expected_for_frame=*/true,
                       /*expected_for_other_frame=*/true);
 
   devtools_client.SendCommandSync(
       "Browser.setPermission",
-      base::Value::Dict()
+      base::DictValue()
           .Set("setting", "granted")
           .Set("origin", kOriginA)
           .Set("embeddedOrigin", kOriginB)
-          .Set("permission",
-               base::Value::Dict().Set("name", "storage-access")));
+          .Set("permission", base::DictValue().Set("name", "storage-access")));
   test_storage_access(/*expected_for_frame=*/true,
                       /*expected_for_other_frame=*/false);
 
@@ -798,22 +796,20 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   devtools_client.SendCommandSync(
       "Browser.setPermission",
-      base::Value::Dict()
+      base::DictValue()
           .Set("setting", "granted")
           .Set("origin", kOriginA)
           .Set("embeddedOrigin", kOriginB)
-          .Set("permission",
-               base::Value::Dict().Set("name", "storage-access")));
+          .Set("permission", base::DictValue().Set("name", "storage-access")));
   ASSERT_EQ(QueryPermission(GetFrame()), "granted");
 
   devtools_client.SendCommandSync(
       "Browser.setPermission",
-      base::Value::Dict()
+      base::DictValue()
           .Set("setting", "denied")
           .Set("origin", kOriginA)
           .Set("embeddedOrigin", kOriginB)
-          .Set("permission",
-               base::Value::Dict().Set("name", "storage-access")));
+          .Set("permission", base::DictValue().Set("name", "storage-access")));
 
   // Ensure that the 'denied' status is masked as 'prompt'.
   EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
@@ -2516,7 +2512,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
-  auto matcher = [](const base::Value::Dict& params) {
+  auto matcher = [](const base::DictValue& params) {
     const std::string* maybe_issue_code =
         params.FindStringByDottedPath("issue.code");
     if (!maybe_issue_code || *maybe_issue_code != "DeprecationIssue") {
@@ -2527,7 +2523,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
     return maybe_type && *maybe_type == "RelatedWebsiteSets";
   };
 
-  base::Value::Dict notification = devtools_client.WaitForMatchingNotification(
+  base::DictValue notification = devtools_client.WaitForMatchingNotification(
       "Audits.issueAdded", base::BindRepeating(matcher));
 
   // Verify that the issue is reported again when the permission is reused.

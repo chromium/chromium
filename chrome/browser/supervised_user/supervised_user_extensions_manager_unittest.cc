@@ -67,9 +67,9 @@ class SupervisedUserExtensionsManagerTestBase
   }
 
   scoped_refptr<const extensions::Extension> MakeThemeExtension() {
-    base::Value::Dict source;
+    base::DictValue source;
     source.Set(extensions::manifest_keys::kName, "Theme");
-    source.Set(extensions::manifest_keys::kTheme, base::Value::Dict());
+    source.Set(extensions::manifest_keys::kTheme, base::DictValue());
     source.Set(extensions::manifest_keys::kVersion, "1.0");
     extensions::ExtensionBuilder builder;
     scoped_refptr<const extensions::Extension> extension =
@@ -201,7 +201,7 @@ TEST_F(SupervisedUserExtensionsManagerTest,
   // preference.
   auto* prefs = profile()->GetPrefs();
   CHECK(prefs);
-  base::Value::Dict approved_extensions;
+  base::DictValue approved_extensions;
   approved_extensions.Set(approved_extn->id(), true);
   prefs->SetDict(prefs::kSupervisedUserApprovedExtensions,
                  std::move(approved_extensions));
@@ -221,7 +221,7 @@ TEST_F(SupervisedUserExtensionsManagerTest,
 
   // The already approved extension should be allowed and not part of the
   // local-approved list.
-  const base::Value::Dict& local_approved_extensions_pref =
+  const base::DictValue& local_approved_extensions_pref =
       prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
   EXPECT_FALSE(local_approved_extensions_pref.contains(approved_extn->id()));
   EXPECT_TRUE(manager_->IsExtensionAllowed(*approved_extn));
@@ -395,7 +395,7 @@ TEST_F(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {
 
   auto* prefs = profile()->GetPrefs();
   CHECK(prefs);
-  const base::Value::Dict& local_approved_extensions_pref =
+  const base::DictValue& local_approved_extensions_pref =
       prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
   EXPECT_EQ(
       has_local_approval_migration_run,
@@ -494,7 +494,7 @@ TEST_P(AddingSupervisionTest,
 
   auto* prefs = profile()->GetPrefs();
   CHECK(prefs);
-  const base::Value::Dict& local_approved_extensions_pref =
+  const base::DictValue& local_approved_extensions_pref =
       prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
   EXPECT_FALSE(
       local_approved_extensions_pref.contains(existing_extension->id()));
@@ -505,7 +505,7 @@ TEST_P(AddingSupervisionTest,
   profile()->AsTestingProfile()->SetIsSupervisedProfile(true);
   ASSERT_TRUE(profile()->IsChild());
 
-  const base::Value::Dict& local_approved_extensions_pref_post_migr =
+  const base::DictValue& local_approved_extensions_pref_post_migr =
       prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
   // Check that the pre-existing extensions should have been be excluded from
   // the local approval migration.

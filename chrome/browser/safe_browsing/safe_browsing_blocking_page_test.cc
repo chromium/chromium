@@ -1634,7 +1634,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        VerifyEnterpriseAllowlist) {
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
   // Add test server domain into the enterprise allowlist.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(url.GetHost());
   browser()->profile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
@@ -2132,7 +2132,7 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialUIBrowserTest,
   interstitial_page = static_cast<SafeBrowsingBlockingPage*>(
       helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting());
   BaseSafeBrowsingErrorUI* temp_var = interstitial_page->sb_error_ui();
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   temp_var->PopulateStringsForHtml(load_time_data);
 
   // Safe browsing blocking page should use correct heading and primary,
@@ -2193,7 +2193,7 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialUIBrowserTest,
   interstitial_page = static_cast<SafeBrowsingBlockingPage*>(
       helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting());
   BaseSafeBrowsingErrorUI* temp_var = interstitial_page->sb_error_ui();
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   temp_var->PopulateStringsForHtml(load_time_data);
 
   // Safe browsing blocking page should use correct header and enhanced

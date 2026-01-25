@@ -39,8 +39,8 @@ void StateStore::Transaction::MarkAsReported(IncidentType type,
                                              const std::string& key,
                                              IncidentDigest digest) {
   std::string type_string(base::NumberToString(static_cast<int>(type)));
-  base::Value::Dict& incidents_sent = GetPrefDict();
-  base::Value::Dict* type_dict = incidents_sent.EnsureDict(type_string);
+  base::DictValue& incidents_sent = GetPrefDict();
+  base::DictValue* type_dict = incidents_sent.EnsureDict(type_string);
   type_dict->Set(key, base::NumberToString(digest));
 }
 
@@ -55,10 +55,10 @@ void StateStore::Transaction::Clear(IncidentType type, const std::string& key) {
   // store.
   std::string type_string(base::NumberToString(static_cast<int>(type)));
 
-  const base::Value::Dict* const_type_dict =
+  const base::DictValue* const_type_dict =
       store_->incidents_sent_->FindDict(type_string);
   if (const_type_dict && const_type_dict->Find(key)) {
-    base::Value::Dict* type_dict = GetPrefDict().FindDict(type_string);
+    base::DictValue* type_dict = GetPrefDict().FindDict(type_string);
     type_dict->Remove(key);
   }
 }
@@ -83,7 +83,7 @@ void StateStore::Transaction::ClearAll() {
     GetPrefDict().clear();
 }
 
-base::Value::Dict& StateStore::Transaction::GetPrefDict() {
+base::DictValue& StateStore::Transaction::GetPrefDict() {
   if (!pref_update_) {
     pref_update_ = std::make_unique<ScopedDictPrefUpdate>(
         store_->profile_->GetPrefs(), prefs::kSafeBrowsingIncidentsSent);
@@ -95,7 +95,7 @@ base::Value::Dict& StateStore::Transaction::GetPrefDict() {
   return pref_update_->Get();
 }
 
-void StateStore::Transaction::ReplacePrefDict(base::Value::Dict pref_dict) {
+void StateStore::Transaction::ReplacePrefDict(base::DictValue pref_dict) {
   GetPrefDict() = std::move(pref_dict);
 }
 
@@ -115,7 +115,7 @@ StateStore::StateStore(Profile* profile)
 
   // Apply the platform data.
   Transaction transaction(this);
-  std::optional<base::Value::Dict> value_dict(
+  std::optional<base::DictValue> value_dict(
       platform_state_store::Load(profile_));
   if (value_dict.has_value()) {
     if (value_dict->empty()) {
@@ -137,7 +137,7 @@ StateStore::~StateStore() {
 bool StateStore::HasBeenReported(IncidentType type,
                                  const std::string& key,
                                  IncidentDigest digest) {
-  const base::Value::Dict* type_dict =
+  const base::DictValue* type_dict =
       incidents_sent_ ? incidents_sent_->FindDict(
                             base::NumberToString(static_cast<int>(type)))
                       : nullptr;

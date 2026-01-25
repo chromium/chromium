@@ -233,27 +233,27 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   void WaitForMetadataIssueAndCheck(const std::vector<std::string>& sites,
                                     uint32_t opt_out_percentage,
                                     bool is_opt_out_top_level) {
-    auto is_metadata_issue = [](const base::Value::Dict& params) {
+    auto is_metadata_issue = [](const base::DictValue& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
       return issue_code && *issue_code == "CookieDeprecationMetadataIssue";
     };
 
     // Wait for notification of a Metadata Issue.
-    base::Value::Dict params =
+    base::DictValue params =
         web_contents_devtools_client.WaitForMatchingNotification(
             "Audits.issueAdded", base::BindRepeating(is_metadata_issue));
     const std::string* issue_code = params.FindStringByDottedPath("issue.code");
     ASSERT_TRUE(issue_code);
     ASSERT_EQ(*issue_code, "CookieDeprecationMetadataIssue");
 
-    base::Value::Dict* metadata_issue_details = params.FindDictByDottedPath(
+    base::DictValue* metadata_issue_details = params.FindDictByDottedPath(
         "issue.details.cookieDeprecationMetadataIssueDetails");
     ASSERT_TRUE(metadata_issue_details);
 
     // Verify the reported allowed sites match the expected sites.
     std::vector<std::string> allowed_sites;
-    base::Value::List* allowed_sites_list =
+    base::ListValue* allowed_sites_list =
         metadata_issue_details->FindList("allowedSites");
     if (allowed_sites_list) {
       for (const auto& val : *allowed_sites_list) {
@@ -284,14 +284,14 @@ class TpcdMetadataDevtoolsObserverBrowserTest
                                   std::string_view exclusion) {
     CHECK(warning.empty() || exclusion.empty())
         << "inclusion reason and exclusion reason should not co-exist";
-    auto is_cookie_issue = [](const base::Value::Dict& params) {
+    auto is_cookie_issue = [](const base::DictValue& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
       return issue_code && *issue_code == "CookieIssue";
     };
 
     // Wait for notification of a Cookie Issue.
-    base::Value::Dict params =
+    base::DictValue params =
         web_contents_devtools_client.WaitForMatchingNotification(
             "Audits.issueAdded", base::BindRepeating(is_cookie_issue));
 
@@ -327,7 +327,7 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   void SendSetCookieControls(bool enable_third_party_cookie_restriction,
                              bool disable_third_party_cookie_metadata,
                              bool disable_third_party_cookie_heuristics) {
-    base::Value::Dict command_params;
+    base::DictValue command_params;
     command_params.Set("enableThirdPartyCookieRestriction",
                        enable_third_party_cookie_restriction);
     command_params.Set("disableThirdPartyCookieMetadata",

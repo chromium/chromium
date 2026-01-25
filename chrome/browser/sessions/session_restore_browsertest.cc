@@ -3718,7 +3718,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
     web_app::WebAppTestInstallObserver observer(profile);
     observer.BeginListening({ash::kCalculatorAppId});
 
-    base::Value::List web_app_settings =
+    base::ListValue web_app_settings =
         base::JSONReader::Read(R"([
     {
       "manifest_id": "https://calculator.apps.chrome/",
@@ -3732,7 +3732,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
     profile->GetPrefs()->SetList(prefs::kWebAppSettings,
                                  std::move(web_app_settings));
 
-    base::Value::List web_app_install_list =
+    base::ListValue web_app_install_list =
         base::JSONReader::Read(R"([
     {
       "url": "https://calculator.apps.chrome/",
@@ -3764,7 +3764,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
 
   // Remove unclosability setting. The browser should still not be restored
   // because the app window was not tracked when the browser was closed.
-  profile->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+  profile->GetPrefs()->SetList(prefs::kWebAppSettings, base::ListValue());
 
   // Now that SessionServices are off, we can close stuff to simulate a closure.
   CloseBrowserSynchronously(app_browser);
@@ -3800,7 +3800,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
     web_app::WebAppTestInstallObserver observer(profile);
     observer.BeginListening({ash::kCalculatorAppId});
 
-    base::Value::List web_app_install_list =
+    base::ListValue web_app_install_list =
         base::JSONReader::Read(R"([
     {
       "url": "https://calculator.apps.chrome/",
@@ -3842,7 +3842,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
   StartupServices(profile);
 
   {
-    base::Value::List web_app_settings =
+    base::ListValue web_app_settings =
         base::JSONReader::Read(R"([
     {
       "manifest_id": "https://calculator.apps.chrome/",

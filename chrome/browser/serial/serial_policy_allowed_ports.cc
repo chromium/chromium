@@ -80,7 +80,7 @@ bool SerialPolicyAllowedPorts::HasPortPermission(
 void SerialPolicyAllowedPorts::LoadAllowAllPortsForUrlsPolicy() {
   all_ports_policy_.clear();
 
-  const base::Value::List& pref_list = pref_change_registrar_.prefs()->GetList(
+  const base::ListValue& pref_list = pref_change_registrar_.prefs()->GetList(
       prefs::kManagedSerialAllowAllPortsForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
@@ -102,13 +102,13 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
   usb_device_policy_.clear();
   usb_vendor_policy_.clear();
 
-  const base::Value::List& pref_list = pref_change_registrar_.prefs()->GetList(
+  const base::ListValue& pref_list = pref_change_registrar_.prefs()->GetList(
       prefs::kManagedSerialAllowUsbDevicesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_list) {
-    const base::Value::List* urls_value = item.GetDict().FindList(kPrefUrlsKey);
+    const base::ListValue* urls_value = item.GetDict().FindList(kPrefUrlsKey);
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
@@ -125,7 +125,7 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
       continue;
     }
 
-    const base::Value::List* devices_value =
+    const base::ListValue* devices_value =
         item.GetDict().FindList(kPrefDevicesKey);
     DCHECK(devices_value);
     for (const auto& port_value : *devices_value) {

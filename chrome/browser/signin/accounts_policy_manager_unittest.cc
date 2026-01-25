@@ -171,7 +171,7 @@ TEST_F(AccountsPolicyManagerTest, ClearProfileUnallowedAccounts) {
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id3));
 
   // Set prefs to only allow example.com secondary accounts
-  base::Value::List profile_separation_domain_exception_list;
+  base::ListValue profile_separation_domain_exception_list;
   profile_separation_domain_exception_list.Append("example.com");
   GetProfile()->GetPrefs()->SetList(
       prefs::kProfileSeparationDomainExceptionList,
@@ -214,7 +214,7 @@ TEST_F(AccountsPolicyManagerTest, ClearProfileUnallowedAccountsDisabled) {
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id3));
 
   // Set prefs to only allow example.com secondary accounts
-  base::Value::List profile_separation_domain_exception_list;
+  base::ListValue profile_separation_domain_exception_list;
   profile_separation_domain_exception_list.Append("example.com");
   GetProfile()->GetPrefs()->SetList(
       prefs::kProfileSeparationDomainExceptionList,

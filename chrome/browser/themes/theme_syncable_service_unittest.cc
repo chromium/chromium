@@ -1271,8 +1271,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldDownloadNtpBackground) {
               fake_change_processor()));
   ASSERT_FALSE(error.has_value()) << error->ToString();
 
-  base::Value::Dict expected_value =
-      base::Value::Dict()
+  base::DictValue expected_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -1298,8 +1298,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUploadNtpBackground) {
               fake_change_processor()));
   ASSERT_FALSE(error.has_value()) << error->ToString();
 
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -1335,8 +1335,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUploadNtpBackground) {
 
 TEST_F(RealThemeSyncableServiceTest,
        ShouldNotUploadNtpBackgroundIfSetFromLocalResource) {
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2084,8 +2084,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
 // Regression test for crbug.com/389026436.
 TEST_F(RealThemeSyncableServiceTest, ClearLocalNtpBackgroundIfRemoteEmpty) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2127,8 +2127,8 @@ TEST_F(RealThemeSyncableServiceTest, ClearLocalNtpBackgroundIfRemoteEmpty) {
 TEST_F(RealThemeSyncableServiceTest,
        KeepLocalNtpBackgroundUponNonDefaultOldThemeSpecifics) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2181,8 +2181,8 @@ TEST_F(RealThemeSyncableServiceTest,
 TEST_F(RealThemeSyncableServiceTest,
        KeepLocalNtpBackgroundUponDefaultOldThemeSpecifics) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2226,8 +2226,8 @@ TEST_F(RealThemeSyncableServiceTest,
 TEST_F(RealThemeSyncableServiceTest,
        ClearLocalNtpBackgroundUponNonDefaultNewThemeSpecifics) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2269,8 +2269,8 @@ TEST_F(RealThemeSyncableServiceTest,
 TEST_F(RealThemeSyncableServiceTest,
        KeepLocalNtpBackgroundUponDefaultNewThemeSpecifics) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2961,8 +2961,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
        SaveLocalNtpBackgroundToPrefUponInitialSync) {
   // Set custom background via pref.
-  base::Value::Dict background_dict =
-      base::Value::Dict()
+  base::DictValue background_dict =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -3346,7 +3346,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
   EXPECT_FALSE(theme_service()->UsingExtensionTheme());
   EXPECT_EQ(
       profile()->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict),
-      base::Value::Dict()
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -3783,7 +3783,7 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
 
   pref_service_.SetDict(
       prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse,
-      base::Value::Dict()
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")

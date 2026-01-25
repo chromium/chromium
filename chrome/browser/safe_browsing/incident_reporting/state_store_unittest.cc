@@ -105,7 +105,7 @@ class StateStoreTest : public PlatformStateStoreTestBase {
     std::unique_ptr<base::Value> prefs(JSONFileValueDeserializer(GetPrefsPath())
                                            .Deserialize(nullptr, nullptr));
     ASSERT_NE(nullptr, prefs.get());
-    base::Value::Dict* dict = prefs->GetIfDict();
+    base::DictValue* dict = prefs->GetIfDict();
     ASSERT_TRUE(dict);
     ASSERT_TRUE(dict->RemoveByDottedPath(prefs::kSafeBrowsingIncidentsSent));
     ASSERT_TRUE(JSONFileValueSerializer(GetPrefsPath()).Serialize(*dict));

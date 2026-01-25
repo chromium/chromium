@@ -115,12 +115,12 @@ TEST_P(SpellcheckLanguagePolicyHandlersTest, ApplyPolicySettings) {
   PrefValueMap prefs;
   policy::PolicyMap policy;
 
-  base::Value::List blocked_languages_list;
+  base::ListValue blocked_languages_list;
   for (const auto& blocked_language : GetParam().blocked_languages) {
     blocked_languages_list.Append(std::move(blocked_language));
   }
 
-  base::Value::List forced_languages_list;
+  base::ListValue forced_languages_list;
   for (const auto& forced_language : GetParam().forced_languages) {
     forced_languages_list.Append(std::move(forced_language));
   }

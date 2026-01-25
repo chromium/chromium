@@ -42,7 +42,7 @@ class SmartCardPermissionUiTest
   auto SetSmartCardConnectAllowedFor(const GURL& origin_url) {
     return Do([this, origin_url]() {
       SetPolicy(&policies_, policy::key::kSmartCardConnectAllowedForUrls,
-                base::Value(base::Value::List().Append(origin_url.spec())));
+                base::Value(base::ListValue().Append(origin_url.spec())));
       UpdateProviderPolicy(policies_);
     });
   }
@@ -50,7 +50,7 @@ class SmartCardPermissionUiTest
   auto SetSmartCardConnectBlockedFor(const GURL& origin_url) {
     return Do([this, origin_url]() {
       SetPolicy(&policies_, policy::key::kSmartCardConnectBlockedForUrls,
-                base::Value(base::Value::List().Append(origin_url.spec())));
+                base::Value(base::ListValue().Append(origin_url.spec())));
       UpdateProviderPolicy(policies_);
     });
   }

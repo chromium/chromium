@@ -92,10 +92,10 @@ sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(
 // error reading the values from the file, for example, the file doesn't exist.
 // NOTE: `key` missing from the json file would be returned as an empty dict,
 // and not a nullopt.
-std::optional<base::Value::Dict> ReadValuesFromFile(
+std::optional<base::DictValue> ReadValuesFromFile(
     const base::FilePath& file_path,
     const std::optional<std::string>& key = std::nullopt) {
-  std::optional<base::Value::Dict> result;
+  std::optional<base::DictValue> result;
   // ASSERT_* returns void. Thus using a lambda to not exit from the function,
   // but still generate fatal failures.
   [&]() {
@@ -112,9 +112,9 @@ std::optional<base::Value::Dict> ReadValuesFromFile(
     if (!key.has_value()) {
       result = std::move(json_content->GetDict());
     } else {
-      base::Value::Dict* dict =
+      base::DictValue* dict =
           json_content->GetDict().FindDictByDottedPath(key.value());
-      result = dict ? std::move(*dict) : base::Value::Dict();
+      result = dict ? std::move(*dict) : base::DictValue();
     }
   }();
   return result;
@@ -512,13 +512,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
 
-  base::Value::List local_value;
+  base::ListValue local_value;
   local_value.Append("local value");
   preferences_helper::ChangeListPref(
       0, sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
       local_value);
 
-  base::Value::List account_value;
+  base::ListValue account_value;
   account_value.Append("account value");
   InjectPreferenceToFakeServer(
       syncer::PREFERENCES,
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
                 sync_preferences::kSyncableHistorySensitiveListPrefForTesting),
             local_value);
 
-  base::Value::List new_value;
+  base::ListValue new_value;
   new_value.Append("new value");
   preferences_helper::ChangeListPref(
       0, sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
@@ -578,13 +578,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
 
-  base::Value::List local_value;
+  base::ListValue local_value;
   local_value.Append("local value");
   preferences_helper::ChangeListPref(
       0, sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
       local_value);
 
-  base::Value::List account_value;
+  base::ListValue account_value;
   account_value.Append("account value");
   InjectPreferenceToFakeServer(
       syncer::PREFERENCES,
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
                 sync_preferences::kSyncableHistorySensitiveListPrefForTesting),
             account_value);
 
-  base::Value::List new_value;
+  base::ListValue new_value;
   new_value.Append("new value");
   preferences_helper::ChangeListPref(
       0, sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
@@ -629,13 +629,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
 
-  base::Value::List local_value;
+  base::ListValue local_value;
   local_value.Append("local value");
   preferences_helper::ChangeListPref(
       0, sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
       local_value);
 
-  base::Value::List account_value;
+  base::ListValue account_value;
   account_value.Append("account value");
   InjectPreferenceToFakeServer(
       syncer::PREFERENCES,
@@ -747,7 +747,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
   CommitToDiskAndWait();
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+  std::optional<base::DictValue> file_content = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
       chrome_prefs::kAccountPreferencesPrefix);
   ASSERT_TRUE(file_content.has_value());
@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
   CommitToDiskAndWait();
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+  std::optional<base::DictValue> file_content = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
       chrome_prefs::kAccountPreferencesPrefix);
   ASSERT_TRUE(file_content.has_value());
@@ -1086,16 +1086,16 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
           sync_preferences::kSyncableMergeableDictPrefForTesting,
           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  base::Value::Dict local_value = base::Value::Dict()
-                                      .Set("google.com", "allow")
-                                      .Set("wikipedia.org", "allow");
+  base::DictValue local_value = base::DictValue()
+                                    .Set("google.com", "allow")
+                                    .Set("wikipedia.org", "allow");
   GetPrefs(0)->SetDict(sync_preferences::kSyncableMergeableDictPrefForTesting,
                        local_value.Clone());
 
-  base::Value::Dict server_value = base::Value::Dict()
-                                       .Set("facebook.com", "deny")
-                                       .Set("microsoft.com", "deny")
-                                       .Set("wikipedia.org", "deny");
+  base::DictValue server_value = base::DictValue()
+                                     .Set("facebook.com", "deny")
+                                     .Set("microsoft.com", "deny")
+                                     .Set("wikipedia.org", "deny");
   InjectPreferenceToFakeServer(
       syncer::PREFERENCES,
       sync_preferences::kSyncableMergeableDictPrefForTesting,
@@ -1107,7 +1107,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
 
   // Fake server value is synced to the account store and the dict value is
   // merged with the value in the local store.
-  auto merged_value = base::Value::Dict()
+  auto merged_value = base::DictValue()
                           .Set("facebook.com", "deny")
                           .Set("google.com", "allow")
                           .Set("microsoft.com", "deny")
@@ -1139,16 +1139,16 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
           sync_preferences::kSyncableMergeableDictPrefForTesting,
           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  base::Value::Dict local_value = base::Value::Dict()
-                                      .Set("google.com", "allow")
-                                      .Set("wikipedia.org", "allow");
+  base::DictValue local_value = base::DictValue()
+                                    .Set("google.com", "allow")
+                                    .Set("wikipedia.org", "allow");
   GetPrefs(0)->SetDict(sync_preferences::kSyncableMergeableDictPrefForTesting,
                        local_value.Clone());
 
-  base::Value::Dict server_value = base::Value::Dict()
-                                       .Set("facebook.com", "deny")
-                                       .Set("microsoft.com", "deny")
-                                       .Set("wikipedia.org", "deny");
+  base::DictValue server_value = base::DictValue()
+                                     .Set("facebook.com", "deny")
+                                     .Set("microsoft.com", "deny")
+                                     .Set("wikipedia.org", "deny");
   InjectPreferenceToFakeServer(
       syncer::PREFERENCES,
       sync_preferences::kSyncableMergeableDictPrefForTesting,
@@ -1160,7 +1160,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
 
   // Fake server value is synced to the account store and the dict value is
   // merged with the value in the local store.
-  auto merged_value = base::Value::Dict()
+  auto merged_value = base::DictValue()
                           .Set("facebook.com", "deny")
                           .Set("google.com", "allow")
                           .Set("microsoft.com", "deny")
@@ -1169,7 +1169,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
                 sync_preferences::kSyncableMergeableDictPrefForTesting),
             merged_value);
 
-  auto updated_value = base::Value::Dict()
+  auto updated_value = base::DictValue()
                            // New key, should get added to both stores.
                            .Set("cnn.com", "deny")
                            // Updated value, should get added to both stores.
@@ -1186,7 +1186,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
             updated_value);
 
   // Note that entry for "wikipedia.org" was removed.
-  auto updated_server_value = base::Value::Dict()
+  auto updated_server_value = base::DictValue()
                                   .Set("cnn.com", "deny")
                                   .Set("facebook.com", "allow")
                                   .Set("microsoft.com", "deny");
@@ -1204,7 +1204,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
 
   // Note that entry for "wikipedia.org" was removed.
-  auto updated_local_value = base::Value::Dict()
+  auto updated_local_value = base::DictValue()
                                  .Set("cnn.com", "deny")
                                  .Set("facebook.com", "allow")
                                  .Set("google.com", "allow");
@@ -1223,13 +1223,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
   ASSERT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
 
-  base::Value::List local_value =
-      base::Value::List().Append("cnn.com").Append("facebook.com");
+  base::ListValue local_value =
+      base::ListValue().Append("cnn.com").Append("facebook.com");
   GetPrefs(0)->SetList(sync_preferences::kSyncableMergeableListPrefForTesting,
                        local_value.Clone());
 
-  base::Value::List server_value =
-      base::Value::List().Append("google.com").Append("facebook.com");
+  base::ListValue server_value =
+      base::ListValue().Append("google.com").Append("facebook.com");
   InjectPreferenceToFakeServer(
       syncer::PREFERENCES,
       sync_preferences::kSyncableMergeableListPrefForTesting,
@@ -1241,7 +1241,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
 
   // Fake server value is synced to the account store and the list value is
   // merged with the value in the local store.
-  auto merged_value = base::Value::List()
+  auto merged_value = base::ListValue()
                           .Append("google.com")
                           .Append("facebook.com")
                           .Append("cnn.com");
@@ -1271,13 +1271,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
   ASSERT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
 
-  base::Value::List local_value =
-      base::Value::List().Append("cnn.com").Append("facebook.com");
+  base::ListValue local_value =
+      base::ListValue().Append("cnn.com").Append("facebook.com");
   GetPrefs(0)->SetList(sync_preferences::kSyncableMergeableListPrefForTesting,
                        local_value.Clone());
 
-  base::Value::List server_value =
-      base::Value::List().Append("google.com").Append("facebook.com");
+  base::ListValue server_value =
+      base::ListValue().Append("google.com").Append("facebook.com");
   InjectPreferenceToFakeServer(
       syncer::PREFERENCES,
       sync_preferences::kSyncableMergeableListPrefForTesting,
@@ -1289,7 +1289,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
 
   // Fake server value is synced to the account store and the list value is
   // merged with the value in the local store.
-  auto merged_value = base::Value::List()
+  auto merged_value = base::ListValue()
                           .Append("google.com")
                           .Append("facebook.com")
                           .Append("cnn.com");
@@ -1298,8 +1298,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
             merged_value);
 
   // Common entry for "facebook.com" is removed.
-  auto updated_value =
-      base::Value::List().Append("google.com").Append("cnn.com");
+  auto updated_value = base::ListValue().Append("google.com").Append("cnn.com");
   GetPrefs(0)->SetList(sync_preferences::kSyncableMergeableListPrefForTesting,
                        updated_value.Clone());
   ASSERT_EQ(GetPrefs(0)->GetList(
@@ -1406,7 +1405,7 @@ IN_PROC_BROWSER_TEST_P(
   CommitToDiskAndWait();
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+  std::optional<base::DictValue> file_content = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
   ASSERT_TRUE(file_content.has_value());
 
@@ -1463,7 +1462,7 @@ IN_PROC_BROWSER_TEST_P(
   CommitToDiskAndWait();
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+  std::optional<base::DictValue> file_content = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename));
   ASSERT_TRUE(file_content.has_value());
 
@@ -1559,7 +1558,7 @@ IN_PROC_BROWSER_TEST_P(
 
   CommitToDiskAndWait();
 
-  std::optional<base::Value::Dict> account_pref_values_on_disk =
+  std::optional<base::DictValue> account_pref_values_on_disk =
       ReadValuesFromFile(
           GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
           chrome_prefs::kAccountPreferencesPrefix);
@@ -1611,7 +1610,7 @@ IN_PROC_BROWSER_TEST_P(
   CommitToDiskAndWait();
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+  std::optional<base::DictValue> file_content = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
       chrome_prefs::kAccountPreferencesPrefix);
   ASSERT_TRUE(file_content.has_value());
@@ -1670,7 +1669,7 @@ IN_PROC_BROWSER_TEST_P(
   CommitToDiskAndWait();
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value::Dict> file_content = ReadValuesFromFile(
+  std::optional<base::DictValue> file_content = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename),
       chrome_prefs::kAccountPreferencesPrefix);
   ASSERT_TRUE(file_content.has_value());
@@ -1762,7 +1761,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientTrackedPreferencesSyncTest,
   // Check unprotected pref is present in the main preference file.
   std::string account_pref_name = base::StringPrintf(
       "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kUnprotectedPrefName);
-  std::optional<base::Value::Dict> prefs = ReadValuesFromFile(
+  std::optional<base::DictValue> prefs = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename));
   ASSERT_TRUE(prefs.has_value());
   ASSERT_TRUE(prefs->FindByDottedPath(kUnprotectedPrefName))
@@ -1771,7 +1770,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientTrackedPreferencesSyncTest,
       << "Missing key " << account_pref_name << " in " << *prefs;
 
   // Check unprotected pref is not in the secured preference file.
-  std::optional<base::Value::Dict> secured_prefs = ReadValuesFromFile(
+  std::optional<base::DictValue> secured_prefs = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kSecurePreferencesFilename));
   ASSERT_TRUE(secured_prefs.has_value());
   ASSERT_FALSE(secured_prefs->FindByDottedPath(kUnprotectedPrefName))
@@ -1806,7 +1805,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientTrackedPreferencesSyncTest,
       "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kProtectedPrefName);
   if (!IsProtectionEnforced()) {
     // Check protected pref is present in the main preference file.
-    std::optional<base::Value::Dict> prefs = ReadValuesFromFile(
+    std::optional<base::DictValue> prefs = ReadValuesFromFile(
         GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename));
     ASSERT_TRUE(prefs.has_value());
     ASSERT_TRUE(prefs->FindByDottedPath(kProtectedPrefName))
@@ -1817,7 +1816,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientTrackedPreferencesSyncTest,
   }
 
   // Check protected pref is not in the main preference file.
-  std::optional<base::Value::Dict> prefs = ReadValuesFromFile(
+  std::optional<base::DictValue> prefs = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kPreferencesFilename));
   ASSERT_TRUE(prefs.has_value());
   ASSERT_FALSE(prefs->FindByDottedPath(kProtectedPrefName))
@@ -1826,7 +1825,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientTrackedPreferencesSyncTest,
       << "Incorrect key " << account_pref_name << " in " << *prefs;
 
   // Check protected pref is present in the secured preference file.
-  std::optional<base::Value::Dict> secured_prefs = ReadValuesFromFile(
+  std::optional<base::DictValue> secured_prefs = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kSecurePreferencesFilename));
   ASSERT_TRUE(secured_prefs.has_value());
   ASSERT_TRUE(secured_prefs->FindByDottedPath(kProtectedPrefName))
@@ -1860,7 +1859,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientTrackedPreferencesSyncTest,
   CommitToDiskAndWait();
 
   // Load hashes from the preference or the secured preference file.
-  std::optional<base::Value::Dict> protection_values = ReadValuesFromFile(
+  std::optional<base::DictValue> protection_values = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append((IsProtectionEnforced()
                                            ? chrome::kSecurePreferencesFilename
                                            : chrome::kPreferencesFilename)),
@@ -1911,7 +1910,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientTrackedPreferencesSyncTest,
   // Check protected account pref is present in the preference file.
   std::string account_pref_name = base::StringPrintf(
       "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kProtectedPrefName);
-  std::optional<base::Value::Dict> prefs =
+  std::optional<base::DictValue> prefs =
       ReadValuesFromFile(GetProfile(0)->GetPath().Append(
           (IsProtectionEnforced() ? chrome::kSecurePreferencesFilename
                                   : chrome::kPreferencesFilename)));
@@ -1943,7 +1942,7 @@ class SingleClientTrackedPreferencesSyncTestWithAttack
     base::FilePath file_path =
         user_data_dir.Append(GetProfileBaseName(0)).Append(filename);
 
-    std::optional<base::Value::Dict> values = ReadValuesFromFile(file_path);
+    std::optional<base::DictValue> values = ReadValuesFromFile(file_path);
     ASSERT_TRUE(values.has_value());
     // Update the existing account value.
     std::string pref_name = base::StringPrintf(
@@ -2013,7 +2012,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientTrackedPreferencesSyncTestWithAttack,
   // Check protected account pref is no longer present in the preference file.
   std::string account_pref_name = base::StringPrintf(
       "%s.%s", chrome_prefs::kAccountPreferencesPrefix, kProtectedPrefName);
-  std::optional<base::Value::Dict> prefs = ReadValuesFromFile(
+  std::optional<base::DictValue> prefs = ReadValuesFromFile(
       GetProfile(0)->GetPath().Append(chrome::kSecurePreferencesFilename));
   ASSERT_TRUE(prefs.has_value());
   EXPECT_FALSE(prefs->FindByDottedPath(account_pref_name))
@@ -2328,8 +2327,8 @@ class SingleClientFeatureListEarlyAccessTest
         &policy_provider_);
 
     policy::PolicyMap policies;
-    base::Value::List clear_browsing_data_list =
-        base::Value::List().Append("site_settings");
+    base::ListValue clear_browsing_data_list =
+        base::ListValue().Append("site_settings");
     policies.Set(policy::key::kClearBrowsingDataOnExitList,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD,

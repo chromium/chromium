@@ -297,7 +297,7 @@ void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
           .SetID(extension_id)
           .SetPath(path)
           .SetLocation(location)
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", extension_name)
                            .Set("version", kExtensionVersion)
                            .Set("manifest_version", 2))
@@ -958,12 +958,12 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
               {"normal_installed", ExtensionInfo::INSTALLATION_RECOMMENDED}};
 
       for (const auto& [mode, policy] : installation_policies) {
-        base::Value::Dict entry = base::Value::Dict()
-                                      .Set(kInstallationMode, mode)
-                                      .Set(kUpdateUrl, kTestUpdateUrl);
+        base::DictValue entry = base::DictValue()
+                                    .Set(kInstallationMode, mode)
+                                    .Set(kUpdateUrl, kTestUpdateUrl);
         profile_.GetTestingPrefService()->SetManagedPref(
             extensions::pref_names::kExtensionManagement,
-            base::Value::Dict().Set(extension->id(), std::move(entry)));
+            base::DictValue().Set(extension->id(), std::move(entry)));
 
         std::unique_ptr<ExtensionInfo> extension_pb =
             GetExtensionInfo(*extension);
@@ -1335,11 +1335,11 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_ProcessesOffstoreExtensions) {
   // Test Extension 0.
   EXPECT_TRUE(file_data_dict.contains(kExtensionId[0]));
 
-  const base::Value::Dict* actual_extension_0 =
+  const base::DictValue* actual_extension_0 =
       file_data_dict.FindDict(kExtensionId[0]);
   EXPECT_TRUE(actual_extension_0->FindString(kFileDataProcessTimestampPref));
 
-  const base::Value::Dict* actual_extension_0_file_data =
+  const base::DictValue* actual_extension_0_file_data =
       actual_extension_0->FindDict(kFileDataDictPref);
   EXPECT_TRUE(actual_extension_0_file_data->contains(kJavaScriptFile));
   EXPECT_TRUE(actual_extension_0_file_data->FindString(kJavaScriptFile));
@@ -1349,11 +1349,11 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_ProcessesOffstoreExtensions) {
   // Test Extension 1.
   EXPECT_TRUE(file_data_dict.contains(kExtensionId[1]));
 
-  const base::Value::Dict* actual_extension_1 =
+  const base::DictValue* actual_extension_1 =
       file_data_dict.FindDict(kExtensionId[1]);
   EXPECT_TRUE(actual_extension_1->FindString(kFileDataProcessTimestampPref));
 
-  const base::Value::Dict* actual_extension_1_file_data =
+  const base::DictValue* actual_extension_1_file_data =
       actual_extension_1->FindDict(kFileDataDictPref);
   EXPECT_TRUE(actual_extension_1_file_data->contains(kJavaScriptFile));
   EXPECT_TRUE(actual_extension_1_file_data->FindString(kJavaScriptFile));
@@ -1452,10 +1452,10 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyTimestampsInPrefs) {
   // extension 0 - empty timestamp string
   // extension 1 - missing timestamp key
   auto extension_0_dict =
-      base::Value::Dict().Set(kFileDataProcessTimestampPref, "");
-  base::Value::Dict empty_timestamps_dict;
+      base::DictValue().Set(kFileDataProcessTimestampPref, "");
+  base::DictValue empty_timestamps_dict;
   empty_timestamps_dict.Set(kExtensionId[0], std::move(extension_0_dict));
-  empty_timestamps_dict.Set(kExtensionId[1], base::Value::Dict());
+  empty_timestamps_dict.Set(kExtensionId[1], base::DictValue());
   prefs()->SetDict(prefs::kExtensionTelemetryFileData,
                    std::move(empty_timestamps_dict));
 
@@ -1468,14 +1468,14 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyTimestampsInPrefs) {
 
   // Test Extension 0.
   EXPECT_TRUE(file_data_dict.contains(kExtensionId[0]));
-  const base::Value::Dict* actual_extension_0 =
+  const base::DictValue* actual_extension_0 =
       file_data_dict.FindDict(kExtensionId[0]);
   EXPECT_TRUE(actual_extension_0->FindString(kFileDataProcessTimestampPref));
   EXPECT_TRUE(actual_extension_0->FindDict(kFileDataDictPref));
 
   // Test Extension 1.
   EXPECT_TRUE(file_data_dict.contains(kExtensionId[1]));
-  const base::Value::Dict* actual_extension_1 =
+  const base::DictValue* actual_extension_1 =
       file_data_dict.FindDict(kExtensionId[1]);
   EXPECT_TRUE(actual_extension_1->FindString(kFileDataProcessTimestampPref));
   EXPECT_TRUE(actual_extension_1->FindDict(kFileDataDictPref));
@@ -1491,7 +1491,7 @@ TEST_F(ExtensionTelemetryServiceTest,
   const auto& file_data_dict =
       prefs()->GetDict(prefs::kExtensionTelemetryFileData);
 
-  const base::Value::Dict* extension_0_dict =
+  const base::DictValue* extension_0_dict =
       file_data_dict.FindDict(kExtensionId[0])->FindDict(kFileDataDictPref);
   EXPECT_EQ(telemetry_report_pb->reports(0).extension().id(), kExtensionId[0]);
   EXPECT_EQ(telemetry_report_pb->reports(0).extension().manifest_json(),
@@ -1502,7 +1502,7 @@ TEST_F(ExtensionTelemetryServiceTest,
   EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos(0).hash(),
             *(extension_0_dict->FindString(kJavaScriptFile)));
 
-  const base::Value::Dict* extension_1_dict =
+  const base::DictValue* extension_1_dict =
       file_data_dict.FindDict(kExtensionId[1])->FindDict(kFileDataDictPref);
   EXPECT_EQ(telemetry_report_pb->reports(1).extension().id(), kExtensionId[1]);
   EXPECT_EQ(telemetry_report_pb->reports(1).extension().manifest_json(),
@@ -1548,7 +1548,7 @@ TEST_F(ExtensionTelemetryServiceTest,
   const auto& file_data_dict =
       prefs()->GetDict(prefs::kExtensionTelemetryFileData);
   ASSERT_EQ(file_data_dict.size(), 1u);
-  const base::Value::Dict* cmdline_extension_file_data_dict =
+  const base::DictValue* cmdline_extension_file_data_dict =
       file_data_dict.FindDict(cmdline_extension.id())
           ->FindDict(kFileDataDictPref);
   ASSERT_TRUE(cmdline_extension_file_data_dict);
@@ -1599,11 +1599,11 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyFileDataInPrefs) {
   // Set up pref dict:
   // extension 0 - empty file data dict
   // extension 1 - missing file data dict key
-  base::Value::Dict extension_0_dict;
-  extension_0_dict.Set(kFileDataDictPref, base::Value::Dict());
-  base::Value::Dict empty_file_data_dicts;
+  base::DictValue extension_0_dict;
+  extension_0_dict.Set(kFileDataDictPref, base::DictValue());
+  base::DictValue empty_file_data_dicts;
   empty_file_data_dicts.Set(kExtensionId[0], std::move(extension_0_dict));
-  empty_file_data_dicts.Set(kExtensionId[1], base::Value::Dict());
+  empty_file_data_dicts.Set(kExtensionId[1], base::DictValue());
   prefs()->SetDict(prefs::kExtensionTelemetryFileData,
                    std::move(empty_file_data_dicts));
 

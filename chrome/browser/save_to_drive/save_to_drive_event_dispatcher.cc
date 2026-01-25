@@ -93,7 +93,7 @@ void SaveToDriveEventDispatcher::Notify(
   CHECK_NE(progress.status, SaveToDriveStatus::kNone);
   recorder_->Record(progress);
   progress.file_metadata = GetFileMetadataString(progress);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(stream_url_.spec());
   args.Append(progress.ToValue());
   auto event = std::make_unique<extensions::Event>(

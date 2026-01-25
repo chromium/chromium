@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_P(
           ContentSettingsPattern::FromURLNoWildcard(GURL(kNonAllowlistedUrl)),
           ContentSettingsPattern::Wildcard(),
           ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
-          base::Value(base::Value::Dict().Set(kIsAllowlistedByUserKey, true)));
+          base::Value(base::DictValue().Set(kIsAllowlistedByUserKey, true)));
 
   UpdateNotificationContentDetectionModel();
   blink::PlatformNotificationData data =
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_P(
           ContentSettingsPattern::FromURLNoWildcard(GURL(kNonAllowlistedUrl)),
           ContentSettingsPattern::Wildcard(),
           ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
-          base::Value(base::Value::Dict().Set(kIsAllowlistedByUserKey, true)));
+          base::Value(base::DictValue().Set(kIsAllowlistedByUserKey, true)));
 
   // Unsubscribe from notifications then re-enable them.
   std::unique_ptr<NotificationHandler> handler =
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
                        EnterpriseAllowlistedSiteDoesNotExecuteModel) {
   // Setup enterprise allowlist.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("enterprise-domain.com");
   browser()->profile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));

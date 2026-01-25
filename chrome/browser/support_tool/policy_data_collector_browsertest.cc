@@ -78,7 +78,7 @@ constexpr const char* kPolicyStatusFields[] = {
 
 // Reads the contents of exported policy Json file in to `policies`
 // dictionary.
-void ReadExportedPolicyFile(base::Value::Dict* policies,
+void ReadExportedPolicyFile(base::DictValue* policies,
                             base::FilePath file_path) {
   // Allow blocking for testing in this scope for IO operations.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -119,7 +119,7 @@ class PolicyDataCollectorBrowserTest : public InProcessBrowserTest {
 
  protected:
   void AddExpectedChromePolicy(policy::PolicyMap* policy_map,
-                               base::Value::Dict* expected_policies,
+                               base::DictValue* expected_policies,
                                const std::string& policy,
                                policy::PolicyLevel level,
                                const std::string& level_str,
@@ -131,7 +131,7 @@ class PolicyDataCollectorBrowserTest : public InProcessBrowserTest {
                                base::Value value) {
     policy_map->Set(policy, level, scope, source, value.Clone(),
                     /*external_data_fetcher=*/nullptr);
-    base::Value::Dict policy_dict;
+    base::DictValue policy_dict;
     policy_dict.Set("level", level_str);
     policy_dict.Set("scope", scope_str);
     policy_dict.Set("source", source_str);
@@ -214,12 +214,12 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTest,
   policy::PolicyMap values;
 
   // Set expected policy values.
-  base::Value::Dict expected_policies;
+  base::DictValue expected_policies;
   expected_policies.Set(policy::kNameKey, policy::kChromePoliciesName);
-  expected_policies.Set(policy::kPoliciesKey, base::Value::Dict());
+  expected_policies.Set(policy::kPoliciesKey, base::DictValue());
 
   // Add policies for testing.
-  base::Value::List popups_blocked_for_urls;
+  base::ListValue popups_blocked_for_urls;
   popups_blocked_for_urls.Append("aaa");
   popups_blocked_for_urls.Append("bbb");
   popups_blocked_for_urls.Append("ccc");
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTest,
       /*error=*/std::string(), base::Value(2));
 
   // This also checks that we save unknown policies correctly.
-  base::Value::List unknown_policy;
+  base::ListValue unknown_policy;
   unknown_policy.Append(true);
   unknown_policy.Append(12);
   const std::string kUnknownPolicy = "NoSuchThing";
@@ -276,11 +276,11 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTest,
 
   // The result must contain three main parts: "chromeMetadata", policies and
   // "status".
-  base::Value::Dict policy_result;
+  base::DictValue policy_result;
   ASSERT_NO_FATAL_FAILURE(ReadExportedPolicyFile(
       &policy_result, output_path.Append(FILE_PATH_LITERAL("policies.json"))));
 
-  base::Value::Dict* chrome_metadata = policy_result.FindDict("chromeMetadata");
+  base::DictValue* chrome_metadata = policy_result.FindDict("chromeMetadata");
   ASSERT_TRUE(chrome_metadata);
   // Check that `chrome_metadata` contains all the expected keys.
   // The keys that are expected to be in "chromeMetadata" dictionary are
@@ -291,19 +291,19 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTest,
   EXPECT_TRUE(chrome_metadata->contains("revision"));
 
   // Check that policy values are the same as expected.
-  base::Value::Dict* policy_values =
+  base::DictValue* policy_values =
       policy_result.FindDict(policy::kPolicyValuesKey);
   ASSERT_TRUE(policy_values);
   // We only check Chrome policies as it's common between all platforms. We
   // don't test platform specific policies in this test.
-  base::Value::Dict* chrome_policies =
+  base::DictValue* chrome_policies =
       policy_values->FindDict(policy::kChromePoliciesId);
   ASSERT_TRUE(chrome_policies);
   EXPECT_EQ(*chrome_policies, expected_policies);
 
   // Check that the returned contains "status". We just check if the returned
   // status is not empty.
-  base::Value::Dict* status = policy_result.FindDict("status");
+  base::DictValue* status = policy_result.FindDict("status");
   ASSERT_TRUE(status);
   EXPECT_FALSE(status->empty());
 }
@@ -346,16 +346,16 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTestAsh, CollectPolicyStatus) {
   error = test_future_export_data.Get();
   EXPECT_EQ(error, std::nullopt);
 
-  base::Value::Dict policy_result;
+  base::DictValue policy_result;
   ASSERT_NO_FATAL_FAILURE(ReadExportedPolicyFile(
       &policy_result, output_path.Append(FILE_PATH_LITERAL("policies.json"))));
   EXPECT_FALSE(policy_result.empty());
 
-  base::Value::Dict* status = policy_result.FindDict("status");
+  base::DictValue* status = policy_result.FindDict("status");
   ASSERT_TRUE(status);
 
   // Check device policy status.
-  base::Value::Dict* device_policy_status =
+  base::DictValue* device_policy_status =
       status->FindDict(policy::kDeviceStatusKey);
   EXPECT_TRUE(device_policy_status);
   // Check the policy status fields with PII.
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTestAsh, CollectPolicyStatus) {
   }
 
   // Check user policy status.
-  base::Value::Dict* user_policy_status =
+  base::DictValue* user_policy_status =
       status->FindDict(policy::kUserStatusKey);
   EXPECT_TRUE(user_policy_status);
   // Check the policy status fields with PII.

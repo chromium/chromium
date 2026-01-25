@@ -513,14 +513,14 @@ void SessionServiceBase::TabNavigationPathEntriesDeleted(SessionID window_id,
 
 #if DCHECK_IS_ON()
 base::Value SessionServiceBase::ToDebugValue() const {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("profile", base::ToString(profile_.get()));
   if (command_storage_manager_) {
     result.Set("command_storage_manager",
                command_storage_manager_->ToDebugValue());
   }
   for (const auto& [id, range] : tab_to_available_range_) {
-    base::Value::Dict* range_dict =
+    base::DictValue* range_dict =
         result.EnsureDict("tab_to_available_range")
             ->EnsureDict(base::NumberToString(id.id()));
     range_dict->Set("first", range.first);

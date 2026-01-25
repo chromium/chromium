@@ -628,8 +628,8 @@ TEST_P(ThemeLocalDataBatchUploaderTest, LocalGrayscaleTheme) {
 
 TEST_P(ThemeLocalDataBatchUploaderTest, LocalNtpBackground) {
   // Set custom background via pref.
-  base::Value::Dict background_dict =
-      base::Value::Dict()
+  base::DictValue background_dict =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")

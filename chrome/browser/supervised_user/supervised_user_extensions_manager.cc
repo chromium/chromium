@@ -44,12 +44,12 @@ constexpr char const* kAllowlistExtensionIds[] = {
 };
 
 // Returns the set of extensions that are missing parent approval.
-base::Value::Dict GetExtensionsMissingApproval(const PrefService& user_prefs) {
-  const base::Value::Dict& user_extensions_dict =
+base::DictValue GetExtensionsMissingApproval(const PrefService& user_prefs) {
+  const base::DictValue& user_extensions_dict =
       user_prefs.GetDict(pref_names::kExtensions);
-  const base::Value::Dict& approved_extensions_dict =
+  const base::DictValue& approved_extensions_dict =
       user_prefs.GetDict(prefs::kSupervisedUserApprovedExtensions);
-  base::Value::Dict unapproved_extensions_dict;
+  base::DictValue unapproved_extensions_dict;
 
   // Deduce which extensions are not parent-approved based on the
   // corresponding preferences, as at the time of creation of
@@ -360,7 +360,7 @@ void SupervisedUserExtensionsManager::UpdateApprovedExtension(
     ApprovedExtensionChange type) {
   ScopedDictPrefUpdate update(user_prefs_,
                               prefs::kSupervisedUserApprovedExtensions);
-  base::Value::Dict& approved_extensions = update.Get();
+  base::DictValue& approved_extensions = update.Get();
   bool success = false;
   const Profile* profile = Profile::FromBrowserContext(context_);
   switch (type) {
@@ -476,7 +476,7 @@ void SupervisedUserExtensionsManager::
 }
 
 void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
-  base::Value::Dict unapproved_extensions_dict =
+  base::DictValue unapproved_extensions_dict =
       GetExtensionsMissingApproval(*user_prefs_);
   user_prefs_->SetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions,
                        std::move(unapproved_extensions_dict));
@@ -496,14 +496,14 @@ void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
 
 bool SupervisedUserExtensionsManager::IsLocallyParentApprovedExtension(
     const std::string& extension_id) const {
-  const base::Value::Dict& current_locally_approved_dict = user_prefs_->GetDict(
+  const base::DictValue& current_locally_approved_dict = user_prefs_->GetDict(
       prefs::kSupervisedUserLocallyParentApprovedExtensions);
   return current_locally_approved_dict.contains(extension_id);
 }
 
 void SupervisedUserExtensionsManager::RemoveLocalParentalApproval(
     const std::set<std::string>& extension_ids) {
-  base::Value::Dict locally_approved_extensions_dict =
+  base::DictValue locally_approved_extensions_dict =
       user_prefs_
           ->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions)
           .Clone();

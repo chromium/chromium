@@ -101,7 +101,7 @@ TEST_F(RestoreOnStartupPolicyHandlerTest,
   // Specify the Last value and the Session-Only Cookies value.
   SetPolicyValue(key::kRestoreOnStartup,
                  base::Value(SessionStartupPref::kPrefValueLast));
-  base::Value::List urls;
+  base::ListValue urls;
   urls.Append("http://foo.com");
   SetPolicyValue(key::kCookiesSessionOnlyForUrls, base::Value(std::move(urls)));
   // Checking should succeed but add an error to the error map.

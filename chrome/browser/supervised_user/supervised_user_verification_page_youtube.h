@@ -49,7 +49,7 @@ class SupervisedUserVerificationPageForYouTube
       override;
 
  protected:
-  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
+  void PopulateInterstitialStrings(base::DictValue& load_time_data) override;
 
  private:
   bool is_main_frame_;

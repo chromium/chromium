@@ -197,20 +197,20 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
                                    bool has_background_process) {
     TestExtensionDir dir;
 
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set("name", name)
                         .Set("version", "1.0")
                         .Set("manifest_version", 2)
                         .Set("web_accessible_resources",
-                             base::Value::List()
+                             base::ListValue()
                                  .Append("blank_iframe.html")
                                  .Append("http_iframe.html")
                                  .Append("two_http_iframes.html"));
 
     if (has_background_process) {
       manifest.Set("background",
-                   base::Value::Dict().Set(
-                       "scripts", base::Value::List().Append("script.js")));
+                   base::DictValue().Set(
+                       "scripts", base::ListValue().Append("script.js")));
       dir.WriteFile(FILE_PATH_LITERAL("script.js"),
                     "console.log('" + name + " running');");
     }
@@ -254,15 +254,15 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
     TestExtensionDir dir;
 
     auto manifest =
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", name)
             .Set("version", "1.0")
             .Set("manifest_version", 2)
             .Set("app",
-                 base::Value::Dict()
-                     .Set("urls", base::Value::List().Append(app_url.spec()))
+                 base::DictValue()
+                     .Set("urls", base::ListValue().Append(app_url.spec()))
                      .Set("launch",
-                          base::Value::Dict().Set("web_url", app_url.spec())));
+                          base::DictValue().Set("web_url", app_url.spec())));
     dir.WriteManifest(manifest);
 
     const Extension* extension = LoadExtension(dir.UnpackedPath());

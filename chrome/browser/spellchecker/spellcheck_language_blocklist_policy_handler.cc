@@ -34,7 +34,7 @@ bool SpellcheckLanguageBlocklistPolicyHandler::CheckPolicySettings(
   const base::Value* value = nullptr;
   bool ok = CheckAndGetValue(policies, errors, &value);
 
-  base::Value::List blocklisted;
+  base::ListValue blocklisted;
   std::vector<std::string> unknown;
   std::vector<std::string> duplicates;
   SortBlocklistedLanguages(policies, &blocklisted, &unknown, &duplicates);
@@ -71,7 +71,7 @@ void SpellcheckLanguageBlocklistPolicyHandler::ApplyPolicySettings(
 
   // Set the blocklisted dictionaries preference based on this policy's values,
   // and emit warnings for unknown or duplicate languages.
-  base::Value::List blocklisted;
+  base::ListValue blocklisted;
   std::vector<std::string> unknown;
   std::vector<std::string> duplicates;
   SortBlocklistedLanguages(policies, &blocklisted, &unknown, &duplicates);
@@ -95,7 +95,7 @@ void SpellcheckLanguageBlocklistPolicyHandler::ApplyPolicySettings(
 
 void SpellcheckLanguageBlocklistPolicyHandler::SortBlocklistedLanguages(
     const policy::PolicyMap& policies,
-    base::Value::List* const blocklisted,
+    base::ListValue* const blocklisted,
     std::vector<std::string>* const unknown,
     std::vector<std::string>* const duplicates) {
   const base::Value* value =

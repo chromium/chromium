@@ -197,20 +197,20 @@ class BrowserThemePack : public CustomThemeSupplier {
 
   // Transforms the JSON tint values into their final versions in the |tints_|
   // array. Does nothing if |tints_value| is nullptr.
-  void SetTintsFromJSON(const base::Value::Dict* tints_value);
+  void SetTintsFromJSON(const base::DictValue* tints_value);
 
   // Transforms the JSON color values into their final versions in the
   // |colors_| array and also fills in unspecified colors based on tint values.
   // Does nothing if |color_value| is nullptr.
-  void SetColorsFromJSON(const base::Value::Dict* color_value);
+  void SetColorsFromJSON(const base::DictValue* color_value);
 
   // Implementation details of BuildColorsFromJSON().
-  void ReadColorsFromJSON(const base::Value::Dict& colors_value,
+  void ReadColorsFromJSON(const base::DictValue& colors_value,
                           std::map<int, SkColor>* temp_colors);
 
   // Transforms the JSON display properties into |display_properties_|. Does
   // nothing if |display_value| is nullptr.
-  void SetDisplayPropertiesFromJSON(const base::Value::Dict* display_value);
+  void SetDisplayPropertiesFromJSON(const base::DictValue* display_value);
 
   // Parses the image names out of an extension. Does nothing if |theme_images|
   // is nullptr.
@@ -223,7 +223,7 @@ class BrowserThemePack : public CustomThemeSupplier {
   // versions in the |tab_group_color_palette_shades_| array. Does nothing if
   // |tab_group_color_palette_value| is nullptr.
   void SetTabGroupColorPaletteShadesFromJSON(
-      const base::Value::Dict* tab_group_color_palette_value);
+      const base::DictValue* tab_group_color_palette_value);
 
   // Helper function to populate the FilePathMap.
   void AddFileAtScaleToMap(const std::string& image_name,

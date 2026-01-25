@@ -54,7 +54,7 @@ class SupervisedUserVerificationPage
   void CommandReceived(const std::string& command) override;
   void OnInterstitialClosing() override;
   int GetHTMLTemplateId() override;
-  void PopulateCommonStrings(base::Value::Dict& load_time_data);
+  void PopulateCommonStrings(base::DictValue& load_time_data);
   bool IsReauthCompleted();
 
  private:

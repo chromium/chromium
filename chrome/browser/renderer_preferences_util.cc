@@ -86,7 +86,7 @@ void ParsePortRange(const std::string& range,
 
 // Extracts the string representation of URLs allowed for local IP exposure.
 std::vector<std::string> GetLocalIpsAllowedUrls(
-    const base::Value::List& allowed_urls) {
+    const base::ListValue& allowed_urls) {
   std::vector<std::string> ret;
   for (const auto& url : allowed_urls)
     ret.push_back(url.GetString());
@@ -160,7 +160,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 
   for (const base::Value& entry :
        pref_service->GetList(prefs::kWebRTCIPHandlingUrl)) {
-    const base::Value::Dict& dict = entry.GetDict();
+    const base::DictValue& dict = entry.GetDict();
     const std::string* url = dict.FindString("url");
     if (!url) {
       DVLOG(1) << "Malformed WebRtcIPHandlingUrl entry: Missing 'url' value.";

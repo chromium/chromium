@@ -146,9 +146,9 @@ class SmartCardPermissionContextTest : public testing::Test {
 
   void TearDown() override {
     profile_.GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedSmartCardConnectAllowedForUrls, base::Value::List());
+        prefs::kManagedSmartCardConnectAllowedForUrls, base::ListValue());
     profile_.GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedSmartCardConnectBlockedForUrls, base::Value::List());
+        prefs::kManagedSmartCardConnectBlockedForUrls, base::ListValue());
   }
 
   bool HasReaderPermission(SmartCardPermissionContext& context,
@@ -172,13 +172,13 @@ class SmartCardPermissionContextTest : public testing::Test {
   void SetAllowlistedByPolicy(const url::Origin& origin) {
     profile_.GetTestingPrefService()->SetManagedPref(
         prefs::kManagedSmartCardConnectAllowedForUrls,
-        base::Value::List().Append(origin.Serialize()));
+        base::ListValue().Append(origin.Serialize()));
   }
 
   void SetBlocklistedByPolicy(const url::Origin& origin) {
     profile_.GetTestingPrefService()->SetManagedPref(
         prefs::kManagedSmartCardConnectBlockedForUrls,
-        base::Value::List().Append(origin.Serialize()));
+        base::ListValue().Append(origin.Serialize()));
   }
 
   std::unique_ptr<KeyedService> CreateFakeSmartCardReaderTracker(

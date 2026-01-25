@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
 // Verifies "Save link as" is not enabled for links blocked via policy.
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
                        MAYBE_SaveLinkAsEntryIsDisabledForBlockedUrls) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("google.com");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
                                             std::move(list));
@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
   browser()->profile()->GetPrefs()->SetList(
       policy::policy_prefs::kUrlBlocklist,
-      base::Value::List().Append(initial_url.spec()));
+      base::ListValue().Append(initial_url.spec()));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
   browser()->profile()->GetPrefs()->SetList(
       policy::policy_prefs::kUrlBlocklist,
-      base::Value::List().Append("google.com"));
+      base::ListValue().Append("google.com"));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -812,7 +812,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
 // Verifies "Save image as" is not enabled for links blocked via policy.
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
                        MAYBE_SaveImageAsEntryIsDisabledForBlockedUrls) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("url.com");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
                                             std::move(list));
@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
 // Verifies "Save video as" is not enabled for links blocked via policy.
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
                        SaveVideoAsEntryIsDisabledForBlockedUrls) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("example.com");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
                                             std::move(list));

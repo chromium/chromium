@@ -87,13 +87,13 @@ void WarnIfMissingPauseOrResumeListener(Profile* profile,
 
 std::unique_ptr<std::vector<extensions::TtsVoice>>
 ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
-                                   const base::Value::List& voices_data,
+                                   const base::ListValue& voices_data,
                                    bool return_after_first_error,
                                    const char** error) {
   auto tts_voices = std::make_unique<std::vector<extensions::TtsVoice>>();
   for (size_t i = 0; i < voices_data.size(); i++) {
     extensions::TtsVoice voice;
-    const base::Value::Dict& voice_data = voices_data[i].GetDict();
+    const base::DictValue& voice_data = voices_data[i].GetDict();
 
     // Note partial validation of these attributes occurs based on tts engine's
     // json schema (e.g. for data type matching). The missing checks follow
@@ -134,7 +134,7 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
         continue;
       }
     }
-    const base::Value::List* event_types =
+    const base::ListValue* event_types =
         voice_data.FindList(constants::kEventTypesKey);
 
     if (event_types) {
@@ -159,7 +159,7 @@ std::unique_ptr<std::vector<extensions::TtsVoice>> GetVoicesInternal(
     const extensions::Extension* extension) {
   // First try to get the saved set of voices from extension prefs.
   auto* extension_prefs = extensions::ExtensionPrefs::Get(context);
-  const base::Value::List* voices_data =
+  const base::ListValue* voices_data =
       extension_prefs->ReadPrefAsList(extension->id(), kPrefTtsVoices);
   if (voices_data) {
     const char* error = nullptr;
@@ -338,7 +338,7 @@ void TtsExtensionEngine::GetVoices(
 
 void TtsExtensionEngine::Speak(content::TtsUtterance* utterance,
                                const content::VoiceData& voice) {
-  base::Value::List args = BuildSpeakArgs(utterance, voice);
+  base::ListValue args = BuildSpeakArgs(utterance, voice);
   Profile* profile =
       Profile::FromBrowserContext(utterance->GetBrowserContext());
   extensions::EventRouter* event_router = EventRouter::Get(profile);
@@ -365,7 +365,7 @@ void TtsExtensionEngine::Stop(content::BrowserContext* browser_context,
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_STOP, tts_engine_events::kOnStop,
-      base::Value::List(), profile);
+      base::ListValue(), profile);
   EventRouter::Get(profile)->DispatchEventToExtension(engine_id,
                                                       std::move(event));
 }
@@ -379,7 +379,7 @@ void TtsExtensionEngine::Pause(content::BrowserContext* browser_context,
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_PAUSE, tts_engine_events::kOnPause,
-      base::Value::List(), profile);
+      base::ListValue(), profile);
   EventRouter* event_router = EventRouter::Get(profile);
   event_router->DispatchEventToExtension(engine_id, std::move(event));
   WarnIfMissingPauseOrResumeListener(profile, event_router, engine_id);
@@ -394,7 +394,7 @@ void TtsExtensionEngine::Resume(content::BrowserContext* browser_context,
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_RESUME, tts_engine_events::kOnResume,
-      base::Value::List(), profile);
+      base::ListValue(), profile);
   EventRouter* event_router = EventRouter::Get(profile);
   event_router->DispatchEventToExtension(engine_id, std::move(event));
   WarnIfMissingPauseOrResumeListener(profile, event_router, engine_id);
@@ -408,10 +408,10 @@ void TtsExtensionEngine::UninstallLanguageRequest(
     bool uninstall_immediately) {
   tts_engine_events::TtsClientSource tts_client_source =
       static_cast<tts_engine_events::TtsClientSource>(source);
-  base::Value::List args =
+  base::ListValue args =
       BuildLanguagePackArgs(lang, client_id, tts_client_source);
 
-  base::Value::Dict removal_options = base::Value::Dict().Set(
+  base::DictValue removal_options = base::DictValue().Set(
       constants::kUninstallImmediatelyKey, uninstall_immediately);
   args.Append((std::move(removal_options)));
 
@@ -431,7 +431,7 @@ void TtsExtensionEngine::InstallLanguageRequest(
     int source) {
   tts_engine_events::TtsClientSource tts_client_source =
       static_cast<tts_engine_events::TtsClientSource>(source);
-  base::Value::List args =
+  base::ListValue args =
       BuildLanguagePackArgs(lang, client_id, tts_client_source);
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -451,7 +451,7 @@ void TtsExtensionEngine::LanguageStatusRequest(
   tts_engine_events::TtsClientSource tts_client_source =
       static_cast<tts_engine_events::TtsClientSource>(source);
 
-  base::Value::List args =
+  base::ListValue args =
       BuildLanguagePackArgs(lang, client_id, tts_client_source);
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -474,14 +474,14 @@ bool TtsExtensionEngine::IsBuiltInTtsEngineInitialized(
   return true;
 }
 
-base::Value::List TtsExtensionEngine::BuildLanguagePackArgs(
+base::ListValue TtsExtensionEngine::BuildLanguagePackArgs(
     const std::string& lang,
     const std::string& client_id,
     tts_engine_events::TtsClientSource source) {
-  base::Value::List args;
+  base::ListValue args;
 
-  base::Value::Dict tts_client =
-      base::Value::Dict()
+  base::DictValue tts_client =
+      base::DictValue()
           .Set(constants::kIdKey, client_id)
           .Set(constants::kSourceKey, TtsClientSourceEnumToString(source));
 
@@ -490,7 +490,7 @@ base::Value::List TtsExtensionEngine::BuildLanguagePackArgs(
   return args;
 }
 
-base::Value::List TtsExtensionEngine::BuildSpeakArgs(
+base::ListValue TtsExtensionEngine::BuildSpeakArgs(
     content::TtsUtterance* utterance,
     const content::VoiceData& voice) {
   // See if the engine supports the "end" event; if so, we can keep the
@@ -499,12 +499,12 @@ base::Value::List TtsExtensionEngine::BuildSpeakArgs(
   bool sends_end_event =
       voice.events.find(content::TTS_EVENT_END) != voice.events.end();
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(utterance->GetText());
 
   // Pass through most options to the speech engine, but remove some
   // that are handled internally.
-  base::Value::Dict options = utterance->GetOptions()->Clone();
+  base::DictValue options = utterance->GetOptions()->Clone();
   options.Remove(constants::kRequiredEventTypesKey);
   options.Remove(constants::kDesiredEventTypesKey);
   if (sends_end_event)
@@ -546,7 +546,7 @@ ExtensionTtsEngineUpdateLanguageFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
 
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
-  const base::Value::Dict& voice_pack_status = args()[0].GetDict();
+  const base::DictValue& voice_pack_status = args()[0].GetDict();
 
   const std::string* lang = voice_pack_status.FindString(constants::kLangKey);
   EXTENSION_FUNCTION_VALIDATE(lang);
@@ -600,7 +600,7 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
   int utterance_id = utterance_id_value.GetInt();
 
   EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
-  const base::Value::Dict& event = args()[1].GetDict();
+  const base::DictValue& event = args()[1].GetDict();
 
   const std::string* event_type = event.FindString(constants::kEventTypeKey);
   EXTENSION_FUNCTION_VALIDATE(event_type);
@@ -662,7 +662,7 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(utterance_id_value.is_int());
   int utterance_id = utterance_id_value.GetInt();
 
-  const base::Value::Dict* audio = args()[1].GetIfDict();
+  const base::DictValue* audio = args()[1].GetIfDict();
   EXTENSION_FUNCTION_VALIDATE(audio);
 
   const std::vector<uint8_t>* audio_buffer_blob =

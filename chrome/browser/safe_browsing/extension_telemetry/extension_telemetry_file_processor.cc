@@ -89,12 +89,12 @@ ExtensionTelemetryFileProcessor::ExtensionTelemetryFileProcessor()
       max_file_size_(kMaxFileSizeBytes),
       max_files_to_read_(kMaxFilesToRead) {}
 
-base::Value::Dict ExtensionTelemetryFileProcessor::ProcessExtension(
+base::DictValue ExtensionTelemetryFileProcessor::ProcessExtension(
     const base::FilePath& root_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (root_dir.empty()) {
     RecordValidExtension(false);
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   // Check if Manifest.json file is valid. If invalid, record in histogram and
@@ -104,7 +104,7 @@ base::Value::Dict ExtensionTelemetryFileProcessor::ProcessExtension(
   if (!base::ReadFileToString(manifest_path, &manifest_contents) ||
       manifest_contents.empty()) {
     RecordValidExtension(false);
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   // Gather all installed extension files, filter and sort by types.
@@ -113,7 +113,7 @@ base::Value::Dict ExtensionTelemetryFileProcessor::ProcessExtension(
   RecordNumFilesFound(installed_files.size() + 1);
 
   // Compute hashes of files until |max_files_to_process_| limit is reached.
-  base::Value::Dict extension_data =
+  base::DictValue extension_data =
       ComputeHashes(root_dir, std::move(installed_files));
   extension_data.Set(manifest_path.BaseName().AsUTF8Unsafe(),
                      std::move(manifest_contents));
@@ -167,10 +167,10 @@ ExtensionTelemetryFileProcessor::RetrieveFilePaths(
   return sorted_file_paths;
 }
 
-base::Value::Dict ExtensionTelemetryFileProcessor::ComputeHashes(
+base::DictValue ExtensionTelemetryFileProcessor::ComputeHashes(
     const base::FilePath& root_dir,
     const SortedFilePaths& file_paths) {
-  base::Value::Dict extension_data;
+  base::DictValue extension_data;
 
   for (const auto& full_path : file_paths) {
     if (extension_data.size() >= max_files_to_process_) {

@@ -173,7 +173,7 @@ std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
   return std::make_unique<HttpsFirstModeService>(profile, GetClock());
 }
 
-base::Time GetTimestamp(const base::Value::Dict& dict, const char* key) {
+base::Time GetTimestamp(const base::DictValue& dict, const char* key) {
   const auto* timestamp_string = dict.Find(key);
   if (timestamp_string) {
     const auto timestamp = base::ValueToTime(timestamp_string);
@@ -350,16 +350,16 @@ bool HttpsFirstModeService::UpdateFallbackEntries(bool add_new_entry) {
     return false;
   }
   base::Time now = clock_->Now();
-  const base::Value::Dict& base_pref =
+  const base::DictValue& base_pref =
       profile_->GetPrefs()->GetDict(prefs::kHttpsUpgradeFallbacks);
 
-  base::Value::List new_entries;
-  const base::Value::List* fallback_events =
+  base::ListValue new_entries;
+  const base::ListValue* fallback_events =
       base_pref.FindList(kFallbackEventsKey);
   base::Time latest_fallback_timestamp;
   if (fallback_events) {
     for (const auto& event : *fallback_events) {
-      const base::Value::Dict* fallback_event = event.GetIfDict();
+      const base::DictValue* fallback_event = event.GetIfDict();
       if (!fallback_event) {
         continue;
       }
@@ -390,7 +390,7 @@ bool HttpsFirstModeService::UpdateFallbackEntries(bool add_new_entry) {
 
   // Add the new fallback entry.
   if (add_new_entry) {
-    base::Value::Dict new_event;
+    base::DictValue new_event;
     new_event.Set(kFallbackEventsPrefTimestampKey, base::TimeToValue(now));
     new_entries.Append(std::move(new_event));
   }
@@ -417,7 +417,7 @@ bool HttpsFirstModeService::UpdateFallbackEntries(bool add_new_entry) {
        kMinRecentNavigationsForTypicallySecureUser.Get());
 
   // Update the pref with the new fallback events.
-  base::Value::Dict new_base_pref;
+  base::DictValue new_base_pref;
   new_base_pref.Set(kFallbackEventsKey, std::move(new_entries));
   new_base_pref.Set(kHeuristicStartTimestampKey,
                     base::TimeToValue(heuristic_start_timestamp));
@@ -622,9 +622,9 @@ void HttpsFirstModeService::SetClockForTesting(base::Clock* clock) {
 }
 
 size_t HttpsFirstModeService::GetFallbackEntryCountForTesting() const {
-  const base::Value::Dict& base_pref =
+  const base::DictValue& base_pref =
       profile_->GetPrefs()->GetDict(prefs::kHttpsUpgradeFallbacks);
-  const base::Value::List* fallback_events =
+  const base::ListValue* fallback_events =
       base_pref.FindList(kFallbackEventsKey);
   return fallback_events ? fallback_events->size() : 0;
 }

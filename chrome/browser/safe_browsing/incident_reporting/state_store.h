@@ -72,10 +72,10 @@ class StateStore {
     // obtaining this view will cause a serialize-and-write operation to be
     // scheduled when the transaction terminates. Use the store's
     // |incidents_sent_| member directly to simply query the preference.
-    base::Value::Dict& GetPrefDict();
+    base::DictValue& GetPrefDict();
 
     // Replaces the contents of the underlying dictionary value.
-    void ReplacePrefDict(base::Value::Dict pref_dict);
+    void ReplacePrefDict(base::DictValue pref_dict);
 
     // The store corresponding to this transaction.
     raw_ptr<StateStore> store_;
@@ -105,7 +105,7 @@ class StateStore {
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // A read-only view on the profile's incidents_sent preference.
-  raw_ptr<const base::Value::Dict, DanglingUntriaged> incidents_sent_ = nullptr;
+  raw_ptr<const base::DictValue, DanglingUntriaged> incidents_sent_ = nullptr;
 
 #if DCHECK_IS_ON()
   // True when a Transaction instance is outstanding.
