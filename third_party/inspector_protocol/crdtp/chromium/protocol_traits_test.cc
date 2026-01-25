@@ -114,19 +114,19 @@ TEST(ProtocolTraits, PrimitiveValueSerialization) {
 }
 
 template <typename... Args>
-base::Value::List MakeList(Args&&... args) {
-  base::Value::List res;
+base::ListValue MakeList(Args&&... args) {
+  base::ListValue res;
   (res.Append(std::forward<Args>(args)), ...);
   return res;
 }
 
 TEST(ProtocolTraits, ListValueSerialization) {
-  EXPECT_THAT(ConvertTo<std::vector<int>>(base::Value(base::Value::List())),
+  EXPECT_THAT(ConvertTo<std::vector<int>>(base::Value(base::ListValue())),
               Eq(std::vector<int>()));
-  EXPECT_THAT(RoundTrip(base::Value(base::Value::List())),
-              IsJson(base::Value(base::Value::List())));
+  EXPECT_THAT(RoundTrip(base::Value(base::ListValue())),
+              IsJson(base::Value(base::ListValue())));
 
-  base::Value::List list = MakeList(2, 3, 5);
+  base::ListValue list = MakeList(2, 3, 5);
   base::Value list_value = base::Value(list.Clone());
   EXPECT_THAT(ConvertTo<std::vector<int>>(list_value),
               Eq(std::vector<int>{2, 3, 5}));
@@ -140,7 +140,7 @@ TEST(ProtocolTraits, ListValueSerialization) {
 }
 
 TEST(ProtocolTraits, DictValueSerialization) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   EXPECT_THAT(RoundTrip(base::Value(dict.Clone())),
               IsJson(base::Value(base::Value::Type::DICT)));
   dict.Set("int", 42);
@@ -156,7 +156,7 @@ TEST(ProtocolTraits, DictValueSerialization) {
 }
 
 TEST(ProtocolTraits, DictValueJSONConversion) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set("int", 42);
   dict.Set("double", 2.718281828459045);
@@ -166,7 +166,7 @@ TEST(ProtocolTraits, DictValueJSONConversion) {
   dict.Set("dict", dict.Clone());
 
   std::vector<uint8_t> bytes;
-  ProtocolTypeTraits<base::Value::Dict>::Serialize(dict, &bytes);
+  ProtocolTypeTraits<base::DictValue>::Serialize(dict, &bytes);
 
   std::string json;
   json::ConvertCBORToJSON(SpanFrom(bytes), &json);

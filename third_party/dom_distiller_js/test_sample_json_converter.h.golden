@@ -18,7 +18,7 @@ namespace dom_distiller {
           class Message {
            public:
             static bool ReadFromValue(const base::Value& dict_value, dom_distiller::test_sample::proto::TypeTest::Message* message) {
-              const base::Value::Dict* dict = dict_value.GetIfDict();
+              const base::DictValue* dict = dict_value.GetIfDict();
               if (!dict) goto error;
               if (const auto* value = dict->Find("1")) {
                 if (!(*value).is_bool()) {
@@ -33,7 +33,7 @@ namespace dom_distiller {
             }
 
             static base::Value WriteToValue(const dom_distiller::test_sample::proto::TypeTest::Message& message) {
-              base::Value::Dict dict;
+              base::DictValue dict;
               if (message.has_dummy()) {
                 dict.Set("1", message.dummy());
               }
@@ -42,7 +42,7 @@ namespace dom_distiller {
           };
 
           static bool ReadFromValue(const base::Value& dict_value, dom_distiller::test_sample::proto::TypeTest* message) {
-            const base::Value::Dict* dict = dict_value.GetIfDict();
+            const base::DictValue* dict = dict_value.GetIfDict();
             if (!dict) goto error;
             if (const auto* value = dict->Find("1")) {
               if (!((*value).is_int() || (*value).is_double())) {
@@ -86,7 +86,7 @@ namespace dom_distiller {
           }
 
           static base::Value WriteToValue(const dom_distiller::test_sample::proto::TypeTest& message) {
-            base::Value::Dict dict;
+            base::DictValue dict;
             if (message.has_float_value()) {
               dict.Set("1", message.float_value());
             }
@@ -116,7 +116,7 @@ namespace dom_distiller {
           class Message {
            public:
             static bool ReadFromValue(const base::Value& dict_value, dom_distiller::test_sample::proto::Repeated::Message* message) {
-              const base::Value::Dict* dict = dict_value.GetIfDict();
+              const base::DictValue* dict = dict_value.GetIfDict();
               if (!dict) goto error;
               if (const auto* value = dict->Find("1")) {
                 if (!value->is_list()) {
@@ -136,10 +136,10 @@ namespace dom_distiller {
             }
 
             static base::Value WriteToValue(const dom_distiller::test_sample::proto::Repeated::Message& message) {
-              base::Value::Dict dict;
+              base::DictValue dict;
               {
                 const auto& repeated_field = message.dummy();
-                base::Value::List field_list;
+                base::ListValue field_list;
                 field_list.reserve(repeated_field.size());
                 for (const auto& element : repeated_field) {
                   field_list.Append(element);
@@ -151,7 +151,7 @@ namespace dom_distiller {
           };
 
           static bool ReadFromValue(const base::Value& dict_value, dom_distiller::test_sample::proto::Repeated* message) {
-            const base::Value::Dict* dict = dict_value.GetIfDict();
+            const base::DictValue* dict = dict_value.GetIfDict();
             if (!dict) goto error;
             if (const auto* value = dict->Find("1")) {
               if (!value->is_list()) {
@@ -225,10 +225,10 @@ namespace dom_distiller {
           }
 
           static base::Value WriteToValue(const dom_distiller::test_sample::proto::Repeated& message) {
-            base::Value::Dict dict;
+            base::DictValue dict;
             {
               const auto& repeated_field = message.float_value();
-              base::Value::List field_list;
+              base::ListValue field_list;
               field_list.reserve(repeated_field.size());
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
@@ -237,7 +237,7 @@ namespace dom_distiller {
             }
             {
               const auto& repeated_field = message.double_value();
-              base::Value::List field_list;
+              base::ListValue field_list;
               field_list.reserve(repeated_field.size());
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
@@ -246,7 +246,7 @@ namespace dom_distiller {
             }
             {
               const auto& repeated_field = message.int32_value();
-              base::Value::List field_list;
+              base::ListValue field_list;
               field_list.reserve(repeated_field.size());
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
@@ -255,7 +255,7 @@ namespace dom_distiller {
             }
             {
               const auto& repeated_field = message.bool_value();
-              base::Value::List field_list;
+              base::ListValue field_list;
               field_list.reserve(repeated_field.size());
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
@@ -264,7 +264,7 @@ namespace dom_distiller {
             }
             {
               const auto& repeated_field = message.string_value();
-              base::Value::List field_list;
+              base::ListValue field_list;
               field_list.reserve(repeated_field.size());
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
@@ -273,7 +273,7 @@ namespace dom_distiller {
             }
             {
               const auto& repeated_field = message.message_value();
-              base::Value::List field_list;
+              base::ListValue field_list;
               field_list.reserve(repeated_field.size());
               for (const auto& element : repeated_field) {
                 field_list.Append(

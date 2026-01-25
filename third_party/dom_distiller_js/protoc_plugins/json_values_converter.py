@@ -66,7 +66,7 @@ class CppConverterWriter(writer.CodeWriter):
 
       self.Output(
           'static bool ReadFromValue(const base::Value& dict_value, {generated_class_name}* message) {{\n'
-          '  const base::Value::Dict* dict = dict_value.GetIfDict();\n'
+          '  const base::DictValue* dict = dict_value.GetIfDict();\n'
           '  if (!dict) goto error;\n'
           '',
           generated_class_name=generated_class_name)
@@ -83,7 +83,7 @@ class CppConverterWriter(writer.CodeWriter):
           '}}\n'
           '\n'
           'static base::Value WriteToValue(const {generated_class_name}& message) {{\n'
-          '  base::Value::Dict dict;\n'
+          '  base::DictValue dict;\n'
           '',
           generated_class_name=generated_class_name)
 
@@ -118,7 +118,7 @@ class CppConverterWriter(writer.CodeWriter):
     if field.IsClassType():
       self.Output(
           'const auto& repeated_field = message.{field_name}();\n'
-          'base::Value::List field_list;\n'
+          'base::ListValue field_list;\n'
           'field_list.reserve(repeated_field.size());\n'
           'for (const auto& element : repeated_field) {{\n'
           '  field_list.Append(\n'
@@ -132,7 +132,7 @@ class CppConverterWriter(writer.CodeWriter):
     else:
       self.Output(
           'const auto& repeated_field = message.{field_name}();\n'
-          'base::Value::List field_list;\n'
+          'base::ListValue field_list;\n'
           'field_list.reserve(repeated_field.size());\n'
           'for (const auto& element : repeated_field) {{\n'
           '  field_list.Append(element);\n'

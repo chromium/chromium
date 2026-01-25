@@ -26,8 +26,8 @@ namespace traits {
 // to specify the type mapping to the rest of the generated code.
 using String = std::string;
 using Value = base::Value;
-using DictionaryValue = base::Value::Dict;
-using ListValue = base::Value::List;
+using DictionaryValue = base::DictValue;
+using ListValue = base::ListValue;
 
 }  // namespace traits
 
