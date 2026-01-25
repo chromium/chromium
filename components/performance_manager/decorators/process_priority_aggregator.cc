@@ -42,7 +42,7 @@ void ProcessPriorityAggregator::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value::Dict ProcessPriorityAggregator::DescribeProcessNodeData(
+base::DictValue ProcessPriorityAggregator::DescribeProcessNodeData(
     const ProcessNode* node) const {
   Data& data = Data::Get(ProcessNodeImpl::FromNode(node));
   return data.Describe();

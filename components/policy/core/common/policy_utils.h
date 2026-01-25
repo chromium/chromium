@@ -23,8 +23,8 @@ namespace utils {
 bool POLICY_EXPORT IsPolicyTestingEnabled(PrefService* pref_service,
                                           version_info::Channel channel);
 
-base::Value::Dict POLICY_EXPORT
-GetPolicyNameToTypeMapping(const base::Value::List& policy_names,
+base::DictValue POLICY_EXPORT
+GetPolicyNameToTypeMapping(const base::ListValue& policy_names,
                            const Schema& schema);
 
 }  // namespace utils

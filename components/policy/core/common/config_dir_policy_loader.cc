@@ -139,7 +139,7 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
                       << config_file.value() << ": " << error_msg;
       continue;
     }
-    base::Value::Dict* dictionary_value = value->GetIfDict();
+    base::DictValue* dictionary_value = value->GetIfDict();
     if (!dictionary_value) {
       SYSLOG(WARNING) << "Expected JSON dictionary in configuration file "
                       << config_file.value();
@@ -173,7 +173,7 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
   // entries are component IDs, and the third-level entries are the policies
   // for that domain/component namespace.
 
-  const base::Value::Dict* domains_dictionary = policies->GetIfDict();
+  const base::DictValue* domains_dictionary = policies->GetIfDict();
   if (!domains_dictionary) {
     SYSLOG(WARNING) << "3rdparty value is not a dictionary!";
     return;
@@ -192,7 +192,7 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
       continue;
     }
 
-    const base::Value::Dict* components_dictionary =
+    const base::DictValue* components_dictionary =
         domains_it.second.GetIfDict();
     if (!components_dictionary) {
       SYSLOG(WARNING) << "3rdparty/" << domains_it.first
@@ -202,7 +202,7 @@ void ConfigDirPolicyLoader::Merge3rdPartyPolicy(const base::Value* policies,
 
     PolicyDomain domain = supported_domains[domains_it.first];
     for (auto components_it : *components_dictionary) {
-      const base::Value::Dict* policy_dictionary =
+      const base::DictValue* policy_dictionary =
           components_it.second.GetIfDict();
       if (!policy_dictionary) {
         SYSLOG(WARNING) << "3rdparty/" << domains_it.first << "/"

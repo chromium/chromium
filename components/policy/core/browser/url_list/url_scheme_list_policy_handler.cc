@@ -72,7 +72,7 @@ void URLSchemeListPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (!schemes) {
     return;
   }
-  base::Value::List filtered_schemes;
+  base::ListValue filtered_schemes;
   for (const auto& entry : schemes->GetList()) {
     if (filtered_schemes.size() >= max_items()) {
       break;

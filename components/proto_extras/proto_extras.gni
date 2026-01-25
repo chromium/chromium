@@ -87,7 +87,7 @@
 # foo.ostream.h, etc.
 #
 # Other Notes:
-# - base::DictValue is the preferred type to base::Value::Dict, as it is
+# - base::DictValue is the preferred type to base::DictValue, as it is
 #   forward-declarable, allowing for less header includes.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -306,9 +306,7 @@ template("proto_test_extras") {
   if (defined(invoker.deps) && invoker.deps != [] && _extras_deps == []) {
     assert(
         false,
-        "The `deps` field is set, but the `extras_deps` field is not set. " +
-        "Protobuf depependencies need to have a corresponding proto_extras " +
-        "target so the generated matchers can use the `Serialize()` call.")
+        "The `deps` field is set, but the `extras_deps` field is not set. " + "Protobuf depependencies need to have a corresponding proto_extras " + "target so the generated matchers can use the `Serialize()` call.")
   }
   proto_library("${target_name}") {
     testonly = true

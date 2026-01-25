@@ -15,8 +15,8 @@
 
 namespace policy {
 namespace {
-base::Value::List ToList(const std::vector<std::string>& values) {
-  base::Value::List storage;
+base::ListValue ToList(const std::vector<std::string>& values) {
+  base::ListValue storage;
   storage.reserve(values.size());
   for (const auto& value : values)
     storage.Append(value);
@@ -24,7 +24,7 @@ base::Value::List ToList(const std::vector<std::string>& values) {
   return storage;
 }
 
-base::Value::Dict ToDict(const std::string& json) {
+base::DictValue ToDict(const std::string& json) {
   return base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
       .value()
       .TakeDict();
@@ -61,7 +61,7 @@ TEST_F(SensitivePolicyFilterTest, TestSimplePolicyFilter) {
 }
 
 TEST_F(SensitivePolicyFilterTest, TestExtensionInstallForceListFilter) {
-  base::Value::List policy =
+  base::ListValue policy =
       ToList({"extension0", "extension1;example.com", "extension2;",
               "extension3;https://clients2.google.com/service/update2/crx"});
   AddNewPolicy(key::kExtensionInstallForcelist, base::Value(std::move(policy)));
@@ -73,14 +73,14 @@ TEST_F(SensitivePolicyFilterTest, TestExtensionInstallForceListFilter) {
   const auto* actual_filtered_policy = policies()->GetValue(
       key::kExtensionInstallForcelist, base::Value::Type::LIST);
   ASSERT_TRUE(actual_filtered_policy);
-  base::Value::List expected_filtered_policy = ToList(
+  base::ListValue expected_filtered_policy = ToList(
       {"extension0", "[BLOCKED]extension1;example.com", "[BLOCKED]extension2;",
        "extension3;https://clients2.google.com/service/update2/crx"});
   EXPECT_EQ(expected_filtered_policy, *actual_filtered_policy);
 }
 
 TEST_F(SensitivePolicyFilterTest, TestExtensionSettingsFilter) {
-  base::Value::Dict policy = ToDict(R"({
+  base::DictValue policy = ToDict(R"({
     "*": {
       "installation_mode": "force_installed",
       "update_url": "https://example.com"
@@ -115,7 +115,7 @@ TEST_F(SensitivePolicyFilterTest, TestExtensionSettingsFilter) {
 
   FilterSensitivePolicies(policies());
 
-  const base::Value::Dict& filtered_policy =
+  const base::DictValue& filtered_policy =
       policies()
           ->GetValue(key::kExtensionSettings, base::Value::Type::DICT)
           ->GetDict();

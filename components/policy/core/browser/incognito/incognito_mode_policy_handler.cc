@@ -113,7 +113,7 @@ void IncognitoModePolicyHandler::ApplyPolicySettings(
   if (incognito_allowlist_set &&
       (!incognito_blocklist_set ||
        incognito_availability == IncognitoModeAvailability::kDisabled)) {
-    base::Value::List all_blocked_blocklist;
+    base::ListValue all_blocked_blocklist;
     all_blocked_blocklist.Append("*");
     prefs->SetValue(policy_prefs::kIncognitoModeUrlBlocklist,
                     base::Value(std::move(all_blocked_blocklist)));

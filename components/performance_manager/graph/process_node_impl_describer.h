@@ -27,7 +27,7 @@ class ProcessNodeImplDescriber : public GraphOwned,
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribeProcessNodeData(
+  base::DictValue DescribeProcessNodeData(
       const ProcessNode* node) const override;
 };
 

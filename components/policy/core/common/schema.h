@@ -132,7 +132,7 @@ class POLICY_EXPORT Schema {
   // expressions used in "pattern" and "patternProperties" and in Validate()
   // invalid regular expression don't accept any strings. |options| is a
   // bitwise-OR combination of the options above (see |kSchemaOptions*| above).
-  static base::expected<base::Value::Dict, std::string> ParseToDictAndValidate(
+  static base::expected<base::DictValue, std::string> ParseToDictAndValidate(
       const std::string& schema,
       int options);
 

@@ -61,7 +61,7 @@ std::string HostedProcessTypesToString(
 }
 
 base::Value GetProcessValueDict(const base::Process& process) {
-  base::Value::Dict ret;
+  base::DictValue ret;
 
   // On Windows, handle is a void *. On Fuchsia it's an int. On other platforms
   // it is equal to the pid, so don't bother to record it.
@@ -133,11 +133,11 @@ void ProcessNodeImplDescriber::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value::Dict ProcessNodeImplDescriber::DescribeProcessNodeData(
+base::DictValue ProcessNodeImplDescriber::DescribeProcessNodeData(
     const ProcessNode* node) const {
   const ProcessNodeImpl* impl = ProcessNodeImpl::FromNode(node);
 
-  base::Value::Dict ret;
+  base::DictValue ret;
 
   ret.Set("pid", base::NumberToString(impl->GetProcessId()));
 

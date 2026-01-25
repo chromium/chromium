@@ -36,7 +36,7 @@ class ProcessPriorityAggregatorData
     return user_blocking_count_;
   }
 
-  base::Value::Dict Describe() const;
+  base::DictValue Describe() const;
 
  private:
   // The number of frames at the given priority levels. The lowest priority

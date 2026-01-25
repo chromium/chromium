@@ -135,7 +135,7 @@ class POLICY_EXPORT CloudPolicyClient {
    public:
     explicit Result(DeviceManagementStatus);
     explicit Result(DeviceManagementStatus, int);
-    explicit Result(DeviceManagementStatus, int, base::Value::Dict);
+    explicit Result(DeviceManagementStatus, int, base::DictValue);
     explicit Result(NotRegistered);
 
     Result(const Result& other);
@@ -152,12 +152,12 @@ class POLICY_EXPORT CloudPolicyClient {
              response_ == other.response_;
     }
 
-    const base::Value::Dict& GetResponse() const;
+    const base::DictValue& GetResponse() const;
 
    private:
     std::variant<NotRegistered, DeviceManagementStatus> result_;
     int net_error_ = 0;
-    base::Value::Dict response_;
+    base::DictValue response_;
   };
 
   // A callback which receives the operations result.
@@ -474,7 +474,7 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // DEPRECATED: Use |UploadSecurityEvent| instead.
   virtual void UploadSecurityEventReport(bool include_device_info,
-                                         base::Value::Dict report,
+                                         base::DictValue report,
                                          ResultCallback callback);
 
   // Uploads a report on the status of app push-installs. The client must be in
@@ -483,7 +483,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // Only one outstanding app push-install report upload is allowed.
   // In case the new push-installs report upload is started, the previous one
   // will be canceled.
-  virtual void UploadAppInstallReport(base::Value::Dict report,
+  virtual void UploadAppInstallReport(base::DictValue report,
                                       ResultCallback callback);
 
   // Cancels the pending app push-install status report upload, if exists.
@@ -683,7 +683,7 @@ class POLICY_EXPORT CloudPolicyClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return client_id_;
   }
-  const base::Value::Dict* configuration_seed() const {
+  const base::DictValue* configuration_seed() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return configuration_seed_.get();
   }
@@ -794,12 +794,11 @@ class POLICY_EXPORT CloudPolicyClient {
                                DMServerJobResult result);
 
   // Callback for realtime report upload requests.
-  void OnRealtimeReportUploadCompleted(
-      ResultCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      std::optional<base::Value::Dict> response);
+  void OnRealtimeReportUploadCompleted(ResultCallback callback,
+                                       DeviceManagementService::Job* job,
+                                       DeviceManagementStatus status,
+                                       int net_error,
+                                       std::optional<base::DictValue> response);
 
   // Callback for remote command fetch requests.
   void OnRemoteCommandsFetched(RemoteCommandCallback callback,
@@ -868,7 +867,7 @@ class POLICY_EXPORT CloudPolicyClient {
   std::string oauth_token_;
 
   std::string dm_token_;
-  std::unique_ptr<base::Value::Dict> configuration_seed_;
+  std::unique_ptr<base::DictValue> configuration_seed_;
   DeviceMode device_mode_ = DEVICE_MODE_NOT_SET;
   ThirdPartyIdentityType third_party_identity_type_ = NO_THIRD_PARTY_MANAGEMENT;
   std::string client_id_;
@@ -939,7 +938,7 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // DEPRECATED: Use CreateNewRealtimeReportingJob instead.
   DeviceManagementService::Job* CreateNewRealtimeReportingJobDeprecated(
-      base::Value::Dict report,
+      base::DictValue report,
       const std::string& server_url,
       bool include_device_info,
       ResultCallback callback);

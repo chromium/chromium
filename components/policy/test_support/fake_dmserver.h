@@ -151,7 +151,7 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
                                 const std::string* serialized_raw_policy);
 
   // Parses regular and external policy from the JSON dict.
-  bool ParsePolicies(const base::Value::Dict* dict);
+  bool ParsePolicies(const base::DictValue* dict);
 
   // Reads and sets the values in the policy blob file, it will return true if
   // the policy blob file doesn't exist yet or all the values are read
@@ -168,12 +168,12 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   bool ReadClientStateFile();
 
   // Returns true if the key of the specific type is in the dictionary.
-  static bool FindKey(const base::Value::Dict& dict,
+  static bool FindKey(const base::DictValue& dict,
                       const std::string& key,
                       base::Value::Type type);
 
   // Converts the client to Dictionary.
-  static base::Value::Dict GetValueFromClient(
+  static base::DictValue GetValueFromClient(
       const policy::ClientStorage::ClientInfo& c);
   // Converts the value to Client.
   static std::optional<policy::ClientStorage::ClientInfo> GetClientFromValue(

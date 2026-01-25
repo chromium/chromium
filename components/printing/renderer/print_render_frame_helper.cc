@@ -367,7 +367,7 @@ bool IsPrintingPdfFrame(blink::WebLocalFrame* frame,
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-bool IsPrintToPdfRequested(const base::Value::Dict& job_settings) {
+bool IsPrintToPdfRequested(const base::DictValue& job_settings) {
   mojom::PrinterType type = static_cast<mojom::PrinterType>(
       job_settings.FindInt(kSettingPrinterType).value());
   return type == mojom::PrinterType::kPdf;
@@ -464,7 +464,7 @@ gfx::SizeF GetPdfPageSize(const gfx::SizeF& page_size, int dpi) {
                     ConvertUnitFloat(page_size.height(), dpi, kPointsPerInch));
 }
 
-ScalingType ScalingTypeFromJobSettings(const base::Value::Dict& job_settings) {
+ScalingType ScalingTypeFromJobSettings(const base::DictValue& job_settings) {
   return static_cast<ScalingType>(
       job_settings.FindInt(kSettingScalingType).value());
 }
@@ -487,7 +487,7 @@ mojom::PrintScalingOption GetPrintScalingOption(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
     bool source_is_html,
-    const base::Value::Dict& job_settings,
+    const base::DictValue& job_settings,
     const mojom::PrintParams& params) {
   if (params.print_to_pdf)
     return mojom::PrintScalingOption::kSourceSize;
@@ -590,7 +590,7 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
       page_layout.margin_top + page_layout.margin_bottom +
           page_layout.content_height);
 
-  base::Value::Dict options;
+  base::DictValue options;
   options.Set(kSettingHeaderFooterDate,
               base::Time::Now().InMillisecondsFSinceUnixEpoch());
   options.Set("width", static_cast<double>(page_size.width()));
@@ -1478,7 +1478,7 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
   // Print Preview resets `print_in_progress_` when the dialog closes.
 }
 
-void PrintRenderFrameHelper::PrintPreview(base::Value::Dict settings) {
+void PrintRenderFrameHelper::PrintPreview(base::DictValue settings) {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
@@ -1642,7 +1642,7 @@ void PrintRenderFrameHelper::PrintNodeUnderContextMenu() {
 }
 
 void PrintRenderFrameHelper::UpdateFrameMarginsCssInfo(
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   constexpr int kDefault = static_cast<int>(mojom::MarginType::kDefaultMargins);
   int margins_type = settings.FindInt(kSettingMarginsType).value_or(kDefault);
   ignore_css_margins_ = margins_type != kDefault;
@@ -2451,11 +2451,11 @@ PrintRenderFrameHelper::SetOptionsFromPdfDocument() {
 bool PrintRenderFrameHelper::UpdatePrintSettings(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
-    base::Value::Dict passed_job_settings) {
+    base::DictValue passed_job_settings) {
   CHECK(!passed_job_settings.empty());
 
-  base::Value::Dict modified_job_settings;
-  const base::Value::Dict* job_settings;
+  base::DictValue modified_job_settings;
+  const base::DictValue* job_settings;
   bool source_is_html = !IsPrintingPdfFrame(frame, node);
   if (source_is_html) {
     job_settings = &passed_job_settings;

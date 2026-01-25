@@ -581,13 +581,13 @@ void PageLiveStateDecorator::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
+base::DictValue PageLiveStateDecorator::DescribePageNodeData(
     const PageNode* node) const {
   auto* data = Data::FromPageNode(node);
   if (!data)
-    return base::Value::Dict();
+    return base::DictValue();
 
-  base::Value::Dict ret;
+  base::DictValue ret;
   ret.Set("IsConnectedToUSBDevice", data->IsConnectedToUSBDevice());
   ret.Set("IsConnectedToBluetoothDevice", data->IsConnectedToBluetoothDevice());
   ret.Set("IsConnectedToHidDevice", data->IsConnectedToHidDevice());

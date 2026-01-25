@@ -184,7 +184,7 @@ bool JsonPrefStore::GetValue(std::string_view key,
   return true;
 }
 
-base::Value::Dict JsonPrefStore::GetValues() const {
+base::DictValue JsonPrefStore::GetValues() const {
   return prefs_.Clone();
 }
 
@@ -438,7 +438,7 @@ void JsonPrefStore::OnFileRead(std::unique_ptr<ReadResult> read_result) {
 
   DCHECK(read_result);
 
-  base::Value::Dict unfiltered_prefs;
+  base::DictValue unfiltered_prefs;
 
   read_error_ = read_result->error;
 
@@ -505,7 +505,7 @@ JsonPrefStore::GetSerializedDataProducerForBackgroundSequence() {
 }
 
 void JsonPrefStore::FinalizeFileRead(bool initialization_successful,
-                                     base::Value::Dict prefs,
+                                     base::DictValue prefs,
                                      bool schedule_write) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

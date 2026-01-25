@@ -241,7 +241,7 @@ bool PrefMember<base::FilePath>::Internal::UpdateValueInternal(
 template <>
 void PrefMember<std::vector<std::string> >::UpdatePref(
     const std::vector<std::string>& value) {
-  base::Value::List list_value;
+  base::ListValue list_value;
   for (const std::string& val : value)
     list_value.Append(val);
 

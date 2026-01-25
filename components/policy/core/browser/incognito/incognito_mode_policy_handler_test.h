@@ -26,17 +26,17 @@ class IncognitoModePolicyHandlerTestBase
   };
 
   PolicyMap policies_;
-  base::Value::List default_blocklist_;
-  base::Value::List default_allowlist_;
+  base::ListValue default_blocklist_;
+  base::ListValue default_allowlist_;
 
   void SetIncognitoModeAvailability(
       policy::IncognitoModeAvailability availability);
-  void SetIncognitoModeUrlAllowlist(base::Value::List allowlist);
-  void SetIncognitoModeUrlBlocklist(base::Value::List blocklist);
+  void SetIncognitoModeUrlAllowlist(base::ListValue allowlist);
+  void SetIncognitoModeUrlBlocklist(base::ListValue blocklist);
   void ApplyPolicies();
   void VerifyAvailabilityPref(policy::IncognitoModeAvailability availability);
-  void VerifyBlocklistPref(const base::Value::List& expected_blocklist);
-  void VerifyAllowlistPref(const base::Value::List& expected_allowlist);
+  void VerifyBlocklistPref(const base::ListValue& expected_blocklist);
+  void VerifyAllowlistPref(const base::ListValue& expected_allowlist);
 };
 
 }  // namespace policy

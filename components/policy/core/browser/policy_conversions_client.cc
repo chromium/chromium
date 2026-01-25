@@ -87,7 +87,7 @@ std::string PolicyConversionsClient::ConvertValueToJSON(
   return json_string;
 }
 
-base::Value::Dict PolicyConversionsClient::GetChromePolicies() {
+base::DictValue PolicyConversionsClient::GetChromePolicies() {
   DCHECK(HasUserPolicies());
 
   PolicyService* policy_service = GetPolicyService();
@@ -120,7 +120,7 @@ base::Value::Dict PolicyConversionsClient::GetChromePolicies() {
                          GetKnownPolicies(schema_map, policy_namespace));
 }
 
-base::Value::Dict PolicyConversionsClient::GetPrecedencePolicies() {
+base::DictValue PolicyConversionsClient::GetPrecedencePolicies() {
   DCHECK(HasUserPolicies());
 
   VLOG_POLICY(3, POLICY_FETCHING) << "Client has user policies; getting "
@@ -137,7 +137,7 @@ base::Value::Dict PolicyConversionsClient::GetPrecedencePolicies() {
     return Value::Dict();
   }
 
-  base::Value::Dict values;
+  base::DictValue values;
   // Iterate through all precedence metapolicies and retrieve their value only
   // if they are set in the PolicyMap.
   for (auto* policy : metapolicy::kPrecedence) {
@@ -155,7 +155,7 @@ base::Value::Dict PolicyConversionsClient::GetPrecedencePolicies() {
   return values;
 }
 
-base::Value::List PolicyConversionsClient::GetPrecedenceOrder() {
+base::ListValue PolicyConversionsClient::GetPrecedenceOrder() {
   DCHECK(HasUserPolicies());
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -213,7 +213,7 @@ base::Value::List PolicyConversionsClient::GetPrecedenceOrder() {
                                     IDS_POLICY_PRECEDENCE_CLOUD_USER};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  base::Value::List precedence_order_localized;
+  base::ListValue precedence_order_localized;
   for (int label_id : precedence_order) {
     precedence_order_localized.Append(l10n_util::GetStringUTF16(label_id));
   }
@@ -341,7 +341,7 @@ Value::Dict PolicyConversionsClient::GetPolicyValue(
     bool has_override_values = false;
     bool has_supersede_values = false;
     for (const auto& conflict : policy.conflicts) {
-      base::Value::Dict conflicted_policy_value =
+      base::DictValue conflicted_policy_value =
           GetPolicyValue(policy_name, conflict.entry(), deprecated_policies,
                          future_policies, errors, known_policy_schemas);
       switch (conflict.conflict_type()) {
@@ -377,7 +377,7 @@ Value::Dict PolicyConversionsClient::GetPolicyValues(
         known_policy_schemas) const {
   DVLOG_POLICY(2, POLICY_PROCESSING) << "Retrieving map of policy values";
 
-  base::Value::Dict values;
+  base::DictValue values;
   for (const auto& entry : map) {
     const std::string& policy_name = entry.first;
     const PolicyMap::Entry& policy = entry.second;
@@ -385,7 +385,7 @@ Value::Dict PolicyConversionsClient::GetPolicyValues(
       continue;
     if (policy.IsDefaultValue() && drop_default_values_enabled_)
       continue;
-    base::Value::Dict value =
+    base::DictValue value =
         GetPolicyValue(policy_name, policy, deprecated_policies,
                        future_policies, errors, known_policy_schemas);
     values.Set(policy_name, std::move(value));

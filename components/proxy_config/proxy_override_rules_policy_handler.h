@@ -28,7 +28,7 @@ class PROXY_CONFIG_EXPORT ProxyOverrideRulesPolicyHandler
   // with the policy's expected formats. These functions are called after the
   // basic schema validation done in `CheckPolicySettings`. Returns false if the
   // passed `value` should result in its rule not being valid overall.
-  bool CheckRule(const base::Value::Dict& value,
+  bool CheckRule(const base::DictValue& value,
                  policy::PolicyErrorPath error_path,
                  policy::PolicyErrorMap* errors);
   bool CheckDestinations(const base::Value& value,

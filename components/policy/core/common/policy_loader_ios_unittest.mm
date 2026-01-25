@@ -58,9 +58,9 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallBooleanPolicy(const std::string& policy_name,
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
-                               const base::Value::List& policy_value) override;
+                               const base::ListValue& policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
-                               const base::Value::Dict& policy_value) override;
+                               const base::DictValue& policy_value) override;
 
   static PolicyProviderTestHarness* Create();
   static PolicyProviderTestHarness* CreateWithJSONEncoding();
@@ -130,9 +130,8 @@ void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
   });
 }
 
-void TestHarness::InstallStringListPolicy(
-    const std::string& policy_name,
-    const base::Value::List& policy_value) {
+void TestHarness::InstallStringListPolicy(const std::string& policy_name,
+                                          const base::ListValue& policy_value) {
   NSString* key = base::SysUTF8ToNSString(policy_name);
   base::apple::ScopedCFTypeRef<CFPropertyListRef> value =
       ValueToProperty(base::Value(policy_value.Clone()));
@@ -149,9 +148,8 @@ void TestHarness::InstallStringListPolicy(
   }
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::Value::Dict& policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::DictValue& policy_value) {
   NSString* key = base::SysUTF8ToNSString(policy_name);
 
   if (encode_complex_data_as_json_) {

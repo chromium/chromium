@@ -613,7 +613,7 @@ ReadingListEntry::AsReadingListLocal(const base::Time& now) const {
   pb_entry->set_failed_download_counter(failed_download_counter_);
 
   if (backoff_) {
-    base::Value::List backoff =
+    base::ListValue backoff =
         net::BackoffEntrySerializer::SerializeToList(*backoff_, now);
 
     std::string output;

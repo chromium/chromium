@@ -67,7 +67,7 @@ void HeadlessPrintManager::ScriptedPrint(
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void HeadlessPrintManager::UpdatePrintSettings(
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     UpdatePrintSettingsCallback callback) {
   mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
 }

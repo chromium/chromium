@@ -136,7 +136,7 @@ void ProxyOverrideRulesPolicyHandler::ApplyPolicySettings(
 }
 
 bool ProxyOverrideRulesPolicyHandler::CheckRule(
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
   // Evaluate each sub-field of a given rule to get all error messages

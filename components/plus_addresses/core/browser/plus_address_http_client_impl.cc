@@ -279,7 +279,7 @@ void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateRequest(kServerReservePlusAddressEndpoint,
                     net::HttpRequestHeaders::kPutMethod, *auth_token);
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("facet", origin.Serialize());
   payload.Set("refresh_email_address", refresh);
   std::string request_body;
@@ -320,7 +320,7 @@ void PlusAddressHttpClientImpl::ConfirmPlusAddressInternal(
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateRequest(kServerCreatePlusAddressEndpoint,
                     net::HttpRequestHeaders::kPutMethod, *auth_token);
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("facet", origin.Serialize());
   payload.Set("reserved_email_address", *plus_address);
   std::string request_body;

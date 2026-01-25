@@ -57,11 +57,11 @@ class POLICY_EXPORT URLBlocklist {
   // URLs matching one of the |filters| will be blocked. The filter format is
   // documented at
   // http://www.chromium.org/administrators/url-blocklist-filter-format.
-  void Block(const base::Value::List& filters);
+  void Block(const base::ListValue& filters);
 
   // URLs matching one of the |filters| will be allowed. If a URL is both
   // blocked and allowed, allow takes precedence.
-  void Allow(const base::Value::List& filters);
+  void Allow(const base::ListValue& filters);
 
   // Returns true if the URL is blocked.
   bool IsURLBlocked(const GURL& url) const;
@@ -88,10 +88,10 @@ class BlocklistSource {
 
   // Returns the blocklist which can contains URLs, domain/subdomains and
   // schemes.
-  virtual const base::Value::List* GetBlocklistSpec() const = 0;
+  virtual const base::ListValue* GetBlocklistSpec() const = 0;
 
   // Returns exceptions to the blocklist.
-  virtual const base::Value::List* GetAllowlistSpec() const = 0;
+  virtual const base::ListValue* GetAllowlistSpec() const = 0;
 
   // Adds an observer that will be called when the blocklist changes.
   virtual void SetBlocklistObserver(base::RepeatingClosure observer) = 0;

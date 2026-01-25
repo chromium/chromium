@@ -26,10 +26,10 @@ JsonGenerationParams::JsonGenerationParams() = default;
 JsonGenerationParams::~JsonGenerationParams() = default;
 JsonGenerationParams::JsonGenerationParams(JsonGenerationParams&&) = default;
 
-std::string GenerateJson(base::Value::Dict policy_values,
-                         base::Value::Dict status,
+std::string GenerateJson(base::DictValue policy_values,
+                         base::DictValue status,
                          const JsonGenerationParams& params) {
-  base::Value::Dict dict = std::move(policy_values);
+  base::DictValue dict = std::move(policy_values);
   dict.Set("chromeMetadata", GetChromeMetadataValue(params));
   dict.Set("status", std::move(status));
 
@@ -40,8 +40,8 @@ std::string GenerateJson(base::Value::Dict policy_values,
   return json_policies;
 }
 
-base::Value::Dict GetChromeMetadataValue(const JsonGenerationParams& params) {
-  base::Value::Dict chrome_metadata;
+base::DictValue GetChromeMetadataValue(const JsonGenerationParams& params) {
+  base::DictValue chrome_metadata;
   chrome_metadata.Set("application", params.application_name);
 
   std::string version = base::StrCat(

@@ -52,7 +52,7 @@ base::Value MaybeNullStringToValue(std::string_view str) {
 
 base::Value PriorityAndReasonToValue(
     const execution_context_priority::PriorityAndReason& priority_and_reason) {
-  base::Value::Dict priority;
+  base::DictValue priority;
   priority.Set("priority",
                base::ProcessPriorityToString(priority_and_reason.priority()));
   priority.Set("reason", MaybeNullStringToValue(priority_and_reason.reason()));
@@ -75,7 +75,7 @@ std::string DumpNodeDescription(const Node* node) {
           .DebugString();
     case NodeTypeEnum::kSystem:
       // SystemNodeImpl has no default describer. Return an empty dictionary.
-      return base::Value::Dict().DebugString();
+      return base::DictValue().DebugString();
     case NodeTypeEnum::kWorker:
       return WorkerNodeImplDescriber()
           .DescribeNodeData(WorkerNodeImpl::FromNode(node))

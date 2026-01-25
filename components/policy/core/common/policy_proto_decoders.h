@@ -81,7 +81,7 @@ POLICY_EXPORT void DecodeProtoFields(
 // parse was successful. The `scope` and `source` are set as scope and source of
 // the policy in the result. In case of failure, the `error` is populated with
 // error message and false is returned.
-POLICY_EXPORT bool ParseComponentPolicy(base::Value::Dict json_dict,
+POLICY_EXPORT bool ParseComponentPolicy(base::DictValue json_dict,
                                         PolicyScope scope,
                                         PolicySource source,
                                         PolicyMap* policy,

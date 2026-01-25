@@ -602,7 +602,7 @@ void PasswordReuseManagerImpl::OnPrimaryAccountChanged(
       return;
     }
     for (size_t i = 0; i < saved_creds_list.size(); i++) {
-      base::Value::Dict* saved_creds_entry = saved_creds_list[i].GetIfDict();
+      base::DictValue* saved_creds_entry = saved_creds_list[i].GetIfDict();
       const std::string* account_id =
           saved_creds_entry->FindString(kLoginAccountIdentifier);
       CHECK(account_id);

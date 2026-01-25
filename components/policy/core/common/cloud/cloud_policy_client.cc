@@ -361,7 +361,7 @@ CloudPolicyClient::Result::Result(DeviceManagementStatus status, int net_error)
     : result_(status), net_error_(net_error) {}
 CloudPolicyClient::Result::Result(DeviceManagementStatus status,
                                   int net_error,
-                                  base::Value::Dict response)
+                                  base::DictValue response)
     : result_(status), net_error_(net_error), response_(std::move(response)) {}
 CloudPolicyClient::Result::Result(NotRegistered) : result_(NotRegistered()) {}
 
@@ -400,7 +400,7 @@ int CloudPolicyClient::Result::GetNetError() const {
   return net_error_;
 }
 
-const base::Value::Dict& CloudPolicyClient::Result::GetResponse() const {
+const base::DictValue& CloudPolicyClient::Result::GetResponse() const {
   return response_;
 }
 
@@ -1206,7 +1206,7 @@ void CloudPolicyClient::UploadSecurityEvent(
 }
 
 void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
-                                                  base::Value::Dict report,
+                                                  base::DictValue report,
                                                   ResultCallback callback) {
   DCHECK(!base::FeatureList::IsEnabled(
       policy::kUploadRealtimeReportingEventsUsingProto));
@@ -1224,7 +1224,7 @@ void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
       include_device_info, std::move(callback));
 }
 
-void CloudPolicyClient::UploadAppInstallReport(base::Value::Dict report,
+void CloudPolicyClient::UploadAppInstallReport(base::DictValue report,
                                                ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1310,7 +1310,7 @@ DeviceManagementService::Job* CloudPolicyClient::CreateNewRealtimeReportingJob(
 
 DeviceManagementService::Job*
 CloudPolicyClient::CreateNewRealtimeReportingJobDeprecated(
-    base::Value::Dict report,
+    base::DictValue report,
     const std::string& server_url,
     bool include_device_info,
     ResultCallback callback) {
@@ -1699,7 +1699,7 @@ void CloudPolicyClient::ProcessDeviceRegisterResponse(
         response.configuration_seed(),
         base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (configuration_seed && configuration_seed->is_dict()) {
-      configuration_seed_ = std::make_unique<base::Value::Dict>(
+      configuration_seed_ = std::make_unique<base::DictValue>(
           std::move(*configuration_seed).TakeDict());
     } else {
       configuration_seed_.reset();
@@ -1955,7 +1955,7 @@ void CloudPolicyClient::OnRealtimeReportUploadCompleted(
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int reponse_code,
-    std::optional<base::Value::Dict> response) {
+    std::optional<base::DictValue> response) {
   last_dm_status_ = status;
   if (status != DM_STATUS_SUCCESS) {
     NotifyClientError();

@@ -63,8 +63,7 @@ class ProcessMetricsDecorator
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber
-  base::Value::Dict DescribeSystemNodeData(
-      const SystemNode* node) const override;
+  base::DictValue DescribeSystemNodeData(const SystemNode* node) const override;
 
   bool IsTimerRunningForTesting() const;
   base::TimeDelta GetTimerDelayForTesting() const;

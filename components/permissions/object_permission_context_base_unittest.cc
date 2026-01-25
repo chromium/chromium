@@ -43,17 +43,16 @@ class TestObjectPermissionContext : public ObjectPermissionContextBase {
             PermissionsClient::Get()->GetSettingsMap(browser_context)) {}
   ~TestObjectPermissionContext() override = default;
 
-  bool IsValidObject(const base::Value::Dict& dict) override {
+  bool IsValidObject(const base::DictValue& dict) override {
     return dict.size() == 2 && dict.Find(kRequiredKey1) &&
            dict.Find(kRequiredKey2);
   }
 
-  std::u16string GetObjectDisplayName(
-      const base::Value::Dict& object) override {
+  std::u16string GetObjectDisplayName(const base::DictValue& object) override {
     return {};
   }
 
-  std::string GetKeyForObject(const base::Value::Dict& object) override {
+  std::string GetKeyForObject(const base::DictValue& object) override {
     return *object.FindString(kRequiredKey1);
   }
 };
@@ -94,8 +93,8 @@ class ObjectPermissionContextBaseTest : public testing::Test {
   const GURL url2_;
   const url::Origin origin1_;
   const url::Origin origin2_;
-  base::Value::Dict object1_;
-  base::Value::Dict object2_;
+  base::DictValue object1_;
+  base::DictValue object2_;
   TestObjectPermissionContext context_;
   TestObjectPermissionContext file_system_access_context_;
 };

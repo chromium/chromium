@@ -49,7 +49,7 @@ PaymentShippingOption& PaymentShippingOption::operator=(
   return *this;
 }
 
-bool PaymentShippingOption::FromValueDict(const base::Value::Dict& dict) {
+bool PaymentShippingOption::FromValueDict(const base::DictValue& dict) {
   const std::string* id_in = dict.FindString(kPaymentShippingOptionId);
   if (!id_in) {
     return false;
@@ -62,7 +62,7 @@ bool PaymentShippingOption::FromValueDict(const base::Value::Dict& dict) {
   }
   label = *label_in;
 
-  const base::Value::Dict* amount_dict =
+  const base::DictValue* amount_dict =
       dict.FindDict(kPaymentShippingOptionAmount);
   if (!amount_dict) {
     return false;

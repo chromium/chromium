@@ -96,8 +96,8 @@ void PageAggregatorData::UpdateCurrentFrameCountForFreezingOriginTrialOptOut(
       PassKey(), num_current_frames_with_freezing_origin_trial_opt_out_ > 0);
 }
 
-base::Value::Dict PageAggregatorData::Describe() {
-  base::Value::Dict ret;
+base::DictValue PageAggregatorData::Describe() {
+  base::DictValue ret;
   ret.Set("num_frames_holding_web_lock", num_frames_holding_web_lock_);
   ret.Set("num_frames_holding_blocking_indexeddb_lock",
           num_frames_holding_blocking_indexeddb_lock_);

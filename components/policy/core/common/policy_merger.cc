@@ -176,7 +176,7 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
 
   auto new_conflict = policy->DeepCopy();
   if (value_changed) {
-    base::Value::List new_value;
+    base::ListValue new_value;
     for (const base::Value* it : merged_values)
       new_value.Append(it->Clone());
 
@@ -266,7 +266,7 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy,
         return policy_map.EntryHasHigherPriority(*b, *a);
       });
 
-  base::Value::Dict merged_dictionary;
+  base::DictValue merged_dictionary;
   bool value_changed = false;
 
   // Merges all the keys from the policies from different sources.
@@ -275,7 +275,7 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy,
                             *it, *policy, AllowUserCloudPolicyMerging()))
       continue;
 
-    const base::Value::Dict* dict =
+    const base::DictValue* dict =
         it->value(base::Value::Type::DICT)->GetIfDict();
     DCHECK(dict);
 

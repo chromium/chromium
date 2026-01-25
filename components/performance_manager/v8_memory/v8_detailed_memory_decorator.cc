@@ -694,31 +694,31 @@ void V8DetailedMemoryDecorator::OnBeforeProcessNodeRemoved(
   process_data->process_measurement_requests().OnOwnerUnregistered();
 }
 
-base::Value::Dict V8DetailedMemoryDecorator::DescribeFrameNodeData(
+base::DictValue V8DetailedMemoryDecorator::DescribeFrameNodeData(
     const FrameNode* frame_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* const frame_data =
       V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
   if (!frame_data)
-    return base::Value::Dict();
+    return base::DictValue();
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("v8_bytes_used",
            static_cast<int>(frame_data->v8_memory_used().InBytes()));
   return dict;
 }
 
-base::Value::Dict V8DetailedMemoryDecorator::DescribeProcessNodeData(
+base::DictValue V8DetailedMemoryDecorator::DescribeProcessNodeData(
     const ProcessNode* process_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* const process_data =
       V8DetailedMemoryProcessData::ForProcessNode(process_node);
   if (!process_data)
-    return base::Value::Dict();
+    return base::DictValue();
 
   DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->GetProcessType());
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("detached_v8_bytes_used",
            static_cast<int>(process_data->detached_v8_memory_used().InBytes()));
   dict.Set("shared_v8_bytes_used",

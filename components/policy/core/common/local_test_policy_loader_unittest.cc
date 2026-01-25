@@ -18,14 +18,14 @@ namespace policy {
 class LocalTestPolicyLoaderTest : public ::testing::Test {
  public:
   void LoadAndVerifyPolicies(LocalTestPolicyLoader* loader,
-                             const base::Value::List& expected_policies) {
+                             const base::ListValue& expected_policies) {
     std::unique_ptr<PolicyBundle> bundle =
         std::make_unique<PolicyBundle>(loader->Load());
     PolicyMap& map =
         bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
     EXPECT_EQ(map.size(), expected_policies.size());
     for (auto& expected_policy : expected_policies) {
-      const base::Value::Dict* policy_dict = &expected_policy.GetDict();
+      const base::DictValue* policy_dict = &expected_policy.GetDict();
       const PolicyMap::Entry* actual_policy =
           map.Get(*policy_dict->FindString("name"));
       ASSERT_TRUE(actual_policy);
@@ -42,12 +42,12 @@ class LocalTestPolicyLoaderTest : public ::testing::Test {
     }
   }
 
-  base::Value::Dict PolicyAsDict(PolicyLevel level,
-                                 PolicyScope scope,
-                                 PolicySource source,
-                                 const std::string& name,
-                                 base::Value value) {
-    base::Value::Dict policy;
+  base::DictValue PolicyAsDict(PolicyLevel level,
+                               PolicyScope scope,
+                               PolicySource source,
+                               const std::string& name,
+                               base::Value value) {
+    base::DictValue policy;
     policy.Set("level", level);
     policy.Set("scope", scope);
     policy.Set("source", source);
@@ -78,7 +78,7 @@ TEST_F(LocalTestPolicyLoaderTest, LoadFromJson) {
       "value": "test"
     }
   ])");
-  base::Value::List expected_policies;
+  base::ListValue expected_policies;
   expected_policies.Append(PolicyAsDict(
       POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
       POLICY_SOURCE_ENTERPRISE_DEFAULT, /*name=*/"a", base::Value(3)));

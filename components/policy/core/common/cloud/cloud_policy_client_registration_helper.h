@@ -86,7 +86,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   void OnTokenFetched(const std::string& oauth_access_token);
 
   // UserInfoFetcher::Delegate implementation:
-  void OnGetUserInfoSuccess(const base::Value::Dict& response) override;
+  void OnGetUserInfoSuccess(const base::DictValue& response) override;
   void OnGetUserInfoFailure(const GoogleServiceAuthError& error) override;
 
   // CloudPolicyClient::Observer implementation:

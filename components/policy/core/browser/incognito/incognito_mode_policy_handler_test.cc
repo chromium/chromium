@@ -25,14 +25,14 @@ void IncognitoModePolicyHandlerTestBase::SetIncognitoModeAvailability(
 }
 
 void IncognitoModePolicyHandlerTestBase::SetIncognitoModeUrlAllowlist(
-    base::Value::List allowlist) {
+    base::ListValue allowlist) {
   policies_.Set(key::kIncognitoModeUrlAllowlist, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                 base::Value(std::move(allowlist)), nullptr);
 }
 
 void IncognitoModePolicyHandlerTestBase::SetIncognitoModeUrlBlocklist(
-    base::Value::List blocklist) {
+    base::ListValue blocklist) {
   policies_.Set(key::kIncognitoModeUrlBlocklist, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                 base::Value(std::move(blocklist)), nullptr);
@@ -51,7 +51,7 @@ void IncognitoModePolicyHandlerTestBase::VerifyAvailabilityPref(
 }
 
 void IncognitoModePolicyHandlerTestBase::VerifyBlocklistPref(
-    const base::Value::List& expected_blocklist) {
+    const base::ListValue& expected_blocklist) {
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(policy::policy_prefs::kIncognitoModeUrlBlocklist,
                                &value));
@@ -59,7 +59,7 @@ void IncognitoModePolicyHandlerTestBase::VerifyBlocklistPref(
 }
 
 void IncognitoModePolicyHandlerTestBase::VerifyAllowlistPref(
-    const base::Value::List& expected_allowlist) {
+    const base::ListValue& expected_allowlist) {
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(policy::policy_prefs::kIncognitoModeUrlAllowlist,
                                &value));

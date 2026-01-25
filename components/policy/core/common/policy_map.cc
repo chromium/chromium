@@ -567,7 +567,7 @@ const PolicyDetails* PolicyMap::GetPolicyDetails(
   return details_callback_.Run(policy);
 }
 
-void PolicyMap::LoadFrom(const base::Value::Dict& policies,
+void PolicyMap::LoadFrom(const base::DictValue& policies,
                          PolicyLevel level,
                          PolicyScope scope,
                          PolicySource source) {

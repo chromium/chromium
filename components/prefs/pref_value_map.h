@@ -86,7 +86,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
                         std::vector<std::string>* differing_keys) const;
 
   // Copies the map into a Value::Dict.
-  base::Value::Dict AsDict() const;
+  base::DictValue AsDict() const;
 
  private:
   Map prefs_;

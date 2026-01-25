@@ -93,7 +93,7 @@ std::string PolicyConversions::ToJSON() {
   return client_->ConvertValueToJSON(base::Value(ToValueDict()));
 }
 
-base::Value::Dict PolicyConversions::ToValueDict() {
+base::DictValue PolicyConversions::ToValueDict() {
   return delegate_->ToValueDict();
 }
 
@@ -143,8 +143,8 @@ Value::Dict DefaultPolicyConversions::GetDeviceLocalAccountPolicies() {
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-base::Value::Dict DefaultPolicyConversions::GetExtensionPolicies() {
-  base::Value::Dict extension_policies;
+base::DictValue DefaultPolicyConversions::GetExtensionPolicies() {
+  base::DictValue extension_policies;
   if (client()->HasUserPolicies()) {
     extension_policies.Set("extensionPolicies",
                            GetExtensionPolicies(POLICY_DOMAIN_EXTENSIONS));

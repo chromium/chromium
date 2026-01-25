@@ -160,7 +160,7 @@ TEST_F(SchemaMapTest, FilterBundle) {
 
   PolicyNamespace extension_ns(POLICY_DOMAIN_EXTENSIONS, "abc");
   PolicyMap& map = expected_bundle.Get(extension_ns);
-  base::Value::List list;
+  base::ListValue list;
   list.Append("a");
   list.Append("b");
   map.Set("list", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -171,7 +171,7 @@ TEST_F(SchemaMapTest, FilterBundle) {
           POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   map.Set("double", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
           POLICY_SOURCE_CLOUD, base::Value(1.2), nullptr);
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("a", "b");
   dict.Set("b", 2);
   map.Set("object", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,

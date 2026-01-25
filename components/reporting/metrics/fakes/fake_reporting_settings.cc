@@ -51,7 +51,7 @@ bool FakeReportingSettings::GetInteger(const std::string& path,
 }
 
 bool FakeReportingSettings::GetList(const std::string& path,
-                                    const base::Value::List** out_value) const {
+                                    const base::ListValue** out_value) const {
   if (!list_map_.contains(path)) {
     return false;
   }
@@ -84,7 +84,7 @@ void FakeReportingSettings::SetInteger(const std::string& path, int int_value) {
 }
 
 void FakeReportingSettings::SetList(const std::string& path,
-                                    const base::Value::List& list_value) {
+                                    const base::ListValue& list_value) {
   list_map_.insert_or_assign(path, list_value.Clone());
   if (settings_callbacks_map_.contains(path)) {
     settings_callbacks_map_.at(path)->Notify();

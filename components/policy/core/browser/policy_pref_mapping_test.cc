@@ -46,7 +46,7 @@ enum class PrefLocation {
   kLocalState,
 };
 
-PrefLocation GetPrefLocation(const base::Value::Dict& settings) {
+PrefLocation GetPrefLocation(const base::DictValue& settings) {
   const std::string* location = settings.FindString("location");
   if (!location || *location == "user_profile")
     return PrefLocation::kUserProfile;
@@ -128,7 +128,7 @@ void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
 // one `PrefTestCase`.
 class PrefTestCase {
  public:
-  PrefTestCase(const std::string& name, const base::Value::Dict& settings) {
+  PrefTestCase(const std::string& name, const base::DictValue& settings) {
     const base::Value* value = settings.Find("value");
     const base::Value* default_value = settings.Find("default_value");
     location_ = GetPrefLocation(settings);
@@ -193,11 +193,11 @@ class PrefTestCase {
 // one `PolicyPrefMappingTest`.
 class PolicyPrefMappingTest {
  public:
-  explicit PolicyPrefMappingTest(const base::Value::Dict& mapping) {
-    const base::Value::Dict* policies = mapping.FindDict("policies");
-    const base::Value::Dict* policies_settings =
+  explicit PolicyPrefMappingTest(const base::DictValue& mapping) {
+    const base::DictValue* policies = mapping.FindDict("policies");
+    const base::DictValue* policies_settings =
         mapping.FindDict("policies_settings");
-    const base::Value::Dict* prefs = mapping.FindDict("prefs");
+    const base::DictValue* prefs = mapping.FindDict("prefs");
     if (policies)
       policies_ = policies->Clone();
     if (policies_settings)
@@ -215,7 +215,7 @@ class PolicyPrefMappingTest {
     if (prefs_.empty()) {
       ADD_FAILURE() << "missing |prefs|";
     }
-    const base::Value::List* required_buildflags =
+    const base::ListValue* required_buildflags =
         mapping.FindList("required_buildflags");
     if (required_buildflags) {
       for (const auto& required_buildflag : *required_buildflags) {
@@ -227,8 +227,8 @@ class PolicyPrefMappingTest {
   PolicyPrefMappingTest(const PolicyPrefMappingTest& other) = delete;
   PolicyPrefMappingTest& operator=(const PolicyPrefMappingTest& other) = delete;
 
-  const base::Value::Dict& policies() const { return policies_; }
-  const base::Value::Dict& policies_settings() const {
+  const base::DictValue& policies() const { return policies_; }
+  const base::DictValue& policies_settings() const {
     return policies_settings_;
   }
 
@@ -241,8 +241,8 @@ class PolicyPrefMappingTest {
   }
 
  private:
-  base::Value::Dict policies_;
-  base::Value::Dict policies_settings_;
+  base::DictValue policies_;
+  base::DictValue policies_settings_;
   std::vector<std::unique_ptr<PrefTestCase>> prefs_;
   std::vector<std::string> required_buildflags_;
 };
@@ -250,7 +250,7 @@ class PolicyPrefMappingTest {
 class SimplePolicyPrefMappingTest {
  public:
   SimplePolicyPrefMappingTest(const std::string& policy_name,
-                              const base::Value::Dict& test,
+                              const base::DictValue& test,
                               const bool is_os_supported) {
     const std::string* pref_name = test.FindString("pref_name");
     if (!pref_name) {
@@ -260,7 +260,7 @@ class SimplePolicyPrefMappingTest {
     }
 
     const std::string* location = test.FindString("pref_location");
-    const base::Value::Dict* policy_settings = test.FindDict("policy_settings");
+    const base::DictValue* policy_settings = test.FindDict("policy_settings");
 
     const base::Value* default_value = test.Find("default_value");
     const base::Value* default_for_enterprise_users = nullptr;
@@ -281,7 +281,7 @@ class SimplePolicyPrefMappingTest {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    const base::Value::List* values_to_test = test.FindList("values_to_test");
+    const base::ListValue* values_to_test = test.FindList("values_to_test");
     if (!values_to_test || values_to_test->empty()) {
       ADD_FAILURE() << "Simple test for " << policy_name
                     << " is missing a 'values_to_test' or is empty";
@@ -290,9 +290,9 @@ class SimplePolicyPrefMappingTest {
 
     // Build test case for default value.
     if (default_value || default_for_enterprise_users) {
-      base::Value::Dict default_value_test_dict;
-      base::Value::Dict default_value_prefs_dict;
-      base::Value::Dict default_value_pref_dict;
+      base::DictValue default_value_test_dict;
+      base::DictValue default_value_prefs_dict;
+      base::DictValue default_value_pref_dict;
       if (default_for_enterprise_users) {
         default_value_pref_dict.Set("value",
                                     default_for_enterprise_users->Clone());
@@ -311,14 +311,14 @@ class SimplePolicyPrefMappingTest {
 
     // Build test case for each `value_to_test`.
     for (const base::Value& value_to_test : *values_to_test) {
-      base::Value::Dict value_test_dict;
-      base::Value::Dict value_policies_dict;
-      base::Value::Dict value_prefs_dict;
-      base::Value::Dict value_pref_dict;
+      base::DictValue value_test_dict;
+      base::DictValue value_policies_dict;
+      base::DictValue value_prefs_dict;
+      base::DictValue value_pref_dict;
       value_policies_dict.Set(policy_name, value_to_test.Clone());
       value_test_dict.Set("policies", std::move(value_policies_dict));
       if (policy_settings) {
-        base::Value::Dict value_policy_settings_dict;
+        base::DictValue value_policy_settings_dict;
         value_policy_settings_dict.Set(policy_name, policy_settings->Clone());
         value_test_dict.Set("policies_settings",
                             std::move(value_policy_settings_dict));
@@ -333,12 +333,12 @@ class SimplePolicyPrefMappingTest {
     }
   }
 
-  const std::vector<base::Value::Dict>& policy_pref_mapping_test_dicts() const {
+  const std::vector<base::DictValue>& policy_pref_mapping_test_dicts() const {
     return policy_pref_mapping_test_dicts_;
   }
 
  private:
-  std::vector<base::Value::Dict> policy_pref_mapping_test_dicts_;
+  std::vector<base::DictValue> policy_pref_mapping_test_dicts_;
 };
 
 // Populates buildflags as strings that policy pref mapping test cases
@@ -370,14 +370,14 @@ bool CheckRequiredBuildFlagsSupported(const PolicyPrefMappingTest* test) {
 class PolicyTestCase {
  public:
   PolicyTestCase(const std::string& policy_name,
-                 const base::Value::Dict& test_case) {
+                 const base::DictValue& test_case) {
     is_official_only_ = test_case.FindBool("official_only").value_or(false);
     can_be_recommended_ =
         test_case.FindBool("can_be_recommended").value_or(false);
     has_reason_for_missing_test_ =
         test_case.FindString("reason_for_missing_test") != nullptr;
 
-    const base::Value::List* os_list = test_case.FindList("os");
+    const base::ListValue* os_list = test_case.FindList("os");
     if (os_list) {
       for (const auto& os : *os_list) {
         if (os.is_string()) {
@@ -386,7 +386,7 @@ class PolicyTestCase {
       }
     }
 
-    const base::Value::List* policy_pref_mapping_test_list =
+    const base::ListValue* policy_pref_mapping_test_list =
         test_case.FindList("policy_pref_mapping_tests");
     if (policy_pref_mapping_test_list) {
       for (const auto& policy_pref_mapping_test_dict :
@@ -397,12 +397,12 @@ class PolicyTestCase {
       }
     }
 
-    const base::Value::Dict* simple_policy_pref_mapping_test_dict =
+    const base::DictValue* simple_policy_pref_mapping_test_dict =
         test_case.FindDict("simple_policy_pref_mapping_test");
     if (simple_policy_pref_mapping_test_dict) {
       const SimplePolicyPrefMappingTest simple_policy_pref_mapping_test(
           policy_name, *simple_policy_pref_mapping_test_dict, IsOsSupported());
-      for (const base::Value::Dict& policy_pref_mapping_test_dict :
+      for (const base::DictValue& policy_pref_mapping_test_dict :
            simple_policy_pref_mapping_test.policy_pref_mapping_test_dicts()) {
         AddPolicyPrefMappingTest(policy_pref_mapping_test_dict);
       }
@@ -480,7 +480,7 @@ class PolicyTestCase {
   std::vector<std::unique_ptr<PolicyPrefMappingTest>>
       policy_pref_mapping_tests_;
 
-  void AddPolicyPrefMappingTest(const base::Value::Dict& mapping) {
+  void AddPolicyPrefMappingTest(const base::DictValue& mapping) {
     policy_pref_mapping_tests_.push_back(
         std::make_unique<PolicyPrefMappingTest>(mapping));
   }
@@ -554,9 +554,9 @@ struct PolicySettings {
 };
 
 PolicySettings GetPolicySettings(const std::string& policy,
-                                 const base::Value::Dict& policies_settings) {
+                                 const base::DictValue& policies_settings) {
   PolicySettings settings;
-  const base::Value::Dict* settings_value =
+  const base::DictValue* settings_value =
       policies_settings.FindDictByDottedPath(policy);
   if (!settings_value)
     return settings;
@@ -593,8 +593,8 @@ PolicySettings GetPolicySettings(const std::string& policy,
 }
 
 void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
-                       const base::Value::Dict& policies,
-                       const base::Value::Dict& policies_settings,
+                       const base::DictValue& policies,
+                       const base::DictValue& policies_settings,
                        PolicyLevel level) {
   PolicyMap policy_map;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -769,7 +769,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
           prefs->ClearPref(pref_case->pref());
           CheckPrefHasDefaultValue(pref);
 
-          const base::Value::Dict& policies = pref_mapping->policies();
+          const base::DictValue& policies = pref_mapping->policies();
 
           const base::Value* expected_value = pref_case->value();
           bool expect_value_to_be_default = false;

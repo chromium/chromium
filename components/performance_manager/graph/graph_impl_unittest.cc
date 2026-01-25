@@ -244,40 +244,39 @@ class TestNodeDataDescriber : public NodeDataDescriber {
  public:
   explicit TestNodeDataDescriber(std::string_view name) : name_(name) {}
 
-  base::Value::Dict DescribeFrameNodeData(
-      const FrameNode* node) const override {
-    base::Value::Dict dict;
+  base::DictValue DescribeFrameNodeData(const FrameNode* node) const override {
+    base::DictValue dict;
     dict.Set("name", name_);
     dict.Set("type", "FrameNode");
     return dict;
   }
 
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override {
-    base::Value::Dict dict;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override {
+    base::DictValue dict;
     dict.Set("name", name_);
     dict.Set("type", "PageNode");
     return dict;
   }
 
-  base::Value::Dict DescribeProcessNodeData(
+  base::DictValue DescribeProcessNodeData(
       const ProcessNode* node) const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("name", name_);
     dict.Set("type", "ProcessNode");
     return dict;
   }
 
-  base::Value::Dict DescribeSystemNodeData(
+  base::DictValue DescribeSystemNodeData(
       const SystemNode* node) const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("name", name_);
     dict.Set("type", "SystemNode");
     return dict;
   }
 
-  base::Value::Dict DescribeWorkerNodeData(
+  base::DictValue DescribeWorkerNodeData(
       const WorkerNode* node) const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("name", name_);
     dict.Set("type", "WorkerNode");
     return dict;
@@ -287,11 +286,11 @@ class TestNodeDataDescriber : public NodeDataDescriber {
   const std::string name_;
 };
 
-void AssertDictValueContainsListKey(const base::Value::Dict& descr,
+void AssertDictValueContainsListKey(const base::DictValue& descr,
                                     const char* key,
                                     const std::string s1,
                                     const std::string s2) {
-  const base::Value::Dict* dict = descr.FindDict(key);
+  const base::DictValue* dict = descr.FindDict(key);
   ASSERT_NE(nullptr, dict);
 
   ASSERT_EQ(2u, dict->size());
@@ -306,7 +305,7 @@ TEST_F(GraphImplTest, NodeDataDescribers) {
   NodeDataDescriberRegistry* registry = graph()->GetNodeDataDescriberRegistry();
 
   // No describers->no description.
-  base::Value::Dict descr = registry->DescribeNodeData(mock_graph.frame.get());
+  base::DictValue descr = registry->DescribeNodeData(mock_graph.frame.get());
   EXPECT_EQ(0u, descr.size());
 
   // Test that the default impl does nothing.

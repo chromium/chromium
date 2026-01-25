@@ -122,13 +122,13 @@ ListPolicyHandler::~ListPolicyHandler() = default;
 
 bool ListPolicyHandler::CheckPolicySettings(const policy::PolicyMap& policies,
                                             policy::PolicyErrorMap* errors) {
-  std::optional<base::Value::List> empty = std::nullopt;
+  std::optional<base::ListValue> empty = std::nullopt;
   return CheckAndGetList(policies, errors, empty);
 }
 
 void ListPolicyHandler::ApplyPolicySettings(const policy::PolicyMap& policies,
                                             PrefValueMap* prefs) {
-  auto list = std::make_optional<base::Value::List>();
+  auto list = std::make_optional<base::ListValue>();
   if (CheckAndGetList(policies, nullptr, list) && list) {
     ApplyList(*std::move(list), prefs);
   }
@@ -137,7 +137,7 @@ void ListPolicyHandler::ApplyPolicySettings(const policy::PolicyMap& policies,
 bool ListPolicyHandler::CheckAndGetList(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors,
-    std::optional<base::Value::List>& filtered_list) {
+    std::optional<base::ListValue>& filtered_list) {
   const base::Value* value = nullptr;
   if (!CheckAndGetValue(policies, errors, &value))
     return false;
@@ -148,7 +148,7 @@ bool ListPolicyHandler::CheckAndGetList(
   }
 
   // Filter the list, rejecting any invalid strings.
-  const base::Value::List& list = value->GetList();
+  const base::ListValue& list = value->GetList();
   for (size_t list_index = 0; list_index < list.size(); ++list_index) {
     const base::Value& entry = list[list_index];
     if (entry.type() != list_entry_type_) {
@@ -259,13 +259,13 @@ void StringMappingListPolicyHandler::ApplyPolicySettings(
     return;
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
-  base::Value::List list;
+  base::ListValue list;
   if (value && Convert(value, &list, nullptr))
     prefs->SetValue(pref_path_, base::Value(std::move(list)));
 }
 
 bool StringMappingListPolicyHandler::Convert(const base::Value* input,
-                                             base::Value::List* output,
+                                             base::ListValue* output,
                                              PolicyErrorMap* errors) {
   if (!input)
     return true;
@@ -649,7 +649,7 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckListOfJsonStrings(
 
   // If that succeeds, validate all the list items are strings and validate
   // the JSON inside the strings.
-  const base::Value::List& list = root_value->GetList();
+  const base::ListValue& list = root_value->GetList();
   bool json_error_seen = false;
 
   for (size_t index = 0; index < list.size(); ++index) {

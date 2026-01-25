@@ -37,7 +37,7 @@ void AddTestPolicies(PolicyMap* policy) {
               POLICY_SOURCE_CLOUD, base::Value("omg"), nullptr);
   policy->Set("recommended-user", POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
               POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("false", false);
   dict.Set("int", 456);
   dict.Set("str", "bbq");

@@ -79,7 +79,7 @@ const base::Value* GetProxyPolicyValue(const base::Value* value,
   if (!value) {
     return nullptr;
   }
-  const base::Value::Dict* settings = value->GetIfDict();
+  const base::DictValue* settings = value->GetIfDict();
   if (!settings) {
     return nullptr;
   }
@@ -198,7 +198,7 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
   PolicyMap::Entry current_priority;  // Defaults to the lowest priority.
   policy::PolicySource inherited_source =
       policy::POLICY_SOURCE_ENTERPRISE_DEFAULT;
-  base::Value::Dict proxy_settings;
+  base::DictValue proxy_settings;
   for (auto* policy : kDeprecatedProxyPolicies) {
     const PolicyMap::Entry* entry = policies.Get(policy);
     if (!entry)
@@ -351,7 +351,7 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
   }
 
-  auto set_proxy_pref_value = [&prefs](base::Value::Dict dict) {
+  auto set_proxy_pref_value = [&prefs](base::DictValue dict) {
     prefs->SetValue(prefs::kProxy, base::Value(std::move(dict)));
   };
 

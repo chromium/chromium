@@ -184,7 +184,7 @@ std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
 
 std::vector<PasswordHashData>
 HashPasswordManager::RetrieveAllPasswordHashesInternal(
-    const base::Value::List& hash_list) const {
+    const base::ListValue& hash_list) const {
   std::vector<PasswordHashData> result;
   for (const base::Value& entry : hash_list) {
     std::optional<PasswordHashData> password_hash_data =
@@ -203,7 +203,7 @@ std::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
   if (username.empty()) {
     return std::nullopt;
   }
-  const base::Value::List* hash_list = GetPrefList(is_gaia_password);
+  const base::ListValue* hash_list = GetPrefList(is_gaia_password);
   if (!hash_list) {
     return std::nullopt;
   }
@@ -223,7 +223,7 @@ bool HashPasswordManager::HasPasswordHash(const std::string& username,
   if (username.empty()) {
     return false;
   }
-  const base::Value::List* hash_list = GetPrefList(is_gaia_password);
+  const base::ListValue* hash_list = GetPrefList(is_gaia_password);
   if (!hash_list) {
     return false;
   }
@@ -274,7 +274,7 @@ bool HashPasswordManager::EncryptAndSave(
     return false;
   }
 
-  base::Value::Dict encrypted_password_hash_entry;
+  base::DictValue encrypted_password_hash_entry;
   encrypted_password_hash_entry.Set(kUsernameFieldKey, encrypted_username);
   encrypted_password_hash_entry.Set(kHashFieldKey, encrypted_hash);
   encrypted_password_hash_entry.Set(kLengthAndSaltFieldKey,
@@ -285,7 +285,7 @@ bool HashPasswordManager::EncryptAndSave(
   std::unique_ptr<ScopedListPrefUpdate> update =
       GetScopedListPrefUpdate(password_hash_data.is_gaia_password);
 
-  base::Value::List& update_list = update->Get();
+  base::ListValue& update_list = update->Get();
   size_t num_erased = update_list.EraseIf([&](const auto& dict) {
     return AreUsernamesSame(GetAndDecryptField(dict, kUsernameFieldKey),
                             IsGaiaPassword(dict), password_hash_data.username,
@@ -306,7 +306,7 @@ bool HashPasswordManager::EncryptAndSave(
   return true;
 }
 
-const base::Value::List* HashPasswordManager::GetPrefList(
+const base::ListValue* HashPasswordManager::GetPrefList(
     bool is_gaia_password) const {
   if (!is_gaia_password) {
     // Required check to avoid returning an empty pref value.
@@ -414,8 +414,8 @@ void HashPasswordManager::MigrateEnterprisePasswordHashes() {
   ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
   ScopedListPrefUpdate enterprise_update(local_prefs_,
                                          prefs::kLocalPasswordHashDataList);
-  base::Value::List& update_list = update.Get();
-  base::Value::List& enterprise_update_list = enterprise_update.Get();
+  base::ListValue& update_list = update.Get();
+  base::ListValue& enterprise_update_list = enterprise_update.Get();
   for (auto it = update_list.begin(); it != update_list.end();) {
     if (!IsGaiaPassword(*it)) {
       enterprise_update_list.Append(std::move(it->GetDict()));

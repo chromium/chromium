@@ -73,10 +73,10 @@ void PolicyStatusProvider::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-base::Value::Dict PolicyStatusProvider::GetStatus() {
+base::DictValue PolicyStatusProvider::GetStatus() {
   // This method is called when the client is not enrolled.
   // Thus return an empty dictionary.
-  return base::Value::Dict();
+  return base::DictValue();
 }
 
 void PolicyStatusProvider::NotifyStatusChange() {
@@ -85,7 +85,7 @@ void PolicyStatusProvider::NotifyStatusChange() {
 }
 
 // static
-base::Value::Dict PolicyStatusProvider::GetStatusFromCore(
+base::DictValue PolicyStatusProvider::GetStatusFromCore(
     const CloudPolicyCore* core) {
   const CloudPolicyStore* store = core->store();
   const CloudPolicyClient* client = core->client();
@@ -95,7 +95,7 @@ base::Value::Dict PolicyStatusProvider::GetStatusFromCore(
   const std::u16string status = GetPolicyStatusFromStore(store, client);
 
   const em::PolicyData* policy = store->policy();
-  base::Value::Dict dict = GetStatusFromPolicyData(policy);
+  base::DictValue dict = GetStatusFromPolicyData(policy);
 
   SetPolicyPushAndRefreshStatus(dict, refresh_scheduler);
 
@@ -122,9 +122,9 @@ base::Value::Dict PolicyStatusProvider::GetStatusFromCore(
 }
 
 // static
-base::Value::Dict PolicyStatusProvider::GetStatusFromPolicyData(
+base::DictValue PolicyStatusProvider::GetStatusFromPolicyData(
     const em::PolicyData* policy) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (!policy) {
     dict.Set(kClientIdKey, std::string());
     dict.Set(kUsernameKey, std::string());
@@ -152,7 +152,7 @@ base::Value::Dict PolicyStatusProvider::GetStatusFromPolicyData(
 
 // static
 void PolicyStatusProvider::SetPolicyPushAndRefreshStatus(
-    base::Value::Dict& status,
+    base::DictValue& status,
     const CloudPolicyRefreshScheduler* refresh_scheduler) {
   const base::TimeDelta refresh_interval = base::Milliseconds(
       refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
@@ -174,7 +174,7 @@ void PolicyStatusProvider::SetPolicyPushAndRefreshStatus(
 
 // static
 void PolicyStatusProvider::UpdateLastReportTimestamp(
-    base::Value::Dict& status,
+    base::DictValue& status,
     PrefService* prefs,
     const std::string& report_timestamp_pref_path) {
   if (prefs->HasPrefPath(report_timestamp_pref_path)) {

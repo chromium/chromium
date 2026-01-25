@@ -54,7 +54,7 @@ TEST_F(IncognitoModePolicyHandlerTest, AllowlistSet) {
   SetIncognitoModeUrlAllowlist(default_allowlist_.Clone());
   ApplyPolicies();
   VerifyAllowlistPref(default_allowlist_);
-  VerifyBlocklistPref(base::Value::List().Append("*"));
+  VerifyBlocklistPref(base::ListValue().Append("*"));
 }
 
 TEST_F(IncognitoModePolicyHandlerTest, AllowlistSetWithBlocklistSet) {
@@ -71,7 +71,7 @@ TEST_F(IncognitoModePolicyHandlerTest, AllowlistSetWithAvailabilityDisabled) {
   SetIncognitoModeUrlAllowlist(default_allowlist_.Clone());
   SetIncognitoModeAvailability(policy::IncognitoModeAvailability::kDisabled);
   ApplyPolicies();
-  VerifyBlocklistPref(base::Value::List().Append("*"));
+  VerifyBlocklistPref(base::ListValue().Append("*"));
   VerifyAvailabilityPref(policy::IncognitoModeAvailability::kEnabled);
 }
 
@@ -84,7 +84,7 @@ TEST_F(IncognitoModePolicyHandlerTest,
   SetIncognitoModeAvailability(policy::IncognitoModeAvailability::kDisabled);
   ApplyPolicies();
   VerifyAllowlistPref(default_allowlist_);
-  VerifyBlocklistPref(base::Value::List().Append("*"));
+  VerifyBlocklistPref(base::ListValue().Append("*"));
   VerifyAvailabilityPref(policy::IncognitoModeAvailability::kEnabled);
 }
 
@@ -92,7 +92,7 @@ TEST_F(IncognitoModePolicyHandlerTest, AllowlistSetWithAvailabilityForced) {
   SetIncognitoModeUrlAllowlist(default_allowlist_.Clone());
   SetIncognitoModeAvailability(policy::IncognitoModeAvailability::kForced);
   ApplyPolicies();
-  VerifyBlocklistPref(base::Value::List().Append("*"));
+  VerifyBlocklistPref(base::ListValue().Append("*"));
   VerifyAvailabilityPref(policy::IncognitoModeAvailability::kForced);
 }
 

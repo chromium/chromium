@@ -148,13 +148,13 @@ TEST_F(WrapWithPrefixPrefStoreTest, GetValues) {
 
   target_store().SetString(kTestPref, "value1");
   ASSERT_EQ(target_store().GetValues(),
-            base::Value::Dict().SetByDottedPath(kTestPref, "value1"));
+            base::DictValue().SetByDottedPath(kTestPref, "value1"));
   EXPECT_THAT(store().GetValues(), IsEmpty());
 
   target_store().SetString(kPrefixedTestPref, "value2");
   // Expect the new pref store to return the "un-prefixed" value.
   EXPECT_EQ(store().GetValues(),
-            base::Value::Dict().SetByDottedPath(kTestPref, "value2"));
+            base::DictValue().SetByDottedPath(kTestPref, "value2"));
   EXPECT_TRUE(ValueInStoreIs(store(), kTestPref, "value2"));
 }
 
@@ -240,7 +240,7 @@ TEST_F(WrapWithPrefixPrefStoreTest, RemoveValuesByPrefixSilently) {
   target_store().SetString("prefixed.test.pref", "value1");
   target_store().SetString("prefixed.test.pref2", "value2");
 
-  ASSERT_EQ(store().GetValues(), base::Value::Dict()
+  ASSERT_EQ(store().GetValues(), base::DictValue()
                                      .SetByDottedPath("test.pref", "value1")
                                      .SetByDottedPath("test.pref2", "value2"));
 
@@ -248,7 +248,7 @@ TEST_F(WrapWithPrefixPrefStoreTest, RemoveValuesByPrefixSilently) {
 
   EXPECT_THAT(store().GetValues(), IsEmpty());
   EXPECT_EQ(target_store().GetValues(),
-            base::Value::Dict().SetByDottedPath("test.pref", "value"));
+            base::DictValue().SetByDottedPath("test.pref", "value"));
 }
 
 TEST_F(WrapWithPrefixPrefStoreTest, ReadOnly) {

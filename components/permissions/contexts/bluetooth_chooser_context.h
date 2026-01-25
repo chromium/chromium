@@ -15,7 +15,7 @@
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 
 namespace base {
-class Value;
+class DictValue;
 }  // namespace base
 
 namespace content {
@@ -48,7 +48,7 @@ class BluetoothChooserContext : public ObjectPermissionContextBase {
   BluetoothChooserContext(const BluetoothChooserContext&) = delete;
   BluetoothChooserContext& operator=(const BluetoothChooserContext&) = delete;
 
-  static base::Value::Dict DeviceInfoToValue(
+  static base::DictValue DeviceInfoToValue(
       const device::BluetoothDevice* device,
       const blink::mojom::WebBluetoothRequestDeviceOptions* options,
       const blink::WebBluetoothDeviceId& device_id);
@@ -89,20 +89,20 @@ class BluetoothChooserContext : public ObjectPermissionContextBase {
       uint16_t manufacturer_code);
 
   static blink::WebBluetoothDeviceId GetObjectDeviceId(
-      const base::Value::Dict& object);
+      const base::DictValue& object);
 
   // ObjectPermissionContextBase;
-  std::string GetKeyForObject(const base::Value::Dict& object) override;
-  bool IsValidObject(const base::Value::Dict& object) override;
-  std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
+  std::string GetKeyForObject(const base::DictValue& object) override;
+  bool IsValidObject(const base::DictValue& object) override;
+  std::u16string GetObjectDisplayName(const base::DictValue& object) override;
 
   // KeyedService:
   void Shutdown() override;
 
  private:
-  static bool IsValidDict(const base::Value::Dict& dict);
+  static bool IsValidDict(const base::DictValue& dict);
 
-  std::optional<base::Value::Dict> FindDeviceObject(
+  std::optional<base::DictValue> FindDeviceObject(
       const url::Origin& origin,
       const blink::WebBluetoothDeviceId& device_id);
 

@@ -804,7 +804,7 @@ void PrintDialogLinuxPortal::OnPreparePrintResponse(dbus_xdg::Results results) {
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  base::Value::Dict dialog_data;
+  base::DictValue dialog_data;
 #endif
 
   if (auto it = results->find(kKeySettings); it != results->end()) {

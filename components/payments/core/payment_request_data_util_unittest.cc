@@ -37,7 +37,7 @@ static const char* kUnsupportedPaymentMethodIdentifiers[] = {
 // PaymentAddress spec.
 TEST(PaymentRequestDataUtilTest, GetPaymentAddressFromAutofillProfile) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
-  base::Value::Dict address_value = payments::PaymentAddressToValueDict(
+  base::DictValue address_value = payments::PaymentAddressToValueDict(
       *payments::data_util::GetPaymentAddressFromAutofillProfile(address,
                                                                  "en-US"));
   std::string json_address = base::WriteJson(address_value).value_or("");

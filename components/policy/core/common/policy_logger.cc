@@ -174,8 +174,8 @@ void PolicyLogger::LogHelper::StreamLog() const {
       << message_buffer_.str();
 }
 
-base::Value::Dict PolicyLogger::Log::GetAsDict() const {
-  return base::Value::Dict()
+base::DictValue PolicyLogger::Log::GetAsDict() const {
+  return base::DictValue()
       .Set("message", base::EscapeForHTML(message_))
       .Set("logSeverity", GetLogSeverity(log_severity_))
       .Set("logSource", GetLogSourceValue(log_source_))
@@ -229,8 +229,8 @@ void PolicyLogger::ScheduleOldLogsDeletion() {
   is_log_deletion_scheduled_ = true;
 }
 
-base::Value::List PolicyLogger::GetAsList() {
-  base::Value::List all_logs_list;
+base::ListValue PolicyLogger::GetAsList() {
+  base::ListValue all_logs_list;
   base::AutoLock lock(lock_);
   for (const Log& log : logs_) {
     all_logs_list.Append(log.GetAsDict());

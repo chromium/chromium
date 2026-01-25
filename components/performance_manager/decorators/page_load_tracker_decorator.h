@@ -47,7 +47,7 @@ class PageLoadTrackerDecorator : public FrameNodeObserver,
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
 
   // ProcessNodeObserver implementation:
   void OnMainThreadTaskLoadIsLow(const ProcessNode* process_node) override;

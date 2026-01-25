@@ -48,7 +48,7 @@ bool IsOutdatedOrInvalid(const base::Value& preallocated_address) {
   if (!preallocated_address.is_dict()) {
     return true;
   }
-  const base::Value::Dict& dict = preallocated_address.GetDict();
+  const base::DictValue& dict = preallocated_address.GetDict();
   if (!dict.FindString(PlusAddressPreallocator::kPlusAddressKey)) {
     return true;
   }
@@ -59,7 +59,7 @@ bool IsOutdatedOrInvalid(const base::Value& preallocated_address) {
 // Stores `profile` in a `base::Value` that can be written to prefs.
 base::Value SeralizeAndSetEndOfLife(PreallocatedPlusAddress address) {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set(PlusAddressPreallocator::kEndOfLifeKey,
                base::TimeToValue(base::Time::Now() + address.lifetime))
           .Set(PlusAddressPreallocator::kPlusAddressKey,
@@ -295,7 +295,7 @@ void PlusAddressPreallocator::ReplyToRequestsWithError(
 std::optional<PlusAddress>
 PlusAddressPreallocator::GetFirstAvailablePlusAddress(AllocationMode mode) {
   PrunePreallocatedPlusAddresses();
-  const base::Value::List& preallocated_addresses = GetPreallocatedAddresses();
+  const base::ListValue& preallocated_addresses = GetPreallocatedAddresses();
   const int preallocated_addresses_size =
       static_cast<int>(preallocated_addresses.size());
   int index = GetIndexOfNextPreallocatedAddress();
@@ -311,7 +311,7 @@ PlusAddressPreallocator::GetFirstAvailablePlusAddress(AllocationMode mode) {
       GetPlusAddress(preallocated_addresses[index]));
 }
 
-const base::Value::List& PlusAddressPreallocator::GetPreallocatedAddresses()
+const base::ListValue& PlusAddressPreallocator::GetPreallocatedAddresses()
     const {
   return pref_service_->GetList(prefs::kPreallocatedAddresses);
 }

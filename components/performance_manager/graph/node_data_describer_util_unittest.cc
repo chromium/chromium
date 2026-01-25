@@ -21,26 +21,25 @@ namespace {
 
 class TestNodeDataDescriber final : public NodeDataDescriber {
  public:
-  base::Value::Dict DescribeFrameNodeData(const FrameNode*) const final {
+  base::DictValue DescribeFrameNodeData(const FrameNode*) const final {
     return Describe("FrameNode");
   }
-  base::Value::Dict DescribePageNodeData(const PageNode*) const final {
+  base::DictValue DescribePageNodeData(const PageNode*) const final {
     return Describe("PageNode");
   }
-  base::Value::Dict DescribeProcessNodeData(
-      const ProcessNode* node) const final {
+  base::DictValue DescribeProcessNodeData(const ProcessNode* node) const final {
     return Describe("ProcessNode");
   }
-  base::Value::Dict DescribeSystemNodeData(const SystemNode*) const final {
+  base::DictValue DescribeSystemNodeData(const SystemNode*) const final {
     return Describe("SystemNode");
   }
-  base::Value::Dict DescribeWorkerNodeData(const WorkerNode*) const final {
+  base::DictValue DescribeWorkerNodeData(const WorkerNode*) const final {
     return Describe("WorkerNode");
   }
 
  private:
-  base::Value::Dict Describe(std::string_view node_type) const {
-    base::Value::Dict description;
+  base::DictValue Describe(std::string_view node_type) const {
+    base::DictValue description;
     description.Set("node_type", node_type);
     return description;
   }

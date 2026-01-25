@@ -75,13 +75,13 @@ const std::string ValidateAndTruncateIfNeeded(const std::string& input,
 // |web_app_manifest_urls|. Uses |manifest_url| to resolve relative URLs.
 // Returns 'false' for invalid data.
 bool ParseDefaultApplications(const GURL& manifest_url,
-                              const base::Value::Dict* dict,
+                              const base::DictValue* dict,
                               std::vector<GURL>* web_app_manifest_urls,
                               const ErrorLogger& log) {
   DCHECK(dict);
   DCHECK(web_app_manifest_urls);
 
-  const base::Value::List* list = dict->FindList(kDefaultApplications);
+  const base::ListValue* list = dict->FindList(kDefaultApplications);
   if (!list) {
     // TODO(crbug.com/40681786): Move the error message strings to
     // components/payments/core/native_error_strings.cc.
@@ -130,13 +130,13 @@ bool ParseDefaultApplications(const GURL& manifest_url,
 
 // Parses the "supported_origins": "https://some.origin" from |dict|
 // into |supported_origins|. Returns 'false' for invalid data.
-bool ParseSupportedOrigins(const base::Value::Dict* dict,
+bool ParseSupportedOrigins(const base::DictValue* dict,
                            std::vector<url::Origin>* supported_origins,
                            const ErrorLogger& log) {
   DCHECK(dict);
   DCHECK(supported_origins);
 
-  const base::Value::List* list = dict->FindList(kSupportedOrigins);
+  const base::ListValue* list = dict->FindList(kSupportedOrigins);
   if (!list) {
     log.Error(base::StringPrintf("\"%s\" must be a list of origins.",
                                  kSupportedOrigins));
@@ -183,12 +183,12 @@ bool ParseSupportedOrigins(const base::Value::Dict* dict,
   return true;
 }
 
-void ParseIcons(const base::Value::Dict& dict,
+void ParseIcons(const base::DictValue& dict,
                 const ErrorLogger& log,
                 std::vector<PaymentManifestParser::WebAppIcon>* icons) {
   DCHECK(icons);
 
-  const base::Value::List* icons_list = dict.FindList(kWebAppIcons);
+  const base::ListValue* icons_list = dict.FindList(kWebAppIcons);
   if (!icons_list) {
     log.Warn(
         base::StringPrintf("No \"%s\" list in the manifest.", kWebAppIcons));
@@ -241,7 +241,7 @@ void ParseIcons(const base::Value::Dict& dict,
 }
 
 void ParsePreferredRelatedApplicationIdentifiers(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     const ErrorLogger& log,
     std::vector<std::string>* ids) {
   DCHECK(ids);
@@ -260,7 +260,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
   if (!prefer_related_applications.value())
     return;
 
-  const base::Value::List* related_applications =
+  const base::ListValue* related_applications =
       dict.FindList(kRelatedApplications);
   if (!related_applications) {
     log.Warn(
@@ -279,7 +279,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
 
   for (size_t i = 0; i < size; ++i) {
     const base::Value& related_application_value = (*related_applications)[i];
-    const base::Value::Dict* related_application =
+    const base::DictValue* related_application =
         related_application_value.GetIfDict();
     if (!related_application) {
       log.Warn(
@@ -320,7 +320,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
   }
 }
 
-bool GetString(const base::Value::Dict* dict,
+bool GetString(const base::DictValue* dict,
                std::string_view key,
                std::string& result) {
   DCHECK(dict);
@@ -386,7 +386,7 @@ void PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
   DCHECK(web_app_manifest_urls);
   DCHECK(supported_origins);
 
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     log.Error("Payment method manifest must be a JSON dictionary.");
     return;
@@ -409,13 +409,13 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     base::Value value,
     const ErrorLogger& log,
     std::vector<WebAppManifestSection>* output) {
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     log.Error("Web app manifest must be a JSON dictionary.");
     return false;
   }
 
-  const base::Value::List* list = dict->FindList(kRelatedApplications);
+  const base::ListValue* list = dict->FindList(kRelatedApplications);
   if (!list) {
     log.Error(
         base::StringPrintf("\"%s\" must be a list.", kRelatedApplications));
@@ -423,7 +423,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
   }
 
   for (const base::Value& related_application_value : *list) {
-    const base::Value::Dict* related_application =
+    const base::DictValue* related_application =
         related_application_value.GetIfDict();
     if (!related_application) {
       log.Error(base::StringPrintf("\"%s\" must be a list of dictionaries.",
@@ -480,7 +480,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
       return false;
     }
 
-    const base::Value::List* fingerprints_list =
+    const base::ListValue* fingerprints_list =
         related_application->FindList(kFingerprints);
     if (!fingerprints_list || fingerprints_list->empty() ||
         fingerprints_list->size() > kMaximumNumberOfItems) {
@@ -492,7 +492,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     }
 
     for (const base::Value& fingerprint_dict_value : *fingerprints_list) {
-      const base::Value::Dict* fingerprint_dict =
+      const base::DictValue* fingerprint_dict =
           fingerprint_dict_value.GetIfDict();
       std::string fingerprint_type;
       std::string fingerprint_value;
@@ -535,15 +535,14 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
   DCHECK(installation_info);
   DCHECK(icons);
 
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     log.Error("Web app manifest must be a JSON dictionary.");
     return false;
   }
 
   {
-    const base::Value::Dict* service_worker_dict =
-        dict->FindDict(kServiceWorker);
+    const base::DictValue* service_worker_dict = dict->FindDict(kServiceWorker);
     if (!service_worker_dict) {
       log.Error(base::StringPrintf(
           "\"%s\" must be a dictionary in your web app manifest.",
@@ -587,9 +586,9 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
   ParsePreferredRelatedApplicationIdentifiers(
       *dict, log, &installation_info->preferred_app_ids);
 
-  const base::Value::Dict* payment_dict = dict->FindDict(kPayment);
+  const base::DictValue* payment_dict = dict->FindDict(kPayment);
   if (payment_dict) {
-    const base::Value::List* delegation_list =
+    const base::ListValue* delegation_list =
         payment_dict->FindList(kSupportedDelegations);
     if (delegation_list) {
       if (delegation_list->empty() ||

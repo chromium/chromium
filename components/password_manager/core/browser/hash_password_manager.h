@@ -89,9 +89,9 @@ class HashPasswordManager {
   // Retrieves all saved password hashes from |hash_list| as a
   // PasswordHashData collection.
   std::vector<PasswordHashData> RetrieveAllPasswordHashesInternal(
-      const base::Value::List& hash_list) const;
+      const base::ListValue& hash_list) const;
 
-  const base::Value::List* GetPrefList(bool is_gaia_password) const;
+  const base::ListValue* GetPrefList(bool is_gaia_password) const;
   std::unique_ptr<ScopedListPrefUpdate> GetScopedListPrefUpdate(
       bool is_gaia_password) const;
 

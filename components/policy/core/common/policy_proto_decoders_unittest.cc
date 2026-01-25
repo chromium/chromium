@@ -80,7 +80,7 @@ TEST_F(PolicyProtoDecodersTest, StringPolicy) {
 }
 
 TEST_F(PolicyProtoDecodersTest, StringListPolicy) {
-  base::Value::List expected_disabled_sync_types;
+  base::ListValue expected_disabled_sync_types;
   expected_disabled_sync_types.Append("bookmarks");
   expected_disabled_sync_types.Append("readingList");
   expected_policy_map_.Set(key::kSyncTypesListDisabled, POLICY_LEVEL_MANDATORY,
@@ -178,7 +178,7 @@ TEST_F(PolicyProtoDecodersTest, IntegerPolicyWithValueUpperThanMaxLimit) {
 }
 
 TEST_F(PolicyProtoDecodersTest, JsonPolicy) {
-  base::Value::Dict jsonPolicy;
+  base::DictValue jsonPolicy;
   jsonPolicy.Set("key", "value");
 
   expected_policy_map_.Set(key::kManagedBookmarks, POLICY_LEVEL_MANDATORY,
@@ -273,35 +273,35 @@ TEST_F(PolicyProtoDecodersTest, PolicyWithFalseFilter) {
 }
 
 TEST_F(PolicyProtoDecodersTest, ExtensionInstallPolicies) {
-  base::Value::Dict expected_policy_value1;
-  base::Value::Dict& version_dict =
-      expected_policy_value1.Set(kExtension1Version1, base::Value::Dict())
+  base::DictValue expected_policy_value1;
+  base::DictValue& version_dict =
+      expected_policy_value1.Set(kExtension1Version1, base::DictValue())
           ->GetDict();
   version_dict.Set("action", 0);
-  version_dict.Set("reasons", base::Value::List());
+  version_dict.Set("reasons", base::ListValue());
 
-  base::Value::Dict expected_policy_value2;
-  base::Value::Dict& version_dict2 =
-      expected_policy_value2.Set(kExtension2Version2, base::Value::Dict())
+  base::DictValue expected_policy_value2;
+  base::DictValue& version_dict2 =
+      expected_policy_value2.Set(kExtension2Version2, base::DictValue())
           ->GetDict();
   version_dict2.Set("action", 1);
-  version_dict2.Set("reasons", base::Value::List());
+  version_dict2.Set("reasons", base::ListValue());
 
-  base::Value::Dict expected_policy_value3;
-  base::Value::Dict& version_dict3 =
-      expected_policy_value3.Set(kExtension3Version3, base::Value::Dict())
+  base::DictValue expected_policy_value3;
+  base::DictValue& version_dict3 =
+      expected_policy_value3.Set(kExtension3Version3, base::DictValue())
           ->GetDict();
   version_dict3.Set("action", 2);
-  base::Value::List expected_reasons;
+  base::ListValue expected_reasons;
   expected_reasons.Append(1);
   expected_reasons.Append(2);
   version_dict3.Set("reasons", std::move(expected_reasons));
 
-  base::Value::Dict& version_dict4 =
-      expected_policy_value1.Set(kExtension1Version2, base::Value::Dict())
+  base::DictValue& version_dict4 =
+      expected_policy_value1.Set(kExtension1Version2, base::DictValue())
           ->GetDict();
   version_dict4.Set("action", 0);
-  version_dict4.Set("reasons", base::Value::List());
+  version_dict4.Set("reasons", base::ListValue());
 
   expected_policy_map_.Set(kExtensionId1, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,

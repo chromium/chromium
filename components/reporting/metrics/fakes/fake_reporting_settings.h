@@ -36,7 +36,7 @@ class FakeReportingSettings : public ReportingSettings {
   bool GetBoolean(const std::string& path, bool* out_value) const override;
   bool GetInteger(const std::string& path, int* out_value) const override;
   bool GetList(const std::string& path,
-               const base::Value::List** out_value) const override;
+               const base::ListValue** out_value) const override;
   bool GetReportingEnabled(const std::string& path,
                            bool* out_value) const override;
 
@@ -44,7 +44,7 @@ class FakeReportingSettings : public ReportingSettings {
 
   void SetInteger(const std::string& path, int int_value);
 
-  void SetList(const std::string& path, const base::Value::List& list_value);
+  void SetList(const std::string& path, const base::ListValue& list_value);
 
   void SetReportingEnabled(const std::string& path, bool enabled_value);
 
@@ -58,7 +58,7 @@ class FakeReportingSettings : public ReportingSettings {
 
   base::flat_map<std::string, bool> bool_map_;
   base::flat_map<std::string, int> int_map_;
-  base::flat_map<std::string, base::Value::List> list_map_;
+  base::flat_map<std::string, base::ListValue> list_map_;
   base::flat_map<std::string, bool> reporting_enabled_map_;
 
   bool is_trusted_ = true;

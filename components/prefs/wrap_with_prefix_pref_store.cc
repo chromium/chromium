@@ -27,10 +27,10 @@ bool WrapWithPrefixPrefStore::GetValue(std::string_view key,
   return target_pref_store_->GetValue(AddDottedPrefix(key), value);
 }
 
-base::Value::Dict WrapWithPrefixPrefStore::GetValues() const {
-  base::Value::Dict values = target_pref_store_->GetValues();
+base::DictValue WrapWithPrefixPrefStore::GetValues() const {
+  base::DictValue values = target_pref_store_->GetValues();
   std::string_view prefix(dotted_prefix_.c_str(), dotted_prefix_.size() - 1);
-  if (base::Value::Dict* values_with_prefix =
+  if (base::DictValue* values_with_prefix =
           values.FindDictByDottedPath(prefix)) {
     return std::move(*values_with_prefix);
   }

@@ -40,13 +40,13 @@ void WorkerNodeImplDescriber::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value::Dict WorkerNodeImplDescriber::DescribeWorkerNodeData(
+base::DictValue WorkerNodeImplDescriber::DescribeWorkerNodeData(
     const WorkerNode* node) const {
   const WorkerNodeImpl* impl = WorkerNodeImpl::FromNode(node);
   if (!impl)
-    return base::Value::Dict();
+    return base::DictValue();
 
-  base::Value::Dict ret;
+  base::DictValue ret;
   ret.Set("worker_type", WorkerTypeToString(impl->GetWorkerType()));
   ret.Set("browser_context_id", impl->GetBrowserContextID());
   ret.Set("worker_token", impl->GetWorkerToken().ToString());
@@ -55,7 +55,7 @@ base::Value::Dict WorkerNodeImplDescriber::DescribeWorkerNodeData(
   ret.Set("origin", impl->GetOrigin().GetDebugString());
   ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
 
-  base::Value::Dict metrics;
+  base::DictValue metrics;
   metrics.Set("resident_set",
               base::NumberToString(impl->GetResidentSetEstimate().InKiB()));
   metrics.Set(

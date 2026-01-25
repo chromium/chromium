@@ -76,13 +76,13 @@ TEST_F(PolicyLoaderCommandLineTest, ParseSwitchValue) {
     "list_policy": [1,2],
     "dict_policy": {"k1":1, "k2": {"k3":true}}
   })");
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set("int_policy", 42);
   policies.Set("string_policy", "string");
   policies.Set("bool_policy", true);
 
   // list policy
-  base::Value::List list;
+  base::ListValue list;
   list.Append(1);
   list.Append(2);
   policies.Set("list_policy", std::move(list));

@@ -21,7 +21,7 @@ bool InMemoryPrefStore::GetValue(std::string_view key,
   return prefs_.GetValue(key, value);
 }
 
-base::Value::Dict InMemoryPrefStore::GetValues() const {
+base::DictValue InMemoryPrefStore::GetValues() const {
   return prefs_.AsDict();
 }
 

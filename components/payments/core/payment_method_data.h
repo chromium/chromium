@@ -25,7 +25,7 @@ class PaymentMethodData {
 
   // Populates the properties of this PaymentMethodData from |dict|. Returns
   // true if the required values are present.
-  bool FromValueDict(const base::Value::Dict& dict);
+  bool FromValueDict(const base::DictValue& dict);
 
   // Payment method identifier for payment method that the merchant web site
   // accepts.

@@ -525,20 +525,20 @@ class CloudPolicyClientTest : public testing::Test {
     CreateClient("", "", kFlexSysVendor, kFlexProductName, kFlexProductVersion);
   }
 
-  base::Value::Dict MakeDefaultRealtimeReport() {
-    base::Value::Dict context;
+  base::DictValue MakeDefaultRealtimeReport() {
+    base::DictValue context;
     context.SetByDottedPath("profile.gaiaEmail", "name@gmail.com");
     context.SetByDottedPath("browser.userAgent", "User-Agent");
     context.SetByDottedPath("profile.profileName", "Profile 1");
     context.SetByDottedPath("profile.profilePath", "C:\\User Data\\Profile 1");
 
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set("time", "2019-05-22T13:01:45Z");
     event.SetByDottedPath("foo.prop1", "value1");
     event.SetByDottedPath("foo.prop2", "value2");
     event.SetByDottedPath("foo.prop3", "value3");
 
-    base::Value::List event_list;
+    base::ListValue event_list;
     event_list.Append(std::move(event));
     return policy::RealtimeReportingJobConfiguration::BuildReport(
         std::move(event_list), std::move(context));
@@ -2814,7 +2814,7 @@ TEST_P(CloudPolicyClientUploadSecurityEventReportDeprecatedTest,
   std::optional<base::Value> payload = base::JSONReader::Read(
       job_payload_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(payload);
-  const base::Value::Dict& payload_dict = payload->GetDict();
+  const base::DictValue& payload_dict = payload->GetDict();
 
   ASSERT_FALSE(policy::GetDeviceName().empty());
   EXPECT_EQ(version_info::GetVersionNumber(),
@@ -2907,7 +2907,7 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNoResponse) {
   std::optional<base::Value> payload = base::JSONReader::Read(
       job_payload_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(payload);
-  const base::Value::Dict& payload_dict = payload->GetDict();
+  const base::DictValue& payload_dict = payload->GetDict();
 
   ASSERT_FALSE(policy::GetDeviceName().empty());
   EXPECT_EQ(version_info::GetVersionNumber(),
@@ -3053,22 +3053,22 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMergeDeprecated) {
 
   // Add one report to the config.
   {
-    base::Value::Dict context;
+    base::DictValue context;
     context.SetByDottedPath("profile.gaiaEmail", "name@gmail.com");
     context.SetByDottedPath("browser.userAgent", "User-Agent");
     context.SetByDottedPath("profile.profileName", "Profile 1");
     context.SetByDottedPath("profile.profilePath", "C:\\User Data\\Profile 1");
 
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set("time", "2019-09-10T20:01:45Z");
     event.SetByDottedPath("foo.prop1", "value1");
     event.SetByDottedPath("foo.prop2", "value2");
     event.SetByDottedPath("foo.prop3", "value3");
 
-    base::Value::List events;
+    base::ListValue events;
     events.Append(std::move(event));
 
-    base::Value::Dict report;
+    base::DictValue report;
     report.Set(RealtimeReportingJobConfiguration::kEventListKey,
                std::move(events));
     report.Set(RealtimeReportingJobConfiguration::kContextKey,
@@ -3079,21 +3079,21 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMergeDeprecated) {
 
   // Add a second report to the config with a different context.
   {
-    base::Value::Dict context;
+    base::DictValue context;
     context.SetByDottedPath("profile.gaiaEmail", "name2@gmail.com");
     context.SetByDottedPath("browser.userAgent", "User-Agent2");
     context.SetByDottedPath("browser.version", "1.0.0.0");
 
-    base::Value::Dict event;
+    base::DictValue event;
     event.Set("time", "2019-09-10T20:02:45Z");
     event.SetByDottedPath("foo.prop1", "value1");
     event.SetByDottedPath("foo.prop2", "value2");
     event.SetByDottedPath("foo.prop3", "value3");
 
-    base::Value::List events;
+    base::ListValue events;
     events.Append(std::move(event));
 
-    base::Value::Dict report;
+    base::DictValue report;
     report.Set(RealtimeReportingJobConfiguration::kEventListKey,
                std::move(events));
     report.Set(RealtimeReportingJobConfiguration::kContextKey,
@@ -3107,7 +3107,7 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMergeDeprecated) {
   std::optional<base::Value> payload = base::JSONReader::Read(
       job_config->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(payload);
-  const base::Value::Dict& payload_dict = payload->GetDict();
+  const base::DictValue& payload_dict = payload->GetDict();
 
   ASSERT_EQ("name2@gmail.com",
             *payload_dict.FindStringByDottedPath("profile.gaiaEmail"));
@@ -3643,7 +3643,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
 
 TEST_F(CloudPolicyClientTest, ResultCopyAssignment) {
   CloudPolicyClient::Result result1 =
-      CloudPolicyClient::Result(DM_STATUS_SUCCESS, 400, base::Value::Dict());
+      CloudPolicyClient::Result(DM_STATUS_SUCCESS, 400, base::DictValue());
   CloudPolicyClient::Result result2 =
       CloudPolicyClient::Result(DM_STATUS_REQUEST_FAILED);
 

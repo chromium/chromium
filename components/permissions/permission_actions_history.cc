@@ -68,19 +68,19 @@ constexpr char kTemporaryGrantCountKey[] = "temporary_grant_count";
 constexpr char kTemporaryGrantTimeStampKey[] = "temporary_grant_time_days";
 constexpr char kOneTimeGrantCountKey[] = "one_time_grant_count";
 
-base::Value::Dict GetOriginActionHistoryData(HostContentSettingsMap* settings,
-                                             const GURL& origin_url) {
+base::DictValue GetOriginActionHistoryData(HostContentSettingsMap* settings,
+                                           const GURL& origin_url) {
   base::Value website_setting = settings->GetWebsiteSetting(
       origin_url, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY);
   if (!website_setting.is_dict()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   return std::move(website_setting.GetDict());
 }
 
-base::Value::Dict* EnsurePermissionDict(base::Value::Dict& origin_dict,
-                                        ContentSettingsType content_type) {
+base::DictValue* EnsurePermissionDict(base::DictValue& origin_dict,
+                                      ContentSettingsType content_type) {
   // TODO(crbug.com/450467541): Support approximate location.
   CHECK((content_type == ContentSettingsType::GEOLOCATION ||
          content_type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) &&
@@ -96,8 +96,8 @@ base::Value::Dict* EnsurePermissionDict(base::Value::Dict& origin_dict,
 int GetTemporaryGrantCount(const GURL& url,
                            ContentSettingsType permission,
                            HostContentSettingsMap* settings_map) {
-  base::Value::Dict dict = GetOriginActionHistoryData(settings_map, url);
-  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
+  base::DictValue dict = GetOriginActionHistoryData(settings_map, url);
+  base::DictValue* permission_dict = EnsurePermissionDict(dict, permission);
 
   std::optional<int> value = permission_dict->FindInt(kTemporaryGrantCountKey);
   return value.value_or(0);
@@ -115,7 +115,7 @@ PermissionActionsHistory::~PermissionActionsHistory() = default;
 std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistory(const base::Time& begin,
                                      EntryFilter entry_filter) {
-  const base::Value::Dict& dictionary =
+  const base::DictValue& dictionary =
       pref_service_->GetDict(prefs::kPermissionActions);
 
   std::vector<PermissionActionsHistory::Entry> matching_actions;
@@ -146,15 +146,15 @@ void PermissionActionsHistory::RecordAction(
     RequestType type,
     PermissionPromptDisposition prompt_disposition) {
   ScopedDictPrefUpdate update(pref_service_, prefs::kPermissionActions);
-  base::Value::Dict& update_dict = update.Get();
+  base::DictValue& update_dict = update.Get();
 
   const std::string_view permission_path(PermissionKeyForRequestType(type));
 
   if (!update_dict.FindListByDottedPath(permission_path)) {
-    update_dict.SetByDottedPath(permission_path, base::Value::List());
+    update_dict.SetByDottedPath(permission_path, base::ListValue());
   }
 
-  base::Value::List* permission_actions =
+  base::ListValue* permission_actions =
       update_dict.FindListByDottedPath(permission_path);
   CHECK(permission_actions);
 
@@ -167,7 +167,7 @@ void PermissionActionsHistory::RecordAction(
   });
 
   // Record the new permission action.
-  base::Value::Dict new_action_attributes;
+  base::DictValue new_action_attributes;
   new_action_attributes.Set(kPermissionActionEntryTimestampKey,
                             base::TimeToValue(base::Time::Now()));
   new_action_attributes.Set(kPermissionActionEntryActionKey,
@@ -201,8 +201,8 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
 bool PermissionActionsHistory::RecordTemporaryGrant(
     const GURL& url,
     ContentSettingsType permission) {
-  base::Value::Dict dict = GetOriginActionHistoryData(settings_map_, url);
-  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
+  base::DictValue dict = GetOriginActionHistoryData(settings_map_, url);
+  base::DictValue* permission_dict = EnsurePermissionDict(dict, permission);
 
   std::optional<int> value = permission_dict->FindInt(kTemporaryGrantCountKey);
   int current_count = value.value_or(0);
@@ -225,7 +225,7 @@ bool PermissionActionsHistory::RecordTemporaryGrant(
 void PermissionActionsHistory::ResetHeuristicData(
     const GURL& url,
     ContentSettingsType permission) {
-  base::Value::Dict dict = GetOriginActionHistoryData(settings_map_, url);
+  base::DictValue dict = GetOriginActionHistoryData(settings_map_, url);
   if (dict.empty()) {
     return;
   }
@@ -254,9 +254,9 @@ bool PermissionActionsHistory::CheckHeuristicallyAutoGranted(
     const GURL& request_origin,
     ContentSettingsType permission,
     bool needs_update) {
-  base::Value::Dict dict =
+  base::DictValue dict =
       GetOriginActionHistoryData(settings_map_, request_origin);
-  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
+  base::DictValue* permission_dict = EnsurePermissionDict(dict, permission);
 
   std::optional<base::Time> last_grant_time =
       base::ValueToTime(permission_dict->Find(kTemporaryGrantTimeStampKey));
@@ -318,7 +318,7 @@ std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
                                              const std::string& key,
                                              EntryFilter entry_filter) {
-  const base::Value::List* permission_actions =
+  const base::ListValue* permission_actions =
       pref_service_->GetDict(prefs::kPermissionActions).FindList(key);
 
   if (!permission_actions)
@@ -327,7 +327,7 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
   std::vector<Entry> matching_actions;
 
   for (const auto& entry : *permission_actions) {
-    const base::Value::Dict& entry_dict = entry.GetDict();
+    const base::DictValue& entry_dict = entry.GetDict();
     const std::optional<base::Time> timestamp =
         base::ValueToTime(entry_dict.Find(kPermissionActionEntryTimestampKey));
 
@@ -411,12 +411,12 @@ void PermissionActionsHistory::RecordOneTimeGrant(
   }
   base::Value setting = settings_map_->GetWebsiteSetting(
       origin, origin, ContentSettingsType::PERMISSION_ACTIONS_HISTORY, nullptr);
-  base::Value::Dict dict = !setting.is_none() && setting.is_dict()
-                               ? setting.GetDict().Clone()
-                               : base::Value::Dict();
+  base::DictValue dict = !setting.is_none() && setting.is_dict()
+                             ? setting.GetDict().Clone()
+                             : base::DictValue();
   const std::string permission_str =
       PermissionUtil::GetPermissionString(permission_type);
-  base::Value::Dict* permission_dict = dict.EnsureDict(permission_str);
+  base::DictValue* permission_dict = dict.EnsureDict(permission_str);
   int current_count =
       permission_dict->FindInt(kOneTimeGrantCountKey).value_or(0);
   current_count++;
@@ -470,10 +470,10 @@ int PermissionActionsHistory::GetOneTimeGrantCount(
   base::Value setting = settings_map_->GetWebsiteSetting(
       origin, origin, ContentSettingsType::PERMISSION_ACTIONS_HISTORY, nullptr);
   if (!setting.is_none() && setting.is_dict()) {
-    const base::Value::Dict& dict = setting.GetDict();
+    const base::DictValue& dict = setting.GetDict();
     const std::string permission_str =
         PermissionUtil::GetPermissionString(permission);
-    const base::Value::Dict* permission_dict = dict.FindDict(permission_str);
+    const base::DictValue* permission_dict = dict.FindDict(permission_str);
     if (permission_dict) {
       return permission_dict->FindInt(kOneTimeGrantCountKey).value_or(0);
     }

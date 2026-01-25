@@ -207,7 +207,7 @@ TEST_F(PrefMemberTest, BasicGetAndSet) {
   EXPECT_FALSE(string.IsDefaultValue());
 
   // Test string list
-  base::Value::List expected_list;
+  base::ListValue expected_list;
   std::vector<std::string> expected_vector;
   StringListPrefMember string_list;
   string_list.Init(kStringListPref, &prefs);

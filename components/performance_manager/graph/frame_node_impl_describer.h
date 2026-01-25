@@ -26,7 +26,7 @@ class FrameNodeImplDescriber : public GraphOwned,
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriberDefaultImpl impl:
-  base::Value::Dict DescribeFrameNodeData(const FrameNode* node) const override;
+  base::DictValue DescribeFrameNodeData(const FrameNode* node) const override;
 };
 
 }  // namespace performance_manager

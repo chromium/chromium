@@ -104,7 +104,7 @@ void PageLoadTrackerDecoratorData::SetLoadIdleState(
   }
 }
 
-void PageLoadTrackerDecoratorData::Describe(base::Value::Dict* dict) {
+void PageLoadTrackerDecoratorData::Describe(base::DictValue* dict) {
   CHECK(dict);
   dict->Set("load_idle_state", ToString(load_idle_state()));
   dict->Set("is_loading", is_loading_);

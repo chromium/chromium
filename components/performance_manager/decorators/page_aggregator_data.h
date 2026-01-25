@@ -42,7 +42,7 @@ class PageAggregatorData : public SparseNodeInlineData<PageAggregatorData> {
   void UpdateCurrentFrameCountForFreezingOriginTrialOptOut(
       bool frame_has_freezing_origin_trial_opt_out);
 
-  base::Value::Dict Describe();
+  base::DictValue Describe();
 
  private:
   raw_ptr<PageNodeImpl> page_node_;

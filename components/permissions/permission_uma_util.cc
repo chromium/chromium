@@ -2207,7 +2207,7 @@ PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
   if (!stored_value.is_dict()) {
     return std::nullopt;
   }
-  base::Value::List* permission_type_list =
+  base::ListValue* permission_type_list =
       stored_value.GetDict().FindList(permissions::kRevokedKey);
   if (!permission_type_list) {
     return std::nullopt;

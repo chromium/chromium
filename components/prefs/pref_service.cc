@@ -161,11 +161,11 @@ void PrefService::IteratePreferenceValues(
     callback.Run(it.first, *GetPreferenceValue(it.first));
 }
 
-base::Value::Dict PrefService::GetPreferenceValues(
+base::DictValue PrefService::GetPreferenceValues(
     IncludeDefaults include_defaults) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Value::Dict out;
+  base::DictValue out;
   for (const auto& it : *pref_registry_) {
     if (include_defaults == INCLUDE_DEFAULTS) {
       out.SetByDottedPath(it.first, GetPreferenceValue(it.first)->Clone());
@@ -261,12 +261,12 @@ const base::Value& PrefService::GetValue(std::string_view path) const {
   return *GetPreferenceValue(path);
 }
 
-const base::Value::Dict& PrefService::GetDict(std::string_view path) const {
+const base::DictValue& PrefService::GetDict(std::string_view path) const {
   const base::Value& value = GetValue(path);
   return value.GetDict();
 }
 
-const base::Value::List& PrefService::GetList(std::string_view path) const {
+const base::ListValue& PrefService::GetList(std::string_view path) const {
   const base::Value& value = GetValue(path);
   return value.GetList();
 }
@@ -382,11 +382,11 @@ void PrefService::SetString(std::string_view path, std::string_view value) {
   SetUserPrefValue(path, base::Value(value));
 }
 
-void PrefService::SetDict(std::string_view path, base::Value::Dict dict) {
+void PrefService::SetDict(std::string_view path, base::DictValue dict) {
   SetUserPrefValue(path, base::Value(std::move(dict)));
 }
 
-void PrefService::SetList(std::string_view path, base::Value::List list) {
+void PrefService::SetList(std::string_view path, base::ListValue list) {
   SetUserPrefValue(path, base::Value(std::move(list)));
 }
 

@@ -49,10 +49,10 @@ MachineLevelUserCloudPolicyStatusProvider::
     core_->store()->RemoveObserver(this);
 }
 
-base::Value::Dict MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
+base::DictValue MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
   CloudPolicyRefreshScheduler* refresh_scheduler = core_->refresh_scheduler();
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   SetPolicyPushAndRefreshStatus(dict, refresh_scheduler);
 
   if (!context_->enrollmentToken.empty())

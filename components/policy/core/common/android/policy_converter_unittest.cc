@@ -63,7 +63,7 @@ class PolicyConverterTest : public testing::Test {
   std::string ConvertJavaStringArrayToListValue(
       JNIEnv* env,
       const JavaRef<jobjectArray>& java_array) {
-    base::Value::List list =
+    base::ListValue list =
         PolicyConverter::ConvertJavaStringArrayToListValue(env, java_array);
 
     std::string json_string;
@@ -169,7 +169,7 @@ TEST_F(PolicyConverterTest, ConvertToDictValue) {
   Schema dict_schema = schema_.GetKnownProperty("dict");
   ASSERT_TRUE(dict_schema.valid());
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("thx", 1138);
   EXPECT_EQ("{\"thx\":1138}", Convert(Value(std::move(dict)), dict_schema));
   EXPECT_EQ("{\"moose\":true}",

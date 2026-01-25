@@ -72,22 +72,22 @@ void MemoryMeasurementProvider::RequestMemorySummary(ResultCallback callback) {
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-base::Value::Dict MemoryMeasurementProvider::DescribeFrameNodeData(
+base::DictValue MemoryMeasurementProvider::DescribeFrameNodeData(
     const FrameNode* node) const {
   return DescribeContextData(node->GetResourceContext());
 }
 
-base::Value::Dict MemoryMeasurementProvider::DescribePageNodeData(
+base::DictValue MemoryMeasurementProvider::DescribePageNodeData(
     const PageNode* node) const {
   return DescribeContextData(node->GetResourceContext());
 }
 
-base::Value::Dict MemoryMeasurementProvider::DescribeProcessNodeData(
+base::DictValue MemoryMeasurementProvider::DescribeProcessNodeData(
     const ProcessNode* node) const {
   return DescribeContextData(node->GetResourceContext());
 }
 
-base::Value::Dict MemoryMeasurementProvider::DescribeWorkerNodeData(
+base::DictValue MemoryMeasurementProvider::DescribeWorkerNodeData(
     const WorkerNode* node) const {
   return DescribeContextData(node->GetResourceContext());
 }
@@ -186,10 +186,10 @@ void MemoryMeasurementProvider::OnMemorySummary(
   std::move(callback).Run(std::move(results));
 }
 
-base::Value::Dict MemoryMeasurementProvider::DescribeContextData(
+base::DictValue MemoryMeasurementProvider::DescribeContextData(
     const ResourceContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict dict;
+  base::DictValue dict;
   const auto it = cached_results_.find(context);
   if (it != cached_results_.end()) {
     const MemorySummaryResult& result =

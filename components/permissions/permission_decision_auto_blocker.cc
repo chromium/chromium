@@ -104,19 +104,19 @@ std::string GetStringForContentType(ContentSettingsType content_type) {
   }
 }
 
-base::Value::Dict GetOriginAutoBlockerData(HostContentSettingsMap* settings,
-                                           const GURL& origin_url) {
+base::DictValue GetOriginAutoBlockerData(HostContentSettingsMap* settings,
+                                         const GURL& origin_url) {
   base::Value website_setting = settings->GetWebsiteSetting(
       origin_url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA);
   if (!website_setting.is_dict()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   return std::move(website_setting.GetDict());
 }
 
-base::Value::Dict* GetOrCreatePermissionDict(base::Value::Dict& origin_dict,
-                                             const std::string& permission) {
+base::DictValue* GetOrCreatePermissionDict(base::DictValue& origin_dict,
+                                           const std::string& permission) {
   return origin_dict.EnsureDict(permission);
 }
 
@@ -124,9 +124,9 @@ int RecordActionInWebsiteSettings(const GURL& url,
                                   ContentSettingsType permission,
                                   const char* key,
                                   HostContentSettingsMap* settings_map) {
-  base::Value::Dict dict = GetOriginAutoBlockerData(settings_map, url);
+  base::DictValue dict = GetOriginAutoBlockerData(settings_map, url);
 
-  base::Value::Dict* permission_dict =
+  base::DictValue* permission_dict =
       GetOrCreatePermissionDict(dict, GetStringForContentType(permission));
 
   std::optional<int> value = permission_dict->FindInt(key);
@@ -144,8 +144,8 @@ int GetActionCount(const GURL& url,
                    ContentSettingsType permission,
                    const char* key,
                    HostContentSettingsMap* settings_map) {
-  base::Value::Dict dict = GetOriginAutoBlockerData(settings_map, url);
-  base::Value::Dict* permission_dict =
+  base::DictValue dict = GetOriginAutoBlockerData(settings_map, url);
+  base::DictValue* permission_dict =
       GetOrCreatePermissionDict(dict, GetStringForContentType(permission));
 
   std::optional<int> value = permission_dict->FindInt(key);
@@ -190,7 +190,7 @@ base::TimeDelta GetEmbargoDurationForContentSettingsType(
   return base::Days(kDefaultEmbargoDays);
 }
 
-base::Time GetEmbargoStartTime(base::Value::Dict* permission_dict,
+base::Time GetEmbargoStartTime(base::DictValue* permission_dict,
                                const char* key) {
   std::optional<double> found = permission_dict->FindDouble(key);
   if (found) {
@@ -199,7 +199,7 @@ base::Time GetEmbargoStartTime(base::Value::Dict* permission_dict,
   return base::Time();
 }
 
-bool IsUnderEmbargo(base::Value::Dict* permission_dict,
+bool IsUnderEmbargo(base::DictValue* permission_dict,
                     const char* key,
                     base::Time current_time,
                     base::TimeDelta offset) {
@@ -270,9 +270,8 @@ PermissionDecisionAutoBlocker::GetEmbargoResult(
   DCHECK(settings_map);
   DCHECK(IsEnabledForContentSetting(permission));
 
-  base::Value::Dict dict =
-      GetOriginAutoBlockerData(settings_map, request_origin);
-  base::Value::Dict* permission_dict =
+  base::DictValue dict = GetOriginAutoBlockerData(settings_map, request_origin);
+  base::DictValue* permission_dict =
       GetOrCreatePermissionDict(dict, GetStringForContentType(permission));
 
   int dismiss_count = GetActionCount(request_origin, permission,
@@ -323,9 +322,9 @@ base::Time PermissionDecisionAutoBlocker::GetEmbargoStartTime(
     const GURL& request_origin,
     ContentSettingsType permission) {
   DCHECK(settings_map_);
-  base::Value::Dict dict =
+  base::DictValue dict =
       GetOriginAutoBlockerData(settings_map_, request_origin);
-  base::Value::Dict* permission_dict =
+  base::DictValue* permission_dict =
       GetOrCreatePermissionDict(dict, GetStringForContentType(permission));
 
   // A permission may have a record for both dismisal and ignore, return the
@@ -479,7 +478,7 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
     return;
   }
 
-  base::Value::Dict dict = GetOriginAutoBlockerData(settings_map_, url);
+  base::DictValue dict = GetOriginAutoBlockerData(settings_map_, url);
 
   dict.Remove(GetStringForContentType(permission));
 
@@ -526,9 +525,9 @@ void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
     const GURL& request_origin,
     ContentSettingsType permission,
     const char* key) {
-  base::Value::Dict dict =
+  base::DictValue dict =
       GetOriginAutoBlockerData(settings_map_, request_origin);
-  base::Value::Dict* permission_dict =
+  base::DictValue* permission_dict =
       GetOrCreatePermissionDict(dict, GetStringForContentType(permission));
   permission_dict->Set(
       key, base::Value(static_cast<double>(clock_->Now().ToInternalValue())));

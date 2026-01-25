@@ -193,7 +193,7 @@ void QuirksClient::Retry() {
 }
 
 bool QuirksClient::ParseResult(const std::string& result, std::string* data) {
-  std::optional<base::Value::Dict> maybe_json =
+  std::optional<base::DictValue> maybe_json =
       base::JSONReader::ReadDict(result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_json) {
     VLOG(1) << "Failed to parse JSON icc data";

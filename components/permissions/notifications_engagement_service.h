@@ -48,9 +48,9 @@ class NotificationsEngagementService : public KeyedService {
                   int>
   GetNotificationCountMapPerPatternPair(const HostContentSettingsMap* hcsm);
   static int GetDailyAverageNotificationCount(
-      const base::Value::Dict& engagement);
+      const base::DictValue& engagement);
   static int GetSuspiciousNotificationCountForPeriod(
-      const base::Value::Dict& engagement,
+      const base::DictValue& engagement,
       int days);
 
   static std::string GetBucketLabel(base::Time time);

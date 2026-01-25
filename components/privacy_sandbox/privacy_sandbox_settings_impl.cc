@@ -103,10 +103,10 @@ std::vector<ContentSettingsPattern> FledgeBlockToContentSettingsPatterns(
           ContentSettingsPattern::FromString(entry)};
 }
 
-// Returns a base::Value::Dict for storage in prefs that represents |topic|
+// Returns a base::DictValue for storage in prefs that represents |topic|
 // blocked at the current time.
-base::Value::Dict CreateBlockedTopicEntry(const CanonicalTopic& topic) {
-  return base::Value::Dict()
+base::DictValue CreateBlockedTopicEntry(const CanonicalTopic& topic) {
+  return base::DictValue()
       .Set(kBlockedTopicsTopicKey, topic.ToValue())
       .Set(kBlockedTopicsBlockTimeKey, base::TimeToValue(base::Time::Now()));
 }

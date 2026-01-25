@@ -52,7 +52,7 @@ void EncryptAndSave(const os_crypt_async::Encryptor& encryptor,
   std::string encrypted_is_gaia_value = EncryptString(
       encryptor, base::ToString(password_hash_data.is_gaia_password));
 
-  base::Value::Dict encrypted_password_hash_entry;
+  base::DictValue encrypted_password_hash_entry;
   encrypted_password_hash_entry.Set("username", encrypted_username);
   encrypted_password_hash_entry.Set("hash", encrypted_hash);
   encrypted_password_hash_entry.Set("salt_length", encrypted_length_and_salt);
@@ -62,7 +62,7 @@ void EncryptAndSave(const os_crypt_async::Encryptor& encryptor,
   std::unique_ptr<ScopedListPrefUpdate> update =
       std::make_unique<ScopedListPrefUpdate>(pref, pref_path);
 
-  base::Value::List& update_list = update->Get();
+  base::ListValue& update_list = update->Get();
   update_list.Append(std::move(encrypted_password_hash_entry));
 }
 

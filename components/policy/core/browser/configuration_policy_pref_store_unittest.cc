@@ -56,7 +56,7 @@ TEST_F(ConfigurationPolicyPrefStoreListTest, GetDefault) {
 }
 
 TEST_F(ConfigurationPolicyPrefStoreListTest, SetValue) {
-  base::Value::List in_value;
+  base::ListValue in_value;
   in_value.Append("test1");
   in_value.Append("test2,");
   PolicyMap policy;

@@ -35,7 +35,7 @@ class MockUserInfoFetcherDelegate : public UserInfoFetcher::Delegate {
   ~MockUserInfoFetcherDelegate() = default;
   MOCK_METHOD1(OnGetUserInfoFailure,
                void(const GoogleServiceAuthError& error));
-  MOCK_METHOD1(OnGetUserInfoSuccess, void(const base::Value::Dict& result));
+  MOCK_METHOD1(OnGetUserInfoSuccess, void(const base::DictValue& result));
 };
 
 MATCHER_P(MatchDict, expected, "matches Value::Dict") {
@@ -87,7 +87,7 @@ TEST_F(UserInfoFetcherTest, SuccessfulFetch) {
 
   // Generate what we expect our result will look like (should match
   // parsed kUserInfoResponse).
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("email", "test_user@test.com");
   dict.Set("verified_email", true);
   dict.Set("hd", "test.com");

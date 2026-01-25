@@ -47,7 +47,7 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   v8::Isolate* GetIsolate() override;
   net::SiteForCookies SiteForCookies() const override;
   blink::WebURL CompleteURL(const blink::WebString& partial_url) const override;
-  void PostMessage(base::Value::Dict message) override;
+  void PostMessage(base::DictValue message) override;
   void Invalidate() override;
   void RequestTouchEventType(
       blink::WebPluginContainer::TouchEventRequestType request_type) override;

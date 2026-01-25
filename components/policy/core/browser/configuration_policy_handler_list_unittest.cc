@@ -165,7 +165,7 @@ TEST_F(ConfigurationPolicyHandlerListTest, ApplySettingsWithFuturePolicy) {
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 
   // Whitelist a different policy.
-  base::Value::List enabled_future_policies;
+  base::ListValue enabled_future_policies;
   enabled_future_policies.Append(kPolicyName2);
   AddPolicy(key::kEnableExperimentalPolicies, /*is_cloud=*/true,
             base::Value(enabled_future_policies.Clone()));

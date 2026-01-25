@@ -619,23 +619,23 @@ void CPUMeasurementMonitor::OnBeforeClientWorkerRemoved(
   UpdateCPUMeasurements(worker_node->GetProcessNode());
 }
 
-base::Value::Dict CPUMeasurementMonitor::DescribeFrameNodeData(
+base::DictValue CPUMeasurementMonitor::DescribeFrameNodeData(
     const FrameNode* node) const {
   return SharedCPUTimeResultData::Get(FrameNodeImpl::FromNode(node)).Describe();
 }
 
-base::Value::Dict CPUMeasurementMonitor::DescribePageNodeData(
+base::DictValue CPUMeasurementMonitor::DescribePageNodeData(
     const PageNode* node) const {
   return SharedCPUTimeResultData::Get(PageNodeImpl::FromNode(node)).Describe();
 }
 
-base::Value::Dict CPUMeasurementMonitor::DescribeProcessNodeData(
+base::DictValue CPUMeasurementMonitor::DescribeProcessNodeData(
     const ProcessNode* node) const {
   return SharedCPUTimeResultData::Get(ProcessNodeImpl::FromNode(node))
       .Describe();
 }
 
-base::Value::Dict CPUMeasurementMonitor::DescribeWorkerNodeData(
+base::DictValue CPUMeasurementMonitor::DescribeWorkerNodeData(
     const WorkerNode* node) const {
   return SharedCPUTimeResultData::Get(WorkerNodeImpl::FromNode(node))
       .Describe();

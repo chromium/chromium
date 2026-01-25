@@ -57,9 +57,9 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallBooleanPolicy(const std::string& policy_name,
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
-                               const base::Value::List& policy_value) override;
+                               const base::ListValue& policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
-                               const base::Value::Dict& policy_value) override;
+                               const base::DictValue& policy_value) override;
 
   static PolicyProviderTestHarness* Create();
 
@@ -114,9 +114,8 @@ void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
                       /*is_forced=*/true, /*is_machine=*/true);
 }
 
-void TestHarness::InstallStringListPolicy(
-    const std::string& policy_name,
-    const base::Value::List& policy_value) {
+void TestHarness::InstallStringListPolicy(const std::string& policy_name,
+                                          const base::ListValue& policy_value) {
   ScopedCFTypeRef<CFStringRef> name(base::SysUTF8ToCFStringRef(policy_name));
   ScopedCFTypeRef<CFPropertyListRef> array =
       ValueToProperty(base::Value(policy_value.Clone()));
@@ -125,9 +124,8 @@ void TestHarness::InstallStringListPolicy(
                       /*is_machine=*/true);
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::Value::Dict& policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::DictValue& policy_value) {
   ScopedCFTypeRef<CFStringRef> name(base::SysUTF8ToCFStringRef(policy_name));
   ScopedCFTypeRef<CFPropertyListRef> dict =
       ValueToProperty(base::Value(policy_value.Clone()));

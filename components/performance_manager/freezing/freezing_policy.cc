@@ -956,9 +956,9 @@ void FreezingPolicy::OnIsCapturingDisplayChanged(const PageNode* page_node) {
                              CannotFreezeReason::kCapturingDisplay);
 }
 
-base::Value::Dict FreezingPolicy::DescribePageNodeData(
+base::DictValue FreezingPolicy::DescribePageNodeData(
     const PageNode* node) const {
-  base::Value::Dict ret;
+  base::DictValue ret;
 
   const auto& page_freezing_state = GetFreezingState(node);
 
@@ -967,7 +967,7 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
 
   // Present browsing instances for this page.
   {
-    base::Value::List browsing_instances;
+    base::ListValue browsing_instances;
     for (auto browsing_instance : GetBrowsingInstances(node)) {
       browsing_instances.Append(browsing_instance.value());
     }
@@ -976,7 +976,7 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
 
   // Present `CannotFreezeReason`s for this page.
   {
-    base::Value::List cannot_freeze_reasons_list;
+    base::ListValue cannot_freeze_reasons_list;
     for (auto reason : page_freezing_state.cannot_freeze_reasons) {
       cannot_freeze_reasons_list.Append(CannotFreezeReasonToString(reason));
     }
@@ -1001,7 +1001,7 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
         }
       }
     }
-    base::Value::List cannot_freeze_reasons_other_pages_list;
+    base::ListValue cannot_freeze_reasons_other_pages_list;
     for (CannotFreezeReason reason : cannot_freeze_reasons_other_pages) {
       cannot_freeze_reasons_other_pages_list.Append(
           CannotFreezeReasonToString(reason));

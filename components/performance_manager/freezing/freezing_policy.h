@@ -217,7 +217,7 @@ class FreezingPolicy : public PageNodeObserver,
   void OnIsCapturingDisplayChanged(const PageNode* page_node) override;
 
   // NodeDataDescriber:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
 
   // resource_attribution::QueryResultObserver:
   void OnResourceUsageUpdated(

@@ -81,8 +81,8 @@ base::Process::Priority ProcessPriorityAggregatorData::GetPriority() const {
   return base::Process::Priority::kMinValue;
 }
 
-base::Value::Dict ProcessPriorityAggregatorData::Describe() const {
-  base::Value::Dict ret;
+base::DictValue ProcessPriorityAggregatorData::Describe() const {
+  base::DictValue ret;
   ret.Set("user_visible_count", base::saturated_cast<int>(user_visible_count_));
   ret.Set("user_blocking_count",
           base::saturated_cast<int>(user_blocking_count_));

@@ -72,7 +72,7 @@ ValueToDnsCondition(const base::Value& value) {
   // }
   // For now "DnsProbe" is always expected, but eventually other types of
   // conditions will be possible.
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   auto* dns_probe_value = dict.FindDict(proxy_config::kKeyDnsProbe);
   if (!dns_probe_value) {
     return std::nullopt;
@@ -111,7 +111,7 @@ ValueToDnsCondition(const base::Value& value) {
 // Implicit rules are not applied to URL pattern listsof the
 // "ProxyOverrideRules" policy, so on a valid `value` there is always an extra
 // rule added to subtract them from the matcher evaluation.
-bool AddUrlMatcher(const base::Value::Dict& value,
+bool AddUrlMatcher(const base::DictValue& value,
                    net::ProxyHostMatchingRules& rules,
                    const std::string& key,
                    bool optional_field) {
@@ -140,7 +140,7 @@ bool AddUrlMatcher(const base::Value::Dict& value,
 }
 
 // Returns false if an unexpected value was found in the passed `value`.
-bool AddDestinationMatchers(const base::Value::Dict& value,
+bool AddDestinationMatchers(const base::DictValue& value,
                             net::ProxyConfig::ProxyOverrideRule& rule) {
   return AddUrlMatcher(value, rule.destination_matchers,
                        proxy_config::kKeyDestinationMatchers,
@@ -148,7 +148,7 @@ bool AddDestinationMatchers(const base::Value::Dict& value,
 }
 
 // Returns false if an unexpected value was found in the passed `value`.
-bool AddExcludeDestinationMatchers(const base::Value::Dict& value,
+bool AddExcludeDestinationMatchers(const base::DictValue& value,
                                    net::ProxyConfig::ProxyOverrideRule& rule) {
   return AddUrlMatcher(value, rule.exclude_destination_matchers,
                        proxy_config::kKeyExcludeDestinationMatchers,
@@ -157,7 +157,7 @@ bool AddExcludeDestinationMatchers(const base::Value::Dict& value,
 
 // Returns false if an unexpected value was found in the passed `value`, or if
 // the "ProxyList" key is missing.
-bool AddProxyChain(const base::Value::Dict& value,
+bool AddProxyChain(const base::DictValue& value,
                    net::ProxyConfig::ProxyOverrideRule& rule) {
   // Expected schema:
   // {
@@ -194,7 +194,7 @@ bool AddProxyChain(const base::Value::Dict& value,
 }
 
 // Returns false if an unexpected value was found in the passed `value`.
-bool AddConditions(const base::Value::Dict& value,
+bool AddConditions(const base::DictValue& value,
                    net::ProxyConfig::ProxyOverrideRule& rule) {
   // Expected schema:
   // {
@@ -247,7 +247,7 @@ std::optional<net::ProxyConfig::ProxyOverrideRule> ValueToOverrideRule(
   //        }
   //   ]
   // }
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   net::ProxyConfig::ProxyOverrideRule rule;
 
   if (!AddDestinationMatchers(dict, rule) ||
@@ -270,7 +270,7 @@ bool SetProxyOverrideRules(const PrefService* pref_service,
     return false;
   }
 
-  const base::Value::List& rules_list =
+  const base::ListValue& rules_list =
       pref_service->GetList(proxy_config::prefs::kProxyOverrideRules);
   if (rules_list.empty() ||
       !base::FeatureList::IsEnabled(kEnableProxyOverrideRules)) {
@@ -564,7 +564,7 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
       pref_service->FindPreference(proxy_config::prefs::kProxy);
   DCHECK(pref);
 
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service->GetDict(proxy_config::prefs::kProxy);
   ProxyConfigDictionary proxy_dict(dict.Clone());
 

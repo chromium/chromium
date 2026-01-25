@@ -114,7 +114,7 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   std::optional<PlusAddress> GetFirstAvailablePlusAddress(AllocationMode mode);
 
   // Returns the pre-allocated plus addresses from pref-storage.
-  const base::Value::List& GetPreallocatedAddresses() const;
+  const base::ListValue& GetPreallocatedAddresses() const;
 
   // Returns the index of the next pre-allocated plus address from pref-storage.
   int GetIndexOfNextPreallocatedAddress() const;

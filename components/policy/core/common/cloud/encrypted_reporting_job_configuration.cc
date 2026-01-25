@@ -37,7 +37,7 @@ DMAuth GetAuthData(const std::string& dm_token) {
 EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     const std::string& server_url,
-    base::Value::Dict merging_payload,
+    base::DictValue merging_payload,
     const std::string& dm_token,
     const std::string& client_id,
     UploadResponseCallback response_cb,
@@ -83,7 +83,7 @@ void EncryptedReportingJobConfiguration::UpdatePayloadBeforeGetInternal() {
 }
 
 void EncryptedReportingJobConfiguration::UpdateContext(
-    base::Value::Dict context) {
+    base::DictValue context) {
   context_ = std::move(context);
 }
 

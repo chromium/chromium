@@ -152,11 +152,11 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
   std::unique_ptr<base::Value> ValidFormSubmittedMessageBody(
       std::string frame_id) {
     return std::make_unique<base::Value>(
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "test_form")
             .Set("origin", BaseUrl())
-            .Set("fields", base::Value::List().Append(
-                               base::Value::Dict()
+            .Set("fields", base::ListValue().Append(
+                               base::DictValue()
                                    .Set("name", "test_field")
                                    .Set("form_control_type", "password")))
             .Set("host_frame", frame_id));
@@ -694,7 +694,7 @@ TEST_F(PasswordFormHelperTest, FillUsernameAndPassword_MissingFillResultField) {
 
   // Test the missing did_fill_username field.
   {
-    auto result = base::Value(base::Value::Dict()
+    auto result = base::Value(base::DictValue()
                                   .Set("did_fill_password", base::Value(true))
                                   .Set("did_attempt_fill", base::Value(true)));
     main_frame_ptr->AddJsResultForFunctionCall(&result,
@@ -715,7 +715,7 @@ TEST_F(PasswordFormHelperTest, FillUsernameAndPassword_MissingFillResultField) {
 
   // Test the missing did_fill_password field.
   {
-    auto result = base::Value(base::Value::Dict()
+    auto result = base::Value(base::DictValue()
                                   .Set("did_fill_username", base::Value(true))
                                   .Set("did_attempt_fill", base::Value(true)));
     main_frame_ptr->AddJsResultForFunctionCall(&result,
@@ -736,7 +736,7 @@ TEST_F(PasswordFormHelperTest, FillUsernameAndPassword_MissingFillResultField) {
 
   // Test the missing did_attempt_fill field.
   {
-    auto result = base::Value(base::Value::Dict()
+    auto result = base::Value(base::DictValue()
                                   .Set("did_fill_username", base::Value(true))
                                   .Set("did_fill_password", base::Value(true)));
     main_frame_ptr->AddJsResultForFunctionCall(&result,
@@ -973,7 +973,7 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_CantExtractFormData) {
   LoadHtml(@"<p>");
 
   auto incomplete_message_body = std::make_unique<base::Value>(
-      base::Value::Dict().Set("host_frame", GetMainFrame()->GetFrameId()));
+      base::DictValue().Set("host_frame", GetMainFrame()->GetFrameId()));
 
   // Set a message with an incomplete body that misses the required keys to be
   // parsed to form data.

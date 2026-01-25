@@ -35,8 +35,8 @@ namespace {
 // A unique type ID for this implementation.
 const uintptr_t kGraphImplType = reinterpret_cast<uintptr_t>(&kGraphImplType);
 
-base::Value::Dict DescribeNodeWithDescriber(const NodeDataDescriber& describer,
-                                            const Node* node) {
+base::DictValue DescribeNodeWithDescriber(const NodeDataDescriber& describer,
+                                          const Node* node) {
   switch (node->GetNodeType()) {
     case NodeTypeEnum::kFrame:
       return describer.DescribeNodeData(FrameNodeImpl::FromNode(node));
@@ -60,7 +60,7 @@ class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {
   void RegisterDescriber(const NodeDataDescriber* describer,
                          std::string_view name) override;
   void UnregisterDescriber(const NodeDataDescriber* describer) override;
-  base::Value::Dict DescribeNodeData(const Node* node) const override;
+  base::DictValue DescribeNodeData(const Node* node) const override;
 
   size_t size() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -99,12 +99,12 @@ void NodeDataDescriberRegistryImpl::UnregisterDescriber(
   DCHECK_EQ(1u, erased);
 }
 
-base::Value::Dict NodeDataDescriberRegistryImpl::DescribeNodeData(
+base::DictValue NodeDataDescriberRegistryImpl::DescribeNodeData(
     const Node* node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict result;
+  base::DictValue result;
   for (const auto& [describer, describer_name] : describers_) {
-    base::Value::Dict description = DescribeNodeWithDescriber(*describer, node);
+    base::DictValue description = DescribeNodeWithDescriber(*describer, node);
     if (!description.empty()) {
       DCHECK_EQ(nullptr, result.FindDict(describer_name));
       result.Set(describer_name, std::move(description));

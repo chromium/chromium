@@ -11,7 +11,7 @@
 namespace policy {
 
 TEST(PolicyValuesToStringSetTest, Convert) {
-  base::Value::List items;
+  base::ListValue items;
   items.Append("1");
   items.Append("2");
   items.Append("3");
@@ -21,14 +21,14 @@ TEST(PolicyValuesToStringSetTest, Convert) {
 }
 
 TEST(PolicyValuesToStringSetTest, SkipInvalidItem) {
-  base::Value::List items;
+  base::ListValue items;
   items.Append("1");
   items.Append(base::Value());
   items.Append(0);
   items.Append(true);
   items.Append(base::Value(base::Value::Type::BINARY));
-  items.Append(base::Value::List());
-  items.Append(base::Value::Dict());
+  items.Append(base::ListValue());
+  items.Append(base::DictValue());
   items.Append("2");
   items.Append("3");
   items.Append("");

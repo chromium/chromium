@@ -72,8 +72,8 @@ constexpr char kIosNtpHost[] = "newtab";
 #endif
 
 // Returns a blocklist based on the given |block| and |allow| pattern lists.
-std::unique_ptr<URLBlocklist> BuildBlocklist(const base::Value::List* block,
-                                             const base::Value::List* allow) {
+std::unique_ptr<URLBlocklist> BuildBlocklist(const base::ListValue* block,
+                                             const base::ListValue* allow) {
   auto blocklist = std::make_unique<URLBlocklist>();
   if (block) {
     blocklist->Block(*block);
@@ -84,8 +84,8 @@ std::unique_ptr<URLBlocklist> BuildBlocklist(const base::Value::List* block,
   return blocklist;
 }
 
-const base::Value::List* GetPrefList(const PrefService* pref_service,
-                                     std::optional<std::string> pref_path) {
+const base::ListValue* GetPrefList(const PrefService* pref_service,
+                                   std::optional<std::string> pref_path) {
   DCHECK(pref_service);
 
   if (!pref_path) {
@@ -194,11 +194,11 @@ class DefaultBlocklistSource : public BlocklistSource {
   DefaultBlocklistSource& operator=(const DefaultBlocklistSource&) = delete;
   ~DefaultBlocklistSource() override = default;
 
-  const base::Value::List* GetBlocklistSpec() const override {
+  const base::ListValue* GetBlocklistSpec() const override {
     return GetPrefList(pref_change_registrar_.prefs(), blocklist_pref_path_);
   }
 
-  const base::Value::List* GetAllowlistSpec() const override {
+  const base::ListValue* GetAllowlistSpec() const override {
     return GetPrefList(pref_change_registrar_.prefs(), allowlist_pref_path_);
   }
 
@@ -225,13 +225,13 @@ URLBlocklist::URLBlocklist() : url_matcher_(new URLMatcher) {}
 
 URLBlocklist::~URLBlocklist() = default;
 
-void URLBlocklist::Block(const base::Value::List& filters) {
+void URLBlocklist::Block(const base::ListValue& filters) {
   url_matcher::util::AddFiltersWithLimit(url_matcher_.get(), /*allow=*/false,
                                          &id_, filters, &filters_,
                                          kMaxUrlFiltersPerPolicy);
 }
 
-void URLBlocklist::Allow(const base::Value::List& filters) {
+void URLBlocklist::Allow(const base::ListValue& filters) {
   url_matcher::util::AddFiltersWithLimit(url_matcher_.get(), /*allow=*/true,
                                          &id_, filters, &filters_,
                                          kMaxUrlFiltersPerPolicy);
@@ -299,10 +299,8 @@ URLBlocklistManager::URLBlocklistManager(
       &URLBlocklistManager::ScheduleUpdate, base::Unretained(this)));
   // Start enforcing the policies without a delay when they are present at
   // startup.
-  const base::Value::List* block =
-      default_blocklist_source_->GetBlocklistSpec();
-  const base::Value::List* allow =
-      default_blocklist_source_->GetAllowlistSpec();
+  const base::ListValue* block = default_blocklist_source_->GetBlocklistSpec();
+  const base::ListValue* allow = default_blocklist_source_->GetAllowlistSpec();
   if (block || allow) {
     SetBlocklist(BuildBlocklist(block, allow));
   }
@@ -333,19 +331,17 @@ void URLBlocklistManager::Update() {
                                               ? override_blocklist_source_.get()
                                               : default_blocklist_source_.get();
 
-  const base::Value::List* block = current_source->GetBlocklistSpec();
-  const base::Value::List* allow = current_source->GetAllowlistSpec();
+  const base::ListValue* block = current_source->GetBlocklistSpec();
+  const base::ListValue* allow = current_source->GetAllowlistSpec();
 
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &BuildBlocklist,
-          base::Owned(block
-                          ? std::make_unique<base::Value::List>(block->Clone())
-                          : nullptr),
-          base::Owned(allow
-                          ? std::make_unique<base::Value::List>(allow->Clone())
-                          : nullptr)),
+          base::Owned(block ? std::make_unique<base::ListValue>(block->Clone())
+                            : nullptr),
+          base::Owned(allow ? std::make_unique<base::ListValue>(allow->Clone())
+                            : nullptr)),
       base::BindOnce(&URLBlocklistManager::SetBlocklist,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }

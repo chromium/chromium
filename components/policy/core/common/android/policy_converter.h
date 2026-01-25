@@ -69,7 +69,7 @@ class POLICY_EXPORT PolicyConverter {
                                                          const Schema& schema);
 
   // Public for testing.
-  static base::Value::List ConvertJavaStringArrayToListValue(
+  static base::ListValue ConvertJavaStringArrayToListValue(
       JNIEnv* env,
       const base::android::JavaRef<jobjectArray>& array);
 

@@ -40,7 +40,7 @@ class POLICY_EXPORT UserInfoFetcher {
     // Invoked when the UserInfo request has succeeded, passing the parsed
     // response in |response|. Delegate may free the UserInfoFetcher in this
     // callback.
-    virtual void OnGetUserInfoSuccess(const base::Value::Dict& response) = 0;
+    virtual void OnGetUserInfoSuccess(const base::DictValue& response) = 0;
 
     // Invoked when the UserInfo request has failed, passing the associated
     // error in |error|. Delegate may free the UserInfoFetcher in this

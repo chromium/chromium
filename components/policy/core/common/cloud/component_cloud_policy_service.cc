@@ -62,12 +62,12 @@ bool ToPolicyNamespace(const PolicyTypeToFetch& key, PolicyNamespace* ns) {
   return true;
 }
 
-base::Value::Dict TranslatePolicyMapEntryToJson(const PolicyMap::Entry& entry) {
+base::DictValue TranslatePolicyMapEntryToJson(const PolicyMap::Entry& entry) {
   constexpr const char kValue[] = "Value";
   constexpr const char kLevel[] = "Level";
   constexpr const char kRecommended[] = "Recommended";
 
-  base::Value::Dict result;
+  base::DictValue result;
   // This is actually safe because this code just copies the value,
   // not caring about its type.
   result.Set(kValue, entry.value_unsafe()->Clone());
@@ -77,8 +77,8 @@ base::Value::Dict TranslatePolicyMapEntryToJson(const PolicyMap::Entry& entry) {
   return result;
 }
 
-base::Value::Dict TranslatePolicyMapToJson(const PolicyMap& policy_map) {
-  base::Value::Dict result;
+base::DictValue TranslatePolicyMapToJson(const PolicyMap& policy_map) {
+  base::DictValue result;
   for (const auto& [key, entry] : policy_map) {
     result.Set(key, TranslatePolicyMapEntryToJson(entry));
   }

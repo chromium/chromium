@@ -35,10 +35,10 @@ const char RealtimeReportingJobConfiguration::kFailedUploadsKey[] =
 const char RealtimeReportingJobConfiguration::kPermanentFailedUploadsKey[] =
     "permanentFailedUploads";
 
-base::Value::Dict RealtimeReportingJobConfiguration::BuildReport(
-    base::Value::List events,
-    base::Value::Dict context) {
-  base::Value::Dict value_report;
+base::DictValue RealtimeReportingJobConfiguration::BuildReport(
+    base::ListValue events,
+    base::DictValue context) {
+  base::DictValue value_report;
   value_report.Set(kEventListKey, std::move(events));
   value_report.Set(kContextKey, std::move(context));
   return value_report;
@@ -119,11 +119,11 @@ bool RealtimeReportingJobConfiguration::AddRequest(
 }
 
 bool RealtimeReportingJobConfiguration::AddReportDeprecated(
-    base::Value::Dict report) {
+    base::DictValue report) {
   DCHECK(
       !base::FeatureList::IsEnabled(kUploadRealtimeReportingEventsUsingProto));
-  base::Value::Dict* context = report.FindDict(kContextKey);
-  base::Value::List* events = report.FindList(kEventListKey);
+  base::DictValue* context = report.FindDict(kContextKey);
+  base::ListValue* events = report.FindList(kEventListKey);
   if (!context || !events) {
     return false;
   }
@@ -137,7 +137,7 @@ bool RealtimeReportingJobConfiguration::AddReportDeprecated(
   }
 
   // Append event_list to the payload.
-  base::Value::List* to = payload_.FindList(kEventListKey);
+  base::ListValue* to = payload_.FindList(kEventListKey);
   for (auto& event : *events) {
     to->Append(std::move(event));
   }
@@ -166,7 +166,7 @@ void RealtimeReportingJobConfiguration::InitializePayloadInternal(
     InitializePayloadWithoutDeviceInfo();
   }
 
-  payload_.Set(kEventListKey, base::Value::List());
+  payload_.Set(kEventListKey, base::ListValue());
 }
 
 DeviceManagementService::Job::RetryMethod
@@ -225,7 +225,7 @@ std::set<std::string> RealtimeReportingJobConfiguration::GetFailedUploadIds(
   if (!response || !response->is_dict()) {
     return failedIds;
   }
-  base::Value::List* failedUploads =
+  base::ListValue* failedUploads =
       response->GetDict().FindList(kFailedUploadsKey);
   if (failedUploads) {
     for (const auto& failedUpload : *failedUploads) {

@@ -36,25 +36,25 @@ int FieldRendererIdToJsParameter(autofill::FieldRendererId field_id) {
   return field_id.value();
 }
 
-base::Value::Dict SerializeFillData(const GURL& origin,
-                                    autofill::FormRendererId form_renderer_id,
-                                    autofill::FieldRendererId username_element,
-                                    const std::u16string& username_value,
-                                    autofill::FieldRendererId password_element,
-                                    const std::u16string& password_value) {
-  base::Value::Dict root_dict;
+base::DictValue SerializeFillData(const GURL& origin,
+                                  autofill::FormRendererId form_renderer_id,
+                                  autofill::FieldRendererId username_element,
+                                  const std::u16string& username_value,
+                                  autofill::FieldRendererId password_element,
+                                  const std::u16string& password_value) {
+  base::DictValue root_dict;
   root_dict.Set("origin", origin.spec());
   root_dict.Set("renderer_id", FormRendererIdToJsParameter(form_renderer_id));
 
-  base::Value::List fieldList;
+  base::ListValue fieldList;
 
-  base::Value::Dict usernameField;
+  base::DictValue usernameField;
   usernameField.Set("renderer_id",
                     FieldRendererIdToJsParameter(username_element));
   usernameField.Set("value", username_value);
   fieldList.Append(std::move(usernameField));
 
-  base::Value::Dict passwordField;
+  base::DictValue passwordField;
   passwordField.Set("renderer_id", static_cast<int>(password_element.value()));
   passwordField.Set("value", password_value);
   fieldList.Append(std::move(passwordField));
@@ -67,8 +67,8 @@ base::Value::Dict SerializeFillData(const GURL& origin,
 // Serializes |fill_data| so it can be used by the JS side of
 // PasswordController. Includes both username and password data if
 // |fill_username|, and only password data otherwise.
-base::Value::Dict SerializeFillData(const password_manager::FillData& fill_data,
-                                    BOOL fill_username) {
+base::DictValue SerializeFillData(const password_manager::FillData& fill_data,
+                                  BOOL fill_username) {
   return SerializeFillData(fill_data.origin, fill_data.form_id,
                            fill_username ? fill_data.username_element_id
                                          : autofill::FieldRendererId(),
@@ -113,7 +113,7 @@ void PasswordManagerJavaScriptFeature::ExtractForm(
   DCHECK(!callback.is_null());
   CallJavaScriptFunction(
       frame, "passwords.getPasswordFormDataAsString",
-      base::Value::List().Append(FormRendererIdToJsParameter(form_identifier)),
+      base::ListValue().Append(FormRendererIdToJsParameter(form_identifier)),
       CreateStringCallback(std::move(callback)),
       base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
@@ -127,9 +127,9 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
     base::OnceCallback<void(const base::Value*)> callback) {
   DCHECK(!callback.is_null());
 
-  base::Value::Dict form_value = SerializeFillData(fill_data, fill_username);
+  base::DictValue form_value = SerializeFillData(fill_data, fill_username);
   CallJavaScriptFunction(frame, "passwords.fillPasswordForm",
-                         base::Value::List()
+                         base::ListValue()
                              .Append(std::move(form_value))
                              .Append(username)
                              .Append(password),
@@ -159,7 +159,7 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
   DCHECK(!callback.is_null());
   CallJavaScriptFunction(
       frame, "passwords.fillPasswordFormWithGeneratedPassword",
-      base::Value::List()
+      base::ListValue()
           .Append(FormRendererIdToJsParameter(form_identifier))
           .Append(FieldRendererIdToJsParameter(new_password_identifier))
           .Append(FieldRendererIdToJsParameter(confirm_password_identifier))

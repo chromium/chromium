@@ -126,7 +126,7 @@ std::u16string AlternativeElementVectorToString(
 }
 
 // Serializes a PasswordForm to a JSON object. Used only for logging in tests.
-void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
+void PasswordFormToJSON(const PasswordForm& form, base::DictValue& target) {
   target.Set("primary_key",
              form.primary_key.has_value()
                  ? base::NumberToString(form.primary_key.value().value())
@@ -202,10 +202,10 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
 
   target.Set("moving_blocked_for_list", base::JoinString(hashes, ", "));
 
-  base::Value::List password_issues;
+  base::ListValue password_issues;
   password_issues.reserve(form.password_issues.size());
   for (const auto& issue : form.password_issues) {
-    base::Value::Dict issue_value;
+    base::DictValue issue_value;
     issue_value.Set("insecurity_type", ToString(issue.first));
     issue_value.Set("create_time", base::TimeToValue(issue.second.create_time));
     issue_value.Set("is_muted", static_cast<bool>(issue.second.is_muted));
@@ -214,10 +214,10 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
 
   target.Set("password_issues ", std::move(password_issues));
 
-  base::Value::List password_notes;
+  base::ListValue password_notes;
   password_notes.reserve(form.notes.size());
   for (const auto& note : form.notes) {
-    base::Value::Dict note_dict;
+    base::DictValue note_dict;
     note_dict.Set("unique_display_name", note.unique_display_name);
     note_dict.Set("value", note.value);
     note_dict.Set("date_created", base::TimeToValue(note.date_created));
@@ -304,7 +304,7 @@ AlternativeElement& AlternativeElement::operator=(AlternativeElement&& rhs) =
 AlternativeElement::~AlternativeElement() = default;
 
 std::ostream& operator<<(std::ostream& os, const AlternativeElement& element) {
-  base::Value::Dict element_json;
+  base::DictValue element_json;
   element_json.Set("value", element.value);
   element_json.Set("field_renderer_id",
                    base::NumberToString(element.field_renderer_id.value()));
@@ -486,12 +486,12 @@ std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme) {
 }
 
 std::ostream& operator<<(std::ostream& os, const PasswordForm& form) {
-  base::Value::Dict form_json;
+  base::DictValue form_json;
   PasswordFormToJSON(form, form_json);
 
   // Serialize the default PasswordForm, and remove values from the result that
   // are equal to this to make the results more concise.
-  base::Value::Dict default_form_json;
+  base::DictValue default_form_json;
   PasswordFormToJSON(PasswordForm(), default_form_json);
   for (auto it_default_key_values : default_form_json) {
     const base::Value* actual_value =

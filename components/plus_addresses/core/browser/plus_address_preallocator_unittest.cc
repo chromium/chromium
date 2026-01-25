@@ -57,7 +57,7 @@ MATCHER_P2(IsPreallocatedPlusAddress, end_of_life, address, "") {
   if (!arg.is_dict()) {
     return false;
   }
-  const base::Value::Dict& d = arg.GetDict();
+  const base::DictValue& d = arg.GetDict();
   const std::string* plus_address =
       d.FindString(PlusAddressPreallocator::kPlusAddressKey);
   return plus_address && *plus_address == address &&
@@ -93,10 +93,10 @@ class PlusAddressPreallocatorTest : public ::testing::Test {
   FakePlusAddressSettingService& setting_service() { return setting_service_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
-  const base::Value::List& GetPreallocatedAddresses() {
+  const base::ListValue& GetPreallocatedAddresses() {
     return pref_service_.GetList(prefs::kPreallocatedAddresses);
   }
-  void SetPreallocatedAddresses(base::Value::List addresses) {
+  void SetPreallocatedAddresses(base::ListValue addresses) {
     pref_service_.SetList(prefs::kPreallocatedAddresses, std::move(addresses));
   }
 
@@ -120,7 +120,7 @@ class PlusAddressPreallocatorTest : public ::testing::Test {
 // creation of the `PlusAddressPreallocator`.
 TEST_F(PlusAddressPreallocatorTest,
        PrunePreallocatedPlusAddressesWithEolInFuture) {
-  SetPreallocatedAddresses(base::Value::List()
+  SetPreallocatedAddresses(base::ListValue()
                                .Append(CreatePreallocatedPlusAddress(
                                    base::Time::Now() + base::Days(1)))
                                .Append(CreatePreallocatedPlusAddress(
@@ -139,7 +139,7 @@ TEST_F(PlusAddressPreallocatorTest,
 // address is set to 0 if no entries remain.
 TEST_F(PlusAddressPreallocatorTest,
        PrunePreallocatedPlusAddressesWithEolInPast) {
-  SetPreallocatedAddresses(base::Value::List()
+  SetPreallocatedAddresses(base::ListValue()
                                .Append(CreatePreallocatedPlusAddress(
                                    base::Time::Now() - base::Days(1)))
                                .Append(CreatePreallocatedPlusAddress(
@@ -170,7 +170,7 @@ TEST_F(PlusAddressPreallocatorTest,
 TEST_F(PlusAddressPreallocatorTest,
        PrunePreallocatedPlusAddressesWithMixedEols) {
   SetPreallocatedAddresses(
-      base::Value::List()
+      base::ListValue()
           .Append(
               CreatePreallocatedPlusAddress(base::Time::Now() - base::Days(1)))
           .Append(
@@ -203,7 +203,7 @@ TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationNoPlusAddresses) {
 // Tests that a cache of only outdated plus addresses means that a synchronous
 // allocation is not possible
 TEST_F(PlusAddressPreallocatorTest, SychronousAllocationOutdatedPlusAddresses) {
-  SetPreallocatedAddresses(base::Value::List()
+  SetPreallocatedAddresses(base::ListValue()
                                .Append(CreatePreallocatedPlusAddress(
                                    base::Time::Now() - base::Days(1)))
                                .Append(CreatePreallocatedPlusAddress(
@@ -219,7 +219,7 @@ TEST_F(PlusAddressPreallocatorTest, SychronousAllocationOutdatedPlusAddresses) {
 // Tests that valid plus addresses in the cache means that a synchronous
 // allocation is possible.
 TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationValidPlusAddresses) {
-  SetPreallocatedAddresses(base::Value::List()
+  SetPreallocatedAddresses(base::ListValue()
                                .Append(CreatePreallocatedPlusAddress(
                                    base::Time::Now() + base::Days(1)))
                                .Append(CreatePreallocatedPlusAddress(
@@ -248,7 +248,7 @@ TEST_F(PlusAddressPreallocatorTest,
   const std::string kPlusAddress2 = "plus2@plus.com";
 
   SetPreallocatedAddresses(
-      base::Value::List()
+      base::ListValue()
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2)));
   base::RunLoop loop;
@@ -279,7 +279,7 @@ TEST_F(PlusAddressPreallocatorTest,
       kOrigin, PlusAddressAllocator::AllocationMode::kAny);
 
   // Preallocate less than the minimum amount of addresses
-  SetPreallocatedAddresses(base::Value::List().Append(
+  SetPreallocatedAddresses(base::ListValue().Append(
       CreatePreallocatedPlusAddress(kFuture, kPlusAddress1)));
   check.Call();
   allocator.AllocatePlusAddressSynchronously(
@@ -300,7 +300,7 @@ TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationRefreshPlusAddresses) {
   const std::string kPlusAddress1 = "plus1@plus.com";
   const std::string kPlusAddress2 = "plus2@plus.com";
   SetPreallocatedAddresses(
-      base::Value::List()
+      base::ListValue()
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2)));
 
@@ -334,7 +334,7 @@ TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationRefreshPlusAddresses) {
 // Tests that no synchronous allocation is possible if plus addresses are not
 // enabled.
 TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationNotEnabled) {
-  SetPreallocatedAddresses(base::Value::List()
+  SetPreallocatedAddresses(base::ListValue()
                                .Append(CreatePreallocatedPlusAddress(
                                    base::Time::Now() + base::Days(1)))
                                .Append(CreatePreallocatedPlusAddress(
@@ -349,7 +349,7 @@ TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationNotEnabled) {
 
 // Tests that no synchronous allocation is possible if the facet is not valid
 TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationInvalidFacet) {
-  SetPreallocatedAddresses(base::Value::List()
+  SetPreallocatedAddresses(base::ListValue()
                                .Append(CreatePreallocatedPlusAddress(
                                    base::Time::Now() + base::Days(1)))
                                .Append(CreatePreallocatedPlusAddress(
@@ -368,7 +368,7 @@ TEST_F(PlusAddressPreallocatorTest, RequestPreallocatedAddressesOnStartup) {
   feature.InitAndEnableFeatureWithParameters(
       features::kPlusAddressPreallocation,
       {{features::kPlusAddressPreallocationMinimumSize.name, "2"}});
-  SetPreallocatedAddresses(base::Value::List().Append(
+  SetPreallocatedAddresses(base::ListValue().Append(
       CreatePreallocatedPlusAddress(base::Time::Now() + base::Days(1))));
 
   MockFunction<void()> check;
@@ -465,7 +465,7 @@ TEST_F(PlusAddressPreallocatorTest,
   feature.InitAndEnableFeatureWithParameters(
       features::kPlusAddressPreallocation,
       {{features::kPlusAddressPreallocationMinimumSize.name, "1"}});
-  SetPreallocatedAddresses(base::Value::List().Append(
+  SetPreallocatedAddresses(base::ListValue().Append(
       CreatePreallocatedPlusAddress(base::Time::Now() + base::Days(1))));
 
   EXPECT_CALL(http_client(), PreallocatePlusAddresses).Times(0);
@@ -482,7 +482,7 @@ TEST_F(PlusAddressPreallocatorTest, HandleNetworkError) {
   feature.InitAndEnableFeatureWithParameters(
       features::kPlusAddressPreallocation,
       {{features::kPlusAddressPreallocationMinimumSize.name, "10"}});
-  SetPreallocatedAddresses(base::Value::List().Append(
+  SetPreallocatedAddresses(base::ListValue().Append(
       CreatePreallocatedPlusAddress(base::Time::Now() + base::Days(1))));
 
   MockFunction<void()> check;
@@ -659,7 +659,7 @@ TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddress) {
   const std::string kPlusAddress1 = "plus1@plus.com";
   const std::string kPlusAddress2 = "plus2@plus.com";
   SetPreallocatedAddresses(
-      base::Value::List()
+      base::ListValue()
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2)));
 
@@ -725,7 +725,7 @@ TEST_F(PlusAddressPreallocatorTest,
   const std::string kPlusAddress3 = "plus3@plus.com";
   const std::string kPlusAddress4 = "plus4@plus.com";
   SetPreallocatedAddresses(
-      base::Value::List()
+      base::ListValue()
           .Append(CreatePreallocatedPlusAddress(kFarFuture, kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2))
           .Append(CreatePreallocatedPlusAddress(kFarFuture, kPlusAddress3)));
@@ -804,7 +804,7 @@ TEST_F(PlusAddressPreallocatorTest,
   const std::string kPlusAddress3 = "plus3@plus.com";
   const std::string kPlusAddress4 = "plus4@plus.com";
   SetPreallocatedAddresses(
-      base::Value::List()
+      base::ListValue()
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2)));
 
@@ -862,7 +862,7 @@ TEST_F(PlusAddressPreallocatorTest, RemoveAllocatedPlusAddress) {
   const auto kPlusAddress1 = PlusAddress("plus1@plusfoo.com");
   const auto kPlusAddress2 = PlusAddress("plus2@plusbar.com");
   SetPreallocatedAddresses(
-      base::Value::List()
+      base::ListValue()
           .Append(CreatePreallocatedPlusAddress(
               base::Time::Now() + base::Days(1), *kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(

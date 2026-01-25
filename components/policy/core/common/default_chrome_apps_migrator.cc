@@ -57,15 +57,15 @@ void DefaultChromeAppsMigrator::Migrate(PolicyMap* policies) const {
     return;
 
   EnsurePolicyValueIsList(policies, key::kWebAppInstallForceList);
-  base::Value::List& web_app_policy_value =
+  base::ListValue& web_app_policy_value =
       policies
           ->GetMutableValue(key::kWebAppInstallForceList,
                             base::Value::Type::LIST)
           ->GetList();
   for (const std::string& chrome_app_id : chrome_app_ids) {
-    base::Value::Dict web_app;
+    base::DictValue web_app;
     web_app.Set("url", chrome_app_to_web_app_.at(chrome_app_id));
-    base::Value::List uninstall_list;
+    base::ListValue uninstall_list;
     uninstall_list.Append(chrome_app_id);
     web_app.Set("uninstall_and_replace", std::move(uninstall_list));
     web_app_policy_value.Append(std::move(web_app));
@@ -88,7 +88,7 @@ DefaultChromeAppsMigrator::RemoveChromeAppsFromExtensionForcelist(
     return std::vector<std::string>();
 
   std::vector<std::string> chrome_app_ids;
-  base::Value::List new_forcelist_value;
+  base::ListValue new_forcelist_value;
   for (const auto& list_entry : forcelist_value->GetList()) {
     if (!list_entry.is_string()) {
       new_forcelist_value.Append(list_entry.Clone());

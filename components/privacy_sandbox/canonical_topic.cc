@@ -79,7 +79,7 @@ std::u16string CanonicalTopic::GetLocalizedDescription() const {
 }
 
 base::Value CanonicalTopic::ToValue() const {
-  return base::Value(base::Value::Dict()
+  return base::Value(base::DictValue()
                          .Set(kTopicId, topic_id_.value())
                          .Set(kTaxonomyVersion, taxonomy_version_));
 }

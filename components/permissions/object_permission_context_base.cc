@@ -47,7 +47,7 @@ ObjectPermissionContextBase::~ObjectPermissionContextBase() {
 
 ObjectPermissionContextBase::Object::Object(
     const url::Origin& origin,
-    base::Value::Dict value,
+    base::DictValue value,
     content_settings::SettingSource source,
     bool incognito)
     : origin(origin.GetURL()),
@@ -159,7 +159,7 @@ ObjectPermissionContextBase::GetAllGrantedObjects() {
 
 void ObjectPermissionContextBase::GrantObjectPermission(
     const url::Origin& origin,
-    base::Value::Dict object) {
+    base::DictValue object) {
   DCHECK(IsValidObject(object));
 
   const std::string key = GetKeyForObject(object);
@@ -174,8 +174,8 @@ void ObjectPermissionContextBase::GrantObjectPermission(
 
 void ObjectPermissionContextBase::UpdateObjectPermission(
     const url::Origin& origin,
-    const base::Value::Dict& old_object,
-    base::Value::Dict new_object) {
+    const base::DictValue& old_object,
+    base::DictValue new_object) {
   auto origin_objects_it = objects().find(origin);
   if (origin_objects_it == objects().end()) {
     return;
@@ -196,7 +196,7 @@ void ObjectPermissionContextBase::UpdateObjectPermission(
 
 void ObjectPermissionContextBase::RevokeObjectPermission(
     const url::Origin& origin,
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   DCHECK(IsValidObject(object));
 
   RevokeObjectPermission(origin, GetKeyForObject(object));
@@ -268,13 +268,13 @@ void ObjectPermissionContextBase::NotifyPermissionRevoked(
   }
 }
 
-base::Value::Dict ObjectPermissionContextBase::GetWebsiteSetting(
+base::DictValue ObjectPermissionContextBase::GetWebsiteSetting(
     const url::Origin& origin,
     content_settings::SettingInfo* info) {
   base::Value value = host_content_settings_map_->GetWebsiteSetting(
       origin.GetURL(), GURL(), data_content_settings_type_, info);
   if (!value.is_dict()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
   return std::move(value.GetDict());
 }
@@ -298,11 +298,11 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
     return;
   }
 
-  base::Value::List objects_list;
+  base::ListValue objects_list;
   for (const auto& object : origin_objects_it->second) {
     objects_list.Append(object.second->value.Clone());
   }
-  base::Value::Dict website_setting_value;
+  base::DictValue website_setting_value;
   website_setting_value.Set(kObjectListKey, std::move(objects_list));
 
   content_settings::ContentSettingConstraints constraints;
@@ -359,8 +359,8 @@ ObjectPermissionContextBase::GetWebsiteSettingObjects() {
     }
 
     content_settings::SettingInfo info;
-    base::Value::Dict setting = GetWebsiteSetting(origin, &info);
-    base::Value::List* objects = setting.FindList(kObjectListKey);
+    base::DictValue setting = GetWebsiteSetting(origin, &info);
+    base::ListValue* objects = setting.FindList(kObjectListKey);
     if (!objects) {
       continue;
     }

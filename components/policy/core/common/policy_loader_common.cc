@@ -97,7 +97,7 @@ bool FilterSensitiveExtensionSettings(PolicyMap::Entry* map_entry) {
     return false;
   }
 
-  base::Value::Dict& policy_dict = policy_dict_value->GetDict();
+  base::DictValue& policy_dict = policy_dict_value->GetDict();
   // Note that we only search for sensitive entries, all other validations will
   // be handled by ExtensionSettingsPolicyHandler.
   std::vector<std::string> filtered_extensions;
@@ -106,7 +106,7 @@ bool FilterSensitiveExtensionSettings(PolicyMap::Entry* map_entry) {
       continue;
     if (!entry.second.is_dict())
       continue;
-    base::Value::Dict& entry_dict = entry.second.GetDict();
+    base::DictValue& entry_dict = entry.second.GetDict();
     std::string* installation_mode = entry_dict.FindString(kInstallationMode);
     if (!installation_mode || (*installation_mode != kForceInstalled &&
                                *installation_mode != kNormalInstalled)) {

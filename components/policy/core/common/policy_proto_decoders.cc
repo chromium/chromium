@@ -88,7 +88,7 @@ base::Value DecodeStringProto(const em::StringPolicyProto& proto) {
 // Convert a StringListPolicyProto to a List base::Value, where each list value
 // is of Type::STRING.
 base::Value DecodeStringListProto(const em::StringListPolicyProto& proto) {
-  base::Value::List list_value;
+  base::ListValue list_value;
   for (const auto& entry : proto.value().entries())
     list_value.Append(entry);
   return base::Value(std::move(list_value));
@@ -212,7 +212,7 @@ void DecodeProtoFields(
       continue;
     }
     base::Value action(policy.action());
-    base::Value::List reasons;
+    base::ListValue reasons;
     for (const auto& reason : policy.reasons()) {
       reasons.Append(reason);
     }
@@ -329,7 +329,7 @@ void DecodeProtoFields(
   }
 }
 
-bool ParseComponentPolicy(base::Value::Dict json_dict,
+bool ParseComponentPolicy(base::DictValue json_dict,
                           PolicyScope scope,
                           PolicySource source,
                           PolicyMap* policy,
@@ -345,7 +345,7 @@ bool ParseComponentPolicy(base::Value::Dict json_dict,
       return false;
     }
 
-    base::Value::Dict& description_dict = description.GetDict();
+    base::DictValue& description_dict = description.GetDict();
     std::optional<base::Value> value = description_dict.Extract(kValue);
     if (!value.has_value()) {
       *error = base::StrCat(

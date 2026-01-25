@@ -246,12 +246,12 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // Returns the branch if it exists, or the registered default value otherwise.
   // `path` must point to a registered preference whose value and registered
   // default are of type `base::Value::Type::DICT (DCHECK).
-  const base::Value::Dict& GetDict(std::string_view path) const;
+  const base::DictValue& GetDict(std::string_view path) const;
 
   // Returns the branch if it exists, or the registered default value otherwise.
   // `path` must point to a registered preference whose value and registered
   // default are of type `base::Value::Type::LIST (DCHECK).
-  const base::Value::List& GetList(std::string_view path) const;
+  const base::ListValue& GetList(std::string_view path) const;
 
   // Removes a user pref and restores the pref to its default value.
   void ClearPref(std::string_view path);
@@ -271,8 +271,8 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   void SetInteger(std::string_view path, int value);
   void SetDouble(std::string_view path, double value);
   void SetString(std::string_view path, std::string_view value);
-  void SetDict(std::string_view path, base::Value::Dict dict);
-  void SetList(std::string_view path, base::Value::List list);
+  void SetDict(std::string_view path, base::DictValue dict);
+  void SetList(std::string_view path, base::ListValue list);
   void SetFilePath(std::string_view path, const base::FilePath& value);
 
   // Int64 helper methods that actually store the given value as a string.
@@ -330,7 +330,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // If INCLUDE_DEFAULTS is requested, preferences set to their default values
   // will be included. Otherwise, these will be omitted from the returned
   // dictionary.
-  base::Value::Dict GetPreferenceValues(IncludeDefaults include_defaults) const;
+  base::DictValue GetPreferenceValues(IncludeDefaults include_defaults) const;
 
   // Returns a map of the preference values by their path including prefs that
   // have their default value.

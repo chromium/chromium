@@ -52,8 +52,8 @@ class FrozenFrameAggregator : public FrameNodeObserver,
   void OnProcessNodeAdded(const ProcessNode* process_node) override;
 
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
-  base::Value::Dict DescribeProcessNodeData(
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribeProcessNodeData(
       const ProcessNode* node) const override;
 
  protected:

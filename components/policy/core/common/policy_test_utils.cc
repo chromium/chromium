@@ -47,7 +47,7 @@ bool PolicyServiceIsEmpty(const PolicyService* service) {
   const PolicyMap& map = service->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   if (!map.empty()) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     for (const auto& it : map)
       dict.Set(it.first, it.second.value_unsafe()->Clone());
     LOG(WARNING) << "There are pre-existing policies in this machine: " << dict;
@@ -96,7 +96,7 @@ base::apple::ScopedCFTypeRef<CFPropertyListRef> ValueToProperty(
     }
 
     case base::Value::Type::DICT: {
-      const base::Value::Dict& value_dict = value.GetDict();
+      const base::DictValue& value_dict = value.GetDict();
       base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> cf_dict(
           CFDictionaryCreateMutable(kCFAllocatorDefault, value_dict.size(),
                                     &kCFTypeDictionaryKeyCallBacks,
@@ -115,7 +115,7 @@ base::apple::ScopedCFTypeRef<CFPropertyListRef> ValueToProperty(
     }
 
     case base::Value::Type::LIST: {
-      const base::Value::List& list = value.GetList();
+      const base::ListValue& list = value.GetList();
       base::apple::ScopedCFTypeRef<CFMutableArrayRef> cf_array(
           CFArrayCreateMutable(kCFAllocatorDefault, list.size(),
                                &kCFTypeArrayCallBacks));

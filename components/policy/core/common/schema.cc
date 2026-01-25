@@ -280,7 +280,7 @@ bool IsValidType(const std::string& type) {
 // corresponding value of 'type'. Also ensure that all of those attributes are
 // of the expected type. |options| can be used to ignore unknown attributes.
 base::expected<void, std::string> ValidateAttributesAndTypes(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     const std::string& type,
     int options) {
   const SchemaKeyToValueType* begin = nullptr;
@@ -346,12 +346,12 @@ base::expected<void, std::string> ValidateEnum(const base::Value* enum_list,
 }
 
 // Forward declaration (used in ValidateProperties).
-base::expected<void, std::string> IsValidSchema(const base::Value::Dict& dict,
+base::expected<void, std::string> IsValidSchema(const base::DictValue& dict,
                                                 int options);
 
 // Validates that the values in the |properties| dict are valid schemas.
 base::expected<void, std::string> ValidateProperties(
-    const base::Value::Dict& properties,
+    const base::DictValue& properties,
     int options) {
   for (auto dict_it : properties) {
     if (!dict_it.second.is_dict()) {
@@ -381,7 +381,7 @@ base::expected<void, std::string> IsFieldTypeObject(
 // attribute and keys for 'patternProperties' are not checked for valid regular
 // expression syntax. Invalid regular expressions will cause a value validation
 // error.
-base::expected<void, std::string> IsValidSchema(const base::Value::Dict& dict,
+base::expected<void, std::string> IsValidSchema(const base::DictValue& dict,
                                                 int options) {
   // Validate '$ref'.
   if (dict.contains(schema::kRef)) {
@@ -459,7 +459,7 @@ base::expected<void, std::string> IsValidSchema(const base::Value::Dict& dict,
       RETURN_IF_ERROR(IsValidSchema(additional_properties->GetDict(), options));
     }
 
-    if (const base::Value::List* required = dict.FindList(schema::kRequired)) {
+    if (const base::ListValue* required = dict.FindList(schema::kRequired)) {
       for (const base::Value& item : *required) {
         if (!item.is_string()) {
           return base::unexpected(
@@ -492,7 +492,7 @@ class Schema::InternalStorage
   static scoped_refptr<const InternalStorage> Wrap(const SchemaData* data);
 
   static base::expected<scoped_refptr<const InternalStorage>, std::string>
-  ParseSchema(const base::Value::Dict& schema);
+  ParseSchema(const base::DictValue& schema);
 
   const SchemaData* data() const { return &schema_data_; }
 
@@ -552,7 +552,7 @@ class Schema::InternalStorage
 
   // Determines the expected |sizes| of the storage for the representation
   // of |schema|.
-  static void DetermineStorageSizes(const base::Value::Dict& schema,
+  static void DetermineStorageSizes(const base::DictValue& schema,
                                     StorageSizes* sizes);
 
   // Parses the JSON schema in |schema|.
@@ -565,34 +565,34 @@ class Schema::InternalStorage
   // to the |index| in the |id_map|.
   //
   // If |schema| is invalid, it returns an error reason.
-  base::expected<void, std::string> Parse(const base::Value::Dict& schema,
+  base::expected<void, std::string> Parse(const base::DictValue& schema,
                                           int16_t* index,
                                           ReferencesAndIDs* references_and_ids);
 
   // Helper for Parse() that gets an already assigned |schema_node| instead of
   // an |index| pointer.
   base::expected<void, std::string> ParseDictionary(
-      const base::Value::Dict& schema,
+      const base::DictValue& schema,
       SchemaNode* schema_node,
       ReferencesAndIDs* references_and_ids);
 
   // Helper for Parse() that gets an already assigned |schema_node| instead of
   // an |index| pointer.
   base::expected<void, std::string> ParseList(
-      const base::Value::Dict& schema,
+      const base::DictValue& schema,
       SchemaNode* schema_node,
       ReferencesAndIDs* references_and_ids);
 
-  base::expected<void, std::string> ParseEnum(const base::Value::Dict& schema,
+  base::expected<void, std::string> ParseEnum(const base::DictValue& schema,
                                               base::Value::Type type,
                                               SchemaNode* schema_node);
 
   base::expected<void, std::string> ParseRangedInt(
-      const base::Value::Dict& schema,
+      const base::DictValue& schema,
       SchemaNode* schema_node);
 
   base::expected<void, std::string> ParseStringPattern(
-      const base::Value::Dict& schema,
+      const base::DictValue& schema,
       SchemaNode* schema_node);
 
   // Assigns the IDs in |id_map| to the pending references in the
@@ -638,7 +638,7 @@ scoped_refptr<const Schema::InternalStorage> Schema::InternalStorage::Wrap(
 
 // static
 base::expected<scoped_refptr<const Schema::InternalStorage>, std::string>
-Schema::InternalStorage::ParseSchema(const base::Value::Dict& schema) {
+Schema::InternalStorage::ParseSchema(const base::DictValue& schema) {
   // Determine the sizes of the storage arrays and reserve the capacity before
   // starting to append nodes and strings. This is important to prevent the
   // arrays from being reallocated, which would invalidate the c_str() pointers
@@ -715,7 +715,7 @@ re2::RE2* Schema::InternalStorage::CompileRegex(
 
 // static
 void Schema::InternalStorage::DetermineStorageSizes(
-    const base::Value::Dict& schema,
+    const base::DictValue& schema,
     StorageSizes* sizes) {
   if (schema.FindString(schema::kRef)) {
     // Schemas with a "$ref" attribute don't take additional storage.
@@ -745,7 +745,7 @@ void Schema::InternalStorage::DetermineStorageSizes(
       DetermineStorageSizes(additional_properties->GetDict(), sizes);
     }
 
-    const base::Value::Dict* properties = schema.FindDict(schema::kProperties);
+    const base::DictValue* properties = schema.FindDict(schema::kProperties);
     if (properties) {
       for (auto property : *properties) {
         if (property.second.is_dict()) {
@@ -756,7 +756,7 @@ void Schema::InternalStorage::DetermineStorageSizes(
       }
     }
 
-    const base::Value::Dict* pattern_properties =
+    const base::DictValue* pattern_properties =
         schema.FindDict(schema::kPatternProperties);
     if (pattern_properties) {
       for (auto pattern_property : *pattern_properties) {
@@ -768,14 +768,14 @@ void Schema::InternalStorage::DetermineStorageSizes(
       }
     }
 
-    const base::Value::List* required_properties =
+    const base::ListValue* required_properties =
         schema.FindList(schema::kRequired);
     if (required_properties) {
       sizes->strings += required_properties->size();
       sizes->required_properties += required_properties->size();
     }
   } else if (schema.FindList(schema::kEnum)) {
-    const base::Value::List* possible_values = schema.FindList(schema::kEnum);
+    const base::ListValue* possible_values = schema.FindList(schema::kEnum);
     if (possible_values) {
       size_t num_possible_values = possible_values->size();
       if (type == base::Value::Type::INTEGER) {
@@ -801,7 +801,7 @@ void Schema::InternalStorage::DetermineStorageSizes(
 }
 
 base::expected<void, std::string> Schema::InternalStorage::Parse(
-    const base::Value::Dict& schema,
+    const base::DictValue& schema,
     int16_t* index,
     ReferencesAndIDs* references_and_ids) {
   const std::string* ref = schema.FindString(schema::kRef);
@@ -868,14 +868,14 @@ base::expected<void, std::string> Schema::InternalStorage::Parse(
 }
 
 base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
-    const base::Value::Dict& schema,
+    const base::DictValue& schema,
     SchemaNode* schema_node,
     ReferencesAndIDs* references_and_ids) {
   int extra = static_cast<int>(properties_nodes_.size());
   properties_nodes_.push_back({.additional = kInvalid});
   schema_node->extra = extra;
 
-  const base::Value::Dict* additional_properties =
+  const base::DictValue* additional_properties =
       schema.FindDict(schema::kAdditionalProperties);
   if (additional_properties) {
     RETURN_IF_ERROR(Parse(*additional_properties,
@@ -885,7 +885,7 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
 
   properties_nodes_[extra].begin = static_cast<int>(property_nodes_.size());
 
-  const base::Value::Dict* properties = schema.FindDict(schema::kProperties);
+  const base::DictValue* properties = schema.FindDict(schema::kProperties);
   if (properties) {
     // This and below reserves nodes for all of the |properties|, and makes sure
     // they are contiguous. Recursive calls to Parse() will append after these
@@ -895,7 +895,7 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
 
   properties_nodes_[extra].end = static_cast<int>(property_nodes_.size());
 
-  const base::Value::Dict* pattern_properties =
+  const base::DictValue* pattern_properties =
       schema.FindDict(schema::kPatternProperties);
   if (pattern_properties) {
     property_nodes_.resize(property_nodes_.size() + pattern_properties->size());
@@ -947,7 +947,7 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
   }
 
   properties_nodes_[extra].required_begin = required_properties_.size();
-  const base::Value::List* required_properties =
+  const base::ListValue* required_properties =
       schema.FindList(schema::kRequired);
   if (required_properties) {
     for (const base::Value& val : *required_properties) {
@@ -973,10 +973,10 @@ base::expected<void, std::string> Schema::InternalStorage::ParseDictionary(
 }
 
 base::expected<void, std::string> Schema::InternalStorage::ParseList(
-    const base::Value::Dict& schema,
+    const base::DictValue& schema,
     SchemaNode* schema_node,
     ReferencesAndIDs* references_and_ids) {
-  const base::Value::Dict* items = schema.FindDict(schema::kItems);
+  const base::DictValue* items = schema.FindDict(schema::kItems);
   if (!items) {
     return base::unexpected(
         "Arrays must declare a single schema for their items.");
@@ -985,10 +985,10 @@ base::expected<void, std::string> Schema::InternalStorage::ParseList(
 }
 
 base::expected<void, std::string> Schema::InternalStorage::ParseEnum(
-    const base::Value::Dict& schema,
+    const base::DictValue& schema,
     base::Value::Type type,
     SchemaNode* schema_node) {
-  const base::Value::List* possible_values = schema.FindList(schema::kEnum);
+  const base::ListValue* possible_values = schema.FindList(schema::kEnum);
   if (!possible_values) {
     return base::unexpected("Enum attribute must be a list value");
   }
@@ -1028,7 +1028,7 @@ base::expected<void, std::string> Schema::InternalStorage::ParseEnum(
 }
 
 base::expected<void, std::string> Schema::InternalStorage::ParseRangedInt(
-    const base::Value::Dict& schema,
+    const base::DictValue& schema,
     SchemaNode* schema_node) {
   int min_value = schema.FindInt(schema::kMinimum).value_or(INT_MIN);
   int max_value = schema.FindInt(schema::kMaximum).value_or(INT_MAX);
@@ -1043,7 +1043,7 @@ base::expected<void, std::string> Schema::InternalStorage::ParseRangedInt(
 }
 
 base::expected<void, std::string> Schema::InternalStorage::ParseStringPattern(
-    const base::Value::Dict& schema,
+    const base::DictValue& schema,
     SchemaNode* schema_node) {
   const std::string* pattern = schema.FindString(schema::kPattern);
   if (!pattern) {
@@ -1372,7 +1372,7 @@ bool Schema::Normalize(base::Value* value,
     }
     return true;
   } else if (value->is_list()) {
-    base::Value::List& list = value->GetList();
+    base::ListValue& list = value->GetList();
 
     // Instead of removing invalid list items afterwards, we push valid items
     // forward in the list by overriding invalid items. The next free position
@@ -1450,7 +1450,7 @@ base::expected<Schema, std::string> Schema::Parse(const std::string& content) {
 }
 
 // static
-base::expected<base::Value::Dict, std::string> Schema::ParseToDictAndValidate(
+base::expected<base::DictValue, std::string> Schema::ParseToDictAndValidate(
     const std::string& schema,
     int validator_options) {
   ASSIGN_OR_RETURN(

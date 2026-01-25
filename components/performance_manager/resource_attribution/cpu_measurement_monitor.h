@@ -137,12 +137,11 @@ class CPUMeasurementMonitor
       const WorkerNode* client_worker_node) override;
 
   // NodeDataDescriber:
-  base::Value::Dict DescribeFrameNodeData(const FrameNode* node) const override;
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
-  base::Value::Dict DescribeProcessNodeData(
+  base::DictValue DescribeFrameNodeData(const FrameNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribeProcessNodeData(
       const ProcessNode* node) const override;
-  base::Value::Dict DescribeWorkerNodeData(
-      const WorkerNode* node) const override;
+  base::DictValue DescribeWorkerNodeData(const WorkerNode* node) const override;
 
  private:
   friend class CPUMeasurementMonitorTest;

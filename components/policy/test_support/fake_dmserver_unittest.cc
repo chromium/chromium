@@ -285,10 +285,10 @@ TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
   std::unique_ptr<base::Value> value =
       deserializer.Deserialize(&error_code, &error_msg);
   ASSERT_TRUE(value);
-  const base::Value::Dict* state_dict = value->GetIfDict();
+  const base::DictValue* state_dict = value->GetIfDict();
   ASSERT_TRUE(state_dict);
   ASSERT_EQ(state_dict->size(), 1u);
-  const base::Value::Dict* client_dict = state_dict->FindDict("fake_device_id");
+  const base::DictValue* client_dict = state_dict->FindDict("fake_device_id");
   ASSERT_TRUE(client_dict);
   const std::string* device_id = client_dict->FindString("device_id");
   ASSERT_TRUE(device_id);
@@ -303,14 +303,14 @@ TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
   ASSERT_TRUE(username);
   EXPECT_EQ(*username, "tast-user@managedchrome.com");
 
-  const base::Value::List* allowed_policy_types =
+  const base::ListValue* allowed_policy_types =
       client_dict->FindList("allowed_policy_types");
   ASSERT_TRUE(allowed_policy_types);
   ASSERT_EQ(allowed_policy_types->size(), 1u);
   EXPECT_EQ((*allowed_policy_types)[0].GetString(),
             policy::dm_protocol::GetChromeUserPolicyType());
 
-  const base::Value::List* state_keys = client_dict->FindList("state_keys");
+  const base::ListValue* state_keys = client_dict->FindList("state_keys");
   ASSERT_TRUE(state_keys);
   EXPECT_TRUE(state_keys->empty());
 }

@@ -183,7 +183,7 @@ class LeakDetectionDelegateTest : public testing::Test {
   void SetBlockedDomain(std::string_view domain) {
     pref_service_->registry()->RegisterListPref(
         ::prefs::kSafeBrowsingAllowlistDomains);
-    base::Value::List domains;
+    base::ListValue domains;
     domains.Append(domain);
     pref_service()->SetList(::prefs::kSafeBrowsingAllowlistDomains,
                             std::move(domains));

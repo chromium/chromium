@@ -62,7 +62,7 @@ class MockCallbackObserver {
                void(DeviceManagementService::Job* job,
                     DeviceManagementStatus code,
                     int response_code,
-                    std::optional<base::Value::Dict>));
+                    std::optional<base::DictValue>));
 };
 
 class RealtimeReportingJobConfigurationTest
@@ -105,15 +105,15 @@ class RealtimeReportingJobConfigurationTest
       }
       configuration_->AddRequest(std::move(request));
     } else {
-      base::Value::Dict context;
+      base::DictValue context;
       context.SetByDottedPath("browser.userAgent", "dummyAgent");
-      base::Value::List events;
+      base::ListValue events;
       for (size_t i = 0; i < kIds.size(); ++i) {
-        base::Value::Dict event = CreateEvent(kIds[i], i);
+        base::DictValue event = CreateEvent(kIds[i], i);
         events.Append(std::move(event));
       }
 
-      base::Value::Dict report = RealtimeReportingJobConfiguration::BuildReport(
+      base::DictValue report = RealtimeReportingJobConfiguration::BuildReport(
           std::move(events), std::move(context));
       configuration_->AddReportDeprecated(std::move(report));
     }
@@ -124,11 +124,11 @@ class RealtimeReportingJobConfigurationTest
  protected:
   const std::vector<std::string> kIds = {"id1", "id2", "id3"};
   base::HistogramTester histogram_;
-  static base::Value::Dict CreateEvent(const std::string& event_id, int type) {
-    base::Value::Dict event;
+  static base::DictValue CreateEvent(const std::string& event_id, int type) {
+    base::DictValue event;
     event.Set(kAppPackage, kPackage);
     event.Set(kEventType, type);
-    base::Value::Dict wrapper;
+    base::DictValue wrapper;
     wrapper.Set(enterprise_connectors::kExtensionInstallEvent,
                 std::move(event));
     wrapper.Set(kEventId, event_id);
@@ -149,13 +149,13 @@ class RealtimeReportingJobConfigurationTest
     return event;
   }
 
-  static base::Value::Dict CreateResponse(
+  static base::DictValue CreateResponse(
       const std::set<std::string>& success_ids,
       const std::set<std::string>& failed_ids,
       const std::set<std::string>& permanent_failed_ids) {
-    base::Value::Dict response;
+    base::DictValue response;
     if (!success_ids.empty()) {
-      base::Value::List& list =
+      base::ListValue& list =
           response
               .Set(RealtimeReportingJobConfiguration::kUploadedEventsKey,
                    base::Value(base::Value::Type::LIST))
@@ -165,27 +165,27 @@ class RealtimeReportingJobConfigurationTest
       }
     }
     if (!failed_ids.empty()) {
-      base::Value::List& list =
+      base::ListValue& list =
           response
               .Set(RealtimeReportingJobConfiguration::kFailedUploadsKey,
                    base::Value(base::Value::Type::LIST))
               ->GetList();
       for (const auto& id : failed_ids) {
-        base::Value::Dict failure;
+        base::DictValue failure;
         failure.Set(kEventId, id);
         failure.Set(kStatusCode, 8 /* RESOURCE_EXHAUSTED */);
         list.Append(std::move(failure));
       }
     }
     if (!permanent_failed_ids.empty()) {
-      base::Value::List& list =
+      base::ListValue& list =
           response
               .Set(
                   RealtimeReportingJobConfiguration::kPermanentFailedUploadsKey,
                   base::Value(base::Value::Type::LIST))
               ->GetList();
       for (const auto& id : permanent_failed_ids) {
-        base::Value::Dict failure;
+        base::DictValue failure;
         failure.Set(kEventId, id);
         failure.Set(kStatusCode, 9 /* FAILED_PRECONDITION */);
         list.Append(std::move(failure));
@@ -195,7 +195,7 @@ class RealtimeReportingJobConfigurationTest
     return response;
   }
 
-  static std::string CreateResponseString(const base::Value::Dict& response) {
+  static std::string CreateResponseString(const base::DictValue& response) {
     return base::WriteJson(response).value_or("");
   }
 
@@ -259,7 +259,7 @@ TEST_P(RealtimeReportingJobConfigurationTest, ValidatePayload) {
     std::optional<base::Value> payload = base::JSONReader::Read(
         configuration_->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(payload.has_value());
-    const base::Value::Dict& payload_dict = payload->GetDict();
+    const base::DictValue& payload_dict = payload->GetDict();
     EXPECT_EQ(kDummyToken, *payload_dict.FindStringByDottedPath(
                                ReportingJobConfigurationBase::
                                    DeviceDictionaryBuilder::GetDMTokenPath()));
@@ -297,12 +297,12 @@ TEST_P(RealtimeReportingJobConfigurationTest, ValidatePayload) {
                   ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                       GetNetworkNamePath()));
 
-    base::Value::List* events = payload->GetDict().FindList(
+    base::ListValue* events = payload->GetDict().FindList(
         RealtimeReportingJobConfiguration::kEventListKey);
     EXPECT_EQ(kIds.size(), events->size());
     int i = -1;
     for (const base::Value& event_val : *events) {
-      const base::Value::Dict& event = event_val.GetDict();
+      const base::DictValue& event = event_val.GetDict();
       const std::string& id = CHECK_DEREF(event.FindString(kEventId));
       EXPECT_EQ(kIds[++i], id);
       const std::optional<int> type =
@@ -315,7 +315,7 @@ TEST_P(RealtimeReportingJobConfigurationTest, ValidatePayload) {
 }
 
 TEST_P(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_Success) {
-  base::Value::Dict response =
+  base::DictValue response =
       CreateResponse(/*success_ids=*/{kIds[0], kIds[1], kIds[2]},
                      /*failed_ids=*/{}, /*permanent_failed_ids=*/{});
   EXPECT_CALL(callback_observer_,
@@ -455,7 +455,7 @@ TEST_P(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
     // If using the JSON format, validate the request.
     std::optional<base::Value> payload = base::JSONReader::Read(
         configuration_->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    base::Value::List* events = payload->GetDict().FindList(
+    base::ListValue* events = payload->GetDict().FindList(
         RealtimeReportingJobConfiguration::kEventListKey);
     EXPECT_EQ(1u, events->size());
     auto& event = (*events)[0];

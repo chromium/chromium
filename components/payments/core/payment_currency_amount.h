@@ -16,13 +16,12 @@ namespace payments {
 
 // Populates the properties of |amount| from |dictionary_value|.
 // Returns true if the required values are present.
-bool PaymentCurrencyAmountFromValueDict(
-    const base::Value::Dict& dictionary_value,
-    mojom::PaymentCurrencyAmount* amount);
+bool PaymentCurrencyAmountFromValueDict(const base::DictValue& dictionary_value,
+                                        mojom::PaymentCurrencyAmount* amount);
 
-// Creates a base::Value::Dict with the properties of the given
+// Creates a base::DictValue with the properties of the given
 // PaymentCurrencyAmount.
-base::Value::Dict PaymentCurrencyAmountToValueDict(
+base::DictValue PaymentCurrencyAmountToValueDict(
     const mojom::PaymentCurrencyAmount& amount);
 
 }  // namespace payments

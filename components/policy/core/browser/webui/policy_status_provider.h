@@ -62,10 +62,10 @@ class POLICY_EXPORT PolicyStatusProvider {
   virtual ~PolicyStatusProvider();
 
   // Returns a dictionary with metadata about policies.
-  virtual base::Value::Dict GetStatus();
+  virtual base::DictValue GetStatus();
 
-  static base::Value::Dict GetStatusFromCore(const CloudPolicyCore* core);
-  static base::Value::Dict GetStatusFromPolicyData(
+  static base::DictValue GetStatusFromCore(const CloudPolicyCore* core);
+  static base::DictValue GetStatusFromPolicyData(
       const enterprise_management::PolicyData* policy);
 
   // Overrides clock in tests. Returned closure removes the override when
@@ -85,13 +85,13 @@ class POLICY_EXPORT PolicyStatusProvider {
   // Add policy push information along with conditional refresh interval into
   // policy `status` dictionary.
   static void SetPolicyPushAndRefreshStatus(
-      base::Value::Dict& status,
+      base::DictValue& status,
       const CloudPolicyRefreshScheduler* refresh_scheduler);
 
   // Add last report uploaded timestamp into policy `status` dictionary from
   // `prefs`.
   static void UpdateLastReportTimestamp(
-      base::Value::Dict& status,
+      base::DictValue& status,
       PrefService* prefs,
       const std::string& report_timestamp_pref_path);
 

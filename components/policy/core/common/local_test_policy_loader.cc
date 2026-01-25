@@ -28,7 +28,7 @@ const char kName[] = "name";
 const char kValue[] = "value";
 const char kLocalTestId[] = "local_test_id";
 
-policy::PolicyMap GetPolicyMapWithEntry(base::Value::Dict* policy_dict) {
+policy::PolicyMap GetPolicyMapWithEntry(base::DictValue* policy_dict) {
   policy::PolicyLevel level =
       static_cast<policy::PolicyLevel>(*policy_dict->FindInt(kLevel));
   policy::PolicyScope scope =
@@ -70,7 +70,7 @@ void LocalTestPolicyLoader::SetPolicyListJson(
   for (auto& policy : policies->GetList()) {
     CHECK(policy.is_dict())
         << "A dictionary is expected for each policy definition";
-    base::Value::Dict& policy_dict = policy.GetDict();
+    base::DictValue& policy_dict = policy.GetDict();
     VerifyJsonContents(&policy_dict);
 
     std::string key = base::StringPrintf(
@@ -108,7 +108,7 @@ void LocalTestPolicyLoader::SetPolicyListJson(
   policies_ = policy_list_json;
 }
 
-void LocalTestPolicyLoader::VerifyJsonContents(base::Value::Dict* policy_dict) {
+void LocalTestPolicyLoader::VerifyJsonContents(base::DictValue* policy_dict) {
   auto level_int = policy_dict->FindInt(kLevel);
   CHECK(level_int.has_value() &&
         *level_int <= static_cast<int>(PolicyLevel::POLICY_LEVEL_MAX))

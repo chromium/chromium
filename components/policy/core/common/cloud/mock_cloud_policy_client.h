@@ -145,7 +145,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (override));
   MOCK_METHOD(void,
               UploadSecurityEventReport,
-              (bool, base::Value::Dict, ResultCallback),
+              (bool, base::DictValue, ResultCallback),
               (override));
   MOCK_METHOD(void,
               UploadSecurityEvent,
@@ -155,7 +155,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (override));
   MOCK_METHOD(void,
               UploadAppInstallReport,
-              (base::Value::Dict value, ResultCallback callback),
+              (base::DictValue value, ResultCallback callback),
               (override));
   MOCK_METHOD(void,
               ClientCertProvisioningRequest,

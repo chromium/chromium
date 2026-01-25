@@ -439,7 +439,7 @@ TEST_F(PrefServiceSetValueTest, SetDictionaryValue) {
   prefs_.RemoveUserPref(kName);
   Mock::VerifyAndClearExpectations(&observer_);
 
-  base::Value::Dict new_value_dict;
+  base::DictValue new_value_dict;
   new_value_dict.Set(kName, kValue);
   base::Value new_value(std::move(new_value_dict));
   observer_.Expect(kName, &new_value);
@@ -450,7 +450,7 @@ TEST_F(PrefServiceSetValueTest, SetDictionaryValue) {
   prefs_.Set(kName, new_value);
   Mock::VerifyAndClearExpectations(&observer_);
 
-  base::Value empty((base::Value::Dict()));
+  base::Value empty((base::DictValue()));
   observer_.Expect(kName, &empty);
   prefs_.Set(kName, empty);
   Mock::VerifyAndClearExpectations(&observer_);
@@ -466,7 +466,7 @@ TEST_F(PrefServiceSetValueTest, SetListValue) {
   prefs_.RemoveUserPref(kName);
   Mock::VerifyAndClearExpectations(&observer_);
 
-  base::Value::List new_value_list;
+  base::ListValue new_value_list;
   new_value_list.Append(kValue);
   base::Value new_value(std::move(new_value_list));
   observer_.Expect(kName, &new_value);
@@ -477,7 +477,7 @@ TEST_F(PrefServiceSetValueTest, SetListValue) {
   prefs_.Set(kName, new_value);
   Mock::VerifyAndClearExpectations(&observer_);
 
-  base::Value empty((base::Value::List()));
+  base::Value empty((base::ListValue()));
   observer_.Expect(kName, &empty);
   prefs_.Set(kName, empty);
   Mock::VerifyAndClearExpectations(&observer_);

@@ -23,7 +23,7 @@ PaymentMethodData::PaymentMethodData() = default;
 PaymentMethodData::PaymentMethodData(const PaymentMethodData& other) = default;
 PaymentMethodData::~PaymentMethodData() = default;
 
-bool PaymentMethodData::FromValueDict(const base::Value::Dict& dict) {
+bool PaymentMethodData::FromValueDict(const base::DictValue& dict) {
   supported_networks.clear();
 
   // The value of supportedMethods should be a string.
@@ -36,10 +36,10 @@ bool PaymentMethodData::FromValueDict(const base::Value::Dict& dict) {
 
   // Data is optional, but if a dictionary is present, save a stringified
   // version and attempt to parse supportedNetworks.
-  const base::Value::Dict* data_dict = dict.FindDict(kMethodDataData);
+  const base::DictValue* data_dict = dict.FindDict(kMethodDataData);
   if (data_dict) {
     data = base::WriteJson(*data_dict).value_or("");
-    const base::Value::List* supported_networks_list =
+    const base::ListValue* supported_networks_list =
         data_dict->FindList(kSupportedNetworks);
     if (supported_networks_list) {
       for (const base::Value& supported_network : *supported_networks_list) {

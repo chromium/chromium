@@ -43,7 +43,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStatusProvider
   ~MachineLevelUserCloudPolicyStatusProvider() override;
 
   // PolicyStatusProvider implementation.
-  base::Value::Dict GetStatus() override;
+  base::DictValue GetStatus() override;
 
   // CloudPolicyStore::Observer implementation.
   void OnStoreLoaded(CloudPolicyStore* store) override;

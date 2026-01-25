@@ -1045,7 +1045,7 @@ def _GenerateDefaultValue(value):
   elif type(value) == str:
     return [], 'base::Value("%s")' % value
   elif type(value) == list:
-    setup = ['base::Value::List default_value;']
+    setup = ['base::ListValue default_value;']
     for entry in value:
       decl, fetch = _GenerateDefaultValue(entry)
       # Nested lists are not supported.

@@ -60,7 +60,7 @@ class PageLoadTrackerDecoratorData
   // Returns the LoadIdleState for the page.
   LoadIdleState load_idle_state() const { return load_idle_state_; }
 
-  void Describe(base::Value::Dict* dict);
+  void Describe(base::DictValue* dict);
 
   // Whether there is an ongoing different-document load, i.e. DidStartLoading()
   // was invoked but not DidStopLoading().

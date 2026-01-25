@@ -103,7 +103,7 @@ class POLICY_EXPORT PolicyLogger {
     int line() const { return line_; }
     base::Time timestamp() const { return timestamp_; }
 
-    base::Value::Dict GetAsDict() const;
+    base::DictValue GetAsDict() const;
 
    private:
     Severity log_severity_;
@@ -166,8 +166,8 @@ class POLICY_EXPORT PolicyLogger {
   PolicyLogger& operator=(const PolicyLogger&) = delete;
   ~PolicyLogger();
 
-  // Returns the logs list as base::Value::List to send to UI.
-  base::Value::List GetAsList();
+  // Returns the logs list as base::ListValue to send to UI.
+  base::ListValue GetAsList();
 
   // Checks if browser is running on Android.
   bool IsPolicyLoggingEnabled() const;

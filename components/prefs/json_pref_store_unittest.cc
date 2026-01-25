@@ -74,10 +74,10 @@ class InterceptingPrefFilter : public PrefFilter {
 
   // PrefFilter implementation:
   void FilterOnLoad(PostFilterOnLoadCallback post_filter_on_load_callback,
-                    base::Value::Dict pref_store_contents) override;
+                    base::DictValue pref_store_contents) override;
   void FilterUpdate(std::string_view path) override {}
   OnWriteCallbackPair FilterSerializeData(
-      base::Value::Dict& pref_store_contents) override {
+      base::DictValue& pref_store_contents) override {
     return std::move(on_write_callback_pair_);
   }
   void OnStoreDeletionFromDisk() override {}
@@ -92,7 +92,7 @@ class InterceptingPrefFilter : public PrefFilter {
 
  private:
   PostFilterOnLoadCallback post_filter_on_load_callback_;
-  std::unique_ptr<base::Value::Dict> intercepted_prefs_;
+  std::unique_ptr<base::DictValue> intercepted_prefs_;
   OnWriteCallbackPair on_write_callback_pair_;
 };
 
@@ -107,15 +107,15 @@ InterceptingPrefFilter::~InterceptingPrefFilter() = default;
 
 void InterceptingPrefFilter::FilterOnLoad(
     PostFilterOnLoadCallback post_filter_on_load_callback,
-    base::Value::Dict pref_store_contents) {
+    base::DictValue pref_store_contents) {
   post_filter_on_load_callback_ = std::move(post_filter_on_load_callback);
   intercepted_prefs_ =
-      std::make_unique<base::Value::Dict>(std::move(pref_store_contents));
+      std::make_unique<base::DictValue>(std::move(pref_store_contents));
 }
 
 void InterceptingPrefFilter::ReleasePrefs() {
   EXPECT_FALSE(post_filter_on_load_callback_.is_null());
-  std::unique_ptr<base::Value::Dict> prefs = std::move(intercepted_prefs_);
+  std::unique_ptr<base::DictValue> prefs = std::move(intercepted_prefs_);
   std::move(post_filter_on_load_callback_).Run(std::move(*prefs), false);
 }
 
@@ -373,9 +373,9 @@ TEST_P(JsonPrefStoreTest, PreserveEmptyValues) {
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(pref_file);
 
   // Set some keys with empty values.
-  pref_store->SetValue("list", base::Value(base::Value::List()),
+  pref_store->SetValue("list", base::Value(base::ListValue()),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  pref_store->SetValue("dict", base::Value(base::Value::Dict()),
+  pref_store->SetValue("dict", base::Value(base::DictValue()),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   // Write to file.
@@ -402,7 +402,7 @@ TEST_P(JsonPrefStoreTest, RemoveClearsEmptyParent) {
 
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(pref_file);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("key", "value");
   pref_store->SetValue("dict", base::Value(std::move(dict)),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
@@ -1031,12 +1031,12 @@ class MockApiTestPrefFilter : public PrefFilter {
   ~MockApiTestPrefFilter() override = default;
 
   void FilterOnLoad(PostFilterOnLoadCallback on_done,
-                    base::Value::Dict pref_store_contents) override {
+                    base::DictValue pref_store_contents) override {
     std::move(on_done).Run(std::move(pref_store_contents), false);
   }
 
   OnWriteCallbackPair FilterSerializeData(
-      base::Value::Dict& pref_store_contents) override {
+      base::DictValue& pref_store_contents) override {
     return OnWriteCallbackPair();
   }
 

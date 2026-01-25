@@ -203,7 +203,7 @@ class PolicyBlocklistNavigationThrottleTest
   }
 
   void SetBlocklistUrlPattern(const std::string& pattern) {
-    base::Value::List value;
+    base::ListValue value;
     value.Append(pattern);
     pref_service_.SetManagedPref(policy::policy_prefs::kUrlBlocklist,
                                  std::move(value));
@@ -211,7 +211,7 @@ class PolicyBlocklistNavigationThrottleTest
   }
 
   void SetAllowlistUrlPattern(const std::string& pattern) {
-    base::Value::List value;
+    base::ListValue value;
     value.Append(pattern);
     pref_service_.SetManagedPref(policy::policy_prefs::kUrlAllowlist,
                                  std::move(value));
@@ -219,7 +219,7 @@ class PolicyBlocklistNavigationThrottleTest
   }
 
   void SetIncognitoBlocklistUrlPattern(const std::string& pattern) {
-    base::Value::List value;
+    base::ListValue value;
     value.Append(pattern);
     pref_service_.SetManagedPref(
         policy::policy_prefs::kIncognitoModeUrlBlocklist, std::move(value));
@@ -227,7 +227,7 @@ class PolicyBlocklistNavigationThrottleTest
   }
 
   void SetIncognitoAllowlistUrlPattern(const std::string& pattern) {
-    base::Value::List value;
+    base::ListValue value;
     value.Append(pattern);
     pref_service_.SetManagedPref(
         policy::policy_prefs::kIncognitoModeUrlAllowlist, std::move(value));
@@ -688,7 +688,7 @@ TEST_P(PolicyBlocklistNavigationThrottleTest,
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_P(PolicyBlocklistNavigationThrottleTest, UseVpnPreConnectFiltering) {
   SetBlocklistUrlPattern("block-by-general-pref.com");
-  base::Value::List list;
+  base::ListValue list;
   list.Append("allowed-preconnect.com");
   pref_service_.SetManagedPref(
       policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist,
