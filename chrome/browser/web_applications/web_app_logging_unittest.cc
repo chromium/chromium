@@ -86,7 +86,7 @@ TEST_F(WebAppLoggingTest, LogIsWrittenToDisk) {
   RunLoggingTasks();
 
   clock_.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(12345));
-  log->Append(base::Value::Dict().Set("key", "value"));
+  log->Append(base::DictValue().Set("key", "value"));
   // The log should write on destruction.
   log.reset();
   RunLoggingTasks();

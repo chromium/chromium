@@ -20,7 +20,7 @@ void SetWebAppPendingUpdateAsIgnored(
     base::PassKey<WebAppCommandScheduler> pass_key,
     const webapps::AppId& app_id,
     AppLock& lock,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   debug_value.Set("app_id", app_id);
 
   // Exit early if the app is not installed or the app does not have a pending

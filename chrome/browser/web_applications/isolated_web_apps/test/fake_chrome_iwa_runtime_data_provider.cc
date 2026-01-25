@@ -39,7 +39,7 @@ FakeIwaRuntimeDataProviderBase::OnRuntimeDataChanged(
 }
 
 void FakeIwaRuntimeDataProviderBase::WriteDebugMetadata(
-    base::Value::Dict& log) const {}
+    base::DictValue& log) const {}
 
 void FakeIwaRuntimeDataProviderBase::DispatchRuntimeDataUpdate() {
   subscriptions_.Notify();

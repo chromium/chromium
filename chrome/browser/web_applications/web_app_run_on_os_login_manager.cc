@@ -61,9 +61,8 @@ void WebAppRunOnOsLoginManager::Start() {
   }
 }
 
-void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(
-    AllAppsLock& lock,
-    base::Value::Dict& debug_value) {
+void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock,
+                                                 base::DictValue& debug_value) {
   base::flat_map<webapps::AppId, WebAppUiManager::RoolNotificationBehavior>
       notification_behaviors;
 

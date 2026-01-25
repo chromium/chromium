@@ -64,7 +64,7 @@ bool IsAllowedByPlatformEnterprisePolicy(
     const url::Origin& caller_origin) {
   const Profile* profile = Profile::FromBrowserContext(browser_context);
   const PrefService* prefs = profile->GetPrefs();
-  const base::Value::List& allowed_origins =
+  const base::ListValue& allowed_origins =
       prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins);
   if (std::ranges::any_of(
           allowed_origins, [&caller_origin](const base::Value& origin_value) {

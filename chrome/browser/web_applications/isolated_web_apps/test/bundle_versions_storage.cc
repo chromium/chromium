@@ -79,16 +79,16 @@ GURL BundleVersionsStorage::GetBundleUrl(
   return GetBundleUrl(*base_url_, web_bundle_id, version);
 }
 
-base::Value::Dict BundleVersionsStorage::GetUpdateManifest(
+base::DictValue BundleVersionsStorage::GetUpdateManifest(
     const web_package::SignedWebBundleId& web_bundle_id) const {
   const auto& bundle_versions =
       CHECK_DEREF(base::FindOrNull(bundle_versions_per_id_, web_bundle_id));
-  return base::Value::Dict().Set(
+  return base::DictValue().Set(
       "versions",
       base::ToValueList(bundle_versions, [&](const auto& bundle_meta) {
         const auto& [version, bundle_info] = bundle_meta;
 
-        auto dict = base::Value::Dict()
+        auto dict = base::DictValue()
                         .Set("version", version.GetString())
                         .Set("src", base_url_
                                         ->Resolve(GetRelativeWebBundleUrl(

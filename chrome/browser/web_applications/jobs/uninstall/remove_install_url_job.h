@@ -34,7 +34,7 @@ class RemoveInstallUrlJob : public UninstallJob {
  public:
   RemoveInstallUrlJob(webapps::WebappUninstallSource uninstall_source,
                       Profile& profile,
-                      base::Value::Dict& debug_value,
+                      base::DictValue& debug_value,
                       std::optional<webapps::AppId> app_id,
                       WebAppManagement::Type install_source,
                       GURL install_url);
@@ -50,7 +50,7 @@ class RemoveInstallUrlJob : public UninstallJob {
   const webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
   const raw_ref<Profile> profile_;
-  const raw_ref<base::Value::Dict> debug_value_;
+  const raw_ref<base::DictValue> debug_value_;
   const std::optional<webapps::AppId> app_id_;
   const WebAppManagement::Type install_source_;
   const GURL install_url_;

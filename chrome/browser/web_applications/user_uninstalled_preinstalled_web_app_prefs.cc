@@ -36,7 +36,7 @@ void UserUninstalledPreinstalledWebAppPrefs::Add(
     const webapps::AppId& app_id,
     base::flat_set<GURL> install_urls) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value::List url_list;
+  base::ListValue url_list;
 
   AppendExistingInstallUrlsPerAppId(app_id, install_urls);
 
@@ -57,14 +57,14 @@ std::optional<webapps::AppId>
 UserUninstalledPreinstalledWebAppPrefs::LookUpAppIdByInstallUrl(
     const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::Dict& ids_to_urls =
+  const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
   if (!url.is_valid())
     return std::nullopt;
 
   for (auto it : ids_to_urls) {
-    const base::Value::List* urls = it.second.GetIfList();
+    const base::ListValue* urls = it.second.GetIfList();
     if (!urls)
       continue;
     for (const base::Value& link : *urls) {
@@ -80,7 +80,7 @@ UserUninstalledPreinstalledWebAppPrefs::LookUpAppIdByInstallUrl(
 bool UserUninstalledPreinstalledWebAppPrefs::DoesAppIdExist(
     const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::Dict& ids_to_urls =
+  const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
   return ids_to_urls.contains(app_id);
@@ -90,13 +90,13 @@ void UserUninstalledPreinstalledWebAppPrefs::AppendExistingInstallUrlsPerAppId(
     const webapps::AppId& app_id,
     base::flat_set<GURL>& urls) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::Dict& ids_to_urls =
+  const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
   if (!ids_to_urls.contains(app_id))
     return;
 
-  const base::Value::List* current_list = ids_to_urls.FindList(app_id);
+  const base::ListValue* current_list = ids_to_urls.FindList(app_id);
   if (!current_list)
     return;
 
@@ -110,7 +110,7 @@ void UserUninstalledPreinstalledWebAppPrefs::AppendExistingInstallUrlsPerAppId(
 
 int UserUninstalledPreinstalledWebAppPrefs::Size() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::Dict& ids_to_urls =
+  const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
   return ids_to_urls.size();
@@ -120,7 +120,7 @@ bool UserUninstalledPreinstalledWebAppPrefs::RemoveByInstallUrl(
     const webapps::AppId& app_id,
     const GURL& install_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::Dict& ids_to_urls =
+  const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
   // Prefs are empty, so no need of removal.
@@ -129,8 +129,8 @@ bool UserUninstalledPreinstalledWebAppPrefs::RemoveByInstallUrl(
   if (!ids_to_urls.contains(app_id))
     return false;
 
-  const base::Value::List* url_list = ids_to_urls.FindList(app_id);
-  base::Value::List install_urls;
+  const base::ListValue* url_list = ids_to_urls.FindList(app_id);
+  base::ListValue install_urls;
   for (const base::Value& url : *url_list) {
     const std::string* url_str = url.GetIfString();
     if (!url_str || (url_str && *url_str == install_url.spec()))
@@ -158,7 +158,7 @@ bool UserUninstalledPreinstalledWebAppPrefs::RemoveByInstallUrl(
 bool UserUninstalledPreinstalledWebAppPrefs::RemoveByAppId(
     const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::Dict& ids_to_urls =
+  const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
   // Pref does not contain the app_id, so no need of removal.
@@ -178,10 +178,10 @@ bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
   if (url_map.empty())
     return false;
 
-  const base::Value::Dict& ids_to_urls =
+  const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
-  const base::Value::List* current_list = ids_to_urls.FindList(app_id);
+  const base::ListValue* current_list = ids_to_urls.FindList(app_id);
   if (!current_list)
     return false;
 

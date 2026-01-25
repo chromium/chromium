@@ -156,7 +156,7 @@ class WebAppPolicyManager {
   friend class WebAppPolicyManagerTestBase;
 
   struct WebAppSetting {
-    bool Parse(const base::Value::Dict& dict, bool for_default_settings);
+    bool Parse(const base::DictValue& dict, bool for_default_settings);
 
     RunOnOsLoginPolicy run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
     bool prevent_close = false;
@@ -198,13 +198,13 @@ class WebAppPolicyManager {
   RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicyByManifestId(
       const std::string& manifest_id) const;
 
-  // Parses install options from a `base::Value::Dict`, which represents one
+  // Parses install options from a `base::DictValue`, which represents one
   // entry of the kWepAppInstallForceList. If the value contains a custom_name
   // or custom_icon, it is inserted into the custom_manifest_values_by_url_ map.
   // If the install_url in the entry is invalid, returns a `std::nullopt`, so
   // that installation can be skipped.
   std::optional<ExternalInstallOptions> ParseInstallPolicyEntry(
-      const base::Value::Dict& entry);
+      const base::DictValue& entry);
 
   void ObserveDisabledSystemFeaturesPolicy();
 

@@ -107,7 +107,7 @@ class WebInstallServiceImpl
       content::WebContents* web_contents,
       InstallCallbackWithMetrics callback_with_metrics,
       AppLock& lock,
-      base::Value::Dict& debug_value);
+      base::DictValue& debug_value);
 
   void OnIntentPickerMaybeLaunched(
       InstallCallbackWithMetrics callback_with_metrics,

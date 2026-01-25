@@ -358,7 +358,7 @@ base::DictValue LogDownloadedIconsErrors(
   base::DictValue icon_errors;
   {
     // Reports errors only, omits successful entries.
-    base::Value::List icons_http_errors;
+    base::ListValue icons_http_errors;
 
     for (const auto& url_and_http_code : icons_http_results) {
       const GURL& icon_url = url_and_http_code.first.url;

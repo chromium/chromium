@@ -1220,7 +1220,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
   provider().scheduler().ScheduleCallback<AppLock>(
       "InstalledByFieldMaxEntries", AppLockDescription(app_id),
       base::BindLambdaForTesting([&](AppLock& lock,
-                                     base::Value::Dict& debug_value) {
+                                     base::DictValue& debug_value) {
         base::Time base_time = base::Time::Now();
         {
           web_app::ScopedRegistryUpdate update =

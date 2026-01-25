@@ -322,8 +322,7 @@ UpgradeDetector::GetRelaunchWindowPolicyValue() {
   const base::Value* policy_value = preference->GetValue();
   DCHECK(policy_value->is_dict());
 
-  const base::Value::List* entries =
-      policy_value->GetDict().FindList("entries");
+  const base::ListValue* entries = policy_value->GetDict().FindList("entries");
   if (!entries || entries->empty()) {
     return std::nullopt;
   }

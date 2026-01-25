@@ -374,13 +374,13 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
       const std::vector<UpdateManifestVersionEntry>& available_versions) {
     profile_url_loader_factory().AddResponse(
         update_manifest_url_.spec(),
-        *base::WriteJson(base::Value::Dict().Set(
+        *base::WriteJson(base::DictValue().Set(
             "versions",
             base::ToValueList(
                 available_versions,
                 [](const UpdateManifestVersionEntry& entry) {
-                  base::Value::Dict entry_dict =
-                      base::Value::Dict()
+                  base::DictValue entry_dict =
+                      base::DictValue()
                           .Set("src", entry.src)
                           .Set("version", entry.version.GetString());
 

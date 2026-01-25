@@ -167,7 +167,7 @@ TEST_F(ChromeWebAuthenticationDelegateTest, IndividualAttestation) {
     PrefService* prefs =
         Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
     if (!test.permit_attestation_policy_values.empty()) {
-      base::Value::List policy_values;
+      base::ListValue policy_values;
       for (const std::string& v : test.permit_attestation_policy_values) {
         policy_values.Append(v);
       }

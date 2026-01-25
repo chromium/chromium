@@ -285,13 +285,13 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
             .mutable_isolatedwebappinstallforcelist();
 
     isolated_web_apps_proto->set_value(
-        WriteJson(base::Value::List().Append(
+        WriteJson(base::ListValue().Append(
                       iwa_test_update_server_.CreateForceInstallPolicyEntry(
                           kWebBundleId1)))
             .value());
   }
 
-  void SetIwaForceInstallPolicy(base::Value::List update_manifest_entries) {
+  void SetIwaForceInstallPolicy(base::ListValue update_manifest_entries) {
     if (is_user_session_) {
       policy::PolicyMap policies;
       policies.Set(policy::key::kIsolatedWebAppInstallForceList,
@@ -313,13 +313,13 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
   }
 
   void SetPolicyWithOneApp() {
-    SetIwaForceInstallPolicy(base::Value::List().Append(
+    SetIwaForceInstallPolicy(base::ListValue().Append(
         iwa_test_update_server_.CreateForceInstallPolicyEntry(kWebBundleId1)));
   }
 
   void SetPolicyWithTwoApps() {
     SetIwaForceInstallPolicy(
-        base::Value::List()
+        base::ListValue()
             .Append(iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 kWebBundleId1))
             .Append(iwa_test_update_server_.CreateForceInstallPolicyEntry(
@@ -328,7 +328,7 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 
   void SetPolicyWithOneAppWithPinnedVersion(
       std::string pinned_version = kPinnedVersion) {
-    SetIwaForceInstallPolicy(base::Value::List().Append(
+    SetIwaForceInstallPolicy(base::ListValue().Append(
         iwa_test_update_server_.CreateForceInstallPolicyEntry(
             kWebBundleId1, /*update_channel=*/std::nullopt,
             *IwaVersion::Create(pinned_version))));
@@ -336,7 +336,7 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 
   void SetPolicyWithBetaChannelApp(
       const web_package::SignedWebBundleId& web_bundle_id) {
-    SetIwaForceInstallPolicy(base::Value::List().Append(
+    SetIwaForceInstallPolicy(base::ListValue().Append(
         iwa_test_update_server_.CreateForceInstallPolicyEntry(web_bundle_id,
                                                               {kBetaChannel})));
   }

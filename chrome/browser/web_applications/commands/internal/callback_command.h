@@ -49,7 +49,7 @@ class CallbackCommand : public WebAppCommand<LockType> {
   // This is the callback used as the command - it accepts the lock (and debug
   // value).
   using CallbackType =
-      base::OnceCallback<void(LockType& lock, base::Value::Dict& debug_value)>;
+      base::OnceCallback<void(LockType& lock, base::DictValue& debug_value)>;
   // This is the completion callback that is called after the callback above is
   // finished & the command is destroyed.
   using CompletionCallbackType = base::OnceClosure;
@@ -79,7 +79,7 @@ class CallbackCommandWithResult : public WebAppCommand<LockType, ItemType> {
   // value) and returns the value sent to the completion callback.
   using CallbackType =
       base::OnceCallback<ReturnType(LockType& lock,
-                                    base::Value::Dict& debug_value)>;
+                                    base::DictValue& debug_value)>;
   // This is the completion callback that is called after the callback above is
   // finished & the command is destroyed. It is called with the object returned
   // from the above callback.

@@ -46,7 +46,7 @@ class IwaTestServerConfigurator {
   // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
   // Delegates to `test::CreateForceInstallIwaPolicyEntry()` with a custom
   // `update_manifest_url` that `factory_` can process.
-  static base::Value::Dict CreateForceInstallPolicyEntry(
+  static base::DictValue CreateForceInstallPolicyEntry(
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
       const std::optional<IwaVersion>& pinned_version = std::nullopt,

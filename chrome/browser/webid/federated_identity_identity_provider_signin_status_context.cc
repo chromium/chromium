@@ -41,8 +41,8 @@ const char kIdpSigninOptionsExpirationKey[] = "expiration";
 // purpose of expiration.
 const char kIdpSigninOptionsLastModifiedKey[] = "last-modified";
 
-base::Value::Dict DictFromAccount(const LoginStatusAccount& account) {
-  base::Value::Dict dict;
+base::DictValue DictFromAccount(const LoginStatusAccount& account) {
+  base::DictValue dict;
   dict.Set(content::webid::kAccountIdKey, account.id);
   dict.Set(content::webid::kAccountEmailKey, account.email);
   dict.Set(content::webid::kAccountNameKey, account.name);
@@ -57,9 +57,8 @@ base::Value::Dict DictFromAccount(const LoginStatusAccount& account) {
   return dict;
 }
 
-base::Value::Dict DictFromLoginStatusOptions(
-    const LoginStatusOptions& options) {
-  base::Value::Dict dict;
+base::DictValue DictFromLoginStatusOptions(const LoginStatusOptions& options) {
+  base::DictValue dict;
 
   dict.Set(kIdpSigninOptionsLastModifiedKey,
            base::TimeToValue(base::Time::Now()));
@@ -69,7 +68,7 @@ base::Value::Dict DictFromLoginStatusOptions(
              base::TimeDeltaToValue(options.expiration.value()));
   }
 
-  base::Value::List accounts;
+  base::ListValue accounts;
   for (const auto& input_account : options.accounts) {
     accounts.Append(DictFromAccount(input_account));
   }
@@ -81,7 +80,7 @@ base::Value::Dict DictFromLoginStatusOptions(
 // Take a dictionary representing the stored accounts list and expiration
 // information for a given IdP and returns "true" if the current time exceeds
 // the last modified time plus the expiration duration.
-bool IsExpired(const base::Value::Dict* options) {
+bool IsExpired(const base::DictValue* options) {
   CHECK(options);
   std::optional<base::TimeDelta> expiration =
       base::ValueToTimeDelta(options->Find(kIdpSigninOptionsExpirationKey));
@@ -122,7 +121,7 @@ FederatedIdentityIdentityProviderSigninStatusContext::GetSigninStatus(
   return granted_object->value.FindBool(kIdpSigninStatusKey);
 }
 
-base::Value::List
+base::ListValue
 FederatedIdentityIdentityProviderSigninStatusContext::GetAccounts(
     const url::Origin& identity_provider) {
   auto granted_object =
@@ -131,10 +130,10 @@ FederatedIdentityIdentityProviderSigninStatusContext::GetAccounts(
   if (granted_object) {
     bool is_logged_in =
         granted_object->value.FindBool(kIdpSigninStatusKey).value_or(false);
-    base::Value::Dict* options_dict =
+    base::DictValue* options_dict =
         granted_object->value.FindDict(kIdpSigninOptionsKey);
     if (is_logged_in && options_dict && !IsExpired(options_dict)) {
-      base::Value::List* accounts_list =
+      base::ListValue* accounts_list =
           options_dict->FindList(kIdpSigninOptionsAccountsKey);
       if (accounts_list) {
         return accounts_list->Clone();
@@ -142,7 +141,7 @@ FederatedIdentityIdentityProviderSigninStatusContext::GetAccounts(
     }
   }
 
-  return base::Value::List();
+  return base::ListValue();
 }
 
 void FederatedIdentityIdentityProviderSigninStatusContext::SetSigninStatus(
@@ -155,7 +154,7 @@ void FederatedIdentityIdentityProviderSigninStatusContext::SetSigninStatus(
     return;
   }
 
-  base::Value::Dict new_object;
+  base::DictValue new_object;
   new_object.Set(kIdpKey, identity_provider.Serialize());
   new_object.Set(kIdpSigninStatusKey, base::Value(signin_status));
 
@@ -174,7 +173,7 @@ void FederatedIdentityIdentityProviderSigninStatusContext::SetSigninStatus(
     // but still needs to preserve any existing IDP options. If the options
     // have already expired, we can safely discard them.
     if (!options.has_value()) {
-      base::Value::Dict* existing_options =
+      base::DictValue* existing_options =
           granted_object->value.FindDict(kIdpSigninOptionsKey);
       if (signin_status && existing_options && !IsExpired(existing_options)) {
         new_object.Set(kIdpSigninOptionsKey, existing_options->Clone());
@@ -190,12 +189,12 @@ void FederatedIdentityIdentityProviderSigninStatusContext::SetSigninStatus(
 
 std::string
 FederatedIdentityIdentityProviderSigninStatusContext::GetKeyForObject(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   return *object.FindString(kIdpKey);
 }
 
 bool FederatedIdentityIdentityProviderSigninStatusContext::IsValidObject(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   return object.FindString(kIdpKey);
 }
 
@@ -204,11 +203,11 @@ void FederatedIdentityIdentityProviderSigninStatusContext::
   // Replace any valid-but-expired entries with a copy that only contains the
   // basic login status
   for (const auto& granted_object : GetAllGrantedObjects()) {
-    base::Value::Dict* options_dict =
+    base::DictValue* options_dict =
         granted_object->value.FindDict(kIdpSigninOptionsKey);
     if (IsValidObject(granted_object->value) && options_dict &&
         IsExpired(options_dict)) {
-      base::Value::Dict new_object;
+      base::DictValue new_object;
       url::Origin identity_provider =
           url::Origin::Create(GURL(*granted_object->value.FindString(kIdpKey)));
       bool signin_status =
@@ -224,7 +223,7 @@ void FederatedIdentityIdentityProviderSigninStatusContext::
 
 std::u16string
 FederatedIdentityIdentityProviderSigninStatusContext::GetObjectDisplayName(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   DCHECK(IsValidObject(object));
   return base::UTF8ToUTF16(*object.FindString(kIdpKey));
 }

@@ -254,7 +254,7 @@ class PreinstalledWebAppMigrationBrowserTest
           run_loop.Quit();
         });
 
-    base::Value::List app_configs;
+    base::ListValue app_configs;
     if (pass_config) {
       std::string app_config_string = base::ReplaceStringPlaceholders(
           R"({
@@ -269,7 +269,7 @@ class PreinstalledWebAppMigrationBrowserTest
       app_configs.Append(*base::JSONReader::Read(
           app_config_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     }
-    base::AutoReset<const base::Value::List*> configs_for_testing =
+    base::AutoReset<const base::ListValue*> configs_for_testing =
         PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     WebAppProvider::GetForTest(profile())

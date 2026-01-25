@@ -110,14 +110,14 @@ IconSizes& IconSizes::operator=(IconSizes&&) noexcept = default;
 
 base::Value IconSizes::AsDebugValue() const {
   auto ConvertList = [](const auto& list) {
-    base::Value::List list_json;
+    base::ListValue list_json;
     for (const auto& item : list) {
       list_json.Append(item);
     }
     return list_json;
   };
 
-  base::Value::Dict root;
+  base::DictValue root;
   for (IconPurpose purpose : kIconPurposes) {
     root.Set(base::ToString(purpose), ConvertList(GetSizesForPurpose(purpose)));
   }
@@ -174,7 +174,7 @@ WebAppShortcutsMenuItemInfo::Icon& WebAppShortcutsMenuItemInfo::Icon::operator=(
     WebAppShortcutsMenuItemInfo::Icon&&) = default;
 
 base::Value WebAppShortcutsMenuItemInfo::Icon::AsDebugValue() const {
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("url", url.spec());
   root.Set("square_size_px", square_size_px);
   return base::Value(std::move(root));
@@ -228,15 +228,15 @@ void WebAppShortcutsMenuItemInfo::SetShortcutIconInfosForPurpose(
 
 base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
   TRACE_EVENT0("ui", "WebAppShortcutsMenuItemInfo::AsDebugValue");
-  base::Value::Dict root;
+  base::DictValue root;
 
   root.Set("name", name);
 
   root.Set("url", url.spec());
 
-  base::Value::Dict icons;
+  base::DictValue icons;
   for (IconPurpose purpose : kIconPurposes) {
-    base::Value::List purpose_list;
+    base::ListValue purpose_list;
     for (const WebAppShortcutsMenuItemInfo::Icon& icon :
          GetShortcutIconInfosForPurpose(purpose)) {
       purpose_list.Append(icon.AsDebugValue());
@@ -261,48 +261,48 @@ bool IconsWithSizeAny::operator==(
     const IconsWithSizeAny& icons_with_size_any) const = default;
 
 base::Value IconsWithSizeAny::ToDebugValue() const {
-  base::Value::Dict icons;
-  base::Value::Dict manifest;
+  base::DictValue icons;
+  base::DictValue manifest;
   for (const auto& icon : manifest_icons) {
     manifest.Set(base::ToString(icon.first), icon.second.spec());
   }
   icons.Set("manifest_icons", base::Value(std::move(manifest)));
-  base::Value::List manifest_sizes;
+  base::ListValue manifest_sizes;
   for (const auto& size : manifest_icon_provided_sizes) {
     manifest_sizes.Append(size.ToString());
   }
   icons.Set("manifest_provided_sizes", base::Value(std::move(manifest_sizes)));
 
-  base::Value::Dict shortcut_icon;
+  base::DictValue shortcut_icon;
   for (const auto& shicon : shortcut_menu_icons) {
     shortcut_icon.Set(base::ToString(shicon.first), shicon.second.spec());
   }
   icons.Set("shortcut_icons", base::Value(std::move(shortcut_icon)));
-  base::Value::List shortcut_sizes;
+  base::ListValue shortcut_sizes;
   for (const auto& size : shortcut_menu_icons_provided_sizes) {
     shortcut_sizes.Append(size.ToString());
   }
   icons.Set("shortcut_menu_icons_provided_sizes",
             base::Value(std::move(shortcut_sizes)));
 
-  base::Value::Dict file_handlers;
+  base::DictValue file_handlers;
   for (const auto& fhicon : file_handling_icons) {
     file_handlers.Set(base::ToString(fhicon.first), fhicon.second.spec());
   }
   icons.Set("file_handling_icons", base::Value(std::move(file_handlers)));
-  base::Value::List file_handling_sizes;
+  base::ListValue file_handling_sizes;
   for (const auto& size : file_handling_icon_provided_sizes) {
     file_handling_sizes.Append(size.ToString());
   }
   icons.Set("file_handling_icons_manifest_provided_sizes",
             base::Value(std::move(file_handling_sizes)));
 
-  base::Value::Dict tab_icons;
+  base::DictValue tab_icons;
   for (const auto& thicon : home_tab_icons) {
     tab_icons.Set(base::ToString(thicon.first), thicon.second.spec());
   }
   icons.Set("home_tab_icons", base::Value(std::move(tab_icons)));
-  base::Value::List home_tab_sizes;
+  base::ListValue home_tab_sizes;
   for (const auto& size : home_tab_icon_provided_sizes) {
     home_tab_sizes.Append(size.ToString());
   }

@@ -23,7 +23,7 @@ namespace web_app {
 GetProgressiveWebAppSizeJob::GetProgressiveWebAppSizeJob(
     Profile* profile,
     const webapps::AppId& app_id,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     ResultCallback result_callback)
     : app_id_(app_id),
       profile_(profile),

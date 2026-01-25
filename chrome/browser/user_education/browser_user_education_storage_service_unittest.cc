@@ -393,7 +393,7 @@ TEST_F(BrowserUserEducationStorageServiceTest, LegacyDataTest) {
                               base::TimeToValue(kLastSnoozeTime));
     pref_data.SetByDottedPath("TestIPHFeature.snooze_count", 1);
 
-    base::Value::List shown_for;
+    base::ListValue shown_for;
     shown_for.Append(kAppName1);
     pref_data.SetByDottedPath("TestIPHFeature.shown_for_apps",
                               std::move(shown_for));

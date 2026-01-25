@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Initially app is allowlisted in the class setup to be installable
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId(),
                 /*update_channel=*/std::nullopt,
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId(),
                 /*update_channel=*/std::nullopt,
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        SucceedsWithDowngrade) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Pin IWA to version 1.0.0 and allow downgrading.
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        FailToDowngradeToNotExistentVersion) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Pin IWA to version 1.0.0 and allow downgrading.
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/kBetaChannel,
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Pin IWA to version 5.0.5 and allow downgrading.
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId())));
 
@@ -739,7 +739,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   // Pin IWA to version 7.0.6.
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Unpinning) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/std::nullopt,
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Unpinning) {
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId())));
 
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -927,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               /*web_bundle_id=*/GetWebBundleId(),
               /*update_channel=*/kBetaChannel,
@@ -966,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -978,7 +978,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 /*web_bundle_id=*/GetWebBundleId(),
                 /*update_channel=*/kBetaChannel,
@@ -1040,7 +1040,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 GetWebBundleId(), kBetaChannel)));
 
@@ -1095,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -1138,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -1179,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId(), kBetaChannel)));
 
@@ -1217,7 +1217,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        MAYBE_SucceedsWithServiceWorkerWithFetchHandler) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -1271,7 +1271,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        PRE_AppliesUpdateOnStartupIfAppWindowNeverCloses) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -1370,7 +1370,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        PendingUpdateDoesNotGetCleanedUp) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -1473,7 +1473,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               web_bundle_id_)));
 
@@ -1530,7 +1530,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               web_bundle_id_)));
 
@@ -1618,7 +1618,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               web_bundle_id_)));
 
@@ -1702,7 +1702,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 web_bundle_id_)));
 

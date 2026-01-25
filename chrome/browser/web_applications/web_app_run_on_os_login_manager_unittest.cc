@@ -176,9 +176,9 @@ class WebAppRunOnOsLoginManagerSimpleSettingsTest
   void SetWebAppSettingsPref() override {
     profile()->GetPrefs()->SetList(
         prefs::kWebAppSettings,
-        base::Value::List().Append(base::Value::Dict()
-                                       .Set(kManifestId, kTestApp)
-                                       .Set(kRunOnOsLogin, kRunWindowed)));
+        base::ListValue().Append(base::DictValue()
+                                     .Set(kManifestId, kTestApp)
+                                     .Set(kRunOnOsLogin, kRunWindowed)));
   }
 
   void InstallWebApp() {

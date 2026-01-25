@@ -200,8 +200,8 @@ class WebAppsPreventCloseChromeOsBrowserTest
         installed_app_url_ = kCalculatorAppUrl;
         profile()->GetPrefs()->SetList(
             prefs::kWebAppInstallForceList,
-            base::Value::List().Append(
-                base::Value::Dict()
+            base::ListValue().Append(
+                base::DictValue()
                     .Set(web_app::kUrlKey, kCalculatorAppUrl)
                     .Set(web_app::kDefaultLaunchContainerKey,
                          web_app::kDefaultLaunchContainerWindowValue)));
@@ -243,9 +243,9 @@ class WebAppsPreventCloseChromeOsBrowserTest
   }
 
   void ResetPolicies() {
-    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::ListValue());
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
-                                   base::Value::List());
+                                   base::ListValue());
     web_app::WebAppProvider::GetForTest(profile())
         ->command_manager()
         .AwaitAllCommandsCompleteForTesting();
@@ -267,8 +267,8 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
   InstallApp();
   profile()->GetPrefs()->SetList(
       prefs::kWebAppSettings,
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set(web_app::kManifestId, *installed_app_url_)
               .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
               .Set(web_app::kPreventClose, IsPreventCloseEnabled())));
@@ -332,8 +332,8 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kWebAppSettings,
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set(web_app::kManifestId, *installed_app_url_)
               .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
               .Set(web_app::kPreventClose, IsPreventCloseEnabled())));
@@ -361,8 +361,8 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kWebAppSettings,
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set(web_app::kManifestId, *installed_app_url_)
               .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
               .Set(web_app::kPreventClose, IsPreventCloseEnabled())));

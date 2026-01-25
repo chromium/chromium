@@ -61,11 +61,11 @@ class BundleVersionsStorage {
 
   // Returns the update manifest for `web_bundle_id`. Will CHECK if there
   // are no bundles served for this `web_bundle_id`.
-  base::Value::Dict GetUpdateManifest(
+  base::DictValue GetUpdateManifest(
       const web_package::SignedWebBundleId& web_bundle_id) const;
 
   using BundleOrUpdateManifest =
-      std::variant<BundledIsolatedWebApp*, base::Value::Dict>;
+      std::variant<BundledIsolatedWebApp*, base::DictValue>;
   // Handles the following routes:
   //  * /<web_bundle_id>/update_manifest.json
   //  * /<web_bundle_id>/<version>.swbn

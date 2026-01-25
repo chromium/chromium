@@ -31,7 +31,7 @@ class PolicyGenerator {
   base::Value Generate();
 
  private:
-  base::Value::List app_policies_;
+  base::ListValue app_policies_;
 };
 }  // namespace web_app
 

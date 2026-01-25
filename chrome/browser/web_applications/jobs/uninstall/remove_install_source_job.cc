@@ -51,7 +51,7 @@ Action GetAction(const WebAppManagementTypes& sources,
 RemoveInstallSourceJob::RemoveInstallSourceJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     webapps::AppId app_id,
     WebAppManagementTypes install_managements_to_remove)
     : uninstall_source_(uninstall_source),

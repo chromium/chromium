@@ -57,7 +57,7 @@ void IsolatedWebAppUpdateApplyWaiter::Wait(Profile* profile,
 
 base::Value IsolatedWebAppUpdateApplyWaiter::AsDebugValue() const {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("app_id", url_info_.app_id())
           .Set("bundle_id", url_info_.web_bundle_id().id())
           .Set("signalled", callback_.is_null())

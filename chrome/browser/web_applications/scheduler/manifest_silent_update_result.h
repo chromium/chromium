@@ -44,7 +44,7 @@ struct ManifestSilentUpdateCompletionInfo {
       ManifestSilentUpdateCheckResult result);
   ~ManifestSilentUpdateCompletionInfo() = default;
 
-  base::Value::Dict ToDebugValue();
+  base::DictValue ToDebugValue();
   std::string ToString();
 
   ManifestSilentUpdateCompletionInfo(ManifestSilentUpdateCompletionInfo&&);

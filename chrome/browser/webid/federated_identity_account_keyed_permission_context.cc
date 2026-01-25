@@ -59,8 +59,8 @@ std::string BuildKey(const url::Origin& relying_party_requester,
                   identity_provider.Serialize());
 }
 
-base::Value::List::iterator FindAccount(base::Value::List& account_list,
-                                        const std::string& account_id) {
+base::ListValue::iterator FindAccount(base::ListValue& account_list,
+                                      const std::string& account_id) {
   return std::find_if(account_list.begin(), account_list.end(),
                       [&account_id](const auto& value) {
                         if (value.is_string()) {
@@ -103,7 +103,7 @@ FederatedIdentityAccountKeyedPermissionContext::
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_requester) {
   for (const auto& object : GetGrantedObjects(relying_party_requester)) {
-    const base::Value::List* account_list =
+    const base::ListValue* account_list =
         object->value.FindList(kAccountIdsKey);
     if (account_list) {
       return true;
@@ -151,7 +151,7 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     return false;
   }
 
-  base::Value::List* account_list =
+  base::ListValue* account_list =
       granted_object->value.FindList(kAccountIdsKey);
   return !!account_list;
 }
@@ -170,7 +170,7 @@ FederatedIdentityAccountKeyedPermissionContext::GetLastUsedTimestamp(
     return std::nullopt;
   }
 
-  base::Value::List* account_list =
+  base::ListValue* account_list =
       granted_object->value.FindList(kAccountIdsKey);
   if (!account_list) {
     return std::nullopt;
@@ -210,12 +210,12 @@ void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
                              identity_provider);
   const auto granted_object = GetGrantedObject(relying_party_requester, key);
   if (granted_object) {
-    base::Value::Dict new_object = granted_object->value.Clone();
+    base::DictValue new_object = granted_object->value.Clone();
     AddToAccountList(new_object, account_id);
     UpdateObjectPermission(relying_party_requester, granted_object->value,
                            std::move(new_object));
   } else {
-    base::Value::Dict new_object;
+    base::DictValue new_object;
     new_object.Set(kRpRequesterKey, relying_party_requester.Serialize());
     new_object.Set(kRpEmbedderKey, relying_party_embedder.Serialize());
     new_object.Set(kSharingIdpKey, identity_provider.Serialize());
@@ -238,8 +238,8 @@ bool FederatedIdentityAccountKeyedPermissionContext::RefreshExistingPermission(
     return false;
   }
 
-  base::Value::Dict new_object = granted_object->value.Clone();
-  base::Value::List* account_list = new_object.FindList(kAccountIdsKey);
+  base::DictValue new_object = granted_object->value.Clone();
+  base::ListValue* account_list = new_object.FindList(kAccountIdsKey);
   if (!account_list) {
     return false;
   }
@@ -252,7 +252,7 @@ bool FederatedIdentityAccountKeyedPermissionContext::RefreshExistingPermission(
     // Erase the previous string, and add a list (id, timestamp).
     account_list->erase(it);
 
-    base::Value::Dict account_dict;
+    base::DictValue account_dict;
     account_dict.Set(kAccountIdKey, account_id);
     account_dict.Set(kTimestampKey, base::TimeToValue(clock_->Now()));
     account_list->Append(std::move(account_dict));
@@ -279,8 +279,8 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
     return;
   }
 
-  base::Value::Dict new_object = object->value.Clone();
-  base::Value::List* account_ids = new_object.FindList(kAccountIdsKey);
+  base::DictValue new_object = object->value.Clone();
+  base::ListValue* account_ids = new_object.FindList(kAccountIdsKey);
   if (account_ids) {
     auto it = FindAccount(*account_ids, account_id);
     if (it != account_ids->end()) {
@@ -333,7 +333,7 @@ void FederatedIdentityAccountKeyedPermissionContext::OnSetRequiresUserMediation(
 }
 
 std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   DCHECK(IsValidObject(object));
   const std::string* rp_requester_origin = object.FindString(kRpRequesterKey);
   const std::string* rp_embedder_origin = object.FindString(kRpEmbedderKey);
@@ -347,13 +347,13 @@ std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
 }
 
 bool FederatedIdentityAccountKeyedPermissionContext::IsValidObject(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   return object.FindString(kSharingIdpKey);
 }
 
 std::u16string
 FederatedIdentityAccountKeyedPermissionContext::GetObjectDisplayName(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   DCHECK(IsValidObject(object));
   return base::UTF8ToUTF16(*object.FindString(kSharingIdpKey));
 }
@@ -364,7 +364,7 @@ void FederatedIdentityAccountKeyedPermissionContext::GetAllDataKeys(
   auto granted_objects = GetAllGrantedObjects();
   std::vector<webid::FederatedIdentityDataModel::DataKey> data_keys;
   for (const auto& obj : granted_objects) {
-    const base::Value::List* accounts = obj->value.FindList(kAccountIdsKey);
+    const base::ListValue* accounts = obj->value.FindList(kAccountIdsKey);
     const std::string* rp_requester_origin =
         obj->value.FindString(kRpRequesterKey);
     const std::string* rp_embedder_origin =
@@ -472,19 +472,19 @@ void FederatedIdentityAccountKeyedPermissionContext::
 }
 
 void FederatedIdentityAccountKeyedPermissionContext::AddToAccountList(
-    base::Value::Dict& dict,
+    base::DictValue& dict,
     const std::string& account_id) {
-  base::Value::Dict account_dict;
+  base::DictValue account_dict;
   account_dict.Set(kAccountIdKey, account_id);
   account_dict.Set(kTimestampKey, base::TimeToValue(clock_->Now()));
 
-  base::Value::List* account_list = dict.FindList(kAccountIdsKey);
+  base::ListValue* account_list = dict.FindList(kAccountIdsKey);
   if (account_list) {
     account_list->Append(std::move(account_dict));
     return;
   }
 
-  base::Value::List new_list;
+  base::ListValue new_list;
   new_list.Append(std::move(account_dict));
   dict.Set(kAccountIdsKey, base::Value(std::move(new_list)));
 }

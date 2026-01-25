@@ -537,7 +537,7 @@ TEST_F(WebAppPrefsMLGuardrailsMaxStorageTest, ClearAndResetGuardrails) {
   EXPECT_FALSE(IsMLBlockedByGuardrails("app"));
   EXPECT_FALSE(IsMLPromoBlockedTimeSet());
 
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
   std::optional<int> agnostic_not_installed_count =
       dict.FindInt(kMlPromoPrefNames.not_accepted_count_name);
@@ -661,7 +661,7 @@ TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, ClearAndResetGuardrails) {
   EXPECT_FALSE(IsDesktopLinkCapturingIphBlocked("app"));
   EXPECT_FALSE(IsDesktopIphBlockedTimeSet());
 
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
   std::optional<int> agnostic_not_installed_count =
       dict.FindInt(kIPHNavigationCapturingPrefNames.not_accepted_count_name);

@@ -221,8 +221,8 @@ class PreinstalledWebAppManagerBrowserTestBase
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 
   void SyncEmptyConfigs() {
-    base::Value::List app_configs;
-    base::AutoReset<const base::Value::List*> configs_for_testing =
+    base::ListValue app_configs;
+    base::AutoReset<const base::ListValue*> configs_for_testing =
         PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     base::RunLoop run_loop;
@@ -260,7 +260,7 @@ class PreinstalledWebAppManagerBrowserTestBase
     base::AutoReset<FileUtilsWrapper*> file_utils_for_testing =
         PreinstalledWebAppManager::SetFileUtilsForTesting(file_utils.get());
 
-    base::Value::List app_configs;
+    base::ListValue app_configs;
     auto json_parse_result = base::JSONReader::ReadAndReturnValueWithError(
         app_config_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(json_parse_result.has_value())
@@ -268,7 +268,7 @@ class PreinstalledWebAppManagerBrowserTestBase
     if (!json_parse_result.has_value())
       return std::nullopt;
     app_configs.Append(std::move(*json_parse_result));
-    base::AutoReset<const base::Value::List*> configs_for_testing =
+    base::AutoReset<const base::ListValue*> configs_for_testing =
         PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     std::optional<webapps::InstallResultCode> code;

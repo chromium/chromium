@@ -108,7 +108,7 @@ void CheckInstalledByAndMaybeUpdate(const base::Time& api_call_time,
                                     const GURL& requesting_page,
                                     const webapps::AppId& app_id,
                                     AppLock& lock,
-                                    base::Value::Dict& debug_value) {
+                                    base::DictValue& debug_value) {
   ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
   WebApp* app_to_update = update->UpdateApp(app_id);
   if (!app_to_update) {
@@ -340,7 +340,7 @@ void WebInstallServiceImpl::CheckForInstalledAppMaybeLaunch(
     content::WebContents* web_contents,
     InstallCallbackWithMetrics callback_with_metrics,
     AppLock& lock,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   // Now that we've locked the app, re-confirm the current document is still
   // already installed on the current device.
   const webapps::AppId* app_id =

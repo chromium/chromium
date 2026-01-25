@@ -34,7 +34,7 @@ class WebAppUninstallAndReplaceJob {
  public:
   WebAppUninstallAndReplaceJob(
       Profile* profile,
-      base::Value::Dict& debug_value,
+      base::DictValue& debug_value,
       WithAppResources& to_app_lock,
       const std::vector<webapps::AppId>& from_apps_or_extensions,
       const webapps::AppId& to_app,
@@ -64,7 +64,7 @@ class WebAppUninstallAndReplaceJob {
       ShortcutLocations from_app_locations);
 
   const raw_ref<Profile> profile_;
-  const raw_ref<base::Value::Dict> debug_value_;
+  const raw_ref<base::DictValue> debug_value_;
   // `this` must exist within the scope of a WebAppCommand's WithAppResources.
   const raw_ref<WithAppResources> to_app_lock_;
   std::vector<webapps::AppId> from_apps_or_extensions_;

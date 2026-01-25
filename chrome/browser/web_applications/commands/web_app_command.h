@@ -183,7 +183,7 @@ class WebAppCommand : public internal::CommandWithLock<LockType> {
     DCHECK_CALLED_ON_VALID_SEQUENCE(
         internal::CommandBase::command_sequence_checker_);
 
-    base::Value::Dict* metadata =
+    base::DictValue* metadata =
         internal::CommandBase::GetMutableDebugValue().EnsureDict("!metadata");
     CHECK(internal::CommandBase::command_manager())
         << "Command was never given to the command manager: "

@@ -80,8 +80,8 @@ class ManagedConfigurationAPIInIsolatedWebAppTest
                         const std::string& origin_key) {
     browser()->profile()->GetPrefs()->SetList(
         prefs::kManagedConfigurationPerOrigin,
-        base::Value::List().Append(
-            base::Value::Dict()
+        base::ListValue().Append(
+            base::DictValue()
                 .Set(ManagedConfigurationAPI::kOriginKey, origin_key)
                 .Set(ManagedConfigurationAPI::kManagedConfigurationUrlKey,
                      embedded_test_server()->GetURL(conf_url).spec())
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIInIsolatedWebAppTest,
       [&](auto& update) { update.AddToManagedAllowlist(GetWebBundleId()); });
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIInIsolatedWebAppTest,
   auto result = content::EvalJs(
       OpenApp(url_info.app_id(), ""),
       content::JsReplace("navigator.managed.getManagedConfiguration($1)",
-                         base::Value::List().Append(kKey1).Append(kKey2)));
+                         base::ListValue().Append(kKey1).Append(kKey2)));
 
   EXPECT_EQ(result, base::test::ParseJson(kConfigurationData));
 }

@@ -395,13 +395,13 @@ void IsolatedWebAppUpdateManager::Shutdown() {
 }
 
 base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
-  base::Value::List update_apply_waiters;
+  base::ListValue update_apply_waiters;
   for (const auto& [app_id, waiter] : update_apply_waiters_) {
     update_apply_waiters.Append(waiter->AsDebugValue());
   }
 
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("automatic_updates_enabled", automatic_updates_enabled_)
           .Set("update_discovery_frequency_in_minutes",
                update_discovery_frequency_.InSecondsF() /
@@ -859,8 +859,8 @@ IsolatedWebAppUpdateManager::NextUpdateDiscoveryCheck::AsDebugValue() const {
   double next_update_check_in_minutes =
       next_update_check.InSecondsF() / base::Time::kSecondsPerMinute;
 
-  return base::Value(base::Value::Dict().Set("next_update_check_in_minutes",
-                                             next_update_check_in_minutes));
+  return base::Value(base::DictValue().Set("next_update_check_in_minutes",
+                                           next_update_check_in_minutes));
 }
 
 IsolatedWebAppUpdateManager::TaskQueue::TaskQueue(
@@ -870,18 +870,18 @@ IsolatedWebAppUpdateManager::TaskQueue::TaskQueue(
 IsolatedWebAppUpdateManager::TaskQueue::~TaskQueue() = default;
 
 base::Value IsolatedWebAppUpdateManager::TaskQueue::AsDebugValue() const {
-  base::Value::List update_discovery_tasks;
+  base::ListValue update_discovery_tasks;
   for (const auto& task : update_discovery_tasks_) {
     update_discovery_tasks.Append(task->AsDebugValue());
   }
 
-  base::Value::List update_apply_tasks;
+  base::ListValue update_apply_tasks;
   for (const auto& task : update_apply_tasks_) {
     update_apply_tasks.Append(task->AsDebugValue());
   }
 
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("update_discovery_tasks", std::move(update_discovery_tasks))
           .Set("update_discovery_log", update_discovery_results_log_.Clone())
           .Set("update_apply_tasks", std::move(update_apply_tasks))

@@ -50,7 +50,7 @@ class TestIwaInstallerFactory {
       IsolatedWebAppExternalInstallOptions install_options,
       IwaInstaller::InstallSourceType install_source_type,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::Value::List& log,
+      base::ListValue& log,
       WebAppProvider* provider,
       IwaInstaller::ResultCallback callback);
 

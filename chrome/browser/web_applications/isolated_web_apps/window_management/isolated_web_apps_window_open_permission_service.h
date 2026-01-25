@@ -72,7 +72,7 @@ class IsolatedWebAppsWindowOpenPermissionService : public KeyedService {
  private:
   void RetrieveNotificationStates();
   void OnAllAppsLockAcquiredForStateRetrieval(web_app::AllAppsLock& lock,
-                                              base::Value::Dict& debug_value);
+                                              base::DictValue& debug_value);
 
   void RegisterFirstTimeActiveAppNotification(const webapps::AppId& app_id);
   void CreateAndDisplayNotification(const webapps::AppId& app_id);

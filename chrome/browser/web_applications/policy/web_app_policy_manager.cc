@@ -182,7 +182,7 @@ void WebAppPolicyManager::Shutdown() {
 void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
     const GURL& url,
     ExternallyManagedAppManager::OnceInstallCallback on_complete) {
-  const base::Value::List& web_apps =
+  const base::ListValue& web_apps =
       pref_service_->GetList(prefs::kWebAppInstallForceList);
   const auto& web_apps_list = web_apps;
 
@@ -448,7 +448,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps(
 
   custom_manifest_values_by_url_.clear();
 
-  const base::Value::List& web_apps =
+  const base::ListValue& web_apps =
       pref_service_->GetList(prefs::kWebAppInstallForceList);
   std::vector<ExternalInstallOptions> install_options_list;
   // No need to validate the types or values of the policy members because we
@@ -512,7 +512,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps(
 void WebAppPolicyManager::ParsePolicySettings() {
   // No need to validate the types or values of the policy members because we
   // are using a WebAppSettingsPolicyHandler which should validate them for us.
-  const base::Value::List& web_apps_list =
+  const base::ListValue& web_apps_list =
       pref_service_->GetList(prefs::kWebAppSettings);
 
   settings_by_url_.clear();
@@ -627,7 +627,7 @@ void WebAppPolicyManager::ApplyForceOSUnregistrationPolicySettings(
 }
 
 std::optional<ExternalInstallOptions>
-WebAppPolicyManager::ParseInstallPolicyEntry(const base::Value::Dict& entry) {
+WebAppPolicyManager::ParseInstallPolicyEntry(const base::DictValue& entry) {
   const std::string* install_url = entry.FindString(kUrlKey);
   // url is a required field and is validated by
   // SimpleSchemaValidatingPolicyHandler. It is guaranteed to exist.
@@ -637,7 +637,7 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::Value::Dict& entry) {
   const std::optional<bool> create_desktop_shortcut =
       entry.FindBool(kCreateDesktopShortcutKey);
   const std::string* fallback_app_name = entry.FindString(kFallbackAppNameKey);
-  const base::Value::List* uninstall_and_replace =
+  const base::ListValue* uninstall_and_replace =
       entry.FindList(kUninstallAndReplaceKey);
   const std::optional<bool> install_as_diy = entry.FindBool(kInstallAsShortcut);
 
@@ -698,7 +698,7 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::Value::Dict& entry) {
       custom_manifest_values_by_url_[install_gurl].SetName(*custom_name);
   }
 
-  const base::Value::Dict* custom_icon = entry.FindDict(kCustomIconKey);
+  const base::DictValue* custom_icon = entry.FindDict(kCustomIconKey);
   if (custom_icon && custom_icon) {
     const std::string* icon_url = custom_icon->FindString(kCustomIconURLKey);
     if (icon_url) {
@@ -863,7 +863,7 @@ void WebAppPolicyManager::OnAppsSynchronized(
   OnWebAppForceInstallPolicyParsed();
 }
 
-bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value::Dict& dict,
+bool WebAppPolicyManager::WebAppSetting::Parse(const base::DictValue& dict,
                                                bool for_default_settings) {
   const std::string* run_on_os_login_str = dict.FindString(kRunOnOsLogin);
   if (run_on_os_login_str) {
@@ -978,7 +978,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   if (!local_state)  // Sometimes it's not available in tests.
     return;
 
-  const base::Value::List& disabled_system_features_pref =
+  const base::ListValue& disabled_system_features_pref =
       local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
 
   for (const auto& entry : disabled_system_features_pref) {

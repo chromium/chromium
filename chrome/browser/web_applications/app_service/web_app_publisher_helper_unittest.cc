@@ -389,7 +389,7 @@ TEST_F(WebAppPublisherHelperTest, LaunchWithFiles_AllowWithNoPrompt) {
   const GURL app_url("https://example.com/path/index.html");
   const WebApp* app = nullptr;
 
-  base::Value::Dict pref_value;
+  base::DictValue pref_value;
   pref_value.Set(".txt", "https://example.com/path/index.html");
   profile()->GetPrefs()->SetDict(prefs::kDefaultHandlersForFileExtensions,
                                  std::move(pref_value));

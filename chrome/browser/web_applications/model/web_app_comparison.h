@@ -97,7 +97,7 @@ class WebAppComparison {
   // This does not consider any pending update info.
   bool IsSecuritySensitiveChangesOnly() const;
 
-  // Returns a `base::Value::Dict` representation of this object, useful for
+  // Returns a `base::DictValue` representation of this object, useful for
   // debugging.
   base::DictValue ToDict() const;
 

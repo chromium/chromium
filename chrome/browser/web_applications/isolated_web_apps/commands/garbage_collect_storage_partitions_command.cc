@@ -97,7 +97,7 @@ void GarbageCollectStoragePartitionsCommand::DoGarbageCollection() {
     }
   }
 
-  base::Value::List* debug_paths =
+  base::ListValue* debug_paths =
       GetMutableDebugValue().EnsureList("allow_list_paths");
   for (const auto& path : allowlist) {
     debug_paths->Append(path.LossyDisplayName());

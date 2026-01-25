@@ -95,8 +95,8 @@ class PreinstalledWebAppManager {
   static base::AutoReset<bool> BypassAwaitingDependenciesForTesting();
   static base::AutoReset<bool> BypassOfflineManifestRequirementForTesting();
   static base::AutoReset<bool> OverridePreviousUserUninstallConfigForTesting();
-  static base::AutoReset<const base::Value::List*> SetConfigsForTesting(
-      const base::Value::List* configs);
+  static base::AutoReset<const base::ListValue*> SetConfigsForTesting(
+      const base::ListValue* configs);
   static base::AutoReset<std::vector<ExternalInstallOptions>>
   SetParsedConfigsForTesting(std::vector<ExternalInstallOptions> configs);
   static base::AutoReset<FileUtilsWrapper*> SetFileUtilsForTesting(

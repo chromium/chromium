@@ -40,7 +40,7 @@ class InstallPlaceholderJob {
       base::OnceCallback<void(webapps::InstallResultCode code,
                               webapps::AppId app_id)>;
   InstallPlaceholderJob(Profile* profile,
-                        base::Value::Dict& debug_value,
+                        base::DictValue& debug_value,
                         const ExternalInstallOptions& install_options,
                         InstallAndReplaceCallback callback,
                         SharedWebContentsWithAppLock& lock);
@@ -77,7 +77,7 @@ class InstallPlaceholderJob {
                           webapps::InstallResultCode code);
 
   const raw_ref<Profile> profile_;
-  const raw_ref<base::Value::Dict> debug_value_;
+  const raw_ref<base::DictValue> debug_value_;
   const webapps::AppId app_id_;
 
   // `this` must exist within the scope of a WebCommand's

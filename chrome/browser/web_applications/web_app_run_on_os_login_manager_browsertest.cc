@@ -129,9 +129,9 @@ class RunOnOsLoginTestHandlerMixin : public InProcessBrowserTestMixin {
         .SetRefreshPolicySettingsCompletedCallbackForTesting(
             policy_refresh_sync_future.GetCallback());
     PrefService* prefs = profile_->GetPrefs();
-    base::Value::List web_app_settings =
+    base::ListValue web_app_settings =
         prefs->GetList(prefs::kWebAppSettings).Clone();
-    web_app_settings.Append(base::Value::Dict()
+    web_app_settings.Append(base::DictValue()
                                 .Set(kManifestId, manifest_id)
                                 .Set(kRunOnOsLogin, run_on_os_login)
                                 .Set(kPreventClose, prevent_close));
@@ -165,7 +165,7 @@ class RunOnOsLoginTestHandlerMixin : public InProcessBrowserTestMixin {
     provider_->policy_manager()
         .SetRefreshPolicySettingsCompletedCallbackForTesting(
             future.GetCallback());
-    profile_->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+    profile_->GetPrefs()->SetList(prefs::kWebAppSettings, base::ListValue());
     ASSERT_TRUE(future.Wait());
   }
 
@@ -233,10 +233,10 @@ class WebAppRunOnOsLoginManagerBrowserTest
     observer.BeginListening({app_id});
 
     PrefService* prefs = profile()->GetPrefs();
-    base::Value::List install_force_list =
+    base::ListValue install_force_list =
         prefs->GetList(prefs::kWebAppInstallForceList).Clone();
     install_force_list.Append(
-        base::Value::Dict()
+        base::DictValue()
             .Set(kUrlKey, manifest_id)
             .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue)
             .Set(kFallbackAppNameKey, app_name));
@@ -717,8 +717,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppRunOnOsLoginManagerBrowserTest,
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set(kPolicyWebBundleIdKey, url_info_->web_bundle_id().id())
               .Set(kPolicyUpdateManifestUrlKey,
                    run_on_os_login_handler_.iwa_test_server()

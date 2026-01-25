@@ -52,7 +52,7 @@ constexpr std::string_view kIsolatedAppVersion = "1.0.0";
 std::optional<IsolationData::OpenedTabsCounterNotificationState>
 ReadIwaNotificationStateWithLock(const webapps::AppId& app_id,
                                  AppLock& lock,
-                                 base::Value::Dict& debug_value) {
+                                 base::DictValue& debug_value) {
   const WebApp* web_app = lock.registrar().GetAppById(app_id);
   if (!web_app) {
     return std::nullopt;

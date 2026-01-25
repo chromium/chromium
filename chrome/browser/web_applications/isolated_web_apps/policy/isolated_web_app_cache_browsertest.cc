@@ -299,7 +299,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
     }
     std::visit(absl::Overload{
                    [&](ManagedGuestSessionMixin& mgs_mixin) {
-                     base::Value::List config;
+                     base::ListValue config;
                      for (auto& iwa : apps_to_configure_in_session) {
                        config.Append(iwa_test_update_server_
                                          .CreateForceInstallPolicyEntry(
@@ -511,11 +511,11 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::test::RunUntil([&]() {
       base::Value debug_value = provider().iwa_cache_manager().GetDebugValue();
-      base::Value::List* operations_results =
+      base::ListValue* operations_results =
           debug_value.GetDict().FindList(kOperationsResults);
       return operations_results &&
              operations_results->contains(
-                 base::Value::Dict().Set(operation_name, result));
+                 base::DictValue().Set(operation_name, result));
     }));
   }
 
@@ -581,7 +581,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
       const SignedWebBundleId& bundle_id) {
     std::vector<IwaVersion> versions;
 
-    base::Value::Dict manifest_dict =
+    base::DictValue manifest_dict =
         iwa_test_update_server_.GetUpdateManifest(bundle_id);
     for (auto& version_value :
          CHECK_DEREF(manifest_dict.FindList("versions"))) {

@@ -25,7 +25,7 @@ void NavigationCapturingLog::LogData(
   static const size_t kMaxLogLength =
       base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo) ? 1000
                                                                      : 20;
-  base::Value::Dict log_entry;
+  base::DictValue log_entry;
   log_entry.Set("source", source);
   log_entry.Set("navigation_id",
                 base::saturated_cast<int>(navigation_handle_id.value_or(-1)));
@@ -39,7 +39,7 @@ void NavigationCapturingLog::LogData(
 }
 
 base::Value NavigationCapturingLog::GetLog() const {
-  base::Value::List log;
+  base::ListValue log;
   for (const auto& command_value : debug_log_) {
     log.Append(command_value.Clone());
   }

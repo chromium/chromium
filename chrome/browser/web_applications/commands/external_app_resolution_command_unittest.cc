@@ -869,7 +869,7 @@ TEST_F(ExternalAppResolutionCommandTest, UpgradeLock) {
   auto callback_command = std::make_unique<internal::CallbackCommand<AppLock>>(
       "", AppLockDescription(app_ids),
       base::BindLambdaForTesting(
-          [&](AppLock&, base::Value::Dict&) { callback_command_run = true; }),
+          [&](AppLock&, base::DictValue&) { callback_command_run = true; }),
       /*completion_callback=*/base::DoNothing());
 
   bool callback_command_2_run = false;
@@ -877,7 +877,7 @@ TEST_F(ExternalAppResolutionCommandTest, UpgradeLock) {
   auto callback_command_2 =
       std::make_unique<internal::CallbackCommand<AppLock>>(
           "", AppLockDescription(app_ids),
-          base::BindLambdaForTesting([&](AppLock&, base::Value::Dict&) {
+          base::BindLambdaForTesting([&](AppLock&, base::DictValue&) {
             callback_command_2_run = true;
           }),
           /*completion_callback=*/callback_runloop.QuitClosure());

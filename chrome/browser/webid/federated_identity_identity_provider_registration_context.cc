@@ -53,9 +53,9 @@ void FederatedIdentityIdentityProviderRegistrationContext::RegisterIdP(
     configURLs->Append(base::Value(url.spec()));
     UpdateObjectPermission(origin, old, std::move(granted_object->value));
   } else {
-    base::Value::Dict new_object;
+    base::DictValue new_object;
     new_object.Set(kIdPRegistrationKey, origin.Serialize());
-    base::Value::List configURLs;
+    base::ListValue configURLs;
     configURLs.Append(base::Value(url.spec()));
     new_object.Set(kIdPRegistrationUrlKey, std::move(configURLs));
     GrantObjectPermission(origin, std::move(new_object));
@@ -79,19 +79,19 @@ void FederatedIdentityIdentityProviderRegistrationContext::UnregisterIdP(
 
 std::string
 FederatedIdentityIdentityProviderRegistrationContext::GetKeyForObject(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   DCHECK(IsValidObject(object));
   return *object.FindString(kIdPRegistrationKey);
 }
 
 bool FederatedIdentityIdentityProviderRegistrationContext::IsValidObject(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   return object.FindString(kIdPRegistrationKey);
 }
 
 std::u16string
 FederatedIdentityIdentityProviderRegistrationContext::GetObjectDisplayName(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   DCHECK(IsValidObject(object));
   return base::UTF8ToUTF16(*object.FindString(kIdPRegistrationKey));
 }

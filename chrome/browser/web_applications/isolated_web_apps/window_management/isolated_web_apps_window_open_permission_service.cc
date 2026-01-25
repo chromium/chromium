@@ -95,7 +95,7 @@ void IsolatedWebAppsWindowOpenPermissionService::RetrieveNotificationStates() {
 
 void IsolatedWebAppsWindowOpenPermissionService::
     OnAllAppsLockAcquiredForStateRetrieval(web_app::AllAppsLock& lock,
-                                           base::Value::Dict& debug_value) {
+                                           base::DictValue& debug_value) {
   for (const WebApp& web_app : lock.registrar().GetApps(
            WebAppFilter::IsIsolatedWebAppWithOnlyUserManagement())) {
     const auto& state =
@@ -239,7 +239,7 @@ void IsolatedWebAppsWindowOpenPermissionService::PersistNotificationState(
           [](const webapps::AppId& app_id,
              const web_app::IsolationData::OpenedTabsCounterNotificationState&
                  notification_state,
-             web_app::AppLock& lock, base::Value::Dict& debug_value) {
+             web_app::AppLock& lock, base::DictValue& debug_value) {
             web_app::ScopedRegistryUpdate update =
                 lock.sync_bridge().BeginUpdate();
 

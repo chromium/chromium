@@ -27,8 +27,8 @@ namespace web_app {
 
 namespace {
 
-base::Value::Dict UrlPatternDebugValue(const blink::SafeUrlPattern& pattern) {
-  base::Value::Dict dict;
+base::DictValue UrlPatternDebugValue(const blink::SafeUrlPattern& pattern) {
+  base::DictValue dict;
   auto set_if_not_empty = [&dict](
                               std::string_view field,
                               const std::vector<liburlpattern::Part>& parts) {
@@ -121,7 +121,7 @@ base::Value DisplayOverride::ToDebugValue() const {
   if (url_patterns_.empty()) {
     return base::Value(blink::DisplayModeToString(display_mode_));
   }
-  base::Value::Dict item_dict;
+  base::DictValue item_dict;
   item_dict.Set("display", blink::DisplayModeToString(display_mode_));
   item_dict.Set("url_patterns",
                 base::ToValueList(url_patterns_, UrlPatternDebugValue));

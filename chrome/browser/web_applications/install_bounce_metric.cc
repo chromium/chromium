@@ -56,10 +56,10 @@ std::optional<InstallMetrics> ParseInstallMetricsFromPrefs(
     const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value::Dict& ids_to_metrics =
+  const base::DictValue& ids_to_metrics =
       pref_service->GetDict(prefs::kWebAppInstallMetrics);
 
-  const base::Value::Dict* metrics = ids_to_metrics.FindDict(app_id);
+  const base::DictValue* metrics = ids_to_metrics.FindDict(app_id);
   if (!metrics)
     return std::nullopt;
 
@@ -80,7 +80,7 @@ void WriteInstallMetricsToPrefs(const InstallMetrics& install_metrics,
                                 PrefService* pref_service,
                                 const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kInstallTimestamp, SerializeTime(install_metrics.timestamp));
   dict.Set(kInstallSource, static_cast<int>(install_metrics.source));
 

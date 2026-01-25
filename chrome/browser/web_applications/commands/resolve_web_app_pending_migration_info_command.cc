@@ -37,8 +37,8 @@ void ResolveWebAppPendingMigrationInfoCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
   lock_ = std::move(lock);
 
-  base::Value::Dict& debug_value = GetMutableDebugValue();
-  base::Value::Dict* debug_updates = debug_value.EnsureDict("updates");
+  base::DictValue& debug_value = GetMutableDebugValue();
+  base::DictValue* debug_updates = debug_value.EnsureDict("updates");
 
   // Map from source_manifest_id (the app being migrated FROM) to list of
   // PendingMigrationInfo (info about the app being migrated TO).
@@ -80,7 +80,7 @@ void ResolveWebAppPendingMigrationInfoCommand::StartWithLock(
       if (new_info != current_info) {
         debug_updates->Set(
             app.app_id(),
-            base::Value::Dict()
+            base::DictValue()
                 .Set("old", current_info ? proto::ToValue(*current_info)
                                          : base::Value())
                 .Set("new",

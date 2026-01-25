@@ -91,7 +91,7 @@ std::optional<IwaPermissionsPolicyCache::CacheEntry> ParseManifest(
     return std::nullopt;
   }
 
-  const base::Value::Dict* manifest_dict = json_value->GetIfDict();
+  const base::DictValue* manifest_dict = json_value->GetIfDict();
   const base::Value* permissions_policy_value =
       manifest_dict->Find("permissions_policy");
 
@@ -103,7 +103,7 @@ std::optional<IwaPermissionsPolicyCache::CacheEntry> ParseManifest(
     return std::nullopt;
   }
 
-  const base::Value::Dict& permissions_policy_dict =
+  const base::DictValue& permissions_policy_dict =
       permissions_policy_value->GetDict();
 
   std::vector<IwaPermissionsPolicyCache::Entry> permissions_policy;
@@ -111,7 +111,7 @@ std::optional<IwaPermissionsPolicyCache::CacheEntry> ParseManifest(
     if (!val.is_list()) {
       return std::nullopt;
     }
-    const base::Value::List& list = val.GetList();
+    const base::ListValue& list = val.GetList();
     std::vector<std::string> allowed_origins;
     for (const auto& item : list) {
       if (!item.is_string()) {

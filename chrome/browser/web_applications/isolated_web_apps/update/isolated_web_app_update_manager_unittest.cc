@@ -435,7 +435,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
     return provider().iwa_update_manager().AsDebugValue();
   }
 
-  base::Value::List UpdateDiscoveryLog() {
+  base::ListValue UpdateDiscoveryLog() {
     return debug_log()
         .GetDict()
         .FindDict("task_queue")
@@ -443,7 +443,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
-  base::Value::List UpdateDiscoveryTasks() {
+  base::ListValue UpdateDiscoveryTasks() {
     return debug_log()
         .GetDict()
         .FindDict("task_queue")
@@ -451,7 +451,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
-  base::Value::List UpdateApplyLog() {
+  base::ListValue UpdateApplyLog() {
     return debug_log()
         .GetDict()
         .FindDict("task_queue")
@@ -459,7 +459,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
-  base::Value::List UpdateApplyTasks() {
+  base::ListValue UpdateApplyTasks() {
     return debug_log()
         .GetDict()
         .FindDict("task_queue")
@@ -467,7 +467,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
-  base::Value::List UpdateApplyWaiters() {
+  base::ListValue UpdateApplyWaiters() {
     return debug_log().GetDict().FindList("update_apply_waiters")->Clone();
   }
 };

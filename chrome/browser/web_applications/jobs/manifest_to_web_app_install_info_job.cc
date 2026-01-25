@@ -580,7 +580,7 @@ ManifestToWebAppInstallInfoJob::CreateAndStart(
     webapps::WebappInstallSource install_source,
     base::WeakPtr<content::WebContents> web_contents,
     base::FunctionRef<void(IconUrlSizeSet&)> icon_url_modifications,
-    base::Value::Dict& debug_data,
+    base::DictValue& debug_data,
     WebAppInstallInfoCreationCallback creation_callback,
     WebAppInstallInfoConstructOptions options,
     std::optional<WebAppInstallInfo> fallback_info) {
@@ -619,7 +619,7 @@ ManifestToWebAppInstallInfoJob::ManifestToWebAppInstallInfoJob(
     WebAppDataRetriever& data_retriever,
     bool background_installation,
     webapps::WebappInstallSource install_source,
-    base::Value::Dict& debug_data,
+    base::DictValue& debug_data,
     WebAppInstallInfoCreationCallback creation_callback,
     WebAppInstallInfoConstructOptions options,
     std::optional<WebAppInstallInfo> fallback_info)
@@ -874,10 +874,10 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
   icon_fetch_result_ = result;
-  base::Value::Dict* icons_downloaded =
+  base::DictValue* icons_downloaded =
       debug_data_->EnsureDict("icons_retrieved");
   for (const auto& [url, bitmap_vector] : icons_map) {
-    base::Value::List* sizes = icons_downloaded->EnsureList(url.spec());
+    base::ListValue* sizes = icons_downloaded->EnsureList(url.spec());
     for (const SkBitmap& bitmap : bitmap_vector) {
       sizes->Append(bitmap.width());
     }

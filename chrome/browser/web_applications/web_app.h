@@ -322,7 +322,7 @@ class WebApp {
     friend bool operator==(const ExternalManagementConfig&,
                            const ExternalManagementConfig&) = default;
 
-    base::Value::Dict AsDebugValue() const;
+    base::DictValue AsDebugValue() const;
 
     bool is_placeholder = false;
     base::flat_set<GURL> install_urls;

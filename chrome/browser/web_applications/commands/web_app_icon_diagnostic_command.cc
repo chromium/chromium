@@ -24,7 +24,7 @@ base::Value CreateIconDiagnosticDebugData(
   if (!diagnostic_result.has_value()) {
     return base::Value("no_result_yet");
   }
-  base::Value::Dict root;
+  base::DictValue root;
   const WebAppIconDiagnosticResult result_value = diagnostic_result.value();
   root.Set("has_empty_downloaded_icon_sizes",
            result_value.has_empty_downloaded_icon_sizes);

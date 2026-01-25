@@ -610,7 +610,7 @@ void WebAppCommandScheduler::SetAppIsDisabled(const webapps::AppId& app_id,
       "SetAppIsDisabled", AppLockDescription(app_id),
       base::BindOnce(
           [](const webapps::AppId& app_id, bool is_disabled,
-             web_app::AppLock& lock, base::Value::Dict& debug_value) {
+             web_app::AppLock& lock, base::DictValue& debug_value) {
             lock.sync_bridge().SetAppIsDisabled(lock, app_id, is_disabled);
           },
           app_id, is_disabled),
@@ -798,7 +798,7 @@ void WebAppCommandScheduler::GetAllAppsForFilter(
       "GetAllAppsForFilter", AllAppsLockDescription(),
       base::BindOnce(
           [](const WebAppFilter& filter, AllAppsLock& lock,
-             base::Value::Dict& debug_value) {
+             base::DictValue& debug_value) {
             std::vector<webapps::AppId> apps;
             // GetAppIds() automatically excludes some things like stubs and
             // uninstalling. If those are needed, the filter should likely

@@ -34,7 +34,7 @@ class GetIsolatedWebAppSizeJob {
 
   GetIsolatedWebAppSizeJob(Profile* profile,
                            const webapps::AppId& app_id,
-                           base::Value::Dict& debug_value,
+                           base::DictValue& debug_value,
                            ResultCallback result_callback);
   ~GetIsolatedWebAppSizeJob();
 
@@ -54,7 +54,7 @@ class GetIsolatedWebAppSizeJob {
   size_t icon_size_ = 0u;
   const raw_ptr<Profile> profile_;
   raw_ptr<WithAppResources> lock_with_app_resources_ = nullptr;
-  const raw_ref<base::Value::Dict> debug_value_;
+  const raw_ref<base::DictValue> debug_value_;
   ResultCallback result_callback_;
   base::WeakPtrFactory<GetIsolatedWebAppSizeJob> weak_factory_{this};
 };

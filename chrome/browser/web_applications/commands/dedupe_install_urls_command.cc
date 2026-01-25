@@ -34,7 +34,7 @@ bool g_suppress_for_testing = false;
 
 base::flat_map<GURL, base::flat_set<webapps::AppId>> BuildInstallUrlToAppIdsMap(
     const WebAppRegistrar& registrar,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   base::flat_map<GURL, base::flat_set<webapps::AppId>> result;
 
   for (const WebApp& app : registrar.GetApps()) {
@@ -89,7 +89,7 @@ const webapps::AppId& SelectWebAppToDedupeInto(
 std::vector<std::unique_ptr<RemoveInstallUrlJob>>
 BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
     Profile& profile,
-    base::Value::Dict& jobs_debug_value,
+    base::DictValue& jobs_debug_value,
     const WebAppRegistrar& registrar,
     ScopedRegistryUpdate& update,
     const GURL& install_url,
@@ -141,7 +141,7 @@ struct DedupeOperations {
 
 DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
     Profile& profile,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     const WebAppRegistrar& registrar,
     ScopedRegistryUpdate& update,
     const base::flat_map<GURL, base::flat_set<webapps::AppId>>&

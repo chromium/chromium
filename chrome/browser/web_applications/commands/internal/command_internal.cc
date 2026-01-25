@@ -38,7 +38,7 @@ CommandBase::CommandBase(std::string name)
   // WebAppProvider sequence without requiring a UI thread in unittests, so just
   // allow this construction to happen from any thread.
 
-  base::Value::Dict* metadata = GetMutableDebugValue().EnsureDict("!metadata");
+  base::DictValue* metadata = GetMutableDebugValue().EnsureDict("!metadata");
   metadata->Set("!name", name_);
   metadata->Set("id", id_);
   metadata->Set("started", false);
@@ -89,7 +89,7 @@ void CommandBase::SetCommandManager(base::PassKey<WebAppCommandManager>,
   command_manager_ = command_manager;
 }
 
-const base::Value::Dict& CommandBase::GetDebugValue() const {
+const base::DictValue& CommandBase::GetDebugValue() const {
   return debug_value_;
 }
 
@@ -98,7 +98,7 @@ WebAppCommandManager* CommandBase::command_manager() const {
   return command_manager_;
 }
 
-base::Value::Dict& CommandBase::GetMutableDebugValue() {
+base::DictValue& CommandBase::GetMutableDebugValue() {
   return debug_value_;
 }
 

@@ -31,7 +31,7 @@ class WebAppCommandSchedulerTest : public WebAppTest {
     // should not be done, given how easily the format can be changed.
     // TODO(b/318858671): Update logic to not read command errors from debug
     // log.
-    base::Value::Dict log =
+    base::DictValue log =
         fake_provider().command_manager().ToDebugValue().TakeDict();
     for (const base::Value& command : *log.FindList("command_queue")) {
       if (*command.GetDict().FindDict("!metadata")->FindString("!name") ==

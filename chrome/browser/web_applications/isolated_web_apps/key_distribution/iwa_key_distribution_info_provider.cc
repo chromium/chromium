@@ -405,7 +405,7 @@ IwaKeyDistributionInfoProvider::OnComponentUpdatedForTesting(
 }
 
 base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
-  base::Value::Dict debug_data;
+  base::DictValue debug_data;
 
   if (!GetDevModeKeyRotationData().empty()) {
     auto* dev_mode_key_rotations =
@@ -452,7 +452,7 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
 }
 
 void IwaKeyDistributionInfoProvider::WriteDebugMetadata(
-    base::Value::Dict& log) const {
+    base::DictValue& log) const {
   if (!component_) {
     // Will be displayed as <null>.
     log.Set("component", base::Value());

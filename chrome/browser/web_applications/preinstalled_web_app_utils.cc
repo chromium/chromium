@@ -200,7 +200,7 @@ constexpr char kDisableIfTouchScreenWithStylusNotSupported[] =
 constexpr char kIsPreferredAppForSupportedLinks[] =
     "is_preferred_app_for_supported_links";
 
-void EnsureContains(base::Value::List& list, std::string_view value) {
+void EnsureContains(base::ListValue& list, std::string_view value) {
   for (const base::Value& item : list) {
     if (item.is_string() && item.GetString() == value) {
       return;
@@ -219,7 +219,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
     return base::StrCat(
         {file.AsUTF8Unsafe(), " was not a dictionary as the top level"});
   }
-  const base::Value::Dict& app_config_dict = app_config.GetDict();
+  const base::DictValue& app_config_dict = app_config.GetDict();
 
   // app_url
   const std::string* app_url_string = app_config_dict.FindString(kAppUrl);
@@ -239,7 +239,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   options.force_reinstall = false;
 
   // user_type
-  const base::Value::List* list = app_config_dict.FindList(kUserType);
+  const base::ListValue* list = app_config_dict.FindList(kUserType);
   if (!list) {
     return base::StrCat({file.AsUTF8Unsafe(), " missing ", kUserType});
   }
@@ -399,7 +399,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
       return base::StrCat(
           {file.AsUTF8Unsafe(), " had an invalid ", kUninstallAndReplace});
     }
-    const base::Value::List& uninstall_and_replace_values = value->GetList();
+    const base::ListValue& uninstall_and_replace_values = value->GetList();
 
     for (const auto& app_id_value : uninstall_and_replace_values) {
       if (!app_id_value.is_string()) {
@@ -486,7 +486,7 @@ IconBitmapsOrError ParseOfflineManifestIconBitmaps(
     const base::FilePath& dir,
     const base::FilePath& manifest_file,
     const char* icon_key,
-    const base::Value::List& icon_files) {
+    const base::ListValue& icon_files) {
   std::map<SquareSizePx, SkBitmap> icon_bitmaps;
 
   for (const base::Value& icon_file : icon_files) {
@@ -526,7 +526,7 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     const base::FilePath& dir,
     const base::FilePath& file,
     const base::Value& offline_manifest) {
-  const base::Value::Dict& offline_manifest_dict = offline_manifest.GetDict();
+  const base::DictValue& offline_manifest_dict = offline_manifest.GetDict();
 
   // start_url
   const std::string* start_url_string =
@@ -603,9 +603,9 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
   app_info->display_mode = display;
 
   // icon_any_pngs || icon_maskable_pngs
-  const base::Value::List* icon_any_files =
+  const base::ListValue* icon_any_files =
       offline_manifest_dict.FindList(kOfflineManifestIconAnyPngs);
-  const base::Value::List* icon_maskable_files =
+  const base::ListValue* icon_maskable_files =
       offline_manifest_dict.FindList(kOfflineManifestIconMaskablePngs);
 
   if (!icon_any_files && !icon_maskable_files) {
@@ -685,7 +685,7 @@ bool IsReinstallPastMilestoneNeeded(
 }
 
 bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
-  const base::Value::List& migrated_apps =
+  const base::ListValue& migrated_apps =
       profile->GetPrefs()->GetList(webapps::kWebAppsMigratedPreinstalledApps);
 
   for (const auto& val : migrated_apps) {
@@ -702,7 +702,7 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
                                bool was_migrated) {
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               webapps::kWebAppsMigratedPreinstalledApps);
-  base::Value::List& update_list = update.Get();
+  base::ListValue& update_list = update.Get();
   if (was_migrated) {
     EnsureContains(update_list, app_id);
   } else {
@@ -711,7 +711,7 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
 }
 
 bool WasMigrationRun(Profile* profile, std::string_view feature_name) {
-  const base::Value::List& migrated_features =
+  const base::ListValue& migrated_features =
       profile->GetPrefs()->GetList(prefs::kWebAppsDidMigrateDefaultChromeApps);
 
   for (const auto& val : migrated_features) {
@@ -728,7 +728,7 @@ void SetMigrationRun(Profile* profile,
                      bool was_migrated) {
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               prefs::kWebAppsDidMigrateDefaultChromeApps);
-  base::Value::List& update_list = update.Get();
+  base::ListValue& update_list = update.Get();
   if (was_migrated) {
     EnsureContains(update_list, feature_name);
   } else {
@@ -738,7 +738,7 @@ void SetMigrationRun(Profile* profile,
 
 bool WasPreinstalledAppUninstalled(Profile* profile,
                                    const std::string& app_id) {
-  const base::Value::List& uninstalled_apps =
+  const base::ListValue& uninstalled_apps =
       profile->GetPrefs()->GetList(prefs::kWebAppsUninstalledDefaultChromeApps);
 
   for (const auto& val : uninstalled_apps) {

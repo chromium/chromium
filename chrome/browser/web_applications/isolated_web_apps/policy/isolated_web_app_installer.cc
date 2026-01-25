@@ -158,8 +158,8 @@ void IwaInstaller::IwaInstallCommandWrapperImpl::Install(
 IwaInstallerResult::IwaInstallerResult(Type type, std::string message)
     : type_(type), message_(std::move(message)) {}
 
-base::Value::Dict IwaInstallerResult::ToDebugValue() const {
-  return base::Value::Dict()
+base::DictValue IwaInstallerResult::ToDebugValue() const {
+  return base::DictValue()
       .Set("type", base::ToString(type_))
       .Set("message", message_);
 }
@@ -169,7 +169,7 @@ IwaInstaller::IwaInstaller(
     InstallSourceType install_source_type,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<IwaInstallCommandWrapper> install_command_wrapper,
-    base::Value::List& log,
+    base::ListValue& log,
     WebAppProvider* provider,
     ResultCallback callback)
     : install_options_(std::move(install_options)),
@@ -462,7 +462,7 @@ std::unique_ptr<IwaInstaller> IwaInstallerFactory::Create(
     IsolatedWebAppExternalInstallOptions install_options,
     IwaInstaller::InstallSourceType install_source_type,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::Value::List& log,
+    base::ListValue& log,
     WebAppProvider* provider,
     IwaInstaller::ResultCallback callback) {
   return GetIwaInstallerFactory().Run(
@@ -485,7 +485,7 @@ IwaInstallerFactory::GetDefaultIwaInstallerFactory() {
       [](IsolatedWebAppExternalInstallOptions install_options,
          IwaInstaller::InstallSourceType install_source_type,
          scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-         base::Value::List& log, WebAppProvider* provider,
+         base::ListValue& log, WebAppProvider* provider,
          IwaInstaller::ResultCallback callback) {
         return std::make_unique<IwaInstaller>(
             std::move(install_options), install_source_type,

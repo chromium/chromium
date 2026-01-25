@@ -74,15 +74,15 @@ bool UsbPolicyAllowedDevices::IsDeviceAllowed(
 }
 
 void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
-  const base::Value::List& pref_list = pref_change_registrar_.prefs()->GetList(
+  const base::ListValue& pref_list = pref_change_registrar_.prefs()->GetList(
       prefs::kManagedWebUsbAllowDevicesForUrls);
   usb_device_ids_to_urls_.clear();
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_list| follows the policy template.
   for (const base::Value& item_val : pref_list) {
-    const base::Value::Dict& item = item_val.GetDict();
-    const base::Value::List* urls_list = item.FindList(kPrefUrlsKey);
+    const base::DictValue& item = item_val.GetDict();
+    const base::ListValue* urls_list = item.FindList(kPrefUrlsKey);
     std::set<url::Origin> parsed_set;
 
     // A urls item can contain a pair of URLs that are delimited by a comma. If
@@ -119,9 +119,9 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
 
     // For each device entry in the map, create or update its respective URL
     // set.
-    const base::Value::List* devices = item.FindList(kPrefDevicesKey);
+    const base::ListValue* devices = item.FindList(kPrefDevicesKey);
     for (const base::Value& device_val : CHECK_DEREF(devices)) {
-      const base::Value::Dict& device = device_val.GetDict();
+      const base::DictValue& device = device_val.GetDict();
       // A missing ID signifies a wildcard for that ID, so a sentinel value of
       // -1 is assigned.
       const std::optional<int> vendor_id_optional =

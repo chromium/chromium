@@ -22,7 +22,7 @@ class GURL;
 class Profile;
 
 namespace base {
-class Value;
+class DictValue;
 }
 
 namespace webapps {
@@ -233,7 +233,7 @@ class ExternallyManagedAppManager {
       ExternalInstallSource install_source,
       SynchronizeCallback callback,
       AllAppsLock& lock,
-      base::Value::Dict& debug_value);
+      base::DictValue& debug_value);
 
   void InstallForSynchronizeCallback(
       ExternalInstallSource source,
@@ -249,7 +249,7 @@ class ExternallyManagedAppManager {
 
   void MaybeStartNext();
   void MaybeStartNextOnLockAcquired(AllAppsLock& lock,
-                                    base::Value::Dict& debug_value);
+                                    base::DictValue& debug_value);
 
   void StartInstallationTask(
       std::unique_ptr<ExternalInstallMetadata> external_install_metadata,

@@ -76,7 +76,7 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
         .SetOnAppsSynchronizedCompletedCallbackForTesting(future.GetCallback());
     profile()->GetPrefs()->SetList(
         prefs::kWebAppInstallForceList,
-        base::Value::List().Append(base::Value::Dict().Set("url", url.spec())));
+        base::ListValue().Append(base::DictValue().Set("url", url.spec())));
     CHECK(future.Wait());
   }
 

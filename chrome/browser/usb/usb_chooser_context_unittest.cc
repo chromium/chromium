@@ -148,7 +148,7 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokePermission) {
       device_manager_.CreateAndAddDevice(0, 0, "Google", "Gizmo", "123ABC");
   UsbChooserContext* store = GetChooserContext(profile());
 
-  auto object = base::Value(base::Value::Dict()
+  auto object = base::Value(base::DictValue()
                                 .Set(kDeviceNameKey, "Gizmo")
                                 .Set(kVendorIdKey, 0)
                                 .Set(kProductIdKey, 0)
@@ -202,7 +202,7 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokeEphemeralPermission) {
   UsbChooserContext* store = GetChooserContext(profile());
 
   auto object = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kDeviceNameKey, "Gizmo")
           .Set(kGuidKey, device_info->guid)
           .Set(kVendorIdKey, static_cast<int>(device_info->vendor_id))
@@ -789,7 +789,7 @@ TEST_F(DeviceLoginScreenWebUsbChooserContextTest,
 
 namespace {
 
-void ExpectDeviceObjectInfo(const base::Value::Dict& actual,
+void ExpectDeviceObjectInfo(const base::DictValue& actual,
                             int vendor_id,
                             int product_id,
                             const std::string& name) {
@@ -1284,8 +1284,8 @@ TEST_F(UsbChooserContextTest, MassStorageHidden) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(UsbChooserContextTest, MassStorageShownWhenDetachable) {
-  base::Value::List allowlist;
-  base::Value::Dict ids;
+  base::ListValue allowlist;
+  base::DictValue ids;
   ids.Set(ash::kUsbDetachableAllowlistKeyVid, 1234);
   ids.Set(ash::kUsbDetachableAllowlistKeyPid, 1);
   allowlist.Append(std::move(ids));

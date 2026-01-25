@@ -80,7 +80,7 @@ mojom::UserDisplayMode GetExtensionUserDisplayMode(
 
 WebAppUninstallAndReplaceJob::WebAppUninstallAndReplaceJob(
     Profile* profile,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     WithAppResources& to_app_lock,
     const std::vector<webapps::AppId>& from_apps_or_extensions,
     const webapps::AppId& to_app,

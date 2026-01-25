@@ -170,7 +170,7 @@ void WebAppCommandManager::Shutdown() {
 }
 
 base::Value WebAppCommandManager::ToDebugValue() {
-  base::Value::List queued;
+  base::ListValue queued;
   for (const auto& [command, location] : commands_waiting_for_start_) {
     queued.Append(command->GetDebugValue().Clone());
   }
@@ -178,7 +178,7 @@ base::Value WebAppCommandManager::ToDebugValue() {
     queued.Append(command->GetDebugValue().Clone());
   }
 
-  base::Value::Dict state;
+  base::DictValue state;
   if (log_) {
     state.Set("command_log", log_->CloneToList());
   }

@@ -92,7 +92,7 @@ bool g_skip_startup_for_testing_ = false;
 bool g_bypass_awaiting_dependencies_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 bool g_override_previous_user_uninstall_for_testing_ = false;
-const base::Value::List* g_configs_for_testing = nullptr;
+const base::ListValue* g_configs_for_testing = nullptr;
 FileUtilsWrapper* g_file_utils_for_testing = nullptr;
 
 std::vector<ExternalInstallOptions>& GetParsedConfigsForTesting() {
@@ -694,9 +694,9 @@ PreinstalledWebAppManager::OverridePreviousUserUninstallConfigForTesting() {
 }
 
 // static
-base::AutoReset<const base::Value::List*>
+base::AutoReset<const base::ListValue*>
 PreinstalledWebAppManager::SetConfigsForTesting(
-    const base::Value::List* configs) {
+    const base::ListValue* configs) {
   return {&g_configs_for_testing, configs, nullptr};
 }
 

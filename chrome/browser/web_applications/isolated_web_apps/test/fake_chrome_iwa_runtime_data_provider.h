@@ -26,7 +26,7 @@ class FakeIwaRuntimeDataProviderBase : public ChromeIwaRuntimeDataProvider {
   base::CallbackListSubscription OnRuntimeDataChanged(
       base::RepeatingClosure callback) override;
   base::OneShotEvent& OnBestEffortRuntimeDataReady() override;
-  void WriteDebugMetadata(base::Value::Dict& log) const override;
+  void WriteDebugMetadata(base::DictValue& log) const override;
 
  protected:
   void DispatchRuntimeDataUpdate();

@@ -75,7 +75,7 @@ MatchingWebAppResult FindMatchingWebApp(
 RemoveInstallUrlJob::RemoveInstallUrlJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     std::optional<webapps::AppId> app_id,
     WebAppManagement::Type install_source,
     GURL install_url)

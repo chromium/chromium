@@ -144,7 +144,7 @@ std::unique_ptr<base::ScopedTempDir> CreateIwaComponentDir(
   auto dir = std::make_unique<base::ScopedTempDir>();
   CHECK(dir->CreateUniqueTempDir());
 
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("manifest_version", 1)
                       .Set("name", Component::kManifestName)
                       .Set("version", version.GetString());
@@ -819,7 +819,7 @@ TEST_F(IsolatedWebAppPolicyManagerPolicyRaceTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List()
+        base::ListValue()
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1()))
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
@@ -905,7 +905,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, OneAppUninstalled) {
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List()
+        base::ListValue()
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1()))
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
@@ -929,7 +929,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, OneAppUninstalled) {
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1())));
 
@@ -945,7 +945,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List()
+        base::ListValue()
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1()))
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
@@ -976,7 +976,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
               2U);
 
     profile()->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
-                                   base::Value::List());
+                                   base::ListValue());
 
     uninstall_observer.Wait();
 
@@ -1015,7 +1015,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1())));
 
@@ -1260,7 +1260,7 @@ TEST_F(IsolatedWebAppRetryTest, RetryTriggeredWhenAllTasksDone) {
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List()
+      base::ListValue()
           .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
               web_bundle_id_1()))
           .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(

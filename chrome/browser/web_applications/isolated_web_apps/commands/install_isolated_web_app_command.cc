@@ -73,7 +73,7 @@ InstallIsolatedWebAppCommandSuccess::InstallIsolatedWebAppCommandSuccess(
 std::ostream& operator<<(std::ostream& os,
                          const InstallIsolatedWebAppCommandSuccess& success) {
   return os << "InstallIsolatedWebAppCommandSuccess "
-            << base::Value::Dict()
+            << base::DictValue()
                    .Set("installed_version",
                         success.installed_version.GetString())
                    .Set("location", success.location.ToDebugValue());

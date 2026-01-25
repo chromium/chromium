@@ -135,7 +135,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
   prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
-                 base::Value::List().Append(kAnotherExampleOrigin));
+                 base::ListValue().Append(kAnotherExampleOrigin));
 
   // Both the origin specified by the command-line switch and the origin in the
   // allowed origins pref should be allowed.
@@ -177,7 +177,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 
   // Test with policy explicitly empty.
   prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
-                 base::Value::List());
+                 base::ListValue());
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
 }
@@ -196,7 +196,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
       "https://example.com:invalidport",
   };
 
-  base::Value::List invalid_origins_list;
+  base::ListValue invalid_origins_list;
   for (const auto& origin : invalid_origins) {
     invalid_origins_list.Append(origin);
   }
@@ -211,7 +211,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 
   // A valid one, added for good measure, should still work.
   prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
-                 base::Value::List().Append(kExampleOrigin));
+                 base::ListValue().Append(kExampleOrigin));
   EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
 }
@@ -222,7 +222,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-  base::Value::List valid_origins;
+  base::ListValue valid_origins;
   valid_origins.Append(kExampleOrigin);
   valid_origins.Append(kAnotherExampleOrigin);
   prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
@@ -248,13 +248,13 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 
   // Scheme mismatch.
   prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
-                 base::Value::List().Append("https://example.com"));
+                 base::ListValue().Append("https://example.com"));
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(), url::Origin::Create(GURL("http://example.com"))));
 
   // Port mismatch.
   prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
-                 base::Value::List().Append("https://example.com:1234"));
+                 base::ListValue().Append("https://example.com:1234"));
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(), url::Origin::Create(GURL("https://example.com"))));
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
@@ -263,7 +263,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 
   // Path mismatch (should be allowed because paths are ignored).
   prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
-                 base::Value::List().Append("https://example.com/path"));
+                 base::ListValue().Append("https://example.com/path"));
   EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(), url::Origin::Create(GURL("https://example.com"))));
   EXPECT_TRUE(delegate.OriginMayUseRemoteDesktopClientOverride(

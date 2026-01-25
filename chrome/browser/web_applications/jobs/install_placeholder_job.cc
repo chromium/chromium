@@ -44,7 +44,7 @@ const base::TimeDelta ICON_DOWNLOAD_RETRY_DELAY = base::Seconds(5);
 
 InstallPlaceholderJob::InstallPlaceholderJob(
     Profile* profile,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     const ExternalInstallOptions& install_options,
     InstallAndReplaceCallback callback,
     SharedWebContentsWithAppLock& lock)

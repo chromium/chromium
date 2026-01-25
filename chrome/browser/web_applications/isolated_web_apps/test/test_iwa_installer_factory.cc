@@ -56,7 +56,7 @@ std::unique_ptr<IwaInstaller> TestIwaInstallerFactory::CreateIwaInstaller(
     IsolatedWebAppExternalInstallOptions install_options,
     IwaInstaller::InstallSourceType install_source_type,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::Value::List& log,
+    base::ListValue& log,
     WebAppProvider* provider,
     IwaInstaller::ResultCallback callback) {
   CHECK(command_behaviors_.contains(install_options.web_bundle_id().id()));

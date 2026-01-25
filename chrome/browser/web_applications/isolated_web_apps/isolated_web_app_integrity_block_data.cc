@@ -157,15 +157,15 @@ IsolatedWebAppIntegrityBlockData::ToProto() const {
 }
 
 base::Value IsolatedWebAppIntegrityBlockData::AsDebugValue() const {
-  return base::Value(base::Value::Dict().Set(
+  return base::Value(base::DictValue().Set(
       "signatures", base::ToValueList(signatures_, [](const auto& signature) {
         return std::visit(
             absl::Overload{
                 [](const web_package::SignedWebBundleSignatureInfoEd25519&
                        signature_info) {
-                  return base::Value::Dict().Set(
+                  return base::DictValue().Set(
                       "ed25519",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("public_key",
                                base::Base64Encode(
                                    signature_info.public_key().bytes()))
@@ -176,9 +176,9 @@ base::Value IsolatedWebAppIntegrityBlockData::AsDebugValue() const {
                 [](const web_package::
                        SignedWebBundleSignatureInfoEcdsaP256SHA256&
                            signature_info) {
-                  return base::Value::Dict().Set(
+                  return base::DictValue().Set(
                       "ecdsa_p256_sha256",
-                      base::Value::Dict()
+                      base::DictValue()
                           .Set("public_key",
                                base::Base64Encode(
                                    signature_info.public_key().bytes()))
@@ -188,8 +188,7 @@ base::Value IsolatedWebAppIntegrityBlockData::AsDebugValue() const {
                 },
                 [](const web_package::SignedWebBundleSignatureInfoUnknown&
                        public_key) {
-                  return base::Value::Dict().Set("unknown",
-                                                 base::Value::Dict());
+                  return base::DictValue().Set("unknown", base::DictValue());
                 }},
             signature);
       })));

@@ -933,7 +933,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, DeferIconFetching) {
   shortcut_icon_state.bitmaps = {shortcut_icon_bitmap};
 
   // Verify no icons are downloaded.
-  base::Value::Dict debug_data;
+  base::DictValue debug_data;
   base::test::TestFuture<std::unique_ptr<WebAppInstallInfo>> future;
   std::unique_ptr<WebAppDataRetriever> retriever =
       provider().web_contents_manager().CreateDataRetriever();

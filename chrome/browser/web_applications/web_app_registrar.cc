@@ -1794,7 +1794,7 @@ bool WebAppRegistrar::IsAppPolicyDefinedHandlerForFileExtension(
 bool WebAppRegistrar::IsAppSetAsPolicyDefinedFileHandlerForAnyFileExtension(
     const webapps::AppId& app_id) const {
 #if BUILDFLAG(IS_CHROMEOS)
-  const base::Value::Dict& default_handlers =
+  const base::DictValue& default_handlers =
       profile_->GetPrefs()->GetDict(prefs::kDefaultHandlersForFileExtensions);
 
   const WebApp* web_app = GetAppById(app_id);
@@ -2089,7 +2089,7 @@ WebAppRegistrar::AppSet WebAppRegistrar::GetApps(
 }
 
 base::Value WebAppRegistrar::AsDebugValue() const {
-  base::Value::Dict root;
+  base::DictValue root;
 
   std::vector<const web_app::WebApp*> web_apps;
   for (const web_app::WebApp& web_app : GetAppsIncludingStubs()) {
@@ -2098,7 +2098,7 @@ base::Value WebAppRegistrar::AsDebugValue() const {
   std::ranges::sort(web_apps, {}, &web_app::WebApp::untranslated_name);
 
   // Prefix with a ! so this appears at the top when serialized.
-  base::Value::Dict& index = *root.EnsureDict("!Index");
+  base::DictValue& index = *root.EnsureDict("!Index");
   for (const web_app::WebApp* web_app : web_apps) {
     const std::string& key = web_app->untranslated_name();
     base::Value* existing_entry = index.Find(key);
@@ -2109,21 +2109,21 @@ base::Value WebAppRegistrar::AsDebugValue() const {
     // If any web apps share identical names then collect a list of app IDs.
     const std::string* existing_id = existing_entry->GetIfString();
     if (existing_id) {
-      base::Value::List id_list;
+      base::ListValue id_list;
       id_list.Append(*existing_id);
       index.Set(key, std::move(id_list));
     }
     index.FindList(key)->Append(web_app->app_id());
   }
 
-  base::Value::List& web_app_details = *root.EnsureList("Details");
+  base::ListValue& web_app_details = *root.EnsureList("Details");
   for (const web_app::WebApp* web_app : web_apps) {
     auto app_id = web_app->app_id();
 
     base::Value app_debug_value = web_app->AsDebugValue();
     auto& app_debug_dict = app_debug_value.GetDict();
 
-    base::Value::Dict& effective_fields =
+    base::DictValue& effective_fields =
         *app_debug_dict.EnsureDict("registrar_evaluated_fields");
     effective_fields.Set(
         "display_mode",
@@ -2131,7 +2131,7 @@ base::Value WebAppRegistrar::AsDebugValue() const {
     effective_fields.Set("launch_url", base::ToString(GetAppLaunchUrl(app_id)));
     effective_fields.Set("scope", base::ToString(GetAppScope(app_id)));
 
-    base::Value::Dict& run_on_os_login_fields =
+    base::DictValue& run_on_os_login_fields =
         *effective_fields.EnsureDict("run_on_os_login_mode");
     web_app::ValueWithPolicy<web_app::RunOnOsLoginMode> run_on_os_login_mode =
         GetAppRunOnOsLoginMode(app_id);
@@ -2140,7 +2140,7 @@ base::Value WebAppRegistrar::AsDebugValue() const {
     run_on_os_login_fields.Set("user_controllable",
                                run_on_os_login_mode.user_controllable);
 
-    base::Value::List* in_mem_controlled_frame_partitions =
+    base::ListValue* in_mem_controlled_frame_partitions =
         app_debug_dict.EnsureDict("isolated_data_in_memory")
             ->EnsureList("controlled_frame_partitions (in-memory)");
     auto it = isolated_web_app_in_memory_controlled_frame_partitions_.find(

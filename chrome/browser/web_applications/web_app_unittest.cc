@@ -414,9 +414,8 @@ TEST(WebAppTest, IsolationDataDebugValue) {
                              base::JSON_PARSE_CHROMIUM_EXTENSIONS)
           .value();
 
-  base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
-  base::Value::Dict* debug_isolation_data =
-      debug_app.FindDict("isolation_data");
+  base::DictValue debug_app = app.AsDebugValue().GetDict().Clone();
+  base::DictValue* debug_isolation_data = debug_app.FindDict("isolation_data");
   EXPECT_TRUE(debug_isolation_data != nullptr);
   EXPECT_EQ(*debug_isolation_data, expected_isolation_data);
 }
@@ -446,10 +445,10 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
-  auto ib_data_serialized = *base::WriteJson(base::Value::Dict().Set(
-      "signatures", base::Value::List().Append(base::Value::Dict().Set(
+  auto ib_data_serialized = *base::WriteJson(base::DictValue().Set(
+      "signatures", base::ListValue().Append(base::DictValue().Set(
                         "ecdsa_p256_sha256",
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("public_key", kEcdsaP256PublicKeyBase64)
                             .Set("signature", kEcdsaP256SHA256SignatureHex)))));
 
@@ -486,9 +485,8 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
           /*offsets=*/nullptr),
       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
-  base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
-  base::Value::Dict* debug_isolation_data =
-      debug_app.FindDict("isolation_data");
+  base::DictValue debug_app = app.AsDebugValue().GetDict().Clone();
+  base::DictValue* debug_isolation_data = debug_app.FindDict("isolation_data");
   EXPECT_TRUE(debug_isolation_data != nullptr);
   EXPECT_EQ(*debug_isolation_data, expected_isolation_data);
 }
@@ -546,8 +544,8 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
                              base::JSON_PARSE_CHROMIUM_EXTENSIONS)
           .value();
 
-  base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
-  base::Value::List* debug_permissions_policy =
+  base::DictValue debug_app = app.AsDebugValue().GetDict().Clone();
+  base::ListValue* debug_permissions_policy =
       debug_app.FindList("permissions_policy");
   EXPECT_TRUE(debug_permissions_policy != nullptr);
   EXPECT_EQ(*debug_permissions_policy, expected_permissions_policy);
@@ -567,7 +565,7 @@ TEST(WebAppTest, DisplayOverrideDebugValue) {
 
   base::Value debug_app = app.AsDebugValue();
 
-  base::Value::List* debug_display_override =
+  base::ListValue* debug_display_override =
       debug_app.GetDict().FindList("display_override");
   ASSERT_THAT(debug_display_override, testing::NotNull());
   EXPECT_THAT(*debug_display_override,

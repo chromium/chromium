@@ -51,8 +51,8 @@ ManifestSilentUpdateCompletionInfo&
 ManifestSilentUpdateCompletionInfo::operator=(
     ManifestSilentUpdateCompletionInfo&&) = default;
 
-base::Value::Dict ManifestSilentUpdateCompletionInfo::ToDebugValue() {
-  return base::Value::Dict()
+base::DictValue ManifestSilentUpdateCompletionInfo::ToDebugValue() {
+  return base::DictValue()
       .Set("result", base::ToString(result))
       .Set("time_for_icon_diff_check",
            time_for_icon_diff_check.has_value()

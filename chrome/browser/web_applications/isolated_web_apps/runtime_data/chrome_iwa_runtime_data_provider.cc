@@ -16,8 +16,8 @@ ChromeIwaRuntimeDataProvider* g_instance = nullptr;
 
 base::Value
 ChromeIwaRuntimeDataProvider::SpecialAppPermissionsInfo::AsDebugValue() const {
-  return base::Value(base::Value::Dict().Set(
-      "skip_capture_started_notification", skip_capture_started_notification));
+  return base::Value(base::DictValue().Set("skip_capture_started_notification",
+                                           skip_capture_started_notification));
 }
 
 ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::
@@ -33,8 +33,7 @@ ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::
 base::Value
 ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::AsDebugValue()
     const {
-  return base::Value(
-      base::Value::Dict().Set("enterprise_name", enterprise_name));
+  return base::Value(base::DictValue().Set("enterprise_name", enterprise_name));
 }
 
 // static

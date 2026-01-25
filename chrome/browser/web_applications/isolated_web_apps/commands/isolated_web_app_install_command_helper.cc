@@ -232,7 +232,7 @@ void UpdateBundlePathAndCreateStorageLocation(
 
 KeyRotationLookupResult LookupRotatedKey(
     const SignedWebBundleId& web_bundle_id,
-    base::optional_ref<base::Value::Dict> debug_log) {
+    base::optional_ref<base::DictValue> debug_log) {
   auto log_rotated_key = [&](const std::string& value) {
     if (debug_log) {
       debug_log->Set("rotated_key", value);

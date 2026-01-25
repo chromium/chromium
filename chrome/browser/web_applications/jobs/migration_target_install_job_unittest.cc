@@ -65,7 +65,7 @@ class MigrationTargetInstallJobTest : public WebAppTest {
     EXPECT_TRUE(lock_future.Wait());
 
     base::test::TestFuture<MigrationTargetInstallJobResult> future;
-    base::Value::Dict debug_value;
+    base::DictValue debug_value;
     auto data_retriever = web_contents_manager().CreateDataRetriever();
     auto job = MigrationTargetInstallJob::CreateAndStart(
         std::move(manifest), web_contents()->GetWeakPtr(), profile(),

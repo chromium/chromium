@@ -276,14 +276,14 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     // task will be popped from the queue.
     base::circular_deque<std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask>>
         update_discovery_tasks_;
-    base::Value::List update_discovery_results_log_;
+    base::ListValue update_discovery_results_log_;
 
     // Update apply tasks are executed serially one after each other. Only the
     // task at the front of the queue can be running. Once finished, the task
     // will be popped from the queue.
     base::circular_deque<std::unique_ptr<IsolatedWebAppUpdateApplyTask>>
         update_apply_tasks_;
-    base::Value::List update_apply_results_log_;
+    base::ListValue update_apply_results_log_;
   };
 
   void OnRuntimeDataChanged();

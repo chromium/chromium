@@ -82,7 +82,7 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
 // static
 base::expected<IsolatedWebAppExternalInstallOptions, std::string>
 IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
-    const base::Value::Dict& entry) {
+    const base::DictValue& entry) {
   const std::string* const update_manifest_url_raw =
       entry.FindString(kPolicyUpdateManifestUrlKey);
   if (!update_manifest_url_raw) {

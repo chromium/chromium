@@ -107,7 +107,7 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
   bool IsManagedInstallPermitted(std::string_view web_bundle_id) const override;
   bool IsManagedUpdatePermitted(std::string_view web_bundle_id) const override;
   base::Value AsDebugValue() const;
-  void WriteDebugMetadata(base::Value::Dict& log) const override;
+  void WriteDebugMetadata(base::DictValue& log) const override;
   std::optional<base::Version> GetVersion() const;
 
   // When set to true both above functions always return true

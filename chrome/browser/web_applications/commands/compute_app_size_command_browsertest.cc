@@ -100,7 +100,7 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
       const ComputeAppSizeCommandForIsolatedWebAppBrowserTest&) = delete;
 
  protected:
-  void SetIwaForceInstallPolicy(base::Value::List update_manifest_entries) {
+  void SetIwaForceInstallPolicy(base::ListValue update_manifest_entries) {
     profile()->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
                                    std::move(update_manifest_entries));
   }
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,
           .app_id();
 
   WebAppTestInstallObserver install_observer(profile());
-  SetIwaForceInstallPolicy(base::Value::List().Append(
+  SetIwaForceInstallPolicy(base::ListValue().Append(
       iwa_test_update_server_.CreateForceInstallPolicyEntry(kWebBundleId1)));
   ASSERT_EQ(install_observer.BeginListeningAndWait({app_id}), app_id);
 

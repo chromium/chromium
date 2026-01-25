@@ -1037,10 +1037,10 @@ class PlaceholderUpdateRelaunchBrowserTest
         .SetOnAppsSynchronizedCompletedCallbackForTesting(
             app_sync_future.GetCallback());
     PrefService* prefs = profile()->GetPrefs();
-    base::Value::List install_force_list =
+    base::ListValue install_force_list =
         prefs->GetList(prefs::kWebAppInstallForceList).Clone();
     install_force_list.Append(
-        base::Value::Dict()
+        base::DictValue()
             .Set(kUrlKey, manifest_id)
             .Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue)
             .Set(kFallbackAppNameKey, app_name));
@@ -1057,9 +1057,9 @@ class PlaceholderUpdateRelaunchBrowserTest
         .SetRefreshPolicySettingsCompletedCallbackForTesting(
             policy_refresh_sync_future.GetCallback());
     PrefService* prefs = profile()->GetPrefs();
-    base::Value::List web_app_settings =
+    base::ListValue web_app_settings =
         prefs->GetList(prefs::kWebAppSettings).Clone();
-    web_app_settings.Append(base::Value::Dict()
+    web_app_settings.Append(base::DictValue()
                                 .Set(kManifestId, manifest_id)
                                 .Set(kRunOnOsLogin, run_on_os_login)
                                 .Set(kPreventClose, true));

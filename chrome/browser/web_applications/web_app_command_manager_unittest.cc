@@ -435,9 +435,9 @@ TEST_F(WebAppCommandManagerTest, MultipleSingleArgCallbackCommands) {
         loop.Quit();
       }));
   for (auto* app_id : {kTestAppId, kTestAppId2}) {
-    base::OnceCallback<std::string(AppLock&, base::Value::Dict&)> callback =
+    base::OnceCallback<std::string(AppLock&, base::DictValue&)> callback =
         base::BindOnce([](webapps::AppId app_id, AppLock&,
-                          base::Value::Dict&) { return app_id; },
+                          base::DictValue&) { return app_id; },
                        app_id);
     manager().ScheduleCommand(
         std::make_unique<
@@ -514,28 +514,28 @@ TEST_F(WebAppCommandManagerTest, ToDebugValue) {
   manager().ScheduleCommand(
       std::make_unique<internal::CallbackCommand<AppLock>>(
           "", AppLockDescription(kTestAppId),
-          base::DoNothingAs<void(AppLock&, base::Value::Dict&)>(),
+          base::DoNothingAs<void(AppLock&, base::DictValue&)>(),
           on_command_complete.GetCallback()));
   manager().ScheduleCommand(
       std::make_unique<internal::CallbackCommand<AppLock>>(
           "", AppLockDescription(kTestAppId2),
-          base::DoNothingAs<void(AppLock&, base::Value::Dict&)>(),
+          base::DoNothingAs<void(AppLock&, base::DictValue&)>(),
           base::DoNothing()));
   EXPECT_TRUE(on_command_complete.Wait());
 
   // Generally we should not test the output of the debug value, as this seems
   // fragile & can duplicate testing of the real functionality. However for the
   // common metadata it seems fine.
-  base::Value::Dict command_manager_debug_value =
+  base::DictValue command_manager_debug_value =
       manager().ToDebugValue().TakeDict();
 
   auto get_metadata_field_names =
-      [](const base::Value::Dict& command_dict) -> std::vector<std::string> {
+      [](const base::DictValue& command_dict) -> std::vector<std::string> {
     return base::ToVector(*command_dict.FindDict("!metadata"),
                           [](const auto& kv) { return kv.first; });
   };
 
-  base::Value::List* log = command_manager_debug_value.FindList("command_log");
+  base::ListValue* log = command_manager_debug_value.FindList("command_log");
   ASSERT_TRUE(log);
   ASSERT_GT(log->size(), 0ul);
   EXPECT_THAT(
@@ -545,7 +545,7 @@ TEST_F(WebAppCommandManagerTest, ToDebugValue) {
           "!name", "started", "scheduled_location", "scheduled_at",
           "completed_at", "started_at"));
 
-  base::Value::List* queue =
+  base::ListValue* queue =
       command_manager_debug_value.FindList("command_queue");
   ASSERT_TRUE(queue);
   ASSERT_GT(queue->size(), 0ul);
@@ -559,9 +559,9 @@ TEST_F(WebAppCommandManagerTest, ToDebugValueWithResult) {
   base::test::ScopedFeatureList features{features::kRecordWebAppDebugInfo};
 
   base::test::TestFuture<webapps::AppId> on_command_complete;
-  base::OnceCallback<std::string(AppLock&, base::Value::Dict&)> callback =
+  base::OnceCallback<std::string(AppLock&, base::DictValue&)> callback =
       base::BindOnce([](webapps::AppId app_id, AppLock&,
-                        base::Value::Dict&) { return app_id; },
+                        base::DictValue&) { return app_id; },
                      kTestAppId);
   manager().ScheduleCommand(
       std::make_unique<
@@ -574,16 +574,16 @@ TEST_F(WebAppCommandManagerTest, ToDebugValueWithResult) {
   // Generally we should not test the output of the debug value, as this seems
   // fragile & can duplicate testing of the real functionality. However for the
   // common metadata it seems fine.
-  base::Value::Dict command_manager_debug_value =
+  base::DictValue command_manager_debug_value =
       manager().ToDebugValue().TakeDict();
 
   auto get_metadata_field_names =
-      [](const base::Value::Dict& command_dict) -> std::vector<std::string> {
+      [](const base::DictValue& command_dict) -> std::vector<std::string> {
     return base::ToVector(*command_dict.FindDict("!metadata"),
                           [](const auto& kv) { return kv.first; });
   };
 
-  base::Value::List* log = command_manager_debug_value.FindList("command_log");
+  base::ListValue* log = command_manager_debug_value.FindList("command_log");
   ASSERT_TRUE(log);
   ASSERT_GT(log->size(), 0ul);
   EXPECT_THAT(

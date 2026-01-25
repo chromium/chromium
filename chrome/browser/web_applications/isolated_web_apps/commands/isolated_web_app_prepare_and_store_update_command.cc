@@ -393,7 +393,7 @@ IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::operator=(
 base::Value IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::AsDebugValue()
     const {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("source", source_.ToDebugValue())
           .Set("expected_version", expected_version_.has_value()
                                        ? expected_version_->GetString()

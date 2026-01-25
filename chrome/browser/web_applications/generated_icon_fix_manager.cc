@@ -71,7 +71,7 @@ void GeneratedIconFixManager::InvalidateWeakPtrsForTesting() {
 }
 
 void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
-                                            base::Value::Dict& debug_value) {
+                                            base::DictValue& debug_value) {
   int started_attempt_count = 0;
   for (const webapps::AppId& app_id : all_apps_lock.registrar().GetAppIds()) {
     bool scheduled = MaybeScheduleFix(app_id, all_apps_lock,
@@ -97,7 +97,7 @@ void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
 
 bool GeneratedIconFixManager::MaybeScheduleFix(const webapps::AppId& app_id,
                                                WithAppResources& resources,
-                                               base::Value::Dict& debug_value) {
+                                               base::DictValue& debug_value) {
   const WebApp* app = resources.registrar().GetAppById(app_id);
   GeneratedIconFixScheduleDecision decision = MakeScheduleDecision(app);
 
@@ -126,7 +126,7 @@ bool GeneratedIconFixManager::MaybeScheduleFix(const webapps::AppId& app_id,
 void GeneratedIconFixManager::MaybeScheduleFixAppLock(
     const webapps::AppId& app_id,
     AppLock& app_lock,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   MaybeScheduleFix(app_id, app_lock, debug_value);
 }
 

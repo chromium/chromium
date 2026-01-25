@@ -72,7 +72,7 @@ void IwaTestServerConfigurator::SetServedUpdateManifestResponse(
 }
 
 // static
-base::Value::Dict IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
+base::DictValue IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<UpdateChannel>& update_channel,
     const std::optional<IwaVersion>& pinned_version,

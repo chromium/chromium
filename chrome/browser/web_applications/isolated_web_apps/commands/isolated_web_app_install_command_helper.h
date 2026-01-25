@@ -75,7 +75,7 @@ enum class KeyRotationLookupResult { kNoKeyRotation, kKeyFound, kKeyBlocked };
 //   * Otherwise, writes the key data into `debug_log` and returns `kKeyFound.`
 KeyRotationLookupResult LookupRotatedKey(
     const web_package::SignedWebBundleId& web_bundle_id,
-    base::optional_ref<base::Value::Dict> debug_log = std::nullopt);
+    base::optional_ref<base::DictValue> debug_log = std::nullopt);
 
 // Provides the key rotation data associated with a particular IWA.
 struct KeyRotationData {
@@ -183,7 +183,7 @@ class IsolatedWebAppInstallCommandHelper {
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
-  base::Value::Dict manifest_to_info_debug_data_;
+  base::DictValue manifest_to_info_debug_data_;
 
   base::WeakPtrFactory<IsolatedWebAppInstallCommandHelper> weak_factory_{this};
 };

@@ -118,7 +118,7 @@ std::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-void LogInstallInfoForFallbackData(base::Value::Dict& dict,
+void LogInstallInfoForFallbackData(base::DictValue& dict,
                                    const WebAppInstallInfo& install_info) {
   dict.Set("manifest_id", install_info.manifest_id().spec());
   dict.Set("start_url", install_info.start_url().spec());
@@ -609,10 +609,10 @@ void FetchManifestAndInstallCommand::OnIconsDownloadedForFallbackInfoShowDialog(
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);
     return;
   }
-  base::Value::Dict* icons_downloaded =
+  base::DictValue* icons_downloaded =
       GetMutableDebugValue().EnsureDict("icons_retrieved");
   for (const auto& [url, bitmap_vector] : icons_map) {
-    base::Value::List* sizes = icons_downloaded->EnsureList(url.spec());
+    base::ListValue* sizes = icons_downloaded->EnsureList(url.spec());
     for (const SkBitmap& bitmap : bitmap_vector) {
       sizes->Append(bitmap.width());
     }

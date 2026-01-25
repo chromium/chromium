@@ -63,7 +63,7 @@ class ChromeIwaRuntimeDataProvider : public IwaRuntimeDataProvider {
   virtual const UserInstallAllowlistItemData* GetUserInstallAllowlistData(
       const std::string& web_bundle_id) const = 0;
 
-  virtual void WriteDebugMetadata(base::Value::Dict& log) const = 0;
+  virtual void WriteDebugMetadata(base::DictValue& log) const = 0;
 };
 
 }  // namespace web_app

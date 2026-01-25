@@ -98,7 +98,7 @@ class FileHandlingSubManagerConfigureTest : public WebAppTest {
 #if BUILDFLAG(IS_CHROMEOS)
   void UpdateDefaultHandlersPrefs(
       const std::vector<FileHandlerMapping>& handlers = {}) {
-    base::Value::Dict pref_dict;
+    base::DictValue pref_dict;
     for (const auto& handler : handlers) {
       pref_dict.Set(handler.file_extension, handler.policy_id);
     }

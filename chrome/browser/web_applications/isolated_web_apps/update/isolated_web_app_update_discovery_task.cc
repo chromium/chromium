@@ -190,7 +190,7 @@ IsolatedWebAppUpdateDiscoveryTask::IsolatedWebAppUpdateDiscoveryTask(
       profile_(profile) {
   CHECK(url_loader_factory_);
   debug_log_ =
-      base::Value::Dict()
+      base::DictValue()
           .Set("bundle_id", task_params_.url_info().web_bundle_id().id())
           .Set("update_channel", task_params_.update_channel().ToString())
           .Set("allow_downgrades", task_params_.allow_downgrades())
@@ -272,7 +272,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   debug_log_.Set(
       "available_versions",
       base::ToValueList(update_manifest.versions(), [](const auto& entry) {
-        return base::Value::Dict()
+        return base::DictValue()
             .Set("version", entry.version().GetString())
             .Set("update_channels",
                  base::ToValueList(entry.channels(), [](const auto& channel) {
@@ -282,7 +282,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
 
   debug_log_.Set(
       "version_entry",
-      base::Value::Dict()
+      base::DictValue()
           .Set("version", version_entry->version().GetString())
           .Set("src", version_entry->src().spec())
           .Set("update_channel", task_params_.update_channel().ToString()));

@@ -24,7 +24,7 @@ namespace web_app {
 namespace {
 
 base::Value SynchronizeOptionsDebugValue(const SynchronizeOsOptions& options) {
-  base::Value::Dict debug_dict;
+  base::DictValue debug_dict;
   debug_dict.Set("force_unregister_os_integration",
                  options.force_unregister_os_integration);
   debug_dict.Set("add_shortcut_to_desktop", options.add_shortcut_to_desktop);

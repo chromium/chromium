@@ -96,10 +96,10 @@ GetPolicyInstalledIwasForManagedGuestSession(const Profile& profile) {
 template <typename T, typename E>
 void AddResultToLog(const std::string& key,
                     const base::expected<T, E>& result,
-                    base::Value::List& operations_results) {
+                    base::ListValue& operations_results) {
   std::string value = result.has_value() ? base::ToString(result.value())
                                          : base::ToString(result.error());
-  operations_results.Append(base::Value::Dict().Set(key, std::move(value)));
+  operations_results.Append(base::DictValue().Set(key, std::move(value)));
 }
 
 }  // namespace
@@ -159,7 +159,7 @@ void IwaBundleCacheManager::OnWebAppInstallManagerDestroyed() {
 
 base::Value IwaBundleCacheManager::GetDebugValue() const {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kBundleCacheIsEnabled, IsIwaBundleCacheEnabledInCurrentSession())
           .Set(kOperationsResults, base::Value(operations_results_.Clone())));
 }

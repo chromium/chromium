@@ -141,9 +141,8 @@ std::ostream& operator<<(
     std::ostream& os,
     const CleanupOrphanedIsolatedWebAppsCommandSuccess& success) {
   return os << "CleanupOrphanedIsolatedWebAppsCommandSuccess "
-            << base::Value::Dict().Set(
-                   "number_of_cleaned_up_directories",
-                   success.number_of_cleaned_up_directories);
+            << base::DictValue().Set("number_of_cleaned_up_directories",
+                                     success.number_of_cleaned_up_directories);
 }
 
 std::ostream& operator<<(
@@ -158,7 +157,7 @@ std::ostream& operator<<(
     case CleanupOrphanedIsolatedWebAppsCommandError::Type::kSystemShutdown:
       type = "SystemShutdown";
   }
-  return os << base::Value::Dict()
+  return os << base::DictValue()
                    .Set("message", error.message)
                    .Set("type", type)
                    .DebugString();

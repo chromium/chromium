@@ -57,7 +57,7 @@ IsolatedWebAppUpdateApplyTask::IsolatedWebAppUpdateApplyTask(
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)),
       command_scheduler_(command_scheduler),
       profile_(CHECK_DEREF(profile)) {
-  debug_log_ = base::Value::Dict()
+  debug_log_ = base::DictValue()
                    .Set("bundle_id", url_info_.web_bundle_id().id())
                    .Set("app_id", url_info_.app_id());
 #if BUILDFLAG(IS_CHROMEOS)

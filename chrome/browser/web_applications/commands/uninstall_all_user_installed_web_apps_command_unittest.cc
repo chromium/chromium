@@ -92,7 +92,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, NoUserInstalledWebApps) {
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
   {
-    base::Value::Dict app_policy;
+    base::DictValue app_policy;
     app_policy.Set(web_app::kUrlKey, "https://example.com/install");
     ScopedListPrefUpdate update(profile()->GetPrefs(),
                                 prefs::kWebAppInstallForceList);
@@ -116,7 +116,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
   {
-    base::Value::Dict app_policy;
+    base::DictValue app_policy;
     app_policy.Set(web_app::kUrlKey, "https://example.com/install");
     ScopedListPrefUpdate update(profile()->GetPrefs(),
                                 prefs::kWebAppInstallForceList);

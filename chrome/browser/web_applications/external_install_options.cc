@@ -97,10 +97,10 @@ bool ExternalInstallOptions::operator==(
 }
 
 base::Value ExternalInstallOptions::AsDebugValue() const {
-  base::Value::Dict root;
+  base::DictValue root;
 
   auto ConvertStringList = [](const std::vector<std::string>& list) {
-    base::Value::List list_json;
+    base::ListValue list_json;
     for (const std::string& item : list)
       list_json.Append(item);
     return list_json;

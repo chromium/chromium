@@ -592,7 +592,7 @@ class IwaIwaKeyDistributionInfoProviderReadinessTest
     dir_ = std::make_unique<base::ScopedTempDir>();
     CHECK(dir_->CreateUniqueTempDir());
 
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set("manifest_version", 1)
                         .Set("name", Component::kManifestName)
                         .Set("version", version.GetString());

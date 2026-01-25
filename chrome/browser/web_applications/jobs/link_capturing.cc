@@ -19,7 +19,7 @@ void SetAppCapturesSupportedLinksDisableOverlapping(
     const webapps::AppId& app_id,
     bool set_to_preferred,
     AllAppsLock& lock,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   debug_value.Set("app_id", app_id);
   debug_value.Set("set_to_preferred", set_to_preferred);
 

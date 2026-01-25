@@ -47,7 +47,7 @@ bool CanStorePersistentEntry(const device::mojom::UsbDeviceInfo& device_info) {
   return device_info.serial_number && !device_info.serial_number->empty();
 }
 
-std::pair<int, int> GetDeviceIds(const base::Value::Dict& object) {
+std::pair<int, int> GetDeviceIds(const base::DictValue& object) {
   DCHECK(object.FindInt(kVendorIdKey));
   int vendor_id = *object.FindInt(kVendorIdKey);
 
@@ -95,8 +95,8 @@ std::u16string GetDeviceNameFromIds(int vendor_id, int product_id) {
       base::ASCIIToUTF16(base::StringPrintf("0x%04X", vendor_id)));
 }
 
-base::Value::Dict DeviceIdsToValue(int vendor_id, int product_id) {
-  base::Value::Dict device_value;
+base::DictValue DeviceIdsToValue(int vendor_id, int product_id) {
+  base::DictValue device_value;
   std::u16string device_name = GetDeviceNameFromIds(vendor_id, product_id);
 
   device_value.Set(kDeviceNameKey, device_name);
@@ -109,7 +109,7 @@ base::Value::Dict DeviceIdsToValue(int vendor_id, int product_id) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsDetachable(int vid, int pid) {
-  const base::Value::List* policy_list;
+  const base::ListValue* policy_list;
   if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
     for (const auto& entry : *policy_list) {
@@ -173,9 +173,9 @@ UsbChooserContext::UsbChooserContext(Profile* profile)
 }
 
 // static
-base::Value::Dict UsbChooserContext::DeviceInfoToValue(
+base::DictValue UsbChooserContext::DeviceInfoToValue(
     const device::mojom::UsbDeviceInfo& device_info) {
-  base::Value::Dict device_value;
+  base::DictValue device_value;
   device_value.Set(kDeviceNameKey, device_info.product_name
                                        ? *device_info.product_name
                                        : std::u16string_view());
@@ -302,9 +302,9 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
   // permissions from being displayed.
   // TODO(crbug.com/40611788): This logic is very similar to the logic for
   // GetAllGrantedObjects(), so it could potentially be centralized.
-  std::map<std::pair<int, int>, base::Value::Dict> device_ids_to_object_map;
+  std::map<std::pair<int, int>, base::DictValue> device_ids_to_object_map;
   for (auto it = objects.begin(); it != objects.end();) {
-    base::Value::Dict& object = (*it)->value;
+    base::DictValue& object = (*it)->value;
     auto device_ids = GetDeviceIds(object);
 
     if (usb_policy_allowed_devices_->IsDeviceAllowed(origin, device_ids)) {
@@ -328,7 +328,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
       // If there is an entry for the device in |device_ids_to_object_map|, use
       // that object to represent the device. Otherwise, attempt to figure out
       // the name of the device from the |vendor_id| and |product_id|.
-      base::Value::Dict object;
+      base::DictValue object;
       auto it =
           device_ids_to_object_map.find(std::make_pair(vendor_id, product_id));
       if (it != device_ids_to_object_map.end()) {
@@ -370,7 +370,7 @@ UsbChooserContext::GetAllGrantedObjects() {
   // objects that have already been granted permission by the policy.
   // TODO(crbug.com/40611788): This logic is very similar to the logic for
   // GetGrantedObjects(), so it could potentially be centralized.
-  std::map<std::pair<int, int>, base::Value::Dict> device_ids_to_object_map;
+  std::map<std::pair<int, int>, base::DictValue> device_ids_to_object_map;
   for (auto it = objects.begin(); it != objects.end();) {
     Object& object = **it;
     auto device_ids = GetDeviceIds(object.value);
@@ -393,7 +393,7 @@ UsbChooserContext::GetAllGrantedObjects() {
       // If there is an entry for the device in |device_ids_to_object_map|, use
       // that object to represent the device. Otherwise, attempt to figure out
       // the name of the device from the |vendor_id| and |product_id|.
-      base::Value::Dict object;
+      base::DictValue object;
       auto it =
           device_ids_to_object_map.find(std::make_pair(vendor_id, product_id));
       if (it != device_ids_to_object_map.end()) {
@@ -411,9 +411,8 @@ UsbChooserContext::GetAllGrantedObjects() {
   return objects;
 }
 
-void UsbChooserContext::RevokeObjectPermission(
-    const url::Origin& origin,
-    const base::Value::Dict& object) {
+void UsbChooserContext::RevokeObjectPermission(const url::Origin& origin,
+                                               const base::DictValue& object) {
   RevokeObjectPermissionInternal(origin, object, /*revoked_by_website=*/false);
 }
 
@@ -427,7 +426,7 @@ void UsbChooserContext::RevokeDevicePermissionWebInitiated(
 
 void UsbChooserContext::RevokeObjectPermissionInternal(
     const url::Origin& origin,
-    const base::Value::Dict& object,
+    const base::DictValue& object,
     bool revoked_by_website = false) {
   const std::string* guid = object.FindString(kGuidKey);
 
@@ -452,8 +451,7 @@ void UsbChooserContext::RevokeObjectPermissionInternal(
                          : WEBUSB_PERMISSION_REVOKED_EPHEMERAL_BY_USER);
 }
 
-std::string UsbChooserContext::GetKeyForObject(
-    const base::Value::Dict& object) {
+std::string UsbChooserContext::GetKeyForObject(const base::DictValue& object) {
   if (!IsValidObject(object))
     return std::string();
   return base::JoinString(
@@ -463,14 +461,14 @@ std::string UsbChooserContext::GetKeyForObject(
       "|");
 }
 
-bool UsbChooserContext::IsValidObject(const base::Value::Dict& object) {
+bool UsbChooserContext::IsValidObject(const base::DictValue& object) {
   return object.size() == 4 && object.FindString(kDeviceNameKey) &&
          object.FindInt(kVendorIdKey) && object.FindInt(kProductIdKey) &&
          (object.FindString(kSerialNumberKey) || object.FindString(kGuidKey));
 }
 
 std::u16string UsbChooserContext::GetObjectDisplayName(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   const std::string* name = object.FindString(kDeviceNameKey);
   DCHECK(name);
   if (!name->empty())
@@ -511,7 +509,7 @@ bool UsbChooserContext::HasDevicePermission(
 
   std::vector<std::unique_ptr<Object>> object_list = GetGrantedObjects(origin);
   for (const auto& object : object_list) {
-    const base::Value::Dict& device = object->value;
+    const base::DictValue& device = object->value;
     DCHECK(IsValidObject(device));
 
     const int vendor_id = *device.FindInt(kVendorIdKey);

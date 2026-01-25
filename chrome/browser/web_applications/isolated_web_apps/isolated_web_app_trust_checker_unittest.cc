@@ -113,16 +113,16 @@ TEST_F(IsolatedWebAppTrustCheckerTest, UntrustedByDefault) {
 #if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(IsolatedWebAppTrustCheckerTest, TrustedViaPolicy) {
-  base::Value::List force_install_list;
+  base::ListValue force_install_list;
   {
-    base::Value::Dict force_install_entry;
+    base::DictValue force_install_entry;
     force_install_entry.Set(kPolicyWebBundleIdKey, "not a web bundle id");
     force_install_entry.Set(kPolicyUpdateManifestUrlKey,
                             "https://example.com/update-manifest.json");
     force_install_list.Append(std::move(force_install_entry));
   }
   {
-    base::Value::Dict force_install_entry;
+    base::DictValue force_install_entry;
     force_install_entry.Set(kPolicyWebBundleIdKey, kWebBundleId1.id());
     force_install_entry.Set(kPolicyUpdateManifestUrlKey,
                             "https://example.com/update-manifest.json");

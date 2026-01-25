@@ -128,13 +128,13 @@ class IsolatedWebAppDeviceAttributesBrowserTest
       policies.Set(policy::key::kDeviceAttributesBlockedForOrigins,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD,
-                   base::Value(base::Value::List().Append(origin)), nullptr);
+                   base::Value(base::ListValue().Append(origin)), nullptr);
     }
     if (IsAllowPolicySet()) {
       policies.Set(policy::key::kDeviceAttributesAllowedForOrigins,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD,
-                   base::Value(base::Value::List().Append(origin)), nullptr);
+                   base::Value(base::ListValue().Append(origin)), nullptr);
     }
     policy_provider_.UpdateChromePolicy(policies);
   }

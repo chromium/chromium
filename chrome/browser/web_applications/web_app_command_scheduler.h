@@ -524,7 +524,7 @@ class WebAppCommandScheduler {
   template <typename LockType, typename ReturnType>
   using CallbackCommand =
       base::OnceCallback<ReturnType(LockType& lock,
-                                    base::Value::Dict& debug_value)>;
+                                    base::DictValue& debug_value)>;
   // `ScheduleCallback*` methods provide convenient way to do operations
   // on the WebAppProvider system that don't require any async work, but still
   // have all of the safety guarantees of commands. All require a:
