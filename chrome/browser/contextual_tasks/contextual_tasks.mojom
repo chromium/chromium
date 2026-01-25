@@ -62,6 +62,9 @@ interface PageHandler {
   // thread.
   IsZeroState(url.mojom.Url url) => (bool is_zero_state);
 
+  // Returns if the given URL is an AI page.
+  IsAiPage(url.mojom.Url url) => (bool is_ai_page);
+
   // Set the title of the active thread.
   SetThreadTitle(string title);
 

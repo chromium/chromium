@@ -120,6 +120,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'getSearchUrl',
       'getThreadUrl',
       'getUrlForTask',
+      'isAiPage',
       'isShownInTab',
       'isZeroState',
       'moveTaskUiToNewTab',
@@ -179,6 +180,11 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   isZeroState(url: Url) {
     this.methodCalled('isZeroState', url);
     return Promise.resolve({isZeroState: false});
+  }
+
+  isAiPage(url: Url) {
+    this.methodCalled('isAiPage', url);
+    return Promise.resolve({isAiPage: false});
   }
 
   openMyActivityUi() {
