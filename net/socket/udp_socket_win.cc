@@ -675,7 +675,6 @@ int UDPSocketWin::SetRecvTos() {
   if (wsa_recv_msg_ == nullptr) {
     return LogAndReturnError();
   }
-  report_ecn_ = true;
   return 0;
 }
 

@@ -1870,8 +1870,18 @@ void QuicSessionPool::FinishCreateSession(
     std::optional<ConnectionManagementConfig> connection_management_config,
     int rv) {
   if (rv != OK) {
+#if BUILDFLAG(IS_WIN)
+    // Windows 7 and below have rv set to ERR_FAILED. Set it to 0 and QUIC works.
+    if (rv == ERR_FAILED) {
+      rv = 0;
+    } else {
+      std::move(callback).Run(base::unexpected(rv));
+      return;
+    }
+#else
     std::move(callback).Run(base::unexpected(rv));
     return;
+#endif
   }
   base::expected<QuicSessionAttempt::CreateSessionResult, int> result =
       CreateSessionHelper(
