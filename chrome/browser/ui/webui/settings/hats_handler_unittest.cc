@@ -119,7 +119,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
           expected_product_specific_data, _,
           HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN, _, _, _, _))
       .Times(2);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
   handler()->HandleTrustSafetyInteractionOccurred(args);
@@ -139,7 +139,7 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
           kHatsSurveyTriggerPrivacyGuide, web_contents(), 15000, _, _,
           HatsService::NavigationBehavior::REQUIRE_SAME_ORIGIN, _, _, _, _))
       .Times(1);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE));
   handler()->HandleTrustSafetyInteractionOccurred(args);
@@ -156,8 +156,8 @@ TEST_F(HatsHandlerTest,
       LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _, _, _, _))
       .Times(0);
 
-  base::Value::List args;
-  args.Append(base::Value::List());  // No interactions
+  base::ListValue args;
+  args.Append(base::ListValue());  // No interactions
   args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
   // Set the time spent on the page to 20,000 milliseconds, which is longer than
   // the configured value from Finch, 15,000 milliseconds.
@@ -179,8 +179,8 @@ TEST_F(HatsHandlerTest,
       LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _, _, _, _))
       .Times(0);
 
-  base::Value::List args;
-  args.Append(base::Value::List());  // No interactions
+  base::ListValue args;
+  args.Append(base::ListValue());  // No interactions
   args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
   // Set the time spent on the page to 10,000 milliseconds, which is shorter
   // than the configured value from Finch, 15,000 milliseconds.
@@ -224,7 +224,7 @@ TEST_F(HatsHandlerTest,
                            expected_product_specific_data, _, _))
       .Times(1);
 
-  base::Value::List interactions;
+  base::ListValue interactions;
   interactions.Append(static_cast<int>(HatsHandler::SecurityPageV2Interaction::
                                            ENHANCED_BUNDLE_RADIO_BUTTON_CLICK));
   interactions.Append(static_cast<int>(
@@ -233,7 +233,7 @@ TEST_F(HatsHandlerTest,
       static_cast<int>(HatsHandler::SecurityPageV2Interaction::
                            ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(interactions));
   args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
   // Set the time spent on the page to 20,000 milliseconds, which is longer than
@@ -258,7 +258,7 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   EXPECT_CALL(*mock_sentiment_service_,
               InteractedWithPrivacySettings(web_contents()))
       .Times(1);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
   handler()->HandleTrustSafetyInteractionOccurred(args);

@@ -238,8 +238,8 @@ constexpr unsigned char kPrintData[] = "print data, PDF";
 // Used as a callback to StartGetPrinters() in tests.
 // Increases `call_count` and records values returned by StartGetPrinters().
 void RecordPrinterList(size_t& call_count,
-                       base::Value::List& printers_out,
-                       base::Value::List printers) {
+                       base::ListValue& printers_out,
+                       base::ListValue printers) {
   ++call_count;
   printers_out = std::move(printers);
 }
@@ -253,10 +253,10 @@ void RecordPrintersDone(bool* is_done_out) {
 // Used as a callback to StartGetCapability() in tests.
 // Increases `call_count` and records values returned by StartGetCapability().
 void RecordCapability(size_t& call_count,
-                      base::Value::Dict& capability_out,
-                      base::Value::Dict capability) {
+                      base::DictValue& capability_out,
+                      base::DictValue capability) {
   ++call_count;
-  base::Value::Dict* capabilities = capability.FindDict(kSettingCapabilities);
+  base::DictValue* capabilities = capability.FindDict(kSettingCapabilities);
   if (capabilities) {
     capability_out = std::move(*capabilities);
   } else {
@@ -280,8 +280,8 @@ void RecordPrintResult(size_t* call_count,
 // Used as a callback to StartGrantPrinterAccess in tests.
 // Increases |*call_count| and records the value returned.
 void RecordPrinterInfo(size_t* call_count,
-                       base::Value::Dict* printer_info_out,
-                       const base::Value::Dict& printer_info) {
+                       base::DictValue* printer_info_out,
+                       const base::DictValue& printer_info) {
   ++(*call_count);
   *printer_info_out = printer_info.Clone();
 }
@@ -402,7 +402,7 @@ class FakePrinterProviderAPI : public PrinterProviderAPI {
     return nullptr;
   }
 
-  void TriggerNextGetPrintersCallback(base::Value::List printers, bool done) {
+  void TriggerNextGetPrintersCallback(base::ListValue printers, bool done) {
     ASSERT_GT(pending_get_printers_count(), 0u);
     pending_printers_callbacks_.front().Run(std::move(printers), done);
     pending_printers_callbacks_.pop();
@@ -412,7 +412,7 @@ class FakePrinterProviderAPI : public PrinterProviderAPI {
     return pending_capability_callbacks_.size();
   }
 
-  void TriggerNextGetCapabilityCallback(base::Value::Dict caps) {
+  void TriggerNextGetCapabilityCallback(base::DictValue caps) {
     ASSERT_GT(pending_get_capability_count(), 0u);
     std::move(pending_capability_callbacks_.front()).Run(std::move(caps));
     pending_capability_callbacks_.pop();
@@ -442,7 +442,7 @@ class FakePrinterProviderAPI : public PrinterProviderAPI {
     return pending_usb_info_callbacks_.size();
   }
 
-  void TriggerNextUsbPrinterInfoCallback(base::Value::Dict printer_info) {
+  void TriggerNextUsbPrinterInfoCallback(base::DictValue printer_info) {
     ASSERT_GT(pending_usb_info_count(), 0u);
     std::move(pending_usb_info_callbacks_.front()).Run(std::move(printer_info));
     pending_usb_info_callbacks_.pop();
@@ -511,7 +511,7 @@ class ExtensionPrinterHandlerTest : public testing::Test {
 
 TEST_F(ExtensionPrinterHandlerTest, GetPrinters) {
   size_t call_count = 0;
-  base::Value::List printers;
+  base::ListValue printers;
   bool is_done = false;
   extension_printer_handler_->StartGetPrinters(
       base::BindRepeating(&RecordPrinterList, std::ref(call_count),
@@ -538,7 +538,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetPrinters) {
 
 TEST_F(ExtensionPrinterHandlerTest, GetPrintersReset) {
   size_t call_count = 0;
-  base::Value::List printers;
+  base::ListValue printers;
   bool is_done = false;
   extension_printer_handler_->StartGetPrinters(
       base::BindRepeating(&RecordPrinterList, std::ref(call_count),
@@ -582,7 +582,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
   permissions_manager->AllowUsbDevice(extension_2->id(), *device0);
 
   size_t call_count = 0;
-  base::Value::List printers;
+  base::ListValue printers;
   bool is_done = false;
   extension_printer_handler_->StartGetPrinters(
       base::BindRepeating(&RecordPrinterList, std::ref(call_count),
@@ -598,8 +598,8 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
   EXPECT_EQ(1u, call_count);
   EXPECT_FALSE(is_done);
   EXPECT_EQ(2u, printers.size());
-  base::Value::Dict extension_1_entry =
-      base::Value::Dict()
+  base::DictValue extension_1_entry =
+      base::DictValue()
           .Set("id", base::StringPrintf("provisional-usb:%s:%s",
                                         extension_1->id().c_str(),
                                         device0->guid.c_str()))
@@ -607,8 +607,8 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
           .Set("extensionName", "Provider 1")
           .Set("extensionId", extension_1->id())
           .Set("provisional", true);
-  base::Value::Dict extension_2_entry =
-      base::Value::Dict()
+  base::DictValue extension_2_entry =
+      base::DictValue()
           .Set("id", base::StringPrintf("provisional-usb:%s:%s",
                                         extension_2->id().c_str(),
                                         device1->guid.c_str()))
@@ -619,7 +619,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
   EXPECT_TRUE(printers.contains(extension_1_entry));
   EXPECT_TRUE(printers.contains(extension_2_entry));
 
-  fake_api->TriggerNextGetPrintersCallback(base::Value::List(), /*done=*/true);
+  fake_api->TriggerNextGetPrintersCallback(base::ListValue(), /*done=*/true);
 
   EXPECT_EQ(1u, call_count);  // No printers, so no calls. Call count stays 1.
   EXPECT_TRUE(is_done);       // Still calls done.
@@ -628,7 +628,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
 
 TEST_F(ExtensionPrinterHandlerTest, GetCapability) {
   size_t call_count = 0;
-  base::Value::Dict capability;
+  base::DictValue capability;
 
   extension_printer_handler_->StartGetCapability(
       kPrinterId, base::BindOnce(&RecordCapability, std::ref(call_count),
@@ -645,16 +645,16 @@ TEST_F(ExtensionPrinterHandlerTest, GetCapability) {
   ASSERT_TRUE(original_capability.is_dict());
 
   // TODO(thestig): Consolidate constants used in this section.
-  base::Value::Dict original_capability_with_dpi_dict =
+  base::DictValue original_capability_with_dpi_dict =
       original_capability.GetDict().Clone();
-  base::Value::Dict* printer =
+  base::DictValue* printer =
       original_capability_with_dpi_dict.FindDict("printer");
   ASSERT_TRUE(printer);
   auto default_dpi_option =
-      base::Value::Dict().Set("horizontal_dpi", kDefaultPdfDpi);
+      base::DictValue().Set("horizontal_dpi", kDefaultPdfDpi);
   default_dpi_option.Set("vertical_dpi", kDefaultPdfDpi);
-  auto dpi_list = base::Value::List().Append(std::move(default_dpi_option));
-  base::Value::Dict dpi_dict;
+  auto dpi_list = base::ListValue().Append(std::move(default_dpi_option));
+  base::DictValue dpi_dict;
   dpi_dict.Set("option", std::move(dpi_list));
   printer->Set("dpi", std::move(dpi_dict));
 
@@ -667,7 +667,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetCapability) {
 
 TEST_F(ExtensionPrinterHandlerTest, GetCapabilityReset) {
   size_t call_count = 0;
-  base::Value::Dict capability;
+  base::DictValue capability;
 
   extension_printer_handler_->StartGetCapability(
       kPrinterId, base::BindOnce(&RecordCapability, std::ref(call_count),
@@ -974,7 +974,7 @@ TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccess) {
   base::RunLoop().RunUntilIdle();
 
   size_t call_count = 0;
-  base::Value::Dict printer_info;
+  base::DictValue printer_info;
 
   std::string printer_id = base::StringPrintf(
       "provisional-usb:fake extension id:%s", device->guid.c_str());
@@ -987,8 +987,8 @@ TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccess) {
   ASSERT_TRUE(fake_api);
   ASSERT_EQ(1u, fake_api->pending_usb_info_count());
 
-  base::Value::Dict original_printer_info =
-      base::Value::Dict().Set("id", "printer1").Set("name", "Printer 1");
+  base::DictValue original_printer_info =
+      base::DictValue().Set("id", "printer1").Set("name", "Printer 1");
 
   fake_api->TriggerNextUsbPrinterInfoCallback(original_printer_info.Clone());
 
@@ -1004,7 +1004,7 @@ TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccessReset) {
   base::RunLoop().RunUntilIdle();
 
   size_t call_count = 0;
-  base::Value::Dict printer_info;
+  base::DictValue printer_info;
 
   extension_printer_handler_->StartGrantPrinterAccess(
       base::StringPrintf("provisional-usb:fake extension id:%s",
@@ -1018,8 +1018,8 @@ TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccessReset) {
 
   extension_printer_handler_->Reset();
 
-  base::Value::Dict original_printer_info =
-      base::Value::Dict().Set("id", "printer1").Set("name", "Printer 1");
+  base::DictValue original_printer_info =
+      base::DictValue().Set("id", "printer1").Set("name", "Printer 1");
 
   fake_api->TriggerNextUsbPrinterInfoCallback(std::move(original_printer_info));
 

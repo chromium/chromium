@@ -369,7 +369,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
                 prefs->GetDouble(
                     prefs::kAccessibilityReadAnythingHighlightGranularity))
           : read_anything::mojom::HighlightGranularity::kDefaultValue;
-  base::Value::Dict voices = base::Value::Dict();
+  base::DictValue voices = base::DictValue();
   if (features::IsReadAnythingReadAloudEnabled()) {
     voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
   }
@@ -394,7 +394,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
       features::IsReadAnythingReadAloudEnabled()
           ? prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
                 .Clone()
-          : base::Value::List(),
+          : base::ListValue(),
       highlight_granularity, line_focus);
 
   // Get user's default language to check for compatible fonts.

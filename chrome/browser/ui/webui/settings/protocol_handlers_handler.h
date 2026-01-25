@@ -64,40 +64,40 @@ class ProtocolHandlersHandler
   // Called to fetch the state of the protocol handlers. If the full list of
   // handlers is not needed, consider HandleObserveProtocolHandlersEnabledState
   // instead.
-  void HandleObserveProtocolHandlers(const base::Value::List& args);
+  void HandleObserveProtocolHandlers(const base::ListValue& args);
 
   // Called to begin updates to the handlers enabled status. This is a subset
   // (lighter alternative) of HandleObserveProtocolHandlers. There's no need to
   // call this function if HandleObserveProtocolHandlers is called.
-  void HandleObserveProtocolHandlersEnabledState(const base::Value::List& args);
+  void HandleObserveProtocolHandlersEnabledState(const base::ListValue& args);
 
   // Notifies the JS side whether the handlers are enabled or not.
   void SendHandlersEnabledValue();
 
   // Called when the user toggles whether custom handlers are enabled.
-  void HandleSetHandlersEnabled(const base::Value::List& args);
+  void HandleSetHandlersEnabled(const base::ListValue& args);
 
   // Called when the user sets a new default handler for a protocol.
-  void HandleSetDefault(const base::Value::List& args);
+  void HandleSetDefault(const base::ListValue& args);
 
   // Parses a ProtocolHandler out of the arguments passed back from the view.
   // |args| is a list of [protocol, url].
   custom_handlers::ProtocolHandler ParseHandlerFromArgs(
-      const base::Value::List& args) const;
+      const base::ListValue& args) const;
 
   // Populates a JSON object describing the set of protocol handlers for the
   // given protocol.
-  base::Value::Dict GetHandlersForProtocol(const std::string& protocol);
+  base::DictValue GetHandlersForProtocol(const std::string& protocol);
 
   // Returns a JSON list of the ignored protocol handlers.
-  base::Value::List GetIgnoredHandlers();
+  base::ListValue GetIgnoredHandlers();
 
   // Called when the JS PasswordManager object is initialized.
   void UpdateHandlerList();
 
   // Remove a handler.
   // |args| is a list of [protocol, url].
-  void HandleRemoveHandler(const base::Value::List& args);
+  void HandleRemoveHandler(const base::ListValue& args);
 
   custom_handlers::ProtocolHandlerRegistry* GetProtocolHandlerRegistry();
 
@@ -108,16 +108,16 @@ class ProtocolHandlersHandler
   // Web App Protocol Handler specific functions:
 
   // Called to fetch the state of the app protocol handlers.
-  void HandleObserveAppProtocolHandlers(const base::Value::List& args);
+  void HandleObserveAppProtocolHandlers(const base::ListValue& args);
 
   // Parses an App ProtocolHandler out of |args|, which is a list of [protocol,
   // url, app_id].
   custom_handlers::ProtocolHandler ParseAppHandlerFromArgs(
-      const base::Value::List& args) const;
+      const base::ListValue& args) const;
 
   // Returns a Value::Dict describing the set of app protocol handlers for
   // the given |protocol| in the given |handlers| list.
-  base::Value::Dict GetAppHandlersForProtocol(
+  base::DictValue GetAppHandlersForProtocol(
       const std::string& protocol,
       custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList handlers);
 
@@ -129,7 +129,7 @@ class ProtocolHandlersHandler
 
   // Used to remove a protocol handler from the approved or disapproved list.
   // |args| is a list of [protocol, url, app_id].
-  void ResetProtocolHandlerUserApproval(const base::Value::List& args);
+  void ResetProtocolHandlerUserApproval(const base::ListValue& args);
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<web_app::WebAppProvider> web_app_provider_;

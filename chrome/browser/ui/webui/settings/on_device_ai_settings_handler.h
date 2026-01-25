@@ -33,11 +33,11 @@ class OnDeviceAiSettingsHandler : public SettingsPageUIHandler {
  protected:
   // Handles the "getOnDeviceAiEnabled" message from the UI. Protected for
   // testing.
-  void HandleGetOnDeviceAiEnabled(const base::Value::List& args);
+  void HandleGetOnDeviceAiEnabled(const base::ListValue& args);
 
   // Handles the "setOnDeviceAiEnabled" message from the UI. Protected for
   // testing.
-  void HandleSetOnDeviceAiEnabled(const base::Value::List& args);
+  void HandleSetOnDeviceAiEnabled(const base::ListValue& args);
 
  private:
   // Called when the kOnDeviceAiEnabled preference changes.

@@ -50,33 +50,33 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   void OnJavascriptDisallowed() override;
 
   // Retrieves the paths of tampered preferences.
-  void HandleGetTamperedPreferencePaths(const base::Value::List& args);
+  void HandleGetTamperedPreferencePaths(const base::ListValue& args);
 
  protected:
   // Overridden in tests to substitute with a test version of ProfileResetter.
   virtual ProfileResetter* GetResetter();
 
   // Javascript callback to start clearing data.
-  void HandleResetProfileSettings(const base::Value::List& args);
+  void HandleResetProfileSettings(const base::ListValue& args);
 
  private:
   // Retrieves the settings that will be reported, called from Javascript.
-  void HandleGetReportedSettings(const base::Value::List& args);
+  void HandleGetReportedSettings(const base::ListValue& args);
 
   // Called once the settings that will be reported have been retrieved.
   void OnGetReportedSettingsDone(std::string callback_id);
 
   // Called when the reset profile dialog is shown.
-  void OnShowResetProfileDialog(const base::Value::List& args);
+  void OnShowResetProfileDialog(const base::ListValue& args);
 
   // Called when the reset profile dialog is hidden.
-  void OnHideResetProfileDialog(const base::Value::List& args);
+  void OnHideResetProfileDialog(const base::ListValue& args);
 
   // Called when the reset profile banner is shown.
-  void OnHideResetProfileBanner(const base::Value::List& args);
+  void OnHideResetProfileBanner(const base::ListValue& args);
 
   // Retrieve the triggered reset tool name, called from Javascript.
-  void HandleGetTriggeredResetToolName(const base::Value::List& args);
+  void HandleGetTriggeredResetToolName(const base::ListValue& args);
 
   // Resets the settings that are marked in the resettable flags to the default
   // value, callback will be called once the reset is complete. The difference
@@ -99,7 +99,7 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
       reset_report::ChromeResetReport::ResetRequestOrigin request_origin);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  void OnShowSanitizeDialog(const base::Value::List& args);
+  void OnShowSanitizeDialog(const base::ListValue& args);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   const raw_ptr<Profile> profile_;

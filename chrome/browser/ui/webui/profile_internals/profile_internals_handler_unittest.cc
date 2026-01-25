@@ -60,7 +60,7 @@ TEST_F(ProfileInternalsHandlerTest, DebugDataLoaded) {
   content::TestWebUI& web_ui = ConfigureWebUI(web_ui_profile);
 
   {
-    base::Value::List empty_args;
+    base::ListValue empty_args;
     web_ui.HandleReceivedMessage("getProfilesList", empty_args);
   }
 
@@ -69,7 +69,7 @@ TEST_F(ProfileInternalsHandlerTest, DebugDataLoaded) {
   ASSERT_EQ("cr.webUIListenerCallback", call_data.function_name());
   ASSERT_EQ("profiles-list-changed", call_data.arg1()->GetString());
   ASSERT_TRUE(call_data.arg2()->is_list());
-  const base::Value::List& pushed_list = call_data.arg2()->GetList();
+  const base::ListValue& pushed_list = call_data.arg2()->GetList();
 
   EXPECT_EQ(2u, pushed_list.size());
 }

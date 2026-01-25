@@ -30,7 +30,7 @@ class UserActionsUIHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandlePageLoaded(const base::Value::List& args);
+  void HandlePageLoaded(const base::ListValue& args);
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
   base::ActionCallback action_callback_;

@@ -24,7 +24,7 @@ void UserActionsUIHandler::RegisterMessages() {
                                         base::Unretained(this)));
 }
 
-void UserActionsUIHandler::HandlePageLoaded(const base::Value::List& args) {
+void UserActionsUIHandler::HandlePageLoaded(const base::ListValue& args) {
   AllowJavascript();
 }
 

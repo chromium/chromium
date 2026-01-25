@@ -58,13 +58,13 @@ void ValidateFledgeInfo(content::TestWebUI* web_ui,
 
 void ValidateTopicsInfo(
     std::vector<privacy_sandbox::CanonicalTopic> expected_topics,
-    const base::Value::List& actual_topics) {
+    const base::ListValue& actual_topics) {
   ASSERT_EQ(expected_topics.size(), actual_topics.size());
   for (size_t i = 0; i < expected_topics.size(); i++) {
     const auto& actual_topic = actual_topics[i];
     const auto& expected_topic = expected_topics[i];
     ASSERT_TRUE(actual_topic.is_dict());
-    const base::Value::Dict& actual_topic_dict = actual_topic.GetDict();
+    const base::DictValue& actual_topic_dict = actual_topic.GetDict();
     ASSERT_EQ(expected_topic.topic_id().value(),
               actual_topic_dict.FindInt("topicId"));
     ASSERT_EQ(expected_topic.taxonomy_version(),
@@ -141,7 +141,7 @@ TEST_F(PrivacySandboxHandlerTestMockService, SetFledgeJoiningAllowed) {
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               SetFledgeJoiningAllowed(kTestSite, true));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kTestSite);
   args.Append(true);
   handler()->HandleSetFledgeJoiningAllowed(args);
@@ -160,7 +160,7 @@ TEST_F(PrivacySandboxHandlerTestMockService, GetFledgeState) {
       .WillOnce([&](Callback callback) { callback_one = std::move(callback); })
       .WillOnce([&](Callback callback) { callback_two = std::move(callback); });
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kCallbackId1);
   handler()->HandleGetFledgeState(args);
 
@@ -196,7 +196,7 @@ TEST_F(PrivacySandboxHandlerTestMockService, SetTopicAllowed) {
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               SetTopicAllowed(kTestTopic, false))
       .Times(1);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kTestTopic.topic_id().value());
   args.Append(kTestTopic.taxonomy_version());
   args.Append(false);
@@ -218,7 +218,7 @@ TEST_F(PrivacySandboxHandlerTestMockService, GetTopicsState) {
       .Times(1)
       .WillOnce(testing::Return(kBlockedTopics));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kCallbackId1);
   handler()->HandleGetTopicsState(args);
 
@@ -239,7 +239,7 @@ TEST_F(PrivacySandboxHandlerTestMockService, TopicsToggleChanged) {
     testing::Mock::VerifyAndClearExpectations(mock_privacy_sandbox_service());
     EXPECT_CALL(*mock_privacy_sandbox_service(), TopicsToggleChanged(state));
 
-    base::Value::List args;
+    base::ListValue args;
     args.Append(state);
     handler()->HandleTopicsToggleChanged(args);
   }
@@ -306,7 +306,7 @@ TEST_P(PrivacySandboxPrivacyGuideAdTopicsShownTest,
           PrivacySandboxPrivacyGuideShouldShowAdTopicsCard())
       .WillByDefault(Return(should_show_ad_topics_card));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kCallbackId1);
   web_ui()->ProcessWebUIMessage(
       GURL(), "privacySandboxPrivacyGuideShouldShowAdTopicsCard",
@@ -344,7 +344,7 @@ TEST_F(PrivacySandboxAdTopicsContentParityEnabledTest, TopicsToggleChanged) {
   for (bool state : states) {
     EXPECT_CALL(*mock_privacy_sandbox_service(), TopicsToggleChanged(state));
 
-    base::Value::List args;
+    base::ListValue args;
     args.Append(state);
     web_ui()->ProcessWebUIMessage(GURL(), "topicsToggleChanged",
                                   std::move(args));
@@ -354,7 +354,7 @@ TEST_F(PrivacySandboxAdTopicsContentParityEnabledTest, TopicsToggleChanged) {
 
 TEST_F(PrivacySandboxAdTopicsContentParityEnabledTest,
        shouldShowAdTopicsContentParity) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kCallbackId1);
   web_ui()->ProcessWebUIMessage(
       GURL(), "shouldShowPrivacySandboxAdTopicsContentParity", std::move(args));
@@ -383,7 +383,7 @@ class PrivacySandboxAdTopicsContentParityDisabledTest
 
 TEST_F(PrivacySandboxAdTopicsContentParityDisabledTest,
        shouldNotShowAdTopicsContentParity) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kCallbackId1);
   web_ui()->ProcessWebUIMessage(
       GURL(), "shouldShowPrivacySandboxAdTopicsContentParity", std::move(args));

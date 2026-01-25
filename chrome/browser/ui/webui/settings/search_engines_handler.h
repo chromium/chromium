@@ -52,33 +52,33 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   friend class SearchEnginesHandlerTest;
 
   // Retrieves all search engines and returns them to WebUI.
-  void HandleGetSearchEnginesList(const base::Value::List& args);
+  void HandleGetSearchEnginesList(const base::ListValue& args);
 
-  base::Value::Dict GetSearchEnginesList();
+  base::DictValue GetSearchEnginesList();
 
   // Returns whether the search engine choice should be saved in guest mode
   // Returns null if the profile is not eligible for guest choice saving.
   // Called from WebUI.
-  void HandleGetSaveGuestChoice(const base::Value::List& args);
+  void HandleGetSaveGuestChoice(const base::ListValue& args);
 
   // Removes the search engine at the given index. Called from WebUI.
-  void HandleRemoveSearchEngine(const base::Value::List& args);
+  void HandleRemoveSearchEngine(const base::ListValue& args);
 
   // Sets the search engine at the given index to be default. Called from WebUI.
-  void HandleSetDefaultSearchEngine(const base::Value::List& args);
+  void HandleSetDefaultSearchEngine(const base::ListValue& args);
 
   // Activates or deactivates the search engine at the given index. Called from
   // WebUI.
-  void HandleSetIsActiveSearchEngine(const base::Value::List& args);
+  void HandleSetIsActiveSearchEngine(const base::ListValue& args);
 
   // Starts an edit session for the search engine at the given index. If the
   // index is -1, starts editing a new search engine instead of an existing one.
   // Called from WebUI.
-  void HandleSearchEngineEditStarted(const base::Value::List& args);
+  void HandleSearchEngineEditStarted(const base::ListValue& args);
 
   // Validates the given search engine values, and reports the results back
   // to WebUI. Called from WebUI.
-  void HandleValidateSearchEngineInput(const base::Value::List& args);
+  void HandleValidateSearchEngineInput(const base::ListValue& args);
 
   // Checks whether the given user input field (searchEngine, keyword, queryUrl)
   // is populated with a valid value.
@@ -87,19 +87,19 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 
   // Called when an edit is canceled.
   // Called from WebUI.
-  void HandleSearchEngineEditCancelled(const base::Value::List& args);
+  void HandleSearchEngineEditCancelled(const base::ListValue& args);
 
   // Called when an edit is finished and should be saved.
   // Called from WebUI.
-  void HandleSearchEngineEditCompleted(const base::Value::List& args);
+  void HandleSearchEngineEditCompleted(const base::ListValue& args);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Request the browser to open its search settings.
-  void HandleOpenBrowserSearchSettings(const base::Value::List& args);
+  void HandleOpenBrowserSearchSettings(const base::ListValue& args);
 #endif
 
   // Returns a dictionary to pass to WebUI representing the given search engine.
-  base::Value::Dict CreateDictionaryForEngine(size_t index, bool is_default);
+  base::DictValue CreateDictionaryForEngine(size_t index, bool is_default);
 
   const raw_ptr<Profile> profile_;
 

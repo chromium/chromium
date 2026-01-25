@@ -24,7 +24,7 @@ class MacSystemSettingsHandler : public SettingsPageUIHandler {
   void OnJavascriptDisallowed() override {}
 
  private:
-  void HandleOpenTrackpadGesturesSettings(const base::Value::List& args);
+  void HandleOpenTrackpadGesturesSettings(const base::ListValue& args);
 };
 
 }  // namespace settings

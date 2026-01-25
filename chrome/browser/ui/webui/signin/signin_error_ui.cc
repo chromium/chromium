@@ -121,7 +121,7 @@ void SigninErrorUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
   source->AddLocalizedString("signinErrorOkLabel",
                              IDS_SIGNIN_ERROR_OK_BUTTON_LABEL);
 
-  base::Value::Dict strings;
+  base::DictValue strings;
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  &strings);
   source->AddLocalizedStrings(strings);

@@ -137,7 +137,7 @@ TEST_F(SavedInfoHandlerTest, HandleGetPasswordCount) {
 
   web_ui()->ClearTrackedCalls();
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append("test_callback_id");
   test_api(*handler).HandleGetPasswordCount(args);
 
@@ -147,7 +147,7 @@ TEST_F(SavedInfoHandlerTest, HandleGetPasswordCount) {
   EXPECT_EQ("test_callback_id", data.arg1()->GetString());
   EXPECT_TRUE(data.arg2()->GetBool());
 
-  const base::Value::Dict& dict = data.arg3()->GetDict();
+  const base::DictValue& dict = data.arg3()->GetDict();
   EXPECT_EQ(2, dict.FindInt("passwordCount"));
   EXPECT_EQ(1, dict.FindInt("passkeyCount"));
 }
@@ -167,7 +167,7 @@ TEST_F(SavedInfoHandlerTest, HandleGetLoyaltyCardsCount) {
 
   web_ui()->ClearTrackedCalls();
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append("test_callback_id");
   test_api(*handler).HandleGetLoyaltyCardsCount(args);
 
@@ -198,7 +198,7 @@ TEST_F(SavedInfoHandlerTest, RequestDataManagementSurvey) {
       LaunchDelayedSurvey(kHatsSurveyTriggerManageYourSavedInfoPerception,
                           10000, _, _));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(0);     // DataManagementSurvey::kYourSavedInfo
   args.Append(true);  // fromHomePage
   test_api(*handler).HandleRequestDataManagementSurvey(args);

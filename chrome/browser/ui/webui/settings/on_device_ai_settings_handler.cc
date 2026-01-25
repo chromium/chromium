@@ -55,19 +55,19 @@ void OnDeviceAiSettingsHandler::OnPrefChange() {
 }
 
 void OnDeviceAiSettingsHandler::HandleGetOnDeviceAiEnabled(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("enabled", g_browser_process->local_state()->GetBoolean(
                             kOnDeviceAiUserSettingsEnabled));
   ResolveJavascriptCallback(callback_id, std::move(result));
 }
 
 void OnDeviceAiSettingsHandler::HandleSetOnDeviceAiEnabled(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   bool enabled = args[0].GetBool();
   g_browser_process->local_state()->SetBoolean(kOnDeviceAiUserSettingsEnabled,
@@ -75,7 +75,7 @@ void OnDeviceAiSettingsHandler::HandleSetOnDeviceAiEnabled(
 }
 
 void OnDeviceAiSettingsHandler::SendOnDeviceAiEnabledChange() {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("enabled", g_browser_process->local_state()->GetBoolean(
                             kOnDeviceAiUserSettingsEnabled));
   FireWebUIListener("on-device-ai-enabled-changed", std::move(result));

@@ -53,12 +53,12 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   friend class ProfilePickerCreationFlowBrowserTest;
 
   // Handlers for messages from javascript.
-  void HandleInitialized(const base::Value::List& args);
-  void HandleGetAvailableIcons(const base::Value::List& args);
-  void HandleDone(const base::Value::List& args);
-  void HandleSkip(const base::Value::List& args);
-  void HandleDeleteProfile(const base::Value::List& args);
-  void HandleSetAvatarIcon(const base::Value::List& args);
+  void HandleInitialized(const base::ListValue& args);
+  void HandleGetAvailableIcons(const base::ListValue& args);
+  void HandleDone(const base::ListValue& args);
+  void HandleSkip(const base::ListValue& args);
+  void HandleDeleteProfile(const base::ListValue& args);
+  void HandleSetAvatarIcon(const base::ListValue& args);
 
   // Sends an updated profile info (avatar and colors) to the WebUI.
   // `profile_path` is the path of the profile being updated, this function does
@@ -66,7 +66,7 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   void UpdateProfileInfo(const base::FilePath& profile_path);
 
   // Computes the profile info (avatar and colors) to be sent to the WebUI.
-  base::Value::Dict GetProfileInfoValue();
+  base::DictValue GetProfileInfoValue();
 
   // Returns the ProfilesAttributesEntry associated with the current profile.
   ProfileAttributesEntry* GetProfileEntry() const;

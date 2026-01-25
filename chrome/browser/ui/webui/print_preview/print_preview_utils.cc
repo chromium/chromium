@@ -53,16 +53,16 @@ const char kVendorCapabilityKey[] = "vendor_capability";
 
 namespace {
 
-base::Value::List PrintersToValues(const PrinterList& printer_list) {
-  base::Value::List results;
+base::ListValue PrintersToValues(const PrinterList& printer_list) {
+  base::ListValue results;
   for (const PrinterBasicInfo& printer : printer_list) {
-    base::Value::Dict printer_info;
+    base::DictValue printer_info;
     printer_info.Set(kSettingDeviceName, printer.printer_name);
 
     printer_info.Set(kSettingPrinterName, printer.display_name);
     printer_info.Set(kSettingPrinterDescription, printer.printer_description);
 
-    base::Value::Dict options;
+    base::DictValue options;
     for (const auto& opt_it : printer.options) {
       options.SetByDottedPath(opt_it.first, opt_it.second);
     }
@@ -85,8 +85,7 @@ base::Value::List PrintersToValues(const PrinterList& printer_list) {
 }
 
 template <typename Predicate>
-base::Value::List GetFilteredList(const base::Value::List& list,
-                                  Predicate pred) {
+base::ListValue GetFilteredList(const base::ListValue& list, Predicate pred) {
   auto out_list = list.Clone();
   out_list.EraseIf(pred);
   return out_list;
@@ -124,11 +123,11 @@ bool VendorCapabilityInvalid(const base::Value& val) {
   if (*option_type != kSelectString) {
     return false;
   }
-  const base::Value::Dict* select_cap = dict.FindDict(kSelectCapKey);
+  const base::DictValue* select_cap = dict.FindDict(kSelectCapKey);
   if (!select_cap) {
     return true;
   }
-  const base::Value::List* options_list = select_cap->FindList(kOptionKey);
+  const base::ListValue* options_list = select_cap->FindList(kOptionKey);
   if (!options_list || options_list->empty() ||
       GetFilteredList(*options_list, ValueIsNull).empty()) {
     return true;
@@ -142,17 +141,17 @@ void SystemDialogDone(const base::Value& error) {
 
 }  // namespace
 
-base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd) {
-  base::Value::Dict* caps = cdd.FindDict(kPrinter);
+base::DictValue ValidateCddForPrintPreview(base::DictValue cdd) {
+  base::DictValue* caps = cdd.FindDict(kPrinter);
   if (!caps) {
     return cdd;
   }
 
-  base::Value::Dict out_caps;
+  base::DictValue out_caps;
   for (auto capability : *caps) {
     const auto& key = capability.first;
     base::Value& value = capability.second;
-    base::Value::List* list_value = nullptr;
+    base::ListValue* list_value = nullptr;
     if (value.is_list()) {
       list_value = &value.GetList();
     }
@@ -201,7 +200,7 @@ base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd) {
       }
     }
     if (value.is_dict()) {
-      base::Value::Dict option_dict;
+      base::DictValue option_dict;
       option_dict.Set(kOptionKey, std::move(*list_value));
       std::optional<bool> reset_to_default =
           value.GetDict().FindBool(kResetToDefaultKey);
@@ -217,48 +216,47 @@ base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd) {
   return cdd;
 }
 
-base::Value::Dict UpdateCddWithDpiIfMissing(base::Value::Dict cdd) {
-  base::Value::Dict* printer = cdd.FindDict(kPrinter);
+base::DictValue UpdateCddWithDpiIfMissing(base::DictValue cdd) {
+  base::DictValue* printer = cdd.FindDict(kPrinter);
   if (!printer) {
     return cdd;
   }
 
   if (!printer->FindDict(kDpiCapabilityKey)) {
-    base::Value::Dict default_dpi;
+    base::DictValue default_dpi;
     default_dpi.Set(kHorizontalDpi, kDefaultPdfDpi);
     default_dpi.Set(kVerticalDpi, kDefaultPdfDpi);
-    base::Value::List dpi_options;
+    base::ListValue dpi_options;
     dpi_options.Append(std::move(default_dpi));
-    base::Value::Dict dpi_capability;
+    base::DictValue dpi_capability;
     dpi_capability.Set(kOptionKey, std::move(dpi_options));
     printer->Set(kDpiCapabilityKey, std::move(dpi_capability));
   }
   return cdd;
 }
 
-const base::Value::List* GetMediaSizeOptionsFromCdd(
-    const base::Value::Dict& cdd) {
-  const base::Value::Dict* printer = cdd.FindDict(kPrinter);
+const base::ListValue* GetMediaSizeOptionsFromCdd(const base::DictValue& cdd) {
+  const base::DictValue* printer = cdd.FindDict(kPrinter);
   if (!printer) {
     return nullptr;
   }
-  const base::Value::Dict* media_size = printer->FindDict(kMediaSizeKey);
+  const base::DictValue* media_size = printer->FindDict(kMediaSizeKey);
   if (!media_size) {
     return nullptr;
   }
   return media_size->FindList(kOptionKey);
 }
 
-void FilterContinuousFeedMediaSizes(base::Value::Dict& cdd) {
+void FilterContinuousFeedMediaSizes(base::DictValue& cdd) {
   // OK to const_cast here since `cdd` started off non-const.
-  base::Value::List* options =
-      const_cast<base::Value::List*>(GetMediaSizeOptionsFromCdd(cdd));
+  base::ListValue* options =
+      const_cast<base::ListValue*>(GetMediaSizeOptionsFromCdd(cdd));
   if (!options) {
     return;
   }
 
   options->EraseIf([](const base::Value& item) {
-    const base::Value::Dict* item_dict = item.GetIfDict();
+    const base::DictValue* item_dict = item.GetIfDict();
     if (!item_dict) {
       return false;
     }
@@ -271,7 +269,7 @@ void ConvertPrinterListForCallback(
     PrinterHandler::AddedPrintersCallback callback,
     PrinterHandler::GetPrintersDoneCallback done_callback,
     const PrinterList& printer_list) {
-  base::Value::List printers = PrintersToValues(printer_list);
+  base::ListValue printers = PrintersToValues(printer_list);
 
   VLOG(1) << "Enumerate printers finished, found " << printers.size()
           << " printers";
@@ -281,7 +279,7 @@ void ConvertPrinterListForCallback(
   std::move(done_callback).Run();
 }
 
-void StartLocalPrint(base::Value::Dict job_settings,
+void StartLocalPrint(base::DictValue job_settings,
                      scoped_refptr<base::RefCountedMemory> print_data,
                      content::WebContents* preview_web_contents,
                      PrinterHandler::PrintCallback callback) {

@@ -589,7 +589,7 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
           optimization_guide::proto::LogAiDataRequest::kWallpaperSearch)) {
     return;
   }
-  base::Value::Dict feedback_metadata;
+  base::DictValue feedback_metadata;
   if (!log_entries_.empty()) {
     feedback_metadata.Set("log_id", log_entries_.back()
                                         .first->log_ai_data_request()
@@ -603,7 +603,7 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
       l10n_util::GetStringUTF8(IDS_NTP_WALLPAPER_SEARCH_FEEDBACK_PLACEHOLDER),
       /*category_tag=*/"wallpaper_search",
       /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+      /*autofill_metadata=*/base::DictValue(), std::move(feedback_metadata));
 }
 
 void WallpaperSearchHandler::OnHistoryUpdated() {
@@ -652,11 +652,11 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
     return;
   }
 
-  const base::Value::List* descriptor_a =
+  const base::ListValue* descriptor_a =
       result->GetDict().FindList("descriptor_a");
-  const base::Value::List* descriptor_b =
+  const base::ListValue* descriptor_b =
       result->GetDict().FindList("descriptor_b");
-  const base::Value::List* descriptor_c_labels =
+  const base::ListValue* descriptor_c_labels =
       result->GetDict().FindList("descriptor_c");
   if (!descriptor_a || !descriptor_b || !descriptor_c_labels) {
     DVLOG(1) << "Parsing JSON failed: no valid descriptors.";
@@ -667,7 +667,7 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
   std::vector<side_panel::customize_chrome::mojom::GroupPtr> mojo_group_list;
   if (descriptor_a) {
     for (const auto& descriptor : *descriptor_a) {
-      const base::Value::Dict& descriptor_a_dict = descriptor.GetDict();
+      const base::DictValue& descriptor_a_dict = descriptor.GetDict();
       auto* category = descriptor_a_dict.FindString("category");
       auto* label_values = descriptor_a_dict.FindList("labels");
       if (!category || !label_values) {
@@ -701,7 +701,7 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
       mojo_descriptor_b_list;
   if (descriptor_b) {
     for (const auto& descriptor : *descriptor_b) {
-      const base::Value::Dict& descriptor_b_dict = descriptor.GetDict();
+      const base::DictValue& descriptor_b_dict = descriptor.GetDict();
       auto* label = descriptor_b_dict.FindString("label");
       auto* image_path = descriptor_b_dict.FindString("image");
       if (!label || !image_path) {
@@ -846,8 +846,8 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
     if (!inspiration.is_dict()) {
       continue;
     }
-    const base::Value::Dict& inspiration_dict = inspiration.GetDict();
-    const base::Value::List* images = inspiration_dict.FindList("images");
+    const base::DictValue& inspiration_dict = inspiration.GetDict();
+    const base::ListValue* images = inspiration_dict.FindList("images");
     const std::string* descriptor_a =
         inspiration_dict.FindString("descriptor_a");
     if (!images || !descriptor_a) {
@@ -881,7 +881,7 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
       mojo_inspiration_group->descriptors->mood =
           MakeKeyLabel(*descriptor_c, *descriptor_c_label);
     }
-    if (const base::Value::Dict* descriptor_d_dict =
+    if (const base::DictValue* descriptor_d_dict =
             inspiration_dict.FindDict("descriptor_d")) {
       if (const std::string* descriptor_d_name =
               descriptor_d_dict->FindString("name")) {
@@ -894,7 +894,7 @@ void WallpaperSearchHandler::OnInspirationsJsonParsed(
     std::vector<side_panel::customize_chrome::mojom::InspirationPtr>
         mojo_inspiration_list;
     for (const auto& image : *images) {
-      const base::Value::Dict& image_dict = image.GetDict();
+      const base::DictValue& image_dict = image.GetDict();
       const std::string* background_image =
           image_dict.FindString("background_image");
       const std::string* thumbnail_image =

@@ -98,7 +98,7 @@ class WhatsNewHandlerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
   base::test::ScopedFeatureList feature_list_;
-  base::Value::List mock_module_data_;
+  base::ListValue mock_module_data_;
   raw_ptr<MockWhatsNewStorageService> mock_storage_service_;
 
   // NOTE: The initialization order of these members matters.

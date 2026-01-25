@@ -84,8 +84,8 @@ void ReportNumberOfPrinters(size_t number);
 void ReportPrintDocumentTypeHistograms(PrintDocumentTypeBuckets doctype);
 
 // Track the popularity of print settings and report the stats.
-void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
-                              const base::Value::Dict& preview_settings,
+void ReportPrintSettingsStats(const base::DictValue& print_settings,
+                              const base::DictValue& preview_settings,
                               bool is_pdf);
 
 void ReportUserActionHistogram(UserActionBuckets event);

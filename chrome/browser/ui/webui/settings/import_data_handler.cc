@@ -113,7 +113,7 @@ void ImportDataHandler::StartImport(
                                     source_profile.importer_type);
 }
 
-void ImportDataHandler::HandleImportData(const base::Value::List& args) {
+void ImportDataHandler::HandleImportData(const base::ListValue& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto& list = args;
   CHECK_GE(list.size(), 2u);
@@ -129,7 +129,7 @@ void ImportDataHandler::HandleImportData(const base::Value::List& args) {
     return;
   }
 
-  const base::Value::Dict& type_dict = types.GetDict();
+  const base::DictValue& type_dict = types.GetDict();
   uint16_t selected_items = user_data_importer::NONE;
   if (*type_dict.FindBool(prefs::kImportDialogAutofillFormData)) {
     selected_items |= user_data_importer::AUTOFILL_FORM_DATA;
@@ -161,7 +161,7 @@ void ImportDataHandler::HandleImportData(const base::Value::List& args) {
 }
 
 void ImportDataHandler::HandleInitializeImportDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -176,7 +176,7 @@ void ImportDataHandler::HandleInitializeImportDialog(
 }
 
 void ImportDataHandler::HandleImportFromBookmarksFile(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (select_file_dialog_) {
@@ -204,13 +204,13 @@ void ImportDataHandler::SendBrowserProfileData(const std::string& callback_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   importer_list_loaded_ = true;
 
-  base::Value::List browser_profiles;
+  base::ListValue browser_profiles;
   for (size_t i = 0; i < importer_list_->count(); ++i) {
     const user_data_importer::SourceProfile& source_profile =
         importer_list_->GetSourceProfileAt(i);
     uint16_t browser_services = source_profile.services_supported;
 
-    base::Value::Dict browser_profile;
+    base::DictValue browser_profile;
     browser_profile.Set("name", source_profile.importer_name);
     browser_profile.Set("index", static_cast<int>(i));
     browser_profile.Set("profileName", source_profile.profile);

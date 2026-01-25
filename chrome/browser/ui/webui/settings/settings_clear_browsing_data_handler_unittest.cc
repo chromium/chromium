@@ -74,7 +74,7 @@ class TestingClearBrowsingDataHandler
                browsing_data::ClearBrowsingDataTab::ADVANCED);
   }
 
-  void HandleRestartCounters(const base::Value::List& args) {
+  void HandleRestartCounters(const base::ListValue& args) {
     settings::ClearBrowsingDataHandler::HandleRestartCounters(args);
   }
 
@@ -191,7 +191,7 @@ void ClearBrowsingDataHandlerUnitTest::VerifySearchHistoryWebUIUpdate(
     if (!event || *event != "update-sync-state") {
       continue;
     }
-    const base::Value::Dict* arg2_dict = data.arg2()->GetIfDict();
+    const base::DictValue* arg2_dict = data.arg2()->GetIfDict();
     if (!arg2_dict) {
       continue;
     }
@@ -231,10 +231,10 @@ TemplateURL* ClearBrowsingDataHandlerUnitTest::AddSearchEngine(
 TEST_F(ClearBrowsingDataHandlerUnitTest,
        ClearBrowsingData_EmmitsDeleteMetrics) {
   base::HistogramTester histogram_tester;
-  base::Value::List args;
+  base::ListValue args;
 
   args.Append("fooCallback");
-  args.Append(base::Value::List());
+  args.Append(base::ListValue());
   args.Append(1);
 
   test_web_ui_.HandleReceivedMessage("clearBrowsingData", args);
@@ -250,9 +250,9 @@ TEST_F(ClearBrowsingDataHandlerUnitTest,
 TEST_F(ClearBrowsingDataHandlerUnitTest, ClearBrowsingData_ShowsToast) {
   EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append("fooCallback");
-  args.Append(base::Value::List());
+  args.Append(base::ListValue());
   args.Append(1);
   test_web_ui_.HandleReceivedMessage("clearBrowsingData", args);
 
@@ -291,7 +291,7 @@ TEST_F(ClearBrowsingDataHandlerUnitTest,
 }
 
 TEST_F(ClearBrowsingDataHandlerUnitTest, HandleRestartCounters) {
-  base::Value::List basic_args;
+  base::ListValue basic_args;
   basic_args.Append(true /* basic */);
   basic_args.Append(static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
 
@@ -307,7 +307,7 @@ TEST_F(ClearBrowsingDataHandlerUnitTest, HandleRestartCounters) {
   testing::Mock::VerifyAndClearExpectations(handler_->basic_counter());
   testing::Mock::VerifyAndClearExpectations(handler_->advanced_counter());
 
-  base::Value::List advanced_args;
+  base::ListValue advanced_args;
   advanced_args.Append(false /* basic */);
   advanced_args.Append(static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
 

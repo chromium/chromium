@@ -387,7 +387,7 @@ std::string GetDisplayNameForPattern(Profile* profile,
 // Returns exceptions constructed from the policy-set allowed URLs
 // for the content settings |type| mic or camera.
 void GetPolicyAllowedUrls(ContentSettingsType type,
-                          std::vector<base::Value::Dict>* exceptions,
+                          std::vector<base::DictValue>* exceptions,
                           content::WebUI* web_ui,
                           bool incognito) {
   DCHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
@@ -395,7 +395,7 @@ void GetPolicyAllowedUrls(ContentSettingsType type,
 
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* prefs = profile->GetPrefs();
-  const base::Value::List& policy_urls =
+  const base::ListValue& policy_urls =
       prefs->GetList(type == ContentSettingsType::MEDIASTREAM_MIC
                          ? prefs::kAudioCaptureAllowedUrls
                          : prefs::kVideoCaptureAllowedUrls);
@@ -774,8 +774,8 @@ std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
 // the web extent of a hosted |app|.
 void AddExceptionForHostedApp(const std::string& url_pattern,
                               const extensions::Extension& app,
-                              base::Value::List* exceptions) {
-  base::Value::Dict exception;
+                              base::ListValue* exceptions) {
+  base::DictValue exception;
 
   std::string setting_string =
       content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW);
@@ -793,18 +793,17 @@ void AddExceptionForHostedApp(const std::string& url_pattern,
   exceptions->Append(std::move(exception));
 }
 
-// Create a base::Value::Dict that will act as a data source for a single row
+// Create a base::DictValue that will act as a data source for a single row
 // for a File System Access permission grant.
-base::Value::Dict GetFileSystemExceptionForPage(
-    ContentSettingsType content_type,
-    Profile* profile,
-    const std::string& origin,
-    const base::FilePath& file_path,
-    const ContentSetting& setting,
-    SiteSettingSource source,
-    bool incognito,
-    bool is_embargoed) {
-  base::Value::Dict exception;
+base::DictValue GetFileSystemExceptionForPage(ContentSettingsType content_type,
+                                              Profile* profile,
+                                              const std::string& origin,
+                                              const base::FilePath& file_path,
+                                              const ContentSetting& setting,
+                                              SiteSettingSource source,
+                                              bool incognito,
+                                              bool is_embargoed) {
+  base::DictValue exception;
   exception.Set(kOrigin, origin);
   // TODO(crbug.com/40101962): Replace `LossyDisplayName` method with a
   // new method that returns the full file path in a human-readable format.
@@ -836,9 +835,9 @@ std::u16string GetExpirationDescription(const base::Time& expiration) {
                                           days);
 }
 
-// Create a base::Value::Dict that will act as a data source for a single row
+// Create a base::DictValue that will act as a data source for a single row
 // in a HostContentSettingsMap-controlled exceptions table (e.g., cookies).
-base::Value::Dict GetExceptionForPage(
+base::DictValue GetExceptionForPage(
     ContentSettingsType content_type,
     Profile* profile,
     const ContentSettingsPattern& pattern,
@@ -849,7 +848,7 @@ base::Value::Dict GetExceptionForPage(
     const base::Time& expiration,
     bool incognito,
     bool is_embargoed) {
-  base::Value::Dict exception;
+  base::DictValue exception;
   exception.Set(kType, ContentSettingsTypeToGroupName(content_type));
   exception.Set(kOrigin, pattern.ToString());
   exception.Set(kDisplayName, display_name);
@@ -910,7 +909,7 @@ std::string GetStorageAccessDisplayNameForPattern(
   return pattern.ToString();
 }
 
-base::Value::Dict GetStorageAccessExceptionForPage(
+base::DictValue GetStorageAccessExceptionForPage(
     Profile* profile,
     const ContentSettingsPattern& pattern,
     const std::string& display_name,
@@ -918,7 +917,7 @@ base::Value::Dict GetStorageAccessExceptionForPage(
     const std::vector<StorageAccessEmbeddingException>& exceptions) {
   CHECK(!exceptions.empty());
 
-  base::Value::Dict exception;
+  base::DictValue exception;
   exception.Set(kOrigin, pattern.ToString());
   exception.Set(kDisplayName, display_name);
   std::string setting_string =
@@ -941,7 +940,7 @@ base::Value::Dict GetStorageAccessExceptionForPage(
     }
 
     exception.Set(kIncognito, embedding_sa_exception.is_incognito);
-    exception.Set(kExceptions, base::Value::List());
+    exception.Set(kExceptions, base::ListValue());
     return exception;
   }
 
@@ -955,11 +954,11 @@ base::Value::Dict GetStorageAccessExceptionForPage(
   exception.Set(kOpenDescription,
                 l10n_util::GetStringUTF16(open_description_id));
 
-  base::Value::List embedding_origins;
+  base::ListValue embedding_origins;
   for (auto& embedding_sa_exception : exceptions) {
     ContentSettingsPattern secondary_pattern =
         embedding_sa_exception.secondary_pattern;
-    base::Value::Dict embedding_exception;
+    base::DictValue embedding_exception;
     embedding_exception.Set(
         kEmbeddingOrigin,
         secondary_pattern == ContentSettingsPattern::Wildcard()
@@ -1098,7 +1097,7 @@ void GetExceptionsForContentType(ContentSettingsType type,
                                  Profile* profile,
                                  content::WebUI* web_ui,
                                  bool incognito,
-                                 base::Value::List* exceptions) {
+                                 base::ListValue* exceptions) {
   // Group settings by primary_pattern.
   RawPatternSettings all_patterns_settings;
 
@@ -1107,8 +1106,7 @@ void GetExceptionsForContentType(ContentSettingsType type,
 
   // Keep the exceptions sorted by provider so they will be displayed in
   // precedence order.
-  std::map<ProviderType, std::vector<base::Value::Dict>>
-      all_provider_exceptions;
+  std::map<ProviderType, std::vector<base::DictValue>> all_provider_exceptions;
 
   for (const auto& [primary_pattern_and_source, one_settings] :
        all_patterns_settings) {
@@ -1162,7 +1160,7 @@ void GetStorageAccessExceptions(ContentSetting content_setting,
                                 Profile* profile,
                                 Profile* incognito_profile,
                                 content::WebUI* web_ui,
-                                base::Value::List* exceptions) {
+                                base::ListValue* exceptions) {
   ContentSettingsType type = ContentSettingsType::STORAGE_ACCESS;
 
   // Group settings by primary_pattern.
@@ -1211,7 +1209,7 @@ void GetStorageAccessExceptions(ContentSetting content_setting,
 
 void GetContentCategorySetting(const HostContentSettingsMap* map,
                                ContentSettingsType content_type,
-                               base::Value::Dict* object) {
+                               base::DictValue* object) {
   auto provider = ProviderType::kDefaultProvider;
   std::string setting = content_settings::ContentSettingToString(
       map->GetDefaultContentSetting(content_type, &provider));
@@ -1291,7 +1289,7 @@ GetSingleOriginExceptionsForContentType(HostContentSettingsMap* map,
   return entries;
 }
 
-void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
+void GetFileSystemGrantedEntries(std::vector<base::DictValue>* exceptions,
                                  Profile* profile,
                                  bool incognito) {
   ChromeFileSystemAccessPermissionContext* permission_context =
@@ -1314,10 +1312,10 @@ void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
     }
   }
   // Sort exceptions by origin name, alphabetically.
-  std::ranges::sort(*exceptions, [](const base::Value::Dict& lhs,
-                                    const base::Value::Dict& rhs) {
-    return lhs.Find(kOrigin)->GetString() < rhs.Find(kOrigin)->GetString();
-  });
+  std::ranges::sort(
+      *exceptions, [](const base::DictValue& lhs, const base::DictValue& rhs) {
+        return lhs.Find(kOrigin)->GetString() < rhs.Find(kOrigin)->GetString();
+      });
 }
 
 const ChooserTypeNameEntry* ChooserTypeFromGroupName(std::string_view name) {
@@ -1329,16 +1327,16 @@ const ChooserTypeNameEntry* ChooserTypeFromGroupName(std::string_view name) {
   return nullptr;
 }
 
-// Create a base::Value::Dict that will act as a data source for a single row
+// Create a base::DictValue that will act as a data source for a single row
 // in a chooser permission exceptions table. The chooser permission will contain
 // a list of site exceptions that correspond to the exception.
-base::Value::Dict CreateChooserExceptionObject(
+base::DictValue CreateChooserExceptionObject(
     const std::u16string& display_name,
     const base::Value& object,
     const std::string& chooser_type,
     const ChooserExceptionDetails& chooser_exception_details,
     Profile* profile) {
-  base::Value::Dict exception;
+  base::DictValue exception;
 
   std::string setting_string =
       content_settings::ContentSettingToString(CONTENT_SETTING_DEFAULT);
@@ -1349,8 +1347,7 @@ base::Value::Dict CreateChooserExceptionObject(
   exception.Set(kChooserType, chooser_type);
 
   // Order the sites by the provider precedence order.
-  std::map<SiteSettingSource, std::vector<base::Value::Dict>>
-      all_provider_sites;
+  std::map<SiteSettingSource, std::vector<base::DictValue>> all_provider_sites;
   for (const auto& details : chooser_exception_details) {
     const GURL& origin = std::get<0>(details);
     const SiteSettingSource source = std::get<1>(details);
@@ -1362,7 +1359,7 @@ base::Value::Dict CreateChooserExceptionObject(
             .name);
 
     auto& this_provider_sites = all_provider_sites[source];
-    base::Value::Dict site;
+    base::DictValue site;
     site.Set(kOrigin, origin.spec());
     site.Set(kDisplayName, site_display_name);
     site.Set(kSetting, setting_string);
@@ -1371,7 +1368,7 @@ base::Value::Dict CreateChooserExceptionObject(
     this_provider_sites.push_back(std::move(site));
   }
 
-  base::Value::List sites;
+  base::ListValue sites;
   for (auto& one_provider_sites : all_provider_sites) {
     for (auto& site : one_provider_sites.second) {
       sites.Append(std::move(site));
@@ -1382,10 +1379,10 @@ base::Value::Dict CreateChooserExceptionObject(
   return exception;
 }
 
-base::Value::List GetChooserExceptionListFromProfile(
+base::ListValue GetChooserExceptionListFromProfile(
     Profile* profile,
     const ChooserTypeNameEntry& chooser_type) {
-  base::Value::List exceptions;
+  base::ListValue exceptions;
   ContentSettingsType content_type =
       ContentSettingsTypeFromGroupName(std::string(chooser_type.name));
   DCHECK(content_type != ContentSettingsType::DEFAULT);

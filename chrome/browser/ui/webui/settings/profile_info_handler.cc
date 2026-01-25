@@ -96,7 +96,7 @@ void ProfileInfoHandler::OnProfileAvatarChanged(
   PushProfileInfo();
 }
 
-void ProfileInfoHandler::HandleGetProfileInfo(const base::Value::List& args) {
+void ProfileInfoHandler::HandleGetProfileInfo(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -106,7 +106,7 @@ void ProfileInfoHandler::HandleGetProfileInfo(const base::Value::List& args) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-void ProfileInfoHandler::HandleGetProfileStats(const base::Value::List& args) {
+void ProfileInfoHandler::HandleGetProfileStats(const base::ListValue& args) {
   AllowJavascript();
 
   ProfileStatisticsFactory::GetForProfile(profile_)->GatherStatistics(
@@ -131,7 +131,7 @@ void ProfileInfoHandler::PushProfileInfo() {
   FireWebUIListener(kProfileInfoChangedEventName, GetAccountNameAndIcon());
 }
 
-base::Value::Dict ProfileInfoHandler::GetAccountNameAndIcon() {
+base::DictValue ProfileInfoHandler::GetAccountNameAndIcon() {
   std::string name;
   std::string icon_url;
 
@@ -163,7 +163,7 @@ base::Value::Dict ProfileInfoHandler::GetAccountNameAndIcon() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("name", name);
   response.Set("iconUrl", icon_url);
   return response;

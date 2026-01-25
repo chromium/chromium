@@ -75,7 +75,7 @@ void PrivacySandboxDialogHandler::RegisterMessages() {
 }
 
 void PrivacySandboxDialogHandler::HandleRecordPrivacyPolicyLoadTime(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!IsJavascriptAllowed()) {
     return;
   }
@@ -92,7 +92,7 @@ void PrivacySandboxDialogHandler::HandleRecordPrivacyPolicyLoadTime(
 }
 
 void PrivacySandboxDialogHandler::HandleShouldShowAdTopicsContentParity(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   ResolveJavascriptCallback(
       args[0], base::FeatureList::IsEnabled(
@@ -126,7 +126,7 @@ void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
 }
 
 void PrivacySandboxDialogHandler::HandlePromptActionOccurred(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!IsJavascriptAllowed()) {
     return;
   }
@@ -168,7 +168,7 @@ void PrivacySandboxDialogHandler::HandlePromptActionOccurred(
 }
 
 void PrivacySandboxDialogHandler::HandleResizeDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   const base::Value& callback_id = args[0];
@@ -180,7 +180,7 @@ void PrivacySandboxDialogHandler::HandleResizeDialog(
 }
 
 void PrivacySandboxDialogHandler::HandleShowDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK(dialog_callback_);

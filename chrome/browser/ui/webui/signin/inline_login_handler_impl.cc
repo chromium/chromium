@@ -134,7 +134,7 @@ void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
   // Provider for Windows.
 #if BUILDFLAG(IS_WIN)
   std::string json_retval;
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set(credential_provider::kKeyEmail, base::Value(email_));
   args.Set(credential_provider::kKeyPassword, base::Value(password_));
   args.Set(credential_provider::kKeyId, base::Value(gaia_id_.ToString()));
@@ -175,7 +175,7 @@ InlineLoginHandlerImpl::InlineLoginHandlerImpl() = default;
 InlineLoginHandlerImpl::~InlineLoginHandlerImpl() = default;
 
 // static
-void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
+void InlineLoginHandlerImpl::SetExtraInitParams(base::DictValue& params) {
   params.Set("service", "chromiumsync");
 
   const GURL& url = GaiaUrls::GetInstance()->embedded_signin_url();
@@ -343,7 +343,7 @@ void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
   CHECK_EQ(signin::GetSigninReasonForEmbeddedPromoURL(current_url),
            signin_metrics::Reason::kFetchLstOnly);
 
-  base::Value::Dict error_value;
+  base::DictValue error_value;
 #if BUILDFLAG(IS_WIN)
   // If the error contains an integer error code, send it as part of the
   // result.

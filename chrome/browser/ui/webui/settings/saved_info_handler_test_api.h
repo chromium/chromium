@@ -16,15 +16,15 @@ class SavedInfoHandlerTestApi {
   explicit SavedInfoHandlerTestApi(SavedInfoHandler* handler)
       : handler_(*handler) {}
 
-  void HandleGetPasswordCount(const base::Value::List& args) {
+  void HandleGetPasswordCount(const base::ListValue& args) {
     handler_->HandleGetPasswordCount(args);
   }
 
-  void HandleGetLoyaltyCardsCount(const base::Value::List& args) {
+  void HandleGetLoyaltyCardsCount(const base::ListValue& args) {
     handler_->HandleGetLoyaltyCardsCount(args);
   }
 
-  void HandleRequestDataManagementSurvey(const base::Value::List& args) {
+  void HandleRequestDataManagementSurvey(const base::ListValue& args) {
     handler_->HandleRequestDataManagementSurvey(args);
   }
 

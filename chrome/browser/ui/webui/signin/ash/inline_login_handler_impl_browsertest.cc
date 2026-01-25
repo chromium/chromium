@@ -114,7 +114,7 @@ DeviceAccountInfo GetChildDeviceAccountInfo() {
 }
 
 base::Value GetCompleteLoginArgs(const std::string& email) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kEmailKey, base::Value(email));
   dict.Set(kPasswordKey, base::Value("fake password"));
   dict.Set(kGaiaIdKey,
@@ -141,7 +141,7 @@ class TestInlineLoginHandler : public InlineLoginHandlerImpl {
   TestInlineLoginHandler(const TestInlineLoginHandler&) = delete;
   TestInlineLoginHandler& operator=(const TestInlineLoginHandler&) = delete;
 
-  void SetExtraInitParams(base::Value::Dict& params) override {
+  void SetExtraInitParams(base::DictValue& params) override {
     InlineLoginHandlerImpl::SetExtraInitParams(params);
   }
 };
@@ -298,24 +298,24 @@ class InlineLoginHandlerTest
   }
 
   void CompleteConsentLogForChildUser(const std::string& secondary_email) {
-    base::Value::List call_args;
+    base::ListValue call_args;
     call_args.Append(secondary_email);
     call_args.Append(kToSVersion);
 
-    base::Value::List list_args;
+    base::ListValue list_args;
     list_args.Append(kConsentLoggedCallback);
     list_args.Append(std::move(call_args));
 
     web_ui()->HandleReceivedMessage("consentLogged", list_args);
   }
 
-  void SetExtraInitParamsInHandler(base::Value::Dict& dict) {
+  void SetExtraInitParamsInHandler(base::DictValue& dict) {
     handler_->SetExtraInitParams(dict);
   }
 
   std::string GetDeviceIdFromWebview() {
     // Call "getDeviceId".
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kHandleFunctionName);
     web_ui()->HandleReceivedMessage(kGetDeviceIdMessage, args);
     base::RunLoop().RunUntilIdle();
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, NewAccountAdditionSuccess) {
       profile()->GetPath().value()));
 
   // Call "completeLogin".
-  base::Value::List args;
+  base::ListValue args;
   args.Append(GetCompleteLoginArgs(kSecondaryAccount1Email));
   web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest, PrimaryReauthenticationSuccess) {
       profile()->GetPath().value()));
 
   // Call "completeLogin".
-  base::Value::List args;
+  base::ListValue args;
   args.Append(GetCompleteLoginArgs(GetDeviceAccountInfo().email));
   web_ui()->HandleReceivedMessage(kCompleteLoginMessage, args);
 
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
                        GetDeviceIdReturnsKnownUserDeviceIdForDeviceAccount) {
   user_manager::KnownUser known_user{g_browser_process->local_state()};
   known_user.SetDeviceId(primary_account_id(), kFakeDeviceId);
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("email", primary_account_id().GetUserEmail());
   SetExtraInitParamsInHandler(params);
 
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_P(
     GetDeviceIdDoesNotReturnKnownUserDeviceIdForSecondaryAccount) {
   user_manager::KnownUser known_user{g_browser_process->local_state()};
   known_user.SetDeviceId(primary_account_id(), kFakeDeviceId);
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("email", kSecondaryAccount1Email);
   SetExtraInitParamsInHandler(params);
 
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
                        FlowNameForDeviceAccountReauthentication) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("email", primary_account_id().GetUserEmail());
   SetExtraInitParamsInHandler(params);
 
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
     return;
   }
 
-  base::Value::Dict params;
+  base::DictValue params;
   SetExtraInitParamsInHandler(params);
 
   std::string* flow_name = params.FindString("flow");
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
     return;
   }
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("email", kSecondaryAccount1Email);
   SetExtraInitParamsInHandler(params);
 
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
     return;
   }
 
-  base::Value::Dict params;
+  base::DictValue params;
   SetExtraInitParamsInHandler(params);
 
   std::string* flow_name = params.FindString("flow");
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTest,
     return;
   }
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("email", kSecondaryAccount1Email);
   SetExtraInitParamsInHandler(params);
 

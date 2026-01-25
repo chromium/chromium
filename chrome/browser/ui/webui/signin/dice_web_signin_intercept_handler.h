@@ -43,16 +43,16 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   const AccountInfo& primary_account();
   const AccountInfo& intercepted_account();
 
-  void HandleAccept(const base::Value::List& args);
-  void HandleCancel(const base::Value::List& args);
-  void HandlePageLoaded(const base::Value::List& args);
-  void HandleInitializedWithHeight(const base::Value::List& args);
-  void HandleChromeSigninPageLoaded(const base::Value::List& args);
+  void HandleAccept(const base::ListValue& args);
+  void HandleCancel(const base::ListValue& args);
+  void HandlePageLoaded(const base::ListValue& args);
+  void HandleInitializedWithHeight(const base::ListValue& args);
+  void HandleChromeSigninPageLoaded(const base::ListValue& args);
 
   // Gets the values sent to javascript.
-  base::Value::Dict GetInterceptionParametersValue();
+  base::DictValue GetInterceptionParametersValue();
   // Get the values for ChromeSignin bubble sent to javascript.
-  base::Value::Dict GetInterceptionChromeSigninParametersValue();
+  base::DictValue GetInterceptionChromeSigninParametersValue();
 
   // The dialog string is different when the device is managed. This function
   // returns whether the version for managed devices should be used.

@@ -606,7 +606,7 @@ void CustomizeChromePageHandler::SetModuleDisabled(const std::string& module_id,
                                                    bool disabled) {
   DisableModuleAutoRemoval(profile_, module_id);
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
-  base::Value::List& list = update.Get();
+  base::ListValue& list = update.Get();
   if (disabled) {
     if (!list.contains(module_id)) {
       list.Append(module_id);

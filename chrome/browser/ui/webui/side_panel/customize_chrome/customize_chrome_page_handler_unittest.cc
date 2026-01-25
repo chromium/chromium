@@ -377,8 +377,8 @@ class CustomizeChromePageHandlerTest : public testing::Test {
 
   void SetEnterpriseShortcutsPolicy(bool has_policy) {
     if (has_policy) {
-      base::Value::List enterprise_shortcuts;
-      enterprise_shortcuts.Append(base::Value::Dict()
+      base::ListValue enterprise_shortcuts;
+      enterprise_shortcuts.Append(base::DictValue()
                                       .Set("title", "test")
                                       .Set("url", "https://test.com"));
       profile().GetPrefs()->SetList(
@@ -386,8 +386,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
           std::move(enterprise_shortcuts));
     } else {
       profile().GetPrefs()->SetList(
-          ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
-          base::Value::List());
+          ntp_tiles::prefs::kEnterpriseShortcutsPolicyList, base::ListValue());
     }
   }
 
@@ -1022,7 +1021,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThirdPartyTheme) {
   auto* extension_registry = extensions::ExtensionRegistry::Get(profile_.get());
   scoped_refptr<const extensions::Extension> extension;
   extension = extensions::ExtensionBuilder()
-                  .SetManifest(base::Value::Dict()
+                  .SetManifest(base::DictValue()
                                    .Set("name", "Foo Extension")
                                    .Set("version", "1.0.0")
                                    .Set("manifest_version", 2))
@@ -1568,7 +1567,7 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest,
             modules_settings = std::move(modules_settings_arg);
           });
 
-  base::Value::List hidden_modules_list;
+  base::ListValue hidden_modules_list;
   hidden_modules_list.Append(ntp_modules::kMostRelevantTabResumptionModuleId);
 
   profile().GetPrefs()->SetList(prefs::kNtpHiddenModules,

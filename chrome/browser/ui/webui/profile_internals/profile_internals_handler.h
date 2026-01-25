@@ -29,18 +29,18 @@ class ProfileInternalsHandler : public content::WebUIMessageHandler {
  private:
   friend class ProfileInternalsHandlerTest;
 
-  void HandleGetProfilesList(const base::Value::List& args);
+  void HandleGetProfilesList(const base::ListValue& args);
 
   void PushProfilesList();
 
-  static base::Value::Dict CreateProfileEntry(
+  static base::DictValue CreateProfileEntry(
       const ProfileAttributesEntry* entry);
 
   static std::string CountryIdToDebugString(
       std::optional<regional_capabilities::CountryIdHolder> country_id);
 
   // Returns the list of profiles ordered by the local profile name.
-  base::Value::List GetProfilesList();
+  base::ListValue GetProfilesList();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PROFILE_INTERNALS_PROFILE_INTERNALS_HANDLER_H_

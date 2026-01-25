@@ -62,7 +62,7 @@ void ChromeSyncInternalsMessageHandler::OnJavascriptDisallowed() {
 void ChromeSyncInternalsMessageHandler::AllowJavascriptAndHandleMessage(
     const browser_sync::SyncInternalsMessageHandler::PageMessageHandler&
         handler,
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   handler.Run(args);
 }

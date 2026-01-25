@@ -80,24 +80,24 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   bool HasPromotionBeenChecked() const { return promotion_checked_; }
 
  private:
-  void HandleExportPoliciesJson(const base::Value::List& args);
-  void HandleListenPoliciesUpdates(const base::Value::List& args);
-  void HandleReloadPolicies(const base::Value::List& args);
-  void HandleCopyPoliciesJson(const base::Value::List& args);
-  void HandleSetLocalTestPolicies(const base::Value::List& args);
-  void HandleRevertLocalTestPolicies(const base::Value::List& args);
-  void HandleRestartBrowser(const base::Value::List& args);
-  void HandleSetUserAffiliated(const base::Value::List& args);
-  void HandleGetAppliedTestPolicies(const base::Value::List& args);
-  void HandleShouldShowPromotion(const base::Value::List& args);
-  void HandleSetBannerDismissed(const base::Value::List& args);
-  void HandleRecordBannerRedirected(const base::Value::List& args);
+  void HandleExportPoliciesJson(const base::ListValue& args);
+  void HandleListenPoliciesUpdates(const base::ListValue& args);
+  void HandleReloadPolicies(const base::ListValue& args);
+  void HandleCopyPoliciesJson(const base::ListValue& args);
+  void HandleSetLocalTestPolicies(const base::ListValue& args);
+  void HandleRevertLocalTestPolicies(const base::ListValue& args);
+  void HandleRestartBrowser(const base::ListValue& args);
+  void HandleSetUserAffiliated(const base::ListValue& args);
+  void HandleGetAppliedTestPolicies(const base::ListValue& args);
+  void HandleShouldShowPromotion(const base::ListValue& args);
+  void HandleSetBannerDismissed(const base::ListValue& args);
+  void HandleRecordBannerRedirected(const base::ListValue& args);
 #if !BUILDFLAG(IS_CHROMEOS)
-  void HandleUploadReport(const base::Value::List& args);
+  void HandleUploadReport(const base::ListValue& args);
 #endif
 
   // Handler functions for chrome://policy/logs.
-  void HandleGetPolicyLogs(const base::Value::List& args);
+  void HandleGetPolicyLogs(const base::ListValue& args);
 
   // Send information about the current policy values to the UI. Information is
   // sent in two parts to the UI:

@@ -149,7 +149,7 @@ void ResetSettingsHandler::RegisterMessages() {
 }
 
 void ResetSettingsHandler::HandleResetProfileSettings(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(3U, args.size());
@@ -184,7 +184,7 @@ void ResetSettingsHandler::OnResetProfileSettingsDone(
 }
 
 void ResetSettingsHandler::HandleGetReportedSettings(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -196,7 +196,7 @@ void ResetSettingsHandler::HandleGetReportedSettings(
 }
 
 void ResetSettingsHandler::HandleGetTamperedPreferencePaths(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   // We check for expiration before sending the pref list to the UI.
@@ -216,12 +216,12 @@ void ResetSettingsHandler::HandleGetTamperedPreferencePaths(
   const base::Value& callback_id = args[0];
 
   if (!base::FeatureList::IsEnabled(features::kShowResetProfileBannerV2)) {
-    ResolveJavascriptCallback(callback_id, base::Value(base::Value::List()));
+    ResolveJavascriptCallback(callback_id, base::Value(base::ListValue()));
     return;
   }
 
-  base::Value::List tampered_paths;
-  const base::Value::List& tampered_prefs =
+  base::ListValue tampered_paths;
+  const base::ListValue& tampered_prefs =
       chrome_prefs::GetTamperedPrefList(profile_);
 
   // Using a flat_set to avoid duplicates.
@@ -249,7 +249,7 @@ void ResetSettingsHandler::HandleGetTamperedPreferencePaths(
     }
   }
 
-  base::Value::List result;
+  base::ListValue result;
   for (const auto& setting : changed_settings) {
     result.Append(setting);
   }
@@ -258,27 +258,27 @@ void ResetSettingsHandler::HandleGetTamperedPreferencePaths(
 }
 
 void ResetSettingsHandler::OnGetReportedSettingsDone(std::string callback_id) {
-  base::Value::List list =
+  base::ListValue list =
       GetReadableFeedbackForSnapshot(profile_, *setting_snapshot_);
   ResolveJavascriptCallback(base::Value(callback_id), list);
 }
 
 void ResetSettingsHandler::OnShowResetProfileDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!GetResetter()->IsActive()) {
     setting_snapshot_ = std::make_unique<ResettableSettingsSnapshot>(profile_);
   }
 }
 
 void ResetSettingsHandler::OnHideResetProfileDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!GetResetter()->IsActive()) {
     setting_snapshot_.reset();
   }
 }
 
 void ResetSettingsHandler::OnHideResetProfileBanner(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   chrome_prefs::ClearResetTime(profile_);
   chrome_prefs::ClearTamperedPrefList(profile_);
 }
@@ -304,7 +304,7 @@ ProfileResetter* ResetSettingsHandler::GetResetter() {
 }
 
 void ResetSettingsHandler::HandleGetTriggeredResetToolName(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -336,7 +336,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void ResetSettingsHandler::OnShowSanitizeDialog(const base::Value::List& args) {
+void ResetSettingsHandler::OnShowSanitizeDialog(const base::ListValue& args) {
   // TODO(b/357057195) move sanitize functionality functions out of
   // ResetSettingsHandler and only leave the UI parts for ResetSettingsHandler.
   if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {

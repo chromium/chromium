@@ -46,7 +46,7 @@ void SigninErrorHandler::RegisterMessages() {
 }
 
 void SigninErrorHandler::HandleSwitchToExistingProfile(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (duplicate_profile_path_.empty()) {
     return;
   }
@@ -63,11 +63,11 @@ void SigninErrorHandler::HandleSwitchToExistingProfile(
   profiles::SwitchToProfile(path_switching_to, false);
 }
 
-void SigninErrorHandler::HandleConfirm(const base::Value::List& args) {
+void SigninErrorHandler::HandleConfirm(const base::ListValue& args) {
   CloseDialog();
 }
 
-void SigninErrorHandler::HandleLearnMore(const base::Value::List& args) {
+void SigninErrorHandler::HandleLearnMore(const base::ListValue& args) {
   if (!browser_) {
     return;
   }
@@ -76,7 +76,7 @@ void SigninErrorHandler::HandleLearnMore(const base::Value::List& args) {
 }
 
 void SigninErrorHandler::HandleInitializedWithSize(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   if (duplicate_profile_path_.empty()) {
     FireWebUIListener("switch-button-unavailable");

@@ -26,9 +26,9 @@ class HatsHandler : public SettingsPageUIHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-  void HandleTrustSafetyInteractionOccurred(const base::Value::List& args);
+  void HandleTrustSafetyInteractionOccurred(const base::ListValue& args);
 
-  void HandleSecurityPageHatsRequest(const base::Value::List& args);
+  void HandleSecurityPageHatsRequest(const base::ListValue& args);
 
  private:
   friend class HatsHandlerTest;
@@ -98,7 +98,7 @@ class HatsHandler : public SettingsPageUIHandler {
    */
   SurveyStringData GetSecurityPageProductSpecificStringData(
       Profile* profile,
-      const base::Value::List& args);
+      const base::ListValue& args);
 };
 
 }  // namespace settings

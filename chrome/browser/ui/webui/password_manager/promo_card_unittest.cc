@@ -135,7 +135,7 @@ TEST_F(PromoCardBaseTest, InitAddsPref) {
   FakePromoCard card(pref_service());
   // There should be a record now in prefs since the constructor takes care of
   // registering it when it doesn't exist.
-  const base::Value::List& promo_card_prefs =
+  const base::ListValue& promo_card_prefs =
       pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
   EXPECT_THAT(promo_card_prefs,
               ElementsAre(PromoCardPrefInfo(PrefInfo{card.GetPromoID()})));
@@ -144,7 +144,7 @@ TEST_F(PromoCardBaseTest, InitAddsPref) {
 TEST_F(PromoCardBaseTest, PrefValuesReflectedInCard) {
   base::Time now = base::Time::Now();
   {
-    base::Value::Dict promo_card_pref_entry;
+    base::DictValue promo_card_pref_entry;
     promo_card_pref_entry.Set("id", FakePromoCard::kId);
     promo_card_pref_entry.Set("number_of_times_shown", 31);
     promo_card_pref_entry.Set("last_time_shown", base::TimeToValue(now));
@@ -156,7 +156,7 @@ TEST_F(PromoCardBaseTest, PrefValuesReflectedInCard) {
   }
 
   FakePromoCard card(pref_service());
-  const base::Value::List& promo_card_prefs =
+  const base::ListValue& promo_card_prefs =
       pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
   ASSERT_THAT(promo_card_prefs, ElementsAre(PromoCardPrefInfo(PrefInfo{
                                     card.GetPromoID(), 31, now, true})));
@@ -176,7 +176,7 @@ TEST_F(PromoCardBaseTest, OnPromoCardDismissed) {
   card.OnPromoCardDismissed();
   EXPECT_TRUE(card.was_dismissed());
 
-  const base::Value::List& promo_card_prefs =
+  const base::ListValue& promo_card_prefs =
       pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
   ASSERT_THAT(promo_card_prefs,
               ElementsAre(PromoCardPrefInfo(
@@ -195,7 +195,7 @@ TEST_F(PromoCardBaseTest, OnPromoCardShown) {
   EXPECT_EQ(1, card.number_of_times_shown());
   EXPECT_EQ(base::Time::Now(), card.last_time_shown());
 
-  const base::Value::List& promo_card_prefs =
+  const base::ListValue& promo_card_prefs =
       pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
   ASSERT_THAT(promo_card_prefs,
               ElementsAre(PromoCardPrefInfo(

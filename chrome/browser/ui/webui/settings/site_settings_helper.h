@@ -141,15 +141,14 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
 std::string SiteSettingSourceToString(const SiteSettingSource source);
 
 // Helper function to construct a dictionary for a File System exception.
-base::Value::Dict GetFileSystemExceptionForPage(
-    ContentSettingsType content_type,
-    Profile* profile,
-    const std::string& origin,
-    const base::FilePath& file_path,
-    const ContentSetting& setting,
-    SiteSettingSource source,
-    bool incognito,
-    bool is_embargoed = false);
+base::DictValue GetFileSystemExceptionForPage(ContentSettingsType content_type,
+                                              Profile* profile,
+                                              const std::string& origin,
+                                              const base::FilePath& file_path,
+                                              const ContentSetting& setting,
+                                              SiteSettingSource source,
+                                              bool incognito,
+                                              bool is_embargoed = false);
 
 // Calculates the number of days between now and `expiration_timestamp`,
 // timestamp of when a setting is going to expire, and returns the appropriate
@@ -165,7 +164,7 @@ std::u16string GetExpirationDescription(const base::Time& expiration_timestamp);
 
 // Helper function to construct a dictionary for a storage access exceptions
 // grouped by origin.
-base::Value::Dict GetStorageAccessExceptionForPage(
+base::DictValue GetStorageAccessExceptionForPage(
     Profile* profile,
     const ContentSettingsPattern& pattern,
     const std::string& display_name,
@@ -173,7 +172,7 @@ base::Value::Dict GetStorageAccessExceptionForPage(
     const std::vector<StorageAccessEmbeddingException>& exceptions);
 
 // Helper function to construct a dictionary for an exception.
-base::Value::Dict GetExceptionForPage(
+base::DictValue GetExceptionForPage(
     ContentSettingsType content_type,
     Profile* profile,
     const ContentSettingsPattern& pattern,
@@ -188,14 +187,14 @@ base::Value::Dict GetExceptionForPage(
 // Helper function to construct a dictionary for a hosted app exception.
 void AddExceptionForHostedApp(const std::string& url_pattern,
                               const extensions::Extension& app,
-                              base::Value::List* exceptions);
+                              base::ListValue* exceptions);
 
 // Fills in |exceptions| with Values for the given |type| from |profile|.
 void GetExceptionsForContentType(ContentSettingsType type,
                                  Profile* profile,
                                  content::WebUI* web_ui,
                                  bool incognito,
-                                 base::Value::List* exceptions);
+                                 base::ListValue* exceptions);
 
 // Fills in |exceptions| with Values for the Storage Access exception for the
 // given content setting (such as enabled or blocked) from a |profile| and its
@@ -204,14 +203,14 @@ void GetStorageAccessExceptions(ContentSetting content_setting,
                                 Profile* profile,
                                 Profile* incognito_profile,
                                 content::WebUI* web_ui,
-                                base::Value::List* exceptions);
+                                base::ListValue* exceptions);
 
 // Fills in object saying what the current settings is for the category (such as
 // enabled or blocked) and the source of that setting (such preference, policy,
 // or extension).
 void GetContentCategorySetting(const HostContentSettingsMap* map,
                                ContentSettingsType content_type,
-                               base::Value::Dict* object);
+                               base::DictValue* object);
 
 // Retrieves the current setting for a given origin, category pair, the source
 // of that setting, and its display name, which will be different if it's an
@@ -224,7 +223,7 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
                                           SiteSettingSource* source);
 
 // Returns URLs with granted entries from the File System Access API.
-void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
+void GetFileSystemGrantedEntries(std::vector<base::DictValue>* exceptions,
                                  Profile* profile,
                                  bool incognito);
 
@@ -256,7 +255,7 @@ const ChooserTypeNameEntry* ChooserTypeFromGroupName(std::string_view name);
 // * sites: Array<SiteException>
 // The structure of the SiteException objects is the same as the objects
 // returned by GetExceptionForPage().
-base::Value::Dict CreateChooserExceptionObject(
+base::DictValue CreateChooserExceptionObject(
     const std::u16string& display_name,
     const base::Value& object,
     const std::string& chooser_type,
@@ -264,7 +263,7 @@ base::Value::Dict CreateChooserExceptionObject(
     Profile* profile);
 
 // Returns an array of chooser exception objects.
-base::Value::List GetChooserExceptionListFromProfile(
+base::ListValue GetChooserExceptionListFromProfile(
     Profile* profile,
     const ChooserTypeNameEntry& chooser_type);
 

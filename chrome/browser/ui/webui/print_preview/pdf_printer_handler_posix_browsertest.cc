@@ -84,7 +84,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
 
     scoped_refptr<base::RefCountedMemory> dummy_data =
         base::MakeRefCounted<base::RefCountedStaticMemory>(kDummyData);
-    StartPrint(u"dummy-job-title", /*settings=*/base::Value::Dict(), dummy_data,
+    StartPrint(u"dummy-job-title", /*settings=*/base::DictValue(), dummy_data,
                base::DoNothing());
     run_loop_.Run();
   }

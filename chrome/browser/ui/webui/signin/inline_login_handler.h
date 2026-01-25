@@ -69,33 +69,33 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
 
  private:
   // JS callback to prepare for starting auth.
-  void HandleInitializeMessage(const base::Value::List& args);
+  void HandleInitializeMessage(const base::ListValue& args);
 
   // Continue to initialize the authenticator component. It calls
   // |SetExtraInitParams| to set extra init params.
   void ContinueHandleInitializeMessage();
 
   // JS callback to handle tasks after authenticator component loads.
-  virtual void HandleAuthenticatorReadyMessage(const base::Value::List& args) {}
+  virtual void HandleAuthenticatorReadyMessage(const base::ListValue& args) {}
 
   // JS callback to complete login. It calls |CompleteLogin| to do the real
   // work.
-  void HandleCompleteLoginMessage(const base::Value::List& args);
+  void HandleCompleteLoginMessage(const base::ListValue& args);
 
   // Called by HandleCompleteLoginMessage after it gets the GAIA URL's cookies
   // from the CookieManager.
   void HandleCompleteLoginMessageWithCookies(
-      const base::Value::List& args,
+      const base::ListValue& args,
       const net::CookieAccessResultList& cookies,
       const net::CookieAccessResultList& excluded_cookies);
 
   // JS callback to switch the UI from a constrainted dialog to a full tab.
-  void HandleSwitchToFullTabMessage(const base::Value::List& args);
+  void HandleSwitchToFullTabMessage(const base::ListValue& args);
 
   // Handles the web ui message sent when the window is closed from javascript.
-  virtual void HandleDialogClose(const base::Value::List& args);
+  virtual void HandleDialogClose(const base::ListValue& args);
 
-  virtual void SetExtraInitParams(base::Value::Dict& params) {}
+  virtual void SetExtraInitParams(base::DictValue& params) {}
   virtual void CompleteLogin(const CompleteLoginParams& params) = 0;
 
   base::WeakPtrFactory<InlineLoginHandler> weak_ptr_factory_{this};

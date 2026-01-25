@@ -195,7 +195,7 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
             kExpectedProfileImageSize, false /* no_silhouette */)
             .spec();
     std::string passed_picture_url;
-    const base::Value::Dict& dict = call_data.arg2()->GetDict();
+    const base::DictValue& dict = call_data.arg2()->GetDict();
     const std::string* src = dict.FindString("src");
     EXPECT_NE(src, nullptr);
     EXPECT_EQ(expected_picture_url, *src);
@@ -252,7 +252,7 @@ TEST_F(SyncConfirmationHandlerTest, TestAvatarChangeWhenPrimaryAccountReady) {
       "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
@@ -278,7 +278,7 @@ TEST_F(SyncConfirmationHandlerTest, TestScreenModeChangedWhenCapabilityReady) {
       false);
   identity_test_env()->UpdateAccountInfoForAccount(account_info_);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
@@ -302,7 +302,7 @@ TEST_F(SyncConfirmationHandlerTest, TestScreenModeChangeImmuneToAltering) {
       false);
   identity_test_env()->UpdateAccountInfoForAccount(account_info_);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
@@ -329,7 +329,7 @@ TEST_F(SyncConfirmationHandlerTest, TestScreenModeChangeImmuneToAltering) {
 
 TEST_F(SyncConfirmationHandlerTest,
        TestAvatarChangeWhenPrimaryAccountReadyLater) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
@@ -356,7 +356,7 @@ TEST_F(SyncConfirmationHandlerTest,
 
 TEST_F(SyncConfirmationHandlerTest,
        TestSetAccountInfoIgnoredIfSecondaryAccountUpdated) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
@@ -399,7 +399,7 @@ TEST_F(SyncConfirmationHandlerTest,
       "google.com", "full_name", "given_name", "locale",
       "http://picture.example.com/picture.jpg");
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
@@ -418,7 +418,7 @@ TEST_F(SyncConfirmationHandlerTest,
 }
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
 
   handler()->HandleUndo(args);
@@ -435,7 +435,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
   // The consent description consists of strings 1, 2, and 4.
-  base::Value::List consent_description;
+  base::ListValue consent_description;
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText1);
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText2);
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText4);
@@ -444,7 +444,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
   base::Value consent_confirmation(SyncConfirmationHandlerTest::kConsentText5);
 
   // These are passed as parameters to HandleConfirm().
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
   args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
@@ -474,7 +474,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   // The consent description consists of strings 2, 3, and 5.
-  base::Value::List consent_description;
+  base::ListValue consent_description;
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText2);
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText3);
   consent_description.Append(SyncConfirmationHandlerTest::kConsentText5);
@@ -483,7 +483,7 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   base::Value consent_confirmation(SyncConfirmationHandlerTest::kConsentText2);
 
   // These are passed as parameters to HandleGoToSettings().
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
   args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
@@ -520,7 +520,7 @@ TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedImmediately) {
       false);
   identity_test_env()->UpdateAccountInfoForAccount(account_info_);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
@@ -542,7 +542,7 @@ TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedLater) {
     GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
   }
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
@@ -578,7 +578,7 @@ TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsNotRecordedTwice) {
     GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
   }
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 
@@ -616,7 +616,7 @@ TEST_F(SyncConfirmationHandlerTest, UserVisibleLatencyIsRecordedPastDeadline) {
     GTEST_SKIP() << "Latency tracking is only implemented in minor mode.";
   }
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(args);
 

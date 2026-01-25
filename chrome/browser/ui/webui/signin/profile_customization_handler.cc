@@ -113,7 +113,7 @@ void ProfileCustomizationHandler::OnProfileNameChanged(
 }
 
 void ProfileCustomizationHandler::HandleInitialized(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   AllowJavascript();
   const base::Value& callback_id = args[0];
@@ -121,7 +121,7 @@ void ProfileCustomizationHandler::HandleInitialized(
 }
 
 void ProfileCustomizationHandler::HandleGetAvailableIcons(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -130,7 +130,7 @@ void ProfileCustomizationHandler::HandleGetAvailableIcons(
       profiles::GetIconsAndLabelsForProfileAvatarSelector(profile_->GetPath()));
 }
 
-void ProfileCustomizationHandler::HandleDone(const base::Value::List& args) {
+void ProfileCustomizationHandler::HandleDone(const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   std::u16string profile_name = base::UTF8ToUTF16(args[0].GetString());
 
@@ -155,7 +155,7 @@ void ProfileCustomizationHandler::HandleDone(const base::Value::List& args) {
   }
 }
 
-void ProfileCustomizationHandler::HandleSkip(const base::Value::List& args) {
+void ProfileCustomizationHandler::HandleSkip(const base::ListValue& args) {
   CHECK_EQ(0u, args.size());
 
   if (completion_callback_) {
@@ -164,7 +164,7 @@ void ProfileCustomizationHandler::HandleSkip(const base::Value::List& args) {
 }
 
 void ProfileCustomizationHandler::HandleDeleteProfile(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(0u, args.size());
 
   DCHECK(GetProfileEntry()->IsEphemeral());
@@ -176,7 +176,7 @@ void ProfileCustomizationHandler::HandleDeleteProfile(
 }
 
 void ProfileCustomizationHandler::HandleSetAvatarIcon(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   size_t avatar_icon_index = args[0].GetInt();
 
@@ -192,10 +192,10 @@ void ProfileCustomizationHandler::UpdateProfileInfo(
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());
 }
 
-base::Value::Dict ProfileCustomizationHandler::GetProfileInfoValue() {
+base::DictValue ProfileCustomizationHandler::GetProfileInfoValue() {
   ProfileAttributesEntry* entry = GetProfileEntry();
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("backgroundColor",
            color_utils::SkColorToRgbaString(
                entry->GetProfileThemeColors().profile_highlight_color));

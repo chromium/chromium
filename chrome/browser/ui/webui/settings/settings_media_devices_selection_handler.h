@@ -44,12 +44,12 @@ class MediaDevicesSelectionHandler
 
  private:
   // Requests initialization of the devices menu.
-  void InitializeCaptureDevices(const base::Value::List& args);
+  void InitializeCaptureDevices(const base::ListValue& args);
 
   // Sets the preferred audio/video capture device for media. |args| includes
   // the media type (kAuudio/kVideo) and the unique id of the new default device
   // that the user has chosen.
-  void SetPreferredCaptureDevice(const base::Value::List& args);
+  void SetPreferredCaptureDevice(const base::ListValue& args);
 
   // Helpers methods to update the device menus.
   void UpdateDevicesMenu(

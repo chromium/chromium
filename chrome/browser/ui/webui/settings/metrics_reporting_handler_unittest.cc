@@ -37,7 +37,7 @@ class MetricsReportingHandlerTest : public testing::Test {
     ASSERT_EQ(local_state(), g_browser_process->local_state());
     EXPECT_TRUE(test_web_ui()->call_data().empty());
 
-    base::Value::List args;
+    base::ListValue args;
     args.Append(1);
     handler()->HandleGetMetricsReporting(args);
 

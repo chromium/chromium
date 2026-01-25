@@ -15,7 +15,7 @@ VersionHandlerWindows::VersionHandlerWindows() = default;
 VersionHandlerWindows::~VersionHandlerWindows() = default;
 
 void VersionHandlerWindows::HandleRequestVersionInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   VersionHandler::HandleRequestVersionInfo(args);
 
   // Start the asynchronous load of the versions.

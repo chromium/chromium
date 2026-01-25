@@ -106,7 +106,7 @@ gfx::Size GetDefaultPdfMediaSizeMicrons() {
                    pdf_media_size.height() * device_microns_per_device_unit);
 }
 
-base::Value::Dict GetPdfCapabilities(
+base::DictValue GetPdfCapabilities(
     const std::string& locale,
     PrinterSemanticCapsAndDefaults::Papers custom_papers) {
   using cloud_devices::printer::MediaSize;
@@ -227,7 +227,7 @@ void ConstructCapabilitiesAndCompleteCallback(
     PrinterSemanticCapsAndDefaults::Papers custom_papers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::Value::Dict printer_info;
+  base::DictValue printer_info;
   printer_info.Set(kSettingDeviceName, destination_id);
   printer_info.Set(kSettingCapabilities,
                    GetPdfCapabilities(g_browser_process->GetApplicationLocale(),
@@ -282,7 +282,7 @@ void PdfPrinterHandler::StartGetCapability(const std::string& destination_id,
 
 void PdfPrinterHandler::StartPrint(
     const std::u16string& job_title,
-    base::Value::Dict settings,
+    base::DictValue settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
   print_data_ = print_data;

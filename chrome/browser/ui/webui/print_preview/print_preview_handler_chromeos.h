@@ -65,13 +65,13 @@ class PrintPreviewHandlerChromeOS
 
   // Grants an extension access to a provisional printer.  First element of
   // |args| is the provisional printer ID.
-  void HandleGrantExtensionPrinterAccess(const base::Value::List& args);
+  void HandleGrantExtensionPrinterAccess(const base::ListValue& args);
 
   // Performs printer setup. First element of |args| is the printer name.
-  void HandlePrinterSetup(const base::Value::List& args);
+  void HandlePrinterSetup(const base::ListValue& args);
 
   // Gets the EULA URL.
-  void HandleGetEulaUrl(const base::Value::List& args);
+  void HandleGetEulaUrl(const base::ListValue& args);
 
   // Send the EULA URL;
   void SendEulaUrl(const std::string& callback_id, const std::string& eula_url);
@@ -80,20 +80,20 @@ class PrintPreviewHandlerChromeOS
   // printer capabilities.
   void SendPrinterSetup(const std::string& callback_id,
                         const std::string& printer_name,
-                        base::Value::Dict settings_info);
+                        base::DictValue settings_info);
 
   // Called when an extension reports information requested for a provisional
   // printer.
   // |callback_id|: The javascript callback to resolve or reject.
   // |printer_info|: The data reported by the extension.
   void OnGotExtensionPrinterInfo(const std::string& callback_id,
-                                 const base::Value::Dict& printer_info);
+                                 const base::DictValue& printer_info);
 
   // Called to initiate a status request for a printer.
-  void HandleRequestPrinterStatusUpdate(const base::Value::List& args);
+  void HandleRequestPrinterStatusUpdate(const base::ListValue& args);
   void HandleRequestPrinterStatusUpdateCompletion(
       base::Value callback_id,
-      std::optional<base::Value::Dict> result);
+      std::optional<base::DictValue> result);
 
   // crosapi::mojom::PrintServerObserver Implementation
   void OnPrintServersChanged(
@@ -102,13 +102,13 @@ class PrintPreviewHandlerChromeOS
 
   // Loads printers corresponding to the print server(s).  First element of
   // |args| is the print server IDs.
-  void HandleChoosePrintServers(const base::Value::List& args);
+  void HandleChoosePrintServers(const base::ListValue& args);
 
   // Gets the list of print servers and fetching mode.
-  void HandleGetPrintServersConfig(const base::Value::List& args);
+  void HandleGetPrintServersConfig(const base::ListValue& args);
 
   // Records the `PrintPreview.PrintAttemptOutcome` histogram.
-  void HandleRecordPrintAttemptOutcome(const base::Value::List& args);
+  void HandleRecordPrintAttemptOutcome(const base::ListValue& args);
 
   // Gets the WebContents that initiated print preview request using
   // `PrintPreviewDialogController`.
@@ -116,9 +116,9 @@ class PrintPreviewHandlerChromeOS
 
   // Gets whether the UI should show the button to open printer settings. Button
   // should be hidden if preview launched from the settings SWA.
-  void HandleGetShowManagePrinters(const base::Value::List& args);
+  void HandleGetShowManagePrinters(const base::ListValue& args);
 
-  void HandleObserveLocalPrinters(const base::Value::List& args);
+  void HandleObserveLocalPrinters(const base::ListValue& args);
 
   // Callback for `HandleGetShowManagePrinters()`.
   void OnHandleObserveLocalPrinters(

@@ -69,7 +69,7 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
 
-  base::Value::Dict strings;
+  base::DictValue strings;
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  &strings);
   source->AddLocalizedStrings(strings);

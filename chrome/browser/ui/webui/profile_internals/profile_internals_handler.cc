@@ -52,12 +52,12 @@ std::string ProfileInternalsHandler::CountryIdToDebugString(
 }
 
 // static
-base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
+base::DictValue ProfileInternalsHandler::CreateProfileEntry(
     const ProfileAttributesEntry* entry) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* loaded_profile = profile_manager->GetProfileByPath(entry->GetPath());
 
-  base::Value::Dict profile_entry;
+  base::DictValue profile_entry;
   profile_entry.Set("profilePath", base::FilePathToValue(entry->GetPath()));
   profile_entry.Set("localProfileName", entry->GetLocalProfileName());
   std::string signin_state;
@@ -96,14 +96,14 @@ base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
       "foregroundColor",
       skia::SkColorToHexString(GetProfileForegroundTextColor(highlight_color)));
 
-  base::Value::List keep_alives;
+  base::ListValue keep_alives;
   std::map<ProfileKeepAliveOrigin, int> keep_alives_map =
       profile_manager->GetKeepAlivesByPath(entry->GetPath());
   for (const auto& pair : keep_alives_map) {
     if (pair.second != 0) {
       std::stringstream ss;
       ss << pair.first;
-      base::Value::Dict keep_alive_pair;
+      base::DictValue keep_alive_pair;
       keep_alive_pair.Set("origin", ss.str());
       keep_alive_pair.Set("count", pair.second);
       keep_alives.Append(std::move(keep_alive_pair));
@@ -111,7 +111,7 @@ base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
   }
   profile_entry.Set("keepAlives", std::move(keep_alives));
 
-  base::Value::List signedAccounts;
+  base::ListValue signedAccounts;
   for (const GaiaId& gaiaId : entry->GetGaiaIds()) {
     signedAccounts.Append(gaiaId.ToString());
   }
@@ -167,7 +167,7 @@ void ProfileInternalsHandler::RegisterMessages() {
 }
 
 void ProfileInternalsHandler::HandleGetProfilesList(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(0u, args.size());
   PushProfilesList();
@@ -178,8 +178,8 @@ void ProfileInternalsHandler::PushProfilesList() {
   FireWebUIListener("profiles-list-changed", GetProfilesList());
 }
 
-base::Value::List ProfileInternalsHandler::GetProfilesList() {
-  base::Value::List profiles_list;
+base::ListValue ProfileInternalsHandler::GetProfilesList() {
+  base::ListValue profiles_list;
   std::vector<ProfileAttributesEntry*> entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()

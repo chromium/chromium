@@ -39,7 +39,7 @@ void PluralStringHandler::AddLocalizedString(const std::string& name, int id) {
   name_to_id_[name] = id;
 }
 
-void PluralStringHandler::HandleGetPluralString(const base::Value::List& args) {
+void PluralStringHandler::HandleGetPluralString(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(3U, args.size());
 
@@ -53,16 +53,16 @@ void PluralStringHandler::HandleGetPluralString(const base::Value::List& args) {
 }
 
 void PluralStringHandler::HandleGetPluralStringTupleWithComma(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   GetPluralStringTuple(args, IDS_CONCAT_TWO_STRINGS_WITH_COMMA);
 }
 
 void PluralStringHandler::HandleGetPluralStringTupleWithPeriods(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   GetPluralStringTuple(args, IDS_CONCAT_TWO_STRINGS_WITH_PERIODS);
 }
 
-void PluralStringHandler::GetPluralStringTuple(const base::Value::List& args,
+void PluralStringHandler::GetPluralStringTuple(const base::ListValue& args,
                                                int string_tuple_id) {
   AllowJavascript();
   CHECK_EQ(5U, args.size());

@@ -153,7 +153,7 @@ void ResetPasswordUI::BindInterface(
       web_ui()->GetWebContents(), std::move(receiver));
 }
 
-base::Value::Dict ResetPasswordUI::PopulateStrings() const {
+base::DictValue ResetPasswordUI::PopulateStrings() const {
   auto* service = safe_browsing::ChromePasswordProtectionService::
       GetPasswordProtectionService(Profile::FromWebUI(web_ui()));
   std::string org_name =
@@ -185,7 +185,7 @@ base::Value::Dict ResetPasswordUI::PopulateStrings() const {
         formatted_org_name);
   }
 
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   load_time_data.Set("title",
                      l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_TITLE));
   load_time_data.Set("heading", l10n_util::GetStringUTF16(heading_string_id));

@@ -82,7 +82,7 @@ void AccessibilityMainHandler::StateChanged(
 }
 
 void AccessibilityMainHandler::HandleGetScreenAIInstallState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   AllowJavascript();
@@ -94,7 +94,7 @@ void AccessibilityMainHandler::HandleGetScreenAIInstallState(
 }
 
 void AccessibilityMainHandler::HandleGetScreenReaderState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   AllowJavascript();
@@ -105,7 +105,7 @@ void AccessibilityMainHandler::HandleGetScreenReaderState(
 }
 
 void AccessibilityMainHandler::HandleCheckAccessibilityImageLabels(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // When the user tries to enable the feature, show the modal dialog. The
   // dialog will disable the feature again if it is not accepted.
   content::WebContents* web_contents = web_ui()->GetWebContents();

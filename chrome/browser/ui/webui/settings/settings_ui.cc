@@ -842,7 +842,7 @@ void SettingsUI::UpdateShowGlicState() {
   auto enablement = glic::GlicEnabling::EnablementForProfile(profile);
   const bool show_glic = enablement.ShouldShowSettingsPage();
 
-  base::Value::Dict update;
+  base::DictValue update;
   update.Set("showGlicSettings", show_glic);
   update.Set("glicDisallowedByAdmin", enablement.DisallowedByAdmin());
   if (show_glic) {

@@ -163,10 +163,10 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
   // types that the user cleared from the clear browsing data UI and time period
   // of the data to be cleared.
 
-  base::Value::List data_types;
+  base::ListValue data_types;
   data_types.Append("browser.clear_data.browsing_history");
 
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append("webui_callback_id");
   list_args.Append(std::move(data_types));
   list_args.Append(1);
@@ -174,7 +174,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
 }
 
 void ClearBrowsingDataHandler::HandleClearBrowsingData(
-    const base::Value::List& args_list) {
+    const base::ListValue& args_list) {
   CHECK_EQ(3U, args_list.size());
   const std::string& webui_callback_id = args_list[0].GetString();
 
@@ -184,7 +184,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   std::vector<BrowsingDataType> data_type_vector;
 
   CHECK(args_list[1].is_list());
-  const base::Value::List& data_type_list = args_list[1].GetList();
+  const base::ListValue& data_type_list = args_list[1].GetList();
   auto* sentiment_service = TrustSafetySentimentServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui()));
   for (const base::Value& type : data_type_list) {
@@ -307,7 +307,7 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   bool show_passwords_notice =
       (failed_data_types & chrome_browsing_data_remover::DATA_TYPE_PASSWORDS);
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("showHistoryNotice", show_history_notice);
   result.Set("showPasswordsNotice", show_passwords_notice);
 
@@ -328,7 +328,7 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   ResolveJavascriptCallback(base::Value(webui_callback_id), result);
 }
 
-void ClearBrowsingDataHandler::HandleInitialize(const base::Value::List& args) {
+void ClearBrowsingDataHandler::HandleInitialize(const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
@@ -355,15 +355,14 @@ void ClearBrowsingDataHandler::HandleInitialize(const base::Value::List& args) {
   ResolveJavascriptCallback(callback_id, base::Value() /* Promise<void> */);
 }
 
-void ClearBrowsingDataHandler::HandleGetSyncState(
-    const base::Value::List& args) {
+void ClearBrowsingDataHandler::HandleGetSyncState(const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, CreateSyncStateEvent());
 }
 
 void ClearBrowsingDataHandler::HandleRestartCounters(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   RestartCounters(args[0].GetBool() /* basic */,
@@ -384,10 +383,10 @@ void ClearBrowsingDataHandler::UpdateSyncState() {
   FireWebUIListener("update-sync-state", CreateSyncStateEvent());
 }
 
-base::Value::Dict ClearBrowsingDataHandler::CreateSyncStateEvent() {
+base::DictValue ClearBrowsingDataHandler::CreateSyncStateEvent() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  base::Value::Dict event;
+  base::DictValue event;
   event.Set("signedIn", identity_manager && identity_manager->HasPrimaryAccount(
                                                 signin::ConsentLevel::kSignin));
   event.Set("syncingHistory", sync_service_ &&

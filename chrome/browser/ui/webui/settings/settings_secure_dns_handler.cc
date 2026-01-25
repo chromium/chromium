@@ -44,7 +44,7 @@ namespace settings {
 
 namespace {
 
-base::Value::Dict CreateSecureDnsSettingDict(
+base::DictValue CreateSecureDnsSettingDict(
     content::BrowserContext* browser_context) {
   // Fetch the current host resolver configuration. It is not sufficient to read
   // the secure DNS prefs directly since the host resolver configuration takes
@@ -55,7 +55,7 @@ base::Value::Dict CreateSecureDnsSettingDict(
           ->GetSecureDnsConfiguration(
               true /* force_check_parental_controls_for_automatic_mode */);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("mode", SecureDnsConfig::ModeToString(config.mode()));
   dict.Set("config", config.doh_servers().ToString());
 #if BUILDFLAG(IS_CHROMEOS)
@@ -123,11 +123,11 @@ void SecureDnsHandler::OnJavascriptDisallowed() {
   doh_source_.reset();
 }
 
-base::Value::List SecureDnsHandler::GetSecureDnsResolverList() {
-  base::Value::List resolvers;
+base::ListValue SecureDnsHandler::GetSecureDnsResolverList() {
+  base::ListValue resolvers;
   for (const net::DohProviderEntry* entry : providers_) {
     net::DnsOverHttpsConfig doh_config({entry->doh_server_config});
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("name", entry->ui_name);
     dict.Set("value", doh_config.ToString());
     dict.Set("policy", entry->privacy_policy);
@@ -161,7 +161,7 @@ void SecureDnsHandler::SetProvidersForTesting(
 }
 
 void SecureDnsHandler::HandleGetSecureDnsResolverList(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const std::string& callback_id = args[0].GetString();
 
@@ -169,8 +169,7 @@ void SecureDnsHandler::HandleGetSecureDnsResolverList(
                             GetSecureDnsResolverList());
 }
 
-void SecureDnsHandler::HandleGetSecureDnsSetting(
-    const base::Value::List& args) {
+void SecureDnsHandler::HandleGetSecureDnsSetting(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   const base::Value& callback_id = args[0];
@@ -179,7 +178,7 @@ void SecureDnsHandler::HandleGetSecureDnsSetting(
                        web_ui()->GetWebContents()->GetBrowserContext()));
 }
 
-void SecureDnsHandler::HandleIsValidConfig(const base::Value::List& args) {
+void SecureDnsHandler::HandleIsValidConfig(const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   const std::string& custom_entry = args[1].GetString();
@@ -189,7 +188,7 @@ void SecureDnsHandler::HandleIsValidConfig(const base::Value::List& args) {
   ResolveJavascriptCallback(callback_id, base::Value(valid));
 }
 
-void SecureDnsHandler::HandleProbeConfig(const base::Value::List& args) {
+void SecureDnsHandler::HandleProbeConfig(const base::ListValue& args) {
   AllowJavascript();
 
   if (!probe_callback_id_.empty()) {

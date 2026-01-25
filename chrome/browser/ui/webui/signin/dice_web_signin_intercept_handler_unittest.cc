@@ -226,7 +226,7 @@ class DiceWebSigninInterceptHandlerTestBase : public testing::Test {
 
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
-  base::Value::Dict GetInterceptionParameters() {
+  base::DictValue GetInterceptionParameters() {
     Profile* profile = profile_manager_.CreateTestingProfile("Primary Profile");
     // Resetting the platform authority to NONE, as not all platforms have the
     // same value in browser tests. See https://crbug.com/1324377.
@@ -291,7 +291,7 @@ class DiceWebSigninInterceptHandlerTest
   }
 
  protected:
-  void ExpectStringsMatch(const base::Value::Dict& parameters,
+  void ExpectStringsMatch(const base::DictValue& parameters,
                           const BubbleStrings& expected_strings) {
     EXPECT_EQ(*parameters.FindString("headerText"),
               expected_strings.header_text);
@@ -326,7 +326,7 @@ class DiceWebSigninInterceptHandlerTest
 };
 
 TEST_P(DiceWebSigninInterceptHandlerTest, CheckStrings) {
-  base::Value::Dict parameters = GetInterceptionParameters();
+  base::DictValue parameters = GetInterceptionParameters();
 
   if (GetParam().interception_type !=
       WebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
@@ -362,7 +362,7 @@ class DiceWebSigninInterceptHandlerChromeSigninInterceptionTest
     }
   }
 
-  void ExpectChromeSignInStringsMatch(const base::Value::Dict& parameters) {
+  void ExpectChromeSignInStringsMatch(const base::DictValue& parameters) {
     std::string title = l10n_util::GetStringUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE);
     std::string subtitle = l10n_util::GetStringUTF8(
@@ -403,7 +403,7 @@ class DiceWebSigninInterceptHandlerChromeSigninInterceptionTest
 
 TEST_P(DiceWebSigninInterceptHandlerChromeSigninInterceptionTest,
        CheckStrings) {
-  base::Value::Dict parameters = GetInterceptionParameters();
+  base::DictValue parameters = GetInterceptionParameters();
   ExpectChromeSignInStringsMatch(parameters);
 }
 

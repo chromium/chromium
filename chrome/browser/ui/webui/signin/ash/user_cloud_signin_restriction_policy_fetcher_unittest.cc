@@ -143,7 +143,7 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        FetchingPolicyValueSucceedsForSecondaryGoogleAccountUsage) {
   // Set API response.
-  base::Value::Dict expected_response;
+  base::DictValue expected_response;
   expected_response.Set("policyValue", "primary_account_signin");
   std::string response;
   JSONStringValueSerializer serializer(&response);
@@ -177,7 +177,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        FetchingPolicyValueSucceedsForSecondaryAccountAllowedInArcPolicy) {
   // Set API response.
-  base::Value::Dict expected_response;
+  base::DictValue expected_response;
   expected_response.Set("policyValue", "true");
   std::string response;
   JSONStringValueSerializer serializer(&response);

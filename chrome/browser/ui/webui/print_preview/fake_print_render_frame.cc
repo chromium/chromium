@@ -40,7 +40,7 @@ void FakePrintRenderFrame::InitiatePrintPreview(
     bool has_selection) {
 }
 
-void FakePrintRenderFrame::PrintPreview(base::Value::Dict settings) {}
+void FakePrintRenderFrame::PrintPreview(base::DictValue settings) {}
 
 void FakePrintRenderFrame::OnPrintPreviewDialogClosed() {}
 

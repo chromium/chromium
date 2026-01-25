@@ -117,12 +117,12 @@ const SkBitmap& GetDefaultAccountIcon() {
   return default_icon.GetRepresentation(1.0f).GetBitmap();
 }
 
-base::Value::Dict GaiaAccountToValue(const ::account_manager::Account& account,
-                                     const AccountInfo& account_info) {
+base::DictValue GaiaAccountToValue(const ::account_manager::Account& account,
+                                   const AccountInfo& account_info) {
   DCHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
   DCHECK(!account_info.IsEmpty());
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kAccountKeyId, account.key.id());
   dict.Set(kAccountKeyEmail, account.raw_email);
   dict.Set(kAccountKeyFullName, account_info.full_name);
@@ -134,7 +134,7 @@ base::Value::Dict GaiaAccountToValue(const ::account_manager::Account& account,
   return dict;
 }
 
-::account_manager::Account ValueToGaiaAccount(const base::Value::Dict& dict) {
+::account_manager::Account ValueToGaiaAccount(const base::DictValue& dict) {
   const std::string* id = dict.FindString(kAccountKeyId);
   DCHECK(id);
   const std::string* email = dict.FindString(kAccountKeyEmail);
@@ -296,7 +296,7 @@ void InlineLoginHandlerImpl::RegisterMessages() {
                                          base::Unretained(this)));
 }
 
-void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
+void InlineLoginHandlerImpl::SetExtraInitParams(base::DictValue& params) {
   std::string* email = params.FindString("email");
   if (email && !email->empty()) {
     initial_email_ = *email;
@@ -344,7 +344,7 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
                          weak_factory_.GetWeakPtr(), params));
 }
 
-void InlineLoginHandlerImpl::HandleDialogClose(const base::Value::List& args) {
+void InlineLoginHandlerImpl::HandleDialogClose(const base::ListValue& args) {
   close_dialog_closure_.Run();
 }
 
@@ -410,7 +410,7 @@ void InlineLoginHandlerImpl::CreateSigninHelper(
 void InlineLoginHandlerImpl::ShowSigninErrorPage(
     const std::string& email,
     const std::string& hosted_domain) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("email", email);
   params.Set("hostedDomain", hosted_domain);
   params.Set("deviceType", ui::GetChromeOSDeviceName());
@@ -420,13 +420,12 @@ void InlineLoginHandlerImpl::ShowSigninErrorPage(
 }
 
 void InlineLoginHandlerImpl::ShowIncognitoAndCloseDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   chrome::NewIncognitoWindow(Profile::FromWebUI(web_ui()));
   close_dialog_closure_.Run();
 }
 
-void InlineLoginHandlerImpl::GetAccountsInSession(
-    const base::Value::List& args) {
+void InlineLoginHandlerImpl::GetAccountsInSession(const base::ListValue& args) {
   const std::string& callback_id = args[0].GetString();
   const Profile* profile = Profile::FromWebUI(web_ui());
   AccountManagerFactory::Get()
@@ -438,7 +437,7 @@ void InlineLoginHandlerImpl::GetAccountsInSession(
 void InlineLoginHandlerImpl::OnGetAccounts(
     const std::string& callback_id,
     const std::vector<::account_manager::Account>& accounts) {
-  base::Value::List account_emails;
+  base::ListValue account_emails;
   for (const auto& account : accounts) {
     // Currently, we only support `kGaia` account type. Should a new type be
     // added in the future, consider removing the `CHECK_EQ()` below and
@@ -452,7 +451,7 @@ void InlineLoginHandlerImpl::OnGetAccounts(
 }
 
 void InlineLoginHandlerImpl::GetAccountsNotAvailableInArc(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
@@ -476,7 +475,7 @@ void InlineLoginHandlerImpl::FinishGetAccountsNotAvailableInArc(
     const std::string& callback_id,
     const std::vector<::account_manager::Account>& accounts,
     const base::flat_set<account_manager::Account>& arc_accounts) {
-  base::Value::List result;
+  base::ListValue result;
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
   for (const auto& account : accounts) {
@@ -499,9 +498,9 @@ void InlineLoginHandlerImpl::FinishGetAccountsNotAvailableInArc(
 }
 
 void InlineLoginHandlerImpl::MakeAvailableInArcAndCloseDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
-  const base::Value::Dict& dictionary = args.front().GetDict();
+  const base::DictValue& dictionary = args.front().GetDict();
   AccountAppsAvailabilityFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->SetIsAccountAvailableInArc(ValueToGaiaAccount(dictionary),
                                    /*is_available=*/true);
@@ -509,7 +508,7 @@ void InlineLoginHandlerImpl::MakeAvailableInArcAndCloseDialog(
 }
 
 void InlineLoginHandlerImpl::HandleSkipWelcomePage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(!args.empty());
   const bool skip = args.front().GetBool();
   Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
@@ -517,11 +516,11 @@ void InlineLoginHandlerImpl::HandleSkipWelcomePage(
 }
 
 void InlineLoginHandlerImpl::OpenGuestWindowAndCloseDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NOTREACHED();
 }
 
-void InlineLoginHandlerImpl::GetDeviceId(const base::Value::List& args) {
+void InlineLoginHandlerImpl::GetDeviceId(const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
 

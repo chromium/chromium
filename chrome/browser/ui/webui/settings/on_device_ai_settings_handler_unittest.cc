@@ -41,7 +41,7 @@ class OnDeviceAiSettingsHandlerTest : public testing::Test {
     EXPECT_TRUE(test_web_ui()->call_data().empty());
 
     // Initialize the handler and allow Javascript.
-    base::Value::List args;
+    base::ListValue args;
     args.Append(1);  // Callback ID
     handler()->HandleGetOnDeviceAiEnabled(args);
 
@@ -69,7 +69,7 @@ TEST_F(OnDeviceAiSettingsHandlerTest, HandleSetOnDeviceAIEnabled) {
   // Ensure the pref is initially false for this test.
   local_state()->SetBoolean(kOnDeviceAiUserSettingsEnabled, false);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(true);
   handler()->HandleSetOnDeviceAiEnabled(args);
 

@@ -54,7 +54,7 @@ class PerformanceHandlerTest : public InProcessBrowserTest {
   void ExpectCurrentOpenSitesEquals(std::vector<std::string> expected_sites,
                                     base::Value actual) {
     ASSERT_TRUE(actual.is_list());
-    const base::Value::List& actual_sites = actual.GetList();
+    const base::ListValue& actual_sites = actual.GetList();
     ASSERT_EQ(expected_sites.size(), actual_sites.size());
     for (size_t i = 0; i < expected_sites.size(); i++) {
       const base::Value& actual_site_value = actual_sites[i];

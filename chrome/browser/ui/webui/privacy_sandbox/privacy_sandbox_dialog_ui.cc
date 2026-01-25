@@ -307,7 +307,7 @@ void PrivacySandboxDialogUI::Initialize(
         PrivacySandboxService::AdsDialogCallbackNoArgsEvents)> dialog_callback,
     base::OnceCallback<void(int)> resize_callback,
     PrivacySandboxService::PromptType prompt_type) {
-  base::Value::Dict update;
+  base::DictValue update;
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(

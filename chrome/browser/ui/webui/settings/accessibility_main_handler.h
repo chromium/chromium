@@ -37,10 +37,10 @@ class AccessibilityMainHandler
   void StateChanged(screen_ai::ScreenAIInstallState::State state) override;
 
  private:
-  void HandleGetScreenReaderState(const base::Value::List& args);
-  void HandleCheckAccessibilityImageLabels(const base::Value::List& args);
+  void HandleGetScreenReaderState(const base::ListValue& args);
+  void HandleCheckAccessibilityImageLabels(const base::ListValue& args);
 
-  void HandleGetScreenAIInstallState(const base::Value::List& args);
+  void HandleGetScreenAIInstallState(const base::ListValue& args);
 
   void SendScreenReaderStateChanged();
 

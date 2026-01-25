@@ -97,7 +97,7 @@ base::TimeDelta GetMinorModeRestrictionsDeadline() {
 
 void SetInitializedModalHeight(Browser* browser,
                                content::WebUI* web_ui,
-                               const base::Value::List& args) {
+                               const base::ListValue& args) {
   if (!browser) {
     return;
   }

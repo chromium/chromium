@@ -32,15 +32,15 @@ class CaptionsHandler : public SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandleLiveCaptionSectionReady(const base::Value::List& args);
-  void HandleOpenSystemCaptionsDialog(const base::Value::List& args);
-  void HandleGetAvailableLanguagePacks(const base::Value::List& args);
-  void HandleGetInstalledLanguagePacks(const base::Value::List& args);
-  void HandleRemoveLanguagePacks(const base::Value::List& args);
-  void HandleInstallLanguagePacks(const base::Value::List& args);
+  void HandleLiveCaptionSectionReady(const base::ListValue& args);
+  void HandleOpenSystemCaptionsDialog(const base::ListValue& args);
+  void HandleGetAvailableLanguagePacks(const base::ListValue& args);
+  void HandleGetInstalledLanguagePacks(const base::ListValue& args);
+  void HandleRemoveLanguagePacks(const base::ListValue& args);
+  void HandleInstallLanguagePacks(const base::ListValue& args);
 
-  base::Value::List GetAvailableLanguagePacks();
-  base::Value::List GetInstalledLanguagePacks();
+  base::ListValue GetAvailableLanguagePacks();
+  base::ListValue GetInstalledLanguagePacks();
 
   // SodaInstaller::Observer overrides:
   void OnSodaInstalled(speech::LanguageCode language_code) override;

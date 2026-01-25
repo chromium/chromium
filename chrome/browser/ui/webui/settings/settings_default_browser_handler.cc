@@ -100,7 +100,7 @@ void DefaultBrowserHandler::OnJavascriptDisallowed() {
 }
 
 void DefaultBrowserHandler::RequestDefaultBrowserState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(args.size(), 1U);
@@ -113,7 +113,7 @@ void DefaultBrowserHandler::RequestDefaultBrowserState(
 }
 
 void DefaultBrowserHandler::HandleRequestUserValueStringsFeatureState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(args.size(), 1U);
@@ -123,7 +123,7 @@ void DefaultBrowserHandler::HandleRequestUserValueStringsFeatureState(
       base::FeatureList::IsEnabled(features::kUserValueDefaultBrowserStrings);
   ResolveJavascriptCallback(callback_id, base::Value(is_enabled));
 }
-void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
+void DefaultBrowserHandler::SetAsDefaultBrowser(const base::ListValue& args) {
   CHECK(!DefaultBrowserIsDisabledByPolicy());
   AllowJavascript();
   RecordSetAsDefaultUMA();
@@ -197,7 +197,7 @@ void DefaultBrowserHandler::OnDefaultCheckFinished(
     const std::optional<std::string>& js_callback_id,
     bool can_pin,
     shell_integration::DefaultWebClientState state) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("isDefault", state == shell_integration::IS_DEFAULT);
   dict.Set("canPin", can_pin);
   dict.Set("canBeDefault", shell_integration::CanSetAsDefaultBrowser());

@@ -50,13 +50,13 @@ class SavedInfoHandler
   // autofill::ValuablesDataManager::Observer:
   void OnValuablesDataChanged() override;
 
-  void HandleGetPasswordCount(const base::Value::List& args);
-  base::Value::Dict GetPasswordCounts();
+  void HandleGetPasswordCount(const base::ListValue& args);
+  base::DictValue GetPasswordCounts();
 
-  void HandleGetLoyaltyCardsCount(const base::Value::List& args);
+  void HandleGetLoyaltyCardsCount(const base::ListValue& args);
   base::Value GetLoyaltyCardsCount();
 
-  void HandleRequestDataManagementSurvey(const base::Value::List& args);
+  void HandleRequestDataManagementSurvey(const base::ListValue& args);
 
   raw_ptr<Profile> profile_;
 

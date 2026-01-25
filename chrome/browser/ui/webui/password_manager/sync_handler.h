@@ -49,26 +49,26 @@ class SyncHandler : public content::WebUIMessageHandler,
   // Retrieves the trusted vault banner state value from the SyncService.
   base::Value GetTrustedVaultBannerState() const;
   // Handles the request for the trusted vault banner state.
-  void HandleGetTrustedVaultBannerState(const base::Value::List& args);
+  void HandleGetTrustedVaultBannerState(const base::ListValue& args);
 
   // Retrieves sync related information from the SyncService.
-  base::Value::Dict GetSyncInfo() const;
+  base::DictValue GetSyncInfo() const;
   // Handles the request for sync information.
-  void HandleGetSyncInfo(const base::Value::List& args);
+  void HandleGetSyncInfo(const base::ListValue& args);
 
   // Retrieves information about the primary account.
-  base::Value::Dict GetAccountInfo() const;
+  base::DictValue GetAccountInfo() const;
   // Handles the request for the primary account information.
-  void HandleGetAccountInfo(const base::Value::List& args);
+  void HandleGetAccountInfo(const base::ListValue& args);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Opens the Batch Upload Dialog.
-  void HandleOpenBatchUploadDialog(const base::Value::List& args);
+  void HandleOpenBatchUploadDialog(const base::ListValue& args);
 #endif
 
   // Handles getitng the local password count from the `syncer::SyncService`
   // API.
-  void HandleGetLocalPasswordCount(const base::Value::List& args);
+  void HandleGetLocalPasswordCount(const base::ListValue& args);
   void FireOnGetLocalDataDescriptionReceived(
       std::map<syncer::DataType, syncer::LocalDataDescription> data);
   void OnGetLocalDataDescriptionReceived(

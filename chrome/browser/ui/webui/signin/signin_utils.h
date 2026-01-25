@@ -126,7 +126,7 @@ base::TimeDelta GetMinorModeRestrictionsDeadline();
 // needed to better accomodate different locales' text heights.
 void SetInitializedModalHeight(Browser* browser,
                                content::WebUI* web_ui,
-                               const base::Value::List& args);
+                               const base::ListValue& args);
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Helps clear Profile info, mainly for managed accounts.

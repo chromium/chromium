@@ -103,8 +103,8 @@ void SavedInfoHandler::OnValuablesDataChanged() {
   FireWebUIListener("loyalty-cards-count-changed", GetLoyaltyCardsCount());
 }
 
-base::Value::Dict SavedInfoHandler::GetPasswordCounts() {
-  base::Value::Dict dict;
+base::DictValue SavedInfoHandler::GetPasswordCounts() {
+  base::DictValue dict;
   auto* passwords_presenter = password_observation_.GetSource();
   if (passwords_presenter) {
     const size_t password_count = passwords_presenter->GetSavedPasswords().size();
@@ -122,7 +122,7 @@ base::Value::Dict SavedInfoHandler::GetPasswordCounts() {
   return dict;
 }
 
-void SavedInfoHandler::HandleGetPasswordCount(const base::Value::List& args) {
+void SavedInfoHandler::HandleGetPasswordCount(const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetPasswordCounts());
@@ -138,8 +138,7 @@ base::Value SavedInfoHandler::GetLoyaltyCardsCount() {
   return base::Value(static_cast<int>(loyalty_cards_count));
 }
 
-void SavedInfoHandler::HandleGetLoyaltyCardsCount(
-    const base::Value::List& args) {
+void SavedInfoHandler::HandleGetLoyaltyCardsCount(const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetLoyaltyCardsCount());
@@ -195,7 +194,7 @@ const base::Feature& GetManagementSurveyFeature(DataManagementSurvey survey) {
 }
 
 void SavedInfoHandler::HandleRequestDataManagementSurvey(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   auto survey = static_cast<DataManagementSurvey>(args[0].GetInt());

@@ -87,7 +87,7 @@ class SystemInfoUIHandler : public WebUIMessageHandler {
 
   // Callbacks for SystemInfo request messages. This asynchronously requests
   // system info and eventually returns it to the front end.
-  void HandleRequestSystemInfo(const base::Value::List& args);
+  void HandleRequestSystemInfo(const base::ListValue& args);
 
   void OnSystemInfo(std::unique_ptr<SystemLogsResponse> sys_info);
 
@@ -117,8 +117,7 @@ void SystemInfoUIHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void SystemInfoUIHandler::HandleRequestSystemInfo(
-    const base::Value::List& args) {
+void SystemInfoUIHandler::HandleRequestSystemInfo(const base::ListValue& args) {
   AllowJavascript();
   callback_id_ = args[0].GetString();
 
@@ -134,10 +133,10 @@ void SystemInfoUIHandler::OnSystemInfo(
   if (!sys_info) {
     return;
   }
-  base::Value::List data;
+  base::ListValue data;
   for (SystemLogsResponse::const_iterator it = sys_info->begin();
        it != sys_info->end(); ++it) {
-    base::Value::Dict val;
+    base::DictValue val;
     val.Set("statName", it->first);
     val.Set("statValue", it->second);
     data.Append(std::move(val));

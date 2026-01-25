@@ -115,7 +115,7 @@ base::Value SyncHandler::GetTrustedVaultBannerState() const {
 }
 
 void SyncHandler::HandleGetTrustedVaultBannerState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -123,8 +123,8 @@ void SyncHandler::HandleGetTrustedVaultBannerState(
   ResolveJavascriptCallback(callback_id, GetTrustedVaultBannerState());
 }
 
-base::Value::Dict SyncHandler::GetSyncInfo() const {
-  base::Value::Dict dict;
+base::DictValue SyncHandler::GetSyncInfo() const {
+  base::DictValue dict;
 
   syncer::SyncService* sync_service = GetSyncService();
   // sync_service might be nullptr if SyncServiceFactory::IsSyncAllowed is
@@ -144,7 +144,7 @@ base::Value::Dict SyncHandler::GetSyncInfo() const {
   return dict;
 }
 
-void SyncHandler::HandleGetSyncInfo(const base::Value::List& args) {
+void SyncHandler::HandleGetSyncInfo(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -153,13 +153,13 @@ void SyncHandler::HandleGetSyncInfo(const base::Value::List& args) {
   ResolveJavascriptCallback(callback_id, GetSyncInfo());
 }
 
-base::Value::Dict SyncHandler::GetAccountInfo() const {
+base::DictValue SyncHandler::GetAccountInfo() const {
   signin::IdentityManager* identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
   auto stored_account = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("email", stored_account.email);
   const auto& avatar_image = stored_account.account_image;
   if (!avatar_image.IsEmpty()) {
@@ -168,7 +168,7 @@ base::Value::Dict SyncHandler::GetAccountInfo() const {
   return dict;
 }
 
-void SyncHandler::HandleGetAccountInfo(const base::Value::List& args) {
+void SyncHandler::HandleGetAccountInfo(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -177,7 +177,7 @@ void SyncHandler::HandleGetAccountInfo(const base::Value::List& args) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void SyncHandler::HandleOpenBatchUploadDialog(const base::Value::List& args) {
+void SyncHandler::HandleOpenBatchUploadDialog(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   CHECK(args[0].is_int());
@@ -196,7 +196,7 @@ void SyncHandler::HandleOpenBatchUploadDialog(const base::Value::List& args) {
 }
 #endif
 
-void SyncHandler::HandleGetLocalPasswordCount(const base::Value::List& args) {
+void SyncHandler::HandleGetLocalPasswordCount(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];

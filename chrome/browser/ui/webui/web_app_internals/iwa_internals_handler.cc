@@ -617,7 +617,7 @@ void IwaInternalsHandler::SetUpdateChannelForIsolatedWebApp(
       web_app::AppLockDescription(app_id),
       base::BindOnce(
           [](const webapps::AppId& app_id, const std::string& update_channel,
-             AppLock& lock, base::Value::Dict& debug_value) {
+             AppLock& lock, base::DictValue& debug_value) {
             web_app::ScopedRegistryUpdate update =
                 lock.sync_bridge().BeginUpdate();
 
@@ -741,7 +741,7 @@ void IwaInternalsHandler::OnInstalledIsolatedWebAppInDevModeFromWebBundle(
           base::BindOnce(
               [](const IsolatedWebAppUrlInfo& url_info,
                  ::mojom::UpdateInfoPtr update_info, AppLock& lock,
-                 base::Value::Dict& debug_value) {
+                 base::DictValue& debug_value) {
                 web_app::ScopedRegistryUpdate update =
                     lock.sync_bridge().BeginUpdate();
 

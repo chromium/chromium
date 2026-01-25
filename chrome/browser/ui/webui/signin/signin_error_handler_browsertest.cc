@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
 
   // Open learn more.
   CreateHandlerInBrowser();
-  base::Value::List args;
+  base::ListValue args;
   handler()->HandleLearnMore(args);
 
   // Dialog should be closed now.
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest,
   handler()->OnBrowserClosed(browser());
 
   // Open learn more.
-  base::Value::List args;
+  base::ListValue args;
   handler()->HandleLearnMore(args);
 
   // Dialog is not closed if the browser was removed.
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
   CreateHandlerInBrowser();
-  base::Value::List args;
+  base::ListValue args;
   handler()->HandleConfirm(args);
 
   // Confirm simply closes the dialog.

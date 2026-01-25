@@ -39,7 +39,7 @@ class AppearanceHandlerTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest,
                        OpenCustomizeChromeToolbarSection) {
-  base::Value::List args;
+  base::ListValue args;
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
     EXPECT_EQ(2u, actions_model->PinnedActionIds().size());
   }
 
-  base::Value::List args;
+  base::ListValue args;
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()

@@ -106,16 +106,16 @@ std::map<GaiaId, gfx::Image> GetFakeProfileImageMap() {
   };
 }
 
-base::Value::List GetFakeParentsWithoutImage() {
-  base::Value::List parents;
+base::ListValue GetFakeParentsWithoutImage() {
+  base::ListValue parents;
 
-  base::Value::Dict parent1;
+  base::DictValue parent1;
   parent1.Set("email", "homer@simpson.com");
   parent1.Set("displayName", "Homer Simpson");
   parent1.Set("obfuscatedGaiaId", kFakeParentGaiaId.ToString());
   parents.Append(std::move(parent1));
 
-  base::Value::Dict parent2;
+  base::DictValue parent2;
   parent2.Set("email", std::string());
   parent2.Set("displayName", "Marge Simpson");
   parent2.Set("obfuscatedGaiaId", kFakeParentGaiaId2.ToString());
@@ -124,8 +124,8 @@ base::Value::List GetFakeParentsWithoutImage() {
   return parents;
 }
 
-base::Value::List GetFakeParentsWithImage() {
-  base::Value::List parents = GetFakeParentsWithoutImage();
+base::ListValue GetFakeParentsWithImage() {
+  base::ListValue parents = GetFakeParentsWithoutImage();
   std::map<GaiaId, gfx::Image> profile_images = GetFakeProfileImageMap();
 
   for (auto& parent : parents) {
@@ -150,8 +150,8 @@ base::Value::List GetFakeParentsWithImage() {
   return parents;
 }
 
-base::Value::Dict GetFakeParent() {
-  base::Value::Dict parent;
+base::DictValue GetFakeParent() {
+  base::DictValue parent;
   parent.Set("email", "homer@simpson.com");
   parent.Set("displayName", "Homer Simpson");
   parent.Set("profileImageUrl", "http://profile.url/homer/image");
@@ -179,7 +179,7 @@ class MockEduAccountLoginHandler : public EduAccountLoginHandler {
               (override));
   MOCK_METHOD(void,
               FetchParentImages,
-              (base::Value::List parents,
+              (base::ListValue parents,
                (std::map<GaiaId, GURL> profile_image_urls)),
               (override));
 };
@@ -242,7 +242,7 @@ class EduAccountLoginHandlerTest : public testing::Test {
 TEST_F(EduAccountLoginHandlerTest, HandleGetParentsSuccess) {
   SetupNetwork();
   constexpr char callback_id[] = "handle-get-parents-callback";
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(callback_id);
 
   EXPECT_CALL(*handler(), FetchFamilyMembers());
@@ -267,7 +267,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleGetParentsSuccess) {
 TEST_F(EduAccountLoginHandlerTest, HandleGetParentsFailure) {
   SetupNetwork();
   constexpr char callback_id[] = "handle-get-parents-callback";
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(callback_id);
 
   EXPECT_CALL(*handler(), FetchFamilyMembers());
@@ -280,7 +280,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleGetParentsFailure) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id, /*success=*/false);
 
-  ASSERT_EQ(base::Value::List(), *data.arg3());
+  ASSERT_EQ(base::ListValue(), *data.arg3());
 }
 
 TEST_F(EduAccountLoginHandlerTest, HandleParentSigninSuccess) {
@@ -288,7 +288,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninSuccess) {
   handler()->AllowJavascriptForTesting();
 
   constexpr char callback_id[] = "handle-parent-signin-callback";
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(callback_id);
   list_args.Append(GetFakeParent());
   list_args.Append(kFakeParentCredential);
@@ -320,7 +320,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninAccessTokenFailure) {
   handler()->AllowJavascriptForTesting();
 
   constexpr char callback_id[] = "handle-parent-signin-callback";
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(callback_id);
   list_args.Append(GetFakeParent());
   list_args.Append(kFakeParentCredential);
@@ -336,7 +336,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninAccessTokenFailure) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id, false /*success*/);
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("isWrongPassword", false);
   ASSERT_EQ(result, *data.arg3());
 }
@@ -346,7 +346,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninReAuthProofTokenFailure) {
   handler()->AllowJavascriptForTesting();
 
   constexpr char callback_id[] = "handle-parent-signin-callback";
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(callback_id);
   list_args.Append(GetFakeParent());
   list_args.Append(kFakeParentCredential);
@@ -370,7 +370,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninReAuthProofTokenFailure) {
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id, false);
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("isWrongPassword", true);
   ASSERT_EQ(result, *data.arg3());
 }
@@ -411,7 +411,7 @@ TEST_F(EduAccountLoginHandlerTest, ProfileImageFetcherTest) {
 TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOffline) {
   SetupNetwork(/*network_status_online=*/false);
   constexpr char callback_id[] = "is-network-ready-callback";
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(callback_id);
 
   handler()->HandleIsNetworkReady(list_args);
@@ -427,7 +427,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOffline) {
 TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOnline) {
   SetupNetwork(/*network_status_online=*/true);
   constexpr char callback_id[] = "is-network-ready-callback";
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(callback_id);
 
   handler()->HandleIsNetworkReady(list_args);

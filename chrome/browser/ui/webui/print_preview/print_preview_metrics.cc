@@ -36,8 +36,8 @@ void ReportPrintDocumentTypeHistograms(PrintDocumentTypeBuckets doctype) {
   base::UmaHistogramEnumeration("PrintPreview.PrintDocumentType", doctype);
 }
 
-void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
-                              const base::Value::Dict& preview_settings,
+void ReportPrintSettingsStats(const base::DictValue& print_settings,
+                              const base::DictValue& preview_settings,
                               bool is_pdf) {
   ReportPrintSettingHistogram(PrintSettingsBuckets::kTotal);
 
@@ -50,13 +50,13 @@ void ReportPrintSettingsStats(const base::Value::Dict& print_settings,
   // print ticket. Similarly, settings applied at the printer should be pulled
   // from the print ticket, as they may have dummy values in the preview
   // request.
-  const base::Value::List* page_range_array =
+  const base::ListValue* page_range_array =
       preview_settings.FindList(kSettingPageRange);
   if (page_range_array && !page_range_array->empty()) {
     ReportPrintSettingHistogram(PrintSettingsBuckets::kPageRange);
   }
 
-  const base::Value::Dict* media_size_value =
+  const base::DictValue* media_size_value =
       preview_settings.FindDict(kSettingMediaSize);
   if (media_size_value && !media_size_value->empty()) {
     if (media_size_value->FindBool(kSettingMediaSizeIsDefault)

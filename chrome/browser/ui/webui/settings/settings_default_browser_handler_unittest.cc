@@ -97,7 +97,7 @@ class DefaultBrowserHandlerTest : public testing::Test {
 
  protected:
   void CallRequestDefaultBrowserState() {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kRequestDefaultBrowserStateCallback);
     test_web_ui()->HandleReceivedMessage("requestDefaultBrowserState", args);
 
@@ -113,7 +113,7 @@ class DefaultBrowserHandlerTest : public testing::Test {
 
   void CallRequestUserValueStringsFeatureState() {
     // Simulate the WebUI call to the handler.
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kRequestUserValueStringsFeatureStateCallback);
     test_web_ui()->HandleReceivedMessage("requestUserValueStringsFeatureState",
                                          args);
@@ -133,7 +133,7 @@ class DefaultBrowserHandlerTest : public testing::Test {
   }
 
   void CallSetDefaultBrowser() {
-    base::Value::List empty_args;
+    base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("setAsDefaultBrowser", empty_args);
 
     WaitForSingleCallData();

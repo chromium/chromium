@@ -38,7 +38,7 @@ class TabSearchSyncHandler : public content::WebUIMessageHandler,
   // Returns whether or not the user is currently signed in.
   bool GetSignInState() const;
   // Handles the request for the sign in state.
-  void HandleGetSignInState(const base::Value::List& args);
+  void HandleGetSignInState(const base::ListValue& args);
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync_service) override;

@@ -189,7 +189,7 @@ void UserCloudSigninRestrictionPolicyFetcher::FetchUserInfo() {
 }
 
 void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoSuccess(
-    const base::Value::Dict& user_info) {
+    const base::DictValue& user_info) {
   // No need to check for hosted domain when fetching value of
   // SecondaryAccountAllowedInArcPolicy since call to fetch its value is only
   // made after establishing that SecondaryGoogleAccountUsage is called on a

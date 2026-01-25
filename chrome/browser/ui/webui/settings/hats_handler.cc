@@ -87,7 +87,7 @@ void HatsHandler::RegisterMessages() {
  * Fourth arg indicates the SecuritySettingsBundleSetting when the settings page
  * was opened.
  */
-void HatsHandler::HandleSecurityPageHatsRequest(const base::Value::List& args) {
+void HatsHandler::HandleSecurityPageHatsRequest(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(4U, args.size());
@@ -138,8 +138,8 @@ void HatsHandler::HandleSecurityPageHatsRequest(const base::Value::List& args) {
  */
 SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
     Profile* profile,
-    const base::Value::List& args) {
-  const base::Value::List& interactions = args[0].GetList();
+    const base::ListValue& args) {
+  const base::ListValue& interactions = args[0].GetList();
   auto safe_browsing_state = static_cast<SafeBrowsingState>(args[1].GetInt());
 
   auto security_settings_bundle_setting =
@@ -266,7 +266,7 @@ SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
 }
 
 void HatsHandler::HandleTrustSafetyInteractionOccurred(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());

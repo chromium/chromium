@@ -89,10 +89,10 @@ class AboutHandlerTest : public testing::Test {
   }
 
   const base::Value& CallWebUIMessage(const std::string& message,
-                                      base::Value::List args = {}) {
+                                      base::ListValue args = {}) {
     size_t initial_call_count = web_ui_.call_data().size();
 
-    base::Value::List message_args;
+    base::ListValue message_args;
     message_args.Append("handlerFunctionName");
     for (base::Value& arg : args) {
       message_args.Append(std::move(arg));
@@ -175,7 +175,7 @@ TEST_F(AboutHandlerTest, DeferredUpdateMessageInAboutPage) {
   EXPECT_EQ(0,
             fake_update_engine_client_->apply_deferred_update_advanced_count());
   web_ui_.HandleReceivedMessage("applyDeferredUpdateAdvanced",
-                                base::Value::List());
+                                base::ListValue());
   EXPECT_EQ(1,
             fake_update_engine_client_->apply_deferred_update_advanced_count());
 }
@@ -262,7 +262,7 @@ TEST_F(AboutHandlerTest, HandleIsExtendedUpdatesOptInEligible) {
       .WillOnce(Return(true));
 
   bool eligible = CallWebUIMessage("isExtendedUpdatesOptInEligible",
-                                   base::Value::List()
+                                   base::ListValue()
                                        .Append(params.eol_passed)
                                        .Append(params.extended_date_passed)
                                        .Append(params.opt_in_required))

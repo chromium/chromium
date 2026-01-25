@@ -186,7 +186,7 @@ class PeopleHandler : public SettingsPageUIHandler,
 
   // Returns a newly created dictionary with a number of properties that
   // correspond to the status of sync.
-  base::Value::Dict GetSyncStatusDictionary() const;
+  base::DictValue GetSyncStatusDictionary() const;
 
   // Helper routine that gets the SyncService associated with the parent
   // profile.
@@ -196,41 +196,41 @@ class PeopleHandler : public SettingsPageUIHandler,
   LoginUIService* GetLoginUIService() const;
 
   // Callbacks from the page.
-  void HandleGetProfileInfo(const base::Value::List& args);
-  void OnDidClosePage(const base::Value::List& args);
-  void HandleSetDatatypes(const base::Value::List& args);
-  void HandleSetEncryptionPassphrase(const base::Value::List& args);
-  void HandleSetDecryptionPassphrase(const base::Value::List& args);
-  void HandleShowSyncSetupUI(const base::Value::List& args);
-  void HandleSyncPrefsDispatch(const base::Value::List& args);
-  void HandleTrustedVaultBannerStateDispatch(const base::Value::List& args);
+  void HandleGetProfileInfo(const base::ListValue& args);
+  void OnDidClosePage(const base::ListValue& args);
+  void HandleSetDatatypes(const base::ListValue& args);
+  void HandleSetEncryptionPassphrase(const base::ListValue& args);
+  void HandleSetDecryptionPassphrase(const base::ListValue& args);
+  void HandleShowSyncSetupUI(const base::ListValue& args);
+  void HandleSyncPrefsDispatch(const base::ListValue& args);
+  void HandleTrustedVaultBannerStateDispatch(const base::ListValue& args);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void HandleGetChromeSigninUserChoiceInfo(const base::Value::List& args);
-  void HandleSetChromeSigninUserChoice(const base::Value::List& args);
-  void HandleRecordSigninPendingOffered(const base::Value::List& args);
+  void HandleGetChromeSigninUserChoiceInfo(const base::ListValue& args);
+  void HandleSetChromeSigninUserChoice(const base::ListValue& args);
+  void HandleRecordSigninPendingOffered(const base::ListValue& args);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  void HandleAttemptUserExit(const base::Value::List& args);
-  void HandleTurnOnSync(const base::Value::List& args);
-  void HandleTurnOffSync(const base::Value::List& args);
+  void HandleAttemptUserExit(const base::ListValue& args);
+  void HandleTurnOnSync(const base::ListValue& args);
+  void HandleTurnOffSync(const base::ListValue& args);
 #else
-  void HandleStartSignin(const base::Value::List& args);
+  void HandleStartSignin(const base::ListValue& args);
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void HandleSignout(const base::Value::List& args);
+  void HandleSignout(const base::ListValue& args);
   void HandleTurnOffSync(bool delete_profile,
                          bool is_clear_primary_account_allowed);
-  void HandlePauseSync(const base::Value::List& args);
+  void HandlePauseSync(const base::ListValue& args);
 #endif
-  void HandleStartKeyRetrieval(const base::Value::List& args);
-  void HandleSyncShowBookmarkLimitExceededHelp(const base::Value::List& args);
-  void HandleGetSyncStatus(const base::Value::List& args);
+  void HandleStartKeyRetrieval(const base::ListValue& args);
+  void HandleSyncShowBookmarkLimitExceededHelp(const base::ListValue& args);
+  void HandleGetSyncStatus(const base::ListValue& args);
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  void HandleShowSyncPassphraseDialog(const base::Value::List& args);
-  void HandleShowAccountSettingsUI(const base::Value::List& args);
-  void HandleSetDatatype(const base::Value::List& args);
+  void HandleShowSyncPassphraseDialog(const base::ListValue& args);
+  void HandleShowAccountSettingsUI(const base::ListValue& args);
+  void HandleSetDatatype(const base::ListValue& args);
 
   // Displays the GAIA login form.
   void DisplayGaiaLogin(signin_metrics::AccessPoint access_point);
@@ -240,17 +240,17 @@ class PeopleHandler : public SettingsPageUIHandler,
       signin_metrics::AccessPoint access_point);
 #endif
 
-  void HandleGetStoredAccounts(const base::Value::List& args);
-  void HandleStartSyncingWithEmail(const base::Value::List& args);
-  void HandleGetProfileAvatar(const base::Value::List& args);
-  base::Value::List GetStoredAccountsList();
+  void HandleGetStoredAccounts(const base::ListValue& args);
+  void HandleStartSyncingWithEmail(const base::ListValue& args);
+  void HandleGetProfileAvatar(const base::ListValue& args);
+  base::ListValue GetStoredAccountsList();
   base::Value GetProfileAvatar();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Sends the updated chrome signin user choice info to UI.
   void UpdateChromeSigninUserChoiceInfo();
   // Constructs the information dictionary needed to be sent.
-  base::Value::Dict GetChromeSigninUserChoiceInfo();
+  base::DictValue GetChromeSigninUserChoiceInfo();
 #endif
 
   // Pushes the updated sync prefs to JavaScript.

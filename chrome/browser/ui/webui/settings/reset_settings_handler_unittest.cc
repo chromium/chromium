@@ -72,7 +72,7 @@ class ResetSettingsHandlerTest : public testing::Test {
 };
 
 TEST_F(ResetSettingsHandlerTest, HandleResetProfileSettings) {
-  base::Value::List list;
+  base::ListValue list;
   std::string expected_callback_id("dummyCallbackId");
   list.Append(expected_callback_id);
   list.Append(false);
@@ -99,7 +99,7 @@ class ResetSettingsHandlerV2Test : public ResetSettingsHandlerTest {
 };
 
 TEST_F(ResetSettingsHandlerV2Test, HandleGetTamperedPreferencePaths) {
-  base::Value::List tampered_prefs;
+  base::ListValue tampered_prefs;
   tampered_prefs.Append("some.unrelated.pref.path");
   tampered_prefs.Append(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
@@ -110,7 +110,7 @@ TEST_F(ResetSettingsHandlerV2Test, HandleGetTamperedPreferencePaths) {
   profile()->GetPrefs()->SetList(user_prefs::kTrackedPreferencesReset,
                                  std::move(tampered_prefs));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append("test-callback-id-123");
   handler()->HandleGetTamperedPreferencePaths(args);
 
@@ -119,7 +119,7 @@ TEST_F(ResetSettingsHandlerV2Test, HandleGetTamperedPreferencePaths) {
   ASSERT_EQ("test-callback-id-123", call_data.arg1()->GetString());
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
-  const base::Value::List* result_list = call_data.arg3()->GetIfList();
+  const base::ListValue* result_list = call_data.arg3()->GetIfList();
   ASSERT_TRUE(result_list);
 
   ASSERT_EQ(5U, result_list->size());
@@ -144,12 +144,12 @@ TEST_F(ResetSettingsHandlerV2Test,
        HandleGetTamperedPreferencePaths_EmptyWhenNoPrefs) {
   profile()->GetPrefs()->ClearPref(user_prefs::kTrackedPreferencesReset);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append("test-callback-id-456");
   handler()->HandleGetTamperedPreferencePaths(args);
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  const base::Value::List* result_list = call_data.arg3()->GetIfList();
+  const base::ListValue* result_list = call_data.arg3()->GetIfList();
   ASSERT_TRUE(result_list);
   EXPECT_TRUE(result_list->empty());
 }
@@ -159,17 +159,17 @@ TEST_F(ResetSettingsHandlerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kShowResetProfileBannerV2);
   // Setup: Add a tampered pref.
-  base::Value::List tampered_prefs;
+  base::ListValue tampered_prefs;
   tampered_prefs.Append(prefs::kShowHomeButton);
   profile()->GetPrefs()->SetList(user_prefs::kTrackedPreferencesReset,
                                  std::move(tampered_prefs));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append("test-callback-id-789");
   handler()->HandleGetTamperedPreferencePaths(args);
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  const base::Value::List* result_list = call_data.arg3()->GetIfList();
+  const base::ListValue* result_list = call_data.arg3()->GetIfList();
   ASSERT_TRUE(result_list);
   EXPECT_TRUE(result_list->empty());
 }

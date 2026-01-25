@@ -100,8 +100,8 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                bool images_enabled,
                read_anything::mojom::Colors color,
                double speech_rate,
-               base::Value::Dict voices,
-               base::Value::List languages_enabled_in_pref,
+               base::DictValue voices,
+               base::ListValue languages_enabled_in_pref,
                read_anything::mojom::HighlightGranularity granularity,
                read_anything::mojom::LineFocus line_focus));
   MOCK_METHOD(void,
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   OnLanguagePrefChange(kLang2, true);
   OnLanguagePrefChange(kDisabledLang, false);
 
-  const base::Value::List* langs = &browser()->profile()->GetPrefs()->GetList(
+  const base::ListValue* langs = &browser()->profile()->GetPrefs()->GetList(
       prefs::kAccessibilityReadAnythingLanguagesEnabled);
   ASSERT_EQ(langs->size(), 2u);
   ASSERT_EQ((*langs)[0].GetString(), kLang1);
@@ -873,11 +873,11 @@ IN_PROC_BROWSER_TEST_P(
   const char kVoice1[] = "Rapunzel";
   const char kVoice2[] = "Eugene";
   const char kVoice3[] = "Cassandra";
-  base::Value::Dict voices = base::Value::Dict()
-                                 .Set(kLang1, kVoice1)
-                                 .Set(kLang2, kVoice2)
-                                 .Set(kLang3, kVoice3);
-  base::Value::List langs;
+  base::DictValue voices = base::DictValue()
+                               .Set(kLang1, kVoice1)
+                               .Set(kLang2, kVoice2)
+                               .Set(kLang3, kVoice3);
+  base::ListValue langs;
   langs.Append(kLang1);
   langs.Append(kLang2);
   langs.Append(kLang3);
@@ -899,18 +899,18 @@ IN_PROC_BROWSER_TEST_P(
                          _, _, _, _, _, _, _, expected_speech_rate, _, _,
                          expected_highlight_granularity, _))
       .Times(1)
-      .WillOnce(testing::WithArgs<8, 9>(
-          [&](base::Value::Dict voices, base::Value::List langs) {
-            EXPECT_THAT(voices, base::test::DictionaryHasValues(
-                                    base::Value::Dict()
-                                        .Set(kLang1, kVoice1)
-                                        .Set(kLang2, kVoice2)
-                                        .Set(kLang3, kVoice3)));
-            EXPECT_EQ(3u, langs.size());
-            EXPECT_EQ(langs[0].GetString(), kLang1);
-            EXPECT_EQ(langs[1].GetString(), kLang2);
-            EXPECT_EQ(langs[2].GetString(), kLang3);
-          }));
+      .WillOnce(testing::WithArgs<8, 9>([&](base::DictValue voices,
+                                            base::ListValue langs) {
+        EXPECT_THAT(voices,
+                    base::test::DictionaryHasValues(base::DictValue()
+                                                        .Set(kLang1, kVoice1)
+                                                        .Set(kLang2, kVoice2)
+                                                        .Set(kLang3, kVoice3)));
+        EXPECT_EQ(3u, langs.size());
+        EXPECT_EQ(langs[0].GetString(), kLang1);
+        EXPECT_EQ(langs[1].GetString(), kLang2);
+        EXPECT_EQ(langs[2].GetString(), kLang3);
+      }));
 
   handler_ = CreateHandler();
 }
@@ -926,13 +926,12 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   OnVoiceChange(kVoice1, kLang1);
   OnVoiceChange(kVoice2, kLang2);
 
-  const base::Value::Dict* voices = &browser()->profile()->GetPrefs()->GetDict(
+  const base::DictValue* voices = &browser()->profile()->GetPrefs()->GetDict(
       prefs::kAccessibilityReadAnythingVoiceName);
   ASSERT_EQ(voices->size(), 2u);
-  EXPECT_THAT(
-      *voices,
-      base::test::DictionaryHasValues(
-          base::Value::Dict().Set(kLang1, kVoice1).Set(kLang2, kVoice2)));
+  EXPECT_THAT(*voices,
+              base::test::DictionaryHasValues(
+                  base::DictValue().Set(kLang1, kVoice1).Set(kLang2, kVoice2)));
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
@@ -945,7 +944,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   OnVoiceChange(kVoice1, kLang);
   OnVoiceChange(kVoice2, kLang);
 
-  const base::Value::Dict* voices = &browser()->profile()->GetPrefs()->GetDict(
+  const base::DictValue* voices = &browser()->profile()->GetPrefs()->GetDict(
       prefs::kAccessibilityReadAnythingVoiceName);
   ASSERT_EQ(voices->size(), 1u);
   EXPECT_THAT(*voices,
@@ -962,12 +961,12 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   OnVoiceChange(kVoice, kLang1);
   OnVoiceChange(kVoice, kLang2);
 
-  const base::Value::Dict* voices = &browser()->profile()->GetPrefs()->GetDict(
+  const base::DictValue* voices = &browser()->profile()->GetPrefs()->GetDict(
       prefs::kAccessibilityReadAnythingVoiceName);
   ASSERT_EQ(voices->size(), 2u);
   EXPECT_THAT(*voices,
               base::test::DictionaryHasValues(
-                  base::Value::Dict().Set(kLang1, kVoice).Set(kLang2, kVoice)));
+                  base::DictValue().Set(kLang1, kVoice).Set(kLang2, kVoice)));
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest, BadImageData) {

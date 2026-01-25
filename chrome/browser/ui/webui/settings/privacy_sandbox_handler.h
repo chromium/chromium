@@ -35,21 +35,21 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxHandlerTestMockService,
                            TopicsToggleChanged);
 
-  void HandleSetFledgeJoiningAllowed(const base::Value::List& args);
-  void HandleGetFledgeState(const base::Value::List& args);
-  void HandleSetTopicAllowed(const base::Value::List& args);
-  void HandleGetTopicsState(const base::Value::List& args);
-  void HandleTopicsToggleChanged(const base::Value::List& args);
-  void HandleGetFirstLevelTopics(const base::Value::List& args);
-  void HandleGetChildTopicsCurrentlyAssigned(const base::Value::List& args);
+  void HandleSetFledgeJoiningAllowed(const base::ListValue& args);
+  void HandleGetFledgeState(const base::ListValue& args);
+  void HandleSetTopicAllowed(const base::ListValue& args);
+  void HandleGetTopicsState(const base::ListValue& args);
+  void HandleTopicsToggleChanged(const base::ListValue& args);
+  void HandleGetFirstLevelTopics(const base::ListValue& args);
+  void HandleGetChildTopicsCurrentlyAssigned(const base::ListValue& args);
   // Determines if the Ad Topics card in the Privacy Guide should be displayed.
   // This requires the PrivacySandboxAdTopicsContentParity feature to be enabled
   // AND the user to be located in a Privacy Sandbox Consent Country.
   void HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
-      const base::Value::List& args);
+      const base::ListValue& args);
   // Determines if the Ad Topics Content Parity should be shown.
   void HandleShouldShowPrivacySandboxAdTopicsContentParity(
-      const base::Value::List& args);
+      const base::ListValue& args);
 
   virtual PrivacySandboxCountries* GetPrivacySandboxCountries();
   virtual PrivacySandboxService* GetPrivacySandboxService();

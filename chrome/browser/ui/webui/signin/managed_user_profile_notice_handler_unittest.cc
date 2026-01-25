@@ -184,7 +184,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
           /*process_user_choice_callback=*/
           mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(GetParam().state);
   args.Append(GetParam().should_link_data);
 
@@ -210,7 +210,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
           /*process_user_choice_callback=*/
           mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(GetParam().state);
   args.Append(GetParam().should_link_data);
 
@@ -221,7 +221,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
 
   // When disclosure is shown, the next state shown is the data handling one.
   if (GetParam().state == ManagedUserProfileNoticeHandler::State::kDisclosure) {
-    base::Value::List data_handling_args;
+    base::ListValue data_handling_args;
     data_handling_args.Append(
         ManagedUserProfileNoticeHandler::State::kUserDataHandling);
     data_handling_args.Append(GetParam().should_link_data);
@@ -251,7 +251,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
           /*process_user_choice_callback=*/
           mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
   args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
@@ -290,7 +290,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
           /*process_user_choice_callback=*/
           mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
   args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
@@ -310,7 +310,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
 
   // When disclosure is shown, the next state shown is the data handling one.
   if (GetParam().state == ManagedUserProfileNoticeHandler::State::kDisclosure) {
-    base::Value::List data_handling_args;
+    base::ListValue data_handling_args;
     data_handling_args.Append(
         ManagedUserProfileNoticeHandler::State::kUserDataHandling);
     data_handling_args.Append(GetParam().should_link_data);
@@ -338,7 +338,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
           /*process_user_choice_callback=*/
           mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
   args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
@@ -390,9 +390,9 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
       profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
 
   managed_profile.GetPrefs()->SetList(
-      prefs::kProfileSeparationDomainExceptionList, base::Value::List());
+      prefs::kProfileSeparationDomainExceptionList, base::ListValue());
   unmanaged_profile.GetPrefs()->SetList(
-      prefs::kProfileSeparationDomainExceptionList, base::Value::List());
+      prefs::kProfileSeparationDomainExceptionList, base::ListValue());
 
   // No account manager, no device manager
   {
@@ -599,7 +599,7 @@ TEST_F(ManagedUserProfileNoticeHandleCancelTest, HandleCancelNoUseAfterFree) {
               Run(signin::SIGNIN_CHOICE_CANCEL))
       .WillOnce([&]() { DeleteHandler(); });
   EXPECT_CALL(mock_done_callback, Run());
-  web_ui()->HandleReceivedMessage("cancel", base::Value::List());
+  web_ui()->HandleReceivedMessage("cancel", base::ListValue());
   EXPECT_EQ(handler(), nullptr);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

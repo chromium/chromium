@@ -971,7 +971,7 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
           optimization_guide::proto::LogAiDataRequest::kTabOrganization)) {
     return;
   }
-  base::Value::Dict feedback_metadata;
+  base::DictValue feedback_metadata;
   feedback_metadata.Set("log_id", feedback_id);
   chrome::ShowFeedbackPage(
       browser_, feedback::kFeedbackSourceAI,
@@ -980,7 +980,7 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
       l10n_util::GetStringUTF8(IDS_TAB_ORGANIZATION_FEEDBACK_PLACEHOLDER),
       /*category_tag=*/"tab_organization",
       /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+      /*autofill_metadata=*/base::DictValue(), std::move(feedback_metadata));
 }
 
 void TabSearchPageHandler::TriggerSignIn() {

@@ -255,14 +255,14 @@ void PolicyUITest::VerifyPolicies(
       base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value_ptr);
   ASSERT_TRUE(value_ptr->is_list());
-  const base::Value::List& actual_policies = value_ptr->GetList();
+  const base::ListValue& actual_policies = value_ptr->GetList();
 
   // Verify that the cells contain the expected strings for all policies.
   ASSERT_EQ(expected_policies.size(), actual_policies.size());
   for (size_t i = 0; i < expected_policies.size(); ++i) {
     const std::vector<std::string> expected_policy = expected_policies[i];
     ASSERT_TRUE(actual_policies[i].is_list());
-    const base::Value::List& actual_policy = actual_policies[i].GetList();
+    const base::ListValue& actual_policy = actual_policies[i].GetList();
     ASSERT_EQ(expected_policy.size(), actual_policy.size());
     for (size_t j = 0; j < expected_policy.size(); ++j) {
       const std::string* value = actual_policy[j].GetIfString();
@@ -359,8 +359,8 @@ bool PolicyUIStatusTest::ReadStatusFor(
   if (!statuses.has_value() || !statuses->is_dict()) {
     return false;
   }
-  const base::Value::Dict& status_dict = statuses->GetDict();
-  const base::Value::Dict* actual_entries = status_dict.FindDict(policy_legend);
+  const base::DictValue& status_dict = statuses->GetDict();
+  const base::DictValue* actual_entries = status_dict.FindDict(policy_legend);
   if (!actual_entries) {
     return false;
   }
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_SendPolicyValues) {
   std::map<std::string, std::string> expected_values;
 
   // Set the values of four existing policies.
-  base::Value::List blocked_urls;
+  base::ListValue blocked_urls;
   blocked_urls.Append("site1.com");
   blocked_urls.Append("site2.com");
   blocked_urls.Append("site3.com");
@@ -861,9 +861,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
   base::WriteFile(schema_path, json_data);
 
   // Build extension that contains the policy schema.
-  auto storage = base::Value::Dict().Set("managed_schema", schema_file);
+  auto storage = base::DictValue().Set("managed_schema", schema_file);
 
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "test")
                       .Set("version", "1")
                       .Set("manifest_version", 2)
@@ -936,9 +936,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
   // Verify if policy UI includes policy that extension have.
   VerifyPolicies(expected_policies);
 
-  base::Value::Dict object_value;
+  base::DictValue object_value;
   object_value.Set("objectProperty", true);
-  base::Value::List array_value;
+  base::ListValue array_value;
   array_value.Append(true);
 
   policy::PolicyMap values;
