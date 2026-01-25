@@ -48,7 +48,7 @@ class KioskIwaLauncher : public KioskWebAppLauncherBase {
 
   const raw_ref<const KioskIwaData> iwa_data_;
   std::unique_ptr<web_app::IwaInstaller> iwa_installer_;
-  base::Value::List iwa_install_log_;
+  base::ListValue iwa_install_log_;
 
   base::WeakPtrFactory<KioskIwaLauncher> weak_ptr_factory_{this};
 };

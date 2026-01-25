@@ -127,7 +127,7 @@ namespace extensions {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetInputMethodConfigFunction::Run() {
-  base::Value::Dict output;
+  base::DictValue output;
   output.Set("isPhysicalKeyboardAutocorrectEnabled", true);
   output.Set("isImeMenuActivated",
              Profile::FromBrowserContext(browser_context())
@@ -175,7 +175,7 @@ InputMethodPrivateSwitchToLastUsedInputMethodFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetInputMethodsFunction::Run() {
-  base::Value::List output;
+  base::ListValue output;
   auto* manager = ash::input_method::InputMethodManager::Get();
   ash::input_method::InputMethodUtil* util = manager->GetInputMethodUtil();
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
@@ -185,7 +185,7 @@ InputMethodPrivateGetInputMethodsFunction::Run() {
   for (size_t i = 0; i < input_methods.size(); ++i) {
     const ash::input_method::InputMethodDescriptor& input_method =
         input_methods[i];
-    base::Value::Dict val;
+    base::DictValue val;
     val.Set("id", input_method.id());
     val.Set("name", util->GetInputMethodLongName(input_method));
     val.Set("indicator", input_method.GetIndicator());
@@ -209,7 +209,7 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
   }
 
   std::set<std::string> words = dictionary->GetWords();
-  base::Value::List output;
+  base::ListValue output;
   output.reserve(words.size());
   for (auto it = words.begin(); it != words.end();) {
     output.Append(std::move(words.extract(it++).value()));
@@ -338,7 +338,7 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
   if (!info.selection_range.IsValid())
     return RespondNow(WithArguments(base::Value()));
 
-  base::Value::Dict ret;
+  base::DictValue ret;
   uint32_t selection_start = info.selection_range.start();
   uint32_t selection_end = info.selection_range.end();
   // Makes sure |selection_start| is less or equals to |selection_end|.
@@ -370,7 +370,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
   const auto params = GetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const base::Value::Dict& input_methods =
+  const base::DictValue& input_methods =
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
           ->GetDict(prefs::kLanguageInputMethodSpecificSettings);
@@ -561,7 +561,7 @@ InputMethodPrivateGetLanguagePackStatusFunction::Run() {
 void InputMethodPrivateGetLanguagePackStatusFunction::
     OnGetLanguagePackStatusComplete(
         const input_method_private::LanguagePackStatus status) {
-  base::Value::List results =
+  base::ListValue results =
       input_method_private::GetLanguagePackStatus::Results::Create(status);
   Respond(ArgumentList(std::move(results)));
 }

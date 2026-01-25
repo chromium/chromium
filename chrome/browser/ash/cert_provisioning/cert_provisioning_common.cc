@@ -169,7 +169,7 @@ CertProfile::CertProfile() = default;
 CertProfile::~CertProfile() = default;
 
 std::optional<CertProfile> CertProfile::MakeFromValue(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   static_assert(kVersion == 7, "This function should be updated");
 
   const std::string* id = value.FindString(kCertProfileIdKey);

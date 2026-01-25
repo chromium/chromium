@@ -30,24 +30,24 @@ class ExternalCache {
 
   // If an external extension should be downloaded, returns the extension's
   // update URL. Otherwise, returns an empty URL.
-  static GURL GetExtensionUpdateUrl(const base::Value::Dict& extension_value,
+  static GURL GetExtensionUpdateUrl(const base::DictValue& extension_value,
                                     bool always_checking_for_updates);
 
   // Converts an external extension value to the external extension value
   // describing a cached extension - i.e. a value describing an extension
   // returned by GetCachedExtensions().
-  static base::Value::Dict GetExtensionValueToCache(
-      const base::Value::Dict& original_value,
+  static base::DictValue GetExtensionValueToCache(
+      const base::DictValue& original_value,
       const std::string& path,
       const std::string& version);
 
   // If the external extension is not curently cached, whether the extension's
   // value should be added to the set of cached extensions (returned by
   // GetCachedExtensions()) regardless of the extension's download status.
-  static bool ShouldCacheImmediately(const base::Value::Dict& extension_value);
+  static bool ShouldCacheImmediately(const base::DictValue& extension_value);
 
   // Returns already cached extensions.
-  virtual const base::Value::Dict& GetCachedExtensions() = 0;
+  virtual const base::DictValue& GetCachedExtensions() = 0;
 
   // Shut down the cache. The |callback| will be invoked when the cache has shut
   // down completely and there are no more pending file I/O operations.
@@ -55,7 +55,7 @@ class ExternalCache {
 
   // Replace the list of extensions to cache with |prefs| and perform update
   // checks for these.
-  virtual void UpdateExtensionsList(base::Value::Dict prefs) = 0;
+  virtual void UpdateExtensionsList(base::DictValue prefs) = 0;
 
   // If a user of one of the ExternalCache's extensions detects that
   // the extension is damaged then this method can be used to remove it from

@@ -66,7 +66,7 @@ class CertProvisioningWorkerFactory {
       CertScope cert_scope,
       Profile* profile,
       PrefService* pref_service,
-      const base::Value::Dict& saved_worker,
+      const base::DictValue& saved_worker,
       CertProvisioningClient* cert_provisioning_client,
       std::unique_ptr<CertProvisioningInvalidator> invalidator,
       base::RepeatingClosure state_change_callback,

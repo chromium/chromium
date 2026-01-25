@@ -418,7 +418,7 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
       {"line-height", TerminalSetting::kLineHeight},
   });
 
-  const base::Value::Dict& settings =
+  const base::DictValue& settings =
       profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsTerminalSettings);
   for (const auto item : settings) {
     // Only record settings for /hterm/profiles/default/.
@@ -442,7 +442,7 @@ std::string GetTerminalSettingBackgroundColor(
     return GetSettingsKey(kSettingsPrefixHterm, profile,
                           kSettingsKeyBackgroundColor);
   };
-  const base::Value::Dict& settings =
+  const base::DictValue& settings =
       profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsTerminalSettings);
   // 1. Use 'settings_profile' url param.
   std::string settings_profile;
@@ -465,13 +465,13 @@ std::string GetTerminalSettingBackgroundColor(
 }
 
 bool GetTerminalSettingPassCtrlW(Profile* profile) {
-  const base::Value::Dict& value =
+  const base::DictValue& value =
       profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsTerminalSettings);
   return value.FindBool(kSettingPassCtrlW).value_or(kDefaultPassCtrlW);
 }
 
 std::string ShortcutIdForSSH(const std::string& profileId) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kShortcutKey, base::Value(kShortcutValueSSH));
   dict.Set(kProfileIdKey, base::Value(profileId));
   return base::WriteJson(dict).value_or("");
@@ -479,13 +479,13 @@ std::string ShortcutIdForSSH(const std::string& profileId) {
 
 std::string ShortcutIdFromContainerId(Profile* profile,
                                       const guest_os::GuestId& id) {
-  base::Value::Dict dict = id.ToDictValue();
+  base::DictValue dict = id.ToDictValue();
   dict.Set(kShortcutKey, base::Value(kShortcutValueTerminal));
 
   // Find terminal profile from prefs.
-  const base::Value::Dict& settings =
+  const base::DictValue& settings =
       profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsTerminalSettings);
-  const base::Value::List* vsh_ids = settings.FindList("/vsh/profile-ids");
+  const base::ListValue* vsh_ids = settings.FindList("/vsh/profile-ids");
   if (vsh_ids) {
     for (const auto& vsh_id : *vsh_ids) {
       if (!vsh_id.is_string()) {
@@ -508,7 +508,7 @@ std::string ShortcutIdFromContainerId(Profile* profile,
 }
 
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
-    const base::Value::Dict& shortcut) {
+    const base::DictValue& shortcut) {
   base::flat_map<std::string, std::string> extras;
   for (const auto it : shortcut) {
     if (it.second.is_string()) {
@@ -521,9 +521,9 @@ base::flat_map<std::string, std::string> ExtrasFromShortcutId(
 std::vector<std::pair<std::string, std::string>> GetSSHConnections(
     Profile* profile) {
   std::vector<std::pair<std::string, std::string>> result;
-  const base::Value::Dict& settings =
+  const base::DictValue& settings =
       profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsTerminalSettings);
-  const base::Value::List* ids = settings.FindList("/nassh/profile-ids");
+  const base::ListValue* ids = settings.FindList("/nassh/profile-ids");
   if (!ids) {
     return result;
   }
@@ -598,7 +598,7 @@ void AddTerminalMenuShortcuts(
 bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
-  std::optional<base::Value::Dict> shortcut = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> shortcut = base::JSONReader::ReadDict(
       shortcut_id, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!shortcut) {
     return false;
@@ -609,7 +609,7 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
     if (!profileId) {
       return false;
     }
-    const base::Value::Dict& settings =
+    const base::DictValue& settings =
         profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsTerminalSettings);
     const std::string* settings_profile = settings.FindString(GetSettingsKey(
         kSettingsPrefixNassh, *profileId, kSettingsKeyTerminalProfile));

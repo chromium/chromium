@@ -61,7 +61,7 @@ const char* ConvertGoldenDayToProcessorDay(ConsistencyGoldenEffectiveDay day) {
 
 }  // namespace
 
-base::Value::Dict ConvertGoldenInputToProcessorInput(
+base::DictValue ConvertGoldenInputToProcessorInput(
     const ConsistencyGoldenInput& input) {
   // Random date representing the last time the policies were updated,
   // used whenever the last_updated field is not specified in the input proto.
@@ -73,7 +73,7 @@ base::Value::Dict ConvertGoldenInputToProcessorInput(
                               input.usage_limit_resets_at().minute())
           : kDefaultResetsAt;
 
-  base::Value::Dict policy = utils::CreateTimeLimitPolicy(resets_at);
+  base::DictValue policy = utils::CreateTimeLimitPolicy(resets_at);
 
   /* Begin Window Limits data */
 

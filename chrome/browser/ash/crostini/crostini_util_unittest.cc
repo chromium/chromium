@@ -139,7 +139,7 @@ TEST_F(CrostiniUtilTest, ShouldStopVm) {
   CrostiniManager* manager = CrostiniManager::GetForProfile(profile_.get());
   guest_os::GuestId containera(kCrostiniDefaultVmType, "apple", "banana");
   guest_os::GuestId containerb(kCrostiniDefaultVmType, "potato", "strawberry");
-  base::Value::List containers;
+  base::ListValue containers;
   containers.Append(containera.ToDictValue().Clone());
   containers.Append(containerb.ToDictValue().Clone());
 
@@ -163,7 +163,7 @@ TEST_F(CrostiniUtilTest, ShouldNotStopVm) {
   CrostiniManager* manager = CrostiniManager::GetForProfile(profile_.get());
   guest_os::GuestId containera(kCrostiniDefaultVmType, "apple", "banana");
   guest_os::GuestId containerb(kCrostiniDefaultVmType, "apple", "strawberry");
-  base::Value::List containers;
+  base::ListValue containers;
   containers.Append(containera.ToDictValue().Clone());
   containers.Append(containerb.ToDictValue().Clone());
 

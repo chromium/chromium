@@ -94,9 +94,9 @@ void FloatingSsoService::UpdateUrlMatchers() {
   block_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   except_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
 
-  const base::Value::List& blocklist =
+  const base::ListValue& blocklist =
       prefs_->GetList(::prefs::kFloatingSsoDomainBlocklist);
-  const base::Value::List& blocklist_exceptions =
+  const base::ListValue& blocklist_exceptions =
       prefs_->GetList(::prefs::kFloatingSsoDomainBlocklistExceptions);
 
   if (!blocklist.empty()) {

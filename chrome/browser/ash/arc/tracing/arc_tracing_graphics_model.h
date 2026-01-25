@@ -175,15 +175,15 @@ class ArcTracingGraphicsModel {
   bool Build(const ArcTracingModel& common_model,
              const PresentFramesTracer& present_frames);
 
-  // Serializes the model to |base::Value::Dict|, this can be passed to
+  // Serializes the model to |base::DictValue|, this can be passed to
   // javascript for rendering.
-  base::Value::Dict Serialize() const;
+  base::DictValue Serialize() const;
   // Serializes the model to Json string.
   std::string SerializeToJson() const;
   // Loads the model from Json string.
   bool LoadFromJson(const std::string& json_data);
-  // Loads the model from |base::Value::Dict|.
-  bool LoadFromValue(const base::Value::Dict& root);
+  // Loads the model from |base::DictValue|.
+  bool LoadFromValue(const base::DictValue& root);
 
   uint64_t duration() const { return duration_; }
   base::Time timestamp() const { return timestamp_; }

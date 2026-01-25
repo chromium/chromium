@@ -163,7 +163,7 @@ const base::FilePath& GetCpuTemperaturePathOnFileThread() {
   return instance->path();
 }
 
-bool ReadNonNegativeInt(const base::Value::Dict& root,
+bool ReadNonNegativeInt(const base::DictValue& root,
                         const std::string& key,
                         int* out) {
   std::optional<int> value = root.FindInt(key);
@@ -496,15 +496,15 @@ void ArcSystemStatCollector::Flush(const base::TimeTicks& min_timestamp,
 // Serializes the model to |base::Value|, this can be passed to
 // javascript for rendering.
 std::unique_ptr<base::Value> ArcSystemStatCollector::Serialize() const {
-  base::Value::Dict root;
+  base::DictValue root;
 
   root.Set(kKeyMaxInterval,
            base::NumberToString(max_interval_.InMicroseconds()));
 
   // Samples
-  base::Value::List sample_list;
+  base::ListValue sample_list;
   for (const auto& sample : samples_) {
-    base::Value::Dict sample_value;
+    base::DictValue sample_value;
 
     sample_value.Set(
         kKeyTimestamp,
@@ -554,7 +554,7 @@ bool ArcSystemStatCollector::LoadFromJson(const std::string& json_data) {
 
 bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
   samples_.clear();
-  const base::Value::Dict& root_dict = root.GetDict();
+  const base::DictValue& root_dict = root.GetDict();
 
   int64_t max_interval_mcs;
   const std::string* max_interval = root_dict.FindString(kKeyMaxInterval);
@@ -564,13 +564,13 @@ bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
 
   max_interval_ = base::Microseconds(max_interval_mcs);
 
-  const base::Value::List* sample_list = root_dict.FindList(kKeySamples);
+  const base::ListValue* sample_list = root_dict.FindList(kKeySamples);
   if (!sample_list) {
     return false;
   }
 
   for (const auto& sample_entry : *sample_list) {
-    const base::Value::Dict* sample_entry_dict = sample_entry.GetIfDict();
+    const base::DictValue* sample_entry_dict = sample_entry.GetIfDict();
     if (!sample_entry_dict) {
       return false;
     }

@@ -161,10 +161,10 @@ void ConvertSelectedFileInfoListToFileChooserFileInfoList(
     FileChooserFileInfoListCallback callback);
 
 // Converts EntryDefinition to something File API stack can understand.
-base::Value::Dict ConvertEntryDefinitionToValue(
+base::DictValue ConvertEntryDefinitionToValue(
     const EntryDefinition& entry_definition);
 
-base::Value::List ConvertEntryDefinitionListToListValue(
+base::ListValue ConvertEntryDefinitionListToListValue(
     const EntryDefinitionList& entry_definition_list);
 
 // Checks if a directory exists at |directory_path| absolute path.

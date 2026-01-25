@@ -148,7 +148,7 @@ void KioskArcvmAppService::OnComplianceReportReceived(
   VLOG(2) << "Compliance report received";
   compliance_report_received_ = true;
   pending_policy_app_installs_.clear();
-  const base::Value::List* const details =
+  const base::ListValue* const details =
       compliance_report->GetDict().FindList("nonComplianceDetails");
   if (!details) {
     PreconditionsChanged();
@@ -156,7 +156,7 @@ void KioskArcvmAppService::OnComplianceReportReceived(
   }
 
   for (const auto& detail : *details) {
-    const base::Value::Dict& detail_dict = detail.GetDict();
+    const base::DictValue& detail_dict = detail.GetDict();
     std::optional<size_t> reason = detail_dict.FindInt("nonComplianceReason");
     if (reason != kNonComplianceReasonAppNotInstalled) {
       continue;

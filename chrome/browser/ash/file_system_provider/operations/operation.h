@@ -51,7 +51,7 @@ class Operation : public RequestManager::HandlerInterface {
   bool SendEvent(int request_id,
                  extensions::events::HistogramValue histogram_value,
                  const std::string& event_name,
-                 base::Value::List event_args);
+                 base::ListValue event_args);
 
   ProvidedFileSystemInfo file_system_info_;
 

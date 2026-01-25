@@ -682,7 +682,7 @@ TEST_F(ArcSessionManagerTest,
   {
     // Emulate the situation that ARC is activated during user session start up
     // in recent three sessions, which exceeds the threshold.
-    base::Value::List history;
+    base::ListValue history;
     for (size_t i = 0; i < kHistoryThreshold; ++i) {
       history.Append(base::Value(true));
     }

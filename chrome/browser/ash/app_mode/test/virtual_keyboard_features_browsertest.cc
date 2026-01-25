@@ -39,7 +39,7 @@ bool IsChromeApp(const KioskApp& app) {
 }
 
 std::string ToJsonString(const keyboard::KeyboardConfig& config) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("auto_complete_enabled", config.auto_complete)
                   .Set("auto_correct_enabled", config.auto_correct)
                   .Set("handwriting_enabled", config.handwriting)

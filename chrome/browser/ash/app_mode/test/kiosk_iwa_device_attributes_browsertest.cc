@@ -178,7 +178,7 @@ class KioskIwaDeviceAttributesApiTest
           policy::key::kDeviceAttributesBlockedForOrigins,
           policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
           policy::POLICY_SOURCE_CLOUD,
-          base::Value(base::Value::List().Append(kAppOrigin.Serialize())),
+          base::Value(base::ListValue().Append(kAppOrigin.Serialize())),
           nullptr);
     }
     if (IsAllowPolicySet()) {
@@ -186,7 +186,7 @@ class KioskIwaDeviceAttributesApiTest
           policy::key::kDeviceAttributesAllowedForOrigins,
           policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
           policy::POLICY_SOURCE_CLOUD,
-          base::Value(base::Value::List().Append(kAppOrigin.Serialize())),
+          base::Value(base::ListValue().Append(kAppOrigin.Serialize())),
           nullptr);
     }
     policy_provider_.UpdateChromePolicy(policies);

@@ -287,7 +287,7 @@ void ArcSupportHost::Close() {
     return;
   }
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kAction, kActionCloseWindow);
   message_host_->SendMessage(message);
 
@@ -317,7 +317,7 @@ void ArcSupportHost::ShowPage(UIPage ui_page) {
     return;
   }
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kAction, kActionShowPage);
   switch (ui_page) {
     case UIPage::TERMS:
@@ -353,7 +353,7 @@ void ArcSupportHost::ShowError(ErrorInfo error_info,
     return;
   }
 
-  base::Value::Dict message_args;
+  base::DictValue message_args;
   message_args.Set(kAction, kActionShowErrorPage);
   int message_id;
 #define MAP_ERROR(name, id) \
@@ -442,7 +442,7 @@ void ArcSupportHost::SendPreferenceCheckboxUpdate(
   if (!message_host_)
     return;
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kAction, action_name);
   message.Set(kEnabled, data.is_enabled);
   message.Set(kManaged, data.is_managed);
@@ -522,7 +522,7 @@ bool ArcSupportHost::Initialize() {
   const bool is_child =
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
-  base::Value::Dict loadtime_data;
+  base::DictValue loadtime_data;
   loadtime_data.Set("appWindow", l10n_util::GetStringUTF16(
                                      IDS_ARC_PLAYSTORE_ICON_TITLE_BETA));
   loadtime_data.Set("greetingHeader",
@@ -662,7 +662,7 @@ bool ArcSupportHost::Initialize() {
   webui::SetLoadTimeDataDefaults(app_locale, &loadtime_data);
   loadtime_data.Set("locale", app_locale);
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kAction, kActionInitialize);
   message.Set(kData, std::move(loadtime_data));
 
@@ -684,7 +684,7 @@ void ArcSupportHost::SetWindowBound(const display::Display& display) {
   if (!message_host_)
     return;
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kAction, kActionSetWindowBounds);
   message.Set(kDisplayWorkareaX, display.work_area().x());
   message.Set(kDisplayWorkareaY, display.work_area().y());
@@ -693,7 +693,7 @@ void ArcSupportHost::SetWindowBound(const display::Display& display) {
   message_host_->SendMessage(message);
 }
 
-void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
+void ArcSupportHost::OnMessage(const base::DictValue& message) {
   const std::string* event = message.FindString(kEvent);
   if (!event) {
     NOTREACHED();

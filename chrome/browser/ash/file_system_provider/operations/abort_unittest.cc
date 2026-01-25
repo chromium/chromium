@@ -60,7 +60,7 @@ TEST_F(FileSystemProviderOperationsAbortTest, Execute) {
   extensions::Event* event = dispatcher.events()[0].get();
   EXPECT_EQ(extensions::api::file_system_provider::OnAbortRequested::kEventName,
             event->event_name);
-  const base::Value::List& event_args = event->event_args;
+  const base::ListValue& event_args = event->event_args;
   ASSERT_EQ(1u, event_args.size());
 
   const base::Value* options_as_value = &event_args[0];

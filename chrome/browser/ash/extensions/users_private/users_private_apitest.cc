@@ -53,7 +53,7 @@ class TestPrefsUtil : public PrefsUtil {
     pref_object.key = name;
     pref_object.type = api::settings_private::PrefType::kList;
 
-    base::Value::List value;
+    base::ListValue value;
     for (auto& email : user_list_) {
       value.Append(email);
     }
@@ -190,7 +190,7 @@ class LoginStatusTestConfig {
   }
 
  private:
-  base::Value::Dict test_config_;
+  base::DictValue test_config_;
 };
 
 class UsersPrivateApiLoginStatusTest : public ExtensionApiTest {

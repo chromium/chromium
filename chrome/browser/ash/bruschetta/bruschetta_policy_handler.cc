@@ -74,7 +74,7 @@ bool BruschettaPolicyHandler::CheckDownloadableObject(
     policy::PolicyErrorMap* errors,
     const std::string& id,
     const std::string& key,
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   bool retval = true;
 
   const auto* url_str = dict.FindString(prefs::kPolicyURLKey);
@@ -119,7 +119,7 @@ bool BruschettaPolicyHandler::CheckPolicySettings(
 
   for (const auto outer_config : value->GetDict()) {
     const std::string& id = outer_config.first;
-    const base::Value::Dict& config = outer_config.second.GetDict();
+    const base::DictValue& config = outer_config.second.GetDict();
 
     bool valid_config = true;
 
@@ -171,13 +171,13 @@ void BruschettaPolicyHandler::ApplyPolicySettings(
   // We can mostly skip error checking here because by this point the policy has
   // already been checked against the schema.
 
-  base::Value::Dict pref;
+  base::DictValue pref;
 
   for (const auto outer_config : value->GetDict()) {
     const std::string& id = outer_config.first;
-    const base::Value::Dict& config = outer_config.second.GetDict();
+    const base::DictValue& config = outer_config.second.GetDict();
 
-    base::Value::Dict pref_config;
+    base::DictValue pref_config;
     bool installable;
 
     {
@@ -228,7 +228,7 @@ void BruschettaPolicyHandler::ApplyPolicySettings(
         }
       }
 
-      base::Value::Dict pref_vtpm;
+      base::DictValue pref_vtpm;
       pref_vtpm.Set(prefs::kPolicyVTPMEnabledKey, vtpm_enabled);
       pref_vtpm.Set(prefs::kPolicyVTPMUpdateActionKey,
                     static_cast<int>(vtpm_update_action));
@@ -237,7 +237,7 @@ void BruschettaPolicyHandler::ApplyPolicySettings(
     }
 
     {
-      base::Value::List pref_oem_strings;
+      base::ListValue pref_oem_strings;
 
       const auto* oem_strings = config.FindList(prefs::kPolicyOEMStringsKey);
       if (oem_strings) {

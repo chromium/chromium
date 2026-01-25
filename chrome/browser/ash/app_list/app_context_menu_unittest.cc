@@ -328,7 +328,7 @@ class AppContextMenuTest : public AppListTestBase {
 
   scoped_refptr<extensions::Extension> MakeChromeApp() {
     std::u16string err;
-    base::Value::Dict value;
+    base::DictValue value;
     value.Set("name", "Chrome App");
     value.Set("version", "0.0");
     value.SetByDottedPath("app.launch.web_url", "http://google.com");

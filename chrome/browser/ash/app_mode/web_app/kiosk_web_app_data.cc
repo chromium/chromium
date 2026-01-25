@@ -215,7 +215,7 @@ KioskWebAppData::KioskWebAppData(
 KioskWebAppData::~KioskWebAppData() = default;
 
 bool KioskWebAppData::LoadFromCache() {
-  const base::Value::Dict& dict = local_state_->GetDict(dictionary_name());
+  const base::DictValue& dict = local_state_->GetDict(dictionary_name());
 
   if (!LoadFromDictionary(dict)) {
     return false;
@@ -316,8 +316,7 @@ void KioskWebAppData::SetStatus(Status status, bool notify) {
   }
 }
 
-bool KioskWebAppData::LoadLaunchUrlFromDictionary(
-    const base::Value::Dict& dict) {
+bool KioskWebAppData::LoadLaunchUrlFromDictionary(const base::DictValue& dict) {
   // All the previous keys should be present since this function is executed
   // after LoadFromDictionary().
   const std::string* launch_url_string =
@@ -333,7 +332,7 @@ bool KioskWebAppData::LoadLaunchUrlFromDictionary(
   return true;
 }
 
-GURL KioskWebAppData::GetLastIconUrl(const base::Value::Dict& dict) const {
+GURL KioskWebAppData::GetLastIconUrl(const base::DictValue& dict) const {
   // All the previous keys should be present since this function is executed
   // after LoadFromDictionary().
   const std::string* icon_url_string = dict.FindDict(KioskAppDataBase::kKeyApps)

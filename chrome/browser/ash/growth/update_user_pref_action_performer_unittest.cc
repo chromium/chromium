@@ -134,11 +134,11 @@ class UpdateUserPrefActionPerformerTest : public testing::Test {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     prefs->registry()->RegisterStringPref(kStringPref, std::string());
-    prefs->registry()->RegisterListPref(kListPref, base::Value::List());
+    prefs->registry()->RegisterListPref(kListPref, base::ListValue());
     prefs->SetString(kStringPref, kDefaultValue);
     prefs->SetList(
         kListPref,
-        base::Value::List().Append(kDefaultValue).Append(kRemoveValue));
+        base::ListValue().Append(kDefaultValue).Append(kRemoveValue));
     return prefs;
   }
 

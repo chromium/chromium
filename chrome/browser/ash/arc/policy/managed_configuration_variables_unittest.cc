@@ -32,8 +32,8 @@ namespace arc {
 
 namespace {
 
-typedef std::pair</*input=*/base::Value::Dict,
-                  /*expected_output=*/base::Value::Dict>
+typedef std::pair</*input=*/base::DictValue,
+                  /*expected_output=*/base::DictValue>
     Parameter;
 typedef Parameter ParameterGetter(bool);
 
@@ -52,12 +52,12 @@ constexpr const char kVariablePattern[] = "${%s}";
 
 Parameter SampleWithoutVariables(bool is_affiliated) {
   // Set up an |input| Value without variables.
-  base::Value::Dict input;
+  base::DictValue input;
   input.Set(kKey1, "value1");
   input.Set(kKey2, "value2");
 
   // Expected |output| is the same as the input.
-  base::Value::Dict output = input.Clone();
+  base::DictValue output = input.Clone();
 
   return std::make_pair(std::move(input), std::move(output));
 }
@@ -87,7 +87,7 @@ Parameter SampleWithVariables(bool is_affiliated) {
       base::StringPrintf("${%s}", kDeviceAnnotatedLocation);
 
   // Set up an |input| Value with some variables.
-  base::Value::Dict input;
+  base::DictValue input;
   input.Set(kUserEmailKey, kUserEmailVariable);
   input.Set(kUserNameKey, kUserEmailNameVariable);
   input.Set(kUserDomainKey, kUserEmailDomainVariable);
@@ -97,7 +97,7 @@ Parameter SampleWithVariables(bool is_affiliated) {
   input.Set(kDeviceLocationKey, kDeviceAnnotatedLocationVariable);
 
   // Set up an |output| Value where variables have been replaced.
-  base::Value::Dict output;
+  base::DictValue output;
   output.Set(kUserEmailKey, kTestEmail);
   output.Set(kUserNameKey, kTestEmailName);
   output.Set(kUserDomainKey, kTestEmailDomain);
@@ -131,20 +131,20 @@ Parameter SampleWithNestedVariables(bool is_affiliated) {
       base::StringPrintf(kVariablePattern, kDeviceSerialNumber);
 
   // Set up an |input| Value with variables in nested values.
-  base::Value::Dict nestedInput2;
+  base::DictValue nestedInput2;
   nestedInput2.Set(kEmailKey, kUserEmailVariable);
   nestedInput2.Set(kKey2, kValue2);
   nestedInput2.Set(kSerialNumberKey, kDeviceSerialNumberVariable);
-  base::Value::Dict nestedInput1;
+  base::DictValue nestedInput1;
   nestedInput1.Set(kSubSubKey, std::move(nestedInput2));
   nestedInput1.Set(kKey1, kValue1);
-  base::Value::Dict input;
+  base::DictValue input;
   input.Set(kKey0, kValue0);
   input.Set(kSubKey, std::move(nestedInput1));
   input.Set(kNameKey, kTestEmailName);
 
   // |output| is the same as |input| except the variables have been replaced.
-  base::Value::Dict output = input.Clone();
+  base::DictValue output = input.Clone();
   output.Set(kNameKey, kTestEmailName);
   output.SetByDottedPath(kNestedEmailKey, kTestEmail);
   output.SetByDottedPath(kNestedSerialNumberKey,
@@ -178,13 +178,13 @@ Parameter SampleWithVariableChains(bool is_affiliated) {
       kChainReplacedPattern, is_affiliated ? kTestDeviceAnnotatedLocation : "");
 
   // Set up an |input| Value with some variable chains.
-  base::Value::Dict input;
+  base::DictValue input;
   input.Set(kChain1, kChainVariable1);
   input.Set(kChain2, kChainVariable2);
   input.Set(kChain3, kChainVariable3);
 
   // Set up an |output| Value where variables have been replaced.
-  base::Value::Dict output;
+  base::DictValue output;
   output.Set(kChain1, kReplacedChain1);
   output.Set(kChain2, kReplacedChain2);
   output.Set(kChain3, kReplacedChain3);
@@ -272,10 +272,10 @@ class ManagedConfigurationVariablesAffiliatedTest
   void TearDown() override { DoTearDown(); }
 
   // Return the input parameter.
-  base::Value::Dict& mutable_input() { return parameter().first; }
+  base::DictValue& mutable_input() { return parameter().first; }
 
   // Return the expected output parameter.
-  const base::Value::Dict& expected_output() { return parameter().second; }
+  const base::DictValue& expected_output() { return parameter().second; }
 
  private:
   bool is_affiliated() { return std::get<0>(GetParam()); }
@@ -295,7 +295,7 @@ TEST_F(ManagedConfigurationVariablesTest, VariableChains) {
   const std::string kChain =
       base::StringPrintf("${%s:%s:%s}", kDeviceAnnotatedLocation,
                          kDeviceAssetId, kDeviceDirectoryId);
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kKey, kChain);
 
   // Initially all values in the chain are set, expect annotated location will
@@ -344,7 +344,7 @@ TEST_F(ManagedConfigurationVariablesTest, IgnoresInvalidVariables) {
   const std::string kInvalidChain3 = base::StringPrintf(
       "${%s:DEVICE_ASsEt_ID:%s}", kDeviceAnnotatedLocation, kDeviceAssetId);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kValidKey, kValidChain);
   dict.Set(kInvalidKey1, kInvalidChain1);
   dict.Set(kInvalidKey2, kInvalidChain2);
@@ -367,7 +367,7 @@ TEST_F(ManagedConfigurationVariablesTest, RespectsSpecialCharacters) {
   const std::string kVariable =
       base::StringPrintf(kVariablePattern, kDeviceAssetId);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kKey1, kVariable);
 
   // Setup a fake asset ID using special characters.
@@ -388,7 +388,7 @@ TEST_F(ManagedConfigurationVariablesTest,
   const std::string kVariable2 =
       base::StringPrintf(kVariablePattern, kDeviceAnnotatedLocation);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kKey1, kVariable1);
   dict.Set(kKey2, kVariable2);
 
@@ -406,9 +406,9 @@ TEST_F(ManagedConfigurationVariablesTest, ReplacesVariablesInLists) {
   const std::string kVariable1 =
       base::StringPrintf(kVariablePattern, kDeviceAssetId);
 
-  base::Value::Dict dict = base::Value::Dict().Set(
+  base::DictValue dict = base::DictValue().Set(
       kKey1,
-      base::Value::List().Append(base::Value::Dict().Set(kKey2, kVariable1)));
+      base::ListValue().Append(base::DictValue().Set(kKey2, kVariable1)));
 
   device_attributes()->SetFakeDeviceAssetId(kTestDeviceAssetId);
 
@@ -416,10 +416,10 @@ TEST_F(ManagedConfigurationVariablesTest, ReplacesVariablesInLists) {
                                                   device_attributes(), dict);
 
   ASSERT_EQ(1U, dict.size());
-  base::Value::List* nestedList = dict.FindList(kKey1);
+  base::ListValue* nestedList = dict.FindList(kKey1);
   ASSERT_NE(nullptr, nestedList);
   ASSERT_EQ(1U, nestedList->size());
-  base::Value::Dict& leafDict = (*nestedList)[0].GetDict();
+  base::DictValue& leafDict = (*nestedList)[0].GetDict();
   ASSERT_EQ(kTestDeviceAssetId, *leafDict.FindString(kKey2));
 }
 

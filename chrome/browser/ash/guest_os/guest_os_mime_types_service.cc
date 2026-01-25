@@ -22,9 +22,9 @@
 namespace guest_os {
 namespace {
 
-base::Value::Dict GetOverrideMimeTypes(
+base::DictValue GetOverrideMimeTypes(
     const vm_tools::apps::MimeTypes& mime_type_mappings) {
-  base::Value::Dict overrides;
+  base::DictValue overrides;
   for (const auto& mapping : mime_type_mappings.mime_type_mappings()) {
     // Only store mappings from container that are different to host.
     base::FilePath dummy_path("foo." + mapping.first);
@@ -47,10 +47,10 @@ std::string GuestOsMimeTypesService::GetMimeType(
     const base::FilePath& file_path,
     const std::string& vm_name,
     const std::string& container_name) const {
-  const base::Value::Dict* vm =
+  const base::DictValue* vm =
       prefs_->GetDict(prefs::kGuestOsMimeTypes).FindDict(vm_name);
   if (vm) {
-    const base::Value::Dict* container = vm->FindDict(container_name);
+    const base::DictValue* container = vm->FindDict(container_name);
     if (container) {
       // Try Extension() which may be a double like ".tar.gz".
       std::string extension = file_path.Extension();
@@ -84,16 +84,16 @@ GuestOsMimeTypesService::GetExtensionTypesFromMimeTypes(
     const std::set<std::string>& supported_mime_types,
     const std::string& vm_name,
     const std::string& container_name) const {
-  const base::Value::Dict* vm =
+  const base::DictValue* vm =
       prefs_->GetDict(prefs::kGuestOsMimeTypes).FindDict(vm_name);
   if (!vm) {
     return {};
   }
-  const base::Value::Dict* container = vm->FindDict(container_name);
+  const base::DictValue* container = vm->FindDict(container_name);
   if (!container) {
     return {};
   }
-  const base::Value::Dict* extension_to_mime = vm->FindDict(container_name);
+  const base::DictValue* extension_to_mime = vm->FindDict(container_name);
   if (!extension_to_mime) {
     return {};
   }
@@ -112,8 +112,8 @@ void GuestOsMimeTypesService::ClearMimeTypes(
     const std::string& container_name) {
   VLOG(1) << "ClearMimeTypes(" << vm_name << ", " << container_name << ")";
   ScopedDictPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::Value::Dict& mime_types = update.Get();
-  base::Value::Dict* vm = mime_types.FindDict(vm_name);
+  base::DictValue& mime_types = update.Get();
+  base::DictValue* vm = mime_types.FindDict(vm_name);
   if (vm) {
     vm->Remove(container_name);
     if (container_name.empty() || vm->empty()) {
@@ -145,11 +145,11 @@ void GuestOsMimeTypesService::UpdateMimeTypes(
 void GuestOsMimeTypesService::UpdateOverrideMimeTypes(
     std::string vm_name,
     std::string container_name,
-    base::Value::Dict overrides) {
+    base::DictValue overrides) {
   VLOG(1) << "UpdateMimeTypes(" << vm_name << ", " << container_name
           << ")=" << overrides;
   ScopedDictPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::Value::Dict* vm = update.Get().EnsureDict(vm_name);
+  base::DictValue* vm = update.Get().EnsureDict(vm_name);
   vm->Set(container_name, base::Value(std::move(overrides)));
 }
 

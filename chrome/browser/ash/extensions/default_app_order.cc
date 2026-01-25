@@ -53,7 +53,7 @@ const char kImportDefaultOrderAttr[] = "import_default_order";
 
 // Reads external ordinal json file and returns the parsed value. Returns NULL
 // if the file does not exist or could not be parsed properly.
-std::unique_ptr<base::Value::List> ReadExternalOrdinalFile(
+std::unique_ptr<base::ListValue> ReadExternalOrdinalFile(
     const base::FilePath& path) {
   if (!base::PathExists(path))
     return nullptr;
@@ -71,25 +71,25 @@ std::unique_ptr<base::Value::List> ReadExternalOrdinalFile(
   if (!value->is_list())
     LOG(WARNING) << "Expect a JSON list in file " << path.value();
 
-  return std::make_unique<base::Value::List>(std::move(*value).TakeList());
+  return std::make_unique<base::ListValue>(std::move(*value).TakeList());
 }
 
-std::string GetLocaleSpecificStringImpl(const base::Value::Dict& root,
+std::string GetLocaleSpecificStringImpl(const base::DictValue& root,
                                         const std::string& locale,
                                         const std::string& dictionary_name,
                                         const std::string& entry_name) {
-  const base::Value::Dict* dict_content = root.FindDict(dictionary_name);
+  const base::DictValue* dict_content = root.FindDict(dictionary_name);
   if (!dict_content)
     return std::string();
 
-  const base::Value::Dict* locale_dict = dict_content->FindDict(locale);
+  const base::DictValue* locale_dict = dict_content->FindDict(locale);
   if (locale_dict) {
     const std::string* result = locale_dict->FindString(entry_name);
     if (result)
       return *result;
   }
 
-  const base::Value::Dict* default_dict = dict_content->FindDict(kDefaultAttr);
+  const base::DictValue* default_dict = dict_content->FindDict(kDefaultAttr);
   if (default_dict) {
     const std::string* result = default_dict->FindString(entry_name);
     if (result)
@@ -272,7 +272,7 @@ void ExternalLoader::Load() {
   base::FilePath ordinals_file;
   CHECK(base::PathService::Get(ash::FILE_DEFAULT_APP_ORDER, &ordinals_file));
 
-  std::unique_ptr<base::Value::List> ordinals_value =
+  std::unique_ptr<base::ListValue> ordinals_value =
       ReadExternalOrdinalFile(ordinals_file);
   if (ordinals_value) {
     std::string locale = g_browser_process->GetApplicationLocale();
@@ -281,7 +281,7 @@ void ExternalLoader::Load() {
         std::string app_id = i.GetString();
         app_ids_.push_back(app_id);
       } else if (i.is_dict()) {
-        const base::Value::Dict& dict = i.GetDict();
+        const base::DictValue& dict = i.GetDict();
         if (dict.FindBool(kOemAppsFolderAttr).value_or(false)) {
           oem_apps_folder_name_ = GetLocaleSpecificStringImpl(
               dict, locale, kLocalizedContentAttr, kNameAttr);

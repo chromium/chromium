@@ -80,8 +80,8 @@ class ExtensionsPermissionsTrackerTest : public testing::Test {
   ExtensionsPermissionsTrackerTest& operator=(
       const ExtensionsPermissionsTrackerTest&) = delete;
 
-  base::Value::Dict SetupForceList() {
-    base::Value::Dict dict;
+  base::DictValue SetupForceList() {
+    base::DictValue dict;
     dict.Set(kExtensionId1, kExtensionUrl1);
     dict.Set(kExtensionId2, kExtensionUrl2);
     prefs_->SetManagedPref(pref_names::kInstallForceList, dict.Clone());
@@ -89,7 +89,7 @@ class ExtensionsPermissionsTrackerTest : public testing::Test {
   }
 
   void SetupEmptyForceList() {
-    prefs_->SetManagedPref(pref_names::kInstallForceList, base::Value::Dict());
+    prefs_->SetManagedPref(pref_names::kInstallForceList, base::DictValue());
   }
 
   void CreateExtensionsPermissionsTracker() {

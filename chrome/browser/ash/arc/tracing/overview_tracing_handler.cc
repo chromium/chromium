@@ -192,7 +192,7 @@ std::unique_ptr<OverviewTracingResult> BuildGraphicsModel(
   trace->model.set_app_icon_png(trace->task_icon_png);
   trace->model.set_platform(base::GetLinuxDistro());
   trace->model.set_timestamp(trace->timestamp);
-  base::Value::Dict model = trace->model.Serialize();
+  base::DictValue model = trace->model.Serialize();
 
   std::string json_content;
   base::JSONWriter::WriteWithOptions(

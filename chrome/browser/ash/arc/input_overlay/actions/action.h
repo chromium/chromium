@@ -32,7 +32,7 @@ class DisplayOverlayController;
 class TouchInjector;
 
 // Parse position from Json.
-std::unique_ptr<Position> ParsePosition(const base::Value::Dict& dict);
+std::unique_ptr<Position> ParsePosition(const base::DictValue& dict);
 // Log events for debugging.
 void LogEvent(const ui::Event& event);
 void LogTouchEvents(const std::list<ui::TouchEvent>& events);
@@ -42,7 +42,7 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events);
 //    "modifiers": [""] // optional: "ctrl", "shift", "alt".
 // }
 std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string_view key_name);
 
 // Return true if the `input_element` is bound.
@@ -60,7 +60,7 @@ class Action {
   Action& operator=(const Action&) = delete;
   virtual ~Action();
 
-  virtual bool ParseFromJson(const base::Value::Dict& value);
+  virtual bool ParseFromJson(const base::DictValue& value);
   // Used to create an action from UI.
   virtual bool InitByAddingNewAction(const gfx::Point& target_pos);
   virtual void InitByChangingActionType(Action* action);

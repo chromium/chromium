@@ -21,10 +21,10 @@ constexpr char kAspectRatio[] = "aspect_ratio";
 constexpr char kXonY[] = "x_on_y";
 constexpr char kYonX[] = "y_on_x";
 
-std::optional<gfx::PointF> ParseTwoElementsArray(const base::Value::Dict& value,
+std::optional<gfx::PointF> ParseTwoElementsArray(const base::DictValue& value,
                                                  const char* key,
                                                  bool required) {
-  const base::Value::List* list = value.FindList(key);
+  const base::ListValue* list = value.FindList(key);
   if (!list) {
     if (required) {
       LOG(ERROR) << "Require values for key " << key;
@@ -46,7 +46,7 @@ std::optional<gfx::PointF> ParseTwoElementsArray(const base::Value::Dict& value,
   return std::make_optional<gfx::PointF>(x, y);
 }
 
-std::optional<int> ParseIntValue(const base::Value::Dict& value,
+std::optional<int> ParseIntValue(const base::DictValue& value,
                                  std::string key) {
   if (std::optional<int> val = value.FindInt(key)) {
     if (*val <= 0) {
@@ -89,7 +89,7 @@ float CalculateDependent(const gfx::PointF& anchor,
 
 }  // namespace
 
-bool ParsePositiveFraction(const base::Value::Dict& value,
+bool ParsePositiveFraction(const base::DictValue& value,
                            const char* key,
                            std::optional<float>* output) {
   *output = value.FindDouble(key);
@@ -116,7 +116,7 @@ std::unique_ptr<Position> Position::ConvertFromProto(
   return position;
 }
 
-bool Position::ParseFromJson(const base::Value::Dict& value) {
+bool Position::ParseFromJson(const base::DictValue& value) {
   switch (position_type_) {
     case PositionType::kDefault:
       return ParseDefaultFromJson(value);
@@ -139,7 +139,7 @@ gfx::PointF Position::CalculatePosition(
   }
 }
 
-bool Position::ParseDefaultFromJson(const base::Value::Dict& value) {
+bool Position::ParseDefaultFromJson(const base::DictValue& value) {
   // Parse anchor point if existing, or the anchor point is (0, 0).
   if (auto anchor = ParseTwoElementsArray(value, kAnchor, false)) {
     anchor_.set_x(anchor.value().x());
@@ -170,7 +170,7 @@ bool Position::ParseDefaultFromJson(const base::Value::Dict& value) {
   return true;
 }
 
-bool Position::ParseDependentFromJson(const base::Value::Dict& value) {
+bool Position::ParseDependentFromJson(const base::DictValue& value) {
   if (!ParseDefaultFromJson(value)) {
     return false;
   }

@@ -300,9 +300,9 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   ASSERT_TRUE(item);
 
   // Verify that the promise app item is not added to local storage.
-  const base::Value::Dict& local_items =
+  const base::DictValue& local_items =
       profile()->GetPrefs()->GetDict(prefs::kAppListLocalState);
-  const base::Value::Dict* dict_item =
+  const base::DictValue* dict_item =
       local_items.FindDict(kTestPackageId.ToString());
   EXPECT_FALSE(dict_item);
 

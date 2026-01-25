@@ -138,15 +138,15 @@ void AppSearchProviderTestBase::AddExtension(const std::string& id,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", name)
                   .Set("version", "0.1")
-                  .Set("app", base::Value::Dict().Set(
-                                  "urls", base::Value::List().Append(
+                  .Set("app", base::DictValue().Set(
+                                  "urls", base::ListValue().Append(
                                               "http://localhost/extensions/"
                                               "hosted_app/main.html")))
-                  .Set("launch", base::Value::Dict().Set(
-                                     "urls", base::Value::List().Append(
+                  .Set("launch", base::DictValue().Set(
+                                     "urls", base::ListValue().Append(
                                                  "http://localhost/extensions/"
                                                  "hosted_app/main.html")))
                   .Set("display_in_launcher", display_in_launcher))

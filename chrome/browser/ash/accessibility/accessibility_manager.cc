@@ -261,7 +261,7 @@ std::optional<bool> GetDictationOfflineNudgePrefForLocale(
   if (dictation_locale.empty()) {
     return std::nullopt;
   }
-  const base::Value::Dict& offline_nudges = profile->GetPrefs()->GetDict(
+  const base::DictValue& offline_nudges = profile->GetPrefs()->GetDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
   return offline_nudges.FindBoolByDottedPath(dictation_locale);
 }
@@ -714,11 +714,11 @@ void AccessibilityManager::OnFaceGazeChanged() {
     // experience.
     pref_service->SetDict(
         prefs::kAccessibilityFaceGazeGesturesToMacros,
-        base::Value::Dict()
+        base::DictValue()
             .Set(kFaceGazeMouthSmileGesture, kFaceGazeLeftClickValue)
             .Set(kFaceGazeJawOpenGesture, kFaceGazeScrollValue));
     pref_service->SetDict(prefs::kAccessibilityFaceGazeGesturesToConfidence,
-                          base::Value::Dict()
+                          base::DictValue()
                               .Set(kFaceGazeMouthSmileGesture, 60)
                               .Set(kFaceGazeJawOpenGesture, 60));
     pref_service->CommitPendingWrite();
@@ -927,7 +927,7 @@ void AccessibilityManager::HandleAccessibilityGesture(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(ui::ToString(gesture));
   event_args.Append(location.x());
   event_args.Append(location.y());
@@ -1444,7 +1444,7 @@ void AccessibilityManager::RequestSelectToSpeakStateChange() {
           ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_STATE_CHANGE_REQUESTED,
       extensions::api::accessibility_private::
           OnSelectToSpeakStateChangeRequested::kEventName,
-      base::Value::List()));
+      base::ListValue()));
   event_router->DispatchEventWithLazyListener(
       extension_misc::kSelectToSpeakExtensionId, std::move(event));
 }
@@ -1504,7 +1504,7 @@ void AccessibilityManager::OnSelectToSpeakContextMenuClick() {
           ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_CONTEXT_MENU_CLICKED,
       extensions::api::accessibility_private::
           OnSelectToSpeakContextMenuClicked::kEventName,
-      base::Value::List()));
+      base::ListValue()));
   event_router->DispatchEventWithLazyListener(
       extension_misc::kSelectToSpeakExtensionId, std::move(event));
 }
@@ -2164,7 +2164,7 @@ void AccessibilityManager::PostLoadChromeVox() {
   std::unique_ptr<extensions::Event> event(new extensions::Event(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_INTRODUCE_CHROME_VOX,
       extensions::api::accessibility_private::OnIntroduceChromeVox::kEventName,
-      base::Value::List()));
+      base::ListValue()));
   event_router->DispatchEventWithLazyListener(extension_id, std::move(event));
 
   if (!chromevox_panel_ && spoken_feedback_enabled()) {
@@ -2371,7 +2371,7 @@ bool AccessibilityManager::ToggleDictation() {
   dictation_active_ = !dictation_active_;
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(dictation_active_);
   auto event = std::make_unique<extensions::Event>(
       extensions::events::ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION,
@@ -2574,7 +2574,7 @@ void AccessibilityManager::SetSwitchAccessKeysForTest(
     const std::set<int>& action_keys,
     const std::string& pref_name) {
   ScopedDictPrefUpdate pref_update(profile_->GetPrefs(), pref_name);
-  base::Value::List devices;
+  base::ListValue devices;
   devices.Append(kSwitchAccessInternalDevice);
   devices.Append(kSwitchAccessUsbDevice);
   devices.Append(kSwitchAccessBluetoothDevice);
@@ -2601,7 +2601,7 @@ void AccessibilityManager::OnSelectToSpeakPanelAction(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(AccessibilityPrivateEnumForAction(action));
   if (value != 0.0) {
     event_args.Append(value);

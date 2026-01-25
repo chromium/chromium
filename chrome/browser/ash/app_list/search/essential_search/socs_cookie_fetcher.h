@@ -66,7 +66,7 @@ class SocsCookieFetcher final {
  private:
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
-  void ProcessValidTokenResponse(base::Value::Dict json_response);
+  void ProcessValidTokenResponse(base::DictValue json_response);
 
   // `consumer_` to call back when this request completes.
   const raw_ptr<Consumer> consumer_;

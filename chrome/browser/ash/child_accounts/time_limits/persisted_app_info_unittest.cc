@@ -66,7 +66,7 @@ TEST_F(PersistedAppInfoTest, UpdateAppActivityPreference) {
 
   PersistedAppInfo app_info(app, app_state, running_active_time,
                             {{entry1, entry2, entry3}});
-  base::Value::Dict entry;
+  base::DictValue entry;
 
   app_info.UpdateAppActivityPreference(entry, /* replace */ false);
   AppActivity::ActiveTime to_append = AppActivity::ActiveTime(

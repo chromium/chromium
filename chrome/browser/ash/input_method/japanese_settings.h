@@ -65,7 +65,7 @@ enum class HistSymbolStyle {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/input/enums.xml:jp_settings_hist_enums)
 
 ash::ime::mojom::JapaneseSettingsPtr ToMojomInputMethodSettings(
-    const base::Value::Dict& prefs_dict);
+    const base::DictValue& prefs_dict);
 
 void RecordJapaneseSettingsMetrics(
     const ash::ime::mojom::JapaneseSettings& settings);

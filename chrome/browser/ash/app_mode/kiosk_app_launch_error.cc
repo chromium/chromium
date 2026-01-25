@@ -125,7 +125,7 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get(
     return *s_last_error;
   }
   s_last_error = Error::kNone;
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       local_state.GetDict(KioskChromeAppManager::kKioskDictionaryName);
 
   std::optional<int> error = dict.FindInt(kKeyLaunchError);
@@ -139,7 +139,7 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get(
 
 // static
 bool KioskAppLaunchError::DidUserCancelLaunch(const PrefService& local_state) {
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       local_state.GetDict(KioskChromeAppManager::kKioskDictionaryName);
   return dict.FindBool(kUserCancelledLaunchKey).value_or(false);
 }

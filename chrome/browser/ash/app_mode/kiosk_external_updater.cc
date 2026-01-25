@@ -258,7 +258,7 @@ void KioskExternalUpdater::ProcessParsedManifest(
                  << manifest.second.type();
       continue;
     }
-    const base::Value::Dict& extension = manifest.second.GetDict();
+    const base::DictValue& extension = manifest.second.GetDict();
 
     const std::string* external_crx_str = extension.FindString(kExternalCrx);
     if (!external_crx_str) {

@@ -197,7 +197,7 @@ JapaneseSettingsPtr MakeDefaultJapaneseSettings() {
 
 }  // namespace
 
-JapaneseSettingsPtr ToMojomInputMethodSettings(const base::Value::Dict& prefs) {
+JapaneseSettingsPtr ToMojomInputMethodSettings(const base::DictValue& prefs) {
   JapaneseSettingsPtr response = MakeDefaultJapaneseSettings();
   if (const std::string* val = prefs.FindString(kJpPrefInputMode);
       val != nullptr) {

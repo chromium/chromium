@@ -351,7 +351,7 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
 void OnSearchDriveFs(
     scoped_refptr<ExtensionFunction> function,
     bool filter_dirs,
-    base::OnceCallback<void(std::optional<base::Value::List>)> callback,
+    base::OnceCallback<void(std::optional<base::ListValue>)> callback,
     drive::FileError error,
     std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   Profile* const profile =
@@ -378,13 +378,13 @@ void OnSearchDriveFs(
   const auto fs_name = service->GetMountPointPath().BaseName().value();
   const base::FilePath root("/");
 
-  base::Value::List result;
+  base::ListValue result;
   for (const auto& item : *items) {
     base::FilePath path;
     if (!root.AppendRelativePath(item->path, &path)) {
       path = item->path;
     }
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("fileSystemName", fs_name);
     entry.Set("fileSystemRoot", fs_root);
     entry.Set("fileFullPath", item->path.AsUTF8Unsafe());
@@ -403,7 +403,7 @@ drivefs::mojom::QueryParameters::QuerySource SearchDriveFs(
     scoped_refptr<ExtensionFunction> function,
     drivefs::mojom::QueryParametersPtr query,
     bool filter_dirs,
-    base::OnceCallback<void(std::optional<base::Value::List>)> callback) {
+    base::OnceCallback<void(std::optional<base::ListValue>)> callback) {
   DriveIntegrationService* const service = GetIntegrationServiceByProfile(
       Profile::FromBrowserContext(function->browser_context()));
   auto on_response = base::BindOnce(&OnSearchDriveFs, std::move(function),
@@ -664,7 +664,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateSearchDriveFunction::Run() {
 }
 
 void FileManagerPrivateSearchDriveFunction::OnSearchDriveFs(
-    std::optional<base::Value::List> results) {
+    std::optional<base::ListValue> results) {
   using api::file_manager_private::SearchDriveResponse;
   if (!results) {
     UmaEmitSearchOutcome(
@@ -788,7 +788,7 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
 
 void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
     const std::string& query_text,
-    std::optional<base::Value::List> results) {
+    std::optional<base::ListValue> results) {
   if (!results) {
     UmaEmitSearchOutcome(false, !is_offline_, search_type_, operation_start_);
     Respond(Error("No search results"));
@@ -810,11 +810,11 @@ void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
             keyword));
   }
 
-  base::Value::List results_list;
+  base::ListValue results_list;
   for (auto& item : *results) {
-    base::Value::Dict& entry = item.GetDict();
+    base::DictValue& entry = item.GetDict();
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     std::string highlight;
     std::string* value = entry.FindString("fileFullPath");
     if (value) {

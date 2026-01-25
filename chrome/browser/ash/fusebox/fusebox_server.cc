@@ -854,7 +854,7 @@ base::FilePath Server::InverseResolveFSURL(
 void Server::GetDebugJSONForKey(
     std::string_view key,
     base::OnceCallback<void(JSONKeyValuePair)> callback) {
-  base::Value::Dict subdirs;
+  base::DictValue subdirs;
   subdirs.Set(kMonikerSubdir, base::Value("[special]"));
   for (const auto& i : prefix_map_) {
     subdirs.Set(i.first,
@@ -863,7 +863,7 @@ void Server::GetDebugJSONForKey(
                      i.second.read_only ? " (read-only)" : " (read-write)"})));
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("monikers", moniker_map_.GetDebugJSON());
   dict.Set("subdirs", std::move(subdirs));
   std::move(callback).Run(std::make_pair(key, base::Value(std::move(dict))));

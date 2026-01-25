@@ -135,16 +135,15 @@ struct CustomizationDocumentTestOverride {
 // Global overrider for ServicesCustomizationDocument for tests.
 CustomizationDocumentTestOverride* g_test_overrides = nullptr;
 
-
-std::string GetLocaleSpecificStringImpl(const base::Value::Dict& root,
+std::string GetLocaleSpecificStringImpl(const base::DictValue& root,
                                         const std::string& locale,
                                         const std::string& dictionary_name,
                                         const std::string& entry_name) {
-  const base::Value::Dict* dictionary_content = root.FindDict(dictionary_name);
+  const base::DictValue* dictionary_content = root.FindDict(dictionary_name);
   if (!dictionary_content)
     return std::string();
 
-  const base::Value::Dict* locale_dictionary =
+  const base::DictValue* locale_dictionary =
       dictionary_content->FindDict(locale);
   if (locale_dictionary) {
     const std::string* result = locale_dictionary->FindString(entry_name);
@@ -152,7 +151,7 @@ std::string GetLocaleSpecificStringImpl(const base::Value::Dict& root,
       return *result;
   }
 
-  const base::Value::Dict* default_dictionary =
+  const base::DictValue* default_dictionary =
       dictionary_content->FindDict(kDefaultAttr);
   if (default_dictionary) {
     const std::string* result = default_dictionary->FindString(entry_name);
@@ -199,7 +198,7 @@ class ServicesCustomizationExternalLoader : public extensions::ExternalLoader {
   Profile* profile() { return profile_; }
 
   // Used by the ServicesCustomizationDocument to update the current apps.
-  void SetCurrentApps(base::Value::Dict prefs) {
+  void SetCurrentApps(base::DictValue prefs) {
     apps_ = std::move(prefs);
     is_apps_set_ = true;
     StartLoading();
@@ -233,7 +232,7 @@ class ServicesCustomizationExternalLoader : public extensions::ExternalLoader {
 
  private:
   bool is_apps_set_ = false;
-  base::Value::Dict apps_;
+  base::DictValue apps_;
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<ServicesCustomizationExternalLoader> weak_ptr_factory_{
       this};
@@ -268,8 +267,7 @@ bool CustomizationDocument::LoadManifestFromString(
     NOTREACHED();
   }
 
-  root_ =
-      std::make_unique<base::Value::Dict>(std::move(*parsed_json).TakeDict());
+  root_ = std::make_unique<base::DictValue>(std::move(*parsed_json).TakeDict());
 
   const std::string* result = root_->FindString(kVersionAttr);
   if (!result || *result != accepted_version_) {
@@ -342,10 +340,10 @@ void StartupCustomizationDocument::Init(
     if (const std::optional<std::string_view> hwid =
             statistics_provider->GetMachineStatistic(
                 system::kHardwareClassKey)) {
-      base::Value::List* hwid_list = root_->FindList(kHwidMapAttr);
+      base::ListValue* hwid_list = root_->FindList(kHwidMapAttr);
       if (hwid_list) {
         for (const base::Value& hwid_value : *hwid_list) {
-          const base::Value::Dict* hwid_dictionary = nullptr;
+          const base::DictValue* hwid_dictionary = nullptr;
           if (hwid_value.is_dict())
             hwid_dictionary = &hwid_value.GetDict();
 
@@ -713,7 +711,7 @@ bool ServicesCustomizationDocument::GetDefaultWallpaperUrl(
   return true;
 }
 
-std::optional<base::Value::Dict> ServicesCustomizationDocument::GetDefaultApps()
+std::optional<base::DictValue> ServicesCustomizationDocument::GetDefaultApps()
     const {
   if (!IsReady())
     return std::nullopt;
@@ -729,18 +727,18 @@ std::string ServicesCustomizationDocument::GetOemAppsFolderName(
   return GetOemAppsFolderNameImpl(locale, *root_);
 }
 
-base::Value::Dict ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
-    const base::Value::Dict& root) {
-  base::Value::Dict prefs;
-  const base::Value::List* apps_list = root.FindList(kDefaultAppsAttr);
+base::DictValue ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
+    const base::DictValue& root) {
+  base::DictValue prefs;
+  const base::ListValue* apps_list = root.FindList(kDefaultAppsAttr);
   if (apps_list) {
     for (const base::Value& app_entry_value : *apps_list) {
       std::string app_id;
-      base::Value::Dict entry;
+      base::DictValue entry;
       if (app_entry_value.is_string()) {
         app_id = app_entry_value.GetString();
       } else if (app_entry_value.is_dict()) {
-        const base::Value::Dict& app_entry = app_entry_value.GetDict();
+        const base::DictValue& app_entry = app_entry_value.GetDict();
         const std::string* app_id_ptr = app_entry.FindString(kIdAttr);
         if (!app_id_ptr) {
           LOG(ERROR) << "Wrong format of default application list";
@@ -781,7 +779,7 @@ extensions::ExternalLoader* ServicesCustomizationDocument::CreateExternalLoader(
     loader->SetCurrentApps(GetDefaultAppsInProviderFormat(*root_));
     SetOemFolderName(profile, *root_);
   } else {
-    const base::Value::Dict& root =
+    const base::DictValue& root =
         profile->GetPrefs()->GetDict(kServicesCustomizationKey);
     if (root.FindString(kVersionAttr)) {
       // If version exists, profile has cached version of customization.
@@ -803,7 +801,7 @@ void ServicesCustomizationDocument::OnCustomizationNotFound() {
 
 void ServicesCustomizationDocument::SetOemFolderName(
     Profile* profile,
-    const base::Value::Dict& root) {
+    const base::DictValue& root) {
   std::string locale = g_browser_process->GetApplicationLocale();
   std::string name = GetOemAppsFolderNameImpl(locale, root);
   if (name.empty())
@@ -822,7 +820,7 @@ void ServicesCustomizationDocument::SetOemFolderName(
 
 std::string ServicesCustomizationDocument::GetOemAppsFolderNameImpl(
     const std::string& locale,
-    const base::Value::Dict& root) const {
+    const base::DictValue& root) const {
   return GetLocaleSpecificStringImpl(root, locale, kLocalizedContent,
                                      kDefaultAppsFolderName);
 }

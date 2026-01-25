@@ -197,7 +197,7 @@ void UpdateSyncItemInLocalStorage(
 
   ScopedDictPrefUpdate pref_update(profile->GetPrefs(),
                                    prefs::kAppListLocalState);
-  base::Value::Dict* dict_item = pref_update->EnsureDict(sync_item->item_id);
+  base::DictValue* dict_item = pref_update->EnsureDict(sync_item->item_id);
   dict_item->Set(kNameKey, sync_item->item_name);
   dict_item->Set(kPromisePackageIdKey, !sync_item->promise_package_id.empty()
                                            ? sync_item->promise_package_id
@@ -480,7 +480,7 @@ void AppListSyncableService::InitFromLocalStorage() {
   DCHECK(!IsInitialized());
 
   // Restore initial state from local storage.
-  const base::Value::Dict& local_items =
+  const base::DictValue& local_items =
       profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
   local_state_initially_empty_ = local_items.empty();
 

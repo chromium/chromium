@@ -44,7 +44,7 @@ void CrostiniSharedDevices::SetVmDeviceShared(guest_os::GuestId container_id,
                                               ResultCallback callback) {
   const base::Value* prev_shared_devices = guest_os::GetContainerPrefValue(
       profile_, container_id, guest_os::prefs::kContainerSharedVmDevicesKey);
-  base::Value::Dict shared_devices;
+  base::DictValue shared_devices;
   if (prev_shared_devices && prev_shared_devices->is_dict()) {
     shared_devices = prev_shared_devices->GetDict().Clone();
   }
@@ -65,7 +65,7 @@ void CrostiniSharedDevices::SetVmDeviceShared(guest_os::GuestId container_id,
 
 void CrostiniSharedDevices::ApplySharingState(
     const guest_os::GuestId container_id,
-    base::Value::Dict next_shared_devices,
+    base::DictValue next_shared_devices,
     ResultCallback callback) {
   if (next_shared_devices.empty()) {
     VLOG(2) << "Nothing to apply";
@@ -95,7 +95,7 @@ void CrostiniSharedDevices::ApplySharingState(
 
 void CrostiniSharedDevices::OnUpdateContainerDevices(
     const guest_os::GuestId container_id,
-    base::Value::Dict next_shared_devices,
+    base::DictValue next_shared_devices,
     ResultCallback callback,
     std::optional<vm_tools::cicerone::UpdateContainerDevicesResponse>
         response) {
@@ -155,7 +155,7 @@ void CrostiniSharedDevices::OnContainerStarted(
     const guest_os::GuestId& container_id) {
   const base::Value* prev_shared_devices = guest_os::GetContainerPrefValue(
       profile_, container_id, guest_os::prefs::kContainerSharedVmDevicesKey);
-  base::Value::Dict shared_devices;
+  base::DictValue shared_devices;
   if (prev_shared_devices && prev_shared_devices->is_dict()) {
     shared_devices = prev_shared_devices->GetDict().Clone();
   }

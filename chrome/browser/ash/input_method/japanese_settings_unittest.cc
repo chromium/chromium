@@ -15,7 +15,7 @@ namespace {
 using ::ash::ime::mojom::JapaneseSettings;
 
 TEST(JapaneseSettingsTest, OnSetPrefsSetsSettingsFromPrefs) {
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   prefs.Set("AutomaticallySwitchToHalfwidth", false);
   prefs.Set("JapaneseDisableSuggestions", true);
   prefs.Set("JapaneseInputMode", "Kana");
@@ -54,7 +54,7 @@ TEST(JapaneseSettingsTest, OnSetPrefsSetsSettingsFromPrefs) {
 }
 
 TEST(JapaneseSettingsTest, OnUnsetPrefsSetsDefault) {
-  base::Value::Dict prefs;
+  base::DictValue prefs;
 
   ash::ime::mojom::JapaneseSettingsPtr response =
       ToMojomInputMethodSettings(prefs);

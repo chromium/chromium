@@ -94,7 +94,7 @@ bool ActiveSessionFingerprintClientImpl::IsFingerprintAvailable(
     case AuthRequest::Reason::kPasswordManager: {
       if (pref_service->GetBoolean(
               password_manager::prefs::kBiometricAuthenticationBeforeFilling)) {
-        const base::Value::List& factors =
+        const base::ListValue& factors =
             pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
         if (factors.contains(kFactorsOptionAll) ||
             factors.contains(kFactorsOptionFingerprint)) {
@@ -104,7 +104,7 @@ bool ActiveSessionFingerprintClientImpl::IsFingerprintAvailable(
       return false;
     }
     case AuthRequest::Reason::kWebAuthN: {
-      const base::Value::List& factors =
+      const base::ListValue& factors =
           pref_service->GetList(prefs::kWebAuthnFactors);
       if (factors.contains(kFactorsOptionAll) ||
           factors.contains(kFactorsOptionFingerprint)) {
@@ -113,7 +113,7 @@ bool ActiveSessionFingerprintClientImpl::IsFingerprintAvailable(
       return false;
     }
     case AuthRequest::Reason::kPaymentsAutofill: {
-      const base::Value::List& factors =
+      const base::ListValue& factors =
           pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
       if (std::ranges::contains(factors, base::Value(kFactorsOptionAll)) ||
           std::ranges::contains(factors,

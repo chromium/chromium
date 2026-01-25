@@ -40,7 +40,7 @@ void ExtensionImeMenuEventRouter::ImeMenuActivationChanged(bool activation) {
   if (!router->HasEventListener(OnImeMenuActivationChanged::kEventName))
     return;
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(activation);
 
   // The router will only send the event to extensions that are listening.
@@ -59,7 +59,7 @@ void ExtensionImeMenuEventRouter::ImeMenuListChanged() {
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INPUT_METHOD_PRIVATE_ON_IME_MENU_LIST_CHANGED,
-      OnImeMenuListChanged::kEventName, base::Value::List(), context_);
+      OnImeMenuListChanged::kEventName, base::ListValue(), context_);
   router->BroadcastEvent(std::move(event));
 }
 

@@ -95,14 +95,14 @@ std::optional<base::Value> ParsePolicyJson(const std::string& arc_policy) {
 
 std::map<std::string, std::set<std::string>> CreateInstallTypeMap(
     const base::Value& dict) {
-  const base::Value::List* const packages =
+  const base::ListValue* const packages =
       dict.GetDict().FindList(kApplicationsKey);
   if (!packages)
     return {};
 
   std::map<std::string, std::set<std::string>> install_type_map;
   for (const auto& package : *packages) {
-    const base::Value::Dict* package_dict = package.GetIfDict();
+    const base::DictValue* package_dict = package.GetIfDict();
     if (!package_dict) {
       continue;
     }

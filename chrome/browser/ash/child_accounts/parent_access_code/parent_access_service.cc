@@ -126,7 +126,7 @@ ParentCodeValidationResult ParentAccessService::ValidateParentAccessCode(
 
 void ParentAccessService::UpdateConfigForUser(
     const AccountId& account_id,
-    std::optional<base::Value::Dict> config) {
+    std::optional<base::DictValue> config) {
   if (config) {
     config_source_.UpdateConfigForUser(account_id, std::move(config.value()));
   } else {

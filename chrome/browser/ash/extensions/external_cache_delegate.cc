@@ -9,7 +9,7 @@
 namespace chromeos {
 
 void ExternalCacheDelegate::OnExtensionListsUpdated(
-    const base::Value::Dict& prefs) {}
+    const base::DictValue& prefs) {}
 
 void ExternalCacheDelegate::OnExtensionLoadedInCache(
     const extensions::ExtensionId& id,

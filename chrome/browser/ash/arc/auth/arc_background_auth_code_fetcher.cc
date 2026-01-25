@@ -125,7 +125,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
     // UMA.
   }
 
-  base::Value::Dict request_data;
+  base::DictValue request_data;
   request_data.Set(kRefreshToken, token_info.token);
   request_data.Set(kClientId, kClientIdArc);
   request_data.Set(kDeviceType, kDeviceTypeArc);

@@ -51,7 +51,7 @@ ConfigSource::ConfigSource(PrefService* local_state)
 ConfigSource::~ConfigSource() = default;
 
 void ConfigSource::UpdateConfigForUser(const AccountId& account_id,
-                                       base::Value::Dict config) {
+                                       base::DictValue config) {
 #if DCHECK_IS_ON()
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
@@ -75,11 +75,11 @@ void ConfigSource::RemoveConfigForUser(const AccountId& account_id) {
 }
 
 void ConfigSource::LoadConfigForUser(const AccountId& account_id,
-                                     const base::Value::Dict& dictionary) {
+                                     const base::DictValue& dictionary) {
   // Clear old authenticators for that user.
   config_map_[account_id].clear();
 
-  const base::Value::Dict* future_config_value =
+  const base::DictValue* future_config_value =
       dictionary.FindDict(kFutureConfigDictKey);
   if (future_config_value) {
     AddAuthenticator(*future_config_value, account_id);
@@ -87,7 +87,7 @@ void ConfigSource::LoadConfigForUser(const AccountId& account_id,
     LOG(WARNING) << "No future config for parent access code in the policy";
   }
 
-  const base::Value::Dict* current_config_value =
+  const base::DictValue* current_config_value =
       dictionary.FindDict(kCurrentConfigDictKey);
   if (current_config_value) {
     AddAuthenticator(*current_config_value, account_id);
@@ -95,7 +95,7 @@ void ConfigSource::LoadConfigForUser(const AccountId& account_id,
     LOG(WARNING) << "No current config for parent access code in the policy";
   }
 
-  const base::Value::List* old_configs_value =
+  const base::ListValue* old_configs_value =
       dictionary.FindList(kOldConfigsDictKey);
   if (old_configs_value) {
     for (const auto& config_value : *old_configs_value) {
@@ -104,7 +104,7 @@ void ConfigSource::LoadConfigForUser(const AccountId& account_id,
   }
 }
 
-void ConfigSource::AddAuthenticator(const base::Value::Dict& dict,
+void ConfigSource::AddAuthenticator(const base::DictValue& dict,
                                     const AccountId& account_id) {
   std::optional<AccessCodeConfig> code_config =
       AccessCodeConfig::FromDictionary(dict);

@@ -209,7 +209,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::IsInLoginLayoutAllowlist(
   return login_layout_set_.find(layout) != login_layout_set_.end();
 }
 
-std::optional<base::Value::Dict>
+std::optional<base::DictValue>
 ComponentExtensionIMEManagerDelegateImpl::ParseManifest(
     std::string_view manifest_string) {
   base::JSONReader::Result result =
@@ -242,7 +242,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::IsIMEExtensionID(
 // static
 bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     const ComponentExtensionIME& component_extension,
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     ComponentExtensionEngine* out) {
   DCHECK(out);
   const std::string* engine_id =
@@ -285,7 +285,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   // supports one layout per input method. Thus use the "first" layout if
   // specified, else default to "us". CrOS IME extension manifests should
   // specify one and only one layout per input method to avoid confusion.
-  const base::Value::List* layouts =
+  const base::ListValue* layouts =
       dict.FindList(extensions::manifest_keys::kLayouts);
   if (!layouts) {
     return false;
@@ -361,7 +361,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
 
 // static
 bool ComponentExtensionIMEManagerDelegateImpl::ReadExtensionInfo(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const std::string& extension_id,
     ComponentExtensionIME* out) {
   const std::string* description =
@@ -405,14 +405,14 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
       continue;
     }
 
-    std::optional<base::Value::Dict> maybe_manifest =
+    std::optional<base::DictValue> maybe_manifest =
         ParseManifest(component_ime.manifest);
     if (!maybe_manifest.has_value()) {
       LOG(ERROR) << "Failed to load invalid manifest: "
                  << component_ime.manifest;
       continue;
     }
-    const base::Value::Dict& manifest = maybe_manifest.value();
+    const base::DictValue& manifest = maybe_manifest.value();
 
     if (!ReadExtensionInfo(manifest, extension.id, &component_ime)) {
       LOG(ERROR) << "manifest doesn't have needed information for IME.";
@@ -429,7 +429,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
       component_ime.path = resources_path.Append(component_ime.path);
     }
 
-    const base::Value::List* component_list =
+    const base::ListValue* component_list =
         manifest.FindList(extensions::manifest_keys::kInputComponents);
     if (!component_list) {
       LOG(ERROR) << "No input_components is found in manifest.";
@@ -441,7 +441,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
         continue;
       }
 
-      const base::Value::Dict& dictionary = value.GetDict();
+      const base::DictValue& dictionary = value.GetDict();
       ComponentExtensionEngine engine;
       ReadEngineComponent(component_ime, dictionary, &engine);
 

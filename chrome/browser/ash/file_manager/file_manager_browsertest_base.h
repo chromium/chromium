@@ -298,31 +298,31 @@ class FileManagerBrowserTestBase
   // Process test extension command |name|, with arguments |value|. Write the
   // results to |output|.
   void OnCommand(const std::string& name,
-                 const base::Value::Dict& value,
+                 const base::DictValue& value,
                  std::string* output);
 
   // Checks if the command is a GuestOs one. If so, handles it and returns
   // true, otherwise it returns false.
   bool HandleGuestOsCommands(const std::string& name,
-                             const base::Value::Dict& value,
+                             const base::DictValue& value,
                              std::string* output);
 
   // Checks if the command is a DLP one. If so, handles it and returns true,
   // otherwise it returns false.
   virtual bool HandleDlpCommands(const std::string& name,
-                                 const base::Value::Dict& value,
+                                 const base::DictValue& value,
                                  std::string* output);
 
   // Checks if the command is from enterprise connectors. If so, handles it and
   // returns true, otherwise it returns false.
   virtual bool HandleEnterpriseConnectorCommands(const std::string& name,
-                                                 const base::Value::Dict& value,
+                                                 const base::DictValue& value,
                                                  std::string* output);
 
   // Checks if the command is from SkyVault. If so, handles it and returns true,
   // otherwise it returns false.
   virtual bool HandleSkyVaultCommands(const std::string& name,
-                                      const base::Value::Dict& value,
+                                      const base::DictValue& value,
                                       std::string* output);
 
   // Called during setup if needed, to create a drive integration service for

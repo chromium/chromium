@@ -32,7 +32,7 @@ void SetAutocorrectLevelTo(Profile& profile,
                            const std::string& pref_name,
                            const std::string& engine_id,
                            int autocorrect_level) {
-  base::Value::Dict input_method_setting;
+  base::DictValue input_method_setting;
   input_method_setting.SetByDottedPath(
       base::StrCat({engine_id, ".", pref_name}), autocorrect_level);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,

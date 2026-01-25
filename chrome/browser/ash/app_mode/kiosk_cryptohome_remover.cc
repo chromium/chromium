@@ -91,7 +91,7 @@ void KioskCryptohomeRemover::PerformDelayedCryptohomeRemovals(
     return;
   }
 
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       local_state_->GetDict(prefs::kAllKioskUsersToRemove);
   for (const auto it : dict) {
     std::string app_id;

@@ -70,7 +70,7 @@ TEST_F(FileSystemProviderOperationsExecuteActionTest, Execute) {
   EXPECT_EQ(extensions::api::file_system_provider::OnExecuteActionRequested::
                 kEventName,
             event->event_name);
-  const base::Value::List& event_args = event->event_args;
+  const base::ListValue& event_args = event->event_args;
   ASSERT_EQ(1u, event_args.size());
 
   const base::Value* options_as_value = &event_args[0];

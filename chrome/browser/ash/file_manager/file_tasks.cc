@@ -128,22 +128,21 @@ constexpr char kWebAppTaskType[] = "web";
 constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kPdfFileExtension[] = ".pdf";
 
-
-base::Value::Dict& GetDebugBaseValueDictForExecuteFileTask() {
+base::DictValue& GetDebugBaseValueDictForExecuteFileTask() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  static base::NoDestructor<base::Value::Dict> instance;
+  static base::NoDestructor<base::DictValue> instance;
   return *instance;
 }
 
 void UpdateDebugBaseValue(const TaskDescriptor& task,
                           const std::vector<FileSystemURL>& file_urls) {
-  auto urls_list = base::Value::List::with_capacity(file_urls.size());
+  auto urls_list = base::ListValue::with_capacity(file_urls.size());
   for (const auto& url : file_urls) {
     urls_list.Append(url.ToGURL().spec());
   }
   GetDebugBaseValueDictForExecuteFileTask() =
-      base::Value::Dict()
-          .Set("task", base::Value::Dict()
+      base::DictValue()
+          .Set("task", base::DictValue()
                            .Set("action_id", task.action_id)
                            .Set("app_id", task.app_id)
                            .Set("type", TaskTypeToString(task.task_type)))
@@ -705,7 +704,7 @@ std::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
   VLOG(1) << "Looking for default for MIME type: " << mime_type
           << " and suffix: " << suffix;
   if (!mime_type.empty()) {
-    const base::Value::Dict& mime_task_prefs =
+    const base::DictValue& mime_task_prefs =
         pref_service.GetDict(prefs::kDefaultTasksByMimeType);
     const std::string* task_id = mime_task_prefs.FindString(mime_type);
     if (task_id) {
@@ -714,7 +713,7 @@ std::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
     }
   }
 
-  const base::Value::Dict& suffix_task_prefs =
+  const base::DictValue& suffix_task_prefs =
       pref_service.GetDict(prefs::kDefaultTasksBySuffix);
   std::string lower_suffix = base::ToLowerASCII(suffix);
 

@@ -268,12 +268,12 @@ void GetChromeTopLevelEvents(const ArcTracingModel& common_model,
   SortBufferEventsByTimestamp(&result->buffer_events()[0]);
 }
 
-// Helper that serializes events |events| to the |base::Value::List|.
-base::Value::List SerializeEvents(
+// Helper that serializes events |events| to the |base::ListValue|.
+base::ListValue SerializeEvents(
     const ArcTracingGraphicsModel::BufferEvents& events) {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& event : events) {
-    base::Value::List event_value;
+    base::ListValue event_value;
     event_value.Append(static_cast<int>(event.type));
     event_value.Append(static_cast<double>(event.timestamp));
     if (!event.content.empty()) {
@@ -284,12 +284,12 @@ base::Value::List SerializeEvents(
   return list;
 }
 
-// Helper that serializes |events| to the |base::Value::Dict|.
-base::Value::Dict SerializeEventsContainer(
+// Helper that serializes |events| to the |base::DictValue|.
+base::DictValue SerializeEventsContainer(
     const ArcTracingGraphicsModel::EventsContainer& events) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
 
-  base::Value::List buffer_list;
+  base::ListValue buffer_list;
   for (auto& buffer : events.buffer_events()) {
     buffer_list.Append(SerializeEvents(buffer));
   }
@@ -308,7 +308,7 @@ bool IsInRange(EventType type,
 
 // Helper that loads events from |base::Value|. Returns true in case events were
 // read successfully. Events must be sorted and be known.
-bool LoadEvents(const base::Value::List* value,
+bool LoadEvents(const base::ListValue* value,
                 ArcTracingGraphicsModel::BufferEvents* out_events) {
   DCHECK(out_events);
   if (!value) {
@@ -319,7 +319,7 @@ bool LoadEvents(const base::Value::List* value,
     if (!item.is_list()) {
       return false;
     }
-    const base::Value::List& entry = item.GetList();
+    const base::ListValue& entry = item.GetList();
     if (entry.size() < 2) {
       return false;
     }
@@ -364,7 +364,7 @@ bool LoadEvents(const base::Value::List* value,
   return true;
 }
 
-bool LoadEventsContainer(const base::Value::Dict* dict,
+bool LoadEventsContainer(const base::DictValue* dict,
                          ArcTracingGraphicsModel::EventsContainer* out_events) {
   DCHECK(out_events->buffer_events().empty());
   DCHECK(out_events->global_events().empty());
@@ -373,7 +373,7 @@ bool LoadEventsContainer(const base::Value::Dict* dict,
     return false;
   }
 
-  const base::Value::List* buffer_entries = dict->FindList(kKeyBuffers);
+  const base::ListValue* buffer_entries = dict->FindList(kKeyBuffers);
   if (!buffer_entries) {
     return false;
   }
@@ -386,8 +386,7 @@ bool LoadEventsContainer(const base::Value::Dict* dict,
     out_events->buffer_events().emplace_back(std::move(events));
   }
 
-  const base::Value::List* const global_events =
-      dict->FindList(kKeyGlobalEvents);
+  const base::ListValue* const global_events = dict->FindList(kKeyGlobalEvents);
   if (!LoadEvents(global_events, &out_events->global_events())) {
     return false;
   }
@@ -395,7 +394,7 @@ bool LoadEventsContainer(const base::Value::Dict* dict,
   return true;
 }
 
-bool ReadDuration(const base::Value::Dict* root, uint32_t* duration) {
+bool ReadDuration(const base::DictValue* root, uint32_t* duration) {
   const base::Value* duration_value = root->Find(kKeyDuration);
   if (!duration_value ||
       (!duration_value->is_double() && !duration_value->is_int())) {
@@ -563,13 +562,13 @@ void ArcTracingGraphicsModel::Reset() {
   timestamp_ = base::Time();
 }
 
-base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
-  base::Value::Dict root;
+base::DictValue ArcTracingGraphicsModel::Serialize() const {
+  base::DictValue root;
 
   // Views
-  base::Value::List view_list;
+  base::ListValue view_list;
   for (auto& view : view_buffers_) {
-    base::Value::Dict view_value = SerializeEventsContainer(view.second);
+    base::DictValue view_value = SerializeEventsContainer(view.second);
     view_value.Set(kKeyActivity, view.first.activity);
     view_value.Set(kKeyTaskId, view.first.task_id);
     view_list.Append(std::move(view_value));
@@ -583,7 +582,7 @@ base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
   root.Set(kKeySystem, system_model_.Serialize());
 
   // Information
-  base::Value::Dict information;
+  base::DictValue information;
   information.Set(kKeyDuration, static_cast<double>(duration_));
   information.Set(kKeyPerceivedFps, perceived_fps_);
   information.Set(kKeyAppFps, app_fps_);
@@ -607,7 +606,7 @@ base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
 }
 
 std::string ArcTracingGraphicsModel::SerializeToJson() const {
-  base::Value::Dict root = Serialize();
+  base::DictValue root = Serialize();
   std::string output;
   if (!base::JSONWriter::WriteWithOptions(
           root, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
@@ -618,7 +617,7 @@ std::string ArcTracingGraphicsModel::SerializeToJson() const {
 
 bool ArcTracingGraphicsModel::LoadFromJson(const std::string& json_data) {
   Reset();
-  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> root = base::JSONReader::ReadDict(
       json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return false;
@@ -626,10 +625,10 @@ bool ArcTracingGraphicsModel::LoadFromJson(const std::string& json_data) {
   return LoadFromValue(*root);
 }
 
-bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
+bool ArcTracingGraphicsModel::LoadFromValue(const base::DictValue& root) {
   Reset();
 
-  const base::Value::List* view_list = root.FindList(kKeyViews);
+  const base::ListValue* view_list = root.FindList(kKeyViews);
   if (!view_list || view_list->empty()) {
     // Views are optional for overview tracing.
     if (!skip_structure_validation_) {
@@ -637,7 +636,7 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
     }
   } else {
     for (const auto& item : *view_list) {
-      const base::Value::Dict* view_entry = item.GetIfDict();
+      const base::DictValue* view_entry = item.GetIfDict();
       if (!view_entry) {
         return false;
       }
@@ -665,7 +664,7 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
     return false;
   }
 
-  const base::Value::Dict* informaton = root.FindDict(kKeyInformation);
+  const base::DictValue* informaton = root.FindDict(kKeyInformation);
   if (informaton) {
     if (!ReadDuration(informaton, &duration_)) {
       return false;

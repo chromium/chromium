@@ -491,7 +491,7 @@ bool SetTouchMode(bool enable) {
   if (!intent_helper_instance)
     return false;
 
-  base::Value::Dict extras;
+  base::DictValue extras;
   extras.Set("inTouchMode", enable);
   std::string extras_string =
       base::WriteJson(base::Value(std::move(extras))).value_or("");
@@ -508,7 +508,7 @@ std::vector<std::string> GetSelectedPackagesFromPrefs(
   const Profile* const profile = Profile::FromBrowserContext(context);
   const PrefService* prefs = profile->GetPrefs();
 
-  const base::Value::List& selected_package_prefs =
+  const base::ListValue& selected_package_prefs =
       prefs->GetList(arc::prefs::kArcFastAppReinstallPackages);
   for (const base::Value& item : selected_package_prefs) {
     std::string item_str = item.is_string() ? item.GetString() : std::string();

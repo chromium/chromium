@@ -605,7 +605,7 @@ class CampaignsManagerInteractiveUiNotificationTest
   auto ReloadCampaigns() {
     return Do([]() {
       auto* campaigns_manager = growth::CampaignsManager::Get();
-      auto empty_campaigns = base::Value::Dict();
+      auto empty_campaigns = base::DictValue();
       campaigns_manager->SetCampaignsForTesting(&empty_campaigns);
     });
   }

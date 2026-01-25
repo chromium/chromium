@@ -102,7 +102,7 @@ constexpr auto kGoogleOneOfferBannerSupportedCountries =
 #define SET_STRING_PLURAL(id, idr, n) \
   dict->Set(id, l10n_util::GetPluralStringFUTF16(idr, n))
 
-void AddStringsForFileTypes(base::Value::Dict* dict) {
+void AddStringsForFileTypes(base::DictValue* dict) {
   // TODO(crbug.com/41146170): Rename string IDs to something like
   // FILE_TYPE_WHATEVER.
   SET_STRING("ARCHIVE_FILE_TYPE", IDS_FILE_BROWSER_ARCHIVE_FILE_TYPE);
@@ -147,7 +147,7 @@ void AddStringsForFileTypes(base::Value::Dict* dict) {
   SET_STRING("TINI_FILE_TYPE", IDS_FILE_BROWSER_TINI_FILE_TYPE);
 }
 
-void AddStringsForDrive(base::Value::Dict* dict) {
+void AddStringsForDrive(base::DictValue* dict) {
   SET_STRING("BULK_PINNING_BUTTON_LABEL_ISSUE",
              IDS_FILE_BROWSER_BULK_PINNING_BUTTON_LABEL_ISSUE);
   SET_STRING("BULK_PINNING_BUTTON_LABEL_OFFLINE",
@@ -259,7 +259,7 @@ void AddStringsForDrive(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_BULK_PINNING_METERED_NETWORK_LABEL);
 }
 
-void AddStringsForMediaView(base::Value::Dict* dict) {
+void AddStringsForMediaView(base::DictValue* dict) {
   SET_STRING("MEDIA_VIEW_ALL_ROOT_LABEL",
              IDS_FILE_BROWSER_MEDIA_VIEW_ALL_ROOT_LABEL);
   SET_STRING("MEDIA_VIEW_AUDIO_ROOT_LABEL",
@@ -297,7 +297,7 @@ void AddStringsForMediaView(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_RECENT_EMPTY_DOCUMENTS_FOLDER);
 }
 
-void AddStringsForMediaPlayer(base::Value::Dict* dict) {
+void AddStringsForMediaPlayer(base::DictValue* dict) {
   SET_STRING("MEDIA_PLAYER_PLAY_BUTTON_LABEL",
              IDS_MEDIA_PLAYER_PLAY_BUTTON_LABEL);
   SET_STRING("MEDIA_PLAYER_PAUSE_BUTTON_LABEL",
@@ -316,7 +316,7 @@ void AddStringsForMediaPlayer(base::Value::Dict* dict) {
              IDS_MEDIA_PLAYER_VOLUME_SLIDER_LABEL);
 }
 
-void AddStringsForCrUiMenuItemShortcuts(base::Value::Dict* dict) {
+void AddStringsForCrUiMenuItemShortcuts(base::DictValue* dict) {
   // Shortcut key names: used from cr.ui.MenuItem.updateShortcut_.
   SET_STRING("SHORTCUT_ALT", IDS_FILE_BROWSER_SHORTCUT_ALT);
   SET_STRING("SHORTCUT_BACKSPACE", IDS_FILE_BROWSER_SHORTCUT_BACKSPACE);
@@ -327,7 +327,7 @@ void AddStringsForCrUiMenuItemShortcuts(base::Value::Dict* dict) {
   SET_STRING("SHORTCUT_SPACE", IDS_FILE_BROWSER_SHORTCUT_SPACE);
 }
 
-void AddStringsForFileErrors(base::Value::Dict* dict) {
+void AddStringsForFileErrors(base::DictValue* dict) {
   SET_STRING("FILE_ERROR_GENERIC", IDS_FILE_BROWSER_FILE_ERROR_GENERIC);
   SET_STRING("FILE_ERROR_INVALID_MODIFICATION",
              IDS_FILE_BROWSER_FILE_ERROR_INVALID_MODIFICATION);
@@ -344,11 +344,11 @@ void AddStringsForFileErrors(base::Value::Dict* dict) {
   SET_STRING("FILE_ERROR_SECURITY", IDS_FILE_BROWSER_FILE_ERROR_SECURITY);
 }
 
-void AddStringsForSharesheet(base::Value::Dict* dict) {
+void AddStringsForSharesheet(base::DictValue* dict) {
   SET_STRING("SHARESHEET_BUTTON_LABEL", IDS_SHARESHEET_TITLE_LABEL);
 }
 
-void AddStringsForHoldingSpace(base::Value::Dict* dict) {
+void AddStringsForHoldingSpace(base::DictValue* dict) {
   const std::u16string pin_command = l10n_util::GetStringUTF16(
       IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL);
   dict->Set("HOLDING_SPACE_PIN_COMMAND_LABEL", pin_command);
@@ -367,13 +367,13 @@ void AddStringsForHoldingSpace(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TITLE);
 }
 
-void AddStringsForPhotos(base::Value::Dict* dict) {
+void AddStringsForPhotos(base::DictValue* dict) {
   SET_STRING("PHOTOS_WELCOME_DISMISS", IDS_FILE_BROWSER_PHOTOS_WELCOME_DISMISS);
   SET_STRING("PHOTOS_WELCOME_TEXT", IDS_FILE_BROWSER_PHOTOS_WELCOME_TEXT);
   SET_STRING("PHOTOS_WELCOME_TITLE", IDS_FILE_BROWSER_PHOTOS_WELCOME_TITLE);
 }
 
-void AddStringsGeneric(base::Value::Dict* dict) {
+void AddStringsGeneric(base::DictValue* dict) {
   SET_STRING("ALL_FILES_FILTER", IDS_FILE_BROWSER_ALL_FILES_FILTER);
   SET_STRING("ARCHIVE_MOUNT_FAILED", IDS_FILE_BROWSER_ARCHIVE_MOUNT_FAILED);
   SET_STRING("ARCHIVE_MOUNT_MESSAGE", IDS_FILE_BROWSER_ARCHIVE_MOUNT_MESSAGE);
@@ -1205,7 +1205,7 @@ bool IsEligibleAndEnabledGoogleOneOfferFilesBanner(
              ash::features::kDisableGoogleOneOfferFilesBanner);
 }
 
-void AddStringsForVms(base::Value::Dict* dict) {
+void AddStringsForVms(base::DictValue* dict) {
   auto* profile = GetProfile();
   std::u16string overall_name = bruschetta::GetOverallVmName(profile);
 
@@ -1242,7 +1242,7 @@ void AddStringsForVms(base::Value::Dict* dict) {
                 overall_name));
 }
 
-void AddStringsForSkyVault(base::Value::Dict* dict) {
+void AddStringsForSkyVault(base::DictValue* dict) {
   dict->Set(
       "SKYVAULT_MIGRATION_BANNER_GOOGLE_DRIVE",
       base::ReplaceStringPlaceholders(
@@ -1263,8 +1263,8 @@ void AddStringsForSkyVault(base::Value::Dict* dict) {
 
 }  // namespace
 
-base::Value::Dict GetFileManagerStrings(const std::string& application_locale) {
-  base::Value::Dict dict;
+base::DictValue GetFileManagerStrings(const std::string& application_locale) {
+  base::DictValue dict;
 
   AddStringsForDrive(&dict);
   AddStringsForMediaView(&dict);
@@ -1304,8 +1304,8 @@ base::Value::Dict GetFileManagerStrings(const std::string& application_locale) {
   return dict;
 }
 
-base::Value::Dict GetFileManagerPluralStrings() {
-  base::Value::Dict dict;
+base::DictValue GetFileManagerPluralStrings() {
+  base::DictValue dict;
 
   dict.Set("ERROR_PROGRESS_SUMMARY", IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY);
   dict.Set("WARNING_PROGRESS_SUMMARY",
@@ -1345,7 +1345,7 @@ void AddFileManagerFeatureStrings(
     const std::string& application_locale,
     const variations::VariationsService& variations_service,
     Profile* profile,
-    base::Value::Dict* dict) {
+    base::DictValue* dict) {
   DCHECK(profile);
 
   dict->Set("HIDE_SPACE_INFO", ash::demo_mode::IsDeviceInDemoMode());
@@ -1383,11 +1383,11 @@ void AddFileManagerFeatureStrings(
   dict->Set("SKYVAULT_V2_ENABLED",
             base::FeatureList::IsEnabled(features::kSkyVaultV2));
 
-  base::Value::List vms;
+  base::ListValue vms;
   auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   if (share_path) {
     for (const auto& guest : share_path->ListGuests()) {
-      base::Value::Dict d;
+      base::DictValue d;
       d.Set("vmName", guest.vm_name);
       d.Set("containerName", guest.container_name);
       vms.Append(std::move(d));

@@ -21,7 +21,7 @@ bool IsPredictiveWritingPrefEnabled(const PrefService& pref_service,
   if (!IsPhysicalKeyboardPredictiveWritingAllowed(pref_service)) {
     return false;
   }
-  const base::Value::Dict& input_method_settings =
+  const base::DictValue& input_method_settings =
       pref_service.GetDict(::prefs::kLanguageInputMethodSpecificSettings);
   std::optional<bool> predictive_writing_setting =
       input_method_settings.FindBoolByDottedPath(

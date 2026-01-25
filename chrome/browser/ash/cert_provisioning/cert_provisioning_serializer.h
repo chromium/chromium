@@ -33,18 +33,18 @@ class CertProvisioningSerializer {
   // Deserializes saved worker state |saved_worker| into a just created
   // |worker|. Consider using CertProvisioningWorkerFactory::Deserialize
   // instead of calling it directly.
-  static bool DeserializeWorker(const base::Value::Dict& saved_worker,
+  static bool DeserializeWorker(const base::DictValue& saved_worker,
                                 CertProvisioningWorkerStatic* worker);
-  static bool DeserializeWorker(const base::Value::Dict& saved_worker,
+  static bool DeserializeWorker(const base::DictValue& saved_worker,
                                 CertProvisioningWorkerDynamic* worker);
 
   static std::optional<ProtocolVersion> GetProtocolVersion(
-      const base::Value::Dict& saved_worker);
+      const base::DictValue& saved_worker);
 
  private:
-  static base::Value::Dict SerializeWorker(
+  static base::DictValue SerializeWorker(
       const CertProvisioningWorkerStatic& worker);
-  static base::Value::Dict SerializeWorker(
+  static base::DictValue SerializeWorker(
       const CertProvisioningWorkerDynamic& worker);
 };
 

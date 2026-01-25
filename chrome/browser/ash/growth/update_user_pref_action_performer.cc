@@ -149,7 +149,7 @@ UpdateUserPrefActionPerformer::~UpdateUserPrefActionPerformer() = default;
 void UpdateUserPrefActionPerformer::Run(
     int campaign_id,
     std::optional<int> group_id,
-    const base::Value::Dict* params,
+    const base::DictValue* params,
     growth::ActionPerformer::Callback callback) {
   if (!params) {
     std::move(callback).Run(growth::ActionResult::kFailure,

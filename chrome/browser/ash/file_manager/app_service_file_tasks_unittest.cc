@@ -182,24 +182,24 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddChromeApp() {
     extensions::ExtensionBuilder baz_app;
     baz_app.SetManifest(
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "Baz")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
-            .Set("app", base::Value::Dict().Set(
-                            "background",
-                            base::Value::Dict().Set(
-                                "scripts",
-                                base::Value::List().Append("background.js"))))
+            .Set("app",
+                 base::DictValue().Set(
+                     "background",
+                     base::DictValue().Set(
+                         "scripts", base::ListValue().Append("background.js"))))
             .Set("file_handlers",
-                 base::Value::Dict()
+                 base::DictValue()
                      .Set("any",
-                          base::Value::Dict().Set(
+                          base::DictValue().Set(
                               "extensions",
-                              base::Value::List().Append("*").Append("bar")))
-                     .Set("image", base::Value::Dict().Set(
-                                       "types", base::Value::List().Append(
-                                                    "image/*")))));
+                              base::ListValue().Append("*").Append("bar")))
+                     .Set("image",
+                          base::DictValue().Set(
+                              "types", base::ListValue().Append("image/*")))));
     baz_app.SetID(kChromeAppId);
     auto filters =
         apps_util::CreateIntentFiltersForChromeApp(baz_app.Build().get());
@@ -211,48 +211,48 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddChromeAppWithVerbs() {
     extensions::ExtensionBuilder foo_app;
     foo_app.SetManifest(
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "Foo")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
-            .Set("app", base::Value::Dict().Set(
-                            "background",
-                            base::Value::Dict().Set(
-                                "scripts",
-                                base::Value::List().Append("background.js"))))
+            .Set("app",
+                 base::DictValue().Set(
+                     "background",
+                     base::DictValue().Set(
+                         "scripts", base::ListValue().Append("background.js"))))
             .Set("file_handlers",
-                 base::Value::Dict()
+                 base::DictValue()
                      .Set("any_with_directories",
-                          base::Value::Dict()
+                          base::DictValue()
                               .Set("include_directories", true)
-                              .Set("types", base::Value::List().Append("*"))
+                              .Set("types", base::ListValue().Append("*"))
                               .Set("verb", "open_with"))
                      .Set("html_handler",
-                          base::Value::Dict()
+                          base::DictValue()
                               .Set("title", "Html")
                               .Set("types",
-                                   base::Value::List().Append("text/html"))
+                                   base::ListValue().Append("text/html"))
                               .Set("verb", "open_with"))
                      .Set("plain_text",
-                          base::Value::Dict()
+                          base::DictValue()
                               .Set("title", "Plain")
                               .Set("types",
-                                   base::Value::List().Append("text/plain")))
+                                   base::ListValue().Append("text/plain")))
                      .Set("share_plain_text",
-                          base::Value::Dict()
+                          base::DictValue()
                               .Set("title", "Share Plain")
                               .Set("types",
-                                   base::Value::List().Append("text/plain"))
+                                   base::ListValue().Append("text/plain"))
                               .Set("verb", "share_with"))
                      .Set("any_pack",
-                          base::Value::Dict()
-                              .Set("types", base::Value::List().Append("*"))
+                          base::DictValue()
+                              .Set("types", base::ListValue().Append("*"))
                               .Set("verb", "pack_with"))
                      .Set("plain_text_add_to",
-                          base::Value::Dict()
+                          base::DictValue()
                               .Set("title", "Plain")
                               .Set("types",
-                                   base::Value::List().Append("text/plain"))
+                                   base::ListValue().Append("text/plain"))
                               .Set("verb", "add_to"))));
     foo_app.SetID(kChromeAppWithVerbsId);
     auto filters =
@@ -266,19 +266,18 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddExtension() {
     extensions::ExtensionBuilder fbh_app;
     fbh_app.SetManifest(
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "Fbh")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
-            .Set("permissions",
-                 base::Value::List().Append("fileBrowserHandler"))
+            .Set("permissions", base::ListValue().Append("fileBrowserHandler"))
             .Set("file_browser_handlers",
-                 base::Value::List().Append(
-                     base::Value::Dict()
+                 base::ListValue().Append(
+                     base::DictValue()
                          .Set("id", "open")
                          .Set("default_title", "open title")
-                         .Set("file_filters", base::Value::List().Append(
-                                                  "filesystem:*.txt")))));
+                         .Set("file_filters",
+                              base::ListValue().Append("filesystem:*.txt")))));
     fbh_app.SetID(kExtensionId);
     auto filters =
         apps_util::CreateIntentFiltersForExtension(fbh_app.Build().get());

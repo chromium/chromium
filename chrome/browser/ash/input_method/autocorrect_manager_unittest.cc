@@ -421,7 +421,7 @@ ui::KeyEvent KeyA() {
 void SetAutocorrectPreferenceTo(Profile& profile,
                                 const std::string& engine_id,
                                 int autocorrect_level) {
-  base::Value::Dict input_method_setting;
+  base::DictValue input_method_setting;
   input_method_setting.SetByDottedPath(
       engine_id + ".physicalKeyboardAutoCorrectionLevel", autocorrect_level);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,

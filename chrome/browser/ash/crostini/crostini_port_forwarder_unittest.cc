@@ -84,7 +84,7 @@ class CrostiniPortForwarderTest : public testing::Test {
    public:
     MOCK_METHOD(void,
                 OnActivePortsChanged,
-                (const base::Value::List& activePorts),
+                (const base::ListValue& activePorts),
                 (override));
     MOCK_METHOD(void,
                 OnActiveNetworkChanged,
@@ -516,8 +516,7 @@ TEST_F(CrostiniPortForwarderTest, GetActivePorts) {
             3U);
 
   // Get active ports.
-  base::Value::List forwarded_ports =
-      crostini_port_forwarder_->GetActivePorts();
+  base::ListValue forwarded_ports = crostini_port_forwarder_->GetActivePorts();
   EXPECT_EQ(forwarded_ports.size(), ports_to_add.size());
   for (unsigned int i = 0; i < ports_to_add.size(); i++) {
     unsigned int reverse_index = ports_to_add.size() - i - 1;

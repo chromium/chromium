@@ -110,7 +110,7 @@ orca::mojom::TextQueryErrorCode ConvertErrorCode(
 
 std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
     const std::string& request_id,
-    base::Value::Dict& response) {
+    base::DictValue& response) {
   std::vector<orca::mojom::TextQueryResultPtr> results;
   if (auto* output_data_list = response.FindList("outputData")) {
     int result_id = 0;
@@ -172,7 +172,7 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
       base::BindOnce(
           [](const std::string& request_id,
              EditorMetricsRecorder* metrics_recorder,
-             ProcessCallback process_callback, base::Value::Dict dict,
+             ProcessCallback process_callback, base::DictValue dict,
              manta::MantaStatus status) {
             if (status.status_code == manta::MantaStatusCode::kOk) {
               auto responses = ParseSuccessResponse(request_id, dict);

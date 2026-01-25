@@ -113,10 +113,10 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
   // extensions::SandboxedUnpackerClient
   void OnUnpackSuccess(const base::FilePath& temp_dir,
                        const base::FilePath& extension_root,
-                       std::unique_ptr<base::Value::Dict> original_manifest,
+                       std::unique_ptr<base::DictValue> original_manifest,
                        const extensions::Extension* extension,
                        const SkBitmap& install_icon,
-                       base::Value::Dict ruleset_install_prefs) override {
+                       base::DictValue ruleset_install_prefs) override {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
     const extensions::KioskModeInfo* info =
@@ -226,7 +226,7 @@ class KioskAppData::WebstoreDataParser
   // WebstoreInstallHelper::Delegate overrides:
   void OnWebstoreParseSuccess(const std::string& id,
                               const SkBitmap& icon,
-                              base::Value::Dict parsed_manifest) override {
+                              base::DictValue parsed_manifest) override {
     extensions::Manifest manifest(
         extensions::mojom::ManifestLocation::kInvalidLocation,
         std::move(parsed_manifest), id);
@@ -378,7 +378,7 @@ void KioskAppData::SetStatus(Status status) {
 }
 
 bool KioskAppData::LoadFromCache() {
-  const base::Value::Dict& dict = local_state_->GetDict(dictionary_name());
+  const base::DictValue& dict = local_state_->GetDict(dictionary_name());
 
   if (!LoadFromDictionary(dict)) {
     return false;
@@ -517,7 +517,7 @@ void KioskAppData::OnWebstoreResponseParseFailure(
 }
 
 bool KioskAppData::CheckResponseKeyValue(const std::string& extension_id,
-                                         const base::Value::Dict& response,
+                                         const base::DictValue& response,
                                          const char* key,
                                          std::string* value) {
   const std::string* value_ptr = response.FindString(key);

@@ -98,7 +98,7 @@ class FakeEventRouter : public extensions::EventRouter {
                                          OnCloseFileRequested::kEventName);
 
     if (reply_result_ == base::File::FILE_OK) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(kFileSystemId);
       list.Append(request_id);
       list.Append(0);  // Execution time.

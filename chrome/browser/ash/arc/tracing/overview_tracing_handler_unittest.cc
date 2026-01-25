@@ -345,7 +345,7 @@ TEST_F(OverviewTracingHandlerTest, CommitAndPresentTimestampsInModel) {
 
   LOG(INFO) << "checking JSON model: " << dict;
 
-  auto validate_events = [&](EventType type, const base::Value::List* events) {
+  auto validate_events = [&](EventType type, const base::ListValue* events) {
     ASSERT_TRUE(events);
     std::queue<double> expected_times({0, 42000, 84000, 126000, 168000});
     ASSERT_EQ(events->size(), expected_times.size());

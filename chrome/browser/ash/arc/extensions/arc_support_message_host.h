@@ -23,7 +23,7 @@ class ArcSupportMessageHost : public extensions::NativeMessageHost {
   class Observer {
    public:
     // Called when an message is sent from arc_support Chrome App.
-    virtual void OnMessage(const base::Value::Dict& message) = 0;
+    virtual void OnMessage(const base::DictValue& message) = 0;
 
    protected:
     virtual ~Observer() = default;

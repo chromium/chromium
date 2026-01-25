@@ -70,7 +70,7 @@ void OnTaskExtensionsManagerImpl::ReEnableExtensions() {
   auto* extension_registrar = ExtensionRegistrar::Get(profile_);
   const ExtensionRegistry* const extension_registry =
       ExtensionRegistry::Get(profile_);
-  const base::Value::List& disabled_extension_ids =
+  const base::ListValue& disabled_extension_ids =
       profile_->GetPrefs()->GetList(kDisabledOnTaskExtensions);
   for (const auto& disabled_extension_id : disabled_extension_ids) {
     const ExtensionId& extension_id =
@@ -110,7 +110,7 @@ void OnTaskExtensionsManagerImpl::SaveDisabledExtensionIds(
     const ExtensionIdList& extension_ids) {
   ScopedListPrefUpdate pref_update(profile_->GetPrefs(),
                                    kDisabledOnTaskExtensions);
-  base::Value::List& saved_extension_ids = pref_update.Get();
+  base::ListValue& saved_extension_ids = pref_update.Get();
   saved_extension_ids.clear();
   for (const auto& extension_id : extension_ids) {
     saved_extension_ids.Append(extension_id);

@@ -49,38 +49,38 @@ std::string AppRestrictionToPolicyString(const AppRestriction& restriction);
 
 // Deserializes AppId from |dict|.
 // Returns value if |dict| contains valid app information.
-std::optional<AppId> AppIdFromDict(const base::Value::Dict* dict);
+std::optional<AppId> AppIdFromDict(const base::DictValue* dict);
 
 // Serializes AppId to the dictionary.
-base::Value::Dict AppIdToDict(const AppId& app_id);
+base::DictValue AppIdToDict(const AppId& app_id);
 
 // Deserializes AppId from |dict|.
 // Returns value if |dict| contains valid app information in its entry keyed by
 // kAppInfoDict.
-std::optional<AppId> AppIdFromAppInfoDict(const base::Value::Dict* dict);
+std::optional<AppId> AppIdFromAppInfoDict(const base::DictValue* dict);
 
 // Deserializes AppLimit from |dict|.
 // Returns value if |dict| contains valid app limit information.
-std::optional<AppLimit> AppLimitFromDict(const base::Value::Dict& dict);
+std::optional<AppLimit> AppLimitFromDict(const base::DictValue& dict);
 
 // Serializes AppLimit to the dictionary.
-base::Value::Dict AppLimitToDict(const AppLimit& limit);
+base::DictValue AppLimitToDict(const AppLimit& limit);
 
 // Deserializes daily limits reset time from |dict|.
 // Returns value if |dict| contains valid reset time information.
-std::optional<base::TimeDelta> ResetTimeFromDict(const base::Value::Dict& dict);
+std::optional<base::TimeDelta> ResetTimeFromDict(const base::DictValue& dict);
 
 // Serializes daily limits reset to the dictionary.
-base::Value::Dict ResetTimeToDict(int hour, int minutes);
+base::DictValue ResetTimeToDict(int hour, int minutes);
 
 // Deserializes activity reporting enabled boolean from |dict|.
 // Returns value if |dict| contains a valid entry.
 std::optional<bool> ActivityReportingEnabledFromDict(
-    const base::Value::Dict& dict);
+    const base::DictValue& dict);
 
 // Deserializes app limits data from the |dict|.
 // Will return empty map if |dict| is invalid.
-std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value::Dict& dict);
+std::map<AppId, AppLimit> AppLimitsFromDict(const base::DictValue& dict);
 
 }  // namespace policy
 }  // namespace ash::app_time

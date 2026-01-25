@@ -35,7 +35,7 @@ void EditorTextQueryFromManta::Call(
     manta::MantaGenericCallback callback) {
   if (!provider_) {
     std::move(callback).Run(
-        base::Value::Dict().Set("outputData", base::Value::List()),
+        base::DictValue().Set("outputData", base::ListValue()),
         manta::MantaStatus{
             .status_code = manta::MantaStatusCode::kBackendFailure,
             .message = ""});

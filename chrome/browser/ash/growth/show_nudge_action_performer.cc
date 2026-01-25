@@ -140,7 +140,7 @@ const std::string* GetNudgeBody(const NudgePayload* nudge_payload) {
   return nudge_payload->FindString(kNudgeBodyPath);
 }
 
-void MaybeSetImageData(const base::Value::Dict* image_value,
+void MaybeSetImageData(const base::DictValue* image_value,
                        ash::AnchoredNudgeData& nudge_data) {
   if (!image_value) {
     return;
@@ -282,7 +282,7 @@ ShowNudgeActionPerformer::~ShowNudgeActionPerformer() {
 
 void ShowNudgeActionPerformer::Run(int campaign_id,
                                    std::optional<int> group_id,
-                                   const base::Value::Dict* action_params,
+                                   const base::DictValue* action_params,
                                    growth::ActionPerformer::Callback callback) {
   if (!ShowNudge(campaign_id, group_id, action_params)) {
     // TODO: b/331953307 - callback with concrete failure result reason.
@@ -385,7 +385,7 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   // TODO: b/331045558 - Add close button callback.
   NotifyReadyToLogImpression(campaign_id, group_id, should_log_cros_events);
 
-  const base::Value::List* clear_events =
+  const base::ListValue* clear_events =
       nudge_payload->FindList(kClearEventsPath);
   if (clear_events) {
     auto* campaigns_manager = growth::CampaignsManager::Get();
@@ -402,7 +402,7 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 }
 
 bool ShowNudgeActionPerformer::MaybeSetAnchorView(
-    const base::Value::Dict* anchor_dict,
+    const base::DictValue* anchor_dict,
     ash::AnchoredNudgeData& nudge_data) {
   if (!anchor_dict) {
     // No anchor option provided. Set to default position.
@@ -460,7 +460,7 @@ bool ShowNudgeActionPerformer::MaybeSetAnchorView(
 void ShowNudgeActionPerformer::MaybeSetButtonData(
     int campaign_id,
     std::optional<int> group_id,
-    const base::Value::Dict* button_dict,
+    const base::DictValue* button_dict,
     ash::AnchoredNudgeData& nudge_data,
     bool is_primary,
     bool should_log_cros_events) {
@@ -498,7 +498,7 @@ void ShowNudgeActionPerformer::OnNudgeButtonClicked(
     int campaign_id,
     std::optional<int> group_id,
     CampaignButtonId button_id,
-    const base::Value::Dict* action_dict,
+    const base::DictValue* action_dict,
     bool should_mark_dismissed,
     bool should_log_cros_events) {
   NotifyButtonPressed(campaign_id, group_id, button_id, should_mark_dismissed,

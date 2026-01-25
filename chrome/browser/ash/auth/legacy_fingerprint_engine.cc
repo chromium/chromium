@@ -29,7 +29,7 @@ const char kFactorsOptionFingerprint[] = "FINGERPRINT";
 bool HasPolicyValue(const PrefService& pref_service,
                     LegacyFingerprintEngine::Purpose purpose,
                     const char* value) {
-  const base::Value::List* factors = nullptr;
+  const base::ListValue* factors = nullptr;
   switch (purpose) {
     case LegacyFingerprintEngine::Purpose::kUnlock:
       factors = &pref_service.GetList(prefs::kQuickUnlockModeAllowlist);

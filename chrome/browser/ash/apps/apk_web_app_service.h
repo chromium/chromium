@@ -168,7 +168,7 @@ class ApkWebAppService : public KeyedService,
                                 webapps::UninstallResultCode code);
   void UpdatePackageInfo(const std::string& app_id,
                          const arc::mojom::WebAppInfoPtr& web_app_info);
-  const base::Value::Dict& WebAppToApks() const;
+  const base::DictValue& WebAppToApks() const;
   void SyncArcAndWebApps();
 
   void RemoveObsoletePrefValues(const webapps::AppId& web_app_id);

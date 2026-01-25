@@ -45,9 +45,9 @@ std::string_view DayOfWeekToStringView(DayOfWeek day) {
   }
 }
 
-base::Value::Dict BuildScheduleTimePoint(DayOfWeek day_of_week,
-                                         const base::TimeDelta& time_of_day) {
-  return base::Value::Dict()
+base::DictValue BuildScheduleTimePoint(DayOfWeek day_of_week,
+                                       const base::TimeDelta& time_of_day) {
+  return base::DictValue()
       .Set(kDayOfWeek, DayOfWeekToStringView(day_of_week))
       .Set(kTime, static_cast<int>(time_of_day.InMilliseconds()));
 }
@@ -67,7 +67,7 @@ DeviceWeeklyScheduledSuspendTestPolicyBuilder::AddWeeklySuspendInterval(
     DayOfWeek end_day_of_week,
     const base::TimeDelta& end_time_of_day) {
   policy_value_.Append(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kStart,
                BuildScheduleTimePoint(start_day_of_week, start_time_of_day))
           .Set(kEnd, BuildScheduleTimePoint(end_day_of_week, end_time_of_day)));
@@ -78,7 +78,7 @@ DeviceWeeklyScheduledSuspendTestPolicyBuilder&&
 DeviceWeeklyScheduledSuspendTestPolicyBuilder::AddInvalidScheduleMissingStart(
     DayOfWeek end_day_of_week,
     const base::TimeDelta& end_time_of_day) {
-  policy_value_.Append(base::Value::Dict().Set(
+  policy_value_.Append(base::DictValue().Set(
       kEnd, BuildScheduleTimePoint(end_day_of_week, end_time_of_day)));
   return std::move(*this);
 }
@@ -87,13 +87,13 @@ DeviceWeeklyScheduledSuspendTestPolicyBuilder&&
 DeviceWeeklyScheduledSuspendTestPolicyBuilder::AddInvalidScheduleMissingEnd(
     DayOfWeek start_day_of_week,
     const base::TimeDelta& start_time_of_day) {
-  policy_value_.Append(base::Value::Dict().Set(
+  policy_value_.Append(base::DictValue().Set(
       kStart, BuildScheduleTimePoint(start_day_of_week, start_time_of_day)));
   return std::move(*this);
 }
 
-base::Value::List
-DeviceWeeklyScheduledSuspendTestPolicyBuilder::GetAsPrefValue() const {
+base::ListValue DeviceWeeklyScheduledSuspendTestPolicyBuilder::GetAsPrefValue()
+    const {
   return policy_value_.Clone();
 }
 

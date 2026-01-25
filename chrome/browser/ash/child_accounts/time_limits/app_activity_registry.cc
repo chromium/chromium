@@ -444,7 +444,7 @@ AppActivityRegistry::GenerateAppActivityReport(
     return AppActivityReportInterface::ReportParams{timestamp, false};
   }
 
-  const base::Value::List& list =
+  const base::ListValue& list =
       pref_service_->GetList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> applications_info =
@@ -672,7 +672,7 @@ void AppActivityRegistry::SaveAppActivity() {
   {
     ScopedListPrefUpdate update(pref_service_,
                                 prefs::kPerAppTimeLimitsAppActivities);
-    base::Value::List& list = update.Get();
+    base::ListValue& list = update.Get();
 
     const base::Time now = base::Time::Now();
 
@@ -695,7 +695,7 @@ void AppActivityRegistry::SaveAppActivity() {
 
     for (const AppId& app_id : newly_installed_apps_) {
       const PersistedAppInfo info = GetPersistedAppInfoForApp(app_id, now);
-      base::Value::Dict value;
+      base::DictValue value;
       info.UpdateAppActivityPreference(value, /* replace */ false);
       list.Append(std::move(value));
     }
@@ -747,7 +747,7 @@ void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
   ScopedListPrefUpdate update(pref_service_,
                               prefs::kPerAppTimeLimitsAppActivities);
 
-  base::Value::List& list = update.Get();
+  base::ListValue& list = update.Get();
 
   for (size_t index = 0; index < list.size();) {
     base::Value& entry = list[index];
@@ -1132,7 +1132,7 @@ void AppActivityRegistry::InitializeRegistryFromPref() {
 }
 
 void AppActivityRegistry::InitializeAppActivities() {
-  const base::Value::List& list =
+  const base::ListValue& list =
       pref_service_->GetList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> applications_info =

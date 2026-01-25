@@ -107,18 +107,18 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
  protected:
   void BuildPrefValues() {
-    base::Value::Dict vtpm;
+    base::DictValue vtpm;
     vtpm.Set(prefs::kPolicyVTPMEnabledKey, true);
     vtpm.Set(prefs::kPolicyVTPMUpdateActionKey,
              static_cast<int>(
                  prefs::PolicyUpdateAction::FORCE_SHUTDOWN_IF_MORE_RESTRICTED));
-    base::Value::Dict image;
+    base::DictValue image;
     image.Set(prefs::kPolicyURLKey, kVmConfigUrl);
     image.Set(prefs::kPolicyHashKey, kVmConfigHash);
-    base::Value::List oem_strings;
+    base::ListValue oem_strings;
     oem_strings.Append("OEM string");
 
-    base::Value::Dict config;
+    base::DictValue config;
 
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::RUN_ALLOWED));
@@ -198,7 +198,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     return [this]() { run_loop_.Quit(); };
   }
 
-  auto PrefsCallback(const base::Value::Dict& value) {
+  auto PrefsCallback(const base::DictValue& value) {
     return [this, &value]() {
       profile_.GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
                                    value.Clone());
@@ -611,7 +611,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
   base::RunLoop run_loop_, run_loop_2_;
 
-  base::Value::Dict prefs_installable_no_pflash_, prefs_installable_,
+  base::DictValue prefs_installable_no_pflash_, prefs_installable_,
       prefs_not_installable_;
 
   TestingProfile profile_;

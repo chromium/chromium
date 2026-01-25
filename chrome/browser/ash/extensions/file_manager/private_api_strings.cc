@@ -26,7 +26,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetStringsFunction::Run() {
   // TODO(crbug.com/404131876): Remove g_browser_process usage.
   const std::string& application_locale =
       g_browser_process->GetApplicationLocale();
-  base::Value::Dict dict = GetFileManagerStrings(application_locale);
+  base::DictValue dict = GetFileManagerStrings(application_locale);
 
   const std::string locale = extension_l10n_util::CurrentLocaleOrDefault();
   AddFileManagerFeatureStrings(

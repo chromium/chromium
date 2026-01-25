@@ -140,7 +140,7 @@ void KioskIwaData::Update(const std::string& title,
 }
 
 bool KioskIwaData::LoadFromCache() {
-  const base::Value::Dict& dict = local_state_->GetDict(dictionary_name());
+  const base::DictValue& dict = local_state_->GetDict(dictionary_name());
   if (!LoadFromDictionary(dict)) {
     return false;
   }

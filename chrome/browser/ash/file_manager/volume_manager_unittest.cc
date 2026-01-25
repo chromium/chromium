@@ -90,7 +90,7 @@ const policy::DeviceId kAllowlistedDeviceId{0xA123, 0x456B};
 void SetExternalStorageAllowlist(PrefService* pref_service) {
   pref_service->SetList(
       disks::prefs::kExternalStorageAllowlist,
-      base::Value::List().Append(kAllowlistedDeviceId.ToDict()));
+      base::ListValue().Append(kAllowlistedDeviceId.ToDict()));
 }
 
 std::unique_ptr<Disk> CreateAllowlistedDisk(const std::string& disk_path) {

@@ -200,8 +200,7 @@ enum class KeyType {
 };
 
 struct CertProfile {
-  static std::optional<CertProfile> MakeFromValue(
-      const base::Value::Dict& value);
+  static std::optional<CertProfile> MakeFromValue(const base::DictValue& value);
 
   CertProfile();
   // For tests.

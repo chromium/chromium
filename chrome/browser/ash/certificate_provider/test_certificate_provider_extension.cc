@@ -54,7 +54,7 @@ constexpr extensions::api::certificate_provider::Algorithm
         extensions::api::certificate_provider::Algorithm::kRsassaPkcs1V1_5Sha1};
 
 base::Value ConvertBytesToValue(base::span<const uint8_t> bytes) {
-  base::Value::List value;
+  base::ListValue value;
   for (auto byte : bytes)
     value.Append(byte);
   return base::Value(std::move(value));
@@ -74,11 +74,11 @@ base::span<const uint8_t> GetCertDer(const net::X509Certificate& certificate) {
 
 base::Value MakeClientCertificateInfoValue(
     const net::X509Certificate& certificate) {
-  base::Value::Dict cert_info_value;
-  base::Value::List certificate_chain;
+  base::DictValue cert_info_value;
+  base::ListValue certificate_chain;
   certificate_chain.Append(ConvertBytesToValue(GetCertDer(certificate)));
   cert_info_value.Set("certificateChain", std::move(certificate_chain));
-  base::Value::List supported_algorithms_value;
+  base::ListValue supported_algorithms_value;
   for (auto supported_algorithm : kSupportedAlgorithms) {
     supported_algorithms_value.Append(
         extensions::api::certificate_provider::ToString(supported_algorithm));
@@ -182,14 +182,14 @@ TestCertificateProviderExtension::TestCertificateProviderExtension(
 TestCertificateProviderExtension::~TestCertificateProviderExtension() = default;
 
 void TestCertificateProviderExtension::TriggerSetCertificates() {
-  base::Value::Dict message_data;
+  base::DictValue message_data;
   message_data.Set("name", "setCertificates");
-  base::Value::List cert_info_values;
+  base::ListValue cert_info_values;
   if (should_provide_certificates_)
     cert_info_values.Append(MakeClientCertificateInfoValue(*certificate_));
   message_data.Set("certificateInfoList", std::move(cert_info_values));
 
-  base::Value::List message;
+  base::ListValue message;
   message.Append(std::move(message_data));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FOR_TEST,
@@ -204,7 +204,7 @@ void TestCertificateProviderExtension::HandleMessage(
   // Handle the request and reply to it (possibly, asynchronously).
   base::Value message_value = ParseJsonToValue(message);
   CHECK(message_value.is_list());
-  base::Value::List& message_list = message_value.GetList();
+  base::ListValue& message_list = message_value.GetList();
   CHECK(message_list.size());
   CHECK(message_list[0].is_string());
   const std::string& request_type = message_list[0].GetString();
@@ -227,7 +227,7 @@ void TestCertificateProviderExtension::HandleMessage(
 void TestCertificateProviderExtension::HandleCertificatesRequest(
     ReplyToJsCallback callback) {
   ++certificate_request_count_;
-  base::Value::List cert_info_values;
+  base::ListValue cert_info_values;
   if (should_provide_certificates_)
     cert_info_values.Append(MakeClientCertificateInfoValue(*certificate_));
   std::move(callback).Run(base::Value(std::move(cert_info_values)));
@@ -254,12 +254,12 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
     return;
   }
 
-  base::Value::Dict response;
+  base::DictValue response;
   if (required_pin_.has_value()) {
     if (pin_status_string == "not_requested") {
       // The PIN is required but not specified yet, so request it via the JS
       // side before generating the signature.
-      base::Value::Dict pin_request_parameters;
+      base::DictValue pin_request_parameters;
       pin_request_parameters.Set("signRequestId", sign_request_id);
       if (remaining_pin_attempts_ == 0) {
         pin_request_parameters.Set("errorType", "MAX_ATTEMPTS_EXCEEDED");
@@ -288,7 +288,7 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
       // update the PIN dialog with displaying an error.
       if (remaining_pin_attempts_ > 0)
         --remaining_pin_attempts_;
-      base::Value::Dict pin_request_parameters;
+      base::DictValue pin_request_parameters;
       pin_request_parameters.Set("signRequestId", sign_request_id);
       pin_request_parameters.Set("errorType", remaining_pin_attempts_ == 0
                                                   ? "MAX_ATTEMPTS_EXCEEDED"
@@ -302,7 +302,7 @@ void TestCertificateProviderExtension::HandleSignatureRequest(
     }
     // The entered PIN is correct. Stop the PIN request and proceed to
     // generating the signature.
-    base::Value::Dict stop_pin_request_parameters;
+    base::DictValue stop_pin_request_parameters;
     stop_pin_request_parameters.Set("signRequestId", sign_request_id);
     response.Set("stopPinRequest", std::move(stop_pin_request_parameters));
   }

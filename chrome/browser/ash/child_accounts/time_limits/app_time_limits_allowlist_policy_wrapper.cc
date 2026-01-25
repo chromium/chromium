@@ -13,7 +13,7 @@
 namespace ash::app_time {
 
 AppTimeLimitsAllowlistPolicyWrapper::AppTimeLimitsAllowlistPolicyWrapper(
-    const base::Value::Dict* dict)
+    const base::DictValue* dict)
     : dict_(dict) {}
 
 AppTimeLimitsAllowlistPolicyWrapper::~AppTimeLimitsAllowlistPolicyWrapper() =
@@ -23,7 +23,7 @@ std::vector<AppId> AppTimeLimitsAllowlistPolicyWrapper::GetAllowlistAppList()
     const {
   std::vector<AppId> return_value;
 
-  const base::Value::List* app_list = dict_->FindList(policy::kAppList);
+  const base::ListValue* app_list = dict_->FindList(policy::kAppList);
   if (!app_list) {
     VLOG(1) << "Invalid allowlist application list.";
     return return_value;

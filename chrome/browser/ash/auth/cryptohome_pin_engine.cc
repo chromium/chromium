@@ -26,7 +26,7 @@ constexpr char kFactorsOptionPin[] = "PIN";
 bool HasPolicyValue(const PrefService& pref_service,
                     CryptohomePinEngine::Purpose purpose,
                     const char* value) {
-  const base::Value::List* factors = nullptr;
+  const base::ListValue* factors = nullptr;
   switch (purpose) {
     case CryptohomePinEngine::Purpose::kUnlock:
       factors = &pref_service.GetList(prefs::kQuickUnlockModeAllowlist);

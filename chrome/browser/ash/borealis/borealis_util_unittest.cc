@@ -255,7 +255,7 @@ guest_os::GuestOsRegistryService::Registration CreateRegistration(
     std::string_view name,
     std::string_view exec) {
   base::Value pref(base::Value::Type::DICT);
-  base::Value::Dict localized_name;
+  base::DictValue localized_name;
   localized_name.Set("" /* locale */, base::Value(name));
   pref.GetDict().Set(guest_os::prefs::kAppNameKey, std::move(localized_name));
   pref.GetDict().Set(guest_os::prefs::kAppExecKey, exec);

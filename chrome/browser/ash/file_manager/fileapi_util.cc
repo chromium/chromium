@@ -623,9 +623,9 @@ void ConvertSelectedFileInfoListToFileChooserFileInfoList(
       context, origin, selected_info_list, std::move(callback));
 }
 
-base::Value::Dict ConvertEntryDefinitionToValue(
+base::DictValue ConvertEntryDefinitionToValue(
     const EntryDefinition& entry_definition) {
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set("fileSystemName", entry_definition.file_system_name);
   entry.Set("fileSystemRoot", entry_definition.file_system_root_url);
   entry.Set(
@@ -635,9 +635,9 @@ base::Value::Dict ConvertEntryDefinitionToValue(
   return entry;
 }
 
-base::Value::List ConvertEntryDefinitionListToListValue(
+base::ListValue ConvertEntryDefinitionListToListValue(
     const EntryDefinitionList& entry_definition_list) {
-  base::Value::List entries;
+  base::ListValue entries;
   for (const auto& entry : entry_definition_list) {
     entries.Append(ConvertEntryDefinitionToValue(entry));
   }

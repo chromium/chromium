@@ -539,7 +539,7 @@ TEST_F(CertProvisioningSchedulerTest, DeserializeWorkers) {
           "public_key": "fake_public_key_1",
           "state": 1
         })");
-  base::Value::Dict all_saved_workers;
+  base::DictValue all_saved_workers;
   all_saved_workers.Set("cert_profile_1", saved_worker.Clone());
 
   pref_service_.SetDict(GetPrefNameForSerialization(kCertScope),
@@ -593,7 +593,7 @@ TEST_F(CertProvisioningSchedulerTest, DeserializeWorkerForExistingCert) {
           "public_key": "fake_public_key_1",
           "state": 1
         })");
-  base::Value::Dict all_saved_workers;
+  base::DictValue all_saved_workers;
   all_saved_workers.Set("cert_profile_1", saved_worker.Clone());
 
   pref_service_.SetDict(GetPrefNameForSerialization(kCertScope),
@@ -866,7 +866,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
           "public_key": "fake_public_key_1",
           "state": 1
         })");
-    base::Value::Dict all_saved_workers;
+    base::DictValue all_saved_workers;
     all_saved_workers.Set("cert_profile_1", saved_worker.Clone());
 
     pref_service_.SetDict(GetPrefNameForSerialization(kCertScope),

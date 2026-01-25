@@ -105,7 +105,7 @@ void LogLatency(base::TimeDelta latency) {
 // JSON response parsing
 //----------------------
 
-std::optional<std::string> GetString(const base::Value::Dict& value,
+std::optional<std::string> GetString(const base::DictValue& value,
                                      const std::string& key) {
   const auto* field = value.FindString(key);
   if (!field) {

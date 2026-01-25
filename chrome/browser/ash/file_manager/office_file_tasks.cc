@@ -517,7 +517,7 @@ std::set<std::string> WordGroupMimeTypes() {
 bool HasExplicitDefaultFileHandler(Profile* profile,
                                    const std::string& extension) {
   std::string lower_extension = base::ToLowerASCII(extension);
-  const base::Value::Dict& extension_task_prefs =
+  const base::DictValue& extension_task_prefs =
       profile->GetPrefs()->GetDict(prefs::kDefaultTasksBySuffix);
   return extension_task_prefs.contains(lower_extension);
 }

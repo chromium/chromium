@@ -21,7 +21,7 @@ MountRequestHandler::MountRequestHandler(RequestDispatcher* dispatcher,
 MountRequestHandler::~MountRequestHandler() = default;
 
 bool MountRequestHandler::Execute(int request_id) {
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.reserve(1);
   event_args.Append(base::Value(request_id));
 

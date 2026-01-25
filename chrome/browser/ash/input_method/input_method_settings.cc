@@ -103,7 +103,7 @@ void RecordSettingsMetrics(const mojom::VietnameseVniSettings& settings) {
 }
 
 mojom::VietnameseVniSettingsPtr CreateVietnameseVniSettings(
-    const base::Value::Dict& input_method_specific_pref) {
+    const base::DictValue& input_method_specific_pref) {
   auto settings = mojom::VietnameseVniSettings::New();
   settings->allow_flexible_diacritics =
       input_method_specific_pref.FindBool(kVnPrefVniAllowFlexibleDiacritics)
@@ -122,7 +122,7 @@ mojom::VietnameseVniSettingsPtr CreateVietnameseVniSettings(
 }
 
 mojom::VietnameseTelexSettingsPtr CreateVietnameseTelexSettings(
-    const base::Value::Dict& input_method_specific_pref) {
+    const base::DictValue& input_method_specific_pref) {
   auto settings = mojom::VietnameseTelexSettings::New();
   settings->allow_flexible_diacritics =
       input_method_specific_pref.FindBool(kVnPrefTelexAllowFlexibleDiacritics)
@@ -144,7 +144,7 @@ mojom::VietnameseTelexSettingsPtr CreateVietnameseTelexSettings(
 }
 
 mojom::LatinSettingsPtr CreateLatinSettings(
-    const base::Value::Dict& input_method_specific_pref,
+    const base::DictValue& input_method_specific_pref,
     const PrefService& prefs,
     const std::string& engine_id) {
   auto settings = mojom::LatinSettings::New();
@@ -185,7 +185,7 @@ mojom::KoreanLayout KoreanLayoutToMojom(const std::string& layout) {
 }
 
 mojom::KoreanSettingsPtr CreateKoreanSettings(
-    const base::Value::Dict& input_method_specific_pref) {
+    const base::DictValue& input_method_specific_pref) {
   auto settings = mojom::KoreanSettings::New();
   settings->input_multiple_syllables =
       !input_method_specific_pref.FindBool(kKrPrefEnableSyllableInput)
@@ -198,7 +198,7 @@ mojom::KoreanSettingsPtr CreateKoreanSettings(
 }
 
 mojom::FuzzyPinyinSettingsPtr CreateFuzzyPinyinSettings(
-    const base::Value::Dict& pref) {
+    const base::DictValue& pref) {
   auto settings = mojom::FuzzyPinyinSettings::New();
   settings->an_ang = pref.FindBool(kPinyinPrefFuzzyAnAng).value_or(false);
   settings->en_eng = pref.FindBool(kPinyinPrefFuzzyEnEng).value_or(false);
@@ -229,7 +229,7 @@ mojom::PinyinLayout PinyinLayoutToMojom(const std::string& layout) {
 }
 
 mojom::PinyinSettingsPtr CreatePinyinSettings(
-    const base::Value::Dict& input_method_specific_pref) {
+    const base::DictValue& input_method_specific_pref) {
   auto settings = mojom::PinyinSettings::New();
   settings->fuzzy_pinyin =
       CreateFuzzyPinyinSettings(input_method_specific_pref);
@@ -302,7 +302,7 @@ uint32_t ZhuyinPageSizeToInt(const std::string& page_size) {
 }
 
 mojom::ZhuyinSettingsPtr CreateZhuyinSettings(
-    const base::Value::Dict& input_method_specific_pref) {
+    const base::DictValue& input_method_specific_pref) {
   auto settings = mojom::ZhuyinSettings::New();
   settings->layout = ZhuyinLayoutToMojom(ValueOrEmpty(
       input_method_specific_pref.FindString(kZhuyinPrefKeyboardLayout)));
@@ -338,12 +338,12 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   std::string_view lookup_engine_id =
       engine_id == kJapaneseUsEngineId ? kJapaneseEngineId : engine_id;
 
-  const base::Value::Dict* ime_prefs_ptr =
+  const base::DictValue* ime_prefs_ptr =
       prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings)
           .FindDict(lookup_engine_id);
 
-  base::Value::Dict default_dict;
-  const base::Value::Dict& input_method_specific_pref =
+  base::DictValue default_dict;
+  const base::DictValue& input_method_specific_pref =
       ime_prefs_ptr == nullptr ? default_dict : *ime_prefs_ptr;
 
   if (IsFstEngine(engine_id)) {

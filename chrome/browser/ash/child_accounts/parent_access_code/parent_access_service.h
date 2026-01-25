@@ -71,7 +71,7 @@ class ParentAccessService {
   // Updates and reloads config for the provided user. If `config` is null, the
   // config will be removed.
   void UpdateConfigForUser(const AccountId& account_id,
-                           std::optional<base::Value::Dict> config);
+                           std::optional<base::DictValue> config);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

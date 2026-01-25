@@ -17,9 +17,9 @@ AppTimeLimitsAllowlistPolicyBuilder::~AppTimeLimitsAllowlistPolicyBuilder() =
     default;
 
 void AppTimeLimitsAllowlistPolicyBuilder::SetUp() {
-  dict_ = base::Value::Dict();
-  dict_.Set(policy::kUrlList, base::Value::List());
-  dict_.Set(policy::kAppList, base::Value::List());
+  dict_ = base::DictValue();
+  dict_.Set(policy::kUrlList, base::ListValue());
+  dict_.Set(policy::kAppList, base::ListValue());
 }
 
 void AppTimeLimitsAllowlistPolicyBuilder::Clear() {
@@ -28,7 +28,7 @@ void AppTimeLimitsAllowlistPolicyBuilder::Clear() {
 
 void AppTimeLimitsAllowlistPolicyBuilder::AppendToAllowlistAppList(
     const AppId& app_id) {
-  base::Value::Dict dict_to_append;
+  base::DictValue dict_to_append;
   dict_to_append.Set(policy::kAppId, base::Value(app_id.app_id()));
   dict_to_append.Set(
       policy::kAppType,
@@ -37,8 +37,8 @@ void AppTimeLimitsAllowlistPolicyBuilder::AppendToAllowlistAppList(
 }
 
 void AppTimeLimitsAllowlistPolicyBuilder::AppendToList(const std::string& key,
-                                                       base::Value::Dict dict) {
-  base::Value::List* list = dict_.FindList(key);
+                                                       base::DictValue dict) {
+  base::ListValue* list = dict_.FindList(key);
   DCHECK(list);
   list->Append(std::move(dict));
 }

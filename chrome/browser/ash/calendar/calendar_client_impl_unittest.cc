@@ -103,7 +103,7 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarPref) {
 TEST_F(CalendarClientImplTest,
        IsDisabledByAdmin_NoCalendarInContextualGoogleIntegrationsPref) {
   auto prefs = GetDefaultPrefs();
-  base::Value::List enabled_integrations;
+  base::ListValue enabled_integrations;
   enabled_integrations.Append(prefs::kGoogleClassroomIntegrationName);
   enabled_integrations.Append(prefs::kGoogleTasksIntegrationName);
   prefs->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
@@ -141,7 +141,7 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarApp) {
 
 TEST_F(CalendarClientImplTest, IsDisabledByAdmin_BlockedCalendarUrl) {
   auto prefs = GetDefaultPrefs();
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("calendar.google.com");
   prefs->SetManagedPref(policy::policy_prefs::kUrlBlocklist,
                         std::move(blocklist));

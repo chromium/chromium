@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
       << "Test failed for initial_locale='" << GetParam() << "'";
 
   for (size_t i = 0; i < ui_language_list.size(); ++i) {
-    base::Value::Dict* language_info = ui_language_list[i].GetIfDict();
+    base::DictValue* language_info = ui_language_list[i].GetIfDict();
 
     ASSERT_TRUE(language_info)
         << "Test failed for initial_locale='" << GetParam() << "', i=" << i;

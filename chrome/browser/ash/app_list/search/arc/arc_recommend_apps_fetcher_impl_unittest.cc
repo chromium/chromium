@@ -109,8 +109,8 @@ TEST_F(AppListRecommendAppsFetcherImplTest, ResponseWithLeadeingBrackets) {
 
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
             delegate_.WaitForResult());
-  base::Value::List expected_apps;
-  base::Value::Dict app;
+  base::ListValue expected_apps;
+  base::DictValue app;
   app.Set("name", base::Value("Test app 1"));
   app.Set("icon", base::Value("http://test.app"));
   app.Set("package_name", base::Value("test.app1"));
@@ -172,14 +172,14 @@ TEST_F(AppListRecommendAppsFetcherImplTest, ResponseWithMultipleApps) {
 
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
             delegate_.WaitForResult());
-  base::Value::List expected_apps;
-  base::Value::Dict app1;
+  base::ListValue expected_apps;
+  base::DictValue app1;
   app1.Set("name", base::Value("Test app 1"));
   app1.Set("icon", base::Value("http://test.app"));
   app1.Set("package_name", base::Value("test.app1"));
   expected_apps.Append(std::move(app1));
 
-  base::Value::Dict app2;
+  base::DictValue app2;
   app2.Set("package_name", base::Value("test.app2"));
   expected_apps.Append(std::move(app2));
 
@@ -209,14 +209,14 @@ TEST_F(AppListRecommendAppsFetcherImplTest, InvalidAppItemsIgnored) {
 
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
             delegate_.WaitForResult());
-  base::Value::List expected_apps;
-  base::Value::Dict app1;
+  base::ListValue expected_apps;
+  base::DictValue app1;
   app1.Set("name", base::Value("Test app 1"));
   app1.Set("icon", base::Value("http://test.app"));
   app1.Set("package_name", base::Value("test.app1"));
   expected_apps.Append(std::move(app1));
 
-  base::Value::Dict app2;
+  base::DictValue app2;
   app2.Set("package_name", base::Value("test.app2"));
   expected_apps.Append(std::move(app2));
 

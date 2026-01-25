@@ -23,7 +23,7 @@ class View;
 //   "title": "Nudge title",
 //   "body": "Body text"
 // }
-using NudgePayload = base::Value::Dict;
+using NudgePayload = base::DictValue;
 
 // Implements the action to show nudge.
 class ShowNudgeActionPerformer : public UiActionPerformer,
@@ -35,7 +35,7 @@ class ShowNudgeActionPerformer : public UiActionPerformer,
   // growth::Action:
   void Run(int campaign_id,
            std::optional<int> group_id,
-           const base::Value::Dict* action_params,
+           const base::DictValue* action_params,
            growth::ActionPerformer::Callback callback) override;
   growth::ActionType ActionType() const override;
 
@@ -46,18 +46,18 @@ class ShowNudgeActionPerformer : public UiActionPerformer,
   bool ShowNudge(int campaign_id,
                  std::optional<int> group_id,
                  const NudgePayload* nudge_payload);
-  bool MaybeSetAnchorView(const base::Value::Dict* anchor_dict,
+  bool MaybeSetAnchorView(const base::DictValue* anchor_dict,
                           ash::AnchoredNudgeData& nudge_data);
   void MaybeSetButtonData(int campaign_id,
                           std::optional<int> group_id,
-                          const base::Value::Dict* button_dict,
+                          const base::DictValue* button_dict,
                           ash::AnchoredNudgeData& nudge_data,
                           bool is_primary,
                           bool should_log_cros_events);
   void OnNudgeButtonClicked(int campaign_id,
                             std::optional<int> group_id,
                             CampaignButtonId button_id,
-                            const base::Value::Dict* action_dict,
+                            const base::DictValue* action_dict,
                             bool should_mark_dismissed,
                             bool should_log_cros_events);
   void OnNudgeDismissed(int campaign_id,

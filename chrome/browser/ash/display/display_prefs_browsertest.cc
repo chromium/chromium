@@ -38,17 +38,17 @@ class DisplayPrefsBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  const base::Value::Dict* GetDisplayProperties(int index) {
+  const base::DictValue* GetDisplayProperties(int index) {
     int64_t display_id =
         ash::Shell::Get()->display_manager()->GetDisplayAt(index).id();
 
-    const base::Value::Dict& display_properties =
+    const base::DictValue& display_properties =
         local_state_->GetDict(ash::prefs::kDisplayProperties);
     return display_properties.FindDict(base::NumberToString(display_id));
   }
 
   display::Display::Rotation GetRotation(int index) {
-    const base::Value::Dict* properties = GetDisplayProperties(index);
+    const base::DictValue* properties = GetDisplayProperties(index);
     EXPECT_TRUE(properties);
     display::Display::Rotation result = display::Display::ROTATE_0;
     std::optional<int> rot_value = properties->FindInt("rotation");

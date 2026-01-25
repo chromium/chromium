@@ -33,9 +33,9 @@ class ArcAppScopedPrefUpdate {
 
   ~ArcAppScopedPrefUpdate();
 
-  base::Value::Dict& Get();
+  base::DictValue& Get();
 
-  base::Value::Dict* operator->() { return &Get(); }
+  base::DictValue* operator->() { return &Get(); }
 
  private:
   const std::string id_;

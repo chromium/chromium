@@ -850,7 +850,7 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Unset) {
 
 TEST_F(LocalPrinterAshTest, GetPolicies_PaperSize) {
   auto* prefs = GetPrefs();
-  base::Value::Dict paper_size;
+  base::DictValue paper_size;
   paper_size.Set(kPaperSizeName, "iso_a4_210x297mm");
   prefs->Set("printing.paper_size_default", base::Value(std::move(paper_size)));
 

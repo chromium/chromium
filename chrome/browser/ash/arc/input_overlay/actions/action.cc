@@ -46,7 +46,7 @@ constexpr char kRadius[] = "radius";
 constexpr int kMinRadius = 18;
 constexpr float kHalf = 0.5;
 
-std::vector<Position> ParseLocation(const base::Value::List& position) {
+std::vector<Position> ParseLocation(const base::ListValue& position) {
   std::vector<Position> positions;
   for (const base::Value& val : position) {
     const auto pos = ParsePosition(val.GetDict());
@@ -72,7 +72,7 @@ void InitPositions(std::vector<Position>& positions,
 
 }  // namespace
 
-std::unique_ptr<Position> ParsePosition(const base::Value::Dict& dict) {
+std::unique_ptr<Position> ParsePosition(const base::DictValue& dict) {
   const auto* type = dict.FindString(kType);
   if (!type) {
     LOG(ERROR) << "There must be type for each position.";
@@ -126,7 +126,7 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
 }
 
 std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string_view key_name) {
   const std::string* key = value.FindString(kKey);
   if (!key) {
@@ -141,7 +141,7 @@ std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     return std::nullopt;
   }
   // "modifiers" is optional.
-  const base::Value::List* modifier_list = value.FindList(kModifiers);
+  const base::ListValue* modifier_list = value.FindList(kModifiers);
   int modifiers = 0;
   if (modifier_list) {
     for (const base::Value& val : *modifier_list) {
@@ -164,7 +164,7 @@ Action::Action(TouchInjector* touch_injector)
 
 Action::~Action() = default;
 
-bool Action::ParseFromJson(const base::Value::Dict& value) {
+bool Action::ParseFromJson(const base::DictValue& value) {
   // Name can be empty.
   auto* name = value.FindString(kName);
   if (name) {
@@ -180,7 +180,7 @@ bool Action::ParseFromJson(const base::Value::Dict& value) {
   id_ = *id;
 
   // Parse action device source.
-  const base::Value::List* sources = value.FindList(kInputSources);
+  const base::ListValue* sources = value.FindList(kInputSources);
   if (!sources) {
     LOG(ERROR) << "Must have input source(s) for each action.";
     return false;
@@ -203,7 +203,7 @@ bool Action::ParseFromJson(const base::Value::Dict& value) {
   }
 
   // Location can be empty for mouse related actions.
-  if (const base::Value::List* position = value.FindList(kLocation)) {
+  if (const base::ListValue* position = value.FindList(kLocation)) {
     if (auto parsed_pos = ParseLocation(*position); !parsed_pos.empty()) {
       original_positions_ = parsed_pos;
       on_left_or_middle_side_ =

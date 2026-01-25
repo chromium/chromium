@@ -123,10 +123,10 @@ bool AddAllCpuEvent(AllCpuEvents* all_cpu_events,
   return AddCpuEvent(&(*all_cpu_events)[cpu_id], timestamp, type, tid);
 }
 
-base::Value::List SerializeCpuEvents(const CpuEvents& cpu_events) {
-  base::Value::List list;
+base::ListValue SerializeCpuEvents(const CpuEvents& cpu_events) {
+  base::ListValue list;
   for (const auto& event : cpu_events) {
-    base::Value::List event_value;
+    base::ListValue event_value;
     event_value.Append(base::Value(static_cast<int>(event.type)));
     event_value.Append(base::Value(static_cast<double>(event.timestamp)));
     event_value.Append(base::Value(static_cast<int>(event.tid)));
@@ -135,8 +135,8 @@ base::Value::List SerializeCpuEvents(const CpuEvents& cpu_events) {
   return list;
 }
 
-base::Value::List SerializeAllCpuEvents(const AllCpuEvents& all_cpu_events) {
-  base::Value::List list;
+base::ListValue SerializeAllCpuEvents(const AllCpuEvents& all_cpu_events) {
+  base::ListValue list;
   for (const auto& cpu_events : all_cpu_events) {
     list.Append(SerializeCpuEvents(cpu_events));
   }

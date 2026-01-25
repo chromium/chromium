@@ -36,7 +36,7 @@ namespace {
 // Extracts a vector of WeeklyTimeInterval objects from the policy config.
 // Returns a vector containing nullptr for invalid dictionary entries.
 std::vector<std::unique_ptr<WeeklyTimeInterval>>
-GetPolicyConfigAsWeeklyTimeIntervals(const base::Value::List& policy_config) {
+GetPolicyConfigAsWeeklyTimeIntervals(const base::ListValue& policy_config) {
   std::vector<std::unique_ptr<WeeklyTimeInterval>> intervals;
   std::ranges::transform(policy_config, std::back_inserter(intervals),
                          [](const base::Value& value) {
@@ -62,7 +62,7 @@ bool IntervalsDoNotOverlap(
   return true;
 }
 
-bool AllWeeklyTimeIntervalsAreValid(const base::Value::List& policy_config) {
+bool AllWeeklyTimeIntervalsAreValid(const base::ListValue& policy_config) {
   std::vector<std::unique_ptr<WeeklyTimeInterval>> intervals =
       GetPolicyConfigAsWeeklyTimeIntervals(policy_config);
   bool all_intervals_valid = true;
@@ -79,7 +79,7 @@ bool AllWeeklyTimeIntervalsAreValid(const base::Value::List& policy_config) {
 
 std::vector<std::unique_ptr<WeeklyIntervalTimer>> BuildIntervalTimersFromConfig(
     WeeklyIntervalTimer::Factory* interval_timer_factory,
-    const base::Value::List& policy_config,
+    const base::ListValue& policy_config,
     const base::RepeatingCallback<void(base::TimeDelta)>& on_start_callback) {
   std::vector<std::unique_ptr<WeeklyTimeInterval>> intervals =
       GetPolicyConfigAsWeeklyTimeIntervals(policy_config);
@@ -177,7 +177,7 @@ void DeviceWeeklyScheduledSuspendController::
   if (!power_manager_available_) {
     return;
   }
-  const base::Value::List& policy_config =
+  const base::ListValue& policy_config =
       pref_change_registrar_.prefs()->GetList(
           prefs::kDeviceWeeklyScheduledSuspend);
 

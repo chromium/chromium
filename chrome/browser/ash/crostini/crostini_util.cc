@@ -357,7 +357,7 @@ base::FilePath ContainerChromeOSBaseDirectory() {
 
 void AddNewLxdContainerToPrefs(Profile* profile,
                                const guest_os::GuestId& container_id) {
-  base::Value::Dict properties;
+  base::DictValue properties;
   properties.Set(guest_os::prefs::kContainerOsVersionKey,
                  static_cast<int>(ContainerOsVersion::kUnknown));
   properties.Set(guest_os::prefs::kContainerOsPrettyNameKey, "");

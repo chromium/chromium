@@ -39,7 +39,7 @@ TEST_P(TimeLimitConsistencyTest, OutputMatchesGolden) {
   std::optional<usage_time_limit::State> previous_state =
       GenerateUnlockUsageLimitOverrideStateFromInput(golden_case.input());
 
-  base::Value::Dict policy =
+  base::DictValue policy =
       ConvertGoldenInputToProcessorInput(golden_case.input());
   usage_time_limit::State state = usage_time_limit::GetState(
       policy, /* local_override */ nullptr,

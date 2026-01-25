@@ -151,7 +151,7 @@ FaceGazeTestUtils::MockFaceLandmarkerResult::WithGesture(
   // receives confidence scores as values [0, 1], so we need to convert the
   // confidence to a decimal before processing it.
   recognized_gestures_.Append(
-      base::Value::Dict()
+      base::DictValue()
           .Set("categoryName", ToString(gesture))
           .Set("score", static_cast<double>(confidence) / 100.0));
   return *this;
@@ -493,7 +493,7 @@ void FaceGazeTestUtils::SetGesturesToMacros(
     const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros) {
   // Copy the stricly-typed mapping of gestures to macros into a dictionary
   // value that can be used as the preference value.
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& mapping : gestures_to_macros) {
     dict.Set(ToString(mapping.first), mapping.second);
   }
@@ -506,7 +506,7 @@ void FaceGazeTestUtils::SetGestureConfidences(
     const base::flat_map<FaceGazeGesture, int>& gesture_confidences) {
   // Copy the stricly-typed mapping of gestures to confidences into a dictionary
   // value that can be used as the preference value.
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& mapping : gesture_confidences) {
     dict.Set(ToString(mapping.first), mapping.second);
   }

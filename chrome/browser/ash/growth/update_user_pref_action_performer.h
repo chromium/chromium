@@ -17,7 +17,7 @@ class UpdateUserPrefActionPerformer : public growth::ActionPerformer {
   // growth::ActionPerformer:
   void Run(int campaign_id,
            std::optional<int> group_id,
-           const base::Value::Dict* action_params,
+           const base::DictValue* action_params,
            growth::ActionPerformer::Callback callback) override;
   growth::ActionType ActionType() const override;
 };

@@ -187,7 +187,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   void SetLocationServicesPreferenceCheckbox(bool is_enabled, bool is_managed);
 
   // arc::ArcSupportMessageHost::Observer override:
-  void OnMessage(const base::Value::Dict& message) override;
+  void OnMessage(const base::DictValue& message) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

@@ -91,8 +91,8 @@ api::users_private::User CreateUnknownApiUser(const std::string& email) {
   return api_user;
 }
 
-base::Value::List GetUsersList(content::BrowserContext* browser_context) {
-  base::Value::List user_list;
+base::ListValue GetUsersList(content::BrowserContext* browser_context) {
+  base::ListValue user_list;
 
   if (!CanModifyUserList(browser_context))
     return user_list;
@@ -101,7 +101,7 @@ base::Value::List GetUsersList(content::BrowserContext* browser_context) {
   // asynchronous and sequential. Before previous write comes back, cached
   // list is stale and should not be used for appending. See
   // http://crbug.com/127215
-  base::Value::List email_list;
+  base::ListValue email_list;
 
   UsersPrivateDelegate* delegate =
       UsersPrivateDelegateFactory::GetForBrowserContext(browser_context);
@@ -293,7 +293,7 @@ ExtensionFunction::ResponseAction UsersPrivateGetLoginStatusFunction::Run() {
   const bool is_screen_locked =
       session_manager::SessionManager::Get()->IsScreenLocked();
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("isLoggedIn", base::Value(is_logged_in));
   result.Set("isScreenLocked", base::Value(is_screen_locked));
   return RespondNow(WithArguments(std::move(result)));

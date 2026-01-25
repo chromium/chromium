@@ -95,7 +95,7 @@ MonikerMap::FSURLAndReadOnlyState MonikerMap::Resolve(
 }
 
 base::Value MonikerMap::GetDebugJSON() {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& i : map_) {
     dict.Set(i.first.ToString(),
              base::Value(base::StrCat(

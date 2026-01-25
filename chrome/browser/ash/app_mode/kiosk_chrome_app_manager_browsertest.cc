@@ -86,11 +86,11 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
     const std::string& version,
     const std::string& id,
     const std::string& required_platform_version) {
-  auto value = base::Value::Dict()
+  auto value = base::DictValue()
                    .Set("name", name)
                    .Set("version", version)
                    .SetByDottedPath("app.background.scripts",
-                                    base::Value::List().Append("main.js"))
+                                    base::ListValue().Append("main.js"))
                    .Set("kiosk_enabled", true);
   if (!required_platform_version.empty()) {
     value.SetByDottedPath("kiosk.required_platform_version",
@@ -258,15 +258,15 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
         local_state, KioskChromeAppManager::kKioskDictionaryName);
     dict_update->Set(
         KioskAppDataBase::kKeyApps,
-        base::Value::Dict()
+        base::DictValue()
             .SetByDottedPath(app_id + ".name", app_name)
             .SetByDottedPath(app_id + ".icon", icon_path.MaybeAsASCII())
             .SetByDottedPath(app_id + ".required_platform_version",
                              required_platform_version));
 
     // Make the app appear in device settings.
-    auto device_local_accounts = base::Value::List().Append(
-        base::Value::Dict()
+    auto device_local_accounts = base::ListValue().Append(
+        base::DictValue()
             // Fake an account id. Note this needs to match
             // GenerateKioskAppAccountId in kiosk_chrome_app_manager.cc to make
             // SetAutoLaunchApp work with the existing app entry created here.
@@ -304,7 +304,7 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
 
     // Check data is cached in local state correctly.
     PrefService* local_state = g_browser_process->local_state();
-    const base::Value::Dict& dict =
+    const base::DictValue& dict =
         local_state->GetDict(KioskChromeAppManager::kKioskDictionaryName);
 
     const std::string name_key = "apps." + app_id + ".name";
@@ -485,10 +485,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, ClearAppData) {
   SetExistingApp("app_1", "Cached App1 Name", "red16x16.png", "");
 
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       local_state->GetDict(KioskChromeAppManager::kKioskDictionaryName);
-  const base::Value::Dict* apps_dict =
-      dict.FindDict(KioskAppDataBase::kKeyApps);
+  const base::DictValue* apps_dict = dict.FindDict(KioskAppDataBase::kKeyApps);
   EXPECT_TRUE(apps_dict);
   EXPECT_TRUE(apps_dict->contains("app_1"));
 

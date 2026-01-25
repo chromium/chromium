@@ -120,7 +120,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
   virtual void BroadcastEvent(
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      base::Value::List event_args,
+      base::ListValue event_args,
       bool dispatch_to_system_notification = true) = 0;
 
   // This is owned by EventRouter and only shared with this class.

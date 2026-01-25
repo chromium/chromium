@@ -79,7 +79,7 @@ class TouchInjector : public ui::EventRewriter {
   //     ...
   //   ]
   // }
-  void ParseActions(const base::Value::Dict& root);
+  void ParseActions(const base::DictValue& root);
   // Update the flags after loading data finished. `is_o4c` is true if the game
   // is optimized for ChromeOS.
   void UpdateFlags(bool is_o4c);
@@ -205,7 +205,7 @@ class TouchInjector : public ui::EventRewriter {
   //   "key": "KeyA",
   //   "modifier": [""]
   // }
-  void ParseMouseLock(const base::Value::Dict& dict);
+  void ParseMouseLock(const base::DictValue& dict);
 
   void FlipMouseLockFlag();
   // Check if the event located on menu entry. `press_required` tells whether or

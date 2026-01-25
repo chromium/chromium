@@ -27,23 +27,23 @@ scoped_refptr<const extensions::Extension> CreateTestApp(
     ManifestLocation location) {
   return extensions::ExtensionBuilder()
       .SetManifest(
-          base::Value::Dict()
+          base::DictValue()
               .Set("name", "test app")
               .Set("version", "1")
               .Set("manifest_version", 2)
               .Set("app",
-                   base::Value::Dict()  //
+                   base::DictValue()  //
                        .Set("background",
-                            base::Value::Dict()
+                            base::DictValue()
                                 .Set("persistent", "false")
                                 .Set("scripts",
-                                     base::Value::List::with_capacity(1)  //
+                                     base::ListValue::with_capacity(1)  //
                                          .Append("background.js"))))
               .Set("storage",
-                   base::Value::Dict().Set("managed_schema",
-                                           "managed_storage_schema.json"))
+                   base::DictValue().Set("managed_schema",
+                                         "managed_storage_schema.json"))
               .Set("permissions",
-                   base::Value::List::with_capacity(2)  //
+                   base::ListValue::with_capacity(2)  //
                        .Append("usb")
                        .Append("alwaysOnTopWindows")))
       .SetID(extension_id)

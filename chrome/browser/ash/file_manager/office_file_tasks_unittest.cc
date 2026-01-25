@@ -31,12 +31,12 @@ class FileManagerOfficeFileTasksTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
-  const base::Value::Dict& tasks_by_mime_type() {
+  const base::DictValue& tasks_by_mime_type() {
     return profile()->GetTestingPrefService()->GetDict(
         prefs::kDefaultTasksByMimeType);
   }
 
-  const base::Value::Dict& tasks_by_suffix() {
+  const base::DictValue& tasks_by_suffix() {
     return profile()->GetTestingPrefService()->GetDict(
         prefs::kDefaultTasksBySuffix);
   }

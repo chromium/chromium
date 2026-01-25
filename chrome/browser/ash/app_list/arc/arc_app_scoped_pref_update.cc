@@ -15,7 +15,7 @@ ArcAppScopedPrefUpdate::ArcAppScopedPrefUpdate(PrefService* service,
 
 ArcAppScopedPrefUpdate::~ArcAppScopedPrefUpdate() = default;
 
-base::Value::Dict& ArcAppScopedPrefUpdate::Get() {
+base::DictValue& ArcAppScopedPrefUpdate::Get() {
   return *pref_update_->EnsureDict(id_);
 }
 

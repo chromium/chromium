@@ -54,8 +54,8 @@ SocsCookieFetcher::Consumer::Consumer() = default;
 SocsCookieFetcher::Consumer::~Consumer() = default;
 
 void SocsCookieFetcher::StartFetching() {
-  auto request_data = base::Value::Dict().Set(kChromeVersionKey,
-                                              version_info::GetVersionNumber());
+  auto request_data = base::DictValue().Set(kChromeVersionKey,
+                                            version_info::GetVersionNumber());
   std::string request_string;
   if (!base::JSONWriter::Write(request_data, &request_string)) {
     LOG(ERROR) << "Not able to serialize token request body.";
@@ -152,7 +152,7 @@ void SocsCookieFetcher::OnJsonParsed(
 }
 
 void SocsCookieFetcher::ProcessValidTokenResponse(
-    base::Value::Dict json_response) {
+    base::DictValue json_response) {
   const std::string* cookie_header =
       json_response.FindString(kCookieHeaderEntry);
   if (!cookie_header) {

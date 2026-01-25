@@ -77,9 +77,9 @@ mojom::PrintDuplexMode ToArcDuplexMode(int duplex_mode) {
 
 // Gets and builds the print attributes from the job settings.
 mojom::PrintAttributesPtr GetPrintAttributes(
-    const base::Value::Dict& job_settings) {
+    const base::DictValue& job_settings) {
   // PrintMediaSize:
-  const base::Value::Dict* media_size_value =
+  const base::DictValue* media_size_value =
       job_settings.FindDict(printing::kSettingMediaSize);
   if (!media_size_value)
     return nullptr;
@@ -145,7 +145,7 @@ mojom::PrintAttributesPtr GetPrintAttributes(
 // Creates a PrintDocumentRequest from the provided |job_settings|. Uses helper
 // functions to parse |job_settings|.
 mojom::PrintDocumentRequestPtr PrintDocumentRequestFromJobSettings(
-    const base::Value::Dict& job_settings) {
+    const base::DictValue& job_settings) {
   return mojom::PrintDocumentRequest::New(
       printing::GetPageRangesFromJobSettings(job_settings),
       GetPrintAttributes(job_settings));
@@ -290,7 +290,7 @@ void PrintSessionImpl::OnWindowDestroying(aura::Window* window) {
 }
 
 void PrintSessionImpl::CreatePreviewDocument(
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     CreatePreviewDocumentCallback callback) {
   mojom::PrintDocumentRequestPtr request =
       PrintDocumentRequestFromJobSettings(job_settings);

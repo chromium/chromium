@@ -291,11 +291,11 @@ void CertProvisioningSchedulerImpl::DailyUpdateWorkers() {
 void CertProvisioningSchedulerImpl::DeserializeWorkers() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value::Dict& saved_workers =
+  const base::DictValue& saved_workers =
       pref_service_->GetDict(GetPrefNameForSerialization(cert_scope_));
 
   for (const auto kv : saved_workers) {
-    const base::Value::Dict& saved_worker = kv.second.GetDict();
+    const base::DictValue& saved_worker = kv.second.GetDict();
 
     std::unique_ptr<CertProvisioningWorker> worker =
         CertProvisioningWorkerFactory::Get()->Deserialize(
@@ -629,7 +629,7 @@ std::optional<CertProfile> CertProvisioningSchedulerImpl::GetOneCertProfile(
   const base::Value& profile_list = pref_service_->GetValue(pref_name_);
 
   for (const base::Value& cur_profile : profile_list.GetList()) {
-    const base::Value::Dict& cur_profile_dict = cur_profile.GetDict();
+    const base::DictValue& cur_profile_dict = cur_profile.GetDict();
     const CertProfileId* id = cur_profile_dict.FindString(kCertProfileIdKey);
     if (!id || (*id != cert_profile_id)) {
       continue;

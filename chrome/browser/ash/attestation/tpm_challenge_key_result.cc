@@ -168,7 +168,7 @@ bool TpmChallengeKeyResult::IsSuccess() const {
 
 std::ostream& operator<<(std::ostream& os,
                          const TpmChallengeKeyResult& result) {
-  base::Value::Dict value;
+  base::DictValue value;
 
   value.Set("result_code", static_cast<int>(result.result_code));
   if (!result.IsSuccess()) {

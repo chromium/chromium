@@ -208,7 +208,7 @@ bool CrostiniFeatures::IsPortForwardingAllowed(Profile* profile) const {
 
 bool CrostiniFeatures::IsBaguette(Profile* profile) const {
   bool is_baguette = false;
-  const base::Value::List& container_list =
+  const base::ListValue& container_list =
       profile->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   for (const auto& container : container_list) {
     guest_os::GuestId id(container);

@@ -35,7 +35,7 @@ class CrostiniPortForwarder : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     // Called when a port's active state changes.
-    virtual void OnActivePortsChanged(const base::Value::List& activePorts) = 0;
+    virtual void OnActivePortsChanged(const base::ListValue& activePorts) = 0;
     virtual void OnActiveNetworkChanged(const base::Value& interface,
                                         const base::Value& ipAddress) = 0;
   };
@@ -107,8 +107,8 @@ class CrostiniPortForwarder : public KeyedService {
   // re-forwarded on re-startup. This is called on container shutdown.
   void DeactivateAllActivePorts(const guest_os::GuestId& container_id);
 
-  base::Value::List GetActivePorts();
-  base::Value::List GetActiveNetworkInfo();
+  base::ListValue GetActivePorts();
+  base::ListValue GetActiveNetworkInfo();
 
   size_t GetNumberOfForwardedPortsForTesting();
   std::optional<base::Value> ReadPortPreferenceForTesting(

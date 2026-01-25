@@ -68,7 +68,7 @@ void MapBoolToBool(const std::string& arc_policy_name,
                    const std::string& policy_name,
                    const policy::PolicyMap& policy_map,
                    bool invert_bool_value,
-                   base::Value::Dict* filtered_policies) {
+                   base::DictValue* filtered_policies) {
   if (!policy_map.IsPolicySet(policy_name)) {
     return;
   }
@@ -88,7 +88,7 @@ void MapIntToBool(const std::string& arc_policy_name,
                   const std::string& policy_name,
                   const policy::PolicyMap& policy_map,
                   int int_true,
-                  base::Value::Dict* filtered_policies) {
+                  base::DictValue* filtered_policies) {
   if (!policy_map.IsPolicySet(policy_name)) {
     return;
   }
@@ -108,7 +108,7 @@ void MapManagedIntPrefToBool(const std::string& arc_policy_name,
                              const std::string& pref_name,
                              const PrefService* profile_prefs,
                              int int_true,
-                             base::Value::Dict* filtered_policies) {
+                             base::DictValue* filtered_policies) {
   if (!profile_prefs->IsManagedPreference(pref_name)) {
     return;
   }
@@ -122,7 +122,7 @@ void MapManagedIntPrefToBool(const std::string& arc_policy_name,
 void MapObjectToPresenceBool(const std::string& arc_policy_name,
                              const std::string& policy_name,
                              const policy::PolicyMap& policy_map,
-                             base::Value::Dict* filtered_policies,
+                             base::DictValue* filtered_policies,
                              const std::vector<std::string>& fields) {
   if (!policy_map.IsPolicySet(policy_name)) {
     return;
@@ -142,7 +142,7 @@ void MapObjectToPresenceBool(const std::string& arc_policy_name,
 }
 
 void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
-                             base::Value::Dict* filtered_policies) {
+                             base::DictValue* filtered_policies) {
   const base::Value* const policy_value = policy_map.GetValue(
       policy::key::kArcCertificatesSyncMode, base::Value::Type::INTEGER);
   // Old certs should be uninstalled if the sync is disabled or policy is not
@@ -167,10 +167,10 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
   }
 
   const std::string& onc_blob = onc_policy_value->GetString();
-  base::Value::List certificates;
+  base::ListValue certificates;
   {
-    base::Value::List unused_network_configs;
-    base::Value::Dict unused_global_network_config;
+    base::ListValue unused_network_configs;
+    base::DictValue unused_global_network_config;
     if (!chromeos::onc::ParseAndValidateOncForImport(
             onc_blob, onc::ONCSource::ONC_SOURCE_USER_POLICY,
             &unused_network_configs, &unused_global_network_config,
@@ -179,7 +179,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     }
   }
 
-  base::Value::List ca_certs;
+  base::ListValue ca_certs;
   for (const auto& certificate : certificates) {
     if (!certificate.is_dict()) {
       DLOG(FATAL) << "Value of a certificate entry is not a dictionary "
@@ -187,14 +187,14 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
       continue;
     }
 
-    const base::Value::Dict& cert_dict = certificate.GetDict();
+    const base::DictValue& cert_dict = certificate.GetDict();
     const std::string* const cert_type =
         cert_dict.FindString(::onc::certificate::kType);
     if (!cert_type || *cert_type != ::onc::certificate::kAuthority) {
       continue;
     }
 
-    const base::Value::List* const trust_list =
+    const base::ListValue* const trust_list =
         cert_dict.FindList(::onc::certificate::kTrustBits);
     if (!trust_list) {
       continue;
@@ -223,7 +223,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
       continue;
     }
 
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set(kPolicyCaCertType, *x509_data);
     ca_certs.Append(std::move(data));
   }
@@ -236,13 +236,13 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
 }
 
 void AddRequiredKeyPairs(const CertStoreService* cert_store_service,
-                         base::Value::Dict* filtered_policies) {
+                         base::DictValue* filtered_policies) {
   if (!cert_store_service) {
     return;
   }
-  base::Value::List cert_names;
+  base::ListValue cert_names;
   for (const auto& name : cert_store_service->get_required_cert_names()) {
-    base::Value::Dict value;
+    base::DictValue value;
     value.Set(kPolicyRequiredKeyAlias, name);
     cert_names.Append(std::move(value));
   }
@@ -257,14 +257,14 @@ bool LooksLikeAndroidPackageName(const std::string& name) {
 void AddChoosePrivateKeyRuleToPolicy(
     policy::PolicyService* const policy_service,
     const CertStoreService* cert_store_service,
-    base::Value::Dict* filtered_policies) {
+    base::DictValue* filtered_policies) {
   if (!cert_store_service) {
     return;
   }
 
   auto app_ids = chromeos::platform_keys::ExtensionKeyPermissionsService::
       GetCorporateKeyUsageAllowedAppIds(policy_service);
-  base::Value::List arc_app_ids;
+  base::ListValue arc_app_ids;
   for (const auto& app_id : app_ids) {
     if (LooksLikeAndroidPackageName(app_id)) {
       arc_app_ids.Append(app_id);
@@ -275,9 +275,9 @@ void AddChoosePrivateKeyRuleToPolicy(
     return;
   }
 
-  base::Value::List rules;
+  base::ListValue rules;
   for (const auto& name : cert_store_service->get_required_cert_names()) {
-    base::Value::Dict value;
+    base::DictValue value;
     value.Set(kPolicyPrivateKeyAlias, name);
     value.Set(kPolicyPrivateKeyPackageNames, arc_app_ids.Clone());
     rules.Append(std::move(value));
@@ -292,13 +292,13 @@ void AddChoosePrivateKeyRuleToPolicy(
 // Finds managed configurations of applications in |arc_policy| and replace
 // string values that refer to template variables.
 void ReplaceManagedConfigurationVariables(const Profile* profile,
-                                          base::Value::Dict* arc_policy) {
+                                          base::DictValue* arc_policy) {
   // Replace template variables in application managed configuration.
-  base::Value::List* applications =
+  base::ListValue* applications =
       arc_policy->FindList(policy_util::kArcPolicyKeyApplications);
   if (applications) {
     for (base::Value& entry : *applications) {
-      base::Value::Dict* config =
+      base::DictValue* config =
           entry.GetDict().FindDict(ArcPolicyBridge::kManagedConfiguration);
       if (config) {
         RecursivelyReplaceManagedConfigurationVariables(profile, *config);
@@ -307,9 +307,10 @@ void ReplaceManagedConfigurationVariables(const Profile* profile,
   }
 }
 
-void FilterAppsOnReven(base::Value::Dict* arc_policy,
-                const std::unordered_set<std::string>& allowed_packages) {
-  base::Value::List* applications =
+void FilterAppsOnReven(
+    base::DictValue* arc_policy,
+    const std::unordered_set<std::string>& allowed_packages) {
+  base::ListValue* applications =
       arc_policy->FindList(policy_util::kArcPolicyKeyApplications);
 
   if (!applications) {
@@ -317,7 +318,7 @@ void FilterAppsOnReven(base::Value::Dict* arc_policy,
   }
 
   applications->EraseIf([&allowed_packages](const base::Value& val) {
-    const base::Value::Dict& application = val.GetDict();
+    const base::DictValue& application = val.GetDict();
     const std::string* package_name =
         application.FindString(ArcPolicyBridge::kPackageName);
     if (!package_name) {
@@ -330,7 +331,7 @@ void FilterAppsOnReven(base::Value::Dict* arc_policy,
   });
 }
 
-void ConfigureRevenPolicies(base::Value::Dict* arc_policy) {
+void ConfigureRevenPolicies(base::DictValue* arc_policy) {
   // The policy value is used to restrict the user from being able to
   // toggle between different accounts in ARC++.
   arc_policy->Set(policy_util::kArcPolicyKeyPlayStoreMode,
@@ -351,8 +352,8 @@ void ConfigureRevenPolicies(base::Value::Dict* arc_policy) {
   FilterAppsOnReven(arc_policy, allowed_packages);
 }
 
-base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
-  base::Value::Dict filtered_policies;
+base::DictValue ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
+  base::DictValue filtered_policies;
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
   // Parse ArcPolicy as JSON string before adding other policies to the
@@ -381,7 +382,7 @@ base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
   return filtered_policies;
 }
 
-void MapChromeToArcPolicies(base::Value::Dict& filtered_policies,
+void MapChromeToArcPolicies(base::DictValue& filtered_policies,
                             const Profile* profile,
                             const policy::PolicyMap& policy_map) {
   const PrefService* profile_prefs = profile->GetPrefs();
@@ -419,7 +420,7 @@ void MapChromeToArcPolicies(base::Value::Dict& filtered_policies,
                 /* invert_bool_value */ true, &filtered_policies);
 }
 
-void OverrideArcPolicies(base::Value::Dict& filtered_policies,
+void OverrideArcPolicies(base::DictValue& filtered_policies,
                          const policy::PolicyMap& policy_map,
                          const std::string& guid,
                          bool is_affiliated,
@@ -464,7 +465,7 @@ void OverrideArcPolicies(base::Value::Dict& filtered_policies,
   }
 }
 
-base::Value::Dict GetFilteredDictPolicies(
+base::DictValue GetFilteredDictPolicies(
     policy::PolicyService* const policy_service,
     const std::string& guid,
     bool is_affiliated,
@@ -475,7 +476,7 @@ base::Value::Dict GetFilteredDictPolicies(
   const policy::PolicyMap& policy_map =
       policy_service->GetPolicies(policy_namespace);
 
-  base::Value::Dict filtered_policies = ParseArcPoliciesToDict(policy_map);
+  base::DictValue filtered_policies = ParseArcPoliciesToDict(policy_map);
 
   // Add CA certificates.
   AddOncCaCertsToPolicies(policy_map, &filtered_policies);
@@ -496,7 +497,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
                                     bool is_affiliated,
                                     const CertStoreService* cert_store_service,
                                     const Profile* profile) {
-  base::Value::Dict filtered_policies = GetFilteredDictPolicies(
+  base::DictValue filtered_policies = GetFilteredDictPolicies(
       policy_service, guid, is_affiliated, cert_store_service, profile);
 
   std::string policy_json;
@@ -793,8 +794,8 @@ void ArcPolicyBridge::OnReportComplianceParse(
 void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
     const policy::PolicyMap& policy_map) {
   VLOG(1) << "ArcPolicyBridge::ActivateArcIfRequiredByPolicy";
-  base::Value::Dict filtered_policies = ParseArcPoliciesToDict(policy_map);
-  base::Value::List* apps =
+  base::DictValue filtered_policies = ParseArcPoliciesToDict(policy_map);
+  base::ListValue* apps =
       filtered_policies.FindList(policy_util::kArcPolicyKeyApplications);
   if (apps == nullptr) {
     return;

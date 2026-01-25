@@ -49,11 +49,11 @@ const AccountId kExpectedIwaKioskAccountId =
 
 // Creates an IWA device local account.
 // Create a valid account with default params.
-base::Value::Dict BuildIwaKioskDeviceLocalAccount(
+base::DictValue BuildIwaKioskDeviceLocalAccount(
     const std::string& account_id = kTestIwaKioskAccountIdSetting,
     const std::string& web_bundle_id = kTestWebBundleId,
     const std::string& update_url = kTestUpdateUrl) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, account_id)
       .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
            static_cast<int>(
@@ -67,10 +67,10 @@ base::Value::Dict BuildIwaKioskDeviceLocalAccount(
 }
 
 // Creates a chrome app kiosk device local account that should be ignored.
-base::Value::Dict BuildChromeAppKioskDeviceLocalAccount() {
+base::DictValue BuildChromeAppKioskDeviceLocalAccount() {
   constexpr char kAccountId[] = "chromeapp_kiosk_account";
   constexpr char kKioskAppId[] = "kiosk_app_id";
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, kAccountId)
       .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
            static_cast<int>(policy::DeviceLocalAccountType::kKioskApp))
@@ -85,21 +85,21 @@ base::Value BuildListWithOneIwa(
     const std::string& account_id = kTestIwaKioskAccountIdSetting,
     const std::string& web_bundle_id = kTestWebBundleId,
     const std::string& update_url = kTestUpdateUrl) {
-  return base::Value(base::Value::List().Append(
+  return base::Value(base::ListValue().Append(
       BuildIwaKioskDeviceLocalAccount(account_id, web_bundle_id, update_url)));
 }
 
 // Creates a list of device local accounts with one IWA entry and one chrome app
 // entry.
 base::Value BuildListWithVarious() {
-  return base::Value(base::Value::List()
+  return base::Value(base::ListValue()
                          .Append(BuildIwaKioskDeviceLocalAccount())
                          .Append(BuildChromeAppKioskDeviceLocalAccount()));
 }
 
 // Creates a list of device local accounts with duplicate IWA entries.
 base::Value BuildListWithDuplicate() {
-  return base::Value(base::Value::List()
+  return base::Value(base::ListValue()
                          .Append(BuildIwaKioskDeviceLocalAccount())
                          .Append(BuildIwaKioskDeviceLocalAccount()));
 }

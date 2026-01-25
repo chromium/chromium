@@ -98,10 +98,10 @@ class KioskArcvmAppManagerTest : public InProcessBrowserTest {
 
   void SetApps(const std::vector<policy::ArcvmKioskAppBasicInfo>& apps,
                const std::string& auto_login_account) {
-    base::Value::List device_local_accounts;
+    base::ListValue device_local_accounts;
     for (const policy::ArcvmKioskAppBasicInfo& app : apps) {
       device_local_accounts.Append(
-          base::Value::Dict()
+          base::DictValue()
               .Set(kAccountsPrefDeviceLocalAccountsKeyId,
                    GenerateAccountId(app.package_name()))
               .Set(kAccountsPrefDeviceLocalAccountsKeyType,

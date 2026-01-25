@@ -77,7 +77,7 @@ class ArcAppPerformanceTracing : public KeyedService,
   // Starts custom tracing. Returns true if tracing was successfully started.
   bool StartCustomTracing();
   // Stops custom tracing and returns tracing results.
-  base::Value::Dict StopCustomTracing();
+  base::DictValue StopCustomTracing();
 
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -174,7 +174,7 @@ class ArcAppPerformanceTracing : public KeyedService,
   std::map<std::string, mojom::GfxMetrics> package_name_to_gfx_metrics_;
 
   UmaPerfReporting reporting_;
-  std::optional<base::Value::Dict> custom_trace_result_;
+  std::optional<base::DictValue> custom_trace_result_;
   void OnCustomTraceDone(const std::optional<PerfTraceResult>& result);
 
   // Keeps current active tracing session associated with |active_window_|.

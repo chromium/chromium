@@ -389,7 +389,7 @@ FileManagerPrivateSetPreferencesFunction::Run() {
   }
 
   if (change.folder_shortcuts.has_value()) {
-    base::Value::List folder_shortcuts;
+    base::ListValue folder_shortcuts;
     for (const std::string& shortcut : change.folder_shortcuts.value()) {
       folder_shortcuts.Append(shortcut);
     }
@@ -866,7 +866,7 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
       guest_os_share_path->GetAndSetFirstForSession(params->vm_name);
   auto shared_paths =
       guest_os_share_path->GetPersistedSharedPaths(params->vm_name);
-  base::Value::List entries;
+  base::ListValue entries;
   fmpi::CrostiniSharedPathResponse response;
   response.first_for_session = first_for_session;
   for (const base::FilePath& path : shared_paths) {

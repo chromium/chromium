@@ -1134,7 +1134,7 @@ void CrostiniManager::UpdateVmState(std::string vm_name, VmState vm_state) {
 CrostiniManager::TerminaFlavor CrostiniManager::GetTerminaFlavor(
     Profile* profile) {
   TerminaFlavor termina_flavor = TerminaFlavor::UNINSTALLED;
-  const base::Value::List& container_list =
+  const base::ListValue& container_list =
       profile->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   if (container_list.empty()) {
     return termina_flavor;
@@ -3982,9 +3982,9 @@ bool CrostiniManager::RegisterCreateOptions(
     return false;
   }
 
-  base::Value::Dict new_create_options;
+  base::DictValue new_create_options;
 
-  base::Value::List share_paths;
+  base::ListValue share_paths;
   for (const base::FilePath& path : options.share_paths) {
     share_paths.Append(path.value());
   }
@@ -4041,7 +4041,7 @@ void CrostiniManager::SetCreateOptionsUsed(
     return;
   }
 
-  base::Value::Dict mutable_create_options =
+  base::DictValue mutable_create_options =
       create_options_val->GetDict().Clone();
   mutable_create_options.Set(prefs::kCrostiniCreateOptionsUsedKey,
                              base::Value(true));
@@ -4064,7 +4064,7 @@ bool CrostiniManager::FetchCreateOptions(const guest_os::GuestId& container_id,
     return true;
   }
 
-  const base::Value::Dict& create_options = create_options_val->GetDict();
+  const base::DictValue& create_options = create_options_val->GetDict();
   for (const auto& path :
        *create_options.FindList(prefs::kCrostiniCreateOptionsSharePathsKey)) {
     options->share_paths.emplace_back(path.GetString());

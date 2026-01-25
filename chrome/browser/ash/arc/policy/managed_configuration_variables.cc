@@ -250,14 +250,14 @@ void ReplaceVariables(const VariableResolver& resolver,
                       base::Value& configuration);
 
 void ReplaceVariables(const VariableResolver& resolver,
-                      base::Value::Dict& configuration) {
+                      base::DictValue& configuration) {
   for (auto entry : configuration) {
     ReplaceVariables(resolver, entry.second);
   }
 }
 
 void ReplaceVariables(const VariableResolver& resolver,
-                      base::Value::List& configuration) {
+                      base::ListValue& configuration) {
   for (auto& entry : configuration) {
     ReplaceVariables(resolver, entry);
   }
@@ -286,7 +286,7 @@ const char kDeviceAnnotatedLocation[] = "DEVICE_ANNOTATED_LOCATION";
 
 void RecursivelyReplaceManagedConfigurationVariables(
     const Profile* profile,
-    base::Value::Dict& managedConfiguration) {
+    base::DictValue& managedConfiguration) {
   policy::DeviceAttributesImpl device_attributes;
   RecursivelyReplaceManagedConfigurationVariables(profile, &device_attributes,
                                                   managedConfiguration);
@@ -295,7 +295,7 @@ void RecursivelyReplaceManagedConfigurationVariables(
 void RecursivelyReplaceManagedConfigurationVariables(
     const Profile* profile,
     policy::DeviceAttributes* device_attributes,
-    base::Value::Dict& managedConfiguration) {
+    base::DictValue& managedConfiguration) {
   const VariableResolver resolver =
       BuildVariableResolver(profile, device_attributes);
   ReplaceVariables(resolver, managedConfiguration);

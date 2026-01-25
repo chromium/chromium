@@ -100,7 +100,7 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
 
   void BroadcastEvent(extensions::events::HistogramValue histogram_value,
                       const std::string& event_name,
-                      base::Value::List event_args,
+                      base::ListValue event_args,
                       bool dispatch_to_system_notification = true) override {
     if (dispatch_to_system_notification) {
       BroadcastEventImpl(event_name, base::Value(std::move(event_args)));
@@ -115,7 +115,7 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
               (const std::string& name, const base::Value& event));
   MOCK_METHOD(void,
               BroadcastEventForIndividualFilesImpl,
-              (const std::string& name, const base::Value::List& event));
+              (const std::string& name, const base::ListValue& event));
   MOCK_METHOD(bool, IsPathWatched, (const base::FilePath&));
 
   GURL ConvertDrivePathToFileSystemUrl(const base::FilePath& file_path,

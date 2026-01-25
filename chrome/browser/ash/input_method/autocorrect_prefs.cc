@@ -22,7 +22,7 @@ AutocorrectPreference GetAutocorrectPrefFor(
     const std::string_view autocorrect_pref_path,
     const PrefService& pref_service,
     const std::string& engine_id) {
-  const base::Value::Dict& input_method_settings =
+  const base::DictValue& input_method_settings =
       pref_service.GetDict(prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* autocorrect_level = input_method_settings.FindByDottedPath(
       base::StrCat({engine_id, ".", autocorrect_pref_path}));
@@ -45,7 +45,7 @@ bool IsPkAutocorrectEnabledByDefault(const PrefService& pref_service,
     return false;
   }
 
-  const base::Value::Dict& settings =
+  const base::DictValue& settings =
       pref_service.GetDict(prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* enabled_by_default = settings.FindByDottedPath(
       base::StrCat({engine_id, ".", kPkAutocorrectEnabledByDefaultPrefName}));

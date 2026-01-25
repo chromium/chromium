@@ -149,9 +149,9 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
   std::optional<usage_time_limit::State> last_state = GetLastStateFromPref();
-  const base::Value::Dict& time_limit =
+  const base::DictValue& time_limit =
       pref_service_->GetDict(prefs::kUsageTimeLimit);
-  const base::Value::Dict& local_override =
+  const base::DictValue& local_override =
       pref_service_->GetDict(prefs::kTimeLimitLocalOverride);
 
   // TODO(agawronska): Usage timestamp should be passed instead of second |now|.
@@ -331,7 +331,7 @@ void ScreenTimeController::ScheduleUsageTimeLimitWarning(
 
 void ScreenTimeController::SaveCurrentStateToPref(
     const usage_time_limit::State& state) {
-  base::Value::Dict state_dict;
+  base::DictValue state_dict;
 
   state_dict.Set(kScreenStateLocked, base::Value(state.is_locked));
   state_dict.Set(kScreenStateCurrentPolicyType,
@@ -356,7 +356,7 @@ void ScreenTimeController::SaveCurrentStateToPref(
 
 std::optional<usage_time_limit::State>
 ScreenTimeController::GetLastStateFromPref() {
-  const base::Value::Dict& last_state =
+  const base::DictValue& last_state =
       pref_service_->GetDict(prefs::kScreenTimeLastState);
   usage_time_limit::State result;
   if (last_state.empty())
@@ -438,9 +438,9 @@ void ScreenTimeController::UsageTimeLimitWarning() {
   base::Time now = clock_->Now();
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
-  const base::Value::Dict& time_limit =
+  const base::DictValue& time_limit =
       pref_service_->GetDict(prefs::kUsageTimeLimit);
-  const base::Value::Dict& local_override =
+  const base::DictValue& local_override =
       pref_service_->GetDict(prefs::kTimeLimitLocalOverride);
 
   std::optional<base::TimeDelta> remaining_usage =

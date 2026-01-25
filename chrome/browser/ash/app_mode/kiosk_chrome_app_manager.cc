@@ -371,7 +371,7 @@ KioskChromeAppManager::GetCachedCrx(std::string_view app_id) const {
 crosapi::mojom::AppInstallParams
 KioskChromeAppManager::CreatePrimaryAppInstallData(
     const std::string& id) const {
-  const base::Value::Dict* extension =
+  const base::DictValue* extension =
       external_cache_->GetCachedExtensions().FindDict(id);
   if (!extension) {
     return crosapi::mojom::AppInstallParams(id, std::string(), std::string(),
@@ -599,9 +599,9 @@ void KioskChromeAppManager::UpdateAppsFromPolicy() {
 void KioskChromeAppManager::UpdateExternalCachePrefs() {
   // Request external_cache_ to download new apps and update the existing
   // apps.
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   for (const auto& app : apps_) {
-    base::Value::Dict entry;
+    base::DictValue entry;
 
     if (app->update_url().is_valid()) {
       entry.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,

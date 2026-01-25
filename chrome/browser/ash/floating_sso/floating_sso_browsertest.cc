@@ -194,7 +194,7 @@ class FloatingSsoTest : public policy::PolicyTest {
   }
 
   void SetFloatingSsoDomainBlocklistPolicy(const std::string& domain) {
-    base::Value::List domains;
+    base::ListValue domains;
     domains.Append(domain);
     policy::PolicyTest::SetPolicy(&policies_,
                                   policy::key::kFloatingSsoDomainBlocklist,
@@ -204,7 +204,7 @@ class FloatingSsoTest : public policy::PolicyTest {
 
   void SetFloatingSsoDomainBlocklistExceptionsPolicy(
       const std::string& domain) {
-    base::Value::List domains;
+    base::ListValue domains;
     if (!domain.empty()) {
       domains.Append(domain);
     }

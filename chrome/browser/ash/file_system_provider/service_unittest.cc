@@ -52,25 +52,25 @@ const ProviderId kCustomProviderId =
 
 // The dot in the file system ID is there in order to check that saving to
 // preferences works correctly. File System ID is used as a key in
-// a base::Value::Dict, so it has to be stored without path expansion.
+// a base::DictValue, so it has to be stored without path expansion.
 const char kFileSystemId[] = "camera/pictures/id .!@#$%^&*()_+";
 
 // Creates a fake extension with the specified |extension_id|.
 // TODO(mtomasz): Use the extension builder.
 scoped_refptr<extensions::Extension> CreateFakeExtension(
     const extensions::ExtensionId& extension_id) {
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   std::u16string error;
   manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
   manifest.Set(extensions::manifest_keys::kName, "unused");
 
-  base::Value::List permissions_list;
+  base::ListValue permissions_list;
   permissions_list.Append("fileSystemProvider");
   manifest.Set(extensions::manifest_keys::kPermissions,
                std::move(permissions_list));
 
-  base::Value::Dict capabilities;
+  base::DictValue capabilities;
   capabilities.Set("source", "network");
   capabilities.Set("watchable", true);
   manifest.Set(extensions::manifest_keys::kFileSystemProviderCapabilities,

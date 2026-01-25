@@ -59,7 +59,7 @@ class KioskNetworkStateObserver : public NetworkStateHandlerObserver {
                                 const std::string& error_message);
   void ReceiveProperties(const std::string& passphrase,
                          const std::string& service_path,
-                         std::optional<base::Value::Dict> shill_properties);
+                         std::optional<base::DictValue> shill_properties);
 
   void OnCreatedShillConfigSuccess(const std::string&, const std::string&);
   void OnCreatedShillConfigFailure(const std::string& error);

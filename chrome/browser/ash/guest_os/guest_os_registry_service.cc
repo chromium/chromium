@@ -121,8 +121,8 @@ constexpr char kCrostiniAppIdPrefix[] = "crostini:";
 
 constexpr char kCrostiniIconFolder[] = "crostini.icons";
 
-base::Value::Dict ProtoToDictionary(const App::LocaleString& locale_string) {
-  base::Value::Dict result;
+base::DictValue ProtoToDictionary(const App::LocaleString& locale_string) {
+  base::DictValue result;
   for (const App::LocaleString::Entry& entry : locale_string.values()) {
     const std::string& locale = entry.locale();
 
@@ -139,7 +139,7 @@ base::Value::Dict ProtoToDictionary(const App::LocaleString& locale_string) {
   return result;
 }
 
-std::set<std::string> ListToStringSet(const base::Value::List* list,
+std::set<std::string> ListToStringSet(const base::ListValue* list,
                                       bool to_lower_ascii = false) {
   std::set<std::string> result;
   if (!list) {
@@ -152,18 +152,18 @@ std::set<std::string> ListToStringSet(const base::Value::List* list,
   return result;
 }
 
-base::Value::List ProtoToList(
+base::ListValue ProtoToList(
     const google::protobuf::RepeatedPtrField<std::string>& strings) {
-  base::Value::List result;
+  base::ListValue result;
   for (const std::string& string : strings) {
     result.Append(string);
   }
   return result;
 }
 
-base::Value::Dict LocaleStringsProtoToDictionary(
+base::DictValue LocaleStringsProtoToDictionary(
     const App::LocaleStrings& repeated_locale_string) {
-  base::Value::Dict result;
+  base::DictValue result;
   for (const auto& strings_with_locale : repeated_locale_string.values()) {
     const std::string& locale = strings_with_locale.locale();
 
@@ -181,12 +181,12 @@ base::Value::Dict LocaleStringsProtoToDictionary(
 
 // Populate |pref_registration| based on the given App proto.
 // |name| should be |app.name()| in Dictionary form.
-void PopulatePrefRegistrationFromApp(base::Value::Dict& pref_registration,
+void PopulatePrefRegistrationFromApp(base::DictValue& pref_registration,
                                      VmType vm_type,
                                      const std::string& vm_name,
                                      const std::string& container_name,
                                      const vm_tools::apps::App& app,
-                                     base::Value::Dict name) {
+                                     base::DictValue name) {
   pref_registration.Set(guest_os::prefs::kAppDesktopFileIdKey,
                         base::Value(app.desktop_file_id()));
   pref_registration.Set(guest_os::prefs::kVmTypeKey, static_cast<int>(vm_type));
@@ -215,8 +215,8 @@ void PopulatePrefRegistrationFromApp(base::Value::Dict& pref_registration,
                         base::Value(app.package_id()));
 }
 
-bool EqualsExcludingTimestamps(const base::Value::Dict& left,
-                               const base::Value::Dict& right) {
+bool EqualsExcludingTimestamps(const base::DictValue& left,
+                               const base::DictValue& right) {
   auto left_iter = left.begin();
   auto right_iter = right.begin();
   while (left_iter != left.end() && right_iter != right.end()) {
@@ -505,7 +505,7 @@ std::string GuestOsRegistryService::Registration::GetLocalizedString(
   if (!pref_.is_dict()) {
     return std::string();
   }
-  const base::Value::Dict* dict = pref_.GetDict().FindDict(key);
+  const base::DictValue* dict = pref_.GetDict().FindDict(key);
   if (!dict) {
     return std::string();
   }
@@ -523,13 +523,13 @@ std::set<std::string> GuestOsRegistryService::Registration::GetLocalizedList(
   if (!pref_.is_dict()) {
     return {};
   }
-  const base::Value::Dict* dict = pref_.GetDict().FindDict(key);
+  const base::DictValue* dict = pref_.GetDict().FindDict(key);
   if (!dict) {
     return {};
   }
 
   for (const std::string& locale : GetFallbackLocales()) {
-    if (const base::Value::List* list = dict->FindList(locale)) {
+    if (const base::ListValue* list = dict->FindList(locale)) {
       return ListToStringSet(list);
     }
   }
@@ -552,7 +552,7 @@ base::WeakPtr<GuestOsRegistryService> GuestOsRegistryService::GetWeakPtr() {
 
 std::map<std::string, GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetAllRegisteredApps() const {
-  const base::Value::Dict& apps =
+  const base::DictValue& apps =
       prefs_->GetDict(guest_os::prefs::kGuestOsRegistry);
   std::map<std::string, GuestOsRegistryService::Registration> result;
   for (const auto item : apps) {
@@ -616,10 +616,10 @@ GuestOsRegistryService::GetRegisteredApps(VmType vm_type) const {
 
 std::optional<GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
-  const base::Value::Dict& apps =
+  const base::DictValue& apps =
       prefs_->GetDict(guest_os::prefs::kGuestOsRegistry);
 
-  const base::Value::Dict* pref_registration = apps.FindDict(app_id);
+  const base::DictValue* pref_registration = apps.FindDict(app_id);
   if (!pref_registration) {
     return std::nullopt;
   }
@@ -824,7 +824,7 @@ void GuestOsRegistryService::ClearApplicationList(
   // The ScopedDictPrefUpdate should be destructed before calling the observer.
   {
     ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
-    base::Value::Dict& apps = update.Get();
+    base::DictValue& apps = update.Get();
 
     for (const auto item : apps) {
       Registration registration(item.first, item.second.Clone());
@@ -888,14 +888,14 @@ void GuestOsRegistryService::UpdateApplicationList(
   // The ScopedDictPrefUpdate should be destructed before calling the observer.
   {
     ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
-    base::Value::Dict& apps = update.Get();
+    base::DictValue& apps = update.Get();
     for (const App& app : app_list.apps()) {
       if (app.desktop_file_id().empty()) {
         LOG(WARNING) << "Received app with missing desktop file id";
         continue;
       }
 
-      base::Value::Dict name = ProtoToDictionary(app.name());
+      base::DictValue name = ProtoToDictionary(app.name());
       if (name.Find(std::string_view()) == nullptr) {
         LOG(WARNING) << "Received app '" << app.desktop_file_id()
                      << "' with missing unlocalized name";
@@ -906,12 +906,12 @@ void GuestOsRegistryService::UpdateApplicationList(
           app.desktop_file_id(), app_list.vm_name(), app_list.container_name());
       new_app_ids.insert(app_id);
 
-      base::Value::Dict pref_registration;
+      base::DictValue pref_registration;
       PopulatePrefRegistrationFromApp(
           pref_registration, vm_type, app_list.vm_name(),
           app_list.container_name(), app, std::move(name));
 
-      base::Value::Dict* old_app = apps.FindDict(app_id);
+      base::DictValue* old_app = apps.FindDict(app_id);
       if (old_app && EqualsExcludingTimestamps(pref_registration, *old_app)) {
         continue;
       }
@@ -1025,7 +1025,7 @@ void GuestOsRegistryService::RemoveObserver(Observer* observer) {
 
 void GuestOsRegistryService::AppLaunched(const std::string& app_id) {
   ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
-  base::Value::Dict& app = update->Find(app_id)->GetDict();
+  base::DictValue& app = update->Find(app_id)->GetDict();
   SetCurrentTime(app, guest_os::prefs::kAppLastLaunchTimeKey);
 
   auto vm_type = app.FindInt(guest_os::prefs::kVmTypeKey);
@@ -1041,7 +1041,7 @@ void GuestOsRegistryService::AppLaunched(const std::string& app_id) {
   }
 }
 
-void GuestOsRegistryService::SetCurrentTime(base::Value::Dict& dictionary,
+void GuestOsRegistryService::SetCurrentTime(base::DictValue& dictionary,
                                             const char* key) const {
   int64_t time = clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
   dictionary.Set(key, base::Value(base::NumberToString(time)));
@@ -1050,9 +1050,9 @@ void GuestOsRegistryService::SetCurrentTime(base::Value::Dict& dictionary,
 void GuestOsRegistryService::SetAppScaled(const std::string& app_id,
                                           bool scaled) {
   ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
-  base::Value::Dict& apps = update.Get();
+  base::DictValue& apps = update.Get();
 
-  base::Value::Dict* app = apps.FindDict(app_id);
+  base::DictValue* app = apps.FindDict(app_id);
   if (!app) {
     LOG(ERROR)
         << "Tried to set display scaled property on the app with this app_id "
