@@ -15,7 +15,7 @@ namespace device_signals::test {
 // expectation based on a given signals dictionary.
 // This represents the inline flow contract.
 base::flat_map<std::string,
-               base::RepeatingCallback<bool(const base::Value::Dict&)>>
+               base::RepeatingCallback<bool(const base::DictValue&)>>
 GetSignalsContract(bool is_av_signal_enabled);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -23,7 +23,7 @@ GetSignalsContract(bool is_av_signal_enabled);
 // expectation based on a given signals dictionary.
 // This represents the inline flow contract for unmanaged devices (crOS).
 base::flat_map<std::string,
-               base::RepeatingCallback<bool(const base::Value::Dict&)>>
+               base::RepeatingCallback<bool(const base::DictValue&)>>
 GetSignalsContractForUnmanagedDevices(bool is_av_signal_enabled);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

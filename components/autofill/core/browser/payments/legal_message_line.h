@@ -67,7 +67,7 @@ class LegalMessageLine {
   //    text in MessageFormat, "'{0}" gets treated as a literal.  To avoid
   //    situations like these, setting |escape_apostrophes| to true will escape
   //    all ASCII apostrophes by doubling them up.
-  static bool Parse(const base::Value::Dict& legal_message,
+  static bool Parse(const base::DictValue& legal_message,
                     LegalMessageLines* out,
                     bool escape_apostrophes = false);
 
@@ -77,7 +77,7 @@ class LegalMessageLine {
  private:
   friend class TestLegalMessageLine;
 
-  bool ParseLine(const base::Value::Dict& line, bool escape_apostrophes);
+  bool ParseLine(const base::DictValue& line, bool escape_apostrophes);
 
   std::u16string text_;
   Links links_;

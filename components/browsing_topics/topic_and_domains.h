@@ -30,8 +30,8 @@ class TopicAndDomains {
   ~TopicAndDomains();
 
   // Serialization functions for storing in prefs.
-  static TopicAndDomains FromDictValue(const base::Value::Dict& dict_value);
-  base::Value::Dict ToDictValue() const;
+  static TopicAndDomains FromDictValue(const base::DictValue& dict_value);
+  base::DictValue ToDictValue() const;
 
   void ClearDomain(const HashedDomain& domain);
 

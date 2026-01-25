@@ -68,58 +68,58 @@ bool IsValueAllowedForType(const base::Value& value, ContentSettingsType type) {
 
 // Extract a timestamp from `dict[key]`.
 // Will return base::Time() if no timestamp exists.
-base::Time GetTimeFromDictKey(const base::Value::Dict& dict,
+base::Time GetTimeFromDictKey(const base::DictValue& dict,
                               const std::string& key) {
   return base::ValueToTime(dict.Find(key)).value_or(base::Time());
 }
 
 // Extract a timestamp from `dict[key]`.
 // Will return base::Time() if no timestamp exists.
-base::TimeDelta GetTimeDeltaFromDictKey(const base::Value::Dict& dict,
+base::TimeDelta GetTimeDeltaFromDictKey(const base::DictValue& dict,
                                         const std::string& key) {
   return base::ValueToTimeDelta(dict.Find(key)).value_or(base::TimeDelta());
 }
 
 // Extract a timestamp from `dictionary[kLastModifiedKey]`.
 // Will return base::Time() if no timestamp exists.
-base::Time GetLastModified(const base::Value::Dict& dictionary) {
+base::Time GetLastModified(const base::DictValue& dictionary) {
   return GetTimeFromDictKey(dictionary, kLastModifiedKey);
 }
 
 // Extract a timestamp from `dictionary[kExpirationKey]`.
 // Will return base::Time() if no timestamp exists.
-base::Time GetExpiration(const base::Value::Dict& dictionary) {
+base::Time GetExpiration(const base::DictValue& dictionary) {
   return GetTimeFromDictKey(dictionary, kExpirationKey);
 }
 
 // Extract a timestamp from `dictionary[kLastUsedKey]`.
 // Will return base::Time() if no timestamp exists.
-base::Time GetLastUsed(const base::Value::Dict& dictionary) {
+base::Time GetLastUsed(const base::DictValue& dictionary) {
   return GetTimeFromDictKey(dictionary, kLastUsedKey);
 }
 
 // Extract a timestamp from `dictionary[kLastVisit]`.
 // Will return base::Time() if no timestamp exists.
-base::Time GetLastVisit(const base::Value::Dict& dictionary) {
+base::Time GetLastVisit(const base::DictValue& dictionary) {
   return GetTimeFromDictKey(dictionary, kLastVisitKey);
 }
 
 // Extract a TimeDelta from `dictionary[kLifetimeKey]`.
 // Will return base::TimeDelta() if no value exists for that key.
-base::TimeDelta GetLifetime(const base::Value::Dict& dictionary) {
+base::TimeDelta GetLifetime(const base::DictValue& dictionary) {
   return GetTimeDeltaFromDictKey(dictionary, kLifetimeKey);
 }
 
 // Extract a bool from `dictionary[kDecidedByRelatedWebsiteSets]`.
 // Will return false if no value exists for that key.
-bool GetDecidedByRelatedWebsiteSets(const base::Value::Dict& dictionary) {
+bool GetDecidedByRelatedWebsiteSets(const base::DictValue& dictionary) {
   return dictionary.FindBool(kDecidedByRelatedWebsiteSets).value_or(false);
 }
 
 // Extract a SessionModel from |dictionary[kSessionModelKey]|. Will return
 // SessionModel::DURABLE if no model exists.
 content_settings::mojom::SessionModel GetSessionModel(
-    const base::Value::Dict& dictionary) {
+    const base::DictValue& dictionary) {
   int model_int = dictionary.FindInt(kSessionModelKey).value_or(0);
   if ((model_int >
        static_cast<int>(content_settings::mojom::SessionModel::kMaxValue)) ||
@@ -291,7 +291,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
 }
 
 void ContentSettingsPref::ReadSettingsFromDictionary(
-    const base::Value::Dict& all_settings_dictionary,
+    const base::DictValue& all_settings_dictionary,
     prefs::DictionaryValueUpdate* mutable_settings) {
   // Accumulates non-canonical pattern strings found in Prefs for which the
   // corresponding canonical pattern is also in Prefs. In these cases the
@@ -344,7 +344,7 @@ void ContentSettingsPref::ReadSettingsFromDictionary(
                  << pattern_str << " with value: " << i.second.DebugString();
       continue;
     }
-    const base::Value::Dict& settings_dictionary = i.second.GetDict();
+    const base::DictValue& settings_dictionary = i.second.GetDict();
 
     // Check to see if the setting is expired or not. This may be due to a past
     // expiration date or a SessionModel of UserSession.
@@ -492,7 +492,7 @@ void ContentSettingsPref::UpdatePref(
     if (!found && !value.is_none()) {
       settings_dictionary =
           pattern_pairs_settings->SetDictionaryWithoutPathExpansion(
-              pattern_str, base::Value::Dict());
+              pattern_str, base::DictValue());
     }
 
     if (!settings_dictionary) {

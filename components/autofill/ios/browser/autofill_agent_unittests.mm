@@ -942,8 +942,8 @@ TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
   // Set the result returned from filling.
   std::string serializedResult;
   ASSERT_TRUE(base::JSONWriter::Write(
-      base::Value::Dict().Set(base::NumberToString(field_id.value()),
-                              base::UTF16ToUTF8(field_value)),
+      base::DictValue().Set(base::NumberToString(field_id.value()),
+                            base::UTF16ToUTF8(field_value)),
       &serializedResult));
   base::Value result(serializedResult);
   fake_main_frame_->AddJsResultForFunctionCall(&result, "autofill.fillForm");
@@ -989,8 +989,8 @@ TEST_F(AutofillAgentTests, FillData_UnknowFieldIdInResults) {
   // Set the result returned from filling.
   std::string serializedResult;
   ASSERT_TRUE(base::JSONWriter::Write(
-      base::Value::Dict().Set(base::NumberToString(unknown_field_id.value()),
-                              base::UTF16ToUTF8(fields[0].value)),
+      base::DictValue().Set(base::NumberToString(unknown_field_id.value()),
+                            base::UTF16ToUTF8(fields[0].value)),
       &serializedResult));
   base::Value result(serializedResult);
   fake_main_frame_->AddJsResultForFunctionCall(&result, "autofill.fillForm");
@@ -1066,7 +1066,7 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
   // Set the result returned from filling.
   std::string serializedResult;
   ASSERT_TRUE(base::JSONWriter::Write(
-      base::Value::List()
+      base::ListValue()
           .Append(base::Value(base::NumberToString(field1_id.value())))
           .Append(base::Value(base::NumberToString(field2_id.value()))),
       &serializedResult));

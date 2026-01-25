@@ -548,7 +548,7 @@ void ShoppingServiceTestBase::OnWebWrapperSwitched(WebWrapper* web) {
 
 void ShoppingServiceTestBase::MergeProductInfoData(
     ProductInfo* info,
-    const base::Value::Dict& on_page_data_map) {
+    const base::DictValue& on_page_data_map) {
   ShoppingService::MergeProductInfoData(info, on_page_data_map);
 }
 

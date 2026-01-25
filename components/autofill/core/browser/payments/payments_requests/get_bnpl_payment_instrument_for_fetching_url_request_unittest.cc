@@ -13,7 +13,7 @@ namespace {
 using base::MockCallback;
 using base::test::IsJson;
 using testing::Field;
-using Dict = base::Value::Dict;
+using Dict = base::DictValue;
 using base::OnceCallback;
 using PaymentsRpcResult =
     autofill::payments::PaymentsAutofillClient::PaymentsRpcResult;

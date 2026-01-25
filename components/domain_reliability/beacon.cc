@@ -26,12 +26,12 @@ DomainReliabilityBeacon::~DomainReliabilityBeacon() {
   }
 }
 
-base::Value::Dict DomainReliabilityBeacon::ToValue(
+base::DictValue DomainReliabilityBeacon::ToValue(
     base::TimeTicks upload_time,
     base::TimeTicks last_network_change_time,
     const GURL& collector_url,
     const std::vector<std::unique_ptr<std::string>>& path_prefixes) const {
-  base::Value::Dict beacon_value;
+  base::DictValue beacon_value;
   DCHECK(url.is_valid());
   GURL sanitized_url = SanitizeURLForReport(url, collector_url, path_prefixes);
   beacon_value.Set("url", sanitized_url.spec());
@@ -40,7 +40,7 @@ base::Value::Dict DomainReliabilityBeacon::ToValue(
     beacon_value.Set("quic_error", quic_error);
   }
   if (chrome_error != net::OK) {
-    base::Value::Dict failure_value;
+    base::DictValue failure_value;
     failure_value.Set("custom_error", net::ErrorToString(chrome_error));
     beacon_value.Set("failure_data", std::move(failure_value));
   }

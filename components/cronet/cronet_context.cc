@@ -903,7 +903,7 @@ void CronetContext::NetworkTasks::OnTunnelHeadersReceived(
 }
 
 base::Value CronetContext::NetworkTasks::GetNetLogInfo() const {
-  base::Value::Dict net_info;
+  base::DictValue net_info;
   for (auto& iter : contexts_)
     net_info.Set(base::NumberToString(iter.first),
                  net::GetNetInfo(iter.second.get()));

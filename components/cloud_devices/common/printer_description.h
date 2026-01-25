@@ -89,8 +89,8 @@ class RangeVendorCapability {
                          const RangeVendorCapability&) = default;
 
   bool IsValid() const;
-  bool LoadFrom(const base::Value::Dict& dict);
-  void SaveTo(base::Value::Dict* dict) const;
+  bool LoadFrom(const base::DictValue& dict);
+  void SaveTo(base::DictValue* dict) const;
 
  private:
   ValueType value_type_;
@@ -140,8 +140,8 @@ class TypedValueVendorCapability {
                          const TypedValueVendorCapability&) = default;
 
   bool IsValid() const;
-  bool LoadFrom(const base::Value::Dict& dict);
-  void SaveTo(base::Value::Dict* dict) const;
+  bool LoadFrom(const base::DictValue& dict);
+  void SaveTo(base::DictValue* dict) const;
 
  private:
   ValueType value_type_;
@@ -177,8 +177,8 @@ class VendorCapability {
   bool operator==(const VendorCapability& other) const;
 
   bool IsValid() const;
-  bool LoadFrom(const base::Value::Dict& dict);
-  void SaveTo(base::Value::Dict* dict) const;
+  bool LoadFrom(const base::DictValue& dict);
+  void SaveTo(base::DictValue* dict) const;
 
  private:
   void InternalCleanup();

@@ -59,7 +59,7 @@ namespace {
 // registered for WebView, 512 bytes should be able to hold about 10 entries.
 constexpr size_t kComponentsKeySize = 512;
 
-std::optional<base::Value::Dict> ReadJsonFile(const std::string& file_content) {
+std::optional<base::DictValue> ReadJsonFile(const std::string& file_content) {
   JSONStringValueDeserializer deserializer(file_content);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
@@ -70,7 +70,7 @@ std::optional<base::Value::Dict> ReadJsonFile(const std::string& file_content) {
   return std::nullopt;
 }
 
-std::optional<base::Value::Dict> ReadJsonFileFromFd(int fd) {
+std::optional<base::DictValue> ReadJsonFileFromFd(int fd) {
   std::string content;
   base::ScopedFILE file_stream(
       base::FileToFILE(base::File(std::move(fd)), "r"));
@@ -80,9 +80,9 @@ std::optional<base::Value::Dict> ReadJsonFileFromFd(int fd) {
 }
 
 // Reads both manifest and metadata file from the given file descriptors
-std::pair<std::optional<base::Value::Dict>, std::optional<base::Value::Dict>>
+std::pair<std::optional<base::DictValue>, std::optional<base::DictValue>>
 ReadComponentFilesFromFds(int manifest_fd, int metadata_fd) {
-  std::optional<base::Value::Dict> metadata;
+  std::optional<base::DictValue> metadata;
   if (metadata_fd != -1) {
     metadata = ReadJsonFileFromFd(metadata_fd);
   }
@@ -213,12 +213,12 @@ AndroidComponentLoaderPolicy::GetComponentId(JNIEnv* env) {
 
 void AndroidComponentLoaderPolicy::NotifyNewVersion(
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    std::pair<std::optional<base::Value::Dict>,
-              std::optional<base::Value::Dict>> component_files) {
+    std::pair<std::optional<base::DictValue>, std::optional<base::DictValue>>
+        component_files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::optional<base::Value::Dict> manifest = std::move(component_files.first);
-  std::optional<base::Value::Dict> metadata = std::move(component_files.second);
+  std::optional<base::DictValue> manifest = std::move(component_files.first);
+  std::optional<base::DictValue> metadata = std::move(component_files.second);
 
   if (!manifest) {
     ComponentLoadFailedInternal(ComponentLoadResult::kMalformedManifest);

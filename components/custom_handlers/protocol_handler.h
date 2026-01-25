@@ -67,11 +67,11 @@ class ProtocolHandler {
 
   // Creates a ProtocolHandler with fields from the dictionary. Returns an
   // empty ProtocolHandler if the input is invalid.
-  static ProtocolHandler CreateProtocolHandler(const base::Value::Dict& value);
+  static ProtocolHandler CreateProtocolHandler(const base::DictValue& value);
 
   // Returns true if the dictionary value has all the necessary fields to
   // define a ProtocolHandler.
-  static bool IsValidDict(const base::Value::Dict& value);
+  static bool IsValidDict(const base::DictValue& value);
 
   // Return true if the protocol handler meets security constraints.
   // Verify custom handler URLs security and syntax as well as the schemes
@@ -96,8 +96,8 @@ class ProtocolHandler {
   // ignored.
   bool IsEquivalent(const ProtocolHandler& other) const;
 
-  // Encodes this protocol handler as a `base::Value::Dict`.
-  base::Value::Dict Encode() const;
+  // Encodes this protocol handler as a `base::DictValue`.
+  base::DictValue Encode() const;
 
   // Returns a friendly name for |protocol| if one is available, otherwise
   // this function returns |protocol|.

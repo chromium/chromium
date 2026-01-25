@@ -99,7 +99,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
 //   from `frame_id`.
 // - Returns std::nullopt if the data was invalid.
 base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
-    const base::Value::Dict& form,
+    const base::DictValue& form,
     base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& form_frame_origin,
@@ -110,14 +110,14 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
 // Extracts a single form field from the JSON dictionary into a FormFieldData
 // object.
 // Returns false if the field could not be extracted.
-bool ExtractFormFieldData(const base::Value::Dict& field,
+bool ExtractFormFieldData(const base::DictValue& field,
                           const FieldDataManager& field_data_manager,
                           FormFieldData* field_data);
 
 // Extracts a single child frame's data from the JSON dictionary into a
 // FrameTokenWithPredecessor object. Returns false if the data could not be
 // extracted.
-bool ExtractRemoteFrameToken(const base::Value::Dict& frame_data,
+bool ExtractRemoteFrameToken(const base::DictValue& frame_data,
                              FrameTokenWithPredecessor* token_with_predecessor);
 
 typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
@@ -136,7 +136,7 @@ JavaScriptResultCallback CreateBoolCallback(base::OnceCallback<void(BOOL)>);
 // If |callback| is not null, it will be called when the result of the
 // command is received, or immediately if the command cannot be executed.
 void ExecuteJavaScriptFunction(const std::string& name,
-                               const base::Value::List& parameters,
+                               const base::ListValue& parameters,
                                web::WebFrame* frame,
                                JavaScriptResultCallback callback);
 

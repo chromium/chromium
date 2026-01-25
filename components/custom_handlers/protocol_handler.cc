@@ -94,7 +94,7 @@ ProtocolHandler ProtocolHandler::CreateExtensionProtocolHandler(
 
 ProtocolHandler::ProtocolHandler() = default;
 
-bool ProtocolHandler::IsValidDict(const base::Value::Dict& value) {
+bool ProtocolHandler::IsValidDict(const base::DictValue& value) {
   // Note that "title" parameter is ignored.
   // The |last_modified| field is optional as it was introduced in M68.
   return value.FindString("protocol") && value.FindString("url");
@@ -124,7 +124,7 @@ const ProtocolHandler& ProtocolHandler::EmptyProtocolHandler() {
 }
 
 ProtocolHandler ProtocolHandler::CreateProtocolHandler(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsValidDict(value)) {
     return EmptyProtocolHandler();
@@ -198,9 +198,9 @@ GURL ProtocolHandler::TranslateUrl(const GURL& url) const {
   return GURL(translatedUrlSpec);
 }
 
-base::Value::Dict ProtocolHandler::Encode() const {
+base::DictValue ProtocolHandler::Encode() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value::Dict d;
+  base::DictValue d;
   d.Set("protocol", protocol_);
   d.Set("url", url_.spec());
   d.Set("last_modified", base::TimeToValue(last_modified_));

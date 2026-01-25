@@ -29,7 +29,7 @@ class RoutingLogManagerImpl : public RoutingLogManager {
   // LogManager
   bool IsLoggingActive() const override;
   LogBufferSubmitter Log() override;
-  void ProcessLog(base::Value::Dict node,
+  void ProcessLog(base::DictValue node,
                   base::PassKey<LogBufferSubmitter>) override;
 
  private:
@@ -90,7 +90,7 @@ LogBufferSubmitter RoutingLogManagerImpl::Log() {
   return LogBufferSubmitter(this);
 }
 
-void RoutingLogManagerImpl::ProcessLog(base::Value::Dict node,
+void RoutingLogManagerImpl::ProcessLog(base::DictValue node,
                                        base::PassKey<LogBufferSubmitter>) {
   log_router_->ProcessLog(std::move(node));
 }
@@ -109,11 +109,11 @@ class BufferingLogManagerImpl : public BufferingLogManager {
   // LogManager
   bool IsLoggingActive() const override;
   LogBufferSubmitter Log() override;
-  void ProcessLog(base::Value::Dict node,
+  void ProcessLog(base::DictValue node,
                   base::PassKey<LogBufferSubmitter>) override;
 
  private:
-  std::vector<base::Value::Dict> nodes_;
+  std::vector<base::DictValue> nodes_;
   std::optional<base::PassKey<LogBufferSubmitter>> pass_key_;
 };
 
@@ -132,7 +132,7 @@ LogBufferSubmitter BufferingLogManagerImpl::Log() {
 }
 
 void BufferingLogManagerImpl::ProcessLog(
-    base::Value::Dict node,
+    base::DictValue node,
     base::PassKey<LogBufferSubmitter> pass_key) {
   nodes_.push_back(std::move(node));
   pass_key_ = pass_key;

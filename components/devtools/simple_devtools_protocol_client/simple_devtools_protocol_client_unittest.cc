@@ -53,7 +53,7 @@ class SimpleDevToolsProtocolClientSendCommandTest
     RunUntilIdle();
   }
 
-  void OnSendCommand1Response(base::Value::Dict params) {
+  void OnSendCommand1Response(base::DictValue params) {
     EXPECT_EQ(*params.FindString("method"), "command1");
     EXPECT_EQ(pending_response_map_.size(), 0ul);
     SendCommand("command2",
@@ -63,20 +63,20 @@ class SimpleDevToolsProtocolClientSendCommandTest
     RunUntilIdle();
   }
 
-  void OnSendCommand2Response(base::Value::Dict params) {
+  void OnSendCommand2Response(base::DictValue params) {
     EXPECT_EQ(*params.FindString("method"), "command2");
     EXPECT_EQ(pending_response_map_.size(), 0ul);
     SendCommand("command3",
                 base::BindOnce(
                     [](SimpleDevToolsProtocolClientSendCommandTest* self,
-                       base::Value::Dict params) {
+                       base::DictValue params) {
                       self->OnSendCommand3Response(std::move(params));
                     },
                     base::Unretained(this)));
     RunUntilIdle();
   }
 
-  void OnSendCommand3Response(base::Value::Dict params) {
+  void OnSendCommand3Response(base::DictValue params) {
     EXPECT_EQ(*params.FindString("method"), "command3");
     EXPECT_EQ(pending_response_map_.size(), 0ul);
   }
@@ -94,7 +94,7 @@ class SimpleDevToolsProtocolClientEventHandlerTest
   SimpleDevToolsProtocolClientEventHandlerTest() = default;
 
   void SendEvent(const std::string& event_name) {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("method", event_name);
 
     std::string json =
@@ -109,14 +109,14 @@ class SimpleDevToolsProtocolClientEventHandlerTraceTest
  public:
   SimpleDevToolsProtocolClientEventHandlerTraceTest() = default;
 
-  void OnEvent1(const base::Value::Dict& params) {
+  void OnEvent1(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
   }
-  void OnEvent2(const base::Value::Dict& params) {
+  void OnEvent2(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
   }
 
-  void OnEventX(const base::Value::Dict& params) {
+  void OnEventX(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
   }
 
@@ -239,7 +239,7 @@ class SimpleDevToolsProtocolClientEventHandlerNestedAddTest
  public:
   SimpleDevToolsProtocolClientEventHandlerNestedAddTest() = default;
 
-  void OnEvent(const base::Value::Dict& params) {
+  void OnEvent(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
     AddEventHandler(
         "event",
@@ -253,7 +253,7 @@ class SimpleDevToolsProtocolClientEventHandlerNestedAddTest
             base::Unretained(this)));
   }
 
-  void OnEvent2(const base::Value::Dict& params) {
+  void OnEvent2(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
     AddEventHandler(
         "event3",
@@ -262,7 +262,7 @@ class SimpleDevToolsProtocolClientEventHandlerNestedAddTest
             base::Unretained(this)));
   }
 
-  void OnEvent3(const base::Value::Dict& params) {
+  void OnEvent3(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
   }
 
@@ -287,7 +287,7 @@ class SimpleDevToolsProtocolClientEventHandlerNestedRemoveTest
  public:
   SimpleDevToolsProtocolClientEventHandlerNestedRemoveTest() = default;
 
-  void OnEvent(const base::Value::Dict& params) {
+  void OnEvent(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
     RemoveEventHandler("event", event_handler_);
     RemoveEventHandler("event", event_handler1_);
@@ -295,15 +295,15 @@ class SimpleDevToolsProtocolClientEventHandlerNestedRemoveTest
     RemoveEventHandler("event3", event_handler3_);
   }
 
-  void OnEvent1(const base::Value::Dict& params) {
+  void OnEvent1(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
   }
 
-  void OnEvent2(const base::Value::Dict& params) {
+  void OnEvent2(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
   }
 
-  void OnEvent3(const base::Value::Dict& params) {
+  void OnEvent3(const base::DictValue& params) {
     received_events_.push_back(*params.FindString("method"));
   }
 
@@ -361,7 +361,7 @@ class SelfDestructingSimpleDevToolsProtocolClient
     delete this;
   }
 
-  void DispatchProtocolMessageTask(base::Value::Dict message) override {
+  void DispatchProtocolMessageTask(base::DictValue message) override {
     NOTREACHED() << "use-after-free";
   }
 };

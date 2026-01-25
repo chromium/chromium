@@ -36,13 +36,13 @@ using content::BrowserThread;
 
 namespace custom_handlers {
 
-base::Value::Dict GetProtocolHandlerValue(
+base::DictValue GetProtocolHandlerValue(
     const std::string& protocol,
     const std::string& url,
     bool is_confirmed = true,
     std::optional<std::string> app_id = std::nullopt,
     std::optional<std::string> extension_id = std::nullopt) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("protocol", protocol);
   value.Set("url", url);
   value.Set("is_confirmed", is_confirmed);
@@ -55,15 +55,15 @@ base::Value::Dict GetProtocolHandlerValue(
   return value;
 }
 
-base::Value::Dict GetProtocolHandlerValueWithDefault(
+base::DictValue GetProtocolHandlerValueWithDefault(
     const std::string& protocol,
     const std::string& url,
     bool is_default,
     bool is_confirmed = true,
     std::optional<std::string> app_id = std::nullopt,
     std::optional<std::string> extension_id = std::nullopt) {
-  base::Value::Dict value = GetProtocolHandlerValue(protocol, url, is_confirmed,
-                                                    app_id, extension_id);
+  base::DictValue value = GetProtocolHandlerValue(protocol, url, is_confirmed,
+                                                  app_id, extension_id);
   value.Set("default", is_default);
   return value;
 }
@@ -183,7 +183,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   }
 
   int InPrefHandlerCount() {
-    const base::Value::List& in_pref_handlers = GetPrefs()->GetList(
+    const base::ListValue& in_pref_handlers = GetPrefs()->GetList(
         custom_handlers::prefs::kRegisteredProtocolHandlers);
     return static_cast<int>(in_pref_handlers.size());
   }
@@ -197,7 +197,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   }
 
   int InPrefIgnoredHandlerCount() {
-    const base::Value::List& in_pref_ignored_handlers =
+    const base::ListValue& in_pref_ignored_handlers =
         GetPrefs()->GetList(custom_handlers::prefs::kIgnoredProtocolHandlers);
     return static_cast<int>(in_pref_ignored_handlers.size());
   }
@@ -860,8 +860,8 @@ TEST_F(ProtocolHandlerRegistryTest, TestInstallDefaultHandler) {
 #define URL_p3u1 "https://p3u1.com/%s"
 
 TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapRegister) {
-  base::Value::List handlers_registered_by_pref;
-  base::Value::List handlers_registered_by_policy;
+  base::ListValue handlers_registered_by_pref;
+  base::ListValue handlers_registered_by_policy;
 
   handlers_registered_by_pref.Append(
       GetProtocolHandlerValueWithDefault("news", URL_p1u2, true));
@@ -940,8 +940,8 @@ TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapRegister) {
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapIgnore) {
-  base::Value::List handlers_ignored_by_pref;
-  base::Value::List handlers_ignored_by_policy;
+  base::ListValue handlers_ignored_by_pref;
+  base::ListValue handlers_ignored_by_policy;
 
   handlers_ignored_by_pref.Append(GetProtocolHandlerValue("news", URL_p1u1));
   handlers_ignored_by_pref.Append(GetProtocolHandlerValue("news", URL_p1u2));
@@ -1249,7 +1249,7 @@ TEST_F(ProtocolHandlerRegistryTest, ConfirmHandler) {
 
 TEST_F(ProtocolHandlerRegistryTest, RestoreUnconfirmedHandlerFromPref) {
   const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
-  base::Value::List handlers_registered_by_pref;
+  base::ListValue handlers_registered_by_pref;
 
   handlers_registered_by_pref.Append(GetProtocolHandlerValueWithDefault(
       "news", URL_p1u1, true, false, std::nullopt, kIdBar));

@@ -202,7 +202,7 @@ class AdminTemplateServiceTest : public testing::Test {
 
   void SetEmptyPrefValue() {
     pref_service_.SetManagedPref(ash::prefs::kAppLaunchAutomation,
-                                 base::Value::List());
+                                 base::ListValue());
 
     task_environment_.RunUntilIdle();
   }

@@ -157,7 +157,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
       CreditCard card,
       PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
-      base::Value::Dict fido_assertion_info,
+      base::DictValue fido_assertion_info,
       std::optional<GURL> last_committed_primary_main_frame_origin =
           std::nullopt,
       std::optional<std::string> context_token = std::nullopt);
@@ -211,7 +211,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
       PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,
-      std::optional<base::Value::Dict> fido_assertion_info,
+      std::optional<base::DictValue> fido_assertion_info,
       std::optional<GURL> last_committed_primary_main_frame_origin,
       std::optional<std::string> context_token,
       std::optional<CardUnmaskChallengeOption> selected_challenge_option);

@@ -83,14 +83,14 @@ TEST_F(DeskTemplateConversionTest, ParseAdminTemplatePolicy) {
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
 
-  base::Value::List& parsed_list = parsed_json->GetList();
+  base::ListValue& parsed_list = parsed_json->GetList();
   EXPECT_EQ(parsed_list.size(), 2UL);
 
   EXPECT_TRUE(parsed_list[0].is_dict());
-  base::Value::Dict& value_dict_zero = parsed_list[0].GetDict();
+  base::DictValue& value_dict_zero = parsed_list[0].GetDict();
 
   EXPECT_TRUE(parsed_list[1].is_dict());
-  base::Value::Dict& value_dict_one = parsed_list[1].GetDict();
+  base::DictValue& value_dict_one = parsed_list[1].GetDict();
 
   std::vector<std::unique_ptr<ash::DeskTemplate>>
       templates_derived_from_policy =
@@ -184,11 +184,11 @@ TEST_F(DeskTemplateConversionTest, AdminTemplateConvertsCorrectly) {
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
 
-  base::Value::List& parsed_list = parsed_json->GetList();
+  base::ListValue& parsed_list = parsed_json->GetList();
   EXPECT_EQ(parsed_list.size(), 1UL);
 
   EXPECT_TRUE(parsed_list[0].is_dict());
-  base::Value::Dict& value_dict = parsed_list[0].GetDict();
+  base::DictValue& value_dict = parsed_list[0].GetDict();
 
   std::vector<std::unique_ptr<ash::DeskTemplate>>
       templates_derived_from_policy =

@@ -282,11 +282,11 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Returns a JSON list of protocol handlers. The caller is responsible for
   // deleting this Value.
-  base::Value::List EncodeRegisteredHandlers();
+  base::ListValue EncodeRegisteredHandlers();
 
   // Returns a JSON list of ignored protocol handlers. The caller is
   // responsible for deleting this Value.
-  base::Value::List EncodeIgnoredHandlers();
+  base::ListValue EncodeIgnoredHandlers();
 
   // Notifies observers of a change to the registry.
   void NotifyChanged();
@@ -314,7 +314,7 @@ class ProtocolHandlerRegistry : public KeyedService {
   // These pointers may be invalidated by other changes in the preferences
   // storage, hence they must not be stored in a way that outlives the current
   // stack frame.
-  std::vector<const base::Value::Dict*> GetHandlersFromPref(
+  std::vector<const base::DictValue*> GetHandlersFromPref(
       const char* pref_name) const;
 
   // Ignores future requests to register the given protocol handler.

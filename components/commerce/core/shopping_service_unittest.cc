@@ -983,7 +983,7 @@ TEST_P(ShoppingServiceTest,
   test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
                                   {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set("image", std::string(kImageUrl));
   base::Value js_result(std::move(result));
   NiceMockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -1056,7 +1056,7 @@ TEST_P(ShoppingServiceTest,
        TestProductInfoCacheFullLifecycleWithFallback_PageLoaded) {
   test_features_.InitWithFeatures({kCommerceAllowLocalImages}, {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set("image", std::string(kImageUrl));
   base::Value js_result(std::move(result));
   NiceMockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -1315,7 +1315,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithLeadImage) {
   ProductInfo info;
   info.image_url = GURL(kImageUrl);
 
-  base::Value::Dict data_map;
+  base::DictValue data_map;
   data_map.Set("image", "https://example.com/fallback_image.png");
 
   MergeProductInfoData(&info, data_map);
@@ -1327,7 +1327,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithNoLeadImage) {
   test_features_.InitWithFeatures({kCommerceAllowLocalImages}, {});
   ProductInfo info;
 
-  base::Value::Dict data_map;
+  base::DictValue data_map;
   data_map.Set("image", kImageUrl);
 
   MergeProductInfoData(&info, data_map);
@@ -1339,7 +1339,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithTitle) {
   ProductInfo info;
   info.title = kTitle;
 
-  base::Value::Dict data_map;
+  base::DictValue data_map;
   data_map.Set("title", "Some other fallback title");
 
   MergeProductInfoData(&info, data_map);
@@ -1350,7 +1350,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithTitle) {
 TEST_P(ShoppingServiceTest, TestDataMergeWithNoTitle) {
   ProductInfo info;
 
-  base::Value::Dict data_map;
+  base::DictValue data_map;
   data_map.Set("title", kTitle);
 
   MergeProductInfoData(&info, data_map);

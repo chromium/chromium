@@ -26,7 +26,7 @@ class MockTestPaymentsNetworkInterface : public payments::TestPaymentsNetworkInt
                    void(payments::PaymentsAutofillClient::PaymentsRpcResult,
                         const std::u16string&,
                         const std::u16string&,
-                        std::unique_ptr<base::Value::Dict>)>)),
+                        std::unique_ptr<base::DictValue>)>)),
               (override));
   MOCK_METHOD(void,
               UnmaskIban,

@@ -121,8 +121,8 @@ std::string GetFormSubmissionDetectionMetricName(std::string_view suffix) {
        ".", suffix});
 }
 
-void RecordFormActivityMetrics(const base::Value::Dict& message_body) {
-  const base::Value::Dict* metadata = message_body.FindDict("metadata");
+void RecordFormActivityMetrics(const base::DictValue& message_body) {
+  const base::DictValue* metadata = message_body.FindDict("metadata");
 
   if (!metadata) {
     // Don't record metrics if no metadata because all the data for calculating
@@ -156,7 +156,7 @@ void RecordFormActivityMetrics(const base::Value::Dict& message_body) {
 }
 
 // Record the form submission count metrics provided in the `message_body`.
-void RecordFormSubmissionCountMetrics(const base::Value::Dict& message_body) {
+void RecordFormSubmissionCountMetrics(const base::DictValue& message_body) {
   if (!base::FeatureList::IsEnabled(kAutofillCountFormSubmissionInRenderer)) {
     return;
   }
@@ -328,7 +328,7 @@ void FormActivityTabHelper::RemoveObserver(FormActivityObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void HandleSubmissionError(const base::Value::Dict& message) {
+void HandleSubmissionError(const base::DictValue& message) {
   const std::string* error_stack = message.FindString("errorStack");
   const std::string* error_message = message.FindString("errorMessage");
   std::optional<bool> is_programmatic =
@@ -422,7 +422,7 @@ void FormActivityTabHelper::FormSubmissionHandler(
     return;
   }
 
-  const base::Value::Dict& message_body = message.body()->GetDict();
+  const base::DictValue& message_body = message.body()->GetDict();
   const std::string* frame_id = message_body.FindString("frameID");
   if (!frame_id) {
     RecordFormSubmissionOutcome(FormSubmissionOutcome::kNoFrameID);
@@ -486,7 +486,7 @@ void FormActivityTabHelper::FormSubmissionHandler(
   FieldDataManager* fieldDataManager =
       FieldDataManagerFactoryIOS::FromWebFrame(sender_frame);
 
-  const base::Value::Dict* form_data = message_body.FindDict("formData");
+  const base::DictValue* form_data = message_body.FindDict("formData");
   if (!form_data) {
     RecordFormSubmissionOutcome(FormSubmissionOutcome::kMissingFormData);
     return;

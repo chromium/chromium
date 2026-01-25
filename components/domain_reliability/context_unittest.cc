@@ -364,7 +364,7 @@ TEST_F(DomainReliabilityContextTest, ReportUpload) {
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  base::DictValue value = base::test::ParseJsonDict(upload_report());
   const Value::Dict* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(HasStringValue(*entry, "failure_data.custom_error",
@@ -689,7 +689,7 @@ TEST_F(DomainReliabilityContextTest, NetworkChanged) {
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  base::DictValue value = base::test::ParseJsonDict(upload_report());
   const Value::Dict* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(HasBooleanValue(*entry, "network_changed", true));
@@ -719,7 +719,7 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  base::DictValue value = base::test::ParseJsonDict(upload_report());
   const Value::Dict* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
 
@@ -752,7 +752,7 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  base::DictValue value = base::test::ParseJsonDict(upload_report());
   const Value::Dict* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
 
@@ -786,7 +786,7 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  base::DictValue value = base::test::ParseJsonDict(upload_report());
   const Value::Dict* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_broken", true));
@@ -831,7 +831,7 @@ TEST_F(DomainReliabilityContextTest, FractionalSampleRate) {
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
-  base::Value::Dict value = base::test::ParseJsonDict(upload_report());
+  base::DictValue value = base::test::ParseJsonDict(upload_report());
   const Value::Dict* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(HasDoubleValue(*entry, "sample_rate", 0.5));

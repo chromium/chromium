@@ -30,10 +30,10 @@ namespace cloud_devices {
 //   static std::string GetItemPath();
 //
 //   // Loads ticket item. Returns false if failed.
-//   static bool Load(const base::Value::Dict& dict, ContentType* option);
+//   static bool Load(const base::DictValue& dict, ContentType* option);
 //
 //   // Saves ticket item.
-//   static void Save(ContentType option, base::Value::Dict* dict);
+//   static void Save(ContentType option, base::DictValue* dict);
 
 // Represents a CDD capability that is stored as a JSON list
 // Ex: "<CAPABILITY_NAME>": [ {<VALUE>}, {<VALUE>}, {<VALUE>} ]
@@ -118,8 +118,8 @@ class SelectionCapability {
   bool LoadFrom(const CloudDeviceDescription& description);
   void SaveTo(CloudDeviceDescription* description) const;
 
-  bool LoadFrom(const base::Value::Dict& dict);
-  void SaveTo(base::Value::Dict* dict) const;
+  bool LoadFrom(const base::DictValue& dict);
+  void SaveTo(base::DictValue* dict) const;
 
   void Reset() {
     options_.clear();

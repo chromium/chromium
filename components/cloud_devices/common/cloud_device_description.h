@@ -26,7 +26,7 @@ class CloudDeviceDescription {
   ~CloudDeviceDescription();
 
   bool InitFromString(const std::string& json);
-  bool InitFromValue(base::Value::Dict value);
+  bool InitFromValue(base::DictValue value);
 
   std::string ToStringForTesting() const;
 
@@ -34,16 +34,16 @@ class CloudDeviceDescription {
 
   // Returns item of given type with capability/option.
   // Returns nullptr if missing.
-  const base::Value::Dict* GetDictItem(std::string_view path) const;
-  const base::Value::List* GetListItem(std::string_view path) const;
+  const base::DictValue* GetDictItem(std::string_view path) const;
+  const base::ListValue* GetListItem(std::string_view path) const;
 
   // Sets item with given type for capability/option. Returns false if an
   // intermediate Value in the path is not a dictionary.
-  bool SetDictItem(std::string_view path, base::Value::Dict dict);
-  bool SetListItem(std::string_view path, base::Value::List list);
+  bool SetDictItem(std::string_view path, base::DictValue dict);
+  bool SetListItem(std::string_view path, base::ListValue list);
 
  private:
-  base::Value::Dict root_;
+  base::DictValue root_;
 };
 
 }  // namespace cloud_devices

@@ -63,7 +63,7 @@ inline constexpr char kCrashesUIRequestSingleCrashUpload[] =
     "requestSingleCrashUpload";
 
 // Converts and appends the most recent uploads to |out_value|.
-void UploadListToValue(UploadList* upload_list, base::Value::List* out_value);
+void UploadListToValue(UploadList* upload_list, base::ListValue* out_value);
 
 }  // namespace crash_reporter
 

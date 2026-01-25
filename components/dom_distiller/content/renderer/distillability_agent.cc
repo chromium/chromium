@@ -79,10 +79,10 @@ void DumpDistillability(content::RenderFrame* render_frame,
                         double long_score,
                         bool long_page,
                         bool filtered) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   std::string msg;
 
-  base::Value::Dict raw_features;
+  base::DictValue raw_features;
   raw_features.Set("is_mobile_friendly", features.is_mobile_friendly);
   raw_features.Set("open_graph", features.open_graph);
   raw_features.Set("element_count", static_cast<int>(features.element_count));
@@ -99,7 +99,7 @@ void DumpDistillability(content::RenderFrame* render_frame,
   raw_features.Set("moz_score_all_linear", features.moz_score_all_linear);
   dict.Set("features", std::move(raw_features));
 
-  base::Value::List derived_features;
+  base::ListValue derived_features;
   for (double value : derived) {
     derived_features.Append(value);
   }

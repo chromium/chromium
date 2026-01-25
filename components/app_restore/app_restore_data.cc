@@ -45,17 +45,17 @@ constexpr char kBoundsInRoot[] = "bounds_in_root";
 constexpr char kPrimaryColorKey[] = "primary_color";
 constexpr char kStatusBarColorKey[] = "status_bar_color";
 
-// Converts |size| to base::Value::List, e.g. { 100, 300 }.
-base::Value::List ConvertSizeToList(const gfx::Size& size) {
-  base::Value::List size_list;
+// Converts |size| to base::ListValue, e.g. { 100, 300 }.
+base::ListValue ConvertSizeToList(const gfx::Size& size) {
+  base::ListValue size_list;
   size_list.Append(size.width());
   size_list.Append(size.height());
   return size_list;
 }
 
 // Converts |rect| to base::Value, e.g. { 0, 100, 200, 300 }.
-base::Value::List ConvertRectToList(const gfx::Rect& rect) {
-  base::Value::List rect_list;
+base::ListValue ConvertRectToList(const gfx::Rect& rect) {
+  base::ListValue rect_list;
   rect_list.Append(rect.x());
   rect_list.Append(rect.y());
   rect_list.Append(rect.width());
@@ -68,22 +68,22 @@ base::Value ConvertUintToValue(uint32_t number) {
   return base::Value(base::NumberToString(number));
 }
 
-// Gets bool value from base::Value::Dict, e.g. { "key": true } returns
+// Gets bool value from base::DictValue, e.g. { "key": true } returns
 // true.
-std::optional<bool> GetBoolValueFromDict(const base::Value::Dict& dict,
+std::optional<bool> GetBoolValueFromDict(const base::DictValue& dict,
                                          std::string_view key_name) {
   return dict.FindBool(key_name);
 }
 
-// Gets int value from base::Value::Dict, e.g. { "key": 100 } returns 100.
-std::optional<int32_t> GetIntValueFromDict(const base::Value::Dict& dict,
+// Gets int value from base::DictValue, e.g. { "key": 100 } returns 100.
+std::optional<int32_t> GetIntValueFromDict(const base::DictValue& dict,
                                            std::string_view key_name) {
   return dict.FindInt(key_name);
 }
 
-// Gets uint32_t value from base::Value::Dict, e.g. { "key": "123" } returns
+// Gets uint32_t value from base::DictValue, e.g. { "key": "123" } returns
 // 123.
-std::optional<uint32_t> GetUIntValueFromDict(const base::Value::Dict& dict,
+std::optional<uint32_t> GetUIntValueFromDict(const base::DictValue& dict,
                                              std::string_view key_name) {
   uint32_t result = 0;
   const std::string* value = dict.FindString(key_name);
@@ -93,20 +93,20 @@ std::optional<uint32_t> GetUIntValueFromDict(const base::Value::Dict& dict,
   return result;
 }
 
-std::optional<std::string> GetStringValueFromDict(const base::Value::Dict& dict,
+std::optional<std::string> GetStringValueFromDict(const base::DictValue& dict,
                                                   std::string_view key_name) {
   const std::string* value = dict.FindString(key_name);
   return value ? std::optional<std::string>(*value) : std::nullopt;
 }
 
-std::optional<GURL> GetUrlValueFromDict(const base::Value::Dict& dict,
+std::optional<GURL> GetUrlValueFromDict(const base::DictValue& dict,
                                         std::string_view key_name) {
   const std::string* value = dict.FindString(key_name);
   return value ? std::optional<GURL>(*value) : std::nullopt;
 }
 
 std::optional<std::u16string> GetU16StringValueFromDict(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string_view key_name) {
   std::u16string result;
   const std::string* value = dict.FindString(key_name);
@@ -115,9 +115,9 @@ std::optional<std::u16string> GetU16StringValueFromDict(
   return result;
 }
 
-// Gets display id from base::Value::Dict, e.g. { "display_id": "22000000" }
+// Gets display id from base::DictValue, e.g. { "display_id": "22000000" }
 // returns 22000000.
-std::optional<int64_t> GetDisplayIdFromDict(const base::Value::Dict& dict) {
+std::optional<int64_t> GetDisplayIdFromDict(const base::DictValue& dict) {
   const std::string* display_id_str = dict.FindString(kDisplayIdKey);
   int64_t display_id_value;
   if (display_id_str &&
@@ -129,8 +129,8 @@ std::optional<int64_t> GetDisplayIdFromDict(const base::Value::Dict& dict) {
 }
 
 // Gets urls from the dictionary value.
-std::vector<GURL> GetUrlsFromDict(const base::Value::Dict& dict) {
-  const base::Value::List* urls_path_value = dict.FindList(kUrlsKey);
+std::vector<GURL> GetUrlsFromDict(const base::DictValue& dict) {
+  const base::ListValue* urls_path_value = dict.FindList(kUrlsKey);
   std::vector<GURL> url_paths;
   if (!urls_path_value || urls_path_value->empty()) {
     return url_paths;
@@ -146,12 +146,11 @@ std::vector<GURL> GetUrlsFromDict(const base::Value::Dict& dict) {
   return url_paths;
 }
 
-// Gets std::vector<base::FilePath> from base::Value::Dict, e.g.
+// Gets std::vector<base::FilePath> from base::DictValue, e.g.
 // {"file_paths": { "aa.cc", "bb.h", ... }} returns
 // std::vector<base::FilePath>{"aa.cc", "bb.h", ...}.
-std::vector<base::FilePath> GetFilePathsFromDict(
-    const base::Value::Dict& dict) {
-  const base::Value::List* file_paths_value = dict.FindList(kFilePathsKey);
+std::vector<base::FilePath> GetFilePathsFromDict(const base::DictValue& dict) {
+  const base::ListValue* file_paths_value = dict.FindList(kFilePathsKey);
   std::vector<base::FilePath> file_paths;
   if (!file_paths_value || file_paths_value->empty())
     return file_paths;
@@ -167,9 +166,9 @@ std::vector<base::FilePath> GetFilePathsFromDict(
 
 // Gets gfx::Size from base::Value, e.g. { 100, 300 } returns
 // gfx::Size(100, 300).
-std::optional<gfx::Size> GetSizeFromDict(const base::Value::Dict& dict,
+std::optional<gfx::Size> GetSizeFromDict(const base::DictValue& dict,
                                          std::string_view key_name) {
-  const base::Value::List* size_value = dict.FindList(key_name);
+  const base::ListValue* size_value = dict.FindList(key_name);
   if (!size_value || size_value->size() != 2) {
     return std::nullopt;
   }
@@ -179,9 +178,9 @@ std::optional<gfx::Size> GetSizeFromDict(const base::Value::Dict& dict,
 
 // Gets gfx::Rect from base::Value, e.g. { 0, 100, 200, 300 } returns
 // gfx::Rect(0, 100, 200, 300).
-std::optional<gfx::Rect> GetBoundsRectFromDict(const base::Value::Dict& dict,
+std::optional<gfx::Rect> GetBoundsRectFromDict(const base::DictValue& dict,
                                                std::string_view key_name) {
-  const base::Value::List* rect_value = dict.FindList(key_name);
+  const base::ListValue* rect_value = dict.FindList(key_name);
   if (!rect_value || rect_value->size() != 4) {
     return std::nullopt;
   }
@@ -190,10 +189,10 @@ std::optional<gfx::Rect> GetBoundsRectFromDict(const base::Value::Dict& dict,
                    (*rect_value)[2].GetInt(), (*rect_value)[3].GetInt());
 }
 
-// Gets WindowStateType from base::Value::Dict, e.g. { "window_state_type":
+// Gets WindowStateType from base::DictValue, e.g. { "window_state_type":
 // 2 } returns WindowStateType::kMinimized.
 std::optional<chromeos::WindowStateType> GetWindowStateTypeFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   return dict.Find(kWindowStateTypeKey)
              ? std::make_optional(static_cast<chromeos::WindowStateType>(
                    dict.FindInt(kWindowStateTypeKey).value()))
@@ -201,14 +200,14 @@ std::optional<chromeos::WindowStateType> GetWindowStateTypeFromDict(
 }
 
 std::optional<ui::mojom::WindowShowState> GetPreMinimizedShowStateTypeFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   return dict.Find(kPreMinimizedShowStateTypeKey)
              ? std::make_optional(static_cast<ui::mojom::WindowShowState>(
                    dict.FindInt(kPreMinimizedShowStateTypeKey).value()))
              : std::nullopt;
 }
 
-base::Uuid GetGuidValueFromDict(const base::Value::Dict& dict,
+base::Uuid GetGuidValueFromDict(const base::DictValue& dict,
                                 const std::string& key_name) {
   if (const std::string* value = dict.FindString(key_name)) {
     return base::Uuid::ParseCaseInsensitive(*value);
@@ -219,7 +218,7 @@ base::Uuid GetGuidValueFromDict(const base::Value::Dict& dict,
 template <typename T>
 void SetValueIntoDict(std::optional<T> value,
                       std::string_view key,
-                      base::Value::Dict& dict) {
+                      base::DictValue& dict) {
   if (value) {
     dict.Set(key, *value);
   }
@@ -229,7 +228,7 @@ void SetValueIntoDict(std::optional<T> value,
 
 AppRestoreData::AppRestoreData() = default;
 
-AppRestoreData::AppRestoreData(base::Value::Dict&& data) {
+AppRestoreData::AppRestoreData(base::DictValue&& data) {
   event_flag = GetIntValueFromDict(data, kEventFlagKey);
   container = GetIntValueFromDict(data, kContainerKey);
   disposition = GetIntValueFromDict(data, kDispositionKey);
@@ -237,7 +236,7 @@ AppRestoreData::AppRestoreData(base::Value::Dict&& data) {
   display_id = GetDisplayIdFromDict(data);
   handler_id = GetStringValueFromDict(data, kHandlerIdKey);
   file_paths = GetFilePathsFromDict(data);
-  if (const base::Value::Dict* intent_value = data.FindDict(kIntentKey)) {
+  if (const base::DictValue* intent_value = data.FindDict(kIntentKey)) {
     intent = apps_util::ConvertDictToIntent(*intent_value);
   }
 
@@ -315,7 +314,7 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 }
 
 base::Value AppRestoreData::ConvertToValue() const {
-  base::Value::Dict launch_info_dict;
+  base::DictValue launch_info_dict;
 
   SetValueIntoDict(event_flag, kEventFlagKey, launch_info_dict);
   SetValueIntoDict(container, kContainerKey, launch_info_dict);
@@ -333,7 +332,7 @@ base::Value AppRestoreData::ConvertToValue() const {
   SetValueIntoDict(handler_id, kHandlerIdKey, launch_info_dict);
 
   if (!file_paths.empty()) {
-    base::Value::List file_paths_list;
+    base::ListValue file_paths_list;
     for (const base::FilePath& file_path : file_paths) {
       file_paths_list.Append(file_path.value());
     }
@@ -345,7 +344,7 @@ base::Value AppRestoreData::ConvertToValue() const {
   }
 
   if (!browser_extra_info.urls.empty()) {
-    base::Value::List urls_list;
+    base::ListValue urls_list;
     for (const GURL& url : browser_extra_info.urls) {
       urls_list.Append(url.spec());
     }

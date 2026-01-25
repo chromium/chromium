@@ -40,7 +40,7 @@ enum class AttributionScopesError {
 };
 
 base::expected<AttributionScopesSet, AttributionScopesError> ScopesFromJSON(
-    base::Value::List* list,
+    base::ListValue* list,
     size_t max_string_size,
     size_t max_set_size) {
   if (!list) {
@@ -66,11 +66,11 @@ base::expected<AttributionScopesSet, AttributionScopesError> ScopesFromJSON(
 
 void Serialize(const base::flat_set<std::string>& scopes,
                std::string_view key,
-               base::Value::Dict& dict) {
+               base::DictValue& dict) {
   if (scopes.empty()) {
     return;
   }
-  auto list = base::Value::List::with_capacity(scopes.size());
+  auto list = base::ListValue::with_capacity(scopes.size());
   for (const auto& scope : scopes) {
     list.Append(scope);
   }
@@ -81,7 +81,7 @@ void Serialize(const base::flat_set<std::string>& scopes,
 
 // static
 base::expected<AttributionScopesSet, SourceRegistrationError>
-AttributionScopesSet::FromJSON(base::Value::Dict& reg,
+AttributionScopesSet::FromJSON(base::DictValue& reg,
                                uint32_t attribution_scope_limit) {
   base::Value* scopes_value = reg.Find(kValues);
   if (!scopes_value) {
@@ -89,7 +89,7 @@ AttributionScopesSet::FromJSON(base::Value::Dict& reg,
         SourceRegistrationError::kAttributionScopesListInvalid);
   }
 
-  base::Value::List* scopes_list = scopes_value->GetIfList();
+  base::ListValue* scopes_list = scopes_value->GetIfList();
   if (!scopes_list || scopes_list->empty()) {
     return base::unexpected(
         SourceRegistrationError::kAttributionScopesListInvalid);
@@ -114,13 +114,13 @@ AttributionScopesSet::FromJSON(base::Value::Dict& reg,
 
 // static
 base::expected<AttributionScopesSet, TriggerRegistrationError>
-AttributionScopesSet::FromJSON(base::Value::Dict& reg) {
+AttributionScopesSet::FromJSON(base::DictValue& reg) {
   base::Value* scopes_value = reg.Find(kAttributionScopes);
   if (!scopes_value) {
     return AttributionScopesSet();
   }
 
-  base::Value::List* scopes_list = scopes_value->GetIfList();
+  base::ListValue* scopes_list = scopes_value->GetIfList();
   if (!scopes_list) {
     return base::unexpected(
         TriggerRegistrationError::kAttributionScopesInvalid);
@@ -169,11 +169,11 @@ bool AttributionScopesSet::IsValidForSource(uint32_t scope_limit) const {
          });
 }
 
-void AttributionScopesSet::SerializeForSource(base::Value::Dict& dict) const {
+void AttributionScopesSet::SerializeForSource(base::DictValue& dict) const {
   Serialize(scopes_, kValues, dict);
 }
 
-void AttributionScopesSet::SerializeForTrigger(base::Value::Dict& dict) const {
+void AttributionScopesSet::SerializeForTrigger(base::DictValue& dict) const {
   Serialize(scopes_, kAttributionScopes, dict);
 }
 

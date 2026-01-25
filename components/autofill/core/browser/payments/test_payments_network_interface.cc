@@ -65,7 +65,7 @@ void TestPaymentsNetworkInterface::GetCardUploadDetails(
     const std::string& app_locale,
     base::OnceCallback<void(PaymentsRpcResult,
                             const std::u16string&,
-                            std::unique_ptr<base::Value::Dict>,
+                            std::unique_ptr<base::DictValue>,
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
     const int64_t billing_customer_number,
@@ -161,19 +161,18 @@ void TestPaymentsNetworkInterface::SetFidoRequestOptionsInUnmaskDetails(
   //       "authenticator_transport_support": ["INTERNAL"]
   // }]}
 
-  auto key_info =
-      base::Value::Dict().Set("authenticator_transport_support",
-                              base::Value::List().Append("INTERNAL"));
+  auto key_info = base::DictValue().Set("authenticator_transport_support",
+                                        base::ListValue().Append("INTERNAL"));
   if (!credential_id.empty()) {
     key_info.Set("credential_id", base::Value(credential_id));
   }
 
   unmask_details_.fido_request_options =
-      base::Value::Dict()
+      base::DictValue()
           .Set("challenge", base::Value(kTestChallenge))
           .Set("timeout_millis", base::Value(kTestTimeoutSeconds))
           .Set("relying_party_id", base::Value(relying_party_id))
-          .Set("key_info", base::Value::List().Append(std::move(key_info)));
+          .Set("key_info", base::ListValue().Append(std::move(key_info)));
 }
 
 void TestPaymentsNetworkInterface::SetUploadCardResponseDetailsForUploadCard(
@@ -197,7 +196,7 @@ void TestPaymentsNetworkInterface::SetUseLegalMessageWithMultipleLinesInGetUploa
       use_legal_message_with_multiple_lines;
 }
 
-std::unique_ptr<base::Value::Dict> TestPaymentsNetworkInterface::LegalMessage() {
+std::unique_ptr<base::DictValue> TestPaymentsNetworkInterface::LegalMessage() {
   std::optional<base::Value> parsed_json;
   if (use_invalid_legal_message_) {
     // Legal message is invalid because it's missing the url.
@@ -265,7 +264,7 @@ std::unique_ptr<base::Value::Dict> TestPaymentsNetworkInterface::LegalMessage() 
   }
   // TODO(crbug.com/40826246): Refactor when `base::JSONReader::Read` is updated
   // to return a Dict.
-  return std::make_unique<base::Value::Dict>(std::move(parsed_json->GetDict()));
+  return std::make_unique<base::DictValue>(std::move(parsed_json->GetDict()));
 }
 
 }  // namespace autofill::payments

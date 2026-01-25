@@ -29,7 +29,7 @@ bool IsEventLevelEpsilonValid(double epsilon) {
 
 // static
 base::expected<EventLevelEpsilon, SourceRegistrationError>
-EventLevelEpsilon::Parse(const base::Value::Dict& dict) {
+EventLevelEpsilon::Parse(const base::DictValue& dict) {
   const base::Value* value = dict.Find(kEventLevelEpsilon);
   if (!value) {
     return EventLevelEpsilon();
@@ -59,7 +59,7 @@ bool EventLevelEpsilon::SetIfValid(double epsilon) {
   return true;
 }
 
-void EventLevelEpsilon::Serialize(base::Value::Dict& dict) const {
+void EventLevelEpsilon::Serialize(base::DictValue& dict) const {
   dict.Set(kEventLevelEpsilon, epsilon_);
 }
 

@@ -24,7 +24,7 @@ const char kTestText[] = "abcd1234";
 
 auto JsonHasText(std::string_view text) {
   return testing::ResultOf(
-      [](const base::Value::Dict& dict) {
+      [](const base::DictValue& dict) {
         const std::string* value = dict.FindString("value");
         return value ? *value : "";
       },
@@ -38,7 +38,7 @@ class MockLogReceiver : public LogReceiver {
   MockLogReceiver(const MockLogReceiver&) = delete;
   MockLogReceiver& operator=(const MockLogReceiver&) = delete;
 
-  MOCK_METHOD(void, LogEntry, (const base::Value::Dict&), (override));
+  MOCK_METHOD(void, LogEntry, (const base::DictValue&), (override));
 };
 
 class MockNotifiedObject {

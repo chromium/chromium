@@ -28,7 +28,7 @@ class UnmaskIbanRequestTest : public testing::Test {
 
   UnmaskIbanRequest* GetRequest() { return request_.get(); }
 
-  void ParseResponse(const base::Value::Dict& response) {
+  void ParseResponse(const base::DictValue& response) {
     request_->ParseResponse(response);
   }
 
@@ -71,8 +71,8 @@ TEST_F(UnmaskIbanRequestTest, GetRequestContent) {
 }
 
 TEST_F(UnmaskIbanRequestTest, ParseResponse_ResponseIsComplete) {
-  base::Value::Dict response = base::Value::Dict().Set(
-      "iban_info", base::Value::Dict().Set("value", u"DE75512108001245126199"));
+  base::DictValue response = base::DictValue().Set(
+      "iban_info", base::DictValue().Set("value", u"DE75512108001245126199"));
 
   ParseResponse(response);
 
@@ -80,7 +80,7 @@ TEST_F(UnmaskIbanRequestTest, ParseResponse_ResponseIsComplete) {
 }
 
 TEST_F(UnmaskIbanRequestTest, ParseResponse_MissingValue) {
-  base::Value::Dict response;
+  base::DictValue response;
 
   ParseResponse(response);
 

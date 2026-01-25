@@ -716,7 +716,7 @@ TEST(EventReportWindowsTest, Serialize) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::Value::Dict actual;
+    base::DictValue actual;
     test_case.input.Serialize(actual);
     EXPECT_THAT(actual, base::test::IsJson(test_case.expected));
   }

@@ -236,7 +236,7 @@ std::string SerializeJFVHeader(const base::Value& value) {
 
 std::vector<URLRequestContextConfig::PreloadedNelAndReportingHeader>
 ParseNetworkErrorLoggingHeaders(
-    const base::Value::List& preloaded_headers_config) {
+    const base::ListValue& preloaded_headers_config) {
   std::vector<URLRequestContextConfig::PreloadedNelAndReportingHeader> result;
   for (const auto& preloaded_header_config : preloaded_headers_config) {
     if (!preloaded_header_config.is_dict())
@@ -307,7 +307,7 @@ URLRequestContextConfig::URLRequestContextConfig(
     const std::string& storage_path,
     const std::string& accept_language,
     const std::string& user_agent,
-    base::Value::Dict experimental_options,
+    base::DictValue experimental_options,
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
@@ -355,7 +355,7 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
     bool bypass_public_key_pinning_for_local_trust_anchors,
     std::optional<int> network_thread_priority,
     std::optional<cronet::proto::ProxyOptions> proxy_options) {
-  std::optional<base::Value::Dict> experimental_options =
+  std::optional<base::DictValue> experimental_options =
       ParseExperimentalOptions(unparsed_experimental_options);
   if (!experimental_options) {
     // For the time being maintain backward compatibility by only failing to
@@ -363,7 +363,7 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
     if (ExperimentalOptionsParsingIsAllowedToFail())
       return nullptr;
     else
-      experimental_options = base::Value::Dict();
+      experimental_options = base::DictValue();
   }
   return base::WrapUnique(new URLRequestContextConfig(
       enable_quic, enable_spdy, enable_brotli, http_cache, http_cache_max_size,
@@ -375,7 +375,7 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
 }
 
 // static
-std::optional<base::Value::Dict>
+std::optional<base::DictValue>
 URLRequestContextConfig::ParseExperimentalOptions(
     std::string unparsed_experimental_options) {
   // From a user perspective no experimental options means an empty string. The
@@ -392,7 +392,7 @@ URLRequestContextConfig::ParseExperimentalOptions(
     return std::nullopt;
   }
 
-  base::Value::Dict* experimental_options_dict = parsed_json->GetIfDict();
+  base::DictValue* experimental_options_dict = parsed_json->GetIfDict();
   if (!experimental_options_dict) {
     LOG(ERROR) << "Experimental options string is not a dictionary: "
                << *parsed_json;
@@ -454,7 +454,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
         continue;
       }
 
-      const base::Value::Dict& quic_args = iter->second.GetDict();
+      const base::DictValue& quic_args = iter->second.GetDict();
       const std::string* quic_version_string =
           quic_args.FindString(kQuicVersion);
       if (quic_version_string) {
@@ -629,7 +629,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
         effective_experimental_options.Remove(iter->first);
         continue;
       }
-      const base::Value::Dict& async_dns_args = iter->second.GetDict();
+      const base::DictValue& async_dns_args = iter->second.GetDict();
       async_dns_enable =
           async_dns_args.FindBool(kAsyncDnsEnable).value_or(async_dns_enable);
     } else if (iter->first == kStaleDnsFieldTrialName) {
@@ -639,7 +639,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
         effective_experimental_options.Remove(iter->first);
         continue;
       }
-      const base::Value::Dict& stale_dns_args = iter->second.GetDict();
+      const base::DictValue& stale_dns_args = iter->second.GetDict();
       stale_dns_enable =
           stale_dns_args.FindBool(kStaleDnsEnable).value_or(false);
 
@@ -674,8 +674,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
         effective_experimental_options.Remove(iter->first);
         continue;
       }
-      const base::Value::Dict& host_resolver_rules_args =
-          iter->second.GetDict();
+      const base::DictValue& host_resolver_rules_args = iter->second.GetDict();
       host_resolver_rules_string =
           host_resolver_rules_args.FindString(kHostResolverRules);
       host_resolver_rules_enable = !!host_resolver_rules_string;
@@ -686,7 +685,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
         effective_experimental_options.Remove(iter->first);
         continue;
       }
-      const base::Value::Dict& args = iter->second.GetDict();
+      const base::DictValue& args = iter->second.GetDict();
       https_svcb_options = net::HostResolver::HttpsSvcbOptions::FromDict(args);
       session_params->use_dns_https_svcb_alpn =
           args.FindBool(kUseDnsHttpsSvcbUseAlpn)
@@ -698,7 +697,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
         effective_experimental_options.Remove(iter->first);
         continue;
       }
-      const base::Value::Dict& nel_args = iter->second.GetDict();
+      const base::DictValue& nel_args = iter->second.GetDict();
       nel_enable =
           nel_args.FindBool(kNetworkErrorLoggingEnable).value_or(nel_enable);
 
@@ -745,7 +744,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
         continue;
       }
 
-      const base::Value::Dict& nqe_args = iter->second.GetDict();
+      const base::DictValue& nqe_args = iter->second.GetDict();
       const std::string* nqe_option =
           nqe_args.FindString(net::kForceEffectiveConnectionType);
       if (nqe_option) {

@@ -45,7 +45,7 @@ class PaymentsRequest {
   virtual std::string GetRequestContent() = 0;
 
   // Parses the required elements of the HTTP response.
-  virtual void ParseResponse(const base::Value::Dict& response) = 0;
+  virtual void ParseResponse(const base::DictValue& response) = 0;
 
   // Returns true if all of the required elements were successfully retrieved by
   // a call to ParseResponse.
@@ -81,11 +81,11 @@ class PaymentsRequest {
   virtual std::optional<base::TimeDelta> GetTimeout() const;
 
   // Shared helper function to build the risk data sent in the request.
-  static base::Value::Dict BuildRiskDictionary(
+  static base::DictValue BuildRiskDictionary(
       std::string_view encoded_risk_data);
 
   // Shared helper function to build the customer context sent in the request.
-  static base::Value::Dict BuildCustomerContextDictionary(
+  static base::DictValue BuildCustomerContextDictionary(
       int64_t external_customer_id);
 
  protected:
@@ -93,40 +93,39 @@ class PaymentsRequest {
   // set in the payment requests.
   // Note: `full_sync_enabled` is being deprecated. Don't call this in new code.
   // Use the below function instead.
-  base::Value::Dict BuildChromeUserContext(
+  base::DictValue BuildChromeUserContext(
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       bool full_sync_enabled);
-  base::Value::Dict BuildChromeUserContext(
+  base::DictValue BuildChromeUserContext(
       const std::vector<ClientBehaviorConstants>& client_behavior_signals);
 
   // Shared helper functoin that returns a dictionary with the structure
   // expected by Payments RPCs, containing each of the fields in |profile|,
   // formatted according to |app_locale|. If |include_non_location_data| is
   // false, the name and phone number in |profile| are not included.
-  base::Value::Dict BuildAddressDictionary(const AutofillProfile& profile,
-                                           const std::string& app_locale,
-                                           bool include_non_location_data);
+  base::DictValue BuildAddressDictionary(const AutofillProfile& profile,
+                                         const std::string& app_locale,
+                                         bool include_non_location_data);
 
   // Shared helper function that returns a dictionary of the credit card with
   // the structure expected by Payments RPCs, containing expiration month,
   // expiration year and cardholder name (if any) fields in |credit_card|,
   // formatted according to |app_locale|. |pan_field_name| is the field name for
   // the encrypted pan. We use each credit card's guid as the unique id.
-  base::Value::Dict BuildCreditCardDictionary(
-      const CreditCard& credit_card,
-      const std::string& app_locale,
-      const std::string& pan_field_name);
+  base::DictValue BuildCreditCardDictionary(const CreditCard& credit_card,
+                                            const std::string& app_locale,
+                                            const std::string& pan_field_name);
 
   // Shared helper functions for string operations.
   static void AppendStringIfNotEmpty(const AutofillProfile& profile,
                                      const FieldType& type,
                                      const std::string& app_locale,
-                                     base::Value::List& list);
+                                     base::ListValue& list);
   static void SetStringIfNotEmpty(const FormGroup& form_group,
                                   const FieldType& type,
                                   const std::string& app_locale,
                                   const std::string& path,
-                                  base::Value::Dict& dictionary);
+                                  base::DictValue& dictionary);
 
   // Helper for ParseResponse(). Input format should be "1234,30000-55555,765",
   // where ranges are separated by commas and items separated with a dash means

@@ -34,11 +34,11 @@ class LogRouter : public KeyedService {
   ~LogRouter() override;
 
   // Returns a JSON entry that can be fed into the logger.
-  static base::Value::Dict CreateEntryForText(const std::string& text);
+  static base::DictValue CreateEntryForText(const std::string& text);
 
   // Passes logs to the router. Only call when there are receivers registered.
   void ProcessLog(const std::string& text);
-  void ProcessLog(const base::Value::Dict& node);
+  void ProcessLog(const base::DictValue& node);
 
   // Enables recording autofill-internals logs to LOG(INFO).
   void LogToTerminal();

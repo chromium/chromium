@@ -81,7 +81,7 @@ void SavePasswordProgressLogger::LogHTMLForm(
     SavePasswordProgressLogger::StringID label,
     const std::string& name_or_id,
     const GURL& action) {
-  base::Value::Dict log;
+  base::DictValue log;
   log.Set(GetStringFromID(STRING_NAME_OR_ID), ScrubElementID(name_or_id));
   log.Set(GetStringFromID(STRING_ACTION), ScrubURL(action));
   LogValue(label, base::Value(std::move(log)));

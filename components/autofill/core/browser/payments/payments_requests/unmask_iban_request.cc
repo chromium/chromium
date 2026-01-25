@@ -41,8 +41,8 @@ std::string UnmaskIbanRequest::GetRequestContentType() {
 }
 
 std::string UnmaskIbanRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
-  base::Value::Dict context;
+  base::DictValue request_dict;
+  base::DictValue context;
   context.Set("billable_service",
               payments::kUnmaskPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
@@ -52,7 +52,7 @@ std::string UnmaskIbanRequest::GetRequestContent() {
   }
   request_dict.Set("context", std::move(context));
 
-  base::Value::Dict chrome_user_context;
+  base::DictValue chrome_user_context;
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
 
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
@@ -61,7 +61,7 @@ std::string UnmaskIbanRequest::GetRequestContent() {
 
   // iban_info must always be set, even if blank, so that the Payments server
   // knows this is an UnmaskIbanRequest.
-  base::Value::Dict iban_info;
+  base::DictValue iban_info;
   request_dict.Set("iban_info", std::move(iban_info));
 
   std::string json_request = base::WriteJson(request_dict).value();
@@ -71,8 +71,8 @@ std::string UnmaskIbanRequest::GetRequestContent() {
   return request_content;
 }
 
-void UnmaskIbanRequest::ParseResponse(const base::Value::Dict& response) {
-  if (const base::Value::Dict* iban_info = response.FindDict("iban_info")) {
+void UnmaskIbanRequest::ParseResponse(const base::DictValue& response) {
+  if (const base::DictValue* iban_info = response.FindDict("iban_info")) {
     if (const std::string* value = iban_info->FindString("value")) {
       value_ = base::UTF8ToUTF16(*value);
     }

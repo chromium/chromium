@@ -49,8 +49,8 @@ class EpochTopics {
   ~EpochTopics();
 
   // Serialization functions for storing in prefs.
-  static EpochTopics FromDictValue(const base::Value::Dict& dict_value);
-  base::Value::Dict ToDictValue() const;
+  static EpochTopics FromDictValue(const base::DictValue& dict_value);
+  base::DictValue ToDictValue() const;
 
   // Calculate the candidate topic to expose on `top_domain` when requested by a
   // context where the domain hash is `hashed_context_domain`. The candidate

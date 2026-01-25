@@ -42,8 +42,8 @@ GetDetailsForUpdateBnplPaymentInstrumentRequest::GetRequestContentType() {
 
 std::string
 GetDetailsForUpdateBnplPaymentInstrumentRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
-  base::Value::Dict context;
+  base::DictValue request_dict;
+  base::DictValue context;
   context.Set("language_code", request_details_.app_locale);
   context.Set("billable_service",
               payments::kUploadPaymentMethodBillableServiceNumber);
@@ -54,14 +54,14 @@ GetDetailsForUpdateBnplPaymentInstrumentRequest::GetRequestContent() {
   }
   request_dict.Set("context", std::move(context));
 
-  base::Value::Dict chrome_user_context = BuildChromeUserContext(
+  base::DictValue chrome_user_context = BuildChromeUserContext(
       request_details_.client_behavior_signals, full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
   request_dict.Set("instrument_id",
                    base::NumberToString(request_details_.instrument_id));
 
-  base::Value::Dict buy_now_pay_later_info;
+  base::DictValue buy_now_pay_later_info;
   buy_now_pay_later_info.Set("type", static_cast<int>(request_details_.type));
   buy_now_pay_later_info.Set("issuer_id",
                              std::move(request_details_.issuer_id));
@@ -71,14 +71,14 @@ GetDetailsForUpdateBnplPaymentInstrumentRequest::GetRequestContent() {
 }
 
 void GetDetailsForUpdateBnplPaymentInstrumentRequest::ParseResponse(
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   if (const std::string* context_token = response.FindString("context_token")) {
     context_token_ = context_token ? *context_token : std::string();
   }
 
-  if (const base::Value::Dict* buy_now_pay_later_details_value =
+  if (const base::DictValue* buy_now_pay_later_details_value =
           response.FindDict("buy_now_pay_later_details")) {
-    if (const base::Value::Dict* legal_message_value =
+    if (const base::DictValue* legal_message_value =
             buy_now_pay_later_details_value->FindDict("legal_message")) {
       LegalMessageLine::Parse(*legal_message_value, &legal_message_,
                               /*escape_apostrophes=*/true);

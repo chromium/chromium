@@ -620,7 +620,7 @@ void CreditCardAccessManager::Authenticate(
       // come from the risk based authentication response. But for masked server
       // cards if the risk based auth is not available, `fido_request_options`
       // comes from the UnmaskDetails.
-      base::Value::Dict fido_request_options;
+      base::DictValue fido_request_options;
       std::optional<std::string> context_token;
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
         context_token = risk_based_authentication_response_.context_token;
@@ -768,7 +768,7 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
   } else if (should_register_card_with_fido) {
 #if !BUILDFLAG(IS_IOS)
-    base::Value::Dict request_options;
+    base::DictValue request_options;
     if (!unmask_details_.fido_request_options.empty()) {
       // For opted-in user (CVC then FIDO case), request options are returned in
       // unmask detail response.

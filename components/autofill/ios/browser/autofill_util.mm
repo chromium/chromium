@@ -137,7 +137,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
 
   // Iterate through all the extracted forms and copy the data from JSON into
   // BrowserAutofillManager structures.
-  const base::Value::List& form_list = forms_value->GetList();
+  const base::ListValue& form_list = forms_value->GetList();
   std::vector<FormData> forms_data;
   forms_data.reserve(form_list.size());
   for (const auto& form_value : form_list) {
@@ -157,7 +157,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
 }
 
 base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
-    const base::Value::Dict& form,
+    const base::DictValue& form,
     base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& form_frame_origin,
@@ -247,7 +247,7 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
 
   if (include_frame_metadata) {
     // Child frame tokens, optional.
-    if (const base::Value::List* child_frames_list =
+    if (const base::ListValue* child_frames_list =
             form.FindList("child_frames")) {
       std::vector<FrameTokenWithPredecessor> child_frames;
       for (const auto& frame_dict : *child_frames_list) {
@@ -262,7 +262,7 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
   }
 
   // Field list (mandatory) is extracted.
-  const base::Value::List* fields_list = form.FindList("fields");
+  const base::ListValue* fields_list = form.FindList("fields");
   if (!fields_list) {
     return base::unexpected(ExtractFormDataFailure::kMissingFields);
   }
@@ -299,7 +299,7 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
   return form_data;
 }
 
-bool ExtractFormFieldData(const base::Value::Dict& field,
+bool ExtractFormFieldData(const base::DictValue& field,
                           const FieldDataManager& field_data_manager,
                           FormFieldData* field_data) {
   const std::string* name;
@@ -395,8 +395,8 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   // TODO(crbug.com/40391162): Extract |text_direction|.
 
   // Load option values where present.
-  const base::Value::List* option_values = field.FindList("option_values");
-  const base::Value::List* option_texts = field.FindList("option_texts");
+  const base::ListValue* option_values = field.FindList("option_values");
+  const base::ListValue* option_texts = field.FindList("option_texts");
   if (option_values && option_texts) {
     if (option_values->size() != option_texts->size()) {
       return false;
@@ -427,7 +427,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
 }
 
 bool ExtractRemoteFrameToken(
-    const base::Value::Dict& frame_data,
+    const base::DictValue& frame_data,
     FrameTokenWithPredecessor* token_with_predecessor) {
   const std::string* frame_id = frame_data.FindString("token");
   if (!frame_id) {
@@ -471,7 +471,7 @@ JavaScriptResultCallback CreateBoolCallback(
 }
 
 void ExecuteJavaScriptFunction(const std::string& name,
-                               const base::Value::List& parameters,
+                               const base::ListValue& parameters,
                                web::WebFrame* frame,
                                JavaScriptResultCallback callback) {
   __block JavaScriptResultCallback cb = std::move(callback);

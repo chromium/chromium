@@ -99,8 +99,8 @@ TEST(AggregationKeysTest, FromJSON_CheckSize) {
     size_t key_count;
     size_t key_size;
 
-    base::Value::Dict GetHeader() const {
-      base::Value::Dict dict;
+    base::DictValue GetHeader() const {
+      base::DictValue dict;
       for (size_t i = 0u; i < key_count; ++i) {
         dict.Set(GetKey(i), "0x1");
       }

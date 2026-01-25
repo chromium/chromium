@@ -28,7 +28,7 @@ FormRemovalParams::FormRemovalParams(const FormRemovalParams& other) = default;
 FormRemovalParams::~FormRemovalParams() = default;
 
 bool BaseFormActivityParams::FromMessage(const web::ScriptMessage& message,
-                                         const base::Value::Dict** message_body,
+                                         const base::DictValue** message_body,
                                          BaseFormActivityParams* params) {
   if (!message.body() || !message.body()->is_dict()) {
     // Ignore invalid message.
@@ -60,7 +60,7 @@ std::ostream& operator<<(std::ostream& os,
 
 bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
                                      FormActivityParams* params) {
-  const base::Value::Dict* message_body = nullptr;
+  const base::DictValue* message_body = nullptr;
   if (!BaseFormActivityParams::FromMessage(message, &message_body, params)) {
     return false;
   }
@@ -145,7 +145,7 @@ std::ostream& operator<<(std::ostream& os, const FormActivityParams& params) {
 
 bool FormRemovalParams::FromMessage(const web::ScriptMessage& message,
                                     FormRemovalParams* params) {
-  const base::Value::Dict* message_body = nullptr;
+  const base::DictValue* message_body = nullptr;
   if (!BaseFormActivityParams::FromMessage(message, &message_body, params)) {
     return false;
   }

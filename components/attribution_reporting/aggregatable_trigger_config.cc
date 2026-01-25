@@ -118,7 +118,7 @@ ParseTriggerContextId(base::Value* value) {
 
 // static
 base::expected<AggregatableTriggerConfig, TriggerRegistrationError>
-AggregatableTriggerConfig::Parse(base::Value::Dict& dict) {
+AggregatableTriggerConfig::Parse(base::DictValue& dict) {
   ASSIGN_OR_RETURN(SourceRegistrationTimeConfig source_registration_time_config,
                    ParseAggregatableSourceRegistrationTime(
                        dict.Find(kAggregatableSourceRegistrationTime)));
@@ -184,7 +184,7 @@ AggregatableTriggerConfig& AggregatableTriggerConfig::operator=(
 
 AggregatableTriggerConfig::~AggregatableTriggerConfig() = default;
 
-void AggregatableTriggerConfig::Serialize(base::Value::Dict& dict) const {
+void AggregatableTriggerConfig::Serialize(base::DictValue& dict) const {
   dict.Set(kAggregatableSourceRegistrationTime,
            SerializeAggregatableSourceRegistrationTime(
                source_registration_time_config_));

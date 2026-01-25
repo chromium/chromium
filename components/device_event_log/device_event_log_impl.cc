@@ -166,9 +166,9 @@ std::string LogEntryToString(const DeviceEventLogImpl::LogEntry& log_entry,
   return line;
 }
 
-base::Value::Dict LogEntryToDictionary(
+base::DictValue LogEntryToDictionary(
     const DeviceEventLogImpl::LogEntry& log_entry) {
-  base::Value::Dict entry_dict;
+  base::DictValue entry_dict;
   entry_dict.Set("timestamp", DateAndTimeWithMicroseconds(log_entry.time));
   entry_dict.Set("timestampshort", TimeWithSeconds(log_entry.time));
   entry_dict.Set("level", kLogLevelName[log_entry.log_level]);
@@ -393,7 +393,7 @@ std::string DeviceEventLogImpl::GetAsString(StringOrder order,
   GetLogTypes(types, &include_types, &exclude_types);
 
   std::string result;
-  base::Value::List log_entries;
+  base::ListValue log_entries;
   if (order == OLDEST_FIRST) {
     size_t offset = 0;
     if (max_events > 0 && max_events < entries_.size()) {

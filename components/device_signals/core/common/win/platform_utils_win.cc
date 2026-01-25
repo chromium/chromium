@@ -230,7 +230,7 @@ std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
                          KEY_QUERY_VALUE | KEY_WOW64_64KEY);
 
   if (result == ERROR_SUCCESS && key.Valid()) {
-    base::Value::Dict crowdstrike_info;
+    base::DictValue crowdstrike_info;
 
     auto customer_id = GetHexStringRegValue(key, kCSCURegKey);
     if (customer_id) {

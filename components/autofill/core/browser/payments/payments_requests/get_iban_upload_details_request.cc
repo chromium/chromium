@@ -23,7 +23,7 @@ GetIbanUploadDetailsRequest::GetIbanUploadDetailsRequest(
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const std::u16string& validation_regex,
                             const std::u16string& context_token,
-                            std::unique_ptr<base::Value::Dict>)> callback)
+                            std::unique_ptr<base::DictValue>)> callback)
     : full_sync_enabled_(full_sync_enabled),
       app_locale_(app_locale),
       billing_customer_number_(billing_customer_number),
@@ -41,8 +41,8 @@ std::string GetIbanUploadDetailsRequest::GetRequestContentType() {
 }
 
 std::string GetIbanUploadDetailsRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
-  base::Value::Dict context;
+  base::DictValue request_dict;
+  base::DictValue context;
   context.Set("language_code", app_locale_);
   context.Set("billable_service",
               payments::kUploadPaymentMethodBillableServiceNumber);
@@ -51,10 +51,10 @@ std::string GetIbanUploadDetailsRequest::GetRequestContent() {
                 BuildCustomerContextDictionary(billing_customer_number_));
   }
   request_dict.Set("context", std::move(context));
-  base::Value::Dict chrome_user_context;
+  base::DictValue chrome_user_context;
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
-  base::Value::Dict iban_info;
+  base::DictValue iban_info;
   iban_info.Set("iban_region_code", country_code_);
   request_dict.Set("iban_info", std::move(iban_info));
 
@@ -62,9 +62,8 @@ std::string GetIbanUploadDetailsRequest::GetRequestContent() {
 }
 
 void GetIbanUploadDetailsRequest::ParseResponse(
-    const base::Value::Dict& response) {
-  if (const base::Value::Dict* iban_details =
-          response.FindDict("iban_details")) {
+    const base::DictValue& response) {
+  if (const base::DictValue* iban_details = response.FindDict("iban_details")) {
     if (const std::string* validation_regex =
             iban_details->FindString("validation_regex")) {
       validation_regex_ = base::UTF8ToUTF16(*validation_regex);
@@ -75,10 +74,10 @@ void GetIbanUploadDetailsRequest::ParseResponse(
     context_token_ = base::UTF8ToUTF16(*context_token);
   }
 
-  if (const base::Value::Dict* legal_message_value =
+  if (const base::DictValue* legal_message_value =
           response.FindDict("legal_message")) {
     legal_message_ =
-        std::make_unique<base::Value::Dict>(legal_message_value->Clone());
+        std::make_unique<base::DictValue>(legal_message_value->Clone());
   }
 }
 

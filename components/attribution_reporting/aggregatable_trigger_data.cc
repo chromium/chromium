@@ -27,7 +27,7 @@ namespace {
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
-    const base::Value::Dict& registration) {
+    const base::DictValue& registration) {
   const base::Value* v = registration.Find(kKeyPiece);
   if (!v) {
     return base::unexpected(
@@ -40,13 +40,13 @@ base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
 }
 
 base::expected<AggregatableTriggerData::Keys, TriggerRegistrationError>
-ParseSourceKeys(base::Value::Dict& registration) {
+ParseSourceKeys(base::DictValue& registration) {
   base::Value* v = registration.Find(kSourceKeys);
   if (!v) {
     return AggregatableTriggerData::Keys();
   }
 
-  base::Value::List* l = v->GetIfList();
+  base::ListValue* l = v->GetIfList();
   if (!l) {
     return base::unexpected(
         TriggerRegistrationError::kAggregatableTriggerDataSourceKeysInvalid);
@@ -62,13 +62,13 @@ ParseSourceKeys(base::Value::Dict& registration) {
       });
 }
 
-void SerializeSourceKeysIfNotEmpty(base::Value::Dict& dict,
+void SerializeSourceKeysIfNotEmpty(base::DictValue& dict,
                                    const AggregatableTriggerData::Keys& keys) {
   if (keys.empty()) {
     return;
   }
 
-  auto list = base::Value::List::with_capacity(keys.size());
+  auto list = base::ListValue::with_capacity(keys.size());
   for (const std::string& key : keys) {
     list.Append(key);
   }
@@ -80,7 +80,7 @@ void SerializeSourceKeysIfNotEmpty(base::Value::Dict& dict,
 // static
 base::expected<AggregatableTriggerData, TriggerRegistrationError>
 AggregatableTriggerData::FromJSON(base::Value& value) {
-  base::Value::Dict* dict = value.GetIfDict();
+  base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     return base::unexpected(
         TriggerRegistrationError::kAggregatableTriggerDataWrongType);
@@ -116,8 +116,8 @@ AggregatableTriggerData::AggregatableTriggerData(AggregatableTriggerData&&) =
 AggregatableTriggerData& AggregatableTriggerData::operator=(
     AggregatableTriggerData&&) = default;
 
-base::Value::Dict AggregatableTriggerData::ToJson() const {
-  base::Value::Dict dict;
+base::DictValue AggregatableTriggerData::ToJson() const {
+  base::DictValue dict;
 
   dict.Set(kKeyPiece, HexEncodeAggregationKey(key_piece_));
 

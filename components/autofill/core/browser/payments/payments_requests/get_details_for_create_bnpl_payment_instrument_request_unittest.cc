@@ -42,7 +42,7 @@ class GetDetailsForCreateBnplPaymentInstrumentRequestTest
     return request_.get();
   }
 
-  void ParseResponse(const base::Value::Dict& response) {
+  void ParseResponse(const base::DictValue& response) {
     request_->ParseResponse(response);
   }
 
@@ -88,12 +88,12 @@ TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
 
 TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
        ParseResponse_ResponseIsComplete) {
-  base::Value::Dict response =
-      base::Value::Dict()
+  base::DictValue response =
+      base::DictValue()
           .Set("context_token", base::Value(u"some token"))
           .Set("legal_message",
-               base::Value::Dict().Set(
-                   "line", base::Value::List().Append(base::Value::Dict().Set(
+               base::DictValue().Set(
+                   "line", base::ListValue().Append(base::DictValue().Set(
                                "template", "Terms of Service"))));
 
   ParseResponse(response);
@@ -107,11 +107,11 @@ TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
 
 TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
        ParseResponse_MissingContextToken) {
-  base::Value::Dict response = base::Value::Dict().Set(
+  base::DictValue response = base::DictValue().Set(
       "legal_message",
-      base::Value::Dict().Set(
-          "line", base::Value::List().Append(base::Value::Dict().Set(
-                      "template", "Terms of Service"))));
+      base::DictValue().Set(
+          "line", base::ListValue().Append(
+                      base::DictValue().Set("template", "Terms of Service"))));
 
   ParseResponse(response);
 
@@ -120,12 +120,12 @@ TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
 
 TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
        ParseResponse_InvalidLegalMessage) {
-  base::Value::Dict response =
-      base::Value::Dict()
+  base::DictValue response =
+      base::DictValue()
           .Set("context_token", base::Value(u"some token"))
           .Set("legal_message",
-               base::Value::Dict().Set(
-                   "dummy", base::Value::List().Append(base::Value::Dict().Set(
+               base::DictValue().Set(
+                   "dummy", base::ListValue().Append(base::DictValue().Set(
                                 "template", "Terms of Service"))));
 
   ParseResponse(response);
@@ -135,8 +135,8 @@ TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
 
 TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
        ParseResponse_MissingLegalMessage) {
-  base::Value::Dict response =
-      base::Value::Dict().Set("context_token", base::Value(u"some token"));
+  base::DictValue response =
+      base::DictValue().Set("context_token", base::Value(u"some token"));
 
   ParseResponse(response);
 

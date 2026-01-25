@@ -22,7 +22,7 @@ void GetAllowedClientHints(const base::Value& client_hints_rule,
   }
 
   // We should guarantee client hints list value always be Type::List since we
-  // save the client hints as base::Value::List in the Prefs. For details,
+  // save the client hints as base::ListValue in the Prefs. For details,
   // check components/client_hints/browser/client_hints.cc
   DCHECK(list_value->is_list());
   for (const auto& client_hint : list_value->GetList()) {

@@ -47,7 +47,7 @@ AggregatableNamedBudgetDefs::FromJSON(const base::Value* v) {
     return AggregatableNamedBudgetDefs();
   }
 
-  const base::Value::Dict* dict = v->GetIfDict();
+  const base::DictValue* dict = v->GetIfDict();
   if (!dict) {
     return base::unexpected(
         SourceRegistrationError::kAggregatableNamedBudgetsDictInvalid);
@@ -117,12 +117,12 @@ AggregatableNamedBudgetDefs& AggregatableNamedBudgetDefs::operator=(
 AggregatableNamedBudgetDefs& AggregatableNamedBudgetDefs::operator=(
     AggregatableNamedBudgetDefs&&) = default;
 
-void AggregatableNamedBudgetDefs::Serialize(base::Value::Dict& dict) const {
+void AggregatableNamedBudgetDefs::Serialize(base::DictValue& dict) const {
   if (budgets_.empty()) {
     return;
   }
 
-  base::Value::Dict budget_dict;
+  base::DictValue budget_dict;
   for (const auto& [key, value] : budgets_) {
     budget_dict.Set(key, value);
   }

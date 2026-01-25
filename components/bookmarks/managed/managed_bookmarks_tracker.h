@@ -48,13 +48,13 @@ class ManagedBookmarksTracker {
 
   // Returns the initial list of managed bookmarks, which can be passed to
   // LoadInitial() to do the initial load.
-  base::Value::List GetInitialManagedBookmarks();
+  base::ListValue GetInitialManagedBookmarks();
 
   // Loads the initial managed bookmarks in `list` into `folder`.
   // New nodes will be assigned IDs starting at `next_node_id`.
   // Returns the next node ID to use.
   static int64_t LoadInitial(BookmarkNode* folder,
-                             const base::Value::List& list,
+                             const base::ListValue& list,
                              int64_t next_node_id);
 
   // Starts tracking the pref for updates to the managed bookmarks.
@@ -67,13 +67,12 @@ class ManagedBookmarksTracker {
   void ReloadManagedBookmarksFolderTitle();
   void ReloadManagedBookmarks();
 
-  void UpdateBookmarks(const BookmarkNode* folder,
-                       const base::Value::List& list);
-  static bool LoadBookmark(const base::Value::List& list,
+  void UpdateBookmarks(const BookmarkNode* folder, const base::ListValue& list);
+  static bool LoadBookmark(const base::ListValue& list,
                            size_t index,
                            std::u16string* title,
                            GURL* url,
-                           const base::Value::List** children);
+                           const base::ListValue** children);
 
   raw_ptr<BookmarkModel> model_;
   raw_ptr<BookmarkPermanentNode> managed_node_;

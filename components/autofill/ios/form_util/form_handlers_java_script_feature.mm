@@ -81,7 +81,7 @@ void FormHandlersJavaScriptFeature::TrackFormMutations(
     web::WebFrame* frame,
     int mutation_tracking_delay) {
   CallJavaScriptFunction(frame, "formHandlers.trackFormMutations",
-                         base::Value::List().Append(mutation_tracking_delay));
+                         base::ListValue().Append(mutation_tracking_delay));
 }
 
 std::optional<std::string>

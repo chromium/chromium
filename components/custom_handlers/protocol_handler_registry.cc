@@ -658,12 +658,12 @@ void ProtocolHandlerRegistry::InsertHandler(const ProtocolHandler& handler) {
   protocol_handlers_[handler.protocol()] = new_list;
 }
 
-base::Value::List ProtocolHandlerRegistry::EncodeRegisteredHandlers() {
+base::ListValue ProtocolHandlerRegistry::EncodeRegisteredHandlers() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value::List encoded_handlers;
+  base::ListValue encoded_handlers;
   for (const auto& [protocol, handlers_list] : user_protocol_handlers_) {
     for (const auto& handler : handlers_list) {
-      base::Value::Dict encoded = handler.Encode();
+      base::DictValue encoded = handler.Encode();
       if (IsDefault(handler)) {
         encoded.Set("default", true);
       }
@@ -673,9 +673,9 @@ base::Value::List ProtocolHandlerRegistry::EncodeRegisteredHandlers() {
   return encoded_handlers;
 }
 
-base::Value::List ProtocolHandlerRegistry::EncodeIgnoredHandlers() {
+base::ListValue ProtocolHandlerRegistry::EncodeIgnoredHandlers() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value::List encoded_handlers;
+  base::ListValue encoded_handlers;
   for (const auto& handler : user_ignored_protocol_handlers_) {
     encoded_handlers.Append(handler.Encode());
   }
@@ -712,18 +712,18 @@ bool ProtocolHandlerRegistry::RegisterProtocolHandler(
   return true;
 }
 
-std::vector<const base::Value::Dict*>
+std::vector<const base::DictValue*>
 ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<const base::Value::Dict*> result;
+  std::vector<const base::DictValue*> result;
   if (!prefs_ || !prefs_->HasPrefPath(pref_name)) {
     return result;
   }
 
-  const base::Value::List& handlers = prefs_->GetList(pref_name);
+  const base::ListValue& handlers = prefs_->GetList(pref_name);
 
   for (const auto& list_item : handlers) {
-    if (const base::Value::Dict* encoded_handler = list_item.GetIfDict()) {
+    if (const base::DictValue* encoded_handler = list_item.GetIfDict()) {
       if (ProtocolHandler::IsValidDict(*encoded_handler)) {
         result.push_back(encoded_handler);
       }
@@ -736,7 +736,7 @@ ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
 void ProtocolHandlerRegistry::RegisterProtocolHandlersFromPref(
     const char* pref_name,
     const HandlerSource source) {
-  std::vector<const base::Value::Dict*> registered_handlers =
+  std::vector<const base::DictValue*> registered_handlers =
       GetHandlersFromPref(pref_name);
   for (const auto* encoded_handler : registered_handlers) {
     ProtocolHandler handler =
@@ -766,7 +766,7 @@ void ProtocolHandlerRegistry::IgnoreProtocolHandler(
 void ProtocolHandlerRegistry::IgnoreProtocolHandlersFromPref(
     const char* pref_name,
     const HandlerSource source) {
-  std::vector<const base::Value::Dict*> ignored_handlers =
+  std::vector<const base::DictValue*> ignored_handlers =
       GetHandlersFromPref(pref_name);
   for (const auto* encoded_handler : ignored_handlers)
     IgnoreProtocolHandler(

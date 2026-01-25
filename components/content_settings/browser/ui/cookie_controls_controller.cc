@@ -59,28 +59,28 @@ constexpr CacheSizeType kAccessDetailsCacheSize = 1000;
 constexpr CacheSizeType kMaximumCacheCapacity =
     std::numeric_limits<CacheSizeType>::max();
 
-base::Value::Dict GetMetadata(HostContentSettingsMap* settings_map,
-                              const GURL& url) {
+base::DictValue GetMetadata(HostContentSettingsMap* settings_map,
+                            const GURL& url) {
   base::Value stored_value = settings_map->GetWebsiteSetting(
       url, url, ContentSettingsType::COOKIE_CONTROLS_METADATA);
   if (!stored_value.is_dict()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   return std::move(stored_value.GetDict());
 }
 
-bool WasEntryPointAlreadyAnimated(const base::Value::Dict& metadata) {
+bool WasEntryPointAlreadyAnimated(const base::DictValue& metadata) {
   std::optional<bool> entry_point_animated =
       metadata.FindBool(kEntryPointAnimatedKey);
   return entry_point_animated.has_value() && entry_point_animated.value();
 }
 
-int GetActivationCount(const base::Value::Dict& metadata) {
+int GetActivationCount(const base::DictValue& metadata) {
   return metadata.FindInt(kActivationsCountKey).value_or(0);
 }
 
-bool HasExceptionExpiredSinceLastVisit(const base::Value::Dict& metadata) {
+bool HasExceptionExpiredSinceLastVisit(const base::DictValue& metadata) {
   auto last_expiration = base::ValueToTime(metadata.Find(kLastExpirationKey))
                              .value_or(base::Time());
   auto last_visited =
@@ -95,7 +95,7 @@ bool HasExceptionExpiredSinceLastVisit(const base::Value::Dict& metadata) {
 
 void ApplyMetadataChanges(HostContentSettingsMap* settings_map,
                           const GURL& url,
-                          base::Value::Dict&& dict) {
+                          base::DictValue&& dict) {
   settings_map->SetWebsiteSettingDefaultScope(
       url, url, ContentSettingsType::COOKIE_CONTROLS_METADATA,
       base::Value(std::move(dict)));
@@ -274,7 +274,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   Update(GetWebContents());
   // Record expiration metadata for the newly created exception, and increased
   // the activation count.
-  base::Value::Dict metadata = GetMetadata(settings_map_, url);
+  base::DictValue metadata = GetMetadata(settings_map_, url);
   metadata.Set(kLastExpirationKey,
                base::TimeToValue(GetStatus(GetWebContents()).expiration));
   metadata.Set(kActivationsCountKey, GetActivationCount(metadata) + 1);
@@ -291,7 +291,7 @@ void CookieControlsController::OnEntryPointAnimated() {
     return;
   }
   const GURL& url = GetWebContents()->GetLastCommittedURL();
-  base::Value::Dict metadata = GetMetadata(settings_map_, url);
+  base::DictValue metadata = GetMetadata(settings_map_, url);
   metadata.Set(kEntryPointAnimatedKey, base::Value(true));
   ApplyMetadataChanges(settings_map_, url, std::move(metadata));
 }
@@ -363,7 +363,7 @@ void CookieControlsController::UpdateLastVisitedSitesMap() {
 
   // We only care about visits with active expirations, if there is an active
   // exception, update the last visited time, otherwise clear it.
-  base::Value::Dict metadata = GetMetadata(settings_map_, url);
+  base::DictValue metadata = GetMetadata(settings_map_, url);
   auto status = GetStatus(GetWebContents());
   if (status.controls_state == CookieControlsState::kAllowed3pc) {
     metadata.Set(kLastVisitedActiveException,

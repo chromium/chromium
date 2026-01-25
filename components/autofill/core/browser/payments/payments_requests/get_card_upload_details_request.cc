@@ -27,7 +27,7 @@ GetCardUploadDetailsRequest::GetCardUploadDetailsRequest(
     const std::string& app_locale,
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const std::u16string&,
-                            std::unique_ptr<base::Value::Dict>,
+                            std::unique_ptr<base::DictValue>,
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
     const int64_t billing_customer_number,
@@ -53,8 +53,8 @@ std::string GetCardUploadDetailsRequest::GetRequestContentType() {
 }
 
 std::string GetCardUploadDetailsRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
-  base::Value::Dict context;
+  base::DictValue request_dict;
+  base::DictValue context;
   context.Set("language_code", app_locale_);
   context.Set("billable_service", billable_service_number_);
   if (billing_customer_number_ != 0) {
@@ -66,7 +66,7 @@ std::string GetCardUploadDetailsRequest::GetRequestContent() {
       "chrome_user_context",
       BuildChromeUserContext(client_behavior_signals_, full_sync_enabled_));
 
-  base::Value::List addresses;
+  base::ListValue addresses;
   for (const AutofillProfile& profile : addresses_) {
     // These addresses are used by Payments to (1) accurately determine the
     // user's country in order to show the correct legal documents and (2) to
@@ -107,16 +107,15 @@ std::string GetCardUploadDetailsRequest::GetRequestContent() {
 }
 
 void GetCardUploadDetailsRequest::ParseResponse(
-  const base::Value::Dict& response) {
+    const base::DictValue& response) {
   const auto* context_token = response.FindString("context_token");
   context_token_ =
       context_token ? base::UTF8ToUTF16(*context_token) : std::u16string();
 
-  const base::Value::Dict* dictionary_value =
-      response.FindDict("legal_message");
+  const base::DictValue* dictionary_value = response.FindDict("legal_message");
   if (dictionary_value)
     legal_message_ =
-        std::make_unique<base::Value::Dict>(dictionary_value->Clone());
+        std::make_unique<base::DictValue>(dictionary_value->Clone());
 
   const auto* supported_card_bin_ranges_string =
       response.FindString("supported_card_bin_ranges_string");

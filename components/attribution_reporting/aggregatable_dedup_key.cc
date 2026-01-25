@@ -27,7 +27,7 @@ using ::attribution_reporting::mojom::TriggerRegistrationError;
 // static
 base::expected<AggregatableDedupKey, TriggerRegistrationError>
 AggregatableDedupKey::FromJSON(base::Value& value) {
-  base::Value::Dict* dict = value.GetIfDict();
+  base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     return base::unexpected(
         TriggerRegistrationError::kAggregatableDedupKeyWrongType);
@@ -50,8 +50,8 @@ AggregatableDedupKey::AggregatableDedupKey(std::optional<uint64_t> dedup_key,
                                            FilterPair filters)
     : dedup_key(dedup_key), filters(std::move(filters)) {}
 
-base::Value::Dict AggregatableDedupKey::ToJson() const {
-  base::Value::Dict dict;
+base::DictValue AggregatableDedupKey::ToJson() const {
+  base::DictValue dict;
 
   filters.SerializeIfNotEmpty(dict);
 

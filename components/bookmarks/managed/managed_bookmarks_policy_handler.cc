@@ -45,12 +45,12 @@ void ManagedBookmarksPolicyHandler::ApplyPolicySettings(
 
   prefs->SetString(prefs::kManagedBookmarksFolderName,
                    GetFolderName(value->GetList()));
-  base::Value::List filtered(FilterBookmarks(std::move(*value).TakeList()));
+  base::ListValue filtered(FilterBookmarks(std::move(*value).TakeList()));
   prefs->SetValue(prefs::kManagedBookmarks, base::Value(std::move(filtered)));
 }
 
 std::string ManagedBookmarksPolicyHandler::GetFolderName(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   // Iterate over the list, and try to find the FolderName.
   for (const auto& el : list) {
     if (!el.is_dict())
@@ -68,19 +68,19 @@ std::string ManagedBookmarksPolicyHandler::GetFolderName(
   return std::string();
 }
 
-base::Value::List ManagedBookmarksPolicyHandler::FilterBookmarks(
-    base::Value::List list) {
+base::ListValue ManagedBookmarksPolicyHandler::FilterBookmarks(
+    base::ListValue list) {
   // Move over conforming values found.
-  base::Value::List out;
+  base::ListValue out;
 
   for (base::Value& item : list) {
     if (!item.is_dict())
       continue;
 
-    base::Value::Dict& dict = item.GetDict();
+    base::DictValue& dict = item.GetDict();
     const std::string* name = dict.FindString(ManagedBookmarksTracker::kName);
     const std::string* url = dict.FindString(ManagedBookmarksTracker::kUrl);
-    base::Value::List* children =
+    base::ListValue* children =
         dict.FindList(ManagedBookmarksTracker::kChildren);
     // Every bookmark must have a name, and then either a URL or a list of
     // child bookmarks.

@@ -71,7 +71,7 @@ OnDeviceHeadSuggestInstallerPolicy::~OnDeviceHeadSuggestInstallerPolicy() =
     default;
 
 bool OnDeviceHeadSuggestInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   const std::string* name = manifest.FindString("name");
 
@@ -98,7 +98,7 @@ bool OnDeviceHeadSuggestInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 OnDeviceHeadSuggestInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -108,7 +108,7 @@ void OnDeviceHeadSuggestInstallerPolicy::OnCustomUninstall() {}
 void OnDeviceHeadSuggestInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   auto* listener = OnDeviceModelUpdateListener::GetInstance();
   if (listener) {
     listener->OnHeadModelUpdate(install_dir);

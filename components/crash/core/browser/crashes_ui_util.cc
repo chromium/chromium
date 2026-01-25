@@ -31,12 +31,12 @@ std::string UploadInfoStateAsString(UploadList::UploadInfo::State state) {
   NOTREACHED();
 }
 
-void UploadListToValue(UploadList* upload_list, base::Value::List* out_value) {
+void UploadListToValue(UploadList* upload_list, base::ListValue* out_value) {
   const std::vector<const UploadList::UploadInfo*> crashes =
       upload_list->GetUploads(50);
 
   for (const auto* info : crashes) {
-    base::Value::Dict crash;
+    base::DictValue crash;
     crash.Set("id", info->upload_id);
     if (info->state == UploadList::UploadInfo::State::Uploaded) {
       crash.Set("upload_time",

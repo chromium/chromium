@@ -79,7 +79,7 @@ class HostCachePersistenceManagerTest : public testing::Test {
     temp_cache.Set(key2, entry, base::TimeTicks::Now(), base::Seconds(1));
     temp_cache.Set(key3, entry, base::TimeTicks::Now(), base::Seconds(1));
 
-    base::Value::List list;
+    base::ListValue list;
     temp_cache.GetList(list, false /* include_stale */,
                        net::HostCache::SerializationType::kRestorable);
     pref_service_->SetList(kPrefName, std::move(list));

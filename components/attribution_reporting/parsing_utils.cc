@@ -44,7 +44,7 @@ constexpr char kDebugReporting[] = "debug_reporting";
 
 template <typename T>
 base::expected<std::optional<T>, ParseError> ParseIntegerFromString(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string_view key,
     bool (*parse)(std::string_view, T*)) {
   const base::Value* value = dict.Find(key);
@@ -88,32 +88,31 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
 }
 
 base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string_view key) {
   return ParseIntegerFromString<uint64_t>(dict, key, &base::StringToUint64);
 }
 
 base::expected<std::optional<int64_t>, ParseError> ParseInt64(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string_view key) {
   return ParseIntegerFromString<int64_t>(dict, key, &base::StringToInt64);
 }
 
-base::expected<int64_t, ParseError> ParsePriority(
-    const base::Value::Dict& dict) {
+base::expected<int64_t, ParseError> ParsePriority(const base::DictValue& dict) {
   return ParseInt64(dict, kPriority).transform(&ValueOrZero<int64_t>);
 }
 
-std::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict) {
+std::optional<uint64_t> ParseDebugKey(const base::DictValue& dict) {
   return ParseUint64(dict, kDebugKey).value_or(std::nullopt);
 }
 
 base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   return ParseUint64(dict, kDeduplicationKey);
 }
 
-bool ParseDebugReporting(const base::Value::Dict& dict) {
+bool ParseDebugReporting(const base::DictValue& dict) {
   return dict.FindBool(kDebugReporting).value_or(false);
 }
 
@@ -190,7 +189,7 @@ base::expected<base::TimeDelta, ParseError> ParseDuration(
 }
 
 base::expected<std::optional<SuitableOrigin>, ParseError>
-ParseAggregationCoordinator(const base::Value::Dict& dict) {
+ParseAggregationCoordinator(const base::DictValue& dict) {
   const base::Value* value = dict.Find(kAggregationCoordinatorOrigin);
 
   // The default value is used for backward compatibility prior to this
@@ -224,41 +223,41 @@ base::expected<int, ParseError> ParseAggregatableValue(const base::Value& v) {
   return value;
 }
 
-void SerializeUint64(base::Value::Dict& dict,
+void SerializeUint64(base::DictValue& dict,
                      std::string_view key,
                      uint64_t value) {
   dict.Set(key, base::NumberToString(value));
 }
 
-void SerializeInt64(base::Value::Dict& dict,
+void SerializeInt64(base::DictValue& dict,
                     std::string_view key,
                     int64_t value) {
   dict.Set(key, base::NumberToString(value));
 }
 
-void SerializePriority(base::Value::Dict& dict, int64_t priority) {
+void SerializePriority(base::DictValue& dict, int64_t priority) {
   SerializeInt64(dict, kPriority, priority);
 }
 
-void SerializeDebugKey(base::Value::Dict& dict,
+void SerializeDebugKey(base::DictValue& dict,
                        std::optional<uint64_t> debug_key) {
   if (debug_key) {
     SerializeUint64(dict, kDebugKey, *debug_key);
   }
 }
 
-void SerializeDebugReporting(base::Value::Dict& dict, bool debug_reporting) {
+void SerializeDebugReporting(base::DictValue& dict, bool debug_reporting) {
   dict.Set(kDebugReporting, debug_reporting);
 }
 
-void SerializeDeduplicationKey(base::Value::Dict& dict,
+void SerializeDeduplicationKey(base::DictValue& dict,
                                std::optional<uint64_t> dedup_key) {
   if (dedup_key) {
     SerializeUint64(dict, kDeduplicationKey, *dedup_key);
   }
 }
 
-void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
+void SerializeTimeDeltaInSeconds(base::DictValue& dict,
                                  std::string_view key,
                                  base::TimeDelta value) {
   int64_t seconds = value.InSeconds();
@@ -300,7 +299,7 @@ base::Value Uint32ToJson(uint32_t value) {
 }
 
 base::expected<base::flat_set<std::string>, StringSetError> ExtractStringSet(
-    base::Value::List list,
+    base::ListValue list,
     const size_t max_string_size,
     const size_t max_set_size) {
   for (const base::Value& item : list) {

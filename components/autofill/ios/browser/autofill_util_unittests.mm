@@ -66,7 +66,7 @@ TEST_F(AutofillUtilTest, ExtractFillingResults) {
 
 // Test that the properties mask is extracted from the form field data.
 TEST_F(AutofillUtilTest, ExtractFormFieldData_PropertiesMask) {
-  base::Value::Dict field;
+  base::DictValue field;
   // Set mandatory field attributes.
   field.Set("name", base::Value("email"));
   field.Set("form_control_type", base::Value("text"));
@@ -113,7 +113,7 @@ TEST_F(AutofillUtilTest, DeserializeTokens) {
 
 // Test that the properties mask is extracted from the form field data.
 TEST_F(AutofillUtilTest, ExtractRemoteFrameToken) {
-  base::Value::Dict remote_frame_token_dict;
+  base::DictValue remote_frame_token_dict;
   remote_frame_token_dict.Set("token",
                               base::Value("beefbeefbeefbeefcafecafecafecafe"));
   remote_frame_token_dict.Set("predecessor", base::Value(64));
@@ -128,15 +128,15 @@ TEST_F(AutofillUtilTest, ExtractRemoteFrameToken) {
             "beefbeefbeefbeefcafecafecafecafe");
   EXPECT_EQ(token_with_predecessor.predecessor, 64);
 
-  base::Value::Dict malformed1;
+  base::DictValue malformed1;
   malformed1.Set("garbage", base::Value("garbage"));
   EXPECT_FALSE(ExtractRemoteFrameToken(malformed1, &token_with_predecessor));
 
-  base::Value::Dict malformed2;
+  base::DictValue malformed2;
   malformed2.Set("token", base::Value("garbage"));
   EXPECT_FALSE(ExtractRemoteFrameToken(malformed2, &token_with_predecessor));
 
-  base::Value::Dict malformed3;
+  base::DictValue malformed3;
   malformed3.Set("token", base::Value("beefbeefbeefbeefcafecafecafecafe"));
   malformed3.Set("predecessor", base::Value("garbage"));
   EXPECT_FALSE(ExtractRemoteFrameToken(malformed3, &token_with_predecessor));

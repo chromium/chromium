@@ -27,7 +27,7 @@ class GetCardUploadDetailsRequest : public PaymentsRequest {
       const std::string& app_locale,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::u16string&,
-                              std::unique_ptr<base::Value::Dict>,
+                              std::unique_ptr<base::DictValue>,
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
       const int64_t billing_customer_number,
@@ -41,7 +41,7 @@ class GetCardUploadDetailsRequest : public PaymentsRequest {
   std::string GetRequestUrlPath() override;
   std::string GetRequestContentType() override;
   std::string GetRequestContent() override;
-  void ParseResponse(const base::Value::Dict& response) override;
+  void ParseResponse(const base::DictValue& response) override;
   bool IsResponseComplete() override;
   void RespondToDelegate(
       PaymentsAutofillClient::PaymentsRpcResult result) override;
@@ -54,11 +54,11 @@ class GetCardUploadDetailsRequest : public PaymentsRequest {
   std::string app_locale_;
   base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                           const std::u16string&,
-                          std::unique_ptr<base::Value::Dict>,
+                          std::unique_ptr<base::DictValue>,
                           std::vector<std::pair<int, int>>)>
       callback_;
   std::u16string context_token_;
-  std::unique_ptr<base::Value::Dict> legal_message_;
+  std::unique_ptr<base::DictValue> legal_message_;
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   const int billable_service_number_;
   UploadCardSource upload_card_source_;

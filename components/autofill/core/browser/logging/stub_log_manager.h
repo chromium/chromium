@@ -25,7 +25,7 @@ class StubLogManager : public RoutingLogManager {
   void SetSuspended(bool suspended) override;
   bool IsLoggingActive() const override;
   LogBufferSubmitter Log() override;
-  void ProcessLog(base::Value::Dict node,
+  void ProcessLog(base::DictValue node,
                   base::PassKey<LogBufferSubmitter>) override;
 };
 

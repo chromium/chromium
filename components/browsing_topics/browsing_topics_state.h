@@ -149,7 +149,7 @@ class BrowsingTopicsState
   base::ImportantFileWriter::BackgroundDataProducerCallback
   GetSerializedDataProducerForBackgroundSequence() override;
 
-  base::Value::Dict ToDictValue() const;
+  base::DictValue ToDictValue() const;
 
   void ScheduleSave();
 

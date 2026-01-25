@@ -42,10 +42,10 @@ std::string CreateCardRequest::GetRequestContentType() {
 }
 
 std::string CreateCardRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
 
   const std::string& app_locale = request_details_.app_locale;
-  base::Value::Dict context;
+  base::DictValue context;
   context.Set("language_code", app_locale);
   context.Set("billable_service", kUploadPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
@@ -68,7 +68,7 @@ std::string CreateCardRequest::GetRequestContent() {
   request_dict.Set("risk_data_encoded",
                    BuildRiskDictionary(request_details_.risk_data));
 
-  base::Value::Dict card_info;
+  base::DictValue card_info;
   card_info.Set("pan", "__param:s7e_21_pan");
   if (!request_details_.cvc.empty()) {
     card_info.Set("cvc", "__param:s7e_13_cvc");
@@ -131,8 +131,8 @@ std::string CreateCardRequest::GetRequestContent() {
   return request_content;
 }
 
-void CreateCardRequest::ParseResponse(const base::Value::Dict& response) {
-  if (const base::Value::Dict* card_info = response.FindDict("card_info")) {
+void CreateCardRequest::ParseResponse(const base::DictValue& response) {
+  if (const base::DictValue* card_info = response.FindDict("card_info")) {
     contains_card_info_ = true;
     if (const std::string* instrument_id =
             card_info->FindString("instrument_id")) {

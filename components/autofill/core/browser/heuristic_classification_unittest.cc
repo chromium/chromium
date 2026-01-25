@@ -212,7 +212,7 @@ class ResultAnalyzer {
   // section in the JSON file for the form. This may be updated if field
   // classifications diverge from the last run.
   void AnalyzeClassification(const FormStructure& form_structure,
-                             base::Value::Dict& form_dict);
+                             base::DictValue& form_dict);
 
   // Returns a dictionary that can be embedded in the output summarizing quality
   // metrics (see "stats" above).
@@ -236,10 +236,10 @@ class ResultAnalyzer {
 };
 
 void ResultAnalyzer::AnalyzeClassification(const FormStructure& form_structure,
-                                           base::Value::Dict& form_dict) {
-  base::Value::List& json_fields = *form_dict.FindList("fields");
+                                           base::DictValue& form_dict) {
+  base::ListValue& json_fields = *form_dict.FindList("fields");
   for (size_t i = 0; i < json_fields.size(); ++i) {
-    base::Value::List* tester_types =
+    base::ListValue* tester_types =
         json_fields[i].GetDict().FindList("tester_type");
 
     // Determine the type assigned to the field by a tester.
@@ -279,10 +279,10 @@ void ResultAnalyzer::AnalyzeClassification(const FormStructure& form_structure,
 base::Value ResultAnalyzer::GetResult() {
   // Dictionary that summarizes the results of all field classifications for all
   // forms.
-  base::Value::Dict result;
+  base::DictValue result;
 
   // Highlevel statistics.
-  base::Value::Dict high_level_stats;
+  base::DictValue high_level_stats;
   high_level_stats.Set("matches", matches_);
   high_level_stats.Set("mismatches", mismatches_);
   high_level_stats.Set("fraction_matches",
@@ -290,13 +290,13 @@ base::Value ResultAnalyzer::GetResult() {
   result.Set("high_level_stats", std::move(high_level_stats));
 
   // Per type stats.
-  base::Value::Dict per_type_stats;
+  base::DictValue per_type_stats;
   for (const std::string& type : fields_in_scope_) {
     if (match_by_type_count_.contains(type) ||
         mismatch_by_type_count_.contains(type)) {
       int matches = match_by_type_count_[type];
       int mismatches = mismatch_by_type_count_[type];
-      base::Value::Dict tester_type_stats;
+      base::DictValue tester_type_stats;
       tester_type_stats.Set("matches", matches);
       tester_type_stats.Set("mismatches", mismatches);
       tester_type_stats.Set("fraction_matches",
@@ -307,7 +307,7 @@ base::Value ResultAnalyzer::GetResult() {
   result.Set("per_type_stats", std::move(per_type_stats));
 
   // Stats for ignored field types.
-  base::Value::Dict ignored_types_stats;
+  base::DictValue ignored_types_stats;
   for (auto it : ignored_by_type_count_) {
     ignored_types_stats.Set(it.first, it.second);
   }
@@ -353,7 +353,7 @@ std::vector<base::FilePath> GetTestFiles() {
 // as contextual information.
 // `field_dict` corresponds to an entry of `.sites[].forms[].fields[]` in the
 // JSON input file in jq syntax (https://jqlang.github.io/jq/).
-FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
+FormFieldData ParseFieldFromJsonDict(const base::DictValue& field_dict,
                                      const FormData& form_data) {
   FormFieldData field;
 
@@ -405,10 +405,10 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   field.set_host_form_id(form_data.renderer_id());
   field.set_renderer_id(test::MakeFieldRendererId());
   std::vector<SelectOption> options;
-  if (const base::Value::List* select_options =
+  if (const base::ListValue* select_options =
           field_dict.FindList("select_options")) {
     for (const base::Value& option : *select_options) {
-      const base::Value::Dict& option_dict = option.GetDict();
+      const base::DictValue& option_dict = option.GetDict();
       const std::string* value = option_dict.FindString("value");
       const std::string* label = option_dict.FindString("label");
       options.emplace_back(
@@ -421,7 +421,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
 }
 
 [[nodiscard]] AssertionResult ParseFormFromJsonDict(
-    const base::Value::Dict& form_dict,
+    const base::DictValue& form_dict,
     const std::string& site_url,
     FormData& form_data) {
   form_data.set_url(GURL(site_url));
@@ -429,7 +429,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   form_data.set_host_frame(test::MakeLocalFrameToken());
   form_data.set_renderer_id(test::MakeFormRendererId());
 
-  const base::Value::List* fields = form_dict.FindList("fields");
+  const base::ListValue* fields = form_dict.FindList("fields");
   if (!fields) {
     return AssertionFailure() << "A form has no fields in " << site_url;
   }
@@ -457,7 +457,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
 // If `ml_predictions_handler` is null, heuristics with regular expressions
 // are used for parsing. If it's non-null, the ML model is applied.
 [[nodiscard]] AssertionResult ClassifyFieldsOfSite(
-    base::Value::Dict& site,
+    base::DictValue& site,
     const GeoIpCountryCode& client_country,
     LanguageCode page_language,
     FieldClassificationModelHandler* ml_predictions_handler,
@@ -467,7 +467,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   if (!site_url) {
     return AssertionFailure() << "Missing attribute 'site_url' in" << site;
   }
-  base::Value::List* forms = site.FindList("forms");
+  base::ListValue* forms = site.FindList("forms");
   if (!forms) {
     return AssertionFailure() << "No 'forms' in " << site;
   }
@@ -507,16 +507,16 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
 // Creates a textual description of the statistics. This is good for a quick
 // view in the delta for an EXPECT_EQ().
 [[nodiscard]] std::string SummarizeStatistics(
-    const base::Value::Dict& json_file) {
+    const base::DictValue& json_file) {
   std::ostringstream result;
 
-  const base::Value::Dict* stats = json_file.FindDict("stats");
+  const base::DictValue* stats = json_file.FindDict("stats");
   if (!stats) {
     return std::string();
   }
 
   auto summarize_sub_section = [](const std::string& caption,
-                                  const base::Value::Dict& dict) {
+                                  const base::DictValue& dict) {
     std::ostringstream result;
     result << caption << ": Fraction matches " << std::fixed
            << std::setprecision(2)
@@ -646,12 +646,12 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   std::optional<base::Value> opt_json_file = base::JSONReader::Read(
       input_json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(opt_json_file);
-  base::Value::Dict* json_file = opt_json_file->GetIfDict();
+  base::DictValue* json_file = opt_json_file->GetIfDict();
   ASSERT_TRUE(json_file);
 
   std::string old_stats = SummarizeStatistics(*json_file);
 
-  base::Value::Dict* config = json_file->FindDict("config");
+  base::DictValue* config = json_file->FindDict("config");
   ASSERT_TRUE(config);
 
   // Configure IP based location.
@@ -682,7 +682,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   LanguageCode page_language(*language);
 
   // Configure list of fields that are in scope for reporting.
-  const base::Value::List* fields_in_scope_json =
+  const base::ListValue* fields_in_scope_json =
       config->FindList("fields_in_scope");
   ASSERT_TRUE(fields_in_scope_json);
   std::vector<std::string> fields_in_scope;
@@ -692,7 +692,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   }
 
   // Test all sites.
-  base::Value::List* sites = json_file->FindList("sites");
+  base::ListValue* sites = json_file->FindList("sites");
   ASSERT_TRUE(sites);
   ResultAnalyzer result_analyzer(std::move(fields_in_scope));
   for (base::Value& site : *sites) {

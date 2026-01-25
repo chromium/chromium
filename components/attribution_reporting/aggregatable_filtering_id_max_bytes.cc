@@ -51,7 +51,7 @@ AggregatableFilteringIdsMaxBytes::Create(int size) {
 // static
 base::expected<AggregatableFilteringIdsMaxBytes,
                mojom::TriggerRegistrationError>
-AggregatableFilteringIdsMaxBytes::Parse(const base::Value::Dict& registration) {
+AggregatableFilteringIdsMaxBytes::Parse(const base::DictValue& registration) {
   const base::Value* value =
       registration.Find(kAggregatableFilteringIdsMaxBytes);
   if (!value) {
@@ -72,8 +72,7 @@ AggregatableFilteringIdsMaxBytes::Parse(const base::Value::Dict& registration) {
   return max_bytes.value();
 }
 
-void AggregatableFilteringIdsMaxBytes::Serialize(
-    base::Value::Dict& dict) const {
+void AggregatableFilteringIdsMaxBytes::Serialize(base::DictValue& dict) const {
   dict.Set(kAggregatableFilteringIdsMaxBytes, static_cast<int>(value_));
 }
 

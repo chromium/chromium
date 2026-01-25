@@ -29,8 +29,7 @@ namespace {
 
 // Loads and deserializes a JSON file determined by `file_path` and returns it
 // in the form of a dictionary, or nullopt if something fails.
-std::optional<base::Value::Dict> LoadFileToDict(
-    const base::FilePath& file_path) {
+std::optional<base::DictValue> LoadFileToDict(const base::FilePath& file_path) {
   // Titles may end up containing invalid utf and we shouldn't throw away
   // all bookmarks if some titles have invalid utf.
   JSONFileValueDeserializer deserializer(file_path,
@@ -75,7 +74,7 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
         BookmarkPermanentNode::CreateMobileBookmarks(
             0, /*is_account_node=*/true);
 
-    std::optional<base::Value::Dict> root_dict =
+    std::optional<base::DictValue> root_dict =
         LoadFileToDict(account_file_path);
     BookmarkCodec codec;
     if (root_dict.has_value() &&
@@ -117,7 +116,7 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
   {
     std::string sync_metadata_str;
     int64_t max_node_id = 0;
-    std::optional<base::Value::Dict> root_dict =
+    std::optional<base::DictValue> root_dict =
         LoadFileToDict(local_or_syncable_file_path);
     BookmarkCodec codec;
     if (root_dict.has_value() &&

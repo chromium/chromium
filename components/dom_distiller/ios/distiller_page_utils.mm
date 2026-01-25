@@ -61,7 +61,7 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
     result = base::Value(value->GetBool());
     DCHECK_EQ(result.type(), base::Value::Type::BOOLEAN);
   } else if (value->is_dict()) {
-    base::Value::Dict dictionary;
+    base::DictValue dictionary;
     for (const auto kv : value->GetDict()) {
       base::Value item_value =
           ConvertedResultFromScriptResult(&kv.second, max_depth - 1);
@@ -75,7 +75,7 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
     DCHECK_EQ(result.type(), base::Value::Type::DICT);
 
   } else if (value->is_list()) {
-    base::Value::List list;
+    base::ListValue list;
     for (const base::Value& list_item : value->GetList()) {
       base::Value converted_item =
           ConvertedResultFromScriptResult(&list_item, max_depth - 1);

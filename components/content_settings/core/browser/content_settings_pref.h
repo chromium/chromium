@@ -87,7 +87,7 @@ class ContentSettingsPref {
   void ReadContentSettingsFromPref();
   // A helper function to read settings from a dictionary.
   void ReadSettingsFromDictionary(
-      const base::Value::Dict& all_settings_dictionary,
+      const base::DictValue& all_settings_dictionary,
       prefs::DictionaryValueUpdate* mutable_settings)
       EXCLUSIVE_LOCKS_REQUIRED(value_map_.GetLock());
   // Helper function to determine if the setting should be removed.

@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(CERTIFICATE_MATCHING) CertificatePrincipalPattern {
   // empty (putting no constraint on the principal field). If |value| is nullptr
   // or not a dictionary, returns an empty pattern.
   static CertificatePrincipalPattern ParseFromOptionalDict(
-      const base::Value::Dict* dict,
+      const base::DictValue* dict,
       std::string_view key_common_name,
       std::string_view key_locality,
       std::string_view key_organization,

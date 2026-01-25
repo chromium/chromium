@@ -99,7 +99,7 @@ constexpr net::NetworkTrafficAnnotationTag kShoppingListTrafficAnnotation =
         })");
 
 std::optional<ProductSpecifications::DescriptionText> ParseDescriptionText(
-    const base::Value::Dict* desc_text_dict) {
+    const base::DictValue* desc_text_dict) {
   if (!desc_text_dict) {
     return std::nullopt;
   }
@@ -109,7 +109,7 @@ std::optional<ProductSpecifications::DescriptionText> ParseDescriptionText(
 
   const std::string* description_text = desc_text_dict->FindString(kTextKey);
 
-  const base::Value::List* url_list = desc_text_dict->FindList(kUrlsKey);
+  const base::ListValue* url_list = desc_text_dict->FindList(kUrlsKey);
   if (url_list) {
     for (const auto& url_object : *url_list) {
       if (!url_object.is_dict()) {
@@ -138,7 +138,7 @@ std::optional<ProductSpecifications::DescriptionText> ParseDescriptionText(
 }
 
 std::optional<ProductSpecifications::Description> ParseDescription(
-    const base::Value::Dict* desc_dict) {
+    const base::DictValue* desc_dict) {
   if (!desc_dict) {
     return std::nullopt;
   }
@@ -152,7 +152,7 @@ std::optional<ProductSpecifications::Description> ParseDescription(
   description->label = label ? *label : "";
   description->alt_text = alt_text ? *alt_text : "";
 
-  const base::Value::List* options = desc_dict->FindList(kOptionsKey);
+  const base::ListValue* options = desc_dict->FindList(kOptionsKey);
 
   if (options) {
     for (const auto& option_value : *options) {
@@ -162,7 +162,7 @@ std::optional<ProductSpecifications::Description> ParseDescription(
         continue;
       }
 
-      const base::Value::List* desc_list =
+      const base::ListValue* desc_list =
           option_value.GetIfDict()->FindList(kDescriptionKey);
       if (desc_list) {
         for (const auto& list_item : *desc_list) {
@@ -182,7 +182,7 @@ std::optional<ProductSpecifications::Description> ParseDescription(
 }
 
 std::optional<ProductSpecifications::Value> ParseValue(
-    const base::Value::Dict* value_dict) {
+    const base::DictValue* value_dict) {
   if (!value_dict) {
     return std::nullopt;
   }
@@ -190,7 +190,7 @@ std::optional<ProductSpecifications::Value> ParseValue(
   ProductSpecifications::Value value;
 
   // Process value description
-  const base::Value::List* specs_descriptions_list =
+  const base::ListValue* specs_descriptions_list =
       value_dict->FindList(kSpecificationDescriptionsKey);
   if (specs_descriptions_list) {
     for (const auto& spec_description : *specs_descriptions_list) {
@@ -202,7 +202,7 @@ std::optional<ProductSpecifications::Value> ParseValue(
     }
   }
 
-  const base::Value::List* summary_descriptions_list =
+  const base::ListValue* summary_descriptions_list =
       value_dict->FindList(kSummaryKey);
   if (summary_descriptions_list) {
     for (const auto& summary_item : *summary_descriptions_list) {
@@ -267,7 +267,7 @@ void ProductSpecificationsServerProxy::HandleSpecificationsResponse(
     return;
   }
 
-  std::optional<base::Value::Dict> result =
+  std::optional<base::DictValue> result =
       base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
 
   if (!result.has_value()) {
@@ -305,13 +305,13 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
   std::optional<ProductSpecifications> product_specs;
   product_specs.emplace();
 
-  const base::Value::Dict* product_specs_dict =
+  const base::DictValue* product_specs_dict =
       compare_json.FindDict(kProductSpecificationsKey);
   if (!product_specs_dict) {
     return std::nullopt;
   }
 
-  const base::Value::List* spec_sections =
+  const base::ListValue* spec_sections =
       product_specs_dict->FindList(kProductSpecificationSectionsKey);
   if (!spec_sections) {
     return std::nullopt;
@@ -331,7 +331,7 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
     }
   }
 
-  const base::Value::List* specifications =
+  const base::ListValue* specifications =
       product_specs_dict->FindList(kProductSpecificationsKey);
   if (!specifications) {
     return std::nullopt;
@@ -345,7 +345,7 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
       continue;
     }
 
-    const base::Value::Dict* id_map = spec.GetDict().FindDict(kIdentifiersKey);
+    const base::DictValue* id_map = spec.GetDict().FindDict(kIdentifiersKey);
     if (!id_map) {
       continue;
     }
@@ -367,8 +367,7 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
       product.title = *title;
     }
 
-    const base::Value::List* summary_list =
-        spec.GetDict().FindList(kSummaryKey);
+    const base::ListValue* summary_list = spec.GetDict().FindList(kSummaryKey);
     if (summary_list) {
       for (const auto& summary_item : *summary_list) {
         std::optional<ProductSpecifications::DescriptionText> summary =
@@ -390,7 +389,7 @@ ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
       product.buying_options_url = GURL(*buying_options_url);
     }
 
-    const base::Value::List* product_spec_values =
+    const base::ListValue* product_spec_values =
         spec.GetDict().FindList(kProductSpecificationValuesKey);
     if (!product_spec_values) {
       continue;

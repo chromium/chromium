@@ -43,20 +43,20 @@ ManagedBookmarksTracker::ManagedBookmarksTracker(
 
 ManagedBookmarksTracker::~ManagedBookmarksTracker() = default;
 
-base::Value::List ManagedBookmarksTracker::GetInitialManagedBookmarks() {
-  const base::Value::List& list = prefs_->GetList(prefs::kManagedBookmarks);
+base::ListValue ManagedBookmarksTracker::GetInitialManagedBookmarks() {
+  const base::ListValue& list = prefs_->GetList(prefs::kManagedBookmarks);
   return list.Clone();
 }
 
 // static
 int64_t ManagedBookmarksTracker::LoadInitial(BookmarkNode* folder,
-                                             const base::Value::List& list,
+                                             const base::ListValue& list,
                                              int64_t next_node_id) {
   for (size_t i = 0; i < list.size(); ++i) {
     // Extract the data for the next bookmark from the `list`.
     std::u16string title;
     GURL url;
-    const base::Value::List* children = nullptr;
+    const base::ListValue* children = nullptr;
     if (!LoadBookmark(list, i, &title, &url, &children))
       continue;
 
@@ -117,18 +117,18 @@ void ManagedBookmarksTracker::ReloadManagedBookmarks() {
   // In case the user just signed into or out of the account.
   ReloadManagedBookmarksFolderTitle();
   // Recursively update all the managed bookmarks and folders.
-  const base::Value::List& list = prefs_->GetList(prefs::kManagedBookmarks);
+  const base::ListValue& list = prefs_->GetList(prefs::kManagedBookmarks);
   UpdateBookmarks(managed_node_, list);
 }
 
 void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
-                                              const base::Value::List& list) {
+                                              const base::ListValue& list) {
   size_t folder_index = 0;
   for (size_t i = 0; i < list.size(); ++i) {
     // Extract the data for the next bookmark from the `list`.
     std::u16string title;
     GURL url;
-    const base::Value::List* children = nullptr;
+    const base::ListValue* children = nullptr;
     if (!LoadBookmark(list, i, &title, &url, &children)) {
       // Skip this bookmark from `list` but don't advance `folder_index`.
       continue;
@@ -167,21 +167,21 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
 }
 
 // static
-bool ManagedBookmarksTracker::LoadBookmark(const base::Value::List& list,
+bool ManagedBookmarksTracker::LoadBookmark(const base::ListValue& list,
                                            size_t index,
                                            std::u16string* title,
                                            GURL* url,
-                                           const base::Value::List** children) {
+                                           const base::ListValue** children) {
   *url = GURL();
   *children = nullptr;
-  const base::Value::Dict* dict = list[index].GetIfDict();
+  const base::DictValue* dict = list[index].GetIfDict();
   if (!dict) {
     // Should never happen after policy validation.
     NOTREACHED();
   }
   const std::string* name = dict->FindString(kName);
   const std::string* spec = dict->FindString(kUrl);
-  const base::Value::List* children_list = dict->FindList(kChildren);
+  const base::ListValue* children_list = dict->FindList(kChildren);
   if (!name || (!spec && !children_list)) {
     // Should never happen after policy validation.
     NOTREACHED();

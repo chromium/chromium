@@ -62,7 +62,7 @@ bool OptimizationHintsComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 OptimizationHintsComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -72,7 +72,7 @@ void OptimizationHintsComponentInstallerPolicy::OnCustomUninstall() {}
 void OptimizationHintsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   DCHECK(!install_dir.empty());
   DVLOG(1) << "Optimization Hints Version Ready: " << version.GetString();
   optimization_guide::OptimizationHintsComponentUpdateListener*
@@ -89,7 +89,7 @@ void OptimizationHintsComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool OptimizationHintsComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(install_dir);
 }

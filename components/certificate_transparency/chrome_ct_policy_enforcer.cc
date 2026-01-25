@@ -41,12 +41,12 @@ namespace {
 // Type of a leaf index extension in an SCT from a Static CT API log.
 const uint8_t kExtensionTypeLeafIndex = 0;
 
-base::Value::Dict NetLogCertComplianceCheckResultParams(
+base::DictValue NetLogCertComplianceCheckResultParams(
     net::X509Certificate* cert,
     bool build_timely,
     base::Time log_list_timestamp,
     CTPolicyCompliance compliance) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("build_timely", build_timely);
   dict.Set("log_list_timestamp",
            net::NetLogNumberValue(

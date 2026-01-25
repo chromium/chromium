@@ -18,7 +18,7 @@ LogBufferSubmitter StubLogManager::Log() {
   return LogBufferSubmitter(this);
 }
 
-void StubLogManager::ProcessLog(base::Value::Dict node,
+void StubLogManager::ProcessLog(base::DictValue node,
                                 base::PassKey<LogBufferSubmitter>) {}
 
 }  // namespace autofill

@@ -15,7 +15,7 @@
 namespace certificate_matching {
 namespace {
 
-std::string GetOptionalStringKey(const base::Value::Dict& dictionary,
+std::string GetOptionalStringKey(const base::DictValue& dictionary,
                                  std::string_view key) {
   auto* value = dictionary.FindString(key);
   return value ? *value : std::string();
@@ -81,7 +81,7 @@ bool CertificatePrincipalPattern::Matches(
 
 // static
 CertificatePrincipalPattern CertificatePrincipalPattern::ParseFromOptionalDict(
-    const base::Value::Dict* dict,
+    const base::DictValue* dict,
     std::string_view key_common_name,
     std::string_view key_locality,
     std::string_view key_organization,

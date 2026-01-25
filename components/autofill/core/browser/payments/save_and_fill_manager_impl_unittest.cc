@@ -141,31 +141,30 @@ class SaveAndFillManagerImplTest : public testing::Test {
       bool create_valid_legal_message,
       const std::vector<std::pair<int, int>>& supported_card_bin_ranges = {}) {
     ON_CALL(network_interface(), GetDetailsForCreateCard)
-        .WillByDefault([&, result, create_valid_legal_message,
-                        supported_card_bin_ranges](
-                           const auto& /*request_details*/,
-                           base::OnceCallback<void(
-                               PaymentsAutofillClient::PaymentsRpcResult,
-                               const std::u16string&,
-                               std::unique_ptr<base::Value::Dict>,
-                               std::vector<std::pair<int, int>>)> callback) {
-          FastForwardBy(base::Milliseconds(600));
-          std::move(callback).Run(
-              result, u"context_token",
-              create_valid_legal_message
-                  ? std::make_unique<base::Value::Dict>(
-                        base::JSONReader::ReadDict(
-                            kLegalMessageLines,
-                            base::JSON_PARSE_CHROMIUM_EXTENSIONS)
-                            .value())
-                  : std::make_unique<base::Value::Dict>(
-                        base::JSONReader::ReadDict(
-                            kInvalidLegalMessageLines,
-                            base::JSON_PARSE_CHROMIUM_EXTENSIONS)
-                            .value()),
-              supported_card_bin_ranges);
-          return RequestId("11223344");
-        });
+        .WillByDefault(
+            [&, result, create_valid_legal_message, supported_card_bin_ranges](
+                const auto& /*request_details*/,
+                base::OnceCallback<void(
+                    PaymentsAutofillClient::PaymentsRpcResult,
+                    const std::u16string&, std::unique_ptr<base::DictValue>,
+                    std::vector<std::pair<int, int>>)> callback) {
+              FastForwardBy(base::Milliseconds(600));
+              std::move(callback).Run(
+                  result, u"context_token",
+                  create_valid_legal_message
+                      ? std::make_unique<base::DictValue>(
+                            base::JSONReader::ReadDict(
+                                kLegalMessageLines,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                                .value())
+                      : std::make_unique<base::DictValue>(
+                            base::JSONReader::ReadDict(
+                                kInvalidLegalMessageLines,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                                .value()),
+                  supported_card_bin_ranges);
+              return RequestId("11223344");
+            });
   }
 
   void SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult result,

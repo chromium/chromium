@@ -42,8 +42,8 @@ std::string FillDataTypeToStr(FillDataType type) {
   }
 }
 
-base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
-  base::Value::Dict field_data;
+base::DictValue BuildFieldDataLogs(AutofillField* field) {
+  base::DictValue field_data;
   field_data.Set("fieldSignature",
                  base::NumberToString(field->GetFieldSignature().value()));
   field_data.Set("hostFormSignature",
@@ -54,7 +54,7 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("labelAttribute", field->label());
   field_data.Set("placeholderAttribute", field->placeholder());
   field_data.Set("fieldTypes", [&field] {
-    base::Value::List field_types;
+    base::ListValue field_types;
     for (FieldType field_type : field->Type().GetTypes()) {
       field_types.Append(FieldTypeToString(field_type));
     }
@@ -82,8 +82,8 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   return field_data;
 }
 
-base::Value::Dict BuildLastAutofillEventLogs(AutofillManager* manager) {
-  base::Value::Dict dict;
+base::DictValue BuildLastAutofillEventLogs(AutofillManager* manager) {
+  base::DictValue dict;
 
   FillDataType type = FillDataType::kUndefined;
   std::string associated_country;
@@ -116,13 +116,13 @@ base::Value::Dict BuildLastAutofillEventLogs(AutofillManager* manager) {
 }
 }  // namespace
 
-base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager,
-                                            base::Value::Dict extra_logs) {
-  base::Value::Dict dict;
-  base::Value::List form_structures;
+base::DictValue FetchAutofillFeedbackData(AutofillManager* manager,
+                                          base::DictValue extra_logs) {
+  base::DictValue dict;
+  base::ListValue form_structures;
 
   manager->ForEachCachedForm([&](const FormStructure& form) {
-    base::Value::Dict form_data;
+    base::DictValue form_data;
     form_data.Set("formSignature",
                   base::NumberToString(form.form_signature().value()));
     form_data.Set("rendererId",
@@ -134,7 +134,7 @@ base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager,
     form_data.Set("idAttribute", form.id_attribute());
     form_data.Set("nameAttribute", form.name_attribute());
 
-    base::Value::List fields;
+    base::ListValue fields;
     fields.reserve(form.fields().size());
     for (const auto& field : form.fields()) {
       fields.Append(BuildFieldDataLogs(field.get()));
@@ -146,7 +146,7 @@ base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager,
 
   dict.Set("formStructures", std::move(form_structures));
 
-  base::Value::Dict last_autofill_event_data =
+  base::DictValue last_autofill_event_data =
       BuildLastAutofillEventLogs(manager);
   if (!last_autofill_event_data.empty()) {
     dict.Set("lastAutofillEvent", std::move(last_autofill_event_data));

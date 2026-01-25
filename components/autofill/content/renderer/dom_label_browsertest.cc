@@ -130,10 +130,10 @@ TEST_P(DomLabelTest, DataDrivenLabels) {
   LoadHTML(dom);
 
   // Aggregate the labels + metadata of all form fields.
-  base::Value::List field_infos;
+  base::ListValue field_infos;
   for (const FormData& form : ExtractFormDatas()) {
     for (const FormFieldData& field : form.fields()) {
-      base::Value::Dict field_info;
+      base::DictValue field_info;
       field_info.Set("name", field.name());
       field_info.Set("label", field.label());
       field_info.Set("heuristic", LabelSourceToString(field.label_source()));
@@ -157,8 +157,7 @@ TEST_P(DomLabelTest, DataDrivenLabels) {
   std::optional<base::Value> expected_output_json = base::JSONReader::Read(
       expected_output_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_output_json && expected_output_json->is_list());
-  const base::Value::List& expected_field_infos =
-      expected_output_json->GetList();
+  const base::ListValue& expected_field_infos = expected_output_json->GetList();
   ASSERT_EQ(field_infos.size(), expected_field_infos.size());
   for (size_t i = 0; i < field_infos.size(); ++i) {
     EXPECT_EQ(field_infos[i], expected_field_infos[i]);

@@ -103,13 +103,13 @@ class SyncInternalsMessageHandlerTest : public testing::Test {
   void ResetHandler() { handler_.reset(); }
 
   // Fake return value for sync_ui_util::ConstructAboutInformation().
-  const base::Value::Dict kAboutInformation =
-      base::Value::Dict().Set("some_sync_state", "some_value");
+  const base::DictValue kAboutInformation =
+      base::DictValue().Set("some_sync_state", "some_value");
 
  private:
   // Returns copies of the same constant dictionary, |kAboutInformation|.
-  base::Value::Dict ConstructFakeAboutInformation(syncer::SyncService* service,
-                                                  const std::string& channel) {
+  base::DictValue ConstructFakeAboutInformation(syncer::SyncService* service,
+                                                const std::string& channel) {
     ++get_about_sync_data_dall_count_;
     return kAboutInformation.Clone();
   }
@@ -141,7 +141,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
   handler()
       ->GetMessageHandlerMap()
       .at(kRequestDataAndRegisterForUpdates)
-      .Run(base::Value::List());
+      .Run(base::ListValue());
   testing::Mock::VerifyAndClearExpectations(mock_sync_service());
 
   EXPECT_CALL(*mock_sync_service(), AddObserver).Times(0);
@@ -155,7 +155,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisableMessages) {
   handler()
       ->GetMessageHandlerMap()
       .at(kRequestDataAndRegisterForUpdates)
-      .Run(base::Value::List());
+      .Run(base::ListValue());
   testing::Mock::VerifyAndClearExpectations(mock_sync_service());
 
   EXPECT_CALL(*mock_sync_service(), AddObserver).Times(0);
@@ -181,7 +181,7 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
       fake_user_event_service(), kChannel);
   handler->GetMessageHandlerMap()
       .at(kRequestDataAndRegisterForUpdates)
-      .Run(base::Value::List());
+      .Run(base::ListValue());
   handler->DisableMessagesToPage();
   // Cannot verify observer methods on sync services were not called, because
   // there is no sync service. Rather, we're just making sure the handler hasn't
@@ -189,34 +189,34 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
-  base::OnceCallback<void(base::Value::List)> get_all_nodes_callback;
+  base::OnceCallback<void(base::ListValue)> get_all_nodes_callback;
   ON_CALL(*mock_sync_service(), GetAllNodesForDebugging)
       .WillByDefault(MoveArg<0>(&get_all_nodes_callback));
   handler()
       ->GetMessageHandlerMap()
       .at(kGetAllNodes)
-      .Run(base::Value::List().Append("getAllNodes_0"));
+      .Run(base::ListValue().Append("getAllNodes_0"));
   EXPECT_CALL(*mock_delegate(), ResolvePageCallback);
-  std::move(get_all_nodes_callback).Run(base::Value::List());
+  std::move(get_all_nodes_callback).Run(base::ListValue());
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 
   handler()
       ->GetMessageHandlerMap()
       .at(kGetAllNodes)
-      .Run(base::Value::List().Append("getAllNodes_1"));
+      .Run(base::ListValue().Append("getAllNodes_1"));
   // This  breaks the weak ref the callback is hanging onto. Which results in
   // the call count not incrementing.
   handler()->DisableMessagesToPage();
   EXPECT_CALL(*mock_delegate(), ResolvePageCallback).Times(0);
-  std::move(get_all_nodes_callback).Run(base::Value::List());
+  std::move(get_all_nodes_callback).Run(base::ListValue());
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 
   handler()
       ->GetMessageHandlerMap()
       .at(kGetAllNodes)
-      .Run(base::Value::List().Append("getAllNodes_2"));
+      .Run(base::ListValue().Append("getAllNodes_2"));
   EXPECT_CALL(*mock_delegate(), ResolvePageCallback);
-  std::move(get_all_nodes_callback).Run(base::Value::List());
+  std::move(get_all_nodes_callback).Run(base::ListValue());
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfo) {
@@ -234,7 +234,7 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEvent) {
   handler()
       ->GetMessageHandlerMap()
       .at(kWriteUserEvent)
-      .Run(base::Value::List().Append("1000000000000000000").Append("-1"));
+      .Run(base::ListValue().Append("1000000000000000000").Append("-1"));
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& event =
@@ -248,7 +248,7 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBadParse) {
   handler()
       ->GetMessageHandlerMap()
       .at(kWriteUserEvent)
-      .Run(base::Value::List().Append("123abc").Append("abcde"));
+      .Run(base::ListValue().Append("123abc").Append("abcde"));
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& event =
@@ -262,7 +262,7 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBlank) {
   handler()
       ->GetMessageHandlerMap()
       .at(kWriteUserEvent)
-      .Run(base::Value::List().Append("").Append(""));
+      .Run(base::ListValue().Append("").Append(""));
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& event =
@@ -279,7 +279,7 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventZero) {
   handler()
       ->GetMessageHandlerMap()
       .at(kWriteUserEvent)
-      .Run(base::Value::List().Append("0").Append("0"));
+      .Run(base::ListValue().Append("0").Append("0"));
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& event =
@@ -299,7 +299,7 @@ TEST_F(SyncInternalsMessageHandlerTest, RequestStart) {
   EXPECT_CALL(*mock_sync_service()->GetMockUserSettings(),
               SetInitialSyncFeatureSetupComplete);
 
-  handler()->GetMessageHandlerMap().at(kRequestStart).Run(base::Value::List());
+  handler()->GetMessageHandlerMap().at(kRequestStart).Run(base::ListValue());
 
   CoreAccountInfo account_info =
       identity_test_environment()->identity_manager()->GetPrimaryAccountInfo(

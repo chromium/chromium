@@ -37,7 +37,7 @@ void BackupCallback(const base::FilePath& path) {
   base::CopyFile(path, backup_path);
 }
 
-base::Value::Dict EncodeModelToDict(
+base::DictValue EncodeModelToDict(
     const BookmarkModel* model,
     BookmarkStorage::PermanentNodeSelection permanent_node_selection) {
   BookmarkCodec codec;
@@ -121,11 +121,10 @@ void BookmarkStorage::ScheduleSave() {
 
 base::ImportantFileWriter::BackgroundDataProducerCallback
 BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
-  base::Value::Dict value =
-      EncodeModelToDict(model_, permanent_node_selection_);
+  base::DictValue value = EncodeModelToDict(model_, permanent_node_selection_);
 
   return base::BindOnce(
-      [](base::Value::Dict value) -> std::optional<std::string> {
+      [](base::DictValue value) -> std::optional<std::string> {
         // This runs on the background sequence.
         std::string output;
         if (!base::JSONWriter::WriteWithOptions(

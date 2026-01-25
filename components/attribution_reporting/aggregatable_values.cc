@@ -35,7 +35,7 @@ bool IsValid(const AggregatableValues::Values& values) {
 }
 
 base::expected<AggregatableValues::Values, TriggerRegistrationError>
-ParseValues(const base::Value::Dict& dict,
+ParseValues(const base::DictValue& dict,
             TriggerRegistrationError key_error,
             TriggerRegistrationError value_error) {
   AggregatableValues::Values::container_type container;
@@ -68,7 +68,7 @@ AggregatableValuesValue::FromJSON(const base::Value& json,
   int value;
   std::optional<uint64_t> filtering_id;
 
-  if (const base::Value::Dict* dict = json.GetIfDict()) {
+  if (const base::DictValue* dict = json.GetIfDict()) {
     const base::Value* value_v = dict->Find(kValue);
     if (!value_v) {
       return base::unexpected(value_error);
@@ -109,7 +109,7 @@ AggregatableValues::FromJSON(base::Value* input_value) {
     return configs;
   }
 
-  if (base::Value::Dict* dict = input_value->GetIfDict()) {
+  if (base::DictValue* dict = input_value->GetIfDict()) {
     ASSIGN_OR_RETURN(
         Values values,
         ParseValues(*dict,
@@ -118,16 +118,16 @@ AggregatableValues::FromJSON(base::Value* input_value) {
     if (!values.empty()) {
       configs.push_back(AggregatableValues(std::move(values), FilterPair()));
     }
-  } else if (base::Value::List* list = input_value->GetIfList()) {
+  } else if (base::ListValue* list = input_value->GetIfList()) {
     configs.reserve(list->size());
     for (auto& maybe_dict_value : *list) {
-      base::Value::Dict* dict_value = maybe_dict_value.GetIfDict();
+      base::DictValue* dict_value = maybe_dict_value.GetIfDict();
       if (!dict_value) {
         return base::unexpected(
             TriggerRegistrationError::kAggregatableValuesWrongType);
       }
 
-      const base::Value::Dict* agg_values_dict = dict_value->FindDict(kValues);
+      const base::DictValue* agg_values_dict = dict_value->FindDict(kValues);
       if (!agg_values_dict) {
         return base::unexpected(TriggerRegistrationError::
                                     kAggregatableValuesListValuesFieldMissing);
@@ -151,10 +151,10 @@ AggregatableValues::FromJSON(base::Value* input_value) {
   return configs;
 }
 
-base::Value::Dict AggregatableValuesValue::ToJson() const {
+base::DictValue AggregatableValuesValue::ToJson() const {
   CHECK(base::IsValueInRangeForNumericType<int>(value_));
 
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set(kValue, static_cast<int>(value_));
   SerializeUint64(dict, kFilteringId, filtering_id_);
@@ -181,13 +181,13 @@ AggregatableValues::AggregatableValues(AggregatableValues&&) = default;
 AggregatableValues& AggregatableValues::operator=(AggregatableValues&&) =
     default;
 
-base::Value::Dict AggregatableValues::ToJson() const {
-  base::Value::Dict values_dict;
+base::DictValue AggregatableValues::ToJson() const {
+  base::DictValue values_dict;
   for (const auto& [key, value] : values_) {
     values_dict.Set(key, value.ToJson());
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kValues, std::move(values_dict));
   filters_.SerializeIfNotEmpty(dict);
   return dict;

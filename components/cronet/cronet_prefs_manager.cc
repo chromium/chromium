@@ -111,11 +111,11 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
   ~PrefServiceAdapter() override {}
 
   // PrefDelegate implementation.
-  const base::Value::Dict& GetServerProperties() const override {
+  const base::DictValue& GetServerProperties() const override {
     return pref_service_->GetDict(path_);
   }
 
-  void SetServerProperties(base::Value::Dict dict,
+  void SetServerProperties(base::DictValue dict,
                            base::OnceClosure callback) override {
     pref_service_->SetDict(path_, std::move(dict));
     if (callback)
@@ -152,7 +152,7 @@ class NetworkQualitiesPrefDelegateImpl
   ~NetworkQualitiesPrefDelegateImpl() override {}
 
   // net::NetworkQualitiesPrefsManager::PrefDelegate implementation.
-  void SetDictionaryValue(const base::Value::Dict& dict) override {
+  void SetDictionaryValue(const base::DictValue& dict) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     pref_service_->SetDict(kNetworkQualitiesPref, dict.Clone());
@@ -176,7 +176,7 @@ class NetworkQualitiesPrefDelegateImpl
         base::Seconds(kUpdatePrefsDelaySeconds));
   }
 
-  base::Value::Dict GetDictionaryValue() override {
+  base::DictValue GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     return pref_service_->GetDict(kNetworkQualitiesPref).Clone();
   }

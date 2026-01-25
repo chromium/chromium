@@ -36,7 +36,7 @@ std::optional<SiteDerivedFeatures> ParseSiteDerivedFeatures(
   if (!url)
     return std::nullopt;
 
-  const base::Value::List* derived_features_json =
+  const base::ListValue* derived_features_json =
       json.GetDict().FindList("features");
   if (!derived_features_json)
     return std::nullopt;
@@ -65,28 +65,28 @@ std::optional<SiteDerivedFeatures> ParseSiteDerivedFeatures(
   return SiteDerivedFeatures{*url, derived_features};
 }
 
-// Reads a JSON "{[....]}" into a base::Value::List. Returns an empty
+// Reads a JSON "{[....]}" into a base::ListValue. Returns an empty
 // list in case of failure.
-base::Value::List ReadJsonList(const std::string& file_name) {
+base::ListValue ReadJsonList(const std::string& file_name) {
   base::FilePath dir_src_test_data_root;
   if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
                               &dir_src_test_data_root)) {
-    return base::Value::List();
+    return base::ListValue();
   }
 
   std::string raw_content;
   bool read_success = base::ReadFileToString(
       dir_src_test_data_root.AppendASCII(file_name), &raw_content);
   if (!read_success)
-    return base::Value::List();
+    return base::ListValue();
 
   std::optional<base::Value> parsed_content =
       base::JSONReader::Read(raw_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_content)
-    return base::Value::List();
+    return base::ListValue();
 
   if (!parsed_content->is_list())
-    return base::Value::List();
+    return base::ListValue();
 
   return std::move(*parsed_content).TakeList();
 }
@@ -106,7 +106,7 @@ TEST(DomDistillerPageFeaturesTest, TestCalculateDerivedFeatures) {
     expected_sites_feature_info.push_back(*parsed);
   }
 
-  base::Value::List input_sites_feature_info =
+  base::ListValue input_sites_feature_info =
       ReadJsonList("components/test/data/dom_distiller/core_features.json");
   ASSERT_FALSE(input_sites_feature_info.empty());
   ASSERT_EQ(expected_sites_feature_info.size(),

@@ -20,13 +20,13 @@ namespace autofill {
 
 class MockLogReceiver : public LogReceiver {
  public:
-  MOCK_METHOD(void, LogEntry, (const base::Value::Dict&), (override));
+  MOCK_METHOD(void, LogEntry, (const base::DictValue&), (override));
 };
 
 TEST(LogBufferSubmitter, VerifySubmissionOnDestruction) {
   LogBuffer buffer;
   buffer << 42;
-  std::optional<base::Value::Dict> expected = buffer.RetrieveResult();
+  std::optional<base::DictValue> expected = buffer.RetrieveResult();
 
   MockLogReceiver receiver;
   LogRouter router;

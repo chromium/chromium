@@ -25,7 +25,7 @@
 namespace commerce {
 
 GURL GetProductSpecsTabUrl(const std::vector<GURL>& urls) {
-  auto urls_list = base::Value::List();
+  auto urls_list = base::ListValue();
 
   for (auto& url : urls) {
     urls_list.Append(url.spec());

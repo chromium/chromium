@@ -575,7 +575,7 @@ void ShoppingService::OnProductInfoLocalExtractionResult(
 }
 
 bool ShoppingService::CheckIsPDPFromMetaOnly(
-    const base::Value::Dict& on_page_meta_map) {
+    const base::DictValue& on_page_meta_map) {
   const std::string* type = on_page_meta_map.FindString(kOgType);
 
   // If the og:type meta is present and the value is either og:product or
@@ -1228,7 +1228,7 @@ void ShoppingService::HandleOnDemandProductInfoResponse(
 
 void ShoppingService::MergeProductInfoData(
     ProductInfo* info,
-    const base::Value::Dict& on_page_data_map) {
+    const base::DictValue& on_page_data_map) {
   if (!info) {
     return;
   }

@@ -54,7 +54,7 @@ TEST_F(ChildFrameRegistrarTest, RegisterAndLookup) {
   autofill::RemoteFrameToken remote_token(
       *DeserializeJavaScriptFrameId(remote_frame_id));
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("local_frame_id", local_frame_id);
   dict.Set("remote_frame_id", remote_frame_id);
   base::Value dict_as_value(std::move(dict));
@@ -72,7 +72,7 @@ TEST_F(ChildFrameRegistrarTest, JunkDoesntRegister) {
   autofill::RemoteFrameToken valid_remote_token(
       *autofill::DeserializeJavaScriptFrameId(valid_remote_id));
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("local_frame_id", "this is junk");
   dict.Set("remote_frame_id", valid_remote_id);
   base::Value dict_as_value(std::move(dict));

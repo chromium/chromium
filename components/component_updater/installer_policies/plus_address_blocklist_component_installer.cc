@@ -77,7 +77,7 @@ bool PlusAddressBlocklistInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 PlusAddressBlocklistInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& /* manifest */,
+    const base::DictValue& /* manifest */,
     const base::FilePath& /* install_dir */) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -87,7 +87,7 @@ void PlusAddressBlocklistInstallerPolicy::OnCustomUninstall() {}
 void PlusAddressBlocklistInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict /* manifest */) {
+    base::DictValue /* manifest */) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
   const base::FilePath pb_path = GetInstalledPath(install_dir);
@@ -100,7 +100,7 @@ void PlusAddressBlocklistInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool PlusAddressBlocklistInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& /* manifest */,
+    const base::DictValue& /* manifest */,
     const base::FilePath& install_dir) const {
   return base::PathExists(GetInstalledPath(install_dir));
 }

@@ -227,7 +227,7 @@ TEST_P(SyncToSigninMigrationTest, SyncStatusPrefsUnset) {
 
   // Take a copy of all current pref values, to verify whether the migration
   // modified any of them.
-  const base::Value::Dict all_prefs =
+  const base::DictValue all_prefs =
       pref_service_.user_prefs_store()->GetValues();
 
   // Trigger the migration - it should only run in this state if the
@@ -261,7 +261,7 @@ TEST_P(SyncToSigninMigrationTest, SyncTransport) {
 
   // Take a copy of all current pref values, to verify that the migration
   // doesn't modify any of them.
-  const base::Value::Dict all_prefs =
+  const base::DictValue all_prefs =
       pref_service_.user_prefs_store()->GetValues();
 
   // Trigger the migration - it should NOT actually run in this state.
@@ -485,7 +485,7 @@ TEST_P(SyncToSigninMigrationTest, SyncInitializing) {
 
   // Take a copy of all current pref values, to verify whether the migration
   // modified any of them.
-  const base::Value::Dict all_prefs =
+  const base::DictValue all_prefs =
       pref_service_.user_prefs_store()->GetValues();
 
   // Trigger the migration - it should only run in this state if the
@@ -533,7 +533,7 @@ TEST_P(SyncToSigninMigrationTest, UndoFeaturePreventsMigration) {
 
   // Take a copy of all current pref values, to verify that the migration
   // doesn't modify any of them.
-  const base::Value::Dict all_prefs =
+  const base::DictValue all_prefs =
       pref_service_.user_prefs_store()->GetValues();
 
   base::HistogramTester histograms;
@@ -1782,7 +1782,7 @@ TEST_P(SyncToSigninMigrationUndoTest, Idempotent) {
 
   // Take a copy of all current pref values, to verify that the second undo
   // attempt doesn't modify any of them.
-  const base::Value::Dict all_prefs =
+  const base::DictValue all_prefs =
       pref_service_.user_prefs_store()->GetValues();
 
   // Trigger the (undo) migration again - it should have no further effect.

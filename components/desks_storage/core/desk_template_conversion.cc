@@ -183,9 +183,7 @@ constexpr auto kValidTabGroupColors = base::MakeFixedFlatSet<std::string_view>(
 constexpr int kVersionNum = 1;
 
 // Conversion to desk methods.
-bool GetString(const base::Value::Dict& dict,
-               const char* key,
-               std::string* out) {
+bool GetString(const base::DictValue& dict, const char* key, std::string* out) {
   const std::string* value = dict.FindString(key);
   if (!value)
     return false;
@@ -194,7 +192,7 @@ bool GetString(const base::Value::Dict& dict,
   return true;
 }
 
-bool GetInt(const base::Value::Dict& dict, const char* key, int* out) {
+bool GetInt(const base::DictValue& dict, const char* key, int* out) {
   std::optional<int> value = dict.FindInt(key);
   if (!value)
     return false;
@@ -203,7 +201,7 @@ bool GetInt(const base::Value::Dict& dict, const char* key, int* out) {
   return true;
 }
 
-bool GetBool(const base::Value::Dict& dict, const char* key, bool* out) {
+bool GetBool(const base::DictValue& dict, const char* key, bool* out) {
   std::optional<bool> value = dict.FindBool(key);
   if (!value)
     return false;
@@ -213,7 +211,7 @@ bool GetBool(const base::Value::Dict& dict, const char* key, bool* out) {
 }
 
 // Get App ID from App proto.
-std::string GetJsonAppId(const base::Value::Dict& app) {
+std::string GetJsonAppId(const base::DictValue& app) {
   std::string app_type;
   if (GetString(app, kAppType, &app_type) && app_type == kAppTypeBrowser) {
     return std::string(app_constants::kChromeAppId);
@@ -226,10 +224,10 @@ std::string GetJsonAppId(const base::Value::Dict& app) {
   return app_id;
 }
 
-// Convert a TabGroupInfo object to a base::Value::Dict.
-base::Value::Dict ConvertTabGroupInfoToDict(
+// Convert a TabGroupInfo object to a base::DictValue.
+base::DictValue ConvertTabGroupInfoToDict(
     const tab_groups::TabGroupInfo& group_info) {
-  base::Value::Dict tab_group_dict;
+  base::DictValue tab_group_dict;
 
   tab_group_dict.Set(kTabRangeFirstIndex,
                      static_cast<int>(group_info.tab_range.start()));
@@ -245,27 +243,27 @@ base::Value::Dict ConvertTabGroupInfoToDict(
   return tab_group_dict;
 }
 
-// Convert Coral tab and app entities to a base::Value::Dict.
-base::Value::Dict ConvertCoralTabAppEntitiesToDict(
+// Convert Coral tab and app entities to a base::DictValue.
+base::DictValue ConvertCoralTabAppEntitiesToDict(
     const std::vector<coral::mojom::EntityPtr>& coral_tab_app_entities) {
-  base::Value::List tab_entities;
-  base::Value::List app_entities;
+  base::ListValue tab_entities;
+  base::ListValue app_entities;
   for (const auto& entity : coral_tab_app_entities) {
     if (entity->is_tab()) {
       const auto& tab = entity->get_tab();
-      auto tab_value = base::Value::Dict()
+      auto tab_value = base::DictValue()
                            .Set(kTitle, tab->title)
                            .Set(kTabUrl, tab->url.possibly_invalid_spec());
       tab_entities.Append(std::move(tab_value));
     } else if (entity->is_app()) {
       const auto& app = entity->get_app();
       auto app_value =
-          base::Value::Dict().Set(kAppName, app->title).Set(kAppId, app->id);
+          base::DictValue().Set(kAppName, app->title).Set(kAppId, app->id);
       app_entities.Append(std::move(app_value));
     }
   }
 
-  base::Value::Dict tab_app_entities_dict;
+  base::DictValue tab_app_entities_dict;
   if (!tab_entities.empty()) {
     tab_app_entities_dict.Set(kTabs, std::move(tab_entities));
   }
@@ -311,7 +309,7 @@ GroupColor ConvertGroupColorStringToGroupColor(const std::string& group_color) {
 // are present and valid in the value parameter.  Returns true on success, false
 // on failure.
 bool MakeTabGroupVisualDataFromDict(
-    const base::Value::Dict& tab_group,
+    const base::DictValue& tab_group,
     tab_groups::TabGroupVisualData* out_visual_data) {
   std::string tab_group_title;
   std::string group_color_string;
@@ -332,7 +330,7 @@ bool MakeTabGroupVisualDataFromDict(
 // Constructs a gfx::Range from value `group_range` IFF all fields are
 // present and valid in the value parameter.  Returns true on success, false on
 // failure.
-bool MakeTabGroupRangeFromDict(const base::Value::Dict& tab_group,
+bool MakeTabGroupRangeFromDict(const base::DictValue& tab_group,
                                gfx::Range* out_range) {
   int32_t range_start;
   int32_t range_end;
@@ -348,7 +346,7 @@ bool MakeTabGroupRangeFromDict(const base::Value::Dict& tab_group,
 // Constructs a TabGroupInfo from `tab_group` IFF all fields are present
 // and valid in the value parameter. Returns true on success, false on failure.
 std::optional<tab_groups::TabGroupInfo> MakeTabGroupInfoFromDict(
-    const base::Value::Dict& tab_group) {
+    const base::DictValue& tab_group) {
   std::optional<tab_groups::TabGroupInfo> tab_group_info = std::nullopt;
 
   tab_groups::TabGroupVisualData visual_data;
@@ -427,7 +425,7 @@ int32_t StringToWindowOpenDisposition(const std::string& disposition) {
 
 // Convert App JSON to `app_restore::AppLaunchInfo`.
 std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
-    const base::Value::Dict& app) {
+    const base::DictValue& app) {
   int32_t window_id;
   if (!GetInt(app, kWindowId, &window_id))
     return nullptr;
@@ -490,7 +488,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
     }
 
     // Fill in the URL list
-    if (const base::Value::List* tabs = app.FindList(kTabs)) {
+    if (const base::ListValue* tabs = app.FindList(kTabs)) {
       for (auto& tab : *tabs) {
         std::string url;
         if (GetString(tab.GetDict(), kTabUrl, &url)) {
@@ -500,7 +498,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
     }
 
     // Fill the tab groups
-    if (const base::Value::List* tab_groups = app.FindList(kTabGroups)) {
+    if (const base::ListValue* tab_groups = app.FindList(kTabGroups)) {
       for (auto& tab : *tab_groups) {
         std::optional<tab_groups::TabGroupInfo> tab_group =
             MakeTabGroupInfoFromDict(tab.GetDict());
@@ -517,7 +515,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
 }
 
 std::vector<coral::mojom::EntityPtr> ConvertDictToCoralTabAppEntities(
-    const base::Value::Dict& tab_app_entities_dict) {
+    const base::DictValue& tab_app_entities_dict) {
   std::vector<coral::mojom::EntityPtr> tab_app_entities;
   if (const auto* tab_entities = tab_app_entities_dict.FindList(kTabs)) {
     for (const auto& tab_entity : *tab_entities) {
@@ -594,9 +592,9 @@ chromeos::WindowStateType ToChromeOsWindowState(
 }
 
 void FillArcExtraWindowInfoFromJson(
-    const base::Value::Dict& app,
+    const base::DictValue& app,
     app_restore::WindowInfo::ArcExtraInfo* out_window_info) {
-  const base::Value::Dict* bounds_in_root = app.FindDict(kBoundsInRoot);
+  const base::DictValue* bounds_in_root = app.FindDict(kBoundsInRoot);
   int top;
   int left;
   int bounds_width;
@@ -609,7 +607,7 @@ void FillArcExtraWindowInfoFromJson(
                                             bounds_height);
   }
 
-  const base::Value::Dict* maximum_size = app.FindDict(kMaximumSize);
+  const base::DictValue* maximum_size = app.FindDict(kMaximumSize);
   int max_width;
   int max_height;
   if (maximum_size && GetInt(*maximum_size, kSizeWidth, &max_width) &&
@@ -617,7 +615,7 @@ void FillArcExtraWindowInfoFromJson(
     out_window_info->maximum_size.emplace(max_width, max_height);
   }
 
-  const base::Value::Dict* minimum_size = app.FindDict(kMinimumSize);
+  const base::DictValue* minimum_size = app.FindDict(kMinimumSize);
   int min_width;
   int min_height;
   if (minimum_size && GetInt(*minimum_size, kSizeWidth, &min_width) &&
@@ -627,7 +625,7 @@ void FillArcExtraWindowInfoFromJson(
 }
 
 // Fill `out_window_info` with information from JSON `app`.
-void FillWindowInfoFromJson(const base::Value::Dict& app,
+void FillWindowInfoFromJson(const base::DictValue& app,
                             app_restore::WindowInfo* out_window_info) {
   std::string window_state;
   chromeos::WindowStateType cros_window_state =
@@ -644,7 +642,7 @@ void FillWindowInfoFromJson(const base::Value::Dict& app,
                                    &out_window_info->arc_extra_info.emplace());
   }
 
-  const base::Value::Dict* window_bound = app.FindDict(kWindowBound);
+  const base::DictValue* window_bound = app.FindDict(kWindowBound);
   int top;
   int left;
   int width;
@@ -686,14 +684,14 @@ void FillWindowInfoFromJson(const base::Value::Dict& app,
 
 // Convert a desk template to `app_restore::RestoreData`.
 std::unique_ptr<app_restore::RestoreData> ConvertJsonToRestoreData(
-    const base::Value::Dict* desk) {
+    const base::DictValue* desk) {
   std::unique_ptr<app_restore::RestoreData> restore_data =
       std::make_unique<app_restore::RestoreData>();
 
-  const base::Value::List* apps = desk->FindList(kApps);
+  const base::ListValue* apps = desk->FindList(kApps);
   if (apps) {
     for (const auto& app : *apps) {
-      const base::Value::Dict& app_dict = app.GetDict();
+      const base::DictValue& app_dict = app.GetDict();
       std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
           ConvertJsonToAppLaunchInfo(app_dict);
       if (!app_launch_info)
@@ -719,8 +717,8 @@ std::unique_ptr<app_restore::RestoreData> ConvertJsonToRestoreData(
 
 // Conversion to value methods.
 
-base::Value::Dict ConvertWindowBoundToValue(const gfx::Rect& rect) {
-  base::Value::Dict rectangle_value;
+base::DictValue ConvertWindowBoundToValue(const gfx::Rect& rect) {
+  base::DictValue rectangle_value;
 
   rectangle_value.Set(kWindowBoundTop, base::Value(rect.y()));
   rectangle_value.Set(kWindowBoundLeft, base::Value(rect.x()));
@@ -730,8 +728,8 @@ base::Value::Dict ConvertWindowBoundToValue(const gfx::Rect& rect) {
   return rectangle_value;
 }
 
-base::Value::Dict ConvertSizeToValue(const gfx::Size& size) {
-  base::Value::Dict size_value;
+base::DictValue ConvertSizeToValue(const gfx::Size& size) {
+  base::DictValue size_value;
 
   size_value.Set(kSizeWidth, base::Value(size.width()));
   size_value.Set(kSizeHeight, base::Value(size.height()));
@@ -832,12 +830,12 @@ std::string LaunchContainerToString(apps::LaunchContainer launch_container) {
   }
 }
 
-base::Value::List ConvertURLsToBrowserAppTabValues(
+base::ListValue ConvertURLsToBrowserAppTabValues(
     const std::vector<GURL>& urls) {
-  base::Value::List tab_list;
+  base::ListValue tab_list;
 
   for (const auto& url : urls) {
-    base::Value::Dict browser_tab;
+    base::DictValue browser_tab;
     browser_tab.Set(kTabUrl, url.spec());
     tab_list.Append(std::move(browser_tab));
   }
@@ -886,7 +884,7 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     return base::Value(base::Value::Type::NONE);
   }
 
-  base::Value::Dict app_data;
+  base::DictValue app_data;
   if (app_type != kAppTypeUnknown) {
     app_data.Set(kAppType, app_type);
   }
@@ -938,7 +936,7 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
   }
 
   if (!app->browser_extra_info.tab_group_infos.empty()) {
-    base::Value::List tab_groups_value;
+    base::ListValue tab_groups_value;
 
     for (const auto& tab_group : app->browser_extra_info.tab_group_infos) {
       tab_groups_value.Append(ConvertTabGroupInfoToDict(tab_group));
@@ -1009,7 +1007,7 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
 base::Value ConvertRestoreDataToValue(
     const app_restore::RestoreData* restore_data,
     apps::AppRegistryCache* apps_cache) {
-  base::Value::List desk_data;
+  base::ListValue desk_data;
 
   for (const auto& app : restore_data->app_id_to_launch_list()) {
     for (const auto& window : app.second) {
@@ -1022,7 +1020,7 @@ base::Value ConvertRestoreDataToValue(
     }
   }
 
-  base::Value::Dict apps;
+  base::DictValue apps;
   apps.Set(kApps, std::move(desk_data));
   return base::Value(std::move(apps));
 }
@@ -1979,7 +1977,7 @@ void CorrectAdminTemplateBrowserFormat(base::Value& app) {
   }
 
   auto& app_dict = app.GetDict();
-  base::Value::List* tabs = app_dict.FindList(kTabsAdminFormat);
+  base::ListValue* tabs = app_dict.FindList(kTabsAdminFormat);
 
   if (tabs == nullptr) {
     return;
@@ -2028,9 +2026,9 @@ void CorrectAdminTemplateAppTypeFormat(base::Value& app) {
 // by `ConvertJsonToRestoreData`.  The value is copied and returned corrected.
 // If the admin format itself is corrupted return the clone, it will be
 // discarded by the parsing code.
-base::Value::Dict CorrectAdminTemplateFormat(const base::Value::Dict* desk) {
+base::DictValue CorrectAdminTemplateFormat(const base::DictValue* desk) {
   auto desk_clone = desk->Clone();
-  base::Value::List* apps = desk_clone.FindList(kApps);
+  base::ListValue* apps = desk_clone.FindList(kApps);
   if (apps == nullptr) {
     return desk_clone;
   }
@@ -2050,7 +2048,7 @@ std::unique_ptr<ash::DeskTemplate> ParseAdminTemplate(
     return nullptr;
   }
 
-  const base::Value::Dict& value_dict = admin_template.GetDict();
+  const base::DictValue& value_dict = admin_template.GetDict();
 
   bool auto_launch_on_startup;
   std::string created_time_usec_str;
@@ -2059,7 +2057,7 @@ std::unique_ptr<ash::DeskTemplate> ParseAdminTemplate(
   std::string updated_time_usec_str;
   int64_t updated_time_usec;
   std::string uuid_str;
-  const base::Value::Dict* desk = value_dict.FindDict(kDesk);
+  const base::DictValue* desk = value_dict.FindDict(kDesk);
   if (!desk ||
       !GetBool(value_dict, kAutoLaunchOnStartup, &auto_launch_on_startup) ||
       !GetString(value_dict, kUuid, &uuid_str) ||
@@ -2168,7 +2166,7 @@ ParseSavedDeskResult ParseDeskTemplateFromBaseValue(
     return base::unexpected(SavedDeskParseError::kBaseValueIsNotDict);
   }
 
-  const base::Value::Dict& value_dict = value.GetDict();
+  const base::DictValue& value_dict = value.GetDict();
 
   std::string created_time_usec_str;
   int64_t created_time_usec;
@@ -2177,7 +2175,7 @@ ParseSavedDeskResult ParseDeskTemplateFromBaseValue(
   int64_t updated_time_usec;
   std::string uuid_str;
   int version;
-  const base::Value::Dict* desk = value_dict.FindDict(kDesk);
+  const base::DictValue* desk = value_dict.FindDict(kDesk);
   if (!desk || !GetInt(value_dict, kVersion, &version) ||
       !GetString(value_dict, kUuid, &uuid_str) ||
       !GetString(value_dict, kName, &name) ||
@@ -2239,7 +2237,7 @@ ParseSavedDeskResult ParseDeskTemplateFromBaseValue(
 base::Value SerializeDeskTemplateAsBaseValue(
     const ash::DeskTemplate* desk,
     apps::AppRegistryCache* app_cache) {
-  base::Value::Dict desk_dict;
+  base::DictValue desk_dict;
   desk_dict.Set(kVersion, kVersionNum);
   desk_dict.Set(kUuid, desk->uuid().AsLowercaseString());
   desk_dict.Set(kName, desk->template_name());

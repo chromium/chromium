@@ -33,7 +33,7 @@ class TestCreditCardFidoAuthenticator : public CreditCardFidoAuthenticator {
   // CreditCardFidoAuthenticator:
   void Authenticate(CreditCard card,
                     base::WeakPtr<Requester> requester,
-                    base::Value::Dict request_options,
+                    base::DictValue request_options,
                     std::optional<std::string> context_token) override;
   void IsUserVerifiable(base::OnceCallback<void(bool)> callback) override;
   bool IsUserOptedIn() override;

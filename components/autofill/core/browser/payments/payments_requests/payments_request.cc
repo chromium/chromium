@@ -49,9 +49,9 @@ std::optional<base::TimeDelta> PaymentsRequest::GetTimeout() const {
   return std::nullopt;
 }
 
-base::Value::Dict PaymentsRequest::BuildRiskDictionary(
+base::DictValue PaymentsRequest::BuildRiskDictionary(
     std::string_view encoded_risk_data) {
-  base::Value::Dict risk_data;
+  base::DictValue risk_data;
 #if BUILDFLAG(IS_IOS)
   // Browser fingerprinting is not available on iOS. Instead, we generate
   // RiskAdvisoryData.
@@ -67,28 +67,28 @@ base::Value::Dict PaymentsRequest::BuildRiskDictionary(
   return risk_data;
 }
 
-base::Value::Dict PaymentsRequest::BuildCustomerContextDictionary(
+base::DictValue PaymentsRequest::BuildCustomerContextDictionary(
     int64_t external_customer_id) {
-  base::Value::Dict customer_context;
+  base::DictValue customer_context;
   customer_context.Set("external_customer_id",
                        base::NumberToString(external_customer_id));
   return customer_context;
 }
 
-base::Value::Dict PaymentsRequest::BuildChromeUserContext(
+base::DictValue PaymentsRequest::BuildChromeUserContext(
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     bool full_sync_enabled) {
-  base::Value::Dict chrome_user_context =
+  base::DictValue chrome_user_context =
       BuildChromeUserContext(client_behavior_signals);
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled);
   return chrome_user_context;
 }
 
-base::Value::Dict PaymentsRequest::BuildChromeUserContext(
+base::DictValue PaymentsRequest::BuildChromeUserContext(
     const std::vector<ClientBehaviorConstants>& client_behavior_signals) {
-  base::Value::Dict chrome_user_context;
+  base::DictValue chrome_user_context;
   if (!client_behavior_signals.empty()) {
-    base::Value::List active_client_signals;
+    base::ListValue active_client_signals;
     for (ClientBehaviorConstants signal : client_behavior_signals) {
       active_client_signals.Append(std::to_underlying(signal));
     }
@@ -99,18 +99,18 @@ base::Value::Dict PaymentsRequest::BuildChromeUserContext(
   return chrome_user_context;
 }
 
-base::Value::Dict PaymentsRequest::BuildAddressDictionary(
+base::DictValue PaymentsRequest::BuildAddressDictionary(
     const AutofillProfile& profile,
     const std::string& app_locale,
     bool include_non_location_data) {
-  base::Value::Dict postal_address;
+  base::DictValue postal_address;
 
   if (include_non_location_data) {
     SetStringIfNotEmpty(profile, NAME_FULL, app_locale,
                         PaymentsRequest::kRecipientName, postal_address);
   }
 
-  base::Value::List address_lines;
+  base::ListValue address_lines;
   AppendStringIfNotEmpty(profile, ADDRESS_HOME_LINE1, app_locale,
                          address_lines);
   AppendStringIfNotEmpty(profile, ADDRESS_HOME_LINE2, app_locale,
@@ -132,7 +132,7 @@ base::Value::Dict PaymentsRequest::BuildAddressDictionary(
   if (!country_code.empty())
     postal_address.Set("country_name_code", country_code);
 
-  base::Value::Dict address;
+  base::DictValue address;
   address.Set("postal_address", std::move(postal_address));
 
   if (include_non_location_data) {
@@ -143,11 +143,11 @@ base::Value::Dict PaymentsRequest::BuildAddressDictionary(
   return address;
 }
 
-base::Value::Dict PaymentsRequest::BuildCreditCardDictionary(
+base::DictValue PaymentsRequest::BuildCreditCardDictionary(
     const CreditCard& credit_card,
     const std::string& app_locale,
     const std::string& pan_field_name) {
-  base::Value::Dict card;
+  base::DictValue card;
   card.Set("unique_id", credit_card.guid());
 
   const std::u16string exp_month =
@@ -173,7 +173,7 @@ base::Value::Dict PaymentsRequest::BuildCreditCardDictionary(
 void PaymentsRequest::AppendStringIfNotEmpty(const AutofillProfile& profile,
                                              const FieldType& type,
                                              const std::string& app_locale,
-                                             base::Value::List& list) {
+                                             base::ListValue& list) {
   std::u16string value = profile.GetInfo(type, app_locale);
   if (!value.empty())
     list.Append(value);
@@ -184,7 +184,7 @@ void PaymentsRequest::SetStringIfNotEmpty(const FormGroup& form_group,
                                           const FieldType& type,
                                           const std::string& app_locale,
                                           const std::string& path,
-                                          base::Value::Dict& dictionary) {
+                                          base::DictValue& dictionary) {
   std::u16string value = form_group.GetInfo(type, app_locale);
   if (!value.empty())
     dictionary.Set(path, std::move(value));

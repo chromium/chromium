@@ -16,7 +16,7 @@ namespace cloud_devices {
 
 namespace {
 
-bool IsValidTicket(const base::Value::Dict& value) {
+bool IsValidTicket(const base::DictValue& value) {
   const std::string* version = value.FindString(json::kVersion);
   return version && *version == json::kVersion10;
 }
@@ -30,7 +30,7 @@ CloudDeviceDescription::CloudDeviceDescription() {
 CloudDeviceDescription::~CloudDeviceDescription() = default;
 
 bool CloudDeviceDescription::InitFromString(const std::string& json) {
-  std::optional<base::Value::Dict> value =
+  std::optional<base::DictValue> value =
       base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return false;
@@ -39,7 +39,7 @@ bool CloudDeviceDescription::InitFromString(const std::string& json) {
   return InitFromValue(std::move(*value));
 }
 
-bool CloudDeviceDescription::InitFromValue(base::Value::Dict ticket) {
+bool CloudDeviceDescription::InitFromValue(base::DictValue ticket) {
   root_ = std::move(ticket);
   return IsValidTicket(root_);
 }
@@ -55,23 +55,23 @@ base::Value CloudDeviceDescription::ToValue() && {
   return base::Value(std::move(root_));
 }
 
-const base::Value::Dict* CloudDeviceDescription::GetDictItem(
+const base::DictValue* CloudDeviceDescription::GetDictItem(
     std::string_view path) const {
   return root_.FindDictByDottedPath(path);
 }
 
-const base::Value::List* CloudDeviceDescription::GetListItem(
+const base::ListValue* CloudDeviceDescription::GetListItem(
     std::string_view path) const {
   return root_.FindListByDottedPath(path);
 }
 
 bool CloudDeviceDescription::SetDictItem(std::string_view path,
-                                         base::Value::Dict dict) {
+                                         base::DictValue dict) {
   return root_.SetByDottedPath(path, std::move(dict));
 }
 
 bool CloudDeviceDescription::SetListItem(std::string_view path,
-                                         base::Value::List list) {
+                                         base::ListValue list) {
   return root_.SetByDottedPath(path, std::move(list));
 }
 

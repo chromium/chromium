@@ -47,35 +47,35 @@ FilterValues CreateFilterValues(size_t n) {
 }
 
 base::Value MakeFilterValuesWithKeys(size_t n) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (size_t i = 0; i < n; ++i) {
-    dict.Set(base::NumberToString(i), base::Value::List());
+    dict.Set(base::NumberToString(i), base::ListValue());
   }
   return base::Value(std::move(dict));
 }
 
 base::Value MakeFilterValuesWithKeyLength(size_t n) {
-  base::Value::Dict dict;
-  dict.Set(std::string(n, 'a'), base::Value::List());
+  base::DictValue dict;
+  dict.Set(std::string(n, 'a'), base::ListValue());
   return base::Value(std::move(dict));
 }
 
 base::Value MakeFilterValuesWithValues(size_t n) {
-  base::Value::List list;
+  base::ListValue list;
   for (size_t i = 0; i < n; ++i) {
     list.Append(base::NumberToString(i));
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("a", std::move(list));
   return base::Value(std::move(dict));
 }
 
 base::Value MakeFilterValuesWithValueLength(size_t n) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(std::string(n, 'a'));
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("a", std::move(list));
   return base::Value(std::move(dict));
 }
@@ -100,7 +100,7 @@ const struct {
     },
     {
         "empty",
-        base::Value(base::Value::Dict()),
+        base::Value(base::DictValue()),
         FilterData(),
         FiltersDisjunction(),
         FiltersDisjunction(),
@@ -327,7 +327,7 @@ TEST(FilterDataTest, FromJSON) {
   // Regression test for http://crbug.com/346951921 in which value cardinality
   // was erroneously checked before deduplication instead of after.
   {
-    base::Value::List list;
+    base::ListValue list;
     for (int i = 4; i >= 0; --i) {
       for (int j = 0; j < 11; ++j) {
         list.Append(base::NumberToString(i));
@@ -335,7 +335,7 @@ TEST(FilterDataTest, FromJSON) {
     }
     ASSERT_GT(list.size(), 50u);
 
-    base::Value value(base::Value::Dict().Set("a", std::move(list)));
+    base::Value value(base::DictValue().Set("a", std::move(list)));
 
     EXPECT_THAT(
         FilterData::FromJSON(&value),
@@ -400,7 +400,7 @@ TEST(FiltersTest, FromJSON_list) {
     if (!test_case.json) {
       continue;
     }
-    auto list = base::Value::List();
+    auto list = base::ListValue();
     list.Append(test_case.json->Clone());
     auto json_copy = base::Value(std::move(list));
     EXPECT_EQ(FiltersFromJSONForTesting(&json_copy),

@@ -19,7 +19,7 @@ TEST(WinTypes, AvProduct_ToValue) {
   for (const auto state : states) {
     AvProduct av_product{"some display name", state};
 
-    base::Value::Dict expected_value;
+    base::DictValue expected_value;
     expected_value.Set("displayName", av_product.display_name);
     expected_value.Set("state", static_cast<int>(av_product.state));
 
@@ -30,7 +30,7 @@ TEST(WinTypes, AvProduct_ToValue) {
 TEST(WinTypes, InstalledHotfix_ToValue) {
   InstalledHotfix hotfix{"some hotfix id"};
 
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
   expected_value.Set("hotfixId", hotfix.hotfix_id);
 
   EXPECT_EQ(hotfix.ToValue(), base::Value(std::move(expected_value)));

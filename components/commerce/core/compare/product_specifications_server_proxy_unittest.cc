@@ -156,7 +156,7 @@ class ProductSpecificationsServerProxyTest : public testing::Test {
 };
 
 TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
-  base::Value::Dict result =
+  base::DictValue result =
       *base::JSONReader::ReadDict(kSimpleResponse, base::JSON_PARSE_RFC);
 
   std::optional<ProductSpecifications> spec =

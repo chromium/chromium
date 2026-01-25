@@ -155,7 +155,7 @@ TEST(AggregatableNamedBudgetDefsTest, Serialize) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     test_case.input.Serialize(dict);
     EXPECT_THAT(dict, base::test::IsJson(test_case.expected_json));
   }

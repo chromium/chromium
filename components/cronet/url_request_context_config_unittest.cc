@@ -61,7 +61,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
       base::test::TaskEnvironment::MainThreadType::IO);
 
   // Create JSON for experimental options.
-  base::Value::Dict options;
+  base::DictValue options;
   options.SetByDottedPath("QUIC.max_server_configs_stored_in_properties", 2);
   options.SetByDottedPath("QUIC.idle_connection_timeout_seconds", 300);
   options.SetByDottedPath("QUIC.close_sessions_on_ip_change", true);

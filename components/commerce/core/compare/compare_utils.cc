@@ -18,15 +18,15 @@ const char kProductIdsKey[] = "productIds";
 
 std::string GetJsonStringForProductClusterIds(
     std::vector<uint64_t> product_cluster_ids) {
-  base::Value::List product_id_list;
+  base::ListValue product_id_list;
   for (uint64_t id : product_cluster_ids) {
-    base::Value::Dict id_definition;
+    base::DictValue id_definition;
     id_definition.Set(kTypeKey, kGPCTypeName);
     id_definition.Set(kIdentifierKey, base::NumberToString(id));
     product_id_list.Append(std::move(id_definition));
   }
 
-  base::Value::Dict json_dict;
+  base::DictValue json_dict;
   json_dict.Set(kProductIdsKey, std::move(product_id_list));
   return base::WriteJson(json_dict).value_or("");
 }

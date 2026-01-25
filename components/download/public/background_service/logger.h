@@ -22,24 +22,24 @@ class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE) Logger {
     // Called whenever the status of the Download Service changes.  This will
     // have the same data as |GetServiceStatus()|.
     virtual void OnServiceStatusChanged(
-        const base::Value::Dict& service_status) = 0;
+        const base::DictValue& service_status) = 0;
 
     // Called when the Download Service is able to notify observers of the list
     // of currently tracked downloads.  This will have the same data as
     // |GetServiceDownloads()|.
     virtual void OnServiceDownloadsAvailable(
-        const base::Value::List& service_downloads) = 0;
+        const base::ListValue& service_downloads) = 0;
 
     // Called when the state of a download has changed.  Format of
     // |service_download| is the same as |GetServiceDownloads()|, except not a
     // list.
     virtual void OnServiceDownloadChanged(
-        const base::Value::Dict& service_download) = 0;
+        const base::DictValue& service_download) = 0;
 
     // Called when a download has failed.  Format of |service_download| is the
     // same as |GetServiceDownloads()|, except not a list.
     virtual void OnServiceDownloadFailed(
-        const base::Value::Dict& service_download) = 0;
+        const base::DictValue& service_download) = 0;
 
     // Called when a request is made of the download service.  Format of
     // |service_request| is:
@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE) Logger {
     //            CLIENT_CANCELLED,INTERNAL_ERROR]
     // }
     virtual void OnServiceRequestMade(
-        const base::Value::Dict& service_request) = 0;
+        const base::DictValue& service_request) = 0;
   };
 
   Logger(const Logger&) = delete;
@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE) Logger {
   //   driverStatus: string [OK,BAD,UNKNOWN],
   //   fileMonitorStatus: string [OK,BAD,UNKNOWN]
   // }
-  virtual base::Value::Dict GetServiceStatus() = 0;
+  virtual base::DictValue GetServiceStatus() = 0;
 
   // Returns the current list of downloads the Download Service is aware of.
   // The serialized format will be a list of:
@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE) Logger {
   //     done: boolean,
   //   }
   // }
-  virtual base::Value::List GetServiceDownloads() = 0;
+  virtual base::ListValue GetServiceDownloads() = 0;
 
  protected:
   Logger() = default;

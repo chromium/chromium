@@ -26,7 +26,7 @@ using ::attribution_reporting::mojom::TriggerRegistrationError;
 // static
 base::expected<AggregatableNamedBudgetCandidate, TriggerRegistrationError>
 AggregatableNamedBudgetCandidate::FromJSON(base::Value& v) {
-  base::Value::Dict* dict = v.GetIfDict();
+  base::DictValue* dict = v.GetIfDict();
   if (!dict) {
     return base::unexpected(
         TriggerRegistrationError::kAggregatableNamedBudgetWrongType);
@@ -68,8 +68,8 @@ AggregatableNamedBudgetCandidate& AggregatableNamedBudgetCandidate::operator=(
 AggregatableNamedBudgetCandidate& AggregatableNamedBudgetCandidate::operator=(
     AggregatableNamedBudgetCandidate&&) = default;
 
-base::Value::Dict AggregatableNamedBudgetCandidate::ToJson() const {
-  base::Value::Dict dict;
+base::DictValue AggregatableNamedBudgetCandidate::ToJson() const {
+  base::DictValue dict;
 
   if (name_.has_value()) {
     dict.Set(kName, *name_);

@@ -80,7 +80,7 @@ TEST(AggregatableFilteringIdsMaxBytes, Parse) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
 
-    base::Value::Dict input = base::test::ParseJsonDict(test_case.json);
+    base::DictValue input = base::test::ParseJsonDict(test_case.json);
 
     EXPECT_THAT(AggregatableFilteringIdsMaxBytes::Parse(input),
                 test_case.matches);

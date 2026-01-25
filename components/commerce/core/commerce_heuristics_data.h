@@ -119,8 +119,8 @@ class CommerceHeuristicsData {
   std::unique_ptr<re2::RE2> ConstructGlobalRegex(const std::string& type);
 
   base::Version version_;
-  base::Value::Dict hint_heuristics_;
-  base::Value::Dict global_heuristics_;
+  base::DictValue hint_heuristics_;
+  base::DictValue global_heuristics_;
   std::string global_heuristics_string_;
   std::unique_ptr<re2::RE2> product_skip_pattern_;
   std::unique_ptr<re2::RE2> rule_discount_partner_merchant_pattern_;

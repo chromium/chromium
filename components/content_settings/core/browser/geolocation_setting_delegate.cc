@@ -64,7 +64,7 @@ PermissionSetting GeolocationSettingDelegate::InheritInIncognito(
 base::Value GeolocationSettingDelegate::ToValue(
     const PermissionSetting& setting) const {
   const GeolocationSetting& geo_setting = std::get<GeolocationSetting>(setting);
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("approximate", static_cast<int>(geo_setting.approximate));
   dict.Set("precise", static_cast<int>(geo_setting.precise));
   return base::Value(std::move(dict));

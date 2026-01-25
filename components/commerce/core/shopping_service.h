@@ -542,13 +542,13 @@ class ShoppingService : public KeyedService,
   // Tries to determine whether a page is a PDP only from information in meta
   // tags extracted from the page. If enough information is present to call the
   // page a PDP, this function returns true.
-  static bool CheckIsPDPFromMetaOnly(const base::Value::Dict& on_page_meta_map);
+  static bool CheckIsPDPFromMetaOnly(const base::DictValue& on_page_meta_map);
 
   // Merge shopping data from existing |info| and the result of on-page
   // heuristics -- a JSON object holding key -> value pairs (a map) stored in
   // |on_page_data_map|. The merged data is written to |info|.
   static void MergeProductInfoData(ProductInfo* info,
-                                   const base::Value::Dict& on_page_data_map);
+                                   const base::DictValue& on_page_data_map);
 
   void HandleOptGuideMerchantInfoResponse(
       const GURL& url,

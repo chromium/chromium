@@ -314,7 +314,7 @@ void IbanSaveManager::OnDidGetUploadDetails(
     PaymentsRpcResult result,
     const std::u16string& validation_regex,
     const std::u16string& context_token,
-    std::unique_ptr<base::Value::Dict> legal_message) {
+    std::unique_ptr<base::DictValue> legal_message) {
   if (observer_for_testing_) {
     observer_for_testing_->OnReceivedGetUploadDetailsResponse();
   }

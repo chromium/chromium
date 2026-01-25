@@ -198,7 +198,7 @@ void AccountChecker::FetchPriceEmailPref() {
 void AccountChecker::HandleFetchPriceEmailPrefResponse(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
-  std::optional<base::Value::Dict> result =
+  std::optional<base::DictValue> result =
       base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
 
   // Only update the pref if we're still waiting for the pref fetch completion.
@@ -237,9 +237,9 @@ void AccountChecker::OnPriceEmailPrefChanged() {
   }
 
   // Send the new value to server.
-  base::Value::Dict post_json = base::Value::Dict().Set(
+  base::DictValue post_json = base::DictValue().Set(
       kPreferencesKey,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           kPriceTrackEmailPref,
           pref_service_->GetBoolean(kPriceEmailNotificationsEnabled)));
   std::string post_data = base::WriteJson(post_json).value_or("");
@@ -286,7 +286,7 @@ void AccountChecker::OnPriceEmailPrefChanged() {
 void AccountChecker::HandleSendPriceEmailPrefResponse(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
-  std::optional<base::Value::Dict> result =
+  std::optional<base::DictValue> result =
       base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
   if (pref_service_ && result.has_value()) {
     if (auto* preferences_map = result->FindDict(kPreferencesKey)) {

@@ -15,7 +15,8 @@
 #include "components/download/public/background_service/logger.h"
 
 namespace base {
-class Value;
+class DictValue;
+class ListValue;
 }
 
 namespace download {
@@ -41,8 +42,8 @@ class LoggerImpl : public Logger, public LogSink {
   // Logger implementation.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  base::Value::Dict GetServiceStatus() override;
-  base::Value::List GetServiceDownloads() override;
+  base::DictValue GetServiceStatus() override;
+  base::ListValue GetServiceDownloads() override;
 
   // LogSink implementation.
   void OnServiceStatusChanged() override;

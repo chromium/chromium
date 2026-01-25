@@ -33,7 +33,7 @@ class CreateBnplPaymentInstrumentRequestTest : public testing::Test {
 
   CreateBnplPaymentInstrumentRequest* GetRequest() { return request_.get(); }
 
-  void ParseResponse(const base::Value::Dict& response) {
+  void ParseResponse(const base::DictValue& response) {
     request_->ParseResponse(response);
   }
 
@@ -77,10 +77,10 @@ TEST_F(CreateBnplPaymentInstrumentRequestTest,
 
 TEST_F(CreateBnplPaymentInstrumentRequestTest,
        ParseResponse_ResponseIsComplete) {
-  base::Value::Dict response = base::Value::Dict().Set(
+  base::DictValue response = base::DictValue().Set(
       "buy_now_pay_later_info",
-      base::Value::Dict().Set("instrument_id",
-                              base::Value("some instrument id")));
+      base::DictValue().Set("instrument_id",
+                            base::Value("some instrument id")));
 
   ParseResponse(response);
 
@@ -90,7 +90,7 @@ TEST_F(CreateBnplPaymentInstrumentRequestTest,
 
 TEST_F(CreateBnplPaymentInstrumentRequestTest,
        ParseResponse_MissingInstrumentId) {
-  base::Value::Dict response = base::Value::Dict();
+  base::DictValue response = base::DictValue();
 
   ParseResponse(response);
 

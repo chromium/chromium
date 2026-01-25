@@ -39,7 +39,7 @@ class UpdateBnplPaymentInstrumentRequestTest : public testing::Test {
 
   UpdateBnplPaymentInstrumentRequest* GetRequest() { return request_.get(); }
 
-  void ParseResponse(const base::Value::Dict& response) {
+  void ParseResponse(const base::DictValue& response) {
     request_->ParseResponse(response);
   }
 
@@ -88,8 +88,8 @@ TEST_F(UpdateBnplPaymentInstrumentRequestTest,
 
 TEST_F(UpdateBnplPaymentInstrumentRequestTest,
        ParseResponse_ResponseIsComplete) {
-  base::Value::Dict response =
-      base::Value::Dict().Set("buy_now_pay_later_info", base::Value::Dict());
+  base::DictValue response =
+      base::DictValue().Set("buy_now_pay_later_info", base::DictValue());
 
   ParseResponse(response);
 
@@ -98,7 +98,7 @@ TEST_F(UpdateBnplPaymentInstrumentRequestTest,
 
 TEST_F(UpdateBnplPaymentInstrumentRequestTest,
        ParseResponse_MissingBuyNowPayLaterInfo) {
-  base::Value::Dict response = base::Value::Dict();
+  base::DictValue response = base::DictValue();
 
   ParseResponse(response);
 

@@ -142,7 +142,7 @@ TEST_F(AutofillFeedbackDataUnitTest, CreatesCompleteReport) {
       /*updated_forms=*/{form},
       /*removed_forms=*/{});
 
-  base::Value::Dict autofill_feedback_data =
+  base::DictValue autofill_feedback_data =
       data_logs::FetchAutofillFeedbackData(&autofill_manager());
 
   ASSERT_OK_AND_ASSIGN(
@@ -174,7 +174,7 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
   ASSERT_TRUE(expected_data.is_dict());
 
   // Update the expected data with a last_autofill_event entry.
-  base::Value::Dict last_autofill_event;
+  base::DictValue last_autofill_event;
   last_autofill_event.Set("associatedCountry", "");
   last_autofill_event.Set("type", "SingleFieldFillerIban");
   expected_data.GetDict().Set("lastAutofillEvent",
@@ -218,13 +218,12 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesExtraLogs) {
       /*updated_forms=*/{form},
       /*removed_forms=*/{});
 
-  base::Value::Dict extra_logs;
+  base::DictValue extra_logs;
   extra_logs.Set("triggerFormSignature", "123");
   extra_logs.Set("triggerFieldSignature", "456");
 
-  base::Value::Dict autofill_feedback_data =
-      data_logs::FetchAutofillFeedbackData(&autofill_manager(),
-                                           extra_logs.Clone());
+  base::DictValue autofill_feedback_data = data_logs::FetchAutofillFeedbackData(
+      &autofill_manager(), extra_logs.Clone());
 
   ASSERT_OK_AND_ASSIGN(
       auto expected_data,

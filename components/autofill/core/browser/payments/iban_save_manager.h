@@ -180,7 +180,7 @@ class IbanSaveManager {
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& validation_regex,
       const std::u16string& context_token,
-      std::unique_ptr<base::Value::Dict> legal_message);
+      std::unique_ptr<base::DictValue> legal_message);
 
   // Add `risk_data` to `UploadIbanRequestDetails` and send upload IBAN request
   // if the user has accepted the save prompt.

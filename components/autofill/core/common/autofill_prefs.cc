@@ -396,7 +396,7 @@ void SetPaymentCardBenefits(PrefService* prefs, bool value) {
 }
 
 void ClearSyncTransportOptIns(PrefService* prefs) {
-  prefs->SetDict(kAutofillSyncTransportOptIn, base::Value::Dict());
+  prefs->SetDict(kAutofillSyncTransportOptIn, base::DictValue());
 }
 
 void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value) {

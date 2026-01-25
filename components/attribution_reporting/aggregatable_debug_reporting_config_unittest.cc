@@ -657,7 +657,7 @@ TEST(AggregatableDebugReportingConfig, Parse) {
     {
       base::HistogramTester histograms;
 
-      base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+      base::DictValue dict = base::test::ParseJsonDict(test_case.json);
       EXPECT_THAT(SourceAggregatableDebugReportingConfig::Parse(dict),
                   test_case.matches_source);
 
@@ -672,7 +672,7 @@ TEST(AggregatableDebugReportingConfig, Parse) {
     {
       base::HistogramTester histograms;
 
-      base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+      base::DictValue dict = base::test::ParseJsonDict(test_case.json);
       EXPECT_THAT(AggregatableDebugReportingConfig::Parse(dict),
                   test_case.matches_trigger);
 
@@ -728,7 +728,7 @@ TEST(AggregatableDebugReportingConfig, SerializeSource) {
           {url::Origin::Create(GURL("https://a.test"))});
 
   for (const auto& test_case : kTestCases) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     test_case.input.Serialize(dict);
     EXPECT_THAT(dict, base::test::IsJson(test_case.expected_json));
   }
@@ -777,7 +777,7 @@ TEST(AggregatableDebugReportingConfig, SerializeTrigger) {
           {url::Origin::Create(GURL("https://a.test"))});
 
   for (const auto& test_case : kTestCases) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     test_case.input.Serialize(dict);
     EXPECT_THAT(dict, base::test::IsJson(test_case.expected_json));
   }
@@ -867,7 +867,7 @@ TEST(AggregatableDebugReportingConfig, SourceDebugDataTypes) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.type_str);
 
-    base::Value::Dict dict =
+    base::DictValue dict =
         base::test::ParseJsonDict(base::ReplaceStringPlaceholders(
             json, {test_case.type_str}, /*offsets=*/nullptr));
     EXPECT_THAT(SourceAggregatableDebugReportingConfig::Parse(dict),
@@ -989,7 +989,7 @@ TEST(AggregatableDebugReportingConfig, TriggerDebugDataTypes) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.type_str);
 
-    base::Value::Dict dict =
+    base::DictValue dict =
         base::test::ParseJsonDict(base::ReplaceStringPlaceholders(
             json, {test_case.type_str}, /*offsets=*/nullptr));
     EXPECT_THAT(AggregatableDebugReportingConfig::Parse(dict),

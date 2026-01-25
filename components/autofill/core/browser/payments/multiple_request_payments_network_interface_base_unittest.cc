@@ -31,7 +31,7 @@ class MockPaymentsRequest : public PaymentsRequest {
   MOCK_METHOD(std::string, GetRequestUrlPath, (), (override));
   MOCK_METHOD(std::string, GetRequestContentType, (), (override));
   MOCK_METHOD(std::string, GetRequestContent, (), (override));
-  MOCK_METHOD(void, ParseResponse, (const base::Value::Dict&), (override));
+  MOCK_METHOD(void, ParseResponse, (const base::DictValue&), (override));
   MOCK_METHOD(bool, IsResponseComplete, (), (override));
   MOCK_METHOD(void,
               RespondToDelegate,

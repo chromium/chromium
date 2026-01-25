@@ -30,13 +30,13 @@ const char kValuePlaying[] = "PLAYING";
 const char kValueLive[] = "LIVE";
 const char kValueVideoWebm[] = "video/webm";
 
-base::Value::Dict GetMediaCurrentStatusValue() {
-  base::Value::Dict media;
+base::DictValue GetMediaCurrentStatusValue() {
+  base::DictValue media;
   media.Set(kKeyContentId, "");
   media.Set(kKeyStreamType, kValueLive);
   media.Set(kKeyContentType, kValueVideoWebm);
 
-  base::Value::Dict media_current_status;
+  base::DictValue media_current_status;
   media_current_status.Set(kKeyMediaSessionId, 0);
   media_current_status.Set(kKeyPlaybackRate, 1.0);
   media_current_status.Set(kKeyPlayerState, kValuePlaying);
@@ -124,7 +124,7 @@ void CastMessagePortImpl::ResetClient() {
 
 void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
                                              const std::string& message) {
-  std::optional<base::Value::Dict> value =
+  std::optional<base::DictValue> value =
       base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
@@ -152,7 +152,7 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
   }
 
   // Build the response message.
-  base::Value::Dict response_value;
+  base::DictValue response_value;
   response_value.Set(kKeyType, kValueError);
   response_value.Set(kKeyRequestId, request_id.value());
   response_value.Set(kKeyData, kValueInjectNotSupportedError);
@@ -165,7 +165,7 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
 
 void CastMessagePortImpl::HandleMediaMessage(const std::string& sender_id,
                                              const std::string& message) {
-  std::optional<base::Value::Dict> value =
+  std::optional<base::DictValue> value =
       base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
@@ -198,10 +198,10 @@ void CastMessagePortImpl::HandleMediaMessage(const std::string& sender_id,
     return;
   }
 
-  base::Value::List message_status_list;
+  base::ListValue message_status_list;
   message_status_list.Append(GetMediaCurrentStatusValue());
 
-  base::Value::Dict response_value;
+  base::DictValue response_value;
   response_value.Set(kKeyRequestId, request_id.value());
   response_value.Set(kKeyType, kValueMediaStatus);
   response_value.Set(kKeyStatus, std::move(message_status_list));

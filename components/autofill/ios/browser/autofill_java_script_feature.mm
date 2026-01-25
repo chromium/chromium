@@ -69,41 +69,41 @@ void AutofillJavaScriptFeature::FetchForms(
   bool restrict_unowned_fields_to_formless_checkout = false;
   CallJavaScriptFunction(
       frame, "autofill.extractForms",
-      base::Value::List().Append(restrict_unowned_fields_to_formless_checkout),
+      base::ListValue().Append(restrict_unowned_fields_to_formless_checkout),
       autofill::CreateStringCallback(std::move(callback)),
       base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::FillActiveFormField(
     web::WebFrame* frame,
-    base::Value::Dict data,
+    base::DictValue data,
     base::OnceCallback<void(BOOL)> callback) {
   CallJavaScriptFunction(frame, "autofill.fillActiveFormField",
-                         base::Value::List().Append(std::move(data)),
+                         base::ListValue().Append(std::move(data)),
                          autofill::CreateBoolCallback(std::move(callback)),
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::FillSpecificFormField(
     web::WebFrame* frame,
-    base::Value::Dict data,
+    base::DictValue data,
     base::OnceCallback<void(BOOL)> callback) {
   CallJavaScriptFunction(frame, "autofill.fillSpecificFormField",
-                         base::Value::List().Append(std::move(data)),
+                         base::ListValue().Append(std::move(data)),
                          autofill::CreateBoolCallback(std::move(callback)),
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void AutofillJavaScriptFeature::FillForm(
     web::WebFrame* frame,
-    base::Value::Dict data,
+    base::DictValue data,
     autofill::FieldRendererId force_fill_field_id,
     base::OnceCallback<void(NSString*)> callback) {
   DCHECK(!callback.is_null());
 
   CallJavaScriptFunction(
       frame, "autofill.fillForm",
-      base::Value::List()
+      base::ListValue()
           .Append(std::move(data))
           .Append(static_cast<int>(force_fill_field_id.value())),
       autofill::CreateStringCallback(std::move(callback)),
@@ -119,7 +119,7 @@ void AutofillJavaScriptFeature::ClearAutofilledFieldsForForm(
 
   CallJavaScriptFunction(
       frame, "autofill.clearAutofilledFields",
-      base::Value::List()
+      base::ListValue()
           .Append(static_cast<int>(form_renderer_id.value()))
           .Append(static_cast<int>(field_renderer_id.value())),
       autofill::CreateStringCallback(std::move(callback)),
@@ -127,9 +127,9 @@ void AutofillJavaScriptFeature::ClearAutofilledFieldsForForm(
 }
 
 void AutofillJavaScriptFeature::FillPredictionData(web::WebFrame* frame,
-                                                   base::Value::Dict data) {
+                                                   base::DictValue data) {
   CallJavaScriptFunction(frame, "autofill.fillPredictionData",
-                         base::Value::List().Append(std::move(data)));
+                         base::ListValue().Append(std::move(data)));
 }
 
 std::optional<std::string>
@@ -145,7 +145,7 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
   }
   const std::string* command = message.body()->GetDict().FindString("command");
   const std::string* frame_id = message.body()->GetDict().FindString("frame");
-  const base::Value::Dict* form_dict =
+  const base::DictValue* form_dict =
       message.body()->GetDict().FindDict("form_data");
   if (!command || !frame_id || !form_dict || *command != kFormFilledCommand) {
     return;

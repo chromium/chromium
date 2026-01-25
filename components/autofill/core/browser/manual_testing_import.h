@@ -79,14 +79,14 @@ std::optional<std::vector<CreditCard>> LoadCreditCardsFromFile(
 // invalid because the last name is not part of the full name, the routine will
 // clear this information.
 std::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
-    const base::Value::List* const profiles_json);
+    const base::ListValue* const profiles_json);
 
 // Given the array of valid credit cards in the aforementioned JSON format,
 // converts it to a vector of CreditCards.
 // If the JSON list doesn't adhere to the above format, an error message is
 // logged and std::nullopt is returned.
 std::optional<std::vector<CreditCard>> CreditCardsFromJSON(
-    const base::Value::List* const cards_json);
+    const base::ListValue* const cards_json);
 
 // Checks if the `kManualImportForTestingFlag` flag is present. If so,
 // reads the specified file, parses the profiles and credit cards description

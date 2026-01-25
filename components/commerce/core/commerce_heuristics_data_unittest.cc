@@ -45,12 +45,12 @@ class CommerceHeuristicsDataTest : public testing::Test {
  public:
   CommerceHeuristicsDataTest() = default;
 
-  base::Value::Dict* GetHintHeuristics() {
+  base::DictValue* GetHintHeuristics() {
     return &commerce_heuristics::CommerceHeuristicsData::GetInstance()
                 .hint_heuristics_;
   }
 
-  base::Value::Dict* GetGlobalHeuristics() {
+  base::DictValue* GetGlobalHeuristics() {
     return &commerce_heuristics::CommerceHeuristicsData::GetInstance()
                 .global_heuristics_;
   }

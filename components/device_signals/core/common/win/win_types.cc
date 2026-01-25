@@ -13,7 +13,7 @@ bool AvProduct::operator==(const AvProduct& other) const {
 }
 
 base::Value AvProduct::ToValue() const {
-  base::Value::Dict values;
+  base::DictValue values;
   values.Set("displayName", display_name);
   values.Set("state", static_cast<int>(state));
   return base::Value(std::move(values));
@@ -24,7 +24,7 @@ bool InstalledHotfix::operator==(const InstalledHotfix& other) const {
 }
 
 base::Value InstalledHotfix::ToValue() const {
-  base::Value::Dict values;
+  base::DictValue values;
   values.Set("hotfixId", hotfix_id);
   return base::Value(std::move(values));
 }

@@ -73,7 +73,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityLocalEnabled) {
   test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
                                   {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set("image", std::string(kImageUrl2));
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -108,7 +108,7 @@ TEST_F(ShoppingServiceMetricsTest,
        TestImageAvailabilityDisabledLocalNoServerImage) {
   test_features_.InitWithFeatures({kShoppingList}, {kCommerceAllowLocalImages});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set("image", std::string(kImageUrl2));
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -142,7 +142,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoServerImage) {
   test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
                                   {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set("image", std::string(kImageUrl2));
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -176,7 +176,7 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoLocalImage) {
   test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
                                   {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set("irrelevant", std::string("value"));
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -231,7 +231,7 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoLocal) {
                                   {});
 
   //  Set the type as a non-product.
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set(std::string(kOgType), "article");
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -256,7 +256,7 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_BothServerAndLocal) {
   test_features_.InitWithFeatures({kShoppingList, kCommerceLocalPDPDetection},
                                   {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set(std::string(commerce::kOgType), commerce::kOgTypeOgProduct);
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -281,7 +281,7 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoServer) {
   test_features_.InitWithFeatures({kShoppingList, kCommerceLocalPDPDetection},
                                   {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set(commerce::kOgType, commerce::kOgTypeOgProduct);
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -306,7 +306,7 @@ TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_IllegalScheme) {
   test_features_.InitWithFeatures({kShoppingList, kCommerceLocalPDPDetection},
                                   {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set(kOgType, kOgTypeOgProduct);
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL("chrome://internal-page"), false, &js_result);
@@ -327,7 +327,7 @@ TEST_F(ShoppingServiceMetricsTest,
   test_features_.InitWithFeatures({kShoppingList},
                                   {kCommerceLocalPDPDetection});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set(commerce::kOgType, commerce::kOgTypeOgProduct);
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -348,7 +348,7 @@ TEST_F(ShoppingServiceMetricsTest, TestProductInfoJsExecutionTime) {
 
   // The content of the javascript result only needs to be json for this text,
   // the actual fields don't matter.
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set("success", "true");
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -368,7 +368,7 @@ TEST_F(ShoppingServiceMetricsTest, TestNoExtractionForNonShoppingPage) {
   test_features_.InitWithFeatures({kCommerceLocalPDPDetection}, {});
   opt_guide_->SetDefaultShoppingPage(false);
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set(kOgType, kOgTypeOgProduct);
   base::Value js_result(std::move(result));
   MockWebWrapper web(GURL(kProductUrl), false, &js_result);

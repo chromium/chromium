@@ -100,7 +100,7 @@ class CreditCardAccessManagerAuthFlowTest
 
   void FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(
       const CreditCard* card,
-      base::Value::Dict fido_request_options = base::Value::Dict()) {
+      base::DictValue fido_request_options = base::DictValue()) {
     CreditCardAccessManagerTestBase::FetchCreditCard(card);
     if (!IsMaskedServerCardRiskBasedAuthEnabled()) {
       return;

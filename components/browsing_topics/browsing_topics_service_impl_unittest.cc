@@ -292,12 +292,12 @@ class BrowsingTopicsServiceImplTest
   void CreateBrowsingTopicsStateFile(
       const std::vector<EpochTopics>& epochs,
       base::Time next_scheduled_calculation_time) {
-    base::Value::List epochs_list;
+    base::ListValue epochs_list;
     for (const EpochTopics& epoch : epochs) {
       epochs_list.Append(epoch.ToDictValue());
     }
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("epochs", std::move(epochs_list));
     dict.Set("next_scheduled_calculation_time",
              base::TimeToValue(next_scheduled_calculation_time));

@@ -78,12 +78,12 @@ TEST(CreateCardRequestTest, GetRequestUrlPath) {
 
 TEST(CreateCardRequestTest, GetRequestContent_ContainsExpectedData) {
   std::unique_ptr<CreateCardRequest> request = BuildCreateCardRequest();
-  base::Value::Dict address =
-      base::Value::Dict()
+  base::DictValue address =
+      base::DictValue()
           .Set("phone_number", "16502111111")
           .Set("postal_address",
-               base::Value::Dict()
-                   .Set("address_line", base::Value::List()
+               base::DictValue()
+                   .Set("address_line", base::ListValue()
                                             .Append("666 Erebus St.")
                                             .Append("Apt 8"))
                    .Set("administrative_area_name", "CA")
@@ -94,10 +94,10 @@ TEST(CreateCardRequestTest, GetRequestContent_ContainsExpectedData) {
   int exp_month, exp_year;
   base::StringToInt(test::NextMonth(), &exp_month);
   base::StringToInt(test::NextYear(), &exp_year);
-  base::Value::Dict json_dict =
-      base::Value::Dict()
+  base::DictValue json_dict =
+      base::DictValue()
           .Set("context",
-               base::Value::Dict()
+               base::DictValue()
                    .Set("billable_service",
                         payments::kUploadPaymentMethodBillableServiceNumber)
                    .Set("customer_context",
@@ -105,16 +105,16 @@ TEST(CreateCardRequestTest, GetRequestContent_ContainsExpectedData) {
                             111122223333))
                    .Set("language_code", "en"))
           .Set("chrome_user_context",
-               base::Value::Dict().Set(
+               base::DictValue().Set(
                    "client_behavior_signals",
-                   base::Value::List().Append(static_cast<int>(
+                   base::ListValue().Append(static_cast<int>(
                        ClientBehaviorConstants::kOfferingToSaveCvc))))
           .Set("context_token", "some context token")
           .Set("risk_data_encoded",
                PaymentsRequest::BuildRiskDictionary("some risk data"))
           .Set("nickname", "some nickname")
           .Set("card_info",
-               base::Value::Dict()
+               base::DictValue()
                    .Set("pan", "__param:s7e_21_pan")
                    .Set("cvc", "__param:s7e_13_cvc")
                    .Set("expiration_month", exp_month)
@@ -176,8 +176,8 @@ TEST(CreateCardRequestTest, GetTimeout) {
 TEST(CreateCardRequestTest, ParseResponse) {
   std::unique_ptr<CreateCardRequest> request = BuildCreateCardRequest();
 
-  base::Value::Dict response = base::Value::Dict().Set(
-      "card_info", base::Value::Dict().Set("instrument_id", "11223344"));
+  base::DictValue response = base::DictValue().Set(
+      "card_info", base::DictValue().Set("instrument_id", "11223344"));
 
   request->ParseResponse(response);
 
@@ -188,7 +188,7 @@ TEST(CreateCardRequestTest, ParseResponse) {
 TEST(CreateCardRequestTest, ParseResponse_MissingCardInfo) {
   std::unique_ptr<CreateCardRequest> request = BuildCreateCardRequest();
 
-  request->ParseResponse(base::Value::Dict());
+  request->ParseResponse(base::DictValue());
 
   EXPECT_FALSE(request->IsResponseComplete());
 }

@@ -138,9 +138,9 @@ class CreditCardAccessManagerTestBase
   void ClearStrikes();
   int GetStrikes();
 
-  base::Value::Dict GetTestRequestOptions(
+  base::DictValue GetTestRequestOptions(
       bool return_invalid_request_options = false);
-  base::Value::Dict GetTestCreationOptions();
+  base::DictValue GetTestCreationOptions();
 
   // Returns true if full card request was sent from FIDO auth.
   bool GetRealPanForFIDOAuth(

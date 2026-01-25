@@ -46,7 +46,7 @@ class CreditCardCvcAuthenticator
       cvc = std::u16string(s);
       return *this;
     }
-    CvcAuthenticationResponse& with_request_options(base::Value::Dict v) {
+    CvcAuthenticationResponse& with_request_options(base::DictValue v) {
       request_options = std::move(v);
       return *this;
     }
@@ -58,7 +58,7 @@ class CreditCardCvcAuthenticator
     raw_ptr<const CreditCard> card = nullptr;
     // TODO(crbug.com/40927733): Remove CVC.
     std::u16string cvc;
-    base::Value::Dict request_options;
+    base::DictValue request_options;
     std::string card_authorization_token;
   };
   class Requester {

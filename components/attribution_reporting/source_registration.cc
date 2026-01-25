@@ -96,7 +96,7 @@ SourceRegistration& SourceRegistration::operator=(SourceRegistration&&) =
 namespace {
 
 base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
-    base::Value::Dict registration,
+    base::DictValue registration,
     SourceType source_type) {
   ASSIGN_OR_RETURN(DestinationSet destination_set,
                    DestinationSet::FromJSON(registration.Find(kDestination)));
@@ -206,7 +206,7 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
 // static
 base::expected<SourceRegistration, SourceRegistrationError>
 SourceRegistration::Parse(base::Value value, SourceType source_type) {
-  if (base::Value::Dict* dict = value.GetIfDict()) {
+  if (base::DictValue* dict = value.GetIfDict()) {
     return ParseDict(std::move(*dict), source_type);
   } else {
     return base::unexpected(SourceRegistrationError::kRootWrongType);
@@ -231,8 +231,8 @@ SourceRegistration::Parse(std::string_view json, SourceType source_type) {
   return source;
 }
 
-base::Value::Dict SourceRegistration::ToJson() const {
-  base::Value::Dict dict;
+base::DictValue SourceRegistration::ToJson() const {
+  base::DictValue dict;
 
   dict.Set(kDestination, destination_set.ToJson());
 

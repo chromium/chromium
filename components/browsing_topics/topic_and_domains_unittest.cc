@@ -12,7 +12,7 @@ class TopicAndDomainsTest : public testing::Test {};
 
 TEST_F(TopicAndDomainsTest, FromEmptyDictionaryValue) {
   TopicAndDomains read_topic_and_domains =
-      TopicAndDomains::FromDictValue(base::Value::Dict());
+      TopicAndDomains::FromDictValue(base::DictValue());
 
   EXPECT_FALSE(read_topic_and_domains.IsValid());
   EXPECT_EQ(read_topic_and_domains.topic(), Topic(0));
@@ -22,7 +22,7 @@ TEST_F(TopicAndDomainsTest, FromEmptyDictionaryValue) {
 TEST_F(TopicAndDomainsTest, EmptyTopicAndDomains_ToAndFromDictValue) {
   TopicAndDomains topic_and_domains;
 
-  base::Value::Dict dict_value = topic_and_domains.ToDictValue();
+  base::DictValue dict_value = topic_and_domains.ToDictValue();
   TopicAndDomains read_topic_and_domains =
       TopicAndDomains::FromDictValue(dict_value);
 
@@ -36,7 +36,7 @@ TEST_F(TopicAndDomainsTest, PopulatedTopicAndDomains_ToAndFromValue) {
       Topic(2),
       /*hashed_domains=*/{HashedDomain(123), HashedDomain(456)});
 
-  base::Value::Dict dict_value = topic_and_domains.ToDictValue();
+  base::DictValue dict_value = topic_and_domains.ToDictValue();
   TopicAndDomains read_topic_and_domains =
       TopicAndDomains::FromDictValue(dict_value);
 

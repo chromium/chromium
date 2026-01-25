@@ -51,12 +51,12 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
     card_ = test::GetMaskedServerCard();
   }
 
-  base::Value::Dict GetTestRequestOptions() {
-    base::Value::Dict request_options;
+  base::DictValue GetTestRequestOptions() {
+    base::DictValue request_options;
     request_options.Set("challenge", base::Value(kTestChallenge));
     request_options.Set("relying_party_id", base::Value(kGooglePaymentsRpid));
 
-    base::Value::Dict key_info;
+    base::DictValue key_info;
     key_info.Set("credential_id", base::Value(kCredentialId));
     request_options.Set("key_info", base::Value(base::Value::Type::LIST));
     request_options.FindList("key_info")->Append(std::move(key_info));
