@@ -51,7 +51,7 @@ TEST_F(WorkerPerformanceTest, Mark) {
   EXPECT_EQ("blink.user_timing", events[0]->category);
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
-  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  base::DictValue arg_dict = events[0]->GetKnownArgAsDict("data");
 
   std::optional<double> start_time = arg_dict.FindDouble("startTime");
   ASSERT_TRUE(start_time.has_value());

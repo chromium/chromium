@@ -65,12 +65,12 @@ base::Value SerializeIntoValue(const base::flat_map<K, V>&);
 template <typename T>
 void SerializeIntoDict(std::string_view field,
                        const T& value,
-                       base::Value::Dict& out);
+                       base::DictValue& out);
 
 template <typename T>
 void SerializeIntoDict(std::string_view field,
                        const std::optional<T>& value,
-                       base::Value::Dict& out);
+                       base::DictValue& out);
 
 template <typename T>
 base::Value SerializeIntoValue(const std::optional<T>& value) {
@@ -104,7 +104,7 @@ base::Value SerializeIntoValue(const absl::uint128& value) {
 template <>
 base::Value SerializeIntoValue(
     const blink::AuctionConfig::AdKeywordReplacement& value) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("match", SerializeIntoValue(value.match));
   result.Set("replacement", SerializeIntoValue(value.replacement));
   return base::Value(std::move(result));
@@ -130,7 +130,7 @@ base::Value SerializeIntoValue(const double& value) {
 template <>
 base::Value SerializeIntoValue(
     const AuctionConfig::NonSharedParams::AuctionReportBuyersConfig& value) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("bucket", SerializeIntoValue(value.bucket));
   result.Set("scale", SerializeIntoValue(value.scale));
   return base::Value(std::move(result));
@@ -138,7 +138,7 @@ base::Value SerializeIntoValue(
 
 template <>
 base::Value SerializeIntoValue(const SellerCapabilitiesType& value) {
-  base::Value::List result;
+  base::ListValue result;
   for (blink::SellerCapabilities cap : value) {
     switch (cap) {
       case blink::SellerCapabilities::kInterestGroupCounts:
@@ -160,14 +160,14 @@ base::Value SerializeIntoValue(const base::Uuid& uuid) {
 template <>
 base::Value SerializeIntoValue(
     const blink::AuctionConfig::ServerResponseConfig& server_config) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("requestId", SerializeIntoValue(server_config.request_id));
   return base::Value(std::move(result));
 }
 
 template <typename T>
 base::Value SerializeIntoValue(const std::vector<T>& values) {
-  base::Value::List out;
+  base::ListValue out;
   for (const T& in_val : values) {
     out.Append(SerializeIntoValue(in_val));
   }
@@ -176,7 +176,7 @@ base::Value SerializeIntoValue(const std::vector<T>& values) {
 
 template <typename T>
 base::Value SerializeIntoValue(const AuctionConfig::MaybePromise<T>& promise) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("pending", promise.is_promise());
   if (!promise.is_promise()) {
     result.Set("value", SerializeIntoValue(promise.value()));
@@ -188,7 +188,7 @@ template <>
 base::Value SerializeIntoValue(
     const AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig&
         value) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("enabled", value.is_enabled);
   if (value.debug_key.has_value()) {
     // debug_key is uint64, so it doesn't fit into regular JS numeric types.
@@ -199,7 +199,7 @@ base::Value SerializeIntoValue(
 
 template <typename K, typename V>
 base::Value SerializeIntoValue(const base::flat_map<K, V>& value) {
-  base::Value::Dict result;
+  base::DictValue result;
   for (const auto& kv : value) {
     result.Set(SerializeIntoKey(kv.first), SerializeIntoValue(kv.second));
   }
@@ -210,10 +210,10 @@ base::Value SerializeIntoValue(const base::flat_map<K, V>& value) {
 // Annoyingly we are quite inconsistent about how optional is used. This handles
 // both cases for the map; for the value the caller can just use make_optional.
 template <typename T>
-base::Value::Dict SerializeSplitMapHelper(
+base::DictValue SerializeSplitMapHelper(
     const std::optional<T>& all_value,
     const std::optional<base::flat_map<url::Origin, T>>& per_values) {
-  base::Value::Dict result;
+  base::DictValue result;
   if (all_value.has_value()) {
     result.Set("*", SerializeIntoValue(*all_value));
   }
@@ -227,10 +227,10 @@ base::Value::Dict SerializeSplitMapHelper(
 }
 
 template <typename T>
-base::Value::Dict SerializeSplitMapHelper(
+base::DictValue SerializeSplitMapHelper(
     const std::optional<T>& all_value,
     const base::flat_map<url::Origin, T>& per_values) {
-  base::Value::Dict result;
+  base::DictValue result;
   if (all_value.has_value()) {
     result.Set("*", SerializeIntoValue(*all_value));
   }
@@ -261,7 +261,7 @@ base::Value SerializeIntoValue(const AdCurrency& in) {
 
 template <>
 base::Value SerializeIntoValue(const AdSize& ad_size) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("width",
              ConvertAdDimensionToString(ad_size.width, ad_size.width_units));
   result.Set("height",
@@ -291,7 +291,7 @@ base::Value SerializeIntoValue(const InterestGroup::AdditionalBidKey& in) {
 
 template <>
 base::Value SerializeIntoValue(const InterestGroup::Ad& ad) {
-  base::Value::Dict result;
+  base::DictValue result;
   SerializeIntoDict("renderURL", ad.render_url(), result);
   SerializeIntoDict("metadata", ad.metadata, result);
   SerializeIntoDict("buyerReportingId", ad.buyer_reporting_id, result);
@@ -309,7 +309,7 @@ base::Value SerializeIntoValue(const InterestGroup::Ad& ad) {
 
 template <>
 base::Value SerializeIntoValue(const AuctionServerRequestFlags& flags) {
-  base::Value::List result;
+  base::ListValue result;
   for (auto flag : flags) {
     switch (flag) {
       case AuctionServerRequestFlagsEnum::kOmitAds:
@@ -330,7 +330,7 @@ base::Value SerializeIntoValue(const AuctionServerRequestFlags& flags) {
 template <typename T>
 void SerializeIntoDict(std::string_view field,
                        const T& value,
-                       base::Value::Dict& out) {
+                       base::DictValue& out) {
   out.Set(field, SerializeIntoValue(value));
 }
 
@@ -339,7 +339,7 @@ void SerializeIntoDict(std::string_view field,
 template <typename T>
 void SerializeIntoDict(std::string_view field,
                        const std::optional<T>& value,
-                       base::Value::Dict& out) {
+                       base::DictValue& out) {
   if (value.has_value()) {
     out.Set(field, SerializeIntoValue(*value));
   }
@@ -347,15 +347,15 @@ void SerializeIntoDict(std::string_view field,
 
 // For use with SerializeSplitMapHelper.
 void SerializeIntoDict(std::string_view field,
-                       base::Value::Dict value,
-                       base::Value::Dict& out) {
+                       base::DictValue value,
+                       base::DictValue& out) {
   out.Set(field, std::move(value));
 }
 
 }  // namespace
 
-base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
-  base::Value::Dict result;
+base::DictValue SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
+  base::DictValue result;
   SerializeIntoDict("seller", conf.seller, result);
   SerializeIntoDict("serverResponse", conf.server_response, result);
   SerializeIntoDict("decisionLogicURL", conf.decision_logic_url, result);
@@ -434,7 +434,7 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
   // For component auctions, we only serialize the seller names to give a
   // quick overview, since they'll get their own events.
   if (!conf.non_shared_params.component_auctions.empty()) {
-    base::Value::List component_auctions;
+    base::ListValue component_auctions;
     for (const auto& child_config : conf.non_shared_params.component_auctions) {
       component_auctions.Append(child_config.seller.Serialize());
     }
@@ -471,8 +471,8 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
   return result;
 }
 
-base::Value::Dict SerializeInterestGroupForDevtools(const InterestGroup& ig) {
-  base::Value::Dict result;
+base::DictValue SerializeInterestGroupForDevtools(const InterestGroup& ig) {
+  base::DictValue result;
   // This used to have its own type in Devtools protocol
   // ("InterestGroupDetails"); the fields that existed there are named to match;
   // otherwise the WebIDL is generally followed.

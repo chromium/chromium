@@ -198,7 +198,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, SingleImage) {
   EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
-  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  base::DictValue arg_dict = events[0]->GetKnownArgAsDict("data");
   EXPECT_TRUE(arg_dict.FindDouble("imageLoadStart").has_value());
   EXPECT_TRUE(arg_dict.FindDouble("imageLoadEnd").has_value());
   EXPECT_TRUE(arg_dict.FindDouble("imageDiscoveryTime").has_value());

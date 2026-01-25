@@ -426,6 +426,9 @@ _CONFIG = [
             'third_party/blink/public/common/interest_group/',
         ],
         'allowed': [
+            "base::DictValue",
+            "base::ListValue",
+
             # For hashing of k-anonymity keys
             'crypto::hash::Sha256',
 
@@ -1049,6 +1052,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/bindings/core/v8/v8_initializer_win.cc',
+        ],
+        'allowed': [
+            'base::DictValue',
+            'base::ListValue',
+            'base::Value',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.cc'
         ],
         'allowed': [
@@ -1640,7 +1653,9 @@ _CONFIG = [
         ],
         'allowed': [
             # Commands from the DevTools window are parsed from a JSON string in
-            # the devtools renderer and sent on as base::Value.
+            # the devtools renderer and sent on as values.
+            'base::DictValue',
+            'base::ListValue',
             'base::Value',
             # PRF inputs are validated in AuthenticationCredentialsContainer.
             'device::kMaxPRFInputSize',
@@ -2323,10 +2338,11 @@ _CONFIG = [
             'base::Bind.*',
             'base::CurrentThread',
             'base::.*Closure',
+            'base::DictValue',
+            'base::ListValue',
             'base::PowerObserver',
             'base::RetainedRef',
             'base::StringPrintf',
-            'base::Value',
             'base::Unretained',
             # TODO(crbug.com/787254): Replace base::Thread with the appropriate Blink class.
             'base::Thread',
@@ -2445,8 +2461,8 @@ _CONFIG = [
             'third_party/blink/renderer/core/frame/local_frame_mojo_handler.h',
             'third_party/blink/renderer/core/frame/pausable_script_executor.cc',
         ],
-        # base::Value is used as a part of script evaluation APIs.
-        'allowed': ['base::Value'],
+        # base::ListValue is used as a part of script evaluation APIs.
+        'allowed': ['base::ListValue'],
     },
     {
         'paths': ['third_party/blink/renderer/core/frame/local_dom_window.cc'],
@@ -2656,6 +2672,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/origin_trials/trial_token.cc',
+        ],
+        'allowed': [
+            'base::DictValue',
+            'base::JSONReader',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/annotation/annotation_agent_impl_test.cc'
             'third_party/blink/renderer/core/editing/markers/glic_marker.cc',
             'third_party/blink/renderer/core/highlight/highlight_style_utils.cc',
@@ -2715,7 +2740,9 @@ _CONFIG = [
             "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/utils/ml_graph_dump.cc",
         ],
         'allowed': [
+            'base::DictValue',
             'base::JSONWriter',
+            'base::ListValue',
             'base::NumberToString',
             'base::Value',
         ]

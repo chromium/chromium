@@ -38,10 +38,10 @@ class MODULES_EXPORT MLGraphDumper : public GarbageCollected<MLGraphDumper> {
   void RecordGraph(const std::string& graph_id,
                    const MLNamedOperands& named_outputs);
 
-  const base::Value::Dict& GetRoot() const { return root_; }
+  const base::DictValue& GetRoot() const { return root_; }
 
  private:
-  base::Value::Dict root_;
+  base::DictValue root_;
   Member<NodeIdMapper> node_id_mapper_;
 };
 

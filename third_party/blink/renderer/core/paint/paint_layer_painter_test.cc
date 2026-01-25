@@ -844,8 +844,8 @@ TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
   auto* target = GetElementById("target");
   auto* scroller = GetElementById("scroller");
 
-  auto get_clip = [](const base::Value::Dict& data) {
-    const base::Value::List* list = data.FindList("clip");
+  auto get_clip = [](const base::DictValue& data) {
+    const base::ListValue* list = data.FindList("clip");
     EXPECT_EQ(8u, list->size());
     gfx::QuadF quad(
         gfx::PointF((*list)[0].GetDouble(), (*list)[1].GetDouble()),
@@ -869,7 +869,7 @@ TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
     // Target is out of the cull rect and is not painted, so there is only
     // the root paint event.
     ASSERT_EQ(1u, events.size());
-    base::Value::Dict root_data = events[0]->GetKnownArgAsDict("data");
+    base::DictValue root_data = events[0]->GetKnownArgAsDict("data");
     EXPECT_EQ(gfx::RectF(800, 600), get_clip(root_data));
     EXPECT_EQ(IdentifiersFactory::FrameId(GetDocument().GetFrame()).Utf8(),
               *root_data.FindString("frame"));

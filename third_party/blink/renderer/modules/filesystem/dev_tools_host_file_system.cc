@@ -30,10 +30,10 @@ DOMFileSystem* DevToolsHostFileSystem::isolatedFileSystem(
 void DevToolsHostFileSystem::upgradeDraggedFileSystemPermissions(
     DevToolsHost& host,
     DOMFileSystem* dom_file_system) {
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set("id", 0);
   message.Set("method", base::Value("upgradeDraggedFileSystemPermissions"));
-  base::Value::List params;
+  base::ListValue params;
   params.Append(dom_file_system->RootURL().GetString().Utf8());
   message.Set("params", std::move(params));
   host.sendMessageToEmbedder(std::move(message));

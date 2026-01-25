@@ -193,7 +193,7 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
     return nullptr;
   }
 
-  std::optional<base::Value::Dict> data = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> data = base::JSONReader::ReadDict(
       token_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!data) {
     return nullptr;

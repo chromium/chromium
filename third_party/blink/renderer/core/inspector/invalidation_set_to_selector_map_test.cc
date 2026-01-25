@@ -86,12 +86,12 @@ TEST_F(InvalidationSetToSelectorMapTest, TrackerLifetime) {
 
 namespace {
 
-const std::string& SelectorAtIndex(const base::Value::List* selector_list,
+const std::string& SelectorAtIndex(const base::ListValue* selector_list,
                                    size_t index) {
   return *(*selector_list)[index].GetDict().FindString("selector");
 }
 
-const std::string& StyleSheetIdAtIndex(const base::Value::List* selector_list,
+const std::string& StyleSheetIdAtIndex(const base::ListValue* selector_list,
                                        size_t index) {
   return *(*selector_list)[index].GetDict().FindString("style_sheet_id");
 }
@@ -123,10 +123,10 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatch) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
@@ -164,10 +164,10 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithMultipleInvalidations) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
@@ -206,10 +206,10 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithMultipleStylesheets) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
 
@@ -264,10 +264,10 @@ TEST_F(InvalidationSetToSelectorMapTest, ClassMatchWithCombine) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 2u);
         // The map stores selectors in a HeapHashSet; they can be output to the
@@ -359,11 +359,11 @@ TEST_F(InvalidationSetToSelectorMapTest, SubtreeInvalidation) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr &&
         *reason == "Invalidation set invalidates subtree") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b *");
@@ -463,10 +463,10 @@ TEST_F(InvalidationSetToSelectorMapTest, StartTracingLate) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
@@ -507,10 +507,10 @@ TEST_F(InvalidationSetToSelectorMapTest, StartTracingLateWithNestedRules) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
@@ -546,10 +546,10 @@ TEST_F(InvalidationSetToSelectorMapTest,
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a .c");
@@ -588,10 +588,10 @@ TEST_F(InvalidationSetToSelectorMapTest,
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".c .d");
@@ -629,10 +629,10 @@ TEST_F(InvalidationSetToSelectorMapTest,
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a + .b");
@@ -698,10 +698,10 @@ TEST_F(InvalidationSetToSelectorMapTest,
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), "* + .b li span");
@@ -773,10 +773,10 @@ TEST_F(InvalidationSetToSelectorMapTest, HandleRebuildAfterRuleSetChange) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a .b");
@@ -812,11 +812,11 @@ TEST_F(InvalidationSetToSelectorMapTest,
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr &&
         *reason == "Invalidation set invalidates subtree") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a *");
@@ -854,11 +854,11 @@ TEST_F(InvalidationSetToSelectorMapTest,
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr &&
         *reason == "Invalidation set invalidates subtree") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a + *");
@@ -875,7 +875,7 @@ int CheckResolveStyleEvent(const trace_analyzer::TraceEvent* event,
                            std::optional<int> expected_parent_id,
                            PseudoId expected_pseudo_id) {
   EXPECT_TRUE(event->HasDictArg("data"));
-  base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+  base::DictValue data_dict = event->GetKnownArgAsDict("data");
   std::optional<int> node_id = data_dict.FindInt("nodeId");
   EXPECT_TRUE(node_id.has_value());
   if (expected_node_id.has_value()) {
@@ -939,11 +939,10 @@ TEST_F(InvalidationSetToSelectorMapTest,
                            "StyleInvalidatorInvalidationTracking"),
                        &invalidation_events);
   ASSERT_EQ(invalidation_events.size(), 1u);
-  base::Value::Dict data_dict =
-      invalidation_events[0]->GetKnownArgAsDict("data");
+  base::DictValue data_dict = invalidation_events[0]->GetKnownArgAsDict("data");
   std::optional<int> node_id = data_dict.FindInt("nodeId");
   EXPECT_EQ(node_id.value_or(-1), root_id);
-  base::Value::List* selector_list = data_dict.FindList("selectors");
+  base::ListValue* selector_list = data_dict.FindList("selectors");
   ASSERT_NE(selector_list, nullptr);
   EXPECT_EQ(selector_list->size(), 1u);
   EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b *");
@@ -999,11 +998,10 @@ TEST_F(InvalidationSetToSelectorMapTest,
                            "StyleInvalidatorInvalidationTracking"),
                        &invalidation_events);
   ASSERT_EQ(invalidation_events.size(), 1u);
-  base::Value::Dict data_dict =
-      invalidation_events[0]->GetKnownArgAsDict("data");
+  base::DictValue data_dict = invalidation_events[0]->GetKnownArgAsDict("data");
   std::optional<int> node_id = data_dict.FindInt("nodeId");
   EXPECT_EQ(node_id.value_or(-1), root_id);
-  base::Value::List* selector_list = data_dict.FindList("selectors");
+  base::ListValue* selector_list = data_dict.FindList("selectors");
   ASSERT_NE(selector_list, nullptr);
   EXPECT_EQ(selector_list->size(), 1u);
   EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a *");
@@ -1057,11 +1055,10 @@ TEST_F(InvalidationSetToSelectorMapTest,
                            "StyleInvalidatorInvalidationTracking"),
                        &invalidation_events);
   ASSERT_EQ(invalidation_events.size(), 1u);
-  base::Value::Dict data_dict =
-      invalidation_events[0]->GetKnownArgAsDict("data");
+  base::DictValue data_dict = invalidation_events[0]->GetKnownArgAsDict("data");
   std::optional<int> node_id = data_dict.FindInt("nodeId");
   EXPECT_EQ(node_id.value_or(-1), div_id);
-  base::Value::List* selector_list = data_dict.FindList("selectors");
+  base::ListValue* selector_list = data_dict.FindList("selectors");
   ASSERT_NE(selector_list, nullptr);
   EXPECT_EQ(selector_list->size(), 1u);
   EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a *");
@@ -1105,11 +1102,10 @@ TEST_F(InvalidationSetToSelectorMapTest, AttributePseudos) {
                            "StyleInvalidatorInvalidationTracking"),
                        &invalidation_events);
   ASSERT_EQ(invalidation_events.size(), 1u);
-  base::Value::Dict data_dict =
-      invalidation_events[0]->GetKnownArgAsDict("data");
+  base::DictValue data_dict = invalidation_events[0]->GetKnownArgAsDict("data");
   std::optional<int> node_id = data_dict.FindInt("nodeId");
   EXPECT_EQ(node_id.value_or(-1), parent_node_id);
-  base::Value::List* selector_list = data_dict.FindList("selectors");
+  base::ListValue* selector_list = data_dict.FindList("selectors");
   ASSERT_NE(selector_list, nullptr);
   EXPECT_EQ(selector_list->size(), 1u);
   EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b p::first-letter");
@@ -1158,10 +1154,10 @@ TEST_F(InvalidationSetToSelectorMapTest, MultipleTreeScopes) {
     size_t found_event_count = 0;
     for (auto event : invalidation_events) {
       ASSERT_TRUE(event->HasDictArg("data"));
-      base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+      base::DictValue data_dict = event->GetKnownArgAsDict("data");
       std::string* reason = data_dict.FindString("reason");
       if (reason != nullptr && *reason == "Invalidation set matched class") {
-        base::Value::List* selector_list = data_dict.FindList("selectors");
+        base::ListValue* selector_list = data_dict.FindList("selectors");
         ASSERT_NE(selector_list, nullptr);
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a .b");
@@ -1239,10 +1235,10 @@ TEST_F(InvalidationSetToSelectorMapTest, AdoptedStylesheets) {
     size_t found_event_count = 0;
     for (auto event : invalidation_events) {
       ASSERT_TRUE(event->HasDictArg("data"));
-      base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+      base::DictValue data_dict = event->GetKnownArgAsDict("data");
       std::string* reason = data_dict.FindString("reason");
       if (reason != nullptr && *reason == "Invalidation set matched class") {
-        base::Value::List* selector_list = data_dict.FindList("selectors");
+        base::ListValue* selector_list = data_dict.FindList("selectors");
         ASSERT_NE(selector_list, nullptr);
         // `selector_list->size()` can be 2 rather than 1 because invalidation
         // sets are not tree-scoped. If both shadow roots have been revisited,
@@ -1295,10 +1291,10 @@ TEST_F(InvalidationSetToSelectorMapTest, HostSelector) {
   size_t found_event_count = 0;
   for (auto event : invalidation_events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       ASSERT_NE(selector_list, nullptr);
       EXPECT_EQ(selector_list->size(), 1u);
       EXPECT_EQ(SelectorAtIndex(selector_list, 0), ":host(.a) .b");
@@ -1345,10 +1341,10 @@ TEST_F(InvalidationSetToSelectorMapTest, PartSelector) {
   size_t found_event_count = 0;
   for (auto event : invalidation_events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched part") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       ASSERT_NE(selector_list, nullptr);
       EXPECT_EQ(selector_list->size(), 1u);
       EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a ::part(b)");
@@ -1390,10 +1386,10 @@ TEST_F(InvalidationSetToSelectorMapTest, UserStylesheet) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched class") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
@@ -1425,10 +1421,10 @@ TEST_F(InvalidationSetToSelectorMapTest, UserAgentStylesheet) {
   size_t found_event_count = 0;
   for (auto event : events) {
     ASSERT_TRUE(event->HasDictArg("data"));
-    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    base::DictValue data_dict = event->GetKnownArgAsDict("data");
     std::string* reason = data_dict.FindString("reason");
     if (reason != nullptr && *reason == "Invalidation set matched tagName") {
-      base::Value::List* selector_list = data_dict.FindList("selectors");
+      base::ListValue* selector_list = data_dict.FindList("selectors");
       if (selector_list != nullptr) {
         // Tolerate some variance in what gets returned, to avoid coupling this
         // test tightly to the contents of the UA stylesheet.

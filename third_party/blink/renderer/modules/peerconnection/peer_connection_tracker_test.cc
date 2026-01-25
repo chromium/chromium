@@ -71,7 +71,7 @@ class MockPeerConnectionTrackerHost
   MOCK_METHOD3(GetDisplayMediaFailure, void(int, const String&, const String&));
   MOCK_METHOD2(WebRtcEventLogWrite, void(int, const Vector<uint8_t>&));
   MOCK_METHOD2(WebRtcDataChannelLogWrite, void(int, const Vector<uint8_t>&));
-  MOCK_METHOD2(AddStandardStats, void(int, base::Value::List));
+  MOCK_METHOD2(AddStandardStats, void(int, base::ListValue));
 
   mojo::PendingRemote<blink::mojom::blink::PeerConnectionTrackerHost>
   CreatePendingRemoteAndBind() {

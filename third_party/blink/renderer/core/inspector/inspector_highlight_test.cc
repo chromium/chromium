@@ -292,7 +292,7 @@ static std::string GetBackgroundColorFromElementInfo(Element* element) {
   auto status_to_json = crdtp::json::ConvertCBORToJSON(
       crdtp::SpanFrom(actual_value->Serialize()), &json_actual);
   EXPECT_TRUE(status_to_json.ok());
-  base::Value::Dict parsed_json_actual = ParseJson(json_actual).TakeDict();
+  base::DictValue parsed_json_actual = ParseJson(json_actual).TakeDict();
   auto* style = parsed_json_actual.FindDict("style");
   EXPECT_TRUE(style);
   auto* background_color = style->FindString("background-color-css-text");

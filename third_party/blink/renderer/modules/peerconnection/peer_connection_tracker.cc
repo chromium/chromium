@@ -323,7 +323,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
       int lid,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread,
       Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders,
-      CrossThreadOnceFunction<void(int, base::Value::List)> completion_callback)
+      CrossThreadOnceFunction<void(int, base::ListValue)> completion_callback)
       : pc_handler_(pc_handler),
         lid_(lid),
         main_thread_(std::move(main_thread)),
@@ -351,7 +351,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
     std::move(completion_callback_).Run(lid_, ReportToList(report));
   }
 
-  base::Value::List ReportToList(
+  base::ListValue ReportToList(
       const webrtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
     std::map<std::string, MediaStreamTrackPlatform*> tracks_by_id;
     for (const auto& sender : senders_) {
@@ -363,7 +363,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
                                          track_component->GetPlatformTrack()));
     }
 
-    base::Value::List result_list;
+    base::ListValue result_list;
 
     if (!pc_handler_) {
       return result_list;
@@ -374,7 +374,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
     // Used for string comparisons with const char* below.
     const std::string kTypeMediaSource = "media-source";
     for (const auto& stats : *report) {
-      base::Value::Dict stats_dictionary;
+      base::DictValue stats_dictionary;
       stats_dictionary.Set("id", stats.id());
       stats_dictionary.Set("type", stats.type());
       // The timestamp unit is milliseconds but we want decimal
@@ -417,7 +417,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
           }
         }
       }
-      base::Value::List list;
+      base::ListValue list;
       list.Append(stats.id());
       list.Append(std::move(stats_dictionary));
       result_list.Append(std::move(list));
@@ -455,7 +455,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
       return base::Value(attribute.get<std::string>());
     }
     if (attribute.holds_alternative<std::map<std::string, double>>()) {
-      base::Value::Dict dict;
+      base::DictValue dict;
       for (auto& value : attribute.get<std::map<std::string, double>>()) {
         dict.Set(value.first, value.second);
       }
@@ -469,7 +469,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
   const int lid_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   const Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders_;
-  CrossThreadOnceFunction<void(int, base::Value::List)> completion_callback_;
+  CrossThreadOnceFunction<void(int, base::ListValue)> completion_callback_;
 };
 
 // static
@@ -1176,7 +1176,7 @@ void PeerConnectionTracker::SendPeerConnectionUpdate(
                                                       value);
 }
 
-void PeerConnectionTracker::AddStandardStats(int lid, base::Value::List value) {
+void PeerConnectionTracker::AddStandardStats(int lid, base::ListValue value) {
   peer_connection_tracker_host_->AddStandardStats(lid, std::move(value));
 }
 

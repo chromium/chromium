@@ -78,7 +78,7 @@ static String StripStyleTags(const String& html) {
 }
 
 static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     base::TimeDelta& parse_time,
     perf_test::PerfResultReporter* reporter) {
   const std::string parse_iterations_str =
@@ -108,7 +108,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
 
   base::ElapsedTimer parse_timer;
   for (const base::Value& sheet_json : *dict.FindList("stylesheets")) {
-    const base::Value::Dict& sheet_dict = sheet_json.GetDict();
+    const base::DictValue& sheet_dict = sheet_json.GetDict();
     auto* sheet = MakeGarbageCollected<StyleSheetContents>(
         MakeGarbageCollected<CSSParserContext>(document));
 

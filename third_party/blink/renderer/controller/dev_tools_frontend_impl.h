@@ -88,7 +88,7 @@ class DevToolsFrontendImpl final
   void SetupDevToolsExtensionAPI(const String& extension_api) override;
 
   // InspectorFrontendClient implementation.
-  void SendMessageToEmbedder(base::Value::Dict) override;
+  void SendMessageToEmbedder(base::DictValue) override;
 
   Member<DevToolsHost> devtools_host_;
   String api_script_;

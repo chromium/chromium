@@ -140,7 +140,7 @@ void DevToolsFrontendImpl::SetupDevToolsExtensionAPI(
   api_script_ = extension_api;
 }
 
-void DevToolsFrontendImpl::SendMessageToEmbedder(base::Value::Dict message) {
+void DevToolsFrontendImpl::SendMessageToEmbedder(base::DictValue message) {
   if (host_.is_bound())
     host_->DispatchEmbedderMessage(std::move(message));
 }

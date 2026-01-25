@@ -375,24 +375,24 @@ class Node : public GarbageCollected<Node> {
   const Vector<IncomingEdge>& IncomingEdges() const { return incoming_edges_; }
   const Vector<NodeAttribute>& Attributes() const { return attributes_; }
 
-  base::Value::Dict ToJson() const {
-    base::Value::Dict node_json;
+  base::DictValue ToJson() const {
+    base::DictValue node_json;
     node_json.Set("id", base::NumberToString(Id()));
     node_json.Set("label", opkind_);
     node_json.Set("namespace", label_);
 
-    base::Value::List node_attrs_json;
+    base::ListValue node_attrs_json;
     for (const auto& attr : attributes_) {
-      base::Value::Dict node_attr_json;
+      base::DictValue node_attr_json;
       node_attr_json.Set("key", attr.key);
       node_attr_json.Set("value", attr.value);
       node_attrs_json.Append(std::move(node_attr_json));
     }
     node_json.Set("attrs", std::move(node_attrs_json));
 
-    base::Value::List incoming_edges_json;
+    base::ListValue incoming_edges_json;
     for (const auto& edge : incoming_edges_) {
-      base::Value::Dict edge_json;
+      base::DictValue edge_json;
       edge_json.Set("sourceNodeId", edge.source_node_id);
       edge_json.Set("sourceNodeOutputId", edge.source_node_output_id);
       edge_json.Set("targetNodeInputId", edge.target_node_input_id);
@@ -400,19 +400,19 @@ class Node : public GarbageCollected<Node> {
     }
     node_json.Set("incomingEdges", std::move(incoming_edges_json));
 
-    base::Value::List outputs_metadata_json;
+    base::ListValue outputs_metadata_json;
     for (wtf_size_t i = 0; i < output_shapes_.size(); ++i) {
-      base::Value::Dict output_metadata_json;
+      base::DictValue output_metadata_json;
       output_metadata_json.Set("id", base::NumberToString(i));
 
-      base::Value::List attrs_json;
+      base::ListValue attrs_json;
 
-      base::Value::Dict shape_attr;
+      base::DictValue shape_attr;
       shape_attr.Set("key", "tensor_shape");
       shape_attr.Set("value", GetTensorShapeString(output_shapes_[i]));
       attrs_json.Append(std::move(shape_attr));
 
-      base::Value::Dict data_type_attr;
+      base::DictValue data_type_attr;
       data_type_attr.Set("key", "dtype");
       data_type_attr.Set("value", output_data_types_[i].AsString().Utf8());
       attrs_json.Append(std::move(data_type_attr));
@@ -1038,7 +1038,7 @@ MLGraphDumper::MLGraphDumper() {
       base::Time::Now(), "'webnn_graph_'yyyyMMdd-HHmmss");
 
   root_.Set("label", collection_id);
-  root_.Set("graphs", base::Value::List());
+  root_.Set("graphs", base::ListValue());
   root_.Set("graphSorting", "name_asc");
 }
 
@@ -1129,16 +1129,16 @@ void MLGraphDumper::RecordGraph(const std::string& graph_id,
     output->AppendInputEdge(edge);
   }
 
-  base::Value::Dict graph_json;
+  base::DictValue graph_json;
   graph_json.Set("id", graph_id);
-  base::Value::List nodes_json;
+  base::ListValue nodes_json;
 
   for (auto& node : nodes) {
     nodes_json.Append(node->ToJson());
   }
   graph_json.Set("nodes", std::move(nodes_json));
 
-  base::Value::List* graphs = root_.FindList("graphs");
+  base::ListValue* graphs = root_.FindList("graphs");
   if (graphs) {
     graphs->Append(std::move(graph_json));
   }

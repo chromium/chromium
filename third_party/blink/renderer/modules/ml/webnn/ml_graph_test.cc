@@ -2433,26 +2433,26 @@ TEST_F(MLGraphTest, MLGraphDumpTest) {
     MLGraphDumper* graph_dumper = MakeGarbageCollected<MLGraphDumper>();
     graph_dumper->RecordGraph("test_graph", named_outputs);
 
-    const base::Value::Dict& json_root = graph_dumper->GetRoot();
-    const base::Value::List* graphs = json_root.FindList("graphs");
+    const base::DictValue& json_root = graph_dumper->GetRoot();
+    const base::ListValue* graphs = json_root.FindList("graphs");
     ASSERT_TRUE(graphs);
     EXPECT_EQ(graphs->size(), 1u);
-    const base::Value::Dict& graph_json = (*graphs)[0].GetDict();
+    const base::DictValue& graph_json = (*graphs)[0].GetDict();
     EXPECT_TRUE(graph_json.FindString("id"));
-    const base::Value::List* nodes = graph_json.FindList("nodes");
+    const base::ListValue* nodes = graph_json.FindList("nodes");
     ASSERT_TRUE(nodes);
     EXPECT_EQ(nodes->size(), 7u);  // 2 inputs + 1 add + 2 relu + 2 outputs
 
-    const base::Value::Dict* json_output0 = nullptr;
-    const base::Value::Dict* json_output1 = nullptr;
-    const base::Value::Dict* json_relu0 = nullptr;
-    const base::Value::Dict* json_relu1 = nullptr;
-    const base::Value::Dict* json_add = nullptr;
+    const base::DictValue* json_output0 = nullptr;
+    const base::DictValue* json_output1 = nullptr;
+    const base::DictValue* json_relu0 = nullptr;
+    const base::DictValue* json_relu1 = nullptr;
+    const base::DictValue* json_add = nullptr;
 
-    std::map<std::string, const base::Value::Dict*> id_to_node_json;
+    std::map<std::string, const base::DictValue*> id_to_node_json;
 
     for (const auto& node_val : *nodes) {
-      const base::Value::Dict& node_json = node_val.GetDict();
+      const base::DictValue& node_json = node_val.GetDict();
       const std::string* id = node_json.FindString("id");
       ASSERT_TRUE(id);
       id_to_node_json[*id] = &node_json;
@@ -2460,10 +2460,10 @@ TEST_F(MLGraphTest, MLGraphDumpTest) {
       const std::string* label = node_json.FindString("label");
       ASSERT_TRUE(label);
       if (*label == "Output") {
-        const base::Value::List* attrs = node_json.FindList("attrs");
+        const base::ListValue* attrs = node_json.FindList("attrs");
         ASSERT_TRUE(attrs);
         for (const auto& attr_val : *attrs) {
-          const base::Value::Dict& attr = attr_val.GetDict();
+          const base::DictValue& attr = attr_val.GetDict();
           const std::string* key = attr.FindString("key");
           const std::string* value = attr.FindString("value");
           ASSERT_TRUE(key);
@@ -2485,95 +2485,94 @@ TEST_F(MLGraphTest, MLGraphDumpTest) {
     ASSERT_TRUE(json_output1);
 
     {
-      const base::Value::List* incoming_edges =
+      const base::ListValue* incoming_edges =
           json_output0->FindList("incomingEdges");
       ASSERT_TRUE(incoming_edges);
       EXPECT_EQ(incoming_edges->size(), 1u);
-      const base::Value::Dict& incoming_edge_json =
+      const base::DictValue& incoming_edge_json =
           (*incoming_edges)[0].GetDict();
       const std::string* source_node_id =
           incoming_edge_json.FindString("sourceNodeId");
       ASSERT_TRUE(source_node_id);
       ASSERT_TRUE(id_to_node_json.count(*source_node_id));
-      const base::Value::Dict* relu_node_json =
-          id_to_node_json[*source_node_id];
+      const base::DictValue* relu_node_json = id_to_node_json[*source_node_id];
       EXPECT_EQ(*relu_node_json->FindString("label"), "relu");
       json_relu1 = relu_node_json;
     }
 
     {
-      const base::Value::List* incoming_edges =
+      const base::ListValue* incoming_edges =
           json_output1->FindList("incomingEdges");
       ASSERT_TRUE(incoming_edges);
       EXPECT_EQ(incoming_edges->size(), 1u);
-      const base::Value::Dict& incoming_edge_json =
+      const base::DictValue& incoming_edge_json =
           (*incoming_edges)[0].GetDict();
       const std::string* source_node_id =
           incoming_edge_json.FindString("sourceNodeId");
       ASSERT_TRUE(source_node_id);
       ASSERT_TRUE(id_to_node_json.count(*source_node_id));
-      const base::Value::Dict* add_node_json = id_to_node_json[*source_node_id];
+      const base::DictValue* add_node_json = id_to_node_json[*source_node_id];
       EXPECT_EQ(*add_node_json->FindString("label"), "add");
       json_add = add_node_json;
     }
 
     {
-      const base::Value::List* incoming_edges =
+      const base::ListValue* incoming_edges =
           json_relu1->FindList("incomingEdges");
       ASSERT_TRUE(incoming_edges);
       EXPECT_EQ(incoming_edges->size(), 1u);
-      const base::Value::Dict& incoming_edge_json =
+      const base::DictValue& incoming_edge_json =
           (*incoming_edges)[0].GetDict();
       const std::string* source_node_id =
           incoming_edge_json.FindString("sourceNodeId");
       ASSERT_TRUE(source_node_id);
       ASSERT_TRUE(id_to_node_json.count(*source_node_id));
-      const base::Value::Dict* add_node_json = id_to_node_json[*source_node_id];
+      const base::DictValue* add_node_json = id_to_node_json[*source_node_id];
       EXPECT_EQ(*add_node_json->FindString("label"), "add");
     }
 
     {
-      const base::Value::List* incoming_edges =
+      const base::ListValue* incoming_edges =
           json_add->FindList("incomingEdges");
       ASSERT_TRUE(incoming_edges);
       EXPECT_EQ(incoming_edges->size(), 2u);
       {
-        const base::Value::Dict& incoming_edge_json =
+        const base::DictValue& incoming_edge_json =
             (*incoming_edges)[0].GetDict();
         const std::string* source_node_id =
             incoming_edge_json.FindString("sourceNodeId");
         ASSERT_TRUE(source_node_id);
         ASSERT_TRUE(id_to_node_json.count(*source_node_id));
-        const base::Value::Dict* relu0_node_json =
+        const base::DictValue* relu0_node_json =
             id_to_node_json[*source_node_id];
         EXPECT_EQ(*relu0_node_json->FindString("label"), "relu");
         json_relu0 = relu0_node_json;
       }
       {
-        const base::Value::Dict& incoming_edge_json =
+        const base::DictValue& incoming_edge_json =
             (*incoming_edges)[1].GetDict();
         const std::string* source_node_id =
             incoming_edge_json.FindString("sourceNodeId");
         ASSERT_TRUE(source_node_id);
         ASSERT_TRUE(id_to_node_json.count(*source_node_id));
-        const base::Value::Dict* input1_node_json =
+        const base::DictValue* input1_node_json =
             id_to_node_json[*source_node_id];
         EXPECT_EQ(*input1_node_json->FindString("label"), "Input");
       }
     }
 
     {
-      const base::Value::List* incoming_edges =
+      const base::ListValue* incoming_edges =
           json_relu0->FindList("incomingEdges");
       ASSERT_TRUE(incoming_edges);
       EXPECT_EQ(incoming_edges->size(), 1u);
-      const base::Value::Dict& incoming_edge_json =
+      const base::DictValue& incoming_edge_json =
           (*incoming_edges)[0].GetDict();
       const std::string* source_node_id =
           incoming_edge_json.FindString("sourceNodeId");
       ASSERT_TRUE(source_node_id);
       ASSERT_TRUE(id_to_node_json.count(*source_node_id));
-      const base::Value::Dict* input0_node_json =
+      const base::DictValue* input0_node_json =
           id_to_node_json[*source_node_id];
       EXPECT_EQ(*input0_node_json->FindString("label"), "Input");
     }
