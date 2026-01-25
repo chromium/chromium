@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
 
   // Check if the given dictionary matches any of the supplied AXNodeFilter(s).
   static bool MatchesNodeFilters(const std::vector<AXNodeFilter>& node_filters,
-                                 const base::Value::Dict& dict);
+                                 const base::DictValue& dict);
 
   // Formats a given web content accessible tree.
   // |root| must be non-null and must be in web content.
@@ -61,9 +61,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
 
   // Similar to BuildTree, but generates a dictionary just for the current
   // web node (i.e. without children).
-  virtual base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const = 0;
-  virtual base::Value::Dict BuildNodeForSelector(
-      const AXTreeSelector&) const = 0;
+  virtual base::DictValue BuildNode(AXPlatformNodeDelegate* node) const = 0;
+  virtual base::DictValue BuildNodeForSelector(const AXTreeSelector&) const = 0;
 
   // Build an accessibility tree for any window or pattern supplied by
   // the selector object.
@@ -88,11 +87,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
   //     "children": [ ]
   //   } ]
   // }
-  virtual base::Value::Dict BuildTreeForSelector(
-      const AXTreeSelector&) const = 0;
+  virtual base::DictValue BuildTreeForSelector(const AXTreeSelector&) const = 0;
 
   // Build an accessibility tree for an application with |node| as the root.
-  virtual base::Value::Dict BuildTreeForNode(AXNode* node) const = 0;
+  virtual base::DictValue BuildTreeForNode(AXNode* node) const = 0;
 
   // Returns a string representing the internal tree represented by |tree_id|.
   virtual std::string DumpInternalAccessibilityTree(
@@ -100,7 +98,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
       const std::vector<AXPropertyFilter>& property_filters) = 0;
 
   // Dumps accessibility tree.
-  virtual std::string FormatTree(const base::Value::Dict& tree_node) const = 0;
+  virtual std::string FormatTree(const base::DictValue& tree_node) const = 0;
 
   // Evaluates script instructions for the window returned by the selector.
   virtual std::string EvaluateScript(

@@ -74,7 +74,7 @@ std::string GetPngDataUrl(base::span<const uint8_t> data) {
   return output;
 }
 
-WindowOpenDisposition GetDispositionFromClick(const base::Value::List& list,
+WindowOpenDisposition GetDispositionFromClick(const base::ListValue& list,
                                               size_t start_index) {
   double button = list[start_index].GetDouble();
   bool alt_key = list[start_index + 1].GetBool();
@@ -184,7 +184,7 @@ void ParsePathAndImageSpec(const GURL& url,
 }
 
 void SetLoadTimeDataDefaults(const std::string& app_locale,
-                             base::Value::Dict* localized_strings) {
+                             base::DictValue* localized_strings) {
   localized_strings->Set("fontfamily", GetFontFamily());
   localized_strings->Set("fontfamilyMd", GetFontFamilyMd());
   localized_strings->Set("fontsize", GetFontSize());
@@ -238,7 +238,7 @@ std::string GetTextDirection() {
 }
 
 std::string GetLocalizedHtml(std::string_view html_template,
-                             const base::Value::Dict& strings) {
+                             const base::DictValue& strings) {
   // Populate $i18n{...} placeholders.
   ui::TemplateReplacements replacements;
   ui::TemplateReplacementsFromDictionaryValue(strings, &replacements);

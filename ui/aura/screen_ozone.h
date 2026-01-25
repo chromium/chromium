@@ -53,7 +53,7 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;
-  base::Value::List GetGpuExtraInfo(
+  base::ListValue GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
   std::optional<float> GetPreferredScaleFactorForWindow(
       gfx::NativeWindow window) const override;

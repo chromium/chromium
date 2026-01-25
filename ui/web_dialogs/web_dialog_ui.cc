@@ -59,7 +59,7 @@ WebDialogUIBase::WebDialogUIBase(content::WebUI* web_ui) : web_ui_(web_ui) {}
 // HTML dialogs won't swap WebUIs anyway since they don't navigate.
 WebDialogUIBase::~WebDialogUIBase() = default;
 
-void WebDialogUIBase::CloseDialog(const base::Value::List& args) {
+void WebDialogUIBase::CloseDialog(const base::ListValue& args) {
   OnDialogClosed(args);
 }
 
@@ -101,7 +101,7 @@ void WebDialogUIBase::HandleRenderFrameCreated(
   }
 }
 
-void WebDialogUIBase::OnDialogClosed(const base::Value::List& args) {
+void WebDialogUIBase::OnDialogClosed(const base::ListValue& args) {
   WebDialogDelegate* delegate = GetDelegate(web_ui_->GetWebContents());
   if (delegate) {
     std::string json_retval;

@@ -23,7 +23,7 @@ std::optional<CaptionStyle> CaptionStyle::FromSpec(const std::string& spec) {
     return std::nullopt;
   }
 
-  base::Value::Dict* value_dict = dict->GetIfDict();
+  base::DictValue* value_dict = dict->GetIfDict();
   if (!value_dict) {
     return std::nullopt;
   }

@@ -10,15 +10,15 @@ namespace display {
 
 base::Value BuildGpuInfoEntry(std::string_view description,
                               std::string_view value) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("description", description);
   dict.Set("value", value);
   return base::Value(std::move(dict));
 }
 
-base::Value::Dict BuildGpuInfoEntry(std::string_view description,
-                                    base::Value value) {
-  base::Value::Dict dict;
+base::DictValue BuildGpuInfoEntry(std::string_view description,
+                                  base::Value value) {
+  base::DictValue dict;
   dict.Set("description", description);
   dict.Set("value", std::move(value));
   return dict;

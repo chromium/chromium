@@ -37,7 +37,7 @@ std::string GetPngDataUrl(base::span<const uint8_t> data);
 // an integer button and booleans alt key, ctrl key, meta key, and shift key
 // (in that order), starting at |start_index|.
 COMPONENT_EXPORT(UI_BASE)
-WindowOpenDisposition GetDispositionFromClick(const base::Value::List& args,
+WindowOpenDisposition GetDispositionFromClick(const base::ListValue& args,
                                               size_t start_index);
 
 // Parse a formatted scale factor string into float and sets to |scale_factor|.
@@ -62,7 +62,7 @@ void ParsePathAndImageSpec(const GURL& url,
 // application locale (i.e. g_browser_process->GetApplicationLocale()).
 COMPONENT_EXPORT(UI_BASE)
 void SetLoadTimeDataDefaults(const std::string& app_locale,
-                             base::Value::Dict* localized_strings);
+                             base::DictValue* localized_strings);
 
 COMPONENT_EXPORT(UI_BASE)
 void SetLoadTimeDataDefaults(const std::string& app_locale,
@@ -86,7 +86,7 @@ COMPONENT_EXPORT(UI_BASE) std::string GetTextDirection();
 // scope.
 COMPONENT_EXPORT(UI_BASE)
 std::string GetLocalizedHtml(std::string_view html_template,
-                             const base::Value::Dict& strings);
+                             const base::DictValue& strings);
 }  // namespace webui
 
 #endif  // UI_BASE_WEBUI_WEB_UI_UTIL_H_

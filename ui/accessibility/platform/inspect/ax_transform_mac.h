@@ -19,8 +19,8 @@ namespace ui {
 COMPONENT_EXPORT(AX_PLATFORM)
 base::Value AXNSObjectToBaseValue(id, const AXTreeIndexerMac*);
 
-// Returns the base::Value::Dict representation of the given AXCustomContent.
-base::Value::Dict AXCustomContentToBaseValue(AXCustomContent*)
+// Returns the base::DictValue representation of the given AXCustomContent.
+base::DictValue AXCustomContentToBaseValue(AXCustomContent*)
     API_AVAILABLE(macosx(11.0));
 
 // Returns the base::Value representation of the given NSAccessibilityElement.
@@ -37,7 +37,7 @@ base::Value AXTextMarkerToBaseValue(id, const AXTreeIndexerMac*);
 // Returns the base::Value representation of the given AXTextMarkerRange.
 base::Value AXTextMarkerRangeToBaseValue(id, const AXTreeIndexerMac*);
 
-// Returns the base::Value::Dict representation of the given NSAttributedString.
+// Returns the base::DictValue representation of the given NSAttributedString.
 COMPONENT_EXPORT(AX_PLATFORM)
 base::Value NSAttributedStringToBaseValue(NSAttributedString*,
                                           const AXTreeIndexerMac*);
@@ -50,26 +50,26 @@ base::Value CGColorRefToBaseValue(CGColorRef color);
 // Returns the base::Value representation of nil.
 COMPONENT_EXPORT(AX_PLATFORM) base::Value AXNilToBaseValue();
 
-// Returns the base::Value::List representation of the given NSArray.
+// Returns the base::ListValue representation of the given NSArray.
 COMPONENT_EXPORT(AX_PLATFORM)
-base::Value::List AXNSArrayToBaseValue(NSArray*, const AXTreeIndexerMac*);
+base::ListValue AXNSArrayToBaseValue(NSArray*, const AXTreeIndexerMac*);
 
-// Returns the base::Value::Dict representation of the given NSDictionary.
+// Returns the base::DictValue representation of the given NSDictionary.
 COMPONENT_EXPORT(AX_PLATFORM)
-base::Value::Dict AXNSDictionaryToBaseValue(NSDictionary*,
-                                            const AXTreeIndexerMac*);
+base::DictValue AXNSDictionaryToBaseValue(NSDictionary*,
+                                          const AXTreeIndexerMac*);
 
-// Returns the base::Value::Dict representation of the given NSPoint.
-COMPONENT_EXPORT(AX_PLATFORM) base::Value::Dict AXNSPointToBaseValue(NSPoint);
+// Returns the base::DictValue representation of the given NSPoint.
+COMPONENT_EXPORT(AX_PLATFORM) base::DictValue AXNSPointToBaseValue(NSPoint);
 
-// Returns the base::Value::Dict representation of the given NSSize.
-COMPONENT_EXPORT(AX_PLATFORM) base::Value::Dict AXNSSizeToBaseValue(NSSize);
+// Returns the base::DictValue representation of the given NSSize.
+COMPONENT_EXPORT(AX_PLATFORM) base::DictValue AXNSSizeToBaseValue(NSSize);
 
-// Returns the base::Value::Dict representation of the given NSRect.
-COMPONENT_EXPORT(AX_PLATFORM) base::Value::Dict AXNSRectToBaseValue(NSRect);
+// Returns the base::DictValue representation of the given NSRect.
+COMPONENT_EXPORT(AX_PLATFORM) base::DictValue AXNSRectToBaseValue(NSRect);
 
-// Returns the base::Value::Dict representation of the given NSRange.
-COMPONENT_EXPORT(AX_PLATFORM) base::Value::Dict AXNSRangeToBaseValue(NSRange);
+// Returns the base::DictValue representation of the given NSRange.
+COMPONENT_EXPORT(AX_PLATFORM) base::DictValue AXNSRangeToBaseValue(NSRange);
 
 }  // namespace ui
 

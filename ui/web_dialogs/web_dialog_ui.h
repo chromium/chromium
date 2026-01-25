@@ -32,7 +32,7 @@ class WEB_DIALOGS_EXPORT WebDialogUIBase {
   WebDialogUIBase& operator=(const WebDialogUIBase&) = delete;
 
   // Close the dialog, passing the specified arguments to the close handler.
-  void CloseDialog(const base::Value::List& args);
+  void CloseDialog(const base::ListValue& args);
 
  protected:
   virtual ~WebDialogUIBase();
@@ -45,7 +45,7 @@ class WEB_DIALOGS_EXPORT WebDialogUIBase {
   static WebDialogDelegate* GetDelegate(content::WebContents* web_contents);
 
   // JS message handler.
-  void OnDialogClosed(const base::Value::List& args);
+  void OnDialogClosed(const base::ListValue& args);
 
   raw_ptr<content::WebUI> web_ui_;
 };

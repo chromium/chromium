@@ -130,7 +130,7 @@ class FakeAutomationV8Router : public AutomationV8Router {
                                 handler_function_wrapper) override {}
 
   void DispatchEvent(const std::string& event_name,
-                     const base::Value::List& event_args) const override {
+                     const base::ListValue& event_args) const override {
     if (!notify_event_ && !notify_tree_destroyed_ &&
         !notify_get_text_location_) {
       return;
@@ -138,7 +138,7 @@ class FakeAutomationV8Router : public AutomationV8Router {
 
     if (notify_event_ &&
         event_name == "automationInternal.onAccessibilityEvent") {
-      const base::Value::Dict* dict = event_args[0].GetIfDict();
+      const base::DictValue* dict = event_args[0].GetIfDict();
       ASSERT_TRUE(dict);
       const std::string* event_type_string = dict->FindString("eventType");
       ASSERT_TRUE(event_type_string);
@@ -155,7 +155,7 @@ class FakeAutomationV8Router : public AutomationV8Router {
 
     if (notify_get_text_location_ &&
         event_name == "automationInternal.onGetTextLocationResult") {
-      const base::Value::Dict* params = event_args[0].GetIfDict();
+      const base::DictValue* params = event_args[0].GetIfDict();
       ASSERT_TRUE(params);
       AXActionData data;
       const std::string* tree_id = params->FindString("treeID");

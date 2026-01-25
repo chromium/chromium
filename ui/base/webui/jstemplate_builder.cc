@@ -22,7 +22,7 @@ namespace {
 
 // Appends a script tag with a variable name |templateData| that has the JSON
 // assigned to it.
-void AppendJsonHtml(const base::Value::Dict& json, std::string* output) {
+void AppendJsonHtml(const base::DictValue& json, std::string* output) {
   std::string javascript_string;
   AppendJsonJS(json, &javascript_string, /*from_js_module=*/false);
 
@@ -51,7 +51,7 @@ void AppendLoadTimeData(std::string* output) {
 }  // namespace
 
 std::string GetI18nTemplateHtml(std::string_view html_template,
-                                const base::Value::Dict& json) {
+                                const base::DictValue& json) {
   ui::TemplateReplacements replacements;
   ui::TemplateReplacementsFromDictionaryValue(json, &replacements);
   std::string output =
@@ -63,7 +63,7 @@ std::string GetI18nTemplateHtml(std::string_view html_template,
   return output;
 }
 
-void AppendJsonJS(const base::Value::Dict& json,
+void AppendJsonJS(const base::DictValue& json,
                   std::string* output,
                   bool from_js_module) {
   if (from_js_module) {

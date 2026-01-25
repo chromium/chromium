@@ -156,7 +156,7 @@ StickyPrintSettingGtk& GetLastUsedSettings() {
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-ScopedGKeyFile GetGKeyFileFromDict(const base::Value::Dict& data,
+ScopedGKeyFile GetGKeyFileFromDict(const base::DictValue& data,
                                    std::string_view key) {
   const std::string* data_string = data.FindString(key);
   CHECK(data_string);

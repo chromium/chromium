@@ -8053,7 +8053,7 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_BulkFetch) {
   std::optional<base::Value> result_val =
       base::JSONReader::Read(response, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(result_val);
-  const base::Value::Dict& result = result_val->GetDict();
+  const base::DictValue& result = result_val->GetDict();
   ASSERT_TRUE(result.contains("role"));
   ASSERT_EQ("scrollBar", CHECK_DEREF(result.FindString("role")));
 }

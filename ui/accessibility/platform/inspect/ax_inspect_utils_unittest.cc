@@ -32,7 +32,7 @@ TEST(AXInspectUtilsTest, FormatDouble) {
 }
 
 TEST(AXInspectUtilsTest, FormatList) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("item1");
   list.Append("item2");
   EXPECT_EQ(AXFormatValue(base::Value(std::move(list))),
@@ -40,7 +40,7 @@ TEST(AXInspectUtilsTest, FormatList) {
 }
 
 TEST(AXInspectUtilsTest, FormatDict) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("anchor", AXMakeConst("textbox"));
   dict.Set("offset", 2);
   dict.Set("affinity", AXMakeConst("down"));
@@ -49,7 +49,7 @@ TEST(AXInspectUtilsTest, FormatDict) {
 }
 
 TEST(AXInspectUtilsTest, FormatSet) {
-  base::Value::Dict set;
+  base::DictValue set;
   set.Set(AXMakeSetKey("index1_anchor"), AXMakeConst(":1"));
   set.Set(AXMakeSetKey("index2_offset"), 2);
   set.Set(AXMakeSetKey("index3_affinity"), AXMakeConst("down"));
@@ -58,7 +58,7 @@ TEST(AXInspectUtilsTest, FormatSet) {
 }
 
 TEST(AXInspectUtilsTest, FormatOrderedDict) {
-  base::Value::Dict ordered_dict;
+  base::DictValue ordered_dict;
   ordered_dict.Set(AXMakeOrderedKey("w", 0), 40);
   ordered_dict.Set(AXMakeOrderedKey("h", 1), 30);
   EXPECT_EQ(AXFormatValue(base::Value(std::move(ordered_dict))),

@@ -51,7 +51,7 @@ bool AXTreeFormatter::MatchesPropertyFilters(
 // static
 bool AXTreeFormatter::MatchesNodeFilters(
     const std::vector<AXNodeFilter>& node_filters,
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   for (const auto& filter : node_filters) {
     if (filter.property == "*") {
       return true;

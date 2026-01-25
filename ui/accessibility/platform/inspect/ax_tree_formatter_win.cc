@@ -119,12 +119,12 @@ Microsoft::WRL::ComPtr<IAccessible> GetIAObject(AXPlatformNodeDelegate* node,
   return node->GetNativeViewAccessible();
 }
 
-base::Value::Dict AXTreeFormatterWin::BuildNode(
+base::DictValue AXTreeFormatterWin::BuildNode(
     AXPlatformNodeDelegate* node) const {
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> node_ia =
       GetIAObject(node, root_x, root_y);
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (!node_ia) {
     return dict;
   }
@@ -132,12 +132,12 @@ base::Value::Dict AXTreeFormatterWin::BuildNode(
   return dict;
 }
 
-base::Value::Dict AXTreeFormatterWin::BuildTree(
+base::DictValue AXTreeFormatterWin::BuildTree(
     AXPlatformNodeDelegate* start) const {
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> start_ia =
       GetIAObject(start, root_x, root_y);
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (!start_ia) {
     return dict;
   }
@@ -165,9 +165,9 @@ Microsoft::WRL::ComPtr<IAccessible> AXTreeFormatterWin::FindAccessibleRoot(
   return root.Get();
 }
 
-base::Value::Dict AXTreeFormatterWin::BuildTreeForSelector(
+base::DictValue AXTreeFormatterWin::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   Microsoft::WRL::ComPtr<IAccessible> root = FindAccessibleRoot(selector);
   if (!root) {
@@ -204,7 +204,7 @@ std::string AXTreeFormatterWin::EvaluateScript(
   if (!root)
     return "error no accessibility tree found";
 
-  base::Value::List scripts;
+  base::ListValue scripts;
   AXTreeIndexerWin indexer(root);
   std::map<std::string, AXTargetWin> storage;
   AXCallStatementInvokerWin invoker(&indexer, &storage);
@@ -237,7 +237,7 @@ std::string AXTreeFormatterWin::EvaluateScript(
 
 void AXTreeFormatterWin::RecursiveBuildTree(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict,
+    base::DictValue* dict,
     LONG root_x,
     LONG root_y) const {
   AXPlatformNode* platform_node =
@@ -258,9 +258,9 @@ void AXTreeFormatterWin::RecursiveBuildTree(
   if (skipChildren)
     return;
 
-  base::Value::List child_list;
+  base::ListValue child_list;
   for (const MSAAChild& msaa_child : MSAAChildren(node)) {
-    base::Value::Dict child_dict;
+    base::DictValue child_dict;
 
     Microsoft::WRL::ComPtr<IAccessible> child = msaa_child.AsIAccessible();
     if (child) {
@@ -365,7 +365,7 @@ const char* const ALL_ATTRIBUTES[] = {
 
 void AXTreeFormatterWin::AddProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict,
+    base::DictValue* dict,
     LONG root_x,
     LONG root_y) const {
   AddMSAAProperties(node, dict, root_x, root_y);
@@ -383,7 +383,7 @@ void AXTreeFormatterWin::AddProperties(
 
 void AXTreeFormatterWin::AddMSAAProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict,
+    base::DictValue* dict,
     LONG root_x,
     LONG root_y) const {
   base::win::ScopedVariant variant_self(CHILDID_SELF);
@@ -439,7 +439,7 @@ void AXTreeFormatterWin::AddMSAAProperties(
     std::vector<std::wstring> state_strings;
     IAccessibleStateToStringVector(ia_state, &state_strings);
 
-    base::Value::List states;
+    base::ListValue states;
     states.reserve(state_strings.size());
     for (const auto& str : state_strings)
       states.Append(base::WideToUTF8(str));
@@ -469,12 +469,12 @@ void AXTreeFormatterWin::AddMSAAProperties(
 
   LONG x, y, width, height;
   if (SUCCEEDED(node->accLocation(&x, &y, &width, &height, variant_self))) {
-    base::Value::Dict location;
+    base::DictValue location;
     location.Set("x", static_cast<int>(x - root_x));
     location.Set("y", static_cast<int>(y - root_y));
     dict->Set("location", std::move(location));
 
-    base::Value::Dict size;
+    base::DictValue size;
     size.Set("width", static_cast<int>(width));
     size.Set("height", static_cast<int>(height));
     dict->Set("size", std::move(size));
@@ -483,7 +483,7 @@ void AXTreeFormatterWin::AddMSAAProperties(
 
 void AXTreeFormatterWin::AddSimpleDOMNodeProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   Microsoft::WRL::ComPtr<ISimpleDOMNode> simple_dom_node;
 
   if (S_OK != IA2QueryInterface<ISimpleDOMNode>(node.Get(), &simple_dom_node))
@@ -498,7 +498,7 @@ void AXTreeFormatterWin::AddSimpleDOMNodeProperties(
 
 bool AXTreeFormatterWin::AddIA2Properties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessible2> ia2;
   if (S_OK != IA2QueryInterface<IAccessible2>(node.Get(), &ia2))
     return false;
@@ -517,7 +517,7 @@ bool AXTreeFormatterWin::AddIA2Properties(
   if (ia2->get_states(&states) == S_OK) {
     IAccessible2StateToStringVector(states, &state_strings);
     // Append IA2 state list to MSAA state
-    base::Value::List* states_list = dict->FindList("states");
+    base::ListValue* states_list = dict->FindList("states");
     if (states_list) {
       for (const auto& str : state_strings)
         states_list->Append(base::WideToUTF8(str));
@@ -534,7 +534,7 @@ bool AXTreeFormatterWin::AddIA2Properties(
         base::SplitString(base::WideToUTF16(bstr.Get()), std::u16string(1, ';'),
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
-    base::Value::List attributes;
+    base::ListValue attributes;
     attributes.reserve(ia2_attributes.size());
     for (const auto& str : ia2_attributes)
       attributes.Append(str);
@@ -571,7 +571,7 @@ bool AXTreeFormatterWin::AddIA2Properties(
 
 void AXTreeFormatterWin::AddIA2ActionProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleAction> ia2action;
   if (S_OK != IA2QueryInterface<IAccessibleAction>(node.Get(), &ia2action))
     return;
@@ -586,7 +586,7 @@ void AXTreeFormatterWin::AddIA2ActionProperties(
 
 void AXTreeFormatterWin::AddIA2HypertextProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleHypertext> ia2hyper;
   if (S_OK != IA2QueryInterface<IAccessibleHypertext>(node.Get(), &ia2hyper))
     return;
@@ -653,7 +653,7 @@ void AXTreeFormatterWin::AddIA2HypertextProperties(
 
 void AXTreeFormatterWin::AddIA2RelationProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessible2> ia2;
   if (S_OK != IA2QueryInterface<IAccessible2>(node.Get(), &ia2)) {
     return;
@@ -681,7 +681,7 @@ void AXTreeFormatterWin::AddIA2RelationProperties(
 
 void AXTreeFormatterWin::AddIA2RelationProperty(
     const Microsoft::WRL::ComPtr<IAccessibleRelation>& relation,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   // Since we already verified a relation exists and points to some
   // non-hidden node, all of these checks should work.
   LONG n_targets;
@@ -719,7 +719,7 @@ void AXTreeFormatterWin::AddIA2RelationProperty(
 
 void AXTreeFormatterWin::AddIA2TableProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleTable> ia2table;
   if (S_OK != IA2QueryInterface<IAccessibleTable>(node.Get(), &ia2table))
     return;  // No IA2Text, we are finished with this node.
@@ -763,7 +763,7 @@ static std::u16string ProcessAccessiblesArray(
 
 void AXTreeFormatterWin::AddIA2TableCellProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleTableCell> ia2cell;
   if (S_OK != IA2QueryInterface<IAccessibleTableCell>(node.Get(), &ia2cell))
     return;  // No IA2Text, we are finished with this node.
@@ -799,7 +799,7 @@ void AXTreeFormatterWin::AddIA2TableCellProperties(
 
 void AXTreeFormatterWin::AddIA2TextProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleText> ia2text;
 
   if (S_OK != IA2QueryInterface<IAccessibleText>(node.Get(), &ia2text))
@@ -828,7 +828,7 @@ void AXTreeFormatterWin::AddIA2TextProperties(
   // Handle IA2 text attributes, adding them as a list.
   // IA2 text attributes comes formatted as a single string, as follows:
   // https://wiki.linuxfoundation.org/accessibility/iaccessible2/textattributes
-  base::Value::List text_attributes;
+  base::ListValue text_attributes;
   LONG current_offset = 0, start_offset, end_offset;
   while (current_offset < n_characters) {
     // TODO(aleventhal) n_characters is not actually useful for ending the
@@ -867,7 +867,7 @@ void AXTreeFormatterWin::AddIA2TextProperties(
 
 void AXTreeFormatterWin::AddIA2ValueProperties(
     const Microsoft::WRL::ComPtr<IAccessible>& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleValue> ia2value;
   if (S_OK != IA2QueryInterface<IAccessibleValue>(node.Get(), &ia2value))
     return;  // No IA2Value, we are finished with this node.
@@ -892,7 +892,7 @@ void AXTreeFormatterWin::AddIA2ValueProperties(
 }
 
 std::string AXTreeFormatterWin::ProcessTreeForOutput(
-    const base::Value::Dict& dict) const {
+    const base::DictValue& dict) const {
   std::string line;
 
   // Always show role, and show it first.
@@ -918,7 +918,7 @@ std::string AXTreeFormatterWin::ProcessTreeForOutput(
       case base::Value::Type::DICT: {
         // Currently all dictionary values are coordinates.
         // Revisit this if that changes.
-        const base::Value::Dict& dict_value = value->GetDict();
+        const base::DictValue& dict_value = value->GetDict();
         if (std::string_view(attribute_name) == "size") {
           WriteAttribute(
               false, FormatCoordinates(dict_value, "size", "width", "height"),

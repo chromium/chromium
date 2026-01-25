@@ -494,7 +494,7 @@ void WaylandScreen::RemoveObserver(display::DisplayObserver* observer) {
   display_list_.RemoveObserver(observer);
 }
 
-base::Value::List WaylandScreen::GetGpuExtraInfo(
+base::ListValue WaylandScreen::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   auto values = GetDesktopEnvironmentInfo();
   std::vector<std::string> protocols;

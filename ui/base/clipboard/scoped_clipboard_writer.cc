@@ -39,7 +39,7 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
   // If the metadata format type is not empty then create a JSON payload and
   // write to the clipboard.
   if (!registered_formats_.empty()) {
-    base::Value::Dict registered_formats_value;
+    base::DictValue registered_formats_value;
     for (const auto& item : registered_formats_)
       registered_formats_value.Set(item.first, item.second);
     Clipboard::Data data = Clipboard::WebCustomFormatMapData{

@@ -350,7 +350,7 @@ void OSExchangeDataProviderWin::SetURLs(
   // a JSON data, while the newline-delimited string remains the fallback
   // for text/uri-list and plain text.
   std::string url_title_list;
-  base::Value::List bookmark_entries;
+  base::ListValue bookmark_entries;
   for (const auto& url_info : url_infos) {
     if (!url_title_list.empty()) {
       url_title_list += '\n';
@@ -359,7 +359,7 @@ void OSExchangeDataProviderWin::SetURLs(
     url_title_list += '\n';
     url_title_list += base::UTF16ToUTF8(url_info.title);
 
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("url", url_info.url.spec());
     entry.Set("title", base::UTF16ToUTF8(url_info.title));
     bookmark_entries.Append(std::move(entry));

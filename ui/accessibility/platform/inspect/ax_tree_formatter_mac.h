@@ -18,12 +18,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterMac
   ~AXTreeFormatterMac() override;
 
   // AXTreeFormatter
-  base::Value::Dict BuildTree(AXPlatformNodeDelegate* root) const override;
-  base::Value::Dict BuildTreeForSelector(
+  base::DictValue BuildTree(AXPlatformNodeDelegate* root) const override;
+  base::DictValue BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
-  base::Value::Dict BuildNodeForSelector(
+  base::DictValue BuildNode(AXPlatformNodeDelegate* node) const override;
+  base::DictValue BuildNodeForSelector(
       const AXTreeSelector& selector) const override;
 
   std::string EvaluateScript(const AXTreeSelector& selector,
@@ -40,25 +40,25 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterMac
       size_t end_index) const;
 
   // AXTreeFormatterMac
-  base::Value::Dict BuildNode(gfx::NativeViewAccessible node) const;
+  base::DictValue BuildNode(gfx::NativeViewAccessible node) const;
 
  protected:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
-  base::Value::Dict BuildTree(id root) const;
-  base::Value::Dict BuildTreeForAXUIElement(AXUIElementRef node) const;
+  base::DictValue BuildTree(id root) const;
+  base::DictValue BuildTreeForAXUIElement(AXUIElementRef node) const;
 
   void RecursiveBuildTree(const AXElementWrapper& ax_element,
                           const NSRect& root_rect,
                           const AXTreeIndexerMac* indexer,
-                          base::Value::Dict* dict) const;
+                          base::DictValue* dict) const;
 
   void AddProperties(const AXElementWrapper& ax_element,
                      const NSRect& root_rect,
                      const AXTreeIndexerMac* indexer,
-                     base::Value::Dict* dict) const;
+                     base::DictValue* dict) const;
 
   // Invokes an attribute by a property node.
   AXOptionalNSObject InvokeAttributeFor(
@@ -66,11 +66,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterMac
       const AXPropertyNode& property_node,
       const AXTreeIndexerMac* indexer) const;
 
-  base::Value::Dict PopulateLocalPosition(const AXElementWrapper& ax_element,
-                                          const NSRect& root_rect) const;
+  base::DictValue PopulateLocalPosition(const AXElementWrapper& ax_element,
+                                        const NSRect& root_rect) const;
 
-  std::string ProcessTreeForOutput(
-      const base::Value::Dict& node) const override;
+  std::string ProcessTreeForOutput(const base::DictValue& node) const override;
 };
 
 }  // namespace ui

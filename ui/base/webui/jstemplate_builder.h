@@ -25,11 +25,11 @@ namespace webui {
 // - the javascript code necessary to load and populate `loadTimeData`
 COMPONENT_EXPORT(UI_BASE)
 std::string GetI18nTemplateHtml(std::string_view html_template,
-                                const base::Value::Dict& json);
+                                const base::DictValue& json);
 
 // Assigns the given json data into |loadTimeData|, without a <script> tag.
 COMPONENT_EXPORT(UI_BASE)
-void AppendJsonJS(const base::Value::Dict& json,
+void AppendJsonJS(const base::DictValue& json,
                   std::string* output,
                   bool from_js_module);
 
