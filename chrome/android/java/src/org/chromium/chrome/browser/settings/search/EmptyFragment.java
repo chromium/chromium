@@ -31,14 +31,19 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 /** Empty Fragment used to clear the settings screen and display guiding information. */
 @NullMarked
 public class EmptyFragment extends Fragment {
+    private static final String KEY_IMAGE_SRC = "ImageSrc";
 
     private int mImageSrc;
     private Runnable mOpenHelpCenter;
 
     @Initializer
-    @EnsuresNonNull("mOpenHelpCenter")
-    public void init(int imageSrc, Runnable openHelpCenter) {
+    public void setImageSrc(int imageSrc) {
         mImageSrc = imageSrc;
+    }
+
+    @Initializer
+    @EnsuresNonNull("mOpenHelpCenter")
+    public void setOpenHelpCenter(Runnable openHelpCenter) {
         mOpenHelpCenter = openHelpCenter;
     }
 
@@ -53,6 +58,7 @@ public class EmptyFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState != null) mImageSrc = savedInstanceState.getInt(KEY_IMAGE_SRC);
         if (mImageSrc == 0) {
             clear();
             return;
@@ -97,11 +103,17 @@ public class EmptyFragment extends Fragment {
         return ss;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_IMAGE_SRC, mImageSrc);
+    }
+
     void clear() {
         // No need to actively hide the widgets when the fragment is going away.
-        if (isRemoving()) return;
-
         Activity activity = getActivity();
+        if (isRemoving() || activity.isDestroyed()) return;
+
         activity.findViewById(R.id.empty_state_icon).setVisibility(View.GONE);
         activity.findViewById(R.id.empty_state_text_title).setVisibility(View.GONE);
         activity.findViewById(R.id.empty_state_text_description).setVisibility(View.GONE);

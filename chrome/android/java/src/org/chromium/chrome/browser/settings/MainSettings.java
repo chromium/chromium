@@ -137,7 +137,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     // Tag for Fragment backstack entry loading the search results into the display fragment.
     // Popping the entry means we are transitioning from result -> search state.
-    public static final String FRAGMENT_TAG_RESULT = "enter_result_settings";
+    public static final String RESULT_BACKSTACK = "enter_result_settings";
 
     public interface Observer {
         /** Called when a preference item is selected. */
@@ -685,7 +685,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
             // Open an external activity. Keep the state as is.
             return false;
         } else if (key.equals(PREF_MANAGE_SYNC)) {
-            openManageSyncPref(context, profile, true, FRAGMENT_TAG_RESULT);
+            openManageSyncPref(context, profile, true, RESULT_BACKSTACK);
             return true;
         } else if (key.equals(PREF_NOTIFICATIONS)) {
             Intent intent = new Intent();

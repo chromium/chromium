@@ -4,8 +4,12 @@
 
 package org.chromium.components.browser_ui.settings.search;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
@@ -94,7 +98,7 @@ public class SettingsIndexData {
      * displaying a search result. Its public fields are final to guarantee immutability, ensuring
      * that its state cannot be changed after creation.
      */
-    public static class Entry {
+    public static class Entry implements Parcelable {
         /** The entry's globally unique id. */
         public final String id;
 
@@ -157,6 +161,58 @@ public class SettingsIndexData {
             mTitleNormalized = titleNormalized;
             mSummaryNormalized = summaryNormalized;
         }
+
+        // Parcel Constructor
+        protected Entry(Parcel in) {
+            id = assumeNonNull(in.readString());
+            key = in.readString();
+            title = in.readString();
+            summary = in.readString();
+            fragment = in.readString();
+            highlightKey = in.readString();
+            subViewPos = in.readInt();
+            header = in.readString();
+            parentFragment = in.readString();
+            // Bundles require a ClassLoader to unparcel custom classes inside them
+            Bundle inExtras = in.readBundle(getClass().getClassLoader());
+            extras = inExtras != null ? inExtras : new Bundle();
+            mTitleNormalized = in.readString();
+            mSummaryNormalized = in.readString();
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(id);
+            dest.writeString(key);
+            dest.writeString(title);
+            dest.writeString(summary);
+            dest.writeString(fragment);
+            dest.writeString(highlightKey);
+            dest.writeInt(subViewPos);
+            dest.writeString(header);
+            dest.writeString(parentFragment);
+            dest.writeBundle(extras);
+            dest.writeString(mTitleNormalized);
+            dest.writeString(mSummaryNormalized);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<Entry> CREATOR =
+                new Creator<Entry>() {
+                    @Override
+                    public Entry createFromParcel(Parcel in) {
+                        return new Entry(in);
+                    }
+
+                    @Override
+                    public Entry[] newArray(int size) {
+                        return new Entry[size];
+                    }
+                };
 
         /**
          * A builder for creating immutable {@link Entry} objects. For future modifications, please
@@ -738,9 +794,9 @@ public class SettingsIndexData {
         }
 
         /** Returns a list of search results after grouping them by the header. */
-        public List<Entry> groupByHeader() {
+        public ArrayList<Entry> groupByHeader() {
             Map<String, Integer> groups = new HashMap<>();
-            List<Entry> results = new ArrayList<>();
+            ArrayList<Entry> results = new ArrayList<>();
             int pos = 0;
 
             // The input is already sorted by the score. Move up items till

@@ -310,12 +310,18 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (isMultiColumnSettingEnabled()) {
                 assert mMultiColumnSettings != null;
                 createMultiColumnTitleUpdater();
+
             } else {
                 mTitleUpdater = new TitleUpdater();
                 fragmentManager.registerFragmentLifecycleCallbacks(
                         mTitleUpdater, /* recursive= */ true);
             }
-            if (ChromeFeatureList.sSearchInSettings.isEnabled()) createSearchCoordinator();
+            createSearchCoordinator(savedInstanceState);
+        } else {
+            // We need search only on MainSettings in single column mode.
+            if (getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT) == null) {
+                createSearchCoordinator(savedInstanceState);
+            }
         }
 
         setStatusBarColor();
@@ -427,7 +433,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         mMultiColumnSettings.addObserver(mMultiColumnTitleUpdater);
     }
 
-    private void createSearchCoordinator() {
+    private void createSearchCoordinator(@Nullable Bundle savedState) {
+        if (!ChromeFeatureList.sSearchInSettings.isEnabled()) return;
+
         Callback<Integer> updateFirstVisibleTitle =
                 isMultiColumnSettingEnabled()
                         ? this::updateFirstVisibleTitle
@@ -442,10 +450,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         updateFirstVisibleTitle,
                         getModalDialogManagerSupplier());
         if (mMultiColumnSettings != null) {
-            mMultiColumnSettings.setOnCreateViewRunnable(mSearchCoordinator::initializeSearchUi);
+            mMultiColumnSettings.setOnCreateViewRunnable(
+                    () -> assumeNonNull(mSearchCoordinator).initializeSearchUi(savedState));
             mMultiColumnSettings.addObserver(mSearchCoordinator);
         } else {
-            mSearchCoordinator.initializeSearchUi();
+            mSearchCoordinator.initializeSearchUi(savedState);
         }
     }
 
@@ -778,8 +787,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (mTitleUpdater != null) {
             getSupportFragmentManager().unregisterFragmentLifecycleCallbacks(mTitleUpdater);
         }
-        if (mSearchCoordinator != null && mMultiColumnSettings != null) {
-            mMultiColumnSettings.removeObserver(mSearchCoordinator);
+        if (mSearchCoordinator != null) {
+            if (mMultiColumnSettings != null) {
+                mMultiColumnSettings.removeObserver(mSearchCoordinator);
+            }
             mSearchCoordinator.destroy();
         }
         super.onDestroy();
@@ -1047,6 +1058,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
             getSupportFragmentManager().executePendingTransactions();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mSearchCoordinator != null) mSearchCoordinator.onSaveInstanceState(outState);
     }
 
     private class TitleUpdater extends FragmentManager.FragmentLifecycleCallbacks {

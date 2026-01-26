@@ -26,11 +26,13 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /** A simple Fragment to display a list of search results. */
 @NullMarked
 public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment {
+    private static final String KEY_PREFERENCE_DATA = "PreferenceData";
+
     // All search results fragment instance share a title supplier. This keeps
     // |MultiColumnTitleUpdater| from adding titles every time a new fragment instance is created
     // and replaced with the existing one upon user keystrokes entering queries.
@@ -58,24 +60,37 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
                 int subViewPos);
     }
 
-    private final List<SettingsIndexData.Entry> mPreferenceData;
-    private final SelectedCallback mSelectedCallback;
+    private @Nullable ArrayList<SettingsIndexData.Entry> mPreferenceData;
+    private @Nullable SelectedCallback mSelectedCallback;
 
     /**
-     * Constructor
+     * Set preference's data.
      *
      * @param results Search results to display.
+     */
+    public void setPreferenceData(ArrayList<SettingsIndexData.Entry> results) {
+        mPreferenceData = results;
+    }
+
+    /**
+     * Set callback to use when items are selected.
+     *
      * @param selectedCallback A callback invoked when one of the result entries is chosen.
      */
-    public SearchResultsPreferenceFragment(
-            List<SettingsIndexData.Entry> results, SelectedCallback selectedCallback) {
-        super();
-        mPreferenceData = results;
+    public void setSelectedCallback(SelectedCallback selectedCallback) {
         mSelectedCallback = selectedCallback;
     }
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+        if (savedInstanceState != null) {
+            mPreferenceData = savedInstanceState.getParcelableArrayList(KEY_PREFERENCE_DATA);
+        }
+        if (mPreferenceData == null) {
+            throw new IllegalStateException(
+                    "Preference data should be set. entries: " + mPreferenceData);
+        }
+
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(requireContext());
         setPreferenceScreen(screen);
 
@@ -102,13 +117,14 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
                         String mainSettingsFragment = MainSettings.class.getName();
                         var isMain = TextUtils.equals(info.parentFragment, mainSettingsFragment);
                         String fragment = isMain ? info.fragment : info.parentFragment;
-                        mSelectedCallback.onSelected(
-                                fragment,
-                                info.key,
-                                info.extras,
-                                !isMain,
-                                info.highlightKey,
-                                info.subViewPos);
+                        assumeNonNull(mSelectedCallback)
+                                .onSelected(
+                                        fragment,
+                                        info.key,
+                                        info.extras,
+                                        !isMain,
+                                        info.highlightKey,
+                                        info.subViewPos);
                         return true;
                     });
             preference.setIconSpaceReserved(false);
@@ -139,7 +155,6 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         getListView().addOnChildAttachStateChangeListener(mChildAttachListener);
     }
 
@@ -149,6 +164,14 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
 
         if (getListView() != null) {
             getListView().removeOnChildAttachStateChangeListener(mChildAttachListener);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mPreferenceData != null) {
+            outState.putParcelableArrayList(KEY_PREFERENCE_DATA, mPreferenceData);
         }
     }
 
