@@ -1626,11 +1626,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (newState != ActivityState.RESUMED && newState != ActivityState.STOPPED) return;
 
         int windowingMode =
-                AppHeaderUtils.getWindowingMode(
+                MultiWindowMetricsUtils.getWindowingMode(
                         mActivity,
                         AppHeaderUtils.isAppInDesktopWindow(
                                 mDesktopWindowStateManagerSupplier.get()));
-        AppHeaderUtils.recordWindowingMode(windowingMode, newState == ActivityState.RESUMED);
+        MultiWindowMetricsUtils.recordWindowingMode(
+                windowingMode, newState == ActivityState.RESUMED);
 
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         // Check the max instance count in a day for every state update if needed.

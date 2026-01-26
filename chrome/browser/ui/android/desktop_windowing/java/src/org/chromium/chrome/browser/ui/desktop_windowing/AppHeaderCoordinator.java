@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.WindowingMode;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -248,7 +249,7 @@ public class AppHeaderCoordinator
                 : "Attempt to read the insets too early.";
         if (mInsetObserver.getLastRawWindowInsets().hasInsets()) {
             int prevWindowingMode = mWindowingMode;
-            mWindowingMode = AppHeaderUtils.getWindowingMode(mActivity, isInDesktopWindow);
+            mWindowingMode = MultiWindowMetricsUtils.getWindowingMode(mActivity, isInDesktopWindow);
             if (prevWindowingMode != mWindowingMode) {
                 // Record this histogram every time the windowing mode changes.
                 RecordHistogram.recordEnumeratedHistogram(
@@ -258,8 +259,10 @@ public class AppHeaderCoordinator
                 // Record windowing mode changes if not going from/to UNKNOWN.
                 if (prevWindowingMode != WindowingMode.UNKNOWN
                         && mWindowingMode != WindowingMode.UNKNOWN) {
-                    AppHeaderUtils.recordWindowingMode(prevWindowingMode, /* isStarted= */ false);
-                    AppHeaderUtils.recordWindowingMode(mWindowingMode, /* isStarted= */ true);
+                    MultiWindowMetricsUtils.recordWindowingMode(
+                            prevWindowingMode, /* isStarted= */ false);
+                    MultiWindowMetricsUtils.recordWindowingMode(
+                            mWindowingMode, /* isStarted= */ true);
                 }
             }
         }
