@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// TODO(crbug.com/40181416): Delete this file.
 
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_CAST_MESSAGE_PORT_IMPL_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_CAST_MESSAGE_PORT_IMPL_H_
