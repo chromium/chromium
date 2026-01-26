@@ -51,16 +51,17 @@ TEST_F(ProxyLookupClientImplTest, NoProxyInfo) {
 
   base::RunLoop run_loop;
   GURL test_url("example.com");
-  std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
-      std::make_unique<ProxyLookupClientImpl>(
-          test_url,
-          base::BindOnce(
-              [](base::RunLoop* run_loop, bool has_proxy) {
-                EXPECT_FALSE(has_proxy);
-                run_loop->Quit();
-              },
-              &run_loop),
-          &network_context);
+  ProxyLookupClientImpl::CreateAndStart(
+      test_url,
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(test_url)),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool has_proxy) {
+            EXPECT_FALSE(has_proxy);
+            run_loop->Quit();
+          },
+          &run_loop),
+      &network_context);
   run_loop.Run();
 }
 
@@ -75,16 +76,17 @@ TEST_F(ProxyLookupClientImplTest, OnlyDirect) {
 
   base::RunLoop run_loop;
   GURL test_url("example.com");
-  std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
-      std::make_unique<ProxyLookupClientImpl>(
-          test_url,
-          base::BindOnce(
-              [](base::RunLoop* run_loop, bool has_proxy) {
-                EXPECT_FALSE(has_proxy);
-                run_loop->Quit();
-              },
-              &run_loop),
-          &network_context);
+  ProxyLookupClientImpl::CreateAndStart(
+      test_url,
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(test_url)),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool has_proxy) {
+            EXPECT_FALSE(has_proxy);
+            run_loop->Quit();
+          },
+          &run_loop),
+      &network_context);
   run_loop.Run();
 }
 
@@ -98,16 +100,17 @@ TEST_F(ProxyLookupClientImplTest, Proxy) {
 
   base::RunLoop run_loop;
   GURL test_url("example.com");
-  std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
-      std::make_unique<ProxyLookupClientImpl>(
-          test_url,
-          base::BindOnce(
-              [](base::RunLoop* run_loop, bool has_proxy) {
-                EXPECT_TRUE(has_proxy);
-                run_loop->Quit();
-              },
-              &run_loop),
-          &network_context);
+  ProxyLookupClientImpl::CreateAndStart(
+      test_url,
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(test_url)),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool has_proxy) {
+            EXPECT_TRUE(has_proxy);
+            run_loop->Quit();
+          },
+          &run_loop),
+      &network_context);
   run_loop.Run();
 }
 
@@ -121,17 +124,18 @@ TEST_F(ProxyLookupClientImplTest, Disconnect) {
 
   base::RunLoop run_loop;
   GURL test_url("example.com");
-  std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
-      std::make_unique<ProxyLookupClientImpl>(
-          test_url,
-          base::BindOnce(
-              [](base::RunLoop* run_loop, bool has_proxy) {
-                // If the mojo pipe disconnects, then result should be false.
-                EXPECT_FALSE(has_proxy);
-                run_loop->Quit();
-              },
-              &run_loop),
-          &network_context);
+  ProxyLookupClientImpl::CreateAndStart(
+      test_url,
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(test_url)),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool has_proxy) {
+            // If the mojo pipe disconnects, then result should be false.
+            EXPECT_FALSE(has_proxy);
+            run_loop->Quit();
+          },
+          &run_loop),
+      &network_context);
   run_loop.Run();
 }
 

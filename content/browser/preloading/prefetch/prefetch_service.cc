@@ -1102,15 +1102,15 @@ void PrefetchService::StartProxyLookupCheck(CheckEligibilityParams params) {
   // |ProxyLookupClientImpl| to |prefetch_container|.
   // `url` is needed to avoid use-after-move.
   const GURL url = params.url;
-  prefetch_container->TakeProxyLookupClient(
-      std::make_unique<ProxyLookupClientImpl>(
-          url,
-          base::BindOnce(&PrefetchService::OnGotProxyLookupResult,
-                         weak_method_factory_.GetWeakPtr(), std::move(params)),
-          g_network_context_for_proxy_lookup_for_testing
-              ? g_network_context_for_proxy_lookup_for_testing
-              : browser_context_->GetDefaultStoragePartition()
-                    ->GetNetworkContext()));
+  ProxyLookupClientImpl::CreateAndStart(
+      url,
+      net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url)),
+      base::BindOnce(&PrefetchService::OnGotProxyLookupResult,
+                     weak_method_factory_.GetWeakPtr(), std::move(params)),
+      g_network_context_for_proxy_lookup_for_testing
+          ? g_network_context_for_proxy_lookup_for_testing
+          : browser_context_->GetDefaultStoragePartition()
+                ->GetNetworkContext());
 }
 
 void PrefetchService::OnGotProxyLookupResult(CheckEligibilityParams params,
@@ -1133,7 +1133,6 @@ void PrefetchService::OnGotProxyLookupResult(CheckEligibilityParams params,
       "loading", "PrefetchService::OnGotProxyLookupResult",
       prefetch_container->request().preload_pipeline_info().GetTrack());
 
-  prefetch_container->ReleaseProxyLookupClient();
   if (has_proxy) {
     std::move(params).Finish(PreloadingEligibility::kExistingProxy);
     return;

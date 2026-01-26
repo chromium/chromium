@@ -47,7 +47,6 @@ class PrefetchServingHandle;
 class PrefetchServingPageMetricsContainer;
 class PrefetchSingleRedirectHop;
 class PrefetchStreamingURLLoader;
-class ProxyLookupClientImpl;
 enum class PrefetchPotentialCandidateServingResult;
 enum class PrefetchProbeResult;
 enum class PrefetchServableState;
@@ -282,12 +281,6 @@ class CONTENT_EXPORT PrefetchContainer {
   LoadState GetLoadState() const;
 
   const PrefetchRequest& request() const { return *request_; }
-
-  // Controls ownership of the |ProxyLookupClientImpl| used during the
-  // eligibility check.
-  void TakeProxyLookupClient(
-      std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client);
-  std::unique_ptr<ProxyLookupClientImpl> ReleaseProxyLookupClient();
 
   // Called when it is added to `PrefetchService::owned_prefetches_`.
   void OnAddedToPrefetchService();
@@ -716,10 +709,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The current status of the prefetch.
   LoadState load_state_ = LoadState::kNotStarted;
-
-  // Looks up the proxy settings in the default network context all URLs in
-  // |redirect_chain_|.
-  std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client_;
 
   // Whether this prefetch is a decoy or not. If the prefetch is a decoy then
   // any prefetched resources will not be served.

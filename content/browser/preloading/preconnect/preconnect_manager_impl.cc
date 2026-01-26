@@ -304,7 +304,7 @@ std::unique_ptr<ResolveHostClientImpl> PreconnectManagerImpl::PreresolveUrl(
       std::move(callback), network_context);
 }
 
-std::unique_ptr<ProxyLookupClientImpl> PreconnectManagerImpl::LookupProxyForUrl(
+void PreconnectManagerImpl::LookupProxyForUrl(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const content::StoragePartitionConfig* storage_partition_config,
@@ -314,8 +314,8 @@ std::unique_ptr<ProxyLookupClientImpl> PreconnectManagerImpl::LookupProxyForUrl(
 
   auto* network_context = GetNetworkContext(storage_partition_config);
 
-  return std::make_unique<ProxyLookupClientImpl>(
-      url, network_anonymization_key, std::move(callback), network_context);
+  ProxyLookupClientImpl::CreateAndStart(url, network_anonymization_key,
+                                        std::move(callback), network_context);
 }
 
 void PreconnectManagerImpl::TryToLaunchPreresolveJobs() {
@@ -344,7 +344,7 @@ void PreconnectManagerImpl::TryToLaunchPreresolveJobs() {
       // This is used to avoid issuing DNS requests when a fixed proxy
       // configuration is in place, which improves efficiency, and is also
       // important if the unproxied DNS may contain incorrect entries.
-      job->proxy_lookup_client = LookupProxyForUrl(
+      LookupProxyForUrl(
           job->url, job->network_anonymization_key,
           base::OptionalToPtr(job->storage_partition_config),
           base::BindOnce(&PreconnectManagerImpl::OnProxyLookupFinished,
@@ -397,7 +397,6 @@ void PreconnectManagerImpl::OnProxyLookupFinished(PreresolveJobId job_id,
                                      success);
   }
 
-  job->proxy_lookup_client = nullptr;
   if (success) {
     FinishPreresolveJob(job_id, success);
   } else {

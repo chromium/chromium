@@ -98,7 +98,6 @@ struct CONTENT_EXPORT PreresolveJob {
   // May be equal to nullptr in case of detached job.
   raw_ptr<PreresolveInfo, DanglingUntriaged> info;
   std::unique_ptr<ResolveHostClientImpl> resolve_host_client;
-  std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client;
   base::TimeTicks creation_time;
   std::optional<base::UnguessableToken> network_restrictions_id;
 };
@@ -172,7 +171,7 @@ class CONTENT_EXPORT PreconnectManagerImpl : public PreconnectManager {
       const content::StoragePartitionConfig* storage_partition_config,
       base::optional_ref<base::UnguessableToken> network_restrictions_id,
       ResolveHostCallback callback) const;
-  std::unique_ptr<ProxyLookupClientImpl> LookupProxyForUrl(
+  void LookupProxyForUrl(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const content::StoragePartitionConfig* storage_partition_config,
