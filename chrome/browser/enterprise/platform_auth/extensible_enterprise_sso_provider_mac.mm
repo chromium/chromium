@@ -10,7 +10,6 @@
 #import <utility>
 #import <vector>
 
-#import "base/barrier_callback.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/strcat.h"
@@ -71,16 +70,11 @@ void RecordMetrics(
 void OnAuthorizationDone(
     PlatformAuthProviderManager::GetDataCallback callback,
     std::unique_ptr<ExtensibleEnterpriseSSOProvider::Metrics> metrics,
-    std::vector<
-        std::unique_ptr<ExtensibleEnterpriseSSOProvider::DelegateResult>>
-        results) {
+    std::unique_ptr<ExtensibleEnterpriseSSOProvider::DelegateResult> result) {
   net::HttpRequestHeaders headers;
-  for (const auto& result : results) {
-    metrics->success |= result->success;
-    if (result->success && !result->headers.IsEmpty()) {
-      headers = result->headers;
-      break;
-    }
+  metrics->success = result && result->success;
+  if (result && result->success && !result->headers.IsEmpty()) {
+    headers = result->headers;
   }
   metrics->end_time = base::Time::Now();
   RecordMetrics(std::move(metrics));
@@ -127,7 +121,7 @@ void ExtensibleEnterpriseSSOProvider::GetData(
   metrics->url_is_supported = auth_provider.canPerformAuthorization;
 
   if (!auth_provider.canPerformAuthorization) {
-    OnAuthorizationDone(std::move(callback), std::move(metrics), {});
+    OnAuthorizationDone(std::move(callback), std::move(metrics), nullptr);
     return;
   }
 
@@ -135,17 +129,7 @@ void ExtensibleEnterpriseSSOProvider::GetData(
       g_browser_process->local_state()->GetList(
           prefs::kExtensibleEnterpriseSSOEnabledIdps);
 
-  // Wait for all idps to call this before continuing. This allows to launch all
-  // of them in parallel, waiting for all of their results and picking the right
-  // ones.
-  auto barrier = base::BarrierCallback<
-      std::unique_ptr<ExtensibleEnterpriseSSOProvider::DelegateResult>>(
-      supported_idps.size(),
-      base::BindOnce(&OnAuthorizationDone, std::move(callback),
-                     std::move(metrics)));
-
   for (const base::Value& idp_value : supported_idps) {
-    // Setup Microsoft Entra handler
     if (const std::string* idp = idp_value.GetIfString();
         idp && *idp == kMicrosoftIdentityProvider) {
       SSOServiceEntraAuthControllerDelegate* delegate =
@@ -155,11 +139,16 @@ void ExtensibleEnterpriseSSOProvider::GetData(
       // Pass `delegate` as a callback parameter so that it lives beyond the
       // scope of this function and until the callback is called.
       auto final_callback = base::BindPostTaskToCurrentDefault(
-          barrier.Then(base::BindRepeating(&OnDataFetched, delegate)));
+          base::BindOnce(&OnAuthorizationDone, std::move(callback),
+                         std::move(metrics))
+              .Then(base::BindRepeating(&OnDataFetched, delegate)));
       [delegate getAuthHeaders:nativeUrl
                   withCallback:std::move(final_callback)];
+      return;
     }
   }
+
+  OnAuthorizationDone(std::move(callback), std::move(metrics), nullptr);
 }
 
 // static
