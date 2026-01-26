@@ -42,11 +42,13 @@ async function init()
     }
 
     console.log('Waiting for a GPU crash to cause device loss');
-    const {reason} = await device.lost;
+    const {deviceLostInfo} = await device.lost;
     gotDevice = false;
     deviceLost = true;
-    if (reason !== undefined) {
-      console.log('TEST FAILED - Expected undefined device lost reason');
+    if (deviceLostInfo !== undefined) {
+      console.log(`TEST FAILED - Expected undefined GPUDeviceLostInfo, got `
+                  `reason: "{deviceLostInfo.reason}", message: `
+                  `"{deviceLostInfo.message}"`);
       reportProgress('FAILED');
     }
 
