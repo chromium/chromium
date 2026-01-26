@@ -316,8 +316,6 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
-    // Should this prefs parent pass a title in the Bundle args? Any entries that need adding?
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     FinancialAccountsManagementFragment.class.getName(), 0) {
