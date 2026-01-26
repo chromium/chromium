@@ -1243,7 +1243,7 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 }
 
 + (BOOL)isComposeboxIOSEnabled {
-  return base::FeatureList::IsEnabled(kComposeboxIOS);
+  return IsComposeboxIOSEnabled();
 }
 
 + (UIInterfaceOrientation)interfaceOrientation {
