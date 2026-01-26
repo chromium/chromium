@@ -1023,8 +1023,8 @@ void FrameSinkManagerImpl::RecurseParents(
 
   auto* mapping = base::FindOrNull(frame_sink_source_map_, frame_sink_id);
   if (mapping) {
-    for (const FrameSinkId& parent : mapping->parent) {
-      RecurseParents(parent, callback);
+    for (const FrameSinkId& parent_id : mapping->parent) {
+      RecurseParents(parent_id, callback);
     }
   }
 }
