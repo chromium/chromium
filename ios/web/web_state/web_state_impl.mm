@@ -9,6 +9,7 @@
 
 #import <string_view>
 
+#import "base/check.h"
 #import "base/compiler_specific.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
@@ -26,6 +27,10 @@
 #import "ios/web/web_state/web_state_impl_serialized_data.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
+
+// TODO(crbug.com/477899998): Remove when the investigation is over.
+#import "base/not_fatal_until.h"
+#import "ios/web/public/thread/web_thread.h"
 
 namespace web {
 namespace {
@@ -1024,6 +1029,27 @@ WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {
 
 void WebStateImpl::AddWebStateImplMarker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // WebState should only be accessed and created on the main sequence (aka
+  // the main thread). According to https://crbug.com/477494757 there exist
+  // code accessing them on a background thread, but we only see those issue
+  // in production and not in DCHECK enabled builds. If this were happening
+  // in DCHECK enabled builds, the DCHECK_CALLED_ON_VALID_SEQUENCE(...) are
+  // expected to catch them unless the WebState have been created on some
+  // background sequence.
+  //
+  // Since this is not expected and not supported, add an explicit check
+  // that the WebStateImpl instance is created on the main thread (which
+  // is expected to fail and catch those errors). The CHECK is not in the
+  // constructor because that would require duplicating it for each one
+  // (as there is no uber constructor they all defer to). This method is
+  // however calld from all the constructors, and thus is a good enough
+  // place to perform the CHECK.
+  //
+  // TODO(crbug.com/477899998): Remove when the investigation is over.
+  CHECK(web::WebThread::CurrentlyOn(web::WebThread::UI),
+        base::NotFatalUntil::M148);
+
   // Store an empty base::SupportsUserData::Data that mark the current instance
   // as a WebStateImpl. Need to be done before anything else, so that casting
   // can safely be performed even before the end of the constructor.
