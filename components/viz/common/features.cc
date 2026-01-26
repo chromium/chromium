@@ -299,6 +299,10 @@ const base::FeatureParam<int>
     kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction{
         &kAckOnSurfaceActivationWhenInteractive, "frames", 3};
 
+// If enabled, DisplayScheduler will attempt to select a future deadline if the
+// preferred deadline is not achievable.
+BASE_FEATURE(kSelectFutureFrameDeadline, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, SDR maximum luminance nits of then current display will be used
 // as the HDR metadata NDWL nits.
 BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -72,6 +72,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   // BeginFrameSource::SchedulerClient implementation.
   void OnBeginFrameForScheduling(const BeginFrameArgs& args) override;
 
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
+
  protected:
   class BeginFrameObserver;
   class BeginFrameRequestObserverImpl;
@@ -84,6 +86,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
     return current_begin_frame_args_.frame_time +
            current_begin_frame_args_.interval;
   }
+
+  base::TimeTicks NowTicks() const;
 
   // These values inidicate how a response to the BeginFrame should be
   // scheduled.
@@ -157,7 +161,11 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
   bool observing_begin_frame_source_;
 
+  base::TimeTicks last_targeted_latch_time_;
+
   const raw_ptr<HintSessionFactory> hint_session_factory_;
+
+  raw_ptr<const base::TickClock> tick_clock_;
 
   struct AdpfSessionState {
     base::flat_set<base::PlatformThreadId> thread_ids;

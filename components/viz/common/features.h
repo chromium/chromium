@@ -118,6 +118,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFScrollNoRendererMain);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFBoostRateLimit);
 extern const VIZ_COMMON_EXPORT base::FeatureParam<base::TimeDelta>
     kAdpfBoostRateLimitMinWait;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSelectFutureFrameDeadline);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDisplaySDRMaxLuminanceNits);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kHideDelegatedFrameHostMac);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEvictionUnlocksResources);

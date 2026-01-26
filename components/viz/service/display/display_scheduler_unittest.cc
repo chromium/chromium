@@ -85,6 +85,7 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
 
   bool DrawAndSwap(const DrawAndSwapParams& params) override {
     draw_and_swap_count_++;
+    last_params_ = params;
 
     bool success = !next_draw_and_swap_fails_;
     next_draw_and_swap_fails_ = false;
@@ -103,12 +104,14 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
   void SetNextDrawAndSwapFails() { next_draw_and_swap_fails_ = true; }
 
   const BeginFrameAck& last_begin_frame_ack() { return last_begin_frame_ack_; }
+  const DrawAndSwapParams& last_params() const { return last_params_; }
 
  protected:
   raw_ptr<TestDisplayDamageTracker> damage_tracker_ = nullptr;
   int draw_and_swap_count_;
   bool next_draw_and_swap_fails_;
   BeginFrameAck last_begin_frame_ack_;
+  DrawAndSwapParams last_params_;
 };
 
 class TestDisplayScheduler : public DisplayScheduler {
@@ -526,6 +529,73 @@ TEST_P(DisplaySchedulerWaitForAllSurfacesTest, WaitForAllSurfacesBeforeDraw) {
   EXPECT_GE(now_src().NowTicks(),
             scheduler_->DesiredBeginFrameDeadlineTimeForTest());
   scheduler_->BeginFrameDeadlineForTest();
+}
+
+TEST_P(DisplaySchedulerTest, SelectFutureFrameDeadline) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kSelectFutureFrameDeadline);
+
+  scheduler_->SetTickClockForTesting(&now_src());
+
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+  scheduler_->SetVisible(true);
+  SetNewRootSurface(root_surface_id);
+
+  // 1. Preferred deadline in the past.
+  now_src().Advance(base::Milliseconds(10));
+  last_begin_frame_args_ = fake_begin_frame_source_.CreateBeginFrameArgs(
+      BEGINFRAME_FROM_HERE, &now_src());
+  BeginFrameArgs args = last_begin_frame_args_;
+  // frame_time = 20ms.
+
+  // Create possible deadlines.
+  args.possible_deadlines = PossibleDeadlines(0);  // Preferred is 0.
+  // Deadline 0 is in the past relative to "now".
+  base::TimeDelta latch_delta0 = base::Milliseconds(5);
+  base::TimeDelta latch_delta1 = base::Milliseconds(50);
+  args.possible_deadlines->deadlines.emplace_back(100, latch_delta0,
+                                                  base::Milliseconds(15));
+  args.possible_deadlines->deadlines.emplace_back(101, latch_delta1,
+                                                  base::Milliseconds(60));
+
+  // Advance time so that now > frame_time + latch_delta0.
+  now_src().Advance(latch_delta0 + base::Milliseconds(1));
+  // now = 20 + 5 + 1 = 26ms.
+
+  scheduler_->OnBeginFrameForScheduling(args);
+
+  SurfaceDamaged(root_surface_id);
+  scheduler_->BeginFrameDeadlineForTest();
+
+  // Should have picked vsync_id 101 because 100 was in the past.
+  EXPECT_EQ(101, client().last_params().choreographer_vsync_id);
+  // last_targeted_latch_time_ = 20 + 50 = 70ms.
+
+  // 2. Preferred deadline before last_targeted_latch_time_.
+  now_src().Advance(base::Milliseconds(10));
+  // now = 36ms.
+  last_begin_frame_args_ = fake_begin_frame_source_.CreateBeginFrameArgs(
+      BEGINFRAME_FROM_HERE, &now_src());
+  args = last_begin_frame_args_;
+  // frame_time = 46ms.
+  args.possible_deadlines = PossibleDeadlines(0);
+  // Deadline 200 latch time: 46 + 10 = 56ms (< 70ms).
+  // Deadline 201 latch time: 46 + 40 = 86ms (> 70ms).
+  args.possible_deadlines->deadlines.emplace_back(200, base::Milliseconds(10),
+                                                  base::Milliseconds(15));
+  args.possible_deadlines->deadlines.emplace_back(201, base::Milliseconds(40),
+                                                  base::Milliseconds(45));
+
+  scheduler_->OnBeginFrameForScheduling(args);
+  SurfaceDamaged(root_surface_id);
+  scheduler_->BeginFrameDeadlineForTest();
+
+  // Should have picked vsync_id 201 because 200's latch time (56ms)
+  // is less than last_targeted_latch_time_ (70ms).
+  EXPECT_EQ(201, client().last_params().choreographer_vsync_id);
 }
 
 TEST_P(DisplaySchedulerTest, OutputSurfaceLost) {
