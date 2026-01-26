@@ -50,13 +50,13 @@ VideoRendererImpl::VideoRendererImpl(
     const CreateVideoDecodersCB& create_video_decoders_cb,
     bool drop_frames,
     MediaLog* media_log,
-    std::unique_ptr<MappableSharedImageVideoFramePool> gmb_pool,
+    std::unique_ptr<MappableSharedImageVideoFramePool> mappable_si_pool,
     MediaPlayerLoggingID media_player_id)
     : task_runner_(media_task_runner),
       sink_(sink),
       sink_started_(false),
       client_(nullptr),
-      gpu_memory_buffer_pool_(std::move(gmb_pool)),
+      mappable_shared_image_pool_(std::move(mappable_si_pool)),
       media_log_(media_log),
       player_id_(media_player_id),
       low_delay_(false),
@@ -116,8 +116,9 @@ void VideoRendererImpl::Flush(base::OnceClosure callback) {
 
   // Reset |video_decoder_stream_| and drop any pending read callbacks from it.
   pending_read_ = false;
-  if (gpu_memory_buffer_pool_)
-    gpu_memory_buffer_pool_->Abort();
+  if (mappable_shared_image_pool_) {
+    mappable_shared_image_pool_->Abort();
+  }
   cancel_on_flush_weak_factory_.InvalidateWeakPtrs();
   paint_first_frame_cb_.Cancel();
   video_decoder_stream_->Reset(
@@ -183,11 +184,11 @@ void VideoRendererImpl::Initialize(
       &VideoRendererImpl::OnConfigChange, weak_factory_.GetWeakPtr()));
   video_decoder_stream_->set_fallback_observer(base::BindRepeating(
       &VideoRendererImpl::OnFallback, weak_factory_.GetWeakPtr()));
-  if (gpu_memory_buffer_pool_) {
+  if (mappable_shared_image_pool_) {
     video_decoder_stream_->SetPrepareCB(base::BindRepeating(
         &MappableSharedImageVideoFramePool::MaybeCreateHardwareFrame,
         // Safe since VideoDecoderStream won't issue calls after destruction.
-        base::Unretained(gpu_memory_buffer_pool_.get())));
+        base::Unretained(mappable_shared_image_pool_.get())));
   }
 
   low_delay_ = stream->liveness() == StreamLiveness::kLive;

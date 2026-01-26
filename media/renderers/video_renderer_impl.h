@@ -62,7 +62,7 @@ class MEDIA_EXPORT VideoRendererImpl
       const CreateVideoDecodersCB& create_video_decoders_cb,
       bool drop_frames,
       MediaLog* media_log,
-      std::unique_ptr<MappableSharedImageVideoFramePool> gmb_pool,
+      std::unique_ptr<MappableSharedImageVideoFramePool> mappable_si_pool,
       MediaPlayerLoggingID media_player_id);
 
   VideoRendererImpl(const VideoRendererImpl&) = delete;
@@ -239,11 +239,12 @@ class MEDIA_EXPORT VideoRendererImpl
 
   raw_ptr<RendererClient> client_;
 
-  // Pool of GpuMemoryBuffers and resources used to create hardware frames.
+  // Pool of MappableSharedImages and resources used to create hardware frames.
   // Ensure this is destructed after |algorithm_| for optimal memory release
   // when a frames are still held by the compositor. Must be destructed after
   // |video_decoder_stream_| since it holds a callback to the pool.
-  std::unique_ptr<MappableSharedImageVideoFramePool> gpu_memory_buffer_pool_;
+  std::unique_ptr<MappableSharedImageVideoFramePool>
+      mappable_shared_image_pool_;
 
   // Provides video frames to VideoRendererImpl.
   std::unique_ptr<VideoDecoderStream> video_decoder_stream_;
@@ -315,7 +316,7 @@ class MEDIA_EXPORT VideoRendererImpl
 
   // Algorithm for selecting which frame to render; manages frames and all
   // timing related information. Ensure this is destructed before
-  // |gpu_memory_buffer_pool_| for optimal memory release when a frames are
+  // |mappable_shared_image_pool_| for optimal memory release when a frames are
   // still held by the compositor.
   std::unique_ptr<VideoRendererAlgorithm> algorithm_;
 
