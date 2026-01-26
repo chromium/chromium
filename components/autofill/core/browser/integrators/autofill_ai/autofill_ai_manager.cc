@@ -335,13 +335,14 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
                  form.ToFormData(), prompt_candidate, ukm_source_id,
                  prompt_type);
 
-    client_->ShowEntityImportBubble(
-        std::move(prompt_candidate),
-        prompt_type == AutofillClient::AutofillAiImportPromptType::kUpdate
-            ? std::optional(*client_->GetEntityDataManager()->GetEntityInstance(
-                  prompt_candidate.guid()))
-            : std::nullopt,
-        std::move(prompt_result_callback));
+    std::optional<EntityInstance> entity_instance;
+    if (prompt_type == AutofillClient::AutofillAiImportPromptType::kUpdate) {
+      entity_instance = *client_->GetEntityDataManager()->GetEntityInstance(
+          prompt_candidate.guid());
+    }
+    client_->ShowEntityImportBubble(std::move(prompt_candidate),
+                                    std::move(entity_instance),
+                                    std::move(prompt_result_callback));
   }
   return prompt_shown;
 }
