@@ -580,7 +580,7 @@ void ReadAnythingAppController::ProcessPendingUpdatesIfAllowed() {
   }
 
   model_.UnserializePendingUpdates(model_.active_tree_id());
-  SendEventUpdates();
+  ProcessModelUpdates();
 }
 
 void ReadAnythingAppController::AccessibilityEventReceived(
@@ -610,10 +610,10 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     return;
   }
 
-  SendEventUpdates();
+  ProcessModelUpdates();
 }
 
-void ReadAnythingAppController::SendEventUpdates() {
+void ReadAnythingAppController::ProcessModelUpdates() {
   if (model_.requires_distillation()) {
     if (features::IsReadAnythingWithReadabilityEnabled()) {
       return;

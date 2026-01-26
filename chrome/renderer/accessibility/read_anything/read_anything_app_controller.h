@@ -425,7 +425,7 @@ class ReadAnythingAppController
 
   // Helper for forwarding various updates to the webui based on the latest
   // processed accessibility events.
-  void SendEventUpdates();
+  void ProcessModelUpdates();
 
   // Helper for forwarding reading mode hide events to the webui so we can
   // perform cleaning operations on it.
