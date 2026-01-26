@@ -223,6 +223,8 @@ public class BottomControlsCoordinator implements BackPressHandler {
     /** Clean up any state when the bottom controls component is destroyed. */
     public void destroy() {
         mIsDestroyed = true;
+        // The previously-provided supplier will have been destroyed, so prevent further use of it.
+        mRootFrameLayout.setConstraintsSupplier(null);
 
         BottomControlsContentDelegate contentDelegate = mContentDelegateSupplier.get();
         if (contentDelegate != null) contentDelegate.destroy();

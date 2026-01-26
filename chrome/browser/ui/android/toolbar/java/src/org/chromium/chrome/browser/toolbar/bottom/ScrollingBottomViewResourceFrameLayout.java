@@ -140,10 +140,12 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
      * @param constraintsSupplier Used to access current constraints of the browser controls.
      */
     public void setConstraintsSupplier(
-            NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier) {
-        assert mConstraintsChecker == null;
+            @Nullable NullableObservableSupplier<@BrowserControlsState Integer>
+                    constraintsSupplier) {
         mConstraintsChecker =
-                new ConstraintsChecker(
-                        getResourceAdapter(), constraintsSupplier, Looper.getMainLooper());
+                constraintsSupplier == null
+                        ? null
+                        : new ConstraintsChecker(
+                                getResourceAdapter(), constraintsSupplier, Looper.getMainLooper());
     }
 }
