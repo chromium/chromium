@@ -304,12 +304,19 @@ class AppMenuItemViewBinder {
         ChromeImageView imageView = view.findViewById(R.id.menu_item_icon);
 
         @ColorRes int colorResId = model.get(AppMenuItemProperties.ICON_COLOR_RES);
-        if (colorResId == 0) {
+        ColorStateList tintList = null;
+        boolean noTint = model.get(AppMenuItemProperties.ICON_NO_TINT);
+
+        if (noTint) {
+            // No-op: If noTint is true, we do not want the default grey tint. tintList = null;
+        } else if (colorResId == 0) {
             // If there is no color assigned to the icon, use the default color.
             colorResId = R.color.default_icon_color_secondary_tint_list;
+            tintList = AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
+        } else {
+            // User the specific color requested.
+            tintList = AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
         }
-        ColorStateList tintList =
-                AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
 
         if (model.get(AppMenuItemProperties.ICON_SHOW_BADGE)) {
             // Draw the icon with a red badge on top.

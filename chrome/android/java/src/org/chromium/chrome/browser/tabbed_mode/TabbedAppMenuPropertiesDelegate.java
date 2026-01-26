@@ -1117,12 +1117,19 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private MVCListAdapter.ListItem buildDefaultBrowserPromoItem() {
         assert shouldShowDefaultBrowserPromo();
-        return new MVCListAdapter.ListItem(
-                AppMenuHandler.AppMenuItemType.STANDARD,
+        PropertyModel model =
                 buildModelForStandardMenuItem(
-                        R.id.default_browser_promo_menu_id,
-                        R.string.make_chrome_default,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_chrome : 0));
+                        R.id.default_browser_promo_menu_id, R.string.make_chrome_default, 0);
+
+        // Make the Chrome logo environment specific (Canary logo for Canary, etc.).
+        model.set(
+                AppMenuItemProperties.ICON,
+                AppCompatResources.getDrawable(mContext, R.mipmap.app_icon));
+
+        // Disable the grey default tint for this particular icon.
+        model.set(AppMenuItemProperties.ICON_NO_TINT, true);
+
+        return new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
     }
 
     private MVCListAdapter.@Nullable ListItem maybeBuildOpenGlicItem(@Nullable Tab currentTab) {

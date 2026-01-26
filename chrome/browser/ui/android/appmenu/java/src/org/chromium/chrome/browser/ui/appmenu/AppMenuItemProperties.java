@@ -74,6 +74,13 @@ public class AppMenuItemProperties {
     public static final WritableBooleanPropertyKey ICON_SHOW_BADGE =
             new WritableBooleanPropertyKey("ICON_SHOW_BADGE");
 
+    /**
+     * * Whether to skip the default icon tinting. Set to true for items that provide their own
+     * full-color icons (e.g. Browser Promo).
+     */
+    public static final WritableBooleanPropertyKey ICON_NO_TINT =
+            new WritableBooleanPropertyKey("ICON_NO_TINT");
+
     /** The the menu item's position in the menu. */
     static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey("POSITION");
 
@@ -141,6 +148,7 @@ public class AppMenuItemProperties {
                 HAS_HOVER_BACKGROUND,
                 KEY_LISTENER,
                 MENU_ICON_AT_START,
-                ADDITIONAL_ICONS
+                ADDITIONAL_ICONS,
+                ICON_NO_TINT
             };
 }
