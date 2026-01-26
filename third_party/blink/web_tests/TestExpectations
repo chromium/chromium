@@ -8438,7 +8438,6 @@ crbug.com/356930166 [ Mac15 ] external/wpt/webrtc-svc/RTCRtpParameters-scalabili
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc-svc/RTCRtpParameters-scalability-vp9.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/idlharness.https.window.html [ Skip Timeout ]
-crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/legacy/simplecall_callbacks.https.html [ Crash Timeout ]
 crbug.com/356930166 [ Mac14 ] external/wpt/webrtc/no-media-call.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/no-media-call.html [ Timeout ]
 crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/promises-call.html [ Timeout ]
@@ -8502,7 +8501,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc-svc/RTCRtpParameters-sca
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc-svc/RTCRtpParameters-scalability-vp9.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/idlharness.https.window.html [ Skip Timeout ]
-crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/legacy/simplecall_callbacks.https.html [ Crash Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/no-media-call.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/promises-call.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/protocol/additional-codecs.html [ Skip Timeout ]
@@ -9206,7 +9204,6 @@ crbug.com/378566920 [ Debug Mac14 ] external/wpt/speculation-rules/prefetch/no-v
 
 # Gardener 2024-11-13
 crbug.com/378566925 [ Mac ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-cover-img.html [ Failure Pass ]
-crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Failure Pass Timeout ]
 
 # Gardener 2024-11-18
 crbug.com/379516106 [ Debug Mac14 ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
