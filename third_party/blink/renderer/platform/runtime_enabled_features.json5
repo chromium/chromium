@@ -5327,7 +5327,7 @@
     },
     {
       name: "TextScaleMetaTag",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/431660829
