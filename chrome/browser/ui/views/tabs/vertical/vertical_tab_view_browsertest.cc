@@ -87,7 +87,7 @@ class NewTabTitleObserver : public TabStripModelObserver {
       TabCollectionNode* tab_node =
           root_node_->children()[1]->children()[content.index].get();
       VerticalTabView* tab_view =
-          views::AsViewClass<VerticalTabView>(tab_node->get_view_for_testing());
+          views::AsViewClass<VerticalTabView>(tab_node->view());
       views::Label* title = views::AsViewClass<views::Label>(
           tab_view->GetViewByElementId(kVerticalTabTitleElementId));
       views::PropertyChangedCallback callback =
