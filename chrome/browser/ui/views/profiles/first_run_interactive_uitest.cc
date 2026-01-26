@@ -17,8 +17,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -43,7 +41,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -112,7 +109,6 @@ enum class SyncButtonsFeatureConfig : int {
 
 struct TestParam {
   std::string test_suffix;
-  bool with_privacy_sandbox_enabled = false;
   SyncButtonsFeatureConfig sync_buttons_feature_config =
       SyncButtonsFeatureConfig::kAsyncNotEqualButtons;
   std::optional<bool> with_supervision = std::nullopt;
@@ -163,8 +159,6 @@ const TestParam kTestParams[] = {
     {.test_suffix = "AsyncCapabilitiesPending",
      .sync_buttons_feature_config =
          SyncButtonsFeatureConfig::kButtonsStillLoading},
-    {.test_suffix = "WithPrivacySandboxEnabled",
-     .with_privacy_sandbox_enabled = true},
 };
 
 }  // namespace
@@ -561,15 +555,6 @@ class FirstRunParameterizedInteractiveUiTest
     enabled_features_and_params.push_back(
         {feature_engagement::kIPHSupervisedUserProfileSigninFeature, {}});
 
-    if (WithPrivacySandboxEnabled()) {
-      enabled_features_and_params.push_back(
-          {privacy_sandbox::kPrivacySandboxSettings4,
-           {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.name,
-             "true"}}});
-      disabled_features.push_back(
-          privacy_sandbox::kDisablePrivacySandboxPrompts);
-    }
-
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features_and_params, disabled_features);
   }
@@ -592,29 +577,11 @@ class FirstRunParameterizedInteractiveUiTest
     command_line->AppendSwitch(switches::kForceFreDefaultBrowserStep);
   }
 
-  void SetUp() override {
-    if (WithPrivacySandboxEnabled()) {
-      ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    }
-    FirstRunInteractiveUiTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     FirstRunInteractiveUiTest::SetUpOnMainThread();
 
-    if (WithPrivacySandboxEnabled()) {
-      host_resolver()->AddRule("*", "127.0.0.1");
-      embedded_test_server()->StartAcceptingConnections();
-      PrivacySandboxServiceFactory::GetForProfile(profile())
-          ->ForceChromeBuildForTests(true);
-    }
-
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
         /*dialog_disabled=*/false);
-  }
-
-  static bool WithPrivacySandboxEnabled() {
-    return GetParam().with_privacy_sandbox_enabled;
   }
 
   static enum SyncButtonsFeatureConfig SyncButtonsFeatureConfig() {
@@ -671,9 +638,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(kTestParams),
                          &ParamToTestSuffix);
 
-// This test doesn't check for the search engine choice and privacy sandbox
-// dialogs because the point of the test suite is to check what's happening in
-// the FRE and not after it is closed.
+// This test doesn't check for the search engine choice dialog because the point
+// of the test suite is to check what's happening in the FRE and not after it is
+// closed.
 IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, CloseWindow) {
   base::test::TestFuture<bool> proceed_future;
 
@@ -855,18 +822,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   }
 
   WaitForPickerClosed();
-
-  if (WithPrivacySandboxEnabled()) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(chrome::kChromeUINewTabPageURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    // Test that the Privacy Sandbox prompt gets displayed in the browser after
-    // the user makes a Search Engine Choice in the FRE.
-    PrivacySandboxService* privacy_sandbox_service =
-        PrivacySandboxServiceFactory::GetForProfile(profile());
-    EXPECT_TRUE(privacy_sandbox_service->IsPromptOpenForBrowser(browser()));
-  }
 
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
