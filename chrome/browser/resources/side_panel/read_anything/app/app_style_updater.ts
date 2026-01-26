@@ -77,6 +77,14 @@ export class AppStyleUpdater {
     this.setStyle_('--max-width', `${chrome.readingMode.maxLineWidth}ch`);
   }
 
+  setPaddingForLineFocus(padding: number) {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+
+    this.setStyle_('--line-focus-padding', `${padding}px`);
+  }
+
   setLineFocusPos(y: number, height: number|null, container: HTMLElement) {
     const containerTop = container.offsetTop;
     const containerHeight = container.offsetHeight;

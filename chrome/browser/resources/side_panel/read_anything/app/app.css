@@ -131,6 +131,8 @@
   max-width: var(--max-width);
   overflow-wrap: break-word;
   padding-left: 20px;
+  padding-top: var(--line-focus-padding);
+  padding-bottom: var(--line-focus-padding);
   width: 100%; /* Wrap text to width even with horizontal scroll bar */
 }
 

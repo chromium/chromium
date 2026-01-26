@@ -642,13 +642,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
       if (this.lineFocusController_.isStatic()) {
         // Add padding so the top and bottom lines of the page can still be
         // focused even though line focus stays in the middle.
-        this.$.container.style.paddingTop = `${padding}px`;
-        this.$.container.style.paddingBottom = `${padding}px`;
+        this.styleUpdater_.setPaddingForLineFocus(padding);
         this.$.containerScroller.scrollBy({top: padding, behavior: 'instant'});
       } else {
         // Reset the padding and maintain the current scroll position.
-        this.$.container.style.paddingTop = '';
-        this.$.container.style.paddingBottom = '';
+        this.styleUpdater_.setPaddingForLineFocus(0);
         this.$.containerScroller.scrollBy({top: -padding, behavior: 'instant'});
       }
     }
@@ -663,6 +661,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private onTextLocationsChange_() {
     if (chrome.readingMode.isLineFocusEnabled) {
+      const padding = this.lineFocusController_.isStatic() ?
+          Math.floor(this.$.containerParent.clientHeight / 2) :
+          0;
+      this.styleUpdater_.setPaddingForLineFocus(padding);
       this.lineFocusController_.onTextLocationsChange(
           this.$.container, this.$.containerParent.clientHeight);
     }

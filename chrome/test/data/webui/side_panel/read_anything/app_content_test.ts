@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {AppElement, LanguageToastElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {BrowserProxy, ContentController, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -112,6 +112,28 @@ suite('AppContent', () => {
 
     assertEquals('10px', app.style.getPropertyValue('--line-focus-y'));
   });
+
+  test('new content updates padding for line focus', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+
+    app.updateContent();
+    await microtasksFinished();
+
+    assertNotEquals('', app.style.getPropertyValue('--line-focus-padding'));
+  });
+
+  test(
+      'new content does not update padding for line focus with flag disabled',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = false;
+        assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+
+        app.updateContent();
+        await microtasksFinished();
+
+        assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+      });
 
   test('line focus shortcut toggles line focus', async () => {
     chrome.readingMode.isLineFocusEnabled = true;

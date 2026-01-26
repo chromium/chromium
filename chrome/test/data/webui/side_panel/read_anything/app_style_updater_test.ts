@@ -49,6 +49,16 @@ suite('AppStyleUpdater', () => {
     assertEquals('40ch', app.style.getPropertyValue('--max-width'));
   });
 
+  test('setPaddingForLineFocus sets top and bottom padding', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const padding = 50;
+
+    updater.setPaddingForLineFocus(padding);
+
+    assertEquals(`${padding}px`, computeStyle('padding-top'));
+    assertEquals(`${padding}px`, computeStyle('padding-bottom'));
+  });
+
   test('line focus height depends on font scale', () => {
     chrome.readingMode.fontSize = 1;
     updater.setLineFocusHeight();
