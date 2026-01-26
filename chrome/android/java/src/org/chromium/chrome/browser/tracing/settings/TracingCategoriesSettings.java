@@ -136,8 +136,8 @@ public class TracingCategoriesSettings extends ChromeBaseSettingsFragment
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Any
-    // entries that need adding?
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(TracingCategoriesSettings.class.getName(), 0);
+            new ChromeBaseSearchIndexProvider(
+                    TracingCategoriesSettings.class.getName(),
+                    ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
 }
