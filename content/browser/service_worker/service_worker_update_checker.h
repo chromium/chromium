@@ -133,10 +133,14 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
   }
 
  private:
-  void CheckOneScript(const GURL& url, const int64_t resource_id);
-  void OnResourceIdAssignedForOneScriptCheck(const GURL& url,
-                                             const int64_t resource_id,
-                                             const int64_t new_resource_id);
+  void CheckOneScript(const GURL& url,
+                      const int64_t resource_id,
+                      const std::optional<const std::string>& sha256_checksum);
+  void OnResourceIdAssignedForOneScriptCheck(
+      const GURL& url,
+      const int64_t resource_id,
+      const std::optional<const std::string>& sha256_checksum,
+      const int64_t new_resource_id);
 
   const GURL main_script_url_;
   const int64_t main_script_resource_id_;

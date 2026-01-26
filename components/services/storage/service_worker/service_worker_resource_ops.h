@@ -9,7 +9,9 @@
 #include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/service_worker/service_worker_disk_cache.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/hash_value.h"
 
 namespace storage {
 
@@ -115,7 +117,8 @@ class ServiceWorkerResourceReaderImpl
       int64_t resource_id,
       base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
       mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver,
-      base::OnceClosure disconnect_handler);
+      base::OnceClosure disconnect_handler,
+      const std::optional<const net::SHA256HashValue>& sha256_checksum);
 
   ServiceWorkerResourceReaderImpl(const ServiceWorkerResourceReaderImpl&) =
       delete;
@@ -142,7 +145,7 @@ class ServiceWorkerResourceReaderImpl
 
   // Completes ReadData(). Called when `data_reader_` finished reading response
   // data.
-  void DidReadDataComplete();
+  void DidReadDataComplete(int status);
 
   DiskEntryOpener entry_opener_;
 
@@ -167,10 +170,14 @@ class ServiceWorkerResourceReaderImpl
   // compared with the stored checksum to verify the integrity of the
   // resource. The result of this comparison is recorded in the
   // "ServiceWorker.ResourceChecksumMatch" UMA metric.
-  std::optional<std::string> sha256_checksum_;
+  std::optional<net::SHA256HashValue> sha256_checksum_;
 
   // Helper for ReadData().
   std::unique_ptr<DataReader> data_reader_;
+
+  crypto::hash::Hasher hasher_{crypto::hash::HashKind::kSha256};
+  int64_t bytes_read_so_far_ = 0;
+  int64_t expected_total_size_ = 0;
 
 #if DCHECK_IS_ON()
   enum class State {

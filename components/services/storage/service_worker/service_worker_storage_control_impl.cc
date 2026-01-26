@@ -309,8 +309,10 @@ void ServiceWorkerStorageControlImpl::GetNewResourceId(
 
 void ServiceWorkerStorageControlImpl::CreateResourceReader(
     int64_t resource_id,
+    const std::optional<net::SHA256HashValue>& sha256_checksum,
     mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> reader) {
-  storage_->CreateResourceReader(resource_id, std::move(reader));
+  storage_->CreateResourceReader(resource_id, sha256_checksum,
+                                 std::move(reader));
 }
 
 void ServiceWorkerStorageControlImpl::CreateResourceWriter(

@@ -9,6 +9,7 @@ import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/hash_value.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
@@ -284,9 +285,14 @@ interface ServiceWorkerStorageControl {
   // is disabled.
   GetNewResourceId() => (int64 resource_id);
 
-  // Creates a resource reader for the given |resource_id|.
-  CreateResourceReader(int64 resource_id,
-                       pending_receiver<ServiceWorkerResourceReader> reader);
+  // Creates a resource reader for the given `resource_id`. If `sha256_checksum`
+  // is provided, it is used to verify the integrity of the resource data as it
+  // is read from the cache. The result of this verification is recorded in the
+  // ServiceWorker.ResourceChecksumMatch UMA metric.
+  CreateResourceReader(
+      int64 resource_id,
+      network.mojom.SHA256HashValue? sha256_checksum,
+      pending_receiver<ServiceWorkerResourceReader> reader);
   // Creates a resource writer for the given |resource_id|.
   CreateResourceWriter(int64 resource_id,
                        pending_receiver<ServiceWorkerResourceWriter> writer);

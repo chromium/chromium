@@ -709,6 +709,7 @@ void ServiceWorkerStorage::PerformStorageCleanup(base::OnceClosure callback) {
 
 void ServiceWorkerStorage::CreateResourceReader(
     int64_t resource_id,
+    const std::optional<net::SHA256HashValue>& sha256_checksum,
     mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver) {
   DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
   switch (state_) {
@@ -718,7 +719,7 @@ void ServiceWorkerStorage::CreateResourceReader(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::CreateResourceReader,
                                     weak_factory_.GetWeakPtr(), resource_id,
-                                    std::move(receiver)));
+                                    sha256_checksum, std::move(receiver)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
@@ -726,11 +727,16 @@ void ServiceWorkerStorage::CreateResourceReader(
 
   uint64_t resource_operation_id = GetNextResourceOperationId();
   DCHECK(!resource_readers_.contains(resource_operation_id));
+  std::optional<const net::SHA256HashValue> checksum_copy;
+  if (sha256_checksum) {
+    checksum_copy.emplace(*sha256_checksum);
+  }
   resource_readers_[resource_operation_id] =
       std::make_unique<ServiceWorkerResourceReaderImpl>(
           resource_id, disk_cache()->GetWeakPtr(), std::move(receiver),
           base::BindOnce(&ServiceWorkerStorage::OnResourceReaderDisconnected,
-                         weak_factory_.GetWeakPtr(), resource_operation_id));
+                         weak_factory_.GetWeakPtr(), resource_operation_id),
+          checksum_copy);
 }
 
 void ServiceWorkerStorage::CreateResourceWriter(
