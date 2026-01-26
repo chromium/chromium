@@ -27,6 +27,23 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
  */
 @NullMarked
 public class TabPersistentStoreFactory {
+    /** Data shared between stores. */
+    public static class SharedStoreData {
+        private boolean mWasStoreRazed;
+
+        /** Whether a store has razed its data during startup. */
+        public boolean wasStoreRazed() {
+            return mWasStoreRazed;
+        }
+
+        /** Called when a store has razed its data. */
+        public void onStoreRazed() {
+            mWasStoreRazed = true;
+        }
+    }
+
+    private static final SharedStoreData sSharedData = new SharedStoreData();
+
     /**
      * Builds an authoritative {@link TabPersistentStore}.
      *
@@ -166,6 +183,7 @@ public class TabPersistentStoreFactory {
 
         TabPersistentStore shadowTabPersistentStore =
                 new TabStateStore(
+                        sSharedData,
                         service,
                         selector,
                         windowTag,

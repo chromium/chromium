@@ -11,6 +11,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.CombinedTabRestorer.CombinedTabRestorerDelegate;
+import org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.SharedStoreData;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 public class TabStateStore implements TabPersistentStore {
     private static final String TAG = "TabStateStore";
 
+    private final SharedStoreData mSharedData;
     private final TabStateStorageService mTabStateStorageService;
     private final TabCreatorManager mTabCreatorManager;
     private final TabModelSelector mTabModelSelector;
@@ -111,6 +113,7 @@ public class TabStateStore implements TabPersistentStore {
             };
 
     /**
+     * @param sharedData Data shared between all instances of the TabStateStore.
      * @param tabStateStorageService The {@link TabStateStorageService} to save to.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes in. Regardless of the
      *     mode this store is in, this will be the real selector with real models. This should be
@@ -123,12 +126,14 @@ public class TabStateStore implements TabPersistentStore {
      *     possible to load/save off the record nodes.
      */
     public TabStateStore(
+            SharedStoreData sharedData,
             TabStateStorageService tabStateStorageService,
             TabModelSelector tabModelSelector,
             String windowTag,
             TabCreatorManager tabCreatorManager,
             TabPersistencePolicy tabPersistencePolicy,
             @Nullable CipherFactory cipherFactory) {
+        mSharedData = sharedData;
         mTabStateStorageService = tabStateStorageService;
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
@@ -469,7 +474,12 @@ public class TabStateStore implements TabPersistentStore {
             // Raze the db and rebuild from the loaded tab state to ensure we are in a known good
             // state. This is a no-op if we are the authoritative source as there shouldn't be a
             // delta and if there is we need a less blunt mechanism to reconcile the difference.
-            clearState();
+            if (!mSharedData.wasStoreRazed()) {
+                clearState();
+                mSharedData.onStoreRazed();
+            } else {
+                mTabStateStorageService.clearWindow(mWindowTag);
+            }
         }
     }
 }
