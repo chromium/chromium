@@ -30,7 +30,7 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_user_installed_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
@@ -226,10 +226,10 @@ WebAppPolicyManager& WebAppProvider::policy_manager() {
   return *web_app_policy_manager_;
 }
 
-IsolatedWebAppInstallationManager&
-WebAppProvider::isolated_web_app_installation_manager() {
+IsolatedWebAppDevInstallManager&
+WebAppProvider::isolated_web_app_dev_install_manager() {
   CheckIsConnected();
-  return *isolated_web_app_installation_manager_;
+  return *isolated_web_app_dev_install_manager_;
 }
 
 IsolatedWebAppUpdateManager& WebAppProvider::iwa_update_manager() {
@@ -390,8 +390,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   preinstalled_web_app_manager_ =
       std::make_unique<PreinstalledWebAppManager>(profile);
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
-  isolated_web_app_installation_manager_ =
-      std::make_unique<IsolatedWebAppInstallationManager>(*profile);
+  isolated_web_app_dev_install_manager_ =
+      std::make_unique<IsolatedWebAppDevInstallManager>(*profile);
   iwa_update_manager_ = std::make_unique<IsolatedWebAppUpdateManager>(*profile);
   isolated_web_app_policy_manager_ =
       std::make_unique<IsolatedWebAppPolicyManager>(profile);
@@ -455,7 +455,7 @@ void WebAppProvider::ConnectSubsystems() {
   os_integration_manager_->SetProvider(pass_key, *this);
   command_manager_->SetProvider(pass_key, *this);
   command_scheduler_->SetProvider(pass_key, *this);
-  isolated_web_app_installation_manager_->SetProvider(pass_key, *this);
+  isolated_web_app_dev_install_manager_->SetProvider(pass_key, *this);
   iwa_update_manager_->SetProvider(pass_key, *this);
   isolated_web_app_policy_manager_->SetProvider(pass_key, *this);
   isolated_web_app_user_installed_manager_->SetProvider(pass_key, *this);
@@ -506,7 +506,7 @@ void WebAppProvider::OnSyncBridgeReady() {
   preinstalled_web_app_manager_->Start(concurrent.CreateClosure());
   web_app_policy_manager_->Start(
       std::move(on_web_app_policy_manager_done_callback));
-  isolated_web_app_installation_manager_->Start();
+  isolated_web_app_dev_install_manager_->Start();
   iwa_update_manager_->Start();
   isolated_web_app_policy_manager_->Start(concurrent.CreateClosure());
   isolated_web_app_user_installed_manager_->Start();

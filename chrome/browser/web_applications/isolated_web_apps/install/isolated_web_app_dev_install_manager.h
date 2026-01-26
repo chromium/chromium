@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_INSTALLATION_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_INSTALLATION_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_DEV_INSTALL_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_DEV_INSTALL_MANAGER_H_
 
 #include <memory>
 #include <optional>
@@ -34,27 +34,26 @@ namespace web_app {
 class IsolatedWebAppUrlInfo;
 class WebAppProvider;
 
-// This class manages Installation related operations for Isolated Web App.
+// This class manages developer installation related operations for isolated web
+// apps.
 //
-// The `InstallFromCommandLine` method can be used to imperatively parse the
-// provided command line and install an IWA if specified.
-//
-// on `Start()`, `MaybeScheduleGarbageCollection()` will check pref values to
-// determine whether to schedule a `GarbageCollectStoragePartitionCommand`.
-//
-// On ChromeOS only, the command line will be parsed whenever a new manager is
-// started, which occurs on `Profile` initialization. This is done this way
-// because the browser does not go through the "normal" startup flow on
-// ChromeOS.
-class IsolatedWebAppInstallationManager {
+// This includes installations from:
+// * Dev proxy: IWA installations that are intended for rapid development with
+// which an IWA doesn't have to be bundled but can be hosted from a development
+// server.
+// * Command line: IWAs can be installed by providing a bundle as command line
+// parameter.
+// * Dev mode: IWAs can be manually installed from chrome://web-app-internals if
+// the developer mode is switched on.
+class IsolatedWebAppDevInstallManager {
  public:
   using MaybeInstallIsolatedWebAppCommandSuccess =
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>;
   using MaybeIwaInstallSource =
       base::expected<std::optional<IsolatedWebAppInstallSource>, std::string>;
 
-  explicit IsolatedWebAppInstallationManager(Profile& profile);
-  ~IsolatedWebAppInstallationManager();
+  explicit IsolatedWebAppDevInstallManager(Profile& profile);
+  ~IsolatedWebAppDevInstallManager();
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
 
@@ -129,11 +128,11 @@ class IsolatedWebAppInstallationManager {
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallationManagerTest,
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppDevInstallManagerTest,
                            NoInstallationWhenFeatureDisabled);
-  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallationManagerTest,
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppDevInstallManagerTest,
                            NoInstallationWhenDevModeFeatureDisabled);
-  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallationManagerTest,
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppDevInstallManagerTest,
                            NoInstallationWhenDevModePolicyDisabled);
 
   static IsolatedWebAppInstallSource CreateInstallSource(
@@ -219,10 +218,9 @@ class IsolatedWebAppInstallationManager {
   // Signals when `GarbageCollectStoragePartitionsCommand` completes.
   base::OneShotEvent on_garbage_collect_storage_partitions_done_for_testing_;
 
-  base::WeakPtrFactory<IsolatedWebAppInstallationManager> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<IsolatedWebAppDevInstallManager> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_INSTALLATION_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_WEB_APP_DEV_INSTALL_MANAGER_H_

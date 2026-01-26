@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
@@ -273,9 +273,9 @@ void IwaInternalsHandler::InstallIsolatedWebAppFromDevProxy(
     return;
   }
 
-  auto& manager = provider->isolated_web_app_installation_manager();
+  auto& manager = provider->isolated_web_app_dev_install_manager();
   manager.InstallIsolatedWebAppFromDevModeProxy(
-      url, IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      url, IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
       base::BindOnce(&IwaInternalsHandler::OnInstallIsolatedWebAppInDevMode,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -347,10 +347,10 @@ void IwaInternalsHandler::InstallIsolatedWebAppFromBundleUrl(
   }
 
   WebAppProvider::GetForWebApps(profile())
-      ->isolated_web_app_installation_manager()
+      ->isolated_web_app_dev_install_manager()
       .DownloadAndInstallIsolatedWebAppFromDevModeBundle(
           params->web_bundle_url,
-          IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+          IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
           base::BindOnce(&IwaInternalsHandler::
                              OnInstalledIsolatedWebAppInDevModeFromWebBundle,
                          weak_ptr_factory_.GetWeakPtr(),
@@ -386,9 +386,9 @@ void IwaInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
     return;
   }
 
-  auto& manager = provider->isolated_web_app_installation_manager();
+  auto& manager = provider->isolated_web_app_dev_install_manager();
   manager.InstallIsolatedWebAppFromDevModeBundle(
-      *path, IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      *path, IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
       base::BindOnce(&IwaInternalsHandler::OnInstallIsolatedWebAppInDevMode,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -425,7 +425,7 @@ void IwaInternalsHandler::OnIsolatedWebAppDevModeBundleSelectedForUpdate(
 
 void IwaInternalsHandler::OnInstallIsolatedWebAppInDevMode(
     base::OnceCallback<void(::mojom::InstallIsolatedWebAppResultPtr)> callback,
-    IsolatedWebAppInstallationManager::MaybeInstallIsolatedWebAppCommandSuccess
+    IsolatedWebAppDevInstallManager::MaybeInstallIsolatedWebAppCommandSuccess
         result) {
   std::move(callback).Run([&] {
     if (result.has_value()) {

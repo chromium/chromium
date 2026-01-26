@@ -37,7 +37,7 @@ class ExternallyManagedAppManager;
 class FakeWebAppProvider;
 class FileUtilsWrapper;
 class GeneratedIconFixManager;
-class IsolatedWebAppInstallationManager;
+class IsolatedWebAppDevInstallManager;
 class IsolatedWebAppPolicyManager;
 class IsolatedWebAppUpdateManager;
 class IsolatedWebAppUserInstalledManager;
@@ -176,9 +176,9 @@ class WebAppProvider : public KeyedService {
   // Clients can use WebAppPolicyManager to request updates of policy installed
   // Web Apps.
   WebAppPolicyManager& policy_manager();
-  // `IsolatedWebAppInstallationManager` is the entry point for Isolated Web App
+  // `IsolatedWebAppDevInstallManager` is the entry point for Isolated Web App
   // installation.
-  IsolatedWebAppInstallationManager& isolated_web_app_installation_manager();
+  IsolatedWebAppDevInstallManager& isolated_web_app_dev_install_manager();
   // Keeps Isolated Web Apps up to date by regularly checking for updates,
   // downloading them, and applying them.
   IsolatedWebAppUpdateManager& iwa_update_manager();
@@ -301,8 +301,8 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
-  std::unique_ptr<IsolatedWebAppInstallationManager>
-      isolated_web_app_installation_manager_;
+  std::unique_ptr<IsolatedWebAppDevInstallManager>
+      isolated_web_app_dev_install_manager_;
   std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager_;
   std::unique_ptr<IsolatedWebAppUserInstalledManager>
       isolated_web_app_user_installed_manager_;

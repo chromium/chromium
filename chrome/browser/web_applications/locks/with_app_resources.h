@@ -10,6 +10,7 @@
 namespace web_app {
 
 class ExtensionsManager;
+class IsolatedWebAppDevInstallManager;
 class OsIntegrationManager;
 class WebAppIconManager;
 class WebAppInstallFinalizer;
@@ -33,6 +34,8 @@ class WithAppResources {
 
   // Will CHECK-fail if accessed before the lock is granted.
   ExtensionsManager& extensions_manager();
+  // Will CHECK-fail if accessed before the lock is granted.
+  IsolatedWebAppDevInstallManager& isolated_web_app_dev_install_manager();
   // Will CHECK-fail if accessed before the lock is granted.
   WebAppRegistrar& registrar();
   // Will CHECK-fail if accessed before the lock is granted.

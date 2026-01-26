@@ -15,6 +15,13 @@ ExtensionsManager& WithAppResources::extensions_manager() {
   CHECK(lock_manager_);
   return lock_manager_->provider().extensions_manager();
 }
+
+IsolatedWebAppDevInstallManager&
+WithAppResources::isolated_web_app_dev_install_manager() {
+  CHECK(lock_manager_);
+  return lock_manager_->provider().isolated_web_app_dev_install_manager();
+}
+
 WebAppRegistrar& WithAppResources::registrar() {
   CHECK(lock_manager_);
   return lock_manager_->provider().registrar_unsafe();

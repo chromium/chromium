@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -348,7 +348,7 @@ void PWAHandler::InstallWebBundleFromUrl(
   }
   auto& installation_manager =
       web_app::WebAppProvider::GetForWebApps(GetProfile())
-          ->isolated_web_app_installation_manager();
+          ->isolated_web_app_dev_install_manager();
 
   if (web_bundle_url.SchemeIsFile()) {
     base::FilePath file_path;
@@ -361,7 +361,7 @@ void PWAHandler::InstallWebBundleFromUrl(
 
     installation_manager.InstallIsolatedWebAppFromDevModeBundle(
         file_path,
-        web_app::IsolatedWebAppInstallationManager::InstallSurface::
+        web_app::IsolatedWebAppDevInstallManager::InstallSurface::
             kDevToolsProtocol,
         base::BindOnce(&OnWebBundleInstalled, std::move(callback), manifest_url,
                        web_bundle_url),
@@ -371,7 +371,7 @@ void PWAHandler::InstallWebBundleFromUrl(
     if (expected_bundle_id->is_for_proxy_mode()) {
       installation_manager.InstallIsolatedWebAppFromDevModeProxy(
           web_bundle_url,
-          web_app::IsolatedWebAppInstallationManager::InstallSurface::
+          web_app::IsolatedWebAppDevInstallManager::InstallSurface::
               kDevToolsProtocol,
           base::BindOnce(&OnWebBundleInstalled, std::move(callback),
                          manifest_url, web_bundle_url),
@@ -379,7 +379,7 @@ void PWAHandler::InstallWebBundleFromUrl(
     } else {
       installation_manager.DownloadAndInstallIsolatedWebAppFromDevModeBundle(
           web_bundle_url,
-          web_app::IsolatedWebAppInstallationManager::InstallSurface::
+          web_app::IsolatedWebAppDevInstallManager::InstallSurface::
               kDevToolsProtocol,
           base::BindOnce(&OnWebBundleInstalled, std::move(callback),
                          manifest_url, web_bundle_url),

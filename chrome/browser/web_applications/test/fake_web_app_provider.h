@@ -29,7 +29,7 @@ namespace web_app {
 class AbstractWebAppDatabaseFactory;
 class ExternallyManagedAppManager;
 class FileUtilsWrapper;
-class IsolatedWebAppInstallationManager;
+class IsolatedWebAppDevInstallManager;
 class IsolatedWebAppUpdateManager;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
@@ -150,9 +150,9 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetWebAppUiManager(std::unique_ptr<WebAppUiManager> ui_manager);
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
-  void SetIsolatedWebAppInstallationManager(
-      std::unique_ptr<IsolatedWebAppInstallationManager>
-          isolated_web_app_installation_manager);
+  void SetIsolatedWebAppDevInstallManager(
+      std::unique_ptr<IsolatedWebAppDevInstallManager>
+          isolated_web_app_dev_install_manager);
   void SetIsolatedWebAppUpdateManager(
       std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager);
 #if BUILDFLAG(IS_CHROMEOS)

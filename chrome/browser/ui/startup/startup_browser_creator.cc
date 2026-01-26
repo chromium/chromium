@@ -140,7 +140,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1234,7 +1234,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     }
   }
 
-  if (web_app::IsolatedWebAppInstallationManager::HasIwaInstallSwitch(
+  if (web_app::IsolatedWebAppDevInstallManager::HasIwaInstallSwitch(
           command_line)) {
     if (profile_info.mode == StartupProfileMode::kProfilePicker) {
       auto* profile_manager = g_browser_process->profile_manager();
@@ -1249,8 +1249,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
                  << "').";
       return false;
     } else {
-      web_app::IsolatedWebAppInstallationManager::
-          MaybeInstallIwaFromCommandLine(command_line, *privacy_safe_profile);
+      web_app::IsolatedWebAppDevInstallManager::MaybeInstallIwaFromCommandLine(
+          command_line, *privacy_safe_profile);
     }
   }
 #endif  //  !BUILDFLAG(IS_CHROMEOS)

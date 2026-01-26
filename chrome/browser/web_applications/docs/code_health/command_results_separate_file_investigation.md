@@ -217,8 +217,8 @@ This solution is low-risk, as it is a straightforward code organization task tha
     *   `//chrome/browser/ui/webui/web_app_internals/iwa_internals_handler.cc`
     *   `//chrome/browser/web_applications/generated_icon_fix_manager.h`
     *   `//chrome/browser/web_applications/isolated_web_apps/browser_navigator_iwa_browsertest.cc`
-    *   `//chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.cc`
-    *   `//chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h`
+    *   `//chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.cc`
+    *   `//chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h`
     *   `//chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_prepare_apply_update_browsertest.cc`
     *   `//chrome/browser/web_applications/isolated_web_apps/isolated_web_app_uninstall_browsertest.cc`
     *   `//chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_manager.cc`
