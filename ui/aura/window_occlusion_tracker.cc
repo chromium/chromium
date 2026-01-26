@@ -25,7 +25,7 @@ namespace {
 
 // When one of these properties is animated, a window is considered non-occluded
 // and cannot occlude other windows.
-// TODO(crbug.com/40677173): Mark a window VISIBLE when COLOR animation starts.
+// The window is considered VISIBLE when COLOR animation starts.
 constexpr ui::LayerAnimationElement::AnimatableProperties
     kSkipWindowWhenPropertiesAnimated =
         ui::LayerAnimationElement::TRANSFORM |
