@@ -48,14 +48,14 @@ BASE_FEATURE(kAutofillReportFormSubmissionErrors,
 BASE_FEATURE(kAutofillStickyInfobarIos, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutofillThrottleDocumentFormScanIos,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Minimal period of time between the document form scanning batches.
 extern const base::FeatureParam<int> kAutofillDocumentFormScanPeriodMs = {
     &kAutofillThrottleDocumentFormScanIos,
     /*name=*/"period-ms", /*default_value=*/250};
 
 BASE_FEATURE(kAutofillThrottleDocumentFormScanForceFirstScanIos,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutofillThrottleFilteredDocumentFormScanIos,
              base::FEATURE_DISABLED_BY_DEFAULT);

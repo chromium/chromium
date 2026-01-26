@@ -36,7 +36,7 @@ BASE_FEATURE(kAutofillAcrossIframesIosThrottling,
 // a xframe form. Only effective when Autofill is enabled across iframes
 // (kAutofillAcrossIframesIos).
 BASE_FEATURE(kAutofillAcrossIframesIosTriggerFormExtraction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch: If enabled, `ChromeAutofillClient` may enter the actor mode,
 // changing how the UI, parsing and the server predictions work. For more

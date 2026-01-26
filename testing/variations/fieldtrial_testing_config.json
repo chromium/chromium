@@ -13359,24 +13359,6 @@
             ]
         }
     ],
-    "IOSAutofillAcrossIframesV2": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAcrossIframesIosThrottling",
-                        "AutofillAcrossIframesIosTriggerFormExtraction",
-                        "AutofillThrottleDocumentFormScanForceFirstScanIos",
-                        "AutofillThrottleDocumentFormScanIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillPaymentsSheetV3": [
         {
             "platforms": [
