@@ -57,6 +57,14 @@ void TabStripModelSelectionState::AddTabToSelection(TabInterface* tab) {
 void TabStripModelSelectionState::RemoveTabFromSelection(TabInterface* tab) {
   InvalidateListSelectionModel();
 
+  if (tab == active_tab_) {
+    active_tab_ = nullptr;
+  }
+
+  if (tab == anchor_tab_) {
+    anchor_tab_ = nullptr;
+  }
+
   selected_tabs_.erase(tab);
 }
 
