@@ -140,7 +140,7 @@ std::optional<ToggleState> GetPermissionsToggleState(
           content_settings::GeolocationContentSettingsType());
   bool is_geolocation_blocked_by_default =
       geolocation_info->delegate().IsBlocked(
-          content_settings_map.GetDefaultContentSetting(
+          content_settings_map.GetDefaultPermissionSetting(
               content_settings::GeolocationContentSettingsType(), &provider));
   // Note: Do not check that the ProviderType is `kSupervisedProvider`. This
   // is true only when the parent has disabled the "Permissions" FL switch.

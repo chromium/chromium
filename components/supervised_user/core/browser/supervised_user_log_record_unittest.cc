@@ -9,7 +9,10 @@
 #include <ostream>
 
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
+#include "build/buildflag.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -17,7 +20,10 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::Optional;
 
 namespace supervised_user {
 
@@ -191,6 +197,36 @@ TEST_F(SupervisedUserLogRecordTest, SupervisionEnabledByUser) {
       supervision_status.value(),
       SupervisedUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkUser);
 }
+
+#if !BUILDFLAG(IS_IOS)
+class SupervisedUserLogRecordWithApproximateGeolocationTest
+    : public base::test::WithFeatureOverride,
+      public SupervisedUserLogRecordTest {
+ public:
+  SupervisedUserLogRecordWithApproximateGeolocationTest()
+      : base::test::WithFeatureOverride(
+            content_settings::features::kApproximateGeolocationPermission) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    SupervisedUserLogRecordWithApproximateGeolocationTest);
+
+TEST_P(SupervisedUserLogRecordWithApproximateGeolocationTest,
+       SupervisionEnabledByUser) {
+  CreateSupervisedUser(/*is_subject_to_parental_controls=*/true,
+                       /*is_opted_in_to_parental_supervision=*/true);
+
+  std::unique_ptr<SupervisedUserLogRecord> record =
+      CreateSupervisedUserLogRecord();
+  std::optional<SupervisedUserLogRecord::Segment> supervision_status =
+      record->GetSupervisionStatusForPrimaryAccount();
+  EXPECT_THAT(supervision_status,
+              Optional(SupervisedUserLogRecord::Segment::
+                           kSupervisionEnabledByFamilyLinkUser));
+  EXPECT_THAT(record->GetPermissionsToggleStateForPrimaryAccount(),
+              Optional(ToggleState::kEnabled));
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SupervisedUserLogRecordTest, SupervisionEnabledByPolicy) {
   CreateSupervisedUser(/*is_subject_to_parental_controls=*/true,
