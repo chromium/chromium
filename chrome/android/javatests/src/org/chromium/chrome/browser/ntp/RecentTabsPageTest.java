@@ -119,7 +119,7 @@ public class RecentTabsPageTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(9)
+                    .setRevision(10)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
                     .build();
 
@@ -177,6 +177,37 @@ public class RecentTabsPageTest {
                 view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
         assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
         waitForViewToDisappear(title);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage"})
+    public void testRecentlyClosedTabs_specialUrls() throws ExecutionException {
+        mPage = loadRecentTabsPage();
+
+        final RecentlyClosedTab aboutTab =
+                new RecentlyClosedTab(0, 0, "About", new GURL("about:blank"), null);
+        final RecentlyClosedTab chromeTab =
+                new RecentlyClosedTab(1, 0, "Chrome", new GURL("chrome://version"), null);
+        final RecentlyClosedTab chromeNativeTab =
+                new RecentlyClosedTab(
+                        2, 0, "Chrome-Native", new GURL("chrome-native://newtab"), null);
+
+        setRecentlyClosedEntries(Arrays.asList(aboutTab, chromeTab, chromeNativeTab));
+        assertEquals(3, mManager.getRecentlyClosedEntries(3).size());
+
+        // For special URLs, the domain part should show the full URL spec.
+        View aboutDomainView = waitForView("about:blank");
+        assertThat(aboutDomainView, instanceOf(TextView.class));
+        assertEquals(View.VISIBLE, aboutDomainView.getVisibility());
+
+        View chromeDomainView = waitForView("chrome://version");
+        assertThat(chromeDomainView, instanceOf(TextView.class));
+        assertEquals(View.VISIBLE, chromeDomainView.getVisibility());
+
+        View chromeNativeDomainView = waitForView("chrome-native://newtab");
+        assertThat(chromeNativeDomainView, instanceOf(TextView.class));
+        assertEquals(View.VISIBLE, chromeNativeDomainView.getVisibility());
     }
 
     @Test
@@ -535,7 +566,7 @@ public class RecentTabsPageTest {
 
         final String eventDescriptionString1 = "google.com and " + (tabCount - 1) + " other tabs";
         final String eventDescriptionString2 =
-                activeTabTitle2 + " and " + (tabCount - 1) + " other tabs";
+                activeTabUrl2 + " and " + (tabCount - 1) + " other tabs";
         waitForView(title1);
         waitForView(eventDescriptionString1);
         waitForView(title2);
