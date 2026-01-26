@@ -11,6 +11,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/user_education/webui/whats_new_registry.h"
@@ -298,4 +299,35 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherMultipleCustomizationsBrowserTest,
   EXPECT_EQ(
       expected,
       whats_new::GetServerURLForRender(*GetRegistry()).possibly_invalid_spec());
+}
+
+class WhatsNewFetcherStagingBrowserTest : public WhatsNewFetcherBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Apply staging environment override.
+    command_line->AppendSwitch(::switches::kWhatsNewUseStaging);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WhatsNewFetcherStagingBrowserTest,
+                       GetServerURLForRenderNoFeatures) {
+  std::string expected = base::StringPrintf(
+      "https://chrome-staging.corp.google.com/chrome/whats-new/"
+      "?version=%d&internal=true",
+      CHROME_VERSION_MAJOR);
+
+  EXPECT_EQ(
+      expected,
+      whats_new::GetServerURLForRender(*GetRegistry()).possibly_invalid_spec());
+}
+
+IN_PROC_BROWSER_TEST_F(WhatsNewFetcherStagingBrowserTest,
+                       GetServerStagingURLForRenderNoFeatures) {
+  std::string expected = base::StringPrintf(
+      "https://chrome-staging.corp.google.com/chrome/whats-new/"
+      "?version=%d&internal=true",
+      CHROME_VERSION_MAJOR);
+
+  EXPECT_EQ(expected, whats_new::GetServerURLForRender(*GetRegistry(), true)
+                          .possibly_invalid_spec());
 }

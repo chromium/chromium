@@ -193,3 +193,13 @@ user-education-whats-new-internals-card {
     width: auto;
   }
 }
+
+.note {
+  font-weight: bold;
+  padding: 4px 0px;
+}
+
+.inline-code {
+  font-weight: normal;
+  font-family: monospace;
+}

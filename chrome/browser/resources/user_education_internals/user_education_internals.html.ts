@@ -141,6 +141,19 @@ export function getHtml(this: UserEducationInternalsElement) {
             <cr-button @click="${this.launchWhatsNewStaging_}">
               Launch staging
             </cr-button>
+            <div class="note">
+              <p>
+                Note: This button will only request the staging page once.
+                Closing the tab or opening another What's New page may request
+                from the production environment again.
+              </p>
+              <p>
+                Consider using the
+                <span class="inline-code">--whats-new-use-staging</span>
+                command-line switch instead. This switch will force the staging
+                environment for the duration of the browser session.
+              </p>
+            </div>
           </div>
         </if>
         ${this.whatsNewModules_.length > 0 ? html`

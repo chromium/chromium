@@ -112,4 +112,9 @@ GURL GetWebUIStartupURL() {
 #endif
 }
 
+bool UseStagingOverrideEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kWhatsNewUseStaging);
+}
+
 }  // namespace whats_new

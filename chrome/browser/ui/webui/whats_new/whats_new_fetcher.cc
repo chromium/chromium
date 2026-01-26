@@ -67,9 +67,11 @@ GURL GetServerRefreshURL(bool is_staging) {
 }
 
 GURL GetServerURL(bool is_staging) {
+  const bool use_staging = is_staging || UseStagingOverrideEnabled();
+
   return base::FeatureList::IsEnabled(features::kWhatsNewDesktopRefresh)
-             ? GetServerRefreshURL(is_staging)
-             : GetServerLegacyURL(is_staging);
+             ? GetServerRefreshURL(use_staging)
+             : GetServerLegacyURL(use_staging);
 }
 
 GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,
