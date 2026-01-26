@@ -74,8 +74,7 @@ namespace {
 // The reserved identifier ranges for autofill server experiments.
 constexpr std::pair<int, int> kAutofillExperimentRanges[] = {
     {3312923, 3312930}, {3314208, 3314209}, {3314711, 3314712},
-    {3314445, 3314448}, {3314854, 3314883},
-};
+    {3314445, 3314448}, {3314854, 3314883}, {3396826, 3396925}};
 
 constexpr size_t kAutofillCrowdsourcingManagerMaxFormCacheSize = 16;
 constexpr size_t kMaxFieldsPerQueryRequest = 100;
