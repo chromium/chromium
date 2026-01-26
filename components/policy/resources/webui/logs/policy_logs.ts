@@ -11,7 +11,6 @@ import '/strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {Log, VersionInfo} from './types.js';
@@ -52,9 +51,22 @@ function displayList() {
       hour12: false,
     });
 
-    // `log.message` is already escaped on the C++ side with EscapeForHTML().
-    logMessage.innerHTML = sanitizeInnerHtml(
-        `[${timestamp}:${log.logSeverity}:${log.fileAndLine}] ${log.message}`);
+    // Create a line that looks like:
+    //   [2026-01-01, 12:34:56 UTC:ERROR:file.cc:123] message
+    // where "file.cc:123" is a link to Chromium codesearch.
+
+    logMessage.appendChild(
+        document.createTextNode(`[${timestamp}:${log.logSeverity}:`));
+
+    const anchor = document.createElement('a');
+    anchor.href = log.location;
+    anchor.setAttribute('target', '_blank');
+    anchor.textContent = log.fileAndLine;
+    logMessage.appendChild(anchor);
+
+    // createTextNode() escapes the HTML for us.
+    logMessage.appendChild(document.createTextNode(`] ${log.message}`));
+
     logMessageContainer.appendChild(logMessage);
   });
 }
