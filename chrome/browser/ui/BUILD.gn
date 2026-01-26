@@ -802,8 +802,6 @@ static_library("ui") {
       "android/autofill/autofill_cvc_save_message_delegate.h",
       "android/autofill/autofill_error_dialog_view_android.cc",
       "android/autofill/autofill_error_dialog_view_android.h",
-      "android/autofill/autofill_fallback_surface_launcher.cc",
-      "android/autofill/autofill_fallback_surface_launcher.h",
       "android/autofill/autofill_keyboard_accessory_view_impl.cc",
       "android/autofill/autofill_keyboard_accessory_view_impl.h",
       "android/autofill/autofill_progress_dialog_view_android.cc",

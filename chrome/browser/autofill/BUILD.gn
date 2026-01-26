@@ -96,6 +96,8 @@ static_library("autofill") {
       "android/autofill_ai_save_update_entity_prompt_controller.cc",
       "android/autofill_ai_save_update_entity_prompt_controller.h",
       "android/autofill_ai_save_update_entity_prompt_view.h",
+      "android/autofill_fallback_surface_launcher.cc",
+      "android/autofill_fallback_surface_launcher.h",
       "android/autofill_image_fetcher_impl.cc",
       "android/autofill_image_fetcher_impl.h",
       "android/autofill_profile_bridge.cc",
@@ -134,8 +136,10 @@ static_library("autofill") {
       "//components/messages/android:feature_flags",
       "//components/one_time_tokens/android/backend/sms:backend",
       "//components/password_manager/core/browser",
+      "//components/plus_addresses/core/common:features",
       "//third_party/jni_zero",
       "//third_party/libaddressinput",
+      "//ui/android",
 
       # TODO(crbug.com/352191610): Use //chrome/browser instead after fixing cyclic
       # dependency.
