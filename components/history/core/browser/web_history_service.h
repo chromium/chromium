@@ -173,6 +173,17 @@ class WebHistoryService : public KeyedService {
           partial_traffic_annotation);
 
  protected:
+  // LINT.IfChange(WebHistoryRequestOutcome)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class RequestOutcome {
+    kSuccess = 0,
+    kInvalidResponse = 1,
+    kFailure = 2,
+    kMaxValue = kFailure
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/history/enums.xml:WebHistoryRequestOutcome)
+
   // Virtual for testing.
   virtual std::unique_ptr<Request> CreateRequest(
       const GURL& url,
@@ -192,6 +203,10 @@ class WebHistoryService : public KeyedService {
       WebHistoryService::QueryWebHistoryCallback callback,
       WebHistoryService::Request* request,
       bool success);
+  static RequestOutcome QueryHistoryCompletionCallbackImpl(
+      WebHistoryService::QueryWebHistoryCallback callback,
+      WebHistoryService::Request* request,
+      bool success);
 
   // Called by `request` when a request to delete history from the server has
   // completed. Unpacks the response and calls `callback`, which is the original
@@ -200,11 +215,19 @@ class WebHistoryService : public KeyedService {
       WebHistoryService::ExpireWebHistoryCallback callback,
       WebHistoryService::Request* request,
       bool success);
+  RequestOutcome ExpireHistoryCompletionCallbackImpl(
+      WebHistoryService::ExpireWebHistoryCallback callback,
+      WebHistoryService::Request* request,
+      bool success);
 
   // Called by `request` when a web and app activity query has completed.
   // Unpacks the response and calls `callback`, which is the original callback
   // that was passed to QueryWebAndAppActivity().
   void QueryWebAndAppActivityCompletionCallback(
+      WebHistoryService::QueryWebAndAppActivityCallback callback,
+      WebHistoryService::Request* request,
+      bool success);
+  RequestOutcome QueryWebAndAppActivityCompletionCallbackImpl(
       WebHistoryService::QueryWebAndAppActivityCallback callback,
       WebHistoryService::Request* request,
       bool success);

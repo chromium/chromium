@@ -16,6 +16,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -794,21 +795,45 @@ void WebHistoryService::QueryHistoryCompletionCallback(
     WebHistoryService::QueryWebHistoryCallback callback,
     WebHistoryService::Request* request,
     bool success) {
+  RequestOutcome outcome =
+      QueryHistoryCompletionCallbackImpl(std::move(callback), request, success);
+  base::UmaHistogramEnumeration("History.WebHistoryRequestOutcome.QueryHistory",
+                                outcome);
+}
+
+// static
+WebHistoryService::RequestOutcome
+WebHistoryService::QueryHistoryCompletionCallbackImpl(
+    WebHistoryService::QueryWebHistoryCallback callback,
+    WebHistoryService::Request* request,
+    bool success) {
   if (!success) {
     std::move(callback).Run(request, std::nullopt);
-    return;
+    return RequestOutcome::kFailure;
   }
 
   std::optional<base::DictValue> response = ReadResponse(*request);
   if (!response) {
     std::move(callback).Run(request, std::nullopt);
-    return;
+    return RequestOutcome::kInvalidResponse;
   }
 
   std::move(callback).Run(request, ParseQueryResponse(*response));
+  return RequestOutcome::kSuccess;
 }
 
 void WebHistoryService::ExpireHistoryCompletionCallback(
+    WebHistoryService::ExpireWebHistoryCallback callback,
+    WebHistoryService::Request* request,
+    bool success) {
+  RequestOutcome outcome = ExpireHistoryCompletionCallbackImpl(
+      std::move(callback), request, success);
+  base::UmaHistogramEnumeration(
+      "History.WebHistoryRequestOutcome.ExpireHistory", outcome);
+}
+
+WebHistoryService::RequestOutcome
+WebHistoryService::ExpireHistoryCompletionCallbackImpl(
     WebHistoryService::ExpireWebHistoryCallback callback,
     WebHistoryService::Request* request,
     bool success) {
@@ -818,13 +843,13 @@ void WebHistoryService::ExpireHistoryCompletionCallback(
 
   if (!success) {
     std::move(callback).Run(/*success=*/false);
-    return;
+    return RequestOutcome::kFailure;
   }
 
   std::optional<base::DictValue> response = ReadResponse(*request);
   if (!response) {
     std::move(callback).Run(/*success=*/false);
-    return;
+    return RequestOutcome::kInvalidResponse;
   }
 
   if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
@@ -841,9 +866,21 @@ void WebHistoryService::ExpireHistoryCompletionCallback(
     observer.OnWebHistoryDeleted();
   }
   std::move(callback).Run(/*success=*/true);
+  return RequestOutcome::kSuccess;
 }
 
 void WebHistoryService::QueryWebAndAppActivityCompletionCallback(
+    WebHistoryService::QueryWebAndAppActivityCallback callback,
+    WebHistoryService::Request* request,
+    bool success) {
+  RequestOutcome outcome = QueryWebAndAppActivityCompletionCallbackImpl(
+      std::move(callback), request, success);
+  base::UmaHistogramEnumeration(
+      "History.WebHistoryRequestOutcome.QueryWebAndAppActivity", outcome);
+}
+
+WebHistoryService::RequestOutcome
+WebHistoryService::QueryWebAndAppActivityCompletionCallbackImpl(
     WebHistoryService::QueryWebAndAppActivityCallback callback,
     WebHistoryService::Request* request,
     bool success) {
@@ -853,7 +890,7 @@ void WebHistoryService::QueryWebAndAppActivityCompletionCallback(
 
   if (!success) {
     std::move(callback).Run(/*web_and_app_activity_enabled=*/false);
-    return;
+    return RequestOutcome::kFailure;
   }
 
   if (std::optional<base::DictValue> response = ReadResponse(*request)) {
@@ -867,7 +904,7 @@ void WebHistoryService::QueryWebAndAppActivityCompletionCallback(
                     setting_dict->FindBool("dataRecordingEnabled")) {
               std::move(callback).Run(
                   /*web_and_app_activity_enabled=*/*enabled);
-              return;
+              return RequestOutcome::kSuccess;
             }
           }
         }
@@ -877,12 +914,13 @@ void WebHistoryService::QueryWebAndAppActivityCompletionCallback(
               response->FindBool("history_recording_enabled")) {
         std::move(callback).Run(
             /*web_and_app_activity_enabled=*/*enabled);
-        return;
+        return RequestOutcome::kSuccess;
       }
     }
   }
 
   std::move(callback).Run(/*web_and_app_activity_enabled=*/false);
+  return RequestOutcome::kFailure;
 }
 
 void WebHistoryService::QueryOtherFormsOfBrowsingHistoryCompletionCallback(
