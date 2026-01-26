@@ -142,7 +142,8 @@
       SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT;
   _identityChooserCoordinator = [[IdentityChooserCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
+                         browser:self.browser
+                 defaultIdentity:nil];
   _identityChooserCoordinator.delegate = self;
   [_identityChooserCoordinator start];
 }
@@ -192,13 +193,6 @@
 
 #pragma mark - IdentityChooserCoordinatorDelegate
 
-- (void)identityChooserCoordinatorDidClose:
-    (IdentityChooserCoordinator*)coordinator {
-  // `_identityChooserCoordinator.delegate` was set to nil before calling this
-  // method since `identityChooserCoordinatorDidTapOnAddAccount:` or
-  // `identityChooserCoordinator:didSelectIdentity:` have been called before.
-  NOTREACHED() << base::SysNSStringToUTF8([self description]);
-}
 
 - (void)identityChooserCoordinatorDidTapOnAddAccount:
     (IdentityChooserCoordinator*)coordinator {
@@ -210,7 +204,7 @@
 }
 
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(id<SystemIdentity>)identity {
+      didCloseWithSelectedIdentity:(id<SystemIdentity>)identity {
   CHECK_EQ(coordinator, _identityChooserCoordinator)
       << base::SysNSStringToUTF8([self description]);
   _identityChooserCoordinator.delegate = nil;

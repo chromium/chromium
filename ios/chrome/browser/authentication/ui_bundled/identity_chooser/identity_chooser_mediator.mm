@@ -31,20 +31,19 @@
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Identity manager to retrieve Chrome identities.
   raw_ptr<signin::IdentityManager> _identityManager;
+  id<SystemIdentity> _defaultIdentity;
 }
 
-@synthesize consumer = _consumer;
-@synthesize selectedIdentity = _selectedIdentity;
-
-- (instancetype)initWithIdentityManager:
-                    (signin::IdentityManager*)identityManager
-                  accountManagerService:
-                      (ChromeAccountManagerService*)accountManagerService {
+- (instancetype)
+    initWithIdentityManager:(signin::IdentityManager*)identityManager
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
+            defaultIdentity:(id<SystemIdentity>)defaultIdentity {
   if ((self = [super init])) {
     CHECK(identityManager);
     CHECK(accountManagerService);
     _identityManager = identityManager;
     _accountManagerService = accountManagerService;
+    _defaultIdentity = defaultIdentity;
   }
   return self;
 }
@@ -67,37 +66,12 @@
   _identityManager = nullptr;
 }
 
-- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
-  if ([_selectedIdentity isEqual:selectedIdentity]) {
-    return;
-  }
-  TableViewIdentityItem* previousSelectedItem =
-      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaId];
-  if (previousSelectedItem) {
-    previousSelectedItem.selected = NO;
-    [self.consumer itemHasChanged:previousSelectedItem];
-  }
-  _selectedIdentity = selectedIdentity;
-  if (!_selectedIdentity) {
-    return;
-  }
-  TableViewIdentityItem* selectedItem =
-      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaId];
-  DCHECK(selectedItem);
-  selectedItem.selected = YES;
-  [self.consumer itemHasChanged:selectedItem];
-}
-
-- (void)selectIdentityWithGaiaID:(const GaiaId&)gaiaID {
-  self.selectedIdentity =
-      _accountManagerService->GetIdentityOnDeviceWithGaiaID(gaiaID);
-}
 
 #pragma mark - Private
 
-- (bool)selectedIdentityIsValid {
-  if (self.selectedIdentity) {
-    GaiaId gaia(self.selectedIdentity.gaiaId);
+- (bool)defaultIdentityIsValid {
+  if (_defaultIdentity) {
+    GaiaId gaia(_defaultIdentity.gaiaId);
     return std::ranges::contains(
         _identityManager->GetAccountsOnDevice(), gaia,
         [](const AccountInfo& info) { return info.gaia; });
@@ -134,7 +108,7 @@
   item.gaiaID = identity.gaiaId;
   item.name = identity.userFullName;
   item.email = identity.userEmail;
-  item.selected = self.selectedIdentity.gaiaId == identity.gaiaId;
+  item.selected = _defaultIdentity.gaiaId == identity.gaiaId;
   item.avatar =
       GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           identity, IdentityAvatarSize::Regular);
@@ -173,11 +147,10 @@
   }
 
   [self loadIdentitySection];
-  // Update the selection, in case no identity was chosen yet, or the currently
-  // selected identity has become unavailable (probably removed from the
-  // device).
-  if (![self selectedIdentityIsValid]) {
-    self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
+  // Update the selection, in case no identity was chosen yet, or the default
+  // identity has become unavailable (probably removed from the device).
+  if (![self defaultIdentityIsValid]) {
+    _defaultIdentity = signin::GetDefaultIdentityOnDevice(
         _identityManager, _accountManagerService);
   }
 }

@@ -13,21 +13,16 @@
 // Delegate protocol for IdentityChooserCoordinator.
 @protocol IdentityChooserCoordinatorDelegate <NSObject>
 
-// Called when the view controller is closed.
-- (void)identityChooserCoordinatorDidClose:
-    (IdentityChooserCoordinator*)coordinator;
-
 // Called when the user taps on "Add Account…" button. The view controller is
-// already dismissed when this call is made. This call is followed by
-// `-identityChooserCoordinatorDidClose:`.
+// already dismissed when this call is made.
 - (void)identityChooserCoordinatorDidTapOnAddAccount:
     (IdentityChooserCoordinator*)coordinator;
 
 // Called when the user selects an identity. The view controller is
-// already dismissed when this call is made. This call is followed by
-// `-identityChooserCoordinatorDidClose:`.
+// already dismissed when this call is made. The identity may be nil in case of
+// race condition.
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(id<SystemIdentity>)identity;
+      didCloseWithSelectedIdentity:(id<SystemIdentity>)identity;
 
 @end
 

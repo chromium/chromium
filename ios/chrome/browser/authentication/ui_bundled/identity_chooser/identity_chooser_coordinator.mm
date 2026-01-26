@@ -18,26 +18,10 @@
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-
-namespace {
-
-// Coordinator states.
-typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
-  // Initiale state.
-  IdentityChooserCoordinatorStateNotStarted = 0,
-  // State when the view controller is displayed.
-  IdentityChooserCoordinatorStateStarted,
-  // State when the view is closed by tapping on "Add Account…" button.
-  IdentityChooserCoordinatorStateClosedByAddingAccount,
-  // State when the view is closed by selecting an identity.
-  IdentityChooserCoordinatorStateClosedBySelectingIdentity,
-  // State when the view is dismissed by tapping outside of the view.
-  IdentityChooserCoordinatorStateClosedByDismiss,
-};
-
-}  // namespace
+#import "ios/chrome/browser/signin/model/system_identity.h"
 
 @interface IdentityChooserCoordinator () <
     IdentityChooserViewControllerPresentationDelegate>
@@ -47,28 +31,31 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
 // View controller.
 @property(nonatomic, strong)
     IdentityChooserViewController* identityChooserViewController;
-// Coordinator state.
-@property(nonatomic, assign) IdentityChooserCoordinatorState state;
 // Transition delegate for the view controller presentation.
 @property(nonatomic, strong)
     IdentityChooserTransitionDelegate* transitionController;
 
 @end
 
-@implementation IdentityChooserCoordinator
+@implementation IdentityChooserCoordinator {
+  id<SystemIdentity> _defaultIdentity;
+}
 
-@synthesize delegate = _delegate;
-@synthesize origin = _origin;
-@synthesize identityChooserMediator = _identityChooserMediator;
-@synthesize identityChooserViewController = _identityChooserViewController;
-@synthesize state = _state;
-@synthesize transitionController = _transitionController;
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                           defaultIdentity:(id<SystemIdentity>)defaultIdentity {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _defaultIdentity = defaultIdentity;
+  }
+  return self;
+}
+
+#pragma mark - ChromeCoordinator
 
 - (void)start {
   [super start];
   base::RecordAction(base::UserMetricsAction("Signin_AccountPicker_Open"));
-  DCHECK_EQ(IdentityChooserCoordinatorStateNotStarted, self.state);
-  self.state = IdentityChooserCoordinatorStateStarted;
   // Creates the controller.
   self.identityChooserViewController = [[IdentityChooserViewController alloc]
       initWithStyle:UITableViewStylePlain];
@@ -87,7 +74,8 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   self.identityChooserMediator = [[IdentityChooserMediator alloc]
       initWithIdentityManager:identityManager
-        accountManagerService:accountManagerService];
+        accountManagerService:accountManagerService
+              defaultIdentity:_defaultIdentity];
 
   self.identityChooserMediator.consumer = self.identityChooserViewController;
   // Setups.
@@ -108,17 +96,8 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   self.identityChooserViewController = nil;
   base::RecordAction(base::UserMetricsAction("Signin_AccountPicker_Close"));
   [self.identityChooserMediator disconnect];
+  self.identityChooserMediator.consumer = nil;
   self.identityChooserMediator = nil;
-}
-
-#pragma mark - Setters/Getters
-
-- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
-  self.identityChooserMediator.selectedIdentity = selectedIdentity;
-}
-
-- (id<SystemIdentity>)selectedIdentity {
-  return self.identityChooserMediator.selectedIdentity;
 }
 
 #pragma mark - IdentityChooserViewControllerPresentationDelegate
@@ -126,62 +105,59 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
 - (void)identityChooserViewControllerDidDisappear:
     (IdentityChooserViewController*)viewController {
   DCHECK_EQ(self.identityChooserViewController, viewController);
-  switch (self.state) {
-    case IdentityChooserCoordinatorStateNotStarted:
-    case IdentityChooserCoordinatorStateClosedByDismiss:
-      NOTREACHED();
-    case IdentityChooserCoordinatorStateStarted:
-      // Dismissing the identity chooser dialog should be the same as accepting
-      // the identity selected by default.
-      [self.delegate identityChooserCoordinator:self
-                              didSelectIdentity:self.selectedIdentity];
-      self.state = IdentityChooserCoordinatorStateClosedByDismiss;
-      break;
-    case IdentityChooserCoordinatorStateClosedByAddingAccount:
-      [self.delegate identityChooserCoordinatorDidTapOnAddAccount:self];
-      break;
-    case IdentityChooserCoordinatorStateClosedBySelectingIdentity:
-      [self.delegate identityChooserCoordinator:self
-                              didSelectIdentity:self.selectedIdentity];
-      break;
-  }
-  self.identityChooserViewController.presentationDelegate = nil;
-  self.identityChooserViewController = nil;
-  [self.delegate identityChooserCoordinatorDidClose:self];
+  // The view being dismissed is similar to selecting the default account.
+  // This method is not called if a button was tapped first.
+  GaiaId gaiaId = _defaultIdentity.gaiaId;
+  __weak __typeof(self) weakSelf = self;
+  [self closeViewControllerWithCompletion:^{
+    [weakSelf selectGaiaID:gaiaId];
+  }];
 }
 
 - (void)identityChooserViewControllerDidTapOnAddAccount:
     (IdentityChooserViewController*)viewController {
   DCHECK_EQ(self.identityChooserViewController, viewController);
-  DCHECK_EQ(IdentityChooserCoordinatorStateStarted, self.state);
-  self.state = IdentityChooserCoordinatorStateClosedByAddingAccount;
-  [self.identityChooserViewController dismissViewControllerAnimated:YES
-                                                         completion:nil];
-  // Note that, even if the user tapped on "add account", we do not display the
-  // add account view here. Instead, it’ll be displayed asynchronously once the
-  // identity chooser disappeared. The implementation is in
-  // `-identityChooserViewControllerDidDisappear:`.
+  __weak __typeof(self) weakSelf = self;
+  [self closeViewControllerWithCompletion:^{
+    [weakSelf addAccount];
+  }];
 }
 
 - (void)identityChooserViewController:
             (IdentityChooserViewController*)viewController
-          didSelectIdentityWithGaiaID:(const GaiaId&)gaiaID {
+          didSelectIdentityWithGaiaID:(const GaiaId&)gaiaId {
   DCHECK_EQ(self.identityChooserViewController, viewController);
-  DCHECK_EQ(IdentityChooserCoordinatorStateStarted, self.state);
-  [self.identityChooserMediator selectIdentityWithGaiaID:gaiaID];
-  // If the account refresh token is invalidated during this
-  // operation then `identity` will be nil.
-  if (self.selectedIdentity) {
-    self.state = IdentityChooserCoordinatorStateClosedBySelectingIdentity;
-  }
+  // Variable used keep the gaia id alive until the completion is called.
+  const GaiaId selectedGaiaID = gaiaId;
+  __weak __typeof(self) weakSelf = self;
+  // Copy the id in order to capture it in the block.
+  [self closeViewControllerWithCompletion:^{
+    [weakSelf selectGaiaID:selectedGaiaID];
+  }];
+}
+
+#pragma mark - Private
+
+- (void)addAccount {
+  [self.delegate identityChooserCoordinatorDidTapOnAddAccount:self];
+}
+
+- (void)selectGaiaID:(const GaiaId&)gaiaID {
+  id<SystemIdentity> identity =
+      ChromeAccountManagerServiceFactory::GetForProfile(self.profile)
+          ->GetIdentityOnDeviceWithGaiaID(gaiaID);
+  [self.delegate identityChooserCoordinator:self
+               didCloseWithSelectedIdentity:identity];
+}
+
+- (void)closeViewControllerWithCompletion:(ProceduralBlock)completion {
+  CHECK(completion);
+  self.identityChooserViewController.presentationDelegate = nil;
   [self.identityChooserViewController dismissViewControllerAnimated:YES
-                                                         completion:nil];
-  // Note that, even if the user tapped on an identity, the delegate is not
-  // notified of the choice here. Instead, the notification is sent
-  // asynchronously, so that when the delegate is notified, the identity chooser
-  // view has already disappeared and the delegate is free to open whatever view
-  // immediately. The implementation is in
-  // `-identityChooserViewControllerDidDisappear:`.
+                                                         completion:^{
+                                                           completion();
+                                                         }];
+  self.identityChooserViewController = nil;
 }
 
 @end
