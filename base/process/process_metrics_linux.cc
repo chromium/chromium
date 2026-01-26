@@ -447,7 +447,8 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
 #endif
     if (target) {
       uint64_t value;
-      if (StringToUint64(tokens[1], &value)) {
+      if (StringToUint64(tokens[1], &value) &&
+          value <= ByteSize::Max().InKiB()) {
         *target = KiBU(value);
       }
     }
