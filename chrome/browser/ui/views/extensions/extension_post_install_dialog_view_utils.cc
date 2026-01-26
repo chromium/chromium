@@ -61,9 +61,7 @@ void MaybeAddSigninPromoFootnoteView(
     content::WebContents* web_contents,
     const extensions::Extension& extension,
     ui::DialogModel::Builder& dialog_model_builder) {
-  if (signin::ShouldShowExtensionSignInPromo(*profile, extension) ||
-      (signin::ShouldShowExtensionSyncPromo(*profile, extension) &&
-       !switches::IsExtensionsExplicitBrowserSigninEnabled())) {
+  if (signin::ShouldShowExtensionSignInPromo(*profile, extension)) {
     // We use a custom field instead of a footnote because footnote doesn't
     // support complex views.
     dialog_model_builder.AddCustomField(

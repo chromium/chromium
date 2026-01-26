@@ -270,48 +270,6 @@ TEST_F(ShowPromoTest, ShouldShowSyncPromoSyncEnabled) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST_F(ShowPromoTest, ShowExtensionSyncPromoWithoutFeatureFlag) {
-  EXPECT_TRUE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
-}
-
-TEST_F(ShowPromoTest, DoNotShowExtensionSyncPromoWithSyncDisabled) {
-  DisableSync();
-  ASSERT_FALSE(ShouldShowSyncPromo(*profile()));
-
-  EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
-}
-
-TEST_F(ShowPromoTest, DoNotShowExtensionSyncPromoWithUnpackedExtension) {
-  const extensions::Extension* unpacked_extension =
-      CreateExtension(extensions::mojom::ManifestLocation::kUnpacked);
-
-  // Unpacked extensions cannot be synced so the sync promo is not shown.
-  ASSERT_TRUE(unpacked_extension);
-  ASSERT_FALSE(
-      extensions::sync_util::ShouldSync(profile(), unpacked_extension));
-
-  EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *unpacked_extension));
-}
-
-TEST_F(ShowPromoTest, DoNotShowExtensionSyncPromoWithSyncingExtensionsEnabled) {
-  ON_CALL(*sync_service()->GetMockUserSettings(), GetSelectedTypes())
-      .WillByDefault(testing::Return(syncer::UserSelectableTypeSet::All()));
-  ASSERT_TRUE(extensions::sync_util::IsSyncingExtensionsEnabled(profile()));
-
-  EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
-}
-
-TEST_F(ShowPromoTest,
-       DoNotShowExtensionSyncPromoWithExplicitBrowserSigninPref) {
-  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
-  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
-
-  EXPECT_FALSE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
-}
-
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ShowPromoTest, ShowSyncPromoWithSignedInAccount) {
   MakePrimaryAccountAvailable(identity_manager(), "test@email.com",

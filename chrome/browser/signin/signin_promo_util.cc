@@ -485,8 +485,8 @@ bool ShouldShowSyncPromo(Profile& profile) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-bool ShouldShowExtensionSyncPromo(Profile& profile,
-                                  const extensions::Extension& extension) {
+bool ShouldShowExtensionSignInPromo(Profile& profile,
+                                    const extensions::Extension& extension) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Don't show the promo if it does not pass the sync base checks.
   if (!signin::ShouldShowSyncPromo(profile)) {
@@ -505,28 +505,13 @@ bool ShouldShowExtensionSyncPromo(Profile& profile,
       return false;
     }
 
-    // The promo is not shown to users that have explicitly signed in through
-    // the browser (even if extensions are not syncing).
-    if (profile.GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
+    if (const signin::IdentityManager* identity_manager =
+            IdentityManagerFactory::GetForProfile(&profile);
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      // The promo is not shown to users that have explicitly signed in through
+      // the browser (even if extensions are not syncing).
       return false;
     }
-  }
-
-  return true;
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-}
-
-bool ShouldShowExtensionSignInPromo(Profile& profile,
-                                    const extensions::Extension& extension) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (!switches::IsExtensionsExplicitBrowserSigninEnabled()) {
-    return false;
-  }
-
-  if (!ShouldShowExtensionSyncPromo(profile, extension)) {
-    return false;
   }
 
   return ShouldShowSignInPromoCommon(profile, SignInPromoType::kExtension);
