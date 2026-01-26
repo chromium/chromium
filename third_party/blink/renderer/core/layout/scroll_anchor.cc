@@ -131,27 +131,33 @@ static PhysicalOffset CornerPointOfRect(const PhysicalRect& rect,
 // Bounds of the LayoutObject relative to the scroller's visible content rect.
 static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
                                    const ScrollableArea* scroller) {
-  PhysicalRect local_bounds;
-  if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
-    local_bounds = box->PhysicalBorderBoxRect();
+  gfx::RectF local_bounds;
+  if (layout_object->IsSVGChild() && !layout_object->IsSVGForeignObject() &&
+      !layout_object->IsSVGInlineText()) {
+    // Because SVG nodes use DecoratedBoundingBox to calculate
+    // AbsoluteBoundingBoxRectF, we use DecoratedBoundingBox here to calculate
+    // local_bounds.
+    local_bounds = layout_object->DecoratedBoundingBox();
+  } else if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
+    PhysicalRect physical_rect = box->PhysicalBorderBoxRect();
     // If we clip overflow then we can use the `PhysicalBorderBoxRect()`
     // as our bounds. If not, we expand the bounds by the scrollable overflow.
     if (!layout_object->ShouldClipOverflowAlongEitherAxis()) {
       // BorderBoxRect doesn't include overflow content and floats.
-      LayoutUnit max_y = std::max(local_bounds.Bottom(),
+      LayoutUnit max_y = std::max(physical_rect.Bottom(),
                                   box->ScrollableOverflowRect().Bottom());
-      local_bounds.ShiftBottomEdgeTo(max_y);
+      physical_rect.ShiftBottomEdgeTo(max_y);
     }
+    local_bounds = gfx::RectF(physical_rect);
   } else if (layout_object->IsText()) {
     const auto* text = To<LayoutText>(layout_object);
     // TODO(kojii): |PhysicalLinesBoundingBox()| cannot compute, and thus
     // returns (0, 0) when changes are made that |DeleteLineBoxes()| or clear
     // |SetPaintFragment()|, e.g., |SplitFlow()|. crbug.com/965352
-    local_bounds.Unite(text->PhysicalLinesBoundingBox());
-
+    local_bounds = gfx::RectF(text->PhysicalLinesBoundingBox());
   } else if (const auto* inline_layout =
                  DynamicTo<LayoutInline>(layout_object)) {
-    local_bounds.Unite(inline_layout->PhysicalLinesBoundingBox());
+    local_bounds = gfx::RectF(inline_layout->PhysicalLinesBoundingBox());
   } else {
     // Only LayoutBox, LayoutText and LayoutInline are supported.
     NOTREACHED();
@@ -159,8 +165,7 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
 
   gfx::RectF relative_bounds =
       scroller
-          ->LocalToVisibleContentQuad(gfx::QuadF(gfx::RectF(local_bounds)),
-                                      layout_object)
+          ->LocalToVisibleContentQuad(gfx::QuadF(local_bounds), layout_object)
           .BoundingBox();
 
   return PhysicalRect::FastAndLossyFromRectF(relative_bounds);

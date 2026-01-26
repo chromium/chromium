@@ -637,6 +637,46 @@ TEST_F(ScrollAnchorTest, SerializeAnchorWithVariousLineHeights) {
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), scroll_y);
 }
 
+TEST_F(ScrollAnchorTest, SerializeAnchorForSvgText) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        height: 2000px;
+      }
+      #svg {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <svg id="svg" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+      <text id="svg-text" x="0" y="20" font-size="20" fill="blue">
+        Hello
+      </text>
+    </svg>
+  )HTML");
+
+  int scroll_y = 15;
+  // scroll to (0, 15)
+  ScrollLayoutViewport(ScrollOffset(0, scroll_y));
+  ScrollAnchor scroll_anchor = GetScrollAnchor(LayoutViewport());
+  SerializedAnchor serialized_anchor = scroll_anchor.GetSerializedAnchor();
+
+  EXPECT_EQ(serialized_anchor.selector, "#svg-text");
+
+  // scroll to (0, 0)
+  ScrollLayoutViewport(ScrollOffset(0, -scroll_y));
+  EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 0);
+
+  // then restore the anchor
+  EXPECT_TRUE(
+      GetScrollAnchor(LayoutViewport()).RestoreAnchor(serialized_anchor));
+  EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), scroll_y);
+}
+
 TEST_F(ScrollAnchorTest, SerializeAnchorUsesTagname) {
   SetBodyInnerHTML(R"HTML(
       <style>
