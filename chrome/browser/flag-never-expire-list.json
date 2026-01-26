@@ -40,6 +40,7 @@
   "disable-facilitated-payments-merchant-allowlist",
   "disable-javascript-harmony-shipping",
   "disallow-doc-written-script-loads",
+  "double-buffer-compositing",
   "enable-autofill-credit-card-upload",
   "enable-benchmarking",
   "enable-command-line-on-non-rooted-devices",

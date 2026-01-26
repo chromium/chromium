@@ -2385,8 +2385,10 @@
   },
   {
     "name": "double-buffer-compositing",
-    "owners": [ "hob@chromium.org", "chromeos-gfx@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "fangzhoug@chromium.org", "chrome-gpu@google.com" ],
+    // This is a debug flag to check whether issues are due to gpu memory
+    // limits.
+    "expiry_milestone": -1
   },
   {
       "name": "download-auto-deletion",
