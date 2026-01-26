@@ -166,15 +166,14 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
   const ContentSerializedNavigationDriver::ExtendedInfoHandlerMap&
       extended_info_handlers = ContentSerializedNavigationDriver::GetInstance()
                                    ->GetAllExtendedInfoHandlers();
-  for (const auto& extended_info_entry : navigation->extended_info_map_) {
-    const std::string& key = extended_info_entry.first;
-    if (!extended_info_handlers.count(key))
+  for (const auto& [key, extended_info] : navigation->extended_info_map_) {
+    auto it = extended_info_handlers.find(key);
+    if (it == extended_info_handlers.end()) {
       continue;
-    ExtendedInfoHandler* extended_info_handler =
-        extended_info_handlers.at(key).get();
+    }
+    ExtendedInfoHandler* extended_info_handler = it->second.get();
     DCHECK(extended_info_handler);
-    extended_info_handler->RestoreExtendedInfo(extended_info_entry.second,
-                                               entry.get());
+    extended_info_handler->RestoreExtendedInfo(extended_info, entry.get());
   }
 
   // This field should have the default value.
