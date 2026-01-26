@@ -148,7 +148,7 @@ TEST_F(ArenaEventBufferTest, UpdatePath) {
 
 TEST_F(ArenaEventBufferTest, PeriodicEventBackup) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(kEventStorageManager,
+  features.InitAndEnableFeatureWithParameters(features::kStructuredMetrics,
                                               {{
                                                   "event_backup_time_s",
                                                   "3"  // seconds

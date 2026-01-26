@@ -21,9 +21,6 @@ namespace metrics::structured {
 // Controls whether Phone Hub Structured Metrics is enabled or not.
 BASE_DECLARE_FEATURE(kPhoneHubStructuredMetrics);
 
-// Controls whether the new storage manager is used to manage events.
-BASE_DECLARE_FEATURE(kEventStorageManager);
-
 // Returns the parameter used to control how many files will be read into memory
 // before events start being discarded.
 //

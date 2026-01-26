@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/metrics/structured/ash_event_storage.h"
 #include "chrome/browser/metrics/structured/key_data_provider_ash.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -22,6 +21,7 @@
 #include "components/metrics/structured/proto/event_storage.pb.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
+#include "components/metrics/structured/test/test_event_storage.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -204,12 +204,6 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
     return profile_manager_.profiles_dir().Append("u-p1@test-hash");
   }
 
-  base::FilePath PreLoginEventPath() {
-    return TempDirPath()
-        .Append(FILE_PATH_LITERAL("structured_metrics"))
-        .Append(FILE_PATH_LITERAL("device"));
-  }
-
   void OnRecordingEnabled() { recorder_->EnableRecording(); }
 
   void OnRecordingDisabled() { recorder_->DisableRecording(); }
@@ -252,8 +246,7 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
     recorder_ = base::WrapRefCounted(new AshStructuredMetricsRecorder(
         std::make_unique<KeyDataProviderAsh>(DeviceKeyFilePath(),
                                              base::Seconds(0)),
-        std::make_unique<AshEventStorage>(base::Seconds(0),
-                                          PreLoginEventPath()),
+        std::make_unique<TestEventStorage>(),
         system_profile_provider_.get()));
 
     profile_manager_.CreateTestingProfile("p1");

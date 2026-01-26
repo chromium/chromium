@@ -4954,8 +4954,6 @@ static_library("browser") {
       "metrics/profile_pref_names.h",
       "metrics/structured/arena_event_buffer.cc",
       "metrics/structured/arena_event_buffer.h",
-      "metrics/structured/ash_event_storage.cc",
-      "metrics/structured/ash_event_storage.h",
       "metrics/structured/ash_structured_metrics_delegate.cc",
       "metrics/structured/ash_structured_metrics_delegate.h",
       "metrics/structured/ash_structured_metrics_recorder.cc",

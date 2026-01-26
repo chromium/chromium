@@ -17,7 +17,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"                       // nogncheck
-#include "chrome/browser/metrics/structured/ash_event_storage.h"  // nogncheck
 #include "chrome/browser/metrics/structured/ash_structured_metrics_delegate.h"  // nogncheck
 #include "chrome/browser/metrics/structured/cros_events_processor.h"  // nogncheck
 #include "chrome/browser/metrics/structured/key_data_provider_ash.h"  // nogncheck

@@ -8958,7 +8958,6 @@ test("unit_tests") {
       "../browser/metrics/perf/profile_provider_chromeos_unittest.cc",
       "../browser/metrics/perf/windowed_incognito_observer_unittest.cc",
       "../browser/metrics/structured/arena_event_buffer_unittest.cc",
-      "../browser/metrics/structured/ash_event_storage_unittest.cc",
       "../browser/metrics/structured/ash_structured_metrics_recorder_unittest.cc",
       "../browser/metrics/structured/cros_events_processor_unittest.cc",
       "../browser/metrics/structured/key_data_provider_ash_unittest.cc",
