@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -127,6 +128,7 @@ public class HistoryPaneTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testOpenedHistoryItem_SingleClickOpensInSameTab() {
         String urlOne =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");

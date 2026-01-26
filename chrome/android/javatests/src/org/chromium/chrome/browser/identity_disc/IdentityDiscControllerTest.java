@@ -54,6 +54,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -92,6 +93,7 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
@@ -381,6 +383,7 @@ public class IdentityDiscControllerTest {
     @Test
     @MediumTest
     @SuppressWarnings("CheckReturnValue")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testIdentityDiscWithSwitchToIncognito() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         ViewUtils.waitForVisibleView(withId(R.id.optional_toolbar_button));

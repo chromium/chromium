@@ -38,7 +38,6 @@
 -org.chromium.chrome.browser.payments.PaymentRequestTabTest.*
 
 # crbug.com/446934111
--org.chromium.chrome.browser.incognito.IncognitoHistoryLeakageTest.*
 -org.chromium.chrome.browser.incognito.IncognitoPermissionLeakageTest.*
 -org.chromium.chrome.browser.incognito.IncognitoProfileDestroyerIntegrationTest.*
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.*
@@ -107,12 +106,6 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testPanelDismissedOnToggleFullscreen
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTriggeringContextualSearchHidesFindInPageOverlay
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchTriggerTest.testTapGestureFollowedByScrollClearsSelection
--org.chromium.chrome.browser.fullscreen.FullscreenManagerTest.*
--org.chromium.chrome.browser.history.HistoryPaneTest.testOpenedHistoryItem_SingleClickOpensInSameTab
--org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testChangeTabSwitcherPanes
--org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testEnterHubAndLeaveViaAppMenuNewIncognitoTab
--org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testIncognitoTabSwitcherStation_newTabGroup
--org.chromium.chrome.browser.identity_disc.IdentityDiscControllerTest.testIdentityDiscWithSwitchToIncognito
 -org.chromium.chrome.browser.input.SelectPopupOtherContentViewTest.testPopupNotClosedByOtherContentView
 -org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.*
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*

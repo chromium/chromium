@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -33,6 +34,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -75,6 +77,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
@@ -93,6 +96,7 @@ public class HubLayoutPublicTransitTest {
     @LargeTest
     // TODO(crbug.com/457847264): Test disabled for Incognito windowing.
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testChangeTabSwitcherPanes() {
         IncognitoTabSwitcherStation incognitoTabSwitcher =
                 mCtaTestRule
@@ -153,6 +157,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testIncognitoTabSwitcherStation_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         IncognitoNewTabPageStation incognitoNewTabPageStation =
