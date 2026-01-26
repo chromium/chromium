@@ -1192,18 +1192,6 @@ void PrefetchService::OnGotEligibilityForNonRedirect(
     return;
   }
 
-  if (!is_decoy) {
-    // Registers a cookie listener for this prefetch if it is using an isolated
-    // network context. If the cookies in the default partition associated with
-    // this URL change after this point, then the prefetched resources should
-    // not be served.
-    if (params.is_isolated_network_context_required) {
-      prefetch_container->RegisterCookieListener(
-          browser_context_->GetDefaultStoragePartition()
-              ->GetCookieManagerForBrowserProcess());
-    }
-  }
-
   if (!UsePrefetchScheduler()) {
     prefetch_queue_.push_back(std::move(prefetch_container));
     Prefetch();
@@ -1283,12 +1271,6 @@ void PrefetchService::OnGotEligibilityForRedirect(
 
   // Inform the prefetch container of the result of the eligibility check
   prefetch_container->OnEligibilityCheckComplete(eligibility);
-  if (eligible && !prefetch_container->IsDecoy() &&
-      params.is_isolated_network_context_required) {
-    prefetch_container->RegisterCookieListener(
-        browser_context_->GetDefaultStoragePartition()
-            ->GetCookieManagerForBrowserProcess());
-  }
 
   if (!base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
     if (!check_streaming_loader()) {

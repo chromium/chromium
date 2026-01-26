@@ -773,6 +773,19 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       SetPrefetchStatus(PrefetchStatus::kPrefetchFailedIneligibleRedirect);
     }
   }
+
+  if (is_eligible && !IsDecoy()) {
+    // Registers a cookie listener for this prefetch if it is using an isolated
+    // network context. If the cookies in the default partition associated with
+    // this URL change after this point, then the prefetched resources should
+    // not be served.
+    if (IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
+      RegisterCookieListener(request()
+                                 .browser_context()
+                                 ->GetDefaultStoragePartition()
+                                 ->GetCookieManagerForBrowserProcess());
+    }
+  }
 }
 
 void PrefetchContainer::AddSpeculationTagsHeader(
