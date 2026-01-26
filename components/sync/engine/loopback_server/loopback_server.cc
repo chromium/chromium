@@ -88,6 +88,7 @@ class ProgressMarkerToken {
     if (splits.size() != 2) {
       ProgressMarkerToken token;
       base::StringToInt64(s, &token.entity_version_);
+      token.is_empty_ = false;
       return token;
     }
     ProgressMarkerToken token;
@@ -95,6 +96,7 @@ class ProgressMarkerToken {
         !base::StringToInt64(splits[1], &token.entity_version_)) {
       return ProgressMarkerToken();
     }
+    token.is_empty_ = false;
     return token;
   }
 
@@ -107,6 +109,7 @@ class ProgressMarkerToken {
     }
   }
 
+  bool is_empty() const { return is_empty_; }
   int migration_version() const { return migration_version_; }
   int64_t entity_version() const { return entity_version_; }
 
@@ -115,6 +118,10 @@ class ProgressMarkerToken {
   }
 
  private:
+  // Whether the token was empty, representing first sync. In that case,
+  // `entity_version_` will be zero (but non-empty tokens can have a version of
+  // zero too).
+  bool is_empty_ = true;
   int migration_version_ = 0;
   int64_t entity_version_ = 0;
 };
@@ -175,6 +182,11 @@ class UpdateSieve {
       return false;
     }
     DCHECK_NE(0U, response_version_map_.count(type));
+    // If this is the initial download for the data type (i.e. there was no
+    // progress token), then don't return tombstones.
+    if (it->second.is_empty() && entity.IsDeleted()) {
+      return false;
+    }
     return it->second.entity_version() < entity.GetVersion();
   }
 

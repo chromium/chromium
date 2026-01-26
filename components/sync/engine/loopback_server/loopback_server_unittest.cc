@@ -86,13 +86,23 @@ class LoopbackServerTest : public testing::Test {
   }
 
  protected:
-  ClientToServerResponse GetUpdatesForType(int field_number) {
+  ClientToServerResponse GetUpdatesForType(
+      int field_number,
+      std::string_view birthday = "",
+      std::string_view progress_token = "") {
     ClientToServerMessage request;
     SyncerProtoUtil::SetProtocolVersion(&request);
     request.set_share("required");
+    if (!birthday.empty()) {
+      request.set_store_birthday(birthday);
+    }
     request.set_message_contents(ClientToServerMessage::GET_UPDATES);
     request.mutable_get_updates()->add_from_progress_marker()->set_data_type_id(
         field_number);
+    if (!progress_token.empty()) {
+      request.mutable_get_updates()->mutable_from_progress_marker(0)->set_token(
+          progress_token);
+    }
 
     ClientToServerResponse response;
     EXPECT_TRUE(CallPostAndProcessHeaders(lcm_.get(), request, &response));
@@ -195,15 +205,44 @@ TEST_F(LoopbackServerTest, CommitBookmarkTombstoneSuccess) {
   std::string id1 = CommitVerifySuccess(NewBookmarkEntity(kUrl1, kBookmarkBar));
   std::string id2 = CommitVerifySuccess(NewBookmarkEntity(kUrl2, id1));
   std::string id3 = CommitVerifySuccess(NewBookmarkEntity(kUrl3, kBookmarkBar));
+  ClientToServerResponse original_response =
+      GetUpdatesForType(EntitySpecifics::kBookmarkFieldNumber);
+  std::map<std::string, SyncEntity> original_bookmarks =
+      ResponseToMap(original_response);
+  ASSERT_TRUE(original_bookmarks.contains(id1));
+  ASSERT_TRUE(original_bookmarks.contains(id2));
+  ASSERT_TRUE(original_bookmarks.contains(id3));
+  ASSERT_FALSE(original_bookmarks[id1].deleted());
+  ASSERT_FALSE(original_bookmarks[id2].deleted());
+  ASSERT_FALSE(original_bookmarks[id3].deleted());
+
+  const std::string birthday = original_response.store_birthday();
+  ASSERT_EQ(original_response.get_updates().new_progress_marker_size(), 1);
+  const std::string progress_token =
+      original_response.get_updates().new_progress_marker(0).token();
 
   // Because 2 is a child of 1, deleting 1 will also delete 2.
   CommitVerifySuccess(DeletedBookmarkEntity(id1, 10));
 
-  std::map<std::string, SyncEntity> bookmarks =
+  // In an incremental update, tombstones are returned for the deleted entities.
+  // The remaining entity is unchanged, so is not returned.
+  std::map<std::string, SyncEntity> incremental_update_bookmarks =
+      ResponseToMap(GetUpdatesForType(EntitySpecifics::kBookmarkFieldNumber,
+                                      birthday, progress_token));
+  EXPECT_TRUE(incremental_update_bookmarks.contains(id1));
+  EXPECT_TRUE(incremental_update_bookmarks.contains(id2));
+  EXPECT_FALSE(incremental_update_bookmarks.contains(id3));
+  EXPECT_TRUE(incremental_update_bookmarks[id1].deleted());
+  EXPECT_TRUE(incremental_update_bookmarks[id2].deleted());
+
+  // In a full (non-incremental) update, no tombstones are returned - the
+  // entities just aren't there anymore.
+  std::map<std::string, SyncEntity> full_update_bookmarks =
       ResponseToMap(GetUpdatesForType(EntitySpecifics::kBookmarkFieldNumber));
-  EXPECT_TRUE(bookmarks[id1].deleted());
-  EXPECT_TRUE(bookmarks[id2].deleted());
-  EXPECT_FALSE(bookmarks[id3].deleted());
+  EXPECT_FALSE(full_update_bookmarks.contains(id1));
+  EXPECT_FALSE(full_update_bookmarks.contains(id2));
+  EXPECT_TRUE(full_update_bookmarks.contains(id3));
+  EXPECT_FALSE(full_update_bookmarks[id3].deleted());
 }
 
 TEST_F(LoopbackServerTest, CommitBookmarkTombstoneFailure) {
