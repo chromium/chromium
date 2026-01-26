@@ -16,14 +16,16 @@ export function getHtml(this: ContextualTasksOnboardingTooltipElement) {
       <div id="tooltipContent">
         <div class="tooltip-header">
           <div class="tooltip-title">${this.onboardingTitle_}</div>
-          <cr-icon-button class="icon-clear" iron-icon="cr:close"
-              @click="${this.onTooltipClose_}">
-          </cr-icon-button>
         </div>
         <div>${this.onboardingBody_}
           <a href="${this.onboardingLinkUrl_}"
               @click="${this.onHelpLinkClick_}">${
-                this.onboardingLink_}</a></div>
+      this.onboardingLink_}</a></div>
+      </div>
+      <div id="buttons">
+        <cr-button class="action-button" @click="${this.onTooltipClose_}">
+          ${this.onboardingAcceptButton_}
+        </cr-button>
       </div>
     </cr-tooltip>
   <!--_html_template_end_-->`;
