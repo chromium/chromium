@@ -243,6 +243,19 @@ impl GregorianYears for &'_ Japanese {
             } else if date >= TAISHO_START {
                 (TAISHO_START, tinystr!(16, "taisho"))
             } else {
+                // Special case: Meiji 1 to 5 are treated as CE.
+                //
+                // This calendar was adopted in Meiji 6 (1873), but Meiji started
+                // on 1868-10-23, so for Meiji 1 - 5 the lunisolar calendar was still
+                // in use. In order to not produce incorrect pre-Meiji 6
+                // dates, we force the Gregorian calendar there.
+                //
+                // https://tc39.es/proposal-intl-era-monthcode/#table-calendar-types
+                // https://github.com/tc39/proposal-intl-era-monthcode/issues/86
+                if year < 1873 {
+                    return CeBce.era_year_from_extended(year, month, day);
+                }
+
                 (MEIJI_START, tinystr!(16, "meiji"))
             }
         } else {
@@ -250,11 +263,7 @@ impl GregorianYears for &'_ Japanese {
             #[allow(clippy::unwrap_used)] // binary search
             match data.binary_search_by(|(d, _)| d.cmp(&date)) {
                 Err(0) => {
-                    return types::EraYear {
-                        // TODO: return era indices?
-                        era_index: None,
-                        ..CeBce.era_year_from_extended(year, month, day)
-                    };
+                    return CeBce.era_year_from_extended(year, month, day);
                 }
                 Ok(index) => data.get(index).unwrap(),
                 Err(index) => data.get(index - 1).unwrap(),
