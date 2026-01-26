@@ -717,6 +717,10 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   TRACE_EVENT("loading", "PrefetchContainer::OnEligibilityCheckComplete",
               request_->preload_pipeline_info().GetFlow());
 
+  if (IsDecoy()) {
+    eligibility = PreloadingEligibility::kEligible;
+  }
+
   request().preload_pipeline_info().SetPrefetchEligibility(eligibility);
   for (auto& preload_pipeline_info : inherited_preload_pipeline_infos_) {
     preload_pipeline_info->SetPrefetchEligibility(eligibility);

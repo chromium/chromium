@@ -1182,12 +1182,7 @@ void PrefetchService::OnGotEligibilityForNonRedirect(
   // dispatched, but the response will not be used. Thus it is eligible but a
   // failure.
   prefetch_container->SetIsDecoy(is_decoy);
-  if (is_decoy) {
-    prefetch_container->OnEligibilityCheckComplete(
-        PreloadingEligibility::kEligible);
-  } else {
-    prefetch_container->OnEligibilityCheckComplete(eligibility);
-  }
+  prefetch_container->OnEligibilityCheckComplete(eligibility);
 
   if (!eligible && !is_decoy) {
     DVLOG(1)
@@ -1289,16 +1284,12 @@ void PrefetchService::OnGotEligibilityForRedirect(
   prefetch_container->SetIsDecoy(prefetch_container->IsDecoy() || is_decoy);
 
   // Inform the prefetch container of the result of the eligibility check
-  if (prefetch_container->IsDecoy()) {
-    prefetch_container->OnEligibilityCheckComplete(
-        PreloadingEligibility::kEligible);
-  } else {
-    prefetch_container->OnEligibilityCheckComplete(eligibility);
-    if (eligible && params.is_isolated_network_context_required) {
-      prefetch_container->RegisterCookieListener(
-          browser_context_->GetDefaultStoragePartition()
-              ->GetCookieManagerForBrowserProcess());
-    }
+  prefetch_container->OnEligibilityCheckComplete(eligibility);
+  if (eligible && !prefetch_container->IsDecoy() &&
+      params.is_isolated_network_context_required) {
+    prefetch_container->RegisterCookieListener(
+        browser_context_->GetDefaultStoragePartition()
+            ->GetCookieManagerForBrowserProcess());
   }
 
   if (!base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
