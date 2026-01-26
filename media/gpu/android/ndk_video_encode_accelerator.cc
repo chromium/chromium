@@ -4,14 +4,9 @@
 
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
-#include <android/hardware_buffer.h>
-
 #include <optional>
 
 #include "base/bits.h"
-#include "base/compiler_specific.h"
-#include "base/containers/span.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -24,8 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
@@ -51,6 +44,22 @@ namespace {
 // Default distance between key frames. About 100 seconds between key frames,
 // the same default value we use on Windows.
 constexpr uint32_t kDefaultGOPLength = 3000;
+
+std::vector<VideoPixelFormat> GetSupportedSharedImagePixelFormats() {
+  if (base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
+    // If kVulkanFromANGLE = true (e.g. Desktop Android)
+    // we we get shared images with AngleVulkanImageBacking, NDK VEA can't
+    // handle such shared images yet.
+    if (base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture)) {
+      // If zero-copy camera capture is enabled, let's allow XBGR shared images
+      // for testing, even though it breaks the canvas copy case.
+      return {PIXEL_FORMAT_XBGR};
+    } else {
+      return {};
+    }
+  }
+  return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
+}
 
 // Deliberately breaking naming convention rules, to match names from
 // MediaCodec SDK.
@@ -541,29 +550,6 @@ NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
   }
 }
 
-std::vector<VideoPixelFormat>
-NdkVideoEncodeAccelerator::GetSupportedSharedImagePixelFormats() {
-  if (use_surface_as_input_) {
-    if (base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
-      // If kVulkanFromANGLE = true (e.g. Desktop Android)
-      // we we get shared images with AngleVulkanImageBacking, NDK VEA can't
-      // handle such shared images yet.
-      if (base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture)) {
-        // If zero-copy camera capture is enabled, let's allow XBGR shared
-        // images for testing, even though it breaks the canvas copy case.
-        return {PIXEL_FORMAT_XBGR};
-      }
-      return {};
-    }
-    return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
-  }
-
-  if (base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture)) {
-    return {PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR};
-  }
-  return {};
-}
-
 VideoEncodeAccelerator::SupportedProfiles
 NdkVideoEncodeAccelerator::GetSupportedProfiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -571,10 +557,13 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
   SupportedProfiles profiles;
   for (auto& info : GetEncoderInfoCache()) {
     profiles.push_back(info.profile);
-    auto& profile = profiles.back();
-    profile.gpu_supported_pixel_formats = GetSupportedSharedImagePixelFormats();
-    profile.supports_gpu_shared_images =
-        !profile.gpu_supported_pixel_formats.empty();
+    if (use_surface_as_input_) {
+      auto& profile = profiles.back();
+      profile.gpu_supported_pixel_formats =
+          GetSupportedSharedImagePixelFormats();
+      profile.supports_gpu_shared_images =
+          !profile.gpu_supported_pixel_formats.empty();
+    }
   }
   return profiles;
 }
@@ -662,17 +651,20 @@ void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
     encoder_info_.reports_average_qp = false;
   }
   encoder_info_.supports_frame_size_change = false;
-  encoder_info_.gpu_supported_pixel_formats =
-      GetSupportedSharedImagePixelFormats();
-  encoder_info_.supports_gpu_shared_images =
-      !encoder_info_.gpu_supported_pixel_formats.empty();
+  if (use_surface_as_input_) {
+    encoder_info_.gpu_supported_pixel_formats =
+        GetSupportedSharedImagePixelFormats();
+    encoder_info_.supports_gpu_shared_images =
+        !encoder_info_.gpu_supported_pixel_formats.empty();
+  } else {
+    encoder_info_.supports_gpu_shared_images = false;
+    encoder_info_.gpu_supported_pixel_formats.clear();
+  }
   const char* input_type_str = "buffer";
   if (use_surface_as_input_) {
     input_type_str = encoder_info_.supports_gpu_shared_images
                          ? "surface_with_shared_images"
                          : "surface";
-  } else if (encoder_info_.supports_gpu_shared_images) {
-    input_type_str = "buffer_with_shared_images";
   }
   encoder_info_.implementation_name =
       base::StringPrintf("NdkVideoEncodeAccelerator(%s) input: %s",
@@ -776,6 +768,9 @@ void NdkVideoEncodeAccelerator::SetCommandBufferHelperCB(
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
         get_command_buffer_helper_cb,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+  if (!use_surface_as_input_) {
+    return;
+  }
   gpu_task_runner_ = std::move(gpu_task_runner);
   gpu_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, std::move(get_command_buffer_helper_cb),
@@ -791,10 +786,8 @@ void NdkVideoEncodeAccelerator::OnCommandBufferHelperAvailable(
     NotifyErrorStatus({EncoderStatus::Codes::kGPUCommandBufferNotAvailable});
     return;
   }
-  shared_image_manager_ = command_buffer_helper_->GetSharedImageManager();
-  if (gl_renderer_) {
-    gl_renderer_->SetSharedImageManager(shared_image_manager_);
-  }
+  gl_renderer_->SetSharedImageManager(
+      command_buffer_helper_->GetSharedImageManager());
 
   // Call FeedInput() in case we have pending frames waiting for
   // synchronization.
@@ -1003,185 +996,10 @@ void NdkVideoEncodeAccelerator::OnSyncDone(VideoFrame::ID frame_id) {
   FeedInput();
 }
 
-scoped_refptr<VideoFrame> NdkVideoEncodeAccelerator::MapSharedImage(
-    const VideoFrame& frame) {
-  TRACE_EVENT0("media", "NdkVideoEncodeAccelerator::MapSharedImage");
-  if (!shared_image_manager_) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
-                       "SharedImageManager is not available"});
-    return nullptr;
-  }
-  auto representation = shared_image_manager_->ProduceVideo(
-      nullptr, frame.shared_image()->mailbox(), &memory_type_tracker_);
-  if (!representation) {
-    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Failed to produce VideoImageRepresentation"});
-    return nullptr;
-  }
-  auto scoped_access = representation->BeginScopedReadAccess();
-  if (!scoped_access) {
-    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Failed to begin scoped access to SharedImage"});
-    return nullptr;
-  }
-  auto* ahb = scoped_access->GetAHardwareBuffer();
-  if (!ahb) {
-    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Failed to get AHardwareBuffer"});
-    return nullptr;
-  }
-
-  AHardwareBuffer_Desc desc;
-  AHardwareBuffer_describe(ahb, &desc);
-
-  scoped_refptr<VideoFrame> src_frame;
-
-  // Unfortunately this value is missing from NDK, it's present in SDK though.
-  // It is declared here:
-  // https://developer.android.com/reference/android/graphics/ImageFormat#YV12
-  constexpr unsigned int AHARDWAREBUFFER_FORMAT_YV12 = 0x32315659;
-
-  switch (desc.format) {
-    case AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420:
-    case AHARDWAREBUFFER_FORMAT_YV12: {
-      AHardwareBuffer_Planes planes;
-      int32_t status = AHardwareBuffer_lockPlanes(
-          ahb, AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, -1, nullptr, &planes);
-      if (status != 0) {
-        NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                           "Failed to lock AHardwareBuffer planes"});
-        return nullptr;
-      }
-
-      if (planes.planeCount == 3) {
-        size_t y_stride = planes.planes[0].rowStride;
-        size_t u_stride = planes.planes[1].rowStride;
-        size_t v_stride = planes.planes[2].rowStride;
-        size_t u_pixel_stride = planes.planes[1].pixelStride;
-        size_t v_pixel_stride = planes.planes[2].pixelStride;
-
-        const gfx::Size coded_size(static_cast<int>(desc.width),
-                                   static_cast<int>(desc.height));
-
-        // SAFETY: AHardwareBuffer_lockPlanes guarantees valid pointers and
-        // strides for the lifetime of the lock.
-        auto y_span = UNSAFE_BUFFERS(
-            base::span(static_cast<const uint8_t*>(planes.planes[0].data),
-                       y_stride * coded_size.height()));
-        if (u_pixel_stride == 1 && v_pixel_stride == 1) {
-          // I420
-          auto u_span = UNSAFE_BUFFERS(
-              base::span(static_cast<const uint8_t*>(planes.planes[1].data),
-                         u_stride * VideoFrame::Rows(VideoFrame::Plane::kU,
-                                                     PIXEL_FORMAT_I420,
-                                                     coded_size.height())));
-          auto v_span = UNSAFE_BUFFERS(
-              base::span(static_cast<const uint8_t*>(planes.planes[2].data),
-                         v_stride * VideoFrame::Rows(VideoFrame::Plane::kV,
-                                                     PIXEL_FORMAT_I420,
-                                                     coded_size.height())));
-          src_frame = VideoFrame::WrapExternalYuvData(
-              PIXEL_FORMAT_I420, coded_size, frame.visible_rect(),
-              frame.visible_rect().size(), y_stride, u_stride, v_stride, y_span,
-              u_span, v_span, frame.timestamp());
-        } else if (u_pixel_stride == 2 && v_pixel_stride == 2 &&
-                   u_stride == v_stride) {
-          // NV12
-          auto uv_span = UNSAFE_BUFFERS(
-              base::span(static_cast<const uint8_t*>(planes.planes[1].data),
-                         u_stride * VideoFrame::Rows(VideoFrame::Plane::kUV,
-                                                     PIXEL_FORMAT_NV12,
-                                                     coded_size.height())));
-          src_frame = VideoFrame::WrapExternalYuvData(
-              PIXEL_FORMAT_NV12, coded_size, frame.visible_rect(),
-              frame.visible_rect().size(), y_stride, u_stride, y_span, uv_span,
-              frame.timestamp());
-        }
-      }
-      if (!src_frame) {
-        AHardwareBuffer_unlock(ahb, nullptr);
-        NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
-                           "Unsupported YUV format from AHardwareBuffer"});
-        return nullptr;
-      }
-      break;
-    }
-    case AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM: {
-      void* data = nullptr;
-      int32_t status = AHardwareBuffer_lock(
-          ahb, AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, -1, nullptr, &data);
-      if (status != 0) {
-        NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                           "Failed to lock AHardwareBuffer"});
-        return nullptr;
-      }
-      // RGBA 8888 is 4 bytes per pixel.
-      size_t stride_bytes =
-          desc.stride * VideoFrame::BytesPerElement(PIXEL_FORMAT_XBGR, 0);
-      const gfx::Size coded_size(static_cast<int>(desc.width),
-                                 static_cast<int>(desc.height));
-
-      // SAFETY: AHardwareBuffer_lock guarantees valid pointer and stride for
-      // the lifetime of the lock.
-      auto data_span =
-          UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(data),
-                                    stride_bytes * coded_size.height()));
-
-      src_frame = VideoFrame::WrapExternalDataWithLayout(
-          VideoFrameLayout::CreateWithStrides(PIXEL_FORMAT_XBGR, coded_size,
-                                              {stride_bytes})
-              .value(),
-          frame.visible_rect(), frame.visible_rect().size(), data_span,
-          frame.timestamp());
-
-      if (!src_frame) {
-        AHardwareBuffer_unlock(ahb, nullptr);
-        NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                           "Failed to wrap XBGR data"});
-        return nullptr;
-      }
-      break;
-    }
-    default: {
-      NotifyErrorStatus(
-          {EncoderStatus::Codes::kUnsupportedFrameFormat,
-           base::StringPrintf("Unsupported AHardwareBuffer format: %d",
-                              desc.format)});
-      return nullptr;
-    }
-  }
-
-  src_frame->AddDestructionObserver(base::BindOnce(
-      [](void* buffer_ptr,
-         std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
-             scoped_access,
-         std::unique_ptr<gpu::VideoImageRepresentation> representation) {
-        AHardwareBuffer* buffer = static_cast<AHardwareBuffer*>(buffer_ptr);
-        AHardwareBuffer_unlock(buffer, nullptr);
-        // Explicitly reset scoped_access to ensure it is destroyed before
-        // representation. ScopedReadAccess destructor calls EndReadAccess on
-        // representation.
-        scoped_access.reset();
-      },
-      static_cast<void*>(ahb), std::move(scoped_access),
-      std::move(representation)));
-
-  return src_frame;
-}
-
 void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
                                                 base::TimeDelta timestamp) {
   TRACE_EVENT1("media", "NdkVideoEncodeAccelerator::FeedInputBuffer",
                "timestamp", timestamp);
-
-  scoped_refptr<VideoFrame> src_frame = frame;
-  if (frame->HasSharedImage()) {
-    src_frame = MapSharedImage(*frame);
-    if (!src_frame) {
-      return;
-    }
-  }
-
   const size_t buffer_idx = media_codec_->TakeInput();
   auto mc_input_buffer = media_codec_->GetInputBuffer(buffer_idx);
   if (mc_input_buffer.empty()) {
@@ -1191,7 +1009,7 @@ void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
   }
 
   const auto visible_size =
-      aligned_size_.value_or(src_frame->visible_rect().size());
+      aligned_size_.value_or(frame->visible_rect().size());
 
   const int dst_stride_uv = input_buffer_stride_;
   const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
@@ -1244,7 +1062,7 @@ void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
   }
 
   auto convert_status =
-      video_frame_converter_.ConvertAndScale(*src_frame, *dst_frame);
+      video_frame_converter_.ConvertAndScale(*frame, *dst_frame);
   if (!convert_status.is_ok()) {
     NotifyErrorStatus({EncoderStatus::Codes::kFormatConversionError,
                        std::string(convert_status.message())});
