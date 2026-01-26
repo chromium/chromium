@@ -50,6 +50,12 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   }
   void set_texture_rg(bool texture_rg) { caps_.texture_rg = texture_rg; }
   void set_supports_mappable_format(SharedImageFormat format, bool support);
+  void set_texture_norm16(bool texture_norm16) {
+    caps_.texture_norm16 = texture_norm16;
+  }
+  void set_texture_half_float_linear(bool texture_half_float_linear) {
+    caps_.texture_half_float_linear = texture_half_float_linear;
+  }
 
   // gpu::raster::RasterInterface implementation.
   void Finish() override;
