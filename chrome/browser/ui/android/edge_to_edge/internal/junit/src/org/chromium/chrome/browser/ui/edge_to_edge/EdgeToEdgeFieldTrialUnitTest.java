@@ -14,7 +14,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowBuild;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -128,7 +127,6 @@ public class EdgeToEdgeFieldTrialUnitTest {
 
     @Test
     @Config(sdk = 32)
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     public void override_e2eEverywhere() {
         ChromeFeatureList.sEdgeToEdgeEverywhereOemList.setForTesting("foo,bar");
         ChromeFeatureList.sEdgeToEdgeEverywhereOemMinVersions.setForTesting("31,32");
@@ -150,7 +148,6 @@ public class EdgeToEdgeFieldTrialUnitTest {
 
     @Test
     @Config(sdk = 31)
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     public void override_e2eEverywhereAndBottomChin() {
         ChromeFeatureList.sEdgeToEdgeBottomChinOemList.setForTesting("foo");
         ChromeFeatureList.sEdgeToEdgeBottomChinOemMinVersions.setForTesting("32");

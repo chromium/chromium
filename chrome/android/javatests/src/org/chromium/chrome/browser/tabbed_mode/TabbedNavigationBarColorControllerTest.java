@@ -294,10 +294,7 @@ public class TabbedNavigationBarColorControllerTest {
     // Disable the dedicated feature flag.
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     @DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
     public void testNavBarColorAnimationsFeatureFlagDisabled() {
         Assume.assumeTrue(

@@ -1144,7 +1144,6 @@ public class FirstRunIntegrationTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     // Automotive devices do not support coloring the system bars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testEdgeToEdgeEverywhere() {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
@@ -1169,7 +1168,6 @@ public class FirstRunIntegrationTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     // Automotive devices do not support coloring the system bars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @DisabledTest(message = "crbug.com/430594808")
     public void testEdgeToEdgeEverywhere_testLargeContentLayout() {
         DialogWhenLargeContentLayout.enableShouldShowAsDialogForTesting(

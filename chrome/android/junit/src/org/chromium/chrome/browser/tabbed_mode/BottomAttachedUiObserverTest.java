@@ -732,10 +732,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testNavBarColorAnimationsOverlayPanel() {
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
@@ -766,10 +763,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testNavBarColorAnimationsBottomSheet() {
         mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
@@ -792,10 +786,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testNavBarColorAnimationsBrowserControls() {
         mColorChangeObserver.assertState(null, false, false);
@@ -832,10 +823,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
     public void testNavBarColorAnimationsBottomToolbar() {
         doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
         doReturn(0.0f).when(mBrowserControlsStateProvider).getBrowserControlHiddenRatio();
