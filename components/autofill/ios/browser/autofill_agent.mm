@@ -471,15 +471,12 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   FieldToFormLookupMap fieldToFormLookupMap;
 
   for (const auto& field : fields) {
-    // Skip empty fields and those that are not autofilled.
-    if (field.value.empty() || !field.is_autofilled) {
-      continue;
-    }
 
     base::DictValue fieldData;
     fieldData.Set("value", field.value);
     fieldData.Set("section", section.ToString());
     fieldData.Set("hostFormId", static_cast<int>(*field.host_form_id));
+    fieldData.Set("isAutofilled", field.is_autofilled);
     fieldsData.Set(NumberToString(*field.renderer_id), std::move(fieldData));
 
     fieldToFormLookupMap[field.renderer_id] = field.host_form_id;

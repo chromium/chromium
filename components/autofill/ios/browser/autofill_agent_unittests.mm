@@ -197,8 +197,7 @@ class AutofillAgentTests : public web::WebTest {
 };
 
 // Tests that form's name and fields' identifiers, values, and whether they are
-// autofilled are sent to the JS. Fields with empty values and those that are
-// not autofilled are skipped. Tests logic based on renderer ids usage.
+// autofilled are sent to the JS.
 TEST_F(AutofillAgentTests,
        OnFormDataFilledTestWithFrameMessagingUsingRendererIDs) {
   std::vector<autofill::FormFieldData::FillData> fill_data;
@@ -244,9 +243,13 @@ TEST_F(AutofillAgentTests,
   fake_web_state_.WasShown();
 
   EXPECT_EQ(u"__gCrWeb.callFunctionInGcrWeb('autofill', 'fillForm', "
-            u"[{\"fields\":{\"2\":{\"hostFormId\":0,\"section\":\"-default\","
-            u"\"value\":\"number_value\"},\"3\":{\"hostFormId\":0,\"section\":"
-            u"\"-default\",\"value\":\"name_value\"}}}, 0]);",
+            u"[{\"fields\":{\"2\":{\"hostFormId\":0,\"isAutofilled\":true,"
+            u"\"section\":\"-default\",\"value\":\"number_value\"},"
+            u"\"3\":{\"hostFormId\":0,\"isAutofilled\":true,\"section\":"
+            u"\"-default\",\"value\":\"name_value\"},\"4\":{\"hostFormId\":0,"
+            u"\"isAutofilled\":false,\"section\":\"-default\","
+            u"\"value\":\"01\"},\"5\":{\"hostFormId\":0,\"isAutofilled\":true,"
+            u"\"section\":\"-default\",\"value\":\"\"}}}, 0]);",
             fake_main_frame_->GetLastJavaScriptCall());
 }
 
