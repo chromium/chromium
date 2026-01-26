@@ -20,6 +20,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_info.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -221,11 +222,6 @@ bool IsVulkanV2Enabled(const GPUInfo& gpu_info,
 
 bool ShouldBypassMediatekBlock(const GPUInfo& gpu_info) {
   return IsVulkanV2Enabled(gpu_info, "Mediatek");
-}
-
-bool IsVulkanV2EnabledForImagination(const GPUInfo& gpu_info) {
-  // Imagination shows regression even with 2022 deQP tests.
-  return false;
 }
 
 // Everything except MediaTek.
@@ -538,14 +534,11 @@ bool CheckVulkanCompatibilities(
            IsVulkanV3EnabledForAdreno(gpu_info, device_properties);
   }
 
-  // https://crbug.com/1122650: Poor performance and untriaged crashes with
-  // Imagination GPUs.
   if (device_properties.vendor_id == kVendorImagination) {
-    // Only PowerVR D series and newer allowed in V1.
-    if (base::MatchPattern(device_properties.device_name, "PowerVR ?-Series*")) {
-      return true;
-    }
-    return IsVulkanV2EnabledForImagination(gpu_info);
+    // Only newer PowerVR GPU series allowed. Older PowerVR GPUs showed poor
+    // performance and stability problems, see https://crbug.com/1122650.
+    return RE2::FullMatch(device_properties.device_name,
+                          "PowerVR ([CDE]-Series)? [CDE]X.*");
   }
 
   // Some devices implement Vulkan using Swiftshader. We do not want those,

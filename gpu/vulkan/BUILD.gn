@@ -132,6 +132,7 @@ if (enable_vulkan) {
       "//base",
       "//components/crash/core/common:crash_key",
       "//components/viz/common/resources:shared_image_format",
+      "//third_party/re2",
       "//third_party/vulkan_memory_allocator",
       "//ui/base:ozone_buildflags",
       "//ui/gfx",
