@@ -6,11 +6,6 @@
 # crbug.com/376100658
 -org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentQueryNoCardTest.*
--org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentQueryTest.*
--org.chromium.chrome.browser.payments.PaymentRequestContactDetailsTest.*
--org.chromium.chrome.browser.payments.PaymentRequestDataUrlTest.*
--org.chromium.chrome.browser.payments.PaymentRequestEmailAndPhoneTest.*
--org.chromium.chrome.browser.payments.PaymentRequestEmailTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestIncompletePhoneTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestInputProtectionTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestJourneyLoggerTest.*
