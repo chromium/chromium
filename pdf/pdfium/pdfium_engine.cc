@@ -3778,7 +3778,6 @@ void PDFiumEngine::DrawSelections(size_t progressive_index,
     }
 
     visible_selection.Offset(-dirty_in_screen.OffsetFromOrigin());
-    visible_selection.Intersect(gfx::SkIRectToRect(image_data.bounds()));
     Highlight(region.value(), visible_selection, kHighlightColor,
               highlighted_rects);
   }
@@ -3913,6 +3912,13 @@ void PDFiumEngine::Highlight(const RegionData& region,
                              SkColor color,
                              std::vector<gfx::Rect>& highlighted_rects) const {
   gfx::Rect new_rect = rect;
+  // `rect` has been found to be able to be outside the addressable bounds of
+  // `region` (see crbug.com/476663015 and duplicates), so intersect it with the
+  // addressable region. Taking `row_pixels == region.stride/4` works because
+  // the bitmap format is always some form of BGRx.
+  new_rect.Intersect(
+      gfx::Rect(region.stride / 4, region.buffer.size() / region.stride));
+
   for (const auto& highlighted : highlighted_rects) {
     new_rect.Subtract(highlighted);
   }
@@ -3928,7 +3934,7 @@ void PDFiumEngine::Highlight(const RegionData& region,
   }
 
   highlighted_rects.push_back(new_rect);
-  int l = new_rect.x();
+  int l = std::max(0, new_rect.x());
   int t = new_rect.y();
   int w = new_rect.width();
   int h = new_rect.height();
