@@ -126,11 +126,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.ActionChips.RequestStatus"
+    enum="ActionChipsRequestStatus" expires_after="2026-07-05">
+  <owner>shomizoe@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The high-level status of the request to the action chips suggestions
+    service. Logged every time a request is made. This feature is currently
+    available only in 1P NTP. A request is sent when the follownig occurs:. -
+    NTP is visited/refreshed. - An action chip/row is dismissed. This causes all
+    the chips to be reloaded.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ActionChips.RequestStatus.NetworkError"
+    enum="NetErrorCodes" expires_after="2026-07-05">
+  <owner>shomizoe@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The network error code encountered when making a request to the action chips
+    suggestions service. Logged when the request status is kNetworkError or
+    kHttpError.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ActionChips.RequestStatus.ParseError"
+    enum="ActionChipsParseError" expires_after="2026-07-05">
+  <owner>shomizoe@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The detailed parse failure reason when processing the response from the
+    action chips suggestions service. Logged when the request status is
+    kParseError.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ActionChips.Shown" enum="ChipType"
     expires_after="2026-07-05">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>Logged when any Action Chips was shown to the user.</summary>
+</histogram>
+
+<histogram name="NewTabPage.ActionChips.SuggestionCount" units="count"
+    expires_after="2026-07-05">
+  <owner>shomizoe@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of action chips returned by the suggestions service. Logged when
+    a request successfully returns suggestions. This feature (action chips) is
+    currently available only in 1P NTP. A request is sent when the follownig
+    occurs: - NTP is visited/refreshed. - An action chip/row is dismissed. This
+    causes all the chips to be reloaded.
+  </summary>
 </histogram>
 
 <histogram name="NewTabPage.ActionChips.ToggledVisibility"

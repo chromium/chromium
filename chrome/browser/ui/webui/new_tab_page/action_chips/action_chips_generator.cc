@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-shared.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/remote_suggestions_service_simple.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/grit/generated_resources.h"
@@ -47,6 +49,7 @@
 #include "url/url_util.h"
 
 namespace {
+using ::action_chips::RecordActionChipsRequestStatus;
 using ::action_chips::RemoteSuggestionsServiceSimple;
 using ::action_chips::RemoteSuggestionsServiceSimpleImpl;
 using ::action_chips::mojom::ActionChip;
@@ -436,16 +439,13 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
     base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
         callback,
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
+  RecordActionChipsRequestStatus(result);
   if (!result.has_value()) {
-    // TODO: b/473586071 - Track the success/failure of the calls by a
-    // histogram.
     std::move(callback).Run(CreateChipsForSteadyState(std::move(tab),
                                                       aim_eligibility_service_,
                                                       /*options=*/{}));
     return;
   }
-  // TODO: b/473586071 - Track the # of suggestions returned when
-  // chrome-ntp-action client is used.
 
   std::vector<ActionChipPtr> chips;
   for (const auto& suggestion : *result) {

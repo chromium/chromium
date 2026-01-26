@@ -467,8 +467,9 @@ TEST(RemoteSuggestionsServiceSimpleTest,
                                                           "invalid json");
   env.run_loop().Run();
 
-  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(FieldsAre(
-                          ParseError::ParseErrorType::kMalformedJson))));
+  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(
+                          FieldsAre(RemoteSuggestionsServiceSimple::
+                                        ParseFailureReason::kMalformedJson))));
 }
 
 TEST(RemoteSuggestionsServiceSimpleTest,
@@ -497,8 +498,9 @@ TEST(RemoteSuggestionsServiceSimpleTest,
                                                           "[]");
   env.run_loop().Run();
 
-  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(FieldsAre(
-                          ParseError::ParseErrorType::kParseFailure))));
+  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(
+                          FieldsAre(RemoteSuggestionsServiceSimple::
+                                        ParseFailureReason::kSchemaMismatch))));
 }
 
 TEST(RemoteSuggestionsServiceSimpleTest,
@@ -744,8 +746,9 @@ TEST(RemoteSuggestionsServiceSimpleTest,
                                                           "invalid json");
   env.run_loop().Run();
 
-  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(FieldsAre(
-                          ParseError::ParseErrorType::kMalformedJson))));
+  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(
+                          FieldsAre(RemoteSuggestionsServiceSimple::
+                                        ParseFailureReason::kMalformedJson))));
 }
 
 TEST(RemoteSuggestionsServiceSimpleTest,
@@ -781,8 +784,9 @@ TEST(RemoteSuggestionsServiceSimpleTest,
                                                           "[]");
   env.run_loop().Run();
 
-  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(FieldsAre(
-                          ParseError::ParseErrorType::kParseFailure))));
+  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(
+                          FieldsAre(RemoteSuggestionsServiceSimple::
+                                        ParseFailureReason::kSchemaMismatch))));
 }
 
 TEST(RemoteSuggestionsServiceSimpleTest,

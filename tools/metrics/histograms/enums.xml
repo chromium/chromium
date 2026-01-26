@@ -169,6 +169,28 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="Account Corruption Detected"/>
 </enum>
 
+<!-- LINT.IfChange(ActionChipsParseError) -->
+
+<enum name="ActionChipsParseError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ResponseEmpty"/>
+  <int value="2" label="MalformedJson"/>
+  <int value="3" label="SchemaMismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/remote_suggestions_service_simple.h:ActionChipsParseError) -->
+
+<!-- LINT.IfChange(ActionChipsRequestStatus) -->
+
+<enum name="ActionChipsRequestStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="NetworkError"/>
+  <int value="2" label="HttpError"/>
+  <int value="3" label="ParseError"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h:ActionChipsRequestStatus) -->
+
 <enum name="ActivationList">
   <int value="0" label="No match"/>
   <int value="1" label="Social Eng Ads Interstitial"/>
