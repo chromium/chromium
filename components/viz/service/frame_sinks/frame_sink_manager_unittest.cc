@@ -126,7 +126,16 @@ class FrameSinkManagerTest : public testing::Test {
   void VerifyThrottling(base::TimeDelta interval,
                         const std::vector<FrameSinkId>& ids) {
     for (auto& id : ids) {
-      EXPECT_EQ(interval, manager_->support_map_[id]->begin_frame_interval_);
+      EXPECT_EQ(interval, manager_->support_map_[id]->begin_frame_interval());
+    }
+  }
+
+  void VerifyAllowThrottling(bool allow_throttling,
+                             const std::vector<FrameSinkId>& ids) {
+    for (auto& id : ids) {
+      EXPECT_EQ(allow_throttling, manager_->support_map_[id]
+                                      ->GetThrottlerForTesting()
+                                      .throttling_allowed());
     }
   }
 
@@ -163,6 +172,16 @@ class FrameSinkManagerTest : public testing::Test {
         ->GetRenderInputRoutersForTesting();
   }
 
+  void RecurseChildren(const FrameSinkId& frame_sink_id,
+                       base::FunctionRef<void(const FrameSinkId&)> callback) {
+    manager_->RecurseChildren(frame_sink_id, callback);
+  }
+
+  void RecurseParents(const FrameSinkId& frame_sink_id,
+                      base::FunctionRef<void(const FrameSinkId&)> callback) {
+    manager_->RecurseParents(frame_sink_id, callback);
+  }
+
   // testing::Test implementation.
   void SetUp() override {
     manager_->SetInputManagerForTesting(
@@ -191,6 +210,72 @@ class FrameSinkManagerTest : public testing::Test {
  private:
   MockGpuServiceImpl gpu_service_;
 };
+
+TEST_F(FrameSinkManagerTest, RecurseFrameSinks) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdRoot, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdB, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdC, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdD, true);
+
+  CreateCompositorFrameSink(kFrameSinkIdRoot, nullptr);
+  CreateCompositorFrameSink(kFrameSinkIdA, nullptr);
+  CreateCompositorFrameSink(kFrameSinkIdB, nullptr);
+  CreateCompositorFrameSink(kFrameSinkIdC, nullptr);
+  CreateCompositorFrameSink(kFrameSinkIdD, nullptr);
+
+  // Set up hierarchy: Root -> A -> B
+  //                          + -> C
+  //                    D (no parents/children)
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdC);
+
+  // Test RecurseChildren from Root
+  {
+    std::vector<FrameSinkId> visited;
+    RecurseChildren(kFrameSinkIdRoot,
+                    [&](const FrameSinkId& id) { visited.push_back(id); });
+    EXPECT_THAT(visited,
+                testing::UnorderedElementsAre(kFrameSinkIdRoot, kFrameSinkIdA,
+                                              kFrameSinkIdB, kFrameSinkIdC));
+  }
+
+  // Test RecurseChildren from A
+  {
+    std::vector<FrameSinkId> visited;
+    RecurseChildren(kFrameSinkIdA,
+                    [&](const FrameSinkId& id) { visited.push_back(id); });
+    EXPECT_THAT(visited,
+                testing::UnorderedElementsAre(kFrameSinkIdA, kFrameSinkIdB));
+  }
+
+  // Test RecurseAncestors from B
+  {
+    std::vector<FrameSinkId> visited;
+    RecurseParents(kFrameSinkIdB,
+                   [&](const FrameSinkId& id) { visited.push_back(id); });
+    EXPECT_THAT(visited, testing::ElementsAre(kFrameSinkIdB, kFrameSinkIdA,
+                                              kFrameSinkIdRoot));
+  }
+
+  // Test RecurseAncestors from D
+  {
+    std::vector<FrameSinkId> visited;
+    RecurseParents(kFrameSinkIdD,
+                   [&](const FrameSinkId& id) { visited.push_back(id); });
+    EXPECT_THAT(visited, testing::ElementsAre(kFrameSinkIdD));
+  }
+
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdC);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdC, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdD, {});
+}
 
 TEST_F(FrameSinkManagerTest, CreateRootCompositorFrameSink) {
   manager_->RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
@@ -681,6 +766,39 @@ TEST_F(FrameSinkManagerTest, Throttle) {
                                          client_d->frame_sink_id());
 }
 
+TEST_F(FrameSinkManagerTest, ThrottleWithIntermediateMissingSupport) {
+  // root -> A (no support) -> B
+  auto root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
+  // kFrameSinkIdA will be registered but no CompositorFrameSinkSupport created.
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  auto client_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+
+  // Set up the hierarchy.
+  manager_->RegisterFrameSinkHierarchy(root->frame_sink_id(), kFrameSinkIdA);
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdA,
+                                       client_b->frame_sink_id());
+
+  constexpr base::TimeDelta interval = base::Hertz(20);
+
+  // kFrameSinkIdA is not included because it has no support to check.
+  std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdB};
+
+  // By default, a CompositorFrameSinkSupport shouldn't have its
+  // |begin_frame_interval| set.
+  VerifyThrottling(base::TimeDelta(), ids);
+
+  manager_->Throttle({kFrameSinkIdRoot}, interval);
+  VerifyThrottling(interval, ids);
+
+  manager_->Throttle({}, base::TimeDelta());
+  VerifyThrottling(base::TimeDelta(), ids);
+
+  manager_->UnregisterFrameSinkHierarchy(root->frame_sink_id(), kFrameSinkIdA);
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdA,
+                                         client_b->frame_sink_id());
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
 TEST_F(FrameSinkManagerTest, GlobalThrottle) {
   // root -> A -> B
   //      -> C -> D
@@ -799,18 +917,23 @@ TEST_F(FrameSinkManagerTest, NoThrottleOnFrameSinksBeingCaptured) {
   // affected on root frame sink and frame sink A.
   VerifyThrottling(interval, {kFrameSinkIdRoot, kFrameSinkIdA});
   VerifyThrottling(base::TimeDelta(), {kFrameSinkIdB, kFrameSinkIdC});
+  VerifyAllowThrottling(true, {kFrameSinkIdRoot, kFrameSinkIdA});
+  VerifyAllowThrottling(false, {kFrameSinkIdB, kFrameSinkIdC});
 
   // Explicitly request to throttle all frame sinks. This would not affect B or
   // C while B is still being captured.
   manager_->Throttle(ids, interval);
   VerifyThrottling(interval, {kFrameSinkIdRoot, kFrameSinkIdA});
   VerifyThrottling(base::TimeDelta(), {kFrameSinkIdB, kFrameSinkIdC});
+  VerifyAllowThrottling(true, {kFrameSinkIdRoot, kFrameSinkIdA});
+  VerifyAllowThrottling(false, {kFrameSinkIdB, kFrameSinkIdC});
 
   // Stop capturing.
   capturable_frame_sink->OnClientCaptureStopped();
   // Now the throttling state should be the same as before capturing started,
   // i.e. all frame sinks will now be throttled.
   VerifyThrottling(interval, ids);
+  VerifyAllowThrottling(true, ids);
 
   manager_->Throttle({}, base::TimeDelta());
   VerifyThrottling(base::TimeDelta(), ids);
@@ -1972,5 +2095,96 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::ValuesIn(kRegisterOrderList),
                        ::testing::ValuesIn(kUnregisterOrderList),
                        ::testing::ValuesIn(kBFSOrderList)));
+
+TEST_F(FrameSinkManagerTest, NoInheritanceOnRegistration) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdB, true);
+
+  // A -> B
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+
+  // No throttling or capture set.
+
+  // Register B.
+  auto client_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+
+  // B should NOT be throttled.
+  VerifyThrottling(base::TimeDelta(), {kFrameSinkIdB});
+  VerifyAllowThrottling(true, {kFrameSinkIdB});
+
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+}
+
+TEST_F(FrameSinkManagerTest, ThrottleInheritanceOnRegistration) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdB, true);
+
+  // A -> B
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+
+  constexpr base::TimeDelta interval = base::Hertz(20);
+  manager_->Throttle({kFrameSinkIdA}, interval);
+
+  // A has no support, B has no support.
+  // Register B.
+  auto client_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+
+  // B should inherit throttling from A.
+  VerifyThrottling(interval, {kFrameSinkIdB});
+
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+}
+
+TEST_F(FrameSinkManagerTest, CaptureOverridesInheritedThrottleOnRegistration) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdB, true);
+
+  // A -> B
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+
+  constexpr base::TimeDelta interval = base::Hertz(20);
+  manager_->Throttle({kFrameSinkIdA}, interval);
+  manager_->OnCaptureStarted(kFrameSinkIdB);
+
+  // Register B.
+  auto client_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+
+  // B should NOT be throttled because it is captured.
+  VerifyThrottling(base::TimeDelta(), {kFrameSinkIdB});
+  VerifyAllowThrottling(false, {kFrameSinkIdB});
+
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+}
+
+TEST_F(FrameSinkManagerTest, DeepHierarchyThrottleInheritanceOnRegistration) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdB, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdC, true);
+
+  // A -> B -> C
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdB, kFrameSinkIdC);
+
+  constexpr base::TimeDelta interval = base::Hertz(20);
+  manager_->Throttle({kFrameSinkIdA}, interval);
+
+  // Register C.
+  auto client_c = CreateCompositorFrameSinkSupport(kFrameSinkIdC);
+
+  // C should inherit throttling from A (via B).
+  VerifyThrottling(interval, {kFrameSinkIdC});
+
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdB, kFrameSinkIdC);
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdC, {});
+}
 
 }  // namespace viz

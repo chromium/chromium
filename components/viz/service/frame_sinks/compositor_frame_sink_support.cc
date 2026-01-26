@@ -264,37 +264,16 @@ void CompositorFrameSinkSupport::SetBundle(const FrameSinkBundleId& bundle_id) {
   UpdateNeedsBeginFramesInternal();
 }
 
-void CompositorFrameSinkSupport::SetLastKnownVsync(
-    base::TimeDelta vsync_interval) {
-  if (last_known_vsync_interval_ == vsync_interval) {
-    return;
-  }
-  last_known_vsync_interval_ = vsync_interval;
-  ThrottleBeginFrame(begin_frame_interval_, /*simple_cadence_only=*/true);
+base::TimeDelta CompositorFrameSinkSupport::begin_frame_interval() const {
+  return throttler_.begin_frame_interval();
 }
 
-bool CompositorFrameSinkSupport::ThrottleBeginFrame(base::TimeDelta interval,
-                                                    bool simple_cadence_only) {
-  if (!interval.is_positive()) {
-    // Remove any existing throttling
-    begin_frame_interval_ = base::TimeDelta();
-    return true;
-  }
+void CompositorFrameSinkSupport::SetThrottleInterval(base::TimeDelta interval) {
+  throttler_.SetThrottleInterval(interval);
+}
 
-  if (!last_known_vsync_interval_.is_positive() || !simple_cadence_only) {
-    // No known vsync interval or forcing throttle interval.
-    begin_frame_interval_ = interval;
-    return true;
-  }
-
-  if (media::VideoCadenceEstimator::HasSimpleCadence(
-          last_known_vsync_interval_, interval, kMaxTimeUntilNextGlitch)) {
-    begin_frame_interval_ = interval;
-    return true;
-  } else {
-    begin_frame_interval_ = base::TimeDelta();
-    return false;
-  }
+void CompositorFrameSinkSupport::SetAllowThrottling(bool allowed) {
+  throttler_.SetAllowThrottling(allowed);
 }
 
 void CompositorFrameSinkSupport::OnSurfaceCommitted(Surface* surface) {
@@ -820,9 +799,12 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
                              frame.metadata.begin_frame_ack.frame_id.source_id);
         last_known_frame_interval_ = preferred_frame_interval;
         // Only throttle simple cadences.
-        ThrottleBeginFrame(preferred_frame_interval,
-                           /*simple_cadence_only=*/true);
+        throttler_.SetCadenceThrottleInterval(preferred_frame_interval);
       }
+    } else if (last_known_frame_interval_ > BeginFrameArgs::MinInterval()) {
+      // Reset simple cadence throttling if no video is detected
+      last_known_frame_interval_ = BeginFrameArgs::MinInterval();
+      throttler_.SetCadenceThrottleInterval(base::TimeDelta());
     }
   }
 
@@ -1072,9 +1054,9 @@ void CompositorFrameSinkSupport::DidPresentCompositorFrame(
   // Override with the throttled interval if one has been set. Otherwise,
   // consumers will assume that the default vsync interval was the target and
   // that the frames are presented too late when in fact, this is intentional.
-  if (begin_frame_interval_.is_positive() &&
+  if (begin_frame_interval().is_positive() &&
       details.presentation_feedback.interval.is_positive()) {
-    details.presentation_feedback.interval = begin_frame_interval_;
+    details.presentation_feedback.interval = begin_frame_interval();
   }
 
   details.start_update_display_tree =
@@ -1168,17 +1150,17 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
 
   BeginFrameArgs adjusted_args = args;
   adjusted_args.dispatch_time = base::TimeTicks::Now();
-  if (begin_frame_interval_.is_positive()) {
-    adjusted_args.interval = begin_frame_interval_;
+  if (begin_frame_interval().is_positive()) {
+    adjusted_args.interval = begin_frame_interval();
     // Deadline is not necessarily frame_time + interval. For example, it may
     // incorporate an estimate for the frame's draw/swap time, so it's
     // desirable to preserve any offset from the next scheduled frame.
     base::TimeDelta offset_from_next_scheduled_frame =
         args.deadline - (args.frame_time + args.interval);
-    adjusted_args.deadline = args.frame_time + begin_frame_interval_ +
+    adjusted_args.deadline = args.frame_time + begin_frame_interval() +
                              offset_from_next_scheduled_frame;
   }
-  SetLastKnownVsync(args.interval);
+  throttler_.SetLastKnownVsync(args.interval, args.unthrottled_interval);
   const bool should_send_begin_frame =
       ShouldSendBeginFrame(args.frame_id, adjusted_args.frame_time,
                            args.interval) &&
@@ -1571,7 +1553,7 @@ void CompositorFrameSinkSupport::CheckPendingSurfaces() {
 bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(
     base::TimeTicks frame_time,
     base::TimeDelta vsync_interval) {
-  if (!begin_frame_interval_.is_positive() || !vsync_interval.is_positive()) {
+  if (!begin_frame_interval().is_positive() || !vsync_interval.is_positive()) {
     return false;
   }
 
@@ -1579,7 +1561,7 @@ bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(
   // need to know if the current frame has elapsed a full cadence interval to
   // know its time to render.
   base::TimeDelta time_since_last_frame = frame_time - last_frame_time_;
-  return !HasElapsedCadenceInterval(vsync_interval, begin_frame_interval_,
+  return !HasElapsedCadenceInterval(vsync_interval, begin_frame_interval(),
                                     time_since_last_frame);
 }
 

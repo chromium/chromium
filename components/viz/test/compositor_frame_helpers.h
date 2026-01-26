@@ -13,6 +13,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -297,6 +298,8 @@ class CompositorFrameBuilder {
       const gfx::DelegatedInkMetadata& metadata);
   CompositorFrameBuilder& AddOffsetTagDefinition(
       const OffsetTagDefinition& definition);
+  CompositorFrameBuilder& AddContentFrameIntervalInfo(
+      const ContentFrameIntervalInfo& content_frame_interval_info);
 
   CompositorFrameBuilder& SetValidTreesInVizTimestamps(base::TimeTicks now);
 

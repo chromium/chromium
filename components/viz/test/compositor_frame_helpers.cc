@@ -537,6 +537,13 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddOffsetTagDefinition(
   return *this;
 }
 
+CompositorFrameBuilder& CompositorFrameBuilder::AddContentFrameIntervalInfo(
+    const ContentFrameIntervalInfo& content_frame_interval_info) {
+  frame_->metadata.frame_interval_inputs.content_interval_info.push_back(
+      content_frame_interval_info);
+  return *this;
+}
+
 CompositorFrameBuilder& CompositorFrameBuilder::SetValidTreesInVizTimestamps(
     base::TimeTicks now) {
   frame_->metadata.trees_in_viz_timing_details = {

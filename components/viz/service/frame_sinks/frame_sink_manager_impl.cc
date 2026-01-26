@@ -697,10 +697,7 @@ void FrameSinkManagerImpl::RegisterCompositorFrameSinkSupport(
     support->SetBeginFrameSource(mapping->source);
   }
 
-  if (global_throttle_interval_) {
-    UpdateThrottlingRecursively(frame_sink_id,
-                                global_throttle_interval_.value());
-  }
+  UpdateThrottlingRecursively(frame_sink_id);
 
   if (frame_counter_) {
     frame_counter_->AddFrameSink(frame_sink_id, support->is_root(),
@@ -723,6 +720,8 @@ void FrameSinkManagerImpl::UnregisterCompositorFrameSinkSupport(
         capturer->target()->frame_sink_id == frame_sink_id)
       capturer->OnTargetWillGoAway();
   }
+
+  captured_frame_sink_ids_.erase(frame_sink_id);
 
   support_map_.erase(frame_sink_id);
 }
@@ -1004,6 +1003,32 @@ base::flat_set<FrameSinkId> FrameSinkManagerImpl::GetChildrenByParent(
   return mapping ? mapping->children : base::flat_set<FrameSinkId>();
 }
 
+void FrameSinkManagerImpl::RecurseChildren(
+    const FrameSinkId& frame_sink_id,
+    base::FunctionRef<void(const FrameSinkId&)> callback) {
+  callback(frame_sink_id);
+
+  auto* mapping = base::FindOrNull(frame_sink_source_map_, frame_sink_id);
+  if (mapping) {
+    for (const FrameSinkId& child_id : mapping->children) {
+      RecurseChildren(child_id, callback);
+    }
+  }
+}
+
+void FrameSinkManagerImpl::RecurseParents(
+    const FrameSinkId& frame_sink_id,
+    base::FunctionRef<void(const FrameSinkId&)> callback) {
+  callback(frame_sink_id);
+
+  auto* mapping = base::FindOrNull(frame_sink_source_map_, frame_sink_id);
+  if (mapping) {
+    for (const FrameSinkId& parent : mapping->parent) {
+      RecurseParents(parent, callback);
+    }
+  }
+}
+
 CompositorFrameSinkSupport* FrameSinkManagerImpl::GetFrameSinkForId(
     const FrameSinkId& frame_sink_id) const {
   return base::FindPtrOrNull(support_map_, frame_sink_id);
@@ -1027,7 +1052,7 @@ void FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests(
 
 void FrameSinkManagerImpl::OnCaptureStarted(const FrameSinkId& id) {
   if (captured_frame_sink_ids_.insert(id).second) {
-    ClearThrottling(id);
+    UpdateThrottling();
   }
   for (auto& observer : observer_list_)
     observer.OnCaptureStarted(id);
@@ -1091,21 +1116,64 @@ void FrameSinkManagerImpl::UpdateDebugRendererSettings(
 }
 
 void FrameSinkManagerImpl::UpdateThrottlingRecursively(
-    const FrameSinkId& frame_sink_id,
-    base::TimeDelta interval) {
-  CompositorFrameSinkSupport* support =
-      base::FindPtrOrNull(support_map_, frame_sink_id);
-  if (support) {
-    support->ThrottleBeginFrame(interval);
+    FrameSinkId frame_sink_id) {
+  const base::TimeDelta default_throttle =
+      global_throttle_interval_.value_or(base::TimeDelta());
+
+  // Clear throttling on all children
+  RecurseChildren(frame_sink_id,
+                  [this, &default_throttle](const FrameSinkId& child_id) {
+                    if (auto* support = GetFrameSinkForId(child_id)) {
+                      support->SetThrottleInterval(default_throttle);
+                      support->SetAllowThrottling(true);
+                    }
+                  });
+
+  bool check_throttles = ThrottleIntervalHasEffect();
+  bool check_captures = !captured_frame_sink_ids_.empty();
+
+  if (!check_throttles && !check_captures) {
+    return;
   }
-  auto children = GetChildrenByParent(frame_sink_id);
-  for (auto& id : children)
-    UpdateThrottlingRecursively(id, interval);
+
+  base::flat_set<FrameSinkId> throttles;
+  base::flat_set<FrameSinkId> captures;
+
+  // Identify anything which would affect throttling from ancestors or
+  // descendants.
+  auto collect_roots = [&](const FrameSinkId& id, bool is_ancestor) {
+    // If an ancestor is throttled/captured, the current `frame_sink_id` acts as
+    // the root of that effect for this subtree update.
+    //
+    // This ensures we limit updates to only the current subtree, while also
+    // inheriting capture or throttle effects from parents.
+    const FrameSinkId& root = is_ancestor ? frame_sink_id : id;
+
+    if (check_throttles && frame_sink_ids_to_throttle_.contains(id)) {
+      throttles.insert(root);
+    }
+    if (check_captures && captured_frame_sink_ids_.contains(id)) {
+      captures.insert(root);
+    }
+  };
+
+  RecurseParents(frame_sink_id, [&](const FrameSinkId& parent) {
+    if (parent != frame_sink_id) {
+      collect_roots(parent, /*is_ancestor=*/true);
+    }
+  });
+
+  RecurseChildren(frame_sink_id, [&](const FrameSinkId& child) {
+    collect_roots(child, /*is_ancestor=*/false);
+  });
+
+  // Apply the identified rules.
+  ApplyThrottlingRules(throttles, captures);
 }
 
 void FrameSinkManagerImpl::Throttle(const std::vector<FrameSinkId>& ids,
                                     base::TimeDelta interval) {
-  frame_sink_ids_to_throttle_ = ids;
+  frame_sink_ids_to_throttle_ = base::flat_set<FrameSinkId>(ids);
   throttle_interval_ = interval;
   UpdateThrottling();
 }
@@ -1121,39 +1189,45 @@ void FrameSinkManagerImpl::StopThrottlingAllFrameSinks() {
   UpdateThrottling();
 }
 
-void FrameSinkManagerImpl::UpdateThrottling() {
-  // Clear previous throttling effect on all frame sinks.
-  for (auto& support_map_item : support_map_) {
-    support_map_item.second->ThrottleBeginFrame(base::TimeDelta());
-  }
-  if (throttle_interval_.is_zero() &&
-      (!global_throttle_interval_ ||
-       global_throttle_interval_.value().is_zero()))
-    return;
-
-  if (global_throttle_interval_) {
-    for (const auto& support : support_map_) {
-      support.second->ThrottleBeginFrame(global_throttle_interval_.value());
+void FrameSinkManagerImpl::ApplyThrottlingRules(
+    const base::flat_set<FrameSinkId>& throttled_roots,
+    const base::flat_set<FrameSinkId>& captured_roots) {
+  // Apply throttling
+  if (ThrottleIntervalHasEffect()) {
+    for (const auto& id : throttled_roots) {
+      RecurseChildren(id, [this](const FrameSinkId& frame_sink_id) {
+        if (auto* support = GetFrameSinkForId(frame_sink_id)) {
+          support->SetThrottleInterval(throttle_interval_);
+        }
+      });
     }
   }
 
-  // If the per-frame sink throttle interval is more aggressive than the global
-  // throttling interval, apply it to those frame sinks effectively always
-  // throttling a frame sink as much as possible.
-  if (!global_throttle_interval_ ||
-      throttle_interval_ > global_throttle_interval_) {
-    for (const auto& id : frame_sink_ids_to_throttle_) {
-      UpdateThrottlingRecursively(id, throttle_interval_);
-    }
-  }
-  // Clear throttling on frame sinks currently being captured.
-  for (const auto& id : captured_frame_sink_ids_) {
-    UpdateThrottlingRecursively(id, base::TimeDelta());
+  // Do not allow throttling on frame sinks currently being captured.
+  for (const auto& id : captured_roots) {
+    RecurseChildren(id, [this](const FrameSinkId& frame_sink_id) {
+      if (auto* support = GetFrameSinkForId(frame_sink_id)) {
+        support->SetAllowThrottling(false);
+      }
+    });
   }
 }
 
-void FrameSinkManagerImpl::ClearThrottling(const FrameSinkId& id) {
-  UpdateThrottlingRecursively(id, base::TimeDelta());
+void FrameSinkManagerImpl::UpdateThrottling() {
+  // Clear previous throttling on all frame sinks.
+  const base::TimeDelta default_throttle =
+      global_throttle_interval_.value_or(base::TimeDelta());
+  for (auto& [id, support] : support_map_) {
+    support->SetThrottleInterval(default_throttle);
+    support->SetAllowThrottling(true);
+  }
+
+  ApplyThrottlingRules(frame_sink_ids_to_throttle_, captured_frame_sink_ids_);
+}
+
+bool FrameSinkManagerImpl::ThrottleIntervalHasEffect() const {
+  return !global_throttle_interval_ ||
+         throttle_interval_ > global_throttle_interval_;
 }
 
 void FrameSinkManagerImpl::MaybeEraseHitTestQuery(
