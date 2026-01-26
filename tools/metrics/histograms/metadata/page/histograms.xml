@@ -1681,6 +1681,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.FinalRequestStartToFinalResponseStart"
+    units="ms" expires_after="2027-01-21">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from the final HTTP request start to the final HTTP response start
+    for the main resource of a main frame navigation, for Google Search page
+    loads. This measures the network latency of the final request, including any
+    potential delay from offloading client hints checks to the network layer.
+    Only recorded for Search navigations that happen entirely in the foreground.
+    The metric is emitted when the navigation is completed or the app is
+    backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.FirstFetchStartToFirstRequestStart"
     units="ms" expires_after="2026-06-28">
   <owner>hayato@chromium.org</owner>
@@ -1693,6 +1710,40 @@ chromium-metrics-reviews@google.com.
     navigation, for Google Search page loads. Only recorded for Search
     navigations that happen entirely in the foreground. The metric is emitted
     when the navigation is completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.FirstRequestStartToFinalResponseStart"
+    units="ms" expires_after="2027-01-21">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from the first HTTP request start to the final HTTP response start
+    for the main resource of a main frame navigation, for Google Search page
+    loads. This measures the total network latency across all redirects,
+    including any potential delay from offloading client hints checks to the
+    network layer. Only recorded for Search navigations that happen entirely in
+    the foreground. The metric is emitted when the navigation is completed or
+    the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.FirstRequestStartToFirstResponseStart"
+    units="ms" expires_after="2027-01-21">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from the first HTTP request start to the first HTTP response start
+    for the main resource of a main frame navigation, for Google Search page
+    loads. This measures the network latency of the first request, including any
+    potential delay from offloading client hints checks to the network layer.
+    Only recorded for Search navigations that happen entirely in the foreground.
+    The metric is emitted when the navigation is completed or the app is
+    backgrounded on Android.
   </summary>
 </histogram>
 

@@ -20,9 +20,12 @@ namespace internal {
 
 extern const char kHistogramGWSNavigationStartToFinalRequestStart[];
 extern const char kHistogramGWSNavigationStartToFinalResponseStart[];
+extern const char kHistogramGWSFinalRequestStartToFinalResponseStart[];
 extern const char kHistogramGWSNavigationStartToFinalLoaderCallback[];
 extern const char kHistogramGWSNavigationStartToFirstRequestStart[];
 extern const char kHistogramGWSNavigationStartToFirstResponseStart[];
+extern const char kHistogramGWSFirstRequestStartToFirstResponseStart[];
+extern const char kHistogramGWSFirstRequestStartToFinalResponseStart[];
 extern const char kHistogramGWSNavigationStartToFirstLoaderCallback[];
 extern const char kHistogramGWSNavigationStartToOnComplete[];
 

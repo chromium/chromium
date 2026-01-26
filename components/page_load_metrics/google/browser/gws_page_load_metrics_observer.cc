@@ -51,12 +51,18 @@ const char kHistogramGWSNavigationStartToFinalRequestStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalRequestStart";
 const char kHistogramGWSNavigationStartToFinalResponseStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalResponseStart";
+const char kHistogramGWSFinalRequestStartToFinalResponseStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.FinalRequestStartToFinalResponseStart";
 const char kHistogramGWSNavigationStartToFinalLoaderCallback[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalLoaderCallback";
 const char kHistogramGWSNavigationStartToFirstRequestStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstRequestStart";
 const char kHistogramGWSNavigationStartToFirstResponseStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstResponseStart";
+const char kHistogramGWSFirstRequestStartToFirstResponseStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.FirstRequestStartToFirstResponseStart";
+const char kHistogramGWSFirstRequestStartToFinalResponseStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.FirstRequestStartToFinalResponseStart";
 const char kHistogramGWSNavigationStartToFirstLoaderCallback[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstLoaderCallback";
 const char kHistogramGWSNavigationStartToOnComplete[] =
@@ -821,6 +827,12 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
       internal::kHistogramGWSNavigationStartToFirstResponseStart,
       timing.first_response_start_time - navigation_start_time);
   PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramGWSFirstRequestStartToFirstResponseStart,
+      timing.first_response_start_time - timing.first_request_start_time);
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramGWSFirstRequestStartToFinalResponseStart,
+      timing.final_response_start_time - timing.first_request_start_time);
+  PAGE_LOAD_HISTOGRAM(
       internal::kHistogramGWSNavigationStartToFirstLoaderCallback,
       timing.first_loader_callback_time - navigation_start_time);
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSNavigationStartToFinalRequestStart,
@@ -828,6 +840,9 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   PAGE_LOAD_HISTOGRAM(
       internal::kHistogramGWSNavigationStartToFinalResponseStart,
       timing.final_response_start_time - navigation_start_time);
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramGWSFinalRequestStartToFinalResponseStart,
+      timing.final_response_start_time - timing.final_request_start_time);
   PAGE_LOAD_HISTOGRAM(
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback,
       timing.final_loader_callback_time - navigation_start_time);
