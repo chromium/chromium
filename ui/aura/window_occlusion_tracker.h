@@ -148,12 +148,40 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
     raw_ptr<Window, DanglingUntriaged> window_;
   };
 
+  // Locks the occlusion state and occluded region on the `window` and suppress
+  // notifying the actual values.  This does not affect child windows that are
+  // trakcing, and the occlusion changes on child windows will continue to be
+  // notified.
+  class AURA_EXPORT ScopedLockState : public WindowObserver {
+   public:
+    explicit ScopedLockState(Window* window);
+
+    ScopedLockState(const ScopedLockState&) = delete;
+    ScopedLockState& operator=(const ScopedLockState&) = delete;
+
+    ~ScopedLockState() override;
+
+   private:
+    // WindowObserver:
+    void OnWindowDestroying(Window* window) override;
+
+    void Shutdown();
+
+    raw_ptr<Window> window_;
+  };
+
   // Holds occlusion related information for tracked windows.
   struct OcclusionData {
     // Occlusion state for a tracked window.
     Window::OcclusionState occlusion_state = Window::OcclusionState::UNKNOWN;
     // Region in root window coordinates that is occluded.
     SkRegion occluded_region;
+    // A locked occlusion state.
+    std::optional<Window::OcclusionState> locked_occlusion_state;
+    // A locked occluded region. This is not an optional to avoid explicit
+    // constructor/destructor. Use `locked_occlusion_state` if the value should
+    // be used.
+    SkRegion locked_occluded_region;
   };
 
   WindowOcclusionTracker();
@@ -222,6 +250,10 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // Recomputes the occlusion state of tracked windows under roots marked as
   // dirty in |root_windows_| if there are no active ScopedPause instance.
   void MaybeComputeOcclusion();
+
+  // Notifies occlusion states on the tracking windows.
+  void NotifyOcclusionState(
+      std::optional<bool> exceeded_max_num_times_occlusion_recomputed);
 
   // Recomputes the occlusion state of |window| and its descendants.
   // |parent_transform_relative_to_root| is the transform of |window->parent()|
@@ -358,6 +390,9 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // Called from ScopedForceVisible.
   void ForceWindowVisible(Window* window);
   void RemoveForceWindowVisible(Window* window);
+
+  // Lock/Unlock the occlusioin state on `window`.
+  void Lock(Window* window, bool lock);
 
   // Returns true if the occlusion tracker should use target bounds, opacity
   // transform, and visibility for occlusion computation. This will be true
