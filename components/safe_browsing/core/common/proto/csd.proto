@@ -448,6 +448,7 @@ enum PhishingDetectorResult {
   DOM_EXTRACTION_FAILED = 8;
   TERM_EXTRACTION_FAILED = 9;
   VISUAL_EXTRACTION_FAILED = 10;
+  CLASSIFICATION_SKIPPED = 11;
 }
 
 // The referring app info that launches Chrome. Only used on Android.

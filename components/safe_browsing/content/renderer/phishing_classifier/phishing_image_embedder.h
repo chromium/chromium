@@ -28,7 +28,8 @@ class PhishingVisualFeatureExtractor;
 class PhishingImageEmbedder {
  public:
   using DoneCallback =
-      base::OnceCallback<void(const ImageFeatureEmbedding& /* verdict */)>;
+      base::OnceCallback<void(const ImageFeatureEmbedding& /* verdict */,
+                              const VisualFeatures& /* visual_features */)>;
 
   explicit PhishingImageEmbedder(content::RenderFrame* render_frame);
 
@@ -46,7 +47,8 @@ class PhishingImageEmbedder {
   // used with the ImageEmbedder under the scorer to produce a 1-D feature
   // vector that is to be appended to the ImageFeatureEmbedding message that
   // is passed back to the browser to be added to the CSPP ping.
-  virtual void BeginImageEmbedding(DoneCallback callback);
+  virtual void BeginImageEmbedding(bool can_extract_visual_features,
+                                   DoneCallback callback);
 
   // Called by the RenderView (on the render thread) when a page is unloading or
   // the RenderView is being destroyed. This cancels any visual feature
@@ -57,15 +59,23 @@ class PhishingImageEmbedder {
  private:
   // Callback when off-thread playback of the recorded paint operations is
   // complete.
-  void OnPlaybackDone(std::unique_ptr<SkBitmap> bitmap);
+  void OnPlaybackDone(bool can_extract_visual_features,
+                      std::unique_ptr<SkBitmap> bitmap);
 
   // Callback when the image embedding feature vector has been added to the
   // verdict.
-  void OnImageEmbeddingDone(ImageFeatureEmbedding image_feature_embedding);
+  void OnImageEmbeddingDone(bool can_extract_visual_features,
+                            ImageFeatureEmbedding image_feature_embedding);
+
+  // Callback when visual features have been extracted from the screenshot.
+  void OnVisualFeaturesExtracted(
+      ImageFeatureEmbedding image_feature_embedding,
+      std::unique_ptr<VisualFeatures> visual_features);
 
   // Helper method to run the Image Embedding process' DoneCallback and clear
   // the state.
-  void RunCallback(const ImageFeatureEmbedding& image_feature_embedding);
+  void RunCallback(const ImageFeatureEmbedding& image_feature_embedding,
+                   const VisualFeatures& visual_features);
 
   // Helper to run the DoneCallback when the visual extraction has failed. This
   // will always send an empty ImageFeatureEmbedding object.

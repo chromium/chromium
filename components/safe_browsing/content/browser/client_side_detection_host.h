@@ -239,6 +239,15 @@ class ClientSideDetectionHost
       ClientSideDetectionHostTest,
       TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlistDueToDisabledFeature);
   FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostSkipImageClassificationScoringTest,
+      NeverSkipWhenFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostSkipImageClassificationScoringTest,
+      TriggerModelsDoesNotSkipWhenFeatureIsEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostSkipImageClassificationScoringTest,
+      AllOtherTypesSkipWhenFeatureIsEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionRTLookupResponseForceRequestTest,
       AsyncCheckTrackerTriggersClassificationRequestOnAllowlistMatch);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostClipboardTest,
@@ -309,6 +318,7 @@ class ClientSideDetectionHost
       ClientSideDetectionType request_type,
       bool is_sample_ping,
       std::optional<bool> did_match_high_confidence_allowlist,
+      base::TimeTicks start_time,
       mojom::PhishingDetectorResult result,
       std::optional<mojo_base::ProtoWrapper> verdict);
 
@@ -330,7 +340,8 @@ class ClientSideDetectionHost
   // `verdict` is the ClientPhishingRequest passed into PhishingDetectionDone().
   void MaybeSendClientPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
-      std::optional<bool> did_match_high_confidence_allowlist);
+      std::optional<bool> did_match_high_confidence_allowlist,
+      mojom::PhishingDetectorResult result);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
   // the outcome of the renderer image embedding. The verdict is passed into
@@ -339,7 +350,8 @@ class ClientSideDetectionHost
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
       mojom::PhishingImageEmbeddingResult result,
-      std::optional<mojo_base::ProtoWrapper> image_feature_embedding);
+      std::optional<mojo_base::ProtoWrapper> image_feature_embedding,
+      std::optional<mojo_base::ProtoWrapper> visual_features);
 
   // Add miscellaneous metadata to ClientPhishingRequest prior to sending the
   // ping.
@@ -512,8 +524,11 @@ class ClientSideDetectionHost
   // The navigation ID that commits the current URL. Used to set UnsafeResource.
   int64_t current_navigation_id_;
 
-  // Records the start time of when phishing detection started.
-  base::TimeTicks phishing_detection_start_time_;
+  // The last URL that the fullscreen API was called. This is used because the
+  // DidToggleFullscreenModeForTab can be called for both entering and exiting
+  // fullscreen.
+  GURL last_fullscreen_url_;
+
   // Records the start time of when image embedding started.
   base::TimeTicks image_embedding_start_time_;
   raw_ptr<const base::TickClock> tick_clock_;

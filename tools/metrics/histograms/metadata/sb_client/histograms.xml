@@ -1495,6 +1495,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.VisualFeaturesExistAfterImageEmbedding"
+    enum="BooleanExists" expires_after="2027-01-20">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether visual features exist after image embedding. This is
+    recorded after every image embedding.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.VisualFeatureTime" units="ms"
     expires_after="2026-04-05">
   <owner>andysjlim@chromium.org</owner>

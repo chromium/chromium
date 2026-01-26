@@ -416,6 +416,10 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<bool>
     kShowWarningsForSuspiciousNotificationsShouldSwapButtons;
 
+// Controls whether to skip image classification scoring for non-page load
+// triggers.
+BASE_DECLARE_FEATURE(kSkipImageClassificationScoringForNonPageLoadTriggers);
+
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 

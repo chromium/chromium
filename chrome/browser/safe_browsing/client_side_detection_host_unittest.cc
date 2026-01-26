@@ -396,6 +396,10 @@ class FakePhishingDetector : public mojom::PhishingDetector {
     url_ = GURL();
   }
 
+  bool phishing_detection_started() const {
+    return phishing_detection_started_;
+  }
+
  private:
   mojo::AssociatedReceiverSet<mojom::PhishingDetector> receivers_;
   bool phishing_detection_started_ = false;
@@ -506,7 +510,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     csd_host_->PhishingDetectionDone(
         csd_type,
         /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
-        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
+        clock_.NowTicks(), mojom::PhishingDetectorResult::SUCCESS,
+        std::move(verdict));
   }
 
   void PhishingDetectionDoneWithHighConfidenceAllowlistMatch(
@@ -514,14 +519,15 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     csd_host_->PhishingDetectionDone(
         ClientSideDetectionType::TRIGGER_MODELS,
         /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/true,
-        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
+        clock_.NowTicks(), mojom::PhishingDetectorResult::SUCCESS,
+        std::move(verdict));
   }
 
   void PhishingDetectionError(mojom::PhishingDetectorResult error) {
     csd_host_->PhishingDetectionDone(
         ClientSideDetectionType::TRIGGER_MODELS,
         /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
-        error, std::nullopt);
+        clock_.NowTicks(), error, std::nullopt);
   }
 
   void ExpectPreClassificationChecks(
@@ -616,7 +622,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
   }
 
-  std::string GetRequestTypeName(
+  static std::string GetRequestTypeName(
       ClientSideDetectionType client_side_detection_type) {
     switch (client_side_detection_type) {
       case safe_browsing::ClientSideDetectionType::
@@ -3106,6 +3112,164 @@ TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
                         1);
 }
 
+class ClientSideDetectionHostSkipImageClassificationScoringTest
+    : public ClientSideDetectionHostTest,
+      public testing::WithParamInterface<ClientSideDetectionType> {
+ public:
+  void SetUp() override { ClientSideDetectionHostTest::SetUp(); }
+
+  ClientSideDetectionType GetParamType() const {
+    return static_cast<ClientSideDetectionType>(GetParam());
+  }
+
+  static std::string GetTestName(
+      const testing::TestParamInfo<ClientSideDetectionType>& test_case) {
+    return GetRequestTypeName(test_case.param);
+  }
+
+  static std::vector<ClientSideDetectionType> GetAllParamValues() {
+    std::vector<ClientSideDetectionType> values;
+    for (int i = 0; ClientSideDetectionType_IsValid(i); i++) {
+      ClientSideDetectionType type = static_cast<ClientSideDetectionType>(i);
+      if (type !=
+          ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED) {
+        values.push_back(type);
+      }
+    }
+    return values;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ClientSideDetectionHostSkipImageClassificationScoringTest,
+    ::testing::ValuesIn(
+        ClientSideDetectionHostSkipImageClassificationScoringTest::
+            GetAllParamValues()),
+    ClientSideDetectionHostSkipImageClassificationScoringTest::GetTestName);
+
+TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
+       NeverSkipWhenFeatureDisabled) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  const ClientSideDetectionType& request_type = GetParamType();
+  base::HistogramTester histogram_tester;
+
+  feature_list_.InitAndDisableFeature(
+      kSkipImageClassificationScoringForNonPageLoadTriggers);
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .WillOnce([](SafeBrowsingTokenFetcher::Callback cb) {
+        std::move(cb).Run("fake_access_token");
+      });
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  csd_host_->OnPhishingPreClassificationDone(
+      request_type, /*should_classify=*/true, /*is_sample_ping=*/true,
+      /*did_match_high_confidence_allowlist=*/false);
+
+  // Wait for the report to be sent.
+  run_loop.Run();
+
+  // Phishing detection should have been done (not skipped).
+  EXPECT_TRUE(fake_phishing_detector_.phishing_detection_started());
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult." +
+          GetRequestTypeName(request_type),
+      mojom::PhishingDetectorResult::SUCCESS, 1);
+}
+
+TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
+       TriggerModelsDoesNotSkipWhenFeatureIsEnabled) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  const ClientSideDetectionType& request_type = GetParamType();
+  base::HistogramTester histogram_tester;
+
+  if (request_type != ClientSideDetectionType::TRIGGER_MODELS) {
+    GTEST_SKIP();
+  }
+
+  feature_list_.InitAndEnableFeature(
+      kSkipImageClassificationScoringForNonPageLoadTriggers);
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .WillOnce([](SafeBrowsingTokenFetcher::Callback cb) {
+        std::move(cb).Run("fake_access_token");
+      });
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  csd_host_->OnPhishingPreClassificationDone(
+      request_type, /*should_classify=*/true, /*is_sample_ping=*/true,
+      /*did_match_high_confidence_allowlist=*/false);
+
+  // Wait for the report to be sent.
+  run_loop.Run();
+
+  // Phishing detection should have been done (not skipped).
+  EXPECT_TRUE(fake_phishing_detector_.phishing_detection_started());
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult." +
+          GetRequestTypeName(request_type),
+      mojom::PhishingDetectorResult::SUCCESS, 1);
+}
+
+TEST_P(ClientSideDetectionHostSkipImageClassificationScoringTest,
+       AllOtherTypesSkipWhenFeatureIsEnabled) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  const ClientSideDetectionType& request_type = GetParamType();
+  base::HistogramTester histogram_tester;
+
+  if (request_type == ClientSideDetectionType::TRIGGER_MODELS) {
+    GTEST_SKIP();
+  }
+
+  feature_list_.InitAndEnableFeature(
+      kSkipImageClassificationScoringForNonPageLoadTriggers);
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .WillOnce([](SafeBrowsingTokenFetcher::Callback cb) {
+        std::move(cb).Run("fake_access_token");
+      });
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  csd_host_->OnPhishingPreClassificationDone(
+      request_type, /*should_classify=*/true, /*is_sample_ping=*/true,
+      /*did_match_high_confidence_allowlist=*/false);
+
+  // Wait for the report to be sent.
+  run_loop.Run();
+
+  // Phishing detection should have been skipped.
+  EXPECT_FALSE(fake_phishing_detector_.phishing_detection_started());
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult." +
+          GetRequestTypeName(request_type),
+      mojom::PhishingDetectorResult::CLASSIFICATION_SKIPPED, 1);
+}
+
 class ClientSideDetectionHostNotificationTest
     : public ClientSideDetectionHostTest {
  public:
@@ -3139,14 +3303,15 @@ class ClientSideDetectionHostNotificationTest
     csd_host_->PhishingDetectionDone(
         ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
         /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
-        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
+        clock_.NowTicks(), mojom::PhishingDetectorResult::SUCCESS,
+        std::move(verdict));
   }
 
   void PhishingDetectionError(mojom::PhishingDetectorResult error) {
     csd_host_->PhishingDetectionDone(
         ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
         /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
-        error, std::nullopt);
+        clock_.NowTicks(), error, std::nullopt);
   }
 
   void WaitForBubbleToBeShown() {
@@ -3897,11 +4062,11 @@ class ClientSideDetectionHostScamDetectionTest
     verdict.set_url(example_url_.spec());
     verdict.set_client_score(client_score);
     verdict.set_is_phishing(is_phishing);
-    csd_host_->PhishingDetectionDone(type,
-                                     /*is_sample_ping=*/false,
-                                     did_match_high_confidence_allowlist,
-                                     mojom::PhishingDetectorResult::SUCCESS,
-                                     mojo_base::ProtoWrapper(verdict));
+    csd_host_->PhishingDetectionDone(
+        type,
+        /*is_sample_ping=*/false, did_match_high_confidence_allowlist,
+        clock_.NowTicks(), mojom::PhishingDetectorResult::SUCCESS,
+        mojo_base::ProtoWrapper(verdict));
   }
 
   void SetExampleUrl(GURL example_url) { example_url_ = example_url; }

@@ -99,6 +99,7 @@ class PhishingImageEmbedderDelegate
   // the phishing detection finishes for the same URL and the browser deems the
   // URL to be phishy, or LLAMA forcefully triggers the CSPP ping.
   void StartImageEmbedding(const GURL& url,
+                           bool can_extract_visual_features,
                            StartImageEmbeddingCallback callback) override;
 
   // Called when the image embedding for the current page finishes. This will
@@ -107,10 +108,11 @@ class PhishingImageEmbedderDelegate
   // 1. Visual extraction fails
   // 2. Model TfLite metadata is missing for embedding tflite model dimensions
   // 3. Embedder failed due to embedder creation or process failure.
-  void ImageEmbeddingDone(const ImageFeatureEmbedding& image_feature_embedding);
+  void ImageEmbeddingDone(const ImageFeatureEmbedding& image_feature_embedding,
+                          const VisualFeatures& visual_features);
 
   // Shared code to begin image embedding if all conditions are met.
-  void MaybeStartImageEmbedding();
+  void MaybeStartImageEmbedding(bool can_extract_visual_features = false);
 
   // ScorerStorage::Observer implementation:
   void OnScorerChanged() override;

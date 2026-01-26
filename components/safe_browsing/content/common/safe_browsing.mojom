@@ -129,6 +129,9 @@ enum PhishingDetectorResult {
 
   // Visual extraction failed.
   VISUAL_EXTRACTION_FAILED = 10,
+
+  // Classification was skipped.
+  CLASSIFICATION_SKIPPED = 11,
 };
 
 enum ClientSideDetectionType {
@@ -283,10 +286,12 @@ interface PhishingImageEmbedderDetector {
   // Tells the renderer to begin image embedding. This should only happen if the
   // user is subscribed to ESB, and the verdict is phishy or LLAMA force trigger
   // the CSPP ping. The return objects are Image Embedding process result and a
-  // ImageFeatureEmbedding object declared in csd.proto
-  StartImageEmbedding(url.mojom.Url url)
+  // ImageFeatureEmbedding object declared in csd.proto, and the latter is only
+  // included if extract_visual_features is true.
+  StartImageEmbedding(url.mojom.Url url, bool extract_visual_features)
       => (PhishingImageEmbeddingResult result,
-          mojo_base.mojom.ProtoWrapper? image_embedding_request);
+          mojo_base.mojom.ProtoWrapper? image_embedding_request,
+          mojo_base.mojom.ProtoWrapper? visual_features);
 };
 
 // Enum representing protocol type of a web request.

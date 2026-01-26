@@ -375,6 +375,9 @@ constexpr base::FeatureParam<bool>
         "ShowWarningsForSuspiciousNotificationsShouldSwapButtons",
         /*default_value=*/false};
 
+BASE_FEATURE(kSkipImageClassificationScoringForNonPageLoadTriggers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);
