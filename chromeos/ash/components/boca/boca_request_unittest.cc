@@ -90,7 +90,7 @@ TEST_F(BocaRequestTest, RequestDataAreCorrect) {
       std::make_unique<BocaRequest>(sender_.get(), std::move(delegate_));
   sender_->StartRequestWithAuthRetry(std::move(boca_request));
   url_loader_factory_.WaitForRequest(GURL(kFullUrl));
-  network::ResourceRequest request =
+  const network::ResourceRequest& request =
       url_loader_factory_.GetPendingRequest(0)->request;
   std::string_view actual_request_body = request.request_body->elements()
                                              ->at(0)
@@ -111,7 +111,7 @@ TEST_F(BocaRequestTest, EmptyRequest) {
       std::make_unique<BocaRequest>(sender_.get(), std::move(delegate_));
   sender_->StartRequestWithAuthRetry(std::move(boca_request));
   url_loader_factory_.WaitForRequest(GURL(kFullUrl));
-  network::ResourceRequest request =
+  const network::ResourceRequest& request =
       url_loader_factory_.GetPendingRequest(0)->request;
 
   EXPECT_THAT(request.request_body, testing::IsNull());
