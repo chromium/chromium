@@ -1778,6 +1778,34 @@
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
       }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/cronet/testing:cronet_python_unittests",
+        "module_scheme": "pyunit",
+        "name": "cronet_python_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_python_unittests",
+        "test_id_prefix": "ninja://components/cronet/testing:cronet_python_unittests/"
+      }
     ]
   }
 }
