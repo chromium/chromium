@@ -240,26 +240,41 @@ bool ClearPasswordStores() {
 
 }  // namespace
 
-@implementation PasswordSettingsAppInterface
+@implementation PasswordSettingsAppInterface {
+  std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
+      _scopedReauthOverride;
+}
 
-static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
-    _scopedReauthOverride;
++ (instancetype)sharedInstance {
+  static PasswordSettingsAppInterface* sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[PasswordSettingsAppInterface alloc] init];
+  });
+  return sharedInstance;
+}
 
 // Helper for accessing the scoped override's module.
 + (MockReauthenticationModule*)mockModule {
-  DCHECK(_scopedReauthOverride);
+  PasswordSettingsAppInterface* shared =
+      [PasswordSettingsAppInterface sharedInstance];
+  DCHECK(shared->_scopedReauthOverride);
 
   return base::apple::ObjCCastStrict<MockReauthenticationModule>(
-      _scopedReauthOverride->module);
+      shared->_scopedReauthOverride->module);
 }
 
 + (void)setUpMockReauthenticationModule {
-  _scopedReauthOverride =
+  PasswordSettingsAppInterface* shared =
+      [PasswordSettingsAppInterface sharedInstance];
+  shared->_scopedReauthOverride =
       SetUpAndReturnMockReauthenticationModuleForPasswordManager();
 }
 
 + (void)removeMockReauthenticationModule {
-  _scopedReauthOverride = nullptr;
+  PasswordSettingsAppInterface* shared =
+      [PasswordSettingsAppInterface sharedInstance];
+  shared->_scopedReauthOverride = nullptr;
 }
 
 + (void)mockReauthenticationModuleExpectedResult:
@@ -268,7 +283,7 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 }
 
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt {
-  DCHECK(_scopedReauthOverride);
+  DCHECK([PasswordSettingsAppInterface sharedInstance]->_scopedReauthOverride);
 
   [self mockModule].canAttempt = canAttempt;
 }

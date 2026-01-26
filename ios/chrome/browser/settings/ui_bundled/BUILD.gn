@@ -405,12 +405,12 @@ source_set("unit_tests") {
 source_set("eg_app_support+eg2") {
   testonly = true
   sources = [
+    "family_link_settings_app_interface.h",
+    "family_link_settings_app_interface.mm",
     "settings_app_interface.h",
     "settings_app_interface.mm",
     "supervised_user_family_link_app_interface.h",
     "supervised_user_family_link_app_interface.mm",
-    "family_link_settings_app_interface.h",
-    "family_link_settings_app_interface.mm",
   ]
   deps = [
     "//base",
@@ -445,21 +445,17 @@ source_set("eg_app_support+eg2") {
     "//services/network:test_support",
   ]
   public_deps = [ "//components/content_settings/core/common" ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("eg_test_support+eg2") {
   testonly = true
   sources = [
+    "family_link_settings_app_interface.h",
+    "family_link_settings_app_interface_stub.mm",
     "settings_app_interface.h",
     "settings_app_interface_stub.mm",
     "supervised_user_family_link_app_interface.h",
     "supervised_user_family_link_app_interface_stub.mm",
-    "family_link_settings_app_interface.h",
-    "family_link_settings_app_interface_stub.mm",
   ]
   public_deps = [ "//components/content_settings/core/common" ]
   deps = [

@@ -30,27 +30,20 @@
 #import "ios/web/public/web_state.h"
 #import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
-namespace {
-
-std::vector<std::string> listHosts;
-std::string portForRewrite;
-
-bool HostToLocalHostRewrite(GURL* url, web::BrowserState* context) {
-  DCHECK(url);
-  for (const std::string& host : listHosts) {
-    if (url->host().contains(host)) {
-      *url = GURL("http://127.0.0.1:" + portForRewrite + "/" + host);
-      return true;
-    }
-  }
-
-  return false;
+// Test specific helpers for settings_egtest.mm.
+@implementation SettingsAppInterface {
+  std::vector<std::string> _listHosts;
+  std::string _portForRewrite;
 }
 
-}  // namespace
-
-// Test specific helpers for settings_egtest.mm.
-@implementation SettingsAppInterface : NSObject
++ (instancetype)sharedInstance {
+  static SettingsAppInterface* sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[SettingsAppInterface alloc] init];
+  });
+  return sharedInstance;
+}
 
 + (void)restoreClearBrowsingDataCheckmarksToDefault {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
@@ -129,15 +122,35 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* context) {
 
 + (void)addURLRewriterForHosts:(NSArray<NSString*>*)hosts
                         onPort:(NSString*)port {
-  listHosts.clear();
+  SettingsAppInterface* shared = [SettingsAppInterface sharedInstance];
+  shared->_listHosts.clear();
   for (NSString* host in hosts) {
-    listHosts.push_back(base::SysNSStringToUTF8(host));
+    shared->_listHosts.push_back(base::SysNSStringToUTF8(host));
   }
-  portForRewrite = base::SysNSStringToUTF8(port);
+  shared->_portForRewrite = base::SysNSStringToUTF8(port);
+
+  auto hostToLocalHostRewrite = [](GURL* url, web::BrowserState* context) {
+    return [SettingsAppInterface hostToLocalHostRewriteForURL:url
+                                                      context:context];
+  };
 
   chrome_test_util::GetCurrentWebState()
       ->GetNavigationManager()
-      ->AddTransientURLRewriter(&HostToLocalHostRewrite);
+      ->AddTransientURLRewriter(hostToLocalHostRewrite);
+}
+
++ (bool)hostToLocalHostRewriteForURL:(GURL*)url
+                             context:(web::BrowserState*)context {
+  DCHECK(url);
+  SettingsAppInterface* shared = [SettingsAppInterface sharedInstance];
+  for (const std::string& host : shared->_listHosts) {
+    if (url->host().contains(host)) {
+      *url = GURL("http://127.0.0.1:" + shared->_portForRewrite + "/" + host);
+      return true;
+    }
+  }
+
+  return false;
 }
 
 @end
