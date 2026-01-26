@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
@@ -39,7 +40,15 @@ std::u16string GetInfo(const AttributeInstance& a,
   return a.GetInfo(field_type, params.app_locale, params.format_string);
 }
 
-TEST(AutofillEntityInstanceTest, MaskedAttribute) {
+class AutofillEntityInstanceTest : public base::test::WithFeatureOverride,
+                                   public testing::Test {
+ public:
+  AutofillEntityInstanceTest()
+      : base::test::WithFeatureOverride(
+            features::kAutofillAiWalletPrivatePasses) {}
+};
+
+TEST_P(AutofillEntityInstanceTest, MaskedAttribute) {
   AttributeInstance attribute((AttributeType(kPassportNumber)));
   EXPECT_FALSE(attribute.masked());
 
@@ -47,7 +56,7 @@ TEST(AutofillEntityInstanceTest, MaskedAttribute) {
   EXPECT_TRUE(attribute.masked());
 }
 
-TEST(AutofillEntityInstanceTest, MaskedServerEntityWithMaskedAttributes) {
+TEST_P(AutofillEntityInstanceTest, MaskedServerEntityWithMaskedAttributes) {
   AttributeInstance attribute((AttributeType(kPassportNumber)));
   ASSERT_TRUE(attribute.type().is_obfuscated());
   test_api(attribute).mark_as_masked();
@@ -63,7 +72,7 @@ TEST(AutofillEntityInstanceTest, MaskedServerEntityWithMaskedAttributes) {
   EXPECT_CHECK_DEATH(invalid_entity.IsMaskedServerEntity());
 }
 
-TEST(AutofillEntityInstanceTest, NeitherMaskedNorUnmaskedServerEntity) {
+TEST_P(AutofillEntityInstanceTest, NeitherMaskedNorUnmaskedServerEntity) {
   AttributeInstance attribute((AttributeType(kPassportNumber)));
   ASSERT_TRUE(attribute.type().is_obfuscated());
 
@@ -73,7 +82,7 @@ TEST(AutofillEntityInstanceTest, NeitherMaskedNorUnmaskedServerEntity) {
   EXPECT_FALSE(entity.IsUnmaskedServerEntity());
 }
 
-TEST(AutofillEntityInstanceTest, ServerEntityWithoutObfuscatedAttributes) {
+TEST_P(AutofillEntityInstanceTest, ServerEntityWithoutObfuscatedAttributes) {
   AttributeInstance attribute((AttributeType(kPassportName)));
   ASSERT_FALSE(attribute.type().is_obfuscated());
 
@@ -83,7 +92,7 @@ TEST(AutofillEntityInstanceTest, ServerEntityWithoutObfuscatedAttributes) {
   EXPECT_FALSE(entity.IsUnmaskedServerEntity());
 }
 
-TEST(AutofillEntityInstanceTest, ServerEntityWithUnmaskedAttributes) {
+TEST_P(AutofillEntityInstanceTest, ServerEntityWithUnmaskedAttributes) {
   AttributeInstance attribute((AttributeType(kPassportNumber)));
   ASSERT_TRUE(attribute.type().is_obfuscated());
 
@@ -93,7 +102,7 @@ TEST(AutofillEntityInstanceTest, ServerEntityWithUnmaskedAttributes) {
   EXPECT_TRUE(entity.IsUnmaskedServerEntity());
 }
 
-TEST(AutofillEntityInstanceTest, Attributes) {
+TEST_P(AutofillEntityInstanceTest, Attributes) {
   const char16_t kName[] = u"Pippi";
   EntityInstance pp =
       test::GetPassportEntityInstance({.name = kName, .number = nullptr});
@@ -112,7 +121,7 @@ TEST(AutofillEntityInstanceTest, Attributes) {
 // Tests that AttributeInstance::GetInfo() returns the value for the specified
 // subtype (as per AttributeType::field_subtypes()) and defaults to the overall
 // type (AttributeType::field_type()).
-TEST(AutofillEntityInstanceTest, Attributes_NormalizedType) {
+TEST_P(AutofillEntityInstanceTest, Attributes_NormalizedType) {
   AttributeInstance passport_name((AttributeType(kPassportName)));
   passport_name.SetInfo(NAME_FULL, u"John Doe",
                         /*app_locale=*/"", /*format_string=*/std::nullopt,
@@ -136,7 +145,7 @@ TEST(AutofillEntityInstanceTest, Attributes_NormalizedType) {
 }
 
 // Tests that AttributeInstance localizes the country name.
-TEST(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
+TEST_P(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
   AttributeInstance passport_country((AttributeType(kPassportCountry)));
   passport_country.SetInfo(PASSPORT_ISSUING_COUNTRY, u"SE",
                            /*app_locale=*/"", /*format_string=*/std::nullopt,
@@ -163,7 +172,7 @@ TEST(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
 }
 
 // Tests that AttributeInstance appropriately manages structured names.
-TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
+TEST_P(AutofillEntityInstanceTest, Attributes_StructuredName) {
   AttributeInstance passport_name((AttributeType(kPassportName)));
   passport_name.SetInfo(NAME_FULL, u"Some Name",
                         /*app_locale=*/"", /*format_string=*/std::nullopt,
@@ -177,7 +186,7 @@ TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
 }
 
 // Tests that AttributeInstance honors the affix formats.
-TEST(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
+TEST_P(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
   auto from_affix = [](std::u16string fs) {
     return AutofillFormatString(std::move(fs), FormatString_Type_AFFIX);
   };
@@ -199,7 +208,7 @@ TEST(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
 }
 
 // Tests that AttributeInstance appropriately manages dates.
-TEST(AutofillEntityInstanceTest, Attributes_Date) {
+TEST_P(AutofillEntityInstanceTest, Attributes_Date) {
   auto from_date = [](std::u16string fs) {
     return AutofillFormatString(std::move(fs), FormatString_Type_DATE);
   };
@@ -216,7 +225,7 @@ TEST(AutofillEntityInstanceTest, Attributes_Date) {
 }
 
 // Tests that formatting flight numbers works correctly.
-TEST(AutofillEntityInstanceTest, AttributesFlightFormat) {
+TEST_P(AutofillEntityInstanceTest, AttributesFlightFormat) {
   auto from_flight_number = [](std::u16string fs) {
     return AutofillFormatString(std::move(fs), FormatString_Type_FLIGHT_NUMBER);
   };
@@ -265,7 +274,7 @@ TEST(AutofillEntityInstanceTest, AttributesFlightFormat) {
 
 // Tests that calling `SetInfo` with an ICU date format string causes a CHECK
 // failure.
-TEST(AutofillEntityInstanceTest, Attributes_SetInfoWithIcuDate_CheckFails) {
+TEST_P(AutofillEntityInstanceTest, Attributes_SetInfoWithIcuDate_CheckFails) {
   AttributeType type(kFlightReservationDepartureDate);
   AttributeInstance attribute(type);
   EXPECT_DEATH_IF_SUPPORTED(
@@ -277,8 +286,9 @@ TEST(AutofillEntityInstanceTest, Attributes_SetInfoWithIcuDate_CheckFails) {
       "");
 }
 
-TEST(AutofillEntityInstanceTest,
-     GetEntityMergeability_IdentiticalEntities_NoMergeableAttribute_IsASubset) {
+TEST_P(
+    AutofillEntityInstanceTest,
+    GetEntityMergeability_IdentiticalEntities_NoMergeableAttribute_IsASubset) {
   EntityInstance::EntityMergeability result =
       test::GetPassportEntityInstance().GetEntityMergeability(
           test::GetPassportEntityInstance());
@@ -286,7 +296,7 @@ TEST(AutofillEntityInstanceTest,
   EXPECT_TRUE(result.is_subset);
 }
 
-TEST(
+TEST_P(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityMissingAttribute_NoMergeableAttributes_IsASubset) {
   EntityInstance::EntityMergeability result =
@@ -296,7 +306,7 @@ TEST(
   EXPECT_TRUE(result.mergeable_attributes.empty());
   EXPECT_TRUE(result.is_subset);
 }
-TEST(
+TEST_P(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityEmptyStringAttribute_NoMergeablesAttribute_IsASubset) {
   EntityInstance::EntityMergeability result =
@@ -307,7 +317,7 @@ TEST(
   EXPECT_TRUE(result.is_subset);
 }
 
-TEST(
+TEST_P(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityHasNewAttribute_MergeableAttributesExists_IsNotASubset) {
   EntityInstance old_entity =
@@ -331,7 +341,7 @@ TEST(
 // This test has two entities that have the same merge constraints (Passport
 // number and expiry date). However, newer contains an update data for country,
 // this should not lead to a fresh entity, rather an updated one.
-TEST(
+TEST_P(
     AutofillEntityInstanceTest,
     GetEntityMergeability_MergeConstraintsMatch_AttributeWithDifferentValue_MergeableAttributesExists_IsNotASubset) {
   EntityInstance new_entity =
@@ -350,7 +360,7 @@ TEST(
   EXPECT_FALSE(result.is_subset);
 }
 
-TEST(
+TEST_P(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityHasSameAttributeWithDifferentValue_MergeableAttributesDoNotExists_IsNotASubset) {
   EntityInstance old_entity =
@@ -363,7 +373,7 @@ TEST(
   EXPECT_FALSE(result.is_subset);
 }
 
-TEST(
+TEST_P(
     AutofillEntityInstanceTest,
     GetEntityMergeability_NewEntityHasEquivalentAttribute_MergeableAttributesDoNotExists_IsASubset) {
   EntityInstance::EntityMergeability result =
@@ -375,27 +385,27 @@ TEST(
   EXPECT_TRUE(result.is_subset);
 }
 
-TEST(AutofillEntityInstanceTest, IsSubsetOf_IdenticalEntities) {
+TEST_P(AutofillEntityInstanceTest, IsSubsetOf_IdenticalEntities) {
   EntityInstance entity1 = test::GetPassportEntityInstance();
   EntityInstance entity2 = test::GetPassportEntityInstance();
   EXPECT_TRUE(entity1.IsSubsetOf(entity2));
 }
 
-TEST(AutofillEntityInstanceTest, IsSubsetOf_ProperSubset) {
+TEST_P(AutofillEntityInstanceTest, IsSubsetOf_ProperSubset) {
   EntityInstance entity1 =
       test::GetPassportEntityInstance({.expiry_date = nullptr});
   EntityInstance entity2 = test::GetPassportEntityInstance();
   EXPECT_TRUE(entity1.IsSubsetOf(entity2));
 }
 
-TEST(AutofillEntityInstanceTest, IsSubsetOf_NotASubset) {
+TEST_P(AutofillEntityInstanceTest, IsSubsetOf_NotASubset) {
   EntityInstance entity1 = test::GetPassportEntityInstance();
   EntityInstance entity2 =
       test::GetPassportEntityInstance({.expiry_date = nullptr});
   EXPECT_FALSE(entity1.IsSubsetOf(entity2));
 }
 
-TEST(AutofillEntityInstanceTest, IsSubsetOf_DifferentEntityTypes) {
+TEST_P(AutofillEntityInstanceTest, IsSubsetOf_DifferentEntityTypes) {
   EntityInstance entity1 = test::GetPassportEntityInstance();
   EntityInstance entity2 = test::GetVehicleEntityInstance();
   EXPECT_FALSE(entity1.IsSubsetOf(entity2));
@@ -403,7 +413,7 @@ TEST(AutofillEntityInstanceTest, IsSubsetOf_DifferentEntityTypes) {
 
 // Tests that valid entities that don't share any attribute in common are not
 // merged, as we cannot verify that they represent the same real-world object.
-TEST(AutofillEntityInstanceTest, GetEntityMergeability_EntitiesAreDisjoint) {
+TEST_P(AutofillEntityInstanceTest, GetEntityMergeability_EntitiesAreDisjoint) {
   EntityInstance::EntityMergeability result =
       test::GetVehicleEntityInstance({.number = u"12345"})
           .GetEntityMergeability(
@@ -413,7 +423,7 @@ TEST(AutofillEntityInstanceTest, GetEntityMergeability_EntitiesAreDisjoint) {
   EXPECT_FALSE(result.is_subset);
 }
 
-TEST(AutofillEntityInstanceTest, FrecencyOrder_SortEntitiesByFrecency) {
+TEST_P(AutofillEntityInstanceTest, FrecencyOrder_SortEntitiesByFrecency) {
   auto pp_with_random_guid = []() {
     return test::GetPassportEntityInstance(
         {.guid = base::Uuid::GenerateRandomV4().AsLowercaseString()});
@@ -441,7 +451,7 @@ TEST(AutofillEntityInstanceTest, FrecencyOrder_SortEntitiesByFrecency) {
 }
 
 // Tests that frecency override takes precedence over frecency.
-TEST(AutofillEntityInstanceTest, FrecencyOrder_EntitiesWithFrecencyOverride) {
+TEST_P(AutofillEntityInstanceTest, FrecencyOrder_EntitiesWithFrecencyOverride) {
   EntityInstance first_flight = test::GetFlightReservationEntityInstance(
       {.departure_time = test::kJune2017});
   EntityInstance second_flight = test::GetFlightReservationEntityInstance(
@@ -457,8 +467,8 @@ TEST(AutofillEntityInstanceTest, FrecencyOrder_EntitiesWithFrecencyOverride) {
 
 // Tests that if one entity has a non-empty frecency override, while other has
 // empty override, the non-empty takes precedence.
-TEST(AutofillEntityInstanceTest,
-     FrecencyOrder_EntityWithFrecencyOverrideTakesPrecedence) {
+TEST_P(AutofillEntityInstanceTest,
+       FrecencyOrder_EntityWithFrecencyOverrideTakesPrecedence) {
   EntityInstance flight = test::GetFlightReservationEntityInstance(
       {.departure_time = test::kJune2017});
   EntityInstance passport = test::GetPassportEntityInstance();
@@ -471,7 +481,7 @@ TEST(AutofillEntityInstanceTest,
   EXPECT_EQ(entities[0].guid(), flight.guid());
 }
 
-TEST(AutofillEntityInstanceTest, AreAttributesReadOnly_ForReadOnlyEntity) {
+TEST_P(AutofillEntityInstanceTest, AreAttributesReadOnly_ForReadOnlyEntity) {
   EntityInstance entity = test::GetPassportEntityInstance(
       {.are_attributes_read_only =
            EntityInstance::AreAttributesReadOnly{true}});
@@ -479,7 +489,7 @@ TEST(AutofillEntityInstanceTest, AreAttributesReadOnly_ForReadOnlyEntity) {
   EXPECT_TRUE(entity.are_attributes_read_only());
 }
 
-TEST(AutofillEntityInstanceTest, AreAttributesReadOnly_ForMutableEntity) {
+TEST_P(AutofillEntityInstanceTest, AreAttributesReadOnly_ForMutableEntity) {
   EntityInstance entity = test::GetPassportEntityInstance(
       {.are_attributes_read_only =
            EntityInstance::AreAttributesReadOnly{false}});
@@ -487,7 +497,7 @@ TEST(AutofillEntityInstanceTest, AreAttributesReadOnly_ForMutableEntity) {
   EXPECT_FALSE(entity.are_attributes_read_only());
 }
 
-TEST(AutofillEntityInstanceTest, FormatFlightDepartureDate) {
+TEST_P(AutofillEntityInstanceTest, FormatFlightDepartureDate) {
   AttributeType type(kFlightReservationDepartureDate);
   AttributeInstance attribute(type);
   attribute.SetInfo(FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
@@ -502,7 +512,7 @@ TEST(AutofillEntityInstanceTest, FormatFlightDepartureDate) {
 }
 
 // Tests that the metadata of an entity instance can be updated correctly.
-TEST(AutofillEntityInstanceTest, SetMetadata) {
+TEST_P(AutofillEntityInstanceTest, SetMetadata) {
   EntityInstance entity = test::GetPassportEntityInstance();
   EntityInstance::EntityId original_guid = entity.guid();
   // Create new metadata with different values but the same GUID.
@@ -517,13 +527,85 @@ TEST(AutofillEntityInstanceTest, SetMetadata) {
 
 // Tests that calling `set_metadata` with a different GUID causes a CHECK
 // failure.
-TEST(AutofillEntityInstanceTest, SetMetadata_DifferentGuid_CheckFails) {
+TEST_P(AutofillEntityInstanceTest, SetMetadata_DifferentGuid_CheckFails) {
   EntityInstance entity = test::GetPassportEntityInstance();
   EntityInstance::EntityMetadata new_metadata = entity.metadata();
   new_metadata.guid = EntityInstance::EntityId(base::Uuid::GenerateRandomV4());
 
   EXPECT_DEATH_IF_SUPPORTED(entity.set_metadata(new_metadata), "");
 }
+
+// Tests that masked attributes only require a suffix match if the feature is
+// enabled.
+TEST_P(AutofillEntityInstanceTest, IsSubsetOf_MaskedAttributes) {
+  AttributeInstance a1((AttributeType(kPassportNumber)));
+  a1.SetRawInfo(PASSPORT_NUMBER, u"LR0123456", VerificationStatus::kNoStatus);
+
+  AttributeInstance a2((AttributeType(kPassportNumber)));
+  a2.SetRawInfo(PASSPORT_NUMBER, u"3456", VerificationStatus::kNoStatus);
+  test_api(a2).mark_as_masked();
+
+  EntityInstance entity1 = test::GetEntityInstance(
+      {a1}, {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance entity2 = test::GetEntityInstance(
+      {a2}, {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  EXPECT_EQ(entity2.IsSubsetOf(entity1), IsParamFeatureEnabled());
+}
+
+// Tests that GetEntityMergeability also honors the suffix match for masked
+// attributes if the feature is enabled.
+TEST_P(AutofillEntityInstanceTest, GetEntityMergeability_MaskedAttributes) {
+  // Passport merge constraints include the passport number.
+  AttributeInstance a1_num((AttributeType(kPassportNumber)));
+  a1_num.SetRawInfo(PASSPORT_NUMBER, u"LR0123456",
+                    VerificationStatus::kNoStatus);
+  AttributeInstance a1_exp((AttributeType(kPassportExpirationDate)));
+  a1_exp.SetRawInfo(PASSPORT_EXPIRATION_DATE, u"2030-01-01",
+                    VerificationStatus::kNoStatus);
+
+  AttributeInstance a2_num((AttributeType(kPassportNumber)));
+  a2_num.SetRawInfo(PASSPORT_NUMBER, u"3456", VerificationStatus::kNoStatus);
+  test_api(a2_num).mark_as_masked();
+  AttributeInstance a2_exp((AttributeType(kPassportExpirationDate)));
+  a2_exp.SetRawInfo(PASSPORT_EXPIRATION_DATE, u"2030-01-01",
+                    VerificationStatus::kNoStatus);
+
+  EntityInstance entity1 = test::GetEntityInstance(
+      {a1_num, a1_exp},
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance entity2 = test::GetEntityInstance(
+      {a2_num, a2_exp},
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  // They should be considered the same entity because their merge constraints
+  // (number and expiry) match (via suffix) if the feature is enabled.
+  EntityInstance::EntityMergeability result =
+      entity1.GetEntityMergeability(entity2);
+  EXPECT_EQ(result.is_subset, IsParamFeatureEnabled());
+}
+
+// Tests that if both attributes are masked, they compare as unequal if they
+// are not the same.
+TEST_P(AutofillEntityInstanceTest, IsSubsetOf_BothMasked_OneIsSuffixOfOther) {
+  AttributeInstance a1((AttributeType(kPassportNumber)));
+  a1.SetRawInfo(PASSPORT_NUMBER, u"LR0123456", VerificationStatus::kNoStatus);
+  test_api(a1).mark_as_masked();
+
+  AttributeInstance a2((AttributeType(kPassportNumber)));
+  a2.SetRawInfo(PASSPORT_NUMBER, u"3456", VerificationStatus::kNoStatus);
+  test_api(a2).mark_as_masked();
+
+  EntityInstance entity1 = test::GetEntityInstance(
+      {a1}, {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance entity2 = test::GetEntityInstance(
+      {a2}, {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  EXPECT_FALSE(entity1.IsSubsetOf(entity2));
+  EXPECT_FALSE(entity2.IsSubsetOf(entity1));
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AutofillEntityInstanceTest);
 
 }  // namespace
 }  // namespace autofill

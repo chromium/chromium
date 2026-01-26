@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
 #include <algorithm>
+#include <optional>
 #include <ranges>
 #include <utility>
 #include <variant>
@@ -26,15 +27,54 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 
 namespace {
 
-std::u16string NormalizeEntityValue(const AttributeInstance& attribute) {
-  return normalization::NormalizeForComparison(
+// Returns the normalized value of the `attribute`. If `suffix_length` is
+// provided, only the suffix of that length is returned.
+std::u16string NormalizeAttributeValue(
+    const AttributeInstance& attribute,
+    std::optional<size_t> suffix_length = std::nullopt) {
+  std::u16string value = normalization::NormalizeForComparison(
       attribute.GetRawInfo(attribute.type().field_type()));
+  if (suffix_length && value.length() > *suffix_length) {
+    value = value.substr(value.length() - *suffix_length);
+  }
+  return value;
+}
+
+// If `kAutofillAiWalletPrivatePasses` is enabled and either `a1` or `a2` is
+// masked, returns the minimum of the lengths of the non-empty, normalized
+// values of the masked attribute instances. Otherwise, returns `std::nullopt`.
+//
+// The product implication of a non-zero suffix length is that equality checks
+// between attribute values only consider the suffix of this length. For
+// example, if the suffix length is 4, the values "12345678" and "45678" are
+// considered equal, but "12345678" and "34567" are not.
+std::optional<size_t> DetermineSuffixLength(const AttributeInstance& a1,
+                                            const AttributeInstance& a2) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
+    return std::nullopt;
+  }
+
+  size_t length = 0;
+  if (a1.masked()) {
+    std::u16string value = NormalizeAttributeValue(a1);
+    if (!value.empty()) {
+      length = value.length();
+    }
+  }
+  if (a2.masked()) {
+    std::u16string value = NormalizeAttributeValue(a2);
+    if (!value.empty()) {
+      length = std::max(length, value.length());
+    }
+  }
+  return length ? std::make_optional(length) : std::nullopt;
 }
 
 // Returns `s` in the demanded `format`. See `data_util::IsValidDateFormat` for
@@ -392,9 +432,13 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
                 attribute(type);
             base::optional_ref<const AttributeInstance> attribute_2 =
                 newer.attribute(type);
-            return attribute_1 && attribute_2 &&
-                   NormalizeEntityValue(*attribute_1) ==
-                       NormalizeEntityValue(*attribute_2);
+            if (!attribute_1 || !attribute_2) {
+              return false;
+            }
+            const std::optional<size_t> suffix_length =
+                DetermineSuffixLength(*attribute_1, *attribute_2);
+            return NormalizeAttributeValue(*attribute_1, suffix_length) ==
+                   NormalizeAttributeValue(*attribute_2, suffix_length);
           });
         });
   }();
@@ -404,9 +448,16 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
       base::optional_ref<const AttributeInstance> attribute_1 = attribute(type);
       base::optional_ref<const AttributeInstance> attribute_2 =
           newer.attribute(type);
-      return !attribute_2 ||
-             (attribute_1 && NormalizeEntityValue(*attribute_1) ==
-                                 NormalizeEntityValue(*attribute_2));
+      if (!attribute_2) {
+        return true;
+      }
+      if (!attribute_1) {
+        return false;
+      }
+      const std::optional<size_t> suffix_length =
+          DetermineSuffixLength(*attribute_1, *attribute_2);
+      return NormalizeAttributeValue(*attribute_1, suffix_length) ==
+             NormalizeAttributeValue(*attribute_2, suffix_length);
     });
   }();
 
@@ -437,7 +488,7 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
     auto is_attribute_empty =
         [&](base::optional_ref<const AttributeInstance> attribute_instance) {
           return !attribute_instance ||
-                 NormalizeEntityValue(*attribute_instance).empty();
+                 NormalizeAttributeValue(*attribute_instance).empty();
         };
     const bool is_attribute_1_empty = is_attribute_empty(attribute_1);
     const bool is_attribute_2_empty = is_attribute_empty(attribute_2);
@@ -457,8 +508,12 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
       return AttributeMergeabilityResult::kNewEntityHasNewAttribute;
     }
 
-    const std::u16string attribute_value_1 = NormalizeEntityValue(*attribute_1);
-    const std::u16string attribute_value_2 = NormalizeEntityValue(*attribute_2);
+    const std::optional<size_t> suffix_length =
+        DetermineSuffixLength(*attribute_1, *attribute_2);
+    const std::u16string attribute_value_1 =
+        NormalizeAttributeValue(*attribute_1, suffix_length);
+    const std::u16string attribute_value_2 =
+        NormalizeAttributeValue(*attribute_2, suffix_length);
     return attribute_value_1 == attribute_value_2
                ? AttributeMergeabilityResult::
                      kNewAndOldEntitiesHaveSameAttribute
@@ -513,10 +568,17 @@ bool EntityInstance::IsSubsetOf(const EntityInstance& other) const {
     base::optional_ref<const AttributeInstance> other_attribute =
         other.attribute(type);
 
+    const std::optional<size_t> suffix_length =
+        (this_attribute && other_attribute)
+            ? DetermineSuffixLength(*this_attribute, *other_attribute)
+            : std::nullopt;
     const std::u16string this_attribute_value =
-        this_attribute ? NormalizeEntityValue(*this_attribute) : u"";
+        this_attribute ? NormalizeAttributeValue(*this_attribute, suffix_length)
+                       : u"";
     const std::u16string other_attribute_value =
-        other_attribute ? NormalizeEntityValue(*other_attribute) : u"";
+        other_attribute
+            ? NormalizeAttributeValue(*other_attribute, suffix_length)
+            : u"";
 
     // Both entities do not have a value for a certain attribute, move forward
     // to check other attributes.

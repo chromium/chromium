@@ -289,6 +289,9 @@ BASE_FEATURE(kAutofillAiVoteForFormatStringsForFlightNumbers,
 BASE_FEATURE(kAutofillAiWalletFlightReservation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, AutofillAi supports private passes entities from Google Wallet.
+BASE_FEATURE(kAutofillAiWalletPrivatePasses, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, AutofillAi supports vehicle registration entities from Google
 // Wallet.
 BASE_FEATURE(kAutofillAiWalletVehicleRegistration,
