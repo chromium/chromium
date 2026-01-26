@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   // root node.
   TabCollectionNode* tab_node =
       unpinned_collection_node()
-          ->GetChildNodeOfType(RootTabCollectionNode::Type::GROUP)
+          ->GetChildNodeOfType(TabCollectionNode::Type::GROUP)
           ->children()[0]
           .get();
   VerticalTabView* tab = static_cast<VerticalTabView*>(tab_node->view());
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   // Verify the collapse icon is correct.
   TabCollectionNode* group_node =
       unpinned_collection_node()->GetChildNodeOfType(
-          RootTabCollectionNode::Type::GROUP);
+          TabCollectionNode::Type::GROUP);
   VerticalTabGroupHeaderView* group_header =
       static_cast<VerticalTabGroupView*>(group_node->view())->group_header();
   EXPECT_EQ(group_header->collapse_icon_for_testing()
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
 
   TabCollectionNode* tab_node =
       unpinned_collection_node()
-          ->GetChildNodeOfType(RootTabCollectionNode::Type::GROUP)
+          ->GetChildNodeOfType(TabCollectionNode::Type::GROUP)
           ->children()[0]
           .get();
   VerticalTabView* tab = static_cast<VerticalTabView*>(tab_node->view());

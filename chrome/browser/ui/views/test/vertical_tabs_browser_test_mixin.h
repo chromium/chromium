@@ -99,12 +99,11 @@ class VerticalTabsBrowserTestMixin : public T {
   }
 
   TabCollectionNode* unpinned_collection_node() {
-    return root_node()->GetChildNodeOfType(
-        RootTabCollectionNode::Type::UNPINNED);
+    return root_node()->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED);
   }
 
   TabCollectionNode* pinned_collection_node() {
-    return root_node()->GetChildNodeOfType(RootTabCollectionNode::Type::PINNED);
+    return root_node()->GetChildNodeOfType(TabCollectionNode::Type::PINNED);
   }
 
   void AppendPinnedTab() {

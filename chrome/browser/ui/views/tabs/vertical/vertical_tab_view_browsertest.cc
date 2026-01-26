@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, LogsTabCloseMetrics_SplitView) {
   AppendSplitTab();
   TabCollectionNode* tab_node =
       unpinned_collection_node()
-          ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
+          ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
           ->GetNodeForHandle(tab_strip_model()->GetActiveTab()->GetHandle());
   TabCloseButton* close_button = static_cast<VerticalTabView*>(tab_node->view())
                                      ->close_button_for_testing();
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, LogsTabCloseMetrics_SplitView) {
 
   AppendSplitTab();
   tab_node = unpinned_collection_node()
-                 ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
+                 ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
                  ->GetNodeForHandle(
                      tab_strip_model()
                          ->GetTabAtIndex(tab_strip_model()->active_index() + 1)

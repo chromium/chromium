@@ -27,7 +27,7 @@ class VerticalSplitTabViewTest
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
   AppendSplitTab();
   auto* split = unpinned_collection_node()
-                    ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
                     ->view();
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
   AppendSplitTab();
   auto* split = unpinned_collection_node()
-                    ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
                     ->view();
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
   AppendSplitTab();
   auto* split = unpinned_collection_node()
-                    ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
+                    ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
                     ->view();
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
