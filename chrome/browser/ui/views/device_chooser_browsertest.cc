@@ -23,7 +23,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/fake_bluetooth_chooser_controller.h"
 #include "components/permissions/fake_usb_chooser_controller.h"
-#include "components/tabs/public/split_tab_visual_data.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
