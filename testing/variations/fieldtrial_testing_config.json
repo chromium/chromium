@@ -16459,22 +16459,6 @@
             ]
         }
     ],
-    "MigrateAccountPrefs": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MigrateAccountPrefs"
-                    ]
-                }
-            ]
-        }
-    ],
     "MigrateAlwaysTranslateLanguagesFix": [
         {
             "platforms": [

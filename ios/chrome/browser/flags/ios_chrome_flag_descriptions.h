@@ -627,9 +627,6 @@ extern const char kMeasurementsDescription[];
 extern const char kMetrickitNonCrashReportName[];
 extern const char kMetrickitNonCrashReportDescription[];
 
-extern const char kMigrateAccountPrefsOnMobileName[];
-extern const char kMigrateAccountPrefsOnMobileDescription[];
-
 extern const char kMigrateIOSKeychainAccessibilityName[];
 extern const char kMigrateIOSKeychainAccessibilityDescription[];
 

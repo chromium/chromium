@@ -125,7 +125,7 @@ bool IsReadingListAccountStorageEnabled() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kMigrateAccountPrefs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMigrateAccountPrefs, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 // Enabled by default, intended as a kill switch.

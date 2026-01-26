@@ -12527,11 +12527,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"migrate-account-prefs-on-mobile",
-     flag_descriptions::kMigrateAccountPrefsOnMobileName,
-     flag_descriptions::kMigrateAccountPrefsOnMobileDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kMigrateAccountPrefs)},
-
     {"tab-model-init-fixes", flag_descriptions::kTabModelInitFixesName,
      flag_descriptions::kTabModelInitFixesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabModelInitFixes)},
