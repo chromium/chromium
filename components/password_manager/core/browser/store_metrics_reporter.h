@@ -89,7 +89,7 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
 
   bool custom_passphrase_enabled_;
 
-  bool is_account_storage_enabled_;
+  bool is_account_storage_active_;
 
   bool is_safe_browsing_enabled_;
 
