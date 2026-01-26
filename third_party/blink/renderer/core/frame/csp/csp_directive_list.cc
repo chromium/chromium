@@ -966,15 +966,10 @@ bool CSPDirectiveListShouldDisableWasmEval(
   return true;
 }
 
-String JoinPath(const Vector<String>& tokens) {
+String JoinPath(const Vector<StringView>& tokens) {
   StringBuilder b;
-  for (size_t i = 0; i < tokens.size(); i++) {
-    b.Append(tokens[i]);
-    if (i != tokens.size() - 1) {
-      b.Append("/");
-    }
-  }
-  return b.ToString();
+  b.AppendRange(tokens, "/");
+  return b.ReleaseString();
 }
 
 String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
@@ -996,18 +991,16 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   // after the origin except for the fragment, which is stripped due to privacy
   // reasons (see https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports).
   KURL document_base(document_url.BaseAsString().ToString());
-  String document_path = document_base.GetPath().ToString();
-  String script_path = StrCat({script_url.GetPath().ToString(),
-                               script_url.QueryWithLeadingQuestionMark()});
+  StringView document_path = document_base.GetPath();
+  String script_path =
+      StrCat({script_url.GetPath(), script_url.QueryWithLeadingQuestionMark()});
 
-  Vector<String> document_path_tokens;
-  Vector<String> script_path_tokens;
   // Paths of resolved KURLs always start with "/", even if the actual path is
   // empty. Remove it then split.
-  document_path.Substring(1).Split("/", /*allow_empty_entries=*/false,
-                                   document_path_tokens);
-  script_path.Substring(1).Split("/", /*allow_empty_entries=*/false,
-                                 script_path_tokens);
+  Vector<StringView> document_path_tokens =
+      document_path.substr(1).SplitSkippingEmpty('/');
+  Vector<StringView> script_path_tokens =
+      StringView(script_path).substr(1).SplitSkippingEmpty('/');
 
   size_t common_prefix_len = 0;
   size_t min_len =
@@ -1019,7 +1012,7 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   }
 
   int level_difference = document_path_tokens.size() - common_prefix_len;
-  Vector<String> relative_path_tokens;
+  Vector<StringView> relative_path_tokens;
   for (int i = 0; i < level_difference; i++) {
     relative_path_tokens.push_back("..");
   }
