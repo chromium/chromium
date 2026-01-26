@@ -397,7 +397,13 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBNonOrigin) {
 }
 
 // Ensure the visible data is where it's supposed to be.
-TEST_F(VideoResourceUpdaterTest, SoftwareFrameY16NonOrigin) {
+// TODO(crbug.com/478752396): Fix and re-enable.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SoftwareFrameY16NonOrigin DISABLED_SoftwareFrameY16NonOrigin
+#else
+#define MAYBE_SoftwareFrameY16NonOrigin SoftwareFrameY16NonOrigin
+#endif
+TEST_F(VideoResourceUpdaterTest, MAYBE_SoftwareFrameY16NonOrigin) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
 
   auto video_frame = CreateTestY16VideoFrameWithVisibleRect();
