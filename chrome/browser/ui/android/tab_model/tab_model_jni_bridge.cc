@@ -703,7 +703,15 @@ std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(
     const std::set<tabs::TabHandle>& tabs) {
   std::optional<base::Token> requested_group_id =
       tab_groups::TabGroupId::ToOptionalToken(group_id);
-  std::vector<TabAndroid*> tabs_to_add = GetAllTabsFromHandles(tabs);
+
+  // Order the tabs by index to ensure consistency with desktop.
+  std::vector<TabAndroid*> tabs_to_add;
+  tabs_to_add.reserve(tabs.size());
+  for (tabs::TabInterface* tab : GetAllTabs()) {
+    if (tabs.contains(tab->GetHandle())) {
+      tabs_to_add.push_back(static_cast<TabAndroid*>(tab));
+    }
+  }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
