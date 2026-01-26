@@ -1455,8 +1455,8 @@ class BookmarksLimitExceededStateProvider : public SyncErrorBaseStateProvider {
       : SyncErrorBaseStateProvider(
             browser->profile(),
             state_observer,
-            syncer::SyncService::UserActionableError::kBookmarksLimitExceeded),
-        browser_(browser) {}
+            syncer::SyncService::UserActionableError::kBookmarksLimitExceeded) {
+  }
 
   ~BookmarksLimitExceededStateProvider() override = default;
 
@@ -1465,25 +1465,6 @@ class BookmarksLimitExceededStateProvider : public SyncErrorBaseStateProvider {
     return l10n_util::GetStringUTF16(
         IDS_AVATAR_BUTTON_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED);
   }
-
-  std::optional<base::RepeatingCallback<void(bool)>> GetButtonActionOverride()
-      override {
-    return base::BindRepeating(
-        &BookmarksLimitExceededStateProvider::OpenHelp,
-        // This is safe because `AvatarToolbarButtonStateManager`
-        // owning all the providers owns the callback.
-        base::Unretained(this));
-  }
-
- private:
-  void OpenHelp(bool) {
-    ShowBookmarksLimitExceededHelp(
-        browser_, SyncServiceFactory::GetForProfile(browser_->profile()),
-        syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
-            kIdentityErrorInfoPill);
-  }
-
-  const raw_ptr<Browser> browser_;
 };
 
 class GenericSyncErrorStateProvider : public SyncErrorBaseStateProvider {

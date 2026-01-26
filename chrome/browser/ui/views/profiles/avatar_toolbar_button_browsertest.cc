@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
@@ -1027,6 +1028,25 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
   ClearBookmarksLimitExceededError();
   EXPECT_TRUE(avatar_button->GetText().empty());
 }
+
+// Avatar button is not shown on Ash. No need to perform those tests as the info
+// checked might not be adapted.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
+                       BookmarksLimitExceededErrorOpensProfileMenu) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  EnableSyncWithImageAndClearGreeting(avatar_button, u"test@gmail.com");
+  SimulateBookmarksLimitExceededError();
+
+  EXPECT_FALSE(
+      browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
+  avatar_button->ButtonPressed();
+  // TODO(crbug.com/478780706) Verifying the presence and functionality of error
+  // cards within the profile menu is not easily testable. Consider implementing
+  // a test harness for this purpose.
+  EXPECT_TRUE(browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        BookmarksLimitExceededErrorForSignedInUser) {
