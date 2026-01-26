@@ -985,10 +985,7 @@ gpu.ci.linux_builder(
             "gpu_common_gtests_passthrough_swiftshader",
         ],
         mixins = [
-            "gpu-swarming-pool",
-            "no_gpu",
-            "linux-jammy",
-            "x86-64",
+            "gpu_linux_gce_stable",
         ],
         per_test_modifications = {
             "gl_tests_passthrough": targets.mixin(

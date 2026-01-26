@@ -844,10 +844,7 @@ linux_memory_builder(
                 reason = "https://crbug.com/crashpad/304",
             ),
             "gl_tests_passthrough": [
-                "gpu-swarming-pool",
-                "no_gpu",
-                "linux-jammy",
-                "x86-64",
+                "gpu_linux_gce_stable",
                 targets.mixin(
                     args = [
                         "--test-launcher-filter-file=../../testing/buildbot/filters/linux.swiftshader.tsan.gl_tests_passthrough.filter",

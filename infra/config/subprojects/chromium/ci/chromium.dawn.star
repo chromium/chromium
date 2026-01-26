@@ -112,10 +112,7 @@ gpu.ci.linux_builder(
             "gpu_dawn_common_isolated_scripts",
         ],
         mixins = [
-            "gpu-swarming-pool",
-            "linux-jammy",
-            "no_gpu",
-            "x86-64",
+            "gpu_linux_gce_stable",
         ],
     ),
     targets_settings = targets.settings(
