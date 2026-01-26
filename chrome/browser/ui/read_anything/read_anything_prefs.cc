@@ -61,9 +61,15 @@ void RegisterReadAnythingProfilePrefs(
       prefs::kAccessibilityReadAnythingLinksEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  registry->RegisterBooleanPref(
-      prefs::kAccessibilityReadAnythingImagesEnabled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    registry->RegisterBooleanPref(
+        prefs::kAccessibilityReadAnythingImagesEnabled, true,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  } else {
+    registry->RegisterBooleanPref(
+        prefs::kAccessibilityReadAnythingImagesEnabled, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  }
   if (features::IsReadAnythingOmniboxChipEnabled() &&
       base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
     registry->RegisterIntegerPref(
