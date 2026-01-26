@@ -136,6 +136,7 @@
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/skia_memory_dump_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/switches.h"
@@ -1466,6 +1467,9 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
   DCHECK(main_thread_runner()->BelongsToCurrentThread());
   if (base::FeatureList::IsEnabled(kUseThreadPoolForMediaTaskRunner)) {
     if (!media_task_runner_) {
+      // TODO(crbug.com/470337728): ensure the sequenced task runner is executed
+      // in the right priority when blink::features::kWebRtcUseMediaThreadTypes
+      // is enabled.
       media_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
           base::TaskTraits{base::TaskPriority::USER_VISIBLE,
                            base::WithBaseSyncPrimitives(), base::MayBlock()});
@@ -1482,6 +1486,10 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
     options.thread_type = base::ThreadType::kDisplayCritical;
 #else
     base::Thread::Options options;
+    if (base::FeatureList::IsEnabled(
+            blink::features::kWebRtcUseMediaThreadTypes)) {
+      options.thread_type = base::ThreadType::kDisplayCritical;
+    }
 #endif
     media_thread_->StartWithOptions(std::move(options));
   }
