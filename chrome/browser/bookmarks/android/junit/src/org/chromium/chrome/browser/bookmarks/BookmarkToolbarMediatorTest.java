@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.base.Clipboard;
@@ -84,7 +84,7 @@ public class BookmarkToolbarMediatorTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private BookmarkDelegate mBookmarkDelegate;
-    @Mock private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
+    @Mock private DragTouchHandler mDragTouchHandler;
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private SelectionDelegate mSelectionDelegate;
     @Mock private Runnable mNavigateBackRunnable;
@@ -144,7 +144,7 @@ public class BookmarkToolbarMediatorTest {
                         mContext,
                         mProfile,
                         mModel,
-                        mDragReorderableRecyclerViewAdapter,
+                        mDragTouchHandler,
                         mBookmarkDelegateSupplier,
                         mSelectionDelegate,
                         mBookmarkModel,
@@ -181,7 +181,7 @@ public class BookmarkToolbarMediatorTest {
                         mContext,
                         mProfile,
                         mModel,
-                        mDragReorderableRecyclerViewAdapter,
+                        mDragTouchHandler,
                         mBookmarkDelegateSupplier,
                         mSelectionDelegate,
                         mBookmarkModel,

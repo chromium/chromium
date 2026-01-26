@@ -197,10 +197,12 @@ public class PartnerBookmarkTest {
     }
 
     private boolean isViewHolderPassivelyDraggable(ViewHolder viewHolder) {
-        return runOnUiThreadBlocking(() -> mAdapter.isPassivelyDraggable(viewHolder));
+        return runOnUiThreadBlocking(
+                () -> mAdapter.getDragTouchHandlerForTest().isPassivelyDraggable(viewHolder));
     }
 
     private boolean isViewHoldersActivelyDraggable(ViewHolder viewHolder) {
-        return runOnUiThreadBlocking(() -> mAdapter.isActivelyDraggable(viewHolder));
+        return runOnUiThreadBlocking(
+                () -> mAdapter.getDragTouchHandlerForTest().isActivelyDraggable(viewHolder));
     }
 }

@@ -99,9 +99,10 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
-import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
-import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DragListener;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DraggabilityProvider;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -354,6 +355,7 @@ public class BookmarkManagerMediatorTest {
     private Activity mActivity;
     private BookmarkManagerMediator mMediator;
     private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
+    private DragTouchHandler mDragTouchHandler;
 
     @Before
     public void setUp() {
@@ -515,8 +517,11 @@ public class BookmarkManagerMediatorTest {
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
 
+        mDragTouchHandler = spy(new DragTouchHandler(mActivity, mModelList));
         mDragReorderableRecyclerViewAdapter =
-                spy(new DragReorderableRecyclerViewAdapter(mActivity, mModelList));
+                spy(
+                        new DragReorderableRecyclerViewAdapter(
+                                mActivity, mModelList, mDragTouchHandler));
         mMediator =
                 new BookmarkManagerMediator(
                         mActivity,
@@ -528,6 +533,7 @@ public class BookmarkManagerMediatorTest {
                         mSelectionDelegate,
                         mRecyclerView,
                         mDragReorderableRecyclerViewAdapter,
+                        mDragTouchHandler,
                         /* isDialogUi= */ true,
                         mBackPressStateSupplier,
                         mProfile,
@@ -783,8 +789,7 @@ public class BookmarkManagerMediatorTest {
         assertTrue(draggabilityProvider.isActivelyDraggable(mModelList.get(1).model));
 
         mModelList.move(1, 2);
-        verify(mDragReorderableRecyclerViewAdapter)
-                .addDragListener(mDragListenerArgumentCaptor.capture());
+        verify(mDragTouchHandler).addDragListener(mDragListenerArgumentCaptor.capture());
         mDragListenerArgumentCaptor.getValue().onSwap();
         verify(mBookmarkModel)
                 .reorderBookmarks(mFolderId1, new long[] {mFolderId3.getId(), mFolderId2.getId()});

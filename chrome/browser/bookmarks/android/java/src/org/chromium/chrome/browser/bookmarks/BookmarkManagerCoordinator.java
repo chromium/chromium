@@ -51,6 +51,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
@@ -95,8 +96,8 @@ public class BookmarkManagerCoordinator
             };
 
     private static final class DragAndCancelAdapter extends DragReorderableRecyclerViewAdapter {
-        DragAndCancelAdapter(Context context, ModelList modelList) {
-            super(context, modelList);
+        DragAndCancelAdapter(Context context, ModelList modelList, DragTouchHandler handler) {
+            super(context, modelList, handler);
         }
 
         @Override
@@ -200,12 +201,14 @@ public class BookmarkManagerCoordinator
         mSelectableListLayout = selectableList;
 
         mModelList = new ModelList();
-        DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
-                new DragAndCancelAdapter(activity, mModelList);
+        DragTouchHandler dragTouchHandler = new DragTouchHandler(mContext, mModelList);
 
         // Disable the default long press so that our custom one can be used.
-        dragReorderableRecyclerViewAdapter.setDefaultLongPressDragEnabled(
+        dragTouchHandler.setDefaultLongPressDragEnabled(
                 !ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled());
+
+        DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
+                new DragAndCancelAdapter(activity, mModelList, dragTouchHandler);
 
         mRecyclerView =
                 mSelectableListLayout.initializeRecyclerView(
@@ -234,7 +237,7 @@ public class BookmarkManagerCoordinator
                         mSelectableListLayout,
                         mSelectionDelegate,
                         /* searchDelegate= */ this,
-                        dragReorderableRecyclerViewAdapter,
+                        dragTouchHandler,
                         isDialogUi,
                         bookmarkDelegateSupplier,
                         mBookmarkModel,
@@ -273,6 +276,7 @@ public class BookmarkManagerCoordinator
                         mSelectionDelegate,
                         mRecyclerView,
                         dragReorderableRecyclerViewAdapter,
+                        dragTouchHandler,
                         isDialogUi,
                         mBackPressStateSupplier,
                         mProfile,

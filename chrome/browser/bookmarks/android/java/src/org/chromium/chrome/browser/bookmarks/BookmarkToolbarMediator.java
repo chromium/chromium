@@ -29,8 +29,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
-import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DragListener;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.base.Clipboard;
@@ -77,7 +77,7 @@ class BookmarkToolbarMediator
     private final Context mContext;
     private final Profile mProfile;
     private final PropertyModel mModel;
-    private final DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
+    private final DragTouchHandler mDragTouchHandler;
     private final SelectionDelegate mSelectionDelegate;
     private final BookmarkModel mBookmarkModel;
     private final BookmarkOpener mBookmarkOpener;
@@ -99,7 +99,7 @@ class BookmarkToolbarMediator
             Context context,
             Profile profile,
             PropertyModel model,
-            DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
+            DragTouchHandler dragTouchHandler,
             OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier,
             SelectionDelegate<BookmarkId> selectionDelegate,
             BookmarkModel bookmarkModel,
@@ -116,8 +116,8 @@ class BookmarkToolbarMediator
         mModel = model;
 
         mModel.set(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION, this::onMenuIdClick);
-        mDragReorderableRecyclerViewAdapter = dragReorderableRecyclerViewAdapter;
-        mDragReorderableRecyclerViewAdapter.addDragListener(this);
+        mDragTouchHandler = dragTouchHandler;
+        mDragTouchHandler.addDragListener(this);
         mSelectionDelegate = selectionDelegate;
         mSelectionDelegate.addObserver(this);
         mBookmarkModel = bookmarkModel;
@@ -284,7 +284,7 @@ class BookmarkToolbarMediator
 
     @Override
     public void onDestroy() {
-        mDragReorderableRecyclerViewAdapter.removeDragListener(this);
+        mDragTouchHandler.removeDragListener(this);
         mSelectionDelegate.removeObserver(this);
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
 

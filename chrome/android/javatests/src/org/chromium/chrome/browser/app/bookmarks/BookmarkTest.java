@@ -2018,11 +2018,13 @@ public class BookmarkTest {
     }
 
     private boolean isViewHolderPassivelyDraggable(ViewHolder viewHolder) {
-        return ThreadUtils.runOnUiThreadBlocking(() -> mAdapter.isPassivelyDraggable(viewHolder));
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mAdapter.getDragTouchHandlerForTest().isPassivelyDraggable(viewHolder));
     }
 
     private boolean isViewHoldersActivelyDraggable(ViewHolder viewHolder) {
-        return ThreadUtils.runOnUiThreadBlocking(() -> mAdapter.isActivelyDraggable(viewHolder));
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mAdapter.getDragTouchHandlerForTest().isActivelyDraggable(viewHolder));
     }
 
     private BookmarkManagerTestingDelegate getTestingDelegate() {
