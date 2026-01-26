@@ -4105,6 +4105,7 @@
       name: "PrerenderUntilScript",
       public: true,
       origin_trial_feature_name: "PrerenderUntilScript",
+      origin_trial_allows_third_party: true,
       status: "experimental",
     },
     {
