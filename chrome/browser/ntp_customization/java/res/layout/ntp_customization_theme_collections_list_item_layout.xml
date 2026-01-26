@@ -10,8 +10,8 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/ntp_customization_theme_collection_list_item_padding_horizontal"
-    android:paddingBottom="@dimen/ntp_customization_theme_collection_list_item_padding_bottom"
+    android:layout_marginHorizontal="@dimen/ntp_customization_theme_collection_list_item_margin_horizontal"
+    android:layout_marginBottom="@dimen/ntp_customization_theme_collection_list_item_margin_bottom"
     android:clickable="true"
     android:focusable="true">
 

@@ -249,7 +249,11 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
             switch (itemType) {
                 case THEME_COLLECTIONS_ITEM:
                     BackgroundCollection collectionItem = (BackgroundCollection) item;
-                    itemView.setActivated(collectionItem.id.equals(selectedCollectionId));
+                    boolean isThemeCollectionSelected =
+                            collectionItem.id.equals(selectedCollectionId);
+                    itemView.setActivated(isThemeCollectionSelected);
+                    // It allows to pronounce "selected" when isSelected is true.
+                    itemView.setSelected(isThemeCollectionSelected);
                     mTitle.setText(collectionItem.label);
                     fetchImageWithPlaceholder(imageFetcher, collectionItem.previewImageUrl);
                     mView.setOnClickListener(onClickListener);
@@ -257,9 +261,14 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
 
                 case SINGLE_THEME_COLLECTION_ITEM:
                     CollectionImage imageItem = (CollectionImage) item;
-                    itemView.setActivated(
+                    String contentDescription = String.join(", ", imageItem.attribution);
+                    mView.setContentDescription(contentDescription);
+                    boolean isSingleThemeCollectionSelected =
                             imageItem.collectionId.equals(selectedCollectionId)
-                                    && imageItem.imageUrl.equals(selectedImageUrl));
+                                    && imageItem.imageUrl.equals(selectedImageUrl);
+                    itemView.setActivated(isSingleThemeCollectionSelected);
+                    // It allows to pronounce "selected" when isSelected is true.
+                    itemView.setSelected(isSingleThemeCollectionSelected);
                     mTitle.setVisibility(View.GONE);
                     fetchImageWithPlaceholder(imageFetcher, imageItem.previewImageUrl);
                     View.OnClickListener clickListener =

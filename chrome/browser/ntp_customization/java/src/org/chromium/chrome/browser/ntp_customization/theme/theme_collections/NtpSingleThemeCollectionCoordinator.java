@@ -110,7 +110,7 @@ public class NtpSingleThemeCollectionCoordinator {
                 context.getResources()
                                 .getDimensionPixelSize(
                                         R.dimen
-                                                .ntp_customization_theme_collection_list_item_padding_horizontal)
+                                                .ntp_customization_theme_collection_list_item_margin_horizontal)
                         * 2;
 
         mNtpSingleThemeCollectionBottomSheetView =

@@ -90,12 +90,15 @@ public class NtpThemeCollectionsAdapterUnitTest {
                 new BackgroundCollection("id2", "Another Collection", JUnitTestGURLs.URL_2, 456));
 
         mImageItems = new ArrayList<>();
+        List<String> attributions1 = new ArrayList<>();
+        attributions1.add("Attribution 1");
+        attributions1.add("Attribution 2");
         mImageItems.add(
                 new CollectionImage(
                         "id1",
                         JUnitTestGURLs.URL_1,
                         PREVIEW_IMAGE_URL,
-                        new ArrayList<>(),
+                        attributions1,
                         JUnitTestGURLs.URL_1));
         mImageItems.add(
                 new CollectionImage(
@@ -152,6 +155,7 @@ public class NtpThemeCollectionsAdapterUnitTest {
         assertEquals(View.VISIBLE, viewHolder.mTitle.getVisibility());
         assertTrue(viewHolder.mView.hasOnClickListeners());
         assertFalse(viewHolder.itemView.isActivated());
+        assertFalse(viewHolder.itemView.isSelected());
 
         ArgumentCaptor<ImageFetcher.Params> paramsCaptor =
                 ArgumentCaptor.forClass(ImageFetcher.Params.class);
@@ -176,6 +180,10 @@ public class NtpThemeCollectionsAdapterUnitTest {
         assertEquals(View.GONE, viewHolder.mTitle.getVisibility());
         assertTrue(viewHolder.mView.hasOnClickListeners());
         assertFalse(viewHolder.itemView.isActivated());
+        assertFalse(viewHolder.itemView.isSelected());
+        assertEquals(
+                "Attribution 1, Attribution 2",
+                viewHolder.mView.getContentDescription().toString());
 
         ArgumentCaptor<ImageFetcher.Params> paramsCaptor =
                 ArgumentCaptor.forClass(ImageFetcher.Params.class);
@@ -321,6 +329,7 @@ public class NtpThemeCollectionsAdapterUnitTest {
         adapter.setSelection(mCollectionItems.get(0).id, null);
         adapter.onBindViewHolder(viewHolder, 0);
         assertTrue(viewHolder.itemView.isActivated());
+        assertTrue(viewHolder.itemView.isSelected());
 
         // Bind a different item, it should not be selected.
         ThemeCollectionViewHolder viewHolder2 =
@@ -329,13 +338,16 @@ public class NtpThemeCollectionsAdapterUnitTest {
         itemViewTypeField.set(viewHolder2, THEME_COLLECTIONS_ITEM);
         adapter.onBindViewHolder(viewHolder2, 1);
         assertFalse(viewHolder2.itemView.isActivated());
+        assertFalse(viewHolder2.itemView.isSelected());
 
         // Select the second item.
         adapter.setSelection(mCollectionItems.get(1).id, null);
         adapter.onBindViewHolder(viewHolder, 0);
         assertFalse(viewHolder.itemView.isActivated());
+        assertFalse(viewHolder.itemView.isSelected());
         adapter.onBindViewHolder(viewHolder2, 1);
         assertTrue(viewHolder2.itemView.isActivated());
+        assertTrue(viewHolder2.itemView.isSelected());
     }
 
     @Test
@@ -358,16 +370,19 @@ public class NtpThemeCollectionsAdapterUnitTest {
         adapter.setSelection(mImageItems.get(0).collectionId, mImageItems.get(0).imageUrl);
         adapter.onBindViewHolder(viewHolder, 0);
         assertTrue(viewHolder.itemView.isActivated());
+        assertTrue(viewHolder.itemView.isSelected());
 
         // Select with only matching collectionId, should not be activated.
         adapter.setSelection(mImageItems.get(0).collectionId, JUnitTestGURLs.URL_2);
         adapter.onBindViewHolder(viewHolder, 0);
         assertFalse(viewHolder.itemView.isActivated());
+        assertFalse(viewHolder.itemView.isSelected());
 
         // Select with only matching imageUrl, should not be activated.
         adapter.setSelection("id2", mImageItems.get(0).imageUrl);
         adapter.onBindViewHolder(viewHolder, 0);
         assertFalse(viewHolder.itemView.isActivated());
+        assertFalse(viewHolder.itemView.isSelected());
     }
 
     @Test
