@@ -142,9 +142,11 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
  public:
   DeviceBoundSessionManagerTest()
       : context_(net::CreateTestURLRequestContextBuilder()->Build()),
-        service_(std::make_unique<SessionServiceImpl>(unexportable_key_service_,
-                                                      context_.get(),
-                                                      /*store=*/nullptr)),
+        service_(std::make_unique<SessionServiceImpl>(
+            unexportable_key_service_,
+            context_.get(),
+            /*store=*/nullptr,
+            /*restricted_sites=*/std::vector<net::SchemefulSite>())),
         cookie_manager_(std::make_unique<CookieManager>(
             context_.get(),
             nullptr,

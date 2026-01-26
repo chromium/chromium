@@ -394,6 +394,17 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceBoundSessionsForRestrictedSites,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDeviceBoundSessionsForRestrictedSitesExperimentId,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kDeviceBoundSessionsForRestrictedSitesExperimentIdParam,
+                   &kDeviceBoundSessionsForRestrictedSitesExperimentId,
+                   "Value",
+                   "");
+
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

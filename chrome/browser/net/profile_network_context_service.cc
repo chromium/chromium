@@ -1552,6 +1552,13 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
   network_context_params->device_bound_sessions_enabled =
       base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions);
+  // Restrict sessions on google.com and youtube.com so that we can run
+  // an experiment to understand their session's impact on Chrome's
+  // special cookie handling for these sites.
+  network_context_params->device_bound_sessions_restricted_sites =
+      std::vector<net::SchemefulSite>{
+          net::SchemefulSite(GURL("https://google.com")),
+          net::SchemefulSite(GURL("https://youtube.com"))};
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions) &&

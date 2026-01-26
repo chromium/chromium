@@ -3045,6 +3045,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
   if (params_->device_bound_sessions_enabled) {
     builder.set_has_device_bound_session_service(true);
+    builder.set_device_bound_sessions_restricted_sites(
+        params_->device_bound_sessions_restricted_sites);
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
     if (params_->bound_sessions_unexportable_key_service.is_valid()) {

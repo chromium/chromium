@@ -78,7 +78,8 @@ class NET_EXPORT SessionService {
   // Returns nullptr if unexportable key provider is not supported by the
   // platform or the device.
   static std::unique_ptr<SessionService> Create(
-      const URLRequestContext* request_context);
+      const URLRequestContext* request_context,
+      const std::vector<SchemefulSite>& restricted_sites);
 
   SessionService(const SessionService&) = delete;
   SessionService& operator=(const SessionService&) = delete;
@@ -206,10 +207,10 @@ class NET_EXPORT SessionService {
 
   // Helper function to handle the registration and challenge headers provided
   // in `headers` on the response to `request`.
-  void HandleResponseHeaders(
+  virtual void HandleResponseHeaders(
       DbscRequest& request,
       HttpResponseHeaders* headers,
-      const FirstPartySetMetadata& first_party_set_metadata);
+      const FirstPartySetMetadata& first_party_set_metadata) = 0;
 
  protected:
   SessionService() = default;

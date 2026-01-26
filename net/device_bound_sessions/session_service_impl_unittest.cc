@@ -174,9 +174,10 @@ class SessionServiceImplTest : public ::testing::Test,
   }
 
   void SetUp() override {
-    service_ = std::make_unique<SessionServiceImpl>(unexportable_key_service_,
-                                                    context_.get(),
-                                                    /*store=*/nullptr);
+    service_ = std::make_unique<SessionServiceImpl>(
+        unexportable_key_service_, context_.get(),
+        /*store=*/nullptr,
+        /*restricted_sites=*/std::vector<SchemefulSite>());
   }
 
   void TearDown() override {
@@ -2268,7 +2269,10 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         context_(CreateTestURLRequestContextBuilder()->Build()),
         store_(std::make_unique<StrictMock<SessionStoreMock>>()),
-        service_(unexportable_key_service_, context_.get(), store_.get()) {
+        service_(unexportable_key_service_,
+                 context_.get(),
+                 store_.get(),
+                 /*restricted_sites=*/std::vector<SchemefulSite>()) {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kDeviceBoundSessionsFederatedRegistration);
   }

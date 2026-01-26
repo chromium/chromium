@@ -10,6 +10,8 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "components/signin/public/base/session_binding_utils.h"
+#include "net/base/features.h"
+#include "net/base/url_util.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
 
@@ -103,6 +105,15 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
 
   if (!registration_endpoint.is_valid() || challenge.empty()) {
     return std::nullopt;
+  }
+
+  if (!net::features::kDeviceBoundSessionsForRestrictedSitesExperimentIdParam
+           .Get()
+           .empty()) {
+    registration_endpoint = net::AppendQueryParameter(
+        registration_endpoint, "experiment_id",
+        net::features::kDeviceBoundSessionsForRestrictedSitesExperimentIdParam
+            .Get());
   }
 
   return BoundSessionRegistrationFetcherParam(std::move(registration_endpoint),

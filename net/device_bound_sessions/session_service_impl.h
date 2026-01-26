@@ -75,7 +75,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   SessionServiceImpl(unexportable_keys::UnexportableKeyService& key_service,
                      const URLRequestContext* request_context,
-                     SessionStore* store);
+                     SessionStore* store,
+                     const std::vector<SchemefulSite>& restricted_sites);
   ~SessionServiceImpl() override;
 
   // Loads saved session data from disk if a `SessionStore` object is provided
@@ -140,6 +141,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       SignedRefreshChallenge signed_refresh_challenge) override;
   bool SigningQuotaExceeded(const SchemefulSite& site) override;
   void AddSigningOccurrence(const SchemefulSite& site) override;
+  void HandleResponseHeaders(
+      DbscRequest& request,
+      HttpResponseHeaders* headers,
+      const FirstPartySetMetadata& first_party_set_metadata) override;
 
   // The `SessionService` implementation has a const-qualified accessor
   // for sessions. This overload allows for non-const access as well.
@@ -402,6 +407,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Holds all currently live registration fetchers.
   std::set<std::unique_ptr<RegistrationFetcher>, base::UniquePtrComparator>
       registration_fetchers_;
+
+  // List of sites that are restricted from starting Device Bound
+  // Session Credential sessions unless
+  // `kDeviceBoundSessionRestrictedSites` is enabled.
+  std::vector<SchemefulSite> restricted_sites_;
 
   base::WeakPtrFactory<SessionServiceImpl> weak_factory_{this};
 };

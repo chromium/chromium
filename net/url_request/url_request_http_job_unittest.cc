@@ -1405,7 +1405,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
   EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Return(std::nullopt));
   request_->Start();
-  EXPECT_CALL(GetMockService(), RegisterBoundSession).Times(1);
+  EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());
 }
@@ -1462,6 +1462,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                           device_bound_sessions::RefreshResult::kUnreachable)));
           return std::nullopt;
         });
+    EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
   }
 
   request_->Start();
@@ -1500,6 +1501,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
   EXPECT_CALL(GetMockService(), ShouldDefer)
       .WillOnce([](Unused, Unused, Unused) { return std::nullopt; });
+  EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
   request_->Start();
   delegate_.RunUntilComplete();
   EXPECT_THAT(delegate_.request_status(), IsOk());
@@ -1576,6 +1578,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
 
           return std::nullopt;
         });
+    EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
   }
 
   request_->Start();
@@ -1624,6 +1627,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                                   kInScopeProactiveRefreshNotPossible);
               return std::nullopt;
             });
+    EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
   }
 
   request_->Start();
@@ -1689,6 +1693,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                           device_bound_sessions::RefreshResult::kUnreachable)));
           return std::nullopt;
         });
+    EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
   }
 
   request_->Start();
@@ -1755,6 +1760,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                           device_bound_sessions::RefreshResult::kUnreachable)));
           return std::nullopt;
         });
+    EXPECT_CALL(GetMockService(), HandleResponseHeaders).Times(1);
   }
 
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
@@ -1798,6 +1804,16 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
     InSequence s;
     EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Return(std::nullopt));
     EXPECT_CALL(GetMockService(), RegisterBoundSession).Times(0);
+    EXPECT_CALL(GetMockService(), HandleResponseHeaders)
+        .WillOnce([](device_bound_sessions::DbscRequest& request,
+                     HttpResponseHeaders* headers,
+                     const FirstPartySetMetadata& first_party_set_metadata) {
+          std::vector<device_bound_sessions::RegistrationFetcherParam> params =
+              device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
+                  request.url(), headers,
+                  /*restricted_sites=*/std::vector<SchemefulSite>());
+          ASSERT_EQ(params.size(), 0u);
+        });
   }
   request_->Start();
   delegate_.RunUntilComplete();
@@ -1830,7 +1846,16 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   {
     InSequence s;
     EXPECT_CALL(GetMockService(), ShouldDefer).WillOnce(Return(std::nullopt));
-    EXPECT_CALL(GetMockService(), SetChallengeForBoundSession).Times(1);
+    EXPECT_CALL(GetMockService(), HandleResponseHeaders)
+        .WillOnce([](device_bound_sessions::DbscRequest& request,
+                     HttpResponseHeaders* headers,
+                     const FirstPartySetMetadata& first_party_set_metadata) {
+          std::vector<device_bound_sessions::SessionChallengeParam>
+              challenge_params =
+                  device_bound_sessions::SessionChallengeParam::CreateIfValid(
+                      request.url(), headers);
+          ASSERT_EQ(challenge_params.size(), 1u);
+        });
   }
   request_->Start();
   delegate_.RunUntilComplete();
