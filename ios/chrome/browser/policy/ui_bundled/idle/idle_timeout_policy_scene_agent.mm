@@ -134,12 +134,14 @@
 
 #pragma mark - IdleServiceObserving
 
-- (void)onIdleTimeoutInForeground {
+- (void)idleServiceDidTimeoutInForeground:
+    (enterprise_idle::IdleService*)idleService {
   [self maybeShowIdleTimeoutConfirmationDialog];
 }
 
-- (void)onIdleTimeoutOnStartup {
-  CHECK(_idleService->IsIdleTimeoutPolicySet());
+- (void)idleServiceDidTimeoutOnStartup:
+    (enterprise_idle::IdleService*)idleService {
+  CHECK(idleService->IsIdleTimeoutPolicySet());
   // Any window can display the snackbar after actions run on startup or
   // reforeground. The differentiating factor in this case will be which scene
   // enters foreground first.
@@ -147,13 +149,15 @@
   [self showExtendedLaunchScreenWindow];
 }
 
-- (void)onIdleTimeoutActionsCompleted {
+- (void)idleServiceDidCompleteActions:
+    (enterprise_idle::IdleService*)idleService {
   [self maybeDismissExtendedLaunchScreenWindowIfDisplayed];
   [self maybeShowPostActionSnackbar];
 }
 
-- (void)onApplicationWillEnterBackground {
-  CHECK(_idleService->IsIdleTimeoutPolicySet());
+- (void)idleServiceWillEnterBackground:
+    (enterprise_idle::IdleService*)idleService {
+  CHECK(idleService->IsIdleTimeoutPolicySet());
   [self stopIdleTimeoutConfirmationCoordinator];
   // When the app is moving to the background -> Show the launch screen. This
   // needs to be done now instead of when we are sure the app will be idle on

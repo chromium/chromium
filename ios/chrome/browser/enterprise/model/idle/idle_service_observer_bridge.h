@@ -7,16 +7,21 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 
-// Objective-C protocol mirroring IdleService::Observer.
+// Objective-C protocol mirroring `IdleService::Observer`.
 @protocol IdleServiceObserving <NSObject>
 @optional
-- (void)onIdleTimeoutInForeground;
-- (void)onIdleTimeoutOnStartup;
-- (void)onIdleTimeoutActionsCompleted;
-- (void)onApplicationWillEnterBackground;
+- (void)idleServiceDidTimeoutInForeground:
+    (enterprise_idle::IdleService*)idleService;
+- (void)idleServiceDidTimeoutOnStartup:
+    (enterprise_idle::IdleService*)idleService;
+- (void)idleServiceDidCompleteActions:
+    (enterprise_idle::IdleService*)idleService;
+- (void)idleServiceWillEnterBackground:
+    (enterprise_idle::IdleService*)idleService;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -27,7 +32,7 @@ class IdleServiceObserverBridge
                             id<IdleServiceObserving> observer);
   ~IdleServiceObserverBridge() override;
 
-  // IdleService::Observer implementation.
+  // `IdleService::Observer` implementation.
   void OnIdleTimeoutInForeground() override;
   void OnIdleTimeoutOnStartup() override;
   void OnIdleTimeoutActionsCompleted() override;
@@ -35,6 +40,7 @@ class IdleServiceObserverBridge
 
  private:
   __weak id<IdleServiceObserving> observer_ = nil;
+  raw_ptr<enterprise_idle::IdleService> service_ = nullptr;
   base::ScopedObservation<enterprise_idle::IdleService,
                           enterprise_idle::IdleService::Observer>
       scoped_observation_{this};
