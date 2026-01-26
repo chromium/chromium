@@ -287,7 +287,7 @@ void EchoAIManagerImpl::CreateProofreader(
 }
 
 void EchoAIManagerImpl::AddModelDownloadProgressObserver(
-    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
         observer_remote) {
   download_progress_observers_.Add(std::move(observer_remote));
 }

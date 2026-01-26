@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_CREATE_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_CREATE_MONITOR_H_
 
-#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -15,9 +15,10 @@
 namespace blink {
 
 // The monitor class that serves as the target for the `downloadprogress` event.
-class CreateMonitor final : public EventTarget,
-                            public ExecutionContextClient,
-                            public mojom::blink::ModelDownloadProgressObserver {
+class CreateMonitor final
+    : public EventTarget,
+      public ExecutionContextClient,
+      public on_device_model::mojom::blink::DownloadObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -32,11 +33,12 @@ class CreateMonitor final : public EventTarget,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  // mojom::blink::ModelDownloadProgressObserver implementation
+  // on_device_model::mojom::blink::DownloadObserver implementation.
   void OnDownloadProgressUpdate(uint64_t downloaded_bytes,
                                 uint64_t total_bytes) override;
 
-  mojo::PendingRemote<mojom::blink::ModelDownloadProgressObserver> BindRemote();
+  mojo::PendingRemote<on_device_model::mojom::blink::DownloadObserver>
+  BindRemote();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(downloadprogress, kDownloadprogress)
 
@@ -45,7 +47,8 @@ class CreateMonitor final : public EventTarget,
 
   Member<AbortSignal> abort_signal_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoReceiver<mojom::blink::ModelDownloadProgressObserver, CreateMonitor>
+  HeapMojoReceiver<on_device_model::mojom::blink::DownloadObserver,
+                   CreateMonitor>
       receiver_;
 };
 

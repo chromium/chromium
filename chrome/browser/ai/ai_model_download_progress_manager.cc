@@ -13,7 +13,7 @@ AIModelDownloadProgressManager::AIModelDownloadProgressManager() = default;
 AIModelDownloadProgressManager::~AIModelDownloadProgressManager() = default;
 
 void AIModelDownloadProgressManager::AddObserver(
-    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
         observer_remote,
     base::flat_set<std::unique_ptr<Component>> components) {
   reporters_.emplace(std::make_unique<Reporter>(
@@ -76,7 +76,7 @@ void AIModelDownloadProgressManager::Component::MaybeRunEventCallback() {
 
 AIModelDownloadProgressManager::Reporter::Reporter(
     AIModelDownloadProgressManager& manager,
-    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
         observer_remote,
     base::flat_set<std::unique_ptr<Component>> components)
     : manager_(manager),

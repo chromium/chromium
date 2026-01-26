@@ -251,7 +251,7 @@ void CreateTranslatorClient::OnGotAvailability(
 
   receiver_.Bind(client.InitWithNewPipeAndPassReceiver(), task_runner_);
 
-  mojo::PendingRemote<mojom::blink::ModelDownloadProgressObserver>
+  mojo::PendingRemote<on_device_model::mojom::blink::DownloadObserver>
       progress_observer;
 
   if (monitor_) {

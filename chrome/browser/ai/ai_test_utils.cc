@@ -9,7 +9,6 @@
 
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 
 AITestUtils::TestStreamingResponder::TestStreamingResponder() = default;
 AITestUtils::TestStreamingResponder::~TestStreamingResponder() = default;
@@ -57,12 +56,12 @@ AITestUtils::MockModelDownloadProgressMonitor::
 AITestUtils::MockModelDownloadProgressMonitor::
     ~MockModelDownloadProgressMonitor() = default;
 
-mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
 AITestUtils::MockModelDownloadProgressMonitor::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
 AITestUtils::FakeMonitor::BindNewPipeAndPassRemote() {
   return mock_monitor_.BindNewPipeAndPassRemote();
 }

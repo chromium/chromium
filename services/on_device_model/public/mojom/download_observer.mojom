@@ -1,0 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module on_device_model.mojom;
+
+// An interface for passively observing a model download. The remote is held
+// by the browser process and the receiver may be in any process. The receiver
+// can disconnect at any time without affecting the model download.
+interface DownloadObserver {
+  // Called on download progress updates with the downloaded and total bytes.
+  OnDownloadProgressUpdate(uint64 downloaded_bytes, uint64 total_bytes);
+};

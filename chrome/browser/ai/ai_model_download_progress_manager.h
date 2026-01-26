@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom.h"
 
 namespace on_device_ai {
 
@@ -100,10 +100,9 @@ class AIModelDownloadProgressManager {
 
   // Adds a `ModelDownloadProgressObserver` to send progress updates for
   // `components`.
-  void AddObserver(
-      mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
-          observer_remote,
-      base::flat_set<std::unique_ptr<Component>> components);
+  void AddObserver(mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
+                       observer_remote,
+                   base::flat_set<std::unique_ptr<Component>> components);
 
   int GetNumberOfReporters();
 
@@ -113,7 +112,7 @@ class AIModelDownloadProgressManager {
   class Reporter {
    public:
     Reporter(AIModelDownloadProgressManager& manager,
-             mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+             mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
                  observer_remote,
              base::flat_set<std::unique_ptr<Component>> components);
     ~Reporter();
@@ -136,7 +135,7 @@ class AIModelDownloadProgressManager {
     // `manager_` owns `this`.
     base::raw_ref<AIModelDownloadProgressManager> manager_;
 
-    mojo::Remote<blink::mojom::ModelDownloadProgressObserver> observer_remote_;
+    mojo::Remote<on_device_model::mojom::DownloadObserver> observer_remote_;
 
     // The components we're reporting the progress for.
     base::flat_set<std::unique_ptr<Component>> components_;

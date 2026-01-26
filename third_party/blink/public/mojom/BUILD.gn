@@ -34,7 +34,6 @@ mojom("mojom_platform") {
     "ai/ai_rewriter.mojom",
     "ai/ai_summarizer.mojom",
     "ai/ai_writer.mojom",
-    "ai/model_download_progress_observer.mojom",
     "ai/model_streaming_responder.mojom",
     "annotation/annotation.mojom",
     "app_banner/app_banner.mojom",

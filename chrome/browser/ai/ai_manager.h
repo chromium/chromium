@@ -26,10 +26,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
-#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 
 namespace base {
@@ -103,7 +103,7 @@ class AIManager : public base::SupportsUserData::Data,
           client,
       blink::mojom::AIProofreaderCreateOptionsPtr options) override;
   void AddModelDownloadProgressObserver(
-      mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
           observer_remote) override;
 
   // Check whether optimization guide supports the feature matching `capability`

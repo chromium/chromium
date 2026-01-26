@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "download_observer.mojom",
     "on_device_model.mojom",
     "on_device_model_service.mojom",
   ]

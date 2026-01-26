@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
@@ -71,7 +70,7 @@ void CreateMonitor::OnDownloadProgressUpdate(uint64_t downloaded_bytes,
                                        true, normalized_downloaded_bytes, 1));
 }
 
-mojo::PendingRemote<mojom::blink::ModelDownloadProgressObserver>
+mojo::PendingRemote<on_device_model::mojom::blink::DownloadObserver>
 CreateMonitor::BindRemote() {
   return receiver_.BindNewPipeAndPassRemote(task_runner_);
 }
