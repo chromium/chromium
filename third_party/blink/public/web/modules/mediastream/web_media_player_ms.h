@@ -250,8 +250,8 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void ReloadAudio();
 
   // Helper method used for testing.
-  void SetGpuMemoryBufferVideoForTesting(
-      media::MappableSharedImageVideoFramePool* gpu_memory_buffer_pool);
+  void SetMappableSharedImagePoolForTesting(
+      media::MappableSharedImageVideoFramePool* mappable_shared_image_pool);
   void SetMediaStreamRendererFactoryForTesting(
       std::unique_ptr<MediaStreamRendererFactory>);
 

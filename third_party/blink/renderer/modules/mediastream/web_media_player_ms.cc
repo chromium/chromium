@@ -205,7 +205,7 @@ class WebMediaPlayerMS::FrameDeliverer {
       return;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    if (!gpu_memory_buffer_pool_) {
+    if (!mappable_shared_image_pool_) {
       const media::VideoFrame::ID original_frame_id = frame->unique_id();
       EnqueueFrame(original_frame_id, std::move(frame));
       return;
@@ -237,14 +237,14 @@ class WebMediaPlayerMS::FrameDeliverer {
 
     const media::VideoFrame::ID original_frame_id = frame->unique_id();
 
-    // |gpu_memory_buffer_pool_| deletion is going to be posted to
+    // |mappable_shared_image_pool_| deletion is going to be posted to
     // |media_task_runner_|. base::Unretained() usage is fine since
-    // |gpu_memory_buffer_pool_| outlives the task.
+    // |mappable_shared_image_pool_| outlives the task.
     PostCrossThreadTask(
         *media_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &media::MappableSharedImageVideoFramePool::MaybeCreateHardwareFrame,
-            CrossThreadUnretained(gpu_memory_buffer_pool_.get()),
+            CrossThreadUnretained(mappable_shared_image_pool_.get()),
             std::move(frame),
             base::BindPostTaskToCurrentDefault(blink::BindOnce(
                 &FrameDeliverer::EnqueueFrame,
@@ -272,10 +272,10 @@ class WebMediaPlayerMS::FrameDeliverer {
   friend class WebMediaPlayerMS;
 
   void CreateGpuMemoryBufferPoolIfNecessary() {
-    if (!gpu_memory_buffer_pool_ && gpu_factories_ &&
+    if (!mappable_shared_image_pool_ && gpu_factories_ &&
         gpu_factories_->ShouldUseMappableSharedImagesForVideoFrames(
             true /* for_media_stream */)) {
-      gpu_memory_buffer_pool_ =
+      mappable_shared_image_pool_ =
           std::make_unique<media::MappableSharedImageVideoFramePool>(
               media_task_runner_, worker_task_runner_, gpu_factories_);
     }
@@ -284,10 +284,10 @@ class WebMediaPlayerMS::FrameDeliverer {
   void FreeGpuMemoryBufferPool() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
-    if (gpu_memory_buffer_pool_) {
+    if (mappable_shared_image_pool_) {
       DropCurrentPoolTasks();
       media_task_runner_->DeleteSoon(FROM_HERE,
-                                     gpu_memory_buffer_pool_.release());
+                                     mappable_shared_image_pool_.release());
     }
   }
 
@@ -312,19 +312,19 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   void DropCurrentPoolTasks() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-    DCHECK(gpu_memory_buffer_pool_);
+    DCHECK(mappable_shared_image_pool_);
 
     if (!weak_factory_for_pool_.HasWeakPtrs())
       return;
 
-    //  |gpu_memory_buffer_pool_| deletion is going to be posted to
+    //  |mappable_shared_image_pool_| deletion is going to be posted to
     //  |media_task_runner_|. CrossThreadUnretained() usage is fine since
-    //  |gpu_memory_buffer_pool_| outlives the task.
+    //  |mappable_shared_image_pool_| outlives the task.
     PostCrossThreadTask(
         *media_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &media::MappableSharedImageVideoFramePool::Abort,
-            CrossThreadUnretained(gpu_memory_buffer_pool_.get())));
+            CrossThreadUnretained(mappable_shared_image_pool_.get())));
     weak_factory_for_pool_.InvalidateWeakPtrs();
   }
 
@@ -336,7 +336,7 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   // Pool of GpuMemoryBuffers and resources used to create hardware frames.
   std::unique_ptr<media::MappableSharedImageVideoFramePool>
-      gpu_memory_buffer_pool_;
+      mappable_shared_image_pool_;
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
 
@@ -1420,10 +1420,11 @@ void WebMediaPlayerMS::TriggerResize() {
     UpdateWatchTimeReporterSecondaryProperties();
 }
 
-void WebMediaPlayerMS::SetGpuMemoryBufferVideoForTesting(
-    media::MappableSharedImageVideoFramePool* gpu_memory_buffer_pool) {
+void WebMediaPlayerMS::SetMappableSharedImagePoolForTesting(
+    media::MappableSharedImageVideoFramePool* mappable_shared_image_pool) {
   CHECK(frame_deliverer_);
-  frame_deliverer_->gpu_memory_buffer_pool_.reset(gpu_memory_buffer_pool);
+  frame_deliverer_->mappable_shared_image_pool_.reset(
+      mappable_shared_image_pool);
 }
 
 void WebMediaPlayerMS::SetMediaStreamRendererFactoryForTesting(

@@ -615,13 +615,13 @@ class WebMediaPlayerMSTest
     background_rendering_ = background_rendering;
   }
 
-  void SetGpuMemoryBufferVideoForTesting() {
+  void SetMappableSharedImagePoolForTesting() {
 #if BUILDFLAG(IS_WIN)
     render_factory_->provider()->set_standard_size(
         WebMediaPlayerMS::kUseGpuMemoryBufferVideoFramesMinResolution);
 #endif  // BUILDFLAG(IS_WIN)
 
-    player_->SetGpuMemoryBufferVideoForTesting(
+    player_->SetMappableSharedImagePoolForTesting(
         new media::MockMappableSharedImageVideoFramePool(&frame_ready_cbs_));
   }
 
@@ -1466,7 +1466,7 @@ TEST_P(WebMediaPlayerMSTest, FrameSizeChange) {
 TEST_P(WebMediaPlayerMSTest, CreateHardwareFrames) {
   InitializeWebMediaPlayerMS();
   MockMediaStreamVideoRenderer* provider = LoadAndGetFrameProvider(false);
-  SetGpuMemoryBufferVideoForTesting();
+  SetMappableSharedImagePoolForTesting();
 
   const int kTestBrake = static_cast<int>(FrameType::TEST_BRAKE);
   Vector<int> timestamps({0, kTestBrake});
