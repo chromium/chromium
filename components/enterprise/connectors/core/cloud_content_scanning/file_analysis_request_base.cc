@@ -86,6 +86,35 @@ std::string GetFileMimeType(const base::FilePath& path,
   return ext_mime_type;
 }
 
+std::string ComputeHashBlocking(base::File file) {
+  if (file.Seek(base::File::FROM_BEGIN, 0) != 0) {
+    return "";  // return empty string to indicate error.
+  }
+
+  std::unique_ptr<crypto::SecureHash> secure_hash =
+      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  size_t bytes_read = 0;
+  size_t file_size = file.GetLength();
+  std::vector<char> buf(kReadFileChunkSize);
+
+  while (bytes_read < file_size) {
+    std::optional<size_t> bytes_currently_read =
+        file.ReadAtCurrentPos(base::as_writable_byte_span(buf));
+    if (!bytes_currently_read.has_value()) {
+      return "";  // return empty string to indicate error.
+    }
+
+    secure_hash->Update(
+        base::as_byte_span(buf).first(bytes_currently_read.value()));
+    bytes_read += bytes_currently_read.value();
+  }
+
+  std::array<uint8_t, crypto::kSHA256Length> hash;
+  secure_hash->Finish(hash);
+
+  return base::HexEncode(hash);
+}
+
 std::pair<ScanRequestUploadResult, BinaryUploadRequest::Data>
 GetFileDataBlocking(const base::FilePath& path,
                     bool detect_mime_type,
@@ -112,38 +141,22 @@ GetFileDataBlocking(const base::FilePath& path,
     return std::make_pair(ScanRequestUploadResult::kSuccess, file_data);
   }
 
-  std::unique_ptr<crypto::SecureHash> secure_hash =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  size_t bytes_read = 0;
   std::vector<char> buf(kReadFileChunkSize);
 
-  while (bytes_read < file_data.size) {
-    std::optional<size_t> bytes_currently_read =
-        file.ReadAtCurrentPos(base::as_writable_byte_span(buf));
-    if (!bytes_currently_read.has_value()) {
-      // Reset the size to zero since some code assumes an UNKNOWN result is
-      // matched with a zero size.
-      file_data.size = 0;
-      return {ScanRequestUploadResult::kUnknown, file_data};
-    }
-
-    // Use the first read chunk to get the mimetype as necessary.
-    if (detect_mime_type && bytes_read == 0) {
-      file_data.mime_type = GetFileMimeType(
-          path, std::string_view(buf.data(), bytes_currently_read.value()));
-    }
-
-    secure_hash->Update(
-        base::as_byte_span(buf).first(bytes_currently_read.value()));
-    bytes_read += bytes_currently_read.value();
+  std::optional<size_t> bytes_currently_read =
+      file.ReadAtCurrentPos(base::as_writable_byte_span(buf));
+  if (!bytes_currently_read.has_value()) {
+    // Reset the size to zero since some code assumes an UNKNOWN result is
+    // matched with a zero size.
+    file_data.size = 0;
+    return {ScanRequestUploadResult::kUnknown, file_data};
   }
 
-  std::array<uint8_t, crypto::kSHA256Length> hash;
-  secure_hash->Finish(hash);
-
-  // TODO(b/367257039): Pass along hash of unobfuscated file for enterprise
-  // scans
-  file_data.hash = base::HexEncode(hash);
+  // Use the first read chunk to get the mimetype as necessary.
+  if (detect_mime_type) {
+    file_data.mime_type = GetFileMimeType(
+        path, std::string_view(buf.data(), bytes_currently_read.value()));
+  }
 
   // Since we will be sending the deobfuscated file data in the request, set the
   // size to match.
@@ -154,6 +167,14 @@ GetFileDataBlocking(const base::FilePath& path,
       file_data.size -= overhead.value();
       file_data.is_obfuscated = true;
     }
+  }
+  // TODO(crbug.com/367257039): Pass along hash of unobfuscated file for
+  // enterprise scans
+  file_data.hash = ComputeHashBlocking(std::move(file));
+  if (file_data.hash.empty()) {
+    // If the hash failed to compute, the result is UNKNOWN.
+    file_data.size = 0;
+    return {ScanRequestUploadResult::kUnknown, file_data};
   }
 
   // Create a histogram to track the size of files being scanned up to 500MB.
@@ -243,14 +264,12 @@ bool FileAnalysisRequestBase::HasMalwareRequest() const {
 }
 
 void FileAnalysisRequestBase::OnGotFileData(
-    std::pair<enterprise_connectors::ScanRequestUploadResult, Data>
-        result_and_data) {
+    std::pair<ScanRequestUploadResult, Data> result_and_data) {
   DCHECK(!result_and_data.second.path.empty());
   DCHECK_EQ(result_and_data.second.path, path_);
 
   scoped_file_access_.reset();
-  if (result_and_data.first !=
-      enterprise_connectors::ScanRequestUploadResult::kSuccess) {
+  if (result_and_data.first != ScanRequestUploadResult::kSuccess) {
     CacheResultAndData(result_and_data.first,
                        std::move(result_and_data.second));
     RunCallback();
@@ -273,7 +292,7 @@ void FileAnalysisRequestBase::OnGotFileData(
   } else if (IsRarFile(ext, mime_type)) {
     ProcessRarFile(std::move(result_and_data.second));
   } else {
-    CacheResultAndData(enterprise_connectors::ScanRequestUploadResult::kSuccess,
+    CacheResultAndData(ScanRequestUploadResult::kSuccess,
                        std::move(result_and_data.second));
     RunCallback();
   }
