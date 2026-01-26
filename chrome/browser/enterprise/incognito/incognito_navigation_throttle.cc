@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_utils.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -107,6 +108,15 @@ IncognitoNavigationThrottle::WillStartRequest() {
   if (blocking_extensions_.empty() && missing_extensions_.empty()) {
     return content::NavigationThrottle::PROCEED;
   }
+
+  // Allow-list internal Top Chrome WebUIs.
+  // These are part of the browser's own UI (like the reload button, tab search,
+  // etc.) and do not access the web.
+  const GURL& url = navigation_handle()->GetURL();
+  if (IsTopChromeWebUIURL(url)) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   return ThrottleCheckResult(
       content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR,
       GetIncognitoNavigationBlockedErrorPage(std::move(blocking_extensions_),
