@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -151,6 +152,11 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
         startDispatchingToTarget:mock_qr_scanner_commands_handler_
                      forProtocol:@protocol(QRScannerCommands)];
 
+    mock_gemini_handler_ = OCMStrictProtocolMock(@protocol(BWGCommands));
+    [test_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_gemini_handler_
+                     forProtocol:@protocol(BWGCommands)];
+
     [[UIPasteboard generalPasteboard] setItems:@[]];
 
     ClipboardRecentContent::SetInstance(
@@ -211,6 +217,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   id mock_settings_commands_handler_;
   id mock_browser_coordinator_commands_handler_;
   id mock_qr_scanner_commands_handler_;
+  id mock_gemini_handler_;
   std::unique_ptr<TestProfileIOS> profile_;
   collaboration::messaging::MockMessagingBackendService messaging_backend_;
 

@@ -50,7 +50,6 @@
     browserCoordinatorHandler;
 // Popup menu commands handler for the ViewController.
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
-
 // Provider for the context menus.
 @property(nonatomic, weak) id<AdaptiveToolbarMenusProvider> menuProvider;
 // Delegate for events in `AdaptiveToolbarViewController`.
@@ -85,6 +84,8 @@
 - (void)IPHHighlightTabGridButton:(BOOL)highlight;
 // Sets the height of the location bar. Used when the omnibox is multiline.
 - (void)setLocationBarHeight:(CGFloat)height;
+// Used for any additional clean up on shutdown.
+- (void)disconnect;
 
 @end
 

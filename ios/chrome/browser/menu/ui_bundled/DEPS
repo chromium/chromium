@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
+  "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",

@@ -80,7 +80,7 @@ CGFloat kFullscreenDisabled = 1.0;
 
 // Used to check if floaty visibility updates are part of a UIView dismissal or
 // presentation.
-double kViewTransitionTime = 1.0;
+double kViewTransitionTime = 1.5;
 
 }  // namespace
 

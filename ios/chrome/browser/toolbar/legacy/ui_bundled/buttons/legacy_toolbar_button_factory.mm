@@ -6,6 +6,7 @@
 
 #import "base/ios/ios_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -350,6 +351,9 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   button.toolbarConfiguration = self.toolbarConfiguration;
   button.exclusiveTouch = YES;
   button.pointerInteractionEnabled = YES;
+  if (IsGeminiCopresenceEnabled()) {
+    button.geminiHandler = self.geminiHandler;
+  }
   if (ios::provider::IsRaccoonEnabled()) {
     button.hoverStyle = [UIHoverStyle
         styleWithShape:[UIShape rectShapeWithCornerRadius:width / 4]];

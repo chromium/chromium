@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -140,6 +141,12 @@ class LensOverlayCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:toolbar_commands_handler_
                      forProtocol:@protocol(ToolbarCommands)];
 
+    gemini_commands_handler_ = OCMProtocolMock(@protocol(BWGCommands));
+
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:gemini_commands_handler_
+                     forProtocol:@protocol(BWGCommands)];
+
     // Tab helper
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
@@ -243,6 +250,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   id<LensCommands> lens_commands_handler_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_handler_;
   id<ToolbarCommands> toolbar_commands_handler_;
+  id<BWGCommands> gemini_commands_handler_;
 
   void DeliverMemoryWarningNotification() {
     [[NSNotificationCenter defaultCenter]

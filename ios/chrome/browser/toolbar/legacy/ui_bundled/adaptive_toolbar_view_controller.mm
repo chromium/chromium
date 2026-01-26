@@ -9,7 +9,9 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
@@ -134,6 +136,19 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   // Needed so spotlightView can have correct frame.
   [self.view.tabGridButton setNeedsLayout];
   [self.view.tabGridButton layoutIfNeeded];
+}
+
+- (void)disconnect {
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
+  }
+
+  for (LegacyToolbarButton* button in self.view.allButtons) {
+    // Ensures that unrecognized command selectors aren't called and context
+    // menu interactions are disabled after disconnecting view controller.
+    button.geminiHandler = nil;
+    button.contextMenuInteractionEnabled = NO;
+  }
 }
 
 #pragma mark - UIViewController

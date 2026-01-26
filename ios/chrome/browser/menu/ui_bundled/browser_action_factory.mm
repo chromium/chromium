@@ -8,12 +8,14 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory+protected.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -493,6 +495,38 @@
                          block:^{
                            [handler openAIMenu];
                          }];
+}
+
+#pragma mark - ActionFactory
+
+- (UIAction*)actionWithTitle:(NSString*)title
+                       image:(UIImage*)image
+                        type:(MenuActionType)type
+                       block:(ProceduralBlock)block {
+  __weak __typeof(self) weakSelf = self;
+  return [super actionWithTitle:title
+                          image:image
+                           type:type
+                          block:^{
+                            [weakSelf hideGeminiFloatyIfInvoked];
+                            if (block) {
+                              block();
+                            }
+                          }];
+}
+
+#pragma mark - Private
+
+// Helper method for completion block to hide Gemini Floaty. Ensures that the
+// floaty is hidden before the view invoked from an UIAction is presented.
+- (void)hideGeminiFloatyIfInvoked {
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
+  }
+
+  id<BWGCommands> geminiHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
+  [geminiHandler hideFloatyIfInvokedAnimated:YES];
 }
 
 @end

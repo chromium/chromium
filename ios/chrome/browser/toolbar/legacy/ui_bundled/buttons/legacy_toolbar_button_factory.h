@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_style.h"
 
+@protocol BWGCommands;
 @class LegacyToolbarButton;
 @class ToolbarButtonActionsHandler;
 @class ToolbarButtonVisibilityConfiguration;
@@ -39,6 +40,8 @@ enum class ToolbarCancelButtonStyle {
     ToolbarConfiguration* toolbarConfiguration;
 // Handler for the actions.
 @property(nonatomic, weak) ToolbarButtonActionsHandler* actionHandler;
+// Handler for gemini commands.
+@property(nonatomic, weak) id<BWGCommands> geminiHandler;
 // Configuration object for the visibility of the buttons.
 @property(nonatomic, strong)
     ToolbarButtonVisibilityConfiguration* visibilityConfiguration;

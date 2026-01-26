@@ -133,8 +133,8 @@ class Tracker;
 // The page action menu handler.
 @property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
 
-// The BWG command handler.
-@property(nonatomic, weak) id<BWGCommands> BWGHandler;
+// The Gemini command handler.
+@property(nonatomic, weak) id<BWGCommands> geminiHandler;
 
 // The page action menu entry point handler. Returns the page action menu entry
 // point view for direct communication between a command dispatched and the page

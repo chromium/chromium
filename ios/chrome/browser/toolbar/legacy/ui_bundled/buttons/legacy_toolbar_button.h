@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_component_options.h"
 
+@protocol BWGCommands;
 @class LayoutGuideCenter;
 @class ToolbarConfiguration;
 
@@ -43,6 +44,8 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 @property(nonatomic, strong) UIView* spotlightView;
 // Whether this button has blue dot promo.
 @property(nonatomic, assign) BOOL hasBlueDot;
+// Dispatcher for Gemini commands.
+@property(nonatomic, weak) id<BWGCommands> geminiHandler;
 
 // Returns a LegacyToolbarButton with a type system, using the `imageLoader` to
 // load the image for normal state. Can only be used when
