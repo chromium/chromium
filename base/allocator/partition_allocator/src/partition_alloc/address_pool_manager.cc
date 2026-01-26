@@ -179,7 +179,7 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
 
     bool found = true;
     for (; curr_bit < end_bit; ++curr_bit) {
-      if (alloc_bitset_.test(curr_bit)) {
+      if (alloc_bitset_[curr_bit]) {
         // The bit was set, so this chunk isn't entirely free. Set |found=false|
         // to ensure the outer loop continues. However, continue the inner loop
         // to set |beg_bit| just past the last set bit in the investigated
@@ -197,8 +197,8 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
     // mark as allocated) and return the allocated address.
     if (found) {
       for (size_t i = beg_bit; i < end_bit; ++i) {
-        PA_DCHECK(!alloc_bitset_.test(i));
-        alloc_bitset_.set(i);
+        PA_DCHECK(!alloc_bitset_[i]);
+        alloc_bitset_[i] = true;
       }
       if (bit_hint_ == beg_bit) {
         bit_hint_ = end_bit;
@@ -228,13 +228,13 @@ bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
   }
   // Check if any bit of the requested region is set already.
   for (size_t i = begin_bit; i < end_bit; ++i) {
-    if (alloc_bitset_.test(i)) {
+    if (alloc_bitset_[i]) {
       return false;
     }
   }
   // Otherwise, set the bits.
   for (size_t i = begin_bit; i < end_bit; ++i) {
-    alloc_bitset_.set(i);
+    alloc_bitset_[i] = true;
   }
   return true;
 }
@@ -253,8 +253,8 @@ void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
   const size_t beg_bit = (address - address_begin_) / kSuperPageSize;
   const size_t end_bit = beg_bit + free_size / kSuperPageSize;
   for (size_t i = beg_bit; i < end_bit; ++i) {
-    PA_DCHECK(alloc_bitset_.test(i));
-    alloc_bitset_.reset(i);
+    PA_DCHECK(alloc_bitset_[i]);
+    alloc_bitset_[i] = false;
   }
   bit_hint_ = std::min(bit_hint_, beg_bit);
 }
@@ -336,8 +336,8 @@ void SetBitmap(std::bitset<bitsize>& bitmap,
   PA_DCHECK(end_bit <= bitsize);
 
   for (size_t i = start_bit; i < end_bit; ++i) {
-    PA_DCHECK(!bitmap.test(i));
-    bitmap.set(i);
+    PA_DCHECK(!bitmap[i]);
+    bitmap[i] = true;
   }
 }
 
@@ -350,8 +350,8 @@ void ResetBitmap(std::bitset<bitsize>& bitmap,
   PA_DCHECK(end_bit <= bitsize);
 
   for (size_t i = start_bit; i < end_bit; ++i) {
-    PA_DCHECK(bitmap.test(i));
-    bitmap.reset(i);
+    PA_DCHECK(bitmap[i]);
+    bitmap[i] = false;
   }
 }
 
