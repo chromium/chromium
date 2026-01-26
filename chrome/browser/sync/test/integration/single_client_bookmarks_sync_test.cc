@@ -227,102 +227,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
-class SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks
-    : public SyncTest {
- public:
-  SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
-class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
-    : public SyncTest {
- public:
-  SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitAndDisableFeature(switches::kSyncReuploadBookmarks);
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
-class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
-    : public SyncTest {
- public:
-  SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitWithFeatureState(switches::kSyncReuploadBookmarks,
-                                            !content::IsPreTest());
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
-class SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration
-    : public SyncTest {
- public:
-  SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitAndEnableFeature(
-        switches::kSyncMigrateBookmarksWithoutClientTagHash);
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
-class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
- public:
-  SingleClientBookmarksThrottlingSyncTest() : SyncTest(SINGLE_CLIENT) {}
-
-  void SetUpInProcessBrowserTestFixture() override {
-    SyncTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&SingleClientBookmarksThrottlingSyncTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    // Fake DeviceInfoSyncService with its fake bridge for device info to make
-    // sure there are no device info commits interfering with the extended nudge
-    // delay.
-    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildFakeDeviceInfoSyncService));
-  }
-
-  // Rarely, self notification for nigori interferes with the
-  // DepleteQuotaAndRecover test causing the tested commit to happen too early.
-  bool TestUsesSelfNotifications() override { return false; }
-
-  void SetupBookmarksSync() {
-    // Only enable bookmarks so that sync is not nudged by another data type
-    // (with a shorter delay).
-    ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
-        base::BindOnce([](syncer::SyncUserSettings* user_settings) {
-          user_settings->SetSelectedTypes(
-              false, {syncer::UserSelectableType::kBookmarks});
-#if BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetSelectedOsTypes(false, {});
-#else   // BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetInitialSyncFeatureSetupComplete(
-              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-        })));
-  }
-
- private:
-  base::CallbackListSubscription create_services_subscription_;
-};
-
 IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
 
@@ -1924,32 +1828,34 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
   ExcludeDataTypesFromCheckForDataTypeFailures({syncer::BOOKMARKS});
 }
 
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
+                       CommitLocalCreationWithClientTag) {
+  ASSERT_TRUE(SetupSync());
+
+  const std::u16string kTitle = u"Title";
+  const BookmarkNode* folder =
+      AddFolder(kSingleProfileIndex,
+                GetOtherNode(kSingleProfileIndex, GetStoreType()), 0, kTitle);
+
+  // Wait until the local bookmark gets committed.
+  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  {{kTitle, /*url=*/GURL()}},
+                  /*cryptographer=*/nullptr)
+                  .Wait());
+
+  // Verify the client tag hash was committed to the server.
+  std::vector<sync_pb::SyncEntity> server_bookmarks =
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
+  ASSERT_EQ(1u, server_bookmarks.size());
+  EXPECT_EQ(server_bookmarks[0].client_tag_hash(),
+            syncer::ClientTagHash::FromUnhashed(
+                syncer::BOOKMARKS, folder->uuid().AsLowercaseString())
+                .value());
+}
+
 // Android doesn't currently support PRE_ tests, see crbug.com/40200835 or
 // crbug.com/40145099.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(
-    SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
-    PRE_ShouldNotReploadUponFaviconLoad) {
-  fake_server::EntityBuilderFactory entity_builder_factory;
-  fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder("Foo Title");
-
-  // Create a legacy bookmark on the server (no |type|, |unique_position| fields
-  // populated). The fact that it's a legacy bookmark means any locally-produced
-  // specifics would be different for this bookmark (new fields like |type|
-  // would be populated).
-  std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
-      bookmark_builder.SetGeneration(BookmarkGeneration::kValidGuidAndFullTitle)
-          .BuildBookmark(GURL(kBookmarkPageUrl));
-  fake_server_->InjectEntity(std::move(bookmark));
-
-  // Start syncing.
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      BookmarksUrlChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl), 1)
-          .Wait());
-}
-
 IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
                        PRE_ShouldUploadUnsyncedEntityAfterRestart) {
   ASSERT_TRUE(SetupSync());
@@ -2023,6 +1929,178 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
 
   // Once loaded, the favicon must be uploaded to the server.
   EXPECT_TRUE(server_bookmarks.front().specifics().bookmark().has_favicon());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientBookmarksSyncTest,
+    PRE_ShouldAllowRecoverIfLocalBookmarksDeletedBelowMaxCountLimit) {
+  ASSERT_TRUE(SetupSync());
+
+  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
+
+  ASSERT_FALSE(GetClient(kSingleProfileIndex)
+                   ->service()
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
+
+  // Add 2 new bookmarks to exceed the limit.
+  const BookmarkNode* bookmark_bar_node =
+      GetBookmarkBarNode(kSingleProfileIndex, GetStoreType());
+
+  ASSERT_TRUE(AddURL(kSingleProfileIndex,
+                     /*parent=*/bookmark_bar_node, /*index=*/0, u"title0",
+                     GURL("http://www.url0.com")));
+  ASSERT_TRUE(AddURL(kSingleProfileIndex,
+                     /*parent=*/bookmark_bar_node, /*index=*/1, u"title1",
+                     GURL("http://www.url1.com")));
+  EXPECT_TRUE(
+      BookmarksDataTypeErrorChecker(GetClient(kSingleProfileIndex)->service())
+          .Wait());
+
+  // Delete one bookmark to bring the count below the limit.
+  Remove(kSingleProfileIndex, bookmark_bar_node, /*index=*/0);
+
+  // Bookmarks should be in an error state. Thus excluding it from the
+  // CheckForDataTypeFailures() check.
+  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::BOOKMARKS});
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientBookmarksSyncTest,
+    ShouldAllowRecoverIfLocalBookmarksDeletedBelowMaxCountLimit) {
+  ASSERT_TRUE(SetupClients());
+
+  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
+
+  ASSERT_TRUE(SetupSync());
+  EXPECT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetActiveDataTypes()
+                  .Has(syncer::BOOKMARKS));
+  EXPECT_FALSE(GetClient(kSingleProfileIndex)
+                   ->service()
+                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+class SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks
+    : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks()
+      : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
+class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
+    : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks()
+      : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitAndDisableFeature(switches::kSyncReuploadBookmarks);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
+class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
+    : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks()
+      : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitWithFeatureState(switches::kSyncReuploadBookmarks,
+                                            !content::IsPreTest());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
+class SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration
+    : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration()
+      : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitAndEnableFeature(
+        switches::kSyncMigrateBookmarksWithoutClientTagHash);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
+class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
+ public:
+  SingleClientBookmarksThrottlingSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SyncTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&SingleClientBookmarksThrottlingSyncTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    // Fake DeviceInfoSyncService with its fake bridge for device info to make
+    // sure there are no device info commits interfering with the extended nudge
+    // delay.
+    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildFakeDeviceInfoSyncService));
+  }
+
+  // Rarely, self notification for nigori interferes with the
+  // DepleteQuotaAndRecover test causing the tested commit to happen too early.
+  bool TestUsesSelfNotifications() override { return false; }
+
+  void SetupBookmarksSync() {
+    // Only enable bookmarks so that sync is not nudged by another data type
+    // (with a shorter delay).
+    ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
+        base::BindOnce([](syncer::SyncUserSettings* user_settings) {
+          user_settings->SetSelectedTypes(
+              false, {syncer::UserSelectableType::kBookmarks});
+#if BUILDFLAG(IS_CHROMEOS)
+          user_settings->SetSelectedOsTypes(false, {});
+#else   // BUILDFLAG(IS_CHROMEOS)
+          user_settings->SetInitialSyncFeatureSetupComplete(
+              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        })));
+  }
+
+ private:
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+// Android doesn't currently support PRE_ tests, see crbug.com/40200835 or
+// crbug.com/40145099.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
+    PRE_ShouldNotReploadUponFaviconLoad) {
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server::BookmarkEntityBuilder bookmark_builder =
+      entity_builder_factory.NewBookmarkEntityBuilder("Foo Title");
+
+  // Create a legacy bookmark on the server (no |type|, |unique_position| fields
+  // populated). The fact that it's a legacy bookmark means any locally-produced
+  // specifics would be different for this bookmark (new fields like |type|
+  // would be populated).
+  std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
+      bookmark_builder.SetGeneration(BookmarkGeneration::kValidGuidAndFullTitle)
+          .BuildBookmark(GURL(kBookmarkPageUrl));
+  fake_server_->InjectEntity(std::move(bookmark));
+
+  // Start syncing.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      BookmarksUrlChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl), 1)
+          .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2257,31 +2335,6 @@ IN_PROC_BROWSER_TEST_F(
   // All elements must have unique_position now.
   EXPECT_THAT(GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS),
               Contains(HasUniquePosition()).Times(3));
-}
-
-IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
-                       CommitLocalCreationWithClientTag) {
-  ASSERT_TRUE(SetupSync());
-
-  const std::u16string kTitle = u"Title";
-  const BookmarkNode* folder =
-      AddFolder(kSingleProfileIndex,
-                GetOtherNode(kSingleProfileIndex, GetStoreType()), 0, kTitle);
-
-  // Wait until the local bookmark gets committed.
-  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  {{kTitle, /*url=*/GURL()}},
-                  /*cryptographer=*/nullptr)
-                  .Wait());
-
-  // Verify the client tag hash was committed to the server.
-  std::vector<sync_pb::SyncEntity> server_bookmarks =
-      GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
-  ASSERT_EQ(1u, server_bookmarks.size());
-  EXPECT_EQ(server_bookmarks[0].client_tag_hash(),
-            syncer::ClientTagHash::FromUnhashed(
-                syncer::BOOKMARKS, folder->uuid().AsLowercaseString())
-                .value());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest, DepleteQuota) {
@@ -2967,55 +3020,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   // Bookmarks should be in an error state. Thus excluding it from the
   // CheckForDataTypeFailures() check.
   ExcludeDataTypesFromCheckForDataTypeFailures({syncer::BOOKMARKS});
-}
-
-IN_PROC_BROWSER_TEST_P(
-    SingleClientBookmarksSyncTest,
-    PRE_ShouldAllowRecoverIfLocalBookmarksDeletedBelowMaxCountLimit) {
-  ASSERT_TRUE(SetupSync());
-
-  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
-
-  ASSERT_FALSE(GetClient(kSingleProfileIndex)
-                   ->service()
-                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
-
-  // Add 2 new bookmarks to exceed the limit.
-  const BookmarkNode* bookmark_bar_node =
-      GetBookmarkBarNode(kSingleProfileIndex, GetStoreType());
-
-  ASSERT_TRUE(AddURL(kSingleProfileIndex,
-                     /*parent=*/bookmark_bar_node, /*index=*/0, u"title0",
-                     GURL("http://www.url0.com")));
-  ASSERT_TRUE(AddURL(kSingleProfileIndex,
-                     /*parent=*/bookmark_bar_node, /*index=*/1, u"title1",
-                     GURL("http://www.url1.com")));
-  EXPECT_TRUE(
-      BookmarksDataTypeErrorChecker(GetClient(kSingleProfileIndex)->service())
-          .Wait());
-
-  // Delete one bookmark to bring the count below the limit.
-  Remove(kSingleProfileIndex, bookmark_bar_node, /*index=*/0);
-
-  // Bookmarks should be in an error state. Thus excluding it from the
-  // CheckForDataTypeFailures() check.
-  ExcludeDataTypesFromCheckForDataTypeFailures({syncer::BOOKMARKS});
-}
-
-IN_PROC_BROWSER_TEST_P(
-    SingleClientBookmarksSyncTest,
-    ShouldAllowRecoverIfLocalBookmarksDeletedBelowMaxCountLimit) {
-  ASSERT_TRUE(SetupClients());
-
-  GetBookmarkSyncService()->SetBookmarksLimitForTesting(4);
-
-  ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(GetSyncService(kSingleProfileIndex)
-                  ->GetActiveDataTypes()
-                  .Has(syncer::BOOKMARKS));
-  EXPECT_FALSE(GetClient(kSingleProfileIndex)
-                   ->service()
-                   ->HasAnyModelErrorForTest({syncer::BOOKMARKS}));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
