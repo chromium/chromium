@@ -122,7 +122,7 @@ void TapDoneButtonOnInfobarModal() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([self isRunningTest:@selector(DISABLED_testPermissionsWithReaderMode)]) {
+  if ([self isRunningTest:@selector(testPermissionsWithReaderMode)]) {
     config.features_enabled.push_back(kEnableReaderModeInUS);
   }
   return config;
@@ -703,8 +703,7 @@ void TapDoneButtonOnInfobarModal() {
 
 // Tests that by enabling permissions, then triggering Reader mode, then
 // disabling Reader mode, the permission badges are still visible at the end.
-// TODO(crbug.com/470346971): Enable this test failing on ios-fieldtrial-rel.
-- (void)DISABLED_testPermissionsWithReaderMode {
+- (void)testPermissionsWithReaderMode {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey
       loadURL:self.testServer->GetURL("/permissions/camera_only.html")];
