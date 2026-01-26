@@ -801,10 +801,9 @@ bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
       verdict.level() == data_controls::Rule::Level::kWarn) {
     auto* factory = GetDialogFactory();
     if (factory) {
-      // TODO(crbug.com/406716605): Use a drag-specific dialog type
       factory->ShowDialogIfNeeded(
           source.web_contents(),
-          data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+          data_controls::DataControlsDialog::Type::kClipboardDragBlock);
     }
 
     return false;

@@ -63,6 +63,7 @@ std::unique_ptr<ui::DialogModel> AndroidDataControlsDialog::CreateDialogModel(
     case Type::kClipboardCopyBlock:
     case Type::kClipboardShareBlock:
     case Type::kClipboardActionBlock:
+    case Type::kClipboardDragBlock:
       // This case should not be reachable in practice.
       NOTREACHED();
       cancel_button_label_id = IDS_CANCEL;
@@ -75,6 +76,7 @@ std::unique_ptr<ui::DialogModel> AndroidDataControlsDialog::CreateDialogModel(
     case Type::kClipboardCopyBlock:
     case Type::kClipboardShareBlock:
     case Type::kClipboardActionBlock:
+    case Type::kClipboardDragBlock:
       // This case should not be reachable in practice.
       NOTREACHED();
 
@@ -118,6 +120,7 @@ std::u16string AndroidDataControlsDialog::GetDialogTitle() const {
     case Type::kClipboardCopyBlock:
     case Type::kClipboardShareBlock:
     case Type::kClipboardActionBlock:
+    case Type::kClipboardDragBlock:
       // This case should not be reachable in practice.
       NOTREACHED();
       id = IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION;
@@ -149,6 +152,7 @@ std::u16string AndroidDataControlsDialog::GetDialogLabel() const {
     case Type::kClipboardCopyBlock:
     case Type::kClipboardShareBlock:
     case Type::kClipboardActionBlock:
+    case Type::kClipboardDragBlock:
       // This case should not be reachable in practice.
       NOTREACHED();
       id = IDS_DATA_CONTROLS_BLOCKED_LABEL;

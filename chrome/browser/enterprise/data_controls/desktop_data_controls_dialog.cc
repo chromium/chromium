@@ -52,6 +52,7 @@ class DataControlsDialogDelegate : public views::DialogDelegate {
     switch (type_) {
       case DataControlsDialog::Type::kClipboardPasteBlock:
       case DataControlsDialog::Type::kClipboardCopyBlock:
+      case DataControlsDialog::Type::kClipboardDragBlock:
         SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
         SetButtonLabel(ui::mojom::DialogButton::kOk,
                        l10n_util::GetStringUTF16(IDS_OK));
@@ -116,6 +117,10 @@ class DataControlsDialogDelegate : public views::DialogDelegate {
         id = IDS_DATA_CONTROLS_CLIPBOARD_COPY_BLOCK_TITLE;
         break;
 
+      case DataControlsDialog::Type::kClipboardDragBlock:
+        id = IDS_DATA_CONTROLS_CLIPBOARD_DRAG_BLOCK_TITLE;
+        break;
+
       case DataControlsDialog::Type::kClipboardPasteWarn:
         id = IDS_DATA_CONTROLS_CLIPBOARD_PASTE_WARN_TITLE;
         break;
@@ -143,6 +148,7 @@ class DataControlsDialogDelegate : public views::DialogDelegate {
       case DataControlsDialog::Type::kClipboardCopyBlock:
       case DataControlsDialog::Type::kClipboardShareBlock:
       case DataControlsDialog::Type::kClipboardActionBlock:
+      case DataControlsDialog::Type::kClipboardDragBlock:
         id = IDS_DATA_CONTROLS_BLOCKED_LABEL;
         break;
       case DataControlsDialog::Type::kClipboardPasteWarn:

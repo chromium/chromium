@@ -125,7 +125,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(DataControlsDialog::Type::kClipboardPasteBlock,
                     DataControlsDialog::Type::kClipboardCopyBlock,
                     DataControlsDialog::Type::kClipboardPasteWarn,
-                    DataControlsDialog::Type::kClipboardCopyWarn));
+                    DataControlsDialog::Type::kClipboardCopyWarn,
+                    DataControlsDialog::Type::kClipboardDragBlock));
 
 IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest, ShowDialogMultipleTimes) {
   // Only 1 dialog should be shown for the same WebContents-Type pair.
@@ -155,9 +156,12 @@ IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
     DesktopDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
         browser()->tab_strip_model()->GetActiveWebContents(),
         DataControlsDialog::Type::kClipboardCopyWarn);
+    DesktopDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        DataControlsDialog::Type::kClipboardDragBlock);
   }
 
-  ASSERT_EQ(constructor_called_count_, 4u);
+  ASSERT_EQ(constructor_called_count_, 5u);
   CloseDialogsAndWait();
 }
 
@@ -203,6 +207,15 @@ IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
   }
   ASSERT_TRUE(was_bypassed.IsReady());
   ASSERT_FALSE(was_bypassed.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
+                       VerifyDragBlockDialogBasicContent) {
+  DesktopDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      DataControlsDialog::Type::kClipboardDragBlock);
+  ASSERT_EQ(constructor_called_count_, 1u);
+  CloseDialogsAndWait();
 }
 
 }  // namespace data_controls

@@ -2192,7 +2192,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragBlocked) {
                                  })"},
                                  machine_scope());
   data_controls::DesktopDataControlsDialogTestHelper helper(
-      data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+      data_controls::DataControlsDialog::Type::kClipboardDragBlock);
 
   content::DropData drop_data;
   drop_data.text = u"Sensitive Data";

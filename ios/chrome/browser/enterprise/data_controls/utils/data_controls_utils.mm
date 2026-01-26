@@ -62,6 +62,7 @@ WarningDialog GetWarningDialog(DataControlsDialog::Type type,
     case DataControlsDialog::Type::kClipboardCopyBlock:
     case DataControlsDialog::Type::kClipboardShareBlock:
     case DataControlsDialog::Type::kClipboardActionBlock:
+    case DataControlsDialog::Type::kClipboardDragBlock:
       // This case should not be reachable in practice.
       NOTREACHED();
   }
