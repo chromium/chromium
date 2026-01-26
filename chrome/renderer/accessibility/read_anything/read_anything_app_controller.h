@@ -113,6 +113,13 @@ class ReadAnythingAppController
   void OnTreeAdded(ui::AXTree* tree) override;
   void OnTreeRemoved(ui::AXTree* tree) override;
 
+  // Returns whether the processing of accessibility updates should be paused.
+  bool IsUpdateProcessingPaused() const;
+
+  // If the update-processing system is not paused, applies pending updates and
+  // triggers necessary actions. If paused, does nothing.
+  void ProcessPendingUpdatesIfAllowed();
+
   // read_anything::mojom::UntrustedPage:
   void AccessibilityEventReceived(
       const ui::AXTreeID& tree_id,

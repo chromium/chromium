@@ -53,10 +53,10 @@ class ReadAloudAppModel {
   ReadAloudAppModel(const ReadAloudAppModel& other) = delete;
   ReadAloudAppModel& operator=(const ReadAloudAppModel&) = delete;
 
-  bool speech_tree_initialized() { return speech_tree_initialized_; }
-  bool speech_playing() { return speech_playing_; }
+  bool speech_tree_initialized() const { return speech_tree_initialized_; }
+  bool speech_playing() const { return speech_playing_; }
   void SetSpeechPlaying(bool is_playing);
-  bool audio_currently_playing() { return audio_currently_playing_; }
+  bool audio_currently_playing() const { return audio_currently_playing_; }
   void SetAudioCurrentlyPlaying(bool is_playing);
   double speech_rate() const { return speech_rate_; }
   void set_speech_rate(double rate) { speech_rate_ = rate; }

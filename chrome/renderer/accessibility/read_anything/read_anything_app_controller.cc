@@ -569,6 +569,20 @@ void ReadAnythingAppController::OnStringAttributeChanged(
   }
 }
 
+bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
+  return model_.distillation_in_progress() ||
+         read_aloud_model_.speech_playing();
+}
+
+void ReadAnythingAppController::ProcessPendingUpdatesIfAllowed() {
+  if (IsUpdateProcessingPaused()) {
+    return;
+  }
+
+  model_.UnserializePendingUpdates(model_.active_tree_id());
+  SendEventUpdates();
+}
+
 void ReadAnythingAppController::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
@@ -577,9 +591,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
   // Remove the const-ness of the data here so that subsequent methods can move
   // the data.
-  if (tree_id == model_.active_tree_id() &&
-      (model_.distillation_in_progress() ||
-       read_aloud_model_.speech_playing())) {
+  if (tree_id == model_.active_tree_id() && IsUpdateProcessingPaused()) {
     VLOG(1)
         << "In AccessibilityEventReceived. Calling QueueAccessibilityUpdates "
            "because distiller should not run yet.";
@@ -813,7 +825,7 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
     return;
   }
 
-  if (model_.distillation_in_progress() || read_aloud_model_.speech_playing()) {
+  if (IsUpdateProcessingPaused()) {
     // When distillation is in progress, the model may have queued up tree
     // updates. In those cases, assume we eventually get to `OnAXTreeDistilled`,
     // where we re-request `Distill`. When speech is playing, assume it will
@@ -871,12 +883,17 @@ void ReadAnythingAppController::OnAXTreeDistilled(
                "disconnected";
     return;
   }
+
+  // Reset distillation in progress, because distillation just finished. This
+  // is needed for the IsUpdateProcessingPaused check below, because it will
+  // consider the processing pipeline paused if distillation is in progress.
+  model_.set_distillation_in_progress(false);
+
   // If speech is playing, we don't want to redraw and disrupt speech. We will
   // re-distill once speech pauses.
-  if (read_aloud_model_.speech_playing()) {
+  if (IsUpdateProcessingPaused()) {
     model_.set_requires_distillation(true);
-    model_.set_distillation_in_progress(false);
-    VLOG(1) << "Distillation terminated because speech is playing";
+    VLOG(1) << "Distillation terminated because update processing is paused";
     return;
   }
   // Reset state, including the current side panel selection so we can update
@@ -976,16 +993,12 @@ void ReadAnythingAppController::OnAXTreeDistilled(
         base::HashMetricName(language::ExtractBaseLanguage(language)));
   }
 
-  // Once drawing is complete, unserialize all of the pending updates on the
-  // active tree which may require more distillations (as tracked by the model's
-  // `requires_distillation()` state below).
-  model_.UnserializePendingUpdates(tree_id);
-  if (model_.requires_distillation()) {
     if (features::IsReadAnythingWithReadabilityEnabled()) {
       return;
     }
-    Distill();
-  }
+    // Once drawing is complete, process pending updates on the active tree if
+    // there are no other factors blocking the processing of updates
+    ProcessPendingUpdatesIfAllowed();
 }
 
 bool ReadAnythingAppController::PostProcessSelection() {
