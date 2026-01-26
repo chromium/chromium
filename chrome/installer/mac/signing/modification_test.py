@@ -556,7 +556,8 @@ class TestModification(unittest.TestCase):
         read_plist.side_effect = plist_read_with_scheme
 
         # product_dirname implies Side-by-Side installation.
-        dist = model.Distribution(channel='beta', product_dirname='BetaDir')
+        dist = model.Distribution(
+            channel='beta', product_dirname='BetaDir', direct_launch_scheme='')
         config = dist.to_config(self.config)
 
         modification.customize_distribution(self.paths, dist, config)

@@ -31,18 +31,6 @@ def _should_keep_scheme(scheme, dist):
     if dist.direct_launch_scheme is not None:
         return scheme == dist.direct_launch_scheme
 
-    # Heuristic for default/unconfigured behavior.
-    # TODO(b/446672134): This logic is temporary to unblock the current CL.
-    # The plan is:
-    # 1. Land the current CL with this heuristic.
-    # 2. Update internal configuration to explicitly set `direct_launch_scheme`
-    #    for all distributions (e.g. empty string for side-by-side channels).
-    # 3. Remove this heuristic in a follow-up CL.
-    if scheme == 'google-chrome':
-        is_sxs = dist.channel in ('beta', 'dev',
-                                  'canary') and dist.product_dirname
-        return not is_sxs
-
     return True
 
 
