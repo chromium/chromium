@@ -20605,12 +20605,14 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledAll_20251127",
+                    "name": "EnabledProtectedTabsAndroid_20260126",
                     "enable_features": [
-                        "ChangeUnfocusedPriority",
                         "ProcessRankPolicyAndroid",
                         "ProtectedTabsAndroid",
                         "SubframeImportance"
+                    ],
+                    "disable_features": [
+                        "ChangeUnfocusedPriority"
                     ]
                 }
             ]
