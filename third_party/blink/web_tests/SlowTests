@@ -843,6 +843,7 @@ crbug.com/1014327 [ Mac Release ] external/wpt/preload/onerror-event.html [ Slow
 crbug.com/1017626 [ Linux ] external/wpt/compat/idlharness.window.html [ Slow ]
 crbug.com/1026712 [ Mac12 ] fast/forms/time-multiple-fields/time-multiple-fields-stepup-stepdown-from-renderer-hour.html [ Slow ]
 crbug.com/1026712 [ Mac12 ] fast/forms/time-multiple-fields/time-multiple-fields-stepup-stepdown-from-renderer.html [ Slow ]
+crbug.com/478186112 external/wpt/pointerevents/pointerevent_attributes.html?touch [ Slow ]
 crbug.com/1044715 [ Win ] external/wpt/pointerevents/pointerevent_touch-action-pan-right-css_touch.html [ Slow ]
 crbug.com/1044715 [ Linux ] external/wpt/pointerevents/pointerevent_touch-action-pan-right-css_touch.html [ Slow ]
 crbug.com/1044715 [ Win ] external/wpt/pointerevents/pointerevent_touch-action-inherit_parent-none_touch.html [ Slow ]
