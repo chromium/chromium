@@ -37,12 +37,11 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/android/browser_controls_offset_tag_constraints.h"
 #include "ui/android/browser_controls_offset_tag_definitions.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/dip_util.h"
 
 namespace ui {
@@ -263,31 +262,6 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
   gfx::Size image_size =
       output_size.IsEmpty() ? surface_size_in_pixels_ : output_size;
 
-  display::Display display =
-      view_->GetWindowAndroid()->GetDisplayWithWindowColorSpace();
-  gfx::ColorSpace color_space = display.GetColorSpaces().GetOutputColorSpace(
-      gfx::ContentColorUsage::kSRGB, /*needs_alpha=*/false);
-
-  auto shared_image = shared_image_interface->CreateSharedImage(
-      {viz::SinglePlaneFormat::kRGBA_8888, image_size, color_space,
-       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-           gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-           gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE,
-       "DFHACopyFromCompositingSurface"},
-      gpu::kNullSurfaceHandle);
-  if (!shared_image) {
-    LOG(WARNING)
-        << "Could not create a shared image to copy from compositing surface";
-    std::move(callback).Run(nullptr, viz::ReleaseCallback());
-    return;
-  }
-  viz::ReleaseCallback release_callback = base::BindOnce(
-      [](scoped_refptr<gpu::ClientSharedImage> shared_image,
-         const gpu::SyncToken& sync_token, bool is_lost) {
-        shared_image->UpdateDestructionSyncToken(sync_token);
-      },
-      shared_image);
-
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
   ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
       keep_surface_alive;
@@ -304,7 +278,6 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
           base::BindOnce(
               [](base::OnceCallback<void(scoped_refptr<gpu::ClientSharedImage>,
                                          viz::ReleaseCallback)> result_callback,
-                 viz::ReleaseCallback release_callback,
                  ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
                      keep_alive,
                  std::unique_ptr<viz::CopyOutputResult> result) {
@@ -318,21 +291,16 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
                   return;
                 }
                 std::move(result_callback)
-                    .Run(result->GetSharedImage(), std::move(release_callback));
+                    .Run(result->GetSharedImage(),
+                         result->TakeSharedImageOwnership());
               },
-              std::move(callback), std::move(release_callback),
-              std::move(keep_surface_alive)));
+              std::move(callback), std::move(keep_surface_alive)));
 
-  auto sync_token = shared_image_interface->GenVerifiedSyncToken();
   viz::SetCopyOutputRequestResultSize(request.get(), src_subrect, output_size,
                                       surface_size_in_pixels_);
   if (!request->has_result_selection()) {
     request->set_result_selection(gfx::Rect(image_size));
   }
-  request->set_blit_request(
-      viz::BlitRequest(gfx::Point(), viz::LetterboxingBehavior::kDoNotLetterbox,
-                       std::move(shared_image), sync_token,
-                       /*populates_gpu_memory_buffer=*/false));
 
   // The callback must be executed on the UI thread. Since the result callback
   // can be dispatched on any thread by default, explicitly set the result task
