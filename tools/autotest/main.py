@@ -39,15 +39,16 @@ import shlex
 import subprocess
 import sys
 import shutil
-
 from enum import Enum
 from pathlib import Path
+
+from opentelemetry import trace
 
 # Don't write pyc files to the src tree, which show up in version control
 # in some environments.
 sys.dont_write_bytecode = True
 
-USE_PYTHON_3 = f'This script will only run under python3.'
+DEBUG = False
 
 SRC_DIR = Path(__file__).parent.parent.parent.resolve()
 sys.path.append(str(SRC_DIR / 'build'))
@@ -57,7 +58,11 @@ sys.path.append(str(SRC_DIR / 'build' / 'android'))
 from pylib import constants
 
 DEPOT_TOOLS_DIR = SRC_DIR / 'third_party' / 'depot_tools'
-DEBUG = False
+
+sys.path.append(str(DEPOT_TOOLS_DIR / 'infra_lib'))
+import telemetry
+
+tracer = telemetry.get_tracer(__name__)
 
 # Some test suites use suffixes that would also match non-test-suite targets.
 # Those test suites should be manually added here.
@@ -195,6 +200,70 @@ class TestValidity(Enum):
   VALID_TEST = 2  # Matches test file regex and includes gtest files.
 
 
+# ------------------------------------------------------------------------------
+# Telemetry tracks attributes declared in main, build, and run phases.
+# Note: Telemetry only applies to Googlers only
+# For details, see: go/autotest-telemetry
+# ------------------------------------------------------------------------------
+
+
+def RecordMainAttributes(targets: list[str], filter: str, used_cache: bool,
+                         out_dir: str):
+  """Records main attributes to the current span.
+
+  Attributes recorded:
+      * main.is_gemini_cli: Indicates if the process is running via the Gemini CLI.
+      * main.targets: The list of targets selected for build/run.
+      * main.filter: The filter string generated from user input.
+      * gn.target_cache_used: Whether the target search utilized the cache.
+      * build.out_dir: The directory path for compiled artifacts.
+  """
+  span = trace.get_current_span()
+  if not span.is_recording():
+    return
+
+  is_gemini_cli = True if os.getenv("GEMINI_CLI") else False
+
+  span.set_attribute('main.is_gemini_cli', is_gemini_cli)
+  span.set_attribute('main.targets', str(targets))
+  span.set_attribute('main.filter', filter)
+  span.set_attribute('gn.target_used_cache', used_cache)
+  span.set_attribute('build.out_dir', out_dir)
+
+
+def RecordBuildAttributes(is_retry: str, is_successful: bool):
+  """Records build execution state attributes to the current span.
+
+  Attributes recorded:
+      * build.is_retry: Indicates if this build is a retry attempt.
+      * build.is_successful: Indicates return code of subprocess run
+  """
+  span = trace.get_current_span()
+  if not span.is_recording():
+    return
+
+  span.set_attribute('build.is_retry', is_retry)
+  span.set_attribute('build.is_successful', is_successful)
+
+
+def RecordRunAttributes(cmd: list[str], is_successful: bool):
+  """Records attributes related to the command execution.
+
+  Attributes recorded:
+      * run.bin: The specific binary name extracted from the full command path.
+      * run.is_successful: Indicates return code of subprocess run
+  """
+  span = trace.get_current_span()
+  if not span.is_recording():
+    return
+
+  run_bin = os.path.basename(cmd[0])
+  span.set_attribute('run.bin', run_bin)
+  span.set_attribute('run.is_successful', is_successful)
+  if not is_successful:
+    span.set_status(trace.StatusCode.ERROR)
+
+
 def CodeSearchFiles(query_args):
   lines = RunCommand([
       'cs',
@@ -258,10 +327,12 @@ class CommandError(Exception):
     return message
 
 
+@tracer.start_as_current_span('chromium.tools.autotest.run_target')
 def StreamCommandOrExit(cmd, **kwargs):
-  try:
-    subprocess.check_call(cmd, **kwargs)
-  except subprocess.CalledProcessError as e:
+  result = subprocess.run(cmd, check=False, **kwargs)
+  is_successful = result.returncode == 0
+  RecordRunAttributes(cmd, is_successful)
+  if not is_successful:
     sys.exit(1)
 
 
@@ -275,15 +346,20 @@ def RunCommand(cmd, **kwargs):
     raise CommandError(e.cmd, e.returncode, e.output) from None
 
 
-def BuildTestTargets(out_dir, targets, dry_run, quiet):
+@tracer.start_as_current_span('chromium.tools.autotest.build')
+def BuildTestTargets(out_dir, targets, dry_run, quiet, is_retry):
   """Builds the specified targets with ninja"""
   cmd = gn_helpers.CreateBuildCommand(out_dir) + targets
   print('Building: ' + shlex.join(cmd))
   if (dry_run):
     return True
+
   completed_process = subprocess.run(cmd,
                                      capture_output=quiet,
                                      encoding='utf-8')
+
+  RecordBuildAttributes(is_retry, completed_process.returncode == 0)
+
   if completed_process.returncode != 0:
     if quiet:
       before, _, after = completed_process.stdout.partition('stderr:')
@@ -680,7 +756,6 @@ def RunTestTargets(out_dir, targets, gtest_filter, pref_mapping_filter,
     if not dry_run:
       StreamCommandOrExit(cmd)
 
-
 def BuildCppTestFilter(filenames, line):
   make_filter_command = [
       sys.executable, SRC_DIR / 'tools' / 'make_gtest_filter.py'
@@ -748,6 +823,7 @@ def GetChangedTestFiles():
   return test_files
 
 
+@tracer.start_as_current_span('chromium.tools.autotest.main')
 def main():
   parser = argparse.ArgumentParser(
       prog='tools/autotest.py', description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
@@ -893,7 +969,8 @@ def main():
     pref_mapping_filter = BuildPrefMappingTestFilter(filenames)
 
   assert targets
-  build_ok = BuildTestTargets(out_dir, targets, args.dry_run, args.quiet)
+
+  build_ok = BuildTestTargets(out_dir, targets, args.dry_run, args.quiet, False)
 
   # If we used the target cache, it's possible we chose the wrong target because
   # a gn file was changed. The build step above will check for gn modifications
@@ -906,7 +983,10 @@ def main():
       # Note that this can happen, for example, if you rename a test target.
       print('gn config was changed, trying to build again', file=sys.stderr)
       targets = new_targets
-      build_ok = BuildTestTargets(out_dir, targets, args.dry_run, args.quiet)
+      build_ok = BuildTestTargets(out_dir, targets, args.dry_run, args.quiet,
+                                  True)
+
+  RecordMainAttributes(targets, gtest_filter, used_cache, out_dir)
 
   if not build_ok: sys.exit(1)
 
@@ -916,4 +996,6 @@ def main():
 
 
 if __name__ == '__main__':
+  telemetry.initialize('chromium.tools.autotest')
+
   sys.exit(main())
