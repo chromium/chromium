@@ -313,13 +313,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     wtf_size_t start_offset,
     GridLanesRunningPositions& running_positions,
     std::optional<SizingConstraint> sizing_constraint) {
-  const auto& border_scrollbar_padding = BorderScrollbarPadding();
-  const auto& container_space = GetConstraintSpace();
   const auto& style = Style();
-  const bool is_for_layout = sizing_constraint == SizingConstraint::kLayout;
-
-  const auto container_writing_direction =
-      container_space.GetWritingDirection();
   const auto grid_axis_direction = track_collection.Direction();
   const bool is_for_columns = grid_axis_direction == kForColumns;
   const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
@@ -337,6 +331,113 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     baseline_accumulator = &grid_baseline_accumulator.value();
   }
   CHECK(baseline_accumulator);
+
+  // TODO(yanlingwang): Properly handle baselines here for intrinsic tracks.
+
+  // If an item is baseline aligned, placement is required in two passes because
+  // track baselines must be computed before items can be aligned.
+  if (has_baseline_aligned_items_) {
+    // In the initial placement pass, compute track baselines by placing items
+    // to determine their positions and baselines. `running_positions` is
+    // needed here in order to determine item placement. We use a copy of
+    // `running_positions` to preserve their original state for the second pass.
+    // Note that during this baseline calculation pass, items are not added to
+    // the container; only baseline information is computed and stored, since
+    // baselines are needed before items can be properly aligned and placed.
+    GridLanesRunningPositions running_positions_for_baseline(running_positions);
+    RunGridLanesPlacementPhase(
+        track_collection, grid_lanes_items, start_offset, sizing_constraint,
+        stacking_axis_gap, PlacementPhase::kCalculateBaselines,
+        baseline_accumulator, running_positions_for_baseline);
+  }
+
+  // Run a final placement pass of all items and add their layout results to
+  // the container. This is the second placement pass if there are any items
+  // requiring baseline alignment, and the only placement pass otherwise. Item
+  // layout results are only added to the container during this final placement
+  // pass, ensuring all alignment and baseline information is available before
+  // items are positioned.
+  RunGridLanesPlacementPhase(track_collection, grid_lanes_items, start_offset,
+                             sizing_constraint, stacking_axis_gap,
+                             PlacementPhase::kFinalPlacement,
+                             baseline_accumulator, running_positions);
+
+  // Propagate the baselines to the container.
+  if (auto first_baseline = baseline_accumulator->FirstBaseline()) {
+    container_builder_.SetFirstBaseline(*first_baseline);
+  }
+  if (auto last_baseline = baseline_accumulator->LastBaseline()) {
+    container_builder_.SetLastBaseline(*last_baseline);
+  }
+
+  // Determine intrinsic size of the grid-lanes container. For the stacking
+  // axis, remove the last gap that was added, since there is no item after it.
+  const LayoutUnit stacking_axis_size =
+      running_positions.GetMaxPositionForSpan(
+          GridSpan::TranslatedDefiniteGridSpan(
+              /*start_line=*/0,
+              /*end_line=*/track_collection.EndLineOfImplicitGrid())) -
+      stacking_axis_gap;
+
+  // To determine the size of the grid axis, add the size of the tracks.
+  const LayoutUnit grid_axis_size = track_collection.CalculateSetSpanSize();
+  const LayoutUnit current_intrinsic_block_size =
+      is_for_columns ? stacking_axis_size : grid_axis_size;
+  // If block size containment is applied, don't set the intrinsic block size
+  // because we would either use the author-provided intrinsic block size, or if
+  // the author didn't provide one, the block size of an empty container.
+  if (!Node().ShouldApplyBlockSizeContainment()) {
+    intrinsic_block_size_ = current_intrinsic_block_size;
+  }
+
+  // Apply content alignment/justification. This is an additional offset
+  // determined by the intrinsic inline or block size of the grid-lanes
+  // container, so it must occur after that has been determined. This must also
+  // occur after the container baselines have been set.
+  const auto& content_alignment =
+      is_for_columns ? style.AlignContent() : style.JustifyContent();
+  if (content_alignment != ComputedStyleInitialValues::InitialAlignContent()) {
+    const LayoutUnit intrinsic_inline_size =
+        is_for_columns ? grid_axis_size : stacking_axis_size;
+
+    const LayoutUnit align_content_offset = AlignContentOffset(
+        is_for_columns ? current_intrinsic_block_size : intrinsic_inline_size,
+        is_for_columns ? ChildAvailableSize().block_size
+                       : ChildAvailableSize().inline_size,
+        baseline_accumulator->FirstBaseline().value_or(LayoutUnit()),
+        content_alignment);
+
+    if (is_for_columns) {
+      if (ChildAvailableSize().block_size != kIndefiniteSize) {
+        container_builder_.MoveChildrenInDirection(align_content_offset,
+                                                   /*is_block_direction=*/true);
+      }
+    } else {
+      if (ChildAvailableSize().inline_size != kIndefiniteSize) {
+        container_builder_.MoveChildrenInDirection(
+            align_content_offset, /*is_block_direction=*/false);
+      }
+    }
+  }
+}
+
+void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
+    GridSizingTrackCollection& track_collection,
+    GridItems& grid_lanes_items,
+    wtf_size_t start_offset,
+    std::optional<SizingConstraint> sizing_constraint,
+    LayoutUnit stacking_axis_gap,
+    PlacementPhase placement_phase,
+    BaselineAccumulator* baseline_accumulator,
+    GridLanesRunningPositions& running_positions) {
+  const bool is_for_layout = sizing_constraint == SizingConstraint::kLayout;
+  const auto& container_space = GetConstraintSpace();
+  const auto& style = Style();
+  const auto border_scrollbar_padding = BorderScrollbarPadding();
+  const auto container_writing_direction =
+      container_space.GetWritingDirection();
+  const auto grid_axis_direction = track_collection.Direction();
+  const bool is_for_columns = grid_axis_direction == kForColumns;
 
   for (auto& grid_lanes_item : grid_lanes_items) {
     // Get the starting offset of where we want the item placed in the stacking
@@ -435,38 +536,66 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
       }
     }
 
-    // `start_offset_in_stacking_axis` specifies where in the stacking axis the
-    // item should be placed, so we need to adjust the `containing_rect` in the
-    // stacking axis to accommodate the newly placed item.
-    is_for_columns ? containing_rect.offset.block_offset =
-                         start_offset_in_stacking_axis +
-                         border_scrollbar_padding.block_start
-                   : containing_rect.offset.inline_offset =
-                         start_offset_in_stacking_axis +
-                         border_scrollbar_padding.inline_start;
+    // In the final placement pass, position items and apply self-alignment.
+    // This must be done after calculating track baselines in the first pass,
+    // since baseline alignment needs to know the track's baseline to properly
+    // align items within their grid areas.
+    if (placement_phase == PlacementPhase::kFinalPlacement) {
+      // `start_offset_in_stacking_axis` specifies where in the stacking axis
+      // the item should be placed, so we need to adjust the `containing_rect`
+      // in the stacking axis to accommodate the newly placed item.
+      is_for_columns ? containing_rect.offset.block_offset =
+                           start_offset_in_stacking_axis +
+                           border_scrollbar_padding.block_start
+                     : containing_rect.offset.inline_offset =
+                           start_offset_in_stacking_axis +
+                           border_scrollbar_padding.inline_start;
 
-    // TODO(celestepan): Account for extra margins from sub-grid items.
-    //
-    // Adjust item's position in the track based on style. We only want offset
-    // applied to the grid axis at the moment.
-    //
-    // TODO(celestepan): Update alignment logic if needed once we resolve on
-    // https://github.com/w3c/csswg-drafts/issues/10275.
+      // TODO(celestepan): Account for extra margins from sub-grid items.
+      //
+      // Adjust item's position in the track based on style. We only want offset
+      // applied to the grid axis at the moment.
+      //
+      // TODO(celestepan): Update alignment logic if needed once we resolve on
+      // https://github.com/w3c/csswg-drafts/issues/10275.
 
-    const auto inline_alignment = is_for_columns
-                                      ? grid_lanes_item.Alignment(kForColumns)
-                                      : AxisEdge::kStart;
-    const auto block_alignment =
-        is_for_columns ? AxisEdge::kStart : grid_lanes_item.Alignment(kForRows);
-    containing_rect.offset += LogicalOffset(
-        AlignmentOffset(containing_rect.size.inline_size, fragment.InlineSize(),
-                        margins.inline_start, margins.inline_end,
-                        /*baseline_offset=*/LayoutUnit(), inline_alignment,
-                        grid_lanes_item.IsOverflowSafe(kForColumns)),
-        AlignmentOffset(containing_rect.size.block_size, fragment.BlockSize(),
-                        margins.block_start, margins.block_end,
-                        /*baseline_offset=*/LayoutUnit(), block_alignment,
-                        grid_lanes_item.IsOverflowSafe(kForRows)));
+      const auto inline_alignment = is_for_columns
+                                        ? grid_lanes_item.Alignment(kForColumns)
+                                        : AxisEdge::kStart;
+      const auto block_alignment = is_for_columns
+                                       ? AxisEdge::kStart
+                                       : grid_lanes_item.Alignment(kForRows);
+
+      const LogicalBoxFragment baseline_fragment(
+          grid_lanes_item.BaselineWritingDirection(grid_axis_direction),
+          physical_fragment);
+
+      // In grid-lanes, we only have tracks in one dimension, so baseline
+      // alignment is only supported in one dimension (the grid axis). Only
+      // compute the baseline offset for the direction that applies.
+      LayoutUnit inline_baseline_offset;
+      LayoutUnit block_baseline_offset;
+      if (is_for_columns) {
+        inline_baseline_offset = ComputeBaselineOffset(
+            grid_lanes_item, track_collection, baseline_fragment, fragment,
+            style.GetFontBaseline(), kForColumns,
+            containing_rect.size.inline_size);
+      } else {
+        block_baseline_offset = ComputeBaselineOffset(
+            grid_lanes_item, track_collection, baseline_fragment, fragment,
+            style.GetFontBaseline(), kForRows, containing_rect.size.block_size);
+      }
+
+      containing_rect.offset += LogicalOffset(
+          AlignmentOffset(
+              containing_rect.size.inline_size, fragment.InlineSize(),
+              margins.inline_start, margins.inline_end, inline_baseline_offset,
+              inline_alignment, grid_lanes_item.IsOverflowSafe(kForColumns)),
+          AlignmentOffset(containing_rect.size.block_size, fragment.BlockSize(),
+                          margins.block_start, margins.block_end,
+                          block_baseline_offset, block_alignment,
+                          grid_lanes_item.IsOverflowSafe(kForRows)));
+    }
 
     // If the item was not placed in an earlier track opening, update
     // `running_positions` of the tracks that the items spans to include the
@@ -493,69 +622,43 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
           grid_lanes_item.resolved_position, grid_axis_direction);
     }
 
-    container_builder_.AddResult(*result, containing_rect.offset, margins);
-    // TODO(yanlingwang): Update negative margin handling if needed once we
-    // resolve on https://github.com/w3c/csswg-drafts/issues/13165.
-    baseline_accumulator->Accumulate(grid_lanes_item, fragment,
-                                     containing_rect.offset.block_offset,
-                                     start_offset_in_stacking_axis);
-  }
-
-  // Propagate the baselines to the container.
-  if (auto first_baseline = baseline_accumulator->FirstBaseline()) {
-    container_builder_.SetFirstBaseline(*first_baseline);
-  }
-  if (auto last_baseline = baseline_accumulator->LastBaseline()) {
-    container_builder_.SetLastBaseline(*last_baseline);
-  }
-
-  // Determine intrinsic size of the grid-lanes container. For the stacking
-  // axis, remove the last gap that was added, since there is no item after it.
-  const LayoutUnit stacking_axis_size =
-      running_positions.GetMaxPositionForSpan(
-          GridSpan::TranslatedDefiniteGridSpan(
-              /*start_line=*/0,
-              /*end_line=*/track_collection.EndLineOfImplicitGrid())) -
-      stacking_axis_gap;
-
-  // To determine the size of the grid axis, add the size of the tracks.
-  const LayoutUnit grid_axis_size = track_collection.CalculateSetSpanSize();
-  const LayoutUnit current_intrinsic_block_size =
-      is_for_columns ? stacking_axis_size : grid_axis_size;
-  // If block size containment is applied, don't set the intrinsic block size
-  // because we would either use the author-provided intrinsic block size, or if
-  // the author didn't provide one, the block size of an empty container.
-  if (!Node().ShouldApplyBlockSizeContainment()) {
-    intrinsic_block_size_ = current_intrinsic_block_size;
-  }
-
-  // Apply content alignment/justification. This is an additional offset
-  // determined by the intrinsic inline or block size of the grid-lanes
-  // container, so it must occur after that has been determined. This must also
-  // occur after the container baselines have been set.
-  const auto& content_alignment =
-      is_for_columns ? style.AlignContent() : style.JustifyContent();
-  if (content_alignment != ComputedStyleInitialValues::InitialAlignContent()) {
-    const LayoutUnit intrinsic_inline_size =
-        is_for_columns ? grid_axis_size : stacking_axis_size;
-
-    const LayoutUnit align_content_offset = AlignContentOffset(
-        is_for_columns ? current_intrinsic_block_size : intrinsic_inline_size,
-        is_for_columns ? ChildAvailableSize().block_size
-                       : ChildAvailableSize().inline_size,
-        baseline_accumulator->FirstBaseline().value_or(LayoutUnit()),
-        content_alignment);
-
-    if (is_for_columns) {
-      if (ChildAvailableSize().block_size != kIndefiniteSize) {
-        container_builder_.MoveChildrenInDirection(align_content_offset,
-                                                   /*is_block_direction=*/true);
+    // TODO(yanlingwang): Properly handle baselines here for intrinsic tracks.
+    if (placement_phase == PlacementPhase::kCalculateBaselines) {
+      // In the baseline calculation pass, skip items without baseline
+      // alignment since they don't contribute to track baselines. This check
+      // must happen after the `running_positions` updates because all items
+      // need to update placement state, regardless of whether they contribute
+      // to baselines.
+      if (!grid_lanes_item.IsBaselineAligned(grid_axis_direction)) {
+        continue;
       }
+
+      // Create `baseline_fragment` with the writing direction appropriate for
+      // the `grid_axis_direction`. This may differ from the container's writing
+      // direction for items with different writing modes, and ensures baselines
+      // are calculated relative to the correct axis.
+      const LogicalBoxFragment baseline_fragment(
+          grid_lanes_item.BaselineWritingDirection(grid_axis_direction),
+          physical_fragment);
+      const LayoutUnit extra_margin =
+          grid_lanes_item.IsLastBaselineSpecified(grid_axis_direction)
+              ? (is_for_columns ? margins.inline_end : margins.block_end)
+              : (is_for_columns ? margins.inline_start : margins.block_start);
+
+      StoreItemBaseline(baseline_fragment, grid_axis_direction,
+                        style.GetFontBaseline(), extra_margin, track_collection,
+                        grid_lanes_item);
     } else {
-      if (ChildAvailableSize().inline_size != kIndefiniteSize) {
-        container_builder_.MoveChildrenInDirection(
-            align_content_offset, /*is_block_direction=*/false);
-      }
+      // Items are only added to the container in the final placement pass.
+      // During the baseline calculation pass, we only compute and store track
+      // baselines without adding items, since baseline information is needed
+      // before items can be properly aligned and placed.
+      container_builder_.AddResult(*result, containing_rect.offset, margins);
+      // TODO(yanlingwang): Update negative margin handling if needed once we
+      // resolve on https://github.com/w3c/csswg-drafts/issues/13165.
+      baseline_accumulator->Accumulate(grid_lanes_item, fragment,
+                                       containing_rect.offset.block_offset,
+                                       start_offset_in_stacking_axis);
     }
   }
 }
@@ -614,7 +717,7 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     const bool needs_intrinsic_track_size,
     SizingConstraint sizing_constraint,
     const wtf_size_t auto_repetition_count,
-    wtf_size_t& start_offset) const {
+    wtf_size_t& start_offset) {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
   const bool is_for_columns = grid_axis_direction == kForColumns;
@@ -653,6 +756,9 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
 
     for (const Member<GridItemData>& group_item : group_items) {
       const GridItemData& item_data = *group_item;
+      has_baseline_aligned_items_ |=
+          item_data.IsBaselineSpecified(grid_axis_direction);
+
       const BlockNode& item_node = item_data.node;
       const auto space = CreateConstraintSpaceForMeasure(item_data);
       const ComputedStyle& item_style = item_node.Style();
@@ -939,7 +1045,7 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::ComputeGridAxisTracks(
     Vector<wtf_size_t>& collapsed_track_indexes,
     wtf_size_t& start_offset,
     bool& needs_intrinsic_track_size,
-    HeapVector<Member<LayoutBox>>* opt_oof_children) const {
+    HeapVector<Member<LayoutBox>>* opt_oof_children) {
   start_offset = 0;
   needs_intrinsic_track_size = false;
 
@@ -972,7 +1078,7 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::BuildGridAxisTracks(
     SizingConstraint sizing_constraint,
     bool& needs_intrinsic_track_size,
     Vector<wtf_size_t>& collapsed_track_indexes,
-    wtf_size_t& start_offset) const {
+    wtf_size_t& start_offset) {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
   GridItems virtual_items = BuildVirtualGridLanesItems(
@@ -1009,9 +1115,15 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::BuildGridAxisTracks(
                                         &collapsed_track_indexes);
   };
 
-  GridSizingTrackCollection track_collection(BuildRanges(),
-                                             grid_axis_direction);
+  GridSizingTrackCollection track_collection(
+      BuildRanges(), grid_axis_direction,
+      /*must_create_baselines=*/has_baseline_aligned_items_);
   track_collection.BuildSets(style, grid_lanes_available_size_);
+
+  // Allocate the major/minor baseline vectors now that we know the set count.
+  if (has_baseline_aligned_items_) {
+    track_collection.ResetBaselines();
+  }
 
   if (track_collection.HasNonDefiniteTrack()) {
     GridTrackSizingAlgorithm::CacheGridItemsProperties(track_collection,

@@ -17,7 +17,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
-  void ComputeGeometry(const GridLanesLayoutAlgorithm& algorithm) {
+  void ComputeGeometry(GridLanesLayoutAlgorithm& algorithm) {
     wtf_size_t start_offset;
     const auto& style = algorithm.Style();
     const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
