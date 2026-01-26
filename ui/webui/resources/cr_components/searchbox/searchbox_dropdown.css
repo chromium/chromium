@@ -69,6 +69,7 @@ cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
   padding-inline-end: 1px;
   text-overflow: ellipsis;
   white-space: nowrap;
+  z-index: 1;
 }
 
 @media (forced-colors: active) {
