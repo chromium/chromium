@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/webui_url_constants.h"
@@ -97,10 +98,7 @@ class FakePromoCard : public PasswordPromoCardBase {
 
 std::unique_ptr<web_app::WebApp> CreateWebApp() {
   GURL url(chrome::kChromeUIPasswordManagerURL);
-  auto web_app = std::make_unique<web_app::WebApp>(
-      /*manifest_id=*/web_app::GenerateManifestIdFromStartUrlOnly(url),
-      /*start_url=*/url,
-      /*scope=*/url.GetWithoutFilename());
+  auto web_app = web_app::test::CreateWebApp(url);
   web_app->SetUserDisplayMode(web_app::mojom::UserDisplayMode::kStandalone);
   return web_app;
 }
