@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/features.gni")
 import("//components/safe_browsing/buildflags.gni")
@@ -16,6 +17,11 @@ declare_args() {
   # Generating the credits page requires a filesystem traversal for licenses
   # that is slow in some environments.
   generate_about_credits = is_official_build
+}
+
+buildflag_header("generate_about_credits_header") {
+  header = "generate_about_credits.h"
+  flags = [ "GENERATE_ABOUT_CREDITS=$generate_about_credits" ]
 }
 
 if (is_android) {
@@ -102,6 +108,19 @@ grit("components_resources") {
   if (is_android && safe_browsing_mode == 2) {
     deps += [ "//components/safe_browsing/content/resources/real_time_url_checks_allowlist:make_real_time_url_allowlist_protobuf" ]
   }
+}
+
+source_set("unit_tests") {
+  sources = [ "about_ui_credits_unittests.cc" ]
+  testonly = true
+  deps = [
+    ":components_resources",
+    ":generate_about_credits_header",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
 }
 
 grit("dev_ui_components_resources") {

@@ -820,6 +820,10 @@ def FindThirdPartyDirs(root,
       for d in dirs:
         dirpath = os.path.join(path, d)
         _MaybeAddThirdPartyPath(root, dirpath, third_party_dirs)
+    parts = pathlib.Path(path).parts
+    if len(parts) == 4 and parts[0] == 'third_party' and \
+        parts[1] == 'rust' and parts[2] != 'chromium_crates_io':
+      _MaybeAddThirdPartyPath(root, path, third_party_dirs)
 
 
   extra_paths = set(ADDITIONAL_PATHS)
