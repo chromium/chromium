@@ -44,6 +44,7 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
             requestAndroidPermissionsIfNecessary();
             return;
         }
+        setupLocationPrecisionChooser(view);
         showDialogInternal(view);
     }
 
@@ -86,6 +87,7 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
                         ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                         mDialogDelegate.getNegativeButtonText());
             }
+            setupLocationPrecisionChooser(customView);
             mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, customView);
         }
     }
@@ -99,12 +101,12 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
 
     @Override
     public void onAndroidPermissionAccepted() {
-        handleSystemPermission(/*accepted*/ true);
+        handleSystemPermission(/* accepted= */ true);
     }
 
     @Override
     public void onAndroidPermissionCanceled() {
-        handleSystemPermission(/*accepted*/ false);
+        handleSystemPermission(/* accepted= */ false);
     }
 
     private void acknowledgeDelegate() {

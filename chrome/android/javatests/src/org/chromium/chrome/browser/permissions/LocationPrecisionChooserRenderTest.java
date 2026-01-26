@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
@@ -36,6 +38,8 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @RunWith(ParameterizedRunner.class)
@@ -51,6 +55,8 @@ public class LocationPrecisionChooserRenderTest {
             new NightModeTestUtils.NightModeParams().getParameters();
 
     private static final String TEST_FILE = "/content/test/data/android/geolocation.html";
+    private static final String TEST_FILE_GEOLOCATION_ELEMENT =
+            "/content/test/data/android/permission_element.html";
     private static final int TEST_PORT = 12345;
 
     private final boolean mNightModeEnabled;
@@ -173,5 +179,27 @@ public class LocationPrecisionChooserRenderTest {
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
         mPermissionRule.setUpUrl(TEST_FILE);
         testPrompt(/* goldenViewId= */ "oneTimePrompt_location_arm6");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Prompt", "RenderTest"})
+    @EnableFeatures({
+        "ApproximateGeolocationPermission:prompt_arm/1",
+        PermissionsAndroidFeatureList.PERMISSION_ELEMENT
+    })
+    public void testGeolocationElementPrompt() throws Exception {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+        mPermissionRule.setUpUrl(TEST_FILE_GEOLOCATION_ELEMENT);
+        CountDownLatch latch = new CountDownLatch(1);
+        latch.await(2, TimeUnit.SECONDS);
+        DOMUtils.clickNode(mPermissionRule.getWebContents(), "geolocation");
+        mPermissionRule.waitForDialogShownState(true);
+
+        View modalDialogView = mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view);
+        RenderTestRule.sanitize(modalDialogView);
+
+        mRenderTestRule.render(modalDialogView, "geolocation_element_prompt");
     }
 }

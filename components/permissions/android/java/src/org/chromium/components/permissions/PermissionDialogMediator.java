@@ -11,10 +11,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -62,7 +62,7 @@ public class PermissionDialogMediator
     private @Nullable LocationPrecisionChooserController mLocationPrecisionChooserController;
     protected @Nullable PermissionDialogDelegate mDialogDelegate;
     protected @Nullable ModalDialogManager mModalDialogManager;
-    protected @Nullable PermissionDialogCoordinator.Delegate mCoordinatorDelegate;
+    protected PermissionDialogCoordinator.@Nullable Delegate mCoordinatorDelegate;
 
     /** The current state, whether we have a prompt showing and so on. */
     protected @State int mState;
@@ -85,6 +85,15 @@ public class PermissionDialogMediator
         mDialogDelegate = delegate;
         mModalDialogManager = manager;
 
+        setupLocationPrecisionChooser(view);
+
+        mDialogModel = createModalDialogModel(view);
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+        mState = State.PROMPT_OPEN;
+    }
+
+    protected void setupLocationPrecisionChooser(View view) {
+        assert mDialogDelegate != null;
         boolean isGeolocationContentSetting =
                 mDialogDelegate.getContentSettingsTypes().length == 1
                         && mDialogDelegate.getContentSettingsTypes()[0]
@@ -112,10 +121,6 @@ public class PermissionDialogMediator
                 locationPrecisionContainer.removeAllViews();
             }
         }
-
-        mDialogModel = createModalDialogModel(view);
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
-        mState = State.PROMPT_OPEN;
     }
 
     private void onLocationAccuracyRadioButtonSelected(@LocationAccuracy int locationAccuracy) {

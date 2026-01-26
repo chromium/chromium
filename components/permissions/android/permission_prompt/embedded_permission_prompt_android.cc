@@ -113,16 +113,7 @@ void EmbeddedPermissionPromptAndroid::Accept(
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGranted);
-
-  // TODO(crbug.com/442793180): Plumb precise/approximate values when
-  // <geolocation> prompts support it. Hardcoding to precise now to avoid
-  // double prompting.
-  prompt_model_->SetDelegateAction(
-      Action::kAllow, delegate()->Requests()[0]->GetContentSettingsType() ==
-                              ContentSettingsType::GEOLOCATION_WITH_OPTIONS
-                          ? PromptOptions(GeolocationPromptOptions{
-                                GeolocationAccuracy::kPrecise})
-                          : std::monostate());
+  prompt_model_->SetDelegateAction(Action::kAllow, prompt_options);
   MaybeUpdateDialogWithNewScreenVariant();
 }
 
@@ -139,17 +130,7 @@ void EmbeddedPermissionPromptAndroid::AcceptThisTime(
   prompt_model_->PrecalculateVariantsForMetrics();
   prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGrantedOnce);
-
-  // TODO(crbug.com/442793180): Plumb precise/approximate values when
-  // <geolocation> prompts support it. Hardcoding to precise now to avoid
-  // double prompting.
-  prompt_model_->SetDelegateAction(
-      Action::kAllowThisTime,
-      delegate()->Requests()[0]->GetContentSettingsType() ==
-              ContentSettingsType::GEOLOCATION_WITH_OPTIONS
-          ? PromptOptions(
-                GeolocationPromptOptions{GeolocationAccuracy::kPrecise})
-          : std::monostate());
+  prompt_model_->SetDelegateAction(Action::kAllowThisTime, prompt_options);
   MaybeUpdateDialogWithNewScreenVariant();
 }
 
