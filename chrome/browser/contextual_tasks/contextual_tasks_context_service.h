@@ -15,8 +15,8 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.mojom.h"
+#include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 class GURL;

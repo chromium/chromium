@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/content/page_embeddings_service.h"
+#include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 
 #include <algorithm>
 #include <numeric>
 #include <set>
 #include <utility>
 
-#include "components/passage_embeddings/content/embeddings_candidate_generator.h"
+#include "chrome/browser/passage_embeddings/embeddings_candidate_generator.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
