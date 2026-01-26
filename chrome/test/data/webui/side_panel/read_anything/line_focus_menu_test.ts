@@ -82,7 +82,7 @@ suite('LineFocusMenuElement', () => {
         await metrics.whenCalled('recordTextSettingsChange'));
     assertEquals(
         numberOfItems, metrics.getCallCount('recordTextSettingsChange'));
-    assertEquals(numberOfItems, closeAllMenusCount);
+    assertEquals(0, closeAllMenusCount);
   });
 
   test('line focus movement change', async () => {
@@ -112,7 +112,7 @@ suite('LineFocusMenuElement', () => {
         await metrics.whenCalled('recordTextSettingsChange'));
     assertEquals(
         numberOfItems, metrics.getCallCount('recordTextSettingsChange'));
-    assertEquals(numberOfItems, closeAllMenusCount);
+    assertEquals(0, closeAllMenusCount);
   });
 
   test('restores saved line focus option', async () => {

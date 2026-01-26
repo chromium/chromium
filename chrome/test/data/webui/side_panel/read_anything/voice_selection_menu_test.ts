@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SettingsOption, spinnerDebounceTimeout, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {type SettingsOption, spinnerDebounceTimeout, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
@@ -191,7 +191,7 @@ suite('VoiceSelectionMenu', () => {
       return setAvailableVoicesAndEnabledLangs(availableVoices);
     });
 
-    test('close all menus event is fired after choosing a voice', async () => {
+    test('close all menus event not fired after choosing a voice', async () => {
       await openVoiceMenu();
 
       let menuIdToClose = null;
@@ -205,7 +205,7 @@ suite('VoiceSelectionMenu', () => {
       voiceItemButton.click();
       await microtasksFinished();
 
-      assertEquals(menuIdToClose, SettingsOption.VOICE_SELECTION);
+      assertEquals(null, menuIdToClose);
     });
 
     test('it shows a checkmark for the selected voice', async () => {

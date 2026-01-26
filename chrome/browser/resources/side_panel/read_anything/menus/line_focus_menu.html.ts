@@ -14,6 +14,7 @@ export function getHtml(this: LineFocusMenuElement) {
     label="$i18n{lineFocusLabel}"
     .menuItems="${this.options_}"
     .nonModal="${this.nonModal}"
+    .closeOnClick="${false}"
     current-selected-index="-1"
     @line-focus-style-change="${this.onLineFocusStyleChange_}"
     @line-focus-movement-change="${this.onLineFocusMovementChange_}">

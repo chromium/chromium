@@ -154,7 +154,6 @@ export class LineFocusMenuElement extends LineFocusMenuElementBase implements
       option.selected = option.data === data;
     });
     this.logger_.logTextSettingsChange(logValue);
-    this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
   }
 }
 

@@ -52,12 +52,14 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
       eventName: {type: String},
       label: {type: String},
       nonModal: {type: Boolean},
+      closeOnClick: {type: Boolean},
     };
   }
 
   accessor currentSelectedIndex: number = 0;
   accessor menuItems: Array<MenuStateItem<any>> = [];
   accessor nonModal: boolean = false;
+  accessor closeOnClick: boolean = true;
 
   // Initializing to random value, but this is set by the parent.
   accessor eventName: ToolbarEvent = ToolbarEvent.THEME;
@@ -79,7 +81,9 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
     assert(menuItem);
     const eventName = menuItem.eventName || this.eventName;
     this.fire(eventName, {data: menuItem.data});
-    this.$.lazyMenu.get().close();
+    if (this.closeOnClick) {
+      this.$.lazyMenu.get().close();
+    }
   }
 
   protected isItemSelected_(index: number, item: MenuStateItem<any>): boolean {

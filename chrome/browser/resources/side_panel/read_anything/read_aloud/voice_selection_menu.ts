@@ -18,7 +18,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
-import {SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {ToolbarMenu} from '../menus/menu_util.js';
 import {openMenu, spinnerDebounceTimeout} from '../shared/common.js';
 import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
@@ -271,9 +271,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
 
     const selectedVoice = this.getVoiceItemForEvent_(e).voice;
     this.fire(ToolbarEvent.VOICE, {selectedVoice});
-    this.fire(
-        ToolbarEvent.CLOSE_ALL_MENUS,
-        {previousId: SettingsOption.VOICE_SELECTION});
   }
 
   protected onVoicePreviewClick_(e: Event) {
