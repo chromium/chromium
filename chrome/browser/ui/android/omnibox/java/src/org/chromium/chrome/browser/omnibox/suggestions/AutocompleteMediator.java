@@ -1029,7 +1029,9 @@ class AutocompleteMediator
      *     current window.
      */
     void loadTypedOmniboxText(long eventTime, boolean openInNewTab, boolean openInNewWindow) {
-        assert isInInputSession();
+        // TODO(crbug.com/478783240): investigate what flows lead to <enter> key triggering
+        // navigation while the Omnibox input session is not active.
+        if (!isInInputSession()) return;
         assert !openInNewTab || !openInNewWindow
                 : "Unable to determine if the URL should be loaded in a new tab in the current"
                         + " window or in a new window.";
