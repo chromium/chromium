@@ -51,6 +51,9 @@ class TestContextProvider
   static scoped_refptr<TestContextProvider> CreateWorker();
   static scoped_refptr<TestContextProvider> CreateWorker(
       std::unique_ptr<TestContextSupport> support);
+  static scoped_refptr<TestContextProvider> CreateWorker(
+      std::unique_ptr<TestContextSupport> support,
+      std::unique_ptr<TestRasterInterface> raster);
 
   TestContextProvider(const TestContextProvider&) = delete;
   TestContextProvider& operator=(const TestContextProvider&) = delete;

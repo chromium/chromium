@@ -110,26 +110,6 @@ class FakeGPUImageDecodeTestRasterInterface : public viz::TestRasterInterface,
   std::unique_ptr<uint8_t, base::AlignedFreeDeleter> mapped_entry_;
 };
 
-class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
- public:
-  static scoped_refptr<GPUImageDecodeTestMockContextProvider> Create(
-      TransferCacheTestHelper* transfer_cache_helper) {
-    auto support = std::make_unique<FakeGPUImageDecodeTestRasterInterface>(
-        transfer_cache_helper);
-    auto raster = std::make_unique<FakeGPUImageDecodeTestRasterInterface>(
-        transfer_cache_helper);
-    return new GPUImageDecodeTestMockContextProvider(std::move(support),
-                                                     std::move(raster));
-  }
-
- private:
-  ~GPUImageDecodeTestMockContextProvider() override = default;
-  GPUImageDecodeTestMockContextProvider(
-      std::unique_ptr<viz::TestContextSupport> support,
-      std::unique_ptr<viz::TestRasterInterface> raster)
-      : TestContextProvider(std::move(support), std::move(raster), true) {}
-};
-
 class FakeRasterDarkModeFilter : public RasterDarkModeFilter {
  public:
   FakeRasterDarkModeFilter() {
@@ -176,9 +156,14 @@ class GpuImageDecodeCacheTest
       ASSERT_TRUE(command_line != nullptr);
       command_line->AppendSwitch(switches::kEnableClippedImageScaling);
     }
-    context_provider_ =
-        GPUImageDecodeTestMockContextProvider::Create(&transfer_cache_helper_);
-    context_provider_->BindToCurrentSequence();
+    std::unique_ptr<viz::TestContextSupport> support =
+        std::make_unique<FakeGPUImageDecodeTestRasterInterface>(
+            &transfer_cache_helper_);
+    std::unique_ptr<viz::TestRasterInterface> raster_interface =
+        std::make_unique<FakeGPUImageDecodeTestRasterInterface>(
+            &transfer_cache_helper_);
+    context_provider_ = viz::TestContextProvider::CreateWorker(
+        std::move(support), std::move(raster_interface));
     {
       viz::RasterContextProvider::ScopedRasterContextLock context_lock(
           context_provider_.get());
@@ -458,7 +443,7 @@ class GpuImageDecodeCacheTest
   // The order of these members is important because |context_provider_| depends
   // on |transfer_cache_helper_|.
   TransferCacheTestHelper transfer_cache_helper_;
-  scoped_refptr<GPUImageDecodeTestMockContextProvider> context_provider_;
+  scoped_refptr<viz::TestContextProvider> context_provider_;
 
   // Only used when |do_yuv_decode_| is true.
   SkYUVAPixmapInfo::DataType yuv_data_type_ =

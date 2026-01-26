@@ -166,12 +166,19 @@ scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker() {
 // static
 scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker(
     std::unique_ptr<TestContextSupport> support) {
+  return CreateWorker(std::move(support),
+                      std::make_unique<TestRasterInterface>());
+}
+
+// static
+scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker(
+    std::unique_ptr<TestContextSupport> support,
+    std::unique_ptr<TestRasterInterface> raster) {
   DCHECK(support);
 
-  auto worker_context_provider =
-      base::WrapRefCounted<TestContextProvider>(new TestContextProvider(
-          std::move(support), std::make_unique<TestRasterInterface>(),
-          /*support_locking=*/true));
+  auto worker_context_provider = base::WrapRefCounted<TestContextProvider>(
+      new TestContextProvider(std::move(support), std::move(raster),
+                              /*support_locking=*/true));
 
   // Worker contexts are bound to the thread they are created on.
   auto result = worker_context_provider->BindToCurrentSequence();
