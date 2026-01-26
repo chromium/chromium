@@ -51,9 +51,20 @@ class SkillsService : public KeyedService {
   SkillsService();
   ~SkillsService() override;
 
+  // Returns whether the service is initialized, i.e. LoadInitialSkills() has
+  // been called. Any access methods must be called only after this returns
+  // true.
+  virtual bool IsInitialized() const = 0;
+
+  // Loads a skill list into memory from the disk and initializes the service.
+  // Must be called only once.
+  virtual void LoadInitialSkills(
+      std::vector<std::unique_ptr<Skill>> initial_skills) = 0;
+
   // Adds a new skill.
   // Generates a unique ID for the skill.
   // Returns a const pointer to the newly added skill.
+  // Must only be called after IsInitialized() returns true.
   virtual const Skill* AddSkill(const std::string& name,
                                 const std::string& icon,
                                 const std::string& prompt) = 0;
@@ -61,12 +72,14 @@ class SkillsService : public KeyedService {
   // Adds a new skill received from sync. Returns the newly created skill. The
   // difference from AddSkill is that this method takes a `skill_id` for the
   // created skill ID.
+  // Must only be called after IsInitialized() returns true.
   virtual const Skill* AddSkillFromSync(std::string_view skill_id,
                                         std::string_view name,
                                         std::string_view icon,
                                         std::string_view prompt) = 0;
 
   // Updates an existing skill. Returns a skill if exists, nullptr otherwise.
+  // Must only be called after IsInitialized() returns true.
   virtual const Skill* UpdateSkill(std::string_view skill_id,
                                    std::string_view name,
                                    std::string_view icon,
@@ -74,17 +87,16 @@ class SkillsService : public KeyedService {
                                    UpdateSource update_source) = 0;
 
   // Deletes a skill if exists.
+  // Must only be called after IsInitialized() returns true.
   virtual void DeleteSkill(std::string_view skill_id,
                            UpdateSource update_source) = 0;
 
   // Returns the skill with the given ID or nullptr if not found.
+  // Must only be called after IsInitialized() returns true.
   virtual const Skill* GetSkillById(std::string_view skill_id) const = 0;
 
-  // Loads a skill list into memory.
-  virtual void LoadInitialSkills(
-      std::vector<std::unique_ptr<Skill>> initial_skills) = 0;
-
   // Returns a const reference to the currently loaded skills.
+  // Must only be called after IsInitialized() returns true.
   virtual const std::vector<std::unique_ptr<Skill>>& GetSkills() const = 0;
 
   // Registers an observer for the service notifications.

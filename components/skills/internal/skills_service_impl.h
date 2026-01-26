@@ -39,6 +39,10 @@ class SkillsServiceImpl : public SkillsService {
       syncer::OnceDataTypeStoreFactory create_store_callback);
   ~SkillsServiceImpl() override;
 
+  // SkillsService implementation.
+  bool IsInitialized() const override;
+  void LoadInitialSkills(
+      std::vector<std::unique_ptr<Skill>> initial_skills) override;
   // TODO(crbug.com/475863107) Add strong typing to help caller avoid swapping
   // order of arguments.
   const Skill* AddSkill(const std::string& name,
@@ -60,8 +64,6 @@ class SkillsServiceImpl : public SkillsService {
 
   void DeleteSkill(std::string_view skill_id,
                    UpdateSource update_source) override;
-  void LoadInitialSkills(
-      std::vector<std::unique_ptr<Skill>> initial_skills) override;
   const Skill* GetSkillById(std::string_view skill_id) const override;
   const std::vector<std::unique_ptr<Skill>>& GetSkills() const override;
   void AddObserver(Observer* observer) override;

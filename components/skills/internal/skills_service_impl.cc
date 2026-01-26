@@ -51,6 +51,8 @@ void SkillsServiceImpl::NotifySkillChanged(std::string_view skill_id,
 const Skill* SkillsServiceImpl::AddSkill(const std::string& name,
                                          const std::string& icon,
                                          const std::string& prompt) {
+  CHECK(is_initialized_);
+
   // TODO(crbug.com/475855831): Add a check to ensure service is initialized.
   auto skill = std::make_unique<Skill>(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), name, icon, prompt);
@@ -72,6 +74,8 @@ const Skill* SkillsServiceImpl::UpdateSkill(std::string_view skill_id,
                                             std::string_view icon,
                                             std::string_view prompt,
                                             UpdateSource update_source) {
+  CHECK(is_initialized_);
+
   // TODO(crbug.com/475855831): Add a check to ensure service is initialized.
   Skill* skill = GetMutableSkillById(skill_id);
   if (!skill) {
@@ -108,6 +112,8 @@ const Skill* SkillsServiceImpl::UpdateSkill(std::string_view skill_id,
 
 void SkillsServiceImpl::DeleteSkill(std::string_view skill_id,
                                     UpdateSource update_source) {
+  CHECK(is_initialized_);
+
   // TODO(crbug.com/475855831): Add a check to ensure service is initialized.
   const std::string id_copy(skill_id);
   const size_t num_erased =
@@ -121,6 +127,7 @@ void SkillsServiceImpl::DeleteSkill(std::string_view skill_id,
 }
 
 const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
+  CHECK(is_initialized_);
   for (const std::unique_ptr<Skill>& skill : skills_) {
     if (skill->id == skill_id) {
       return skill.get();
@@ -131,6 +138,7 @@ const Skill* SkillsServiceImpl::GetSkillById(std::string_view skill_id) const {
 
 const std::vector<std::unique_ptr<Skill>>& SkillsServiceImpl::GetSkills()
     const {
+  CHECK(is_initialized_);
   return skills_;
 }
 
@@ -139,11 +147,18 @@ void SkillsServiceImpl::LoadInitialSkills(
   CHECK(!is_initialized_);
   skills_ = std::move(initial_skills);
   SortSkills();
+
+  // TODO(crbug.com/471795213): consider using tracking metadata to determine if
+  // the initialization is complete.
   is_initialized_ = true;
 
   for (Observer& observer : observers_) {
     observer.OnInitialized();
   }
+}
+
+bool SkillsServiceImpl::IsInitialized() const {
+  return is_initialized_;
 }
 
 void SkillsServiceImpl::SortSkills() {

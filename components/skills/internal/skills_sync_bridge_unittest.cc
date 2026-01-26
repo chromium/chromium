@@ -101,6 +101,7 @@ class MockSkillsService : public SkillsService {
                std::string_view,
                std::string_view,
                UpdateSource));
+  MOCK_METHOD(bool, IsInitialized, (), (const));
   MOCK_METHOD(void, DeleteSkill, (std::string_view, UpdateSource));
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));
