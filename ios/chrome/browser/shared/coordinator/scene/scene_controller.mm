@@ -52,11 +52,9 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
 #import "ios/chrome/browser/app_store_rating/model/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
-#import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 #import "ios/chrome/browser/authentication/signin/fullscreen_promo/model/fullscreen_signin_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
@@ -419,9 +417,6 @@ void OnListFamilyMembersResponse(
 // Coordinator for displaying history.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
 
-// Coordinator for the AI prototyping menu.
-@property(nonatomic, strong) AIPrototypingCoordinator* AIPrototypingCoordinator;
-
 // Coordinates the creation of PDF screenshots with the window's content.
 @property(nonatomic, strong) ScreenshotDelegate* screenshotDelegate;
 
@@ -479,10 +474,6 @@ void OnListFamilyMembersResponse(
 
 @property(nonatomic, strong)
     YoutubeIncognitoCoordinator* youtubeIncognitoCoordinator;
-
-// The coordinator for the Assistant Sheet.
-@property(nonatomic, strong)
-    AssistantSheetCoordinator* assistantSheetCoordinator;
 
 // The profile of the current scene.
 @property(nonatomic, readonly) ProfileIOS* profile;
@@ -1349,13 +1340,9 @@ void OnListFamilyMembersResponse(
   // unregister observers and destroy C++ objects before the application is
   // shut down without depending on non-deterministic call to -dealloc.
   [self.mainCoordinator stopSettingsAnimated:NO completion:nil];
-  [self.mainCoordinator stopPasswordCheckupCoordinator];
 
   [_mainCoordinator stop];
   _mainCoordinator = nil;
-
-  [self.assistantSheetCoordinator stop];
-  self.assistantSheetCoordinator = nil;
 
   _incognitoWebStateObserver.reset();
   _mainWebStateObserver.reset();
@@ -2239,25 +2226,11 @@ using UserFeedbackDataCallback =
 }
 
 - (void)openAIMenu {
-  DCHECK(self.currentInterface.browser);
-  self.AIPrototypingCoordinator = [[AIPrototypingCoordinator alloc]
-      initWithBaseViewController:self.currentInterface.viewController
-                         browser:self.currentInterface.browser];
-
-  // Since this is only for internal prototyping, the coordinator remains active
-  // once it's been started.
-  [self.AIPrototypingCoordinator start];
+  [self.mainCoordinator openAIMenu];
 }
 
 - (void)showAssistant {
-  if (!IsAssistantSheetEnabled()) {
-    return;
-  }
-  self.assistantSheetCoordinator = [[AssistantSheetCoordinator alloc]
-      initWithBaseViewController:self.currentInterface.viewController
-                         browser:self.currentInterface.browser];
-  self.assistantSheetCoordinator.mode = AssistantSheetModeGemini;
-  [self.assistantSheetCoordinator start];
+  [self.mainCoordinator showAssistant];
 }
 
 - (void)displaySafariDataImportFromEntryPoint:
@@ -3341,8 +3314,7 @@ using UserFeedbackDataCallback =
   self.historyCoordinator = nil;
 
   // If Assistant Sheet is active, stop it.
-  [self.assistantSheetCoordinator stop];
-  self.assistantSheetCoordinator = nil;
+  [self.mainCoordinator stopAssistantSheetCoordinator];
 
   // If the Safari data import workflow is active, stop it.
   [self.mainCoordinator stopSafariDataImportCoordinator];

@@ -14,6 +14,8 @@
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
@@ -41,6 +43,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
@@ -93,6 +96,10 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   SafariDataImportMainCoordinator* _safariDataImportCoordinator;
   // Coordinator for display of the Password Checkup.
   PasswordCheckupCoordinator* _passwordCheckupCoordinator;
+  // Coordinator for the AI prototyping menu.
+  AIPrototypingCoordinator* _AIPrototypingCoordinator;
+  // The coordinator for the Assistant Sheet.
+  AssistantSheetCoordinator* _assistantSheetCoordinator;
   // Observer for PolicyWatcherBrowserAgent.
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
@@ -142,6 +149,9 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [self stopSafariDataImportCoordinator];
   [self stopPasswordCheckupCoordinator];
   [self stopSettingsAnimated:NO completion:nil];
+  [_AIPrototypingCoordinator stop];
+  _AIPrototypingCoordinator = nil;
+  [self stopAssistantSheetCoordinator];
   [_tabGridCoordinator stop];
 }
 
@@ -510,6 +520,33 @@ void RecordIfNeededSigninFullscreenPromoEvent(
       presentViewController:self.settingsNavigationController
                    animated:YES
                  completion:nil];
+}
+
+- (void)openAIMenu {
+  DCHECK(self.currentBrowser);
+  _AIPrototypingCoordinator = [[AIPrototypingCoordinator alloc]
+      initWithBaseViewController:self.activeViewController
+                         browser:self.currentBrowser];
+
+  // Since this is only for internal prototyping, the coordinator remains active
+  // once it's been started.
+  [_AIPrototypingCoordinator start];
+}
+
+- (void)showAssistant {
+  if (!IsAssistantSheetEnabled()) {
+    return;
+  }
+  _assistantSheetCoordinator = [[AssistantSheetCoordinator alloc]
+      initWithBaseViewController:self.activeViewController
+                         browser:self.currentBrowser];
+  _assistantSheetCoordinator.mode = AssistantSheetModeGemini;
+  [_assistantSheetCoordinator start];
+}
+
+- (void)stopAssistantSheetCoordinator {
+  [_assistantSheetCoordinator stop];
+  _assistantSheetCoordinator = nil;
 }
 
 #pragma mark - SettingsCommands

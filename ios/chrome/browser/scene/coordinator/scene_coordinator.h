@@ -161,6 +161,15 @@ enum class WarningType;
 // Opens the Price Tracking notifications settings UI.
 - (void)openPriceTrackingNotificationsSettings;
 
+// Opens a debug menu for AI prototyping.
+- (void)openAIMenu;
+
+// Opens the assistant sheet.
+- (void)showAssistant;
+
+// Stops the AssistantSheetcoordinator;
+- (void)stopAssistantSheetCoordinator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SCENE_COORDINATOR_SCENE_COORDINATOR_H_
