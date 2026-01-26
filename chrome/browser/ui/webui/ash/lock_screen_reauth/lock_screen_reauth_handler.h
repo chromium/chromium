@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
-#include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/login/base_screen_handler_utils.h"
@@ -68,22 +67,16 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   // Invoked when the user has successfully authenticated via SAML, the Chrome
   // Credentials Passing API was not used.
-  // If multiple password were scraped AND
-  // CheckPasswordsAgainstCryptohomeHelperEnabled is enabled then
-  // CheckPasswordsAgainstCryptohomeHelper would be used, otherwise
-  // `SAMLConfirmPassword` screen would be shown.
+  // Shows `SAMLConfirmPassword` if multiple password were scraped.
   void SamlConfirmPassword(::login::StringList scraped_saml_passwords,
                            std::unique_ptr<UserContext> user_context);
 
   // Invoked when the user has successfully authenticated via SAML, the Chrome
   // Credentials Passing API was not used.
-  // There are 3 different states that this method would be called with:
+  // There are 2 different states that this method would be called with:
   // -User confirmed their manual which not necessarily the same as their SAML
   // password.
   // -User confirmed which password among scraped password is the right one.
-  // -Checking against cryptohome password was successful, where
-  // CheckPasswordsAgainstCryptohomeHelper could successfully detect which one
-  // is the user password among the list of scraped passwords.
   void OnPasswordConfirmed(const std::string& password);
 
   // Finish the authentication
@@ -131,9 +124,6 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   raw_ptr<LockScreenReauthManager> lock_screen_reauth_manager_ = nullptr;
 
   std::unique_ptr<UserContext> user_context_;
-
-  std::unique_ptr<CheckPasswordsAgainstCryptohomeHelper>
-      check_passwords_against_cryptohome_helper_;
 
   std::unique_ptr<LoginClientCertUsageObserver>
       extension_provided_client_cert_usage_observer_;

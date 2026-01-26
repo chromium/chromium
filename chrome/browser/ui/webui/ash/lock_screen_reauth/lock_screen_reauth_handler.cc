@@ -25,7 +25,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
-#include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -458,22 +457,7 @@ void LockScreenReauthHandler::SamlConfirmPassword(
     std::unique_ptr<UserContext> user_context) {
   scraped_saml_passwords_ = scraped_saml_passwords;
   user_context_ = std::move(user_context);
-
-  if (!features::IsCheckPasswordsAgainstCryptohomeHelperEnabled() ||
-      scraped_saml_passwords_.empty()) {
-    ShowSamlConfirmPasswordScreen();
-    return;
-  }
-
-  // TODO(crbug.com/40214270) Eliminate redundant cryptohome check.
-  check_passwords_against_cryptohome_helper_ =
-      std::make_unique<CheckPasswordsAgainstCryptohomeHelper>(
-          *user_context_.get(), scraped_saml_passwords_,
-          base::BindOnce(
-              &LockScreenReauthHandler::ShowSamlConfirmPasswordScreen,
-              weak_factory_.GetWeakPtr()),
-          base::BindOnce(&LockScreenReauthHandler::OnPasswordConfirmed,
-                         weak_factory_.GetWeakPtr()));
+  ShowSamlConfirmPasswordScreen();
 }
 
 void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {

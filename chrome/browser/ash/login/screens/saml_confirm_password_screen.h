@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/login/base_screen_handler_utils.h"
 
@@ -60,8 +60,6 @@ class SamlConfirmPasswordScreen : public BaseScreen {
 
   ScreenExitCallback exit_callback_;
 
-  std::unique_ptr<CheckPasswordsAgainstCryptohomeHelper>
-      check_passwords_against_cryptohome_helper_;
   std::unique_ptr<UserContext> user_context_;
   ::login::StringList scraped_saml_passwords_;
   int attempt_count_ = 0;

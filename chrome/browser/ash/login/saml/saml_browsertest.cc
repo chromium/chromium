@@ -147,15 +147,19 @@ using ::base::test::RunOnceCallback;
 using ::testing::NiceMock;
 using ::testing::WithArgs;
 
-const test::UIPath kPasswordInput = {"saml-confirm-password", "passwordInput"};
-const test::UIPath kPasswordConfirmInput = {"saml-confirm-password",
-                                            "confirmPasswordInput"};
-const test::UIPath kPasswordSubmit = {"saml-confirm-password", "next"};
-const test::UIPath kSigninFrameDialog = {"gaia-signin", "signin-frame-dialog"};
-const test::UIPath kSamlNoticeMessage = {"gaia-signin", "signin-frame-dialog",
-                                         "saml-notice-message"};
-const test::UIPath kSamlNoticeContainer = {"gaia-signin", "signin-frame-dialog",
-                                           "saml-notice-container"};
+constexpr test::UIPath kPasswordInput = {"saml-confirm-password",
+                                         "passwordInput"};
+constexpr test::UIPath kPasswordConfirmInput = {"saml-confirm-password",
+                                                "confirmPasswordInput"};
+constexpr test::UIPath kSamlConfirmPasswordLoading = {"saml-confirm-password",
+                                                      "progress"};
+constexpr test::UIPath kPasswordSubmit = {"saml-confirm-password", "next"};
+constexpr test::UIPath kSigninFrameDialog = {"gaia-signin",
+                                             "signin-frame-dialog"};
+constexpr test::UIPath kSamlNoticeMessage = {
+    "gaia-signin", "signin-frame-dialog", "saml-notice-message"};
+constexpr test::UIPath kSamlNoticeContainer = {
+    "gaia-signin", "signin-frame-dialog", "saml-notice-container"};
 constexpr test::UIPath kPrimaryButton = {"gaia-signin", "signin-frame-dialog",
                                          "primary-action-button"};
 constexpr test::UIPath kBackButton = {"gaia-signin", "signin-frame-dialog",
@@ -166,7 +170,7 @@ constexpr test::UIPath kEnterprisePrimaryButton = {
     "enterprise-enrollment", "step-signin", "primary-action-button"};
 constexpr test::UIPath kSamlBackButton = {"gaia-signin", "signin-frame-dialog",
                                           "saml-back-button"};
-const test::UIPath kGaiaLoading = {"gaia-signin", "step-loading"};
+constexpr test::UIPath kGaiaLoading = {"gaia-signin", "step-loading"};
 constexpr test::UIPath kFatalErrorActionButton = {"signin-fatal-error",
                                                   "actionButton"};
 constexpr test::UIPath kErrorPage = {"main-frame-error"};
@@ -423,74 +427,20 @@ class SamlTestBase : public OobeBaseTest {
   FakeSamlIdpMixin fake_saml_idp_mixin_{&mixin_host_, &fake_gaia_};
 };
 
-// This test is run with both variants of CheckPasswordsAgainstCryptohomeHelper
-// feature.
+// This test is run with both variants of ManagedLocalPinAndPassword feature.
 class SamlTestWithFeatures : public SamlTestBase,
                              public testing::WithParamInterface<bool> {
  public:
   SamlTestWithFeatures() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
-      enabled_features.push_back(
-          features::kCheckPasswordsAgainstCryptohomeHelper);
-      enabled_features.push_back(features::kManagedLocalPinAndPassword);
-    } else {
-      disabled_features.push_back(
-          features::kCheckPasswordsAgainstCryptohomeHelper);
-      disabled_features.push_back(features::kManagedLocalPinAndPassword);
-
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureState(
+        features::kManagedLocalPinAndPassword, GetParam());
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class ImprovedScrapingTestBase : public SamlTestBase {
- public:
-  ImprovedScrapingTestBase();
-
- protected:
-  void SetFeatures(bool enable_improved_scraping);
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-ImprovedScrapingTestBase::ImprovedScrapingTestBase() = default;
-
-void ImprovedScrapingTestBase::SetFeatures(bool enable_improved_scraping) {
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-  if (enable_improved_scraping) {
-    enabled_features.push_back(
-        features::kCheckPasswordsAgainstCryptohomeHelper);
-  } else {
-    disabled_features.push_back(
-        features::kCheckPasswordsAgainstCryptohomeHelper);
-  }
-  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-}
-
-// Saml test with kCheckPasswordsAgainstCryptohomeHelper enabled.
-class SamlTestWithImprovedScraping : public ImprovedScrapingTestBase {
- public:
-  SamlTestWithImprovedScraping() {
-    SetFeatures(/*enable_improved_scraping=*/true);
-  }
 };
 
 // Tests that signin frame should display the SAML notice and the 'back' button
-
-// Saml test with kCheckPasswordsAgainstCryptohomeHelper disabled.
-class SamlTestWithoutImprovedScraping : public ImprovedScrapingTestBase {
- public:
-  SamlTestWithoutImprovedScraping() {
-    SetFeatures(/*enable_improved_scraping=*/false);
-  }
-};
 // when SAML IdP page is loaded. And the 'back' button goes back to gaia on
 // clicking.
 IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, SamlUI) {
@@ -782,7 +732,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedDynamic) {
 }
 
 // Tests the multiple password scraped flow.
-IN_PROC_BROWSER_TEST_F(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
+IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedMultiple) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
 
@@ -795,52 +745,19 @@ IN_PROC_BROWSER_TEST_F(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
   SigninFrameJS().TapOn("Submit");
   // Lands on confirm password screen.
   OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(false, kSamlConfirmPasswordLoading)
+      ->Wait();
   test::OobeJS().ExpectHiddenPath(kPasswordConfirmInput);
   // Entering an unknown password should go back to the confirm password screen.
   SendConfirmPassword("wrong_password");
   OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(false, kSamlConfirmPasswordLoading)
+      ->Wait();
   test::OobeJS().ExpectHiddenPath(kPasswordConfirmInput);
   // Either scraped password should be able to sign-in.
   SendConfirmPassword("password1");
-  test::WaitForPrimaryUserSessionStart();
-
-  EXPECT_FALSE(user_manager::KnownUser(g_browser_process->local_state())
-                   .GetIsUsingSAMLPrincipalsAPI(AccountId::FromUserEmailGaiaId(
-                       saml_test_users::kFirstUserCorpExampleComEmail,
-                       kFirstSAMLUserGaiaId)));
-
-  histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 2, 1);
-  histogram_tester.ExpectUniqueSample("ChromeOS.SAML.Scraping.PasswordCountAll",
-                                      2, 1);
-  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
-
-  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 0,
-                                     0);
-  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.UserInfo", 1,
-                                     1);
-
-  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 0,
-                                     0);
-  histogram_tester.ExpectBucketCount("ChromeOS.Gaia.Message.Saml.CloseView", 1,
-                                     1);
-}
-
-// Tests the multiple password scraped flow.
-// TODO(crbug.com/40214270): This feature was deprioritized in mid-2022.
-// Restore test once work resumes, or feel free to clean it up if you
-// step on it past mid-2024.
-IN_PROC_BROWSER_TEST_F(SamlTestWithImprovedScraping, DISABLED_ScrapedMultiple) {
-  base::HistogramTester histogram_tester;
-  fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
-
-  StartSamlAndWaitForIdpPageLoad(
-      saml_test_users::kFirstUserCorpExampleComEmail);
-
-  SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
-  SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
-  SigninFrameJS().TypeIntoPath("password1", {"Password1"});
-  SigninFrameJS().TapOn("Submit");
-
   test::WaitForPrimaryUserSessionStart();
 
   EXPECT_FALSE(user_manager::KnownUser(g_browser_process->local_state())
@@ -876,6 +793,9 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedNone) {
 
   // Lands on confirm password screen with manual input state.
   OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(false, kSamlConfirmPasswordLoading)
+      ->Wait();
   test::OobeJS().ExpectTrue("$('saml-confirm-password').isManualInput");
   // Entering passwords that don't match will make us land again in the same
   // page.
@@ -954,7 +874,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures,
   WaitForSigninScreen();
 }
 
-IN_PROC_BROWSER_TEST_F(SamlTestWithoutImprovedScraping, PasswordConfirmFlow) {
+IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, PasswordConfirmFlow) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
   StartSamlAndWaitForIdpPageLoad(

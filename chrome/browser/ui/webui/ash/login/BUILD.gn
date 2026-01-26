@@ -29,8 +29,6 @@ static_library("login") {
     "base_webui_handler.h",
     "categories_selection_screen_handler.cc",
     "categories_selection_screen_handler.h",
-    "check_passwords_against_cryptohome_helper.cc",
-    "check_passwords_against_cryptohome_helper.h",
     "choobe_screen_handler.cc",
     "choobe_screen_handler.h",
     "consolidated_consent_screen_handler.cc",
