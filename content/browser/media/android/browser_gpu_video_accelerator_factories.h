@@ -53,7 +53,7 @@ class BrowserGpuVideoAcceleratorFactories
       override;
   std::optional<media::SupportedVideoDecoderConfigs>
   GetSupportedVideoDecoderConfigs() override;
-  bool ShouldUseGpuMemoryBuffersForVideoFrames(
+  bool ShouldUseMappableSharedImagesForVideoFrames(
       bool for_media_stream) const override;
   media::GpuVideoAcceleratorFactories::OutputFormat VideoFrameOutputFormat(
       media::VideoPixelFormat pixel_format) override;

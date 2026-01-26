@@ -178,7 +178,7 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   CreateVideoEncodeAccelerator() = 0;
 
   // |for_media_stream| specifies webrtc use case of media streams.
-  virtual bool ShouldUseGpuMemoryBuffersForVideoFrames(
+  virtual bool ShouldUseMappableSharedImagesForVideoFrames(
       bool for_media_stream) const = 0;
 
   // Pixel format of the hardware video frames created when GpuMemoryBuffers

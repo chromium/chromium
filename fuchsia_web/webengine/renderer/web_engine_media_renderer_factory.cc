@@ -63,8 +63,9 @@ std::unique_ptr<media::Renderer> WebEngineMediaRendererFactory::CreateRenderer(
     gpu_factories = get_gpu_factories_cb_.Run();
 
   std::unique_ptr<media::MappableSharedImageVideoFramePool> gmb_pool;
-  if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
-                           /*for_media_stream=*/false)) {
+  if (gpu_factories &&
+      gpu_factories->ShouldUseMappableSharedImagesForVideoFrames(
+          /*for_media_stream=*/false)) {
     gmb_pool = std::make_unique<media::MappableSharedImageVideoFramePool>(
         media_task_runner, std::move(worker_task_runner), gpu_factories);
   }

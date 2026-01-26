@@ -109,8 +109,9 @@ std::unique_ptr<Renderer> RendererImplFactory::CreateRenderer(
     gpu_factories = get_gpu_factories_cb_.Run();
 
   std::unique_ptr<MappableSharedImageVideoFramePool> gmb_pool;
-  if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
-                           false /* for_media_stream */)) {
+  if (gpu_factories &&
+      gpu_factories->ShouldUseMappableSharedImagesForVideoFrames(
+          false /* for_media_stream */)) {
     gmb_pool = std::make_unique<MappableSharedImageVideoFramePool>(
         media_task_runner, std::move(worker_task_runner), gpu_factories);
   }

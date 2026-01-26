@@ -255,8 +255,8 @@ MojoGpuVideoAcceleratorFactories::CreateVideoEncodeAccelerator() {
   return codec_factory_->CreateVideoEncodeAccelerator();
 }
 
-bool MojoGpuVideoAcceleratorFactories::ShouldUseGpuMemoryBuffersForVideoFrames(
-    bool for_media_stream) const {
+bool MojoGpuVideoAcceleratorFactories::
+    ShouldUseMappableSharedImagesForVideoFrames(bool for_media_stream) const {
   return for_media_stream ? enable_media_stream_gpu_memory_buffers_
                           : enable_video_gpu_memory_buffers_;
 }

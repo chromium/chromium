@@ -273,7 +273,7 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   void CreateGpuMemoryBufferPoolIfNecessary() {
     if (!gpu_memory_buffer_pool_ && gpu_factories_ &&
-        gpu_factories_->ShouldUseGpuMemoryBuffersForVideoFrames(
+        gpu_factories_->ShouldUseMappableSharedImagesForVideoFrames(
             true /* for_media_stream */)) {
       gpu_memory_buffer_pool_ =
           std::make_unique<media::MappableSharedImageVideoFramePool>(

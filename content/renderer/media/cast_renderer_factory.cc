@@ -50,8 +50,9 @@ std::unique_ptr<media::Renderer> CastRendererFactory::CreateRenderer(
     gpu_factories = get_gpu_factories_cb_.Run();
 
   std::unique_ptr<media::MappableSharedImageVideoFramePool> mappable_si_pool;
-  if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
-                           false /* for_media_stream */)) {
+  if (gpu_factories &&
+      gpu_factories->ShouldUseMappableSharedImagesForVideoFrames(
+          false /* for_media_stream */)) {
     mappable_si_pool =
         std::make_unique<media::MappableSharedImageVideoFramePool>(
             media_task_runner, std::move(worker_task_runner), gpu_factories);
