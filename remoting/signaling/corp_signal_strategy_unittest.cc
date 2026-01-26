@@ -322,4 +322,41 @@ TEST_F(CorpSignalStrategyTest, ReceiveStanza_MalformedXmpp) {
   ASSERT_EQ(0u, received_messages_.size());
 }
 
+TEST_F(CorpSignalStrategyTest, LocalAddressPreservedAfterDisconnect) {
+  EXPECT_CALL(*messaging_client_, StartReceivingMessages(_, _))
+      .WillOnce([](base::OnceClosure on_ready,
+                   MessagingClient::DoneCallback on_closed) {
+        std::move(on_ready).Run();
+        return testing::Return();
+      });
+  signal_strategy_->Connect();
+
+  ASSERT_EQ(signal_strategy_->GetLocalAddress().id(), kFakeLocalCorpId);
+
+  EXPECT_CALL(*messaging_client_, StopReceivingMessages());
+  signal_strategy_->Disconnect();
+
+  EXPECT_EQ(signal_strategy_->GetLocalAddress().id(), kFakeLocalCorpId);
+}
+
+TEST_F(CorpSignalStrategyTest, LocalAddressPreservedAfterChannelError) {
+  MessagingClient::DoneCallback on_closed_callback;
+  EXPECT_CALL(*messaging_client_, StartReceivingMessages(_, _))
+      .WillOnce([&](base::OnceClosure on_ready,
+                    MessagingClient::DoneCallback on_closed) {
+        std::move(on_ready).Run();
+        on_closed_callback = std::move(on_closed);
+      });
+  signal_strategy_->Connect();
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::CONNECTED);
+  ASSERT_EQ(signal_strategy_->GetLocalAddress().id(), kFakeLocalCorpId);
+
+  EXPECT_CALL(*messaging_client_, StopReceivingMessages());
+  std::move(on_closed_callback)
+      .Run(HttpStatus(HttpStatus::Code::UNAVAILABLE, "error"));
+
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  EXPECT_EQ(signal_strategy_->GetLocalAddress().id(), kFakeLocalCorpId);
+}
+
 }  // namespace remoting

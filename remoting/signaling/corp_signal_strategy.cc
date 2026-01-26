@@ -124,7 +124,8 @@ void CorpSignalStrategy::Core::Disconnect() {
 
   messaging_client_->StopReceivingMessages();
   incoming_message_subscription_ = {};
-  local_address_ = SignalingAddress();
+  // Don't reset `local_address_` because it is cached at a lower layer and the
+  // update callback is only triggered when the cached value changes.
   messaging_authz_token_ = std::string();
   SetState(DISCONNECTED);
 }
