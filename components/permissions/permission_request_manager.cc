@@ -1307,6 +1307,8 @@ void PermissionRequestManager::CurrentRequestsDecided(
     ContentSettingsType content_settings_type =
         request->GetContentSettingsType();
     if (content_settings_type == ContentSettingsType::GEOLOCATION ||
+        content_settings_type ==
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS ||
         content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
         content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
       if (permission_action == PermissionAction::GRANTED_ONCE) {

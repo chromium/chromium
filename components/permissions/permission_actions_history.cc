@@ -405,6 +405,7 @@ void PermissionActionsHistory::RecordOneTimeGrant(
     const GURL& origin,
     ContentSettingsType permission_type) {
   if (permission_type != ContentSettingsType::GEOLOCATION &&
+      permission_type != ContentSettingsType::GEOLOCATION_WITH_OPTIONS &&
       permission_type != ContentSettingsType::MEDIASTREAM_MIC &&
       permission_type != ContentSettingsType::MEDIASTREAM_CAMERA) {
     return;
@@ -434,6 +435,7 @@ void PermissionActionsHistory::RecordOTPCountForAction(
     PermissionAction action,
     int count) {
   if (permission != ContentSettingsType::GEOLOCATION &&
+      permission != ContentSettingsType::GEOLOCATION_WITH_OPTIONS &&
       permission != ContentSettingsType::MEDIASTREAM_MIC &&
       permission != ContentSettingsType::MEDIASTREAM_CAMERA) {
     return;
@@ -463,6 +465,7 @@ int PermissionActionsHistory::GetOneTimeGrantCount(
     const GURL& origin,
     ContentSettingsType permission) {
   if (permission != ContentSettingsType::GEOLOCATION &&
+      permission != ContentSettingsType::GEOLOCATION_WITH_OPTIONS &&
       permission != ContentSettingsType::MEDIASTREAM_MIC &&
       permission != ContentSettingsType::MEDIASTREAM_CAMERA) {
     return 0;
