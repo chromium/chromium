@@ -49,6 +49,8 @@ source_set("legion") {
     "connection_basic.cc",
     "connection_basic.h",
     "connection_factory.h",
+    "connection_timeout.cc",
+    "connection_timeout.h",
     "error_code.h",
     "legion_common.h",
     "secure_channel.h",
@@ -87,9 +89,15 @@ source_set("legion") {
 
 source_set("testing") {
   testonly = true
-  sources = [ "testing/mock_legion_client.h" ]
+  sources = [
+    "testing/fake_connection.cc",
+    "testing/fake_connection.h",
+    "testing/mock_legion_client.h",
+  ]
   public_deps = [
     ":legion",
+    ":proto",
+    "//base",
     "//testing/gmock",
   ]
 }
@@ -99,12 +107,14 @@ source_set("unit_tests") {
   sources = [
     "client_impl_unittest.cc",
     "connection_basic_unittest.cc",
+    "connection_timeout_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
   ]
   deps = [
     ":legion",
     ":proto",
+    ":testing",
     "//base",
     "//base/test:test_support",
     "//components/legion/attestation",
