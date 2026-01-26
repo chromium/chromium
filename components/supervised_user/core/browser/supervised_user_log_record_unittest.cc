@@ -172,9 +172,8 @@ class SupervisedUserLogRecordTest : public ::testing::Test {
 TEST_F(SupervisedUserLogRecordTest, SignedOutIsUnsupervised) {
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(supervision_status.value(),
-            SupervisedUserLogRecord::Segment::kUnsupervised);
+  EXPECT_THAT(supervision_status,
+              Optional(SupervisedUserLogRecord::Segment::kUnsupervised));
 }
 
 TEST_F(SupervisedUserLogRecordTest, CapabilitiesUnknownDefault) {
@@ -192,10 +191,9 @@ TEST_F(SupervisedUserLogRecordTest, SupervisionEnabledByUser) {
 
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(
-      supervision_status.value(),
-      SupervisedUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkUser);
+  EXPECT_THAT(supervision_status,
+              Optional(SupervisedUserLogRecord::Segment::
+                           kSupervisionEnabledByFamilyLinkUser));
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -234,10 +232,9 @@ TEST_F(SupervisedUserLogRecordTest, SupervisionEnabledByPolicy) {
 
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(
-      supervision_status.value(),
-      SupervisedUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkPolicy);
+  EXPECT_THAT(supervision_status,
+              Optional(SupervisedUserLogRecord::Segment::
+                           kSupervisionEnabledByFamilyLinkPolicy));
 }
 
 TEST_F(SupervisedUserLogRecordTest, NotSupervised) {
@@ -250,9 +247,8 @@ TEST_F(SupervisedUserLogRecordTest, NotSupervised) {
 
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(supervision_status.value(),
-            SupervisedUserLogRecord::Segment::kUnsupervised);
+  EXPECT_THAT(supervision_status,
+              Optional(SupervisedUserLogRecord::Segment::kUnsupervised));
 }
 
 TEST_F(SupervisedUserLogRecordTest, SignedOutHasNoWebFilter) {
@@ -278,24 +274,21 @@ TEST_F(SupervisedUserLogRecordTest, SupervisedWithMatureSitesFilter) {
   std::optional<WebFilterType> web_filter =
       CreateSupervisedUserWithWebFilter(WebFilterType::kTryToBlockMatureSites)
           ->GetWebFilterTypeForPrimaryAccount();
-  ASSERT_TRUE(web_filter.has_value());
-  EXPECT_EQ(web_filter.value(), WebFilterType::kTryToBlockMatureSites);
+  EXPECT_THAT(web_filter, Optional(WebFilterType::kTryToBlockMatureSites));
 }
 
 TEST_F(SupervisedUserLogRecordTest, SupervisedWithAllowAllFilter) {
   std::optional<WebFilterType> web_filter =
       CreateSupervisedUserWithWebFilter(WebFilterType::kAllowAllSites)
           ->GetWebFilterTypeForPrimaryAccount();
-  ASSERT_TRUE(web_filter.has_value());
-  EXPECT_EQ(web_filter.value(), WebFilterType::kAllowAllSites);
+  EXPECT_THAT(web_filter, Optional(WebFilterType::kAllowAllSites));
 }
 
 TEST_F(SupervisedUserLogRecordTest, SupervisedWithCertainSitesFilter) {
   std::optional<WebFilterType> web_filter =
       CreateSupervisedUserWithWebFilter(WebFilterType::kCertainSites)
           ->GetWebFilterTypeForPrimaryAccount();
-  ASSERT_TRUE(web_filter.has_value());
-  EXPECT_EQ(web_filter.value(), WebFilterType::kCertainSites);
+  EXPECT_THAT(web_filter, Optional(WebFilterType::kCertainSites));
 }
 
 TEST_F(SupervisedUserLogRecordTest, HeadOfHousehold) {
@@ -303,9 +296,8 @@ TEST_F(SupervisedUserLogRecordTest, HeadOfHousehold) {
 
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(supervision_status.value(),
-            SupervisedUserLogRecord::Segment::kParent);
+  EXPECT_THAT(supervision_status,
+              Optional(SupervisedUserLogRecord::Segment::kParent));
 }
 
 TEST_F(SupervisedUserLogRecordTest, Parent) {
@@ -313,18 +305,16 @@ TEST_F(SupervisedUserLogRecordTest, Parent) {
 
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(supervision_status.value(),
-            SupervisedUserLogRecord::Segment::kParent);
+  EXPECT_THAT(supervision_status,
+              Optional(SupervisedUserLogRecord::Segment::kParent));
 }
 
 TEST_F(SupervisedUserLogRecordTest, RegularUserWithDisabledSupervision) {
   CreateRegularUser();
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(supervision_status.value(),
-            SupervisedUserLogRecord::Segment::kUnsupervised);
+  EXPECT_THAT(supervision_status,
+              Optional(SupervisedUserLogRecord::Segment::kUnsupervised));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -334,9 +324,9 @@ TEST_F(SupervisedUserLogRecordTest, RegularUserWithSearchFilterEnabled) {
 
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(supervision_status.value(),
-            SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally);
+  EXPECT_THAT(
+      supervision_status,
+      Optional(SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally));
 }
 
 TEST_F(SupervisedUserLogRecordTest, RegularUserWithContentFiltersEnabled) {
@@ -345,9 +335,9 @@ TEST_F(SupervisedUserLogRecordTest, RegularUserWithContentFiltersEnabled) {
 
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(supervision_status.value(),
-            SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally);
+  EXPECT_THAT(
+      supervision_status,
+      Optional(SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally));
 }
 
 TEST_F(SupervisedUserLogRecordTest, RegularUserWithAllLocalFiltersEnabled) {
@@ -357,9 +347,9 @@ TEST_F(SupervisedUserLogRecordTest, RegularUserWithAllLocalFiltersEnabled) {
 
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       CreateSupervisedUserLogRecord()->GetSupervisionStatusForPrimaryAccount();
-  ASSERT_TRUE(supervision_status.has_value());
-  EXPECT_EQ(supervision_status.value(),
-            SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally);
+  EXPECT_THAT(
+      supervision_status,
+      Optional(SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace
