@@ -688,7 +688,8 @@ class ContextualTasksUiServiceWithoutSidePanelInteractiveUiTest
  public:
   ContextualTasksUiServiceWithoutSidePanelInteractiveUiTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kContextualTasks, {{"OpenSidePanelOnLinkClicked", "false"}}},
+        {{kContextualTasks,
+          {{"ContextualTasksOpenSidePanelOnLinkClicked", "false"}}},
          {kContextualTasksForceEntryPointEligibility, {}}},
         {});
   }

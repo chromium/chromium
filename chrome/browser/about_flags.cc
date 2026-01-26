@@ -5171,10 +5171,10 @@ const FeatureEntry::FeatureParam kContextualTaskPageAction[] = {
     {"ContextualTasksEntryPoint", "page-action-revisit"}};
 const FeatureEntry::FeatureParam kContextualTaskDisableSidePanel[] = {
     {"ContextualTasksEntryPoint", "toolbar-revisit"},
-    {"OpenSidePanelOnLinkClicked", "false"}};
+    {"ContextualTasksOpenSidePanelOnLinkClicked", "false"}};
 const FeatureEntry::FeatureParam kContextualTaskDisableLens[] = {
     {"ContextualTasksEntryPoint", "toolbar-revisit"},
-    {"EnableLensInContextualTasks", "false"}};
+    {"ContextualTasksEnableLensInContextualTasks", "false"}};
 
 const FeatureEntry::FeatureVariation kContextualTaskEntryPointVariations[] = {
     {"Arm 1: Full bundle with ephemeral toolbar button",
@@ -5191,9 +5191,9 @@ const FeatureEntry::FeatureVariation kContextualTaskEntryPointVariations[] = {
      std::size(kContextualTaskPageAction), nullptr}};
 
 const FeatureEntry::FeatureParam kTaskScopedSidePanel[] = {
-    {"TaskScopedSidePanel", "true"}};
+    {"ContextualTasksTaskScopedSidePanel", "true"}};
 const FeatureEntry::FeatureParam kTabScopedSidePanel[] = {
-    {"TaskScopedSidePanel", "false"}};
+    {"ContextualTasksTaskScopedSidePanel", "false"}};
 
 const FeatureEntry::FeatureVariation kContextualTaskContextVariations[] = {
     {" - Task scoped side panel", kTaskScopedSidePanel,

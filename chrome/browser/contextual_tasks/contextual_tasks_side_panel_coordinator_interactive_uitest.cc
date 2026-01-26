@@ -837,7 +837,7 @@ class TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest
  public:
   TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kContextualTasks, {{"TaskScopedSidePanel", "false"}});
+        kContextualTasks, {{"ContextualTasksTaskScopedSidePanel", "false"}});
   }
   ~TabScopedContextualTasksSidePanelCoordinatorInteractiveUiTest() override =
       default;

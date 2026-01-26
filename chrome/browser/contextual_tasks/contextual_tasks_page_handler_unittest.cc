@@ -467,7 +467,7 @@ TEST_F(ContextualTasksPageHandlerTest, GetCommonSearchParams) {
   {
     base::test::ScopedFeatureList gsc_feature_list;
     gsc_feature_list.InitAndEnableFeatureWithParameters(
-        kContextualTasks, {{"ForceGscInTabMode", "true"}});
+        kContextualTasks, {{"ContextualTasksForceGscInTabMode", "true"}});
 
     base::RunLoop run_loop;
     page_handler_->GetCommonSearchParams(

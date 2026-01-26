@@ -16,7 +16,8 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_NoOverride) {
 TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToGoogleHost) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeatureWithParameters(
-      kContextualTasks, {{"forced-embedded-page-host", "corp.google.com"}});
+      kContextualTasks,
+      {{"contextual-tasks-forced-embedded-page-host", "corp.google.com"}});
 
   ASSERT_EQ("corp.google.com", GetForcedEmbeddedPageHost());
 }
@@ -24,7 +25,8 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToGoogleHost) {
 TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeatureWithParameters(
-      kContextualTasks, {{"forced-embedded-page-host", "example.com"}});
+      kContextualTasks,
+      {{"contextual-tasks-forced-embedded-page-host", "example.com"}});
 
   ASSERT_EQ("", GetForcedEmbeddedPageHost());
 }
@@ -32,7 +34,8 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost) {
 TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost_BadSuffix) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeatureWithParameters(
-      kContextualTasks, {{"forced-embedded-page-host", "corpgoogle.com"}});
+      kContextualTasks,
+      {{"contextual-tasks-forced-embedded-page-host", "corpgoogle.com"}});
 
   ASSERT_EQ("", GetForcedEmbeddedPageHost());
 }
@@ -40,8 +43,8 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost_BadSuffix) {
 TEST(FeaturesTest, ForcedEmbeddedPageHost_OverrideToNonGoogleHost_Subdomain) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeatureWithParameters(
-      kContextualTasks,
-      {{"forced-embedded-page-host", "google.com.example.com"}});
+      kContextualTasks, {{"contextual-tasks-forced-embedded-page-host",
+                          "google.com.example.com"}});
 
   ASSERT_EQ("", GetForcedEmbeddedPageHost());
 }
