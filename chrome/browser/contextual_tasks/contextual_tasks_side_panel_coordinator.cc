@@ -161,7 +161,29 @@ class ContextualTasksWebView : public views::WebView {
         event, GetFocusManager());
   }
 
+  // content::WebContentsDelegate:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
+    BrowserWindowInterface* browser = GetBrowser();
+    if (browser) {
+      return browser->OpenURL(params, std::move(navigation_handle_callback));
+    } else {
+      VLOG(1) << "Cannot find browser to open URL from tab.";
+      return nullptr;
+    }
+  }
+
  private:
+  BrowserWindowInterface* GetBrowser() {
+    if (!web_contents()) {
+      return nullptr;
+    }
+    return webui::GetBrowserWindowInterface(web_contents());
+  }
+
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;

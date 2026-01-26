@@ -8,7 +8,9 @@
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/version_info/version_info.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
@@ -39,13 +41,28 @@ bool ContextMenuContentTypeWebView::SupportsGroup(int group) {
   switch (group) {
     case ITEM_GROUP_PAGE:
     case ITEM_GROUP_FRAME:
-    case ITEM_GROUP_LINK:
     case ITEM_GROUP_SEARCHWEBFORIMAGE:
     case ITEM_GROUP_SEARCH_PROVIDER:
     case ITEM_GROUP_PRINT:
     case ITEM_GROUP_ALL_EXTENSION:
     case ITEM_GROUP_PRINT_PREVIEW:
       return false;
+    case ITEM_GROUP_LINK: {
+      // Enable links context menu items for contextual tasks WebUI page, which
+      // has a webview embedding an external URL.
+      // TODO(crbug.com/470110425): Support more menu items for contextual tasks
+      // webview if needed.
+      if (!web_view_guest_) {
+        return false;
+      }
+      const GURL& url =
+          web_view_guest_->owner_rfh()->GetMainFrame()->GetLastCommittedURL();
+      if (url.scheme() == content::kChromeUIScheme &&
+          url.host() == chrome::kChromeUIContextualTasksHost) {
+        return ContextMenuContentType::SupportsGroup(group);
+      }
+      return false;
+    }
     case ITEM_GROUP_CURRENT_EXTENSION:
       // Show contextMenus API items.
       return true;

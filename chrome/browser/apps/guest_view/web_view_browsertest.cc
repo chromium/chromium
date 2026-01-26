@@ -52,6 +52,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -72,6 +74,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/tracing.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -7932,4 +7935,95 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PerformanceManager) {
   // The outer document of the guest view is available.
   EXPECT_EQ(inner_root_frame_node->GetParentOrOuterDocumentOrEmbedder(),
             main_frame_node.get());
+}
+
+class ContextualTasksWebViewTest : public WebViewTest {
+ public:
+  ContextualTasksWebViewTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksForceEntryPointEligibility},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         ContextualTasksWebViewTest,
+                         testing::Bool(),
+                         ContextualTasksWebViewTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksWebViewTest, OpenLinkInNewTab) {
+  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to chrome://contextual-tasks
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Wait for webview to be created.
+  guest_view::GuestViewBase* guest_view1 =
+      GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view1);
+
+  // Inject a second webview.
+  GURL guest_url = embedded_test_server()->GetURL("/link_with_target.html");
+  std::string inject_webview_script = content::JsReplace(
+      "var wv = document.createElement('webview');"
+      "wv.src = $1;"
+      "wv.style.position = 'absolute';"
+      "wv.style.top = '0px';"
+      "wv.style.left = '0px';"
+      "document.body.appendChild(wv);",
+      guest_url.spec());
+  content::WebContents* embedder_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ExecuteScriptAsync(embedder_web_contents, inject_webview_script);
+
+  // Wait for the second webview to be created.
+  GetGuestViewManager()->WaitForNumGuestsCreated(2u);
+  auto* guest_view2 = GetGuestViewManager()->GetLastGuestViewCreated();
+  ASSERT_NE(guest_view1, guest_view2);
+  EXPECT_TRUE(GetGuestViewManager()->WaitUntilAttachedAndLoaded(guest_view2));
+
+  // Wait for the second webview to be ready to receive events
+  content::MainThreadFrameObserver synchronize_threads(
+      guest_view2->GetGuestMainFrame()->GetRenderWidgetHost());
+  synchronize_threads.Wait();
+
+  // Click on open link in new tab context menu item and verify a new tab is
+  // created.
+  {
+    int tab_count = browser()->tab_strip_model()->count();
+    ContextMenuWaiter waiter(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
+    OpenContextMenu(guest_view2->GetGuestMainFrame());
+    waiter.WaitForMenuOpenAndClose();
+    EXPECT_TRUE(waiter.IsCommandExecuted().value());
+    EXPECT_EQ(tab_count + 1, browser()->tab_strip_model()->count());
+  }
+
+  // Click on open link in new window menu item and verify a new window is
+  // created.
+  {
+    int browser_count = chrome::GetBrowserCount(browser()->profile());
+    ContextMenuWaiter waiter(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
+    OpenContextMenu(guest_view2->GetGuestMainFrame());
+    waiter.WaitForMenuOpenAndClose();
+    EXPECT_TRUE(waiter.IsCommandExecuted().value());
+    EXPECT_EQ(browser_count + 1, chrome::GetBrowserCount(browser()->profile()));
+  }
+
+  // Click on open link in incognito windown and verify a new incognito window
+  // is created.
+  {
+    int incognito_browser_count = chrome::GetIncognitoBrowserCount();
+    ContextMenuWaiter waiter(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD);
+    OpenContextMenu(guest_view2->GetGuestMainFrame());
+    waiter.WaitForMenuOpenAndClose();
+    EXPECT_TRUE(waiter.IsCommandExecuted().value());
+    EXPECT_EQ(incognito_browser_count + 1, chrome::GetIncognitoBrowserCount());
+  }
 }
