@@ -228,6 +228,14 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual base::ByteSize EstimatedSizeInBytes() const {
     return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
+
+  // This is supported only by CanvasResourceProviderSharedImageNon2D.
+  scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+      ImageOrientation orientation) override {
+    NOTREACHED();
+  }
+
   uint32_t ContentUniqueID() const;
 
   virtual bool WritePixels(const SkImageInfo& orig_info,
@@ -388,11 +396,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
-  scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-      ImageOrientation orientation) override {
-    NOTREACHED();
-  }
   void RasterRecord(cc::PaintRecord last_recording) override;
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
@@ -520,9 +523,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void ExternalCanvasDrawHelper(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback);
 
-  scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-      ImageOrientation orientation) final;
   void RasterRecord(cc::PaintRecord last_recording) override;
   sk_sp<SkSurface> CreateSkSurface() const override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id);
@@ -659,6 +659,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImageNon2D
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate*);
   ~CanvasResourceProviderSharedImageNon2D() override = default;
+
+  scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
+      ImageOrientation orientation) final;
 
   // For WebGpu RecyclableCanvasResource.
   void OnAcquireRecyclableCanvasResource();
