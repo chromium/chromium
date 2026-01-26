@@ -606,9 +606,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   }
 
   // From this point onward, `updates` and `events` should not be accessed.
-
-  if (tree_id != model_.active_tree_id() ||
-      read_aloud_model_.speech_playing()) {
+  if (tree_id != model_.active_tree_id() || IsUpdateProcessingPaused()) {
     return;
   }
 
@@ -2427,9 +2425,11 @@ void ReadAnythingAppController::OnIsSpeechActiveChanged(bool is_speech_active) {
     return;
   }
   read_aloud_model_.SetSpeechPlaying(is_speech_active);
-  if (!is_speech_active) {
-    SendEventUpdates();
-  }
+
+  // If speech was just stopped, we can now process any updates that were
+  // queued while speech was playing if there are no other factors blocking
+  // processing
+  ProcessPendingUpdatesIfAllowed();
 }
 
 void ReadAnythingAppController::OnIsAudioCurrentlyPlayingChanged(
