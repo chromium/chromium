@@ -5169,12 +5169,24 @@ const FeatureEntry::FeatureParam kContextualTaskEphemeralButton[] = {
     {"ContextualTasksEntryPoint", "toolbar-revisit"}};
 const FeatureEntry::FeatureParam kContextualTaskPageAction[] = {
     {"ContextualTasksEntryPoint", "page-action-revisit"}};
+const FeatureEntry::FeatureParam kContextualTaskDisableSidePanel[] = {
+    {"ContextualTasksEntryPoint", "toolbar-revisit"},
+    {"OpenSidePanelOnLinkClicked", "false"}};
+const FeatureEntry::FeatureParam kContextualTaskDisableLens[] = {
+    {"ContextualTasksEntryPoint", "toolbar-revisit"},
+    {"EnableLensInContextualTasks", "false"}};
 
 const FeatureEntry::FeatureVariation kContextualTaskEntryPointVariations[] = {
+    {"Arm 1: Full bundle with ephemeral toolbar button",
+     kContextualTaskEphemeralButton, std::size(kContextualTaskEphemeralButton),
+     nullptr},
+    {"Arm 2: Full bundle, without AIM link clicks opening side panel",
+     kContextualTaskDisableSidePanel,
+     std::size(kContextualTaskDisableSidePanel), nullptr},
+    {"Arm 3: Full bundle, without Lens migration", kContextualTaskDisableLens,
+     std::size(kContextualTaskDisableLens), nullptr},
     {"permanent toolbar button", kContextualTaskPermanentButton,
      std::size(kContextualTaskPermanentButton), nullptr},
-    {"ephemeral toolbar button", kContextualTaskEphemeralButton,
-     std::size(kContextualTaskEphemeralButton), nullptr},
     {"page action chip", kContextualTaskPageAction,
      std::size(kContextualTaskPageAction), nullptr}};
 
