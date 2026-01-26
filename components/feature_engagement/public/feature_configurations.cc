@@ -2886,8 +2886,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(ANY, 0);
 
-    // This IPH showing does not affect the session count for other IPHs.
-    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // This promo blocks the Gemini Image Remix IPH in the same session.
+    config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config.session_rate_impact.affected_features.emplace();
+    config.session_rate_impact.affected_features->push_back(
+        kIPHiOSGeminiImageRemixFeature.name);
     config.blocked_by.type = BlockedBy::Type::NONE;
     config.blocking.type = Blocking::Type::NONE;
 
@@ -2908,8 +2911,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(ANY, 0);
 
-    // This badge showing does not affect the session count for other IPHs.
-    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // This promo blocks the Gemini Image Remix IPH in the same session.
+    config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    config.session_rate_impact.affected_features.emplace();
+    config.session_rate_impact.affected_features->push_back(
+        kIPHiOSGeminiImageRemixFeature.name);
     config.blocked_by.type = BlockedBy::Type::NONE;
     config.blocking.type = Blocking::Type::NONE;
 
