@@ -49,11 +49,12 @@ std::unique_ptr<media::Renderer> CastRendererFactory::CreateRenderer(
   if (get_gpu_factories_cb_)
     gpu_factories = get_gpu_factories_cb_.Run();
 
-  std::unique_ptr<media::MappableSharedImageVideoFramePool> gmb_pool;
+  std::unique_ptr<media::MappableSharedImageVideoFramePool> mappable_si_pool;
   if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
                            false /* for_media_stream */)) {
-    gmb_pool = std::make_unique<media::MappableSharedImageVideoFramePool>(
-        media_task_runner, std::move(worker_task_runner), gpu_factories);
+    mappable_si_pool =
+        std::make_unique<media::MappableSharedImageVideoFramePool>(
+            media_task_runner, std::move(worker_task_runner), gpu_factories);
   }
 
   auto video_renderer = std::make_unique<media::VideoRendererImpl>(
@@ -68,7 +69,7 @@ std::unique_ptr<media::Renderer> CastRendererFactory::CreateRenderer(
                           base::Unretained(this), media_task_runner,
                           std::move(request_overlay_info_cb),
                           target_color_space, gpu_factories),
-      true, media_log_, std::move(gmb_pool));
+      true, media_log_, std::move(mappable_si_pool));
 
   return std::make_unique<media::RendererImpl>(
       media_task_runner, std::move(audio_renderer), std::move(video_renderer));
