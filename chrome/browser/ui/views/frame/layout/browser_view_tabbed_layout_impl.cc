@@ -792,6 +792,16 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   views().multi_contents_view->SetShouldShowTrailingSeparator(
       show_trailing_separator);
 
+  // Top separator is unnecessary when already in the shadow box; this is
+  // especially obvious in split view, where turning the separator off provides
+  // the required top padding.
+  const bool suppress_top_separator =
+      horizontal_layout.has_toolbar_height_side_panel() &&
+      horizontal_layout.force_top_container_to_top;
+  views().multi_contents_view->SetShouldShowTopSeparator(
+      !suppress_top_separator &&
+      GetTopSeparatorType() == TopSeparatorType::kMultiContents);
+
   // Lay out contents container. The contents container contains the multi-
   // contents view when multi-contents are enabled. The checks here are to
   // force the logic to be updated when multi-contents is fully rolled-out.
@@ -948,10 +958,6 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
     layout.AddChild(views().loading_bar, loading_bar_bounds,
                     top_separator_type == TopSeparatorType::kLoadingBar);
   }
-
-  // Maybe show the separator in the multi-contents view.
-  views().multi_contents_view->SetShouldShowTopSeparator(
-      top_separator_type == TopSeparatorType::kMultiContents);
 
   // Maybe show the separator in the top container.
   if (IsParentedTo(views().top_container_separator, views().top_container)) {
