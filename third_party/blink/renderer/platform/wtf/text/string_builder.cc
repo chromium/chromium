@@ -301,14 +301,18 @@ void StringBuilder::AppendFormat(const char* format, ...) {
   Vector<char, kDefaultSize> buffer(kDefaultSize);
 
   va_start(args, format);
-  int length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
+  // SAFETY: The safety of this code depends on the content of `format`. Since
+  // unsafe usage is marked with UNSAFE_TODO or UNSAFE_BUFFERS at the call
+  // site, no action is required here.
+  int length = UNSAFE_BUFFERS(base::VSpanPrintf(buffer, format, args));
   va_end(args);
   DCHECK_GE(length, 0);
 
   if (length >= static_cast<int>(kDefaultSize)) {
     buffer.Grow(length + 1);
     va_start(args, format);
-    length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
+    // SAFETY: See the previous comment on base::VSpanPrintf().
+    length = UNSAFE_BUFFERS(base::VSpanPrintf(buffer, format, args));
     va_end(args);
   }
 

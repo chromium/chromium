@@ -208,7 +208,10 @@ String String::Format(const char* format, ...) {
   Vector<char, kDefaultSize> buffer(kDefaultSize);
 
   va_start(args, format);
-  int length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
+  // SAFETY: The safety of this code depends on the content of `format`. Since
+  // unsafe usage is marked with UNSAFE_TODO or UNSAFE_BUFFERS at the call
+  // site, no action is required here.
+  int length = UNSAFE_BUFFERS(base::VSpanPrintf(buffer, format, args));
   va_end(args);
 
   // TODO(esprehn): Negative result can only happen if there's an encoding
@@ -235,7 +238,8 @@ String String::Format(const char* format, ...) {
     // Not calling va_end/va_start here happens to work on lots of systems, but
     // fails e.g. on 64bit Linux.
     va_start(args, format);
-    length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
+    // SAFETY: See the previous comment on base::VSpanPrintf().
+    length = UNSAFE_BUFFERS(base::VSpanPrintf(buffer, format, args));
     va_end(args);
 
     // TODO(tsepez): can we get an error the second time around if
