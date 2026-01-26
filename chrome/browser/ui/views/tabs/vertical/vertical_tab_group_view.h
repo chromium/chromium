@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_dragged_tabs_container.h"
@@ -24,6 +25,7 @@ class VerticalTabGroupHeaderView;
 class VerticalTabGroupView
     : public views::View,
       public views::LayoutDelegate,
+      public TabGroupAttentionIndicator::Observer,
       public VerticalTabGroupHeaderView::Delegate,
       public VerticalDraggedTabsContainer,
       public TabCollectionAnimatingLayoutManager::Delegate {
@@ -41,6 +43,9 @@ class VerticalTabGroupView
   // views::LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+
+  // TabGroupAttentionIndicator::Observer:
+  void OnAttentionStateChanged() override;
 
   // VerticalTabGroupHeaderView::Delegate:
   void ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin origin) override;
@@ -68,6 +73,7 @@ class VerticalTabGroupView
   void ResetCollectionNode();
   void OnDataChanged();
   void UpdateChildVisibilityForCollapseState(bool collapsed);
+  bool GetIsShared();
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
@@ -79,6 +85,10 @@ class VerticalTabGroupView
   const raw_ptr<views::View> group_line_ = nullptr;
 
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
+
+  base::ScopedObservation<TabGroupAttentionIndicator,
+                          TabGroupAttentionIndicator::Observer>
+      attention_indicator_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_GROUP_VIEW_H_
