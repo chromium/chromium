@@ -880,7 +880,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
       GetAdvertisedAltSvcFor(request_info_, delegate_, stream_type_);
 
   if (session_->host_resolver()->IsHappyEyeballsV3Enabled() &&
-      proxy_info_.is_direct() && !is_websocket_) {
+      proxy_info_.is_direct() && !is_websocket_ &&
+      request_info_.socket_tag == SocketTag()) {
     SwitchToHttpStreamPool();
     return OK;
   }
