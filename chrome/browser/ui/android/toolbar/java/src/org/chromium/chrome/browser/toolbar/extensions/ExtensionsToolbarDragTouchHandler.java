@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.view.View;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +19,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 /** A custom {@link DragTouchHandler} implementation for toolbar actions. */
 @NullMarked
 public class ExtensionsToolbarDragTouchHandler extends DragTouchHandler {
+
+    private static final int ANIMATION_DURATION_MS = 100;
 
     public ExtensionsToolbarDragTouchHandler(Context context, ModelList listData) {
         super(context, listData);
@@ -29,5 +34,21 @@ public class ExtensionsToolbarDragTouchHandler extends DragTouchHandler {
             dragFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
         }
         return makeMovementFlags(dragFlags, /* swipeFlags= */ 0);
+    }
+
+    @Override
+    public void updateVisualState(boolean dragged, RecyclerView.ViewHolder viewHolder) {
+        View view = viewHolder.itemView;
+
+        float startElevation = view.getTranslationZ();
+        float endElevation = dragged ? getDraggedElevation() : 0;
+        ValueAnimator elevationAnimator = ValueAnimator.ofFloat(startElevation, endElevation);
+        elevationAnimator.addUpdateListener(
+                (anim) -> view.setTranslationZ((float) anim.getAnimatedValue()));
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(ANIMATION_DURATION_MS);
+        animatorSet.play(elevationAnimator);
+        animatorSet.start();
     }
 }

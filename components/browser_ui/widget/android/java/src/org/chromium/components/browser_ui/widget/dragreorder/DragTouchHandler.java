@@ -160,6 +160,11 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         return mDraggedViewHolder;
     }
 
+    /** Gets the value for {@link mDraggedElevation}. */
+    public float getDraggedElevation() {
+        return mDraggedElevation;
+    }
+
     /**
      * Sets whether the default system long-press drag gesture is enabled. If false, dragging can
      * only be initiated manually via {@link ItemTouchHelper#startDrag}.
@@ -314,7 +319,7 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
      * @param dragged Whether this row is currently being dragged.
      * @param viewHolder The DraggableRowViewHolder that is holding this row's content.
      */
-    private void updateVisualState(boolean dragged, RecyclerView.ViewHolder viewHolder) {
+    public void updateVisualState(boolean dragged, RecyclerView.ViewHolder viewHolder) {
         DragUtils.createViewDragAnimation(
                         dragged, viewHolder.itemView, mDraggedBackgroundColor, mDraggedElevation)
                 .start();
