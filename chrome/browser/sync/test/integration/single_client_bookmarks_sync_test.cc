@@ -1993,147 +1993,6 @@ class SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks
   base::test::ScopedFeatureList features_override_;
 };
 
-class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
-    : public SyncTest {
- public:
-  SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitAndDisableFeature(switches::kSyncReuploadBookmarks);
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
-class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
-    : public SyncTest {
- public:
-  SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitWithFeatureState(switches::kSyncReuploadBookmarks,
-                                            !content::IsPreTest());
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
-class SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration
-    : public SyncTest {
- public:
-  SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitAndEnableFeature(
-        switches::kSyncMigrateBookmarksWithoutClientTagHash);
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
-class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
- public:
-  SingleClientBookmarksThrottlingSyncTest() : SyncTest(SINGLE_CLIENT) {}
-
-  void SetUpInProcessBrowserTestFixture() override {
-    SyncTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&SingleClientBookmarksThrottlingSyncTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    // Fake DeviceInfoSyncService with its fake bridge for device info to make
-    // sure there are no device info commits interfering with the extended nudge
-    // delay.
-    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildFakeDeviceInfoSyncService));
-  }
-
-  // Rarely, self notification for nigori interferes with the
-  // DepleteQuotaAndRecover test causing the tested commit to happen too early.
-  bool TestUsesSelfNotifications() override { return false; }
-
-  void SetupBookmarksSync() {
-    // Only enable bookmarks so that sync is not nudged by another data type
-    // (with a shorter delay).
-    ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
-        base::BindOnce([](syncer::SyncUserSettings* user_settings) {
-          user_settings->SetSelectedTypes(
-              false, {syncer::UserSelectableType::kBookmarks});
-#if BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetSelectedOsTypes(false, {});
-#else   // BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetInitialSyncFeatureSetupComplete(
-              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-        })));
-  }
-
- private:
-  base::CallbackListSubscription create_services_subscription_;
-};
-
-// Android doesn't currently support PRE_ tests, see crbug.com/40200835 or
-// crbug.com/40145099.
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(
-    SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
-    PRE_ShouldNotReploadUponFaviconLoad) {
-  fake_server::EntityBuilderFactory entity_builder_factory;
-  fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder("Foo Title");
-
-  // Create a legacy bookmark on the server (no |type|, |unique_position| fields
-  // populated). The fact that it's a legacy bookmark means any locally-produced
-  // specifics would be different for this bookmark (new fields like |type|
-  // would be populated).
-  std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
-      bookmark_builder.SetGeneration(BookmarkGeneration::kValidGuidAndFullTitle)
-          .BuildBookmark(GURL(kBookmarkPageUrl));
-  fake_server_->InjectEntity(std::move(bookmark));
-
-  // Start syncing.
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      BookmarksUrlChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl), 1)
-          .Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
-    ShouldNotReploadUponFaviconLoad) {
-  const GURL url = GURL("http://www.foo.com");
-
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
-
-  // Make sure the favicon gets loaded.
-  const BookmarkNode* bookmark_node =
-      GetUniqueNodeByURL(kSingleProfileIndex, url);
-  ASSERT_NE(nullptr, bookmark_node);
-  GetBookmarkModel(kSingleProfileIndex)->GetFavicon(bookmark_node);
-  ASSERT_TRUE(BookmarkFaviconLoadedChecker(kSingleProfileIndex, url).Wait());
-
-  // Make sure all local commits make it to the server.
-  ASSERT_TRUE(
-      CommittedAllNudgedChangesChecker(GetSyncService(kSingleProfileIndex))
-          .Wait());
-
-  // Verify that the bookmark hasn't been uploaded (no local updates issued). No
-  // commits are expected despite the fact that the server-side bookmark is a
-  // legacy bookmark without the most recent fields (e.g. GUID), because loading
-  // favicons should not lead to commits unless the favicon itself changed.
-  EXPECT_EQ(0, histogram_tester.GetBucketCount(
-                   "Sync.DataTypeEntityChange.BOOKMARK",
-                   syncer::DataTypeEntityChange::kLocalUpdate));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks,
     ShouldReuploadBookmarkAfterInitialMerge) {
@@ -2157,87 +2016,6 @@ IN_PROC_BROWSER_TEST_F(
                   /*cryptographer=*/nullptr)
                   .Wait());
 }
-
-// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
-#if !BUILDFLAG(IS_ANDROID)
-// Initiate reupload after restart when the feature toggle has been just enabled
-// (before restart the entity is in synced state).
-IN_PROC_BROWSER_TEST_F(
-    SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks,
-    PRE_ShouldReuploadForOldClients) {
-  ASSERT_TRUE(SetupSync());
-
-  // Make an incremental remote creation of bookmark without |unique_position|.
-  fake_server::EntityBuilderFactory entity_builder_factory;
-  fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(kBookmarkTitle);
-  std::unique_ptr<syncer::LoopbackServerEntity> remote_folder =
-      bookmark_builder.SetGeneration(BookmarkGeneration::kValidGuidAndFullTitle)
-          .BuildBookmark(GURL(kBookmarkPageUrl));
-
-  fake_server_->InjectEntity(std::move(remote_folder));
-
-  ASSERT_TRUE(BookmarksTitleChecker(kSingleProfileIndex, kBookmarkTitle,
-                                    /*expected_count=*/1)
-                  .Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks,
-    ShouldReuploadForOldClients) {
-  // This test checks that the legacy bookmark which was stored locally will
-  // imply reupload to the server when reupload feature is enabled.
-  ASSERT_EQ(
-      1u, GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS).size());
-  ASSERT_FALSE(GetFakeServer()
-                   ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
-                   .front()
-                   .specifics()
-                   .bookmark()
-                   .has_unique_position());
-  // |parent_guid| is used by BookmarkModelMatchesFakeServerChecker. It was
-  // introduced with |unique_position| and both fields should be reuploaded
-  // simultaneously.
-  ASSERT_FALSE(GetFakeServer()
-                   ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
-                   .front()
-                   .specifics()
-                   .bookmark()
-                   .has_parent_guid());
-
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
-
-  // Run a sync cycle to trigger bookmarks reupload on browser startup. This is
-  // required since bookmarks get reuploaded only after the latest changes are
-  // downloaded to avoid uploading outdated data.
-  GetSyncService(kSingleProfileIndex)
-      ->TriggerRefresh(syncer::SyncService::TriggerRefreshSource::kUnknown,
-                       {syncer::BOOKMARKS});
-
-  // Bookmark favicon will be loaded if there are local changes.
-  ASSERT_TRUE(
-      BookmarkFaviconLoadedChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl))
-          .Wait());
-  EXPECT_TRUE(BookmarkModelMatchesFakeServerChecker(
-                  GetBookmarkModel(kSingleProfileIndex),
-                  GetSyncService(kSingleProfileIndex), GetFakeServer())
-                  .Wait());
-  EXPECT_TRUE(GetFakeServer()
-                  ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
-                  .front()
-                  .specifics()
-                  .bookmark()
-                  .has_unique_position());
-  EXPECT_TRUE(GetFakeServer()
-                  ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
-                  .front()
-                  .specifics()
-                  .bookmark()
-                  .has_parent_guid());
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks,
@@ -2336,6 +2114,312 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS),
               Contains(HasUniquePosition()).Times(3));
 }
+
+class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
+    : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks()
+      : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitAndDisableFeature(switches::kSyncReuploadBookmarks);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
+// Android doesn't currently support PRE_ tests, see crbug.com/40200835 or
+// crbug.com/40145099.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
+    PRE_ShouldNotReploadUponFaviconLoad) {
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server::BookmarkEntityBuilder bookmark_builder =
+      entity_builder_factory.NewBookmarkEntityBuilder("Foo Title");
+
+  // Create a legacy bookmark on the server (no |type|, |unique_position| fields
+  // populated). The fact that it's a legacy bookmark means any locally-produced
+  // specifics would be different for this bookmark (new fields like |type|
+  // would be populated).
+  std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
+      bookmark_builder.SetGeneration(BookmarkGeneration::kValidGuidAndFullTitle)
+          .BuildBookmark(GURL(kBookmarkPageUrl));
+  fake_server_->InjectEntity(std::move(bookmark));
+
+  // Start syncing.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      BookmarksUrlChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl), 1)
+          .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
+    ShouldNotReploadUponFaviconLoad) {
+  const GURL url = GURL("http://www.foo.com");
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
+
+  // Make sure the favicon gets loaded.
+  const BookmarkNode* bookmark_node =
+      GetUniqueNodeByURL(kSingleProfileIndex, url);
+  ASSERT_NE(nullptr, bookmark_node);
+  GetBookmarkModel(kSingleProfileIndex)->GetFavicon(bookmark_node);
+  ASSERT_TRUE(BookmarkFaviconLoadedChecker(kSingleProfileIndex, url).Wait());
+
+  // Make sure all local commits make it to the server.
+  ASSERT_TRUE(
+      CommittedAllNudgedChangesChecker(GetSyncService(kSingleProfileIndex))
+          .Wait());
+
+  // Verify that the bookmark hasn't been uploaded (no local updates issued). No
+  // commits are expected despite the fact that the server-side bookmark is a
+  // legacy bookmark without the most recent fields (e.g. GUID), because loading
+  // favicons should not lead to commits unless the favicon itself changed.
+  EXPECT_EQ(0, histogram_tester.GetBucketCount(
+                   "Sync.DataTypeEntityChange.BOOKMARK",
+                   syncer::DataTypeEntityChange::kLocalUpdate));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
+    : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks()
+      : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitWithFeatureState(switches::kSyncReuploadBookmarks,
+                                            !content::IsPreTest());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
+// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
+#if !BUILDFLAG(IS_ANDROID)
+// Initiate reupload after restart when the feature toggle has been just enabled
+// (before restart the entity is in synced state).
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks,
+    PRE_ShouldReuploadForOldClients) {
+  ASSERT_TRUE(SetupSync());
+
+  // Make an incremental remote creation of bookmark without |unique_position|.
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server::BookmarkEntityBuilder bookmark_builder =
+      entity_builder_factory.NewBookmarkEntityBuilder(kBookmarkTitle);
+  std::unique_ptr<syncer::LoopbackServerEntity> remote_folder =
+      bookmark_builder.SetGeneration(BookmarkGeneration::kValidGuidAndFullTitle)
+          .BuildBookmark(GURL(kBookmarkPageUrl));
+
+  fake_server_->InjectEntity(std::move(remote_folder));
+
+  ASSERT_TRUE(BookmarksTitleChecker(kSingleProfileIndex, kBookmarkTitle,
+                                    /*expected_count=*/1)
+                  .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks,
+    ShouldReuploadForOldClients) {
+  // This test checks that the legacy bookmark which was stored locally will
+  // imply reupload to the server when reupload feature is enabled.
+  ASSERT_EQ(
+      1u, GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS).size());
+  ASSERT_FALSE(GetFakeServer()
+                   ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
+                   .front()
+                   .specifics()
+                   .bookmark()
+                   .has_unique_position());
+  // |parent_guid| is used by BookmarkModelMatchesFakeServerChecker. It was
+  // introduced with |unique_position| and both fields should be reuploaded
+  // simultaneously.
+  ASSERT_FALSE(GetFakeServer()
+                   ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
+                   .front()
+                   .specifics()
+                   .bookmark()
+                   .has_parent_guid());
+
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
+
+  // Run a sync cycle to trigger bookmarks reupload on browser startup. This is
+  // required since bookmarks get reuploaded only after the latest changes are
+  // downloaded to avoid uploading outdated data.
+  GetSyncService(kSingleProfileIndex)
+      ->TriggerRefresh(syncer::SyncService::TriggerRefreshSource::kUnknown,
+                       {syncer::BOOKMARKS});
+
+  // Bookmark favicon will be loaded if there are local changes.
+  ASSERT_TRUE(
+      BookmarkFaviconLoadedChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl))
+          .Wait());
+  EXPECT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  GetBookmarkModel(kSingleProfileIndex),
+                  GetSyncService(kSingleProfileIndex), GetFakeServer())
+                  .Wait());
+  EXPECT_TRUE(GetFakeServer()
+                  ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
+                  .front()
+                  .specifics()
+                  .bookmark()
+                  .has_unique_position());
+  EXPECT_TRUE(GetFakeServer()
+                  ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
+                  .front()
+                  .specifics()
+                  .bookmark()
+                  .has_parent_guid());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+class SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration
+    : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration()
+      : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitAndEnableFeature(
+        switches::kSyncMigrateBookmarksWithoutClientTagHash);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration,
+    MigratePreExistingBookmarks) {
+  const base::Uuid kOriginalFolder1Uuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kOriginalFolder2Uuid = base::Uuid::GenerateRandomV4();
+
+  ASSERT_TRUE(SetupClients());
+
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server_->InjectEntity(
+      entity_builder_factory
+          .NewBookmarkEntityBuilder("Folder1", kOriginalFolder1Uuid)
+          .SetIndex(0)
+          .BuildFolder());
+  fake_server_->InjectEntity(
+      entity_builder_factory
+          .NewBookmarkEntityBuilder("Folder2", kOriginalFolder2Uuid)
+          .SetIndex(1)
+          .EnableClientTagHash()
+          .BuildFolder());
+
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url1")
+          .SetParentGuid(kOriginalFolder1Uuid)
+          .SetIndex(0)
+          .BuildBookmark(GURL("http://url1.com")));
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url2")
+          .SetParentGuid(kOriginalFolder1Uuid)
+          .SetIndex(1)
+          .BuildBookmark(GURL("http://url2.com")));
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url3")
+          .SetParentGuid(kOriginalFolder1Uuid)
+          .SetIndex(2)
+          .EnableClientTagHash()
+          .BuildBookmark(GURL("http://url3.com")));
+
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url4")
+          .SetParentGuid(kOriginalFolder2Uuid)
+          .SetIndex(0)
+          .BuildBookmark(GURL("http://url4.com")));
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url5")
+          .SetParentGuid(kOriginalFolder2Uuid)
+          .SetIndex(1)
+          .BuildBookmark(GURL("http://url5.com")));
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url6")
+          .SetParentGuid(kOriginalFolder2Uuid)
+          .SetIndex(2)
+          .EnableClientTagHash()
+          .BuildBookmark(GURL("http://url6.com")));
+
+  ASSERT_EQ(
+      8u, GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS).size());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_THAT(
+      GetBookmarkBarNode(kSingleProfileIndex)->children(),
+      ElementsAre(
+          IsFolder(
+              u"Folder1",
+              ElementsAre(IsUrlBookmark(u"Url1", GURL("http://url1.com")),
+                          IsUrlBookmark(u"Url2", GURL("http://url2.com")),
+                          IsUrlBookmark(u"Url3", GURL("http://url3.com")))),
+          IsFolder(
+              u"Folder2",
+              ElementsAre(IsUrlBookmark(u"Url4", GURL("http://url4.com")),
+                          IsUrlBookmark(u"Url5", GURL("http://url5.com")),
+                          IsUrlBookmark(u"Url6", GURL("http://url6.com"))))));
+
+  const std::vector<sync_pb::SyncEntity> server_bookmarks =
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
+  EXPECT_EQ(8u, server_bookmarks.size());
+
+  for (const sync_pb::SyncEntity& entity : server_bookmarks) {
+    // All entities should have adopted a client tag hash.
+    EXPECT_TRUE(entity.has_client_tag_hash())
+        << "for title " << entity.specifics().bookmark().full_title();
+  }
+}
+
+class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
+ public:
+  SingleClientBookmarksThrottlingSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SyncTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&SingleClientBookmarksThrottlingSyncTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    // Fake DeviceInfoSyncService with its fake bridge for device info to make
+    // sure there are no device info commits interfering with the extended nudge
+    // delay.
+    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildFakeDeviceInfoSyncService));
+  }
+
+  // Rarely, self notification for nigori interferes with the
+  // DepleteQuotaAndRecover test causing the tested commit to happen too early.
+  bool TestUsesSelfNotifications() override { return false; }
+
+  void SetupBookmarksSync() {
+    // Only enable bookmarks so that sync is not nudged by another data type
+    // (with a shorter delay).
+    ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
+        base::BindOnce([](syncer::SyncUserSettings* user_settings) {
+          user_settings->SetSelectedTypes(
+              false, {syncer::UserSelectableType::kBookmarks});
+#if BUILDFLAG(IS_CHROMEOS)
+          user_settings->SetSelectedOsTypes(false, {});
+#else   // BUILDFLAG(IS_CHROMEOS)
+          user_settings->SetInitialSyncFeatureSetupComplete(
+              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        })));
+  }
+
+ private:
+  base::CallbackListSubscription create_services_subscription_;
+};
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest, DepleteQuota) {
   ASSERT_TRUE(SetupClients());
@@ -3423,89 +3507,5 @@ IN_PROC_BROWSER_TEST_F(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration,
-    MigratePreExistingBookmarks) {
-  const base::Uuid kOriginalFolder1Uuid = base::Uuid::GenerateRandomV4();
-  const base::Uuid kOriginalFolder2Uuid = base::Uuid::GenerateRandomV4();
-
-  ASSERT_TRUE(SetupClients());
-
-  fake_server::EntityBuilderFactory entity_builder_factory;
-  fake_server_->InjectEntity(
-      entity_builder_factory
-          .NewBookmarkEntityBuilder("Folder1", kOriginalFolder1Uuid)
-          .SetIndex(0)
-          .BuildFolder());
-  fake_server_->InjectEntity(
-      entity_builder_factory
-          .NewBookmarkEntityBuilder("Folder2", kOriginalFolder2Uuid)
-          .SetIndex(1)
-          .EnableClientTagHash()
-          .BuildFolder());
-
-  fake_server_->InjectEntity(
-      entity_builder_factory.NewBookmarkEntityBuilder("Url1")
-          .SetParentGuid(kOriginalFolder1Uuid)
-          .SetIndex(0)
-          .BuildBookmark(GURL("http://url1.com")));
-  fake_server_->InjectEntity(
-      entity_builder_factory.NewBookmarkEntityBuilder("Url2")
-          .SetParentGuid(kOriginalFolder1Uuid)
-          .SetIndex(1)
-          .BuildBookmark(GURL("http://url2.com")));
-  fake_server_->InjectEntity(
-      entity_builder_factory.NewBookmarkEntityBuilder("Url3")
-          .SetParentGuid(kOriginalFolder1Uuid)
-          .SetIndex(2)
-          .EnableClientTagHash()
-          .BuildBookmark(GURL("http://url3.com")));
-
-  fake_server_->InjectEntity(
-      entity_builder_factory.NewBookmarkEntityBuilder("Url4")
-          .SetParentGuid(kOriginalFolder2Uuid)
-          .SetIndex(0)
-          .BuildBookmark(GURL("http://url4.com")));
-  fake_server_->InjectEntity(
-      entity_builder_factory.NewBookmarkEntityBuilder("Url5")
-          .SetParentGuid(kOriginalFolder2Uuid)
-          .SetIndex(1)
-          .BuildBookmark(GURL("http://url5.com")));
-  fake_server_->InjectEntity(
-      entity_builder_factory.NewBookmarkEntityBuilder("Url6")
-          .SetParentGuid(kOriginalFolder2Uuid)
-          .SetIndex(2)
-          .EnableClientTagHash()
-          .BuildBookmark(GURL("http://url6.com")));
-
-  ASSERT_EQ(
-      8u, GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS).size());
-
-  ASSERT_TRUE(SetupSync());
-  ASSERT_THAT(
-      GetBookmarkBarNode(kSingleProfileIndex)->children(),
-      ElementsAre(
-          IsFolder(
-              u"Folder1",
-              ElementsAre(IsUrlBookmark(u"Url1", GURL("http://url1.com")),
-                          IsUrlBookmark(u"Url2", GURL("http://url2.com")),
-                          IsUrlBookmark(u"Url3", GURL("http://url3.com")))),
-          IsFolder(
-              u"Folder2",
-              ElementsAre(IsUrlBookmark(u"Url4", GURL("http://url4.com")),
-                          IsUrlBookmark(u"Url5", GURL("http://url5.com")),
-                          IsUrlBookmark(u"Url6", GURL("http://url6.com"))))));
-
-  const std::vector<sync_pb::SyncEntity> server_bookmarks =
-      GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
-  EXPECT_EQ(8u, server_bookmarks.size());
-
-  for (const sync_pb::SyncEntity& entity : server_bookmarks) {
-    // All entities should have adopted a client tag hash.
-    EXPECT_TRUE(entity.has_client_tag_hash())
-        << "for title " << entity.specifics().bookmark().full_title();
-  }
-}
 
 }  // namespace
