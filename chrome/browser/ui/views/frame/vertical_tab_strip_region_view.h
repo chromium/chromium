@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
@@ -92,6 +94,10 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   VerticalTabStripController* GetVerticalTabStripController() {
     return tab_strip_controller_.get();
   }
+
+  // Gets the percentage of the current collapse or un-collapse animation, or
+  // null if none.
+  std::optional<double> GetCollapseAnimationPercent() const;
 
   // views::View:
   void AddedToWidget() override;

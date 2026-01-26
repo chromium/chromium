@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 
 #include <algorithm>
+#include <optional>
 #include <variant>
 
 #include "base/callback_list.h"
@@ -133,6 +134,13 @@ VerticalTabStripRegionView::~VerticalTabStripRegionView() {
   }
 }
 
+std::optional<double> VerticalTabStripRegionView::GetCollapseAnimationPercent()
+    const {
+  return resize_animation_.is_animating()
+             ? std::make_optional(resize_animation_.GetCurrentValue())
+             : std::nullopt;
+}
+
 void VerticalTabStripRegionView::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
@@ -204,8 +212,10 @@ void VerticalTabStripRegionView::ResetTabStrip() {
 
 gfx::Size VerticalTabStripRegionView::GetMinimumSize() const {
   auto min_size = TabStripRegionView::GetMinimumSize();
-  min_size.set_width(state_controller_->IsCollapsed() ? kCollapsedWidth
-                                                      : kUncollapsedMinWidth);
+  min_size.set_width(
+      (state_controller_->IsCollapsed() || resize_animation_.is_animating())
+          ? kCollapsedWidth
+          : kUncollapsedMinWidth);
   return min_size;
 }
 

@@ -53,12 +53,21 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   std::pair<gfx::Size, gfx::Size> GetMinimumTabStripSize(
       const BrowserLayoutParams& params) const;
 
+  // Represents the state of the vertical tabstrip.
+  enum class VerticalTabStripCollapsedState {
+    kExpanded,
+    kCollapsing,
+    kCollapsed,
+    kExpanding
+  };
+
   // Allocate space across the vertical tabstrip, toolbar, and side panels,
   // possibly modifying `params` to allocate grab handle space, and
   // determining how much space to give to each of the left-size elements.
   struct HorizontalLayout {
+    VerticalTabStripCollapsedState vertical_tab_strip_collapsed_state =
+        VerticalTabStripCollapsedState::kExpanded;
     int vertical_tab_strip_width = 0;
-    bool vertical_tab_strip_collapsed = false;
     int toolbar_height_side_panel_width = 0;
     int content_height_side_panel_width = 0;
     int min_content_width = 0;
@@ -90,6 +99,9 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // main area is visible. This is usually tied to the presence of the
   // toolbar-height side panel, but may not be in some browser states.
   bool ShadowOverlayVisible() const;
+
+  // Returns the current state of the vertical tabstrip.
+  VerticalTabStripCollapsedState GetVerticalTabStripCollapsedState() const;
 
   // Returns where the vertical tabstrip starts vertically in collapsed mode.
   // This is relative to the top of the visual client area of `params`, and will

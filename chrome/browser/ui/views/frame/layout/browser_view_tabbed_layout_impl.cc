@@ -136,7 +136,8 @@ BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize(
     }
     case TabStripType::kVertical: {
       auto result = views().vertical_tab_strip_region_view->GetMinimumSize();
-      if (!delegate().IsVerticalTabStripCollapsed()) {
+      if (GetVerticalTabStripCollapsedState() !=
+          VerticalTabStripCollapsedState::kCollapsed) {
         result.set_width(std::max(
             result.width(),
             base::ClampCeil(
@@ -175,20 +176,21 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
         views().vertical_tab_strip_region_view.get();
     preferred_vertical_tab_strip_width =
         vertical_tab_strip->GetPreferredSize().width();
-    layout.vertical_tab_strip_collapsed =
-        delegate().IsVerticalTabStripCollapsed();
-    if (layout.vertical_tab_strip_collapsed) {
+    layout.vertical_tab_strip_collapsed_state =
+        GetVerticalTabStripCollapsedState();
+    if (layout.vertical_tab_strip_collapsed_state ==
+        VerticalTabStripCollapsedState::kCollapsed) {
       // Collapsed tab strip always gets its preferred size.
       min_vertical_tab_strip_width = preferred_vertical_tab_strip_width;
     } else {
       // Minimum size is bounded from below by size of leading exclusion area.
-      min_vertical_tab_strip_width =
-          std::max(vertical_tab_strip->GetMinimumSize().width(),
-                   base::ClampCeil(
-                       params.leading_exclusion.ContentWithPadding().width()));
-      preferred_vertical_tab_strip_width =
-          std::max(min_vertical_tab_strip_width,
-                   vertical_tab_strip->GetPreferredSize().width());
+      if (layout.vertical_tab_strip_collapsed_state ==
+          VerticalTabStripCollapsedState::kExpanded) {
+        min_vertical_tab_strip_width = std::max(
+            vertical_tab_strip->GetMinimumSize().width(),
+            base::ClampCeil(
+                params.leading_exclusion.ContentWithPadding().width()));
+      }
 
       // Figure out the maximum size of the vertical tabstrip that can still
       // accommodate the toolbar.
@@ -341,6 +343,22 @@ bool BrowserViewTabbedLayoutImpl::ShadowOverlayVisible() const {
   return views().toolbar_height_side_panel->GetVisible();
 }
 
+BrowserViewTabbedLayoutImpl::VerticalTabStripCollapsedState
+BrowserViewTabbedLayoutImpl::GetVerticalTabStripCollapsedState() const {
+  if (!views().vertical_tab_strip_region_view) {
+    return VerticalTabStripCollapsedState::kExpanded;
+  }
+  const auto percent =
+      views().vertical_tab_strip_region_view->GetCollapseAnimationPercent();
+  const bool is_collapsed = delegate().IsVerticalTabStripCollapsed();
+  if (is_collapsed) {
+    return percent ? VerticalTabStripCollapsedState::kCollapsing
+                   : VerticalTabStripCollapsedState::kCollapsed;
+  }
+  return percent ? VerticalTabStripCollapsedState::kExpanding
+                 : VerticalTabStripCollapsedState::kExpanded;
+}
+
 int BrowserViewTabbedLayoutImpl::GetCollapsedVerticalTabStripRelativeTop(
     const BrowserLayoutParams& params) const {
   // When the top container isn't in the browser view, the exclusion won't apply
@@ -482,7 +500,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     gfx::Rect vertical_tab_strip_bounds;
     if (tab_strip_type == TabStripType::kVertical) {
       int vertical_tab_strip_relative_top = 0;
-      if (horizontal_layout.vertical_tab_strip_collapsed) {
+      if (horizontal_layout.vertical_tab_strip_collapsed_state ==
+          VerticalTabStripCollapsedState::kCollapsed) {
         // Collapsed tabstrip sits underneath caption buttons when present.
         vertical_tab_strip_relative_top =
             GetCollapsedVerticalTabStripRelativeTop(params);
@@ -513,12 +532,33 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   if (IsParentedTo(views().vertical_tab_strip_top_corner,
                    views().browser_view)) {
     gfx::Rect corner_bounds;
+
+    // The tabstrip lays out below the leading exclusion when collapsed.
+    const bool has_leading_exclusion =
+        !browser_params.leading_exclusion.IsEmpty();
+    const bool below_caption_buttons =
+        horizontal_layout.vertical_tab_strip_collapsed_state ==
+            VerticalTabStripCollapsedState::kCollapsed &&
+        has_leading_exclusion;
+
+    // The top corner is drawn when the tabstrip goes all the way to the top.
     const bool top_corner_visible =
-        tab_strip_type == TabStripType::kVertical &&
-        !horizontal_layout.vertical_tab_strip_collapsed;
+        tab_strip_type == TabStripType::kVertical && !below_caption_buttons;
     if (top_corner_visible) {
-      const auto preferred =
+      auto preferred =
           views().vertical_tab_strip_top_corner->GetPreferredSize();
+
+      // The animation only needs to be applied when the tabstrip is switching
+      // to/from a mode without a corner.
+      if (has_leading_exclusion) {
+        const auto percent =
+            views()
+                .vertical_tab_strip_region_view->GetCollapseAnimationPercent();
+        if (percent.has_value()) {
+          preferred.set_width(
+              base::ClampCeil(preferred.width() * percent.value()));
+        }
+      }
       corner_bounds = gfx::Rect(params.visual_client_area.origin(), preferred);
     }
     layout.AddChild(views().vertical_tab_strip_top_corner, corner_bounds,
@@ -951,7 +991,8 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
   if (delegate().GetBrowserWindowState() == WindowState::kNormal) {
     corners.upper_trailing = background->GetWindowCorner(/*upper=*/true);
     const bool vertical_tab_strip_reaches_top =
-        !delegate().IsVerticalTabStripCollapsed() ||
+        GetVerticalTabStripCollapsedState() !=
+            VerticalTabStripCollapsedState::kCollapsed ||
         params.leading_exclusion.IsEmpty();
     if (!vertical_tab_strip_reaches_top) {
       corners.upper_leading = background->GetWindowCorner(/*upper=*/true);
@@ -971,7 +1012,8 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     // Vertical tabstrip goes all the way to the top of the window if it is not
     // collapsed or there are no caption buttons on the leading edge.
     vertical_tab_strip_reaches_top =
-        !delegate().IsVerticalTabStripCollapsed() ||
+        GetVerticalTabStripCollapsedState() !=
+            VerticalTabStripCollapsedState::kCollapsed ||
         params.leading_exclusion.IsEmpty();
     auto* const vertical_tabs_background =
         static_cast<CustomCornersBackground*>(
