@@ -502,9 +502,30 @@ BASE_FEATURE_PARAM(bool,
                    "tab_search_toolbar_button",
                    true);
 
-// TODO(crbug.com/471062209): Clean up all callers of this function.
+static std::string GetCountryCode() {
+  if (!g_browser_process || !g_browser_process->variations_service()) {
+    return std::string();
+  }
+  std::string country_code =
+      g_browser_process->variations_service()->GetStoredPermanentCountry();
+  if (country_code.empty()) {
+    country_code = g_browser_process->variations_service()->GetLatestCountry();
+  }
+  return country_code;
+}
+
 bool HasTabSearchToolbarButton() {
-  return true;
+  static const bool is_tab_search_moving = [] {
+    if (GetCountryCode() == "us" &&
+        base::FeatureList::IsEnabled(
+            features::kLaunchedTabSearchToolbarButton)) {
+      return true;
+    }
+    return base::FeatureList::IsEnabled(features::kTabstripComboButton) &&
+           features::kTabSearchToolbarButton.Get();
+  }();
+
+  return is_tab_search_moving;
 }
 
 BASE_FEATURE(kNonMilestoneUpdateToast, base::FEATURE_ENABLED_BY_DEFAULT);
