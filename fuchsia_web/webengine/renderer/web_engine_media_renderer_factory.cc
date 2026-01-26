@@ -62,12 +62,13 @@ std::unique_ptr<media::Renderer> WebEngineMediaRendererFactory::CreateRenderer(
   if (get_gpu_factories_cb_)
     gpu_factories = get_gpu_factories_cb_.Run();
 
-  std::unique_ptr<media::MappableSharedImageVideoFramePool> gmb_pool;
+  std::unique_ptr<media::MappableSharedImageVideoFramePool> mappable_si_pool;
   if (gpu_factories &&
       gpu_factories->ShouldUseMappableSharedImagesForVideoFrames(
           /*for_media_stream=*/false)) {
-    gmb_pool = std::make_unique<media::MappableSharedImageVideoFramePool>(
-        media_task_runner, std::move(worker_task_runner), gpu_factories);
+    mappable_si_pool =
+        std::make_unique<media::MappableSharedImageVideoFramePool>(
+            media_task_runner, std::move(worker_task_runner), gpu_factories);
   }
 
   std::unique_ptr<media::VideoRenderer> video_renderer(
@@ -84,7 +85,7 @@ std::unique_ptr<media::Renderer> WebEngineMediaRendererFactory::CreateRenderer(
               base::Unretained(this), media_task_runner,
               std::move(request_overlay_info_cb), target_color_space,
               gpu_factories),
-          /*drop_frames=*/true, media_log_, std::move(gmb_pool),
+          /*drop_frames=*/true, media_log_, std::move(mappable_si_pool),
           media::GetNextMediaPlayerLoggingID()));
 
   return std::make_unique<media::RendererImpl>(
