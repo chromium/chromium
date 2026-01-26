@@ -194,6 +194,8 @@ if (!is_android) {
       "//components/lens",
       "//components/omnibox/browser:mojo_bindings",
       "//google_apis",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//third_party/protobuf:protobuf_lite",
       "//url",
