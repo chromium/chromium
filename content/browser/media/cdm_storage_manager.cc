@@ -298,10 +298,6 @@ void CdmStorageManager::DidGetDatabaseSize(const uint64_t size) {
       kSizeKBBuckets);
 }
 
-// TODO(crbug.com/40272342) Investigate if we can propagate the SQL errors.
-// Investigate adding delete functionality to 'MojoCdmHelper::CloseCdmFileIO' to
-// close database on CdmFileIO closure.
-
 void CdmStorageManager::ReportDatabaseOpenError(CdmStorageOpenError error) {
   // General Errors without distinguishing incognito or not.
   base::UmaHistogramEnumeration(
