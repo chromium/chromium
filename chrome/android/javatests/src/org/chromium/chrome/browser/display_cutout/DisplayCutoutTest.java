@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -40,6 +41,7 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
 })
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376095153
 public class DisplayCutoutTest {
     @Rule
     public DisplayCutoutTestRule mTestRule = new DisplayCutoutTestRule<>(ChromeActivity.class);

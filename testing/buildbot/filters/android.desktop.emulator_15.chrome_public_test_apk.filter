@@ -1,5 +1,4 @@
 # crbug.com/376095153
--org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.*
 
 # crbug.com/375710620
 -org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
@@ -73,8 +72,6 @@
 -org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testMaxMenuItems
 -org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_FeatureDisabled
 -org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_NoClientPackage
--org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testContextMenuPreviewPage
--org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testContextMenuEntriesBeforeFirstRun
 
 # crbug.com/394671175
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.*
@@ -92,7 +89,6 @@
 -org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testShowOnSecureWebsiteDark
 
 # crbug.com/415118264
--org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomMenuItemHasNoEffect
 
 # https://crbug.com/446934111
 # Aggressively disable failed tests to green the suite ASAP.
@@ -114,14 +110,6 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testPanelDismissedOnToggleFullscreen
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTriggeringContextualSearchHidesFindInPageOverlay
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchTriggerTest.testTapGestureFollowedByScrollClearsSelection
--org.chromium.chrome.browser.customtabs.TabReparentingTest.testTabReparentingSelectPopup
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testCctRedirectFromIntentUriStaysInChrome_InIncognito
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIncognitoSubframeExternalNavigation_Accepted
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIncognitoSubframeExternalNavigation_Rejected
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithEmptySchemeDoesNothing
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
 -org.chromium.chrome.browser.fullscreen.FullscreenManagerTest.*
 -org.chromium.chrome.browser.history.HistoryPaneTest.testOpenedHistoryItem_SingleClickOpensInSameTab
 -org.chromium.chrome.browser.hub.HubLayoutPublicTransitTest.testChangeTabSwitcherPanes
