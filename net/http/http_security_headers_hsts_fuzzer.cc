@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/time/time.h"
 #include "net/http/http_security_headers.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
@@ -20,7 +22,11 @@ void TestParseHSTSHeader(const std::string& input) {
 FUZZ_TEST(HttpSecurityHeadersHstsFuzzer, TestParseHSTSHeader)
     .WithDomains(
         fuzztest::String().WithDictionary(fuzztest::ReadDictionaryFromFile(
-            "net/data/fuzzer_dictionaries/"
-            "net_http_security_headers_fuzzer.dict")))
+            base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+                .AppendASCII("net/data/fuzzer_dictionaries/"
+                             "net_http_security_headers_fuzzer.dict")
+                .AsUTF8Unsafe())))
     .WithSeeds(fuzztest::ReadFilesFromDirectory(
-        "net/data/fuzzer_data/http_security_headers/"));
+        base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+            .AppendASCII("net/data/fuzzer_data/http_security_headers/")
+            .AsUTF8Unsafe()));
