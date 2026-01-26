@@ -323,7 +323,8 @@ public class StartupMetricsTracker {
     private void recordFcpMetrics(long firstFcpMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            if (mIsRestoringPersistentStateSupplier.get()) {
+            if (mIsRestoringPersistentStateSupplier != null
+                    && mIsRestoringPersistentStateSupplier.get()) {
                 RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "Startup.Android.Cold.WithPersistentState."
                                 + "TimeToFirstContentfulPaint3.Tabbed",
@@ -340,7 +341,8 @@ public class StartupMetricsTracker {
         if (mFirstVisibleContentRecorded) return;
 
         mFirstVisibleContentRecorded = true;
-        if (mIsRestoringPersistentStateSupplier.get()) {
+        if (mIsRestoringPersistentStateSupplier != null
+                && mIsRestoringPersistentStateSupplier.get()) {
             RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.WithPersistentState.TimeToFirstVisibleContent4",
                     durationMs);
