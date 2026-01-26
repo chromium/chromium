@@ -91,7 +91,10 @@ void InfoBarContainerWithPriority::ChangeInfoBarManager(
       // OnInfoBarAdded contains the AdmitOrQueue logic needed to properly
       // handle prioritization.
       for (InfoBar* infobar : manager()->infobars()) {
-        OnInfoBarAdded(infobar);
+        const auto priority = infobar->delegate()
+                                  ? infobar->delegate()->GetPriority()
+                                  : InfoBarDelegate::InfobarPriority::kDefault;
+        AdmitOrQueue(infobar, priority, /*animate=*/false);
       }
     }
   }
@@ -110,7 +113,7 @@ void InfoBarContainerWithPriority::OnInfoBarAdded(InfoBar* infobar) {
   const auto priority = infobar->delegate()
                             ? infobar->delegate()->GetPriority()
                             : InfoBarDelegate::InfobarPriority::kDefault;
-  AdmitOrQueue(infobar, priority);
+  AdmitOrQueue(infobar, priority, /*animate=*/true);
 }
 
 void InfoBarContainerWithPriority::OnInfoBarRemoved(InfoBar* infobar,
@@ -190,7 +193,8 @@ void InfoBarContainerWithPriority::AddInfoBarAndTrack(
 
 void InfoBarContainerWithPriority::AdmitOrQueue(
     InfoBar* infobar,
-    InfoBarDelegate::InfobarPriority priority) {
+    InfoBarDelegate::InfobarPriority priority,
+    bool animate) {
   // If an identical infobar is already in the queue, do nothing. This avoids
   // enqueuing duplicates.
   if (IsDuplicateOfPending(infobar)) {
@@ -200,8 +204,7 @@ void InfoBarContainerWithPriority::AdmitOrQueue(
   // 1) Handle CRITICAL priority.
   if (priority == InfoBarDelegate::InfobarPriority::kCriticalSecurity) {
     if (CountVisible(priority) < GetInfoBarPriorityCapFor(priority)) {
-      AddInfoBarAndTrack(infobar, infobars().size(), /*animate=*/true,
-                         priority);
+      AddInfoBarAndTrack(infobar, infobars().size(), animate, priority);
     } else {
       EnqueueInfoBar(infobar, priority);
     }
@@ -224,8 +227,7 @@ void InfoBarContainerWithPriority::AdmitOrQueue(
     // reached and it would not preempt an already-visible LOW-priority one.
     if (CountVisible(InfoBarDelegate::InfobarPriority::kLow) == 0 &&
         CountVisible(priority) < GetInfoBarPriorityCapFor(priority)) {
-      AddInfoBarAndTrack(infobar, infobars().size(), /*animate=*/true,
-                         priority);
+      AddInfoBarAndTrack(infobar, infobars().size(), animate, priority);
     } else {
       EnqueueInfoBar(infobar, priority);
     }
@@ -239,7 +241,7 @@ void InfoBarContainerWithPriority::AdmitOrQueue(
   if (CountVisible(InfoBarDelegate::InfobarPriority::kDefault) == 0 &&
       !HasPendingOfPriority(InfoBarDelegate::InfobarPriority::kDefault) &&
       CountVisible(priority) < GetInfoBarPriorityCapFor(priority)) {
-    AddInfoBarAndTrack(infobar, infobars().size(), /*animate=*/true, priority);
+    AddInfoBarAndTrack(infobar, infobars().size(), animate, priority);
   } else {
     EnqueueInfoBar(infobar, priority);
   }

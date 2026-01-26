@@ -72,7 +72,8 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
   // (visible slots available, no higher-priority items blocking) or must be
   // queued for later promotion.
   void AdmitOrQueue(InfoBar* infobar,
-                    InfoBarDelegate::InfobarPriority priority);
+                    InfoBarDelegate::InfobarPriority priority,
+                    bool animate);
 
   // Enqueues an infobar in a deterministic position: first by priority
   // (descending), then by sequence (ascending). This guarantees a stable
