@@ -6,7 +6,8 @@
       "linux",
       "mac",
       "chromeos",
-      "fuchsia"
+      "fuchsia",
+      "android"
     ],
     "policy_pref_mapping_tests": [
       {
