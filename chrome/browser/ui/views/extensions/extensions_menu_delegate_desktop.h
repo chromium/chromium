@@ -66,7 +66,7 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
                      int index) override;
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id,
                        int index) override;
-  void OnActionUpdated() override;
+  void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
   void OnActionsInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
   void OnUserPermissionsSettingsChanged() override;
@@ -99,9 +99,6 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
  private:
   // Switches the current page to `page`.
   void SwitchToPage(std::unique_ptr<views::View> page);
-
-  // Updates current_page for the given `web_contents`.
-  void UpdatePage(content::WebContents* web_contents);
 
   // Updates the menu's main page.
   void UpdateMainPage(ExtensionsMenuMainPageView* main_page);

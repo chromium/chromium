@@ -40,7 +40,7 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
                      int index) override;
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id,
                        int index) override;
-  void OnActionUpdated() override;
+  void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id) override;
   void OnActionsInitialized() override;
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int index) override;

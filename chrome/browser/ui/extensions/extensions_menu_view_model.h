@@ -89,7 +89,8 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
                                  int index) = 0;
 
     // Called when an action is updated in the menu model.
-    virtual void OnActionUpdated() = 0;
+    virtual void OnActionUpdated(
+        const ToolbarActionsModel::ActionId& action_id) = 0;
 
     // Called after all actions are added in the menu model after menu model
     // construction.

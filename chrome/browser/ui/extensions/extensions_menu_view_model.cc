@@ -1148,6 +1148,13 @@ void ExtensionsMenuViewModel::OnToolbarActionRemoved(
 
 void ExtensionsMenuViewModel::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
+  // Action updates can be triggered during WebContents destruction/navigation.
+  // We ignore these here as they are handled by the specific web contents
+  // observers.
+  if (!GetActiveWebContents()) {
+    return;
+  }
+
   // Re-sort the models in case the action name changed (affecting alphabetical
   // order).
   // TODO(emiliapaz): Investigate whether this is necessary, because extension
@@ -1156,7 +1163,7 @@ void ExtensionsMenuViewModel::OnToolbarActionUpdated(
 
   // Notify observers.
   for (Observer& observer : observers_) {
-    observer.OnActionUpdated();
+    observer.OnActionUpdated(action_id);
   }
 }
 

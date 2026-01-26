@@ -107,7 +107,27 @@ ExtensionsMenuDelegateDesktop::CreateActionViewModel(
 
 void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(
     content::WebContents* web_contents) {
-  UpdatePage(web_contents);
+  DCHECK(current_page_);
+  DCHECK(web_contents);
+
+  // Update main page if it is open.
+  auto* main_page = GetMainPage(current_page_.view());
+  if (main_page) {
+    UpdateMainPage(main_page);
+    return;
+  }
+
+  auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
+  CHECK(site_permissions_page);
+  if (menu_model_->CanShowSitePermissionsPage(
+          site_permissions_page->extension_id())) {
+    // Update site permissions page if it is open and the extension can have
+    // one.
+    UpdateSitePermissionsPage(site_permissions_page, web_contents);
+  } else {
+    // Otherwise navigate back to the main page.
+    OpenMainPage();
+  }
 }
 
 void ExtensionsMenuDelegateDesktop::OnHostAccessRequestAdded(
@@ -251,8 +271,33 @@ void ExtensionsMenuDelegateDesktop::OnActionRemoved(
   main_page->RemoveMenuEntry(index);
 }
 
-void ExtensionsMenuDelegateDesktop::OnActionUpdated() {
-  UpdatePage(GetActiveWebContents());
+void ExtensionsMenuDelegateDesktop::OnActionUpdated(
+    const ToolbarActionsModel::ActionId& action_id) {
+  CHECK(current_page_);
+
+  // Update the main page if it is open since an action update can affect the
+  // whole main page, and not just its menu entry.
+  auto* main_page = GetMainPage(current_page_.view());
+  if (main_page) {
+    UpdateMainPage(main_page);
+    return;
+  }
+
+  // Do nothing when the site permissions page is opened for a different
+  // extension.
+  auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
+  CHECK(site_permissions_page);
+  if (site_permissions_page->extension_id() != action_id) {
+    return;
+  }
+
+  // Update the site permissions page if it can be shown for the updated action,
+  // otherwise go back to the main page.
+  if (menu_model_->CanShowSitePermissionsPage(action_id)) {
+    UpdateSitePermissionsPage(site_permissions_page, GetActiveWebContents());
+  } else {
+    OpenMainPage();
+  }
 }
 
 void ExtensionsMenuDelegateDesktop::OnActionsInitialized() {
@@ -385,33 +430,6 @@ void ExtensionsMenuDelegateDesktop::OnShowRequestsTogglePressed(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
   menu_model_->ShowHostAccessRequestsInToolbar(extension_id, is_on);
-}
-
-void ExtensionsMenuDelegateDesktop::UpdatePage(
-    content::WebContents* web_contents) {
-  DCHECK(current_page_);
-
-  if (!web_contents) {
-    return;
-  }
-
-  auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
-  if (site_permissions_page) {
-    // Update site permissions page if the extension can have one.
-    if (menu_model_->CanShowSitePermissionsPage(
-            site_permissions_page->extension_id())) {
-      UpdateSitePermissionsPage(site_permissions_page, web_contents);
-      return;
-    }
-
-    // Otherwise navigate back to the main page.
-    OpenMainPage();
-    return;
-  }
-
-  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  DCHECK(main_page);
-  UpdateMainPage(main_page);
 }
 
 void ExtensionsMenuDelegateDesktop::UpdateMainPage(
