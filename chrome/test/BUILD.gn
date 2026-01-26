@@ -2108,6 +2108,7 @@ if (is_android) {
 
     deps += [
       "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/android/tab_model:browser_tests",
       "//chrome/browser/ui/android/tab_model:test_support",
     ]
 
