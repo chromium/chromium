@@ -255,14 +255,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             // Temporary variable usage to avoid unused variable warning.
             Log.i(TAG, "mTabStateStoreIsAuthoritative: " + mTabStateStoreIsAuthoritative);
 
-            assert mProfileProviderSupplier.get() != null;
-            ProfileProvider profileProvider = mProfileProviderSupplier.get();
-            Profile profile = profileProvider.getOriginalProfile();
-            assert profile != null;
-
             mShadowTabPersistentStore =
                     buildShadowStore(
-                            profile,
                             mRegularShadowTabCreator,
                             mIncognitoShadowTabCreator,
                             mTabModelSelector,
@@ -271,6 +265,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             mWindowTag,
                             mCipherFactory,
                             TABBED_TAG);
+            if (mShadowTabPersistentStore != null) mShadowTabPersistentStore.onNativeLibraryReady();
         }
     }
 

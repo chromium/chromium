@@ -88,7 +88,6 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         // 3. Headless will not delete or modify the incognito tabs.
         mShadowTabPersistentStore =
                 buildShadowStore(
-                        profile,
                         regularShadowTabCreator,
                         incognitoShadowTabCreator,
                         mTabModelSelector,
@@ -118,6 +117,8 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         policy.setTabContentManager(tabContentManager);
 
         mTabPersistentStore.onNativeLibraryReady();
+        if (mShadowTabPersistentStore != null) mShadowTabPersistentStore.onNativeLibraryReady();
+
         mTabPersistentStore.loadState(/* ignoreIncognitoFiles= */ false);
         mTabPersistentStore.restoreTabs(/* setActiveTab= */ true);
 

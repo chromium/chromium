@@ -580,13 +580,13 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
         mShadowTabPersistentStore =
                 buildNonOtrShadowStore(
-                        mProfile,
                         mShadowTabCreator,
                         mTabModelSelector,
                         mTabPersistencePolicy,
                         mTabPersistentStore,
                         ARCHIVED_WINDOW_TAG,
                         ARCHIVED_TAG);
+        if (mShadowTabPersistentStore != null) mShadowTabPersistentStore.onNativeLibraryReady();
     }
 
     @Override
