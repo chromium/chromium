@@ -221,8 +221,9 @@ String KURL::ElidedString() const {
   if (string.length() <= 1024) {
     return string;
   }
-
-  return StrCat({string.Left(511), "...", string.Right(510)});
+  StringView left_part(string, 0, 511);
+  StringView right_part(string, string.length() - 510, 510);
+  return StrCat({left_part, "...", right_part});
 }
 
 KURL::KURL() : is_valid_(false), protocol_is_in_http_family_(false) {}
