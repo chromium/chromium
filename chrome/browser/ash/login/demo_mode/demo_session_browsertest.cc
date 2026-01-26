@@ -34,8 +34,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -297,13 +295,10 @@ class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
 // this feature enablement into a subclass if non-SWA tests are needed
 class DemoSessionLoginTest : public LoginManagerTest,
                              public LocalStateMixin::Delegate,
-                             public BrowserCollectionObserver,
                              public user_manager::UserManager::Observer,
                              public chromeos::FakePowerManagerClient::Observer {
  public:
-  DemoSessionLoginTest() {
-    login_manager_mixin_.SetShouldLaunchBrowser(true);
-  }
+  DemoSessionLoginTest() { login_manager_mixin_.SetShouldLaunchBrowser(true); }
 
   ~DemoSessionLoginTest() override = default;
 
@@ -318,9 +313,6 @@ class DemoSessionLoginTest : public LoginManagerTest,
   }
 
   void SetUpOnMainThread() override {
-    browser_collection_observation_.Observe(
-        GlobalBrowserCollection::GetInstance());
-
     std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
         device_state_mixin_.RequestDevicePolicyUpdate();
 
@@ -353,28 +345,10 @@ class DemoSessionLoginTest : public LoginManagerTest,
     LoginManagerTest::SetUpOnMainThread();
   }
 
-  void TearDownOnMainThread() override {
-    LoginManagerTest::TearDownOnMainThread();
-    browser_collection_observation_.Reset();
-  }
-
-  void WaitForBrowserAdded() {
-    base::RunLoop run_loop;
-    on_browser_added_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
  protected:
   // LocalStateMixin::Delegate
   void SetUpLocalState() override {
     SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
-  }
-
-  // BrowserCollectionObserver:
-  void OnBrowserCreated(BrowserWindowInterface* browser) override {
-    if (on_browser_added_callback_) {
-      std::move(on_browser_added_callback_).Run();
-    }
   }
 
   void OpenBrowserAndInstallSystemAppForActiveProfile() {
@@ -401,8 +375,6 @@ class DemoSessionLoginTest : public LoginManagerTest,
   static constexpr double kInitialBrightness = 20.0;
   base::FilePath growth_campaigns_mounted_path_;
   base::FilePath demo_resource_mounted_path_;
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
   base::WeakPtrFactory<DemoSessionLoginTest> weak_ptr_factory_{this};
 };
 
@@ -753,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginIdleHandlerTest,
   // Wait for idle handler get created at
   // `DemoSession::OnDemoAppComponentLoaded`:
   EXPECT_TRUE(base::test::RunUntil(
-    []() { return DemoSession::Get()->GetIdleHandlerForTest(); }));
+      []() { return DemoSession::Get()->GetIdleHandlerForTest(); }));
 
   //  Verify the photo was copied to download folder.
   auto* profile = ProfileManager::GetActiveUserProfile();
