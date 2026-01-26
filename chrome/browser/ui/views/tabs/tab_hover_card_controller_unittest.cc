@@ -30,7 +30,8 @@ class TabHoverCardControllerTest : public TestWithBrowserView {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(TabHoverCardControllerTest, ShowWrongTabDoesntCrash) {
+// TODO(crbug.com/478172976): Fails UBSan because of misaliged pointers
+TEST_F(TabHoverCardControllerTest, DISABLED_ShowWrongTabDoesntCrash) {
   auto controller = std::make_unique<TabHoverCardController>(
       browser_view()->horizontal_tab_strip_for_testing());
   // Create some completely invalid pointer values (these should never be
