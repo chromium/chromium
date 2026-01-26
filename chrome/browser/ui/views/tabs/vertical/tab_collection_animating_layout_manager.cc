@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "ui/base/class_property.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/view.h"
@@ -260,7 +261,7 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
     const gfx::Rect& previous_bounds_in_screen) {
   auto* child_view = host_view()->AddChildView(std::move(view_to_reparent));
   if (!delegate_ || !delegate_->IsViewDragging(*child_view)) {
-    child_view->SetPaintToLayer();
+    child_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     child_view->SetProperty(kPreviousCollectionBounds,
                             previous_bounds_in_screen);
   }
