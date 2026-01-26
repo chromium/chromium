@@ -124,12 +124,14 @@ GURL BundleVersionsStorage::AddBundle(
 void BundleVersionsStorage::RemoveBundle(
     const web_package::SignedWebBundleId& web_bundle_id,
     const IwaVersion& version) {
-  CHECK(bundle_versions_per_id_.contains(web_bundle_id));
-  auto& bundle_versions = bundle_versions_per_id_[web_bundle_id];
-  CHECK(bundle_versions.contains(version));
-  bundle_versions.erase(version);
+  auto bundle_versions_per_id_it = bundle_versions_per_id_.find(web_bundle_id);
+  CHECK(bundle_versions_per_id_it != bundle_versions_per_id_.end());
+  auto& bundle_versions = bundle_versions_per_id_it->second;
+  auto bundle_versions_it = bundle_versions.find(version);
+  CHECK(bundle_versions_it != bundle_versions.end());
+  bundle_versions.erase(bundle_versions_it);
   if (bundle_versions.empty()) {
-    bundle_versions_per_id_.erase(web_bundle_id);
+    bundle_versions_per_id_.erase(bundle_versions_per_id_it);
   }
 }
 
