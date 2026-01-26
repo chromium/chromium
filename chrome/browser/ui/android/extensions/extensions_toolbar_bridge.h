@@ -65,6 +65,8 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
   std::vector<ToolbarActionsModel::ActionId> GetPinnedActionIds(JNIEnv* env);
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
                          ToolbarActionViewModel::InvocationSource source);
+  void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,
+                        int target_index);
 
  private:
   void RegisterIconObserverForAction(

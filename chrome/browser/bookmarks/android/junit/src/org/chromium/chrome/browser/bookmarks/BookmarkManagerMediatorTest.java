@@ -790,7 +790,7 @@ public class BookmarkManagerMediatorTest {
 
         mModelList.move(1, 2);
         verify(mDragTouchHandler).addDragListener(mDragListenerArgumentCaptor.capture());
-        mDragListenerArgumentCaptor.getValue().onSwap();
+        mDragListenerArgumentCaptor.getValue().onSwap(2);
         verify(mBookmarkModel)
                 .reorderBookmarks(mFolderId1, new long[] {mFolderId3.getId(), mFolderId2.getId()});
 

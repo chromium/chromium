@@ -197,6 +197,12 @@ void ExtensionsToolbarBridge::OnActionIconUpdated(
                                                java_object_, action_id);
 }
 
+void ExtensionsToolbarBridge::MovePinnedAction(
+    const ToolbarActionsModel::ActionId& action_id,
+    int target_index) {
+  toolbar_view_model_->MovePinnedAction(action_id, target_index);
+}
+
 static int64_t JNI_ExtensionsToolbarBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_object,

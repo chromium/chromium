@@ -45,7 +45,7 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         default void onDragStateChange(boolean drag) {}
 
         /** Called when a drag ends and it ends up in a swap. */
-        default void onSwap() {}
+        default void onSwap(int targetIndex) {}
     }
 
     /** Controls draggability state on a per item basis. */
@@ -74,7 +74,7 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
     private boolean mDefaultLongPressDragEnabled = true;
 
     // The view that is being dragged now; null means no view is being dragged now;
-    private RecyclerView.@Nullable ViewHolder mBeingDragged;
+    private RecyclerView.@Nullable ViewHolder mDraggedViewHolder;
 
     /** Styles to use while dragging */
     private final int mDraggedBackgroundColor;
@@ -155,6 +155,11 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         return isDraggable.apply(draggabilityProvider, propertyModel);
     }
 
+    /** Gets the value for {@link mDraggedViewHolder}. */
+    public RecyclerView.@Nullable ViewHolder getDraggedViewHolder() {
+        return mDraggedViewHolder;
+    }
+
     /**
      * Sets whether the default system long-press drag gesture is enabled. If false, dragging can
      * only be initiated manually via {@link ItemTouchHelper#startDrag}.
@@ -183,9 +188,9 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         }
     }
 
-    private void onSwap() {
+    private void onSwap(int targetIndex) {
         for (DragListener dragListener : mListeners) {
-            dragListener.onSwap();
+            dragListener.onSwap(targetIndex);
         }
     }
 
@@ -194,7 +199,7 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         int dragFlags = 0;
         // This method may be called multiple times until the view is dropped
         // ensure there is only one bookmark being dragged.
-        if ((mBeingDragged == viewHolder || mBeingDragged == null)
+        if ((mDraggedViewHolder == viewHolder || mDraggedViewHolder == null)
                 && isActivelyDraggable(viewHolder)) {
             dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
         }
@@ -218,8 +223,8 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         super.onSelectedChanged(viewHolder, actionState);
         assumeNonNull(viewHolder);
         // similar to getMovementFlags, this method may be called multiple times
-        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mBeingDragged != viewHolder) {
-            mBeingDragged = viewHolder;
+        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mDraggedViewHolder != viewHolder) {
+            mDraggedViewHolder = viewHolder;
             mStartPosition = viewHolder.getAdapterPosition();
             onDragStateChange(true);
             updateVisualState(true, viewHolder);
@@ -266,13 +271,13 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         }
         // No need to commit change if recycler view is not attached to window, such as dragging
         // is terminated by destroying activity.
-        if (viewHolder.getAdapterPosition() != mStartPosition
-                && recyclerView.isAttachedToWindow()) {
+        int currentPosition = viewHolder.getAdapterPosition();
+        if (currentPosition != mStartPosition && recyclerView.isAttachedToWindow()) {
             // Commit the position change for the dragged item when it's dropped and
             // RecyclerView has finished layout computing.
-            recyclerView.post(() -> onSwap());
+            recyclerView.post(() -> onSwap(currentPosition));
         }
-        mBeingDragged = null;
+        mDraggedViewHolder = null;
         onDragStateChange(false);
         updateVisualState(false, viewHolder);
     }

@@ -304,6 +304,17 @@ class ExtensionActionListMediator implements Destroyable {
         mCurrentPopupActionId = null;
     }
 
+    /**
+     * Communicates the move to the native side via the bridge to commit.
+     *
+     * @param targetIndex The new index of the moved action item.
+     */
+    public void onActionsSwapped(int targetIndex) {
+        mExtensionsToolbarBridge.movePinnedAction(
+                mModels.get(targetIndex).model.get(ExtensionActionButtonProperties.ID),
+                targetIndex);
+    }
+
     private class ToolbarObserver implements ExtensionsToolbarBridge.Observer {
         @Override
         public void onActionsInitialized() {

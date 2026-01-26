@@ -93,6 +93,11 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 .executeUserAction(mNativeExtensionsToolbarBridge, actionId, source);
     }
 
+    public void movePinnedAction(String actionId, int targetIndex) {
+        ExtensionsToolbarBridgeJni.get()
+                .movePinnedAction(mNativeExtensionsToolbarBridge, actionId, targetIndex);
+    }
+
     @CalledByNative
     public void triggerPopup(@JniType("std::string") String actionId, long nativeHostPtr) {
         // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
@@ -195,5 +200,10 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 long nativeExtensionsToolbarBridge,
                 @JniType("std::string") String actionId,
                 @JniType("ToolbarActionViewModel::InvocationSource") int source);
+
+        void movePinnedAction(
+                long nativeExtensionsToolbarBridge,
+                @JniType("std::string") String actionId,
+                int targetIndex);
     }
 }

@@ -273,7 +273,7 @@ class BookmarkManagerMediator
     private final DragListener mDragListener =
             new DragListener() {
                 @Override
-                public void onSwap() {
+                public void onSwap(int targetIndex) {
                     mIsBookmarkModelReorderingInProgress = true;
                     try {
                         setOrder();

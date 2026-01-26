@@ -20,10 +20,13 @@ import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonPrope
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DragListener;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DraggabilityProvider;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Root component for the extension action buttons. Exposes public API for external consumers to
@@ -34,7 +37,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
     private final ExtensionActionListRecyclerView mContainer;
     private final ModelList mModels;
     private final ExtensionActionListMediator mMediator;
-    private final SimpleRecyclerViewAdapter mAdapter;
+    private final DragReorderableRecyclerViewAdapter mAdapter;
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     public ExtensionActionListCoordinator(
@@ -57,8 +60,15 @@ public class ExtensionActionListCoordinator implements Destroyable {
                         container,
                         extensionsToolbarBridge);
 
-        mAdapter = new SimpleRecyclerViewAdapter(mModels);
-        mAdapter.registerType(
+        ExtensionsToolbarDragTouchHandler dragTouchHandler =
+                new ExtensionsToolbarDragTouchHandler(context, mModels);
+        mAdapter = new DragReorderableRecyclerViewAdapter(context, mModels, dragTouchHandler);
+
+        // TODO(crbug.com/459079173): Set this to `false` and implement custom drag behavior so that
+        // user doesn't have to longpress to start drag.
+        dragTouchHandler.setDefaultLongPressDragEnabled(true);
+
+        mAdapter.registerDraggableType(
                 ListItemType.EXTENSION_ACTION,
                 parent ->
                         (ListMenuButton)
@@ -67,7 +77,32 @@ public class ExtensionActionListCoordinator implements Destroyable {
                                                 R.layout.extension_action_button,
                                                 parent,
                                                 /* attachToRoot= */ false),
-                ExtensionActionButtonViewBinder::bind);
+                ExtensionActionButtonViewBinder::bind,
+                (viewHolder, itemTouchHelper) -> {
+                    viewHolder.itemView.setOnLongClickListener(
+                            (view) -> {
+                                itemTouchHelper.startDrag(viewHolder);
+                                return true;
+                            });
+                },
+                new DraggabilityProvider() {
+                    @Override
+                    public boolean isActivelyDraggable(PropertyModel propertyModel) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isPassivelyDraggable(PropertyModel propertyModel) {
+                        return true;
+                    }
+                });
+        dragTouchHandler.addDragListener(
+                new DragListener() {
+                    @Override
+                    public void onSwap(int targetIndex) {
+                        mMediator.onActionsSwapped(targetIndex);
+                    }
+                });
 
         mContainer.setLayoutManager(
                 new LinearLayoutManager(
@@ -78,10 +113,13 @@ public class ExtensionActionListCoordinator implements Destroyable {
                     }
                 });
         mContainer.setAdapter(mAdapter);
+
+        mAdapter.enableDrag();
     }
 
     @Override
     public void destroy() {
+        mAdapter.destroy();
         mMediator.destroy();
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
