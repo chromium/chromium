@@ -436,7 +436,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink_stroke_modeler
   # and whatever else without interference from each other.
-  'ink_stroke_modeler_revision': '165abce4b2f4914ea55db6b4aa03c062ee52f26e',
+  'ink_stroke_modeler_revision': '7ba488a2ac87b3479114af85711a9958fc4cb9bf',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ios_webkit
   # and whatever else without interference from each other.
