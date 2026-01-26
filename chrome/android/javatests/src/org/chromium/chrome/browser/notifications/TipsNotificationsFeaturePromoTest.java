@@ -14,6 +14,7 @@ import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinati
 import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -29,12 +30,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -48,14 +48,17 @@ import org.chromium.chrome.test.transit.notifications.TipsPromoMainPageBottomShe
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.RenderTestRule.Component;
 import org.chromium.ui.widget.ButtonCompat;
 
+import java.io.IOException;
 import java.util.List;
 
-/** Integration tests for the tips notifications feature promo. */
+// TODO(crbug.com/478907175): Remove casting when value returns the view type.
+/** Integration and render tests for the tips notifications feature promo. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS})
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
@@ -63,6 +66,13 @@ public class TipsNotificationsFeaturePromoTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(Component.UI_NOTIFICATIONS)
+                    .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -87,13 +97,13 @@ public class TipsNotificationsFeaturePromoTest {
         TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
         TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
-                mainPageBottomSheet.clickDetailsButton(null);
+                mainPageBottomSheet.clickDetailsButton();
 
         // Check that clicking the back button on the detail page brings back the main page.
         mainPageBottomSheet = detailsPageBottomSheet.clickBackButton();
 
         // Check that the system backpress brings back the main page from the details page.
-        detailsPageBottomSheet = mainPageBottomSheet.clickDetailsButton(null);
+        detailsPageBottomSheet = mainPageBottomSheet.clickDetailsButton();
         mainPageBottomSheet = detailsPageBottomSheet.pressBack();
 
         // Check that backpress dismisses the main page bottom sheet.
@@ -133,7 +143,8 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
-    public void testESBBottomSheetDetailPageAccept() {
+    @Feature({"RenderTest"})
+    public void testESBBottomSheetDetailPageAccept() throws IOException {
         @TipsNotificationsFeatureType
         int featureType = TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING;
         List<Integer> detailPageStepsRes =
@@ -146,6 +157,11 @@ public class TipsNotificationsFeaturePromoTest {
         var tripResult = showFeatureTipBottomSheet(featureType);
         TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) mainPageBottomSheet.bottomSheetElement.value()),
+                "esb_feature_promo_main_page");
+
         TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
                 mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
         assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
@@ -153,6 +169,11 @@ public class TipsNotificationsFeaturePromoTest {
         assertThat(((ButtonCompat) detailsPageBottomSheet.settingsButtonElement.value()).getText())
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_positive_button_text));
+
+        mRenderTestRule.render(
+                ((View) detailsPageBottomSheet.bottomSheetElement.value()),
+                "esb_feature_promo_detail_page");
+
         SettingsStation<SafeBrowsingSettingsFragment> safeBrowsingSettings =
                 detailsPageBottomSheet.clickESBSettingsButton();
         assertFinalDestination(safeBrowsingSettings);
@@ -195,7 +216,8 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
-    public void testQuickDeleteBottomSheetDetailPageAccept() {
+    @Feature({"RenderTest"})
+    public void testQuickDeleteBottomSheetDetailPageAccept() throws IOException {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.QUICK_DELETE;
         List<Integer> detailPageStepsRes =
                 List.of(
@@ -207,6 +229,11 @@ public class TipsNotificationsFeaturePromoTest {
         var tripResult = showFeatureTipBottomSheet(featureType);
         TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) mainPageBottomSheet.bottomSheetElement.value()),
+                "quick_delete_feature_promo_main_page");
+
         // TODO(crbug.com/467389502): Remove swipe up when layout bug is fixed to show fully.
         onView(ViewMatchers.withId(android.R.id.content)).perform(swipeUp());
         TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
@@ -218,6 +245,11 @@ public class TipsNotificationsFeaturePromoTest {
         assertThat(((ButtonCompat) detailsPageBottomSheet.settingsButtonElement.value()).getText())
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_positive_button_text));
+
+        mRenderTestRule.render(
+                ((View) detailsPageBottomSheet.bottomSheetElement.value()),
+                "quick_delete_feature_promo_detail_page");
+
         QuickDeleteDialogFacility quickDeleteDialog =
                 detailsPageBottomSheet.clickQuickDeleteButton();
         assertFinalDestination(openedNtp, quickDeleteDialog);
@@ -255,7 +287,8 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
-    public void testGoogleLensBottomSheetDetailPageAccept() {
+    @Feature({"RenderTest"})
+    public void testGoogleLensBottomSheetDetailPageAccept() throws IOException {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.GOOGLE_LENS;
         List<Integer> detailPageStepsRes =
                 List.of(
@@ -267,6 +300,11 @@ public class TipsNotificationsFeaturePromoTest {
         var tripResult = showFeatureTipBottomSheet(featureType);
         TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) mainPageBottomSheet.bottomSheetElement.value()),
+                "google_lens_feature_promo_main_page");
+
         TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
                 mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
         assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
@@ -275,6 +313,11 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(
                                 R.string.tips_promo_bottom_sheet_positive_button_text_lens));
+
+        mRenderTestRule.render(
+                ((View) detailsPageBottomSheet.bottomSheetElement.value()),
+                "google_lens_feature_promo_detail_page");
+
         detailsPageBottomSheet.clickGoogleLensButton(mLensController);
 
         // Return to a PageStation for InitialStateRule to reset properly, which clicking the bottom
@@ -316,7 +359,8 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
-    public void testBottomOmniboxBottomSheetDetailPageAccept() {
+    @Feature({"RenderTest"})
+    public void testBottomOmniboxBottomSheetDetailPageAccept() throws IOException {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.BOTTOM_OMNIBOX;
         List<Integer> detailPageStepsRes =
                 List.of(
@@ -328,6 +372,11 @@ public class TipsNotificationsFeaturePromoTest {
         var tripResult = showFeatureTipBottomSheet(featureType);
         TipsPromoMainPageBottomSheetFacility mainPageBottomSheet = tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) mainPageBottomSheet.bottomSheetElement.value()),
+                "bottom_omnibox_feature_promo_main_page");
+
         TipsPromoDetailsPageBottomSheetFacility detailsPageBottomSheet =
                 mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
         assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
@@ -337,6 +386,11 @@ public class TipsNotificationsFeaturePromoTest {
         assertThat(((ButtonCompat) detailsPageBottomSheet.settingsButtonElement.value()).getText())
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_positive_button_text));
+
+        mRenderTestRule.render(
+                ((View) detailsPageBottomSheet.bottomSheetElement.value()),
+                "bottom_omnibox_feature_promo_detail_page");
+
         SettingsStation<AddressBarSettingsFragment> bottomOmniboxSettings =
                 detailsPageBottomSheet.clickBottomOmniboxSettingsButton();
         assertFinalDestination(bottomOmniboxSettings);

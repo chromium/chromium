@@ -64,6 +64,14 @@ public class TipsPromoMainPageBottomSheetFacility<
                 .enterFacility(new TipsPromoDetailsPageBottomSheetFacility<>(detailPageStepsRes));
     }
 
+    /**
+     * Press the details button to navigate to the details page without expectations for the detail
+     * steps.
+     */
+    public TipsPromoDetailsPageBottomSheetFacility clickDetailsButton() {
+        return clickDetailsButton(null);
+    }
+
     /** Press the settings button to navigate to the safe browsing settings page. */
     public SettingsStation<SafeBrowsingSettingsFragment> clickESBSettingsButton() {
         return settingsButtonElement
