@@ -2343,6 +2343,29 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       TimestampHiddenOnChangeToMediaStream) {
+  LoadTabAndEnterPictureInPicture(
+      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+  content::WebContents* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_EQ(true, EvalJs(web_contents, "changeVideoSrcToMediaStream();"));
+
+  // The implicit MediaPosition specifies infinite duration (the canvas player
+  // has no timeline), so the timestamp should be hidden.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->timestamp_for_testing()}, false));
+
+  // If the page establishes an explicit MediaPosition, the timestamp should
+  // become visible.
+  ASSERT_TRUE(ExecJs(
+      web_contents,
+      "navigator.mediaSession.setPositionState({duration: 12, position: 0});"));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->timestamp_for_testing()}, true));
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        TitleVisibility) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),

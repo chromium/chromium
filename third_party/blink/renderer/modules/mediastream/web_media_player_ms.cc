@@ -610,6 +610,10 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
                                     media::MediaContentType::kOneShot);
 
+  client_->DidPlayerMediaPositionStateChange(
+      /*playback_rate=*/1.0, base::Seconds(Duration()),
+      base::Seconds(CurrentTime()), /*end_of_media=*/false);
+
   return WebMediaPlayer::LoadTiming::kImmediate;
 }
 
