@@ -156,6 +156,7 @@ chromium/try/mac-libfuzzer-asan-rel
 chromium/try/mac-official
 chromium/try/mac-rel
 chromium/try/mac-x64-compile-dbg
+chromium/try/mac12-arm64-rel
 chromium/try/mac12-tests
 chromium/try/mac13-arm64-rel
 chromium/try/mac13-tests
