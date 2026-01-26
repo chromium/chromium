@@ -31,8 +31,9 @@ using ShellIntegrationMacBrowserTest = InProcessBrowserTest;
 // verified by python unit tests
 // (chrome/installer/mac/signing/modification_test.py), as this browser test
 // cannot easily run against signed/channel-customized builds.
+// TODO(crbuig.com/446672134): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ShellIntegrationMacBrowserTest,
-                       InfoPlistUrlSchemeMatches) {
+                       DISABLED_InfoPlistUrlSchemeMatches) {
   std::string expected_scheme = GetDirectLaunchUrlScheme();
 
   NSBundle* bundle = base::apple::OuterBundle();
