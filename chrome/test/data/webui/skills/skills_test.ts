@@ -6,7 +6,7 @@ import 'chrome://skills/app.js';
 
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import type {SkillsAppElement} from 'chrome://skills/app.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('SkillsAppPage', function() {
@@ -80,5 +80,21 @@ suite('SkillsAppPage', function() {
         app.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
     assertEquals(
         'Your skills', selectedTab!.querySelector('.name')!.textContent.trim());
+  });
+
+  test('BrowseSkillsButtonNavigatesToDiscoverSkills', async function() {
+    navigateTo('/user-skills');
+    await microtasksFinished();
+    const button = app.$.userSkillsPage.shadowRoot.querySelector<HTMLElement>(
+        '#browse-skills-button');
+    assertTrue(!!button);
+    button.click();
+    await microtasksFinished();
+    assertEquals('/discover-skills', CrRouter.getInstance().getPath());
+    const selectedTab =
+        app.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+    assertEquals(
+        'Discover skills',
+        selectedTab!.querySelector('.name')!.textContent.trim());
   });
 });

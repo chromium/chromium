@@ -57,3 +57,7 @@
   line-height: 24px;
   color: var(--google-grey-700-rgb);
 }
+
+cr-button {
+  margin-top: 12px;
+}

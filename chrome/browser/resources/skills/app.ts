@@ -18,6 +18,7 @@ import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/c
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import type {UserSkillsPageElement} from './user_skills_page.js';
 
 interface MenuItem {
   icon: string;
@@ -34,6 +35,7 @@ export interface SkillsAppElement {
   $: {
     menu: CrMenuSelector,
     toolbar: CrToolbarElement,
+    userSkillsPage: UserSkillsPageElement,
   };
 }
 
@@ -86,6 +88,10 @@ export class SkillsAppElement extends CrLitElement {
     this.eventTracker_.add(
         router, 'cr-router-path-changed',
         (e: Event) => this.onPathChanged_((e as CustomEvent<string>).detail));
+    this.eventTracker_.add(this, 'navigate-to', (e: Event) => {
+      const detail = (e as CustomEvent<{path: string}>).detail;
+      this.onPathChanged_(detail.path);
+    });
   }
 
   override disconnectedCallback() {

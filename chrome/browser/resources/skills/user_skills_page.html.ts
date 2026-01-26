@@ -25,6 +25,11 @@ export function getHtml(this: UserSkillsPageElement) {
   <p id="notice-message">
     Skills help simplify and automate repetitive tasks
   </p>
+  <cr-button id="browse-skills-button" class="floating-button"
+      @click="${this.onExploreButtonClick_}">
+    <cr-icon icon="skills:explore" slot="prefix-icon"></cr-icon>
+    Browse skills
+  </cr-button>
 </div>`;
   // clang-format on
 }
