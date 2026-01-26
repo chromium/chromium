@@ -9,66 +9,50 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.view.View;
 
-import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.content.WebContentsFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Abstract class for Tab Bottom Sheet toolbars. */
 @NullMarked
 public class TabBottomSheetWebUi {
     private final Context mContext;
-    private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
+    private final ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
-    private @Nullable ThinWebView mThinWebView;
 
-    TabBottomSheetWebUi(Context context, Profile profile, WindowAndroid windowAndroid) {
+    TabBottomSheetWebUi(Context context, WindowAndroid windowAndroid) {
         mContext = context;
-        mProfile = profile;
         mWindowAndroid = windowAndroid;
-    }
-
-    void initialize() {
-        mWebContents = WebContentsFactory.createWebContents(mProfile, true, true);
-        ContentView contentView = ContentView.createContentView(mContext, mWebContents);
-        mWebContents.setDelegates(
-                VersionInfo.getProductVersion(),
-                ViewAndroidDelegate.createBasicDelegate(contentView),
-                contentView,
-                mWindowAndroid,
-                WebContents.createDefaultInternalsHolder());
         mThinWebView =
                 ThinWebViewFactory.create(
                         mContext,
                         new ThinWebViewConstraints(),
                         assumeNonNull(mWindowAndroid.getIntentRequestTracker()));
-        mThinWebView.attachWebContents(mWebContents, contentView, null);
+    }
+
+    void setWebContents(WebContents webContents) {
+        mWebContents = webContents;
+        ContentView contentView = ContentView.createContentView(mContext, mWebContents);
+        assumeNonNull(mThinWebView).attachWebContents(mWebContents, contentView, null);
+    }
+
+    @Nullable WebContents getWebContents() {
+        return mWebContents;
     }
 
     void destroy() {
-        if (mWebContents != null) {
-            mWebContents.destroy();
-            mWebContents = null;
-        }
-        if (mThinWebView != null) {
-            mThinWebView.destroy();
-            mThinWebView = null;
-        }
+        // We expect the life cycle of webContents to be managed by native.
+        mWebContents = null;
+        mThinWebView.destroy();
     }
 
-    @Nullable View getWebUiView() {
-        if (mThinWebView == null) {
-            return null;
-        }
+    View getWebUiView() {
         return mThinWebView.getView();
     }
 }

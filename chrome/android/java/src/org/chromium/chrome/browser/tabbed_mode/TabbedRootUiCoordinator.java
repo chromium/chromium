@@ -1626,16 +1626,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             mProfileSupplier,
                             mWindowAndroid,
-                            getBottomSheetController());
-            mTabBottomSheetSimpleManager =
-                    new TabBottomSheetSimpleManager(
-                            mActivity,
-                            mTabModelSelectorSupplier.get().getModel(/* incognito= */ false),
-                            mProfileSupplier,
-                            mWindowAndroid,
                             mActivityLifecycleDispatcher,
                             mSnackbarManagerSupplier.get(),
-                            mTabBottomSheetManager);
+                            getBottomSheetController());
+
+            mTabBottomSheetSimpleManager =
+                    new TabBottomSheetSimpleManager(
+                            mTabModelSelectorSupplier.get().getModel(/* incognito= */ false));
         }
     }
 

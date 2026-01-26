@@ -4,31 +4,24 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet;
 
-import android.app.Activity;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import org.chromium.base.CallbackUtils;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.content_public.browser.WebContents;
 
-/**
- * Helper class to manage the conditions for showing the simple tab bottom sheet and triggering it.
- */
+/** Interface for native methods to interact with the tab bottom sheet. */
 @NullMarked
 public class TabBottomSheetSimpleManager implements Destroyable {
     private final TabModel mTabModel;
-    private @Nullable TabBottomSheetFusebox mFusebox;
-    private final TabBottomSheetManager mTabBottomSheetManager;
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
@@ -37,51 +30,28 @@ public class TabBottomSheetSimpleManager implements Destroyable {
                 }
             };
 
-    private @Nullable TabBottomSheetToolbar mToolbar;
-
     /**
      * Constructor.
      *
-     * @param activity The Android activity.
      * @param tabModel The regular {@link TabModel} for the current session.
-     * @param tabBottomSheetManager The {@link TabBottomSheetManager} for showing the promo.
      */
-    public TabBottomSheetSimpleManager(
-            Activity activity,
-            TabModel tabModel,
-            MonotonicObservableSupplier<Profile> profileSupplier,
-            WindowAndroid windowAndroid,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            SnackbarManager snackbarManager,
-            TabBottomSheetManager tabBottomSheetManager) {
+    public TabBottomSheetSimpleManager(TabModel tabModel) {
         mTabModel = tabModel;
-        mTabBottomSheetManager = tabBottomSheetManager;
 
+        // Temp for testing.
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             mTabModel.addObserver(mTabModelObserver);
-            mToolbar = new TabBottomSheetSimpleToolbar(activity);
-            if (TabBottomSheetUtils.shouldShowFusebox()) {
-                mFusebox =
-                        new TabBottomSheetFusebox(
-                                activity,
-                                profileSupplier,
-                                windowAndroid,
-                                lifecycleDispatcher,
-                                CallbackUtils.emptyCallback(),
-                                snackbarManager);
-            }
         }
     }
 
     /** Attempts to show the Simple Tab BottomSheet. */
-    public void tryToShowBottomSheet() {
-        if (mTabBottomSheetManager != null && mToolbar != null) {
-            mTabBottomSheetManager.tryToShowBottomSheet(
-                    mToolbar.getToolbarView(),
-                    mFusebox != null ? mFusebox.getFuseboxView() : null,
-                    this::onBottomSheetShowAttempted);
-        } else {
-            destroy();
+    // Temp for testing.
+    public static void tryToShowBottomSheet(Tab tab) {
+        TabBottomSheetManager tabBottomSheetManager =
+                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
+        if (tabBottomSheetManager != null) {
+            tabBottomSheetManager.tryToShowBottomSheet(
+                    /* shouldShowToolbar= */ true, /* shouldShowFusebox */ true);
         }
     }
 
@@ -90,34 +60,72 @@ public class TabBottomSheetSimpleManager implements Destroyable {
         if (mTabModel != null) {
             mTabModel.removeObserver(mTabModelObserver);
         }
-        if (mFusebox != null) {
-            mFusebox.destroy();
-            mFusebox = null;
-        }
     }
 
-    void onBottomSheetShowAttempted(boolean didSucceed) {
-        if (!didSucceed) {
-            return;
-        }
-        if (mFusebox != null) {
-            mFusebox.onBottomSheetShown();
-        }
-    }
-
-    /* Observer logic. */
+    /* Temp for testing */
     private void onDidSelectTab(Tab tab) {
         if (checkConditionsForTab(tab)) {
-            tryToShowBottomSheet();
+            tryToShowBottomSheet(tab);
         }
     }
 
-    // Conditions required for the tab to show the bottomsheet.
+    // Temp for testing
     private boolean checkConditionsForTab(Tab tab) {
         return tab != null
                 && !tab.isIncognitoBranded()
                 && UrlUtilities.isNtpUrl(tab.getUrl())
                 && !tab.isClosing()
                 && !tab.isHidden();
+    }
+
+    // Native calls for glic.
+    @CalledByNative
+    public static void show(Tab tab) {
+        TabBottomSheetManager tabBottomSheetManager =
+                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
+        if (tabBottomSheetManager != null) {
+            tabBottomSheetManager.tryToShowBottomSheet(
+                    /* shouldShowToolbar= */ true, /* shouldShowFusebox */ true);
+        }
+    }
+
+    @CalledByNative
+    public static void close(Tab tab) {
+        TabBottomSheetManager tabBottomSheetManager =
+                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
+        if (tabBottomSheetManager != null) {
+            tabBottomSheetManager.tryToCloseBottomSheet();
+        }
+    }
+
+    @CalledByNative
+    public static boolean isOpen(Tab tab) {
+        TabBottomSheetManager tabBottomSheetManager =
+                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
+        if (tabBottomSheetManager != null) {
+            return tabBottomSheetManager.isSheetShowing();
+        } else {
+            return false;
+        }
+    }
+
+    @CalledByNative
+    public static void setWebContents(Tab tab, WebContents webContents) {
+        TabBottomSheetManager tabBottomSheetManager =
+                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
+        if (tabBottomSheetManager != null) {
+            tabBottomSheetManager.setWebContents(webContents);
+        }
+    }
+
+    @CalledByNative
+    public static @Nullable WebContents getWebContents(Tab tab) {
+        TabBottomSheetManager tabBottomSheetManager =
+                TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
+        if (tabBottomSheetManager != null) {
+            return tabBottomSheetManager.getWebContents();
+        } else {
+            return null;
+        }
     }
 }

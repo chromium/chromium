@@ -47,7 +47,7 @@ public class TabBottomSheetCoordinator {
 
     /** Shows the bottom sheet. */
     public void showBottomSheet(
-            View toolbarView,
+            @Nullable View toolbarView,
             View webUiView,
             @Nullable View fuseboxView,
             Callback<Boolean> onBottomSheetShowAttempted) {
@@ -62,7 +62,9 @@ public class TabBottomSheetCoordinator {
         ViewGroup fuseboxContainer = mContentView.findViewById(R.id.fusebox_container);
 
         // Add the views to the bottom sheet.
-        toolbarContainer.addView(toolbarView);
+        if (toolbarView != null) {
+            toolbarContainer.addView(toolbarView);
+        }
         webUiContainer.addView(webUiView);
         if (fuseboxView != null) {
             fuseboxContainer.addView(fuseboxView);
@@ -86,6 +88,15 @@ public class TabBottomSheetCoordinator {
             onBottomSheetShowAttempted.onResult(false);
             cleanupSheetResources();
         }
+    }
+
+    public void closeBottomSheet() {
+        assert mIsSheetCurrentlyManagedByController : "Sheet not managed by controller";
+        mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
+    }
+
+    public boolean isSheetShowing() {
+        return mIsSheetCurrentlyManagedByController;
     }
 
     // Cleanup methods.
