@@ -46,16 +46,14 @@
 
 namespace content {
 
-class PrefetchContainerTestBase : public RenderViewHostTestHarness,
+class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
                                   public WithPrefetchRearchParam {
  public:
   explicit PrefetchContainerTestBase(PrefetchRearchParam param)
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        WithPrefetchRearchParam(param) {}
+      : WithPrefetchRearchParam(param) {}
 
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    PrefetchingMetricsTestBase::SetUp();
     InitRearchFeatures();
 
     browser_context()
@@ -66,7 +64,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness,
 
   void TearDown() override {
     scoped_feature_list_.Reset();
-    RenderViewHostTestHarness::TearDown();
+    PrefetchingMetricsTestBase::TearDown();
   }
 
   network::mojom::CookieManager* cookie_manager() {
@@ -673,8 +671,6 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
 }
 
 TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
 
@@ -711,7 +707,7 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
   // PrefetchProxy_PrefetchedResource UKM event.
   prefetch_container.reset();
 
-  auto ukm_entries = ukm_recorder.GetEntries(
+  auto ukm_entries = test_ukm_recorder()->GetEntries(
       ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName,
       {
           ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName,
@@ -790,12 +786,11 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
 }
 
 TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
   prefetch_container.reset();
 
-  auto ukm_entries = ukm_recorder.GetEntries(
+  auto ukm_entries = test_ukm_recorder()->GetEntries(
       ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName,
       {
           ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName,
