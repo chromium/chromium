@@ -525,6 +525,7 @@ DataTypeSet EncryptableUserTypes() {
   encryptable_user_types.Remove(PRIORITY_PREFERENCES);
   encryptable_user_types.Remove(OS_PRIORITY_PREFERENCES);
   encryptable_user_types.Remove(SUPERVISED_USER_SETTINGS);
+  encryptable_user_types.Remove(SKILL);
   // Password sharing invitations have different encryption implementation.
   encryptable_user_types.Remove(INCOMING_PASSWORD_SHARING_INVITATION);
   encryptable_user_types.Remove(OUTGOING_PASSWORD_SHARING_INVITATION);
