@@ -17,6 +17,7 @@
 #import "components/os_crypt/async/browser/test_utils.h"
 #import "components/supervised_user/core/browser/device_parental_controls.h"
 #import "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
+#import "components/update_client/net/network_chromium.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
@@ -273,7 +274,7 @@ activity_reporter::ActivityReporter*
 TestingApplicationContext::GetActivityReporter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!activity_reporter_) {
-    activity_reporter_ = activity_reporter::CreateActivityReporter();
+    activity_reporter_ = activity_reporter::CreateActivityReporterDisabled();
   }
   return activity_reporter_.get();
 }

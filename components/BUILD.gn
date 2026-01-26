@@ -183,6 +183,7 @@ test("components_unittests") {
 
   deps = [
     "//base",
+    "//components/activity_reporter:unit_tests",
     "//components/affiliations/core/browser:unit_tests",
     "//components/aggregation_service:unit_tests",
     "//components/apdu:unit_tests",
