@@ -181,7 +181,7 @@ class WebAppProvider : public KeyedService {
   IsolatedWebAppDevInstallManager& isolated_web_app_dev_install_manager();
   // Keeps Isolated Web Apps up to date by regularly checking for updates,
   // downloading them, and applying them.
-  IsolatedWebAppUpdateManager& iwa_update_manager();
+  IsolatedWebAppUpdateManager& isolated_web_app_update_manager();
   // Manages the lifetime of IsolatedWebApps, e.g., removes apps that are added
   // to the blocklist
   IsolatedWebAppUserInstalledManager& isolated_web_app_user_installed_manager();
@@ -191,10 +191,10 @@ class WebAppProvider : public KeyedService {
   WebAppRunOnOsLoginManager& run_on_os_login_manager();
 
   // Isolated Web App bundle cache manager.
-  IwaBundleCacheManager& iwa_cache_manager();
+  IwaBundleCacheManager& isolated_web_app_cache_manager();
 #endif
 
-  IsolatedWebAppPolicyManager& iwa_policy_manager();
+  IsolatedWebAppPolicyManager& isolated_web_app_policy_manager();
 
   WebAppUiManager& ui_manager();
 
@@ -303,13 +303,13 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
   std::unique_ptr<IsolatedWebAppDevInstallManager>
       isolated_web_app_dev_install_manager_;
-  std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager_;
+  std::unique_ptr<IsolatedWebAppUpdateManager> isolated_web_app_update_manager_;
   std::unique_ptr<IsolatedWebAppUserInstalledManager>
       isolated_web_app_user_installed_manager_;
   std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<IwaBundleCacheManager> isolated_web_app_cache_manager_;
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;
-  std::unique_ptr<IwaBundleCacheManager> iwa_cache_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppUiManager> ui_manager_;
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;

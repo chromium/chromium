@@ -123,7 +123,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
  public:
   explicit IwaManifestInstallUpdateHandler(WebAppProvider& provider)
       : provider_(provider) {
-    observation_.Observe(&provider.iwa_update_manager());
+    observation_.Observe(&provider.isolated_web_app_update_manager());
   }
 
   void UpdateManifestInstalledIsolatedWebApp(
@@ -159,7 +159,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
     // For now, we do not enable setting pinned_version field via iwa internals.
     // By not setting `pinned_version` argument, discovery task defaults to
     // searching for the latest available version on current update channel.
-    provider_->iwa_update_manager().DiscoverUpdatesForApp(
+    provider_->isolated_web_app_update_manager().DiscoverUpdatesForApp(
         *IsolatedWebAppUrlInfo::Create(iwa->scope()),
         *isolation_data.update_manifest_url(),
         /*update_channel=*/
@@ -447,7 +447,7 @@ void IwaInternalsHandler::SearchForIsolatedWebAppUpdates(
   }
 
   size_t queued_task_count =
-      provider->iwa_update_manager().DiscoverUpdatesNow();
+      provider->isolated_web_app_update_manager().DiscoverUpdatesNow();
   std::move(callback).Run(base::StringPrintf(
       "queued %zu update discovery tasks", queued_task_count));
 }
@@ -562,7 +562,7 @@ void IwaInternalsHandler::ApplyDevModeUpdate(
     return;
   }
 
-  auto& manager = provider->iwa_update_manager();
+  auto& manager = provider->isolated_web_app_update_manager();
   manager.DiscoverApplyAndPrioritizeLocalDevModeUpdate(
       location.has_value() ? *location
                            : IwaSourceDevModeWithFileOp(source.WithFileOp(

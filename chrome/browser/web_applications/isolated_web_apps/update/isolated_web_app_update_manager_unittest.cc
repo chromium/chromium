@@ -195,7 +195,7 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
 
  protected:
   IsolatedWebAppUpdateManager& update_manager() {
-    return provider().iwa_update_manager();
+    return provider().isolated_web_app_update_manager();
   }
 
   FakeWebAppUiManager& fake_ui_manager() {
@@ -383,10 +383,12 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
   update_bundle->FakeInstallPageState(profile());
 
   base::test::TestFuture<base::expected<IwaVersion, std::string>> future;
-  provider().iwa_update_manager().DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-      IwaSourceBundleDevModeWithFileOp(update_bundle->path(),
-                                       IwaSourceBundleDevFileOp::kCopy),
-      url_info, future.GetCallback());
+  provider()
+      .isolated_web_app_update_manager()
+      .DiscoverApplyAndPrioritizeLocalDevModeUpdate(
+          IwaSourceBundleDevModeWithFileOp(update_bundle->path(),
+                                           IwaSourceBundleDevFileOp::kCopy),
+          url_info, future.GetCallback());
 
   EXPECT_THAT(future.Get(),
               ValueIs(Eq(*IwaVersion::Create(kUpdateIwaVersion))));
@@ -432,7 +434,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
   }
 
   base::Value debug_log() {
-    return provider().iwa_update_manager().AsDebugValue();
+    return provider().isolated_web_app_update_manager().AsDebugValue();
   }
 
   base::ListValue UpdateDiscoveryLog() {

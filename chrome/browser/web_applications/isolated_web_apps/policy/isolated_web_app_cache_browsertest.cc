@@ -490,7 +490,9 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   }
 
   void DiscoverUpdatesNow() {
-    EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+    EXPECT_THAT(
+        provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+        Eq(1ul));
   }
 
   void DestroyCacheDir() { cache_root_dir_override_.reset(); }
@@ -510,7 +512,8 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
                                              const std::string& result) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      base::Value debug_value = provider().iwa_cache_manager().GetDebugValue();
+      base::Value debug_value =
+          provider().isolated_web_app_cache_manager().GetDebugValue();
       base::ListValue* operations_results =
           debug_value.GetDict().FindList(kOperationsResults);
       return operations_results &&
@@ -795,7 +798,8 @@ IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, GetDebugValue) {
   AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
   WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 
-  base::Value debug_value = provider().iwa_cache_manager().GetDebugValue();
+  base::Value debug_value =
+      provider().isolated_web_app_cache_manager().GetDebugValue();
   EXPECT_EQ(debug_value.GetDict().FindBool(kBundleCacheIsEnabled), true);
   EXPECT_NE(debug_value.GetDict().Find(kOperationsResults), nullptr);
 }

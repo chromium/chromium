@@ -232,9 +232,9 @@ WebAppProvider::isolated_web_app_dev_install_manager() {
   return *isolated_web_app_dev_install_manager_;
 }
 
-IsolatedWebAppUpdateManager& WebAppProvider::iwa_update_manager() {
+IsolatedWebAppUpdateManager& WebAppProvider::isolated_web_app_update_manager() {
   CheckIsConnected();
-  return *iwa_update_manager_;
+  return *isolated_web_app_update_manager_;
 }
 
 IsolatedWebAppUserInstalledManager&
@@ -249,13 +249,13 @@ WebAppRunOnOsLoginManager& WebAppProvider::run_on_os_login_manager() {
   return *web_app_run_on_os_login_manager_;
 }
 
-IwaBundleCacheManager& WebAppProvider::iwa_cache_manager() {
+IwaBundleCacheManager& WebAppProvider::isolated_web_app_cache_manager() {
   CheckIsConnected();
-  return *iwa_cache_manager_;
+  return *isolated_web_app_cache_manager_;
 }
 #endif
 
-IsolatedWebAppPolicyManager& WebAppProvider::iwa_policy_manager() {
+IsolatedWebAppPolicyManager& WebAppProvider::isolated_web_app_policy_manager() {
   CheckIsConnected();
   return *isolated_web_app_policy_manager_;
 }
@@ -351,7 +351,7 @@ void WebAppProvider::Shutdown() {
   ui_manager_->Shutdown();
   externally_managed_app_manager_->Shutdown();
   manifest_update_manager_->Shutdown();
-  iwa_update_manager_->Shutdown();
+  isolated_web_app_update_manager_->Shutdown();
   install_manager_->Shutdown();
   web_app_policy_manager_->Shutdown();
   icon_manager_->Shutdown();
@@ -392,7 +392,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
   isolated_web_app_dev_install_manager_ =
       std::make_unique<IsolatedWebAppDevInstallManager>(*profile);
-  iwa_update_manager_ = std::make_unique<IsolatedWebAppUpdateManager>(*profile);
+  isolated_web_app_update_manager_ =
+      std::make_unique<IsolatedWebAppUpdateManager>(*profile);
   isolated_web_app_policy_manager_ =
       std::make_unique<IsolatedWebAppPolicyManager>(profile);
   isolated_web_app_user_installed_manager_ =
@@ -429,7 +430,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_run_on_os_login_manager_ =
       std::make_unique<WebAppRunOnOsLoginManager>(profile);
-  iwa_cache_manager_ = std::make_unique<IwaBundleCacheManager>(*profile);
+  isolated_web_app_cache_manager_ =
+      std::make_unique<IwaBundleCacheManager>(*profile);
 #endif
 
   web_contents_manager_ = std::make_unique<WebContentsManager>();
@@ -456,12 +458,12 @@ void WebAppProvider::ConnectSubsystems() {
   command_manager_->SetProvider(pass_key, *this);
   command_scheduler_->SetProvider(pass_key, *this);
   isolated_web_app_dev_install_manager_->SetProvider(pass_key, *this);
-  iwa_update_manager_->SetProvider(pass_key, *this);
+  isolated_web_app_update_manager_->SetProvider(pass_key, *this);
   isolated_web_app_policy_manager_->SetProvider(pass_key, *this);
   isolated_web_app_user_installed_manager_->SetProvider(pass_key, *this);
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_run_on_os_login_manager_->SetProvider(pass_key, *this);
-  iwa_cache_manager_->SetProvider(pass_key, *this);
+  isolated_web_app_cache_manager_->SetProvider(pass_key, *this);
 #endif
   icon_manager_->SetProvider(pass_key, *this);
   translation_manager_->SetProvider(pass_key, *this);
@@ -507,7 +509,7 @@ void WebAppProvider::OnSyncBridgeReady() {
   web_app_policy_manager_->Start(
       std::move(on_web_app_policy_manager_done_callback));
   isolated_web_app_dev_install_manager_->Start();
-  iwa_update_manager_->Start();
+  isolated_web_app_update_manager_->Start();
   isolated_web_app_policy_manager_->Start(concurrent.CreateClosure());
   isolated_web_app_user_installed_manager_->Start();
   manifest_update_manager_->Start();
@@ -518,7 +520,7 @@ void WebAppProvider::OnSyncBridgeReady() {
   profile_deletion_manager_->Start();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  iwa_cache_manager_->Start();
+  isolated_web_app_cache_manager_->Start();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Note: This does not wait for the call from the ChromeOS

@@ -223,7 +223,8 @@ void IwaBundleCacheManager::OnCleanupManagedGuestSessionOrphanedIwas(
 
 void IwaBundleCacheManager::TriggerIwaUpdateCheck(const WebApp& iwa) {
   CHECK(iwa.isolation_data());
-  provider_->iwa_update_manager().MaybeDiscoverUpdatesForApp(iwa.app_id());
+  provider_->isolated_web_app_update_manager().MaybeDiscoverUpdatesForApp(
+      iwa.app_id());
 }
 
 void IwaBundleCacheManager::RemoveObsoleteIwaVersionsCache(const WebApp& iwa) {

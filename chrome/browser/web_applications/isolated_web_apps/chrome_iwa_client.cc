@@ -153,9 +153,10 @@ void GetIwaSourceForRequestImpl(
           .app_id();
   auto* provider = WebAppProvider::GetForWebApps(profile.get());
 
-  if (provider->iwa_update_manager().IsUpdateBeingApplied(iwa_id)) {
+  if (provider->isolated_web_app_update_manager().IsUpdateBeingApplied(
+          iwa_id)) {
     // TODO(crbug.com/432676258): How likely is this case?
-    provider->iwa_update_manager().PrioritizeUpdateAndWait(
+    provider->isolated_web_app_update_manager().PrioritizeUpdateAndWait(
         iwa_id,
         // We ignore whether or not the update was applied successfully - if
         // it succeeds, we send the request to the updated version. If it

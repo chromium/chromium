@@ -154,7 +154,7 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
         {{StableChannel()}});
 
     base::TimeTicks update_time = provider()
-                                      .iwa_update_manager()
+                                      .isolated_web_app_update_manager()
                                       .GetNextUpdateDiscoveryTimeForTesting()
                                       .value();
     task_environment().FastForwardBy(update_time - base::TimeTicks::Now());

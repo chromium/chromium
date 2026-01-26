@@ -261,16 +261,16 @@ base::DictValue BuildAppShimRegistryLocalStorageJson() {
 
 base::Value BuildIsolatedWebAppUpdaterManagerJson(
     web_app::WebAppProvider& provider) {
-  return base::Value(
-      base::DictValue().Set(kIsolatedWebAppUpdateManager,
-                            provider.iwa_update_manager().AsDebugValue()));
+  return base::Value(base::DictValue().Set(
+      kIsolatedWebAppUpdateManager,
+      provider.isolated_web_app_update_manager().AsDebugValue()));
 }
 
 base::Value BuildIsolatedWebAppPolicyManagerJson(
     web_app::WebAppProvider& provider) {
-  return base::Value(
-      base::DictValue().Set(kIsolatedWebAppPolicyManager,
-                            provider.iwa_policy_manager().GetDebugValue()));
+  return base::Value(base::DictValue().Set(
+      kIsolatedWebAppPolicyManager,
+      provider.isolated_web_app_policy_manager().GetDebugValue()));
 }
 
 base::Value BuildIwaKeyDistributionInfoProviderJson(
@@ -284,7 +284,8 @@ base::Value BuildIwaKeyDistributionInfoProviderJson(
 #if BUILDFLAG(IS_CHROMEOS)
 base::Value BuildIwaCacheManagerJson(web_app::WebAppProvider& provider) {
   return base::Value(base::DictValue().Set(
-      kIwaBundleCacheManager, provider.iwa_cache_manager().GetDebugValue()));
+      kIwaBundleCacheManager,
+      provider.isolated_web_app_cache_manager().GetDebugValue()));
 }
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 
