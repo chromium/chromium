@@ -47,12 +47,6 @@ let messageToSend: object|null = null;
 let lastFocusedElement: Element|null = null;
 
 /**
- * The original implementation of HTMLFormElement.submit that will be called by
- * the hook.
- */
-let formSubmitOriginalFunction: Function|null = null;
-
-/**
  * The number of messages scheduled to be sent to browser.
  */
 let numberOfPendingMessages: number = 0;
@@ -314,31 +308,6 @@ function attachListeners(): void {
    * `formActivity` handler, but need to be attached under the same conditions.
    */
   window.addEventListener('message', processInboundMessage);
-
-  // Per specification, SubmitEvent is not triggered when calling
-  // form.submit(). Hook the method to call the handler in that case.
-  if (formSubmitOriginalFunction === null) {
-    formSubmitOriginalFunction = HTMLFormElement.prototype.submit;
-    HTMLFormElement.prototype.submit = function() {
-      reportDetectedFormSubmission(
-          /*isProgrammatic=*/ true, /*handler=*/ NATIVE_MESSAGE_HANDLER);
-      if (!autofillFormFeaturesApi.getFunction('isAutofillIsolatedContentWorldEnabled')()) {
-        // If an error happens in formSubmitted, this will cancel the form
-        // submission which can lead to usability issue for the user.
-        // Put the formSubmitted in a try catch to ensure the original function
-        // is always called.
-
-        try {
-          formSubmitted(
-              this,
-              /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
-              /* programmaticSubmission= */ true);
-        } catch (e) {
-        }
-      }
-      formSubmitOriginalFunction!.call(this);
-    };
-  }
 }
 
 // Attach the listeners immediately to try to catch early actions of the user.
