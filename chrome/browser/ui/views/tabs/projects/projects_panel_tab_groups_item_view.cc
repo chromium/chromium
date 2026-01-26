@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -34,7 +34,10 @@ constexpr auto kTabGroupsItemMargins = gfx::Insets::VH(4, 4);
 
 ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
     const tab_groups::SavedTabGroup& group)
-    : tab_group_color_id_(group.color()) {
+    : tab_group_color_id_(group.color()),
+      tab_group_vector_icon_(group.local_group_id().has_value()
+                                 ? kTabGroupIcon
+                                 : kTabGroupClosedIcon) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
@@ -58,7 +61,7 @@ void ProjectsPanelTabGroupsItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   ui::ColorId color_id = GetTabGroupContextMenuColorId(tab_group_color_id_);
   tab_group_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kTabGroupIcon, GetColorProvider()->GetColor(color_id),
+      *tab_group_vector_icon_, GetColorProvider()->GetColor(color_id),
       kTabGroupIconSize));
 }
 

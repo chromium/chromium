@@ -210,6 +210,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "tab_close_inactive.icon",
     "tab_close_normal.icon",
     "tab_group.icon",
+    "tab_group_closed.icon",
     "tab_group_sharing.icon",
     "tab_groups_sync.icon",
     "tab_usb_connected.icon",

@@ -55,6 +55,7 @@ source_set("unit_tests") {
     ":projects",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//chrome/app/vector_icons",
     "//components/contextual_tasks/public",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
