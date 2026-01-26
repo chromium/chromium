@@ -7,38 +7,12 @@ import 'chrome://skills/skills_dialog_app.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
-import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
-import type {PageHandlerInterface} from 'chrome://skills/skills.mojom-webui.js';
 import type {SkillsDialogAppElement} from 'chrome://skills/skills_dialog_app.js';
 import {SkillsDialogBrowserProxyImpl} from 'chrome://skills/skills_dialog_browser_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-// TODO(marissashen): Move to own file.
-class TestPageHandler extends TestBrowserProxy implements PageHandlerInterface {
-  constructor() {
-    super([
-      'submitSkill',
-      'closeDialog',
-    ]);
-  }
-
-  submitSkill(skill: Skill) {
-    this.methodCalled('submitSkill', skill);
-  }
-
-  closeDialog() {
-    this.methodCalled('closeDialog');
-  }
-}
-
-class TestSkillsDialogBrowserProxy {
-  handler: TestPageHandler;
-
-  constructor() {
-    this.handler = new TestPageHandler();
-  }
-}
+import type {TestPageHandler} from './test_skills_dialog_browser_proxy.js';
+import {TestSkillsDialogBrowserProxy} from './test_skills_dialog_browser_proxy.js';
 
 suite('SkillsDialogAppPage', function() {
   let skillsDialogApp: SkillsDialogAppElement;
