@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/main/ui_bundled/incognito_blocker_scene_agent.h"
 
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -26,7 +28,7 @@ class IncognitoBlockerSceneAgentTest : public PlatformTest {
   }
 
   ~IncognitoBlockerSceneAgentTest() override {
-    scene_state_.incognitoContentVisible = NO;
+    scene_state_.incognitoState.incognitoContentVisible = NO;
   }
 
  protected:
@@ -51,7 +53,7 @@ TEST_F(IncognitoBlockerSceneAgentTest, ShowIncognitoBlocker) {
 
   // Prepare to go to background with some incognito content.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  scene_state_.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
   EXPECT_EQ(window.subviews.count, 0u);
 
   // Upon background with incognito content, the blocker should be added.
@@ -71,7 +73,7 @@ TEST_F(IncognitoBlockerSceneAgentTest, ShowIncognitoBlocker) {
   EXPECT_EQ(window.subviews.count, 0u);
 
   // No blocker should be added when no incognito content is shown.
-  scene_state_.incognitoContentVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
   scene_state_.activationLevel = SceneActivationLevelBackground;
   EXPECT_EQ(window.subviews.count, 0u);
 
@@ -104,7 +106,7 @@ TEST_F(IncognitoBlockerSceneAgentTest, ShowBlockerOnTopWindow) {
 
   // Prepare to go to background with some incognito content.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  scene_state_.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
   EXPECT_EQ(topWindow.subviews.count, 0u);
   EXPECT_EQ(bottomWindow.subviews.count, 0u);
 

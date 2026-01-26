@@ -10,6 +10,8 @@
 #import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -82,7 +84,7 @@ bool ShouldShowStartSurfaceForSceneState(SceneState* scene_state) {
   }
   if (scene_state.presentingModalOverlay ||
       scene_state.startupHadExternalIntent || scene_state.pendingUserActivity ||
-      scene_state.incognitoContentVisible) {
+      scene_state.incognitoState.incognitoContentVisible) {
     return false;
   }
   return true;

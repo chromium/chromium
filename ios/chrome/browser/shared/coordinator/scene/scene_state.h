@@ -16,6 +16,7 @@
 
 @class AppState;
 @protocol BrowserProviderInterface;
+@class IncognitoState;
 @class ProfileState;
 @class SceneController;
 @class SceneState;
@@ -71,10 +72,6 @@ class SigninInProgress;
 // WindowActivityRestoredOrigin.
 @property(nonatomic, assign) WindowActivityOrigin currentOrigin;
 
-// YES if some incognito content is visible, for example an incognito tab or the
-// incognito tab switcher.
-@property(nonatomic) BOOL incognitoContentVisible;
-
 // Window for the associated scene, if any.
 @property(nonatomic, readonly) UIWindow* window;
 
@@ -123,6 +120,10 @@ class SigninInProgress;
 // YES if sign-in is in progress which covers the authentication flow and the
 // sign-in prompt UI.
 @property(nonatomic, readonly) BOOL signinInProgress;
+
+// Object containing the state of whether some incognito content is visible, for
+// example an incognito tab or the incognito tab switcher.
+@property(nonatomic, strong, readonly) IncognitoState* incognitoState;
 
 // Object containing the state of the tab grid.
 @property(nonatomic, strong, readonly) TabGridState* tabGridState;

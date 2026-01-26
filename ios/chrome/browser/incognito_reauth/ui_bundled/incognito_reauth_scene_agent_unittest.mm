@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -492,7 +494,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestScreenTransitionOnForeground) {
                    /*soft_lock_pref_enabled=*/false);
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
-  scene_state_.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
 
   OCMExpect([scene_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
@@ -510,7 +512,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestScreenTransitionOnUIEnabled) {
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
   scene_state_.UIEnabled = NO;
-  scene_state_.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   OCMExpect([scene_handler_mock_
@@ -531,7 +533,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnNoLock) {
 
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
-  scene_state_.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -549,7 +551,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnUIDisabled) {
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
   scene_state_.UIEnabled = NO;
-  scene_state_.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -567,7 +569,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnNormalInterface) {
 
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
-  scene_state_.incognitoContentVisible = NO;
+  scene_state_.incognitoState.incognitoContentVisible = NO;
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -584,7 +586,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionOnTabGrid) {
 
   // Satisfy transition conditions.
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(YES);
-  scene_state_.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -600,7 +602,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestScreenTransitionToTab) {
   OCMExpect([scene_controller_mock_ isTabGridVisible]).andReturn(NO);
   OCMExpect([scene_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
-  scene_state_.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
 
   // Go to foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -625,7 +627,7 @@ TEST_F(IncognitoReauthSceneAgentTest, TestNoScreenTransitionToTab) {
   OCMStub([scene_controller_mock_ isTabGridVisible]).andReturn(YES);
   OCMReject([scene_handler_mock_
       displayTabGridInMode:TabGridOpeningMode::kIncognito]);
-  scene_state_.incognitoContentVisible = YES;
+  scene_state_.incognitoState.incognitoContentVisible = YES;
 
   // Go to foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;

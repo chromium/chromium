@@ -9,6 +9,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -36,11 +37,11 @@ class IncognitoUsageAppStateAgentTest : public PlatformTest {
     app_state_ = [[FakeAppState alloc] initWithStartupInformation:nil];
 
     scene_state1_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state1_.incognitoContentVisible = NO;
+    scene_state1_.incognitoState.incognitoContentVisible = NO;
     scene_state1_.activationLevel = SceneActivationLevelBackground;
 
     scene_state2_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state2_.incognitoContentVisible = NO;
+    scene_state2_.incognitoState.incognitoContentVisible = NO;
     scene_state2_.activationLevel = SceneActivationLevelBackground;
 
     app_state_.connectedScenes = @[ scene_state1_, scene_state2_ ];
@@ -48,8 +49,8 @@ class IncognitoUsageAppStateAgentTest : public PlatformTest {
   }
 
   void TearDown() override {
-    scene_state1_.incognitoContentVisible = NO;
-    scene_state2_.incognitoContentVisible = NO;
+    scene_state1_.incognitoState.incognitoContentVisible = NO;
+    scene_state2_.incognitoState.incognitoContentVisible = NO;
     PlatformTest::TearDown();
   }
 
@@ -71,20 +72,20 @@ TEST_F(IncognitoUsageAppStateAgentTest, NormalIncognitoSession) {
   AdvanceClock(base::Minutes(1));
 
   // Display one incognito for 1 minute.
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
   AdvanceClock(base::Minutes(1));
 
   // Back to normal.
-  scene_state1_.incognitoContentVisible = NO;
+  scene_state1_.incognitoState.incognitoContentVisible = NO;
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   // Metrics is still not logged.
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
   // Back to incognito.
   AdvanceClock(base::Minutes(1));
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   // Metrics from previous time should be logged.
   histogram_tester_.ExpectUniqueTimeSample("IOS.Incognito.TimeSpent",
@@ -102,20 +103,20 @@ TEST_F(IncognitoUsageAppStateAgentTest, ShortIncognitoSession) {
   AdvanceClock(base::Minutes(1));
 
   // Display one incognito for 5 seconds.
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
   AdvanceClock(base::Seconds(5));
 
   // Back to normal.
-  scene_state1_.incognitoContentVisible = NO;
+  scene_state1_.incognitoState.incognitoContentVisible = NO;
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   // Metrics is still not logged.
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
   // Back to incognito.
   AdvanceClock(base::Minutes(1));
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   // Metrics from previous time should not be logged.
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
@@ -132,32 +133,32 @@ TEST_F(IncognitoUsageAppStateAgentTest, ShortNormalSession) {
   AdvanceClock(base::Minutes(1));
 
   // Display one incognito for 1 minute.
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
   AdvanceClock(base::Minutes(1));
 
   // Back to normal.
-  scene_state1_.incognitoContentVisible = NO;
+  scene_state1_.incognitoState.incognitoContentVisible = NO;
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   // Metrics is still not logged.
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
   // Back to incognito.
   AdvanceClock(base::Seconds(5));
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   // Nothing logged yet.
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
   AdvanceClock(base::Seconds(55));
-  scene_state1_.incognitoContentVisible = NO;
+  scene_state1_.incognitoState.incognitoContentVisible = NO;
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   // Metrics is still not logged.
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
   AdvanceClock(base::Minutes(1));
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   // Metrics from previous time should be logged.
   histogram_tester_.ExpectUniqueTimeSample("IOS.Incognito.TimeSpent",
@@ -174,7 +175,7 @@ TEST_F(IncognitoUsageAppStateAgentTest, ApplicationTerminatesInIncognito) {
 
   AdvanceClock(base::Minutes(1));
   // Display one incognito for 1 minute.
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
   AdvanceClock(base::Minutes(1));
@@ -195,11 +196,11 @@ TEST_F(IncognitoUsageAppStateAgentTest, ApplicationTerminatesInNormal) {
 
   AdvanceClock(base::Minutes(1));
   // Display one incognito for 1 minute.
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
   AdvanceClock(base::Minutes(1));
-  scene_state1_.incognitoContentVisible = NO;
+  scene_state1_.incognitoState.incognitoContentVisible = NO;
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
@@ -215,7 +216,7 @@ TEST_F(IncognitoUsageAppStateAgentTest, IncognitoContentVisibleValue) {
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
 
   // Incognito in background.
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
 
   // Foreground incognito.
@@ -231,7 +232,7 @@ TEST_F(IncognitoUsageAppStateAgentTest, IncognitoContentVisibleValue) {
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
 
   // Switch to normal.
-  scene_state1_.incognitoContentVisible = NO;
+  scene_state1_.incognitoState.incognitoContentVisible = NO;
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
 
   // Foreground second scene.
@@ -239,11 +240,11 @@ TEST_F(IncognitoUsageAppStateAgentTest, IncognitoContentVisibleValue) {
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
 
   // Incognito in foreground.
-  scene_state1_.incognitoContentVisible = YES;
+  scene_state1_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
 
   // Second Incognito in foreground.
-  scene_state2_.incognitoContentVisible = YES;
+  scene_state2_.incognitoState.incognitoContentVisible = YES;
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
 
   // Background 1.
@@ -251,6 +252,6 @@ TEST_F(IncognitoUsageAppStateAgentTest, IncognitoContentVisibleValue) {
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
 
   // Switch the other to normal.
-  scene_state2_.incognitoContentVisible = NO;
+  scene_state2_.incognitoState.incognitoContentVisible = NO;
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
 }

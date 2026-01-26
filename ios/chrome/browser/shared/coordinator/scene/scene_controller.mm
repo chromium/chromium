@@ -129,6 +129,7 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller+OTRProfileDeletion.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -1241,7 +1242,7 @@ void OnListFamilyMembersResponse(
   // no incognito tabs open (e.g. the tab switcher was active and user closed
   // the last tab), then instead show the regular UI.
 
-  if (self.sceneState.incognitoContentVisible &&
+  if (self.sceneState.incognitoState.incognitoContentVisible &&
       !self.incognitoInterface.browser->GetWebStateList()->empty()) {
     return ApplicationMode::INCOGNITO;
   }
@@ -2127,7 +2128,8 @@ using UserFeedbackDataCallback =
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
-  self.sceneState.incognitoContentVisible = incognitoContentVisible;
+  self.sceneState.incognitoState.incognitoContentVisible =
+      incognitoContentVisible;
 }
 
 - (void)startVoiceSearch {

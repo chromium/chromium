@@ -4,11 +4,14 @@
 
 source_set("state") {
   sources = [
+    "incognito_state.h",
+    "incognito_state.mm",
     "tab_grid_state.h",
     "tab_grid_state.mm",
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
   ]
 }

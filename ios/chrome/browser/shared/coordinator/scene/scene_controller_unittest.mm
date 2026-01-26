@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -222,11 +223,11 @@ class SceneControllerTest : public PlatformTest {
 // when the relevant scene commands is called.
 TEST_F(SceneControllerTest, UpdatesIncognitoContentVisibility) {
   [scene_controller_ setIncognitoContentVisible:NO];
-  EXPECT_FALSE(scene_state_.incognitoContentVisible);
+  EXPECT_FALSE(scene_state_.incognitoState.incognitoContentVisible);
   [scene_controller_ setIncognitoContentVisible:YES];
-  EXPECT_TRUE(scene_state_.incognitoContentVisible);
+  EXPECT_TRUE(scene_state_.incognitoState.incognitoContentVisible);
   [scene_controller_ setIncognitoContentVisible:NO];
-  EXPECT_FALSE(scene_state_.incognitoContentVisible);
+  EXPECT_FALSE(scene_state_.incognitoState.incognitoContentVisible);
 }
 
 // Tests that scene controller correctly handles an external intent to

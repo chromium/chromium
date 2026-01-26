@@ -15,30 +15,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
-
-namespace {
-
-// Preference key used to store which profile is current.
-NSString* const kIncognitoCurrentKey = @"IncognitoActive";
-
-// Represents the state of the -[SceneState incognitoContentVisible] property
-// that is saved in session storage (and thus unknown during app startup and
-// will be lazily loaded when needed).
-enum class ContentVisibility {
-  kUnknown,
-  kRegular,
-  kIncognito,
-};
-
-// Returns the value of ContentVisibility depending on `isIncognito` boolean.
-ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
-  return isIncognito ? ContentVisibility::kIncognito
-                     : ContentVisibility::kRegular;
-}
-
-}  // namespace
 
 @interface SceneStateObserverList : CRBProtocolObservers <SceneStateObserver>
 @end
@@ -65,9 +44,6 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   // Agents attached to this scene.
   NSMutableArray<id<SceneAgent>>* _agents;
 
-  // The state of the -incognitoContentVisible property.
-  ContentVisibility _contentVisibility;
-
   // The current value of -activationLevel.
   SceneActivationLevel _activationLevel;
 
@@ -91,9 +67,9 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
     _appState = appState;
     _observers = [SceneStateObserverList
         observersWithProtocol:@protocol(SceneStateObserver)];
-    _contentVisibility = ContentVisibility::kUnknown;
     _agents = [[NSMutableArray alloc] init];
     _tabGridState = [[TabGridState alloc] init];
+    _incognitoState = [[IncognitoState alloc] initWithSceneState:self];
 
     // AppState might be nil in tests.
     if (appState) {
@@ -205,43 +181,6 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   if (_URLContextsToOpen) {
     [_observers sceneState:self hasPendingURLs:_URLContextsToOpen];
   }
-}
-
-- (BOOL)incognitoContentVisible {
-  switch (_contentVisibility) {
-    case ContentVisibility::kRegular:
-      return NO;
-
-    case ContentVisibility::kIncognito:
-      return YES;
-
-    case ContentVisibility::kUnknown: {
-      const BOOL incognitoContentVisible = [base::apple::ObjCCast<NSNumber>(
-          [self sessionObjectForKey:kIncognitoCurrentKey]) boolValue];
-
-      _contentVisibility =
-          ContentVisibilityForIncognito(incognitoContentVisible);
-      DCHECK_NE(_contentVisibility, ContentVisibility::kUnknown);
-
-      return incognitoContentVisible;
-    }
-  }
-}
-
-- (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
-  const ContentVisibility contentVisibility =
-      ContentVisibilityForIncognito(incognitoContentVisible);
-  if (contentVisibility == _contentVisibility) {
-    return;
-  }
-
-  _contentVisibility = contentVisibility;
-
-  [self setSessionObject:@(incognitoContentVisible)
-                  forKey:kIncognitoCurrentKey];
-
-  [_observers sceneState:self
-      isDisplayingIncognitoContent:incognitoContentVisible];
 }
 
 - (void)setPendingUserActivity:(NSUserActivity*)pendingUserActivity {

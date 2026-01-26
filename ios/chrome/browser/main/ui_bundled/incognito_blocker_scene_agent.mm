@@ -7,6 +7,8 @@
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 
 @interface IncognitoBlockerSceneAgent () <SceneStateObserver>
 
@@ -55,7 +57,8 @@
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level == SceneActivationLevelBackground &&
-      (sceneState.incognitoContentVisible || sceneState.QRScannerVisible)) {
+      (sceneState.incognitoState.incognitoContentVisible ||
+       sceneState.QRScannerVisible)) {
     // If the current BVC is incognito, or if we are in the tab switcher and
     // there are incognito tabs visible, place a full screen view containing
     // the switcher background to hide any incognito content.

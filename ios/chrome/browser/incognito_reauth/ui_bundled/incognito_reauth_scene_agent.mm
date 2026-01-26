@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -44,7 +45,8 @@
 
 #pragma mark - IncognitoReauthSceneAgent
 
-@interface IncognitoReauthSceneAgent () <PrefObserverDelegate>
+@interface IncognitoReauthSceneAgent () <PrefObserverDelegate,
+                                         IncognitoStateObserver>
 
 // Whether the window had incognito content (e.g. at least one open tab) upon
 // backgrounding.
@@ -116,6 +118,11 @@
              object:nil];
   }
   return self;
+}
+
+- (void)setSceneState:(SceneState*)sceneState {
+  [super setSceneState:sceneState];
+  [sceneState.incognitoState addObserver:self];
 }
 
 - (void)dealloc {
@@ -285,10 +292,17 @@
   }
 }
 
-- (void)sceneState:(SceneState*)sceneState
-    isDisplayingIncognitoContent:(BOOL)level {
+#pragma mark - IncognitoStateObserver
+
+- (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
   if (IsIOSSoftLockEnabled()) {
-    [self recordIncognitoLockImpressionForSceneState:sceneState];
+    [self recordIncognitoLockImpressionForSceneState:self.sceneState];
+  }
+}
+
+- (void)willExitIncognitoForState:(IncognitoState*)incognitoState {
+  if (IsIOSSoftLockEnabled()) {
+    [self recordIncognitoLockImpressionForSceneState:self.sceneState];
   }
 }
 
@@ -325,9 +339,10 @@
     return;
   }
 
-  BOOL isIncognitoTabVisible = sceneState.UIEnabled &&
-                               sceneState.incognitoContentVisible &&
-                               !sceneState.controller.tabGridVisible;
+  BOOL isIncognitoTabVisible =
+      sceneState.UIEnabled &&
+      sceneState.incognitoState.incognitoContentVisible &&
+      !sceneState.controller.tabGridVisible;
   if (!_switchedToIncognitoGrid && isIncognitoTabVisible &&
       self.isAuthenticationRequired) {
     _switchedToIncognitoGrid = YES;
@@ -344,9 +359,10 @@
     return;
   }
 
-  BOOL isIncognitoTabGridVisible = self.sceneState.UIEnabled &&
-                                   self.sceneState.incognitoContentVisible &&
-                                   self.sceneState.controller.tabGridVisible;
+  BOOL isIncognitoTabGridVisible =
+      self.sceneState.UIEnabled &&
+      self.sceneState.incognitoState.incognitoContentVisible &&
+      self.sceneState.controller.tabGridVisible;
   if (isIncognitoTabGridVisible && _switchedToIncognitoGrid) {
     Browser* browser = self.sceneState.browserProviderInterface
                            .incognitoBrowserProvider.browser;
@@ -585,7 +601,8 @@
 - (void)recordIncognitoLockImpressionForSceneState:(SceneState*)sceneState {
   // sceneState.UIEnabled guarantees that sceneState.controller has been
   // initialized.
-  if (sceneState.UIEnabled && sceneState.incognitoContentVisible &&
+  if (sceneState.UIEnabled &&
+      sceneState.incognitoState.incognitoContentVisible &&
       sceneState.activationLevel == SceneActivationLevelForegroundActive) {
     switch ([self incognitoLockState]) {
       case IncognitoLockState::kNone:

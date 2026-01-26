@@ -40,6 +40,7 @@ source_set("incognito_blocker_scene_agent") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -151,6 +152,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sessions/model:test_support",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_util_test_support",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
