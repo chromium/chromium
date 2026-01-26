@@ -2881,41 +2881,39 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
     metadata.top_controls_visible_height.emplace(visible_height);
 
 #if BUILDFLAG(IS_ANDROID)
-    if (features::IsBrowserControlsInVizEnabled()) {
-      const viz::OffsetTag& top_controls_offset_tag =
-          browser_controls_offset_manager_->TopControlsOffsetTag();
-      const viz::OffsetTag& content_offset_tag =
-          browser_controls_offset_manager_->ContentOffsetTag();
+    const viz::OffsetTag& top_controls_offset_tag =
+        browser_controls_offset_manager_->TopControlsOffsetTag();
+    const viz::OffsetTag& content_offset_tag =
+        browser_controls_offset_manager_->ContentOffsetTag();
 
-      if (top_controls_offset_tag) {
-        CHECK(!content_offset_tag.IsEmpty());
+    if (top_controls_offset_tag) {
+      CHECK(!content_offset_tag.IsEmpty());
 
-        float offset = browser_controls_offset_manager_->TopControlsHeight() -
-                       visible_height;
-        if (visible_height == 0) {
-          // The toolbar hairline is still shown after the top controls are
-          // completely scrolled off screen. Shift the top controls a bit more
-          // so that the hairline disappears.
-          offset +=
-              browser_controls_offset_manager_->TopControlsAdditionalHeight();
-        }
-
-        // ViewAndroid::OnTopControlsChanged() also rounds the offset before
-        // handing it off to Android.
-        gfx::Vector2dF offset2d(0.0f, -std::round(offset));
-        metadata.offset_tag_values.emplace_back(top_controls_offset_tag,
-                                                offset2d);
+      float offset = browser_controls_offset_manager_->TopControlsHeight() -
+                     visible_height;
+      if (visible_height == 0) {
+        // The toolbar hairline is still shown after the top controls are
+        // completely scrolled off screen. Shift the top controls a bit more
+        // so that the hairline disappears.
+        offset +=
+            browser_controls_offset_manager_->TopControlsAdditionalHeight();
       }
 
-      if (content_offset_tag) {
-        float offset = browser_controls_offset_manager_->TopControlsHeight() -
-                       visible_height;
+      // ViewAndroid::OnTopControlsChanged() also rounds the offset before
+      // handing it off to Android.
+      gfx::Vector2dF offset2d(0.0f, -std::round(offset));
+      metadata.offset_tag_values.emplace_back(top_controls_offset_tag,
+                                              offset2d);
+    }
 
-        // ViewAndroid::OnTopControlsChanged() also rounds the offset before
-        // handing it off to Android.
-        gfx::Vector2dF offset2d(0.0f, -std::round(offset));
-        metadata.offset_tag_values.emplace_back(content_offset_tag, offset2d);
-      }
+    if (content_offset_tag) {
+      float offset = browser_controls_offset_manager_->TopControlsHeight() -
+                     visible_height;
+
+      // ViewAndroid::OnTopControlsChanged() also rounds the offset before
+      // handing it off to Android.
+      gfx::Vector2dF offset2d(0.0f, -std::round(offset));
+      metadata.offset_tag_values.emplace_back(content_offset_tag, offset2d);
     }
 #endif
   }
@@ -3078,30 +3076,22 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
         last_draw_render_frame_metadata_->has_transparent_background !=
             metadata.has_transparent_background;
 
-    if (features::IsBrowserControlsInVizEnabled()) {
-      // When the browser controls become locked, the browser will update the
-      // offset tags, and also update the controls' offsets if they don't match
-      // the current renderer scroll position. These updates result in a new
-      // renderer frame, but sometimes it gets drawn before the browser frame
-      // with the updated offsets arrives, which causes the controls to jump, so
-      // we need a new surface id here to sync the updates.
-      allocate_new_local_surface_id |=
-          (last_draw_render_frame_metadata_->has_offset_tag &&
-           !metadata.has_offset_tag);
+    // When the browser controls become locked, the browser will update the
+    // offset tags, and also update the controls' offsets if they don't match
+    // the current renderer scroll position. These updates result in a new
+    // renderer frame, but sometimes it gets drawn before the browser frame
+    // with the updated offsets arrives, which causes the controls to jump, so
+    // we need a new surface id here to sync the updates.
+    allocate_new_local_surface_id |=
+        (last_draw_render_frame_metadata_->has_offset_tag &&
+         !metadata.has_offset_tag);
 
-      // If BCIV is enabled but there's no offset tags, it means the controls
-      // aren't scrollable, and any movement of the controls is the result of
-      // the browser updating their offsets and submitting a new browser frame.
-      // We need a new surface id in this case, as this is identical to the
-      // situation without BCIV.
-      if (!browser_controls_offset_manager_->HasOffsetTag()) {
-        allocate_new_local_surface_id |=
-            last_draw_render_frame_metadata_->top_controls_shown_ratio !=
-                metadata.top_controls_shown_ratio ||
-            last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
-                metadata.bottom_controls_shown_ratio;
-      }
-    } else {
+    // If BCIV is enabled but there's no offset tags, it means the controls
+    // aren't scrollable, and any movement of the controls is the result of
+    // the browser updating their offsets and submitting a new browser frame.
+    // We need a new surface id in this case, as this is identical to the
+    // situation without BCIV.
+    if (!browser_controls_offset_manager_->HasOffsetTag()) {
       allocate_new_local_surface_id |=
           last_draw_render_frame_metadata_->top_controls_shown_ratio !=
               metadata.top_controls_shown_ratio ||

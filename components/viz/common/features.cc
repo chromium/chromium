@@ -34,11 +34,6 @@
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
-// During a scroll, enable viz to move browser controls according to the
-// offsets provided by the embedded renderer, circumventing browser main
-// involvement. For now, this applies only to top controls.
-BASE_FEATURE(kAndroidBrowserControlsInViz, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If this flag is enabled, a DumpWithoutCrashing() is captured when a bad
 // state is detected when moving the composited UI. For example, this could
 // mean scrolling without a resource, or OffsetTagValues trying to position
@@ -530,10 +525,6 @@ bool ShouldRemoveRedirectionBitmap() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-bool IsBrowserControlsInVizEnabled() {
-  return base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz);
-}
-
 bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
                          std::string_view soc) {
   std::vector<std::string_view> allowlist = base::SplitStringPiece(

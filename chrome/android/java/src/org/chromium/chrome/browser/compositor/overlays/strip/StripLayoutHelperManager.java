@@ -908,8 +908,7 @@ public class StripLayoutHelperManager
             return topControlsOffset - getHeight();
         }
 
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                && !mBrowserControlsStateProvider.isVisibilityForced()) {
+        if (!mBrowserControlsStateProvider.isVisibilityForced()) {
             // With bciv, as long as if the visibility isn't forced by the browser, and if the
             // tabstrip isn't hidden, the composited layers should positioned at their fully visible
             // positions.
@@ -1181,7 +1180,7 @@ public class StripLayoutHelperManager
     @Override
     public void updateOffsetTagsInfo(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         // LINT.IfChange(updateOffsetTagsInfo)
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && offsetTagsInfo != null) {
+        if (offsetTagsInfo != null) {
             // Use the content OffsetTag here, because the tab strip and content are part of
             // the same subtree and move together with the same offset. We need to release the
             // content offset tag from the static layout first before adding it to the tab strip.

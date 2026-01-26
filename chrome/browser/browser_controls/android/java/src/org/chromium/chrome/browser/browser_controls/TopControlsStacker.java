@@ -348,9 +348,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                         : "All layers with minHeight should be added before a scrollable layer.";
             }
 
-            if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                layer.updateOffsetTag(hasMinHeight ? null : mTopControlsOffsetTagInfo);
-            }
+            layer.updateOffsetTag(hasMinHeight ? null : mTopControlsOffsetTagInfo);
         }
         mTotalHeight = totalHeight;
         mMinHeight = minHeight;
@@ -549,8 +547,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                 // When BCIV is enabled, we override the yOffset at the final step, so we can ensure
                 // mLayerYOffsets has the visually accurate offsets. This is needed so we can handle
                 // offset updates due to constraint changes.
-                if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                        && !offsetsAppliedByBrowser) {
+                if (!offsetsAppliedByBrowser) {
                     yOffset = mLayerRestingOffsets.get(type);
                 }
             }

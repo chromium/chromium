@@ -841,17 +841,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         public void onPageLoadStopped() {
-            if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                // With capture suppression, we don't capture after navigating. Instead, we schedule
-                // a capture to happen when the controls become unlocked. With BCIV, there is no
-                // surface sync, so it's more likely to scroll before the capture is complete. To
-                // fix this, we capture after page load finishes. This is late enough in navigation
-                // to not delay other important tasks on the main thread, and early enough so we
-                // have a capture available before the controls are unlocked.
-                mNeedCaptureAfterPageLoad = true;
-                onResourceRequested();
-                mNeedCaptureAfterPageLoad = false;
-            }
+            // With capture suppression, we don't capture after navigating. Instead, we schedule
+            // a capture to happen when the controls become unlocked. With BCIV, there is no
+            // surface sync, so it's more likely to scroll before the capture is complete. To
+            // fix this, we capture after page load finishes. This is late enough in navigation
+            // to not delay other important tasks on the main thread, and early enough so we
+            // have a capture available before the controls are unlocked.
+            mNeedCaptureAfterPageLoad = true;
+            onResourceRequested();
+            mNeedCaptureAfterPageLoad = false;
         }
 
         private boolean shouldSampleStaleCaptureHistogram() {

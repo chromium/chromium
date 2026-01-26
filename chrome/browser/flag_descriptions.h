@@ -232,12 +232,6 @@ inline constexpr char kAndroidBottomToolbarV2Description[] =
     "If enabled, allows the Omnibox to be persistently anchored to the bottom "
     "of the screen.";
 
-inline constexpr char kAndroidBrowserControlsInVizName[] =
-    "Android Browser Controls in Viz";
-inline constexpr char kAndroidBrowserControlsInVizDescription[] =
-    "Let viz move browser controls when scrolling. For now, this applies only "
-    "to top controls.";
-
 inline constexpr char kAnnotatorModeName[] = "Enable annotator tool";
 inline constexpr char kAnnotatorModeDescription[] =
     "Enables the tool for annotating across the OS.";

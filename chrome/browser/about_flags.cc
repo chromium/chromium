@@ -10873,13 +10873,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kShowSuggestionsOnAutofocus)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-browser-controls-in-viz",
-     flag_descriptions::kAndroidBrowserControlsInVizName,
-     flag_descriptions::kAndroidBrowserControlsInVizDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidBrowserControlsInViz)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"android-desktop-density", flag_descriptions::kAndroidDesktopDensityName,
      flag_descriptions::kAndroidDesktopDensityDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopDensity)},

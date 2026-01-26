@@ -1134,9 +1134,7 @@ public class CompositorViewHolder extends FrameLayout
 
         // TODO(crbug.com/415825206): Revisit when requestNewFrame is set to true, it currently
         // depends on the controls' hidden ratio, but I don't think that's right.
-        boolean scrollingWithBciv =
-                ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                        && (mInGesture || mContentViewScrolling);
+        boolean scrollingWithBciv = mInGesture || mContentViewScrolling;
         if ((requestNewFrame || topControlsMinHeightChanged || bottomControlsMinHeightChanged)
                 && !scrollingWithBciv) {
             requestRender();

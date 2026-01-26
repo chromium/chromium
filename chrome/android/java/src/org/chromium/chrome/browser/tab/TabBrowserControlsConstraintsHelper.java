@@ -17,7 +17,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsOffsetTagModifications;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -158,16 +157,12 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
                     @Override
                     public void onHidden(Tab tab, @TabHidingType int type) {
-                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            unregisterOffsetTags();
-                        }
+                        unregisterOffsetTags();
                     }
 
                     @Override
                     public void onShown(Tab tab, @TabHidingType int type) {
-                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            updateEnabledState();
-                        }
+                        updateEnabledState();
                     }
                 });
         if (mTab.isInitialized() && !mTab.isDetachedFromActivity()) updateVisibilityDelegate();
@@ -263,9 +258,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
             return;
         }
 
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-            generateOffsetTags(constraints);
-        }
+        generateOffsetTags(constraints);
 
         if (current == BrowserControlsState.SHOWN || constraints == BrowserControlsState.SHOWN) {
             mTab.willShowBrowserControls();

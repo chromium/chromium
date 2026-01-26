@@ -508,14 +508,14 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mHasTopControlsHeightAnimation) {
             mTopAnimationInitialOffset = getTopControlOffset();
         }
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && !isVisibilityForced()) {
+        if (!isVisibilityForced()) {
             updateTopControlsOffsetTagConstraints(oldHeight, oldMinHeight, newHeight, newMinHeight);
         }
     }
 
     private void topControlsAnimationEnded() {
         mHasTopControlsHeightAnimation = false;
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && !isVisibilityForced()) {
+        if (!isVisibilityForced()) {
             updateTopControlsOffsetTagConstraints(
                     mTopControlsHeight,
                     mTopControlsMinHeight,

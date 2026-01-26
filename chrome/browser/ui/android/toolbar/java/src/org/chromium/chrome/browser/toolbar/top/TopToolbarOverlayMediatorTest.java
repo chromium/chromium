@@ -145,27 +145,15 @@ public class TopToolbarOverlayMediatorTest {
         mActivityTabObserverCaptor.getValue().onResult(tab);
     }
 
-    private boolean isBcivEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ);
-    }
-
     @Test
-    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
     public void testShadowVisibilityWhenControlsOffsetChanges() {
         when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.0f);
         mBrowserControlsObserverCaptor
                 .getValue()
                 .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
-        if (isBcivEnabled()) {
-            assertTrue(
-                    "Shadow should be visible.",
-                    mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
-        } else {
-            assertFalse(
-                    "Shadow should be invisible.",
-                    mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
-        }
+        assertTrue(
+                "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
 
         when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.5f);
         mBrowserControlsObserverCaptor
@@ -179,15 +167,8 @@ public class TopToolbarOverlayMediatorTest {
     private void testShadowVisibility_androidViewForceHidden() {
         mMediator.setIsAndroidViewVisible(true);
 
-        if (isBcivEnabled()) {
-            assertTrue(
-                    "Shadow should be visible.",
-                    mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
-        } else {
-            assertFalse(
-                    "Shadow should be invisible.",
-                    mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
-        }
+        assertTrue(
+                "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
 
         mMediator.setIsAndroidViewVisible(false);
 
@@ -196,28 +177,14 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
     public void testShadowVisibility_androidViewForceHidden_bciv_enabled() {
-        testShadowVisibility_androidViewForceHidden();
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
-    public void testShadowVisibility_androidViewForceHidden_bciv_disabled() {
         testShadowVisibility_androidViewForceHidden();
     }
 
     private void testShadowVisibility_suppressToolbarCaptures() {
         mBrowserControlsObserverCaptor.getValue().onAndroidControlsVisibilityChanged(View.VISIBLE);
-        if (isBcivEnabled()) {
-            assertTrue(
-                    "Shadow should be visible.",
-                    mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
-        } else {
-            assertFalse(
-                    "Shadow should be invisible.",
-                    mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
-        }
+        assertTrue(
+                "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
 
         mBrowserControlsObserverCaptor
                 .getValue()
@@ -227,14 +194,7 @@ public class TopToolbarOverlayMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
     public void testShadowVisibility_suppressToolbarCaptures_bciv_enabled() {
-        testShadowVisibility_suppressToolbarCaptures();
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
-    public void testShadowVisibility_suppressToolbarCaptures_bciv_disabled() {
         testShadowVisibility_suppressToolbarCaptures();
     }
 
@@ -258,26 +218,12 @@ public class TopToolbarOverlayMediatorTest {
                         mProgressBar);
         mMediator.setIsAndroidViewVisible(true);
 
-        if (isBcivEnabled()) {
-            assertTrue(
-                    "Shadow should be visible.",
-                    mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
-        } else {
-            assertFalse(
-                    "Shadow should be invisible.",
-                    mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
-        }
+        assertTrue(
+                "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
     public void testShadowVisibility_suppressToolbarCaptures_initialState_bciv_enabled() {
-        testShadowVisibility_suppressToolbarCaptures_initialState();
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
-    public void testShadowVisibility_suppressToolbarCaptures_initialState_bciv_disabled() {
         testShadowVisibility_suppressToolbarCaptures_initialState();
     }
 

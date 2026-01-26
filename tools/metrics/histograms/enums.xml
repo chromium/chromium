@@ -18416,7 +18416,6 @@ from previous Chrome versions.
   <int value="1409625676" label="CpaSpecUpdate:disabled"/>
   <int value="1409653883"
       label="GetUserMediaDeferredDeviceSettingsSelection:disabled"/>
-  <int value="1410403456" label="AndroidBrowserControlsInViz:enabled"/>
   <int value="1410697724" label="mediadrm-enable-non-compositing"/>
   <int value="1410846840"
       label="PrefetchMainResourceNetworkIsolationKey:disabled"/>
@@ -18867,7 +18866,6 @@ from previous Chrome versions.
   <int value="1560188739" label="reader-mode-heuristics"/>
   <int value="1560607634" label="ExtensionsCollapseMainMenu:enabled"/>
   <int value="1561281771" label="PriceTrackingIconColors:enabled"/>
-  <int value="1561833662" label="AndroidBrowserControlsInViz:disabled"/>
   <int value="1562855415" label="WebRtcUseMinMaxVEADimensions:disabled"/>
   <int value="1562856564" label="DragDropIntoOmnibox:enabled"/>
   <int value="1562997441"
