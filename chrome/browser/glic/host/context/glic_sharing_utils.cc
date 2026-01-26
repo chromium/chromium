@@ -36,7 +36,7 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
        GURL(chrome::kChromeUINewTabPageThirdPartyURL),
        GURL(chrome::kChromeUINewTabPageURL), GURL(chrome::kChromeUINewTabURL),
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-       // NEEDS_ANDROID_IMPL: This isn't yet available on android desktop.
+       // NEEDS_ANDROID_IMPL: what's new page
        // "What's New" does not exist in the form of a tab on ChromeOS.
        GURL(chrome::kChromeUIWhatsNewURL)
 #endif

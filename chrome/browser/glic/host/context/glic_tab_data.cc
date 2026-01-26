@@ -27,10 +27,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-#include "chrome/browser/ui/tabs/tab_model.h"
-#endif
-
 namespace glic {
 
 namespace {

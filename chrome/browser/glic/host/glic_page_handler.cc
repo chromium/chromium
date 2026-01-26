@@ -1420,7 +1420,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void CaptureRegion(
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer) override {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: CaptureRegion
     content::WebContents* web_contents = nullptr;
     const FocusedTabData& focus = sharing_manager().GetFocusedTabData();
     // Prioritize the focused tab, but fall back to the unfocused tab if one is

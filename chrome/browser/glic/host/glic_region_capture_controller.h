@@ -59,7 +59,7 @@ class GlicRegionCaptureController {
   base::WeakPtrFactory<GlicRegionCaptureController> weak_factory_{this};
 };
 #else
-// TODO(b/470059315): NEEDS_ANDROID_IMPL
+// NEEDS_ANDROID_IMPL: CaptureRegion
 class GlicRegionCaptureController {
  public:
   void CaptureRegion(

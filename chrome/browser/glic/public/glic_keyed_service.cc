@@ -170,7 +170,7 @@ GlicKeyedService::GlicKeyedService(
                                             &window_controller(),
                                             metrics_.get(),
                                             enabling_.get())),
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: CaptureRegion
       region_capture_controller_(
           std::make_unique<GlicRegionCaptureController>()),
 #endif

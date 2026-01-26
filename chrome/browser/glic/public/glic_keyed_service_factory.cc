@@ -73,7 +73,7 @@ GlicKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
 #if !BUILDFLAG(IS_ANDROID)
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile)
 #else
-      nullptr  // NEEDS_ANDROID_IMPL
+      nullptr  // NEEDS_ANDROID_IMPL: actor net yet ported
 #endif
   );
 }

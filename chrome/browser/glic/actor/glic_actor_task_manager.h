@@ -13,15 +13,8 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
-
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/common/actor.mojom-forward.h"
-#else
-namespace actor::mojom {
-enum class ActionResultCode;
-}
-#endif
 
 class Profile;
 
