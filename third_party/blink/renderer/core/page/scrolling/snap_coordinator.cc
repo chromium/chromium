@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -15,11 +16,13 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 namespace {
@@ -149,31 +152,36 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
           ? old_snap_container_data->GetTargetSnapAreaElementIds()
           : cc::TargetSnapAreaElementIds();
 
-  for (auto& fragment : snap_container.PhysicalFragments()) {
-    if (auto* snap_areas = fragment.SnapAreas()) {
-      for (Element* snap_area : *snap_areas) {
-        cc::SnapAreaData snap_area_data =
-            CalculateSnapAreaData(*snap_area, snap_container);
-        // The target snap elements should be preserved in the new container
-        // only if the respective snap areas are still present.
-        if (old_target_ids.x == snap_area_data.element_id) {
-          new_target_ids.x = old_target_ids.x;
-        }
-        if (old_target_ids.y == snap_area_data.element_id) {
-          new_target_ids.y = old_target_ids.y;
-        }
+  if (snap_container.IsPseudo(kPseudoIdOverscrollAreaParent)) {
+    AddOverscrollSnapAreas(snap_container, snap_container_data, new_target_ids,
+                           old_target_ids);
+  } else {
+    for (auto& fragment : snap_container.PhysicalFragments()) {
+      if (auto* snap_areas = fragment.SnapAreas()) {
+        for (Element* snap_area : *snap_areas) {
+          cc::SnapAreaData snap_area_data =
+              CalculateSnapAreaData(*snap_area, snap_container);
+          // The target snap elements should be preserved in the new container
+          // only if the respective snap areas are still present.
+          if (old_target_ids.x == snap_area_data.element_id) {
+            new_target_ids.x = old_target_ids.x;
+          }
+          if (old_target_ids.y == snap_area_data.element_id) {
+            new_target_ids.y = old_target_ids.y;
+          }
 
-        if (snap_area_data.rect.width() > snap_container_data.rect().width() ||
-            snap_area_data.rect.height() >
-                snap_container_data.rect().height()) {
-          snap_container.GetDocument().CountUse(
-              WebFeature::kScrollSnapCoveringSnapArea);
+          if (snap_area_data.rect.width() >
+                  snap_container_data.rect().width() ||
+              snap_area_data.rect.height() >
+                  snap_container_data.rect().height()) {
+            snap_container.GetDocument().CountUse(
+                WebFeature::kScrollSnapCoveringSnapArea);
+          }
+          snap_container_data.AddSnapAreaData(snap_area_data);
         }
-        snap_container_data.AddSnapAreaData(snap_area_data);
       }
     }
   }
-
   snap_container_data.SetTargetSnapAreaElementIds(new_target_ids);
 
   if (!old_snap_container_data ||
@@ -183,6 +191,48 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
     return true;
   }
   return false;
+}
+
+void SnapCoordinator::AddOverscrollSnapAreas(
+    LayoutBox& snap_container,
+    cc::SnapContainerData& snap_container_data,
+    cc::TargetSnapAreaElementIds& new_target_ids,
+    const cc::TargetSnapAreaElementIds& old_target_ids) {
+  // The ::-internal-overscroll-area-parent establishes two snap areas:
+  // 1. One for its initial scroll position, and
+  // 2. A second for the element in its area.
+  // Other elements with scroll-snap-align are not added.
+  PseudoElement* pseudo_container = To<PseudoElement>(snap_container.GetNode());
+  // ::-internal-overscroll-area-parent has an additional snap area of
+  // its own initial scroll position.
+  cc::SnapAreaData overscroll_initial_snap_area;
+  overscroll_initial_snap_area.rect =
+      gfx::RectF(snap_container.OverflowClipRect(
+          PhysicalOffset(snap_container.ScrollOrigin())));
+  overscroll_initial_snap_area.element_id = CompositorElementIdFromDOMNodeId(
+      snap_container.GetNode()->GetDomNodeId());
+  overscroll_initial_snap_area.scroll_snap_align = cc::ScrollSnapAlign(
+      cc::SnapAlignment::kCenter, cc::SnapAlignment::kCenter);
+  snap_container_data.AddSnapAreaData(overscroll_initial_snap_area);
+
+  // Create a snap area for the overscroll area.
+  Element& overscroll_area = pseudo_container->UltimateOriginatingElement();
+  cc::SnapAreaData overscroll_snap_area =
+      CalculateSnapAreaData(overscroll_area, snap_container);
+  overscroll_snap_area.must_snap = false;
+  overscroll_snap_area.scroll_snap_align = cc::ScrollSnapAlign(
+      cc::SnapAlignment::kCenter, cc::SnapAlignment::kCenter);
+  snap_container_data.AddSnapAreaData(overscroll_snap_area);
+
+  // Preserve target snap ids that are still present.
+  if (old_target_ids.x == overscroll_initial_snap_area.element_id ||
+      old_target_ids.x == overscroll_snap_area.element_id) {
+    new_target_ids.x = old_target_ids.x;
+  }
+  if (old_target_ids.y == overscroll_initial_snap_area.element_id ||
+      old_target_ids.y == overscroll_snap_area.element_id) {
+    new_target_ids.y = old_target_ids.y;
+  }
 }
 
 // https://drafts.csswg.org/css-scroll-snap-1/#scroll-snap-align

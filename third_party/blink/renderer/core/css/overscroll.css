@@ -4,6 +4,7 @@
   overflow: auto;
   pointer-events: none;
   scroll-behavior: inherit;
+  scroll-snap-type: both mandatory;
   scrollbar-width: none;
   position: absolute;
 }

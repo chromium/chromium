@@ -278,7 +278,7 @@ struct SnapAreaData {
 
   // Whether this area has scroll-snap-stop: always.
   // See https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-stop
-  bool must_snap;
+  bool must_snap = false;
 
   // Whether this area has focus or has a descendant element which has focus.
   bool has_focus_within = false;

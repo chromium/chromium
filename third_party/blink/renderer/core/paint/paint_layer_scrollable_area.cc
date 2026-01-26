@@ -119,6 +119,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
@@ -2398,12 +2399,18 @@ void PaintLayerScrollableArea::EnqueueForSnapUpdateIfNeeded() {
     return;
   }
 
-  // Enqueue ourselves for a snap update if we have any snap-areas, or if we
-  // currently have snap-data (and it needs to be cleared).
-  for (const auto& fragment : box->PhysicalFragments()) {
-    if (fragment.SnapAreas() || GetSnapContainerData()) {
-      box->GetFrameView()->AddPendingSnapUpdate(this);
-      break;
+  if (box->IsPseudo(kPseudoIdOverscrollAreaParent)) {
+    // ::-internal-overscroll-area-parent has implicit snap areas and should
+    // always be enqueued for pending snap updates.
+    box->GetFrameView()->AddPendingSnapUpdate(this);
+  } else {
+    // Enqueue ourselves for a snap update if we have any snap-areas, or if we
+    // currently have snap-data (and it needs to be cleared).
+    for (const auto& fragment : box->PhysicalFragments()) {
+      if (fragment.SnapAreas() || GetSnapContainerData()) {
+        box->GetFrameView()->AddPendingSnapUpdate(this);
+        break;
+      }
     }
   }
 }

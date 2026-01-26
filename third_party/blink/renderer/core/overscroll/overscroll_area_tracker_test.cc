@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -620,6 +622,15 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollPseudoElementStyles) {
 
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerWithElement) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container, #menu {
+        width: 200px;
+        height: 200px;
+      }
+      #menu {
+        right: 200px; /* Positioned to the left */
+      }
+    </style>
     <div id="container" overscrollcontainer>
       <div id="menu"></div>
       <div id="content"></div>
@@ -649,6 +660,24 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerWithElement) {
   EXPECT_EQ(overscroll_area_parent->GetLayoutObject()->Parent(),
             container->GetLayoutObject());
   EXPECT_EQ(content->GetLayoutObject()->Parent(), container->GetLayoutObject());
+
+  // We should have snap points for the menu and the initial area:
+  const cc::SnapContainerData* snap_container_data =
+      overscroll_area_parent->GetLayoutBox()
+          ->GetScrollableArea()
+          ->GetSnapContainerData();
+  ASSERT_EQ(snap_container_data->size(), 2);
+  const cc::SnapAreaData& parent_area_data = snap_container_data->at(0);
+  EXPECT_EQ(
+      parent_area_data.element_id,
+      CompositorElementIdFromDOMNodeId(overscroll_area_parent->GetDomNodeId()));
+  // The snap area coordinates are relative to the top-left of the scrollable
+  // overflow, placing the origin scroll position at (200, 0).
+  ASSERT_EQ(parent_area_data.rect, gfx::RectF(200, 0, 200, 200));
+  const cc::SnapAreaData& child_data = snap_container_data->at(1);
+  EXPECT_EQ(child_data.element_id,
+            CompositorElementIdFromDOMNodeId(menu->GetDomNodeId()));
+  ASSERT_EQ(child_data.rect, gfx::RectF(0, 0, 200, 200));
 }
 
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerNegativeScroll) {
