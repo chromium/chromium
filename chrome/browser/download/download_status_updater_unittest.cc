@@ -72,8 +72,8 @@ class DownloadStatusUpdaterTest : public testing::Test {
       EXPECT_CALL(*Manager(mgr_idx), RemoveObserver(_));
     }
 
-    delete updater_;
-    updater_ = nullptr;
+    manager_observers_.clear();
+    delete updater_.ExtractAsDangling();
     VerifyAndClearExpectations();
 
     managers_.clear();
@@ -207,7 +207,7 @@ class DownloadStatusUpdaterTest : public testing::Test {
 
   // Pointer so we can verify that destruction triggers appropriate
   // changes.
-  raw_ptr<TestDownloadStatusUpdater, DanglingUntriaged> updater_;
+  raw_ptr<TestDownloadStatusUpdater> updater_;
 
   // Thread so that the DownloadManager (which is a DeleteOnUIThread
   // object) can be deleted.
