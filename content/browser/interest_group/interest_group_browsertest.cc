@@ -10462,19 +10462,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_url);
-    ASSERT_TRUE(request);
-    EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
-              request->credentials_mode);
-    EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
-    EXPECT_EQ(test_origin, request->request_initiator);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+    EXPECT_EQ(network::mojom::RedirectMode::kError, request.redirect_mode);
+    EXPECT_EQ(test_origin, request.request_initiator);
 
-    EXPECT_TRUE(request->headers.IsEmpty());
+    EXPECT_TRUE(request.headers.IsEmpty());
 
-    ASSERT_TRUE(request->trusted_params);
+    ASSERT_TRUE(request.trusted_params);
     const net::IsolationInfo& isolation_info =
-        request->trusted_params->isolation_info;
+        request.trusted_params->isolation_info;
     EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
               isolation_info.request_type());
     EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
@@ -12522,19 +12520,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_url);
-    ASSERT_TRUE(request);
-    EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
-              request->credentials_mode);
-    EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
-    EXPECT_EQ(test_origin, request->request_initiator);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+    EXPECT_EQ(network::mojom::RedirectMode::kError, request.redirect_mode);
+    EXPECT_EQ(test_origin, request.request_initiator);
 
-    EXPECT_TRUE(request->headers.IsEmpty());
+    EXPECT_TRUE(request.headers.IsEmpty());
 
-    ASSERT_TRUE(request->trusted_params);
+    ASSERT_TRUE(request.trusted_params);
     const net::IsolationInfo& isolation_info =
-        request->trusted_params->isolation_info;
+        request.trusted_params->isolation_info;
     EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
               isolation_info.request_type());
     EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
@@ -12870,19 +12866,17 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_url);
-    ASSERT_TRUE(request);
-    EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
-              request->credentials_mode);
-    EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
-    EXPECT_EQ(test_origin, request->request_initiator);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+    EXPECT_EQ(network::mojom::RedirectMode::kError, request.redirect_mode);
+    EXPECT_EQ(test_origin, request.request_initiator);
 
-    EXPECT_TRUE(request->headers.IsEmpty());
+    EXPECT_TRUE(request.headers.IsEmpty());
 
-    ASSERT_TRUE(request->trusted_params);
+    ASSERT_TRUE(request.trusted_params);
     const net::IsolationInfo& isolation_info =
-        request->trusted_params->isolation_info;
+        request.trusted_params->isolation_info;
     EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
               isolation_info.request_type());
     EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
@@ -14827,20 +14821,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_request.url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_request.url);
-    ASSERT_TRUE(request);
-    EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
-              request->credentials_mode);
-    EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+    EXPECT_EQ(network::mojom::RedirectMode::kError, request.redirect_mode);
     EXPECT_EQ(expected_report_request.request_initiator,
-              request->request_initiator);
+              request.request_initiator);
 
-    EXPECT_TRUE(request->headers.IsEmpty());
+    EXPECT_TRUE(request.headers.IsEmpty());
 
-    ASSERT_TRUE(request->trusted_params);
+    ASSERT_TRUE(request.trusted_params);
     const net::IsolationInfo& isolation_info =
-        request->trusted_params->isolation_info;
+        request.trusted_params->isolation_info;
     EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
               isolation_info.request_type());
     EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
@@ -21036,11 +21028,10 @@ interestGroupBuyers: [$1],
                   embedded_https_test_server().GetURL(
                       "a.test", "/interest_group/decision_logic.js"))));
 
-  std::optional<network::ResourceRequest> request =
+  const network::ResourceRequest& request =
       url_loader_monitor.WaitForUrl(embedded_https_test_server().GetURL(
           "b.test", "/echoall?report_win_beacon"));
-  ASSERT_TRUE(request);
-  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
+  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request.method);
 }
 
 // Runs auction like Just like
@@ -21152,11 +21143,9 @@ interestGroupBuyers: [$1],
                   embedded_https_test_server().GetURL(
                       "a.test", "/interest_group/decision_logic.js"))));
 
-  std::optional<network::ResourceRequest> request =
-      url_loader_monitor.WaitForUrl(
-          GURL("https://b.test/echo?a=value_a&b=value_b&c=${NOT_REGISTERED}"));
-  ASSERT_TRUE(request);
-  EXPECT_EQ(net::HttpRequestHeaders::kGetMethod, request->method);
+  const network::ResourceRequest& request = url_loader_monitor.WaitForUrl(
+      GURL("https://b.test/echo?a=value_a&b=value_b&c=${NOT_REGISTERED}"));
+  EXPECT_EQ(net::HttpRequestHeaders::kGetMethod, request.method);
 }
 
 // Runs an auction similar to
@@ -26998,13 +26987,12 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideBrowserTest,
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_request.url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_request.url);
-    ASSERT_TRUE(request);
     EXPECT_EQ(expected_report_request.request_initiator,
-              request->request_initiator);
-    EXPECT_FALSE(request->headers.IsEmpty());
-    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+              request.request_initiator);
+    EXPECT_FALSE(request.headers.IsEmpty());
+    EXPECT_THAT(request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
                 "overridden-user-agent");
   }
 }
@@ -27239,13 +27227,12 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideBrowserTest,
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_url);
-    ASSERT_TRUE(request);
-    EXPECT_EQ(test_origin, request->request_initiator);
+    EXPECT_EQ(test_origin, request.request_initiator);
 
-    EXPECT_FALSE(request->headers.IsEmpty());
-    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+    EXPECT_FALSE(request.headers.IsEmpty());
+    EXPECT_THAT(request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
                 "overridden-user-agent");
   }
 }
@@ -27480,12 +27467,11 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideDisabledBrowserTest,
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_request.url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_request.url);
-    ASSERT_TRUE(request);
     EXPECT_EQ(expected_report_request.request_initiator,
-              request->request_initiator);
-    EXPECT_TRUE(request->headers.IsEmpty());
+              request.request_initiator);
+    EXPECT_TRUE(request.headers.IsEmpty());
   }
 }
 
@@ -27641,12 +27627,11 @@ IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentOverrideDisabledBrowserTest,
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_url);
-    ASSERT_TRUE(request);
-    EXPECT_EQ(test_origin, request->request_initiator);
+    EXPECT_EQ(test_origin, request.request_initiator);
 
-    EXPECT_TRUE(request->headers.IsEmpty());
+    EXPECT_TRUE(request.headers.IsEmpty());
   }
 }
 
@@ -27735,11 +27720,10 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingAndUserAgentOverrideEnabledTest,
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_url);
-    ASSERT_TRUE(request);
-    EXPECT_FALSE(request->headers.IsEmpty());
-    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+    EXPECT_FALSE(request.headers.IsEmpty());
+    EXPECT_THAT(request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
                 "overridden-user-agent");
   }
 }
@@ -27828,11 +27812,10 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledAndUserAgentOverrideDisabledTest,
     // Make sure the report URL was actually fetched over the network.
     WaitForUrl(expected_report_url);
 
-    std::optional<network::ResourceRequest> request =
+    const network::ResourceRequest& request =
         url_loader_monitor.WaitForUrl(expected_report_url);
-    ASSERT_TRUE(request);
-    EXPECT_FALSE(request->headers.IsEmpty());
-    EXPECT_NE(request->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+    EXPECT_FALSE(request.headers.IsEmpty());
+    EXPECT_NE(request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
               "overridden-user-agent");
   }
 }
@@ -27909,27 +27892,26 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, RealTimeReporting) {
       "a.test", "/.well-known/interest-group/real-time-report");
 
   WaitForUrl(expected_report_url);
-  std::optional<network::ResourceRequest> request =
+  const network::ResourceRequest& request =
       url_loader_monitor.WaitForUrl(expected_report_url);
-  ASSERT_TRUE(request);
-  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
-  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request->credentials_mode);
-  EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
-  EXPECT_EQ(test_origin, request->request_initiator);
+  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request.method);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+  EXPECT_EQ(network::mojom::RedirectMode::kError, request.redirect_mode);
+  EXPECT_EQ(test_origin, request.request_initiator);
 
-  EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kContentType),
+  EXPECT_THAT(request.headers.GetHeader(net::HttpRequestHeaders::kContentType),
               testing::Optional(std::string("application/cbor")));
 
-  ASSERT_TRUE(request->trusted_params);
+  ASSERT_TRUE(request.trusted_params);
   const net::IsolationInfo& isolation_info =
-      request->trusted_params->isolation_info;
+      request.trusted_params->isolation_info;
   EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
             isolation_info.request_type());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
 
   // Check the request body, which is the real time report in cbor.
-  std::string body = network::GetUploadData(*request);
+  std::string body = network::GetUploadData(request);
   const auto maybe_map = cbor::Reader::Read(base::as_byte_span(body));
   ASSERT_TRUE(maybe_map && maybe_map->is_map());
   const auto& map = maybe_map->GetMap();
@@ -28009,19 +27991,18 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
       "b.test", "/.well-known/interest-group/real-time-report");
 
   WaitForUrl(expected_report_url);
-  std::optional<network::ResourceRequest> request =
+  const network::ResourceRequest& request =
       url_loader_monitor.WaitForUrl(expected_report_url);
-  ASSERT_TRUE(request);
-  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
-  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request->credentials_mode);
-  EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
-  EXPECT_EQ(test_origin, request->request_initiator);
+  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request.method);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+  EXPECT_EQ(network::mojom::RedirectMode::kError, request.redirect_mode);
+  EXPECT_EQ(test_origin, request.request_initiator);
 
-  EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kContentType),
+  EXPECT_THAT(request.headers.GetHeader(net::HttpRequestHeaders::kContentType),
               testing::Optional(std::string("application/cbor")));
-  ASSERT_TRUE(request->trusted_params);
+  ASSERT_TRUE(request.trusted_params);
   const net::IsolationInfo& isolation_info =
-      request->trusted_params->isolation_info;
+      request.trusted_params->isolation_info;
   EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
             isolation_info.request_type());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
@@ -28083,10 +28064,9 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
       "a.test", "/.well-known/interest-group/real-time-report");
 
   WaitForUrl(expected_report_url);
-  std::optional<network::ResourceRequest> request =
+  const network::ResourceRequest& request =
       url_loader_monitor.WaitForUrl(expected_report_url);
-  ASSERT_TRUE(request);
-  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
+  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request.method);
 }
 
 IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest,
@@ -28325,27 +28305,26 @@ IN_PROC_BROWSER_TEST_F(FledgeUnNoisedRealTimeReportEnabledTest,
       "a.test", "/.well-known/interest-group/real-time-report");
 
   WaitForUrl(expected_report_url);
-  std::optional<network::ResourceRequest> request =
+  const network::ResourceRequest& request =
       url_loader_monitor.WaitForUrl(expected_report_url);
-  ASSERT_TRUE(request);
-  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
-  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request->credentials_mode);
-  EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
-  EXPECT_EQ(test_origin, request->request_initiator);
+  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request.method);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+  EXPECT_EQ(network::mojom::RedirectMode::kError, request.redirect_mode);
+  EXPECT_EQ(test_origin, request.request_initiator);
 
-  EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kContentType),
+  EXPECT_THAT(request.headers.GetHeader(net::HttpRequestHeaders::kContentType),
               testing::Optional(std::string("application/cbor")));
 
-  ASSERT_TRUE(request->trusted_params);
+  ASSERT_TRUE(request.trusted_params);
   const net::IsolationInfo& isolation_info =
-      request->trusted_params->isolation_info;
+      request.trusted_params->isolation_info;
   EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
             isolation_info.request_type());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
 
   // Check the request body, which is the real time report in cbor.
-  std::string body = network::GetUploadData(*request);
+  std::string body = network::GetUploadData(request);
   cbor::Reader::Config config;
   config.allow_floating_point = true;
   const auto maybe_map = cbor::Reader::Read(base::as_byte_span(body), config);
