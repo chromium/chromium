@@ -232,9 +232,7 @@ unsigned DnsRecordParser::ReadName(const void* const vpos,
         if (out) {
           if (!out->empty())
             out->append(".");
-          // TODO(danakj): Use append_range() in C++23.
-          auto range = packet_.subspan(offset, label_len);
-          out->append(range.begin(), range.end());
+          out->append_range(packet_.subspan(offset, label_len));
           CHECK_LE(out->size(), dns_protocol::kMaxCharNameLength);
         }
         offset += label_len;
