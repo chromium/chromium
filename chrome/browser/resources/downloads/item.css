@@ -85,6 +85,7 @@ cr-button {
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-width: 0;  /* This allows #file-link to elide correctly. */
   padding-bottom: 16px;
   padding-inline-end: 16px;
   padding-inline-start: var(--downloads-card-margin);
