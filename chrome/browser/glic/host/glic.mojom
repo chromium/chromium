@@ -247,7 +247,6 @@ interface PageHandler {
 
 // @generate glic_api
 // Reason for failure while acting.
-// LINT.IfChange(PerformActionsErrorReason)
 [Stable, Extensible]
 enum PerformActionsErrorReason {
   [Default] kUnknown = 0,
@@ -258,11 +257,8 @@ enum PerformActionsErrorReason {
   [MinVersion=2] kMissingTaskId = 2,
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:PerformActionsErrorReason)
-
 // @generate glic_api
 // Reason for failure when creating an actor task.
-// LINT.IfChange(CreateTaskErrorReason)
 [Stable, Extensible]
 enum CreateTaskErrorReason {
   [Default] kUnknown = 0,
@@ -270,8 +266,6 @@ enum CreateTaskErrorReason {
   // The host does not support the actor task system.
   kTaskSystemUnavailable = 1,
 };
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:CreateTaskErrorReason)
 
 // @generate glic_api
 // The state of an actor task.
