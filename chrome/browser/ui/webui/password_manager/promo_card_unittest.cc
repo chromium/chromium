@@ -35,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -316,9 +317,18 @@ TEST_F(PromoCardCheckupTest, PromoShownIn7DaysAfterDismiss) {
   histogram_tester.ExpectUniqueSample("PasswordManager.PromoCard.Shown", 0, 1);
 }
 
-class PromoCardInWebTest : public PromoCardBaseTest {
+class PromoCardInWebTest
+    : public PromoCardBaseTest,
+      public ::testing::WithParamInterface<signin::ConsentLevel> {
  public:
   void SetUp() override {
+    if (GetParam() == signin::ConsentLevel::kSignin) {
+      feature_list_.InitWithFeatures(
+          {syncer::kReplaceSyncPromosWithSignInPromos}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {syncer::kReplaceSyncPromosWithSignInPromos});
+    }
     PromoCardBaseTest::SetUp();
     sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -338,11 +348,22 @@ class PromoCardInWebTest : public PromoCardBaseTest {
 
  private:
   raw_ptr<syncer::TestSyncService> sync_service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PromoCardInWebTest, NoPromoIfNotSyncing) {
+INSTANTIATE_TEST_SUITE_P(ConsentLevel,
+                         PromoCardInWebTest,
+                         ::testing::Values(signin::ConsentLevel::kSignin,
+                                           signin::ConsentLevel::kSync));
+
+TEST_P(PromoCardInWebTest, NoPromoIfNotSyncing) {
   sync_service()->SetSignedOut();
-  ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+  if (GetParam() == signin::ConsentLevel::kSignin) {
+    ASSERT_FALSE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  } else {
+    ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
+  }
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
@@ -355,8 +376,12 @@ TEST_F(PromoCardInWebTest, NoPromoIfNotSyncing) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardInWebTest, PromoIsShownWhenSyncing) {
-  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+TEST_P(PromoCardInWebTest, PromoIsShownWhenSyncing) {
+  if (GetParam() == signin::ConsentLevel::kSignin) {
+    ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  } else {
+    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  }
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
@@ -366,8 +391,12 @@ TEST_F(PromoCardInWebTest, PromoIsShownWhenSyncing) {
   EXPECT_TRUE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardInWebTest, ShouldShowPromoFirstThreeTimes) {
-  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+TEST_P(PromoCardInWebTest, ShouldShowPromoFirstThreeTimes) {
+  if (GetParam() == signin::ConsentLevel::kSignin) {
+    ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  } else {
+    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  }
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
@@ -383,10 +412,14 @@ TEST_F(PromoCardInWebTest, ShouldShowPromoFirstThreeTimes) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardInWebTest, PromoNotShownAfterDismiss) {
+TEST_P(PromoCardInWebTest, PromoNotShownAfterDismiss) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  if (GetParam() == signin::ConsentLevel::kSignin) {
+    ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  } else {
+    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  }
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
