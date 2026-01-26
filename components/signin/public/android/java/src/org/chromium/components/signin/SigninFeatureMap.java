@@ -30,7 +30,11 @@ public final class SigninFeatureMap extends FeatureMap {
                     SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final List<CachedFlag> sCachedFlags = List.of(sMigrateAccountManagerDelegate);
+    public static final CachedFlag sSigninLevelUpButton =
+            new CachedFlag(
+                    sInstance, SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, /* defaultValue= */ false);
+    public static final List<CachedFlag> sCachedFlags =
+            List.of(sMigrateAccountManagerDelegate, sSigninLevelUpButton);
 
     /** Layout type for the sign-in promo. */
     @IntDef({
