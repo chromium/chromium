@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 namespace base {
@@ -147,6 +148,12 @@ const ui::ClipboardFormatType& SourceRFHTokenType();
 CONTENT_EXPORT ClipboardEndpoint
 GetSourceClipboardEndpoint(const ui::DataTransferEndpoint* data_dst,
                            ui::ClipboardBuffer clipboard_buffer);
+
+// Adds source-tracking metadata to `clipboard_writer` to mark its data as
+// originating from `rfh`.
+CONTENT_EXPORT void AddSourceDataToClipboardWriter(
+    ui::ScopedClipboardWriter& clipboard_writer,
+    content::RenderFrameHost& rfh);
 
 }  // namespace content
 

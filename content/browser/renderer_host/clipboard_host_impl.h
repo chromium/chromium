@@ -194,10 +194,6 @@ class CONTENT_EXPORT ClipboardHostImpl
   // reinitialize it in preparation for the next write.
   void ResetClipboardWriter();
 
-  // Adds source-tracking metadata to `clipboard_writer_` so it can be written
-  // to the clipboard on the next `CommitWrite()` call.
-  void AddSourceDataToClipboardWriter();
-
   // Creates a `ui::DataTransferEndpoint` representing the last committed URL.
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 

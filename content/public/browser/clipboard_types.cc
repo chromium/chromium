@@ -165,4 +165,12 @@ ClipboardEndpoint GetSourceClipboardEndpoint(
       *rfh);
 }
 
+void AddSourceDataToClipboardWriter(ui::ScopedClipboardWriter& clipboard_writer,
+                                    content::RenderFrameHost& rfh) {
+  clipboard_writer.SetDataSourceURL(rfh.GetMainFrame()->GetLastCommittedURL(),
+                                    rfh.GetLastCommittedURL());
+  clipboard_writer.WritePickledData(rfh.GetGlobalFrameToken().ToPickle(),
+                                    SourceRFHTokenType());
+}
+
 }  // namespace content
