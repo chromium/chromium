@@ -17,6 +17,7 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Handles running cleanup tasks when an object becomes eligible for GC. Cleanup tasks
@@ -130,14 +131,18 @@ public class CleanupReference extends WeakReference<Object> {
      */
     private static final Set<CleanupReference> sRefs = new HashSet<CleanupReference>();
 
-    private Runnable mCleanupTask;
+    private Consumer<Boolean> mCleanupTask;
+    // Whether the cleanup was triggered by an explicit call to cleanupNow() rather than
+    // a garbage collection event.
+    private boolean mExplicitCleanup;
 
     /**
-     * @param obj the object whose loss of reachability should trigger the
-     *            cleanup task.
-     * @param cleanupTask the task to run once obj loses reachability.
+     * @param obj the object whose loss of reachability should trigger the cleanup task.
+     * @param cleanupTask the boolean consumer task to run once obj loses reachability. The boolean
+     *     parameter indicates whether the cleanup was triggered by an explicit call to {@link
+     *     #cleanupNow()} rather than a garbage collection event.
      */
-    public CleanupReference(Object obj, Runnable cleanupTask) {
+    public CleanupReference(Object obj, Consumer<Boolean> cleanupTask) {
         super(obj, sGcQueue);
         if (DEBUG) Log.d(TAG, "+++ CREATED ONE REF");
         mCleanupTask = cleanupTask;
@@ -149,6 +154,7 @@ public class CleanupReference extends WeakReference<Object> {
      * after garbage collection.
      */
     public void cleanupNow() {
+        mExplicitCleanup = true;
         handleOnUiThread(REMOVE_REF);
     }
 
@@ -169,11 +175,11 @@ public class CleanupReference extends WeakReference<Object> {
     private void runCleanupTaskInternal() {
         if (DEBUG) Log.d(TAG, "runCleanupTaskInternal");
         sRefs.remove(this);
-        Runnable cleanupTask = mCleanupTask;
+        Consumer<Boolean> cleanupTask = mCleanupTask;
         mCleanupTask = null;
         if (cleanupTask != null) {
             if (DEBUG) Log.i(TAG, "--- CLEANING ONE REF");
-            cleanupTask.run();
+            cleanupTask.accept(mExplicitCleanup);
         }
         clear();
     }

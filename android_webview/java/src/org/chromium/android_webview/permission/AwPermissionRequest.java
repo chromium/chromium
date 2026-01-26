@@ -32,19 +32,6 @@ public class AwPermissionRequest {
     // Responsible for deleting native peer.
     private CleanupReference mCleanupReference;
 
-    private static final class DestroyRunnable implements Runnable {
-        private final long mNativeAwPermissionRequest;
-
-        private DestroyRunnable(long nativeAwPermissionRequest) {
-            mNativeAwPermissionRequest = nativeAwPermissionRequest;
-        }
-
-        @Override
-        public void run() {
-            AwPermissionRequestJni.get().destroy(mNativeAwPermissionRequest);
-        }
-    }
-
     @CalledByNative
     private static AwPermissionRequest create(
             long nativeAwPermissionRequest, @JniType("std::string") String url, long resources) {
@@ -58,7 +45,9 @@ public class AwPermissionRequest {
         mOrigin = origin;
         mResources = resources;
         mCleanupReference =
-                new CleanupReference(this, new DestroyRunnable(mNativeAwPermissionRequest));
+                new CleanupReference(
+                        this,
+                        (e) -> AwPermissionRequestJni.get().destroy(nativeAwPermissionRequest));
     }
 
     public Uri getOrigin() {
