@@ -50,11 +50,13 @@ void LogNudgeInteractionHistogram(NudgeInteraction interaction,
 
 void LogNudgeInteractionUKM(ukm::SourceId source_id,
                             NudgeInteraction interaction,
+                            bool is_dynamic,
                             base::TimeTicks document_available_time,
                             base::TimeTicks nudge_shown_time) {
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::ContextualCueing_NudgeInteraction(source_id)
       .SetNudgeInteraction(static_cast<int64_t>(interaction))
+      .SetNudgeIsDynamic(is_dynamic)
       .SetNudgeShownDuration(ukm::GetExponentialBucketMinForUserTiming(
           (base::TimeTicks::Now() - nudge_shown_time).InMilliseconds()))
       .SetNudgeLatencyAfterPageLoad(
@@ -321,7 +323,7 @@ void ContextualCueingService::OnNudgeActivity(
     CHECK(nudge_time);
     LogNudgeInteractionUKM(
         web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(), interaction,
-        document_available_time, *nudge_time);
+        is_dynamic, document_available_time, *nudge_time);
   }
 }
 

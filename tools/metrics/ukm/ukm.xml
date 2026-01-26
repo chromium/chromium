@@ -7905,7 +7905,7 @@ be describing additional metrics about the same event.
 
 <event name="ContextualCueing.NudgeDecision">
   <owner>sophiechang@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     Recorded when a decision to nudge an optimization type was made for the page
     load.
@@ -7924,13 +7924,18 @@ be describing additional metrics about the same event.
 
 <event name="ContextualCueing.NudgeInteraction">
   <owner>sophiechang@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     Recorded only if a contextual cueing nudge was shown to the user.
   </summary>
   <metric name="NudgeInteraction" enum="ContextualCueingNudgeInteraction">
     <summary>
       The interaction the user had with the contextual cueing nudge.
+    </summary>
+  </metric>
+  <metric name="NudgeIsDynamic" enum="Boolean">
+    <summary>
+      Whether the nudge is showing a dynamic cue (vs. a static cue).
     </summary>
   </metric>
   <metric name="NudgeLatencyAfterPageLoad">
