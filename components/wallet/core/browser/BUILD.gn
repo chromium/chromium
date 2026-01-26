@@ -22,9 +22,9 @@ static_library("browser") {
     "strike_databases/walletable_pass_consent_strike_database.h",
     "strike_databases/walletable_pass_save_strike_database_by_host.cc",
     "strike_databases/walletable_pass_save_strike_database_by_host.h",
-    "walletable_pass_client.h",
-    "walletable_pass_ingestion_controller.cc",
-    "walletable_pass_ingestion_controller.h",
+    "ingestion/walletable_pass_client.h",
+    "ingestion/walletable_pass_ingestion_controller.cc",
+    "ingestion/walletable_pass_ingestion_controller.h",
     "walletable_permission_utils.cc",
     "walletable_permission_utils.h",
   ]
@@ -47,7 +47,7 @@ static_library("browser") {
 
 source_set("test_support") {
   testonly = true
-  sources = [ "walletable_pass_ingestion_controller_test_api.h" ]
+  sources = [ "ingestion/walletable_pass_ingestion_controller_test_api.h" ]
   deps = [
     ":browser",
     "//base",
@@ -64,7 +64,7 @@ source_set("unit_tests") {
     "walletable_permission_utils_unittest.cc",
   ]
   if (build_with_model_execution) {
-    sources += [ "walletable_pass_ingestion_controller_unittest.cc" ]
+    sources += [ "ingestion/walletable_pass_ingestion_controller_unittest.cc" ]
   }
   deps = [
     ":browser",

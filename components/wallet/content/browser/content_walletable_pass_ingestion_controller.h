@@ -6,7 +6,7 @@
 #define COMPONENTS_WALLET_CONTENT_BROWSER_CONTENT_WALLETABLE_PASS_INGESTION_CONTROLLER_H_
 
 #include "components/wallet/content/browser/walletable_pass_barcode_detector_impl.h"
-#include "components/wallet/core/browser/walletable_pass_ingestion_controller.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_ingestion_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {

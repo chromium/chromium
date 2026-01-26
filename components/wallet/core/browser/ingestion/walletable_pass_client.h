@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_CLIENT_H_
-#define COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_CLIENT_H_
+#ifndef COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_CLIENT_H_
+#define COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_CLIENT_H_
 
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
@@ -83,4 +83,4 @@ class WalletablePassClient {
 
 }  // namespace wallet
 
-#endif  // COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_CLIENT_H_
+#endif  // COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_CLIENT_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/wallet/core/browser/walletable_pass_ingestion_controller.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_ingestion_controller.h"
 
 #include <memory>
 
@@ -21,8 +21,8 @@
 #include "components/wallet/core/browser/data_models/data_model_utils.h"
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
-#include "components/wallet/core/browser/walletable_pass_client.h"
-#include "components/wallet/core/browser/walletable_pass_ingestion_controller_test_api.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_client.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_ingestion_controller_test_api.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "components/wallet/core/common/wallet_prefs.h"

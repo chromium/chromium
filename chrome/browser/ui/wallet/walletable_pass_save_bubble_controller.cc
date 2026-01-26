@@ -18,7 +18,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/wallet/core/browser/data_models/walletable_pass.h"
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
-#include "components/wallet/core/browser/walletable_pass_client.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_client.h"
 #include "content/public/browser/web_contents.h"
 
 namespace wallet {

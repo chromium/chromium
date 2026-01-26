@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_INGESTION_CONTROLLER_H_
-#define COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_INGESTION_CONTROLLER_H_
+#ifndef COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_INGESTION_CONTROLLER_H_
+#define COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_INGESTION_CONTROLLER_H_
 
 #include <optional>
 #include <string>
@@ -19,7 +19,7 @@
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/strike_databases/walletable_pass_consent_strike_database.h"
 #include "components/wallet/core/browser/strike_databases/walletable_pass_save_strike_database_by_host.h"
-#include "components/wallet/core/browser/walletable_pass_client.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_client.h"
 
 class GURL;
 
@@ -180,4 +180,4 @@ class WalletablePassIngestionController {
 
 }  // namespace wallet
 
-#endif  // COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_INGESTION_CONTROLLER_H_
+#endif  // COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_INGESTION_CONTROLLER_H_

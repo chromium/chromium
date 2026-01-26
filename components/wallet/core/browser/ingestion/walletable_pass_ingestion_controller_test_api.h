@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_INGESTION_CONTROLLER_TEST_API_H_
-#define COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_INGESTION_CONTROLLER_TEST_API_H_
+#ifndef COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_INGESTION_CONTROLLER_TEST_API_H_
+#define COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_INGESTION_CONTROLLER_TEST_API_H_
 
 #include <string>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
-#include "components/wallet/core/browser/walletable_pass_ingestion_controller.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_ingestion_controller.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -69,4 +69,4 @@ inline WalletablePassIngestionControllerTestApi test_api(
 
 }  // namespace wallet
 
-#endif  // COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_INGESTION_CONTROLLER_TEST_API_H_
+#endif  // COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_INGESTION_CONTROLLER_TEST_API_H_
