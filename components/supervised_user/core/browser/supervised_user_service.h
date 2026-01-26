@@ -20,9 +20,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
+#include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -30,7 +30,6 @@
 
 class PrefService;
 class SupervisedUserServiceObserver;
-class SupervisedUserServiceFactory;
 
 namespace signin {
 class IdentityManager;

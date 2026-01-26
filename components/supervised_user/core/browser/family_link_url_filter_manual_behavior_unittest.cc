@@ -32,8 +32,8 @@ class FamilyLinkUrlFilterManualBehaviorTestBase : public ::testing::Test {
     supervised_user_test_environment_.Shutdown();
   }
 
-  SupervisedUserUrlFilteringService* under_test() {
-    return supervised_user_test_environment_.url_filtering_service();
+  FamilyLinkUrlFilter* under_test() {
+    return supervised_user_test_environment_.url_filter();
   }
 
   SupervisedUserTestEnvironment& test_env() {

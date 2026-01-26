@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTER_H_
-#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTER_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_URL_FILTER_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_URL_FILTER_H_
 
 #include <functional>
 #include <map>
@@ -239,4 +239,4 @@ class FamilyLinkUrlFilter : public SupervisedUserUrlFilteringService::Delegate {
 
 }  // namespace supervised_user
 
-#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_URL_FILTER_H_
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_URL_FILTER_H_

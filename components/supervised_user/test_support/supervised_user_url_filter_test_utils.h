@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
 namespace version_info {
 enum class Channel;
