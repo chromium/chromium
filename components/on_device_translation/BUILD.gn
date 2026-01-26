@@ -22,6 +22,8 @@ source_set("features") {
 
 source_set("on_device_translation") {
   sources = [
+    "installer.cc",
+    "installer.h",
     "metrics.cc",
     "metrics.h",
     "translation_manager_util.cc",
@@ -71,5 +73,20 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test/fake_installer.cc",
+    "test/fake_installer.h",
+  ]
+  deps = [
+    ":on_device_translation",
+    ":public",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
   ]
 }

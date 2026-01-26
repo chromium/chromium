@@ -1,8 +1,8 @@
 include_rules = [
-  "+components/prefs",
   "+crypto/sha2.h",
   "+mojo/public/cpp/bindings",
   "+third_party/blink/public/mojom",
+  "+components/prefs",
 ]
 
 specific_include_rules = {
