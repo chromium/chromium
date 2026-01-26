@@ -167,6 +167,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -999,7 +1000,8 @@ class ContextMenuForLockedFullscreenBrowserTest
 
 IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
                        ItemsAreDisabledWhenPinnedAndNotLockedForOnTask) {
-  browser()->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      false);
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeImage(/*url=*/kTestUrl);
@@ -1054,7 +1056,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
   }
 
   // Lock instance for OnTask.
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
 
   // Set locked fullscreen state.
   ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
@@ -1105,7 +1108,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
   }
 
   // Lock instance for OnTask.
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
 
   // Verify page navigation commands and some contextual content commands remain
   // enabled.

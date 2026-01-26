@@ -840,11 +840,6 @@ class Browser : public TabStripModelObserver,
   // async and allows graceful teardown of the tab strip and associated data.
   void SynchronouslyDestroyBrowser();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  bool IsLockedForOnTask();
-  void SetLockedForOnTask(bool locked);
-#endif
-
 #if BUILDFLAG(IS_OZONE)
   const std::optional<ui::PlatformSessionWindowData>& platform_session_data()
       const {
@@ -1351,14 +1346,6 @@ class Browser : public TabStripModelObserver,
 
   // If true, immediately updates the UI when scheduled.
   bool update_ui_immediately_for_testing_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // OnTask is a ChromeOS feature that is not related to web browsers, but
-  // happens to be implemented using code in //chrome/browser. The feature,
-  // when enabled, disables certain functionality that a web browser would
-  // never typically disable.
-  bool on_task_locked_ = false;
-#endif
 
   const base::ElapsedTimer creation_timer_;
 

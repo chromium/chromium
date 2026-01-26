@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/ash/test_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -204,7 +205,8 @@ TEST_F(ImmersiveModeControllerChromeosTest, FullscreenToLockedTransition) {
 // browser scenarios.
 TEST_F(ImmersiveModeControllerChromeosTest,
        FullscreenToLockedTransitionWhenLockedForOnTask) {
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   AddTab(browser(), GURL("about:blank"));
   // Start in fullscreen and verify ImmersiveController is enabled.
   ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());

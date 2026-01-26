@@ -131,6 +131,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
@@ -464,7 +465,8 @@ void BrowserCommandController::FindBarVisibilityChanged() {
   // with OnTask.
   bool should_block_command_update = is_locked_fullscreen_;
 #if BUILDFLAG(IS_CHROMEOS)
-  if (browser_->IsLockedForOnTask()) {
+  if (ash::boca::OnTaskLockedController::From(browser_)
+          ->is_locked_for_on_task()) {
     should_block_command_update = false;
   }
 #endif
@@ -1389,7 +1391,8 @@ bool BrowserCommandController::UpdateCommandEnabled(int id, bool state) {
   // with OnTask.
   bool should_block_command_update = is_locked_fullscreen_;
 #if BUILDFLAG(IS_CHROMEOS)
-  if (browser_->IsLockedForOnTask()) {
+  if (ash::boca::OnTaskLockedController::From(browser_)
+          ->is_locked_for_on_task()) {
     should_block_command_update = false;
   }
 #endif
@@ -1845,7 +1848,8 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   // OnTask.
   bool skip_all_command_updates = is_locked_fullscreen_;
 #if BUILDFLAG(IS_CHROMEOS)
-  if (browser_->IsLockedForOnTask()) {
+  if (ash::boca::OnTaskLockedController::From(browser_)
+          ->is_locked_for_on_task()) {
     skip_all_command_updates = false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -2184,7 +2188,8 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
     // Enable commands that allow users to switch between tabs and find content
     // within a webpage if the webapp is locked for OnTask
     // (only relevant for non-web browser scenarios).
-    if (browser_->IsLockedForOnTask()) {
+    if (ash::boca::OnTaskLockedController::From(browser_)
+            ->is_locked_for_on_task()) {
       bool supports_tabs = browser_->SupportsWindowFeature(
           Browser::WindowFeature::kFeatureTabStrip);
       command_updater_.UpdateCommandEnabled(IDC_SELECT_NEXT_TAB, supports_tabs);
@@ -2242,7 +2247,8 @@ void BrowserCommandController::UpdateReloadStopState(bool is_loading,
   // with OnTask.
   bool should_skip_command_updates = is_locked_fullscreen_;
 #if BUILDFLAG(IS_CHROMEOS)
-  if (browser_->IsLockedForOnTask()) {
+  if (ash::boca::OnTaskLockedController::From(browser_)
+          ->is_locked_for_on_task()) {
     should_skip_command_updates = false;
   }
 #endif

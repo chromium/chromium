@@ -61,6 +61,10 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/webview/webview.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/recently_audible_helper.h"
 #endif
@@ -158,15 +162,19 @@ TEST_F(BrowserViewTest, BrowserView) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
-  ASSERT_TRUE(browser_view()->browser());
-  browser_view()->browser()->SetLockedForOnTask(true);
+  Browser* const browser = browser_view()->browser();
+  ASSERT_TRUE(browser);
+  ash::boca::OnTaskLockedController::From(browser)->set_locked_for_on_task(
+      true);
   EXPECT_FALSE(browser_view()->CanMinimize());
   EXPECT_FALSE(browser_view()->ShouldShowCloseButton());
 }
 
 TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
-  ASSERT_TRUE(browser_view()->browser());
-  browser_view()->browser()->SetLockedForOnTask(false);
+  Browser* const browser = browser_view()->browser();
+  ASSERT_TRUE(browser);
+  ash::boca::OnTaskLockedController::From(browser)->set_locked_for_on_task(
+      false);
   EXPECT_TRUE(browser_view()->CanMinimize());
   EXPECT_TRUE(browser_view()->ShouldShowCloseButton());
 }

@@ -19,9 +19,6 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/ash/test_util.h"
-#endif
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -93,6 +90,11 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/ash/test_util.h"
 #endif
 
 class BrowserViewTest : public InProcessBrowserTest {
@@ -278,13 +280,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   EXPECT_FALSE(browser_view()->CanMinimize());
   EXPECT_FALSE(browser_view()->ShouldShowCloseButton());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
-  browser()->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      false);
   EXPECT_TRUE(browser_view()->CanMinimize());
   EXPECT_TRUE(browser_view()->ShouldShowCloseButton());
 }

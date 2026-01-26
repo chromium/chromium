@@ -29,6 +29,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -1607,7 +1608,8 @@ using LockedFullscreenBrowserFrameViewChromeOSTest =
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
                        ToggleTabletModeWhenNotLockedForOnTask) {
-  browser()->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      false);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
   auto* const immersive_mode_controller =
@@ -1649,7 +1651,8 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
                        ToggleTabletModeWhenLockedForOnTask) {
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
   auto* const immersive_mode_controller =

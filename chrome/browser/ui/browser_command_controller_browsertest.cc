@@ -61,6 +61,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "ui/aura/window.h"
@@ -276,7 +277,8 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
                        WhenNotLockedForOnTask) {
-  browser()->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      false);
   CommandUpdaterImpl* const command_updater = GetCommandUpdater();
 
   // IDC_EXIT is always enabled in regular mode so it's a perfect candidate for
@@ -303,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
                        WhenLockedForOnTask) {
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   CommandUpdaterImpl* const command_updater = GetCommandUpdater();
 
   // IDC_EXIT is always enabled in regular mode so it's a perfect candidate for

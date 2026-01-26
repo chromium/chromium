@@ -34,6 +34,10 @@
 #include "extensions/common/constants.h"
 #endif  // (ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 ////////////////////////////////////////////////////////////////////////////////
 // UnloadController, public:
 
@@ -64,7 +68,8 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Tabs cannot be closed when the app is locked for OnTask. Only relevant for
   // non-web browser scenarios.
-  if (browser_->IsLockedForOnTask()) {
+  if (ash::boca::OnTaskLockedController::From(browser_)
+          ->is_locked_for_on_task()) {
     return false;
   }
 #endif

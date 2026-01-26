@@ -49,6 +49,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #endif
 
 using views::FocusManager;
@@ -634,14 +635,16 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        DisableImmersiveModeWhenNotLockedForOnTask) {
-  browser()->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      false);
   ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_FALSE(ImmersiveModeController::From(browser())->IsEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        EnableImmersiveModeWhenLockedForOnTask) {
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_TRUE(ImmersiveModeController::From(browser())->IsEnabled());
 }

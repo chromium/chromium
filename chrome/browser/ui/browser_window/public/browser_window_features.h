@@ -114,6 +114,12 @@ class SessionRestoreInfobarController;
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace ash::boca {
+class OnTaskLockedController;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 class DownloadToolbarUIController;
 #endif
@@ -804,6 +810,10 @@ class BrowserWindowFeatures {
   std::unique_ptr<omnibox::OmniboxPopupCloser> omnibox_popup_closer_;
 
   std::unique_ptr<skills::SkillsUiController> skills_ui_controller_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ash::boca::OnTaskLockedController> on_task_locked_controller_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.

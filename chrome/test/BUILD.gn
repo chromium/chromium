@@ -4902,7 +4902,10 @@ if (!is_android) {
       }
 
       if (is_chromeos) {
-        deps += [ "//chrome/browser/ui/webui/ash/parent_access:test_support" ]
+        deps += [
+          "//chrome/browser/ash/boca/on_task",
+          "//chrome/browser/ui/webui/ash/parent_access:test_support",
+        ]
         sources += [
           "../browser/extensions/api/identity/launch_web_auth_flow_delegate_ash_browsertest.cc",
           "../browser/ui/views/extensions/web_file_handlers/web_file_handlers_file_launch_browsertest.cc",
@@ -9097,6 +9100,7 @@ test("unit_tests") {
       "//chrome/browser/ash/arc/vmm",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/attestation:test_support",
+      "//chrome/browser/ash/boca/on_task",
       "//chrome/browser/ash/browser_delegate:impl",
       "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/certificate_provider:unit_tests",
@@ -12094,6 +12098,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/accessibility",
           "//chrome/browser/ash/accessibility:test_support",
           "//chrome/browser/ash/app_restore",
+          "//chrome/browser/ash/boca/on_task",
           "//chrome/browser/ash/child_accounts:test_support",
           "//chrome/browser/ash/child_accounts/time_limits:test_support",
           "//chrome/browser/ash/crosapi",

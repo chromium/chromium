@@ -1283,17 +1283,6 @@ void Browser::DidBecomeInactive() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-bool Browser::IsLockedForOnTask() {
-  return on_task_locked_;
-}
-
-void Browser::SetLockedForOnTask(bool locked) {
-  on_task_locked_ = locked;
-  GetBrowserView().OnLockedForOnTaskUpdated();
-}
-#endif
-
 void Browser::OnWindowClosing() {
   // There may be situations where async tasks, such as
   // UnloadController::ProcessPendingTabs, may call into OnWindowClosing() after

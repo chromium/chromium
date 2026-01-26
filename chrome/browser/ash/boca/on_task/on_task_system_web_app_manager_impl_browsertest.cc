@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/boca/boca_manager.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/platform_util.h"
@@ -122,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // locked mode transition.
   Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
   ASSERT_THAT(boca_app_browser, NotNull());
-  EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  EXPECT_TRUE(
+      OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   EXPECT_EQ(boca_app_browser->session_id(),
             system_web_app_manager.GetActiveSystemWebAppWindowID());
 }
@@ -143,7 +145,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // locked mode transition.
   Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
   ASSERT_THAT(boca_app_browser, NotNull());
-  EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  EXPECT_TRUE(
+      OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   EXPECT_EQ(boca_app_browser->session_id(),
             system_web_app_manager.GetActiveSystemWebAppWindowID());
 
@@ -494,7 +497,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // Verify that the tab is cleaned up after window prep.
   system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
       boca_app_browser->session_id(), /*close_bundle_content=*/true);
-  EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  EXPECT_TRUE(
+      OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(
       boca_app_browser->window()->GetNativeWindow());
   // TODO (b/382277303): Verify if resize is disabled in locked fullscreen mode.
@@ -526,7 +530,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   // Verify that the tab is not destroyed after window prep.
   system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
       boca_app_browser->session_id(), /*close_bundle_content=*/false);
-  EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  EXPECT_TRUE(
+      OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
   EXPECT_FALSE(boca_app_browser->ShouldRunUnloadListenerBeforeClosing(
       boca_app_browser->tab_strip_model()->GetActiveWebContents()));

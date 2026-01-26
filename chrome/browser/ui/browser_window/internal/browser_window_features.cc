@@ -165,6 +165,10 @@
 #include "chrome/browser/ui/views/frame/windows_taskbar_icon_updater.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
@@ -438,6 +442,12 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               session_restore_infobar::SessionRestoreInfobarController>(
               *browser, browser);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  on_task_locked_controller_ =
+      GetUserDataFactory().CreateInstance<ash::boca::OnTaskLockedController>(
+          *browser, browser);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Initialize embedder features last.
   embedder_browser_window_features_ =

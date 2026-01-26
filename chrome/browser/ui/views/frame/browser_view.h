@@ -870,7 +870,7 @@ class BrowserView : public BrowserWindow,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // This is used only for SWA/PWA scenario.
-  void OnLockedForOnTaskUpdated();
+  void OnLockedForOnTaskUpdated(bool locked_for_on_task);
 
   bool IsLockedFullscreen() const;
 #endif
@@ -1448,6 +1448,8 @@ class BrowserView : public BrowserWindow,
   base::CallbackListSubscription vertical_tab_subscription_;
 
   base::CallbackListSubscription projects_panel_subscription_;
+
+  base::CallbackListSubscription on_locked_task_subscription_;
 
   // Bitmask of current combination of reparenting states, e.g. immersive and
   // ChromeOS tablet modes.

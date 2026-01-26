@@ -74,6 +74,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/account_id/account_id.h"
 #endif
@@ -549,7 +550,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     bool should_block_navigation =
         platform_util::IsBrowserLockedFullscreen(source_browser);
 #if BUILDFLAG(IS_CHROMEOS)
-    if (source_browser->IsLockedForOnTask()) {
+    if (ash::boca::OnTaskLockedController::From(source_browser)
+            ->is_locked_for_on_task()) {
       should_block_navigation = false;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)

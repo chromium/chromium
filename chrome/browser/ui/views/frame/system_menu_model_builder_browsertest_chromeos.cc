@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/autotest_desks_api.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -60,7 +61,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
   webapps::AppId app_id = InstallMockApp();
   Browser* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  app_browser->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(app_browser)
+      ->set_locked_for_on_task(false);
 
   // Create a new desk so we can verify desk menu options visibility.
   ASSERT_TRUE(ash::AutotestDesksApi().CreateNewDesk());
@@ -86,7 +88,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
   webapps::AppId app_id = InstallMockApp();
   Browser* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  app_browser->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(app_browser)
+      ->set_locked_for_on_task(true);
 
   // Create a new desk so we can verify desk menu options visibility.
   ASSERT_TRUE(ash::AutotestDesksApi().CreateNewDesk());

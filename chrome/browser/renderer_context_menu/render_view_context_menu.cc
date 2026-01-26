@@ -320,6 +320,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/chromeos/arc/open_with_menu.h"
 #include "chrome/browser/chromeos/arc/start_smart_selection_action_menu.h"
@@ -2834,7 +2835,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     should_disable_command_for_locked_fullscreen_or_on_task = true;
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  if (browser && browser->IsLockedForOnTask()) {
+  if (browser && ash::boca::OnTaskLockedController::From(browser)
+                     ->is_locked_for_on_task()) {
     bool is_page_nav_command =
         (id == IDC_BACK) || (id == IDC_FORWARD) || (id == IDC_RELOAD);
     bool is_allowed_content_context_command =

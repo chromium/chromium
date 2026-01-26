@@ -123,7 +123,10 @@ source_set("internal") {
     }
 
     if (is_chromeos) {
-      deps += [ "//components/session_manager/core" ]
+      deps += [
+        "//chrome/browser/ash/boca/on_task",
+        "//components/session_manager/core",
+      ]
     }
 
     if (enable_glic) {

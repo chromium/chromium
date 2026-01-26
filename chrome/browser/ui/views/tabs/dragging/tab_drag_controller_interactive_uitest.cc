@@ -127,6 +127,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
@@ -5871,7 +5872,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   EXPECT_EQ(Browser::Type::TYPE_APP, browser()->GetType());
 
   // Lock the app for OnTask and set up app for testing drag behavior.
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   AddTabsAndResetBrowser(browser(), /*additional_tabs=*/3, GetAppUrl());
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ("0 1 2 3", IDString(tab_strip_model));
@@ -5905,7 +5907,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   EXPECT_EQ(Browser::Type::TYPE_APP, browser()->GetType());
 
   // Lock the app for OnTask and set up app for testing drag behavior.
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   AddTabsAndResetBrowser(browser(), /*additional_tabs=*/3, GetAppUrl());
 
   // Drag tab away from tab strip and verify it is not detached.
@@ -5934,7 +5937,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   EXPECT_EQ(Browser::Type::TYPE_APP, browser()->GetType());
 
   // Lock the app for OnTask.
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   const gfx::Rect& initial_bounds =
       browser()->window()->GetNativeWindow()->bounds();
 

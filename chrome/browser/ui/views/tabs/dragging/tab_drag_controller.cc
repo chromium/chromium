@@ -83,6 +83,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"  // nogncheck
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"  // nogncheck
 #endif
@@ -429,7 +430,8 @@ TabDragController::Liveness TabDragController::Init(
   Browser* source_browser = BrowserView::GetBrowserViewForNativeWindow(
                                 source_context->GetWidget()->GetNativeWindow())
                                 ->browser();
-  if (source_browser->IsLockedForOnTask()) {
+  if (ash::boca::OnTaskLockedController::From(source_browser)
+          ->is_locked_for_on_task()) {
     ref->detach_behavior_ = DetachBehavior::kNotDetachable;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

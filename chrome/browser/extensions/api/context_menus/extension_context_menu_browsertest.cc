@@ -51,6 +51,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #endif
 
 using content::WebContents;
@@ -985,7 +986,8 @@ class ExtensionContextMenuLockedFullscreenTest
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLockedFullscreenTest,
                        VerifyItemStateForOnTask) {
-  browser()->SetLockedForOnTask(IsLockedForOnTask());
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      IsLockedForOnTask());
   if (IsLockedFullscreen()) {
     ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   }

@@ -338,6 +338,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/window_properties.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -1039,6 +1040,13 @@ BrowserView::BrowserView(Browser* browser)
             base::BindRepeating(&BrowserView::OnProjectsPanelStateChanged,
                                 base::Unretained(this)));
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  on_locked_task_subscription_ =
+      ash::boca::OnTaskLockedController::From(browser_)
+          ->AddLockedForOnTaskUpdatedCallback(base::BindRepeating(
+              &BrowserView::OnLockedForOnTaskUpdated, base::Unretained(this)));
+#endif
 }
 
 BrowserView::~BrowserView() {
@@ -2434,8 +2442,7 @@ TabDragTarget* BrowserView::GetTabDragTarget(
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-void BrowserView::OnLockedForOnTaskUpdated() {
-  bool locked_for_on_task = browser()->IsLockedForOnTask();
+void BrowserView::OnLockedForOnTaskUpdated(bool locked_for_on_task) {
   // Use immersive mode for tabbed PWA.
   if (browser()->CanSupportWindowFeature(
           Browser::WindowFeature::kFeatureTabStrip)) {
