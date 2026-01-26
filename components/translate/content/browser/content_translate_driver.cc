@@ -58,7 +58,14 @@ ContentTranslateDriver::ContentTranslateDriver(
       next_page_seq_no_(0),
       language_histogram_(url_language_histogram) {}
 
-ContentTranslateDriver::~ContentTranslateDriver() = default;
+ContentTranslateDriver::~ContentTranslateDriver() {
+  // Clear any remaining observers to avoid the CHECK in ObserverList's
+  // destructor. This can happen if the WebContents is destroyed before
+  // observers have a chance to unregister (e.g., Java-side cleanup callbacks
+  // may not fire in time during WebContents destruction).
+  // See https://crbug.com/474819145.
+  translation_observers_.Clear();
+}
 
 void ContentTranslateDriver::AddTranslationObserver(
     TranslationObserver* observer) {
