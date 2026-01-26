@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoord
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -46,6 +47,7 @@ public class HomePageButtonsMediator {
     private final Supplier<@Nullable Profile> mProfileSupplier;
     private final Supplier<Boolean> mIsHomeButtonMenuDisabled;
     private final Callback<Context> mOnHomeButtonMenuClickCallback;
+    private final WindowAndroid mWindowAndroid;
     private MVCListAdapter.@Nullable ModelList mHomeButtonMenuList;
     private @Nullable ListMenuDelegate mHomeButtonListMenuDelegate;
     private final PropertyModel mModel;
@@ -73,7 +75,8 @@ public class HomePageButtonsMediator {
             Callback<Context> onHomeButtonMenuClickCallback,
             Supplier<Boolean> isHomepageMenuDisabledSupplier,
             BottomSheetController bottomSheetController,
-            View.OnClickListener onHomeButtonClickListener) {
+            View.OnClickListener onHomeButtonClickListener,
+            WindowAndroid windowAndroid) {
         mContext = context;
         mProfileSupplier = profileSupplier;
         mModel = model;
@@ -81,6 +84,7 @@ public class HomePageButtonsMediator {
         mIsHomeButtonMenuDisabled = isHomepageMenuDisabledSupplier;
         mBottomSheetController = bottomSheetController;
         mOnHomeButtonClickListener = onHomeButtonClickListener;
+        mWindowAndroid = windowAndroid;
 
         prepareHomePageButtonsData();
     }
@@ -100,7 +104,8 @@ public class HomePageButtonsMediator {
                                             mContext,
                                             mBottomSheetController,
                                             mProfileSupplier,
-                                            NtpCustomizationCoordinator.BottomSheetType.MAIN)
+                                            NtpCustomizationCoordinator.BottomSheetType.MAIN,
+                                            mWindowAndroid)
                                     .showBottomSheet();
                             NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                                     EntryPointType.TOOL_BAR);

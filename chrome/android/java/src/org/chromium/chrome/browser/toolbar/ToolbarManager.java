@@ -1079,7 +1079,8 @@ public class ToolbarManager
                                 this::onHomeButtonMenuClick,
                                 HomepagePolicyManager::isHomepageLocationManaged,
                                 mBottomSheetController,
-                                this::onHomePageButtonClick);
+                                this::onHomePageButtonClick,
+                                mWindowAndroid);
             }
         }
 

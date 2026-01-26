@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinat
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -125,7 +126,8 @@ public class NtpCustomizationCoordinator {
             Context context,
             BottomSheetController bottomSheetController,
             Supplier<@Nullable Profile> profileSupplier,
-            @BottomSheetType int bottomSheetType) {
+            @BottomSheetType int bottomSheetType,
+            WindowAndroid windowAndroid) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mProfileSupplier = profileSupplier;
@@ -172,7 +174,8 @@ public class NtpCustomizationCoordinator {
                         bottomSheetContent,
                         viewFlipperPropertyModel,
                         containerPropertyModel,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        windowAndroid);
         mMediator.registerBottomSheetLayout(MAIN);
 
         mDelegate = createBottomSheetDelegate();

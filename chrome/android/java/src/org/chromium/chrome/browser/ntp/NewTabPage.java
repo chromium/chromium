@@ -173,6 +173,7 @@ public class NewTabPage
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ObserverList<MostVisitedTileClickObserver> mMostVisitedTileClickObservers;
     private final BottomSheetController mBottomSheetController;
+    private final WindowAndroid mWindowAndroid;
     private FeedSurfaceProvider mFeedSurfaceProvider;
 
     private NewTabPageLayout mNewTabPageLayout;
@@ -579,6 +580,7 @@ public class NewTabPage
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mTopInsetProviderSupplier = topInsetProviderSupplier;
+        mWindowAndroid = windowAndroid;
 
         Profile profile = mTab.getProfile();
 
@@ -1608,7 +1610,8 @@ public class NewTabPage
                         mContext,
                         mBottomSheetController,
                         mTab::getProfile,
-                        NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS)
+                        NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS,
+                        mWindowAndroid)
                 .showBottomSheet();
     }
 

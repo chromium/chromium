@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoord
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
@@ -73,7 +74,8 @@ public class HomePageButtonsCoordinatorUnitTest {
                         mock(Callback.class),
                         mock(Supplier.class),
                         mBottomSheetController,
-                        mOnHomeButtonClickListener);
+                        mOnHomeButtonClickListener,
+                        mock(WindowAndroid.class));
         mHomePageButtonsCoordinator.setMediatorForTesting(mMediator);
         mHomePageButtonsCoordinator.setModelForTesting(mModel);
     }
