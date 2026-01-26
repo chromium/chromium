@@ -9,6 +9,11 @@ import type {NtpExtension, OnStartupBrowserProxy, SettingsOnStartupPageElement} 
 import {OnStartupBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+// <if expr="is_win">
+import {loadTimeData} from 'chrome://settings/settings.js';
+import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+// </if>
+
 // clang-format on
 
 class TestOnStartupBrowserProxy extends TestBrowserProxy implements
@@ -55,6 +60,16 @@ suite('OnStartupPage', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-on-startup-page');
     testElement.prefs = {
+      // <if expr="is_win">
+      launch_on_login: {
+        foreground: {
+          enabled: {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          },
+        },
+      },
+      // </if>
       session: {
         restore_on_startup: {
           type: chrome.settingsPrivate.PrefType.NUMBER,
@@ -80,6 +95,9 @@ suite('OnStartupPage', function() {
   setup(async function() {
     onStartupBrowserProxy = new TestOnStartupBrowserProxy();
     OnStartupBrowserProxyImpl.setInstance(onStartupBrowserProxy);
+    // <if expr="is_win">
+    loadTimeData.overrideValues({isForegroundLaunchFeatureEnabled: false});
+    // </if>
     await initPage();
   });
 
@@ -163,4 +181,39 @@ suite('OnStartupPage', function() {
     assertEquals(0, result.matchCount);
     assertTrue(result.wasClearSearch);
   });
+
+  // <if expr="is_win">
+  function getForegroundLaunchToggle(): SettingsToggleButtonElement|null {
+    return testElement.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#foregroundLaunchOnStartup');
+  }
+
+  [true, false].forEach(featureState => {
+    test(
+        `settings toggle shown based on feature state: ${featureState}`,
+        async function() {
+          loadTimeData.overrideValues(
+              {isForegroundLaunchFeatureEnabled: featureState});
+          await initPage();
+
+          assertEquals(!!getForegroundLaunchToggle(), featureState);
+        });
+  });
+
+  test('settings toggle state should match pref value', async function() {
+    loadTimeData.overrideValues({
+      isForegroundLaunchFeatureEnabled: true,
+    });
+    await initPage();
+
+    const toggleButton = getForegroundLaunchToggle();
+    assertTrue(!!toggleButton);
+
+    testElement.set('prefs.launch_on_login.foreground.enabled.value', true);
+    assertTrue(toggleButton.checked);
+
+    testElement.set('prefs.launch_on_login.foreground.enabled.value', false);
+    assertFalse(toggleButton.checked);
+  });
+  // </if>
 });

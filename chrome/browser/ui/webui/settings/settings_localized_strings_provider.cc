@@ -142,6 +142,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/browser/startup/startup_features.h"
 #include "device/fido/public/features.h"
 #include "device/fido/win/webauthn_api.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -1330,8 +1331,17 @@ void AddOnStartupStrings(content::WebUIDataSource* html_source) {
       {"onStartupRemove", IDS_SETTINGS_ON_STARTUP_REMOVE},
       {"onStartupInvalidUrl", IDS_SETTINGS_INVALID_URL},
       {"onStartupUrlTooLong", IDS_SETTINGS_URL_TOOL_LONG},
+#if BUILDFLAG(IS_WIN)
+      {"onStartupForegroundLaunchOnStartupLabel",
+       IDS_SETTINGS_FOREGROUND_LAUNCH_ON_STARTUP_LABEL},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+#if BUILDFLAG(IS_WIN)
+  html_source->AddBoolean("isForegroundLaunchFeatureEnabled",
+                          features::IsForegroundLaunchEnabled());
+#endif
 }
 
 bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {

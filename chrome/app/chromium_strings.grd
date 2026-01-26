@@ -2573,6 +2573,13 @@ Chromium is unable to recover your settings.
         Continue
       </message>
 
+      <!--Launch On Startup-->
+      <if expr="is_win">
+        <message name="IDS_SETTINGS_FOREGROUND_LAUNCH_ON_STARTUP_LABEL" desc="Label for settings toggle button that enables or disables opening Chromium on system startup">
+          Open Chromium when my computer starts
+        </message>
+      </if>
+
       <!-- Advanced security settings -->
       <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_OPTIMIZATION_LINK_ROW_ENABLED" desc="Description for the link row of the Javascript-optimization page when javascript-optimization is enabled.">
         Speeds up sites with Chromium's V8 engine but makes Chromium slightly less resistant to attacks. This setting is on.

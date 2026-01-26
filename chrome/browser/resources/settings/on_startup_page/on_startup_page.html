@@ -40,4 +40,12 @@
       <settings-startup-urls-page prefs="[[prefs]]">
       </settings-startup-urls-page>
     </template>
+ <if expr="is_win">
+    <template is="dom-if" if="[[isForegroundLaunchFeatureEnabled_]]">
+      <settings-toggle-button class="hr" id="foregroundLaunchOnStartup"
+          pref="{{prefs.launch_on_login.foreground.enabled}}"
+          label="$i18n{onStartupForegroundLaunchOnStartupLabel}">
+      </settings-toggle-button>
+    </template>
+</if>
   </settings-section>
