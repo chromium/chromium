@@ -75,23 +75,23 @@ declare_args() {
   use_cras = is_chromeos_device
 
   # Enables AC3/EAC3 audio handling in chromium. This includes demuxing,
-  # on-device decoding and bitstream passthrough on Android.
+  # on-device decoding and bitstream passthrough as supported by device.
   enable_platform_ac3_eac3_audio =
       proprietary_codecs &&
       (is_cast_media_device || (is_ios && target_platform == "tvos"))
 
   # Enables AC4 audio handling in chromium. This includes demuxing,
-  # on-device decoding as supported by device.
+  # on-device decoding and bitstream passthrough as supported by device.
   enable_platform_ac4_audio = false
 
   enable_platform_mpeg_h_audio = proprietary_codecs && is_cast_media_device
 
   # Enables DTS/DTSX audio handling in chromium. This includes demuxing,
-  # on-device decoding and bitstream passthrough on Android and Windows.
+  # on-device decoding and bitstream passthrough as supported by device.
   enable_platform_dts_audio = false
 
-  # Enables IAMF audio handling in chromium. This includes demuxing and
-  # on-device decoding.
+  # Enables IAMF audio handling in chromium. This includes demuxing,
+  # on-device decoding and bitstream passthrough as supported by device.
   enable_platform_iamf_audio = false
 
   # Enable Dolby Vision demuxing. Enabled by default for Chromecast and Windows.
@@ -154,11 +154,6 @@ declare_args() {
   enable_mse_mpeg2ts_stream_parser =
       proprietary_codecs &&
       (enable_hls_demuxer || enable_cast_receiver || use_fuzzing_engine)
-
-  # Only Android and Windows actually have bitstream output implementations.
-  enable_passthrough_audio_codecs =
-      (enable_platform_ac3_eac3_audio && is_android) ||
-      (enable_platform_dts_audio && (is_android || is_win))
 }
 
 declare_args() {

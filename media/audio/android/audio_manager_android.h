@@ -139,12 +139,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       const AudioParameters& params,
       const std::string& device_id,
       const LogCallback& log_callback) override;
-#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   AudioOutputStream* MakeBitstreamOutputStream(
       const AudioParameters& params,
       const std::string& device_id,
       const LogCallback& log_callback) override;
-#endif
   AudioInputStream* MakeLinearInputStream(
       const AudioParameters& params,
       const std::string& device_id,

@@ -25,6 +25,9 @@ if (is_ios) {
 buildflag_header("media_buildflags") {
   header = "media_buildflags.h"
 
+  enable_passthrough_audio_codecs =
+      enable_platform_dts_audio && (is_win || is_linux)
+
   flags = [
     "ALLOW_OOP_VIDEO_DECODER=$allow_oop_video_decoder",
     "ALLOW_HOSTING_OOP_VIDEO_DECODER=$allow_hosting_oop_video_decoder",

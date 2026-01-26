@@ -250,20 +250,14 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStream(
     case AudioParameters::AUDIO_PCM_LOW_LATENCY:
       stream = MakeLowLatencyOutputStream(params, device_id, log_callback);
       break;
-
     case AudioParameters::AUDIO_BITSTREAM_AC3:
     case AudioParameters::AUDIO_BITSTREAM_EAC3:
     case AudioParameters::AUDIO_BITSTREAM_DTS:
     case AudioParameters::AUDIO_BITSTREAM_DTS_HD:
     case AudioParameters::AUDIO_BITSTREAM_DTSX_P2:
     case AudioParameters::AUDIO_BITSTREAM_IEC61937:
-#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
       stream = MakeBitstreamOutputStream(params, device_id, log_callback);
       break;
-#else
-      // This is forbidden by IPC validation.
-      NOTREACHED() << "Bitstream audio output is not supported.";
-#endif
     case AudioParameters::AUDIO_FAKE:
       stream = FakeAudioOutputStream::MakeFakeStream(this, params);
       break;
@@ -284,14 +278,12 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStream(
   return stream;
 }
 
-#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 AudioOutputStream* AudioManagerBase::MakeBitstreamOutputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
   return nullptr;
 }
-#endif
 
 AudioInputStream* AudioManagerBase::MakeAudioInputStream(
     const AudioParameters& input_params,

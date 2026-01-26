@@ -63,17 +63,6 @@ bool ParamTraits<AudioParameters>::Read(const base::Pickle* m,
                          frames_per_buffer);
   }
 
-  // Forbid bitstream formats if passthrough is disabled.
-#if !BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
-  if (r->IsBitstreamFormat() ||
-      (r->hardware_capabilities() &&
-       r->hardware_capabilities()->bitstream_formats != 0)) {
-    DLOG(ERROR) << "Failing AudioParameter serialization. Bitstream formats "
-                   "are disabled.";
-    return false;
-  }
-#endif
-
   r->set_effects(effects);
   r->set_mic_positions(mic_positions);
   r->set_latency_tag(latency_tag);

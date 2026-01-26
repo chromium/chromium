@@ -238,7 +238,6 @@ AudioOutputStream* AudioManagerWin::MakeLinearOutputStream(
                                          WAVE_MAPPER);
 }
 
-#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 AudioOutputStream* AudioManagerWin::MakeBitstreamOutputStream(
     const AudioParameters& params,
     const std::string& device_id,
@@ -249,7 +248,6 @@ AudioOutputStream* AudioManagerWin::MakeBitstreamOutputStream(
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 }
-#endif
 
 // Factory for the implementations of AudioOutputStream for
 // AUDIO_PCM_LOW_LATENCY mode. Two implementations should suffice most
@@ -260,7 +258,13 @@ AudioOutputStream* AudioManagerWin::MakeLowLatencyOutputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  DCHECK(params.format() == AudioParameters::AUDIO_BITSTREAM_DTS ||
+         params.format() == AudioParameters::AUDIO_PCM_LOW_LATENCY)
+      << params.format();
+#else
   DCHECK_EQ(params.format(), AudioParameters::AUDIO_PCM_LOW_LATENCY);
+#endif
 
   if (params.channels() > kWinMaxChannels)
     return nullptr;

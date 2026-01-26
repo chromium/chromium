@@ -15,7 +15,6 @@
 #include "media/audio/audio_device_stats_reporter.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
-#include "media/media_buildflags.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
@@ -36,9 +35,6 @@ AudioOutputDeviceThreadCallback::AudioOutputDeviceThreadCallback(
   // CHECK that the shared memory is large enough. The memory allocated must be
   // at least as large as expected.
   CHECK(memory_length_ <= shared_memory_region_.GetSize());
-#if !BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
-  CHECK(!audio_parameters_.IsBitstreamFormat());
-#endif
 }
 
 AudioOutputDeviceThreadCallback::~AudioOutputDeviceThreadCallback() {
@@ -60,9 +56,7 @@ void AudioOutputDeviceThreadCallback::MapSharedMemory() {
   CHECK_EQ(audio_data_span.data(), buffer->audio);
 
   output_bus_ = media::AudioBus::WrapMemory(audio_parameters_, audio_data_span);
-#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   output_bus_->set_is_bitstream_format(audio_parameters_.IsBitstreamFormat());
-#endif
 }
 
 // Called whenever we receive notifications about pending data.
@@ -108,12 +102,11 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
                            output_bus_.get());
   stats_reporter_.ReportCallback(delay, glitch_info);
 
-#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   if (audio_parameters_.IsBitstreamFormat()) {
     buffer->params.bitstream_data_size = output_bus_->bitstream_data().size();
     buffer->params.bitstream_frames = output_bus_->GetBitstreamFrames();
   }
-#endif
+
 }
 
 void AudioOutputDeviceThreadCallback::OnSocketError() {

@@ -369,11 +369,6 @@ void StreamFactory::CreateOutputStreamInternal(
       output_device_id;
 #endif
 
-#if !BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
-  // This is forbidden by IPC validation.
-  CHECK(!params.IsBitstreamFormat());
-#endif
-
   // base::Unretained() is safe since |this| owns both |output_mixer_manager_|
   // and |output_streams_|, and ensures the correct order of destruction.
   OutputStream::ManagedDeviceOutputStreamCreateCallback

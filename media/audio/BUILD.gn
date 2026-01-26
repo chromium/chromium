@@ -271,6 +271,8 @@ source_set("audio") {
       "android/audio_device_type.h",
       "android/audio_manager_android.cc",
       "android/audio_manager_android.h",
+      "android/audio_track_output_stream.cc",
+      "android/audio_track_output_stream.h",
       "android/muteable_audio_output_stream.h",
     ]
     if (media_use_opensles) {
@@ -282,12 +284,6 @@ source_set("audio") {
         "android/opensles_util.cc",
         "android/opensles_util.h",
         "android/opensles_wrapper.cc",
-      ]
-    }
-    if (enable_passthrough_audio_codecs) {
-      sources += [
-        "android/audio_track_output_stream.cc",
-        "android/audio_track_output_stream.h",
       ]
     }
     libs += [ "aaudio" ]

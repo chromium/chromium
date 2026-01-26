@@ -117,6 +117,7 @@ if (is_android) {
   generate_jni("media_jni_headers") {
     sources = [
       "java/src/org/chromium/media/AudioManagerAndroid.java",
+      "java/src/org/chromium/media/AudioTrackOutputStream.java",
       "java/src/org/chromium/media/CodecProfileLevelList.java",
       "java/src/org/chromium/media/HdrMetadata.java",
       "java/src/org/chromium/media/MediaCodecBridge.java",
@@ -127,10 +128,6 @@ if (is_android) {
       "java/src/org/chromium/media/MediaServerCrashListener.java",
       "java/src/org/chromium/media/VideoAcceleratorUtil.java",
     ]
-
-    if (enable_passthrough_audio_codecs) {
-      sources += [ "java/src/org/chromium/media/AudioTrackOutputStream.java" ]
-    }
   }
 
   java_cpp_enum("java_enums") {
@@ -178,6 +175,7 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/media/AudioDeviceListener.java",
       "java/src/org/chromium/media/AudioManagerAndroid.java",
+      "java/src/org/chromium/media/AudioTrackOutputStream.java",
       "java/src/org/chromium/media/CodecProfileLevelList.java",
       "java/src/org/chromium/media/CommunicationDeviceListener.java",
       "java/src/org/chromium/media/CommunicationDeviceSelector.java",
@@ -197,10 +195,6 @@ if (is_android) {
       "java/src/org/chromium/media/ScreenResolutionUtil.java",
       "java/src/org/chromium/media/VideoAcceleratorUtil.java",
     ]
-
-    if (enable_passthrough_audio_codecs) {
-      sources += [ "java/src/org/chromium/media/AudioTrackOutputStream.java" ]
-    }
   }
 
   # TODO (b/146418831): Replace with androidx version
@@ -212,13 +206,10 @@ if (is_android) {
 
   robolectric_binary("media_base_junit_tests") {
     sources = [
+      "java/src/test/org/chromium/media/AudioTrackOutputStreamTest.java",
       "java/src/test/org/chromium/media/CommunicationDeviceListenerTest.java",
       "java/src/test/org/chromium/media/MediaFormatBuilderTest.java",
     ]
-    if (enable_passthrough_audio_codecs) {
-      sources +=
-          [ "java/src/test/org/chromium/media/AudioTrackOutputStreamTest.java" ]
-    }
     deps = [
       ":media_java",
       "//base:base_java",

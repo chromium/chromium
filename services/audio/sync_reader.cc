@@ -82,11 +82,7 @@ SyncReader::SyncReader(
 
     output_bus_ = media::AudioBus::WrapMemory(params, audio_data);
     output_bus_->Zero();
-#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
     output_bus_->set_is_bitstream_format(params.IsBitstreamFormat());
-#else
-    CHECK(!params.IsBitstreamFormat());
-#endif
   }
 }
 
@@ -197,7 +193,6 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
     return true;
   }
 
-#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   if (output_bus_->is_bitstream_format()) {
     // For bitstream formats, we need the real data size and PCM frame count.
     auto* const buffer =
@@ -214,7 +209,6 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
     output_bus_->CopyTo(dest);
     return true;
   }
-#endif
 
   // Copy and clip data coming across the shared memory since it's untrusted.
   output_bus_->CopyAndClipTo(dest);
