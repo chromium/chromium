@@ -82,6 +82,11 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswords);
 // Delete undecryptable passwords from the store when Sync is active.
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Enables the Unified UI for the Password Manager.
+BASE_DECLARE_FEATURE(kCredentialManagementUnifiedUi);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // Enables debug data popups on OTP fields for manual testing of
 // one-time-passwords. Only for OTP detection testing, not intended to be
 // launched.

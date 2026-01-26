@@ -1862,6 +1862,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "credential-management-unified-ui",
+    "owners": [
+      "derinel@google.com",
+      "anki-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "cros-block-warnings",
     "owners": [ "janlanik@google.com", "kisliaks@google.com" ],
     "expiry_milestone": 136
