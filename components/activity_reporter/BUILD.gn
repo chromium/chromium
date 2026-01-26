@@ -24,7 +24,6 @@ source_set("activity_reporter") {
     ]
     deps += [
       "//base/version_info",
-      "//components/policy/core/common",
       "//components/prefs",
       "//url",
     ]
