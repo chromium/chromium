@@ -421,6 +421,11 @@ TEST_F(NavigatorTest, BeforeUnloadDenialCancelNavigation) {
   // This test assumes a beforeunload handler is present.
   main_test_rfh()->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  // Put a user gesture on the main frame to wait for the beforeunload event to
+  // complete.
+  main_test_rfh()->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
 
   // Start a new navigation.
   FrameTreeNode* node = main_test_rfh()->frame_tree_node();
@@ -457,6 +462,11 @@ TEST_F(NavigatorTest, BeginNavigation) {
   // This test assumes a beforeunload handler is present on the subframe.
   subframe_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  // Put a user gesture on the sub-frame to wait for the beforeunload event to
+  // complete.
+  subframe_rfh->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
 
   // Start a navigation at the subframe.
   FrameTreeNode* subframe_node = subframe_rfh->frame_tree_node();
@@ -506,6 +516,12 @@ TEST_F(NavigatorTest, BeginNavigation) {
   } else {
     EXPECT_FALSE(GetSpeculativeRenderFrameHost(subframe_node));
   }
+
+  // Put a user gesture on the main frame to wait for the beforeunload event to
+  // complete.
+  main_test_rfh()->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
 
   // Now start a navigation at the root node.
   auto navigation2 =
