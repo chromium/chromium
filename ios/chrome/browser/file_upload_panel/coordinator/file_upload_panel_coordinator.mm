@@ -99,7 +99,8 @@
     return;
   }
 
-  if (_mediator.allowsDirectorySelection) {
+  if (_mediator.allowsDirectorySelection ||
+      (!_isChooseFromDriveAvailable && !_mediator.allowsMediaSelection)) {
     base::UmaHistogramEnumeration(
         "IOS.FileUploadPanel.EntryPointVariant",
         FileUploadPanelEntryPointVariant::kFilePicker);
