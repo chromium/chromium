@@ -14,7 +14,6 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.CombinedTabRestorer.CombinedTabRestorerDelegate;
-import org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.SharedStoreData;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,6 +23,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
+import org.chromium.chrome.browser.tab.TabStateStorageService.SharedStoreData;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 public class TabStateStore implements TabPersistentStore {
     private static final String TAG = "TabStateStore";
 
-    private final SharedStoreData mSharedData;
     private @MonotonicNonNull TabStateStorageService mTabStateStorageService;
     private final TabCreatorManager mTabCreatorManager;
     private final TabModelSelector mTabModelSelector;
@@ -119,7 +118,6 @@ public class TabStateStore implements TabPersistentStore {
             };
 
     /**
-     * @param sharedData Data shared between all instances of the TabStateStore.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes in. Regardless of the
      *     mode this store is in, this will be the real selector with real models. This should be
      *     treated as a read only object, no modifications should go through it.
@@ -131,13 +129,11 @@ public class TabStateStore implements TabPersistentStore {
      *     possible to load/save off the record nodes.
      */
     public TabStateStore(
-            SharedStoreData sharedData,
             TabModelSelector tabModelSelector,
             String windowTag,
             TabCreatorManager tabCreatorManager,
             TabPersistencePolicy tabPersistencePolicy,
             @Nullable CipherFactory cipherFactory) {
-        mSharedData = sharedData;
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
@@ -496,14 +492,16 @@ public class TabStateStore implements TabPersistentStore {
 
     private void deleteDbIfNonAuthoritative() {
         assertInitialized();
+
+        SharedStoreData sharedStoreData = mTabStateStorageService.getSharedStoreData();
         if (!ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
             // When we aren't the authoritative source we don't trust ourselves to be correct.
             // Raze the db and rebuild from the loaded tab state to ensure we are in a known good
             // state. This is a no-op if we are the authoritative source as there shouldn't be a
             // delta and if there is we need a less blunt mechanism to reconcile the difference.
-            if (!mSharedData.wasStoreRazed()) {
+            if (!sharedStoreData.wasStoreRazed()) {
                 clearState();
-                mSharedData.onStoreRazed();
+                sharedStoreData.onStoreRazed();
             } else {
                 mTabStateStorageService.clearWindow(mWindowTag);
             }
