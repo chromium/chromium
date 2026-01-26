@@ -628,6 +628,8 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 
+#elif BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/guest_view/chrome_content_browser_client_guest_view_part.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1396,6 +1398,11 @@ ChromeContentBrowserClient::ChromeContentBrowserClient() {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extra_parts_.push_back(
       std::make_unique<ChromeContentBrowserClientExtensionsPart>());
+#elif BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kGlic)) {
+    extra_parts_.push_back(
+        std::make_unique<android::ChromeContentBrowserClientGuestViewPart>());
+  }
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

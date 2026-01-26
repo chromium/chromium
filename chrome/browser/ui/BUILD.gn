@@ -273,6 +273,7 @@ static_library("ui") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser:buildflags",
+    "//chrome/browser:chrome_content_browser_client_parts",
     "//chrome/browser:flags",
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",

@@ -281,7 +281,6 @@ static_library("browser") {
     "chrome_content_browser_client_binder_policies.h",
     "chrome_content_browser_client_navigation_throttles.cc",
     "chrome_content_browser_client_navigation_throttles.h",
-    "chrome_content_browser_client_parts.h",
     "chrome_content_browser_client_receiver_bindings.cc",
     "chrome_resource_bundle_helper.cc",
     "chrome_resource_bundle_helper.h",
@@ -1746,6 +1745,7 @@ static_library("browser") {
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to browser_generated_files.
     ":browser_public_dependencies",
+    ":chrome_content_browser_client_parts",
     "//chrome/browser/google",
     "//chrome/browser/headless",
     "//chrome/browser/profiles",
@@ -7654,6 +7654,8 @@ static_library("browser") {
       "//extensions/browser/updater",
       "//extensions/strings",
     ]
+  } else if (is_android) {
+    deps += [ "//chrome/browser/android/guest_view" ]
   }
 
   if (enable_extensions) {
@@ -8788,6 +8790,14 @@ source_set("primitives") {
     ]
     public_deps += [ "//components/web_modal" ]
   }
+}
+
+source_set("chrome_content_browser_client_parts") {
+  sources = [ "chrome_content_browser_client_parts.h" ]
+  deps = [
+    "//services/service_manager/public/cpp",
+    "//storage/browser",
+  ]
 }
 
 source_set("font_pref") {

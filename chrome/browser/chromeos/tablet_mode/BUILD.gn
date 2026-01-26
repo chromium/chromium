@@ -19,6 +19,7 @@ static_library("tablet_mode") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:chrome_content_browser_client_parts",
     "//chrome/browser/ui:browser_tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
   ]

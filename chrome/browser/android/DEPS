@@ -10,6 +10,7 @@ include_rules = [
   "+components/browser_ui/site_settings/android",
   "+components/browser_ui/sms/android",
   "+components/browser_ui/util/android/url_constants.h",
+  "+components/guest_view",
   "+components/omnibox/composebox",
   "+components/page_content_annotations/content",
   "+components/query_tiles",

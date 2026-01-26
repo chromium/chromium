@@ -541,6 +541,7 @@ source_set("web_applications") {
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser:chrome_content_browser_client_parts",
     "//chrome/browser:global_features",
     "//chrome/browser:shell_integration",
     "//chrome/browser/apps:user_type_filter",

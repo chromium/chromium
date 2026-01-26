@@ -504,6 +504,7 @@ source_set("extensions") {
     "//chrome/app:command_ids",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser:chrome_content_browser_client_parts",
     "//chrome/browser:shell_integration",
     "//chrome/browser/app_mode",
     "//chrome/browser/apps:user_type_filter",
