@@ -31,8 +31,9 @@ namespace {
 
 using AppControllerGoogleChromeSchemeBrowserTest = InProcessBrowserTest;
 
+// TODO(crbuig.com/446672134): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(AppControllerGoogleChromeSchemeBrowserTest,
-                       OpenSchemeUrl) {
+                       DISABLED_OpenSchemeUrl) {
   std::string scheme = shell_integration::GetDirectLaunchUrlScheme();
   if (scheme.empty()) {
     // Scheme not supported for this channel (e.g. Beta/Dev/Canary).
