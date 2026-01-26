@@ -284,6 +284,9 @@
       <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved to the GPay server.">
         Autofill this card for purchases made in Chrome when it's saved to use with Google Pay
       </message>
+      <message name="IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved to Google Wallet.">
+        Autofill this card for purchases made in Chrome when it's saved in Google Wallet
+      </message>
     </if>
     <if expr="not _google_chrome">
       <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved locally.">
@@ -291,6 +294,9 @@
       </message>
       <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved to the GPay server.">
         Autofill this card for purchases made in Chromium when it's saved to use with Google Pay
+      </message>
+      <message name="IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved to Google Wallet.">
+        Autofill this card for purchases made in Chromium when it's saved in Google Wallet
       </message>
     </if>
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CARD_NUMBER_LABEL" desc="The label text for the card number textfield.">

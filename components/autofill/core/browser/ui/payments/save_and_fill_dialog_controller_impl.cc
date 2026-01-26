@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -83,7 +84,9 @@ std::u16string SaveAndFillDialogControllerImpl::GetExplanatoryMessage() const {
   switch (dialog_state_) {
     case SaveAndFillDialogState::kUploadDialog:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD);
+          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+              ? IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD
+              : IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD);
     case SaveAndFillDialogState::kLocalDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL);

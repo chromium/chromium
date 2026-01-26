@@ -8,10 +8,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -87,6 +89,53 @@ std::u16string GenerateExpirationDateString(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnableWalletBranding);
+
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_TITLE));
+
+  SetDialogState(SaveAndFillDialogState::kLocalDialog);
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL));
+
+  EXPECT_EQ(controller()->GetCardNumberLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CARD_NUMBER_LABEL));
+
+  EXPECT_EQ(
+      controller()->GetCvcLabel(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CVC_LABEL));
+
+  EXPECT_EQ(controller()->GetExpirationDateLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPIRATION_DATE_LABEL));
+
+  EXPECT_EQ(controller()->GetNameOnCardLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_NAME_ON_CARD_LABEL));
+
+  EXPECT_EQ(
+      controller()->GetAcceptButtonText(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_ACCEPT));
+
+  EXPECT_EQ(controller()->GetInvalidCardNumberErrorMessage(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CARD_NUMBER));
+
+  // Test for upload Save and Fill explanatory message.
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
+  EXPECT_EQ(
+      controller()->GetExplanatoryMessage(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD));
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_TITLE));
 
