@@ -760,6 +760,17 @@ export class SettingsPaymentsSectionElement extends
   }
 
   /**
+   * Get the body text for the CVC deletion dialog, depending on whether Google
+   * Wallet branding is enabled or not.
+   */
+  private getCvcDeletionDialogBodyText_(): string {
+    return this.i18n(
+        this.autofillEnableWalletBrandingEnabled_ ?
+            'bulkRemoveCvcFromWalletConfirmationDescription' :
+            'bulkRemoveCvcConfirmationDescription');
+  }
+
+  /**
    * Opens an article to learn about pay over time when the pay over time
    * toggle sublabel link is clicked.
    */
