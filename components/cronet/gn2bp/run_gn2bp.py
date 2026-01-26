@@ -93,6 +93,9 @@ def _run_license_generation():
   cronet_utils.run(["python3", _GENERATE_LICENSE_SCRIPT_PATH])
 
 
+def _is_trybot():
+  return os.environ.get('SWARMING_BOT_ID',
+                        '').startswith('luci-chrome-try-')
 def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
                skip_build_scripts: bool, delete_temporary_files: bool,
                channel: str) -> int:
@@ -488,11 +491,13 @@ def main():
     args.channel = _pick_target_channel_for_bot_environment()
     print(f'Automatic selection logic has chosen `{args.channel}` track')
 
-    # When importing to the 'stable' channel from a bot environment, we must verify that
+    # When importing to the 'stable' channel from a CI environment, we must verify that
     # the current Chromium checkout is on a stable release branch. This safeguards
     # against mistakenly importing non-release branches, particularly when the
     # channel is dynamically determined.
-    if args.channel == 'stable':
+    # On a trybot, it's fine to not verify the latest release as the trybot
+    # does not have permission to auto-submit unlike CI bots.
+    if args.channel == 'stable' and not _is_trybot():
       _verify_latest_stable_or_exit(args.stamp)
 
   if args.channel not in ['tot', 'stable']:
