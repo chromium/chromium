@@ -1033,6 +1033,31 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->
 
+<!-- LINT.IfChange(SyncDeviceStatisticsHistoryOptInSummary) -->
+
+<enum name="SyncDeviceStatisticsHistoryOptInSummary">
+  <int value="0"
+      label="Primary account is opted in to history on this device; no other
+             devices exist"/>
+  <int value="1"
+      label="Primary account is NOT opted in to history on this device; no
+             other devices exist"/>
+  <int value="2"
+      label="Primary account is opted in to history on both this device and
+             at least one other device"/>
+  <int value="3"
+      label="Primary account is opted in to history on this device, but not
+             on any other devices"/>
+  <int value="4"
+      label="Primary account is NOT opted in to history on this device, but
+             it IS opted in on at least one other device"/>
+  <int value="5"
+      label="Primary account is NOT opted in to history on this device, nor
+             on any other devices"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsHistoryOptInSummary) -->
+
 <!-- LINT.IfChange(SyncDeviceStatisticsOutcome) -->
 
 <enum name="SyncDeviceStatisticsOutcome">

@@ -200,6 +200,25 @@ void DeviceStatisticsTracker::RequestDoneForGaiaId(const GaiaId& gaia) {
   if (request->GetState() == DeviceStatisticsRequest::State::kComplete) {
     other_devices_by_gaia_[gaia] =
         DeduplicateEntities(request->GetResults(), current_device_cache_guids_);
+
+    // If this request was for the primary account, figure out whether the user
+    // has opted in to history on the current device.
+    if (gaia == primary_account_.gaia) {
+      for (const sync_pb::SyncEntity& entity : request->GetResults()) {
+        const sync_pb::DeviceInfoSpecifics& device_info =
+            entity.specifics().device_info();
+        // Note: `current_device_cache_guids_` contains all known cache GUIDs
+        // for the current device, including some that may belong to other
+        // accounts. But since `device_info` belongs to the primary account, and
+        // cache GUIDs should be unique (and in particular, never shared across
+        // different accounts), that's okay.
+        if (current_device_cache_guids_.contains(device_info.cache_guid()) &&
+            IsOptedInToHistory(device_info)) {
+          primary_account_history_opt_in_ = true;
+          break;
+        }
+      }
+    }
   } else {
     other_devices_by_gaia_[gaia] = base::unexpected(kRequestFailed);
   }
@@ -222,11 +241,12 @@ void DeviceStatisticsTracker::AllRequestsDone() {
 
     for (const auto& [gaia, other_devices] : other_devices_by_gaia_) {
       if (!other_devices.has_value()) {
+        // The statistics request for this account failed, so nothing to record.
         continue;
       }
 
-      bool is_primary = (gaia == primary_account_.gaia);
-      std::string_view infix =
+      const bool is_primary = (gaia == primary_account_.gaia);
+      const std::string_view infix =
           is_primary ? "PrimaryAccount" : "NonPrimaryAccount";
 
       base::UmaHistogramCounts100(
@@ -234,6 +254,22 @@ void DeviceStatisticsTracker::AllRequestsDone() {
               "Sync.DeviceStatistics.Outcome.%s.NumberOfAdditionalClients",
               infix),
           other_devices->size());
+
+      const size_t other_devices_with_history_opt_in = std::ranges::count_if(
+          *other_devices,
+          [](const DeviceData& device) { return device.history_opt_in; });
+      base::UmaHistogramCounts100(
+          absl::StrFormat("Sync.DeviceStatistics.Outcome.%s."
+                          "NumberOfAdditionalClientsWithHistoryOptIn",
+                          infix),
+          other_devices_with_history_opt_in);
+
+      if (is_primary) {
+        base::UmaHistogramEnumeration(
+            "Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptIn",
+            GetHistoryOptInSummary(other_devices->size(),
+                                   other_devices_with_history_opt_in));
+      }
 
       for (DeviceData device : *other_devices) {
         base::UmaHistogramEnumeration(
@@ -337,11 +373,35 @@ DeviceStatisticsTracker::GetOverallOutcome() const {
   }
 }
 
+DeviceStatisticsTracker::HistoryOptInSummary
+DeviceStatisticsTracker::GetHistoryOptInSummary(
+    size_t other_devices,
+    size_t other_devices_with_history_opt_in) const {
+  if (other_devices == 0) {
+    if (primary_account_history_opt_in_) {
+      return HistoryOptInSummary::kThisDeviceYesOtherDevicesNA;
+    }
+    return HistoryOptInSummary::kThisDeviceNoOtherDevicesNA;
+  }
+
+  if (other_devices_with_history_opt_in > 0) {
+    if (primary_account_history_opt_in_) {
+      return HistoryOptInSummary::kThisDeviceYesOtherDevicesYes;
+    }
+    return HistoryOptInSummary::kThisDeviceNoOtherDevicesYes;
+  }
+
+  if (primary_account_history_opt_in_) {
+    return HistoryOptInSummary::kThisDeviceYesOtherDevicesNo;
+  }
+  return HistoryOptInSummary::kThisDeviceNoOtherDevicesNo;
+}
+
 // static
 std::vector<DeviceStatisticsTracker::DeviceData>
 DeviceStatisticsTracker::DeduplicateEntities(
     const std::vector<sync_pb::SyncEntity>& entities,
-    const std::vector<std::string>& current_device_cache_guids) {
+    const base::flat_set<std::string>& current_device_cache_guids) {
   absl::flat_hash_map<std::pair<sync_pb::SyncEnums::DeviceFormFactor,
                                 sync_pb::SyncEnums::OsType>,
                       std::vector<sync_pb::SyncEntity>>
@@ -359,8 +419,7 @@ DeviceStatisticsTracker::DeduplicateEntities(
     }
 
     // Don't consider the current device.
-    if (std::ranges::contains(current_device_cache_guids,
-                              device.cache_guid())) {
+    if (current_device_cache_guids.contains(device.cache_guid())) {
       continue;
     }
 

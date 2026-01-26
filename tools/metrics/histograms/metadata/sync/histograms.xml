@@ -1189,6 +1189,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.NumberOfAdditionalClientsWithHistoryOptIn"
+    units="clients" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of additional syncing clients (i.e.
+    not counting this client) of a non-primary account which are opted in to
+    history sync. Recorded at most once per day (30 seconds after profile
+    initialization) for every non-primary account.
+  </summary>
+</histogram>
+
+<histogram
     name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.PlatformOfAdditionalClient"
     enum="SyncDeviceStatisticsPlatform" expires_after="2026-06-30">
   <owner>treib@chromium.org</owner>
@@ -1213,6 +1226,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptIn"
+    enum="SyncDeviceStatisticsOutcome" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the history opt-in status of the primary account,
+    across this device and any other signed-in-to-Chrome devices. Recorded at
+    most once per day (30 seconds after profile initialization).
+  </summary>
+</histogram>
+
 <histogram
     name="Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients"
     units="clients" expires_after="2026-06-30">
@@ -1222,6 +1246,19 @@ chromium-metrics-reviews@google.com.
     Device statistics: Records the number of additional syncing clients (i.e.
     not counting this client) of the primary account. Recorded at most once per
     day (30 seconds after profile initialization).
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClientsWithHistoryOptIn"
+    units="clients" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of additional syncing clients (i.e.
+    not counting this client) of the primary account which are opted in to
+    history sync. Recorded at most once per day (30 seconds after profile
+    initialization).
   </summary>
 </histogram>
 
