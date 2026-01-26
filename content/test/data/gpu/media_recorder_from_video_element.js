@@ -36,7 +36,7 @@ function setVideoSize() {
   srcVideo.width = width;
   srcVideo.height = height;
   dstVideo.width = width;
-  srcVideo.height = height;
+  dstVideo.height = height;
 }
 
 function startPlayback() {
