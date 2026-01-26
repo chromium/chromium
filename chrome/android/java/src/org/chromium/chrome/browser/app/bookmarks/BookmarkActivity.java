@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -32,18 +34,22 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * The activity that displays the bookmark UI on the phone. It keeps a {@link
@@ -82,9 +88,9 @@ public class BookmarkActivity extends SnackbarActivity {
                         getInsetObserver(),
                         /* trackOcclusion= */ true);
 
-        // TODO(https://crbug.com/437039516): fix the status bar color.
         ScrimManager scrimManager =
                 new ScrimManager(this, getContentView(), ScrimClient.BOOKMARK_ACTIVITY);
+        scrimManager.getStatusBarColorSupplier().addObserver(this::applyScrimToStatusBar);
 
         ViewGroup sheetContainer = findViewById(R.id.sheet_container);
         BottomSheetController bottomSheetController =
@@ -176,6 +182,17 @@ public class BookmarkActivity extends SnackbarActivity {
      */
     public @Nullable BookmarkManagerCoordinator getManagerForTesting() {
         return mBookmarkManagerCoordinator;
+    }
+
+    private void applyScrimToStatusBar(@ColorInt int scrimColor) {
+        @ColorInt int baseColor = SemanticColorUtils.getDefaultBgColor(this);
+        @ColorInt int finalColor = ColorUtils.overlayColor(baseColor, scrimColor);
+        EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
+                (getEdgeToEdgeManager() != null)
+                        ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
+                        : null;
+        StatusBarColorController.setStatusBarColor(
+                edgeToEdgeSystemBarColorHelper, this, finalColor);
     }
 
     private int getEdgeToEdgeInset() {
