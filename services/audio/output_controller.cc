@@ -498,7 +498,7 @@ int OutputController::OnMoreData(base::TimeDelta delay,
     sync_reader_->RequestMoreData(delay, delay_timestamp, glitch_info);
   }
 
-#if !BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if !BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   constexpr bool is_bitstream = false;
 #else
   const bool is_bitstream = params_.IsBitstreamFormat();
