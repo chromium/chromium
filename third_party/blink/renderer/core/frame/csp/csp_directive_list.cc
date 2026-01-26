@@ -982,7 +982,7 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   }
   // Ignore URLs with empty paths. This also covers cases like
   // https://example.com?abc#def.
-  if (script_url.GetPath().ToString() == "/") {
+  if (script_url.GetPath() == "/") {
     return String();
   }
   // For the document URL, use its base string as the starting point. This
