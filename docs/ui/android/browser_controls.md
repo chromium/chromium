@@ -10,7 +10,7 @@ There are two components to the browser controls: an Android view that handles t
 
 ### Why a composited texture?
 
-The browser controls need to be in sync with the web contents when scrolling. Android views and web contents are drawn on different surfaces that are updated at different times. So, even if we were to observe the web contents and update the Android view positions accordingly (i.e. View#setTranslationY()), the browser controls would still be out of sync with the web contents.  Android 10 provides a [SurfaceControl](https://developer.android.com/about/versions/10/features#surface) API that might solve this issue without having to use composited textures, but this is unlikely to be adopted anytime soon since it’s only available on Q+.
+The browser controls need to be in sync with the web contents when scrolling. Android views and web contents are drawn on different surfaces that are updated at different times. So, even if we were to observe the web contents and update the Android view positions accordingly (i.e. View#setTranslationY()), the browser controls would still be out of sync with the web contents.  Android 10 provides a [SurfaceControl](https://developer.android.com/about/versions/10/features#surface) API that might solve this issue without having to use composited textures; but no effort has been made towards adopting the usage for browser controls.
 
 ### How does it work?
 
@@ -44,6 +44,13 @@ Browser controls state/positioning information:
 - {Top|Bottom}ControlOffset: Vertical displacement of the controls relative to their resting (or fully shown) position.
 - {Top|Bottom}ContentOffset: Content offset from the edge of the screen or the visible height of the controls.
 - {Top|Bottom}ControlsMinHeightOffset: Current min-height, useful when the min-height is changed with animation.
+
+The browser controls system also plays an important part in viewport sizing and scroll performance. In Blink, the viewport size is determined in [LocalFrameView::LargeViewportSizeForViewportUnits](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/local_frame_view.cc;l=945?q=-file:%5Eout%2F%20file:%5Ethird_party%2F%20LocalFrameView::LargeViewportSizeForViewportUnits&ss=chromium%2Fchromium%2Fsrc). For viewport on mobile, since browser controls has different total height and minHeight, the viewport size will change as user scroll on the content. To ensure performance, the viewport size is typically locked during active scrolling or animations to prevent expensive layout reflows, resizing only when the controls are idle. See [URL Bar Resizing](https://developer.chrome.com/blog/url-bar-resizing) for more details.
+
+Relevant classes:
+*   [cc::BrowserControlsOffsetManager](https://source.chromium.org/chromium/chromium/src/+/main:cc/input/browser_controls_offset_manager.h)
+*   [blink::BrowserControls](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/browser_controls.h)
+*   [BrowserControlsUtils#controlsResizeView](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsUtils.java)
 
 ### Browser controls in the browser process
 
@@ -241,6 +248,27 @@ Currently, only the top+bottom controls and content layer are moved by BCIV beca
     - If your new browser control is stackable with other controls, check all of the above when the new control is by itself and when stacked with other controls.
 
 Here are some example CLs for the bottom tabgroup strip that [adds and distributes OffsetTag related objects](https://chromium-review.googlesource.com/c/chromium/src/+/6001144), and [makes it move with BCIV and prevent other sources from unnecessarily submitting frames](https://chromium-review.googlesource.com/c/chromium/src/+/6018885).
+
+
+## Managing multiple layers: Browser Controls Stackers
+
+As the browser UI evolved, the need to support multiple layers of controls within the top or bottom areas arose (e.g., Toolbar, Tab Strip, Bookmark Bar, Progress Bar). [TopControlsStacker](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/TopControlsStacker.java) and [BottomControlsStacker](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BottomControlsStacker.java) were introduced to manage these layers. The goal of the stacker and layers is meant to act as a source of truth of what's inside of the browser control box, so current / new browser control layers will not have to build direct dependencies over other layers.
+
+These stackers act as coordinators that:
+1.  **Manage Layers:** They maintain a registry of UI layers (`TopControlLayer` / `BottomControlLayer`).
+2.  **Calculate Heights:** They compute the total `height` and `minHeight` for the browser controls by aggregating the properties of visible layers.
+    *   **Scroll Behavior:** Layers can be defined as scrollable (contribute to total height but can be scrolled off) or non-scrollable (contribute to minHeight and stay visible).
+    *   **Contribute to height:** This offers layers to draw and position together with browser controls while not taking up spaces (e.g. progress bar)
+3.  **Position Layers:** They calculate the Y-offset for each layer based on the current browser controls offset (how much is scrolled off) and the fixed stack order.
+    *   **Stack Order:** The order of layers is predefined using enums (e.g. Tab Strip -> Toolbar -> Bookmark bar).
+4.  **Managing offset tags:** The stackers are implemented with the support of BCIV, and manages when to add / remove offset tags.
+5.  **Handle Animations:** They manage complex transitions where layers might be showing or hiding, ensuring that neighboring layers shift appropriately.
+
+This centralized management allows different features to add their UI to the browser controls without manually calculating offsets or colliding with other features.
+
+See each layer's definition to see how to define a new browser control layers. As for Jan 2026, the top / bottom layers have separate definition. The effort to converge the layer definition is in https://crbug.com/450072689
+* [TopControlLayer](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/TopControlLayer.java)
+* [BottomControlsLayer](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BottomControlsLayer.java)
 
 ## Browser controls when there is no web contents
 
