@@ -1759,6 +1759,7 @@ The following C++23 language features are allowed in the Chromium codebase.
 **Notes:**
 *** promo
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/V6YD6hOjnE8)
+***
 
 ### if consteval <sup>[allowed]</sup>
 
@@ -1779,6 +1780,7 @@ meaningful.
 **Notes:**
 *** promo
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/1e90vNHYVFc)
+***
 
 ### Static operators () and [] <sup>[allowed]</sup>
 
@@ -1836,6 +1838,7 @@ auto x = std::byteswap(y);
 **Notes:**
 *** promo
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/U2zUF-xOj6A/m/ZiRRZdr7AwAJ)
+***
 
 ### Various new ranges algorithms <sup>[allowed]</sup>
 
@@ -1864,6 +1867,7 @@ std::ranges::fold_left_first_with_iter
 *** promo
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/wZg3s5m6rOE).
 Migration of base::Contains() tracked [here](https://crbug.com/470391351).
+***
 
 ### Constructing containers with std::from_range <sup>[allowed]</sup>
 
