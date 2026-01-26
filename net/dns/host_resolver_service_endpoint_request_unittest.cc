@@ -297,6 +297,25 @@ class HostResolverServiceEndpointRequestTest
     SetDnsRules(std::move(rules));
   }
 
+  // Adds A, AAAA, and HTTPS records for `host` without delay.
+  void UseHttpsNonDelayedDnsRules(const std::string& host) {
+    MockDnsClientRuleList rules;
+    AddDnsRule(&rules, host, dns_protocol::kTypeA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+    AddDnsRule(&rules, host, dns_protocol::kTypeAAAA,
+               MockDnsClientRule::ResultType::kOk, /*delay=*/false);
+
+    std::vector<DnsResourceRecord> records = {
+        BuildTestHttpsServiceRecord(host, /*priority=*/1, /*service_name=*/".",
+                                    /*params=*/{})};
+    rules.emplace_back(host, dns_protocol::kTypeHttps,
+                       /*secure=*/false,
+                       MockDnsClientRule::Result(BuildTestDnsResponse(
+                           host, dns_protocol::kTypeHttps, records)),
+                       /*delay=*/false);
+    SetDnsRules(std::move(rules));
+  }
+
   void UseHttpsDelayedDnsRules(const std::string& host) {
     MockDnsClientRuleList rules;
     AddDnsRule(&rules, host, dns_protocol::kTypeA,
@@ -315,21 +334,22 @@ class HostResolverServiceEndpointRequestTest
     SetDnsRules(std::move(rules));
   }
 
-  std::unique_ptr<ServiceEndpointRequest> CreateRequest(
-      std::string_view host,
-      ResolveHostParameters parameters = ResolveHostParameters()) {
-    return resolver_->CreateServiceEndpointRequest(
-        url::SchemeHostPort(GURL(host)), NetworkAnonymizationKey(),
-        // Use an actual NetLogWithSource instance so that we can see NetLog
-        // events when `--log-net-log` is specified.
-        NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE),
-        std::move(parameters), resolve_context_.get());
-  }
-
   Requester CreateRequester(
       std::string_view host,
       ResolveHostParameters parameters = ResolveHostParameters()) {
-    return Requester(CreateRequest(host, std::move(parameters)));
+    return Requester(resolver_->CreateServiceEndpointRequest(
+        HostResolver::Host(url::SchemeHostPort(GURL(host))),
+        NetworkAnonymizationKey(), net_log_with_source_, std::move(parameters),
+        resolve_context_.get()));
+  }
+
+  Requester CreateSchemelessRequester(
+      HostPortPair host_port_pair,
+      ResolveHostParameters parameters = ResolveHostParameters()) {
+    return Requester(resolver_->CreateServiceEndpointRequest(
+        HostResolver::Host(std::move(host_port_pair)),
+        NetworkAnonymizationKey(), net_log_with_source_, std::move(parameters),
+        resolve_context_.get()));
   }
 
   LegacyRequester CreateLegacyRequester(std::string_view host) {
@@ -366,6 +386,11 @@ class HostResolverServiceEndpointRequestTest
   // examine recorded events since we may change events and we don't provide
   // stable event recordings.
   RecordingNetLogObserver net_log_observer_;
+
+  // Use an actual NetLogWithSource instance so that we can see NetLog events
+  // when `--log-net-log` is specified.
+  NetLogWithSource net_log_with_source_{
+      NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};
 };
 
 TEST_F(HostResolverServiceEndpointRequestTest, NameNotResolved) {
@@ -1643,6 +1668,26 @@ TEST_F(HostResolverServiceEndpointRequestTest,
               ElementsAre(ExpectServiceEndpoint(ElementsAre(fresh_endpoint),
                                                 IsEmpty())));
   ASSERT_FALSE(requester.request()->IsStaleWhileRefresing());
+}
+
+TEST_F(HostResolverServiceEndpointRequestTest, NoSchemeHttpsNotQueried) {
+  const std::string kHost = "no_scheme_https_not_queried";
+  UseHttpsNonDelayedDnsRules(kHost);
+
+  Requester requester = CreateSchemelessRequester(HostPortPair(kHost, 443));
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  // There should be only two jobs: A and AAAA.
+  EXPECT_EQ(2u, resolver_->num_running_dispatcher_jobs_for_tests());
+
+  requester.WaitForFinished();
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("127.0.0.1", 443)),
+                  ElementsAre(MakeIPEndPoint("::1", 443)),
+                  // No metadata since HTTPS was not queried.
+                  ConnectionEndpointMetadata())));
 }
 
 }  // namespace net

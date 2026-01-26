@@ -40,14 +40,14 @@ HostResolverManager::ServiceEndpointRequestImpl::FinalizedResult::operator=(
     FinalizedResult&&) = default;
 
 HostResolverManager::ServiceEndpointRequestImpl::ServiceEndpointRequestImpl(
-    url::SchemeHostPort scheme_host_port,
+    HostResolver::Host host,
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     ResolveHostParameters parameters,
     base::WeakPtr<ResolveContext> resolve_context,
     base::WeakPtr<HostResolverManager> manager,
     const base::TickClock* tick_clock)
-    : host_(std::move(scheme_host_port)),
+    : host_(std::move(host)),
       network_anonymization_key_(
           NetworkAnonymizationKey::IsPartitioningEnabled()
               ? std::move(network_anonymization_key)

@@ -173,7 +173,7 @@ class NET_EXPORT HostResolverManager
   // Creates a service endpoint resolution request.
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
   CreateServiceEndpointRequest(
-      url::SchemeHostPort scheme_host_port,
+      HostResolver::Host host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
       ResolveHostParameters parameters,

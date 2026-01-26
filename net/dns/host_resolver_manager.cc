@@ -582,7 +582,7 @@ HostResolverManager::CreateMdnsListener(const HostPortPair& host,
 
 std::unique_ptr<HostResolver::ServiceEndpointRequest>
 HostResolverManager::CreateServiceEndpointRequest(
-    url::SchemeHostPort scheme_host_port,
+    HostResolver::Host host,
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     ResolveHostParameters parameters,
@@ -595,8 +595,8 @@ HostResolverManager::CreateServiceEndpointRequest(
   }
 
   return std::make_unique<ServiceEndpointRequestImpl>(
-      std::move(scheme_host_port), std::move(network_anonymization_key),
-      std::move(net_log), std::move(parameters),
+      std::move(host), std::move(network_anonymization_key), std::move(net_log),
+      std::move(parameters),
       resolve_context ? resolve_context->GetWeakPtr() : nullptr,
       weak_ptr_factory_.GetWeakPtr(), tick_clock_);
 }
