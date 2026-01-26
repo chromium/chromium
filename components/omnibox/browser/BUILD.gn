@@ -803,6 +803,7 @@ source_set("unit_tests") {
     "actions/omnibox_extension_action_unittest.cc",
     "actions/omnibox_pedal_provider_unittest.cc",
     "actions/omnibox_pedal_unittest.cc",
+    "aim_eligibility_service_unittest.cc",
     "answers_cache_unittest.cc",
     "autocomplete_controller_metrics_unittest.cc",
     "autocomplete_controller_unittest.cc",

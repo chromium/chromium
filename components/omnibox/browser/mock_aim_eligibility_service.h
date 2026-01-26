@@ -29,6 +29,11 @@ class MockAimEligibilityService : public AimEligibilityService {
               (override));
   MOCK_METHOD(std::string, GetCountryCode, (), (const, override));
   MOCK_METHOD(std::string, GetLocale, (), (const, override));
+  MOCK_METHOD(bool, HasAimUrlParams, (const GURL& url), (const, override));
+  MOCK_METHOD(const omnibox::AimEligibilityResponse&,
+              GetMostRecentResponse,
+              (),
+              (const, override));
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_MOCK_AIM_ELIGIBILITY_SERVICE_H_

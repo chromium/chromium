@@ -61,10 +61,12 @@ class TestingContextualTasksUiService
   TestingContextualTasksUiService(
       Profile* profile,
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
-      signin::IdentityManager* identity_manager)
+      signin::IdentityManager* identity_manager,
+      AimEligibilityService* aim_eligibility_service)
       : ContextualTasksUiService(profile,
                                  contextual_tasks_service,
-                                 identity_manager) {}
+                                 identity_manager,
+                                 aim_eligibility_service) {}
   ~TestingContextualTasksUiService() override = default;
 
   bool CookieJarContainsPrimaryAccount() override {
@@ -122,6 +124,8 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
                                                 ContextualTasksServiceFactory::
                                                     GetForProfile(profile),
                                             IdentityManagerFactory::
+                                                GetForProfile(profile),
+                                            AimEligibilityServiceFactory::
                                                 GetForProfile(profile)));
                                   }));
                 }));

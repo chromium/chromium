@@ -13,6 +13,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -25,6 +27,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -59,8 +62,12 @@ constexpr char kLabsUrl[] = "https://labs.google.com/search";
 class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
  public:
   explicit MockUiServiceForUrlIntercept(
-      contextual_tasks::ContextualTasksService* contextual_tasks_service)
-      : ContextualTasksUiService(nullptr, contextual_tasks_service, nullptr) {}
+      contextual_tasks::ContextualTasksService* contextual_tasks_service,
+      AimEligibilityService* aim_eligibility_service)
+      : ContextualTasksUiService(nullptr,
+                                 contextual_tasks_service,
+                                 nullptr,
+                                 aim_eligibility_service) {}
   ~MockUiServiceForUrlIntercept() override = default;
 
   MOCK_METHOD(void,
@@ -129,14 +136,21 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
 
     profile_ = std::make_unique<TestingProfile>();
     contextual_tasks_service_ = std::make_unique<MockContextualTasksService>();
+    aim_eligibility_service_ = std::make_unique<MockAimEligibilityService>(
+        prefs_, nullptr, nullptr, nullptr);
+
+    // By default, assume URLs have the correct URL params to be intercepted.
+    ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+        .WillByDefault(Return(true));
+
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
-        contextual_tasks_service_.get());
+        contextual_tasks_service_.get(), aim_eligibility_service_.get());
 
     // Create a real service for testing non-mocked methods like GetAccessToken.
     // We pass the IdentityManager from the test environment.
     real_service_ = std::make_unique<ContextualTasksUiService>(
         profile_.get(), contextual_tasks_service_.get(),
-        identity_test_env_->identity_manager());
+        identity_test_env_->identity_manager(), aim_eligibility_service_.get());
 
     ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
         .WillByDefault(Return(true));
@@ -167,8 +181,10 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
+  TestingPrefServiceSimple prefs_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+  std::unique_ptr<MockAimEligibilityService> aim_eligibility_service_;
   std::unique_ptr<MockUiServiceForUrlIntercept> service_for_nav_;
   std::unique_ptr<ContextualTasksUiService> real_service_;
   std::unique_ptr<MockContextualTasksService> contextual_tasks_service_;
@@ -513,6 +529,9 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
   GURL navigated_url(kSrpUrl);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
+
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
@@ -541,6 +560,9 @@ TEST_F(ContextualTasksUiServiceTest,
        SearchResultsNavigation_ViewedInTab_NoQuery) {
   GURL navigated_url(kSrpHomepage);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
@@ -600,6 +622,9 @@ TEST_F(ContextualTasksUiServiceTest,
   GURL navigated_url(kLabsUrl);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
+
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
@@ -658,7 +683,7 @@ TEST_F(ContextualTasksUiServiceTest, GetThreadUrlFromTaskId) {
 
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
   ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
-                                   nullptr);
+                                   nullptr, aim_eligibility_service_.get());
   GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -694,6 +719,9 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
 TEST_F(ContextualTasksUiServiceTest, SrpHomepage_Intercepted) {
   GURL navigated_url(kSrpHomepage);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
@@ -761,6 +789,9 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepage_InSidePanel_Intercepted) {
 TEST_F(ContextualTasksUiServiceTest, SrpShoppingMode_InSidePanel_Intercepted) {
   GURL navigated_url(kSrpShopping);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));

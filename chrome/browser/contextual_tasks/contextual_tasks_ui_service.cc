@@ -38,6 +38,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_url_utils.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -94,17 +95,6 @@ constexpr char kTaskQueryParam[] = "task";
 constexpr char kSearchQueryKey[] = "q";
 constexpr char kLensModeKey[] = "lns_mode";
 
-// Search parameters for the AI page.
-// TODO(crbug.com/466149941): These should be more robust to be able to handle
-// changes in the URL format.
-constexpr char kUdmParam[] = "udm";
-constexpr char kUdmAiValue[] = "50";
-constexpr char kNemParam[] = "nem";
-constexpr char kNemAiValue[] = "143";
-
-// Query parameter values for the mode.
-inline constexpr char kShoppingModeParameterValue[] = "28";
-
 bool IsSignInDomain(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return false;
@@ -158,10 +148,12 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
 ContextualTasksUiService::ContextualTasksUiService(
     Profile* profile,
     contextual_tasks::ContextualTasksService* contextual_tasks_service,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    AimEligibilityService* aim_eligibility_service)
     : profile_(profile),
       contextual_tasks_service_(contextual_tasks_service),
       identity_manager_(identity_manager),
+      aim_eligibility_service_(aim_eligibility_service),
       request_access_token_backoff_(
           &kIgnoreFirstErrorRequestAccessTokenBackoffPolicy) {
   ai_page_hosts_.emplace_back(kAiPageHost);
@@ -177,7 +169,6 @@ void ContextualTasksUiService::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   access_token_fetcher_.reset();
   token_refresh_timer_.Stop();
-  identity_manager_ = nullptr;
 }
 
 void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
@@ -884,28 +875,11 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
 }
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || !IsAllowedHost(url)) {
+  if (!IsSearchResultsUrl(url)) {
     return false;
   }
 
-  if (!base::StartsWith(url.path(), "/search")) {
-    return false;
-  }
-
-  // AI pages are identified by the "udm" URL param having a value of "50" or
-  // "nem" having a value of "143".
-  std::string udm_value;
-  if (net::GetValueForKeyInQuery(url, kUdmParam, &udm_value) &&
-      udm_value == kUdmAiValue) {
-    return true;
-  }
-
-  std::string nem_value;
-  if (net::GetValueForKeyInQuery(url, kNemParam, &nem_value) &&
-      nem_value == kNemAiValue) {
-    return true;
-  }
-  return false;
+  return aim_eligibility_service_->HasAimUrlParams(url);
 }
 
 bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
@@ -914,11 +888,7 @@ bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
 }
 
 bool ContextualTasksUiService::IsSearchResultsUrl(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    return false;
-  }
-
-  if (!IsAllowedHost(url)) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || !IsAllowedHost(url)) {
     return false;
   }
 
@@ -936,8 +906,7 @@ bool ContextualTasksUiService::IsValidSearchResultsPage(const GURL& url) {
 
   // Do not allow shopping mode queries.
   std::string value;
-  if (net::GetValueForKeyInQuery(url, kUdmParam, &value) &&
-      value == kShoppingModeParameterValue) {
+  if (net::GetValueForKeyInQuery(url, "udm", &value) && value == "28") {
     return false;
   }
 

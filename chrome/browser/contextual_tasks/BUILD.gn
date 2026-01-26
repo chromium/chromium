@@ -133,6 +133,7 @@ if (!is_android) {
       ":contextual_tasks",
       ":mojo_bindings",
       "//base",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:glic",
@@ -319,9 +320,11 @@ source_set("unit_tests") {
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/contextual_search:public",
       "//components/contextual_search:test_support",
+      "//components/omnibox/browser:test_support",
       "//components/passage_embeddings/core",
       "//components/tabs:test_support",
       "//components/variations:test_support",
+      "//services/network/public/cpp",
     ]
   }
 }
