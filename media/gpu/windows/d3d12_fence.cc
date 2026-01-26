@@ -51,7 +51,7 @@ D3D11Status D3D12Fence::WaitCPU(uint64_t fence_value) const {
   }
   base::win::ScopedHandle fence_event{::CreateEvent(
       nullptr, /*bManualReset=*/TRUE, /*bInitialState=*/FALSE, nullptr)};
-  HRESULT hr = fence_->SetEventOnCompletion(fence_value, fence_event.get());
+  HRESULT hr = fence_->SetEventOnCompletion(fence_value_, fence_event.get());
   if (FAILED(hr)) {
     return D3D11Status{D3D11StatusCode::kWaitForFenceFailed,
                        "Failed to SetEventOnCompletion", hr};

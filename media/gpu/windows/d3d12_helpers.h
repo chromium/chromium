@@ -135,31 +135,6 @@ GetD3D12VideoDecodeGUID(VideoCodecProfile profile,
                         uint8_t bitdepth,
                         VideoChromaSampling chroma_sampling);
 
-// Helpers for synchronizing same underlying resource between D3D11 and D3D12.
-using D3D11FenceAndValue =
-    std::pair<Microsoft::WRL::ComPtr<ID3D11Fence>, uint64_t>;
-class MEDIA_GPU_EXPORT D3D11To12Fence {
- public:
-  explicit D3D11To12Fence(Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
-                          Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence);
-  D3D11To12Fence() = delete;
-  D3D11To12Fence(const D3D11To12Fence&) = delete;
-  ~D3D11To12Fence();
-
-  D3D11FenceAndValue GetD3D11FenceAndIncrementValue() {
-    return std::make_pair(d3d11_fence_, ++fence_value_);
-  }
-
-  Microsoft::WRL::ComPtr<ID3D12Fence> GetD3D12Fence() const {
-    return d3d12_fence_;
-  }
-
- private:
-  Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence_;
-  Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence_;
-  uint64_t fence_value_ = 0;
-};
-
 }  // namespace media
 
 #endif  // MEDIA_GPU_WINDOWS_D3D12_HELPERS_H_

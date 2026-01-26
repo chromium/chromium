@@ -200,12 +200,4 @@ GUID GetD3D12VideoDecodeGUID(VideoCodecProfile profile,
   }
 }
 
-D3D11To12Fence::D3D11To12Fence(Microsoft::WRL::ComPtr<ID3D11Fence> d3d11_fence,
-                               Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence)
-    : d3d11_fence_(std::move(d3d11_fence)),
-      d3d12_fence_(std::move(d3d12_fence)),
-      fence_value_(0) {}
-
-D3D11To12Fence::~D3D11To12Fence() = default;
-
 }  // namespace media
