@@ -70,6 +70,7 @@ static_library("core") {
     "//base",
     "//build:buildflag_header_h",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/dev_mode",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/networking",

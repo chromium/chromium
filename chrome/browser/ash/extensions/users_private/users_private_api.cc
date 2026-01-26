@@ -16,12 +16,10 @@
 #include "chrome/browser/ash/extensions/users_private/users_private_delegate_factory.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/users_private.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/session_manager/core/session_manager.h"
@@ -36,9 +34,7 @@ namespace extensions {
 namespace {
 
 bool IsDeviceEnterpriseManaged() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->IsDeviceEnterpriseManaged();
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 bool IsChild(Profile* profile) {

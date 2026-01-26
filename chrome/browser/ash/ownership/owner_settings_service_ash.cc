@@ -30,11 +30,9 @@
 #include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -732,9 +730,8 @@ void OwnerSettingsServiceAsh::ReloadKeypairImpl(
     return;
   }
 
-  const bool is_enterprise_managed = g_browser_process->platform_part()
-                                         ->browser_policy_connector_ash()
-                                         ->IsDeviceEnterpriseManaged();
+  const bool is_enterprise_managed =
+      InstallAttributes::Get()->IsEnterpriseManaged();
 
   auto cb = base::BindOnce(&OwnerSettingsServiceAsh::OnReloadedKeypairImpl,
                            weak_factory_.GetWeakPtr(), std::move(callback));
