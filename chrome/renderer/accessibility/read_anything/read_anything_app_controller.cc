@@ -2668,8 +2668,10 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
   dom_distiller_title_ = title;
   dom_distiller_content_html_ = content;
 
-  // For Google Docs, do not show any text before the doc finishing loading.
-  if (IsGoogleDocs() && !model_.page_finished_loading()) {
+  // Readability distillation uses the DOM and Google docs rendering is
+  // canvas-based instead of DOM, so display empty.
+  if (IsGoogleDocs()) {
+    DrawEmptyState();
     return;
   }
 
