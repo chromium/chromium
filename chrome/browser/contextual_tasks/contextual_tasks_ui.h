@@ -237,14 +237,14 @@ class ContextualTasksUI
    public:
     explicit InnerFrameCreationObvserver(
         content::WebContents* web_contents,
-        base::OnceCallback<void(content::WebContents*)> callback);
+        base::RepeatingCallback<void(content::WebContents*)> callback);
     ~InnerFrameCreationObvserver() override;
 
     void InnerWebContentsCreated(
         content::WebContents* inner_web_contents) override;
 
    private:
-    base::OnceCallback<void(content::WebContents*)> callback_;
+    base::RepeatingCallback<void(content::WebContents*)> callback_;
   };
 
   // A notification that the WebContents hosting the WebUI has created an inner
