@@ -369,8 +369,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       }));
 }
 
+// TODO(crbug.com/478095504): Flakily fails on ASan/LSan
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
+#define MAYBE_SidePanelOpenByTransferWebContentsFromTab \
+  DISABLED_SidePanelOpenByTransferWebContentsFromTab
+#else
+#define MAYBE_SidePanelOpenByTransferWebContentsFromTab \
+  SidePanelOpenByTransferWebContentsFromTab
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-                       SidePanelOpenByTransferWebContentsFromTab) {
+                       MAYBE_SidePanelOpenByTransferWebContentsFromTab) {
   SetUpTasks();
   // Add tab4 with contextual task side panel tab.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
