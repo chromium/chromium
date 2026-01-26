@@ -7,11 +7,18 @@
 #import <memory>
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/browser/intents/model/intents_donation_helper.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/web/public/web_state.h"
 
-@interface AppBarMediator () <WebStateListObserving>
+@interface AppBarMediator () <IncognitoStateObserver,
+                              TabGridStateObserver,
+                              WebStateListObserving>
 
 // The web state list currently observed by this mediator.
 @property(nonatomic, assign) WebStateList* webStateList;
@@ -23,19 +30,31 @@
   raw_ptr<WebStateList> _regularWebStateList;
   raw_ptr<WebStateList> _incognitoWebStateList;
   TabGridPage _currentPage;
+  TabGridState* _tabGridState;
+  IncognitoState* _incognitoState;
 }
 
 - (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
-                      incognitoWebStateList:
-                          (WebStateList*)incognitoWebStateList {
+                      incognitoWebStateList:(WebStateList*)incognitoWebStateList
+                               tabGridState:(TabGridState*)tabGridState
+                             incognitoState:(IncognitoState*)incognitoState {
   self = [super init];
   if (self) {
     _regularWebStateList = regularWebStateList;
     _incognitoWebStateList = incognitoWebStateList;
     _observerBridge = std::make_unique<WebStateListObserverBridge>(self);
-    // The app starts in the regular tab grid.
-    self.webStateList = _regularWebStateList;
-    _currentPage = TabGridPageRegularTabs;
+
+    _tabGridState = tabGridState;
+    [_tabGridState addObserver:self];
+
+    _incognitoState = incognitoState;
+    [_incognitoState addObserver:self];
+
+    if (_tabGridState.tabGridVisible) {
+      [self updateForTabGridPage:_tabGridState.currentPage];
+    } else {
+      [self updateForIncognitoVisible:_incognitoState.incognitoContentVisible];
+    }
   }
   return self;
 }
@@ -46,12 +65,13 @@
 }
 
 - (void)setIncognitoWebStateList:(WebStateList*)incognitoWebStateList {
-  // TODO(crbug.com/472279443): How to handle the destruction of the incognito
-  // web state list?
   _incognitoWebStateList = incognitoWebStateList;
-  if (_currentPage == TabGridPageIncognitoTabs) {
+  if (_tabGridState.tabGridVisible &&
+      _currentPage == TabGridPageIncognitoTabs) {
     self.webStateList = _incognitoWebStateList;
     [self updateConsumer];
+  } else if (_incognitoState.incognitoContentVisible) {
+    self.webStateList = _incognitoWebStateList;
   }
 }
 
@@ -74,37 +94,57 @@
   [self updateConsumer];
 }
 
+#pragma mark - IncognitoStateObserver
+
+- (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
+  if (_tabGridState.tabGridVisible) {
+    return;
+  }
+  self.webStateList = _incognitoWebStateList;
+}
+
+- (void)willExitIncognitoForState:(IncognitoState*)incognitoState {
+  if (_tabGridState.tabGridVisible) {
+    return;
+  }
+  self.webStateList = _regularWebStateList;
+}
+
 #pragma mark - TabGridStateObserver
 
 - (void)willEnterTabGrid {
+  _currentPage = _tabGridState.currentPage;
   [self.consumer willEnterTabGrid];
 }
 
 - (void)willExitTabGrid {
   [self.consumer willExitTabGrid];
+  [self updateForIncognitoVisible:_incognitoState.incognitoContentVisible];
 }
 
 - (void)willChangePageTo:(TabGridPage)page {
   _currentPage = page;
-  switch (page) {
-    case TabGridPageIncognitoTabs:
-      self.webStateList = _incognitoWebStateList;
-      break;
-    case TabGridPageRegularTabs:
-      self.webStateList = _regularWebStateList;
-      break;
-    case TabGridPageTabGroups:
-      // TODO(crbug.com/472279443): Handle tab groups page.
-      break;
+  if (!_tabGridState.tabGridVisible) {
+    return;
   }
+  [self updateForTabGridPage:page];
 }
 
 #pragma mark - AppBarMutator
 
-- (void)createNewTab {
-  // TODO(crbug.com/472279443): Add the logic to add a new tab. This might be a
-  // bit different if the TabGrid is presented as there is a lot of custom
-  // logic.
+- (void)createNewTabFromView:(UIView*)sender {
+  if (_tabGridState.tabGridVisible) {
+    // TODO(crbug.com/472279443): Add the logic to add a new tab from the
+    // TabGrid.
+  } else {
+    CGPoint center = [sender.superview convertPoint:sender.center toView:nil];
+    OpenNewTabCommand* command = [OpenNewTabCommand
+        commandWithIncognito:_incognitoState.incognitoContentVisible
+                 originPoint:center];
+    [self.sceneHandler openURLInNewTab:command];
+
+    [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
+  }
 }
 
 #pragma mark - Properties
@@ -128,6 +168,30 @@
     return;
   }
   [self.consumer updateTabCount:self.webStateList->count()];
+}
+
+// Updates for entering tab grid `page`.
+- (void)updateForTabGridPage:(TabGridPage)page {
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      self.webStateList = _incognitoWebStateList;
+      break;
+    case TabGridPageRegularTabs:
+      self.webStateList = _regularWebStateList;
+      break;
+    case TabGridPageTabGroups:
+      // TODO(crbug.com/472279443): Handle tab groups page.
+      break;
+  }
+}
+
+// Updates for `incognito` being visible.
+- (void)updateForIncognitoVisible:(BOOL)incognitoVisible {
+  if (incognitoVisible) {
+    self.webStateList = _incognitoWebStateList;
+  } else {
+    self.webStateList = _regularWebStateList;
+  }
 }
 
 @end

@@ -12,6 +12,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//ios/chrome/browser/app_bar/ui",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/root_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -33,6 +34,7 @@ source_set("unit_tests") {
     ":coordinator",
     "//base",
     "//ios/chrome/browser/app_bar/ui",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",

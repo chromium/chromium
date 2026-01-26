@@ -34,17 +34,20 @@
   _viewController = [[AppBarViewController alloc] init];
   // It is ok to use the regular browser here as the Scene commands are
   // handled by the same object for both modes.
-  _viewController.sceneHandler = HandlerForProtocol(
+  id<SceneCommands> sceneHandler = HandlerForProtocol(
       _regularBrowser->GetCommandDispatcher(), SceneCommands);
+  _viewController.sceneHandler = sceneHandler;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
+
+  SceneState* sceneState = _regularBrowser->GetSceneState();
 
   _mediator = [[AppBarMediator alloc]
       initWithRegularWebStateList:_regularBrowser->GetWebStateList()
-            incognitoWebStateList:_incognitoBrowser->GetWebStateList()];
+            incognitoWebStateList:_incognitoBrowser->GetWebStateList()
+                     tabGridState:sceneState.tabGridState
+                   incognitoState:sceneState.incognitoState];
   _mediator.consumer = _viewController;
-
-  SceneState* sceneState = _regularBrowser->GetSceneState();
-  [sceneState.tabGridState addObserver:_mediator];
+  _mediator.sceneHandler = sceneHandler;
 
   _viewController.mutator = _mediator;
 }
@@ -65,6 +68,9 @@
 
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
   _incognitoBrowser = incognitoBrowser;
+  [_mediator setIncognitoWebStateList:incognitoBrowser
+                                          ? incognitoBrowser->GetWebStateList()
+                                          : nullptr];
 }
 
 @end

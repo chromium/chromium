@@ -8,13 +8,18 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
-#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 
 @protocol AppBarConsumer;
+@class IncognitoState;
+@protocol SceneCommands;
+@class TabGridState;
 class WebStateList;
 
 // Mediator for the app bar coordinator.
-@interface AppBarMediator : NSObject <AppBarMutator, TabGridStateObserver>
+@interface AppBarMediator : NSObject <AppBarMutator>
+
+// Handler for the scene commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // The consumer of this mediator.
 @property(nonatomic, weak) id<AppBarConsumer> consumer;
@@ -22,6 +27,8 @@ class WebStateList;
 // Initializes the mediator with the two web state lists.
 - (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
                       incognitoWebStateList:(WebStateList*)incognitoWebStateList
+                               tabGridState:(TabGridState*)tabGridState
+                             incognitoState:(IncognitoState*)incognitoState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

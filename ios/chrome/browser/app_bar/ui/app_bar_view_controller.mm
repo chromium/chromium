@@ -131,7 +131,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   UIButton* button = [self buttonWithTitle:title image:image];
 
   [button addTarget:self
-                action:@selector(didTapOpenNewTabButton)
+                action:@selector(didTapOpenNewTabButton:)
       forControlEvents:UIControlEventTouchUpInside];
   return button;
 }
@@ -223,8 +223,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 }
 
 // Called when the New Tab button is tapped.
-- (void)didTapOpenNewTabButton {
-  [self.mutator createNewTab];
+- (void)didTapOpenNewTabButton:(UIView*)sender {
+  [self.mutator createNewTabFromView:sender];
 }
 
 // Called when the Tab Grid button has a touch down.

@@ -5,11 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_MUTATOR_H_
 #define IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_MUTATOR_H_
 
+#import <UIKit/UIKit.h>
+
 // The mutator protocol for the AppBar.
 @protocol AppBarMutator <NSObject>
 
 // Creates a new tab for the current mode.
-- (void)createNewTab;
+- (void)createNewTabFromView:(UIView*)sender;
 
 @end
 
