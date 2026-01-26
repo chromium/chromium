@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinator.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemProperties.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemViewBinder.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/MultiWindowMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceIphController.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManager.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceState.java",

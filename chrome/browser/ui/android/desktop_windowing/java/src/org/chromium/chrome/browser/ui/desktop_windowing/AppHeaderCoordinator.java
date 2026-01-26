@@ -35,8 +35,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.WindowingMode;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.WindowingMode;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -256,8 +256,8 @@ public class AppHeaderCoordinator
                         mWindowingMode,
                         WindowingMode.NUM_ENTRIES);
                 // Record windowing mode changes if not going from/to UNKNOWN.
-                if (prevWindowingMode != AppHeaderUtils.WindowingMode.UNKNOWN
-                        && mWindowingMode != AppHeaderUtils.WindowingMode.UNKNOWN) {
+                if (prevWindowingMode != WindowingMode.UNKNOWN
+                        && mWindowingMode != WindowingMode.UNKNOWN) {
                     AppHeaderUtils.recordWindowingMode(prevWindowingMode, /* isStarted= */ false);
                     AppHeaderUtils.recordWindowingMode(mWindowingMode, /* isStarted= */ true);
                 }

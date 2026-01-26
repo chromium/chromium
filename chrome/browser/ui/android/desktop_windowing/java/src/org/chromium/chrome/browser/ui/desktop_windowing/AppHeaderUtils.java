@@ -23,6 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
+import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.WindowingMode;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -91,26 +92,6 @@ public class AppHeaderUtils {
 
         // Be sure to also update enums.xml when updating these values.
         int NUM_ENTRIES = 3;
-    }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
-        WindowingMode.UNKNOWN,
-        WindowingMode.FULLSCREEN,
-        WindowingMode.PICTURE_IN_PICTURE,
-        WindowingMode.DESKTOP_WINDOW,
-        WindowingMode.MULTI_WINDOW,
-    })
-    public @interface WindowingMode {
-        int UNKNOWN = 0;
-        int FULLSCREEN = 1;
-        int PICTURE_IN_PICTURE = 2;
-        int DESKTOP_WINDOW = 3;
-        int MULTI_WINDOW = 4;
-
-        // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 5;
     }
 
     private static @Nullable Boolean sHeaderCustomizationDisallowedOnExternalDisplayForOem;
