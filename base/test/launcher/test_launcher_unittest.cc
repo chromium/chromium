@@ -33,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 namespace {
@@ -1321,9 +1322,9 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
   // Banner should appear in the output.
   const char kBanner[] = "Found exact positive filter not enforced:";
   EXPECT_TRUE(output.contains(kBanner));
-  std::vector<std::string> lines = base::SplitString(
+  std::vector<std::string_view> lines = base::SplitStringPiece(
       output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::unordered_set<std::string> tests_not_enforced;
+  absl::flat_hash_set<std::string_view> tests_not_enforced;
   bool banner_has_printed = false;
   for (size_t i = 0; i < lines.size(); i++) {
     if (lines[i].contains(kBanner)) {
@@ -1340,7 +1341,7 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
       // ahead to the test names, e.g. below:
       // [1030/220237.425678:ERROR:test_launcher.cc(2123)] Test.secondTest
       // [1030/220237.425682:ERROR:test_launcher.cc(2123)] Test.firstTest
-      std::vector<std::string> line_vec = base::SplitString(
+      std::vector<std::string_view> line_vec = base::SplitStringPiece(
           lines[i], "]", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       ASSERT_EQ(line_vec.size(), 2u);
       tests_not_enforced.insert(line_vec[1]);
