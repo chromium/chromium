@@ -747,9 +747,27 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Zero State Suggestions"/>
   <int value="8" label="What Can Gemini Do"/>
   <int value="9" label="Discovery Card"/>
+  <int value="10" label="Omnibox Summarize"/>
+  <int value="11" label="Omnibox Prompt"/>
+  <int value="12" label="Transition to Live"/>
+  <int value="13" label="Onboarding: What Can Gemini Do"/>
+  <int value="14" label="Onboarding: Ask About Page"/>
+  <int value="15" label="Onboarding: Summarize"/>
+  <int value="16" label="Suggested Reply"/>
+  <int value="17" label="Nano Banana: Turn This Page Into a Comic Strip"/>
+  <int value="18" label="Nano Banana: Make a Folk Art Illustration"/>
+  <int value="19" label="Nano Banana: Make a Custom Mini Figure"/>
+  <int value="20" label="Nano Banana: Give Me a Grunge Makeover"/>
+  <int value="21" label="Nano Banana: Turn This Image Into a Vintage Postcard"/>
+  <int value="22"
+      label="Nano Banana: Turn This Image Into a Watercolor Painting"/>
+  <int value="23" label="Nano Banana: Make This Image Look Like Instant Film"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFirstPromptSubmissionMethod) -->
+<!-- LINT.ThenChange(
+    /ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFirstPromptSubmissionMethod,
+    /ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h:BWGInputType
+) -->
 
 <!-- LINT.IfChange(IOSGeminiFREAction) -->
 

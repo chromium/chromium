@@ -2442,6 +2442,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Prompt.ImageRemix.Enabled" enum="Boolean"
+    expires_after="2027-01-22">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records whether a prompt sent to Gemini had Image Remix enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Prompt.ImagesAttached.Count" units="count"
+    expires_after="2027-01-22">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the number of images sent by the user in a Gemini prompt.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Prompt.LongPressImage.Included" enum="Boolean"
+    expires_after="2027-01-22">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records whether a prompt sent to Gemini included a long-press image.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Response.GeneratedImage.Included" enum="Boolean"
+    expires_after="2027-01-22">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records whether or not a Gemini response included a generated image.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.Response.Latency.WithContext" units="ms"
     expires_after="2026-06-07">
   <owner>kanouche@google.com</owner>
