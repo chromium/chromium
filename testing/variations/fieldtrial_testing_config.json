@@ -466,6 +466,21 @@
             ]
         }
     ],
+    "AccessibilityTextChangeTypes": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityTextChangeTypes"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityUnifiedSnapshots": [
         {
             "platforms": [
