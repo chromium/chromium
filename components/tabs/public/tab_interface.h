@@ -12,6 +12,7 @@
 #include "base/types/pass_key.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_handle_factory.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 namespace ui {
 class UnownedUserDataHost;
@@ -43,6 +44,27 @@ class ScopedTabModalUI {
  public:
   ScopedTabModalUI() = default;
   virtual ~ScopedTabModalUI() = default;
+};
+
+// This class exists to allow consumers to look up a TabInterface from an
+// instance of WebContents. This is necessary while transitioning features to
+// use TabInterface instead of WebContents.
+class TabLookupFromWebContents
+    : public content::WebContentsUserData<TabLookupFromWebContents> {
+ public:
+  ~TabLookupFromWebContents() override = default;
+
+  tabs::TabInterface* model() { return tab_interface_; }
+  const tabs::TabInterface* model() const { return tab_interface_; }
+
+ private:
+  friend WebContentsUserData;
+  TabLookupFromWebContents(content::WebContents* contents,
+                           tabs::TabInterface* tab_interface);
+
+  // Semantically owns this class.
+  raw_ptr<tabs::TabInterface> tab_interface_;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 // TODO(crbug.com/404889112): This interface will be reused for Android as part

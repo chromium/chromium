@@ -60,6 +60,7 @@
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
@@ -97,83 +98,21 @@ BrowserWindowInterface* FindBrowserWindowInterface(SessionID window_id) {
   return nullptr;
 }
 
-class TabAndroidHelper : public content::WebContentsUserData<TabAndroidHelper> {
- public:
-  ~TabAndroidHelper() override = default;
-
-  static void SetTabForWebContents(WebContents* contents,
-                                   TabAndroid* tab_android) {
-    content::WebContentsUserData<TabAndroidHelper>::CreateForWebContents(
-        contents);
-    content::WebContentsUserData<TabAndroidHelper>::FromWebContents(contents)
-        ->tab_android_ = tab_android;
-  }
-
-  static TabAndroid* FromWebContents(WebContents* contents) {
-    TabAndroidHelper* helper =
-        content::WebContentsUserData<TabAndroidHelper>::FromWebContents(
-            contents);
-    return helper ? helper->tab_android() : nullptr;
-  }
-
-  static const TabAndroid* FromWebContents(const WebContents* contents) {
-    const TabAndroidHelper* helper =
-        content::WebContentsUserData<TabAndroidHelper>::FromWebContents(
-            contents);
-    return helper ? helper->tab_android() : nullptr;
-  }
-
-  TabAndroid* tab_android() { return tab_android_; }
-  const TabAndroid* tab_android() const { return tab_android_; }
-
- private:
-  explicit TabAndroidHelper(content::WebContents* web_contents)
-      : content::WebContentsUserData<TabAndroidHelper>(*web_contents) {}
-  friend class content::WebContentsUserData<TabAndroidHelper>;
-
-  raw_ptr<TabAndroid> tab_android_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabAndroidHelper);
-
 }  // namespace
-
-namespace tabs {
-
-// static
-TabInterface* TabInterface::GetFromContents(
-    content::WebContents* web_contents) {
-  auto* tab_android = TabAndroid::FromWebContents(web_contents);
-  CHECK(tab_android);
-  return tab_android;
-}
-
-const TabInterface* TabInterface::GetFromContents(
-    const content::WebContents* web_contents) {
-  const auto* tab_android = TabAndroid::FromWebContents(web_contents);
-  CHECK(tab_android);
-  return tab_android;
-}
-
-// static
-TabInterface* TabInterface::MaybeGetFromContents(
-    content::WebContents* web_contents) {
-  return TabAndroid::FromWebContents(web_contents);
-}
-
-}  // namespace tabs
 
 // static
 const TabAndroid* TabAndroid::FromWebContents(
     const content::WebContents* web_contents) {
-  return TabAndroidHelper::FromWebContents(web_contents);
+  const tabs::TabLookupFromWebContents* helper =
+      tabs::TabLookupFromWebContents::FromWebContents(web_contents);
+  return helper ? static_cast<const TabAndroid*>(helper->model()) : nullptr;
 }
 
 // static
 TabAndroid* TabAndroid::FromWebContents(content::WebContents* web_contents) {
-  return TabAndroidHelper::FromWebContents(web_contents);
+  tabs::TabLookupFromWebContents* helper =
+      tabs::TabLookupFromWebContents::FromWebContents(web_contents);
+  return helper ? static_cast<TabAndroid*>(helper->model()) : nullptr;
 }
 
 // static
@@ -414,7 +353,7 @@ void TabAndroid::InitWebContents(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
 
-  TabAndroidHelper::SetTabForWebContents(web_contents(), this);
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), this);
   web_contents_delegate_ =
       std::make_unique<android::TabWebContentsDelegateAndroid>(
           env, jweb_contents_delegate);
@@ -564,7 +503,8 @@ void TabAndroid::ReleaseWebContents() {
 
   // Remove the link from the native WebContents to |this|, since the
   // lifetimes of the two objects are no longer intertwined.
-  TabAndroidHelper::SetTabForWebContents(released_contents, nullptr);
+  released_contents->RemoveUserData(
+      tabs::TabLookupFromWebContents::UserDataKey());
   ClearSessionId();
 
   synced_tab_delegate_->ResetWebContents();

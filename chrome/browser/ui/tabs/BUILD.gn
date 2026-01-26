@@ -277,6 +277,7 @@ if (!is_android) {
       "//components/commerce/core/product_specifications",
       "//components/saved_tab_groups/public",
       "//components/tab_groups",
+      "//components/tabs",
     ]
 
     if (is_chromeos) {

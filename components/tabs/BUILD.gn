@@ -4,6 +4,9 @@
 
 import("//build/config/ui.gni")
 
+# This component depends on content::WebContents so it can't be used in ios.
+assert(!is_ios)
+
 source_set("public") {
   sources = [
     "public/direct_child_walker.h",
@@ -30,6 +33,7 @@ source_set("public") {
     ":split_tabs",
     "//base",
     "//components/tab_groups",
+    "//content/public/browser",
   ]
 
   deps = [ "//ui/gfx/range" ]
@@ -61,6 +65,7 @@ source_set("tabs") {
     "impl/tab_group.cc",
     "impl/tab_group_tab_collection.cc",
     "impl/tab_handle_factory.cc",
+    "impl/tab_interface.cc",
     "impl/tab_strip_collection.cc",
     "impl/unpinned_tab_collection.cc",
   ]
