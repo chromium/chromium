@@ -878,8 +878,16 @@ IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
 // Tests the local save fallback bubble. Ensures that when a upload save fails,
 // the bubble falls back to a local save, and the Google Pay icon is removed if
 // Google Wallet branding is enabled.
+// TODO(crbug.com/478718852): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Upload_FallsBackToLocalSave_IconDisplayed \
+  DISABLED_Upload_FallsBackToLocalSave_IconDisplayed
+#else
+#define MAYBE_Upload_FallsBackToLocalSave_IconDisplayed \
+  Upload_FallsBackToLocalSave_IconDisplayed
+#endif
 IN_PROC_BROWSER_TEST_P(IbanBubbleViewSyncTransportFullFormBrowserTest,
-                       Upload_FallsBackToLocalSave_IconDisplayed) {
+                       MAYBE_Upload_FallsBackToLocalSave_IconDisplayed) {
   SetUploadIbanRpcPaymentsFails();
   SetUpForSyncTransportModeTest();
 
