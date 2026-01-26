@@ -362,7 +362,13 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
+// TODO(crbug.com/475916124): Flakily fails on Win10 x64
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Screenshots DISABLED_Screenshots
+#else
+#define MAYBE_Screenshots ScreenShots
+#endif
+IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, MAYBE_Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DeepQuery app = {"contextual-tasks-app"};
   DeepQuery toolbar = app + "top-toolbar";
