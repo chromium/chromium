@@ -801,6 +801,13 @@ be describing additional metrics about the same event.
       returns the average of the densities accumulated over the page load time
       rounded to the nearest integer.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="KurtosisViewportAdDensity">
     <summary>
