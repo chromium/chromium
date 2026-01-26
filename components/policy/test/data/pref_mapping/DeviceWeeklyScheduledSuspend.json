@@ -13,7 +13,6 @@
             }
           }
         },
-        // TODO(b/322341636): Add tests to verify that invalid values are not mapped
         {
             "note": "Empty policy.",
             "policies": {
