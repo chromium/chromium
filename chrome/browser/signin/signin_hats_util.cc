@@ -11,6 +11,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
@@ -189,15 +190,14 @@ bool IsSurveyEnabledForHatsTrigger(const std::string& trigger) {
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-}  // namespace
-
-namespace signin {
-
-void LaunchHatsSurveyForProfile(const std::string& trigger,
-                                Profile* profile,
-                                bool defer_if_no_browser,
-                                std::optional<signin_metrics::AccessPoint>
-                                    access_point_for_data_type_promo) {
+// Attempts to launch the survey, whose SurveyStringData is provided at the last
+// possible moment by `data_factory`. This avoids unnecessary work in case the
+// survey can't be launched anyway.
+void LaunchHatsSurveyForProfileInternal(
+    const std::string& trigger,
+    Profile* profile,
+    bool defer_if_no_browser,
+    base::OnceCallback<SurveyStringData()> data_factory) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (!profile || !IsSurveyEnabledForHatsTrigger(trigger)) {
     return;
@@ -228,9 +228,38 @@ void LaunchHatsSurveyForProfile(const std::string& trigger,
       trigger,
       switches::kChromeIdentitySurveyLaunchWithDelayDuration.Get()
           .InMilliseconds(),
-      /*product_specific_bits_data=*/{},
-      GetSurveyStringData(trigger, profile, access_point_for_data_type_promo));
+      /*product_specific_bits_data=*/{}, std::move(data_factory).Run());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
+}  // namespace
+
+namespace signin {
+
+void LaunchHatsSurveyForProfile(const std::string& trigger,
+                                Profile* profile,
+                                bool defer_if_no_browser,
+                                std::optional<signin_metrics::AccessPoint>
+                                    access_point_for_data_type_promo) {
+  LaunchHatsSurveyForProfileInternal(
+      trigger, profile, defer_if_no_browser,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      base::BindOnce(&GetSurveyStringData, trigger, profile,
+                     access_point_for_data_type_promo)
+#else
+      base::BindOnce([]() { return SurveyStringData(); })
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  );
+}
+
+void LaunchHatsSurveyForProfile(const std::string& trigger,
+                                Profile* profile,
+                                bool defer_if_no_browser,
+                                SurveyStringData data) {
+  LaunchHatsSurveyForProfileInternal(
+      trigger, profile, defer_if_no_browser,
+      base::BindOnce([](SurveyStringData data) { return data; },
+                     std::move(data)));
 }
 
 }  // namespace signin

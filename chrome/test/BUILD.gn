@@ -5929,6 +5929,7 @@ if (!is_android) {
         "../browser/enterprise/signin/enterprise_signin_service_browsertest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
+        "../browser/signin/signin_hats_util_browsertest.cc",
       ]
       deps += [
         "//chrome/browser/browser_switcher:browser_tests",
