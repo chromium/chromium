@@ -170,7 +170,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                          const ComputedStyle&);
   static CSSValue* ValueForGridLanesDirection(const GridLanesDirection&,
                                               const ComputedStyle&);
-  static gfx::SizeF UsedBoxSize(const LayoutObject&);
+  static std::optional<gfx::SizeF> UsedBoxSize(const LayoutObject&);
   static CSSValue* RenderTextDecorationFlagsToCSSValue(TextDecorationLine);
   static CSSValue* ValueForTextDecorationStyle(ETextDecorationStyle);
   static CSSValue* ValueForTextDecorationSkipInk(ETextDecorationSkipInk);
@@ -347,7 +347,6 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForWebkitColumnBreakBetween(EBreakBetween);
   static CSSValue* ValueForPageBreakInside(EBreakInside);
   static CSSValue* ValueForWebkitColumnBreakInside(EBreakInside);
-  static bool WidthOrHeightShouldReturnUsedValue(const LayoutObject*);
   static CSSValueList* ValuesForShorthandProperty(const StylePropertyShorthand&,
                                                   const ComputedStyle&,
                                                   const LayoutObject*,

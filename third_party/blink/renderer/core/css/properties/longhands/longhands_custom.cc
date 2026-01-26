@@ -5513,10 +5513,11 @@ const CSSValue* Height::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (value_phase == CSSValuePhase::kResolvedValue &&
-      ComputedStyleUtils::WidthOrHeightShouldReturnUsedValue(layout_object)) {
-    return ZoomAdjustedPixelValue(
-        ComputedStyleUtils::UsedBoxSize(*layout_object).height(), style);
+  if (value_phase == CSSValuePhase::kResolvedValue && layout_object) {
+    if (std::optional<gfx::SizeF> used_size =
+            ComputedStyleUtils::UsedBoxSize(*layout_object)) {
+      return ZoomAdjustedPixelValue(used_size->height(), style);
+    }
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Height(),
                                                              style);
@@ -12496,10 +12497,11 @@ const CSSValue* Width::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (value_phase == CSSValuePhase::kResolvedValue &&
-      ComputedStyleUtils::WidthOrHeightShouldReturnUsedValue(layout_object)) {
-    return ZoomAdjustedPixelValue(
-        ComputedStyleUtils::UsedBoxSize(*layout_object).width(), style);
+  if (value_phase == CSSValuePhase::kResolvedValue && layout_object) {
+    if (std::optional<gfx::SizeF> used_size =
+            ComputedStyleUtils::UsedBoxSize(*layout_object)) {
+      return ZoomAdjustedPixelValue(used_size->width(), style);
+    }
   }
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Width(),
                                                              style);

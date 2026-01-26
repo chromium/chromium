@@ -2281,9 +2281,22 @@ static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {
           IsA<SVGRectElement>(layout_object.GetNode()));
 }
 
-gfx::SizeF ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
-  if (layout_object.IsSVGChild() &&
-      IsSVGObjectWithWidthAndHeight(layout_object)) {
+// https://drafts.csswg.org/cssom/#resolved-value
+//
+// For 'width' and 'height':
+//
+// If the property applies to the element or pseudo-element and the resolved
+// value of the display property is not none or contents, then the resolved
+// value is the used value. Otherwise the resolved value is the computed value
+// (https://drafts.csswg.org/css-cascade-4/#computed-value).
+//
+// (Note that the computed value exists even when the property does not apply.)
+std::optional<gfx::SizeF> ComputedStyleUtils::UsedBoxSize(
+    const LayoutObject& layout_object) {
+  if (layout_object.IsSVGChild()) {
+    if (!IsSVGObjectWithWidthAndHeight(layout_object)) {
+      return std::nullopt;
+    }
     auto* viewport_container =
         DynamicTo<LayoutSVGViewportContainer>(layout_object);
     gfx::SizeF size =
@@ -2297,13 +2310,12 @@ gfx::SizeF ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
     size.Scale(layout_object.StyleRef().EffectiveZoom());
     return size;
   }
-  if (!layout_object.IsBox()) {
-    return gfx::SizeF();
+  if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
+    return gfx::SizeF(box->StyleRef().BoxSizing() == EBoxSizing::kBorderBox
+                          ? box->PhysicalBorderBoxRect().size
+                          : box->ComputedCSSContentBoxRect().size);
   }
-  const auto& box = To<LayoutBox>(layout_object);
-  return gfx::SizeF(box.StyleRef().BoxSizing() == EBoxSizing::kBorderBox
-                        ? box.PhysicalBorderBoxRect().size
-                        : box.ComputedCSSContentBoxRect().size);
+  return std::nullopt;
 }
 
 CSSValue* ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(
@@ -4017,34 +4029,6 @@ CSSValue* ComputedStyleUtils::ValueForWebkitColumnBreakInside(
     default:
       return CSSIdentifierValue::Create(break_value);
   }
-}
-
-// https://drafts.csswg.org/cssom/#resolved-value
-//
-// For 'width' and 'height':
-//
-// If the property applies to the element or pseudo-element and the resolved
-// value of the display property is not none or contents, then the resolved
-// value is the used value. Otherwise the resolved value is the computed value
-// (https://drafts.csswg.org/css-cascade-4/#computed-value).
-//
-// (Note that the computed value exists even when the property does not apply.)
-bool ComputedStyleUtils::WidthOrHeightShouldReturnUsedValue(
-    const LayoutObject* object) {
-  // The display property is 'none'.
-  if (!object) {
-    return false;
-  }
-  // Non-root SVG objects return the resolved value except <image>,
-  // <rect> and <foreignObject> which return the used value.
-  if (object->IsSVGChild()) {
-    return IsSVGObjectWithWidthAndHeight(*object);
-  }
-  // According to
-  // http://www.w3.org/TR/CSS2/visudet.html#the-width-property and
-  // http://www.w3.org/TR/CSS2/visudet.html#the-height-property, the "width" or
-  // "height" property does not apply to non-atomic inline elements.
-  return object->IsAtomicInlineLevel() || !object->IsInline();
 }
 
 CSSValueList* ComputedStyleUtils::ValuesForShorthandProperty(
