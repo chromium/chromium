@@ -434,13 +434,20 @@ enum class ElementAnchoredBubbleVariant {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ElementAnchoredBubbleVariant)
 
+// LINT.IfChange(PermissionAutoRevocationHistory)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class PermissionAutoRevocationHistory {
   // Permission has not been automatically revoked.
   NONE = 0,
 
   // Permission has been automatically revoked.
   PREVIOUSLY_AUTO_REVOKED = 0x01,
+
+  // Always keep at the end.
+  kMaxValue = PREVIOUSLY_AUTO_REVOKED,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PermissionAutoRevocationHistory)
 
 // This enum backs up the
 // 'Permissions.PageInfo.ChangedWithin1m.{PermissionType}' histograms enum. It

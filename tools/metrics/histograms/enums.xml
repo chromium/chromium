@@ -22654,6 +22654,8 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="Zero Window"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionAutoRevocationHistory) -->
+
 <enum name="PermissionAutoRevocationHistory">
   <summary>
     Track whether the permission has been automatically revoked in the past at
@@ -22662,6 +22664,8 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="NONE"/>
   <int value="1" label="PREVIOUSLY_AUTO_REVOKED"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionAutoRevocationHistory) -->
 
 <!-- LINT.IfChange(PermissionPromptDispositionReason) -->
 
