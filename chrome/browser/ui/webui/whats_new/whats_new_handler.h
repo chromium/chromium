@@ -52,7 +52,7 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
       whats_new::mojom::ModulePosition position) override;
   void RecordExploreMoreToggled(bool expanded) override;
   void RecordScrollDepth(whats_new::mojom::ScrollDepth depth) override;
-  void RecordTimeOnPage(base::TimeDelta time) override;
+  void RecordTimeOnPage(base::TimeDelta time, bool is_heartbeat) override;
   void RecordModuleLinkClicked(
       const std::string& module_name,
       whats_new::mojom::ModulePosition position) override;

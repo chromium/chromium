@@ -71,7 +71,7 @@ interface PageHandler {
   RecordScrollDepth(ScrollDepth depth);
 
   // Record metric for how long page was shown.
-  RecordTimeOnPage(mojo_base.mojom.TimeDelta time);
+  RecordTimeOnPage(mojo_base.mojom.TimeDelta time, bool is_heartbeat);
 
   // Record metric for a click event within a module.
   RecordModuleLinkClicked(string module_name, ModulePosition position);

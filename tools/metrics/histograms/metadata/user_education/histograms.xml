@@ -677,6 +677,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this provides usage information about a specific edition of
+     the "What's New" page. However, since the content on the page changes every
+     edition, this histogram cannot be allowed to expire. -->
+
+<histogram name="UserEducation.WhatsNew.TimeOnPageHeartbeat"
+    enum="BooleanYesNo" expires_after="never">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records whether the TimeOnPage metric came from the new heartbeat mechanism
+    or the legacy system.
+  </summary>
+</histogram>
+
 <!-- expires-never: this provides performance information about a specific
      edition of the "What's New" page. However, since the content on the page
      changes every edition, this histogram cannot be allowed to expire. -->
