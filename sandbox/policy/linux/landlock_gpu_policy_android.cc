@@ -103,7 +103,11 @@ bool ApplyLandlock(sandbox::mojom::Sandbox sandbox_type) {
       "/proc/self",
       // Allow access to /proc/sys/kernel/random, which ashmem may use to
       // obtain entropy for ASLR.
-      "/proc/sys/kernel/random", "/sys"};
+      "/proc/sys/kernel/random", "/sys",
+      // TODO(crbug.com/462103953): tighten these broad rules once the Corsola
+      // issue is resolved and we've confirmed the precise paths needed.
+      "/system/vendor/lib", "/system/vendor/lib64", "/vendor/lib",
+      "/vendor/lib64"};
   uint64_t ro_access =
       LANDLOCK_ACCESS_FS_READ_FILE | LANDLOCK_ACCESS_FS_READ_DIR;
   if (!AddRulesToPolicy(ruleset_fd.get(), allowed_ro_paths, ro_access)) {
