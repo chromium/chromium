@@ -136,8 +136,16 @@ BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize(
     }
     case TabStripType::kVertical: {
       auto result = views().vertical_tab_strip_region_view->GetMinimumSize();
-      if (GetVerticalTabStripCollapsedState() !=
+      if (GetVerticalTabStripCollapsedState() ==
           VerticalTabStripCollapsedState::kCollapsed) {
+        // With a collapsed tabstrip, the tabstrip sits below the leading
+        // exclusion. Add this additional height so that it's accounted for in
+        // minimum size computations.
+        result.set_height(
+            result.height() +
+            base::ClampCeil(
+                params.leading_exclusion.ContentWithPadding().height()));
+      } else {
         result.set_width(std::max(
             result.width(),
             base::ClampCeil(

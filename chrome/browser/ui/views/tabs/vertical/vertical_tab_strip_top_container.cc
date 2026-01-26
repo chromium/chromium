@@ -55,6 +55,9 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   CHECK(collapse_button_);
   container_buttons.push_back(collapse_button_);
 
+  const int padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
+
   if (state_controller_->IsCollapsed()) {
     // If the vertical tab strip is collapsed, then lay out the buttons
     // vertically in reverse order from top-to-bottom.
@@ -62,9 +65,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     for (views::LabelButton* container_button : container_buttons) {
       total_height += container_button->GetPreferredSize().height();
     }
-    total_height +=
-        (container_buttons.size() - 1) *
-        GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
+    total_height += (container_buttons.size() - 1) * padding;
 
     if (total_height > host_size.height()) {
       host_size.set_height(total_height);
@@ -75,14 +76,14 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     for (views::LabelButton* container_button :
          base::Reversed(container_buttons)) {
       const gfx::Size pref_size = container_button->GetPreferredSize();
-      gfx::Rect bounds((host_size.width() - pref_size.width()) / 2, current_y,
-                       pref_size.width(), pref_size.height());
+      gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
+                       current_y, pref_size.width(), pref_size.height());
       layout.child_layouts.emplace_back(container_button,
                                         container_button->GetVisible(), bounds);
 
-      current_y +=
-          pref_size.height() +
-          GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
+      host_size.SetToMax(gfx::Size(bounds.right(), 0));
+
+      current_y += pref_size.height() + padding;
     }
   } else {
     // If the vertical tab strip is uncollapsed, then lay out the buttons
@@ -93,15 +94,20 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
       total_width += container_button->GetPreferredSize().width();
     }
 
-    total_width +=
-        (container_buttons.size() - 1) *
-        GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
+    total_width += (container_buttons.size() - 1) * padding;
+
+    // If we're trying to get the minimum size, it will ask for layout for size
+    // bounds {0, 0}, but overflow is based on available size.
+    const int available_width =
+        host_size.width() > 0
+            ? host_size.width()
+            : parent()->GetAvailableSize(this).width().value_or(0);
 
     // If there is not enough space for the buttons on a single line with
     // caption buttons, shift them below.
-    const bool wrapped_due_to_overflow =
-        size_bounds.width().is_bounded() && exclusion_width_ > 0 &&
-        host_size.width() > 0 && total_width > host_size.width();
+    const bool wrapped_due_to_overflow = size_bounds.width().is_bounded() &&
+                                         exclusion_width_ > 0 &&
+                                         total_width > available_width;
 
     if (wrapped_due_to_overflow) {
       host_size.Enlarge(0,
@@ -118,19 +124,21 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
         const gfx::Size pref_size = collapse_button_->GetPreferredSize();
         gfx::Rect bounds(GetLayoutConstant(
                              LayoutConstant::kVerticalTabStripTopButtonPadding),
-                         y_baseline - pref_size.height() / 2, pref_size.width(),
-                         pref_size.height());
+                         std::max(0, y_baseline - pref_size.height() / 2),
+                         pref_size.width(), pref_size.height());
         layout.child_layouts.emplace_back(
             collapse_button_.get(), collapse_button_->GetVisible(), bounds);
+        host_size.SetToMax(gfx::Size(0, bounds.bottom()));
       }
 
       if (tab_search_button_) {
         const gfx::Size pref_size = tab_search_button_->GetPreferredSize();
         gfx::Rect bounds(host_size.width() - pref_size.width(),
-                         y_baseline - pref_size.height() / 2, pref_size.width(),
-                         pref_size.height());
+                         std::max(0, y_baseline - pref_size.height() / 2),
+                         pref_size.width(), pref_size.height());
         layout.child_layouts.emplace_back(
             tab_search_button_.get(), tab_search_button_->GetVisible(), bounds);
+        host_size.SetToMax(gfx::Size(0, bounds.bottom()));
       }
     } else {
       int current_x = host_size.width();
@@ -139,11 +147,14 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
       // vertically within the available space.
       for (views::LabelButton* container_button : container_buttons) {
         const gfx::Size pref_size = container_button->GetPreferredSize();
-        gfx::Rect bounds(current_x - pref_size.width(),
-                         (host_size.height() - pref_size.height()) / 2,
-                         pref_size.width(), pref_size.height());
+        gfx::Rect bounds(
+            current_x - pref_size.width(),
+            std::max(0, (host_size.height() - pref_size.height()) / 2),
+            pref_size.width(), pref_size.height());
         layout.child_layouts.emplace_back(
             container_button, container_button->GetVisible(), bounds);
+
+        host_size.SetToMax(gfx::Size(0, bounds.bottom()));
 
         current_x -= (pref_size.width() +
                       GetLayoutConstant(

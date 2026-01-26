@@ -141,7 +141,7 @@ void VerticalTabStripBottomContainer::UpdateButtonStyles(
   new_tab_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
-          orientation, views::MinimumFlexSizeRule::kScaleToZero,
+          orientation, views::MinimumFlexSizeRule::kScaleToMinimum,
           is_collapsed ? views::MaximumFlexSizeRule::kPreferred
                        : views::MaximumFlexSizeRule::kUnbounded,
           false, views::MinimumFlexSizeRule::kPreferred));

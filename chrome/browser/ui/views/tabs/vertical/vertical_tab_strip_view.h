@@ -43,6 +43,9 @@ class VerticalTabStripView final : public views::View,
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
+  // views::View:
+  gfx::Size GetMinimumSize() const override;
+
  private:
   views::View* AddScrollViewContents(std::unique_ptr<views::View> view);
   void RemoveScrollViewContents(views::View* view);

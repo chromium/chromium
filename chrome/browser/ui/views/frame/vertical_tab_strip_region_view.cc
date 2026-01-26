@@ -74,7 +74,8 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       .SetCollapseMargins(true)
       .SetDefault(
           views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+          views::FlexSpecification(views::LayoutOrientation::kVertical,
+                                   views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
 
   // Create child views.
@@ -99,10 +100,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   resize_animation_.Reset(!state_controller_->IsCollapsed());
 
   target_collapse_state_ = state_controller_->GetState();
-  SetPreferredSize(gfx::Size(target_collapse_state_.collapsed
-                                 ? kCollapsedWidth
-                                 : target_collapse_state_.uncollapsed_width,
-                             0));
   OnCollapsedStateChanged(state_controller_);
   collapsed_state_changed_subscription_ =
       state_controller_->RegisterOnCollapseChanged(base::BindRepeating(
@@ -217,6 +214,15 @@ gfx::Size VerticalTabStripRegionView::GetMinimumSize() const {
           ? kCollapsedWidth
           : kUncollapsedMinWidth);
   return min_size;
+}
+
+gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  auto size = TabStripRegionView::CalculatePreferredSize(available_size);
+  size.set_width(target_collapse_state_.collapsed
+                     ? kCollapsedWidth
+                     : target_collapse_state_.uncollapsed_width);
+  return size;
 }
 
 bool VerticalTabStripRegionView::IsTabStripEditable() const {
@@ -451,7 +457,7 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
   OnCollapsedStateChanged(state_controller_);
   tab_strip_view_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded));
   tab_strip_view_->SetProperty(views::kMarginsKey,
                                gfx::Insets::VH(kRegionVerticalPadding, 0));
@@ -526,6 +532,8 @@ void VerticalTabStripRegionView::UpdateCollapseState(
       resize_animation_.Show();
     }
     state_controller_->SetCollapsed(target_collapse_state_.collapsed);
+    // This may change the minimum size of the top container.
+    InvalidateLayout();
   } else if (!target_collapse_state_.collapsed &&
              !resize_animation_.is_animating()) {
     // If we are still in the expanding animation, resizing to the updated
@@ -544,8 +552,7 @@ void VerticalTabStripRegionView::ResizeToWidth(int width) {
     state_controller_->SetCollapsed(target_collapse_state_.collapsed);
   }
 
-  // BrowserViewLayout uses the preferred size's width. The height is not used.
-  SetPreferredSize(gfx::Size(width, 0));
+  InvalidateLayout();
 }
 
 void VerticalTabStripRegionView::UpdateColors() {

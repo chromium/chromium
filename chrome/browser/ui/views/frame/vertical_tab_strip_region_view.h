@@ -104,6 +104,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void Layout(PassKey) override;
   views::View* GetDefaultFocusableChild() override;
   gfx::Size GetMinimumSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // TabStripRegionView
   void InitializeTabStrip() override;

@@ -135,7 +135,19 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
 
   layouts.host_size =
       gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+  layouts.host_size.SetToMax(GetMinimumSize());
   return layouts;
+}
+
+gfx::Size VerticalTabStripView::GetMinimumSize() const {
+  // The minimum height of the tabstrip should be enough to show a tab and a
+  // half, showing a partial overflow so that the user knows the container can
+  // be scrolled.
+  return gfx::Size(
+      GetLayoutConstant(LayoutConstant::kVerticalTabMinWidth),
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripUncollapsedPadding) +
+          base::ClampCeil(
+              1.5 * GetLayoutConstant(LayoutConstant::kVerticalTabHeight)));
 }
 
 VerticalPinnedTabContainerView* VerticalTabStripView::GetPinnedTabsContainer() {
