@@ -638,6 +638,8 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_ENABLE_NEW_SYNC_DASHBOARD_URL = "SyncEnableNewSyncDashboardUrl";
     public static final String SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE =
             "SyncEnablePasswordsSyncErrorMessageAlternative";
+    public static final String SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION =
+            "SyncTrustedVaultErrorMessageDuration";
     public static final String TAB_BOTTOM_SHEET = "TabBottomSheet";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_FREEZING_USES_DISCARD = "TabFreezingUsesDiscard";

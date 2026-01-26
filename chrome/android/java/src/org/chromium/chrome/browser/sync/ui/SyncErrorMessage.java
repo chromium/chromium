@@ -13,6 +13,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
@@ -53,6 +54,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * A message UI that informs the current sync error and contains a button to take action to resolve
  * it. This class is tied to a window and at most one instance per window can exist at a time. In
@@ -75,6 +78,10 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
             new UnownedUserDataKey<>();
     private static final String PASSWORDS_SYNC_ERROR_MESSAGE_VERSION_PARAM_NAME = "version";
     private static final String TAG = "SyncErrorMessage";
+
+    @VisibleForTesting
+    public static final long UNLOCK_VAULT_MESSAGE_DURATION =
+            TimeUnit.MILLISECONDS.convert(45, TimeUnit.SECONDS);
 
     /**
      * Creates a {@link SyncErrorMessage} in the window of |dispatcher|, or results in a no-op if
@@ -135,7 +142,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         String title = getTitle(activity);
         String primaryButtonText = getPrimaryButtonText(activity);
         Resources resources = activity.getResources();
-        mModel =
+        PropertyModel.Builder builder =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
                                 MessageBannerProperties.MESSAGE_IDENTIFIER,
@@ -151,8 +158,14 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                                 MessageBannerProperties.ICON_TINT_COLOR,
                                 activity.getColor(R.color.default_red))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::onAccepted)
-                        .with(MessageBannerProperties.ON_DISMISSED, this::onDismissed)
-                        .build();
+                        .with(MessageBannerProperties.ON_DISMISSED, this::onDismissed);
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION)) {
+            builder.with(MessageBannerProperties.DISMISSAL_DURATION, UNLOCK_VAULT_MESSAGE_DURATION);
+        }
+
+        mModel = builder.build();
         mMessageDispatcher =
                 sMessageDispatcherForTesting == null ? dispatcher : sMessageDispatcherForTesting;
         mMessageDispatcher.enqueueWindowScopedMessage(mModel, false);
@@ -210,13 +223,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     }
 
     private void onDismissed(@DismissReason int reason) {
-        if (reason != DismissReason.TIMER
-                && reason != DismissReason.GESTURE
-                && reason != DismissReason.PRIMARY_ACTION) {
-            // If the user didn't explicitly accept/dismiss the message, and the display timeout
-            // wasn't reached either, resetLastShownTime() so the message can be shown again. This
-            // includes the case where the user changes tabs while the message is showing
-            // (TAB_SWITCHED).
+        if (allowAnotherMessage(reason)) {
             SyncErrorMessageImpressionTracker.resetLastShownTime();
         }
         mSyncService.removeSyncStateChangedListener(this);
@@ -226,6 +233,21 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         if (reason == DismissReason.GESTURE) {
             recordHistogram(ErrorUiAction.DISMISSED);
         }
+    }
+
+    private boolean allowAnotherMessage(@DismissReason int reason) {
+        if (mError == UserActionableError.NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION)) {
+            return reason != DismissReason.GESTURE && reason != DismissReason.PRIMARY_ACTION;
+        }
+        // If the user didn't explicitly accept/dismiss the message, and the display timeout
+        // wasn't reached either, resetLastShownTime() so the message can be shown again. This
+        // includes the case where the user changes tabs while the message is showing
+        // (TAB_SWITCHED).
+        return reason != DismissReason.TIMER
+                && reason != DismissReason.GESTURE
+                && reason != DismissReason.PRIMARY_ACTION;
     }
 
     private void recordHistogram(@ErrorUiAction int action) {

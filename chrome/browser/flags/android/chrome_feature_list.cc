@@ -501,6 +501,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
     &syncer::kSyncEnableNewSyncDashboardUrl,
     &syncer::kSyncEnablePasswordsSyncErrorMessageAlternative,
+    &syncer::kSyncTrustedVaultErrorMessageDuration,
     &syncer::kUnoPhase2FollowUp,
     &syncer::kWebApkBackupAndRestoreBackend,
     &tab_groups::kUseAlternateHistorySyncIllustration,

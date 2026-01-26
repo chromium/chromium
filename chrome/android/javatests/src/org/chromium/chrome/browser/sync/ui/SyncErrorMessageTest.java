@@ -45,8 +45,11 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -59,10 +62,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -205,8 +210,9 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
-    public void testSyncErrorMessageForTrustedVaultKeyRequiredContent() throws Exception {
-        ArgumentCaptor<PropertyModel> mModelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+    @DisableFeatures({ChromeFeatureList.SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION})
+    public void testSyncErrorMessageToUnlockVaultSuppressedAfterTimer() throws Exception {
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
 
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -214,17 +220,75 @@ public class SyncErrorMessageTest {
         mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
 
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(mModelCaptor.capture(), anyBoolean());
-        PropertyModel mModel = mModelCaptor.getValue();
+        // Verify the correct message gets shown.
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(modelCaptor.capture(), anyBoolean());
+        PropertyModel model = modelCaptor.getValue();
         Assert.assertEquals(
                 mContext.getString(R.string.password_sync_trusted_vault_error_title),
-                mModel.get(MessageBannerProperties.TITLE));
+                model.get(MessageBannerProperties.TITLE));
         Assert.assertEquals(
                 mContext.getString(R.string.password_sync_trusted_vault_error_hint),
-                mModel.get(MessageBannerProperties.DESCRIPTION));
+                model.get(MessageBannerProperties.DESCRIPTION));
         Assert.assertEquals(
                 mContext.getString(R.string.identity_error_card_button_get),
-                mModel.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+                model.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+
+        // The message was dismissed by the timer.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    model.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.TIMER);
+                });
+
+        Assert.assertFalse(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return SyncErrorMessageImpressionTracker.canShowNow(
+                                    UserPrefs.get(mSyncTestRule.getProfile(false)));
+                        }));
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.SYNC_TRUSTED_VAULT_ERROR_MESSAGE_DURATION})
+    public void testSyncErrorMessageToUnlockVaultShowsAgainWithoutDismissal() throws Exception {
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+
+        // Sign in.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
+        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
+
+        // Verify the correct message gets shown.
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(modelCaptor.capture(), anyBoolean());
+        PropertyModel model = modelCaptor.getValue();
+        Assert.assertEquals(
+                mContext.getString(R.string.password_sync_trusted_vault_error_title),
+                model.get(MessageBannerProperties.TITLE));
+        Assert.assertEquals(
+                mContext.getString(R.string.password_sync_trusted_vault_error_hint),
+                model.get(MessageBannerProperties.DESCRIPTION));
+        Assert.assertEquals(
+                mContext.getString(R.string.identity_error_card_button_get),
+                model.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+        Assert.assertEquals(
+                SyncErrorMessage.UNLOCK_VAULT_MESSAGE_DURATION,
+                model.get(MessageBannerProperties.DISMISSAL_DURATION));
+
+        // The message was dismissed by the timer.
+
+        // The message was dismissed by the timer.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    model.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.TIMER);
+                });
+
+        Assert.assertTrue(
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return SyncErrorMessageImpressionTracker.canShowNow(
+                                    UserPrefs.get(mSyncTestRule.getProfile(false)));
+                        }));
     }
 
     @Test

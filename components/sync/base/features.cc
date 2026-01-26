@@ -152,6 +152,9 @@ BASE_FEATURE(kWebApkBackupAndRestoreBackend, base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSyncEnablePasswordsSyncErrorMessageAlternative,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncTrustedVaultErrorMessageDuration,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)

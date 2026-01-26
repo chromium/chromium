@@ -177,6 +177,9 @@ BASE_DECLARE_FEATURE(kSyncEnablePasswordsSyncErrorMessageAlternative);
 inline constexpr base::FeatureParam<int>
     kSyncEnablePasswordsSyncErrorMessageAlternativeVersion{
         &kSyncEnablePasswordsSyncErrorMessageAlternative, "version", 3};
+
+// If enabled, the error message to unlock passwords is shown for longer.
+BASE_DECLARE_FEATURE(kSyncTrustedVaultErrorMessageDuration);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
