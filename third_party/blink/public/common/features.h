@@ -1872,6 +1872,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseCaptureBeginTimestamp);
 // capture timestamps. This is disabled by default.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcAudioSinkUseTimestampAligner);
 
+// Enables the use of specific thread types (kPresentation for video,
+// kInteractive for audio processing) for media tasks.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseMediaThreadTypes);
+
 // This feature enables using Post-Quantum Crypto(PQC) for DTLS to improve
 // WebRTC's security.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcPqcForDtls);
