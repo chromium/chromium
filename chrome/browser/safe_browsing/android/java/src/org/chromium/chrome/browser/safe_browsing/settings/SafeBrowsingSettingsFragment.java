@@ -309,9 +309,8 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. If
-    // it's only the summary, it could be worth explicitly defining it in the XML.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    SafeBrowsingSettingsFragment.class.getName(), R.xml.safe_browsing_preferences);
+                    SafeBrowsingSettingsFragment.class.getName(),
+                    ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
 }
