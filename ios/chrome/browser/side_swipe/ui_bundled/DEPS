@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
@@ -13,6 +14,7 @@ include_rules = [
   "+ios/chrome/browser/toolbar/legacy/ui_bundled/public",
   "+ios/chrome/browser/web/model/page_placeholder_tab_helper.h",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

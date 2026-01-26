@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+components/saved_tab_groups/public",
   "+components/saved_tab_groups/test_support",
   "+ios/chrome/browser/complex_tasks/model",
@@ -6,13 +7,14 @@ include_rules = [
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/main/model/browser_util.h",
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   "+ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h",
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/synced_sessions/model",
-  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

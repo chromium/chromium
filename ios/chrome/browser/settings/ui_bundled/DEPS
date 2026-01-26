@@ -1,7 +1,9 @@
 include_rules = [
+  # keep-sorted start
   "+components/data_sharing/public/features.h",
   "+ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h",
   "+ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h",
+  "+ios/chrome/browser/authentication",
   "+ios/chrome/browser/autofill/model/personal_data_manager_factory.h",
   "+ios/chrome/browser/autofill/ui_bundled",
   "+ios/chrome/browser/browsing_data/model",
@@ -12,12 +14,12 @@ include_rules = [
   "+ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h",
   "+ios/chrome/browser/credential_exchange/coordinator",
   "+ios/chrome/browser/credential_provider/model/features.h",
+  "+ios/chrome/browser/default_browser",
   "+ios/chrome/browser/default_browser/model/promo_source.h",
   "+ios/chrome/browser/default_browser/model/utils.h",
-  "+ios/chrome/browser/default_browser",
   "+ios/chrome/browser/discover_feed/model",
-  "+ios/chrome/browser/download/ui/auto_deletion",
   "+ios/chrome/browser/download/coordinator/auto_deletion",
+  "+ios/chrome/browser/download/ui/auto_deletion",
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/history/model/web_history_service_factory.h",
@@ -37,8 +39,9 @@ include_rules = [
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/policy/ui_bundled/management_util.h",
   "+ios/chrome/browser/prerender/model/prerender_pref.h",
-  "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/push_notification/coordinator/notifications_alert_presenter.h",
+  "+ios/chrome/browser/push_notification/model",
+  "+ios/chrome/browser/reader_mode/model",
   "+ios/chrome/browser/regional_capabilities/model",
   "+ios/chrome/browser/safari_data_import/model/features.h",
   "+ios/chrome/browser/safari_data_import/public",
@@ -51,13 +54,12 @@ include_rules = [
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tabs/model/inactive_tabs",
   "+ios/chrome/browser/translate/model",
-  "+ios/chrome/browser/authentication",
   "+ios/chrome/browser/upgrade/model",
-  "+ios/chrome/browser/reader_mode/model",
   "+ios/chrome/browser/voice/model",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
   "+ios/chrome/browser/web/model/features.h",
   "+ios/chrome/browser/webauthn",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

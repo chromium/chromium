@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+components/signin/internal/identity_manager/account_capabilities_constants.h",
   "+components/signin/internal/identity_manager/account_capabilities_fetcher.h",
   "+components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h",
@@ -16,6 +17,7 @@ include_rules = [
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
   "+ios/chrome/browser/web/model",
   "+ios/chrome/browser/webdata_services/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

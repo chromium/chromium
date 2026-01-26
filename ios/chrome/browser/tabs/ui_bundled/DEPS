@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/drag_and_drop/model",
   "+ios/chrome/browser/feature_engagement/model",
@@ -8,4 +9,5 @@ include_rules = [
   "+ios/chrome/browser/synced_sessions/model",
   "+ios/chrome/browser/tab_switcher/ui_bundled",
   "+ios/chrome/browser/url_loading/model",
+  # keep-sorted end
 ]

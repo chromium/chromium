@@ -1,6 +1,8 @@
 include_rules = [
-  "+ios/chrome/browser/sessions/model",
+  # keep-sorted start
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h",
+  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/url_loading/model",
+  # keep-sorted end
 ]
