@@ -150,8 +150,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           (eligible: boolean) => {
             this.isLensSearchEligible_ = this.isLensSearchEnabled_ && eligible;
           }),
-      this.callbackRouter_.onTabStripChanged.addListener(
-          this.refreshTabSuggestions_.bind(this)),
       this.callbackRouter_.updateAimEligibility.addListener(
           (eligible: boolean) => {
             this.isAimEligible_ = eligible;
@@ -167,8 +165,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     ];
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
-
-    this.refreshTabSuggestions_();
 
     if (!this.isDebug) {
       this.eventTracker_.add(
@@ -291,11 +287,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       y: e.detail.y,
     };
     this.pageHandler_.showContextMenu(point);
-  }
-
-  protected async refreshTabSuggestions_() {
-    const {tabs} = await this.pageHandler_.getRecentTabs();
-    this.tabSuggestions_ = [...tabs];
   }
 
   protected onLensSearchChipClicked_() {

@@ -491,7 +491,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputTextChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;
-  private onTabStripChangedListenerId_: number|null = null;
   private onInputStateChangedListenerId_: number|null = null;
   private placeholderCycler_: PlaceholderTextCycler|null = null;
 
@@ -514,9 +513,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.thumbnailChangedListenerId_ =
         this.callbackRouter_.setThumbnail.addListener(
             this.onSetThumbnail_.bind(this));
-    this.onTabStripChangedListenerId_ =
-        this.callbackRouter_.onTabStripChanged.addListener(
-            this.refreshTabSuggestions_.bind(this));
     this.onInputStateChangedListenerId_ =
         this.callbackRouter_.onInputStateChanged.addListener(
             this.onInputStateChanged_.bind(this));
@@ -536,7 +532,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     if (this.ntpRealboxNextEnabled) {
       this.dragAndDropHandler =
           new DragAndDropHandler(this, this.dragAndDropEnabled_);
-      this.refreshTabSuggestions_();
     }
   }
 
@@ -550,8 +545,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
     assert(this.thumbnailChangedListenerId_);
     this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
-    assert(this.onTabStripChangedListenerId_);
-    this.callbackRouter_.removeListener(this.onTabStripChangedListenerId_);
     assert(this.onInputStateChangedListenerId_);
     this.callbackRouter_.removeListener(this.onInputStateChangedListenerId_);
 
@@ -746,6 +739,9 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.inputFocused_ = true;
     this.pageHandler_.onFocusChanged(true);
     this.placeholderCycler_?.stop();
+    if (this.ntpRealboxNextEnabled) {
+      this.refreshTabSuggestions_();
+    }
   }
 
   protected onInputFocusout_() {
