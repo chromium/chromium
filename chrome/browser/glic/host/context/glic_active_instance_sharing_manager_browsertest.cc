@@ -137,7 +137,8 @@ class GlicActiveInstanceSharingManagerProfileStateTest
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kGlic, features::kGlicMultiInstance,
         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines};
-    std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kGlicTrustFirstOnboarding};
 
     if (IsUnifiedFreEnabled()) {
       enabled_features.push_back(features::kGlicUnifiedFreScreen);

@@ -11999,6 +11999,35 @@
             ]
         }
     ],
+    "GlicTrustFirstOnboarding": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_TrustFirst_Arm1_StartChat",
+                    "params": {
+                        "arm ": "1"
+                    },
+                    "enable_features": [
+                        "GlicTrustFirstOnboarding"
+                    ]
+                },
+                {
+                    "name": "Enabled_TrustFirst_Arm2_WelcomeScreen",
+                    "params": {
+                        "arm ": "2"
+                    },
+                    "enable_features": [
+                        "GlicTrustFirstOnboarding"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicUserStatusCheckDogfood": [
         {
             "platforms": [

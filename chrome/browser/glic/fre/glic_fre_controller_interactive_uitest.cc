@@ -166,7 +166,8 @@ class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
     features_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming});
+                               features::kGlicFreWarming,
+                               features::kGlicTrustFirstOnboarding});
   }
 
   auto ForceInvalidateAccount() {
@@ -449,7 +450,8 @@ class GlicFreControllerUiHttpErrorTest : public GlicFreControllerUiTestBase {
     features_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming});
+                               features::kGlicFreWarming,
+                               features::kGlicTrustFirstOnboarding});
 
     fre_server_.AddDefaultHandlers();
     // Register a handler that will return a 502 error.
@@ -514,7 +516,8 @@ class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTestBase {
     features_.InitWithFeaturesAndParameters(
         enabled_features,
         /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming});
+                               features::kGlicFreWarming,
+                               features::kGlicTrustFirstOnboarding});
 
     fre_server_.AddDefaultHandlers();
     fre_server_.ServeFilesFromDirectory(
@@ -560,8 +563,9 @@ class GlicFreControllerRedirectTest : public GlicFreControllerUiTestBase,
         {features::kGlicCaaGuestError,
          {{"glic-caa-link-url", destination_url_.spec()}}}};
 
-    features_.InitWithFeaturesAndParameters(enabled_features,
-                                            /*disabled_features=*/{});
+    features_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/{features::kGlicTrustFirstOnboarding});
     GlicFreControllerUiTestBase::SetUp();
   }
 

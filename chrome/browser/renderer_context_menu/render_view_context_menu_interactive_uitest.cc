@@ -1189,13 +1189,15 @@ class GlicInteractiveContextMenuTest
                                 features::kGlicMultitabUnderlines},
           /*disabled_features=*/{features::kGlicWarming,
                                  features::kGlicFreWarming,
-                                 blink::features::kSvgFallBackToContainerSize});
+                                 blink::features::kSvgFallBackToContainerSize,
+                                 features::kGlicTrustFirstOnboarding});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{features::kGlic, features::kGlicShareImage},
           /*disabled_features=*/{features::kGlicWarming,
                                  features::kGlicFreWarming,
-                                 blink::features::kSvgFallBackToContainerSize});
+                                 blink::features::kSvgFallBackToContainerSize,
+                                 features::kGlicTrustFirstOnboarding});
     }
     // Ensure that we open the FRE.
     glic_test_environment().SetFreStatusForNewProfiles(std::nullopt);

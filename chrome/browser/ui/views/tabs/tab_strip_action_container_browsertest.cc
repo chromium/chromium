@@ -430,6 +430,9 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, PreloadFreOnNudge) {
   // We set an artificial activity callback here because it is required for
   // OnTriggerGlicNudgeUI to actually show the nudge.
+  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+    GTEST_SKIP() << "Skipping for kGlicTrustFirstOnboarding";
+  }
   auto* nudge_controller =
       browser()->browser_window_features()->glic_nudge_controller();
   nudge_controller->SetNudgeActivityCallbackForTesting();

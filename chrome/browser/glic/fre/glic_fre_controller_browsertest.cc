@@ -374,6 +374,9 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, FreRejection) {
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
                        FreAcceptanceClosesOtherHandlers) {
+  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+    GTEST_SKIP() << "Skipping for TrustFirstOnboarding";
+  }
   // Open two tabs so there are valid WebContents for the handlers.
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
   content::WebContents* wc1 = browser()->tab_strip_model()->GetWebContentsAt(0);

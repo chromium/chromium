@@ -24,20 +24,31 @@ namespace {
 
 class GlicBrowserTest : public InProcessBrowserTest {
  public:
-  GlicBrowserTest() {
-  }
+  GlicBrowserTest() = default;
   GlicBrowserTest(const GlicBrowserTest&) = delete;
   GlicBrowserTest& operator=(const GlicBrowserTest&) = delete;
 
   ~GlicBrowserTest() override = default;
+
+  void SetUp() override {
+    InitializeFeatureList();
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Load blank page in glic guest view
     command_line->AppendSwitchASCII(::switches::kGlicGuestURL, "about:blank");
   }
 
+ protected:
+  virtual void InitializeFeatureList() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kGlicTrustFirstOnboarding});
+  }
+
  private:
   GlicTestEnvironment glic_test_environment_{{.fre_status = std::nullopt}};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensure basic incognito window doesn't cause a crash. Simply opens an

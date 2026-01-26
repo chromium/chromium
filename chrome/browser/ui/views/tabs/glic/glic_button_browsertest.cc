@@ -102,6 +102,10 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextForOpening) {
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextWhileGlicFreOpen) {
   // Toggle to open the FRE dialog.
+  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+    // Disable for kTrustFirstOnboarding.
+    GTEST_SKIP() << "Skipping for kTrustFirstOnboarding";
+  }
   SetFRECompletion(browser()->profile(), prefs::FreStatus::kNotStarted);
   glic_service()->ToggleUI(browser(), false,
                            mojom::InvocationSource::kTopChromeButton);
