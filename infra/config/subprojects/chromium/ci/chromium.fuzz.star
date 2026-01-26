@@ -566,6 +566,7 @@ in release mode with dcheck_always_on.\
     dcheck_always_on = True,
     gn_extra_configs = [
         "high_end_fuzzer_targets",
+        "sanitizer_coverage_skip_stdlib_and_absl",
     ],
 )
 
