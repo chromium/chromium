@@ -3,57 +3,17 @@
 # found in the LICENSE file.
 
 import("//components/activity_reporter/buildflags.gni")
-import("//testing/test.gni")
 
 source_set("activity_reporter") {
   public = [ "activity_reporter.h" ]
 
-  deps = [
-    "//base",
-    "//components/prefs",
-    "//components/update_client",
-  ]
+  deps = [ "//base" ]
 
   sources = [ "activity_reporter_no_impl.cc" ]
 
   if (report_activity) {
-    sources += [
-      "activity_reporter_impl.cc",
-      "configurator.cc",
-      "configurator.h",
-    ]
-    deps += [
-      "//base/version_info",
-      "//components/prefs",
-      "//url",
-    ]
-
-    if (checkout_src_internal) {
-      sources += [ "internal/constants.h" ]
-    } else {
-      sources += [ "constants.h" ]
-    }
+    sources += [ "activity_reporter_impl.cc" ]
   } else {
     sources += [ "activity_reporter_disabled.cc" ]
-  }
-
-  friend = [ ":unit_tests" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  if (report_activity) {
-    sources = [
-      "activity_reporter_for_testing.h",
-      "activity_reporter_impl_unittest.cc",
-    ]
-    deps = [
-      ":activity_reporter",
-      "//base/test:test_support",
-      "//components/prefs:test_support",
-      "//components/update_client",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
   }
 }

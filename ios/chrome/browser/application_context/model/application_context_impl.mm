@@ -50,7 +50,6 @@
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/ukm/ukm_service.h"
 #import "components/update_client/configurator.h"
-#import "components/update_client/net/network_chromium.h"
 #import "components/update_client/update_query_params.h"
 #import "components/variations/service/variations_service.h"
 #import "components/version_info/channel.h"
@@ -446,14 +445,7 @@ activity_reporter::ActivityReporter*
 ApplicationContextImpl::GetActivityReporter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!activity_reporter_) {
-    activity_reporter_ = activity_reporter::CreateActivityReporter(
-        base::BindRepeating(
-            [](PrefService* pref_service) { return pref_service; },
-            GetLocalState()),
-        base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
-            GetSharedURLLoaderFactory(),
-            // Never send cookies for activity reports.
-            base::BindRepeating([](const GURL& url) { return false; })));
+    activity_reporter_ = activity_reporter::CreateActivityReporter();
   }
   return activity_reporter_.get();
 }

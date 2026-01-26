@@ -28,7 +28,6 @@ include_rules = [
   "+components/sync_sessions",
   "+components/translate",
   "+components/unified_consent",
-  "+components/update_client",
   "+components/variations",
   "+components/version_info",
   "+google_apis",
