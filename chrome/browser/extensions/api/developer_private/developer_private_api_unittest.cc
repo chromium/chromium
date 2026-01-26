@@ -3862,6 +3862,9 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest, CannotUploadAfterSignOut) {
   EXPECT_FALSE(CanUploadToAccount(*extension));
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 // Test that extensions can no longer be uploaded by the user if they sign into
 // full sync mode.
 TEST_F(DeveloperPrivateApiTransportModeUnitTest, CannotUploadWithFullSync) {
