@@ -795,6 +795,13 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/net/qwac_web_contents_observer.h:NetCertVerifier2QwacLinkProcessingResult) -->
 
+<enum name="NetCertVerifierNSSCertMigrationResult">
+  <int value="0" label="NSS DB empty"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Partial Success"/>
+  <int value="3" label="Failure"/>
+</enum>
+
 <enum name="NetErrorPageEvents">
   <int value="0" label="Error Page Shown">
     An error page was shown. This bucket encompasses all others and works as a
