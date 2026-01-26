@@ -27,10 +27,6 @@ namespace base {
 class OneShotTimer;
 }  // namespace base
 
-namespace network::mojom {
-class CookieManager;
-}  // namespace network::mojom
-
 namespace url {
 class Origin;
 }  // namespace url
@@ -320,9 +316,9 @@ class CONTENT_EXPORT PrefetchContainer {
   bool IsCrossSiteContaminated() const { return is_cross_site_contaminated_; }
   void MarkCrossSiteContaminated();
 
-  // Allows for |PrefetchCookieListener|s to be reigsitered for
+  // Allows for |PrefetchCookieListener|s to be registered for
   // `GetCurrentSingleRedirectHopToPrefetch()`.
-  void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
+  void RegisterCookieListener();
   void PauseAllCookieListeners();
   void ResumeAllCookieListeners();
 

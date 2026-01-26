@@ -55,20 +55,11 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
   void SetUp() override {
     PrefetchingMetricsTestBase::SetUp();
     InitRearchFeatures();
-
-    browser_context()
-        ->GetDefaultStoragePartition()
-        ->GetNetworkContext()
-        ->GetCookieManager(cookie_manager_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
     scoped_feature_list_.Reset();
     PrefetchingMetricsTestBase::TearDown();
-  }
-
-  network::mojom::CookieManager* cookie_manager() {
-    return cookie_manager_.get();
   }
 
   RenderFrameHostImpl* main_rfhi() {
@@ -149,7 +140,7 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
-    cookie_manager_->SetCanonicalCookie(
+    cookie_manager()->SetCanonicalCookie(
         *cookie.get(), url, options,
         base::BindOnce(
             [](bool* result, base::RunLoop* run_loop,
@@ -170,9 +161,6 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 };
 
 namespace {
@@ -428,13 +416,13 @@ TEST_P(PrefetchContainerTest, CookieListener) {
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl1);
 
   prefetch_container->MakeResourceRequest();
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   // Add redirect hops, and register its own cookie listener for each hop.
   AddRedirectHop(prefetch_container.get(), kTestUrl2);
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
   AddRedirectHop(prefetch_container.get(), kTestUrl3);
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   // Check the cookies for `kTestUrl1`, `kTestUrl2` and `kTestUrl3`,
   // respectively. AdvanceCurrentURLToServe() is used to set the current hop to
@@ -497,7 +485,7 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
   base::HistogramTester histogram_tester;
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl);
 
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   auto serving_handle = prefetch_container->CreateServingHandle();
 
@@ -553,13 +541,13 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   base::HistogramTester histogram_tester;
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl);
   prefetch_container->MakeResourceRequest();
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   AddRedirectHop(prefetch_container.get(), kRedirectUrl1);
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   AddRedirectHop(prefetch_container.get(), kRedirectUrl2);
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   auto serving_handle = prefetch_container->CreateServingHandle();
 

@@ -780,10 +780,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
     // this URL change after this point, then the prefetched resources should
     // not be served.
     if (IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
-      RegisterCookieListener(request()
-                                 .browser_context()
-                                 ->GetDefaultStoragePartition()
-                                 ->GetCookieManagerForBrowserProcess());
+      RegisterCookieListener();
     }
   }
 }
@@ -985,12 +982,14 @@ void PrefetchContainer::AddXClientDataHeader(
   }
 }
 
-void PrefetchContainer::RegisterCookieListener(
-    network::mojom::CookieManager* cookie_manager) {
+void PrefetchContainer::RegisterCookieListener() {
   PrefetchSingleRedirectHop& this_prefetch =
       GetCurrentSingleRedirectHopToPrefetch();
   this_prefetch.cookie_listener_ = PrefetchCookieListener::MakeAndRegister(
-      this_prefetch.url_, cookie_manager);
+      this_prefetch.url_, request()
+                              .browser_context()
+                              ->GetDefaultStoragePartition()
+                              ->GetCookieManagerForBrowserProcess());
 }
 
 void PrefetchContainer::PauseAllCookieListeners() {

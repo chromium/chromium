@@ -16,6 +16,7 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -733,6 +734,12 @@ void PrefetchingMetricsTestBase::ExpectCorrectUkmLogs(
                                                   expected_attempts);
   // We do not test the `PreloadingPrediction` as it is added in
   // `PreloadingDecider`.
+}
+
+network::mojom::CookieManager* PrefetchingMetricsTestBase::cookie_manager() {
+  return browser_context()
+      ->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess();
 }
 
 WithPrefetchRearchParam::WithPrefetchRearchParam(PrefetchRearchParam param)
