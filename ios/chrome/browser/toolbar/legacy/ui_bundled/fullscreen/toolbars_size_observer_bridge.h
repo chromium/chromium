@@ -13,13 +13,15 @@
 // Allows registering of `PanelContentMediator` which is an Objective-C objects
 // to listen to ToolbarUI events.
 @protocol ToolbarsSizeObserving <NSObject>
-- (void)OnTopToolbarHeightChanged;
-- (void)OnBottomToolbarHeightChanged;
+@optional
+- (void)toolbarsSizeDidChangeTopToolbarHeight:(ToolbarsSize*)toolbarsSize;
+- (void)toolbarsSizeDidChangeBottomToolbarHeight:(ToolbarsSize*)toolbarsSize;
 @end
 
 class ToolbarsSizeObserverBridge : public ToolbarsSizeObserver {
  public:
-  ToolbarsSizeObserverBridge(id<ToolbarsSizeObserving> observer);
+  ToolbarsSizeObserverBridge(id<ToolbarsSizeObserving> observer,
+                             ToolbarsSize* toolbars_size);
   ~ToolbarsSizeObserverBridge() override;
 
   ToolbarsSizeObserverBridge(const ToolbarsSizeObserverBridge&) = delete;
@@ -27,11 +29,12 @@ class ToolbarsSizeObserverBridge : public ToolbarsSizeObserver {
       delete;
 
  private:
-  // ToolbarUIObserver
+  // `ToolbarUIObserver` overrides.
   void OnTopToolbarHeightChanged() override;
   void OnBottomToolbarHeightChanged() override;
 
   __weak id<ToolbarsSizeObserving> observer_ = nil;
+  __weak ToolbarsSize* toolbars_size_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_FULLSCREEN_TOOLBARS_SIZE_OBSERVER_BRIDGE_H_

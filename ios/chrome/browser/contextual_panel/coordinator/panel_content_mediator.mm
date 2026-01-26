@@ -32,7 +32,7 @@
   if (self) {
     if (IsRefactorToolbarsSize()) {
       _toolbarsUIObserverBridge =
-          std::make_unique<ToolbarsSizeObserverBridge>(self);
+          std::make_unique<ToolbarsSizeObserverBridge>(self, toolbarsSize);
       _toolbarsSize = toolbarsSize;
       [_toolbarsSize addObserver:_toolbarsUIObserverBridge.get()];
     } else {
@@ -73,16 +73,13 @@
   [self.consumer updateBottomToolbarHeight:height];
 }
 
-#pragma mark - ToolbarUIObserving
+#pragma mark - ToolbarsSizeObserving
 
-- (void)OnBottomToolbarHeightChanged {
+- (void)toolbarsSizeDidChangeBottomToolbarHeight:(ToolbarsSize*)toolbarsSize {
   if (IsRefactorToolbarsSize()) {
     [self.consumer
-        updateBottomToolbarHeight:_toolbarsSize.expandedBottomToolbarHeight];
+        updateBottomToolbarHeight:toolbarsSize.expandedBottomToolbarHeight];
   }
-}
-
-- (void)OnTopToolbarHeightChanged {
 }
 
 @end

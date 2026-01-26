@@ -6,16 +6,34 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
+#import "base/check.h"
+
 ToolbarsSizeObserverBridge::ToolbarsSizeObserverBridge(
-    id<ToolbarsSizeObserving> observer)
-    : observer_(observer) {}
+    id<ToolbarsSizeObserving> observer,
+    ToolbarsSize* toolbars_size)
+    : observer_(observer), toolbars_size_(toolbars_size) {
+  CHECK(observer_);
+  CHECK(toolbars_size_);
+}
 
 ToolbarsSizeObserverBridge::~ToolbarsSizeObserverBridge() {}
 
 void ToolbarsSizeObserverBridge::OnTopToolbarHeightChanged() {
-  [observer_ OnTopToolbarHeightChanged];
+  if ([observer_ respondsToSelector:@selector
+                 (toolbarsSizeDidChangeTopToolbarHeight:)]) {
+    // Since `toolbars_size_` is weak, verify it's valid before passing it to
+    // the observer.
+    CHECK(toolbars_size_);
+    [observer_ toolbarsSizeDidChangeTopToolbarHeight:toolbars_size_];
+  }
 }
 
 void ToolbarsSizeObserverBridge::OnBottomToolbarHeightChanged() {
-  [observer_ OnBottomToolbarHeightChanged];
+  if ([observer_ respondsToSelector:@selector
+                 (toolbarsSizeDidChangeBottomToolbarHeight:)]) {
+    // Since `toolbars_size_` is weak, verify it's valid before passing it to
+    // the observer.
+    CHECK(toolbars_size_);
+    [observer_ toolbarsSizeDidChangeBottomToolbarHeight:toolbars_size_];
+  }
 }
