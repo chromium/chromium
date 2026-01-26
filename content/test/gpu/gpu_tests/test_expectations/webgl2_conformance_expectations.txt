@@ -960,10 +960,10 @@ crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/renderi
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 
-
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
+crbug.com/478893325 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ RetryOnFailure ]
 
 # ANGLE disallows WEBGL_clip_cull_distance if the underlying GL extension doesn't support requirements for number of distances.
 crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
