@@ -805,7 +805,8 @@ class CrossbenchTest(object):
                         help='Specify location of a Finch variations seed file')
     parser.add_argument(
         '--extra-browser-args',
-        dest='extra_browser_args_as_string',
+        action='extend',
+        nargs=1,
         help='Additional arguments to pass to the browser when it starts')
     self.cb_options, self.options.passthrough_args = parser.parse_known_args(
         self.options.passthrough_args)
@@ -950,9 +951,10 @@ class CrossbenchTest(object):
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
     extra_browser_args = []
-    if self.cb_options.extra_browser_args_as_string:
-      extra_browser_args = ['--'] + shlex.split(
-          self.cb_options.extra_browser_args_as_string, posix=(not IsWindows()))
+    if self.cb_options.extra_browser_args:
+      extra_browser_args = ['--']
+      for arg in self.cb_options.extra_browser_args:
+        extra_browser_args.extend(shlex.split(arg, posix=(not IsWindows())))
     if self.cb_options.variations_test_seed_path:
       # Chrome is picky about how the path is specified. Must resolve it first.
       resolved_path = self.cb_options.variations_test_seed_path.resolve()

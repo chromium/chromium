@@ -472,6 +472,19 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     # a path from us.
     self.assertFalse([x for x in command_list if x.startswith('--driver-path')])
 
+  def testCrossbenchExtraBrowserArgs(self):
+    fake_args = _create_crossbench_args()
+    fake_args.extend(
+        ('--extra-browser-args=--a --b --c', '--extra-browser-args=--x'))
+    options = run_performance_tests.parse_arguments(fake_args)
+
+    cb_test = run_performance_tests.CrossbenchTest(options, 'dir')
+    command_list = cb_test._generate_command_list(
+        cb_test.options.benchmarks, cb_test.options.passthrough_args, 'dir')
+
+    pos = command_list.index('--')
+    self.assertEqual(command_list[pos + 1:], ['--a', '--b', '--c', '--x'])
+
 
 def _create_crossbench_args(browser='./chrome'):
   return [
