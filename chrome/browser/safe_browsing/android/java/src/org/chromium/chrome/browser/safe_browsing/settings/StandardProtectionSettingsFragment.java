@@ -109,9 +109,8 @@ public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFrag
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     StandardProtectionSettingsFragment.class.getName(),
-                    R.xml.standard_protection_preferences);
+                    ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
 }
