@@ -80,6 +80,8 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   OperationType GetType() const override { return type_; }
   OperationType PrimitiveType() const final { return kTranslate3D; }
 
+  String DebugString() const override;
+
  protected:
   bool IsEqualAssumingSameType(const TransformOperation& o) const override {
     const TranslateTransformOperation* t =

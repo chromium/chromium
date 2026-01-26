@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace gfx {
@@ -185,6 +186,21 @@ class PLATFORM_EXPORT TransformOperations {
 
   bool ContainsSingularMatrixTransform() const;
   bool IsMergedTransformSingular(wtf_size_t offset) const;
+
+  // For debugging/logging only.
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const TransformOperations& ops) {
+    stream << "[";
+    bool first = true;
+    for (const TransformOperation* op : ops.operations_) {
+      if (!first) {
+        stream << ", ";
+      }
+      first = false;
+      stream << *op;
+    }
+    return stream << "]";
+  }
 
  private:
   HeapVector<Member<TransformOperation>, 2> operations_;

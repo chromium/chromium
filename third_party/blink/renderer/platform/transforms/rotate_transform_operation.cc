@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 
 #include "third_party/blink/renderer/platform/geometry/blend.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 namespace {
@@ -144,6 +145,20 @@ TransformOperation* RotateAroundOriginTransformOperation::Blend(
 TransformOperation* RotateAroundOriginTransformOperation::Zoom(double factor) {
   return MakeGarbageCollected<RotateAroundOriginTransformOperation>(
       Angle(), origin_x_ * factor, origin_y_ * factor);
+}
+
+String RotateTransformOperation::DebugString() const {
+  StringBuilder sb;
+  sb.Append("rotate((");
+  sb.AppendNumber(rotation_.axis.x());
+  sb.Append(", ");
+  sb.AppendNumber(rotation_.axis.y());
+  sb.Append(", ");
+  sb.AppendNumber(rotation_.axis.z());
+  sb.Append("), ");
+  sb.AppendNumber(rotation_.angle);
+  sb.Append("deg)");
+  return sb.ReleaseString();
 }
 
 }  // namespace blink
