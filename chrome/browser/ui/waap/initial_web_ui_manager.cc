@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "ui/base/base_window.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -24,6 +25,9 @@ InitialWebUIManager* InitialWebUIManager::From(
 }
 
 bool InitialWebUIManager::ShouldDeferShow() {
+  if (!features::kWebUIReloadButtonDeferBrowserViewShow.Get()) {
+    return false;
+  }
   if (is_initial_web_ui_pending_) {
     is_show_pending_ = true;
     return true;
