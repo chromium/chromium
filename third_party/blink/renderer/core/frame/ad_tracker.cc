@@ -508,7 +508,9 @@ bool AdTracker::IsFirstCallOfApiFromNonAdScript(v8::Isolate* isolate,
   }
 
   if (WasApiCalledByNonAdScript(isolate, api)) {
-    ad_monkey_patch_calls_in_scope_.insert(api);
+    if (running_sync_tasks_ > 0) {
+      ad_monkey_patch_calls_in_scope_.insert(api);
+    }
     return true;
   }
 
