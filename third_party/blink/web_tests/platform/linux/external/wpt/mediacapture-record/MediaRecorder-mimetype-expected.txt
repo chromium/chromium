@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Profile ignored for mimeType video/mp4; codecs="vp9.madeup.profile"
+  assert_equals: Same result with or without profile expected true but got false
+[FAIL] Support or lack thereof for newer mimeType audio/webm; codecs="futureaudiocodec" is detected asynchronously.
+  assert_true: throwing over unsupported sync codec expected true got false
+[FAIL] Support or lack thereof for newer mimeType audio/matroska; codecs="futureaudiocodec" is detected asynchronously.
+  assert_true: throwing over unsupported sync codec expected true got false
+[FAIL] Support or lack thereof for newer mimeType audio/x-matroska; codecs="futureaudiocodec" is detected asynchronously.
+  assert_true: throwing over unsupported sync codec expected true got false
+[FAIL] Support or lack thereof for newer mimeType video/webm; codecs="av02" is detected asynchronously.
+  assert_true: throwing over unsupported sync codec expected true got false
+[FAIL] Support or lack thereof for newer mimeType video/matroska; codecs="av02" is detected asynchronously.
+  assert_true: throwing over unsupported sync codec expected true got false
+[FAIL] Support or lack thereof for newer mimeType video/x-matroska; codecs="av02" is detected asynchronously.
+  assert_true: throwing over unsupported sync codec expected true got false
+[FAIL] Support or lack thereof for newer mimeType video/webm; codecs="av02,opus" is detected asynchronously, unless opus is unsupported.
+  assert_false: throwing over unsupported sync opus codec expected false got true
+[FAIL] Support or lack thereof for newer mimeType video/webm; codecs="av02,pcm" is detected asynchronously, unless pcm is unsupported.
+  assert_false: throwing over unsupported sync pcm codec expected false got true
+[FAIL] Support or lack thereof for newer mimeType video/webm; codecs="av02,futureaudiocodec" is detected asynchronously.
+  assert_true: throwing over unsupported sync codec expected true got false
+[FAIL] Support or lack thereof for newer mimeType video/webm; codecs="av01,futureaudiocodec" is detected asynchronously, unless av01 is unsupported.
+  assert_false: not supported expected false got true
+[FAIL] Support or lack thereof for newer mimeType video/matroska; codecs="av02,opus" is detected asynchronously, unless opus is unsupported.
+  assert_false: throwing over unsupported sync opus codec expected false got true
+[FAIL] Support or lack thereof for newer mimeType video/matroska; codecs="av02,pcm" is detected asynchronously, unless pcm is unsupported.
+  assert_false: throwing over unsupported sync pcm codec expected false got true
+[FAIL] Support or lack thereof for newer mimeType video/matroska; codecs="av02,futureaudiocodec" is detected asynchronously.
+  assert_true: throwing over unsupported sync codec expected true got false
+[FAIL] Support or lack thereof for newer mimeType video/matroska; codecs="av01,futureaudiocodec" is detected asynchronously, unless av01 is unsupported.
+  assert_false: not supported expected false got true
+[FAIL] Support or lack thereof for newer mimeType video/x-matroska; codecs="av02,opus" is detected asynchronously, unless opus is unsupported.
+  assert_false: throwing over unsupported sync opus codec expected false got true
+[FAIL] Support or lack thereof for newer mimeType video/x-matroska; codecs="av02,pcm" is detected asynchronously, unless pcm is unsupported.
+  assert_false: throwing over unsupported sync pcm codec expected false got true
+[FAIL] Support or lack thereof for newer mimeType video/x-matroska; codecs="av02,futureaudiocodec" is detected asynchronously.
+  assert_true: throwing over unsupported sync codec expected true got false
+[FAIL] Support or lack thereof for newer mimeType video/x-matroska; codecs="av01,futureaudiocodec" is detected asynchronously, unless av01 is unsupported.
+  assert_false: not supported expected false got true
+Harness: the test ran to completion.
+
