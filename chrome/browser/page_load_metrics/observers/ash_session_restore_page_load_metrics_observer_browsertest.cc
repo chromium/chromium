@@ -8,14 +8,16 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -41,21 +43,21 @@ constexpr char kTestUrlRelativePath[] = "/simple.html";
 // Blocks until first input delay is received for a given `WebContents`. Used
 // after simulating a user input (ex: a mouse click), and before checking that
 // the user input had the intended effect.
-class FirstInputDelayBarrier : public BrowserListObserver,
+class FirstInputDelayBarrier : public BrowserCollectionObserver,
                                public TabStripModelObserver {
  public:
   FirstInputDelayBarrier() {
     if (BrowserWindowInterface* const active_browser =
             GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
-      OnBrowserAddedInternal(active_browser);
+      OnBrowserCreatedInternal(active_browser);
     }
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
   FirstInputDelayBarrier(const FirstInputDelayBarrier&) = delete;
   FirstInputDelayBarrier& operator=(const FirstInputDelayBarrier&) = delete;
-
-  ~FirstInputDelayBarrier() override { BrowserList::RemoveObserver(this); }
+  ~FirstInputDelayBarrier() override = default;
 
   // The incoming `web_contents` must have been activated in the past, or this
   // will fail and return `false`.
@@ -75,12 +77,12 @@ class FirstInputDelayBarrier : public BrowserListObserver,
   }
 
  private:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
-    OnBrowserAddedInternal(browser);
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    OnBrowserCreatedInternal(browser);
   }
 
-  void OnBrowserAddedInternal(BrowserWindowInterface* browser) {
+  void OnBrowserCreatedInternal(BrowserWindowInterface* browser) {
     TabStripModel* const tab_strip_model = browser->GetTabStripModel();
     if (content::WebContents* const active_contents =
             tab_strip_model->GetActiveWebContents()) {
@@ -119,6 +121,44 @@ class FirstInputDelayBarrier : public BrowserListObserver,
   base::flat_map<uintptr_t,
                  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>>
       waiters_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
+};
+
+// Lifetime manager for FirstInputDelayBarrier. Ensures that the
+// BrowserCollectionObserver is created and destroyed at the correct times in
+// browser process startup and shutdown.
+class FirstInputDelayBarrierLifetimeManager
+    : public ChromeBrowserMainExtraParts {
+ public:
+  FirstInputDelayBarrierLifetimeManager(
+      base::OnceClosure create_barrier_callback,
+      base::OnceClosure destroy_barrier_callback)
+      : create_barrier_callback_(std::move(create_barrier_callback)),
+        destroy_barrier_callback_(std::move(destroy_barrier_callback)) {}
+
+  // ChromeBrowserMainExtraParts:
+  void PreCreateThreads() override {
+    // Runs after BrowserProcessImpl::Init() - ie, after
+    // g_browser_process->features_ is created and initialized - but before a
+    // Browser is created. This is important because FirstInputDelayBarrier
+    // depends on the global GlobalBrowsersCollection instance, which is a
+    // member of g_browser_process->features_, and we want
+    // FirstInputDelayBarrier to be able to observe the first Browser creation.
+    std::move(create_barrier_callback_).Run();
+  }
+  void PostMainMessageLoopRun() override {
+    // Runs before g_browser_process shutdown begins (ie, before
+    // g_browser_process->features_ teardown begins), and thus ensures that
+    // ChromeBrowserMainExtraParts is cleaned up before its dependency,
+    // GlobalBrowsersCollection.
+    std::move(destroy_barrier_callback_).Run();
+  }
+
+ private:
+  base::OnceClosure create_barrier_callback_;
+  base::OnceClosure destroy_barrier_callback_;
 };
 
 class AshSessionRestorePageLoadMetricsObserverTest
@@ -135,6 +175,20 @@ class AshSessionRestorePageLoadMetricsObserverTest
   AshSessionRestorePageLoadMetricsObserverTest& operator=(
       const AshSessionRestorePageLoadMetricsObserverTest&) = delete;
   ~AshSessionRestorePageLoadMetricsObserverTest() override = default;
+
+  // InProcessBrowserTest:
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    ChromeBrowserMainParts* chrome_browser_main_parts =
+        static_cast<ChromeBrowserMainParts*>(parts);
+    chrome_browser_main_parts->AddParts(
+        std::make_unique<FirstInputDelayBarrierLifetimeManager>(
+            base::BindOnce(
+                &AshSessionRestorePageLoadMetricsObserverTest::create_barrier,
+                base::Unretained(this)),
+            base::BindOnce(
+                &AshSessionRestorePageLoadMetricsObserverTest::destroy_barrier,
+                base::Unretained(this))));
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -158,9 +212,9 @@ class AshSessionRestorePageLoadMetricsObserverTest
                                 blink::WebMouseEvent::Button::kLeft);
   }
 
-  // Opens a browser window manually, navigates to a test url, and ensures first
-  // input delay is not recorded since the browser window is not from a session
-  // restore.
+  // Opens a browser window manually, navigates to a test url, and ensures
+  // first input delay is not recorded since the browser window is not from a
+  // session restore.
   void RunFirstInputDelaySetupTest() {
     ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
@@ -177,7 +231,7 @@ class AshSessionRestorePageLoadMetricsObserverTest
         active_browser, embedded_test_server()->GetURL(kTestUrlRelativePath)));
     SimulateMouseClick(web_contents);
 
-    ASSERT_TRUE(first_input_delay_barrier_.Wait(web_contents));
+    ASSERT_TRUE(first_input_delay_barrier_->Wait(web_contents));
 
     histogram_tester_.ExpectTotalCount(
         AshSessionRestorePageLoadMetricsObserver::kFirstInputDelayName, 0);
@@ -187,7 +241,16 @@ class AshSessionRestorePageLoadMetricsObserverTest
   }
 
   base::HistogramTester histogram_tester_;
-  FirstInputDelayBarrier first_input_delay_barrier_;
+  std::unique_ptr<FirstInputDelayBarrier> first_input_delay_barrier_;
+
+ private:
+  // Callbacks for `FirstInputDelayBarrierLifetimeManager` to create and
+  // destroy `first_input_delay_barrier_` at the proper time in browser
+  // process startup and teardown.
+  void create_barrier() {
+    first_input_delay_barrier_ = std::make_unique<FirstInputDelayBarrier>();
+  }
+  void destroy_barrier() { first_input_delay_barrier_.reset(); }
 };
 
 // Creates browser window that will be restored in the main test.
@@ -208,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
       restored_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   SimulateMouseClick(web_contents);
-  ASSERT_TRUE(first_input_delay_barrier_.Wait(web_contents));
+  ASSERT_TRUE(first_input_delay_barrier_->Wait(web_contents));
 
   histogram_tester_.ExpectTotalCount(
       AshSessionRestorePageLoadMetricsObserver::kFirstInputDelayName, 1);
@@ -219,9 +282,9 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
   RunFirstInputDelaySetupTest();
 }
 
-// Browser window is restored during test setup, user manually opens up another
-// window and interacts with it. First input delay should not be recorded since
-// it wasn't for the restored window.
+// Browser window is restored during test setup, user manually opens up
+// another window and interacts with it. First input delay should not be
+// recorded since it wasn't for the restored window.
 IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
                        DoesNotRecordFirstInputDelayForManualWindow) {
   BrowserWindowInterface* const restored_browser =
@@ -247,13 +310,14 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
   ASSERT_TRUE(manual_web_contents);
 
   SimulateMouseClick(manual_web_contents);
-  ASSERT_TRUE(first_input_delay_barrier_.Wait(manual_web_contents));
+  ASSERT_TRUE(first_input_delay_barrier_->Wait(manual_web_contents));
 
-  // Even after switching back to the restored window, first input delay should
-  // not be recorded since the first input went to the manually opened window.
+  // Even after switching back to the restored window, first input delay
+  // should not be recorded since the first input went to the manually opened
+  // window.
   restored_browser->GetWindow()->Activate();
   SimulateMouseClick(restored_web_contents);
-  ASSERT_TRUE(first_input_delay_barrier_.Wait(restored_web_contents));
+  ASSERT_TRUE(first_input_delay_barrier_->Wait(restored_web_contents));
 
   histogram_tester_.ExpectTotalCount(
       AshSessionRestorePageLoadMetricsObserver::kFirstInputDelayName, 0);
@@ -264,9 +328,9 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
   RunFirstInputDelaySetupTest();
 }
 
-// Browser window is restored during test setup, user manually opens up another
-// tab and interacts with it. First input delay should not be recorded since
-// it wasn't for the restored window.
+// Browser window is restored during test setup, user manually opens up
+// another tab and interacts with it. First input delay should not be recorded
+// since it wasn't for the restored window.
 IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
                        DoesNotRecordFirstInputDelayForManualTab) {
   BrowserWindowInterface* const browser =
@@ -292,14 +356,14 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
   ASSERT_NE(manual_web_contents, restored_web_contents);
 
   SimulateMouseClick(manual_web_contents);
-  ASSERT_TRUE(first_input_delay_barrier_.Wait(manual_web_contents));
+  ASSERT_TRUE(first_input_delay_barrier_->Wait(manual_web_contents));
 
   // Even after switching back to the restored tab, first input delay should
   // not be recorded since the first input went to the manually opened tab.
   tab_strip_model->ActivateTabAt(restored_tab_index);
   ASSERT_EQ(tab_strip_model->GetActiveWebContents(), restored_web_contents);
   SimulateMouseClick(restored_web_contents);
-  ASSERT_TRUE(first_input_delay_barrier_.Wait(restored_web_contents));
+  ASSERT_TRUE(first_input_delay_barrier_->Wait(restored_web_contents));
 
   histogram_tester_.ExpectTotalCount(
       AshSessionRestorePageLoadMetricsObserver::kFirstInputDelayName, 0);
