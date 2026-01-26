@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 
 namespace supervised_user {
@@ -27,30 +26,29 @@ WebFilterType SupervisedUserUrlFilteringService::GetWebFilterType() const {
   return supervised_user_service_->GetURLFilter()->GetWebFilterType();
 }
 
-SupervisedUserURLFilter::Result
-SupervisedUserUrlFilteringService::GetFilteringBehavior(const GURL& url) const {
+WebFilteringResult SupervisedUserUrlFilteringService::GetFilteringBehavior(
+    const GURL& url) const {
   return supervised_user_service_->GetURLFilter()->GetFilteringBehavior(url);
 }
 
 void SupervisedUserUrlFilteringService::GetFilteringBehavior(
     const GURL& url,
     bool skip_manual_parent_filter,
-    SupervisedUserURLFilter::ResultCallback callback,
+    WebFilteringResult::Callback callback,
     const WebFilterMetricsOptions& options) const {
-  supervised_user_service_->GetURLFilter()->GetFilteringBehaviorWithAsyncChecks(
-      url, std::move(callback), skip_manual_parent_filter,
-      options.filtering_context, options.transition_type);
+  supervised_user_service_->GetURLFilter()->GetFilteringBehavior(
+      url, skip_manual_parent_filter, std::move(callback), options);
 }
 
 // Version of the above method that for use in subframe context.
 void SupervisedUserUrlFilteringService::GetFilteringBehaviorForSubFrame(
     const GURL& url,
     const GURL& main_frame_url,
-    SupervisedUserURLFilter::ResultCallback callback,
+    WebFilteringResult::Callback callback,
     const WebFilterMetricsOptions& options) const {
-  supervised_user_service_->GetURLFilter()
-      ->GetFilteringBehaviorForSubFrameWithAsyncChecks(
-          url, main_frame_url, std::move(callback), options.filtering_context,
-          options.transition_type);
+  supervised_user_service_->GetURLFilter()->GetFilteringBehaviorForSubFrame(
+      url, main_frame_url, std::move(callback), options);
 }
+
+SupervisedUserUrlFilteringService::Delegate::~Delegate() = default;
 }  // namespace supervised_user

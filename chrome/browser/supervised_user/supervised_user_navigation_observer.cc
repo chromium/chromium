@@ -33,7 +33,6 @@
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 #include "content/public/browser/browser_thread.h"
@@ -136,7 +135,7 @@ void SupervisedUserNavigationObserver::BindSupervisedUserCommands(
 // static
 void SupervisedUserNavigationObserver::OnRequestBlocked(
     content::WebContents* web_contents,
-    supervised_user::SupervisedUserURLFilter::Result filtering_result,
+    supervised_user::WebFilteringResult filtering_result,
     int64_t navigation_id,
     content::FrameTreeNodeId frame_id,
     const OnInterstitialResultCallback& callback) {
@@ -316,7 +315,7 @@ void SupervisedUserNavigationObserver::OnInterstitialDone(
 }
 
 void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
-    supervised_user::SupervisedUserURLFilter::Result filtering_result,
+    supervised_user::WebFilteringResult filtering_result,
     int64_t navigation_id,
     content::FrameTreeNodeId frame_id,
     const OnInterstitialResultCallback& callback) {
@@ -375,7 +374,7 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
 void SupervisedUserNavigationObserver::URLFilterCheckCallback(
     int render_frame_process_id,
     int render_frame_routing_id,
-    supervised_user::SupervisedUserURLFilter::Result result) {
+    supervised_user::WebFilteringResult result) {
   auto* render_frame_host = content::RenderFrameHost::FromID(
       render_frame_process_id, render_frame_routing_id);
 
@@ -406,7 +405,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
 }
 
 void SupervisedUserNavigationObserver::MaybeShowInterstitial(
-    supervised_user::SupervisedUserURLFilter::Result filtering_result,
+    supervised_user::WebFilteringResult filtering_result,
     bool initial_page_load,
     int64_t navigation_id,
     content::FrameTreeNodeId frame_id,
@@ -527,7 +526,7 @@ void SupervisedUserNavigationObserver::RequestCreated(
 
 void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
-    supervised_user::SupervisedUserURLFilter::Result result =
+    supervised_user::WebFilteringResult result =
         supervised_user_url_filtering_service()->GetFilteringBehavior(
             GURL(*iter));
 

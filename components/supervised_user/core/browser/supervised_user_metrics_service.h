@@ -28,7 +28,7 @@ class Time;
 }  // namespace base
 
 namespace supervised_user {
-class SupervisedUserURLFilter;
+class FamilyLinkUrlFilter;
 
 // Service to initialize and control metric recorders of supervised users.
 // Records metrics daily, or when the SupervisedUserService changes.
@@ -99,10 +99,10 @@ class SupervisedUserMetricsService : public KeyedService,
   // A periodic timer that checks if a new day has arrived.
   base::RepeatingTimer timer_;
 
-  // Cache of last recorded values of SupervisedUserURLFilter to avoid
-  // duplicated emissions.
+  // Cache of last recorded values of FamilyLinkUrlFilter to avoid duplicated
+  // emissions.
   std::optional<WebFilterType> last_recorded_family_link_web_filter_type_;
-  std::optional<SupervisedUserURLFilter::Statistics> last_recorded_statistics_;
+  std::optional<FamilyLinkUrlFilter::Statistics> last_recorded_statistics_;
   std::optional<WebFilterType> last_recorded_supervised_user_web_filter_type_;
 
   base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>

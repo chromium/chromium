@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
@@ -33,7 +33,7 @@ class WebContentHandler {
   // and they must throw an error when implementing this method.
   virtual void RequestLocalApproval(
       const GURL& target_url,
-      SupervisedUserURLFilter::Result filtering_result,
+      WebFilteringResult filtering_result,
       const std::u16string& child_display_name,
       ApprovalRequestInitiatedCallback callback) = 0;
 

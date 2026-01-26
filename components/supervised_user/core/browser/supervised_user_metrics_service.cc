@@ -203,7 +203,7 @@ bool SupervisedUserMetricsService::TryEmittingFamilyLinkMetrics() {
   if (!last_recorded_statistics_.has_value() ||
       *last_recorded_statistics_ !=
           supervised_user_service_->GetURLFilter()->GetFilteringStatistics()) {
-    SupervisedUserURLFilter::Statistics statistics =
+    FamilyLinkUrlFilter::Statistics statistics =
         supervised_user_service_->GetURLFilter()->GetFilteringStatistics();
 
     base::UmaHistogramCounts1000(

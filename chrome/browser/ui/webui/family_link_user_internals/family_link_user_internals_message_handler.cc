@@ -111,7 +111,7 @@ std::string WebFilterTypeToString(
 }
 
 std::string FilteringResultToString(
-    supervised_user::SupervisedUserURLFilter::Result result) {
+    supervised_user::WebFilteringResult result) {
   std::string return_value = FilteringBehaviorToString(result.behavior);
   if (!result.IsClassificationSuccessful()) {
     return_value += " (Uncertain)";
@@ -120,7 +120,7 @@ std::string FilteringResultToString(
 }
 
 std::string FilteringReasonToString(
-    supervised_user::SupervisedUserURLFilter::Result result) {
+    supervised_user::WebFilteringResult result) {
   switch (result.reason) {
     case supervised_user::FilteringBehaviorReason::DEFAULT:
       return "Default";
@@ -282,7 +282,8 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
   url_filtering_service->GetFilteringBehavior(
       url, skip_manual_parent_filter,
       base::BindOnce(&FamilyLinkUserInternalsMessageHandler::OnTryURLResult,
-                     weak_factory_.GetWeakPtr(), callback_id));
+                     weak_factory_.GetWeakPtr(), callback_id),
+      /*options=*/{});
 }
 
 void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
@@ -360,7 +361,7 @@ void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
     const std::string& callback_id,
-    supervised_user::SupervisedUserURLFilter::Result filtering_result) {
+    supervised_user::WebFilteringResult filtering_result) {
   base::DictValue result;
   result.Set("allowResult", FilteringResultToString(filtering_result));
   result.Set("manual", filtering_result.IsFromManualList() &&
@@ -369,7 +370,7 @@ void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
-    supervised_user::SupervisedUserURLFilter::Result filtering_result) {
+    supervised_user::WebFilteringResult filtering_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::DictValue result;
   result.Set("url", filtering_result.url.possibly_invalid_spec());

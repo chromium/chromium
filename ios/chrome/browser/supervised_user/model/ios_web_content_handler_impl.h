@@ -30,7 +30,7 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
   // supervised_user::WebContentHandler implementation:
   void RequestLocalApproval(
       const GURL& target_url,
-      supervised_user::SupervisedUserURLFilter::Result filtering_result,
+      supervised_user::WebFilteringResult filtering_result,
       const std::u16string& child_display_name,
       ApprovalRequestInitiatedCallback callback) override;
   bool IsMainFrame() const override;

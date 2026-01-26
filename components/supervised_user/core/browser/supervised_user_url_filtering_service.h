@@ -8,15 +8,83 @@
 #include "base/memory/raw_ref.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace supervised_user {
+
+// Forward declared until all delegates are no longer owned by it.
+class SupervisedUserService;
+
+// Represents the result of url filtering request.
+struct WebFilteringResult {
+  using Callback = base::OnceCallback<void(WebFilteringResult result)>;
+
+  // The URL that was subject to filtering
+  GURL url;
+  // How the URL should be handled.
+  FilteringBehavior behavior;
+  // Why the URL is handled as indicated in `behavior`.
+  FilteringBehaviorReason reason;
+  // Details of asynchronous check if it was performed, otherwise empty.
+  std::optional<safe_search_api::ClassificationDetails> async_check_details;
+
+  bool IsFromManualList() const {
+    return reason == FilteringBehaviorReason::MANUAL;
+  }
+  bool IsFromDefaultSetting() const {
+    return reason == FilteringBehaviorReason::DEFAULT;
+  }
+  bool IsAllowedBecauseOfDisabledFilter() const {
+    return reason == FilteringBehaviorReason::FILTER_DISABLED &&
+           behavior == FilteringBehavior::kAllow;
+  }
+
+  // True when the result of the classification means that the url is safe.
+  // See `::IsClassificationSuccessful` for caveats.
+  bool IsAllowed() const { return behavior == FilteringBehavior::kAllow; }
+  // True when the result of the classification means that the url is not
+  // safe. See `::IsClassificationSuccessful` for caveats.
+  bool IsBlocked() const { return behavior == FilteringBehavior::kBlock; }
+
+  // True when remote classification was successful. It's useful to understand
+  // if the result is "allowed" because the classification succeeded, or
+  // because it failed and the system uses a default classification.
+  bool IsClassificationSuccessful() const {
+    return !async_check_details.has_value() ||
+           async_check_details->reason !=
+               safe_search_api::ClassificationDetails::Reason::
+                   kFailedUseDefault;
+  }
+};
+
 // Performs URL filtering workflows for supervised users, combining effects of
 // subservices that define the status of these users.
 class SupervisedUserUrlFilteringService : public KeyedService {
  public:
+  // Interface for actual implementations of URL filtering logic.
+  class Delegate {
+   public:
+    virtual ~Delegate();
+
+    virtual WebFilterType GetWebFilterType() const = 0;
+    virtual WebFilteringResult GetFilteringBehavior(const GURL& url) const = 0;
+
+    // TODO(crbug.com/478188599): Declare const after url_checker_ clients are
+    // owned in this service and passed to delegates.
+    virtual void GetFilteringBehavior(
+        const GURL& url,
+        bool skip_manual_parent_filter,
+        WebFilteringResult::Callback callback,
+        const WebFilterMetricsOptions& options) = 0;
+    // TODO(crbug.com/478188599): Declare const after url_checker_ clients are
+    // owned in this service and passed to delegates.
+    virtual void GetFilteringBehaviorForSubFrame(
+        const GURL& url,
+        const GURL& main_frame_url,
+        WebFilteringResult::Callback callback,
+        const WebFilterMetricsOptions& options) = 0;
+  };
+
   SupervisedUserUrlFilteringService(
       const SupervisedUserService& supervised_user_service,
       const FamilyLinkSettingsService& family_link_settings_service);
@@ -30,8 +98,7 @@ class SupervisedUserUrlFilteringService : public KeyedService {
   WebFilterType GetWebFilterType() const;
 
   // Returns the filtering status for a given URL without any remote checks.
-  // TODO(crbug.com/465666839): Promote `Result` struct to a standalone entity.
-  SupervisedUserURLFilter::Result GetFilteringBehavior(const GURL& url) const;
+  WebFilteringResult GetFilteringBehavior(const GURL& url) const;
 
   // Version of the above method that adds asynchronous checks against a
   // remote service if GetFilteringBehavior(.) was inconclusive.
@@ -40,14 +107,14 @@ class SupervisedUserUrlFilteringService : public KeyedService {
   void GetFilteringBehavior(
       const GURL& url,
       bool skip_manual_parent_filter,
-      SupervisedUserURLFilter::ResultCallback callback,
+      WebFilteringResult::Callback callback,
       const WebFilterMetricsOptions& options = WebFilterMetricsOptions()) const;
 
   // Version of the above method that for use in subframe context.
   void GetFilteringBehaviorForSubFrame(
       const GURL& url,
       const GURL& main_frame_url,
-      SupervisedUserURLFilter::ResultCallback callback,
+      WebFilteringResult::Callback callback,
       const WebFilterMetricsOptions& options = WebFilterMetricsOptions()) const;
 
  private:

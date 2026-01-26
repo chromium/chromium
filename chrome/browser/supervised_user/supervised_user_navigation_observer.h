@@ -20,7 +20,6 @@
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
@@ -66,12 +65,11 @@ class SupervisedUserNavigationObserver
       content::RenderFrameHost* rfh);
 
   // Called when a network request to |url| is blocked.
-  static void OnRequestBlocked(
-      content::WebContents* web_contents,
-      supervised_user::SupervisedUserURLFilter::Result result,
-      int64_t navigation_id,
-      content::FrameTreeNodeId frame_id,
-      const OnInterstitialResultCallback& callback);
+  static void OnRequestBlocked(content::WebContents* web_contents,
+                               supervised_user::WebFilteringResult result,
+                               int64_t navigation_id,
+                               content::FrameTreeNodeId frame_id,
+                               const OnInterstitialResultCallback& callback);
 
   // WebContentsObserver:
   void DidFinishNavigation(
@@ -103,18 +101,17 @@ class SupervisedUserNavigationObserver
   explicit SupervisedUserNavigationObserver(content::WebContents* web_contents);
 
   void OnRequestBlockedInternal(
-      supervised_user::SupervisedUserURLFilter::Result filtering_result,
+      supervised_user::WebFilteringResult filtering_result,
       int64_t navigation_id,
       content::FrameTreeNodeId frame_id,
       const OnInterstitialResultCallback& callback);
 
-  void URLFilterCheckCallback(
-      int render_frame_process_id,
-      int render_frame_routing_id,
-      supervised_user::SupervisedUserURLFilter::Result result);
+  void URLFilterCheckCallback(int render_frame_process_id,
+                              int render_frame_routing_id,
+                              supervised_user::WebFilteringResult result);
 
   void MaybeShowInterstitial(
-      supervised_user::SupervisedUserURLFilter::Result filtering_result,
+      supervised_user::WebFilteringResult filtering_result,
       bool initial_page_load,
       int64_t navigation_id,
       content::FrameTreeNodeId frame_id,

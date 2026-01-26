@@ -567,7 +567,7 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
         *FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
             profile->GetProfileKey()),
         SyncServiceFactory::GetInstance()->GetForProfile(profile),
-        std::make_unique<SupervisedUserURLFilter>(
+        std::make_unique<FamilyLinkUrlFilter>(
             *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
             std::make_unique<KidsChromeManagementURLCheckerClient>(
                 IdentityManagerFactory::GetForProfile(profile),

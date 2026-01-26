@@ -67,7 +67,7 @@ SupervisedUserErrorContainer::~SupervisedUserErrorContainer() {
 }
 
 SupervisedUserErrorContainer::SupervisedUserErrorInfo::SupervisedUserErrorInfo(
-    supervised_user::SupervisedUserURLFilter::Result filtering_result,
+    supervised_user::WebFilteringResult filtering_result,
     bool is_main_frame)
     : filtering_result_(filtering_result), is_main_frame_(is_main_frame) {}
 
@@ -120,7 +120,7 @@ bool SupervisedUserErrorContainer::IsRemoteApprovalPendingForUrl(
 }
 
 void SupervisedUserErrorContainer::URLFilterCheckCallback(
-    supervised_user::SupervisedUserURLFilter::Result result) {
+    supervised_user::WebFilteringResult result) {
   auto* blocking_tab_helper =
       security_interstitials::IOSBlockingPageTabHelper::FromWebState(
           web_state_);
@@ -184,7 +184,7 @@ void SupervisedUserErrorContainer::OnRequestCreated(
 
 void SupervisedUserErrorContainer::MaybeUpdatePendingApprovals() {
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
-    supervised_user::SupervisedUserURLFilter::Result result =
+    supervised_user::WebFilteringResult result =
         supervised_user_url_filtering_service_->GetFilteringBehavior(
             GURL(*iter));
 

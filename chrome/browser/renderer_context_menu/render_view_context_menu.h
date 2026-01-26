@@ -29,7 +29,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/search_engines/template_url.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -441,7 +441,7 @@ class RenderViewContextMenu
   // Does not execute "Save link as" if the URL is blocked by the URL filter.
   void CheckSupervisedUserURLFilterAndSaveLinkAs();
   void OnSupervisedUserURLFilterChecked(
-      supervised_user::SupervisedUserURLFilter::Result result);
+      supervised_user::WebFilteringResult result);
 
   // Opens the Lens overlay to search a region defined by the given bounds of
   // the view and the image to be searched. Tab bounds and view bounds are

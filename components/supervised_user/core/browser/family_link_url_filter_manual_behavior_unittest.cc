@@ -188,11 +188,10 @@ TEST_P(FamilyLinkUrlFilterManualBehaviorTest,
   // histogram. A non-conflict entry is recorded on the conflict tracking
   // histogram.
   histogram_tester().ExpectTotalCount(
-      SupervisedUserURLFilter::
-          GetManagedSiteListConflictTypeHistogramNameForTest(),
+      FamilyLinkUrlFilter::GetManagedSiteListConflictTypeHistogramNameForTest(),
       /*expected_count=*/0);
   histogram_tester().ExpectBucketCount(
-      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      FamilyLinkUrlFilter::GetManagedSiteListConflictHistogramNameForTest(),
       /*sample=*/0, /*expected_count=*/1);
 }
 
@@ -580,8 +579,7 @@ TEST_P(FamilyLinkUrlFilterManualBehaviorHostConflictsTest, CertainSites) {
   } else {
     histogram_tester().ExpectBucketCount(
         "FamilyUser.ManagedSiteList.SubdomainConflictType",
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
-            kOtherConflictOnly,
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::kOtherConflictOnly,
         1);
   }
 }
@@ -607,8 +605,7 @@ TEST_P(FamilyLinkUrlFilterManualBehaviorHostConflictsTest, AllowAllSites) {
   } else {
     histogram_tester().ExpectBucketCount(
         "FamilyUser.ManagedSiteList.SubdomainConflictType",
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
-            kOtherConflictOnly,
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::kOtherConflictOnly,
         1);
   }
 }
@@ -709,7 +706,7 @@ INSTANTIATE_TEST_SUITE_P(
 struct HostConflictTypeTestCase {
   std::string test_name;
   std::map<std::string, bool> host_exceptions;
-  std::optional<SupervisedUserURLFilter::FilteringSubdomainConflictType>
+  std::optional<FamilyLinkUrlFilter::FilteringSubdomainConflictType>
       conflict_type;
 };
 
@@ -769,19 +766,19 @@ const HostConflictTypeTestCase kHostConflictTypesTestCases[] = {
     {
         "TrivialConflictOnly_1",
         {{"www.google.com", true}, {"https://google.com", false}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::
             kTrivialSubdomainConflictOnly,
     },
     {
         "TrivialConflictOnly_2",
         {{"www.google.com", false}, {"https://google.com", true}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::
             kTrivialSubdomainConflictOnly,
     },
     {
         "TrivialConflictOnly_3",
         {{"http://www.google.*", false}, {"google.*", true}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::
             kTrivialSubdomainConflictOnly,
     },
     {
@@ -790,7 +787,7 @@ const HostConflictTypeTestCase kHostConflictTypesTestCases[] = {
          {"google.com", true},
          {"www.google.com", false},
          {"http://www.google.com", false}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::
             kTrivialSubdomainConflictOnly,
     },
     {
@@ -798,7 +795,7 @@ const HostConflictTypeTestCase kHostConflictTypesTestCases[] = {
         {{"https://google.com", false},
          {"www.google.com", true},
          {"*.google.*", false}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::
             kTrivialSubdomainConflictOnly,
     },
     {
@@ -806,35 +803,31 @@ const HostConflictTypeTestCase kHostConflictTypesTestCases[] = {
         {{"https://www.google.com", false},
          {"www.google.*", false},
          {"google.com", true}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::
             kTrivialSubdomainConflictOnly,
     },
 
     {
         "OtherConflictOnly_1",
         {{"http://www.google.com", false}, {"*.google.*", true}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
-            kOtherConflictOnly,
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::kOtherConflictOnly,
     },
     {
         "OtherConflictOnly_2",
         {{"*.google.com", false}, {"www.google.com", true}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
-            kOtherConflictOnly,
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::kOtherConflictOnly,
     },
     {
         "OtherConflictOnly_3",
         {{"http://www.google.com", false}, {"www.google.*", true}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
-            kOtherConflictOnly,
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::kOtherConflictOnly,
     },
     {
         "OtherConflictOnly_4",
         {{"http://google.com", false},
          {"https://google.com", true},
          {"*.google.com", true}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
-            kOtherConflictOnly,
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::kOtherConflictOnly,
     },
 
     {
@@ -848,7 +841,7 @@ const HostConflictTypeTestCase kHostConflictTypesTestCases[] = {
         {{"https://google.com", false},
          {"www.google.com", true},
          {"*.google.com", true}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::
             kTrivialSubdomainConflictAndOtherConflict,
     },
     {
@@ -856,7 +849,7 @@ const HostConflictTypeTestCase kHostConflictTypesTestCases[] = {
         {{"https://google.com", true},
          {"www.google.com", false},
          {"*.google.*", true}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::
             kTrivialSubdomainConflictAndOtherConflict,
     },
     {
@@ -865,7 +858,7 @@ const HostConflictTypeTestCase kHostConflictTypesTestCases[] = {
          {"google.com", false},
          {"google.*", true},
          {"*.google.*", false}},
-        SupervisedUserURLFilter::FilteringSubdomainConflictType::
+        FamilyLinkUrlFilter::FilteringSubdomainConflictType::
             kTrivialSubdomainConflictAndOtherConflict,
     },
 };

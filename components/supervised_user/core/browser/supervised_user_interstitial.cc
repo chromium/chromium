@@ -35,7 +35,7 @@ namespace supervised_user {
 std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
     std::unique_ptr<WebContentHandler> web_content_handler,
     SupervisedUserService& supervised_user_service,
-    SupervisedUserURLFilter::Result filtering_result,
+    WebFilteringResult filtering_result,
     const std::u16string& supervised_user_name) {
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
       base::WrapUnique(new SupervisedUserInterstitial(
@@ -50,7 +50,7 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
 SupervisedUserInterstitial::SupervisedUserInterstitial(
     std::unique_ptr<WebContentHandler> web_content_handler,
     SupervisedUserService& supervised_user_service,
-    SupervisedUserURLFilter::Result filtering_result,
+    WebFilteringResult filtering_result,
     const std::u16string& supervised_user_name)
     : supervised_user_service_(supervised_user_service),
       web_content_handler_(std::move(web_content_handler)),

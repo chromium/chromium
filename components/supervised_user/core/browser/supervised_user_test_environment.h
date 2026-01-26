@@ -145,7 +145,7 @@ class SupervisedUserTestEnvironment {
       const SupervisedUserTestEnvironment&) = delete;
   ~SupervisedUserTestEnvironment();
 
-  SupervisedUserURLFilter* url_filter() const;
+  FamilyLinkUrlFilter* url_filter() const;
   SupervisedUserService* service() const;
   SupervisedUserUrlFilteringService* url_filtering_service() const;
   PrefService* pref_service();

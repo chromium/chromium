@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "ui/base/page_transition_types.h"
@@ -31,9 +32,9 @@ enum class Channel;
 
 namespace supervised_user {
 
-// The URL filter manages the filtering behavior for URLs, i.e. it tells
-// callers if a URL should be allowed or blocked. It uses information from
-// multiple sources:
+// This URL filter implementation manages the filtering behavior for URLs as
+// configured in the Family Link system, i.e. it tells callers if a URL should
+// be allowed or blocked. It the following information from the Family Link:
 //   1) User-specified manual overrides (allow or block) for either sites
 //     (hostnames) or exact URLs,
 //   2) Then, depending on the mode of operation:
@@ -46,7 +47,7 @@ namespace supervised_user {
 // user service, it is present all the time. However, when parental controls
 // are off or filtering is not requested, the filter operates in a disabled
 // state which transparently classifies all urls as allowed.
-class SupervisedUserURLFilter {
+class FamilyLinkUrlFilter : public SupervisedUserUrlFilteringService::Delegate {
  public:
   // This enum describes whether the approved list or blocked list is used on
   // Chrome on Chrome OS, which is set by Family Link App or at
@@ -91,46 +92,6 @@ class SupervisedUserURLFilter {
     kMaxValue = kTrivialSubdomainConflictAndOtherConflict,
   };
 
-  // Represents the result of url filtering request.
-  struct Result {
-    // The URL that was subject to filtering
-    GURL url;
-    // How the URL should be handled.
-    FilteringBehavior behavior;
-    // Why the URL is handled as indicated in `behavior`.
-    FilteringBehaviorReason reason;
-    // Details of asynchronous check if it was performed, otherwise empty.
-    std::optional<safe_search_api::ClassificationDetails> async_check_details;
-
-    bool IsFromManualList() const {
-      return reason == FilteringBehaviorReason::MANUAL;
-    }
-    bool IsFromDefaultSetting() const {
-      return reason == FilteringBehaviorReason::DEFAULT;
-    }
-    bool IsAllowedBecauseOfDisabledFilter() const {
-      return reason == FilteringBehaviorReason::FILTER_DISABLED &&
-             behavior == FilteringBehavior::kAllow;
-    }
-
-    // True when the result of the classification means that the url is safe.
-    // See `::IsClassificationSuccessful` for caveats.
-    bool IsAllowed() const { return behavior == FilteringBehavior::kAllow; }
-    // True when the result of the classification means that the url is not
-    // safe. See `::IsClassificationSuccessful` for caveats.
-    bool IsBlocked() const { return behavior == FilteringBehavior::kBlock; }
-
-    // True when remote classification was successful. It's useful to understand
-    // if the result is "allowed" because the classification succeeded, or
-    // because it failed and the system uses a default classification.
-    bool IsClassificationSuccessful() const {
-      return !async_check_details.has_value() ||
-             async_check_details->reason !=
-                 safe_search_api::ClassificationDetails::Reason::
-                     kFailedUseDefault;
-    }
-  };
-
   // Encapsulates statistics about this URL filter.
   struct Statistics {
     bool operator==(const Statistics& other) const = default;
@@ -148,25 +109,23 @@ class SupervisedUserURLFilter {
    public:
     virtual ~Delegate() = default;
     // Returns true if the webstore extension URL is eligible for downloading
-    // for a supervised user.
+    // for a supervised user managed by Family Link.
     virtual bool SupportsWebstoreURL(const GURL& url) const = 0;
   };
-
-  using ResultCallback = base::OnceCallback<void(Result)>;
 
   class Observer {
    public:
     // Called whenever a check started via
     // GetFilteringBehaviorWithAsyncChecks completes.
-    virtual void OnURLChecked(Result result) {}
+    virtual void OnURLChecked(WebFilteringResult result) {}
   };
 
-  SupervisedUserURLFilter(
+  FamilyLinkUrlFilter(
       PrefService& user_prefs,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
-  virtual ~SupervisedUserURLFilter();
+  ~FamilyLinkUrlFilter() override;
 
   static const char* GetManagedSiteListConflictHistogramNameForTest();
   static const char* GetManagedSiteListConflictTypeHistogramNameForTest();
@@ -212,40 +171,29 @@ class SupervisedUserURLFilter {
   // TODO(crbug.com/475731807): This method is Family-Link specific, and
   // probably should live in the SupervisedUserSettingsService after it's
   // renamed to FamilyLinkUserSettingsService.
-  GURL GetEffectiveUrlToUnblock(Result result) const;
+  GURL GetEffectiveUrlToUnblock(WebFilteringResult result) const;
+
+  // SupervisedUserUrlFilteringService::Delegate implementation.
+  WebFilterType GetWebFilterType() const override;
+  WebFilteringResult GetFilteringBehavior(const GURL& url) const override;
+  void GetFilteringBehavior(const GURL& url,
+                            bool skip_manual_parent_filter,
+                            WebFilteringResult::Callback callback,
+                            const WebFilterMetricsOptions& options) override;
+  void GetFilteringBehaviorForSubFrame(
+      const GURL& url,
+      const GURL& main_frame_url,
+      WebFilteringResult::Callback callback,
+      const WebFilterMetricsOptions& options) override;
 
  private:
   // Allows proxying deprecated calls to the filter for the time of migration.
   friend class SupervisedUserUrlFilteringService;
 
-  // Deprecated. Use SupervisedUserUrlFilteringService::GetWebFilterType
-  // instead.
-  WebFilterType GetWebFilterType() const;
-  // Deprecated. Use SupervisedUserUrlFilteringService::GetFilteringBehavior
-  // instead.
-  virtual Result GetFilteringBehavior(const GURL& url);
+  bool IsExemptedFromGuardianApproval(const GURL& effective_url) const;
 
-  // Deprecated. Use SupervisedUserUrlFilteringService::GetFilteringBehavior
-  // instead.
-  bool GetFilteringBehaviorWithAsyncChecks(
-      const GURL& url,
-      ResultCallback callback,
-      bool skip_manual_parent_filter,
-      FilteringContext filtering_context = FilteringContext::kDefault,
-      std::optional<ui::PageTransition> transition_type = std::nullopt);
-
-  // Deprecated. Use SupervisedUserUrlFilteringService::
-  // GetFilteringBehaviorForSubFrame instead.
-  bool GetFilteringBehaviorForSubFrameWithAsyncChecks(
-      const GURL& url,
-      const GURL& main_frame_url,
-      ResultCallback callback,
-      FilteringContext filtering_context = FilteringContext::kDefault,
-      std::optional<ui::PageTransition> transition_type = std::nullopt);
-
-  bool IsExemptedFromGuardianApproval(const GURL& effective_url);
-
-  virtual bool RunAsyncChecker(const GURL& url, ResultCallback callback);
+  virtual bool RunAsyncChecker(const GURL& url,
+                               WebFilteringResult::Callback callback);
 
   FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url) const;
 
@@ -254,17 +202,18 @@ class SupervisedUserURLFilter {
   // normalization methods but report actual requested url as filtered, the
   // async checks will behave the same. Normalized url that is sent to async
   // services is implementation detail.
-  void CheckCallback(ResultCallback callback,
+  void CheckCallback(WebFilteringResult::Callback callback,
                      const GURL& requested_url,
                      const GURL& checked_url,
                      safe_search_api::Classification classification,
                      safe_search_api::ClassificationDetails details) const;
 
-  void NotifyCallerAndObservers(ResultCallback callback, Result result) const;
+  void NotifyCallerAndObservers(WebFilteringResult::Callback callback,
+                                WebFilteringResult result) const;
 
   // Calculates a URL that should unblock the filtering result but without the
   // normalization it (eg. stripping username, password, query params, ref).
-  GURL GetUnnormalizedEffectiveUrlToUnblock(Result result) const;
+  GURL GetUnnormalizedEffectiveUrlToUnblock(WebFilteringResult result) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
@@ -286,8 +235,6 @@ class SupervisedUserURLFilter {
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_{this};
 };
 
 }  // namespace supervised_user

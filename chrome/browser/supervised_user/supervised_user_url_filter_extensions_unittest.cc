@@ -28,7 +28,7 @@ namespace supervised_user {
 namespace {
 
 // URL filter delegate that verifies url extensions support.
-class FakeURLFilterDelegate : public SupervisedUserURLFilter::Delegate {
+class FakeURLFilterDelegate : public FamilyLinkUrlFilter::Delegate {
  public:
   bool SupportsWebstoreURL(const GURL& url) const override {
     return IsSupportedChromeExtensionURL(url);
@@ -45,7 +45,7 @@ class SupervisedUserURLFilterExtensionsTest
             SupervisedUserServiceFactory::GetInstance(),
             base::BindRepeating(
                 &supervised_user_test_util::BuildSupervisedUserService<
-                    SupervisedUserURLFilter, FakeURLFilterDelegate>))
+                    FamilyLinkUrlFilter, FakeURLFilterDelegate>))
         .Build();
   }
 

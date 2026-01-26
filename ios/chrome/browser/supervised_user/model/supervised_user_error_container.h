@@ -13,7 +13,6 @@
 #import "components/security_interstitials/core/controller_client.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/supervised_user/core/browser/supervised_user_service_observer.h"
-#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/components/security_interstitials/ios_security_interstitial_page.h"
@@ -53,20 +52,20 @@ class SupervisedUserErrorContainer
   class SupervisedUserErrorInfo {
    public:
     SupervisedUserErrorInfo(
-        supervised_user::SupervisedUserURLFilter::Result filtering_result,
+        supervised_user::WebFilteringResult filtering_result,
         bool is_main_frame);
     SupervisedUserErrorInfo() = delete;
     SupervisedUserErrorInfo(const SupervisedUserErrorInfo& other) = delete;
     SupervisedUserErrorInfo& operator=(const SupervisedUserErrorInfo& other) =
         delete;
 
-    supervised_user::SupervisedUserURLFilter::Result filtering_result() const {
+    supervised_user::WebFilteringResult filtering_result() const {
       return filtering_result_;
     }
     bool is_main_frame() const { return is_main_frame_; }
 
    private:
-    supervised_user::SupervisedUserURLFilter::Result filtering_result_;
+    supervised_user::WebFilteringResult filtering_result_;
     bool is_main_frame_;
   };
 
@@ -110,8 +109,7 @@ class SupervisedUserErrorContainer
                         const GURL& url,
                         bool successfully_created_request);
   void MaybeUpdatePendingApprovals();
-  void URLFilterCheckCallback(
-      supervised_user::SupervisedUserURLFilter::Result result);
+  void URLFilterCheckCallback(supervised_user::WebFilteringResult result);
 
   // Handler used to request showing the parent access bottom sheet.
   __weak id<ParentAccessCommands> commands_handler_;

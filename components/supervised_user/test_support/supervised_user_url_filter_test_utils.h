@@ -16,7 +16,7 @@ enum class Channel;
 
 namespace supervised_user {
 
-class FakeURLFilterDelegate : public SupervisedUserURLFilter::Delegate {
+class FakeURLFilterDelegate : public FamilyLinkUrlFilter::Delegate {
  public:
   bool SupportsWebstoreURL(const GURL& url) const override;
 };

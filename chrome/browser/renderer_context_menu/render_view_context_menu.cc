@@ -4293,7 +4293,7 @@ void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {
 }
 
 void RenderViewContextMenu::OnSupervisedUserURLFilterChecked(
-    supervised_user::SupervisedUserURLFilter::Result result) {
+    supervised_user::WebFilteringResult result) {
   if (result.IsAllowed()) {
     ExecSaveLinkAs();
   }

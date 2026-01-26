@@ -44,23 +44,23 @@ namespace {
 
 using safe_search_api::ClassificationDetails;
 
-class SupervisedUserURLFilterTest : public ::testing::Test,
-                                    public SupervisedUserURLFilter::Observer {
+class FamilyLinkUrlFilterTest : public ::testing::Test,
+                                public FamilyLinkUrlFilter::Observer {
  public:
-  SupervisedUserURLFilterTest() {
+  FamilyLinkUrlFilterTest() {
     EnableParentalControls(*supervised_user_test_environment_.pref_service());
     supervised_user_test_environment_.SetWebFilterType(
         WebFilterType::kCertainSites);
     supervised_user_test_environment_.url_filter()->AddObserver(this);
   }
 
-  ~SupervisedUserURLFilterTest() override {
+  ~FamilyLinkUrlFilterTest() override {
     supervised_user_test_environment_.url_filter()->RemoveObserver(this);
     supervised_user_test_environment_.Shutdown();
   }
 
-  // SupervisedUserURLFilter::Observer:
-  void OnURLChecked(SupervisedUserURLFilter::Result result) override {
+  // FamilyLinkUrlFilter::Observer:
+  void OnURLChecked(WebFilteringResult result) override {
     behavior_ = result.behavior;
     reason_ = result.reason;
   }
@@ -101,88 +101,82 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   }
 };
 
-TEST_F(SupervisedUserURLFilterTest, HostMatchesPattern) {
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                          "google.com"));
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                          "*.google.com"));
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("google.com",
-                                                          "*.google.com"));
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("accounts.google.com",
-                                                          "*.google.com"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google.de",
-                                                           "*.google.com"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("notgoogle.com",
-                                                           "*.google.com"));
-
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                          "www.google.*"));
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.de",
-                                                          "www.google.*"));
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.co.uk",
-                                                          "www.google.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern(
-      "www.google.blogspot.com", "www.google.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google",
-                                                           "www.google.*"));
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("google.com",
-                                                          "www.google.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("mail.google.com",
-                                                           "www.google.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.googleplex.com",
-                                                           "www.google.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.googleco.uk",
-                                                           "www.google.*"));
-
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                          "*.google.*"));
+TEST_F(FamilyLinkUrlFilterTest, HostMatchesPattern) {
   EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("google.com", "*.google.*"));
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("accounts.google.com",
-                                                          "*.google.*"));
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("mail.google.com",
-                                                          "*.google.*"));
-  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("www.google.de",
-                                                          "*.google.*"));
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "google.com"));
+  EXPECT_TRUE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.com",
+                                                      "*.google.com"));
   EXPECT_TRUE(
-      SupervisedUserURLFilter::HostMatchesPattern("google.de", "*.google.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern(
-      "google.blogspot.com", "*.google.*"));
+      FamilyLinkUrlFilter::HostMatchesPattern("google.com", "*.google.com"));
+  EXPECT_TRUE(FamilyLinkUrlFilter::HostMatchesPattern("accounts.google.com",
+                                                      "*.google.com"));
   EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("google", "*.google.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("notgoogle.com",
-                                                           "*.google.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.googleplex.com",
-                                                           "*.google.*"));
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.de", "*.google.com"));
+  EXPECT_FALSE(
+      FamilyLinkUrlFilter::HostMatchesPattern("notgoogle.com", "*.google.com"));
+
+  EXPECT_TRUE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.com",
+                                                      "www.google.*"));
+  EXPECT_TRUE(
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.de", "www.google.*"));
+  EXPECT_TRUE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.co.uk",
+                                                      "www.google.*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern(
+      "www.google.blogspot.com", "www.google.*"));
+  EXPECT_FALSE(
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google", "www.google.*"));
+  EXPECT_TRUE(
+      FamilyLinkUrlFilter::HostMatchesPattern("google.com", "www.google.*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("mail.google.com",
+                                                       "www.google.*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.googleplex.com",
+                                                       "www.google.*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.googleco.uk",
+                                                       "www.google.*"));
+
+  EXPECT_TRUE(
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "*.google.*"));
+  EXPECT_TRUE(
+      FamilyLinkUrlFilter::HostMatchesPattern("google.com", "*.google.*"));
+  EXPECT_TRUE(FamilyLinkUrlFilter::HostMatchesPattern("accounts.google.com",
+                                                      "*.google.*"));
+  EXPECT_TRUE(
+      FamilyLinkUrlFilter::HostMatchesPattern("mail.google.com", "*.google.*"));
+  EXPECT_TRUE(
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.de", "*.google.*"));
+  EXPECT_TRUE(
+      FamilyLinkUrlFilter::HostMatchesPattern("google.de", "*.google.*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("google.blogspot.com",
+                                                       "*.google.*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("google", "*.google.*"));
+  EXPECT_FALSE(
+      FamilyLinkUrlFilter::HostMatchesPattern("notgoogle.com", "*.google.*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.googleplex.com",
+                                                       "*.google.*"));
 
   // Now test a few invalid patterns. They should never match.
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", ""));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "."));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", ".*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "*."));
   EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com", ""));
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "*.*"));
   EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com", "."));
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google..com", "*..*"));
   EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com", "*"));
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "*.*.com"));
   EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com", ".*"));
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "www.*.*"));
   EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com", "*."));
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "*.goo.*le.*"));
   EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com", "*.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google..com", "*..*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com", "*.*.com"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("www.google.com", "www.*.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                           "*.goo.*le.*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                           "*google*"));
-  EXPECT_FALSE(SupervisedUserURLFilter::HostMatchesPattern("www.google.com",
-                                                           "www.*.google.com"));
+      FamilyLinkUrlFilter::HostMatchesPattern("www.google.com", "*google*"));
+  EXPECT_FALSE(FamilyLinkUrlFilter::HostMatchesPattern("www.google.com",
+                                                       "www.*.google.com"));
 }
 
-TEST_F(SupervisedUserURLFilterTest, Reason) {
+TEST_F(FamilyLinkUrlFilterTest, Reason) {
   supervised_user_test_environment_.SetManualFilterForHost("youtube.com", true);
   supervised_user_test_environment_.SetManualFilterForHost("*.google.*", true);
   supervised_user_test_environment_.SetManualFilterForUrl(
@@ -209,26 +203,25 @@ TEST_F(SupervisedUserURLFilterTest, Reason) {
   ExpectURLInManualDenylist("https://google.co.uk/robots.txt");
 }
 
-TEST_F(SupervisedUserURLFilterTest,
-       PlainWebFilterConfigurationWontDoAsyncCheck) {
+TEST_F(FamilyLinkUrlFilterTest, PlainWebFilterConfigurationWontDoAsyncCheck) {
   // The url filter crashes without a checker client if asked to do an
   // asynchronous classification, unless the filter managed to decide
   // synchronously.
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kAllowAllSites);
 
-  SupervisedUserURLFilter::Result result;
+  WebFilteringResult result;
   supervised_user_test_environment_.url_filtering_service()
       ->GetFilteringBehavior(
           GURL("http://example.com"),
           /*skip_manual_parent_filter=*/false,
           base::BindLambdaForTesting(
-              [&result](SupervisedUserURLFilter::Result r) { result = r; }));
+              [&result](WebFilteringResult r) { result = r; }));
   EXPECT_TRUE(result.IsAllowed())
       << "Plain filter configuration should classify urls as allowed";
 }
 
-TEST_F(SupervisedUserURLFilterTest, StripOnDefaultFilteringBehaviour) {
+TEST_F(FamilyLinkUrlFilterTest, StripOnDefaultFilteringBehaviour) {
   EXPECT_EQ(
       GURL("http://example.com"),
       supervised_user_test_environment_.url_filter()->GetEffectiveUrlToUnblock(
@@ -237,7 +230,7 @@ TEST_F(SupervisedUserURLFilterTest, StripOnDefaultFilteringBehaviour) {
            .reason = FilteringBehaviorReason::DEFAULT}));
 }
 
-TEST_F(SupervisedUserURLFilterTest,
+TEST_F(FamilyLinkUrlFilterTest,
        StripOnManualFilteringBehaviourWithoutConflict) {
   EXPECT_EQ(
       GURL("http://example.com"),
@@ -247,7 +240,7 @@ TEST_F(SupervisedUserURLFilterTest,
            .reason = FilteringBehaviorReason::MANUAL}));
 }
 
-TEST_F(SupervisedUserURLFilterTest,
+TEST_F(FamilyLinkUrlFilterTest,
        SkipStripOnManualFilteringBehaviourWithConflict) {
   GURL full_url("http://www.example.com");
 
@@ -264,7 +257,7 @@ TEST_F(SupervisedUserURLFilterTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(SupervisedUserURLFilterTest, NormalizesUnblockingUrls) {
+TEST_F(FamilyLinkUrlFilterTest, NormalizesUnblockingUrls) {
   GURL full_spec_url("http://admin:password@www.example.com/path?query#ref");
 
   // First the url has normalized trivial domain, username, password, query and
@@ -304,7 +297,7 @@ struct MetricTestParam {
   std::string label;
 };
 
-class SupervisedUserURLFilterMetricsTest
+class FamilyLinkUrlFilterMetricsTest
     : public ::testing::TestWithParam<MetricTestParam> {
  protected:
   void SetUp() override {
@@ -317,7 +310,7 @@ class SupervisedUserURLFilterMetricsTest
   SupervisedUserTestEnvironment supervised_user_test_environment_;
 };
 
-TEST_P(SupervisedUserURLFilterMetricsTest,
+TEST_P(FamilyLinkUrlFilterMetricsTest,
        RecordsTopLevelMetricsForBlockNotInAllowlist) {
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kCertainSites);
@@ -341,7 +334,7 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
       SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist, 1);
 }
 
-TEST_P(SupervisedUserURLFilterMetricsTest, RecordsTopLevelMetricsForAllow) {
+TEST_P(FamilyLinkUrlFilterMetricsTest, RecordsTopLevelMetricsForAllow) {
   supervised_user_test_environment_.SetManualFilterForHost("http://example.com",
                                                            true);
   supervised_user_test_environment_.SetWebFilterType(
@@ -366,8 +359,7 @@ TEST_P(SupervisedUserURLFilterMetricsTest, RecordsTopLevelMetricsForAllow) {
       SupervisedUserFilterTopLevelResult::kAllow, 1);
 }
 
-TEST_P(SupervisedUserURLFilterMetricsTest,
-       RecordsTopLevelMetricsForBlockManual) {
+TEST_P(FamilyLinkUrlFilterMetricsTest, RecordsTopLevelMetricsForBlockManual) {
   supervised_user_test_environment_.SetManualFilterForHost("http://example.com",
                                                            false);
   supervised_user_test_environment_.SetWebFilterType(
@@ -392,8 +384,7 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
       SupervisedUserFilterTopLevelResult::kBlockManual, 1);
 }
 
-TEST_P(SupervisedUserURLFilterMetricsTest,
-       RecordsTopLevelMetricsForAsyncBlock) {
+TEST_P(FamilyLinkUrlFilterMetricsTest, RecordsTopLevelMetricsForAsyncBlock) {
   supervised_user_test_environment_.url_filtering_service()
       ->GetFilteringBehavior(
           GURL("http://example.com"), /*skip_manual_parent_filter=*/false,
@@ -415,8 +406,7 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
       SupervisedUserFilterTopLevelResult::kBlockSafeSites, 1);
 }
 
-TEST_P(SupervisedUserURLFilterMetricsTest,
-       RecordsTopLevelMetricsForAsyncAllow) {
+TEST_P(FamilyLinkUrlFilterMetricsTest, RecordsTopLevelMetricsForAsyncAllow) {
   supervised_user_test_environment_.url_filtering_service()
       ->GetFilteringBehavior(
           GURL("http://example.com"), /*skip_manual_parent_filter=*/false,
@@ -458,20 +448,20 @@ const MetricTestParam kMetricTestParams[] = {
 };
 
 INSTANTIATE_TEST_SUITE_P(,
-                         SupervisedUserURLFilterMetricsTest,
+                         FamilyLinkUrlFilterMetricsTest,
                          testing::ValuesIn(kMetricTestParams),
                          [](const auto& info) { return info.param.label; });
 
-TEST(SupervisedUserURLFilterResultTest, IsFromManualList) {
-  SupervisedUserURLFilter::Result allow{GURL("http://example.com"),
-                                        FilteringBehavior::kAllow,
-                                        FilteringBehaviorReason::MANUAL};
-  SupervisedUserURLFilter::Result block{GURL("http://example.com"),
-                                        FilteringBehavior::kBlock,
-                                        FilteringBehaviorReason::MANUAL};
-  SupervisedUserURLFilter::Result invalid{GURL("http://example.com"),
-                                          FilteringBehavior::kInvalid,
-                                          FilteringBehaviorReason::MANUAL};
+TEST(FamilyLinkUrlFilterResultTest, IsFromManualList) {
+  WebFilteringResult allow{GURL("http://example.com"),
+                           FilteringBehavior::kAllow,
+                           FilteringBehaviorReason::MANUAL};
+  WebFilteringResult block{GURL("http://example.com"),
+                           FilteringBehavior::kBlock,
+                           FilteringBehaviorReason::MANUAL};
+  WebFilteringResult invalid{GURL("http://example.com"),
+                             FilteringBehavior::kInvalid,
+                             FilteringBehaviorReason::MANUAL};
 
   EXPECT_TRUE(allow.IsFromManualList());
   EXPECT_TRUE(block.IsFromManualList());
@@ -482,16 +472,16 @@ TEST(SupervisedUserURLFilterResultTest, IsFromManualList) {
   EXPECT_FALSE(invalid.IsFromDefaultSetting());
 }
 
-TEST(SupervisedUserURLFilterResultTest, IsFromDefaultSetting) {
-  SupervisedUserURLFilter::Result allow{GURL("http://example.com"),
-                                        FilteringBehavior::kAllow,
-                                        FilteringBehaviorReason::DEFAULT};
-  SupervisedUserURLFilter::Result block{GURL("http://example.com"),
-                                        FilteringBehavior::kBlock,
-                                        FilteringBehaviorReason::DEFAULT};
-  SupervisedUserURLFilter::Result invalid{GURL("http://example.com"),
-                                          FilteringBehavior::kInvalid,
-                                          FilteringBehaviorReason::DEFAULT};
+TEST(FamilyLinkUrlFilterResultTest, IsFromDefaultSetting) {
+  WebFilteringResult allow{GURL("http://example.com"),
+                           FilteringBehavior::kAllow,
+                           FilteringBehaviorReason::DEFAULT};
+  WebFilteringResult block{GURL("http://example.com"),
+                           FilteringBehavior::kBlock,
+                           FilteringBehaviorReason::DEFAULT};
+  WebFilteringResult invalid{GURL("http://example.com"),
+                             FilteringBehavior::kInvalid,
+                             FilteringBehaviorReason::DEFAULT};
 
   EXPECT_TRUE(allow.IsFromDefaultSetting());
   EXPECT_TRUE(block.IsFromDefaultSetting());
@@ -502,36 +492,36 @@ TEST(SupervisedUserURLFilterResultTest, IsFromDefaultSetting) {
   EXPECT_FALSE(invalid.IsFromManualList());
 }
 
-TEST(SupervisedUserURLFilterResultTest, IsClassificationSuccessful) {
-  SupervisedUserURLFilter::Result allow_from_list{
-      GURL("http://example.com"), FilteringBehavior::kAllow,
-      FilteringBehaviorReason::MANUAL};
-  SupervisedUserURLFilter::Result allow_from_settings{
-      GURL("http://example.com"), FilteringBehavior::kAllow,
-      FilteringBehaviorReason::DEFAULT};
-  SupervisedUserURLFilter::Result allow_from_server{
+TEST(FamilyLinkUrlFilterResultTest, IsClassificationSuccessful) {
+  WebFilteringResult allow_from_list{GURL("http://example.com"),
+                                     FilteringBehavior::kAllow,
+                                     FilteringBehaviorReason::MANUAL};
+  WebFilteringResult allow_from_settings{GURL("http://example.com"),
+                                         FilteringBehavior::kAllow,
+                                         FilteringBehaviorReason::DEFAULT};
+  WebFilteringResult allow_from_server{
       GURL("http://example.com"), FilteringBehavior::kAllow,
       FilteringBehaviorReason::ASYNC_CHECKER,
       std::optional<ClassificationDetails>(
           {.reason = ClassificationDetails::Reason::kFreshServerResponse})};
-  SupervisedUserURLFilter::Result allow_from_cache{
+  WebFilteringResult allow_from_cache{
       GURL("http://example.com"), FilteringBehavior::kAllow,
       FilteringBehaviorReason::ASYNC_CHECKER,
       std::optional<ClassificationDetails>(
           {.reason = ClassificationDetails::Reason::kCachedResponse})};
 
-  SupervisedUserURLFilter::Result block_from_list{
-      GURL("http://example.com"), FilteringBehavior::kBlock,
-      FilteringBehaviorReason::MANUAL};
-  SupervisedUserURLFilter::Result block_from_settings{
-      GURL("http://example.com"), FilteringBehavior::kBlock,
-      FilteringBehaviorReason::DEFAULT};
-  SupervisedUserURLFilter::Result block_from_server{
+  WebFilteringResult block_from_list{GURL("http://example.com"),
+                                     FilteringBehavior::kBlock,
+                                     FilteringBehaviorReason::MANUAL};
+  WebFilteringResult block_from_settings{GURL("http://example.com"),
+                                         FilteringBehavior::kBlock,
+                                         FilteringBehaviorReason::DEFAULT};
+  WebFilteringResult block_from_server{
       GURL("http://example.com"), FilteringBehavior::kBlock,
       FilteringBehaviorReason::ASYNC_CHECKER,
       std::optional<ClassificationDetails>(
           {.reason = ClassificationDetails::Reason::kFreshServerResponse})};
-  SupervisedUserURLFilter::Result block_from_cache{
+  WebFilteringResult block_from_cache{
       GURL("http://example.com"), FilteringBehavior::kBlock,
       FilteringBehaviorReason::ASYNC_CHECKER,
       std::optional<ClassificationDetails>(
@@ -547,24 +537,24 @@ TEST(SupervisedUserURLFilterResultTest, IsClassificationSuccessful) {
   EXPECT_TRUE(block_from_cache.IsClassificationSuccessful());
 }
 
-TEST(SupervisedUserURLFilterResultTest, IsClassificationNotSuccessful) {
-  SupervisedUserURLFilter::Result allow_from_server{
+TEST(FamilyLinkUrlFilterResultTest, IsClassificationNotSuccessful) {
+  WebFilteringResult allow_from_server{
       GURL("http://example.com"), FilteringBehavior::kAllow,
       FilteringBehaviorReason::ASYNC_CHECKER,
       std::optional<ClassificationDetails>(
           {.reason = ClassificationDetails::Reason::kFailedUseDefault})};
-  SupervisedUserURLFilter::Result allow_from_cache{
+  WebFilteringResult allow_from_cache{
       GURL("http://example.com"), FilteringBehavior::kAllow,
       FilteringBehaviorReason::ASYNC_CHECKER,
       std::optional<ClassificationDetails>(
           {.reason = ClassificationDetails::Reason::kFailedUseDefault})};
 
-  SupervisedUserURLFilter::Result block_from_server{
+  WebFilteringResult block_from_server{
       GURL("http://example.com"), FilteringBehavior::kBlock,
       FilteringBehaviorReason::ASYNC_CHECKER,
       std::optional<ClassificationDetails>(
           {.reason = ClassificationDetails::Reason::kFailedUseDefault})};
-  SupervisedUserURLFilter::Result block_from_cache{
+  WebFilteringResult block_from_cache{
       GURL("http://example.com"), FilteringBehavior::kBlock,
       FilteringBehaviorReason::ASYNC_CHECKER,
       std::optional<ClassificationDetails>(

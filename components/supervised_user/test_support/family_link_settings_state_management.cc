@@ -147,8 +147,7 @@ bool IsUrlConfigured(
     const SupervisedUserUrlFilteringService& url_filtering_service,
     const GURL& url,
     FilteringBehavior expected_filtering_behavior) {
-  SupervisedUserURLFilter::Result result =
-      url_filtering_service.GetFilteringBehavior(url);
+  WebFilteringResult result = url_filtering_service.GetFilteringBehavior(url);
 
   if (!result.IsFromManualList()) {
     // The change that arrived doesn't have the manual mode for requested url
@@ -197,7 +196,7 @@ bool UrlFiltersAreEmpty(const FamilyLinkSettingsState::Services& services) {
   return services.supervised_user_service->GetURLFilter()
              ->GetFilteringStatistics()
              .GetManagedSiteList() ==
-         SupervisedUserURLFilter::ManagedSiteList::kEmpty;
+         FamilyLinkUrlFilter::ManagedSiteList::kEmpty;
 }
 
 bool ToggleHasExpectedValue(const FamilyLinkSettingsState::Services& services,

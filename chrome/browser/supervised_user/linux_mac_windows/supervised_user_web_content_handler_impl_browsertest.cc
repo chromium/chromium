@@ -74,12 +74,12 @@ class SupervisedUserWebContentHandlerImplTest
     return supervision_mixin_;
   }
 
-  supervised_user::SupervisedUserURLFilter* GetUrlFilter() {
+  supervised_user::FamilyLinkUrlFilter* GetUrlFilter() {
     Profile* profile =
         Profile::FromBrowserContext(contents()->GetBrowserContext());
     supervised_user::SupervisedUserService* supervised_user_service =
         SupervisedUserServiceFactory::GetForProfile(profile);
-    supervised_user::SupervisedUserURLFilter* url_filter =
+    supervised_user::FamilyLinkUrlFilter* url_filter =
         supervised_user_service->GetURLFilter();
     CHECK(url_filter);
     return url_filter;
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       contents(), content::FrameTreeNodeId(), 0);
 
   GURL blocked_url("https://www.example.com/");
-  supervised_user::SupervisedUserURLFilter::Result result = {
+  supervised_user::WebFilteringResult result = {
       .url = blocked_url,
       .behavior = supervised_user::FilteringBehavior::kBlock,
       .reason = supervised_user::FilteringBehaviorReason::DEFAULT};
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       contents(), content::FrameTreeNodeId(), 0);
 
   GURL blocked_url("https://www.example.com/");
-  supervised_user::SupervisedUserURLFilter::Result result = {
+  supervised_user::WebFilteringResult result = {
       .url = blocked_url,
       .behavior = supervised_user::FilteringBehavior::kBlock,
       .reason = supervised_user::FilteringBehaviorReason::DEFAULT};
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       contents(), content::FrameTreeNodeId(), 0);
 
   GURL blocked_invalid_url;
-  supervised_user::SupervisedUserURLFilter::Result result = {
+  supervised_user::WebFilteringResult result = {
       .url = GURL(),  // invalid url
       .behavior = supervised_user::FilteringBehavior::kBlock,
       .reason = supervised_user::FilteringBehaviorReason::DEFAULT};
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       contents(), content::FrameTreeNodeId(), 0);
 
   GURL blocked_url("https://www.example.com/");
-  supervised_user::SupervisedUserURLFilter::Result result = {
+  supervised_user::WebFilteringResult result = {
       .url = blocked_url,
       .behavior = supervised_user::FilteringBehavior::kBlock,
       .reason = supervised_user::FilteringBehaviorReason::DEFAULT};
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       contents(), content::FrameTreeNodeId(), 0);
 
   GURL blocked_url("https://www.example.com/");
-  supervised_user::SupervisedUserURLFilter::Result result = {
+  supervised_user::WebFilteringResult result = {
       .url = blocked_url,
       .behavior = supervised_user::FilteringBehavior::kBlock,
       .reason = supervised_user::FilteringBehaviorReason::DEFAULT};
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       contents(), content::FrameTreeNodeId(), 0);
 
   GURL blocked_url("https://www.example.com/");
-  supervised_user::SupervisedUserURLFilter::Result result = {
+  supervised_user::WebFilteringResult result = {
       .url = blocked_url,
       .behavior = supervised_user::FilteringBehavior::kBlock,
       .reason = supervised_user::FilteringBehaviorReason::MANUAL};
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserWebContentHandlerImplTest,
       contents(), content::FrameTreeNodeId(), 0);
 
   GURL blocked_url("https://www.example.com/");
-  supervised_user::SupervisedUserURLFilter::Result result = {
+  supervised_user::WebFilteringResult result = {
       .url = blocked_url,
       .behavior = supervised_user::FilteringBehavior::kBlock,
       .reason = supervised_user::FilteringBehaviorReason::DEFAULT};
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserParentAccessViewErrorScreenUiTest,
       contents(), content::FrameTreeNodeId(), 0);
 
   GURL blocked_url("https://www.example.com/");
-  supervised_user::SupervisedUserURLFilter::Result result = {
+  supervised_user::WebFilteringResult result = {
       .url = blocked_url,
       .behavior = supervised_user::FilteringBehavior::kBlock,
       .reason = supervised_user::FilteringBehaviorReason::DEFAULT};

@@ -46,7 +46,7 @@ SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
 
 void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& target_url,
-    supervised_user::SupervisedUserURLFilter::Result filtering_result,
+    supervised_user::WebFilteringResult filtering_result,
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(web_contents_);

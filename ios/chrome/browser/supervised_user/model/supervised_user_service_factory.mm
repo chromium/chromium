@@ -26,7 +26,7 @@ namespace {
 
 // Implementation of the supervised user filter delegate interface.
 class FilterDelegateImpl
-    : public supervised_user::SupervisedUserURLFilter::Delegate {
+    : public supervised_user::FamilyLinkUrlFilter::Delegate {
  public:
   bool SupportsWebstoreURL(const GURL& url) const override { return false; }
 };
@@ -69,7 +69,7 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
           supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
               profile)),
       &CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)),
-      std::make_unique<supervised_user::SupervisedUserURLFilter>(
+      std::make_unique<supervised_user::FamilyLinkUrlFilter>(
           CHECK_DEREF(profile->GetPrefs()),
           std::make_unique<FilterDelegateImpl>(),
           std::make_unique<

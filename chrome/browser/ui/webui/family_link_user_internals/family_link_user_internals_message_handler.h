@@ -22,7 +22,7 @@
 class FamilyLinkUserInternalsMessageHandler
     : public content::WebUIMessageHandler,
       public SupervisedUserServiceObserver,
-      public supervised_user::SupervisedUserURLFilter::Observer,
+      public supervised_user::FamilyLinkUrlFilter::Observer,
       public signin::IdentityManager::Observer {
  public:
   enum class WebContentFilters : bool {
@@ -77,12 +77,11 @@ class FamilyLinkUserInternalsMessageHandler
   void SendFamilyLinkUserSettings(const base::DictValue& settings);
   void SendWebContentFiltersInfo();
 
-  void OnTryURLResult(
-      const std::string& callback_id,
-      supervised_user::SupervisedUserURLFilter::Result filtering_result);
+  void OnTryURLResult(const std::string& callback_id,
+                      supervised_user::WebFilteringResult filtering_result);
 
-  void OnURLChecked(supervised_user::SupervisedUserURLFilter::Result
-                        filtering_result) override;
+  void OnURLChecked(
+      supervised_user::WebFilteringResult filtering_result) override;
 
   // Emulates device-level setting that manipulates search or browser content
   // filtering. Available only to non-supervised profiles. Note: if multiple
@@ -95,8 +94,8 @@ class FamilyLinkUserInternalsMessageHandler
 
   base::CallbackListSubscription user_settings_subscription_;
 
-  base::ScopedObservation<supervised_user::SupervisedUserURLFilter,
-                          supervised_user::SupervisedUserURLFilter::Observer>
+  base::ScopedObservation<supervised_user::FamilyLinkUrlFilter,
+                          supervised_user::FamilyLinkUrlFilter::Observer>
       url_filter_observation_{this};
 
   base::ScopedObservation<signin::IdentityManager,

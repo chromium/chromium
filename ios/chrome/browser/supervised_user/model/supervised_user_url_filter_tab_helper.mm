@@ -8,7 +8,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
-#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
@@ -40,7 +39,7 @@ void OnURLFilteringDone(
     base::WeakPtr<web::WebState> weak_web_state,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback policy_decision_callback,
-    supervised_user::SupervisedUserURLFilter::Result result) {
+    supervised_user::WebFilteringResult result) {
   // Allow navigation by default.
   PolicyDecision decision = PolicyDecision::Allow();
   web::WebState* web_state = weak_web_state.get();

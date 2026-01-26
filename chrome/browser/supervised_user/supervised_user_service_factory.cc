@@ -36,7 +36,7 @@
 #endif
 
 class FilterDelegateImpl
-    : public supervised_user::SupervisedUserURLFilter::Delegate {
+    : public supervised_user::FamilyLinkUrlFilter::Delegate {
  public:
   bool SupportsWebstoreURL(const GURL& url) const override {
     return supervised_user::IsSupportedChromeExtensionURL(url);
@@ -84,7 +84,7 @@ std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
       *supervised_user::FamilyLinkSettingsServiceFactory::GetInstance()
            ->GetForKey(profile->GetProfileKey()),
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
-      std::make_unique<supervised_user::SupervisedUserURLFilter>(
+      std::make_unique<supervised_user::FamilyLinkUrlFilter>(
           *profile->GetPrefs(), std::make_unique<FilterDelegateImpl>(),
           std::make_unique<
               supervised_user::KidsChromeManagementURLCheckerClient>(

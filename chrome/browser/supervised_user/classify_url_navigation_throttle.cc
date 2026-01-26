@@ -27,7 +27,6 @@
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
@@ -139,7 +138,7 @@ void ClassifyUrlNavigationThrottle::CheckURL() {
 
 void ClassifyUrlNavigationThrottle::OnURLCheckDone(
     ClassifyUrlCheckList::Key key,
-    SupervisedUserURLFilter::Result filtering_result) {
+    WebFilteringResult filtering_result) {
   if (list_.IsDecided()) {
     // If the verdict is already determined there's no point in processing the
     // check. This will reduce noise in metrics, but side-effects might apply
@@ -180,7 +179,7 @@ void ClassifyUrlNavigationThrottle::OnURLCheckDone(
 }
 
 void ClassifyUrlNavigationThrottle::ScheduleInterstitial(
-    SupervisedUserURLFilter::Result result) {
+    WebFilteringResult result) {
   // Don't show interstitial synchronously - it doesn't seem like a good idea to
   // show an interstitial right in the middle of a call into a
   // NavigationThrottle. This also lets OnInterstitialResult to be invoked
@@ -193,7 +192,7 @@ void ClassifyUrlNavigationThrottle::ScheduleInterstitial(
 }
 
 void ClassifyUrlNavigationThrottle::ShowInterstitial(
-    SupervisedUserURLFilter::Result result) {
+    WebFilteringResult result) {
   SupervisedUserNavigationObserver::OnRequestBlocked(
       navigation_handle()->GetWebContents(), result,
       navigation_handle()->GetNavigationId(),
@@ -203,7 +202,7 @@ void ClassifyUrlNavigationThrottle::ShowInterstitial(
 }
 
 void ClassifyUrlNavigationThrottle::OnInterstitialResult(
-    SupervisedUserURLFilter::Result result,
+    WebFilteringResult result,
     InterstitialResultCallbackActions action,
     bool already_sent_request,
     bool is_main_frame) {
@@ -238,7 +237,7 @@ void ClassifyUrlNavigationThrottle::OnInterstitialResult(
 }
 
 std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
-    SupervisedUserURLFilter::Result result,
+    WebFilteringResult result,
     bool already_sent_request,
     bool is_main_frame) const {
 #if BUILDFLAG(IS_ANDROID)
@@ -263,10 +262,6 @@ std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
 
 const GURL& ClassifyUrlNavigationThrottle::currently_navigated_url() const {
   return navigation_handle()->GetURL();
-}
-
-SupervisedUserURLFilter* ClassifyUrlNavigationThrottle::url_filter() const {
-  return supervised_user_service()->GetURLFilter();
 }
 
 SupervisedUserService* ClassifyUrlNavigationThrottle::supervised_user_service()
@@ -307,7 +302,7 @@ void ClassifyUrlNavigationThrottle::MaybeCreateAndAdd(
 
 ClassifyUrlNavigationThrottle::ThrottleCheckResult
 ClassifyUrlNavigationThrottle::DeferAndScheduleInterstitial(
-    SupervisedUserURLFilter::Result result) {
+    WebFilteringResult result) {
   ScheduleInterstitial(result);
   deferred_ = true;
   return DEFER;
@@ -349,7 +344,7 @@ ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::NewCheck() {
 
 void ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::UpdateCheck(
     Key key,
-    SupervisedUserURLFilter::Result result) {
+    WebFilteringResult result) {
   // Every time a check is completed update the timer, so that it only measures
   // elapsed time from the last meaningful check to when the verdict was needed.
   elapsed_.emplace();
@@ -362,7 +357,7 @@ ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::ElapsedSinceDecided()
   return elapsed_->Elapsed();
 }
 
-std::optional<SupervisedUserURLFilter::Result>
+std::optional<WebFilteringResult>
 ClassifyUrlNavigationThrottle::ClassifyUrlCheckList::GetBlockingResult() const {
   for (const auto& result : results_) {
     if (!result.has_value()) {

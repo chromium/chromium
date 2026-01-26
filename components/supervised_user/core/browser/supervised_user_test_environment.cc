@@ -218,7 +218,7 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
           &test_url_loader_factory_),
       *pref_store_environment_.pref_service(),
       *pref_store_environment_.settings_service(), &sync_service_,
-      std::make_unique<SupervisedUserURLFilter>(
+      std::make_unique<FamilyLinkUrlFilter>(
           *pref_store_environment_.pref_service(),
           std::make_unique<FakeURLFilterDelegate>(), std::move(client)),
       std::make_unique<FakePlatformDelegate>(),
@@ -312,7 +312,7 @@ void SupervisedUserTestEnvironment::SetManualFilterForUrl(
                   family_link_settings_service);
 }
 
-SupervisedUserURLFilter* SupervisedUserTestEnvironment::url_filter() const {
+FamilyLinkUrlFilter* SupervisedUserTestEnvironment::url_filter() const {
   return service()->GetURLFilter();
 }
 SupervisedUserService* SupervisedUserTestEnvironment::service() const {

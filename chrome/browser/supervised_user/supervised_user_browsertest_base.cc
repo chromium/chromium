@@ -73,7 +73,7 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       *profile->GetPrefs(),
       *FamilyLinkSettingsServiceFactory::GetForKey(profile_key),
       SyncServiceFactory::GetForProfile(profile),
-      std::make_unique<SupervisedUserURLFilter>(
+      std::make_unique<FamilyLinkUrlFilter>(
           *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
           std::make_unique<WrappedUrlCheckerClient>(mock_url_checker_client)),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),

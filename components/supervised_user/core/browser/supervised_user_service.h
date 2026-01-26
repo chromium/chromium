@@ -114,7 +114,7 @@ class SupervisedUserService : public KeyedService {
   // Returns the URL filter for filtering navigations and classifying sites in
   // the history view. Both this method and the returned filter may only be used
   // on the UI thread.
-  SupervisedUserURLFilter* GetURLFilter() const;
+  FamilyLinkUrlFilter* GetURLFilter() const;
 
   std::optional<Custodian> GetCustodian() const;
   std::optional<Custodian> GetSecondCustodian() const;
@@ -143,7 +143,7 @@ class SupervisedUserService : public KeyedService {
       PrefService& user_prefs,
       FamilyLinkSettingsService& settings_service,
       syncer::SyncService* sync_service,
-      std::unique_ptr<SupervisedUserURLFilter> url_filter,
+      std::unique_ptr<FamilyLinkUrlFilter> url_filter,
       std::unique_ptr<SupervisedUserService::PlatformDelegate>
           platform_delegate,
       const DeviceParentalControls& device_parental_controls);
@@ -195,7 +195,7 @@ class SupervisedUserService : public KeyedService {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  std::unique_ptr<SupervisedUserURLFilter> url_filter_;
+  std::unique_ptr<FamilyLinkUrlFilter> url_filter_;
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 

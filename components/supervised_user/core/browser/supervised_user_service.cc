@@ -91,7 +91,7 @@ SupervisedUserService::~SupervisedUserService() {
   DCHECK(did_shutdown_);
 }
 
-SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
+FamilyLinkUrlFilter* SupervisedUserService::GetURLFilter() const {
   return url_filter_.get();
 }
 
@@ -129,7 +129,7 @@ SupervisedUserService::SupervisedUserService(
     PrefService& user_prefs,
     FamilyLinkSettingsService& settings_service,
     syncer::SyncService* sync_service,
-    std::unique_ptr<SupervisedUserURLFilter> url_filter,
+    std::unique_ptr<FamilyLinkUrlFilter> url_filter,
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate,
     const DeviceParentalControls& device_parental_controls)
     : user_prefs_(user_prefs),

@@ -105,7 +105,7 @@ class RemoteWebApprovalsManagerTest : public ::testing::Test {
     return remote_web_approvals_manager_;
   }
 
-  void RequestApproval(SupervisedUserURLFilter::Result filtering_result,
+  void RequestApproval(WebFilteringResult filtering_result,
                        AsyncResultHolder* result_holder) {
     remote_web_approvals_manager_.RequestApproval(
         supervised_user_test_environment_.url_filter()

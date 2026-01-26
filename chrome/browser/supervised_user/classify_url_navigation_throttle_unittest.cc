@@ -55,18 +55,18 @@ void ExpectNoLatencyRecorded(base::HistogramTester* tester) {
                            /*expected_count=*/0);
 }
 
-class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
+class MockSupervisedUserURLFilter : public FamilyLinkUrlFilter {
  public:
   explicit MockSupervisedUserURLFilter(
       PrefService& prefs,
-      std::unique_ptr<SupervisedUserURLFilter::Delegate> delegate,
+      std::unique_ptr<FamilyLinkUrlFilter::Delegate> delegate,
       std::unique_ptr<safe_search_api::URLCheckerClient> checker_client)
-      : SupervisedUserURLFilter(prefs,
-                                std::move(delegate),
-                                std::move(checker_client)) {}
+      : FamilyLinkUrlFilter(prefs,
+                            std::move(delegate),
+                            std::move(checker_client)) {}
   MOCK_METHOD(bool,
               RunAsyncChecker,
-              (const GURL& url, ResultCallback callback));
+              (const GURL& url, WebFilteringResult::Callback callback));
 };
 
 std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
@@ -290,12 +290,12 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
        BlockedMatureSitesRecordedInBlockSafeSitesBucket) {
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
-      .WillByDefault([](const GURL& url,
-                        MockSupervisedUserURLFilter::ResultCallback callback) {
-        std::move(callback).Run({url, FilteringBehavior::kBlock,
-                                 FilteringBehaviorReason::ASYNC_CHECKER});
-        return true;
-      });
+      .WillByDefault(
+          [](const GURL& url, WebFilteringResult::Callback callback) {
+            std::move(callback).Run({url, FilteringBehavior::kBlock,
+                                     FilteringBehaviorReason::ASYNC_CHECKER});
+            return true;
+          });
   EXPECT_CALL(*GetSupervisedUserURLFilter(),
               RunAsyncChecker(GURL(kExampleURL), testing::_))
       .Times(1);
@@ -316,12 +316,11 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 
 TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
        ClassificationIsFasterThanHttp) {
-  MockSupervisedUserURLFilter::ResultCallback check;
+  WebFilteringResult::Callback check;
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
-          [&check](const GURL& url,
-                   MockSupervisedUserURLFilter::ResultCallback callback) {
+          [&check](const GURL& url, WebFilteringResult::Callback callback) {
             check = std::move(callback);
             return false;
           });
@@ -364,12 +363,11 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 
 TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
        ClassificationIsSlowerThanHttp) {
-  MockSupervisedUserURLFilter::ResultCallback check;
+  WebFilteringResult::Callback check;
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
-          [&check](const GURL& url,
-                   MockSupervisedUserURLFilter::ResultCallback callback) {
+          [&check](const GURL& url, WebFilteringResult::Callback callback) {
             check = std::move(callback);
             return false;
           });
@@ -416,13 +414,12 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 // ready for processing.
 TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
        ReverseOrderOfResponsesAfterContentIsReady) {
-  std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
+  std::vector<WebFilteringResult::Callback> checks;
   // Check for the first url that will complete last.
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
-          [&checks](const GURL& url,
-                    MockSupervisedUserURLFilter::ResultCallback callback) {
+          [&checks](const GURL& url, WebFilteringResult::Callback callback) {
             checks.push_back(std::move(callback));
             return false;
           });
@@ -500,12 +497,11 @@ class ClassifyUrlNavigationThrottleParallelizationTest
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        ClassificationIsFasterThanHttp) {
-  std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
+  std::vector<WebFilteringResult::Callback> checks;
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
-          [&checks](const GURL& url,
-                    MockSupervisedUserURLFilter::ResultCallback callback) {
+          [&checks](const GURL& url, WebFilteringResult::Callback callback) {
             checks.push_back(std::move(callback));
             // Asynchronous behavior all the time.
             return false;
@@ -560,12 +556,11 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        OutOfOrderClassification) {
-  std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
+  std::vector<WebFilteringResult::Callback> checks;
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
-          [&checks](const GURL& url,
-                    MockSupervisedUserURLFilter::ResultCallback callback) {
+          [&checks](const GURL& url, WebFilteringResult::Callback callback) {
             checks.push_back(std::move(callback));
             // Asynchronous behavior all the time.
             return false;
@@ -624,12 +619,11 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        ClassificationIsSlowerThanHttp) {
-  std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
+  std::vector<WebFilteringResult::Callback> checks;
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
       .WillByDefault(
-          [&checks](const GURL& url,
-                    MockSupervisedUserURLFilter::ResultCallback callback) {
+          [&checks](const GURL& url, WebFilteringResult::Callback callback) {
             checks.push_back(std::move(callback));
             // Asynchronous behavior all the time.
             return false;
@@ -696,21 +690,20 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   bool first_check = false;
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
-      .WillByDefault(
-          [&first_check](const GURL& url,
-                         MockSupervisedUserURLFilter::ResultCallback callback) {
-            if (!first_check) {
-              std::move(callback).Run({url, FilteringBehavior::kAllow,
-                                       FilteringBehaviorReason::ASYNC_CHECKER});
-              first_check = true;
-              return true;
-            }
+      .WillByDefault([&first_check](const GURL& url,
+                                    WebFilteringResult::Callback callback) {
+        if (!first_check) {
+          std::move(callback).Run({url, FilteringBehavior::kAllow,
+                                   FilteringBehaviorReason::ASYNC_CHECKER});
+          first_check = true;
+          return true;
+        }
 
-            // Subsequent checks are synchronous blocks.
-            std::move(callback).Run({url, FilteringBehavior::kBlock,
-                                     FilteringBehaviorReason::ASYNC_CHECKER});
-            return true;
-          });
+        // Subsequent checks are synchronous blocks.
+        std::move(callback).Run({url, FilteringBehavior::kBlock,
+                                 FilteringBehaviorReason::ASYNC_CHECKER});
+        return true;
+      });
   EXPECT_CALL(*GetSupervisedUserURLFilter(),
               RunAsyncChecker(testing::_, testing::_))
       .Times(2);
@@ -739,24 +732,24 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
        HandlesLateAsynchronousBlock) {
-  std::vector<MockSupervisedUserURLFilter::ResultCallback> checks;
+  std::vector<WebFilteringResult::Callback> checks;
   bool first_check_completed = false;
   ON_CALL(*GetSupervisedUserURLFilter(),
           RunAsyncChecker(testing::_, testing::_))
-      .WillByDefault([&checks, &first_check_completed](
-                         const GURL& url,
-                         MockSupervisedUserURLFilter::ResultCallback callback) {
-        // First check is synchronous allow
-        if (!first_check_completed) {
-          first_check_completed = true;
-          std::move(callback).Run({url, FilteringBehavior::kAllow,
-                                   FilteringBehaviorReason::ASYNC_CHECKER});
-          return true;
-        }
-        // Subsequent checks are asynchronous
-        checks.push_back(std::move(callback));
-        return false;
-      });
+      .WillByDefault(
+          [&checks, &first_check_completed](
+              const GURL& url, WebFilteringResult::Callback callback) {
+            // First check is synchronous allow
+            if (!first_check_completed) {
+              first_check_completed = true;
+              std::move(callback).Run({url, FilteringBehavior::kAllow,
+                                       FilteringBehaviorReason::ASYNC_CHECKER});
+              return true;
+            }
+            // Subsequent checks are asynchronous
+            checks.push_back(std::move(callback));
+            return false;
+          });
 
   EXPECT_CALL(*GetSupervisedUserURLFilter(),
               RunAsyncChecker(testing::_, testing::_))

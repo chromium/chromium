@@ -70,7 +70,7 @@ class SupervisedUserInterstitial {
   static std::unique_ptr<SupervisedUserInterstitial> Create(
       std::unique_ptr<WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
-      SupervisedUserURLFilter::Result filtering_result,
+      WebFilteringResult filtering_result,
       const std::u16string& supervised_user_name);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -100,15 +100,13 @@ class SupervisedUserInterstitial {
   WebContentHandler* web_content_handler() {
     return web_content_handler_.get();
   }
-  SupervisedUserURLFilter::Result filtering_result() {
-    return filtering_result_;
-  }
+  WebFilteringResult filtering_result() { return filtering_result_; }
 
  private:
   SupervisedUserInterstitial(
       std::unique_ptr<WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
-      SupervisedUserURLFilter::Result filtering_result,
+      WebFilteringResult filtering_result,
       const std::u16string& supervised_user_name);
 
   void OutputRequestPermissionSourceMetric();
@@ -118,7 +116,7 @@ class SupervisedUserInterstitial {
   std::unique_ptr<WebContentHandler> web_content_handler_;
 
   // Filtering result for the last committed url for this frame.
-  SupervisedUserURLFilter::Result filtering_result_;
+  WebFilteringResult filtering_result_;
   std::u16string supervised_user_name_;
 };
 }  // namespace supervised_user

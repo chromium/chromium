@@ -34,7 +34,7 @@ SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
 
 void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& target_url,
-    supervised_user::SupervisedUserURLFilter::Result filtering_result,
+    supervised_user::WebFilteringResult filtering_result,
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
@@ -108,7 +108,8 @@ void SupervisedUserWebContentHandlerImpl::
   CHECK(family_link_settings_service);
 
   supervised_user::WebContentHandler::OnLocalApprovalRequestCompleted(
-      *family_link_settings_service, target_url, start_time, result, error_type);
+      *family_link_settings_service, target_url, start_time, result,
+      error_type);
   switch (result) {
     case supervised_user::LocalApprovalResult::kError:
       DisplayErrorMessageInDialog();
