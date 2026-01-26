@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 
 #include <stddef.h>
@@ -1796,6 +1795,8 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
       break;
     case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
+    // TODO(crbug.com/412962300) use custom string
+    case QuietUiReason::kTriggeredDueToLackOfGesture:
       int bubble_message_string_id = 0;
       int bubble_done_button_string_id = 0;
       switch (request_type) {
@@ -1902,6 +1903,7 @@ void ContentSettingQuietRequestBubbleModel::OnDoneButtonClicked() {
 
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kTriggeredDueToLackOfGesture:
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
@@ -1927,6 +1929,7 @@ void ContentSettingQuietRequestBubbleModel::OnCancelButtonClicked() {
   }
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kTriggeredDueToLackOfGesture:
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:

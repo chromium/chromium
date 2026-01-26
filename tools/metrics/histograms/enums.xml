@@ -22677,6 +22677,7 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Prediction service"/>
   <int value="3" label="Default fallback"/>
   <int value="4" label="On-Device prediction model"/>
+  <int value="5" label="Lack of user gesture"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionPromptDispositionReason) -->

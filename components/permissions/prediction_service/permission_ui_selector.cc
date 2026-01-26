@@ -11,13 +11,15 @@ namespace permissions {
 // static
 bool PermissionUiSelector::ShouldSuppressAnimation(
     std::optional<QuietUiReason> reason) {
-  if (!reason)
+  if (!reason) {
     return true;
+  }
 
   switch (*reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
+    case QuietUiReason::kTriggeredDueToLackOfGesture:
       return false;
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kTriggeredDueToAbusiveRequests:

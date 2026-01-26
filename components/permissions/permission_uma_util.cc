@@ -1930,6 +1930,8 @@ std::string PermissionUmaUtil::GetPromptDispositionReasonString(
       return "SafeBrowsingVerdict";
     case PermissionPromptDispositionReason::USER_PREFERENCE_IN_SETTINGS:
       return "UserPreferenceInSettings";
+    case PermissionPromptDispositionReason::LACK_OF_GESTURE:
+      return "LackOfGesture";
   }
 
   NOTREACHED();

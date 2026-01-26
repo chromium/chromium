@@ -312,6 +312,9 @@ enum class PermissionPromptDispositionReason {
   // Disposition was chosen based on grant likelihood predicted by the On-Device
   // Permission Prediction Model.
   ON_DEVICE_PREDICTION_MODEL = 4,
+
+  // Disposition was chosen because the request lacked a user gesture.
+  LACK_OF_GESTURE = 5,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PermissionPromptDispositionReason)
 

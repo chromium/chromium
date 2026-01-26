@@ -1136,6 +1136,9 @@ void PermissionRequestManager::ShowPrompt() {
           LogWarningToConsole(
               kDisruptiveNotificationBehaviorEnforcementMessage);
           break;
+        case QuietUiReason::kTriggeredDueToLackOfGesture:
+          // TODO(crbug.com/412962300) Add LogWarningToConsole
+          break;
       }
       base::RecordAction(base::UserMetricsAction(
           "Notifications.Quiet.PermissionRequestShown"));
@@ -1529,6 +1532,7 @@ bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
       case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
       case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
       case QuietUiReason::kTriggeredByCrowdDeny:
+      case QuietUiReason::kTriggeredDueToLackOfGesture:
         return false;
       case QuietUiReason::kTriggeredDueToAbusiveRequests:
       case QuietUiReason::kTriggeredDueToAbusiveContent:
@@ -1709,6 +1713,8 @@ PermissionRequestManager::DetermineCurrentRequestUIDispositionReasonForUMA() {
       return PermissionPromptDispositionReason::PREDICTION_SERVICE;
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
       return PermissionPromptDispositionReason::ON_DEVICE_PREDICTION_MODEL;
+    case QuietUiReason::kTriggeredDueToLackOfGesture:
+      return PermissionPromptDispositionReason::LACK_OF_GESTURE;
   }
 }
 
