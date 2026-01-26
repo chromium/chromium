@@ -2680,4 +2680,20 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
   CheckForSampleAndReset(webid::DisclosureDialogResult::kDestroy);
 }
 
+TEST_F(FedCmAccountSelectionViewDesktopTest, CanShowWidget) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+
+  controller->SetCanShowWidget(false);
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
+
+  // Resizing should not show it.
+  controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
+
+  controller->SetCanShowWidget(true);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+}
+
 }  // namespace webid

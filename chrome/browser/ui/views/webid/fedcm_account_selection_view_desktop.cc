@@ -425,6 +425,14 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   return true;
 }
 
+void FedCmAccountSelectionView::SetCanShowWidget(bool can_show_widget) {
+  if (can_show_widget == can_show_widget_) {
+    return;
+  }
+  can_show_widget_ = can_show_widget;
+  UpdateDialogVisibilityAndPosition();
+}
+
 bool FedCmAccountSelectionView::ShowVerifyingDialog(
     const content::RelyingPartyData& rp_data,
     const IdentityProviderDataPtr& idp_data,
@@ -1280,6 +1288,11 @@ gfx::Rect FedCmAccountSelectionView::GetDialogBounds() {
 }
 
 void FedCmAccountSelectionView::ShouldShowDialog(bool& should_show) {
+  if (!can_show_widget_) {
+    should_show = false;
+    return;
+  }
+
   if (dialog_type_ == DialogType::BUBBLE) {
     // Hide the bubble dialog if it can't fit.
     if (!CanFitInWebContents()) {

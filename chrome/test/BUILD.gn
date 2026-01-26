@@ -3823,6 +3823,7 @@ if (!is_android) {
       "../browser/ui/views/webid/fedcm_account_selection_view_desktop_browsertest.cc",
       "../browser/ui/views/webview_accessibility_browsertest.cc",
       "../browser/ui/waap/initial_webui_browsertest.cc",
+      "../browser/ui/webid/identity_dialog_controller_browsertest.cc",
       "../browser/ui/webui/chrome_content_browser_client_webui_part_browsertest.cc",
       "../browser/ui/webui/chrome_url_data_manager_browsertest.cc",
       "../browser/ui/webui/chrome_web_ui_controller_factory_browsertest.cc",

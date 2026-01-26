@@ -121,6 +121,9 @@ class AccountSelectionView {
                                    Account::SignInMode sign_in_mode,
                                    blink::mojom::RpMode rp_mode) = 0;
 
+  // Shows or hides the account selection view.
+  virtual void SetCanShowWidget(bool can_show_widget) {}
+
   virtual std::string GetTitle() const = 0;
   virtual std::optional<std::string> GetSubtitle() const = 0;
 

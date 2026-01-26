@@ -27,6 +27,7 @@ source_set("webid") {
     "//base:i18n",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/resources:platform_locale_settings_grit",
+    "//chrome/browser/actor",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/ui/browser_window",
