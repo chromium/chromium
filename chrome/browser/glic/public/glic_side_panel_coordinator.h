@@ -18,6 +18,10 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 #if !BUILDFLAG(IS_ANDROID)
 namespace views {
 class View;
@@ -71,6 +75,9 @@ class GlicSidePanelCoordinator {
 #if !BUILDFLAG(IS_ANDROID)
   // Sets the content view for the Glic side panel.
   virtual void SetContentsView(std::unique_ptr<views::View> contents_view) = 0;
+#else
+  // Sets the web contents for the Glic side panel.
+  virtual void SetWebContents(content::WebContents* web_contents) = 0;
 #endif
 
   // Returns preferred side panel width. Not guaranteed to be used if user

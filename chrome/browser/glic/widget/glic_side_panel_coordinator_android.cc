@@ -16,6 +16,9 @@ GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() = default;
 
 void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations) {}
 
+void GlicSidePanelCoordinatorAndroid::SetWebContents(
+    content::WebContents* web_contents) {}
+
 void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {}
 
 bool GlicSidePanelCoordinatorAndroid::IsShowing() const {
