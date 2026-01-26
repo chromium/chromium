@@ -18,6 +18,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -84,6 +85,14 @@ class ExtensionInstallPolicyServiceTest : public PlatformBrowserTest {
       delete;
   ExtensionInstallPolicyServiceTest& operator=(
       const ExtensionInstallPolicyServiceTest&) = delete;
+
+  void SetUp() override {
+    if (!IsExtensionInstallPolicySupportedOnThisVersion()) {
+      GTEST_SKIP() << "Extension install policy is not supported on this "
+                      "version of Chrome.";
+    }
+    PlatformBrowserTest::SetUp();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     PlatformBrowserTest::SetUpInProcessBrowserTestFixture();

@@ -17,7 +17,9 @@
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -72,8 +74,12 @@ std::unique_ptr<UserCloudPolicyManager> UserCloudPolicyManager::Create(
 
   std::unique_ptr<UserCloudPolicyStore> extension_install_store = nullptr;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_install_store = UserCloudPolicyStore::CreateForExtensionInstall(
-      profile_path, background_task_runner);
+  if (IsExtensionInstallPolicySupportedOnThisVersion() &&
+      base::FeatureList::IsEnabled(
+          features::kEnableExtensionInstallPolicyFetching)) {
+    extension_install_store = UserCloudPolicyStore::CreateForExtensionInstall(
+        profile_path, background_task_runner);
+  }
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (force_immediate_load) {
