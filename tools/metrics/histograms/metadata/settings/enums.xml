@@ -493,14 +493,6 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Ad Topics card is reached"/>
 </enum>
 
-<enum name="SettingsPrivacySandboxDialogDisplayHostHash">
-  <int value="-2051070284" label="about:blank"/>
-  <int value="-1854305789" label="new-tab-page-third-party"/>
-  <int value="-1840427391" label="settings"/>
-  <int value="-1762176184" label="history"/>
-  <int value="-1652896464" label="new-tab-page"/>
-</enum>
-
 <!-- LINT.IfChange(SettingsPrivacySandboxProfileEnabledState) -->
 
 <enum name="SettingsPrivacySandboxProfileEnabledState">
@@ -517,22 +509,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/profile_bucket_metrics.h:SettingsPrivacySandboxProfileEnabledState) -->
-
-<enum name="SettingsPrivacySandboxPromptHelperEvent">
-  <int value="0" label="Helper Created"/>
-  <int value="1" label="Prompt not required"/>
-  <int value="2" label="Non top frame navigation"/>
-  <int value="3" label="About blank opened"/>
-  <int value="4" label="URL not suitable"/>
-  <int value="5" label="Sync setup in progress"/>
-  <int value="6" label="Signin dialog currently shown"/>
-  <int value="7" label="Prompt already exists for browser"/>
-  <int value="8" label="Window too small for dialog"/>
-  <int value="9" label="Prompt shown"/>
-  <int value="10"
-      label="Search engine choice dialog will be or has been displayed"/>
-  <int value="11" label="Browser not a normal tabbed browser"/>
-</enum>
 
 <!-- LINT.IfChange(SettingsPrivacySandboxPromptStartupState) -->
 

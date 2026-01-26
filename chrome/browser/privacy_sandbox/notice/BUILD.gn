@@ -122,7 +122,6 @@ if (!is_android) {
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/signin",
       "//chrome/common",
@@ -246,7 +245,6 @@ source_set("browser_tests") {
       ":desktop_view_manager",
       "//chrome/browser/sync",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/signin",
       "//chrome/test:test_support_ui",
     ]

@@ -4318,7 +4318,6 @@ static_library("browser") {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/passwords/bubble_controllers:impl",
       "//chrome/browser/ui/performance_controls",
-      "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/promos:impl",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
@@ -4483,13 +4482,6 @@ static_library("browser") {
 
     #!is_android
     deps += [
-      # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
-      # gets modularized.
-      "//chrome/browser/ui/privacy_sandbox:impl",
-    ]
-
-    #!is_android
-    deps += [
       # TODO(crbug.com/418180294): Remove this circular dependency when:
       # - bookmark_model_factory.h,
       # - after_startup_task_utils.h,
@@ -4545,10 +4537,6 @@ static_library("browser") {
       # TODO(crbug.com/369756821): Remove this circular dependency when //c/b/feature_engagement
       # gets modularized.
       "//chrome/browser/ui/global_media_controls:impl",
-
-      # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
-      # gets modularized.
-      "//chrome/browser/ui/privacy_sandbox:impl",
 
       # TODO(crbug.com/418180294): Remove this circular dependency when:
       # - bookmark_model_factory.h,
