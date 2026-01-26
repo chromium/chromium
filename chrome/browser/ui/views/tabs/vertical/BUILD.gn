@@ -6,7 +6,6 @@ import("//chrome/common/features.gni")
 
 source_set("vertical") {
   sources = [
-    "bottom_container_button.h",
     "root_tab_collection_node.h",
     "tab_collection_animating_layout_manager.h",
     "tab_collection_node.h",
@@ -15,6 +14,7 @@ source_set("vertical") {
     "vertical_pinned_tab_container_view.h",
     "vertical_split_tab_view.h",
     "vertical_tab_strip_bottom_container.h",
+    "vertical_tab_strip_flat_edge_button.h",
     "vertical_tab_strip_top_container.h",
     "vertical_tab_strip_view.h",
     "vertical_unpinned_tab_container_view.h",
@@ -36,7 +36,6 @@ source_set("vertical") {
 
 source_set("impl") {
   sources = [
-    "bottom_container_button.cc",
     "root_tab_collection_node.cc",
     "tab_collection_animating_layout_manager.cc",
     "tab_collection_node.cc",
@@ -51,6 +50,7 @@ source_set("impl") {
     "vertical_tab_group_view.cc",
     "vertical_tab_group_view.h",
     "vertical_tab_strip_bottom_container.cc",
+    "vertical_tab_strip_flat_edge_button.cc",
     "vertical_tab_strip_top_container.cc",
     "vertical_tab_strip_view.cc",
     "vertical_tab_view.cc",

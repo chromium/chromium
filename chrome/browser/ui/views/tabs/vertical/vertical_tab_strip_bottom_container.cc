@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
-#include "chrome/browser/ui/views/tabs/vertical/bottom_container_button.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
@@ -67,10 +67,11 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
 
 VerticalTabStripBottomContainer::~VerticalTabStripBottomContainer() = default;
 
-BottomContainerButton* VerticalTabStripBottomContainer::AddChildButtonFor(
+VerticalTabStripFlatEdgeButton*
+VerticalTabStripBottomContainer::AddChildButtonFor(
     actions::ActionId action_id) {
-  std::unique_ptr<BottomContainerButton> container_button =
-      std::make_unique<BottomContainerButton>();
+  std::unique_ptr<VerticalTabStripFlatEdgeButton> container_button =
+      std::make_unique<VerticalTabStripFlatEdgeButton>();
   actions::ActionItem* action_item =
       actions::ActionManager::Get().FindAction(action_id, root_action_item_);
   CHECK(action_item);
@@ -78,7 +79,7 @@ BottomContainerButton* VerticalTabStripBottomContainer::AddChildButtonFor(
   action_view_controller_->CreateActionViewRelationship(
       container_button.get(), action_item->GetAsWeakPtr());
 
-  raw_ptr<BottomContainerButton> raw_container_button =
+  VerticalTabStripFlatEdgeButton* raw_container_button =
       AddChildView(std::move(container_button));
 
   raw_container_button->SetHorizontalAlignment(
@@ -129,8 +130,8 @@ void VerticalTabStripBottomContainer::UpdateButtonStyles(
                                  views::MaximumFlexSizeRule::kPreferred, false,
                                  views::MinimumFlexSizeRule::kPreferred));
     tab_group_button_->SetFlatEdge(
-        is_collapsed ? BottomContainerButton::FlatEdge::kBottom
-                     : BottomContainerButton::FlatEdge::kNone);
+        is_collapsed ? VerticalTabStripFlatEdgeButton::FlatEdge::kBottom
+                     : VerticalTabStripFlatEdgeButton::FlatEdge::kNone);
     tab_group_button_->SetInsets(GetLayoutInsets(
         is_collapsed
             ? LayoutInset::VERTICAL_TAB_STRIP_BOTTOM_BUTTON_COLLAPSED
@@ -144,9 +145,9 @@ void VerticalTabStripBottomContainer::UpdateButtonStyles(
           is_collapsed ? views::MaximumFlexSizeRule::kPreferred
                        : views::MaximumFlexSizeRule::kUnbounded,
           false, views::MinimumFlexSizeRule::kPreferred));
-  new_tab_button_->SetFlatEdge(is_collapsed
-                                   ? BottomContainerButton::FlatEdge::kTop
-                                   : BottomContainerButton::FlatEdge::kNone);
+  new_tab_button_->SetFlatEdge(
+      is_collapsed ? VerticalTabStripFlatEdgeButton::FlatEdge::kTop
+                   : VerticalTabStripFlatEdgeButton::FlatEdge::kNone);
   int padding = GetLayoutConstant(
       LayoutConstant::kVerticalTabStripCollapsedBottomButtonPadding);
   new_tab_button_->SetProperty(
