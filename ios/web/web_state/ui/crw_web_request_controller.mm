@@ -496,10 +496,12 @@ using web::wk_navigation_util::URLNeedsUserAgentType;
     request.attribution = NSURLRequestAttributionUser;
   }
 
-  if (navigationURL.SchemeIsFile() &&
+  // Ensure the URL is valid and has a non-empty path.
+  NSURL* requestURL = request.URL;
+  if (requestURL.path.length > 0 && navigationURL.SchemeIsFile() &&
       web::GetWebClient()->IsAppSpecificURL(virtualURL)) {
     navigation = [self.webView loadFileRequest:request
-                       allowingReadAccessToURL:request.URL];
+                       allowingReadAccessToURL:requestURL];
   } else {
     navigation = [self.webView loadRequest:request];
   }
