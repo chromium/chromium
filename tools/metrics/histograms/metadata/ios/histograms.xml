@@ -7647,7 +7647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManualFallback.VisibleSuggestions.ExpandIcon.OpenAddresses"
-    units="Suggestions" expires_after="2025-10-26">
+    units="Suggestions" expires_after="2026-07-26">
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
   <summary>
@@ -7658,7 +7658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManualFallback.VisibleSuggestions.ExpandIcon.OpenPasswords"
-    units="Suggestions" expires_after="2025-11-02">
+    units="Suggestions" expires_after="2026-07-26">
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
   <summary>
