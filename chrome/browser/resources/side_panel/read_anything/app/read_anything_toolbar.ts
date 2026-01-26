@@ -823,7 +823,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onKeyDown_(e: KeyboardEvent, focusableElements: HTMLElement[]) {
-    if (!isHorizontalArrow(e.key)) {
+    if (!isHorizontalArrow(e.key) || this.isImmersiveEnabled_) {
       return;
     }
 
