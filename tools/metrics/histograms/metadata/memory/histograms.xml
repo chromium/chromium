@@ -2178,6 +2178,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Memory.Experimental.Windows.DemandZeroFaultsFulfilledPerSecond"
+    units="pages/sec" expires_after="2026-05-24">
+  <owner>spvm@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Demand Zero Faults/sec is the rate at which a zeroed page is required to
+    satisfy a memory fault, system wide. This counter shows the number of
+    faults, without regard to the number of pages retrieved to satisfy the
+    fault. Recorded once every five seconds, only on Windows.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Experimental.Windows.HardFaultsFulfilledPerSecond"
     units="pages/sec" expires_after="2026-05-24">
   <owner>spvm@chromium.org</owner>
