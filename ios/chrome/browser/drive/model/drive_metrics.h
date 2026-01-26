@@ -50,6 +50,17 @@ enum class SaveToDriveOutcome {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
+// Enum for the IOS.SaveToDrive.UploadTask.GetResponseLinkFailure histogram.
+// Keep in sync with "IOSSaveToDriveGetResponseLinkFailure"
+// in tools/metrics/histograms/metadata/ios/enums.xml.
+// LINT.IfChange
+enum class GetResponseLinkFailure {
+  kMissingResult = 0,
+  kMissingFileLink = 1,
+  kMaxValue = kMissingFileLink
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
 // Possible states of the upload task.
 // Used as enum for the IOS.SaveToDrive.UploadTask.FinalState histogram.
 // Keep in sync with "IOSSaveToDriveUploadTaskStateType"

@@ -1371,6 +1371,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/safety_check_notifications/utils/constants.h:SafetyCheckNotificationType) -->
 
+<enum name="IOSSaveToDriveGetResponseLinkFailure">
+  <int value="0" label="Missing Result"/>
+  <int value="1" label="Missing File Link"/>
+</enum>
+
 <enum name="IOSSaveToDriveOutcomeType">
   <int value="0" label="Failure - WebState Hidden"/>
   <int value="1" label="Failure - WebState Destroyed"/>
