@@ -4,8 +4,6 @@
 
 #include "content/browser/indexed_db/instance/database.h"
 
-#include <math.h>
-
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -18,8 +16,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/flat_set.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -57,9 +53,7 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
-#include "third_party/leveldatabase/env_chromium.h"
 
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBIndexKeys;
@@ -80,7 +74,7 @@ BuildLockRequestsForLevelDb(const std::u16string& database_name,
                             const std::set<int64_t>& scope) {
   // NB: LevelDB lock IDs are potentially persisted to disk - see
   // `LevelDBPartitionedLock`.
-  const constexpr int kDatabaseLockPartition = 0;
+  constexpr int kDatabaseLockPartition = 0;
   PartitionedLockId database_lock_id{kDatabaseLockPartition,
                                      base::UTF16ToUTF8(database_name)};
   if (mode == blink::mojom::IDBTransactionMode::VersionChange) {
@@ -92,7 +86,7 @@ BuildLockRequestsForLevelDb(const std::u16string& database_name,
   lock_requests.reserve(1 + scope.size());
   lock_requests.emplace_back(std::move(database_lock_id),
                              PartitionedLockManager::LockType::kShared);
-  const constexpr int kObjectStoreLockPartition = 1;
+  constexpr int kObjectStoreLockPartition = 1;
   const auto object_store_lock_type =
       mode == blink::mojom::IDBTransactionMode::ReadOnly
           ? PartitionedLockManager::LockType::kShared
@@ -113,7 +107,7 @@ BuildLockRequestsForSqlite(uint32_t database_id,
                            const std::set<int64_t>& scope) {
   // TODO(crbug.com/427608926): Refactor `PartitionedLockId` to not need `key`
   // to be a string.
-  const constexpr int kMetadataLockPartition = 0;
+  constexpr int kMetadataLockPartition = 0;
   PartitionedLockId metadata_lock_id{kMetadataLockPartition,
                                      base::StringPrintf("%u", database_id)};
   if (mode == blink::mojom::IDBTransactionMode::VersionChange) {
@@ -123,14 +117,14 @@ BuildLockRequestsForSqlite(uint32_t database_id,
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests{
       {std::move(metadata_lock_id), PartitionedLockManager::LockType::kShared}};
   if (mode == blink::mojom::IDBTransactionMode::ReadWrite) {
-    const constexpr int kWriteOperationsLockPartition = 1;
+    constexpr int kWriteOperationsLockPartition = 1;
     lock_requests.emplace_back(
         PartitionedLockId{kWriteOperationsLockPartition,
                           base::StringPrintf("%u", database_id)},
         PartitionedLockManager::LockType::kExclusive);
   }
   lock_requests.reserve(lock_requests.size() + scope.size());
-  const constexpr int kObjectStoreLockPartition = 2;
+  constexpr int kObjectStoreLockPartition = 2;
   const auto object_store_lock_type =
       mode == blink::mojom::IDBTransactionMode::ReadOnly
           ? PartitionedLockManager::LockType::kShared
@@ -153,8 +147,8 @@ BuildLockRequestsForSqlite(uint32_t database_id,
 blink::mojom::IDBReturnValuePtr ConvertValueToReturnValue(
     Transaction& transaction,
     IndexedDBValue value,
-    blink::IndexedDBKey primary_key,
-    blink::IndexedDBKeyPath key_path) {
+    IndexedDBKey primary_key,
+    IndexedDBKeyPath key_path) {
   auto mojo_value = blink::mojom::IDBReturnValue::New();
   if (primary_key.IsValid()) {
     mojo_value->primary_key = std::move(primary_key);
@@ -174,8 +168,8 @@ blink::mojom::IDBReturnValuePtr ExtractReturnValueFromCursorValue(
   const bool is_generated_key = !value.empty() &&
                                 object_store_metadata.auto_increment &&
                                 !object_store_metadata.key_path.IsNull();
-  blink::IndexedDBKey primary_key;
-  blink::IndexedDBKeyPath key_path;
+  IndexedDBKey primary_key;
+  IndexedDBKeyPath key_path;
 
   if (is_generated_key) {
     primary_key = cursor.GetPrimaryKey().Clone();
@@ -218,7 +212,7 @@ PartitionedLockManager& Database::lock_manager() {
 
 int64_t Database::version() const {
   return backing_store_db_ ? metadata().version
-                           : blink::IndexedDBDatabaseMetadata::NO_VERSION;
+                           : IndexedDBDatabaseMetadata::NO_VERSION;
 }
 
 bool Database::IsInitialized() const {
@@ -228,7 +222,7 @@ bool Database::IsInitialized() const {
 StatusOr<int64_t> Database::DeleteDatabase(std::vector<PartitionedLock> locks,
                                            base::OnceClosure on_complete) {
   if (!backing_store_db_) {
-    return blink::IndexedDBDatabaseMetadata::DEFAULT_VERSION;
+    return IndexedDBDatabaseMetadata::DEFAULT_VERSION;
   }
 
   const int64_t old_version = version();
@@ -526,8 +520,8 @@ Status Database::GetOperation(int64_t object_store_id,
       return Status::OK();
     }
 
-    blink::IndexedDBKey primary_key;
-    blink::IndexedDBKeyPath key_path;
+    IndexedDBKey primary_key;
+    IndexedDBKeyPath key_path;
 
     if (object_store_metadata.auto_increment &&
         !object_store_metadata.key_path.IsNull()) {
@@ -585,8 +579,8 @@ Status Database::GetOperation(int64_t object_store_id,
     return Status::OK();
   }
 
-  blink::IndexedDBKey primary_key_return;
-  blink::IndexedDBKeyPath key_path_return;
+  IndexedDBKey primary_key_return;
+  IndexedDBKeyPath key_path_return;
 
   if (object_store_metadata.auto_increment &&
       !object_store_metadata.key_path.IsNull()) {
@@ -605,7 +599,7 @@ Status Database::GetOperation(int64_t object_store_id,
 Transaction::Operation Database::CreateGetAllOperation(
     int64_t object_store_id,
     int64_t index_id,
-    blink::IndexedDBKeyRange key_range,
+    IndexedDBKeyRange key_range,
     blink::mojom::IDBGetAllResultType result_type,
     uint32_t max_count,
     blink::mojom::IDBCursorDirection direction,
