@@ -40,6 +40,14 @@ class TestFontDataService : public FontDataServiceImpl {
     use_memory_fallback_ = fallback;
   }
 
+  bool CheckMatchesRequiredStyleForTesting(
+      const SkFontStyle& actual_style,
+      const std::string& requested_family_name,
+      const SkFontStyle& requested_style) {
+    return CheckMatchesRequiredStyle(actual_style, requested_family_name,
+                                     requested_style);
+  }
+
  private:
   bool use_memory_fallback_ = false;
 };
@@ -65,6 +73,87 @@ mojom::TypefaceStylePtr CreateTypefaceStyle(int weight,
   style->slant = slant;
   return style;
 }
+
+// The CheckMatchesRequiredStyles workaround is only implemented on Windows.
+#if BUILDFLAG(IS_WIN)
+TEST_F(FontDataServiceImplUnitTest, SegoeDoesntRequireStyle) {
+  // A matching style is always valid.
+  EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(
+      SkFontStyle::Normal(), "Segoe UI", SkFontStyle::Normal()));
+  EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(
+      SkFontStyle::Bold(), "Segoe UI", SkFontStyle::Bold()));
+  // Segoe isn't one of gill sans, open sans, or helvetica, so the required
+  // styles workaround doesn't apply to it. A requested "normal" match that
+  // finds a bold face is valid.
+  EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(
+      SkFontStyle::Bold(), "Segoe UI", SkFontStyle::Normal()));
+  EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(
+      SkFontStyle::Italic(), "Segoe UI", SkFontStyle::Normal()));
+}
+
+TEST_F(FontDataServiceImplUnitTest, FamiliesThatRequireMatchingStyles) {
+  static const std::string kFamiliesWithRequiredStyles[] = {
+      "gill sans",
+      "helvetica",
+      "open sans",
+  };
+
+  for (const auto& family : kFamiliesWithRequiredStyles) {
+    // A matching style is always valid.
+    EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(
+        SkFontStyle::Normal(), family, SkFontStyle::Normal()));
+    EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(
+        SkFontStyle::Bold(), family, SkFontStyle::Bold()));
+
+    // If the found face's style doesn't match the requested one, the match
+    // isn't used.
+    EXPECT_FALSE(impl_.CheckMatchesRequiredStyleForTesting(
+        SkFontStyle::Bold(), family, SkFontStyle::Normal()));
+
+    // A "Normal" match is always valid
+    EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(
+        SkFontStyle::Normal(), family, SkFontStyle::Bold()));
+
+    SkFontStyle extra_bold(SkFontStyle::kExtraBold_Weight,
+                           SkFontStyle::kNormal_Width,
+                           SkFontStyle::kUpright_Slant);
+    SkFontStyle extra_light(SkFontStyle::kExtraLight_Weight,
+                            SkFontStyle::kNormal_Width,
+                            SkFontStyle::kUpright_Slant);
+    SkFontStyle light(SkFontStyle::kLight_Weight, SkFontStyle::kNormal_Width,
+                      SkFontStyle::kUpright_Slant);
+
+    // A match doesn't require the exact same weight, only that the direction of
+    // the match is the same as the direction of the request. For instance, an
+    // extra bold face is suitable for a bold request.
+    EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(extra_bold, family,
+                                                          SkFontStyle::Bold()));
+    EXPECT_TRUE(
+        impl_.CheckMatchesRequiredStyleForTesting(light, family, extra_light));
+
+    // The above is also true for width
+    SkFontStyle condensed(SkFontStyle::kNormal_Weight,
+                          SkFontStyle::kCondensed_Width,
+                          SkFontStyle::kUpright_Slant);
+    SkFontStyle extra_condensed(SkFontStyle::kNormal_Weight,
+                                SkFontStyle::kExtraCondensed_Width,
+                                SkFontStyle::kUpright_Slant);
+    SkFontStyle expanded(SkFontStyle::kNormal_Weight,
+                         SkFontStyle::kExpanded_Width,
+                         SkFontStyle::kUpright_Slant);
+
+    EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(extra_condensed,
+                                                          family, condensed));
+    EXPECT_FALSE(
+        impl_.CheckMatchesRequiredStyleForTesting(condensed, family, expanded));
+
+    // Slant must match exactly.
+    EXPECT_FALSE(impl_.CheckMatchesRequiredStyleForTesting(
+        SkFontStyle::Italic(), family, SkFontStyle::Normal()));
+  }
+}
+
+#endif
 
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyName) {
   mojom::MatchFamilyNameResultPtr out_result;
