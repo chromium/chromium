@@ -200,10 +200,6 @@ gfx::Rect BrowserViewLayoutImpl::GetTopContainerBoundsInParent(
   return bounds;
 }
 
-int BrowserViewLayoutImpl::GetMinWebContentsWidthForTesting() const {
-  return kContentsContainerMinimumWidth;
-}
-
 // Layout logic.
 
 void BrowserViewLayoutImpl::Layout(views::View* host) {

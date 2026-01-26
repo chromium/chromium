@@ -233,15 +233,6 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
         ->side_panel_registry();
   }
 
-  // TODO(https://crbug.com/454583671): Eliminate this in favor of something
-  // that actually returns the specific width needed by the test, or else find
-  // some other way to calculate this in the test itself.
-  int GetMinWebContentsWidth() const {
-    return static_cast<BrowserViewLayout*>(
-               browser()->GetBrowserView().GetLayoutManager())
-        ->GetMinWebContentsWidthForTesting();
-  }
-
   // Calls chrome.sidePanel.setOptions() for the given `extension`, `path` and
   // `enabled` and returns when the API call is complete.
   void RunSetOptions(const extensions::Extension& extension,
@@ -637,8 +628,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
 
   // the web contents width will either be it's min width or 1/3 the browser
   // width minus the side panel separator width.
-  const int web_contents_width = std::max(
-      GetMinWebContentsWidth(), (browser_width - two_thirds_browser_width - 1));
+  const int web_contents_width =
+      std::max(BrowserViewLayout::kContentsContainerMinimumWidth,
+               (browser_width - two_thirds_browser_width - 1));
   EXPECT_EQ(browser()->GetBrowserView().contents_web_view()->width(),
             web_contents_width);
 }
@@ -678,7 +670,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   MultiContentsView* multi_contents_view =
       browser()->GetBrowserView().multi_contents_view();
   EXPECT_EQ(multi_contents_view->width(),
-            GetMinWebContentsWidth() + views::Separator::kThickness);
+            BrowserViewLayout::kContentsContainerMinimumWidth +
+                views::Separator::kThickness);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
@@ -744,12 +737,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().Restore();
 #endif
   browser()->GetBrowserView().SetBounds(new_bounds);
-  const int min_web_contents_width = GetMinWebContentsWidth();
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     // Within a couple of pixels.
     return browser()->GetBrowserView().contents_web_view()->width() <
-           min_web_contents_width + 20;
+           BrowserViewLayout::kContentsContainerMinimumWidth + 20;
   }));
 
   // Return browser window to original size, side panel should also return to

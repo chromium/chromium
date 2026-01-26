@@ -31,15 +31,8 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // BrowserViewLayout:
   void Layout(views::View* host) override;
 
-  // BrowserViewLayout overrides:
-  int GetMinWebContentsWidthForTesting() const override;
-
  protected:
   using WindowState = BrowserViewLayoutDelegate::WindowState;
-
-  // The minimum width of the contents area itself. Applies even when side
-  // panels are open and prevents zero or negative contents sizes.
-  static constexpr int kContentsContainerMinimumWidth = 200;
 
   // The overlap between a constrained dialog and the toolbar.
   static constexpr int kDialogToolbarOverlap = 3;
