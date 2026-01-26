@@ -732,6 +732,13 @@ gfx::Size ToolbarView::GetMinimumSize() const {
                                layout_manager_->interior_margin().height();
         size.SetToMin({size.width(), max_height});
       }
+      // Overflow button must be part of minimum size calculation.
+      if (browser_->is_type_normal() && !overflow_button_->GetVisible()) {
+        const int default_margin =
+            GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+        size.Enlarge(
+            default_margin + overflow_button_->GetMinimumSize().width(), 0);
+      }
   }
   size.set_height(size.height() * size_animation_.GetCurrentValue());
   return size;

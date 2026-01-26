@@ -53,6 +53,35 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   std::pair<gfx::Size, gfx::Size> GetMinimumTabStripSize(
       const BrowserLayoutParams& params) const;
 
+  // Allocate space across the vertical tabstrip, toolbar, and side panels,
+  // possibly modifying `params` to allocate grab handle space, and
+  // determining how much space to give to each of the left-size elements.
+  struct HorizontalLayout {
+    int vertical_tab_strip_width = 0;
+    bool vertical_tab_strip_collapsed = false;
+    int toolbar_height_side_panel_width = 0;
+    int content_height_side_panel_width = 0;
+    int min_content_width = 0;
+
+    // The padding placed around a number of UI elements when the toolbar-height
+    // side panel is present.
+    int side_panel_padding = 0;
+
+    // In some cases, even when there is a toolbar-height side panel, the top
+    // container (containing the toolbar, etc.) are laid out at the top of the
+    // screen, above the side panels - this is usually due to other layout
+    // constraints.
+    bool force_top_container_to_top = false;
+
+    bool has_toolbar_height_side_panel() const {
+      return toolbar_height_side_panel_width > 0;
+    }
+    bool has_content_height_side_panel() const {
+      return content_height_side_panel_width > 0;
+    }
+  };
+  HorizontalLayout CalculateHorizontalLayout(BrowserLayoutParams& params) const;
+
   // Returns the type of tabstrip present.
   enum class TabStripType { kNone, kWebUi, kVertical, kHorizontal };
   TabStripType GetTabStripType() const;
