@@ -89,6 +89,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
 
   void CreateAndSendQueryMessage(const std::string& query);
 
+  void ClearFiles() override;
   void HandleLensButtonClick() override;
   void OnLensThumbnailCreated(const std::string& thumbnail_data);
   virtual void CloseLensOverlay(
