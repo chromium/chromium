@@ -509,4 +509,32 @@ TEST_F(InterpolationEffectTest, IterationCompositeReplaceMultiKeyframe) {
   }
 }
 
+// Iteration accumulation skips incompatible (IACVT) lengths without crashing.
+// See: https://crbug.com/467366440
+TEST_F(InterpolationEffectTest,
+       IterationCompositeAccumulateIncompatibleLengths) {
+  Persistent<InterpolationEffect> interpolation_effect =
+      MakeGarbageCollected<InterpolationEffect>();
+  Interpolation* interpolation = CreateInvalidatableInterpolation(
+      CSSPropertyID::kWidth, "auto", "fit-content");
+  interpolation_effect->AddInterpolation(
+      interpolation, scoped_refptr<TimingFunction>(), 0, 1, 0, 1);
+
+  // Test at iteration 1, fraction 0.4.
+  HeapVector<Member<Interpolation>> active_interpolations;
+  interpolation_effect->GetActiveInterpolations(
+      1, 0.4, EffectModel::kIterationCompositeAccumulate,
+      TimingFunction::LimitDirection::RIGHT, active_interpolations);
+  EXPECT_EQ(1ul, active_interpolations.size());
+
+  auto* invalidatable =
+      To<InvalidatableInterpolation>(active_interpolations.at(0).Get());
+  ActiveInterpolations* interpolations =
+      MakeGarbageCollected<ActiveInterpolations>();
+  interpolations->push_back(invalidatable);
+  animation_test_helpers::EnsureInterpolatedValueCached(
+      interpolations, GetDocument(), element_);
+  EXPECT_NE(nullptr, invalidatable->GetCachedValueForTesting());
+}
+
 }  // namespace blink

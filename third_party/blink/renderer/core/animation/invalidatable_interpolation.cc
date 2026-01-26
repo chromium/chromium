@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/interpolable_filter.h"
+#include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/interpolable_transform_list.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
@@ -309,6 +310,13 @@ void InvalidatableInterpolation::ApplyIterationAccumulation() const {
           result_filter->GetType() != end_filter->GetType()) {
         return;
       }
+    }
+  }
+
+  // Iteration accumulation skips incompatible (IACVT) length values.
+  if (result_value->IsLength() && end_value->IsLength()) {
+    if (!InterpolableLength::CanMergeValues(result_value, end_value)) {
+      return;
     }
   }
 
