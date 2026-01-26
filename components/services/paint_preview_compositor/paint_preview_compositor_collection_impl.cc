@@ -95,21 +95,6 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   // The paint preview compositor does not initialize Blink to avoid a large
   // overhead, unlike the PDF compositor. Skia has its own image codecs (WEBP,
   // JPEG, PNG), so custom ones are not added. See crbug.com/40102887 for context.
-
-  // Init this on the background thread for a startup performance improvement.
-  base::ThreadPool::PostTask(FROM_HERE,
-                             base::BindOnce([] { skia::DefaultFontMgr(); }));
-
-  // Sanity check that fonts are working.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // No WebSandbox is provided on Linux so the local fonts aren't accessible.
-  // This is fine since since the subsetted fonts are provided in the SkPicture.
-  // However, we still need to check that the SkFontMgr starts as it is used by
-  // Skia when handling the SkPicture.
-  DCHECK(skia::DefaultFontMgr());
-#else
-  DCHECK(skia::DefaultFontMgr()->countFamilies());
-#endif
 }
 
 PaintPreviewCompositorCollectionImpl::~PaintPreviewCompositorCollectionImpl() {

@@ -584,9 +584,6 @@ void RenderThreadImpl::Init() {
   variations_observer_ = std::make_unique<VariationsRenderThreadObserver>();
   AddObserver(variations_observer_.get());
 
-  base::ThreadPool::PostTask(FROM_HERE,
-                             base::BindOnce([] { skia::DefaultFontMgr(); }));
-
   UpdateForegroundCrashKey(
       /*foreground=*/!blink::kLaunchingProcessIsBackgrounded);
 
