@@ -461,6 +461,33 @@ int MoveTabToWindow(ExtensionFunction* function,
   return final_index;
 }
 
+bool GetTabHandleById(int tab_id,
+                      content::BrowserContext& context,
+                      bool include_incognito,
+                      ::tabs::TabHandle* tab_handle_out,
+                      std::string* error_out) {
+  WindowController* window = nullptr;
+  int index = -1;
+  if (!tabs_internal::GetTabById(tab_id, &context, include_incognito, &window,
+                                 /*contents_out=*/nullptr, &index, error_out)) {
+    return false;
+  }
+  // Some tabs (e.g. prerendering) don't return an index or a window controller.
+  if (index == -1 || !window) {
+    return false;
+  }
+  BrowserWindowInterface* browser = window->GetBrowserWindowInterface();
+  if (!browser) {
+    return false;
+  }
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  if (!tab_list) {
+    return false;
+  }
+  *tab_handle_out = tab_list->GetTab(index)->GetHandle();
+  return true;
+}
+
 }  // namespace
 
 namespace tabs_internal {
@@ -2783,25 +2810,19 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
     }
   }
 
-  // Get the resulting tab indices in the target browser. We recalculate these
-  // after all tabs are moved so that any callbacks are resolved and the indices
-  // are final.
-  std::vector<int> tab_indices;
-  tab_indices.reserve(tab_ids.size());
+  // Get the resulting tab handles in the target browser. We recalculate these
+  // after all tabs are moved so that any callbacks are resolved. The set will
+  // dedupe any duplicate tabs.
+  std::set<::tabs::TabHandle> tab_handles;
   for (int tab_id : tab_ids) {
-    int tab_index = -1;
-    if (!tabs_internal::GetTabById(
-            tab_id, browser_context(), include_incognito_information(),
-            /*window_out=*/nullptr, /*contents_out=*/nullptr, &tab_index,
-            &error)) {
+    ::tabs::TabHandle tab_handle;
+    if (!GetTabHandleById(tab_id, *browser_context(),
+                          include_incognito_information(), &tab_handle,
+                          &error)) {
       return RespondNow(Error(std::move(error)));
     }
-    tab_indices.push_back(tab_index);
+    tab_handles.insert(tab_handle);
   }
-  // Sort and dedupe these indices for processing in the tabstrip.
-  std::sort(tab_indices.begin(), tab_indices.end());
-  tab_indices.erase(std::unique(tab_indices.begin(), tab_indices.end()),
-                    tab_indices.end());
 
   // Get the remaining group metadata and add the tabs to the group.
   // At this point, we assume this is a valid action due to the checks above.
@@ -2819,22 +2840,16 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
     return RespondNow(
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
   }
-  // Get all the target tabs as handles.
-  std::vector<::tabs::TabHandle> tabs;
-  tabs.reserve(tab_indices.size());
-  for (int tab_index : tab_indices) {
-    tabs.push_back(tab_list->GetTab(tab_index)->GetHandle());
+  // Either create a new tab group (if `group` is empty) or add to an existing
+  // group. The API requires std::nullopt for a "null" group ID, so convert
+  // `group` to a std::optional<>.
+  std::optional<tab_groups::TabGroupId> existing_group;
+  if (!group.is_empty()) {
+    existing_group = group;
   }
-  // Either create a new tab group or add to an existing group.
-  std::optional<tab_groups::TabGroupId> final_group = group;
-  if (group.is_empty()) {
-    // Create a new group.
-    final_group = tab_list->CreateTabGroup(tabs);
-  } else {
-    // Add to an existing group. The API requires a set.
-    std::set<::tabs::TabHandle> tab_set(tabs.begin(), tabs.end());
-    final_group = tab_list->AddTabsToGroup(group, tab_set);
-  }
+  // AddTabsToGroup() can both create a new group or add to an existing group.
+  std::optional<tab_groups::TabGroupId> final_group =
+      tab_list->AddTabsToGroup(existing_group, tab_handles);
   if (!final_group) {
     return RespondNow(
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
