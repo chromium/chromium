@@ -115,6 +115,10 @@ void DumpAccessibilityTreeTest::ChooseFeatures(
   disabled_features->emplace_back(
       features::kAccessibilityPopulateSupplementalDescriptionApi);
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
+  // Enable UIA MathML support on Windows.
+  enabled_features->emplace_back(features::kUiaMathMlSupport);
+#endif  // BUILDFLAG(IS_WIN)
   DumpAccessibilityTestBase::ChooseFeatures(enabled_features,
                                             disabled_features);
 }

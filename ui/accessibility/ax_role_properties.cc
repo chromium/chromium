@@ -494,6 +494,37 @@ bool IsListItem(const ax::mojom::Role role) {
   }
 }
 
+bool IsMath(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
+    case ax::mojom::Role::kMathMLFraction:
+    case ax::mojom::Role::kMathMLIdentifier:
+    case ax::mojom::Role::kMathMLMultiscripts:
+    case ax::mojom::Role::kMathMLNoneScript:
+    case ax::mojom::Role::kMathMLNumber:
+    case ax::mojom::Role::kMathMLOperator:
+    case ax::mojom::Role::kMathMLOver:
+    case ax::mojom::Role::kMathMLPrescriptDelimiter:
+    case ax::mojom::Role::kMathMLRoot:
+    case ax::mojom::Role::kMathMLRow:
+    case ax::mojom::Role::kMathMLSquareRoot:
+    case ax::mojom::Role::kMathMLStringLiteral:
+    case ax::mojom::Role::kMathMLSub:
+    case ax::mojom::Role::kMathMLSubSup:
+    case ax::mojom::Role::kMathMLSup:
+    case ax::mojom::Role::kMathMLTable:
+    case ax::mojom::Role::kMathMLTableCell:
+    case ax::mojom::Role::kMathMLTableRow:
+    case ax::mojom::Role::kMathMLText:
+    case ax::mojom::Role::kMathMLUnder:
+    case ax::mojom::Role::kMathMLUnderOver:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsMenuItem(ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kMenuItem:

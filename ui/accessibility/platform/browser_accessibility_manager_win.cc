@@ -18,6 +18,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -86,6 +87,12 @@ BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
     AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(node_id_delegate, delegate) {
   win::CreateATLModuleIfNeeded();
+  // Hydrate the custom property registry if MathML support is enabled.
+  // Since we don't fire any events that call into the registrar like the other
+  // custom properties, we need to ensure it's initialized here.
+  if (features::IsUiaMathMlSupportEnabled()) {
+    ui::UiaRegistrarWin::GetInstance();
+  }
   Initialize(initial_tree);
 }
 

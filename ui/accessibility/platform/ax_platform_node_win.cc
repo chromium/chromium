@@ -1228,11 +1228,6 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
 
     case ax::mojom::Role::kMath:
     case ax::mojom::Role::kMathMLMath:
-      return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
-              L"group"};
-
-    // TODO(http://crbug.com/1260585): Refine this if/when a UIA API exists for
-    // properly exposing MathML content.
     case ax::mojom::Role::kMathMLFraction:
     case ax::mojom::Role::kMathMLIdentifier:
     case ax::mojom::Role::kMathMLMultiscripts:
@@ -1254,8 +1249,11 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
     case ax::mojom::Role::kMathMLText:
     case ax::mojom::Role::kMathMLUnder:
     case ax::mojom::Role::kMathMLUnderOver:
-      return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
-              L"group"};
+      return features::IsUiaMathMlSupportEnabled()
+                 ? UIARoleProperties{UIALocalizationStrategy::kSupply,
+                                     UIA_CustomControlTypeId, L"math"}
+                 : UIARoleProperties{UIALocalizationStrategy::kSupply,
+                                     UIA_GroupControlTypeId, L"group"};
 
     case ax::mojom::Role::kMenu:
       return {UIALocalizationStrategy::kDeferToControlType,
@@ -5786,6 +5784,21 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
           GetStringAttributeAsBstr(ax::mojom::StringAttribute::kVirtualContent,
                                    &V_BSTR(result));
         }
+      } else if (features::IsUiaMathMlSupportEnabled() &&
+                 property_id ==
+                     UiaRegistrarWin::GetInstance().GetMathMLPropertyId()) {
+        // Provide MathML markup for math elements.
+        if (HasStringAttribute(ax::mojom::StringAttribute::kMathContent)) {
+          std::wstring inner_html;
+          inner_html = base::UTF8ToWide(
+              GetStringAttribute(ax::mojom::StringAttribute::kMathContent));
+          if (!inner_html.empty()) {
+            // Wrap innerHTML with <math> tags to form complete MathML.
+            std::wstring outer_math = L"<math>" + inner_html + L"</math>";
+            V_VT(result) = VT_BSTR;
+            V_BSTR(result) = SysAllocString(outer_math.c_str());
+          }
+        }
       }
       break;
   }
@@ -6164,6 +6177,18 @@ HRESULT AXPlatformNodeWin::GetAnnotationTypesAttribute(
     result->Insert<VT_I4>(AnnotationType_GrammarError);
   if (highlight_result == MarkerTypeRangeResult::kMatch)
     result->Insert<VT_I4>(AnnotationType_Highlighted);
+
+  if (features::IsUiaMathMlSupportEnabled()) {
+    // Math or text children of math nodes are considered to have the
+    // annotation type: `AnnotationType_Mathematics`.
+    if (IsMath(GetRole())) {
+      result->Insert<VT_I4>(AnnotationType_Mathematics);
+    } else if (auto* platform_ancestor = GetLowestAccessibleElementForUIA()) {
+      if (IsMath(platform_ancestor->GetRole())) {
+        result->Insert<VT_I4>(AnnotationType_Mathematics);
+      }
+    }
+  }
 
   return S_OK;
 }
@@ -7536,8 +7561,9 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       // text to be effectively repeated.
       auto* ancestor = FromNativeViewAccessible(GetParent());
       while (ancestor) {
-        if (IsUIACellOrTableHeader(ancestor->GetRole()))
+        if (IsUIACellOrTableHeader(ancestor->GetRole())) {
           return false;
+        }
         switch (ancestor->GetRole()) {
           // There are elements inside the `kColorWell` element that we want
           // exposed as UIA Control even if they are inside other elements that
@@ -7617,7 +7643,8 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kListItem:
       // Treat the root of a MathML tree as content/control so that it is seen
       // by UIA clients. The remainder of the tree remains as text for now until
-      // UIA mappings for MathML are defined (https://crbug.com/1260585).
+      // fine tuned UIA mappings for MathML are defined
+      // (https://crbug.com/1260585).
       case ax::mojom::Role::kMathMLMath:
       case ax::mojom::Role::kMeter:
       case ax::mojom::Role::kProgressIndicator:
@@ -7632,6 +7659,12 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       default:
         break;
     }
+    // All other math elements are not controls when MathML UIA support is
+    // enabled.
+    if (features::IsUiaMathMlSupportEnabled() && IsMath(GetRole())) {
+      return false;
+    }
+
     // Classify generic containers that are not clickable or focusable and have
     // no name, description, landmark type, and is not the root of editable
     // content as not controls.
@@ -7720,6 +7753,15 @@ bool AXPlatformNodeWin::ShouldHideChildrenForUIA() const {
     return true;
 
   auto role = GetRole();
+
+  // Do not expose children of Math elements when MathML UIA support is
+  // enabled. This ensures that text ranges within math content return the
+  // parent Math container as the enclosing element, not intermediate text
+  // nodes or non-root math elements.
+  if (features::IsUiaMathMlSupportEnabled() && IsMath(role)) {
+    return true;
+  }
+
   switch (role) {
     // Even though a node with  role kButton has presentational children, it
     // should only hide its children from UIA when it has a single text node

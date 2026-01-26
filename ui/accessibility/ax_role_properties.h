@@ -139,6 +139,9 @@ AX_BASE_EXPORT bool IsList(const ax::mojom::Role role);
 // Returns true if the provided role belongs to a list item.
 AX_BASE_EXPORT bool IsListItem(const ax::mojom::Role role);
 
+// Returns true if the provided role is a MathML-related role.
+AX_BASE_EXPORT bool IsMath(const ax::mojom::Role role);
+
 // Returns true if the provided role belongs to a menu item, including menu item
 // checkbox and menu item radio buttons.
 AX_BASE_EXPORT bool IsMenuItem(ax::mojom::Role role);

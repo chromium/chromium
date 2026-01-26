@@ -12,10 +12,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
@@ -4704,6 +4706,113 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     EXPECT_UIA_TEXTATTRIBUTE_EQ(mark_text_range_provider,
                                 UIA_AnnotationTypesAttributeId, empty_variant);
   }
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestITextRangeProviderGetAttributeValueAnnotationTypesMathematics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kUiaMathMlSupport);
+
+  // Build a simple tree with one math node and one non-math node:
+  // rootWebArea id=1
+  // ++math id=2
+  // ++++staticText id=3 name="x"
+  // ++++++inlineTextBox id=4 name="x"
+  // ++staticText id=5 name="y"
+  // ++++inlineTextBox id=6 name="y"
+  AXNodeData root;
+  AXNodeData math;
+  AXNodeData math_text;
+  AXNodeData math_inline;
+  AXNodeData outside_text;
+  AXNodeData outside_inline;
+
+  root.id = 1;
+  math.id = 2;
+  math_text.id = 3;
+  math_inline.id = 4;
+  outside_text.id = 5;
+  outside_inline.id = 6;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.SetName("root");
+  root.child_ids = {math.id, outside_text.id};
+
+  math.role = ax::mojom::Role::kMathMLMath;
+  math.child_ids = {math_text.id};
+  math.AddStringAttribute(ax::mojom::StringAttribute::kMathContent,
+                          "<math><mi>x</mi></math>");
+
+  math_text.role = ax::mojom::Role::kStaticText;
+  math_text.SetName("x");
+  math_text.child_ids = {math_inline.id};
+
+  math_inline.role = ax::mojom::Role::kInlineTextBox;
+  math_inline.SetName("x");
+
+  outside_text.role = ax::mojom::Role::kStaticText;
+  outside_text.SetName("y");
+  outside_text.child_ids = {outside_inline.id};
+
+  outside_inline.role = ax::mojom::Role::kInlineTextBox;
+  outside_inline.SetName("y");
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root.id;
+  update.nodes = {root,        math,         math_text,
+                  math_inline, outside_text, outside_inline};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  const AXTree* tree = Init(update);
+
+  AXNode* root_node = GetRoot();
+  AXNode* math_text_node = tree->GetFromId(math_text.id);
+  AXNode* outside_text_node = tree->GetFromId(outside_text.id);
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(root_node));
+  ASSERT_NE(owner, nullptr);
+
+  // Text range inside math should expose AnnotationType_Mathematics.
+  ComPtr<AXPlatformNodeTextRangeProviderWin> math_text_range_provider;
+  CreateTextRangeProviderWin(
+      math_text_range_provider, owner,
+      /*start_anchor=*/math_text_node,
+      /*start_offset=*/0,
+      /*start_affinity=*/ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor=*/math_text_node,
+      /*end_offset=*/1,
+      /*end_affinity=*/ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, math_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(math_text_range_provider, L"x");
+
+  base::win::ScopedVariant math_annotation_types_variant;
+  EXPECT_HRESULT_SUCCEEDED(math_text_range_provider->GetAttributeValue(
+      UIA_AnnotationTypesAttributeId, math_annotation_types_variant.Receive()));
+
+  EXPECT_EQ(math_annotation_types_variant.type(), VT_ARRAY | VT_I4);
+  std::vector<int> expected_math_annotations = {AnnotationType_Mathematics};
+  EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(math_annotation_types_variant.ptr()),
+                          expected_math_annotations);
+
+  // Text range outside math should not expose AnnotationType_Mathematics and
+  // instead return an empty variant for AnnotationTypes.
+  ComPtr<AXPlatformNodeTextRangeProviderWin> outside_text_range_provider;
+  CreateTextRangeProviderWin(
+      outside_text_range_provider, owner,
+      /*start_anchor=*/outside_text_node,
+      /*start_offset=*/0,
+      /*start_affinity=*/ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor=*/outside_text_node,
+      /*end_offset=*/1,
+      /*end_affinity=*/ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, outside_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(outside_text_range_provider, L"y");
+
+  base::win::ScopedVariant empty_variant;
+  EXPECT_UIA_TEXTATTRIBUTE_EQ(outside_text_range_provider,
+                              UIA_AnnotationTypesAttributeId, empty_variant);
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
