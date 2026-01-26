@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "extensions/common/extension_urls.h"
 
 namespace chromeos {
@@ -19,7 +19,7 @@ namespace {
 static ChromeKioskExternalLoaderBroker* g_broker_instance = nullptr;
 
 base::DictValue CreatePrimaryAppLoaderPrefs(
-    const crosapi::mojom::AppInstallParams& primary_app_data) {
+    const ash::KioskAppInstallParams& primary_app_data) {
   return base::DictValue()  //
       .Set(primary_app_data.id,
            base::DictValue()
@@ -78,8 +78,8 @@ void ChromeKioskExternalLoaderBroker::RegisterSecondaryAppInstallDataObserver(
 }
 
 void ChromeKioskExternalLoaderBroker::TriggerPrimaryAppInstall(
-    const crosapi::mojom::AppInstallParams& install_data) {
-  primary_app_data_ = install_data;
+    ash::KioskAppInstallParams install_data) {
+  primary_app_data_ = std::move(install_data);
 
   CallPrimaryAppObserver();
 }

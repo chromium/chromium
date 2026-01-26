@@ -7,6 +7,7 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "extensions/common/extension_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,7 +16,7 @@ namespace chromeos {
 namespace {
 
 using Observer = base::test::RepeatingTestFuture<base::DictValue>;
-using crosapi::mojom::AppInstallParams;
+using AppInstallParams = ash::KioskAppInstallParams;
 
 base::DictValue SecondaryAppData() {
   return base::DictValue()

@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
@@ -122,8 +123,9 @@ void InsertPendingSharedModules(content::BrowserContext& browser_context,
 
 ChromeKioskAppInstaller::ChromeKioskAppInstaller(
     Profile* profile,
-    const AppInstallParams& install_data)
-    : profile_(CHECK_DEREF(profile)), primary_app_install_data_(install_data) {}
+    ash::KioskAppInstallParams install_data)
+    : profile_(CHECK_DEREF(profile)),
+      primary_app_install_data_(std::move(install_data)) {}
 
 ChromeKioskAppInstaller::~ChromeKioskAppInstaller() = default;
 
@@ -141,7 +143,7 @@ void ChromeKioskAppInstaller::BeginInstall(InstallCallback callback) {
 
   if (primary_app_install_data_.crx_file_location.empty() &&
       primary_app == nullptr) {
-    ReportInstallFailure(InstallResult::kPrimaryAppNotCached);
+    ReportInstallFailure(ash::KioskInstallResult::kPrimaryAppNotCached);
     return;
   }
 
@@ -154,13 +156,13 @@ void ChromeKioskAppInstaller::BeginInstall(InstallCallback callback) {
 
   if (primary_app == nullptr) {
     // The extension is skipped for installation due to some error.
-    ReportInstallFailure(InstallResult::kPrimaryAppInstallFailed);
+    ReportInstallFailure(ash::KioskInstallResult::kPrimaryAppInstallFailed);
     return;
   }
 
   if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
     // The installed primary app is not kiosk enabled.
-    ReportInstallFailure(InstallResult::kPrimaryAppNotKioskEnabled);
+    ReportInstallFailure(ash::KioskInstallResult::kPrimaryAppNotKioskEnabled);
     return;
   }
 
@@ -190,7 +192,7 @@ void ChromeKioskAppInstaller::MaybeInstallSecondaryApps(
   }
 
   if (!AreExtensionsInstalled(profile_.get(), secondary_app_ids)) {
-    ReportInstallFailure(InstallResult::kSecondaryAppInstallFailed);
+    ReportInstallFailure(ash::KioskInstallResult::kSecondaryAppInstallFailed);
     return;
   }
 
@@ -261,11 +263,9 @@ void ChromeKioskAppInstaller::FinalizeAppInstall() {
   install_complete_ = true;
 
   if (primary_app_update_failed_) {
-    ReportInstallFailure(
-        ChromeKioskAppInstaller::InstallResult::kPrimaryAppUpdateFailed);
+    ReportInstallFailure(ash::KioskInstallResult::kPrimaryAppUpdateFailed);
   } else if (secondary_app_update_failed_) {
-    ReportInstallFailure(
-        ChromeKioskAppInstaller::InstallResult::kSecondaryAppUpdateFailed);
+    ReportInstallFailure(ash::KioskInstallResult::kSecondaryAppUpdateFailed);
   } else {
     ReportInstallSuccess();
   }
@@ -301,14 +301,14 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
     // Primary or secondary app install failed. Abort and report the failure.
     if (primary_app == nullptr && extension_id == primary_app_id()) {
       install_observation_.Reset();
-      ReportInstallFailure(InstallResult::kPrimaryAppInstallFailed);
+      ReportInstallFailure(ash::KioskInstallResult::kPrimaryAppInstallFailed);
       return;
     }
     if (primary_app != nullptr &&
         SecondaryAppsContain(*primary_app, extension_id) &&
         !IsExtensionInstalled(profile_.get(), extension_id)) {
       install_observation_.Reset();
-      ReportInstallFailure(InstallResult::kSecondaryAppInstallFailed);
+      ReportInstallFailure(ash::KioskInstallResult::kSecondaryAppInstallFailed);
       return;
     }
     // Primary or secondary app update failed, but there is an installed version
@@ -331,12 +331,12 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
   install_observation_.Reset();
 
   if (primary_app == nullptr) {
-    ReportInstallFailure(InstallResult::kPrimaryAppInstallFailed);
+    ReportInstallFailure(ash::KioskInstallResult::kPrimaryAppInstallFailed);
     return;
   }
 
   if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
-    ReportInstallFailure(InstallResult::kPrimaryAppNotKioskEnabled);
+    ReportInstallFailure(ash::KioskInstallResult::kPrimaryAppNotKioskEnabled);
     return;
   }
 
@@ -351,14 +351,13 @@ void ChromeKioskAppInstaller::ReportInstallSuccess() {
   DCHECK(install_complete_);
   SYSLOG(INFO) << "Kiosk app install succeeded";
 
-  std::move(on_ready_callback_)
-      .Run(ChromeKioskAppInstaller::InstallResult::kSuccess);
+  std::move(on_ready_callback_).Run(ash::KioskInstallResult::kSuccess);
 }
 
 void ChromeKioskAppInstaller::ReportInstallFailure(
-    ChromeKioskAppInstaller::InstallResult error) {
+    ash::KioskInstallResult error) {
   SYSLOG(ERROR) << "App install failed, error: " << static_cast<int>(error);
-  DCHECK_NE(ChromeKioskAppInstaller::InstallResult::kSuccess, error);
+  DCHECK_NE(ash::KioskInstallResult::kSuccess, error);
 
   std::move(on_ready_callback_).Run(error);
 }

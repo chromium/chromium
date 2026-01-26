@@ -15,6 +15,7 @@
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
@@ -164,37 +165,36 @@ void StartupAppLauncher::BeginInstall() {
       &StartupAppLauncher::OnInstallComplete, weak_ptr_factory_.GetWeakPtr()));
 }
 
-void StartupAppLauncher::OnInstallComplete(
-    ChromeKioskAppInstaller::InstallResult result) {
+void StartupAppLauncher::OnInstallComplete(ash::KioskInstallResult result) {
   CHECK_EQ(state_, LaunchState::kInstallingApp);
 
   installer_.reset();
 
   switch (result) {
-    case ChromeKioskAppInstaller::InstallResult::kSuccess:
+    case ash::KioskInstallResult::kSuccess:
       OnInstallSuccess();
       return;
-    case ChromeKioskAppInstaller::InstallResult::kPrimaryAppUpdateFailed:
+    case ash::KioskInstallResult::kPrimaryAppUpdateFailed:
       SYSLOG(WARNING) << "Primary app update failed, proceeding anyways";
       OnInstallSuccess();
       return;
-    case ChromeKioskAppInstaller::InstallResult::kSecondaryAppUpdateFailed:
+    case ash::KioskInstallResult::kSecondaryAppUpdateFailed:
       SYSLOG(WARNING) << "Secondary app update failed, proceeding anyways";
       OnInstallSuccess();
       return;
-    case ChromeKioskAppInstaller::InstallResult::kPrimaryAppInstallFailed:
+    case ash::KioskInstallResult::kPrimaryAppInstallFailed:
       OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
       return;
-    case ChromeKioskAppInstaller::InstallResult::kPrimaryAppNotKioskEnabled:
+    case ash::KioskInstallResult::kPrimaryAppNotKioskEnabled:
       OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
       return;
-    case ChromeKioskAppInstaller::InstallResult::kPrimaryAppNotCached:
-    case ChromeKioskAppInstaller::InstallResult::kSecondaryAppInstallFailed:
+    case ash::KioskInstallResult::kPrimaryAppNotCached:
+    case ash::KioskInstallResult::kSecondaryAppInstallFailed:
       if (!RetryWhenNetworkIsAvailable()) {
         OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
       }
       return;
-    case ChromeKioskAppInstaller::InstallResult::kUnknown:
+    case ash::KioskInstallResult::kUnknown:
       SYSLOG(ERROR) << "Received unknown InstallResult";
       OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
       return;

@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/install_observer.h"
 #include "extensions/browser/install_tracker.h"
@@ -29,13 +29,10 @@ class ChromeKioskAppInstaller
     : private extensions::InstallObserver,
       public extensions::InstallStageTracker::Observer {
  public:
-  using InstallResult = crosapi::mojom::ChromeKioskInstallResult;
-  using AppInstallParams = crosapi::mojom::AppInstallParams;
-  using InstallCallback =
-      crosapi::mojom::ChromeKioskLaunchController::InstallKioskAppCallback;
+  using InstallCallback = base::OnceCallback<void(ash::KioskInstallResult)>;
 
   ChromeKioskAppInstaller(Profile* profile,
-                          const AppInstallParams& install_data);
+                          ash::KioskAppInstallParams install_data);
   ChromeKioskAppInstaller(const ChromeKioskAppInstaller&) = delete;
   ChromeKioskAppInstaller& operator=(const ChromeKioskAppInstaller&) = delete;
   ~ChromeKioskAppInstaller() override;
@@ -56,7 +53,7 @@ class ChromeKioskAppInstaller
                           bool success) override;
 
   void ReportInstallSuccess();
-  void ReportInstallFailure(InstallResult result);
+  void ReportInstallFailure(ash::KioskInstallResult result);
 
   // Observes `InstallTracker` until the given `ids` finish installing.
   void ObserveInstallations(const std::vector<extensions::ExtensionId>& ids);
@@ -66,7 +63,7 @@ class ChromeKioskAppInstaller
   }
 
   raw_ref<Profile> profile_;
-  AppInstallParams primary_app_install_data_;
+  ash::KioskAppInstallParams primary_app_install_data_;
 
   // The set of extension IDs to wait for in `OnFinishCrxInstall`. This includes
   // the primary Chrome app, its secondary apps, as well as any shared modules

@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
 
@@ -54,8 +55,7 @@ class StartupAppLauncher : public KioskAppLauncher,
   void LaunchApp() override;
 
   void BeginInstall();
-  void OnInstallComplete(
-      chromeos::ChromeKioskAppInstaller::InstallResult result);
+  void OnInstallComplete(ash::KioskInstallResult result);
   void OnInstallSuccess();
 
   void HandlePreLaunchError(

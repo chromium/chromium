@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/extensions/external_cache.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
@@ -169,7 +168,7 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // if the app is not found in cache.
   std::optional<CachedCrxInfo> GetCachedCrx(std::string_view app_id) const;
 
-  crosapi::mojom::AppInstallParams CreatePrimaryAppInstallData(
+  KioskAppInstallParams CreatePrimaryAppInstallData(
       const std::string& id) const;
 
   void UpdateExternalCache();
