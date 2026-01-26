@@ -285,50 +285,62 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
   if (success && dasher_based && !switch_to_entry) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
 
+    // Backfill fix for Dasher-based profile broken by a previous bug
+    if (user_email.empty() &&
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      user_email =
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .email;
+
+      profile_->GetPrefs()->SetString(
+          enterprise_signin::prefs::kProfileUserEmail, user_email);
+    }
+
     // Account already exists, no need to add again.
     if (!identity_manager->FindExtendedAccountInfoByEmailAddress(user_email)
              .IsEmpty()) {
-      return;
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Account already exists, skipping primary account addition.";
+    } else {
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Policy fetched for Dasher-based OIDC profile, adding the user as "
+             "the primary account.";
+      RecordOidcProfileCreationFunnelStep(
+          OidcProfileCreationFunnelStep::kAddingPrimaryAccount, dasher_based);
+
+      // User account management would be included in unified consent dialog.
+      enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
+      CHECK(profile_);
+      policy::CloudPolicyManager* user_policy_manager =
+          profile_->GetUserCloudPolicyManager();
+
+      GaiaId gaia_id =
+          GaiaId(user_policy_manager->core()->store()->policy()->gaia_id());
+
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "GAIA ID retrieved from user policy for " << user_email << ": "
+          << gaia_id << ".";
+
+      auto set_primary_account_result =
+          signin_util::SetPrimaryAccountWithInvalidToken(
+              profile_, user_email, gaia_id,
+              /*is_under_advanced_protection=*/false,
+              signin_metrics::AccessPoint::kOidcRedirectionInterception,
+              signin_metrics::SourceForRefreshTokenOperation::
+                  kMachineLogon_CredentialProvider);
+
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Operation of setting account id " << gaia_id
+          << " received the following result: "
+          << static_cast<int>(set_primary_account_result);
+
+      RecordOidcProfileCreationResult(
+          (set_primary_account_result ==
+           signin::PrimaryAccountMutator::PrimaryAccountError::kNoError)
+              ? OidcProfileCreationResult::kEnrollmentSucceeded
+              : OidcProfileCreationResult::kFailedToAddPrimaryAccount,
+          dasher_based);
     }
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "Policy fetched for Dasher-based OIDC profile, adding the user as "
-           "the primary account.";
-    RecordOidcProfileCreationFunnelStep(
-        OidcProfileCreationFunnelStep::kAddingPrimaryAccount, dasher_based);
-
-    // User account management would be included in unified consent dialog.
-    enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
-    CHECK(profile_);
-    policy::CloudPolicyManager* user_policy_manager =
-        profile_->GetUserCloudPolicyManager();
-
-    GaiaId gaia_id =
-        GaiaId(user_policy_manager->core()->store()->policy()->gaia_id());
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT) << "GAIA ID retrieved from user policy for "
-                                    << user_email << ": " << gaia_id << ".";
-
-    auto set_primary_account_result =
-        signin_util::SetPrimaryAccountWithInvalidToken(
-            profile_, user_email, gaia_id,
-            /*is_under_advanced_protection=*/false,
-            signin_metrics::AccessPoint::kOidcRedirectionInterception,
-            signin_metrics::SourceForRefreshTokenOperation::
-                kMachineLogon_CredentialProvider);
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "Operation of setting account id " << gaia_id
-        << " received the following result: "
-        << static_cast<int>(set_primary_account_result);
-
-    RecordOidcProfileCreationResult(
-        (set_primary_account_result ==
-         signin::PrimaryAccountMutator::PrimaryAccountError::kNoError)
-            ? OidcProfileCreationResult::kEnrollmentSucceeded
-            : OidcProfileCreationResult::kFailedToAddPrimaryAccount,
-        dasher_based);
-
   } else {
     RecordOidcProfileCreationResult(
         (success) ? ((switch_to_entry)
