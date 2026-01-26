@@ -746,6 +746,28 @@ void LayerTreeHost::SetShouldThrottleFrameRate(bool flag) {
   proxy_->SetShouldThrottleFrameRate(flag);
 }
 
+ScopedRequestHighFramerate::ScopedRequestHighFramerate(LayerTreeHost* host)
+    : host_(host->weak_ptr_factory_.GetWeakPtr()) {
+  host->SetRequestHighFramerate(true);
+}
+
+ScopedRequestHighFramerate::~ScopedRequestHighFramerate() {
+  LayerTreeHost* host = host_.get();
+  if (host) {
+    host_->SetRequestHighFramerate(false);
+  }
+}
+
+std::unique_ptr<ScopedRequestHighFramerate>
+LayerTreeHost::RequestHighFramerate() {
+  return std::make_unique<ScopedRequestHighFramerate>(this);
+}
+
+void LayerTreeHost::SetRequestHighFramerate(bool flag) {
+  TRACE_EVENT("cc", __PRETTY_FUNCTION__);
+  proxy_->SetRequestHighFramerate(flag);
+}
+
 DISABLE_CFI_PERF
 void LayerTreeHost::SetNeedsAnimate(bool urgent) {
   DCHECK(IsMainThread());

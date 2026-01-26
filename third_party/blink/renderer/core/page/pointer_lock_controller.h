@@ -26,6 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_POINTER_LOCK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_POINTER_LOCK_CONTROLLER_H_
 
+#include <memory>
+
+#include "cc/trees/layer_tree_host.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -113,6 +116,8 @@ class CORE_EXPORT PointerLockController final
   Member<Document> document_of_removed_element_while_waiting_for_unlock_;
 
   HeapMojoRemote<mojom::blink::PointerLockContext> mouse_lock_context_{nullptr};
+
+  std::unique_ptr<cc::ScopedRequestHighFramerate> high_framerate_request_;
 
   // Store the locked position so that the event position keeps unchanged when
   // in locked states. These values only get set when entering lock states.

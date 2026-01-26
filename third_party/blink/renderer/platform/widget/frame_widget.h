@@ -5,12 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
+#include "cc/trees/layer_tree_host.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
@@ -33,6 +35,7 @@ class Layer;
 class LayerTreeSettings;
 class LayerTreeDebugState;
 struct ElementId;
+class ScopedRequestHighFramerate;
 }  // namespace cc
 
 namespace display {
@@ -309,6 +312,13 @@ class PLATFORM_EXPORT FrameWidget {
   // CompositorFrames.  See https://crbug.com/1232173 for more details.
   virtual void SetMayThrottleIfUndrawnFrames(
       bool may_throttle_if_undrawn_frames) = 0;
+
+  // Requests a high framerate for this widget. This is intended to override
+  // cases where rendering happens at a lower frame rate, when there is a use
+  // case that warrants it. For instance, VR/XR or gaming use cases may request
+  // this.
+  virtual std::unique_ptr<cc::ScopedRequestHighFramerate>
+  RequestHighFramerate() = 0;
 
   // Returns, in physical pixels, the amount that the widget has been resized
   // by the virtual keyboard. The virtual keyboard always insets a widget from

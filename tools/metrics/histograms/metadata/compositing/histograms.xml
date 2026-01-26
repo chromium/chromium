@@ -529,6 +529,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Scheduler.HighFramerateRequested" enum="Boolean"
+    expires_after="2026-05-31">
+  <owner>lizeb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <summary>
+    Report whether a compositor frame is run in a context where high framerate
+    is requested. This is intended to assess the fraction of cases where this is
+    hit, and also to diagnose over-triggering, since this is expected to be a
+    relatively niche use case. Recorded when a compositor frame is started, at a
+    subsampled rate.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Slim.BeginFrameResult" enum="SlimBeginFrameResult"
     expires_after="2026-07-12">
   <owner>acondor@chromium.org</owner>

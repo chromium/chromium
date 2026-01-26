@@ -391,6 +391,7 @@ class CC_EXPORT SchedulerStateMachine {
   }
 
   void SetShouldThrottleFrameRate(bool flag);
+  void SetRequestHighFramerate(bool flag);
 
  protected:
   bool BeginFrameRequiredForAction() const;
@@ -556,6 +557,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool waiting_for_scroll_event_ = false;
 
   bool throttle_frame_rate_ = false;
+  uint64_t high_framerate_requests_count_ = 0;
 };
 
 }  // namespace cc

@@ -795,6 +795,12 @@ void ProxyMain::SetShouldThrottleFrameRate(bool flag) {
                                 base::Unretained(proxy_impl_.get()), flag));
 }
 
+void ProxyMain::SetRequestHighFramerate(bool flag) {
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetRequestHighFramerate,
+                                base::Unretained(proxy_impl_.get()), flag));
+}
+
 bool ProxyMain::IsDeferringCommits() const {
   DCHECK(IsMainThread());
   return paint_holding_reason_.has_value();

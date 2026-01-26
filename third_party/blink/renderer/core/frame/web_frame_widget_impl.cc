@@ -5225,6 +5225,14 @@ void WebFrameWidgetImpl::SetMayThrottleIfUndrawnFrames(
       may_throttle_if_undrawn_frames);
 }
 
+std::unique_ptr<cc::ScopedRequestHighFramerate>
+WebFrameWidgetImpl::RequestHighFramerate() {
+  if (!View()->does_composite()) {
+    return nullptr;
+  }
+  return widget_base_->LayerTreeHost()->RequestHighFramerate();
+}
+
 int WebFrameWidgetImpl::GetVirtualKeyboardResizeHeight() const {
   DCHECK(!virtual_keyboard_resize_height_device_px_ || ForTopMostMainFrame());
   return virtual_keyboard_resize_height_device_px_;

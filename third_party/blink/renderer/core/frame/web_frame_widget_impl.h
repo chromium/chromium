@@ -333,6 +333,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state) override;
   void SetMayThrottleIfUndrawnFrames(
       bool may_throttle_if_undrawn_frames) override;
+  std::unique_ptr<cc::ScopedRequestHighFramerate> RequestHighFramerate()
+      override;
   int GetVirtualKeyboardResizeHeight() const override;
 
   void OnTaskCompletedForFrame(base::TimeTicks start_time,

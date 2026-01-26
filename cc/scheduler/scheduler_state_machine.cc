@@ -8,7 +8,9 @@
 
 #include "base/check_op.h"
 #include "base/format_macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -1378,6 +1380,11 @@ void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameArgs& args) {
   did_invalidate_layer_tree_frame_sink_ = false;
   did_perform_impl_side_invalidation_ = false;
   waiting_for_scroll_event_ = false;
+
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    UMA_HISTOGRAM_BOOLEAN("Compositing.Scheduler.HighFramerateRequested",
+                          high_framerate_requests_count_ > 0);
+  }
 }
 
 void SchedulerStateMachine::OnBeginImplFrameDeadline() {
@@ -1886,9 +1893,26 @@ void SchedulerStateMachine::SetShouldThrottleFrameRate(bool flag) {
   }
 }
 
+void SchedulerStateMachine::SetRequestHighFramerate(bool flag) {
+  TRACE_EVENT("blink", __PRETTY_FUNCTION__);
+  if (flag) {
+    high_framerate_requests_count_ += 1;
+  } else {
+    DCHECK_GE(high_framerate_requests_count_, 1u);
+    high_framerate_requests_count_ =
+        std::max(static_cast<uint64_t>(1), high_framerate_requests_count_) - 1;
+  }
+}
+
 base::TimeDelta SchedulerStateMachine::MainFrameThrottledInterval() const {
   if (!throttle_frame_rate_) {
-    return main_frame_throttled_interval_;
+    if (high_framerate_requests_count_ &&
+        base::FeatureList::IsEnabled(
+            features::kHighFramerateRequestFromClient)) {
+      return base::TimeDelta();
+    } else {
+      return main_frame_throttled_interval_;
+    }
   } else {
     auto throttled_interval =
         std::max(base::Hertz(features::kRenderThrottledFrameIntervalHz.Get()),

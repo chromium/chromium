@@ -159,6 +159,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60HzWebView);
 #endif
 
+// When enabled, clients can request a high framerate, which disables
+// throttling. This is intended to be used when the client knows that the
+// current use case likely warrants higher framerates. Examples include gaming
+// and VR experiences.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHighFramerateRequestFromClient);
+
 // We only want to test the feature value if the client satisfies an eligibility
 // criteria, as testing the value enters the client into an experimental group,
 // and we only want the groups (including control) to only contain eligibilie

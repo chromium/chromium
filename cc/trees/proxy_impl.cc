@@ -1068,6 +1068,10 @@ void ProxyImpl::SetShouldThrottleFrameRate(bool flag) {
   scheduler_->SetShouldThrottleFrameRate(flag);
 }
 
+void ProxyImpl::SetRequestHighFramerate(bool flag) {
+  scheduler_->SetRequestHighFramerate(flag);
+}
+
 void ProxyImpl::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
   host_impl_->NotifyNewLocalSurfaceIdExpectedWhilePaused();
 }

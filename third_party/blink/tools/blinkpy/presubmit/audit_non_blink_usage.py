@@ -2950,6 +2950,15 @@ _CONFIG = [
         ],
         'allowed':
         ['base::test::RunUntil', 'base::test::ScopedRunLoopTimeout'],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/frame/fullscreen_controller.h',
+            'third_party/blink/renderer/core/frame/web_frame_widget_impl.cc',
+            'third_party/blink/renderer/core/frame/web_frame_widget_impl.h',
+            'third_party/blink/renderer/core/page/pointer_lock_controller.h',
+        ],
+        'allowed': ['cc::ScopedRequestHighFramerate']
     }
 ]
 

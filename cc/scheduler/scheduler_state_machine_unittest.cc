@@ -10,8 +10,11 @@
 #include <tuple>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -1448,6 +1451,80 @@ TEST(SchedulerStateMachineTest, TestMainFrameThrottlingWithUrgentUpdates) {
   }
   // One extra main frame, doesn't make all the subsequent ones urgent.
   EXPECT_EQ(begin_main_frame_count, 5 + 1);
+}
+
+TEST(SchedulerStateMachineTest,
+     TestMainFrameThrottlingWithHighFramerateRequest) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatures(
+      {features::kThrottleMainFrameTo60Hz,
+       features::kHighFramerateRequestFromClient},
+      {});
+
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  state.FrameIntervalUpdated(base::Hertz(120));
+  state.AdvanceTimeBy(base::Seconds(1280));  // Start at an arbitrary point.
+
+  auto run_impl_frames = [&](int count) {
+    int begin_main_frame_count = 0;
+    for (int i = 0; i < count; i++) {
+      // One frame marked urgent.
+      state.SetNeedsBeginMainFrame();
+      begin_main_frame_count +=
+          RunOneFrameAndReturnWhetherMainFrameIsIssued(state) ? 1 : 0;
+      state.AdvanceTimeBy(base::Hertz(120));
+      state.SetNeedsBeginMainFrame(false);
+    }
+    return begin_main_frame_count;
+  };
+
+  EXPECT_EQ(run_impl_frames(10), 5);
+
+  state.SetRequestHighFramerate(true);
+  // No throttling.
+  EXPECT_EQ(run_impl_frames(10), 10);
+  state.SetRequestHighFramerate(false);
+  // Restored.
+  EXPECT_EQ(run_impl_frames(10), 5);
+
+  // Stacking
+  state.SetRequestHighFramerate(true);
+  state.SetRequestHighFramerate(true);
+  // No throttling.
+  EXPECT_EQ(run_impl_frames(10), 10);
+  state.SetRequestHighFramerate(false);
+  // Still no throttling, still one request in progress.
+  EXPECT_EQ(run_impl_frames(10), 10);
+  state.SetRequestHighFramerate(false);
+  // Still no throttling, still one request in progress.
+  EXPECT_EQ(run_impl_frames(10), 5);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kHighFramerateRequestFromClient);
+    state.SetRequestHighFramerate(true);
+    // No effect when the feature is disabled.
+    EXPECT_EQ(run_impl_frames(10), 5);
+    state.SetRequestHighFramerate(false);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+    state.SetRequestHighFramerate(true);
+    run_impl_frames(20);
+    histogram_tester.ExpectBucketCount(
+        "Compositing.Scheduler.HighFramerateRequested", true, 20);
+
+    state.SetRequestHighFramerate(false);
+    run_impl_frames(20);
+    histogram_tester.ExpectBucketCount(
+        "Compositing.Scheduler.HighFramerateRequested", false, 20);
+  }
 }
 
 TEST(SchedulerStateMachineTest, CommitWithoutDrawWithPendingTree) {

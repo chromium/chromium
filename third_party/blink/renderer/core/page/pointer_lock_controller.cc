@@ -263,14 +263,14 @@ void PointerLockController::ExitPointerLock() {
 
   // Set the last mouse position back the locked position.
   if (pointer_lock_document && pointer_lock_document->GetFrame()) {
-    pointer_lock_document->GetFrame()
-        ->GetEventHandler()
-        .ResetMousePositionForPointerUnlock();
+    LocalFrame* frame = pointer_lock_document->GetFrame();
+    frame->GetEventHandler().ResetMousePositionForPointerUnlock();
   }
 
   ClearElement();
   document_of_removed_element_while_waiting_for_unlock_ = nullptr;
   mouse_lock_context_.reset();
+  high_framerate_request_.reset();
 }
 
 void PointerLockController::ElementRemoved(Element* element) {
@@ -327,6 +327,12 @@ void PointerLockController::DidAcquirePointerLock() {
     // sends all mouse events to the initial target of the drag.
     // If Lock is entered it supersedes any in progress Capture.
     frame->GetWidgetForLocalRoot()->MouseCaptureLost();
+    // Acquiring the mouse pointer lock is a strong indication of a high-end web
+    // experience, which would benefit from higher framerates. In particular,
+    // this is the case for gaming, where pointer lock is essential for most
+    // games.
+    high_framerate_request_ =
+        frame->GetWidgetForLocalRoot()->RequestHighFramerate();
   }
 }
 
