@@ -15,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/rand_util.h"
@@ -363,6 +364,13 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
     if (!initialized_) {
       task_backlog_.push_back(std::move(task));
+      // TODO(crbug.com/450428442): Remove this UMA after we investigate OOM.
+      // Sample with a 0.001 probability to reduce metrics overhead.
+      if (sampler_.ShouldSample(0.001)) {
+        base::UmaHistogramCounts1000(
+            "Net.NetworkErrorLoggingService.TaskBacklogSize",
+            task_backlog_.size());
+      }
       return;
     }
 

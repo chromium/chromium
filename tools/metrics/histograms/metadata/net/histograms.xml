@@ -4100,6 +4100,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.NetworkErrorLoggingService.TaskBacklogSize" units="count"
+    expires_after="2026-09-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Records the size of the Network Error Logging (NEL) Service's task backlog
+    queue. This is recorded when commands are issued to the NEL service while it
+    is not yet initialized, causing the task to be queued in the backlog. This
+    metric is sampled with a probability of 0.001 to reduce overhead.
+  </summary>
+</histogram>
+
 <histogram name="Net.NetworkTransaction.ConnectedCallbackDelay" units="ms"
     expires_after="2026-06-07">
   <owner>hayato@chromium.org</owner>
