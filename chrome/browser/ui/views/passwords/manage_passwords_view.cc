@@ -171,7 +171,7 @@ ManagePasswordsView::CreatePasswordListView() {
                         kManagePasswordsButtonClicked);
           },
           base::Unretained(this)),
-      controller_.IsAccountStorageEnabled());
+      controller_.IsAccountStorageActive());
 }
 
 std::unique_ptr<ManagePasswordsDetailsView>
@@ -322,7 +322,7 @@ void ManagePasswordsView::RecreateLayout() {
         CreatePasswordDetailsView();
     password_details_view_ = details_view.get();
     page_container_->SwitchToPage(std::move(details_view));
-    if (controller_.IsAccountStorageEnabled() &&
+    if (controller_.IsAccountStorageActive() &&
         !controller_.get_details_bubble_credential()
              .value()
              .IsUsingAccountStore()) {

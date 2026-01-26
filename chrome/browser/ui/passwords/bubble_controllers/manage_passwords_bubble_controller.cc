@@ -304,7 +304,7 @@ bool ManagePasswordsBubbleController::UsernameExists(
       });
 }
 
-bool ManagePasswordsBubbleController::IsAccountStorageEnabled() const {
+bool ManagePasswordsBubbleController::IsAccountStorageActive() const {
   if (!delegate_) {
     return false;
   }
