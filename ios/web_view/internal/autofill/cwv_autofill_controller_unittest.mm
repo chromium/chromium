@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/mock_callback.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
@@ -21,8 +22,11 @@
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/mock_autocomplete_history_manager.h"
 #import "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/core/common/form_data.h"
+#import "components/autofill/ios/browser/autofill_agent.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/fake_autofill_agent.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -122,7 +126,6 @@ class CWVAutofillControllerTest : public web::WebTest {
         static_cast<web::FakeWebFramesManager*>(web_state_.GetWebFramesManager(
             autofill::AutofillJavaScriptFeature::GetInstance()
                 ->GetSupportedContentWorld()));
-
     autofill_agent_ =
         [[FakeAutofillAgent alloc] initWithPrefService:&pref_service_
                                               webState:&web_state_];
@@ -140,6 +143,13 @@ class CWVAutofillControllerTest : public web::WebTest {
     IOSPasswordManagerDriverFactory::CreateForWebState(
         &web_state_, password_controller_, password_manager.get());
     password_manager_client_ = password_manager_client.get();
+
+    const testing::TestInfo* const test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    if (test_info && std::string(test_info->name()) == "SubmitCallback") {
+      scoped_feature_list_.InitAndDisableFeature(
+          autofill::features::kAutofillAcrossIframesIos);
+    }
 
     auto autofill_client = std::make_unique<
         autofill::WithFakedFromWebState<autofill::WebViewAutofillClientIOS>>(
@@ -191,6 +201,7 @@ class CWVAutofillControllerTest : public web::WebTest {
       form_activity_tab_helper_;
   WebViewPasswordManagerClient* password_manager_client_;
   CWVVCNEnrollmentManager* _retainedEnrollmentManager;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests CWVAutofillController fetch suggestions for profiles.
@@ -478,6 +489,45 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
       /*perfect_filling=*/false);
 
   [delegate verify];
+}
+
+// Tests submission handling when autofill across iframes is enabled.
+TEST_F(CWVAutofillControllerTest, SubmitCallbackAcrossIframes) {
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
+
+  OCMExpect([delegate
+         autofillController:autofill_controller_
+      didSubmitFormWithName:kTestFormName
+                    frameID:base::SysUTF8ToNSString(web::kMainFakeFrameId)
+              userInitiated:YES
+             perfectFilling:YES]);
+
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  autofill::FormData test_form_data;
+  test_form_data.set_name(base::SysNSStringToUTF16(kTestFormName));
+
+  // Manually trigger the observer bridge to simulate the event from
+  // AutofillManager.
+  web::WebFrame* main_frame = web_frames_manager_->GetMainWebFrame();
+  if (!main_frame) {
+    auto owned_frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+    main_frame = owned_frame.get();
+    AddWebFrame(std::move(owned_frame));
+  }
+
+  autofill::AutofillDriverIOS* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&web_state_,
+                                                           main_frame);
+  ASSERT_TRUE(driver);
+  autofill::AutofillManager& manager = driver->GetAutofillManager();
+
+  // Simulate submission.
+  manager.NotifyObservers(
+      &autofill::AutofillManager::Observer::OnAfterFormSubmitted,
+      test_form_data);
+
+  EXPECT_OCMOCK_VERIFY(delegate);
 }
 
 // Tests that CWVAutofillController notifies user of password leaks.

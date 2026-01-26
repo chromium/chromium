@@ -27,6 +27,9 @@
                     fromSource:
                         (autofill::AutofillManager::Observer::FieldTypeSource)
                             source;
+
+- (void)onAfterFormSubmitted:(autofill::AutofillManager&)manager
+                    formData:(const autofill::FormData&)form;
 @end
 
 namespace autofill {
@@ -49,6 +52,8 @@ class AutofillManagerObserverBridge final : public AutofillManager::Observer {
   void OnFieldTypesDetermined(AutofillManager& manager,
                               FormGlobalId form,
                               FieldTypeSource source) override;
+  void OnAfterFormSubmitted(AutofillManager& manager,
+                            const FormData& form) override;
 
  private:
   __weak id<AutofillManagerObserver> observer_ = nil;

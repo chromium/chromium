@@ -5,9 +5,14 @@
 #import <ChromeWebView/ChromeWebView.h>
 #import <Foundation/Foundation.h>
 
+#import "base/logging.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/variations/variations_ids_provider.h"
+#import "ios/web/common/uikit_ui_util.h"
+#import "ios/web_view/public/cwv_global_state.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
@@ -15,11 +20,22 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+
+namespace {
+
+CWVEarlyInitFlags* GetInitFlags() {
+  CWVEarlyInitFlags* flags = [[CWVEarlyInitFlags alloc] init];
+  flags.autofillAcrossIframesEnabled = YES;
+  return flags;
+}
+
+}  // namespace
 
 // A stub object that observes the |webViewDidFinishNavigation| event of
 // CWVNavigationDelegate. CWVNavigationDelegate is also used as navigation
@@ -84,7 +100,8 @@ NSString* const kTestFormHtml =
 class WebViewAutofillTest : public WebViewInttestBase {
  protected:
   WebViewAutofillTest()
-      : autofill_controller_delegate_(
+      : WebViewInttestBase(GetInitFlags()),
+        autofill_controller_delegate_(
             OCMProtocolMock(@protocol(CWVAutofillControllerDelegate))) {
     data_source_ =
         OCMStrictProtocolMock(@protocol(CWVSyncControllerDataSource));
@@ -95,8 +112,8 @@ class WebViewAutofillTest : public WebViewInttestBase {
   }
 
   void TearDown() override {
-    [(id)data_source_ verify];
-    [(id)autofill_controller_delegate_ verify];
+    EXPECT_OCMOCK_VERIFY(data_source_);
+    EXPECT_OCMOCK_VERIFY(autofill_controller_delegate_);
   }
 
   // Loads a test page with a single form and waits until Autofill has parsed
@@ -363,6 +380,63 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
     return [current_value isEqualToString:@""];
   }));
   EXPECT_FALSE(cleared_error);
+}
+
+// Tests that submitting a form in a child frame reports the correct frame ID.
+TEST_F(WebViewAutofillTest, TestChildFrameSubmission) {
+  ASSERT_TRUE(test_server_->Start());
+
+  std::string child_html =
+      "<html><body>"
+      "<h1>Child Frame</h1>"
+      "<form id='child_form' action='about:blank' method='POST'>"
+      "<label for='cc'>Credit Card Number</label>"
+      "<input type='text' id='cc' name='cc_number' autocomplete='cc-number'>"
+      "<input type='submit' id='child_submit' value='Submit Child Form'>"
+      "</form>"
+      "</body></html>";
+  GURL child_url = GetUrlForPageWithHtmlBody(child_html);
+
+  std::string main_html =
+      base::StringPrintf("<html><body>"
+                         "<h1>Main Frame</h1>"
+                         "<iframe id='child_frame' src='%s'></iframe>"
+                         "</body></html>",
+                         child_url.spec().c_str());
+  GURL main_url = GetUrlForPageWithHtmlBody(main_html);
+
+  ASSERT_TRUE(test::LoadUrl(web_view_, net::NSURLWithGURL(main_url)));
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    return !!GetMainFrameId();
+  }));
+
+  // Expectation:
+  [[autofill_controller_delegate_ expect]
+         autofillController:autofill_controller_
+      didSubmitFormWithName:[OCMArg any]
+                    frameID:[OCMArg any]
+              userInitiated:YES             // Usually YES if clicked.
+             perfectFilling:[OCMArg any]];  // Relax just in case.
+
+  // Wait for child frame and submit.
+  NSString* submit_script =
+      @"var f = document.getElementById('child_frame');"
+      @"if (f.contentWindow.document.getElementById('child_submit')) {"
+      @"  f.contentWindow.document.getElementById('child_submit').click();"
+      @"  'clicked';"
+      @"} else {"
+      @"  'not_ready';"
+      @"}";
+
+  __block NSError* err = nil;
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    NSString* res = test::EvaluateJavaScript(web_view_, submit_script, &err);
+    return [res isEqualToString:@"clicked"];
+  })) << base::SysNSStringToUTF8(err.debugDescription);
+
+  [autofill_controller_delegate_
+      verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 }
 
 }  // namespace ios_web_view
