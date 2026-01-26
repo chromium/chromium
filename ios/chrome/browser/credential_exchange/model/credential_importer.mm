@@ -24,6 +24,8 @@
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
+#import "ios/chrome/browser/credential_exchange/model/import_stats.h"
+#import "ios/chrome/browser/credential_exchange/model/metrics_util.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "net/base/apple/url_conversions.h"
@@ -158,11 +160,13 @@ std::string DataToString(NSData* data) {
                                     passkeys:
                                         (NSArray<CredentialExchangePasskey*>*)
                                             passkeys
-                         exporterDisplayName:(NSString*)exporterDisplayName {
+                         exporterDisplayName:(NSString*)exporterDisplayName
+                                       stats:(ImportStats*)stats {
   _passwords = passwords;
   _passkeys = passkeys;
   _presentCredentialTypesCount =
       (passwords.count > 0 ? 1 : 0) + (passkeys.count > 0 ? 1 : 0);
+  LogImportStats(stats);
   [_delegate showImportScreenWithPasswordCount:passwords.count
                                   passkeyCount:passkeys.count
                            exporterDisplayName:exporterDisplayName];
