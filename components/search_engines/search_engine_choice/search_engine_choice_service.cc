@@ -405,6 +405,8 @@ const TemplateURL* MaybeGetCurrentDefaultToHighlight(
   }
 
   if (!regional_capabilities_service.GetChoiceScreenEligibilityConfig()
+           .has_value() ||
+      !regional_capabilities_service.GetChoiceScreenEligibilityConfig()
            ->highlight_current_default) {
     return nullptr;
   }
