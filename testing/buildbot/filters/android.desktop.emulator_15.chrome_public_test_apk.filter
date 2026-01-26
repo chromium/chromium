@@ -45,7 +45,6 @@
 -org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
 
 # crbug.com/376527109
--org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
 
 # crbug.com/376528174
 -org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
@@ -60,7 +59,6 @@
 -org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_NoClientPackage
 
 # crbug.com/394671175
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.*
 
 # crbug.com/394673741
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesImageLinkOptions
@@ -128,12 +126,6 @@
 -org.chromium.chrome.browser.tabmodel.TabModelImplTest.testCloseIncognitoTabSwitchesToNormalModelAndUpdatesIncognitoIndex
 -org.chromium.chrome.browser.tabmodel.TabModelImplTest.testSetMuteSetting_Incognito
 -org.chromium.chrome.browser.tabmodel.TabModelImplTest.validIndexAfterRestored_FromPreviousActivity_WithIncognitoTabs
--org.chromium.chrome.browser.tabmodel.TabModelMultiWindowTest.testMoveTabGroupToWindow
--org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_Incognito
--org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_TabGroupColor_Incognito_2TabsInGroup
--org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testRenderGrid_TabGroupColor_Incognito_5TabsInGroup
--org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayoutPTTest.testUrlUpdatedNotCrashing_ForTabNotInCurrentModel
--org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPanePublicTransitTest.*
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchRenderTest.testRenderTypedSuggestions_Incognito
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchRenderTest.testZeroPrefixSuggestions_HiddenInIncognito
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testSearchActivityBackButton_Incognito
