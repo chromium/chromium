@@ -362,6 +362,10 @@ ContextualSearchboxHandler::~ContextualSearchboxHandler() {
   }
 }
 
+void ContextualSearchboxHandler::ResetInputStateModel() {
+  input_state_model_.reset();
+}
+
 contextual_search::ContextualSearchMetricsRecorder*
 ContextualSearchboxHandler::GetMetricsRecorder() {
   auto* contextual_session_handle = GetContextualSessionHandle();

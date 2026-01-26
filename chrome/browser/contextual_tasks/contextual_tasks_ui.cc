@@ -848,6 +848,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     task_info_delegate_->SetThreadTurnId(std::nullopt);
     task_info_delegate_->SetThreadTitle(std::nullopt);
 
+    task_info_delegate_->PrepareForTaskChange();
     ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
                                task_info_delegate_->GetWebUIWebContents(),
                                new_task_id,
@@ -935,6 +936,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   task_info_delegate_->SetThreadTurnId(mstk);
 
   if (task_changed) {
+    task_info_delegate_->PrepareForTaskChange();
     ui_service_->OnTaskChanged(task_info_delegate_->GetBrowser(),
                                task_info_delegate_->GetWebUIWebContents(),
                                task_info_delegate_->GetTaskId().value(),
@@ -1003,6 +1005,10 @@ void ContextualTasksUI::CreatePageHandler(
       std::make_unique<ContextualTasksInternalsPageHandler>(
           contextual_tasks_service, optimization_guide_keyed_service,
           std::move(receiver), std::move(page));
+}
+
+void ContextualTasksUI::PrepareForTaskChange() {
+  composebox_handler_->ResetInputStateModel();
 }
 
 void ContextualTasksUI::OnTaskChanged() {

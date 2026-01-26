@@ -154,6 +154,9 @@ class ContextualSearchboxHandler
 
   std::vector<base::UnguessableToken> GetUploadedContextTokens();
 
+  // Resets `input_state_model_`.
+  void ResetInputStateModel();
+
  protected:
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
@@ -165,6 +168,8 @@ class ContextualSearchboxHandler
                            CreateTabPreviewEncodingOptions_NotScaled);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerBrowserTestDSF2,
                            CreateTabPreviewEncodingOptions_Scaled);
+  FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerBrowserTest,
+                           ResetInputStateModel);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
                            SubmitQuery_DelayUpload);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTestTabsTest,

@@ -119,3 +119,14 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTestDSF2,
   EXPECT_EQ(options->max_width, expected_width);
   EXPECT_EQ(options->max_height, expected_height);
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
+                       ResetInputStateModel) {
+  // Access private member via friend class.
+  ContextualSearchboxHandler* base_handler = handler_.get();
+  ASSERT_TRUE(base_handler->input_state_model_);
+
+  handler_->ResetInputStateModel();
+
+  EXPECT_FALSE(base_handler->input_state_model_);
+}
