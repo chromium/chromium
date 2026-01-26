@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/passage_embeddings/embeddings_candidate_generator.h"
+#include "components/passage_embeddings/content/embeddings_candidate_generator.h"
 
 #include "base/strings/strcat.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"

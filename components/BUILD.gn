@@ -765,6 +765,10 @@ test("components_unittests") {
     ]
   }
 
+  if (!is_android && !is_ios && !is_fuchsia) {
+    deps += [ "//components/passage_embeddings/content:unit_tests" ]
+  }
+
   if (enable_guest_contents) {
     deps += [ "//components/guest_contents/browser:unit_tests" ]
   }
