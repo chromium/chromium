@@ -1079,9 +1079,13 @@ void TabStripActionContainer::SetGlicPanelIsOpen(bool open) {
   // Update glic_button_ first, then have the container match its background
   // color.
   glic_button_->SetGlicPanelIsOpen(open);
-  glic_actor_button_container_->SetBackgroundColor(
-      glic_button_->GetBackgroundColor());
-  glic_actor_button_container_->SetHighlighted(open);
+
+  if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
+      features::kGlicButtonContainerBackground.Get()) {
+    glic_actor_button_container_->SetBackgroundColor(
+        glic_button_->GetBackgroundColor());
+    glic_actor_button_container_->SetHighlighted(open);
+  }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
