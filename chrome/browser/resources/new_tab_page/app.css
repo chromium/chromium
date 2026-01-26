@@ -34,6 +34,7 @@
   --ntp-protected-icon-background-color: transparent;
   --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
   --ntp-scrim-opacity_: 1;
+  --threads-rail-focus-outline-color: var(--color-new-tab-page-focus-ring);
 }
 
 /**

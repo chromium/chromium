@@ -48,6 +48,7 @@
 cr-icon-button {
   --cr-icon-button-icon-size: 24px;
   --cr-icon-button-size: 48px;
+  --cr-icon-button-focus-outline-color: var(--threads-rail-focus-outline-color);
   display: flex;
   justify-content: center;
   align-items: center;
