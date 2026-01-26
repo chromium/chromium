@@ -1,0 +1,5 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <ms class="test">"hello world"</ms><newline></math>'
+++++++Custom IsControlElement=false
+++++++++Text Name='"hello world"'

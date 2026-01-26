@@ -1,0 +1,5 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <mo class="test">+</mo><newline></math>'
+++++++Custom IsControlElement=false
+++++++++Text Name='+'

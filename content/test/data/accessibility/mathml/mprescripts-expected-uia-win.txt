@@ -1,0 +1,21 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <mmultiscripts><newline>    <mn>1</mn><newline>    <mn>2</mn><newline>    <mn>3</mn><newline>    <none></none><newline>    <mn>5</mn><newline>    <mprescripts class="test"></mprescripts><newline>    <mn>6</mn><newline>    <none></none><newline>    <mn>8</mn><newline>    <mn>9</mn><newline>  </mmultiscripts><newline></math>'
+++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Text Name='1'
+++++++++Custom IsControlElement=false
+++++++++++Text Name='2'
+++++++++Custom IsControlElement=false
+++++++++++Text Name='3'
+++++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Text Name='5'
+++++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Text Name='6'
+++++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Text Name='8'
+++++++++Custom IsControlElement=false
+++++++++++Text Name='9'

@@ -1,6 +1,6 @@
 Document
 ++Group IsControlElement=false
-++++Custom
+++++Custom MathML='<math><newline>    <mrow><newline>      <msup><mi>%F0%9D%90%B4</mi><mn>2</mn></msup><newline>      <mo>+</mo><newline>      <msup><mi>%F0%9D%90%B5</mi><mn>2</mn></msup><newline>    </mrow><newline> </math>'
 ++++++Custom IsControlElement=false
 ++++++++Custom IsControlElement=false
 ++++++++++Custom IsControlElement=false

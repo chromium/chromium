@@ -111,6 +111,10 @@ void DumpAccessibilityTreeTest::ChooseFeatures(
       features::kEnableAccessibilityAriaVirtualContent);
   // crbug.com/339418716 - temporary until enabled by default
   enabled_features->emplace_back(blink::features::kPermissionElement);
+#if BUILDFLAG(IS_WIN)
+  // Enable UIA MathML support for dump tests
+  enabled_features->emplace_back(features::kUiaMathMlSupport);
+#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_ANDROID)
   disabled_features->emplace_back(
       features::kAccessibilityPopulateSupplementalDescriptionApi);

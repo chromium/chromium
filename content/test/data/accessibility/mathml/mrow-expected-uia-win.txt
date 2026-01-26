@@ -1,0 +1,12 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <mrow class="test"><newline>    <mn>1</mn><newline>    <mn>2</mn><newline>    <mn>3</mn><newline>    <mn>4</mn><newline>  </mrow><newline></math>'
+++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Text Name='1'
+++++++++Custom IsControlElement=false
+++++++++++Text Name='2'
+++++++++Custom IsControlElement=false
+++++++++++Text Name='3'
+++++++++Custom IsControlElement=false
+++++++++++Text Name='4'

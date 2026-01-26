@@ -1171,6 +1171,8 @@ void AXTreeFormatterUia::BuildCustomPropertiesMap() {
   GetCustomPropertiesMap().insert(
       {UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId(),
        "VirtualContent"});
+  GetCustomPropertiesMap().insert(
+      {UiaRegistrarWin::GetInstance().GetMathMLPropertyId(), "MathML"});
 }
 
 std::string AXTreeFormatterUia::ProcessTreeForOutput(

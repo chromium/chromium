@@ -1,0 +1,5 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <mn class="test">42</mn><newline></math>'
+++++++Custom IsControlElement=false
+++++++++Text Name='42'

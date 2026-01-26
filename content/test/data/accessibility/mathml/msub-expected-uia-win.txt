@@ -1,0 +1,8 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <msub class="test"><newline>    <mn>1</mn><newline>    <mn>2</mn><newline>  </msub><newline></math>'
+++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Text Name='1'
+++++++++Custom IsControlElement=false
+++++++++++Text Name='2'

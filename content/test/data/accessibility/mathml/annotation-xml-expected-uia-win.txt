@@ -1,0 +1,10 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <semantics><newline>    <mfrac><mn>1</mn><mn>2</mn></mfrac><newline>    <annotation encoding="application/x-tex">\frac{1}{2}</annotation><newline>    <annotation-xml class="test" encoding="application/mathml-content+xml"><newline>      <apply><newline>        <divide></divide><newline>        <cn>1</cn><newline>        <cn>2</cn><newline>      </apply><newline>    </annotation-xml><newline>  </semantics><newline></math>'
+++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Custom IsControlElement=false
+++++++++++++Text Name='1'
+++++++++++Custom IsControlElement=false
+++++++++++++Text Name='2'
+++++++++Custom IsControlElement=false

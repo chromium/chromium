@@ -1,0 +1,5 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <mi class="test">sin</mi><newline></math>'
+++++++Custom IsControlElement=false
+++++++++Text Name='sin'

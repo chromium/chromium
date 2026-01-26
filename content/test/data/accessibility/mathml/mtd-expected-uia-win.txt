@@ -1,0 +1,24 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <mtable><newline>    <mtr><newline>      <mtd class="test"><mn>1</mn></mtd><newline>      <mtd><mn>2</mn></mtd><newline>      <mtd><mn>3</mn></mtd><newline>    </mtr><newline>    <mtr><newline>      <mtd><mn>4</mn></mtd><newline>      <mtd><mn>5</mn></mtd><newline>      <mtd><mn>6</mn></mtd><newline>    </mtr><newline>  </mtable><newline></math>'
+++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Custom IsControlElement=false
+++++++++++++Custom IsControlElement=false
+++++++++++++++Text Name='1' IsControlElement=false
+++++++++++Custom IsControlElement=false
+++++++++++++Custom IsControlElement=false
+++++++++++++++Text Name='2' IsControlElement=false
+++++++++++Custom IsControlElement=false
+++++++++++++Custom IsControlElement=false
+++++++++++++++Text Name='3' IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Custom IsControlElement=false
+++++++++++++Custom IsControlElement=false
+++++++++++++++Text Name='4' IsControlElement=false
+++++++++++Custom IsControlElement=false
+++++++++++++Custom IsControlElement=false
+++++++++++++++Text Name='5' IsControlElement=false
+++++++++++Custom IsControlElement=false
+++++++++++++Custom IsControlElement=false
+++++++++++++++Text Name='6' IsControlElement=false

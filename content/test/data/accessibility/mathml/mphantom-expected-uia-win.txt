@@ -1,0 +1,4 @@
+Document
+++Group IsControlElement=false
+++++Custom MathML='<math><newline>  <mphantom style="visibility: visible" class="test"></mphantom><newline></math>'
+++++++Custom IsControlElement=false
