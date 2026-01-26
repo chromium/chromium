@@ -42,7 +42,7 @@
   gap: 61px;
   height: 100%;
   padding: 30px 18px 0 18px;
-  width: 76px;
+  width: var(--threads-rail-width, 76px);
 }
 
 #logo {

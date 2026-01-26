@@ -34,6 +34,7 @@
   --ntp-protected-icon-background-color: transparent;
   --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
   --ntp-scrim-opacity_: 1;
+  --threads-rail-width: 76px;
   --threads-rail-focus-outline-color: var(--color-new-tab-page-focus-ring);
 }
 
@@ -151,6 +152,18 @@ cr-most-visited {
   padding-top: var(--ntp-one-google-bar-height);
   position: relative;
   z-index: 1;
+}
+
+/*
+ * Below 900px, the threads rail will shift the main content aside.
+ * This happens in conjunction with the realbox width change as well,
+ * when the total width reaches 824px + 76px (realbox + rail).
+ */
+@media (max-width: 900px) {
+  #content[ntp-threads-rail-open] {
+    margin-inline-start: var(--threads-rail-width);
+    width: calc(100% - var(--threads-rail-width));
+  }
 }
 
 :host([show-composebox_]) #content {

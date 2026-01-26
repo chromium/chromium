@@ -1,7 +1,8 @@
 <!-- #html_wrapper_imports_start
 import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
 #html_wrapper_imports_end -->
-<div id="content">
+<div id="content"
+  ?ntp-threads-rail-open="${this.showComposebox_ && this.enableThreadsRail_}">
   ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
     <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
   ` : ''}
