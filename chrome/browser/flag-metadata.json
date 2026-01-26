@@ -7537,6 +7537,15 @@
     "expiry_milestone": 149
   },
   {
+    "name": "permissions-gesture-gated-prompts",
+    "owners": [
+      "elklm@chromium.org",
+      "hempjudith@google.com",
+      "//components/permissions/PERMISSIONS_OWNERS"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "permissive-usb-passthrough",
     "owners": [
       "drmasquatch@google.com"

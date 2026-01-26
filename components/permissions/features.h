@@ -105,6 +105,9 @@ BASE_DECLARE_FEATURE(kReturnDeniedForNotificationsWhenNoAppLevelSettings);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionPredictionsGeolocationAccuracy);
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kPermissionsGestureGatedPrompts);
+
 }  // namespace features
 
 namespace feature_params {
@@ -179,6 +182,14 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>
     kWebKioskBrowserPermissionsAllowlist;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<bool>
+    kPermissionsGestureGatedPromptsMuteNotifications;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<bool>
+    kPermissionsGestureGatedPromptsMuteGeolocation;
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PERMISSIONS_COMMON)

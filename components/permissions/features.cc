@@ -117,6 +117,11 @@ BASE_FEATURE(kReturnDeniedForNotificationsWhenNoAppLevelSettings,
 BASE_FEATURE(kPermissionPredictionsGeolocationAccuracy,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, notification and geolocation permission requests that
+// are not accompanied by a user gesture will be shown as quiet prompts.
+BASE_FEATURE(kPermissionsGestureGatedPrompts,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace feature_params {
@@ -297,6 +302,14 @@ const base::FeatureParam<std::string>
 const base::FeatureParam<std::string> kWebKioskBrowserPermissionsAllowlist{
     &permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
     "allowlist_urls", ""};
+
+const base::FeatureParam<bool> kPermissionsGestureGatedPromptsMuteNotifications{
+    &permissions::features::kPermissionsGestureGatedPrompts,
+    "mute_notifications", false};
+
+const base::FeatureParam<bool> kPermissionsGestureGatedPromptsMuteGeolocation{
+    &permissions::features::kPermissionsGestureGatedPrompts, "mute_geolocation",
+    false};
 
 #if !BUILDFLAG(IS_ANDROID)
 const base::FeatureParam<bool> kKeyboardLockPromptUIStyle{

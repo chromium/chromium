@@ -11160,6 +11160,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPermissionsAndroidClapperQuietName,
      flag_descriptions::kPermissionsAndroidClapperQuietDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(permissions::kPermissionsAndroidClapperQuiet)},
+    {"permissions-gesture-gated-prompts",
+     flag_descriptions::kPermissionsGestureGatedPromptsName,
+     flag_descriptions::kPermissionsGestureGatedPromptsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         permissions::features::kPermissionsGestureGatedPrompts)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

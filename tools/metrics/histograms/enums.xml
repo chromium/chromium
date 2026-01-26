@@ -14967,6 +14967,7 @@ from previous Chrome versions.
   <int value="225059444" label="ViewTransitionLayeredCapture:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
   <int value="225857705" label="NtpNextFeatures:disabled"/>
+  <int value="226317496" label="PermissionsGestureGatedPrompts:disabled"/>
   <int value="226590039" label="OverviewButton:disabled"/>
   <int value="226633333"
       label="enable-experimental-accessibility-manifest-v3:disabled"/>
@@ -17938,6 +17939,7 @@ from previous Chrome versions.
   <int value="1251097300"
       label="CCTResizableSideSheetDiscoverFeedSettings:enabled"/>
   <int value="1251663392" label="ArcImageCopyPasteCompat:disabled"/>
+  <int value="1252875387" label="PermissionsGestureGatedPrompts:enabled"/>
   <int value="1253001092" label="FeedShare:enabled"/>
   <int value="1253304179" label="InstanceSwitcherV2:disabled"/>
   <int value="1253698118" label="ash-disable-stable-overview-order"/>
