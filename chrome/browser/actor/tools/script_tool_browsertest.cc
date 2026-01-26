@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
@@ -211,6 +213,51 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
   ASSERT_TRUE(action_results.at(0).result->script_tool_response);
   EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
             "This is an example sentence.");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/declarative_script_tool_cross_document.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string declarative_input =
+      R"JSON(
+        {
+          "echo": "hello world"
+        }
+      )JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
+                                      declarative_input);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  const auto& action_results = result.Get<2>();
+  ASSERT_EQ(action_results.size(), 1u);
+  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->name,
+            "declarative_tool");
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
+            declarative_input);
+
+  base::Value actual_json = base::test::ParseJson(
+      *action_results.at(0).result->script_tool_response->result);
+  base::Value expected_json = base::test::ParseJson(R"JSON(
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "echoed value"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "extra stuff"
+    }
+  ]
+)JSON");
+
+  EXPECT_EQ(actual_json, expected_json);
 }
 
 }  // namespace

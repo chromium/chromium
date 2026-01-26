@@ -117,6 +117,18 @@ interface ChromeRenderFrame {
   // CancelTool() is invoked).
   CancelTool(actor.mojom.TaskId task_id);
 
+  // ScriptTool executed on a Document using InvokeTool can result in a
+  // same-origin cross-document navigation such that the tool result is
+  // available on the new Document.
+  //
+  // This API is used by the browser to pull the result from the new Document.
+  // The API can be called anytime after the navigation commits. The renderer
+  // is responsible for ensuring the Document has reached the required lifecycle
+  // state before the result can be read.
+  //
+  // `result` is derived from structured data in the DOM like json-ld tags.
+  GetCrossDocumentScriptToolResult() => (string result);
+
   // Requests actor automation framework journaling. Journaling can be
   // stopped by disconnecting the passed in remote. We use an associated
   // remote here to keep this consistent with navigation events. The

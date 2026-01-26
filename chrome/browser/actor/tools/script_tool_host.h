@@ -44,15 +44,23 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   tabs::TabHandle GetTargetTab() const override;
 
  private:
-  enum class Lifecycle { kInitial, kInvokeSent, kDone };
+  enum class Lifecycle {
+    kInitial,
+    kInvokeSent,
+    kWaitingForNavigation,
+    kPendingResultFromNewDocment,
+    kDone
+  };
 
   // WebContentsObserver implementation.
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* /*new_host*/) override;
   void RenderFrameDeleted(content::RenderFrameHost* rfh) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   void TearDown();
   void OnToolInvokedInOldDocument(mojom::ActionResultPtr result);
+  void OnResultReceivedFromNewDocument(const std::string& result);
   void PostErrorResult(ToolCallback tool_callback,
                        mojom::ActionResultCode code);
 
@@ -62,12 +70,25 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   const mojom::ToolActionPtr action_;
   ToolCallback tool_done_callback_;
 
-  content::WeakDocumentPtr target_document_;
-
-  // A reference to the target Document for the tool execution. Only set during
-  // kInvokeSent.
+  // A reference to the target Document for the tool execution.
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
       target_document_render_frame_;
+  content::WeakDocumentPtr target_document_;
+  url::Origin target_document_origin_;
+
+  // The result provided by the old Document. This is set when we have received
+  // the response from the old Document. It's populated with the result pulled
+  // from the new Document before the tool invocation is finished.
+  mojom::ActionResultPtr pending_result_;
+
+  // A reference to the new Document if this tool resulted in a cross-document
+  // navigation and the result will be provided on the new Document.
+  // After we have received a response from the old Document, we wait for the
+  // first cross-document navigation to commit in the browser. These fields are
+  // set to that Document if it's same-origin with the old Document.
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+      new_document_render_frame_;
+  content::WeakDocumentPtr new_document_;
 
   base::WeakPtrFactory<ScriptToolHost> weak_ptr_factory_{this};
 };

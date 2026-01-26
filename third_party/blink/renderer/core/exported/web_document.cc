@@ -418,6 +418,19 @@ void WebDocument::ExecuteScriptTool(
   }
 }
 
+void WebDocument::GetCrossDocumentScriptToolResult(
+    CrossDocumentScriptToolResultCallback result_callback) {
+  if (auto* model_context = ModelContextSupplement::modelContext(
+          *Unwrap<Document>()->domWindow()->navigator())) {
+    model_context->GetCrossDocumentScriptToolResult(blink::BindOnce(
+        [](CrossDocumentScriptToolResultCallback original_callback,
+           String result) {
+          std::move(original_callback).Run(WebString(result));
+        },
+        std::move(result_callback)));
+  }
+}
+
 void WebDocument::DispatchAutofillEvent(
     std::vector<std::pair<WebFormControlElement, WebString>> field_data,
     const base::UnguessableToken& fill_id,

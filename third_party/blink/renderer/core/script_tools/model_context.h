@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_registration_params.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
@@ -39,7 +40,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit ModelContext(scoped_refptr<base::SingleThreadTaskRunner>);
+  ModelContext(Document& document, scoped_refptr<base::SingleThreadTaskRunner>);
 
   void ForEachScriptTool(
       base::FunctionRef<void(const mojom::blink::ScriptTool&)>) const;
@@ -57,6 +58,10 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   void ExecuteTool(const String& name,
                    const String& input_arguments,
                    WebDocument::ScriptToolExecutedCallback tool_executed_cb);
+  using CrossDocumentScriptToolResultCallback =
+      base::OnceCallback<void(String)>;
+  void GetCrossDocumentScriptToolResult(
+      CrossDocumentScriptToolResultCallback result_callback);
 
   void SetToolsChangedCallback(std::optional<base::RepeatingClosure> cb) {
     tools_changed_closure_ = std::move(cb);
@@ -65,6 +70,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   void RegisterDeclarativeTool(String name,
                                String description,
                                DeclarativeWebMCPTool* tool);
+  void DidFinishParsing();
 
   void Trace(Visitor*) const override;
 
@@ -105,7 +111,11 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   HashMap<uint32_t, WebDocument::ScriptToolExecutedCallback>
       pending_executions_;
 
+  Vector<CrossDocumentScriptToolResultCallback>
+      cross_document_result_callbacks_;
+
   std::optional<base::RepeatingClosure> tools_changed_closure_;
+  Member<Document> document_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

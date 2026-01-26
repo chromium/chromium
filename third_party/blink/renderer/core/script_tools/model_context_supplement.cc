@@ -52,8 +52,10 @@ void ModelContextSupplement::Trace(Visitor* visitor) const {
 
 ModelContext* ModelContextSupplement::modelContext() {
   if (!model_context_) {
-    if (auto* window = GetSupplementable()->DomWindow()) {
+    auto* window = GetSupplementable()->DomWindow();
+    if (window && window->document()) {
       model_context_ = MakeGarbageCollected<ModelContext>(
+          *window->document(),
           window->GetTaskRunner(TaskType::kUserInteraction));
     }
   }

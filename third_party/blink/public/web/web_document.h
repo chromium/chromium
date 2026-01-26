@@ -233,6 +233,13 @@ class BLINK_EXPORT WebDocument : public WebNode {
                          const WebString& input_arguments,
                          ScriptToolExecutedCallback tool_executed_cb);
 
+  // Provides the result of a script tool execution initiated on an old
+  // Document.
+  using CrossDocumentScriptToolResultCallback =
+      base::OnceCallback<void(WebString)>;
+  void GetCrossDocumentScriptToolResult(
+      CrossDocumentScriptToolResultCallback result_callback);
+
   // Dispatches an autofill event on the document with the given field data.
   // This is called by the autofill agent before filling form fields.
   // The `fill_id` is passed so that refill requests can be associated with

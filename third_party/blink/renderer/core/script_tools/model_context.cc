@@ -8,7 +8,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/platform/json/json_parser.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -48,6 +52,43 @@ ScriptObject JSONStringToScriptObject(ScriptState* script_state,
   return ScriptObject(script_state->GetIsolate(), v8_object);
 }
 
+String ComputeScriptToolResult(const Document& document) {
+  StringBuilder builder;
+  builder.Append("[");
+
+  bool first = true;
+  for (HTMLScriptElement& script_element :
+       Traversal<HTMLScriptElement>::DescendantsOf(document)) {
+    if (static_cast<ScriptElementBase&>(script_element).TypeAttributeValue() !=
+        "application/ld+json") {
+      continue;
+    }
+
+    const String& json_raw = script_element.textContent();
+    if (json_raw.empty()) {
+      continue;
+    }
+
+    JSONParseError error;
+    std::unique_ptr<JSONValue> parsed_json =
+        ParseJSONWithCommentsDeprecated(json_raw, &error);
+    if (!parsed_json) {
+      LOG(ERROR) << "JSON parsing failed : " << error.message;
+      continue;
+    }
+
+    if (!first) {
+      builder.Append(",");
+    }
+
+    builder.Append(parsed_json->ToJSONString());
+    first = false;
+  }
+
+  builder.Append("]");
+  return builder.ToString();
+}
+
 }  // namespace
 
 class ModelContext::ToolFunctionFinishedCallback
@@ -80,7 +121,7 @@ class ModelContext::ToolFunctionFinishedCallback
         }
       }
 
-      if (!result) {
+      if (!result || result->empty()) {
         result = "Operation succeeded";
       }
     } else {
@@ -103,8 +144,9 @@ class ModelContext::ToolFunctionFinishedCallback
 };
 
 ModelContext::ModelContext(
+    Document& document,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)) {}
+    : document_(document), task_runner_(std::move(task_runner)) {}
 
 void ModelContext::ForEachScriptTool(
     base::FunctionRef<void(const mojom::blink::ScriptTool&)> func) const {
@@ -180,6 +222,28 @@ void ModelContext::ExecuteTool(
     ExecuteDeclarativeTool(it->value->declarative_tool, input_arguments,
                            std::move(tool_executed_cb));
   }
+}
+
+void ModelContext::GetCrossDocumentScriptToolResult(
+    CrossDocumentScriptToolResultCallback result_callback) {
+  if (document_->HasFinishedParsing()) {
+    std::move(result_callback).Run(ComputeScriptToolResult(*document_));
+    return;
+  }
+
+  cross_document_result_callbacks_.push_back(std::move(result_callback));
+}
+
+void ModelContext::DidFinishParsing() {
+  if (cross_document_result_callbacks_.empty()) {
+    return;
+  }
+
+  auto result = ComputeScriptToolResult(*document_);
+  for (auto& callback : cross_document_result_callbacks_) {
+    std::move(callback).Run(result);
+  }
+  cross_document_result_callbacks_.clear();
 }
 
 // This overload is used for declaratively-created WebMCP tools. It passes
@@ -344,6 +408,7 @@ void ModelContext::OnToolsChanged() {
 void ModelContext::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(tool_map_);
+  visitor->Trace(document_);
 }
 
 void ModelContext::ToolData::Trace(Visitor* visitor) const {

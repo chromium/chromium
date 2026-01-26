@@ -44,7 +44,9 @@ mojom::ActionResultPtr OnToolExecuted(
   auto script_tool_response = mojom::ScriptToolResponse::New();
   script_tool_response->name = name;
   script_tool_response->input_arguments = input_arguments;
-  script_tool_response->result = response->Utf8();
+  if (!response->IsEmpty()) {
+    script_tool_response->result = response->Utf8();
+  }
   result->script_tool_response = std::move(script_tool_response);
 
   return result;

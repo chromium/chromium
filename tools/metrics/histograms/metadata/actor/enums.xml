@@ -115,6 +115,7 @@ chromium-metrics-reviews@google.com.
   <int value="1201" label="ScriptToolInvalidName"/>
   <int value="1202" label="ScriptToolInvalidInputArguments"/>
   <int value="1203" label="ScriptToolInvocationFailed"/>
+  <int value="1204" label="ScriptToolCrossOriginNavigation"/>
   <int value="1300" label="ActorUiError"/>
 </enum>
 

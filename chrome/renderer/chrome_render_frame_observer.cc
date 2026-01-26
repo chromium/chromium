@@ -644,6 +644,15 @@ void ChromeRenderFrameObserver::StartActorJournal(
   actor_journal_->Bind(std::move(client));
 }
 
+void ChromeRenderFrameObserver::GetCrossDocumentScriptToolResult(
+    GetCrossDocumentScriptToolResultCallback callback) {
+  render_frame()->GetWebFrame()->GetDocument().GetCrossDocumentScriptToolResult(
+      base::BindOnce(
+          [](GetCrossDocumentScriptToolResultCallback cb,
+             blink::WebString result) { std::move(cb).Run(result.Utf8()); },
+          std::move(callback)));
+}
+
 void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
     mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
     const actor::TaskId& task_id,

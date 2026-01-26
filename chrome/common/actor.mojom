@@ -497,6 +497,11 @@ enum ActionResultCode {
   // function threw an error.
   kScriptToolInvocationFailed = 1203,
 
+  // Tool was executed with default form submission assuming the result will be
+  // provided after a same-origin navigation commit but a cross-origin
+  // navigation was committed.
+  kScriptToolCrossOriginNavigation = 1204,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

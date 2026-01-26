@@ -10,6 +10,7 @@
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
@@ -78,6 +79,7 @@ void ScriptToolHost::Invoke(ToolCallback callback) {
 
   frame->GetRemoteAssociatedInterfaces()->GetInterface(
       &target_document_render_frame_);
+  target_document_origin_ = frame->GetLastCommittedOrigin();
 
   lifecycle_ = Lifecycle::kInvokeSent;
   target_document_render_frame_->InvokeTool(
@@ -97,12 +99,18 @@ void ScriptToolHost::Cancel() {
     case Lifecycle::kDone:
       break;
     case Lifecycle::kInvokeSent:
-      CHECK(target_document_render_frame_);
+    case Lifecycle::kWaitingForNavigation:
+    case Lifecycle::kPendingResultFromNewDocment:
       journal().Log(
           JournalURL(), task_id(), "ScriptToolHost::Cancel",
           JournalDetailsBuilder().Add("tab_handle", target_tab_).Build());
 
-      target_document_render_frame_->CancelTool(task_id());
+      if (target_document_render_frame_) {
+        target_document_render_frame_->CancelTool(task_id());
+      }
+
+      // TODO(khushalsagar): Should we cancel the ongoing navigation here? See
+      // crbug.com/478276089.
       PostErrorResult(std::move(tool_done_callback_),
                       mojom::ActionResultCode::kInvokeCanceled);
       break;
@@ -139,20 +147,33 @@ void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
 
   const bool result_on_new_document = result && result->script_tool_response &&
                                       !result->script_tool_response->result;
-  if (!result_on_new_document) {
-    lifecycle_ = Lifecycle::kDone;
-    std::move(tool_done_callback_).Run(std::move(result));
+  if (result_on_new_document) {
+    auto* contents = target_tab_.Get()->GetContents();
+    CHECK(contents);
+
+    lifecycle_ = Lifecycle::kWaitingForNavigation;
+    pending_result_ = std::move(result);
+    Observe(contents);
     return;
   }
 
-  // TODO(khushalsagar): Add support for cross-document result tracking.
   lifecycle_ = Lifecycle::kDone;
   std::move(tool_done_callback_).Run(std::move(result));
 }
 
+void ScriptToolHost::OnResultReceivedFromNewDocument(
+    const std::string& result) {
+  CHECK_EQ(lifecycle_, Lifecycle::kPendingResultFromNewDocment);
+  CHECK(pending_result_);
+
+  lifecycle_ = Lifecycle::kDone;
+  pending_result_->script_tool_response->result = result;
+  std::move(tool_done_callback_).Run(std::move(pending_result_));
+}
+
 void ScriptToolHost::RenderFrameHostChanged(
     content::RenderFrameHost* old_host,
-    content::RenderFrameHost* /*new_host*/) {
+    content::RenderFrameHost* new_host) {
   switch (lifecycle_) {
     case Lifecycle::kInitial:
     case Lifecycle::kDone:
@@ -161,26 +182,78 @@ void ScriptToolHost::RenderFrameHostChanged(
       // If the old_host is destroyed before we get a result from the renderer,
       // we have to process this as a failure since we can't provide the
       // invocation result.
-      if (old_host == target_document_.AsRenderFrameHostIfValid()) {
+      if (old_host && old_host == target_document_.AsRenderFrameHostIfValid()) {
         PostErrorResult(std::move(tool_done_callback_),
                         mojom::ActionResultCode::kFrameWentAway);
       }
       break;
+    case Lifecycle::kPendingResultFromNewDocment:
+      if (old_host && old_host == new_document_.AsRenderFrameHostIfValid()) {
+        PostErrorResult(std::move(tool_done_callback_),
+                        mojom::ActionResultCode::kFrameWentAway);
+      }
+      break;
+    case Lifecycle::kWaitingForNavigation:
+      // RFH swap is too early and doesn't provide the committed origin. We use
+      // PrimaryPageChanged which is dispatched after the committed origin is
+      // available.
+      break;
   }
 }
 
+void ScriptToolHost::PrimaryPageChanged(content::Page& page) {
+  if (lifecycle_ != Lifecycle::kWaitingForNavigation) {
+    return;
+  }
+
+  auto& new_host = page.GetMainDocument();
+  if (!new_host.GetLastCommittedOrigin().IsSameOriginWith(
+          target_document_origin_)) {
+    // If we end with a cross-origin navigation, assume execution
+    // failure.
+    PostErrorResult(std::move(tool_done_callback_),
+                    mojom::ActionResultCode::kScriptToolCrossOriginNavigation);
+    return;
+  }
+  // The new navigation has committed. Send a request to the renderer to
+  // pull the result.
+  lifecycle_ = Lifecycle::kPendingResultFromNewDocment;
+  new_document_ = new_host.GetWeakDocumentPtr();
+  new_host.GetRemoteAssociatedInterfaces()->GetInterface(
+      &new_document_render_frame_);
+  new_document_render_frame_->GetCrossDocumentScriptToolResult(
+      base::BindOnce(&ScriptToolHost::OnResultReceivedFromNewDocument,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // TODO(khushalsagar): We need to address the case where this navigation never
+  // commits in which case PrimaryPageChanged won't be dispatched. See
+  // crbug.com/478063859.
+}
+
 void ScriptToolHost::RenderFrameDeleted(content::RenderFrameHost* rfh) {
+  bool terminate_with_error = false;
   switch (lifecycle_) {
     case Lifecycle::kInitial:
     case Lifecycle::kDone:
       NOTREACHED();
     case Lifecycle::kInvokeSent:
-      if (rfh == target_document_.AsRenderFrameHostIfValid()) {
-        PostErrorResult(std::move(tool_done_callback_),
-                        MaybeGetErrorCodeForTab(target_tab_.Get())
-                            .value_or(mojom::ActionResultCode::kFrameWentAway));
-      }
+    case Lifecycle::kWaitingForNavigation:
+      // Note: If a new navigation is committed, OnRenderFrameHostChanged will
+      // be dispatched before RenderFrameDeleted. If we're receiving the
+      // RenderFrameDeleted notification in this state, it's safe to assume
+      // there was an error/crash in the old frame or the tab was closed.
+      terminate_with_error =
+          (rfh == target_document_.AsRenderFrameHostIfValid());
       break;
+    case Lifecycle::kPendingResultFromNewDocment:
+      terminate_with_error = (rfh == new_document_.AsRenderFrameHostIfValid());
+      break;
+  }
+
+  if (terminate_with_error) {
+    PostErrorResult(std::move(tool_done_callback_),
+                    MaybeGetErrorCodeForTab(target_tab_.Get())
+                        .value_or(mojom::ActionResultCode::kFrameWentAway));
   }
 }
 
@@ -194,6 +267,9 @@ void ScriptToolHost::PostErrorResult(ToolCallback tool_callback,
 
 void ScriptToolHost::TearDown() {
   Observe(nullptr);
+  target_document_render_frame_.reset();
+  new_document_render_frame_.reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace actor

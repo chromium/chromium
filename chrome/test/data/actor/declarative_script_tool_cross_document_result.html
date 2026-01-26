@@ -5,11 +5,18 @@
     {
       "@context": "https://schema.org",
       "@type": "Message",
-      "text": "echoed value",
+      "text": "echoed value"
     }
     </script>
 </head>
 <body>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "extra stuff"
+    }
+    </script>
     <script>
         const params = new URLSearchParams(window.location.search);
         const textValue = params.get('text');
