@@ -62,28 +62,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         ?multi-line-enabled="${this.multiLineEnabled_}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
-      ${this.enableModalComposebox_ ? html`
-        <div id="dialogAnchor"></div>
-        <dialog id="composeboxDialog">
-          <cr-composebox id="composebox"
-              ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
-              ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
-              ?disable-caret-color-animation="${true}"
-              @composebox-initialized="${this.onComposeboxInitialized_}"
-              @close-composebox="${this.closeComposebox_}"
-              @composebox-input-focus-changed="${this.onInputFocusChanged_}"
-              @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
-              @voice-search-action="${this.onComposeVoiceSearchAction_}"
-              ?show-canvas="${this.showCanvas_}"
-              ?show-model-picker="${this.showModelPicker_}"
-              searchbox-layout-mode="${this.realboxLayoutMode_}">
-          </cr-composebox>
-          ${this.enableThreadsRail_ ? html`
-            <cr-threads-rail id="threadsRail">
-            </cr-threads-rail>
-          ` : ''}
-        </dialog>
-      ` : html`
+      <div id="dialogAnchor"></div>
+      <dialog id="composeboxDialog">
         <cr-composebox id="composebox"
             ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
             ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
@@ -91,14 +71,17 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
             @composebox-initialized="${this.onComposeboxInitialized_}"
             @close-composebox="${this.closeComposebox_}"
             @composebox-input-focus-changed="${this.onInputFocusChanged_}"
-            @voice-search-query="${this.onComposeVoiceSearchAction_}"
+            @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+            @voice-search-action="${this.onComposeVoiceSearchAction_}"
+            ?show-canvas="${this.showCanvas_}"
+            ?show-model-picker="${this.showModelPicker_}"
             searchbox-layout-mode="${this.realboxLayoutMode_}">
         </cr-composebox>
         ${this.enableThreadsRail_ ? html`
           <cr-threads-rail id="threadsRail">
           </cr-threads-rail>
         ` : ''}
-      `}
+      </dialog>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
       <ntp-lens-upload-dialog id="lensUploadDialog"
