@@ -60,8 +60,12 @@ class Task:
 def run_command(command: list[str],
                 capture_output: bool = False,
                 **kwargs) -> subprocess.CompletedProcess:
-    """Runs a shell command and returns a CompletedProcess."""
-    logger.info('Running: %s', " ".join(command))
+    """Runs a shell command and returns a CompletedProcess.
+
+    If capture_output is True, stdout and stderr are captured and merged into
+    the stdout field of the returned CompletedProcess.
+    """
+    logger.info('Running: %s', ' '.join(command))
     stdout_arg = subprocess.PIPE if capture_output else None
     stderr_arg = subprocess.STDOUT if capture_output else None
     try:
