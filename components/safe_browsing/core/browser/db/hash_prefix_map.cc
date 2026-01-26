@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/safe_browsing/core/browser/db/prefix_iterator.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -332,8 +333,7 @@ HashPrefixMap::FileInfo::~FileInfo() = default;
 
 HashPrefixesView HashPrefixMap::FileInfo::GetView() const {
   DCHECK(IsReadable());
-  return HashPrefixesView(reinterpret_cast<const char*>(file_.data()),
-                          file_.length());
+  return base::as_string_view(file_.bytes());
 }
 
 bool HashPrefixMap::FileInfo::Initialize(const HashFile& hash_file,

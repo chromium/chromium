@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -543,9 +544,7 @@ void Scorer::ApplyVisualTfLiteModel(
         base::BindOnce(
             &ApplyVisualTfLiteModelHelper, bitmap, classification_input_width_,
             classification_input_height_,
-            std::string(
-                reinterpret_cast<const char*>(visual_tflite_model_.data()),
-                visual_tflite_model_.length()),
+            std::string(base::as_string_view(visual_tflite_model_.bytes())),
             base::SequencedTaskRunner::GetCurrentDefault(),
             std::move(callback)));
   } else {
@@ -566,9 +565,7 @@ void Scorer::ApplyVisualTfLiteModelImageEmbedding(
         base::BindOnce(
             &ApplyImageEmbeddingTfLiteModelHelper, bitmap,
             image_embedding_input_width_, image_embedding_input_height_,
-            std::string(
-                reinterpret_cast<const char*>(image_embedding_model_.data()),
-                image_embedding_model_.length()),
+            std::string(base::as_string_view(image_embedding_model_.bytes())),
             base::SequencedTaskRunner::GetCurrentDefault(),
             std::move(callback)));
     base::UmaHistogramTimes(
