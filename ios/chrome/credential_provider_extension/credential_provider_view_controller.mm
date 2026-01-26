@@ -573,11 +573,8 @@ enum class PasskeyUserVerificationStatus {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  if ([self.presentedViewController
-          isKindOfClass:[PasskeyErrorAlertViewController class]]) {
-    [self dismissViewControllerAnimated:YES completion:nil];
-    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
-  }
+  [self dismissViewControllerAnimated:YES completion:nil];
+  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
 }
 
 #pragma mark - CredentialResponseHandler
@@ -1001,7 +998,6 @@ enum class PasskeyUserVerificationStatus {
 - (void)showStaleCredentials {
   StaleCredentialsViewController* staleCredentialsViewController =
       [[StaleCredentialsViewController alloc] init];
-  staleCredentialsViewController.actionHandler = self;
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:staleCredentialsViewController];
   staleCredentialsViewController.navigationItem.rightBarButtonItem =
@@ -1128,7 +1124,6 @@ enum class PasskeyUserVerificationStatus {
 - (void)showGenericErrorAlert {
   GenericErrorViewController* genericErrorViewController =
       [[GenericErrorViewController alloc] init];
-  genericErrorViewController.actionHandler = self;
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:genericErrorViewController];
 
