@@ -455,6 +455,10 @@ enum class PermissionAutoRevocationHistory {
 // first minute after a PermissionAction has been taken. Note that
 // PermissionActions  DISMISSED and IGNORED are not taken into account, as they
 // don't have an effect on the content settings.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PermissionChangeAction)
 enum class PermissionChangeAction {
   // PermissionAction was one of {GRANTED, GRANTED_ONCE} and the content
   // setting is changed to CONTENT_SETTING_BLOCK.
@@ -480,6 +484,7 @@ enum class PermissionChangeAction {
   // Always keep at the end.
   kMaxValue = REMEMBER_CHECKBOX_TOGGLED,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionChangeAction)
 
 // LINT.IfChange(ElementAnchoredBubbleAction)
 enum class ElementAnchoredBubbleAction {

@@ -152,13 +152,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionAiRelevanceModel) -->
 
+<!-- LINT.IfChange(PermissionChangeAction) -->
+
 <enum name="PermissionChangeAction">
   <int value="0" label="Revoked"/>
   <int value="1" label="Reallowed"/>
-  <int value="2" label="Reset from denied state"/>
-  <int value="3" label="Reset from allowed state"/>
+  <int value="2" label="Reset from allowed state"/>
+  <int value="3" label="Reset from denied state"/>
   <int value="4" label="Remember decision checkbox toggled"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionChangeAction) -->
 
 <enum name="PermissionChangeInfo">
   <int value="0" label="Infobar shown, page reloaded, permission used"/>
