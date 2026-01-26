@@ -19,12 +19,12 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "skia/ext/rgba_to_yuva.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/color_transform.h"
 
 #define FIXME_SUPPORT_ICC_PROFILE_NO_TRANSFORM 0
 #define FIXME_SUPPORT_ICC_PROFILE_TRANSFORM 0
@@ -651,7 +651,7 @@ void ReadYUV(const char* file_name,
              const gfx::Size& expected_uv_size,
              SkColorType color_type,
              int bit_depth,
-             gfx::Point3F* rgb_pixel = nullptr) {
+             SkColor4f* rgb_pixel = nullptr) {
   scoped_refptr<SharedBuffer> data =
       ReadFileToSharedBuffer("web_tests/images/resources/avif/", file_name);
   ASSERT_TRUE(data);
@@ -717,42 +717,43 @@ void ReadYUV(const char* file_name,
   }
 
   if (bit_depth > 8) {
-    rgb_pixel->set_x(reinterpret_cast<uint16_t*>(planes[0])[0]);
-    rgb_pixel->set_y(reinterpret_cast<uint16_t*>(planes[1])[0]);
-    rgb_pixel->set_z(reinterpret_cast<uint16_t*>(planes[2])[0]);
+    rgb_pixel->fR = reinterpret_cast<uint16_t*>(planes[0])[0];
+    rgb_pixel->fG = reinterpret_cast<uint16_t*>(planes[1])[0];
+    rgb_pixel->fB = reinterpret_cast<uint16_t*>(planes[2])[0];
   } else {
-    rgb_pixel->set_x(reinterpret_cast<uint8_t*>(planes[0])[0]);
-    rgb_pixel->set_y(reinterpret_cast<uint8_t*>(planes[1])[0]);
-    rgb_pixel->set_z(reinterpret_cast<uint8_t*>(planes[2])[0]);
+    rgb_pixel->fR = reinterpret_cast<uint8_t*>(planes[0])[0];
+    rgb_pixel->fG = reinterpret_cast<uint8_t*>(planes[1])[0];
+    rgb_pixel->fB = reinterpret_cast<uint8_t*>(planes[2])[0];
   }
 
   if (color_type == kGray_8_SkColorType) {
     const float max_channel = (1 << bit_depth) - 1;
-    rgb_pixel->set_x(rgb_pixel->x() / max_channel);
-    rgb_pixel->set_y(rgb_pixel->y() / max_channel);
-    rgb_pixel->set_z(rgb_pixel->z() / max_channel);
+    rgb_pixel->fR /= max_channel;
+    rgb_pixel->fG /= max_channel;
+    rgb_pixel->fB /= max_channel;
   } else if (color_type == kA16_unorm_SkColorType) {
     constexpr float kR16MaxChannel = 65535.0f;
-    rgb_pixel->set_x(rgb_pixel->x() / kR16MaxChannel);
-    rgb_pixel->set_y(rgb_pixel->y() / kR16MaxChannel);
-    rgb_pixel->set_z(rgb_pixel->z() / kR16MaxChannel);
+    rgb_pixel->fR /= kR16MaxChannel;
+    rgb_pixel->fG /= kR16MaxChannel;
+    rgb_pixel->fB /= kR16MaxChannel;
   } else {
     DCHECK_EQ(color_type, kA16_float_SkColorType);
-    rgb_pixel->set_x(HalfFloatToUnorm(rgb_pixel->x()));
-    rgb_pixel->set_y(HalfFloatToUnorm(rgb_pixel->y()));
-    rgb_pixel->set_z(HalfFloatToUnorm(rgb_pixel->z()));
+    rgb_pixel->fR = HalfFloatToUnorm(rgb_pixel->fR);
+    rgb_pixel->fG = HalfFloatToUnorm(rgb_pixel->fG);
+    rgb_pixel->fB = HalfFloatToUnorm(rgb_pixel->fB);
   }
+  rgb_pixel->fA = 1.f;
 
   // Convert our YUV pixel to RGB to avoid an excessive amounts of test
   // expectations. We otherwise need bit_depth * yuv_sampling * color_type.
-  gfx::ColorTransform::Options options;
-  options.src_bit_depth = bit_depth;
-  options.dst_bit_depth = bit_depth;
-  auto transform = gfx::ColorTransform::NewColorTransform(
-      reinterpret_cast<AVIFImageDecoder*>(decoder.get())
-          ->GetColorSpaceForTesting(),
-      gfx::ColorSpace(), options);
-  transform->Transform(rgb_pixel, 1);
+  SkPixmap pm(
+      SkImageInfo::Make(1, 1, kRGBA_F32_SkColorType, kUnpremul_SkAlphaType),
+      rgb_pixel, sizeof(SkColor4f));
+  SkYUVColorSpace yuv_cs = kIdentity_SkYUVColorSpace;
+  auto cs = reinterpret_cast<AVIFImageDecoder*>(decoder.get())
+                ->GetColorSpaceForTesting();
+  cs.ToSkYUVColorSpace(bit_depth, &yuv_cs);
+  skia::ConvertRGBAToOrFromYUVA(pm, yuv_cs, pm, kIdentity_SkYUVColorSpace);
 }
 
 void TestYUVRed(const char* file_name,
@@ -764,7 +765,7 @@ void TestYUVRed(const char* file_name,
 
   constexpr gfx::Size kRedYSize(3, 3);
 
-  gfx::Point3F decoded_pixel;
+  SkColor4f decoded_pixel;
   ASSERT_NO_FATAL_FAILURE(ReadYUV(file_name, kRedYSize, expected_uv_size,
                                   color_type, bit_depth, &decoded_pixel));
 
@@ -780,9 +781,15 @@ void TestYUVRed(const char* file_name,
   const double kError = color_type == kA16_float_SkColorType
                             ? kMinError + std::pow(2, -11)
                             : kMinError;
-  EXPECT_NEAR(decoded_pixel.x(), 1, kError);     // R
-  EXPECT_NEAR(decoded_pixel.y(), 0, kMinError);  // G
-  EXPECT_NEAR(decoded_pixel.z(), 0, kMinError);  // B
+  // TODO(https://crbug.com/40746890): The test images for this suite were
+  // created to work with the inaccurate implementation of limited range
+  // in gfx::ColorSpace.
+  // TODO(https://crbug.com/463702880): The SkYUVColorSpace YUV to RGB matrices
+  // are also not as precise as they could be.
+  const double kBigError = 0.01;
+  EXPECT_NEAR(decoded_pixel.fR, 1, std::max(kBigError, kError));     // R
+  EXPECT_NEAR(decoded_pixel.fG, 0, std::max(kBigError, kMinError));  // G
+  EXPECT_NEAR(decoded_pixel.fB, 0, std::max(kBigError, kMinError));  // B
 }
 
 void DecodeTask(const Vector<char>* data, base::RepeatingClosure* done) {
