@@ -29,6 +29,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
@@ -131,6 +133,7 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
 
     // Sign in the user so IdentityManager is ready.
     identity_test_environment_adaptor_ =
@@ -156,6 +159,10 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
     identity_test_env_ = nullptr;
     identity_test_environment_adaptor_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void TriggerOnInnerWebContentsCreated(content::WebContents* inner) {
+    controller_->OnInnerWebContentsCreated(inner);
   }
 
  protected:
@@ -366,4 +373,56 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
     controller_->OnLensOverlayStateChanged(false);
     run_loop.Run();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUIBrowserTest,
+    OnInnerWebContentsCreated_HandlesMultipleFramesAndReload) {
+  // Create first inner contents.
+  std::unique_ptr<content::WebContents> inner_contents1 =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  GURL url1 = embedded_test_server()->GetURL("/title1.html?1");
+  inner_contents1->GetController().LoadURL(
+      url1, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents1.get()));
+  TriggerOnInnerWebContentsCreated(inner_contents1.get());
+
+  // Verify first inner contents is observed.
+  EXPECT_EQ(controller_->GetInnerFrameUrl(), url1);
+
+  // Create second inner contents (should be ignored).
+  std::unique_ptr<content::WebContents> inner_contents2 =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  GURL url2 = embedded_test_server()->GetURL("/title1.html?2");
+  inner_contents2->GetController().LoadURL(
+      url2, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents2.get()));
+  TriggerOnInnerWebContentsCreated(inner_contents2.get());
+
+  // Verify first inner contents is still observed.
+  EXPECT_EQ(controller_->GetInnerFrameUrl(), url1);
+
+  // Navigate the main frame (simulating reload).
+  // We use the WebUI's WebContents which is the active tab's WebContents.
+  GURL main_url = embedded_test_server()->GetURL("/title1.html?main");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // The navigation observer should have reset the embedded page.
+  // Verify embedded page is reset (GetInnerFrameUrl returns empty).
+  EXPECT_EQ(controller_->GetInnerFrameUrl(), GURL::EmptyGURL());
+
+  // Create a third inner contents (should be accepted now).
+  std::unique_ptr<content::WebContents> inner_contents3 =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  GURL url3 = embedded_test_server()->GetURL("/title1.html?3");
+  inner_contents3->GetController().LoadURL(
+      url3, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents3.get()));
+  TriggerOnInnerWebContentsCreated(inner_contents3.get());
+
+  // Verify third inner contents is observed.
+  EXPECT_EQ(controller_->GetInnerFrameUrl(), url3);
 }

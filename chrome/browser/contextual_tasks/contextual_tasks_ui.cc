@@ -172,6 +172,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       std::make_unique<InnerFrameCreationObvserver>(
           web_ui->GetWebContents(),
           base::BindRepeating(&ContextualTasksUI::OnInnerWebContentsCreated,
+                              weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&ContextualTasksUI::ResetEmbeddedPage,
                               weak_ptr_factory_.GetWeakPtr()));
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -604,7 +606,13 @@ void ContextualTasksUI::PostMessageToWebview(
 
 void ContextualTasksUI::OnInnerWebContentsCreated(
     content::WebContents* inner_contents) {
-  // This can be called multiple times if the page is reloaded.
+  // This is assumed to only be called once per WebUI lifetime. Can be called
+  // multiple times if the WebUI is reloaded, but that would have reset
+  // `embedded_web_contents_`.
+  if (embedded_web_contents_) {
+    return;
+  }
+
   nav_observer_ = std::make_unique<FrameNavObserver>(
       inner_contents, ui_service_, contextual_tasks_service_, this);
   embedded_web_contents_ = inner_contents->GetWeakPtr();
@@ -989,9 +997,11 @@ bool ContextualTasksUI::IsZeroState(
 
 ContextualTasksUI::InnerFrameCreationObvserver::InnerFrameCreationObvserver(
     content::WebContents* web_contents,
-    base::RepeatingCallback<void(content::WebContents*)> callback)
+    base::RepeatingCallback<void(content::WebContents*)> callback,
+    base::RepeatingClosure reset_callback)
     : content::WebContentsObserver(web_contents),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)),
+      reset_callback_(std::move(reset_callback)) {}
 
 ContextualTasksUI::InnerFrameCreationObvserver::~InnerFrameCreationObvserver() =
     default;
@@ -1000,6 +1010,23 @@ void ContextualTasksUI::InnerFrameCreationObvserver::InnerWebContentsCreated(
     content::WebContents* inner_web_contents) {
   CHECK(callback_);
   callback_.Run(inner_web_contents);
+}
+
+void ContextualTasksUI::InnerFrameCreationObvserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // If the main frame navigates, reset the embedded page so that the
+  // ContextualTaskUI can listen to the a new inner WebContents if needed.
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted() &&
+      !navigation_handle->IsSameDocument()) {
+    CHECK(reset_callback_);
+    reset_callback_.Run();
+  }
+}
+
+void ContextualTasksUI::ResetEmbeddedPage() {
+  embedded_web_contents_ = nullptr;
+  nav_observer_.reset();
 }
 
 void ContextualTasksUI::BindInterface(

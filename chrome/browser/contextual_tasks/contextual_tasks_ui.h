@@ -70,6 +70,8 @@ class ContextualTasksUI : public TaskInfoDelegate,
                           public contextual_tasks_internals::mojom::
                               ContextualTasksInternalsPageHandlerFactory {
  public:
+  friend class ContextualTasksUIBrowserTest;
+
   // A WebContentsObserver used to observe navigations or URL changes in the
   // frame being hosted by this WebUI. Top-level navigations are ignored since
   // this class is only intended to listen to the embedded AI frame.
@@ -226,17 +228,28 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // is only ever one inner WebContents at a time.
   class InnerFrameCreationObvserver : public content::WebContentsObserver {
    public:
-    explicit InnerFrameCreationObvserver(
+    InnerFrameCreationObvserver(
         content::WebContents* web_contents,
-        base::RepeatingCallback<void(content::WebContents*)> callback);
+        base::RepeatingCallback<void(content::WebContents*)> callback,
+        base::RepeatingClosure reset_callback);
     ~InnerFrameCreationObvserver() override;
 
     void InnerWebContentsCreated(
         content::WebContents* inner_web_contents) override;
 
+    // Called when the top level frame (the chrome://contextual-tasks WebUI)
+    // finishes navigating. This is used to reset the observer when the WebUI
+    // is closed/reloaded.
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
+
    private:
     base::RepeatingCallback<void(content::WebContents*)> callback_;
+    base::RepeatingClosure reset_callback_;
   };
+
+  // Resets the embedded page and its observer.
+  void ResetEmbeddedPage();
 
   // A notification that the WebContents hosting the WebUI has created an inner
   // WebContents. In practice, this is the creation of the WebContents hosting
