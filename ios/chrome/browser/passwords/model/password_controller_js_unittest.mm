@@ -918,7 +918,8 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
       expected_form_data = autofill::ExtractFormData(
           expected_form, /*form_name_filter=*/std::nullopt, GURL(BaseUrl()),
           url::Origin::Create(GURL(base::SysNSStringToUTF8(FormOrigin()))),
-          *fieldDataManager, GetMainWebFrame()->GetFrameId());
+          GetMainWebFrame()->GetUrl(), *fieldDataManager,
+          GetMainWebFrame()->GetFrameId());
   EXPECT_THAT(expected_form_data, ValueIs(delegate.lastSubmittedForm));
 }
 

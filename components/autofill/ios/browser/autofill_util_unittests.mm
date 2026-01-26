@@ -9,19 +9,87 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/common/features.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
+#import "url/origin.h"
+
+namespace autofill {
+
+namespace {
 
 using AutofillUtilTest = PlatformTest;
 
-using autofill::ExtractIDs;
-using autofill::ExtractFillingResults;
-using autofill::FieldRendererId;
-using base::ASCIIToUTF16;
+using ::autofill::ExtractFillingResults;
+using ::autofill::ExtractIDs;
+using ::autofill::FieldRendererId;
+using ::base::ASCIIToUTF16;
+
+TEST_F(AutofillUtilTest, ExtractFormData_FullUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAutofillExtractFullUrlOnIOs);
+
+  base::Value::Dict form_dict;
+  form_dict.Set("name", "form_name");
+  form_dict.Set("origin", "https://example.com");
+  form_dict.Set("host_frame", "11111111111111111111111111111111");
+  base::Value::List fields;
+  base::Value::Dict field;
+  field.Set("name", "field_name");
+  field.Set("form_control_type", "text");
+  fields.Append(std::move(field));
+  form_dict.Set("fields", std::move(fields));
+
+  GURL main_frame_url("https://example.com");
+  url::Origin form_frame_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  GURL form_frame_url("https://user:pass@example.com/foo?bar=baz");
+  auto field_data_manager = base::MakeRefCounted<autofill::FieldDataManager>();
+  std::string frame_id = "11111111111111111111111111111111";
+
+  base::expected<FormData, ExtractFormDataFailure> result = ExtractFormData(
+      form_dict, /*formNameFilter=*/std::nullopt, main_frame_url,
+      form_frame_origin, form_frame_url, *field_data_manager, frame_id);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value().full_url(), GURL("https://example.com/foo?bar=baz"));
+}
+
+TEST_F(AutofillUtilTest, ExtractFormData_NoFullUrlWhenDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kAutofillExtractFullUrlOnIOs);
+
+  base::Value::Dict form_dict;
+  form_dict.Set("name", "form_name");
+  form_dict.Set("origin", "https://example.com");
+  form_dict.Set("host_frame", "11111111111111111111111111111111");
+  base::Value::List fields;
+  base::Value::Dict field;
+  field.Set("name", "field_name");
+  field.Set("form_control_type", "text");
+  fields.Append(std::move(field));
+  form_dict.Set("fields", std::move(fields));
+
+  GURL main_frame_url("https://example.com");
+  url::Origin form_frame_origin =
+      url::Origin::Create(GURL("https://example.com"));
+  GURL form_frame_url("https://example.com/foo?bar=baz");
+  auto field_data_manager = base::MakeRefCounted<autofill::FieldDataManager>();
+  std::string frame_id = "11111111111111111111111111111111";
+
+  base::expected<FormData, ExtractFormDataFailure> result = ExtractFormData(
+      form_dict, /*formNameFilter=*/std::nullopt, main_frame_url,
+      form_frame_origin, form_frame_url, *field_data_manager, frame_id);
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.value().full_url().is_empty());
+}
 
 TEST_F(AutofillUtilTest, ExtractIDs) {
   NSString* valid_ids = @"[\"1\",\"2\"]";
@@ -141,3 +209,7 @@ TEST_F(AutofillUtilTest, ExtractRemoteFrameToken) {
   malformed3.Set("predecessor", base::Value("garbage"));
   EXPECT_FALSE(ExtractRemoteFrameToken(malformed3, &token_with_predecessor));
 }
+
+}  // namespace
+
+}  // namespace autofill

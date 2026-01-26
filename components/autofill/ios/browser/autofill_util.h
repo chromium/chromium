@@ -77,14 +77,14 @@ std::unique_ptr<base::Value> ParseJson(NSString* json_string);
 std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
     const std::string& frame_id);
 
-// Processes the JSON form data extracted from the page into the format expected
-// by BrowserAutofillManager.
+// Processes the JSON form data extracted into `FormData`s.
 // See `ExtractFormData` for details on the function parameters.
 std::optional<std::vector<FormData>> ExtractFormsData(
     NSString* form_json,
     base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& frame_origin,
+    const GURL& form_frame_url,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame = LocalFrameToken());
@@ -103,6 +103,7 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& form_frame_origin,
+    const GURL& form_frame_url,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame = LocalFrameToken());

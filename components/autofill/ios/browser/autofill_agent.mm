@@ -1263,6 +1263,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   GURL pageURL = _webState->GetLastCommittedURL();
   url::Origin frameOrigin =
       frame ? frame->GetSecurityOrigin() : url::Origin::Create(pageURL);
+  GURL frameURL = frame ? frame->GetUrl() : pageURL;
 
   if (auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
           _webState, frame)) {
@@ -1273,15 +1274,15 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       FieldDataManagerFactoryIOS::GetRetainable(frame);
   auto extractForms = base::BindOnce(
       [](std::optional<std::u16string> formNameFilter, const GURL& pageURL,
-         const url::Origin& frameOrigin,
+         const url::Origin& frameOrigin, const GURL& frameURL,
          scoped_refptr<FieldDataManager> fieldDataManager,
          const std::string& frame_id, NSString* formJSON) {
         return autofill::ExtractFormsData(formJSON, formNameFilter, pageURL,
-                                          frameOrigin, *fieldDataManager,
-                                          frame_id);
+                                          frameOrigin, frameURL,
+                                          *fieldDataManager, frame_id);
       },
-      std::move(formNameFilter), pageURL, frameOrigin, fieldDataManager,
-      frame->GetFrameId());
+      std::move(formNameFilter), pageURL, frameOrigin, frameURL,
+      fieldDataManager, frame->GetFrameId());
   AutofillJavaScriptFeature::GetInstance()->FetchForms(
       frame, std::move(extractForms).Then(std::move(completionHandler)));
 }

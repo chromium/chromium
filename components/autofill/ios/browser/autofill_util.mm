@@ -24,6 +24,7 @@
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/signatures.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -122,6 +123,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
     base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& frame_origin,
+    const GURL& form_frame_url,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame) {
@@ -148,7 +150,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
 
     if (base::expected<FormData, ExtractFormDataFailure> form = ExtractFormData(
             *form_dict, form_name_filter, main_frame_url, frame_origin,
-            field_data_manager, frame_id, host_frame);
+            form_frame_url, field_data_manager, frame_id, host_frame);
         form.has_value()) {
       forms_data.push_back(std::move(form).value());
     }
@@ -161,6 +163,7 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& form_frame_origin,
+    const GURL& form_frame_url,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame) {
@@ -184,6 +187,9 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
 
   // Use GURL object to verify origin of host frame URL.
   form_data.set_url(GURL(origin));
+  if (base::FeatureList::IsEnabled(kAutofillExtractFullUrlOnIOs)) {
+    form_data.set_full_url(StripAuth(form_frame_url));
+  }
   if (!form_frame_origin.IsSameOriginWith(form_data.url())) {
     return base::unexpected(ExtractFormDataFailure::kOriginMismatch);
   }

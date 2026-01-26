@@ -27,6 +27,8 @@ BASE_FEATURE(kAutofillDedupeFormSubmission, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutofillFixXhrForXframe, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillExtractFullUrlOnIOs, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

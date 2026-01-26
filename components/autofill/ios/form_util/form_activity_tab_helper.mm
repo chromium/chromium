@@ -501,7 +501,8 @@ void FormActivityTabHelper::FormSubmissionHandler(
       autofill::ExtractFormData(
           *form_data, /*form_name_filter=*/base::UTF8ToUTF16(form_name),
           web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),
-          *fieldDataManager, *frame_id, local_frame_token);
+          sender_frame->GetUrl(), *fieldDataManager, *frame_id,
+          local_frame_token);
 
   if (!form_or_failure.has_value()) {
     RecordFormSubmissionOutcome(FormSubmissionOutcome::kFormExtractionFailure);

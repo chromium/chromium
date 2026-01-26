@@ -166,8 +166,8 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
   if (base::expected<autofill::FormData, ExtractFormDataFailure> form_data =
           ExtractFormData(*form_dict, /*form_name_filter=*/std::nullopt,
                           web_state->GetLastCommittedURL(),
-                          frame->GetSecurityOrigin(), *field_data_manager,
-                          frame->GetFrameId());
+                          frame->GetSecurityOrigin(), frame->GetUrl(),
+                          *field_data_manager, frame->GetFrameId());
       form_data.has_value()) {
     driver->DidAutofillForm(std::move(form_data).value());
   }

@@ -155,7 +155,8 @@ const char kHostFrameKey[] = "host_frame";
 
   std::optional<std::vector<FormData>> formsData = autofill::ExtractFormsData(
       JSONString, /*form_name_filter=*/std::nullopt, pageURL,
-      frame->GetSecurityOrigin(), *fieldDataManager, frame->GetFrameId());
+      frame->GetSecurityOrigin(), frame->GetUrl(), *fieldDataManager,
+      frame->GetFrameId());
   if (!formsData) {
     return;
   }
@@ -350,9 +351,9 @@ const char kHostFrameKey[] = "host_frame";
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->ExtractForm(
           frame, formIdentifier, base::BindOnce(^(NSString* jsonString) {
-            if (std::optional<FormData> formData =
-                    JsonStringToFormData(jsonString, *pageURL, frame_origin,
-                                         *fieldDataManager, frame_id)) {
+            if (std::optional<FormData> formData = JsonStringToFormData(
+                    jsonString, *pageURL, frame_origin, frame->GetUrl(),
+                    *fieldDataManager, frame_id)) {
               completionHandler(YES, *formData);
               return;
             }
@@ -414,7 +415,8 @@ const char kHostFrameKey[] = "host_frame";
   if (base::expected<FormData, autofill::ExtractFormDataFailure> form =
           autofill::ExtractFormData(dict, /*form_name_filter=*/std::nullopt,
                                     *pageURL, url::Origin::Create(*pageURL),
-                                    *fieldDataManager, *host_frame);
+                                    frame->GetUrl(), *fieldDataManager,
+                                    *host_frame);
       form.has_value()) {
     [self.delegate formHelper:self didSubmitForm:form.value() inFrame:frame];
 

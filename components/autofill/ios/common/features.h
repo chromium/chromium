@@ -33,6 +33,9 @@ BASE_DECLARE_FEATURE(kAutofillDedupeFormSubmission);
 // enabled.
 BASE_DECLARE_FEATURE(kAutofillFixXhrForXframe);
 
+// Extracts the full URL of the frame where the form is found.
+BASE_DECLARE_FEATURE(kAutofillExtractFullUrlOnIOs);
+
 // Listen to form submission events in capture mode before the events are
 // propagated.
 BASE_DECLARE_FEATURE(kAutofillFormSubmissionEventsInCaptureMode);
