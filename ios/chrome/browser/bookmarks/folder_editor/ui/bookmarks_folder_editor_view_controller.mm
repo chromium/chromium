@@ -442,6 +442,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   CHECK_EQ(tableView, self.tableView, base::NotFatalUntil::M152);
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeParentFolder) {
     [self changeParentFolder];
