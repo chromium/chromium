@@ -59,9 +59,7 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT),
       /*description_text=*/
       l10n_util::GetStringUTF16(
-          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-              ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT
-              : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
 }
 
 // static

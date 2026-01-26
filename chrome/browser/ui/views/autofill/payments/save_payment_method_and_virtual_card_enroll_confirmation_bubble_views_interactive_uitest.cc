@@ -155,35 +155,17 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT));
   EXPECT_TRUE(
       BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL)->GetVisible());
-  if (IsWalletBrandingEnabled()) {
-    EXPECT_EQ(
-        static_cast<views::Label*>(
-            BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
-            ->GetText(),
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-    EXPECT_EQ(
-        static_cast<views::Label*>(
-            BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
-            ->GetViewAccessibility()
-            .GetCachedName(),
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-  } else {
-    EXPECT_EQ(
-        static_cast<views::Label*>(
-            BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
-            ->GetText(),
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-    EXPECT_EQ(
-        static_cast<views::Label*>(
-            BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
-            ->GetViewAccessibility()
-            .GetCachedName(),
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
-  }
+  EXPECT_EQ(static_cast<views::Label*>(
+                BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
+                ->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+  EXPECT_EQ(static_cast<views::Label*>(
+                BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
+                ->GetViewAccessibility()
+                .GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
   EXPECT_EQ(BubbleView()->buttons(),
             static_cast<int>(ui::mojom::DialogButton::kNone));
   EXPECT_TRUE(IconView()->GetVisible());
