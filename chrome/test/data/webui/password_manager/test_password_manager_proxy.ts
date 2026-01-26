@@ -4,7 +4,7 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import type {AccountStorageEnabledStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions, ShouldShowAccountStorageToggleChangedListener} from 'chrome://password-manager/password_manager.js';
+import type {AccountStorageActiveStateChangedListener, BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordViewPageInteractions, ShouldShowAccountStorageToggleChangedListener} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
@@ -23,7 +23,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     familyFetchResults: chrome.passwordsPrivate.FamilyFetchResults,
     groups: chrome.passwordsPrivate.CredentialGroup[],
     insecureCredentials: chrome.passwordsPrivate.PasswordUiEntry[],
-    isAccountStorageEnabled: boolean,
+    isAccountStorageActive: boolean,
     shouldShowAccountStorageSettingToggle: boolean,
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
     isPasswordManagerPinAvailable: boolean,
@@ -35,8 +35,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   };
 
   listeners: {
-    accountStorageEnabledStateListener:
-        AccountStorageEnabledStateChangedListener|null,
+    accountStorageActiveStateListener: AccountStorageActiveStateChangedListener|
+    null,
     shouldShowAccountStorageToggleListener:
         ShouldShowAccountStorageToggleChangedListener|null,
     blockedSitesListChangedListener: BlockedSitesListChangedListener|null,
@@ -84,7 +84,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getUrlCollection',
       'importPasswords',
       'isConnectedToCloudAuthenticator',
-      'isAccountStorageEnabled',
+      'isAccountStorageActive',
       'shouldShowAccountStorageSettingToggle',
       'isPasswordManagerPinAvailable',
       'movePasswordsToAccount',
@@ -118,7 +118,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       familyFetchResults: makeFamilyFetchResults(),
       groups: [],
       insecureCredentials: [],
-      isAccountStorageEnabled: false,
+      isAccountStorageActive: false,
       shouldShowAccountStorageSettingToggle: false,
       passwords: [],
       isPasswordManagerPinAvailable: false,
@@ -131,7 +131,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
     // Holds listeners so they can be called when needed.
     this.listeners = {
-      accountStorageEnabledStateListener: null,
+      accountStorageActiveStateListener: null,
       shouldShowAccountStorageToggleListener: null,
       blockedSitesListChangedListener: null,
       insecureCredentialsListener: null,
@@ -356,13 +356,13 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   }
 
   addAccountStorageEnabledStateListener(
-      listener: AccountStorageEnabledStateChangedListener) {
-    this.listeners.accountStorageEnabledStateListener = listener;
+      listener: AccountStorageActiveStateChangedListener) {
+    this.listeners.accountStorageActiveStateListener = listener;
   }
 
   removeAccountStorageEnabledStateListener(
-      _listener: AccountStorageEnabledStateChangedListener) {
-    this.listeners.accountStorageEnabledStateListener = null;
+      _listener: AccountStorageActiveStateChangedListener) {
+    this.listeners.accountStorageActiveStateListener = null;
   }
 
   addShouldShowAccountStorageSettingToggleListener(
@@ -407,14 +407,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-  isAccountStorageEnabled() {
-    this.methodCalled('isAccountStorageEnabled');
-    return Promise.resolve(this.data.isAccountStorageEnabled);
+  isAccountStorageActive() {
+    this.methodCalled('isAccountStorageActive');
+    return Promise.resolve(this.data.isAccountStorageActive);
   }
 
   setAccountStorageEnabled(enabled: boolean) {
     this.methodCalled('setAccountStorageEnabled');
-    this.data.isAccountStorageEnabled = enabled;
+    this.data.isAccountStorageActive = enabled;
   }
 
   shouldShowAccountStorageSettingToggle() {

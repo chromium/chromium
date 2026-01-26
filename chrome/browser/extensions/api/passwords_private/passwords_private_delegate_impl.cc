@@ -831,7 +831,7 @@ PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
   return ConvertStatus(password_manager_porter_->GetExportProgressStatus());
 }
 
-bool PasswordsPrivateDelegateImpl::IsAccountStorageEnabled() {
+bool PasswordsPrivateDelegateImpl::IsAccountStorageActive() {
   return password_manager::features_util::IsAccountStorageActive(
       SyncServiceFactory::GetForProfile(profile_));
 }
@@ -1212,7 +1212,7 @@ void PasswordsPrivateDelegateImpl::OnStateChanged(
   PasswordsPrivateEventRouter* router =
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
   if (router) {
-    router->OnAccountStorageEnabledStateChanged(IsAccountStorageEnabled());
+    router->OnAccountStorageActiveStateChanged(IsAccountStorageActive());
     router->OnShouldShowAccountStorageSettingToggleChanged(
         ShouldShowAccountStorageSettingToggle());
   }

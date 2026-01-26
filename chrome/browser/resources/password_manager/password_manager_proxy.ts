@@ -14,8 +14,8 @@ import {type ActorLoginPermission, PageCallbackRouter, PageHandlerFactory, PageH
 
 export type BlockedSite = chrome.passwordsPrivate.ExceptionEntry;
 
-export type AccountStorageEnabledStateChangedListener =
-    (enabledState: boolean) => void;
+export type AccountStorageActiveStateChangedListener = (activeState: boolean) =>
+    void;
 export type ShouldShowAccountStorageToggleChangedListener = (show: boolean) =>
     void;
 export type CredentialsChangedListener =
@@ -363,16 +363,16 @@ export interface PasswordManagerProxy {
   extendAuthValidity(): void;
 
   /**
-   * Add an observer to the account storage enabled state.
+   * Add an observer to the account storage active state.
    */
   addAccountStorageEnabledStateListener(
-      listener: AccountStorageEnabledStateChangedListener): void;
+      listener: AccountStorageActiveStateChangedListener): void;
 
   /**
-   * Remove an observer to the account storage enabled state.
+   * Remove an observer to the account storage active state.
    */
   removeAccountStorageEnabledStateListener(
-      listener: AccountStorageEnabledStateChangedListener): void;
+      listener: AccountStorageActiveStateChangedListener): void;
 
   /**
    * Add an observer to the account storage toggle visibility state.
@@ -388,10 +388,10 @@ export interface PasswordManagerProxy {
       listener: ShouldShowAccountStorageToggleChangedListener): void;
 
   /**
-   * Requests the account-storage enabled state of the current user.
-   * @return A promise that resolves to the enabled state.
+   * Requests the account-storage active state of the current user.
+   * @return A promise that resolves to the active state.
    */
-  isAccountStorageEnabled(): Promise<boolean>;
+  isAccountStorageActive(): Promise<boolean>;
 
   /**
    * Triggers the enabling/disabling flow for the account storage.
@@ -676,14 +676,14 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   addAccountStorageEnabledStateListener(
-      listener: AccountStorageEnabledStateChangedListener) {
-    chrome.passwordsPrivate.onAccountStorageEnabledStateChanged.addListener(
+      listener: AccountStorageActiveStateChangedListener) {
+    chrome.passwordsPrivate.onAccountStorageActiveStateChanged.addListener(
         listener);
   }
 
   removeAccountStorageEnabledStateListener(
-      listener: AccountStorageEnabledStateChangedListener) {
-    chrome.passwordsPrivate.onAccountStorageEnabledStateChanged.removeListener(
+      listener: AccountStorageActiveStateChangedListener) {
+    chrome.passwordsPrivate.onAccountStorageActiveStateChanged.removeListener(
         listener);
   }
 
@@ -699,12 +699,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
         .removeListener(listener);
   }
 
-  isAccountStorageEnabled() {
+  isAccountStorageActive() {
     if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
-      return chrome.passwordsPrivate.isAccountStorageEnabled();
+      return chrome.passwordsPrivate.isAccountStorageActive();
     }
-    return this.handler.isAccountStorageEnabled().then(
-        result => result.enabled);
+    return this.handler.isAccountStorageActive().then(result => result.active);
   }
 
   setAccountStorageEnabled(enabled: boolean) {

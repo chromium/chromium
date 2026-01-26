@@ -267,14 +267,14 @@ class PasswordsPrivateRequestExportProgressStatusFunction
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateIsAccountStorageEnabledFunction
+class PasswordsPrivateIsAccountStorageActiveFunction
     : public ExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.isAccountStorageEnabled",
-                             PASSWORDSPRIVATE_ISACCOUNTSTORAGEENABLED)
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.isAccountStorageActive",
+                             PASSWORDSPRIVATE_ISACCOUNTSTORAGEACTIVE)
 
  protected:
-  ~PasswordsPrivateIsAccountStorageEnabledFunction() override = default;
+  ~PasswordsPrivateIsAccountStorageActiveFunction() override = default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;

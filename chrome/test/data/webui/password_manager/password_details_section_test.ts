@@ -485,7 +485,7 @@ suite('PasswordDetailsSectionTest', function() {
   // </if>
 
   test('should show button to move password', async function() {
-    passwordManager.data.isAccountStorageEnabled = true;
+    passwordManager.data.isAccountStorageActive = true;
     syncProxy.syncInfo = {
       isSyncingPasswords: false,
     };
@@ -516,7 +516,7 @@ suite('PasswordDetailsSectionTest', function() {
   });
 
   test('should not show button to move password', async function() {
-    passwordManager.data.isAccountStorageEnabled = true;
+    passwordManager.data.isAccountStorageActive = true;
     syncProxy.syncInfo = {
       isSyncingPasswords: false,
     };

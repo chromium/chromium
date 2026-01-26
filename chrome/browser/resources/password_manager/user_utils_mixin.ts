@@ -65,23 +65,23 @@ export const UserUtilMixin = dedupingMixin(
         declare private syncInfo_: SyncInfo;
         declare private accountInfo_: AccountInfo;
 
-        private setIsAccountStorageEnabledListener_:
-            ((enabled: boolean) => void)|null = null;
+        private setIsAccountStorageActiveListener_: ((active: boolean) => void)|
+            null = null;
 
         override connectedCallback() {
           super.connectedCallback();
 
           // Create listener functions.
-          this.setIsAccountStorageEnabledListener_ = (enabled) =>
-              this.isAccountStoreUser = enabled;
+          this.setIsAccountStorageActiveListener_ = (active) =>
+              this.isAccountStoreUser = active;
           const syncInfoChanged = (syncInfo: SyncInfo) => this.syncInfo_ =
               syncInfo;
           const accountInfoChanged = (accountInfo: AccountInfo) =>
               this.accountInfo_ = accountInfo;
 
           // Request initial data.
-          PasswordManagerImpl.getInstance().isAccountStorageEnabled().then(
-              this.setIsAccountStorageEnabledListener_);
+          PasswordManagerImpl.getInstance().isAccountStorageActive().then(
+              this.setIsAccountStorageActiveListener_);
           SyncBrowserProxyImpl.getInstance().getSyncInfo().then(
               syncInfoChanged);
           SyncBrowserProxyImpl.getInstance().getAccountInfo().then(
@@ -90,7 +90,7 @@ export const UserUtilMixin = dedupingMixin(
           // Listen for changes.
           PasswordManagerImpl.getInstance()
               .addAccountStorageEnabledStateListener(
-                  this.setIsAccountStorageEnabledListener_);
+                  this.setIsAccountStorageActiveListener_);
           this.addWebUiListener('sync-info-changed', syncInfoChanged);
           this.addWebUiListener('stored-accounts-changed', accountInfoChanged);
         }
@@ -98,11 +98,11 @@ export const UserUtilMixin = dedupingMixin(
         override disconnectedCallback() {
           super.disconnectedCallback();
 
-          assert(this.setIsAccountStorageEnabledListener_);
+          assert(this.setIsAccountStorageActiveListener_);
           PasswordManagerImpl.getInstance()
               .removeAccountStorageEnabledStateListener(
-                  this.setIsAccountStorageEnabledListener_);
-          this.setIsAccountStorageEnabledListener_ = null;
+                  this.setIsAccountStorageActiveListener_);
+          this.setIsAccountStorageActiveListener_ = null;
         }
 
         enableAccountStorage() {

@@ -955,7 +955,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, CopyPlaintextBackupPassword) {
   EXPECT_EQ(result, form.GetPasswordBackup());
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, TestShouldEnableAccountStorage) {
+TEST_F(PasswordsPrivateDelegateImplTest, TestShouldActivateAccountStorage) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());

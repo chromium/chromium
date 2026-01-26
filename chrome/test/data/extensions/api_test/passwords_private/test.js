@@ -408,38 +408,38 @@ var availableTests = [
     chrome.passwordsPrivate.requestExportProgressStatus(callback);
   },
 
-  function accountStorageIsDisabled() {
-    var callback = function(enabled) {
-      chrome.test.assertEq(enabled, false);
+  function accountStorageIsInactive() {
+    var callback = function(active) {
+      chrome.test.assertEq(active, false);
       // Ensure that the callback is invoked.
       chrome.test.succeed();
     };
 
-    chrome.passwordsPrivate.isAccountStorageEnabled(callback);
+    chrome.passwordsPrivate.isAccountStorageActive(callback);
   },
 
-  function accountStorageIsEnabled() {
-    var callback = function(enabled) {
-      chrome.test.assertEq(enabled, true);
+  function accountStorageIsActive() {
+    var callback = function(active) {
+      chrome.test.assertEq(active, true);
       // Ensure that the callback is invoked.
       chrome.test.succeed();
     };
 
-    chrome.passwordsPrivate.isAccountStorageEnabled(callback);
+    chrome.passwordsPrivate.isAccountStorageActive(callback);
   },
 
   function enableAccountStorage() {
     chrome.passwordsPrivate.setAccountStorageEnabled(true);
-    chrome.passwordsPrivate.isAccountStorageEnabled(function(enabled) {
-      chrome.test.assertEq(enabled, true);
+    chrome.passwordsPrivate.isAccountStorageActive(function(active) {
+      chrome.test.assertEq(active, true);
       chrome.test.succeed();
     });
   },
 
   function disableAccountStorage() {
     chrome.passwordsPrivate.setAccountStorageEnabled(false);
-    chrome.passwordsPrivate.isAccountStorageEnabled(function(enabled) {
-      chrome.test.assertEq(enabled, false);
+    chrome.passwordsPrivate.isAccountStorageActive(function(active) {
+      chrome.test.assertEq(active, false);
       chrome.test.succeed();
     });
   },

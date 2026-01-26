@@ -273,7 +273,7 @@ TestPasswordsPrivateDelegate::GetExportProgressStatus() {
   return api::passwords_private::ExportProgressStatus::kInProgress;
 }
 
-bool TestPasswordsPrivateDelegate::IsAccountStorageEnabled() {
+bool TestPasswordsPrivateDelegate::IsAccountStorageActive() {
   return is_account_storage_enabled_;
 }
 

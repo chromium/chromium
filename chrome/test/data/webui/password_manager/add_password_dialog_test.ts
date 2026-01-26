@@ -259,7 +259,7 @@ suite('AddPasswordDialogTest', function() {
   });
 
   test('storage picker shown if account storage enabled', async function() {
-    passwordManager.data.isAccountStorageEnabled = true;
+    passwordManager.data.isAccountStorageActive = true;
     syncProxy.syncInfo = {
       isSyncingPasswords: false,
     };
@@ -276,7 +276,7 @@ suite('AddPasswordDialogTest', function() {
   });
 
   test('storage picker hidden if account storage disabled', async function() {
-    passwordManager.data.isAccountStorageEnabled = false;
+    passwordManager.data.isAccountStorageActive = false;
     syncProxy.syncInfo = {
       isSyncingPasswords: false,
     };
@@ -289,7 +289,7 @@ suite('AddPasswordDialogTest', function() {
   });
 
   test('save to account', async function() {
-    passwordManager.data.isAccountStorageEnabled = true;
+    passwordManager.data.isAccountStorageActive = true;
     syncProxy.syncInfo = {
       isSyncingPasswords: false,
     };
@@ -328,7 +328,7 @@ suite('AddPasswordDialogTest', function() {
   });
 
   test('save to device', async function() {
-    passwordManager.data.isAccountStorageEnabled = true;
+    passwordManager.data.isAccountStorageActive = true;
     syncProxy.syncInfo = {
       isSyncingPasswords: false,
     };

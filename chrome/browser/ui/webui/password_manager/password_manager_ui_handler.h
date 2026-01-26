@@ -58,8 +58,7 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
 
   void ShowAddShortcutDialog() override;
 
-  void IsAccountStorageEnabled(
-      IsAccountStorageEnabledCallback callback) override;
+  void IsAccountStorageActive(IsAccountStorageActiveCallback callback) override;
 
   void SetAccountStorageEnabled(bool enabled) override;
 

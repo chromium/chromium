@@ -129,8 +129,8 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     test_delegate_->SetStartPasswordCheckState(state);
   }
 
-  bool IsAccountStorageEnabled() {
-    return test_delegate_->IsAccountStorageEnabled();
+  bool IsAccountStorageActive() {
+    return test_delegate_->IsAccountStorageActive();
   }
 
   void SetAccountStorageEnabled(bool enabled) {
@@ -329,13 +329,13 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RequestExportProgressStatus) {
   EXPECT_TRUE(RunPasswordsSubtest("requestExportProgressStatus")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AccountStorageIsDisabled) {
-  EXPECT_TRUE(RunPasswordsSubtest("accountStorageIsDisabled")) << message_;
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AccountStorageIsInactive) {
+  EXPECT_TRUE(RunPasswordsSubtest("accountStorageIsInactive")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AccountStorageIsEnabled) {
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AccountStorageIsActive) {
   SetAccountStorageEnabled(true);
-  EXPECT_TRUE(RunPasswordsSubtest("accountStorageIsEnabled")) << message_;
+  EXPECT_TRUE(RunPasswordsSubtest("accountStorageIsActive")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetInsecureCredentials) {

@@ -142,7 +142,7 @@ suite('PasswordsSectionTest', function() {
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
     };
-    passwordManager.data.isAccountStorageEnabled = true;
+    passwordManager.data.isAccountStorageActive = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [createPasswordEntry({
@@ -168,7 +168,7 @@ suite('PasswordsSectionTest', function() {
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
     };
-    passwordManager.data.isAccountStorageEnabled = false;
+    passwordManager.data.isAccountStorageActive = false;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
       credentials: [createPasswordEntry(
@@ -190,7 +190,7 @@ suite('PasswordsSectionTest', function() {
       description: 'Move passwords description.',
       actionButtonText: 'Move passwords',
     };
-    passwordManager.data.isAccountStorageEnabled = true;
+    passwordManager.data.isAccountStorageActive = true;
 
     const password = createPasswordEntry({
       id: 1234,
