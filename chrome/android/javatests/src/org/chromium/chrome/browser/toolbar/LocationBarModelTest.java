@@ -361,7 +361,7 @@ public class LocationBarModelTest {
                     NewTabPageDelegate.EMPTY,
                     DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
                     new LocationBarModel.OfflineStatus() {},
-                    ObservableSuppliers.of(ControlsPosition.TOP));
+                    ObservableSuppliers.createNonNull(ControlsPosition.TOP));
             initializeWithNative();
 
             Tab tab =

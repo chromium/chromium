@@ -24,8 +24,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -156,9 +156,7 @@ public class LoadingModalDialogIntegrationTest {
         assertThat(coordinator.getState(), equalTo(State.CANCELLED));
     }
 
-    private static MonotonicObservableSupplier<ModalDialogManager> getDialogManager() {
-        ObservableSupplierImpl<ModalDialogManager> supplier = new ObservableSupplierImpl<>();
-        supplier.set(sActivity.getModalDialogManager());
-        return supplier;
+    private static NonNullObservableSupplier<ModalDialogManager> getDialogManager() {
+        return ObservableSuppliers.createNonNull(sActivity.getModalDialogManager());
     }
 }

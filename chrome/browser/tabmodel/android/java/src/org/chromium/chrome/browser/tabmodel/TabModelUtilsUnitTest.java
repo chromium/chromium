@@ -26,7 +26,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -159,8 +160,8 @@ public class TabModelUtilsUnitTest {
         verify(mTabModelSelector).removeObserver(eq(mTabModelSelectorObserverCaptor.getValue()));
     }
 
-    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Test
     public void testOnInitializedTabModelSelector_AlreadyInit() {

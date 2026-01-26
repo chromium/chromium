@@ -23,7 +23,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationType;
@@ -43,8 +44,8 @@ public class CrossDevicePaneUnitTest {
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     private Pane mCrossDevicePane;
-    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     public void setUp() {

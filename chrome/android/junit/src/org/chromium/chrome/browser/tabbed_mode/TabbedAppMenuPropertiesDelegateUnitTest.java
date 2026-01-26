@@ -44,6 +44,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -51,6 +52,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -203,6 +205,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public FakeExtensionUiBackendRule mFakeExtensionUiBackendRule =
             new FakeExtensionUiBackendRule();
 
+    @Rule public TestName mTestName = new TestName();
+
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private NativePage mNativePage;
@@ -244,7 +248,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private PageZoomManager mPageZoomManagerMock;
 
-    private Context mContext;
+    private ShadowPackageManager mShadowPackageManager;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
@@ -253,7 +257,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
     private final SettableMonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier =
             ObservableSuppliers.createMonotonic();
-    private SettableMonotonicObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
+    private final SettableMonotonicObservableSupplier<ReadAloudController>
+            mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
 
     private TabbedAppMenuPropertiesDelegate mTabbedAppMenuPropertiesDelegate;
     private MenuUiState mUpdateAvailableMenuUiState;
@@ -270,13 +275,17 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Before
     public void setUp() {
-        mContext =
+        Context context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
-        mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic(mReadAloudController);
+        mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
+
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthControllerMock);
+        if (!mTestName.getMethodName().equals("testReadAloudMenuItem_readAloudNotEnabled")) {
+            mReadAloudControllerSupplier.set(mReadAloudController);
+        }
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -336,23 +345,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
-
-        createDelegate();
-
-        MultiWindowTestUtils.resetInstanceInfo();
-
-        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
-        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
-
-        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
-
-        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
-    }
-
-    private void createDelegate() {
         TabbedAppMenuPropertiesDelegate delegate =
                 new TabbedAppMenuPropertiesDelegate(
-                        mContext,
+                        context,
                         mActivityTabProvider,
                         mMultiWindowModeStateDispatcher,
                         mTabModelSelector,
@@ -370,6 +365,15 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* openInAppMenuItemProvider= */ null);
         BaseRobolectricTestRule.runAllBackgroundAndUi();
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(delegate);
+
+        MultiWindowTestUtils.resetInstanceInfo();
+
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
+
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
     }
 
     @After
@@ -431,6 +435,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     private void assertMenuTitlesAreEqual(
             MVCListAdapter.ModelList modelList, Integer... expectedTitles) {
+        Context context = ContextUtils.getApplicationContext();
         for (int i = 0; i < modelList.size(); i++) {
             MVCListAdapter.ListItem listItem = modelList.get(i);
             CharSequence title =
@@ -438,7 +443,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                             ? listItem.model.get(AppMenuItemProperties.TITLE)
                             : null;
             Assert.assertEquals(
-                    expectedTitles[i] == 0 ? null : mContext.getString(expectedTitles[i]), title);
+                    expectedTitles[i] == 0 ? null : context.getString(expectedTitles[i]), title);
         }
     }
 
@@ -1609,11 +1614,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
+        Context context = ContextUtils.getApplicationContext();
         assertTrue(
                 isMenuVisibleWithCorrectTitle(
                         modelList,
                         R.id.reader_mode_menu_id,
-                        mContext.getString(R.string.show_reading_mode_text)));
+                        context.getString(R.string.show_reading_mode_text)));
     }
 
     @Test
@@ -1626,11 +1632,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
+        Context context = ContextUtils.getApplicationContext();
         assertTrue(
                 isMenuVisibleWithCorrectTitle(
                         modelList,
                         R.id.reader_mode_menu_id,
-                        mContext.getString(R.string.hide_reading_mode_text)));
+                        context.getString(R.string.hide_reading_mode_text)));
     }
 
     @Test
@@ -1641,11 +1648,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
+        Context context = ContextUtils.getApplicationContext();
         assertFalse(
                 isMenuVisibleWithCorrectTitle(
                         modelList,
                         R.id.reader_mode_menu_id,
-                        mContext.getString(R.string.hide_reading_mode_text)));
+                        context.getString(R.string.hide_reading_mode_text)));
     }
 
     @Test
@@ -1909,9 +1917,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                     /* tabCount= */ 1,
                     /* taskId= */ i);
         }
-        Shadows.shadowOf(mContext.getPackageManager())
-                .setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
-
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
         doReturn(isInstanceSwitcherEnabled)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .instanceSwitcherWithMultiInstanceEnabled();
@@ -2195,8 +2201,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void testReadAloudMenuItem_readAloudNotEnabled() {
-        mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
-        createDelegate();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         setUpMocksForPageMenu();
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();

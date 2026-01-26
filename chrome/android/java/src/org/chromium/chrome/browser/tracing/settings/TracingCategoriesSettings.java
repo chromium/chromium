@@ -41,7 +41,7 @@ public class TracingCategoriesSettings extends ChromeBaseSettingsFragment
     // Non-translated strings:
     private static final String MSG_CATEGORY_SELECTION_TITLE = "Select categories";
     private final NonNullObservableSupplier<String> mPageTitle =
-            ObservableSuppliers.of(MSG_CATEGORY_SELECTION_TITLE);
+            ObservableSuppliers.createNonNull(MSG_CATEGORY_SELECTION_TITLE);
 
     private static final String SELECT_ALL_KEY = "select-all";
     private static final String SELECT_ALL_TITLE = "Select all";

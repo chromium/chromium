@@ -252,7 +252,7 @@ public class PageInfoDiscoverabilityTest {
                                     mLocationBarDataProvider,
                                     mPermissionDialogController,
                                     mTemplateUrlServiceSupplier,
-                                    ObservableSuppliers.of(mProfile),
+                                    ObservableSuppliers.createNonNull(mProfile),
                                     mPageInfoIphController,
                                     sPermissionTestRule.getActivity().getWindowAndroid(),
                                     null);

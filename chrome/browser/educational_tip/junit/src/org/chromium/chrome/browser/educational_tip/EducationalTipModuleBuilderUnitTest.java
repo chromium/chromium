@@ -26,8 +26,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -76,14 +76,14 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private SetupListManager mSetupListManager;
 
-    private MonotonicObservableSupplier<Profile> mProfileSupplier;
+    private NonNullObservableSupplier<Profile> mProfileSupplier;
     private EducationalTipModuleBuilder mModuleBuilder;
 
     @Before
     public void setUp() {
         SetupListManager.setInstanceForTesting(mSetupListManager);
         when(mSetupListManager.isSetupListActive()).thenReturn(false);
-        mProfileSupplier = new ObservableSupplierImpl(mProfile);
+        mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);

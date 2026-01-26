@@ -35,8 +35,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
@@ -81,7 +81,6 @@ import org.chromium.url.JUnitTestGURLs;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /** Unit test for {@link DataSharingTabManager} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -125,9 +124,9 @@ public class DataSharingTabManagerUnitTest {
     private DataSharingTabManager mDataSharingTabManager;
     private SavedTabGroup mSavedTabGroup;
     private Activity mActivity;
-    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
-    private Supplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private NonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private NonNullObservableSupplier<BottomSheetController> mBottomSheetControllerSupplier;
+    private NonNullObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private SyncedGroupTestHelper mSyncedGroupTestHelper;
 
     @Before
@@ -139,9 +138,9 @@ public class DataSharingTabManagerUnitTest {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
-        mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
-        mBottomSheetControllerSupplier = new ObservableSupplierImpl<>(mBottomSheetController);
-        mShareDelegateSupplier = new ObservableSupplierImpl<>(mShareDelegate);
+        mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
+        mBottomSheetControllerSupplier = ObservableSuppliers.createNonNull(mBottomSheetController);
+        mShareDelegateSupplier = ObservableSuppliers.createNonNull(mShareDelegate);
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
 
         CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =
@@ -250,7 +249,6 @@ public class DataSharingTabManagerUnitTest {
                 .setFaviconHelperForTesting(mFaviconHelper);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
 
-        mTabModelSelectorSupplier.set(mTabModelSelector);
         doReturn(mTabGroupModelFilter).when(mTabModelSelector).getTabGroupModelFilter(anyBoolean());
         when(mTab.getTabGroupId()).thenReturn(null).thenReturn(LOCAL_ID.tabGroupId);
 
@@ -275,7 +273,6 @@ public class DataSharingTabManagerUnitTest {
                 .setFaviconHelperForTesting(mFaviconHelper);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
 
-        mTabModelSelectorSupplier.set(mTabModelSelector);
         doReturn(mTabGroupModelFilter).when(mTabModelSelector).getTabGroupModelFilter(anyBoolean());
         doReturn(LOCAL_ID.tabGroupId).when(mTab).getTabGroupId();
 

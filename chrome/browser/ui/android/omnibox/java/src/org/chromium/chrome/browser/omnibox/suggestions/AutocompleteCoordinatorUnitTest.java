@@ -108,7 +108,7 @@ public class AutocompleteCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mLocationBarDataProvider,
                         mProfileObservableSupplier,
-                        ObservableSuppliers.of(mTopInsetProvider),
+                        ObservableSuppliers.createNonNull(mTopInsetProvider),
                         mBringToForegroundCallback,
                         mBookmarkState,
                         mOmniboxActionDelegate,

@@ -68,7 +68,7 @@ public class LoadProgressMediatorTest {
     }
 
     private void initMediator() {
-        // ObservableSupplierImpl needs initialization in UI thread.
+        // ObservableSupplier needs initialization in UI thread.
         mTabSupplier = ObservableSuppliers.createNullable();
         mMediator = new LoadProgressMediator(mTabSupplier, mModel);
         mTabSupplier.set(mTab);

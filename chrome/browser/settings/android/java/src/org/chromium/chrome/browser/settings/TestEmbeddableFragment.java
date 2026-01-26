@@ -10,7 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 /** An embeddable settings fragment that has several preference inside. */
@@ -18,7 +19,8 @@ public class TestEmbeddableFragment extends PreferenceFragmentCompat
         implements EmbeddableSettingsPage {
     public static final String EXTRA_TITLE = "title";
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {

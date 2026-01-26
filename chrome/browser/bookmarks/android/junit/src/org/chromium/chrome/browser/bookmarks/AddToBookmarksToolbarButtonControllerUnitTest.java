@@ -31,7 +31,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -69,7 +69,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
-    private ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier;
+    private NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
 
     private UserActionTester mActionTester;
 
@@ -80,8 +80,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
         mTabSupplier.set(mTab);
 
         when(mBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
-        mBookmarkModelSupplier = new ObservableSupplierImpl<>();
-        mBookmarkModelSupplier.set(mBookmarkModel);
+        mBookmarkModelSupplier = ObservableSuppliers.createNonNull(mBookmarkModel);
     }
 
     @After

@@ -804,21 +804,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /**
      * Creates and returns a CustomTab-specific LocationBar. This also retains a reference to the
      * passed LocationBarModel.
-     * @param locationBarModel {@link LocationBarModel} to be used for accessing LocationBar
-     *         state.
+     *
+     * @param locationBarModel {@link LocationBarModel} to be used for accessing LocationBar state.
      * @param actionModeCallback Callback to handle changes in contextual action Modes.
      * @param modalDialogManagerSupplier Supplier of {@link ModalDialogManager}.
      * @param ephemeralTabCoordinatorSupplier Supplier of {@link EphemeralTabCoordinator}.
      * @param controlsVisibilityDelegate {@link BrowserStateBrowserControlsVisibilityDelegate} to
-     *         show / hide the browser control. Used to ensure toolbar is shown for a certain
-     *         duration.
+     *     show / hide the browser control. Used to ensure toolbar is shown for a certain duration.
      * @param tabCreator {@link TabCreator} to handle a new tab creation.
      * @return The LocationBar implementation for this CustomTabToolbar.
      */
     public LocationBar createLocationBar(
             LocationBarModel locationBarModel,
             ActionMode.Callback actionModeCallback,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             TabCreator tabCreator) {
@@ -1653,7 +1652,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private LocationBarDataProvider mLocationBarDataProvider;
         private @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
-        private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+        private Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
         private UrlBarCoordinator mUrlCoordinator;
         private @Nullable TabCreator mTabCreator;
 
@@ -2094,7 +2093,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Initializer
         public void init(
                 LocationBarDataProvider locationBarDataProvider,
-                Supplier<ModalDialogManager> modalDialogManagerSupplier,
+                Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
                 Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
                 TabCreator tabCreator,
                 ActionMode.Callback actionModeCallback) {

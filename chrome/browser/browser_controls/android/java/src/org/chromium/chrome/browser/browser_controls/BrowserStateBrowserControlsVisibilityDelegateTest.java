@@ -24,7 +24,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
 
@@ -36,12 +37,11 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
     @Mock private Callback<Integer> mCallback;
 
     private BrowserStateBrowserControlsVisibilityDelegate mDelegate;
-    private ObservableSupplierImpl<Boolean> mPersistentModeSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mPersistentModeSupplier;
 
     @Before
     public void beforeTest() {
-        mPersistentModeSupplier = new ObservableSupplierImpl<>();
-        mPersistentModeSupplier.set(false);
+        mPersistentModeSupplier = ObservableSuppliers.createNonNull(false);
 
         mDelegate = new BrowserStateBrowserControlsVisibilityDelegate(mPersistentModeSupplier);
         mDelegate.addObserver(mCallback);

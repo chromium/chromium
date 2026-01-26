@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings.EXTRA_SITE;
 
 import android.app.Activity;
@@ -84,7 +85,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate {
     private final WebContents mWebContents;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Context mContext;
     private final Profile mProfile;
@@ -101,7 +102,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public ChromePageInfoControllerDelegate(
             Context context,
             WebContents webContents,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
             @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
@@ -155,7 +156,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     /** {@inheritDoc} */
     @Override
     public ModalDialogManager getModalDialogManager() {
-        return mModalDialogManagerSupplier.get();
+        return assertNonNull(mModalDialogManagerSupplier.get());
     }
 
     /** {@inheritDoc} */

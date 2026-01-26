@@ -1333,7 +1333,7 @@ class LocationBarMediator
 
     @VisibleForTesting
     void setProfile(Profile profile) {
-        if (profile == null || !mNativeInitialized) return;
+        if (!mNativeInitialized) return;
 
         mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
         mIsComposeplateV2Enabled =

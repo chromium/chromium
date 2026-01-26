@@ -54,8 +54,8 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -224,8 +224,8 @@ public class EdgeToEdgeControllerTest {
 
     private final SettableNullableObservableSupplier<Tab> mTabProvider =
             ObservableSuppliers.createNullable();
-    private final ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private final UserDataHost mTabDataHost = new UserDataHost();
 
@@ -474,7 +474,7 @@ public class EdgeToEdgeControllerTest {
     /** Test the OSWrapper implementation without mocking it. Native ToNormal. */
     @Test
     public void onObservingDifferentTab_osWrapperImplToNormal() {
-        ObservableSupplierImpl liveSupplier = new ObservableSupplierImpl();
+        SettableNullableObservableSupplier<Tab> liveSupplier = ObservableSuppliers.createNullable();
         EdgeToEdgeControllerImpl liveController =
                 (EdgeToEdgeControllerImpl)
                         EdgeToEdgeControllerFactory.create(
@@ -630,9 +630,6 @@ public class EdgeToEdgeControllerTest {
         doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
         mEdgeToEdgeControllerImpl.onStartedShowing(LayoutType.BROWSING);
         assertToEdgeExpectations();
-
-        mLayoutManagerSupplier.set(null);
-        assertToNormalExpectations();
     }
 
     @Test

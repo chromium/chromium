@@ -28,7 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -42,7 +42,9 @@ import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoord
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerLayout;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
+import org.chromium.chrome.modules.readaloud.Feedback;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
@@ -110,10 +112,19 @@ public class PlayerCoordinatorUnitTest {
         ReadAloudPrefs.setSpeed(prefs, 2f);
         doReturn(prefs).when(mDelegate).getPrefService();
         doReturn(Mockito.mock(LayoutManager.class)).when(mDelegate).getLayoutManager();
-        doReturn(new ObservableSupplierImpl<>()).when(mDelegate).getCurrentLanguageVoicesSupplier();
-        doReturn(new ObservableSupplierImpl<>()).when(mDelegate).getVoiceIdSupplier();
-        doReturn(new ObservableSupplierImpl<>()).when(mDelegate).getPlaybackModeSelectionEnabled();
-        doReturn(new ObservableSupplierImpl<>()).when(mDelegate).getFeedbackTypeSupplier();
+        doReturn(ObservableSuppliers.alwaysNull())
+                .when(mDelegate)
+                .getCurrentLanguageVoicesSupplier();
+        doReturn(ObservableSuppliers.alwaysNull()).when(mDelegate).getVoiceIdSupplier();
+        doReturn(
+                        ObservableSuppliers.createNonNull(
+                                PlaybackArgs.PlaybackModeSelectionEnablementStatus
+                                        .FEATURE_DISABLED))
+                .when(mDelegate)
+                .getPlaybackModeSelectionEnabled();
+        doReturn(ObservableSuppliers.createNonNull(Feedback.FeedbackType.NONE))
+                .when(mDelegate)
+                .getFeedbackTypeSupplier();
         doReturn(mActivity).when(mDelegate).getActivity();
 
         mPlayerCoordinator = new PlayerCoordinator(mDelegate);

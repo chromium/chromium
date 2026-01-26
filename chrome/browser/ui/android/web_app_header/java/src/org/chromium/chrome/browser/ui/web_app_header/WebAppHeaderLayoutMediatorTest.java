@@ -31,8 +31,8 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -72,7 +72,7 @@ public class WebAppHeaderLayoutMediatorTest {
     private WebAppHeaderLayoutMediator mMediator;
     private PropertyModel mModel;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
-    private ObservableSupplierImpl<List<Rect>> mHeaderControlPositionSupplier;
+    private SettableNullableObservableSupplier<List<Rect>> mHeaderControlPositionSupplier;
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock public ThemeColorProvider mThemeColorProvider;
     @Mock public ScrimManager mScrimManager;
@@ -80,7 +80,7 @@ public class WebAppHeaderLayoutMediatorTest {
     @Mock public Tab mTab;
     @Mock public WebContents mWebContents;
     @Mock public Callback<Boolean> mSetHeaderAsOverlayCallback;
-    private ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier;
+    private SettableNonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private @Nullable AppHeaderState mAppHeaderState;
     private ShadowLooper mShadowLooper;
 
@@ -90,13 +90,13 @@ public class WebAppHeaderLayoutMediatorTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
         when(mThemeColorProvider.getThemeColor()).thenReturn(LIGHT_COLOR);
 
-        mScrimVisibilitySupplier = new ObservableSupplierImpl<>();
+        mScrimVisibilitySupplier = ObservableSuppliers.createNonNull(false);
         when(mScrimManager.getScrimVisibilitySupplier()).thenReturn(mScrimVisibilitySupplier);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
 
         mTabSupplier = ObservableSuppliers.createNullable(mTab);
-        mHeaderControlPositionSupplier = new ObservableSupplierImpl<>();
+        mHeaderControlPositionSupplier = ObservableSuppliers.createNullable();
         mModel = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         mMediator =
                 new WebAppHeaderLayoutMediator(

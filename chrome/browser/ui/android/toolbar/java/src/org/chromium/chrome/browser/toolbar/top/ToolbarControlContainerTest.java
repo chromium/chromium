@@ -636,7 +636,7 @@ public class ToolbarControlContainerTest {
 
         ToolbarPhone toolbarPhone = controlContainer.findViewById(R.id.toolbar);
         doReturn(mLocationBarCoordinatorPhone).when(mLocationBarCoordinator).getPhoneCoordinator();
-        doReturn(ObservableSuppliers.of(AutocompleteRequestType.SEARCH))
+        doReturn(ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH))
                 .when(mLocationBarCoordinator)
                 .getAutocompleteRequestTypeSupplier();
         doReturn(mNewTabPageDelegate).when(mToolbarDataProvider).getNewTabPageDelegate();

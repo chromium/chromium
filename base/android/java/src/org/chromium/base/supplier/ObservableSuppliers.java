@@ -66,9 +66,5 @@ public class ObservableSuppliers {
         return (MonotonicObservableSupplier<T>) ALWAYS_NULL;
     }
 
-    public static <T> NonNullObservableSupplier<T> of(T value) {
-        return createNonNull(value);
-    }
-
     private ObservableSuppliers() {}
 }

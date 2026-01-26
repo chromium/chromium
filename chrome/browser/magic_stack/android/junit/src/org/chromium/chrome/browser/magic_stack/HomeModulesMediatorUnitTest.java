@@ -105,7 +105,7 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(0, mHomeModulesConfigManager.getEnabledModuleSet().size());
         mMediator =
                 new HomeModulesMediator(
-                        ObservableSuppliers.of(mProfile),
+                        ObservableSuppliers.createNonNull(mProfile),
                         mModel,
                         mModuleRegistry,
                         mModuleDelegateHost,

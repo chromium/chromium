@@ -27,7 +27,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -73,7 +74,7 @@ public class EducationalTipModuleMediatorUnitTest {
     private ArgumentCaptor<DefaultBrowserPromoTriggerStateListener>
             mDefaultBrowserPromoTriggerStateListener;
 
-    ObservableSupplierImpl<Profile> mProfileSupplier;
+    SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     private Context mContext;
     private @ModuleType int mDefaultModuleTypeForTesting;
     private EducationalTipModuleMediator mEducationalTipModuleMediator;
@@ -92,7 +93,7 @@ public class EducationalTipModuleMediatorUnitTest {
         SetupListManager.setInstanceForTesting(mSetupListManager);
 
         // Setup for History sync promo
-        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier = ObservableSuppliers.createMonotonic();
         mProfileSupplier.set(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);

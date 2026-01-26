@@ -56,8 +56,8 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -174,8 +174,8 @@ public class ReadAloudControllerUnitTest {
     private Locale mDefaultLocale;
 
     private FakeTranslateBridgeJni mFakeTranslateBridge;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
-    private ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier;
+    private NonNullObservableSupplier<Profile> mProfileSupplier;
+    private NonNullObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     @Mock private Profile mMockProfile;
     @Mock private Profile mMockIncognitoProfile;
     @Mock private ReadAloudReadabilityHooks mHooksImpl;
@@ -249,12 +249,10 @@ public class ReadAloudControllerUnitTest {
         mDefaultLocale = Locale.getDefault();
 
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(mMockProfile);
+        mProfileSupplier = ObservableSuppliers.createNonNull(mMockProfile);
         doReturn(true).when(mMockProfile).isNativeInitialized();
 
-        mLayoutManagerSupplier = new ObservableSupplierImpl<>();
-        mLayoutManagerSupplier.set(mLayoutManager);
+        mLayoutManagerSupplier = ObservableSuppliers.createNonNull(mLayoutManager);
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
@@ -1193,7 +1191,7 @@ public class ReadAloudControllerUnitTest {
                                 PlaybackMode.OVERVIEW,
                                 new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-        MonotonicObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+        NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
         observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 
@@ -1241,7 +1239,7 @@ public class ReadAloudControllerUnitTest {
                                 PlaybackMode.OVERVIEW,
                                 new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-        MonotonicObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+        NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
         observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 
@@ -1294,7 +1292,7 @@ public class ReadAloudControllerUnitTest {
                                 PlaybackMode.OVERVIEW,
                                 new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-        MonotonicObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+        NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
         observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 
@@ -1351,7 +1349,7 @@ public class ReadAloudControllerUnitTest {
                                 PlaybackMode.OVERVIEW,
                                 new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-        MonotonicObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+        NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
         observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 
@@ -1408,7 +1406,7 @@ public class ReadAloudControllerUnitTest {
                                 PlaybackMode.OVERVIEW,
                                 new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-        MonotonicObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+        NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
         observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 
@@ -1462,7 +1460,7 @@ public class ReadAloudControllerUnitTest {
                                 PlaybackMode.OVERVIEW,
                                 new ReadAloudReadabilityHooks.ReadabilityResult(true, false)));
 
-        MonotonicObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
+        NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus> observable =
                 mController.getPlaybackModeSelectionEnabled();
         observable.addObserver(mPlaybackModeSelectionEnabledCallback);
 

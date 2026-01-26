@@ -46,7 +46,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -92,12 +93,12 @@ public class PlayerMediatorUnitTest {
     private OnSeekBarChangeListener mOnSeekBarChangeListener;
     private final PlaybackVoice mPlaybackVoiceA = new PlaybackVoice("en", "a", "");
 
-    private ObservableSupplierImpl<List<PlaybackVoice>> mVoicesSupplier;
-    private ObservableSupplierImpl<String> mSelectedVoiceIdSupplier;
-    private ObservableSupplierImpl<Boolean> mHighlightingEnabledSupplier;
-    private ObservableSupplierImpl<PlaybackModeSelectionEnablementStatus>
+    private SettableNonNullObservableSupplier<List<PlaybackVoice>> mVoicesSupplier;
+    private SettableNonNullObservableSupplier<String> mSelectedVoiceIdSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mHighlightingEnabledSupplier;
+    private SettableNonNullObservableSupplier<PlaybackModeSelectionEnablementStatus>
             mPlaybackModeSelectorEnabledSupplier;
-    private ObservableSupplierImpl<FeedbackType> mFeedbackTypeSupplier;
+    private SettableNonNullObservableSupplier<FeedbackType> mFeedbackTypeSupplier;
     @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
     public UserActionTester mUserActionTester;
 
@@ -177,19 +178,15 @@ public class PlayerMediatorUnitTest {
         doReturn(PlaybackMode.OVERVIEW).when(mPlaybackMetadata).playbackMode();
         doReturn(1000).when(mSeekbar).getMax();
         doReturn(mBottomControlsStacker).when(mDelegate).getBottomControlsStacker();
-        mVoicesSupplier = new ObservableSupplierImpl<>();
-        mVoicesSupplier.set(List.of(new PlaybackVoice("en", "a")));
-        mSelectedVoiceIdSupplier = new ObservableSupplierImpl<>();
-        mSelectedVoiceIdSupplier.set("a");
+        mVoicesSupplier = ObservableSuppliers.createNonNull(List.of(new PlaybackVoice("en", "a")));
+        mSelectedVoiceIdSupplier = ObservableSuppliers.createNonNull("a");
 
-        mFeedbackTypeSupplier = new ObservableSupplierImpl<>();
-        mFeedbackTypeSupplier.set(FeedbackType.NONE);
+        mFeedbackTypeSupplier = ObservableSuppliers.createNonNull(FeedbackType.NONE);
 
-        mHighlightingEnabledSupplier = new ObservableSupplierImpl<>();
-        mHighlightingEnabledSupplier.set(true);
-        mPlaybackModeSelectorEnabledSupplier = new ObservableSupplierImpl<>();
-        mPlaybackModeSelectorEnabledSupplier.set(
-                PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
+        mHighlightingEnabledSupplier = ObservableSuppliers.createNonNull(true);
+        mPlaybackModeSelectorEnabledSupplier =
+                ObservableSuppliers.createNonNull(
+                        PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
         ReadAloudPrefsJni.setInstanceForTesting(mPrefsNative);
         mMockPrefServiceHelper = new MockPrefServiceHelper();
         mPlaybackData = new TestPlaybackData();

@@ -26,7 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -61,7 +61,9 @@ public class NtpCardsCoordinatorUnitTest {
         HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         mCoordinator =
                 new NtpCardsCoordinator(
-                        mContext, mBottomSheetDelegate, new ObservableSupplierImpl<>(mProfile));
+                        mContext,
+                        mBottomSheetDelegate,
+                        ObservableSuppliers.createNonNull(mProfile));
     }
 
     @Test

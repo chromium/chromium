@@ -125,7 +125,7 @@ public class StripDragShadowViewUnitTest {
                 mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManager,
-                ObservableSuppliers.of(mMockLayerTitleCache),
+                ObservableSuppliers.createNonNull(mMockLayerTitleCache),
                 mMockTabModelSelector,
                 mMockShadowUpdateHost);
 

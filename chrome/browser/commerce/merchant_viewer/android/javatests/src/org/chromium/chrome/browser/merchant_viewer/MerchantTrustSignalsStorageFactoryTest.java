@@ -17,7 +17,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
@@ -35,7 +36,7 @@ public class MerchantTrustSignalsStorageFactoryTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private MerchantTrustSignalsEventStorage.Natives mMockStorage;
 
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private SettableNonNullObservableSupplier<Profile> mProfileSupplier;
 
     @Mock public Profile.Natives mMockProfileNatives;
 
@@ -46,14 +47,12 @@ public class MerchantTrustSignalsStorageFactoryTest {
 
         doReturn(false).when(mMockProfile1).isOffTheRecord();
         doReturn(false).when(mMockProfile2).isOffTheRecord();
+        mProfileSupplier = ObservableSuppliers.createNonNull(mMockProfile1);
         MerchantTrustSignalsEventStorage.setSkipNativeAssertionsForTesting(true);
     }
 
     @Test
     public void testGetForLastUsedProfile() {
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(mMockProfile1);
-
         MerchantTrustSignalsStorageFactory factory =
                 new MerchantTrustSignalsStorageFactory(mProfileSupplier);
         Assert.assertNotNull(factory.getForLastUsedProfile());
@@ -61,23 +60,8 @@ public class MerchantTrustSignalsStorageFactoryTest {
     }
 
     @Test
-    public void testGetForLastUsedProfileNullProfile() {
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(null);
-
-        MerchantTrustSignalsStorageFactory factory =
-                new MerchantTrustSignalsStorageFactory(mProfileSupplier);
-
-        Assert.assertNull(factory.getForLastUsedProfile());
-        factory.destroy();
-    }
-
-    @Test
     public void testGetForLastUsedProfileOffTheRecordProfile() {
         doReturn(true).when(mMockProfile1).isOffTheRecord();
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(mMockProfile1);
-
         MerchantTrustSignalsStorageFactory factory =
                 new MerchantTrustSignalsStorageFactory(mProfileSupplier);
 
@@ -87,9 +71,6 @@ public class MerchantTrustSignalsStorageFactoryTest {
 
     @Test
     public void testGetForLastUsedProfileSwitch() {
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(mMockProfile1);
-
         MerchantTrustSignalsStorageFactory factory =
                 new MerchantTrustSignalsStorageFactory(mProfileSupplier);
 
@@ -107,8 +88,6 @@ public class MerchantTrustSignalsStorageFactoryTest {
     @Test
     public void testDestroy() {
         doReturn(false).when(mMockProfile1).isOffTheRecord();
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(mMockProfile1);
 
         MerchantTrustSignalsStorageFactory factory =
                 new MerchantTrustSignalsStorageFactory(mProfileSupplier);

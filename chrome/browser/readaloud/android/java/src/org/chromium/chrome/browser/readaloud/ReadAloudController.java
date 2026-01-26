@@ -36,6 +36,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
@@ -1642,7 +1643,7 @@ public class ReadAloudController
     }
 
     @Override
-    public MonotonicObservableSupplier<FeedbackType> getFeedbackTypeSupplier() {
+    public NonNullObservableSupplier<FeedbackType> getFeedbackTypeSupplier() {
         return mFeedbackType;
     }
 
@@ -1689,7 +1690,7 @@ public class ReadAloudController
     }
 
     @Override
-    public MonotonicObservableSupplier<PlaybackModeSelectionEnablementStatus>
+    public NonNullObservableSupplier<PlaybackModeSelectionEnablementStatus>
             getPlaybackModeSelectionEnabled() {
         return mPlaybackModeSelectionEnabled;
     }
@@ -1810,6 +1811,7 @@ public class ReadAloudController
                             public void onSuccess(Playback playback) {
                                 if (playback == null) {
                                     promise.reject(new Exception("Playback is null"));
+                                    return;
                                 }
 
                                 assumeNonNull(mReadabilityHooks);

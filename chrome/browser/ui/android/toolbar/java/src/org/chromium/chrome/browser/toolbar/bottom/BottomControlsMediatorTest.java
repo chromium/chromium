@@ -173,7 +173,7 @@ public class BottomControlsMediatorTest {
                         null,
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
-                        ObservableSuppliers.of(mLayoutManager),
+                        ObservableSuppliers.createNonNull(mLayoutManager),
                         mFullscreenManager);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
@@ -186,7 +186,7 @@ public class BottomControlsMediatorTest {
                         DEFAULT_HEIGHT,
                         DEFAULT_SHADOW_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
-                        ObservableSuppliers.of(liveEdgeToEdgeController),
+                        ObservableSuppliers.createNonNull(liveEdgeToEdgeController),
                         mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         plainMediator.destroy();
@@ -205,7 +205,7 @@ public class BottomControlsMediatorTest {
                         null,
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
-                        ObservableSuppliers.of(mLayoutManager),
+                        ObservableSuppliers.createNonNull(mLayoutManager),
                         mFullscreenManager);
         new BottomControlsMediator(
                 mWindowAndroid,
@@ -217,7 +217,7 @@ public class BottomControlsMediatorTest {
                 DEFAULT_HEIGHT,
                 DEFAULT_SHADOW_HEIGHT,
                 mOverlayPanelVisibilitySupplier,
-                ObservableSuppliers.of(liveEdgeToEdgeController),
+                ObservableSuppliers.createNonNull(liveEdgeToEdgeController),
                 mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         liveEdgeToEdgeController.setIsOptedIntoEdgeToEdgeForTesting(false);

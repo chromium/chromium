@@ -81,7 +81,7 @@ public class OptionalButtonCoordinatorTest {
                         () -> mMockUserEducationHelper,
                         mMockRootView,
                         mMockIsAnimationAllowedDelegate,
-                        ObservableSuppliers.of(mMockTracker));
+                        ObservableSuppliers.createNonNull(mMockTracker));
     }
 
     @Test

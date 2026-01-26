@@ -343,7 +343,7 @@ public class ToolbarManager
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private MenuButtonCoordinator mOverviewModeMenuButtonCoordinator;
     private HomepageManager.@Nullable HomepageStateListener mHomepageStateListener;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final StatusBarColorController mStatusBarColorController;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final BottomSheetController mBottomSheetController;
@@ -440,7 +440,7 @@ public class ToolbarManager
     private int mIncognitoNtpViewIdForA11y = View.NO_ID;
     private @Nullable OverscrollGlowCoordinator mOverscrollGlowCoordinator;
     private final NewTabPageDelegate mNtpDelegate;
-    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
+    private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final SettableNonNullObservableSupplier<Float>
@@ -799,7 +799,7 @@ public class ToolbarManager
             WindowAndroid windowAndroid,
             OneshotSupplier<ChromeAndroidTask> chromeAndroidTaskSupplier,
             Supplier<Boolean> isInOverviewModeSupplier,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             StatusBarColorController statusBarColorController,
             AppMenuDelegate appMenuDelegate,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,

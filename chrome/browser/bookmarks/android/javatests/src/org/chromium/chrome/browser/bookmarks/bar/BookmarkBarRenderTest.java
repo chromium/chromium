@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -129,11 +128,12 @@ public class BookmarkBarRenderTest {
                             mResourceManager,
                             mBrowserControlsManager,
                             /* heightChangeCallback= */ result -> {},
-                            /* profileSupplier= */ new ObservableSupplierImpl<>(),
+                            /* profileSupplier= */ ObservableSuppliers.alwaysNull(),
                             viewStub,
                             mCurrentTab,
                             mBookmarkOpener,
-                            new ObservableSupplierImpl<>(mBookmarkManagerOpener),
+                            /* bookmarkManagerOpenerSupplier= */ ObservableSuppliers.createNonNull(
+                                    mBookmarkManagerOpener),
                             mTopControlsStacker,
                             ObservableSuppliers.alwaysNull(),
                             mTopUiThemeColorProvider);

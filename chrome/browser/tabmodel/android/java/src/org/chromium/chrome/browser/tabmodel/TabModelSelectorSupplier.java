@@ -62,7 +62,7 @@ public class TabModelSelectorSupplier {
 
     /** Sets an instance for testing. */
     public static void setInstanceForTesting(TabModelSelector tabModelSelector) {
-        sInstanceForTesting = ObservableSuppliers.of(tabModelSelector);
+        sInstanceForTesting = ObservableSuppliers.createNonNull(tabModelSelector);
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 

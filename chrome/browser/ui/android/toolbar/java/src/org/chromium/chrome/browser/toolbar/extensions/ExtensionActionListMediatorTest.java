@@ -39,9 +39,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -112,7 +112,7 @@ public class ExtensionActionListMediatorTest {
     private ExtensionActionListMediator mMediator;
     private ModelList mModels;
     private MockTab mTab;
-    private ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ChromeAndroidTask mTask;
@@ -169,8 +169,7 @@ public class ExtensionActionListMediatorTest {
         // Initialize common objects.
         mTab = new MockTab(TAB_ID, mProfile);
         mTab.setWebContentsOverrideForTesting(mWebContents);
-        mCurrentTabSupplier = new ObservableSupplierImpl<>();
-        mCurrentTabSupplier.set(mTab);
+        mCurrentTabSupplier = ObservableSuppliers.createNullable(mTab);
 
         mModels = new ModelList();
 

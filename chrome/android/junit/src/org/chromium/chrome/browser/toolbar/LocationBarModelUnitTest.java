@@ -110,7 +110,7 @@ public class LocationBarModelUnitTest {
                     NewTabPageDelegate.EMPTY,
                     url -> url.getSpec(),
                     OFFLINE_STATUS,
-                    ObservableSuppliers.of(ControlsPosition.TOP));
+                    ObservableSuppliers.createNonNull(ControlsPosition.TOP));
 
     private final GURL mExampleGurl = new GURL("http://www.example.com/");
 

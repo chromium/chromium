@@ -200,7 +200,7 @@ public class MainSettingsFragmentTest {
 
     @Before
     public void setup() {
-        // ObservableSupplierImpl needs a Looper.
+        // ObservableSupplier needs a Looper.
         Looper.prepare();
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);

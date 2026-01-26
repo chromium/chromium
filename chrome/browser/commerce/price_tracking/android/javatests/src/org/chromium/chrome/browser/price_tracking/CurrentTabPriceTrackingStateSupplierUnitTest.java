@@ -29,8 +29,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
@@ -52,7 +52,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     @Mock private Profile mMockProfile;
     @Mock private Tab mMockTab;
     @Mock private ShoppingService mMockShoppingService;
@@ -64,7 +64,7 @@ public class CurrentTabPriceTrackingStateSupplierUnitTest {
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
 
         mTabSupplier = ObservableSuppliers.createNullable();
-        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier = ObservableSuppliers.createMonotonic();
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
     }

@@ -34,7 +34,7 @@ public class DeveloperSettings extends ChromeBaseSettingsFragment
     // Non-translated strings:
     private static final String MSG_DEVELOPER_OPTIONS_TITLE = "Developer options";
     private final NonNullObservableSupplier<String> mPageTitle =
-            ObservableSuppliers.of(MSG_DEVELOPER_OPTIONS_TITLE);
+            ObservableSuppliers.createNonNull(MSG_DEVELOPER_OPTIONS_TITLE);
 
     private static @Nullable Boolean sIsEnabledForTests;
 

@@ -26,7 +26,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -68,8 +69,8 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     @Captor private ArgumentCaptor<UserResponseMetadata> mUserResponseMetadataCaptor;
 
     @Spy
-    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
+            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
 
     private final ArrayList<Tab> mTabs = new ArrayList<>();
 
@@ -119,15 +120,6 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
 
         verify(newFilter).addObserver(any());
         verify(newFilter).addTabGroupObserver(any());
-    }
-
-    @Test
-    public void testFilterChanged_toNull() {
-        mTabGroupModelFilterSupplier.set(null);
-        ShadowLooper.runUiThreadTasks();
-
-        verify(mTabGroupModelFilter).removeObserver(any());
-        verify(mTabGroupModelFilter).removeTabGroupObserver(any());
     }
 
     @Test

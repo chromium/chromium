@@ -26,7 +26,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.R;
@@ -58,15 +59,14 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
     private Context mContext;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private NonNullObservableSupplier<Profile> mProfileSupplier;
     private EducationalTipModuleTwoCellCoordinator mCoordinator;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(mContext);
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(mProfile);
+        mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
     }
 

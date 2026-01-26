@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -72,7 +73,9 @@ public class CustomTabHistoryIphControllerUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.CCT_HISTORY_FEATURE)).thenReturn(true);
         TrackerFactory.setTrackerForTests(mTracker);
         when(mMockProfile.isOffTheRecord()).thenReturn(false);
-        var profileSupplier = ObservableSuppliers.of(mMockProfile);
+        var profileSupplier =
+                (NonNullObservableSupplier<Profile>)
+                        ObservableSuppliers.createNonNull(mMockProfile);
         mController =
                 new CustomTabHistoryIphController(
                         mActivity, mActivityTabProvider, profileSupplier, mAppMenuHandler);

@@ -166,7 +166,7 @@ public final class StatusMediatorUnitTest {
                         mLocationBarDataProvider,
                         mPermissionDialogController,
                         mTemplateUrlServiceSupplier,
-                        ObservableSuppliers.of(mProfile),
+                        ObservableSuppliers.createNonNull(mProfile),
                         mPageInfoIphController,
                         mWindowAndroid,
                         () -> mMerchantTrustSignalsCoordinator);

@@ -66,7 +66,7 @@ public class TracingSettings extends ChromeBaseSettingsFragment
     private static final String MSG_SHARE_TRACE = "Share trace";
 
     private final NonNullObservableSupplier<String> mPageTitle =
-            ObservableSuppliers.of(MSG_TRACING_TITLE);
+            ObservableSuppliers.createNonNull(MSG_TRACING_TITLE);
 
     @VisibleForTesting
     static final String MSG_NOTIFICATIONS_DISABLED =

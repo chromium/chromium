@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
@@ -43,7 +44,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
     private final PropertyModel mModel;
     private final PaymentHandlerToolbarView mToolbarView;
     private final PaymentHandlerToolbarMediator mMediator;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
     /** Observer for the error of the payment handler toolbar. */
     public interface PaymentHandlerToolbarObserver {
@@ -64,7 +65,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
             Activity activity,
             WebContents webContents,
             GURL url,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
         assert activity != null;
         assert webContents != null;
         assert url != null;

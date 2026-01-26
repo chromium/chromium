@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -43,7 +41,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,9 +55,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.task.TaskTraits;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -147,7 +145,6 @@ import java.util.function.Consumer;
 
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPostTask.class})
 @EnableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class BookmarkManagerMediatorTest {
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
@@ -205,10 +202,11 @@ public class BookmarkManagerMediatorTest {
     @Captor private ArgumentCaptor<SubscriptionsObserver> mSubscriptionsObserver;
 
     private int mId = 1;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean>
-            mSelectableListLayoutHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean>
+            mSelectableListLayoutHandleBackPressChangedSupplier =
+                    ObservableSuppliers.createNonNull(false);
     private final BookmarkId mRootFolderId = new BookmarkId(mId++, BookmarkType.NORMAL);
     private final BookmarkId mDesktopFolderId = new BookmarkId(mId++, BookmarkType.NORMAL);
     private final BookmarkId mMobileFolderId = new BookmarkId(mId++, BookmarkType.NORMAL);
@@ -359,14 +357,6 @@ public class BookmarkManagerMediatorTest {
 
     @Before
     public void setUp() {
-        // The mediator will respond to model changes by posting a task to update for performance.
-        // This just runs all of those posts synchronously to simplify test code.
-        ShadowPostTask.setTestImpl(
-                (taskTraits, task, delay) -> {
-                    assertThat(delay).isEqualTo(0);
-                    assertThat(taskTraits).isAtLeast(TaskTraits.UI_TRAITS_START);
-                    task.run();
-                });
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -551,11 +541,8 @@ public class BookmarkManagerMediatorTest {
                         mClipboard);
         mMediator.onAttachedToWindow();
         mMediator.addUiObserver(mBookmarkUiObserver);
-    }
 
-    @After
-    public void tearDown() {
-        ShadowPostTask.reset();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
     }
 
     private void finishLoading() {
@@ -1414,6 +1401,7 @@ public class BookmarkManagerMediatorTest {
                 .getValue()
                 .bookmarkNodeRemoved(mFolderItem2, 0, mBookmarkItem21, false);
 
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         assertEquals(3, mModelList.size());
         verify(mBookmarkUiObserver, times(1)).onUiModeChanged(BookmarkUiMode.FOLDER);
     }
@@ -2293,6 +2281,7 @@ public class BookmarkManagerMediatorTest {
         mBookmarkModelObserverArgumentCaptor.getValue().bookmarkModelChanged();
 
         // Should still be in search mode, and should have refreshed and picked up new results.
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
         verifyCurrentBookmarkIds(null, mFolderId2);
     }
@@ -2395,6 +2384,7 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         BookmarkModelObserver observer = mBookmarkModelObserverArgumentCaptor.getValue();
         observer.bookmarkModelChanged();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         assertBookmarkListEmpty();
 
         // Neither of these can do anything, the models are gone. But more importantly, they should

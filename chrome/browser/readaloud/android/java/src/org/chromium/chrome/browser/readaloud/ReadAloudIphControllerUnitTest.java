@@ -30,7 +30,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -62,7 +63,7 @@ public class ReadAloudIphControllerUnitTest {
     @Captor ArgumentCaptor<IphCommand> mIphCommandCaptor;
     @Mock private MonotonicObservableSupplier<Tab> mMockTabProvider;
     @Mock ReadAloudController mReadAloudController;
-    ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier;
+    private NonNullObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
     private MockTab mTab;
     @Mock private Profile mProfile;
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
@@ -79,8 +80,7 @@ public class ReadAloudIphControllerUnitTest {
         mTab.setGurlOverrideForTesting(sTestGURL);
         doReturn(mTab).when(mMockTabProvider).get();
 
-        mReadAloudControllerSupplier = new ObservableSupplierImpl<>();
-        mReadAloudControllerSupplier.set(mReadAloudController);
+        mReadAloudControllerSupplier = ObservableSuppliers.createNonNull(mReadAloudController);
         doReturn(PlaybackMode.CLASSIC).when(mReadAloudController).getModeToPlay(mTab);
 
         mController =

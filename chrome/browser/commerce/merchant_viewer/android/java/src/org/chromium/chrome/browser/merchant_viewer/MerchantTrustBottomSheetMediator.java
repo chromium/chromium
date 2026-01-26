@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
@@ -56,7 +56,7 @@ public class MerchantTrustBottomSheetMediator {
     private final int mTopControlsHeightDp;
     private final FaviconHelper mFaviconHelper;
     private final int mFaviconSize;
-    private final NonNullObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
 
     private @Nullable PropertyModel mToolbarModel;
     private @Nullable WebContents mWebContents;
@@ -71,7 +71,7 @@ public class MerchantTrustBottomSheetMediator {
             Context context,
             WindowAndroid windowAndroid,
             MerchantTrustMetrics metrics,
-            NonNullObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             FaviconHelper faviconHelper) {
         mContext = context;
         mWindowAndroid = windowAndroid;

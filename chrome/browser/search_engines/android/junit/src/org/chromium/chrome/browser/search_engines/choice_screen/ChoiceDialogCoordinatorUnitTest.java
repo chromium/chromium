@@ -36,7 +36,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Holder;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -87,7 +87,7 @@ public class ChoiceDialogCoordinatorUnitTest {
                                 "Search.OsDefaultsChoice.DialogSuppressionStatus",
                                 DialogSuppressionStatus.CAN_SHOW)
                         .build();
-        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
+        var shouldShowSupplier = ObservableSuppliers.createNullable(true);
         doReturn(shouldShowSupplier)
                 .when(mSearchEngineChoiceService)
                 .getIsDeviceChoiceRequiredSupplier();
@@ -156,7 +156,7 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_doesNotShowEscapeHatch() {
-        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
+        var shouldShowSupplier = ObservableSuppliers.createNullable(true);
         doReturn(shouldShowSupplier)
                 .when(mSearchEngineChoiceService)
                 .getIsDeviceChoiceRequiredSupplier();
@@ -234,7 +234,7 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_showsAndBlocksAfterDelayedApprovalWithoutPendingDialog() {
-        var pendingSupplier = new ObservableSupplierImpl<Boolean>(null);
+        var pendingSupplier = ObservableSuppliers.<Boolean>createNullable();
         doReturn(pendingSupplier)
                 .when(mSearchEngineChoiceService)
                 .getIsDeviceChoiceRequiredSupplier();
@@ -261,7 +261,7 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_unblocksAfterDelayedDisapprovalWithoutPendingDialog() {
-        var pendingSupplier = new ObservableSupplierImpl<Boolean>(null);
+        var pendingSupplier = ObservableSuppliers.<Boolean>createNullable();
         doReturn(pendingSupplier)
                 .when(mSearchEngineChoiceService)
                 .getIsDeviceChoiceRequiredSupplier();
@@ -288,7 +288,7 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_doesNotShowWithImmediateDisapproval() {
-        var disapprovingSupplier = new ObservableSupplierImpl<>(false);
+        var disapprovingSupplier = ObservableSuppliers.createNullable(false);
         doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
         doReturn(disapprovingSupplier)
                 .when(mSearchEngineChoiceService)
@@ -307,7 +307,7 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow_dismissesDialogAfterDisconnection() {
-        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
+        var shouldShowSupplier = ObservableSuppliers.createNullable(true);
         doReturn(shouldShowSupplier)
                 .when(mSearchEngineChoiceService)
                 .getIsDeviceChoiceRequiredSupplier();
@@ -332,7 +332,7 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testLaunchChoiceScreen_isDebounced() {
-        doReturn(new ObservableSupplierImpl<>(true))
+        doReturn(ObservableSuppliers.createNullable(true))
                 .when(mSearchEngineChoiceService)
                 .getIsDeviceChoiceRequiredSupplier();
         doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
@@ -395,7 +395,7 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testLaunchChoiceScreen_pauseResumeRearmsDelay() {
-        doReturn(new ObservableSupplierImpl<>(true))
+        doReturn(ObservableSuppliers.createNullable(true))
                 .when(mSearchEngineChoiceService)
                 .getIsDeviceChoiceRequiredSupplier();
         doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();

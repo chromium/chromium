@@ -173,16 +173,14 @@ public class BookmarkBarVisibilityProvider {
         notifyVisibilityChange();
     }
 
-    private void processProfileChange(@Nullable Profile profile) {
+    private void processProfileChange(Profile profile) {
         // On a profile change, we may have either received a profile for the first time, or we
         // have received a new profile, in which case we want to destroy the previous pref change
         // registrar and create a new one.
         destroyPrefChangeRegistrar();
 
-        if (profile != null) {
-            mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
-            mPrefChangeRegistrar.addObserver(Pref.SHOW_BOOKMARK_BAR, this::processPrefChange);
-        }
+        mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
+        mPrefChangeRegistrar.addObserver(Pref.SHOW_BOOKMARK_BAR, this::processPrefChange);
 
         // Profile changes can also result in visibility changes (e.g. different setting prefs).
         notifyVisibilityChange();
