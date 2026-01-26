@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
@@ -475,10 +476,7 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingsTypeSafe(
       return ContentSettingsType::NOTIFICATIONS;
     case PermissionType::GEOLOCATION:
     case PermissionType::GEOLOCATION_APPROXIMATE:
-      return base::FeatureList::IsEnabled(
-                 content_settings::features::kApproximateGeolocationPermission)
-                 ? ContentSettingsType::GEOLOCATION_WITH_OPTIONS
-                 : ContentSettingsType::GEOLOCATION;
+      return content_settings::GeolocationContentSettingsType();
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_FUCHSIA)
@@ -729,12 +727,7 @@ bool PermissionUtil::DoesPlatformSupportChip() {
 
 // static
 ContentSettingsType PermissionUtil::GetGeolocationType() {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kApproximateGeolocationPermission)) {
-    return ContentSettingsType::GEOLOCATION_WITH_OPTIONS;
-  } else {
-    return ContentSettingsType::GEOLOCATION;
-  }
+  return content_settings::GeolocationContentSettingsType();
 }
 
 }  // namespace permissions
