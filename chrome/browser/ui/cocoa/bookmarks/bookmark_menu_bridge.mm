@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/mac/menu_text_elider_mac.h"
 #include "ui/resources/grit/ui_resources.h"
 
 using bookmarks::BookmarkModel;
@@ -47,7 +48,7 @@ void ClearDelegatesFromSubmenu(NSMenu* menu) {
 }
 
 NSString* MenuTitleForNode(const BookmarkNode* node) {
-  return base::SysUTF16ToNSString(node->GetTitle());
+  return base::SysUTF16ToNSString(gfx::ElideMenuItemTitle(node->GetTitle()));
 }
 
 }  // namespace

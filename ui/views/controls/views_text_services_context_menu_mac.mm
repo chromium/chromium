@@ -10,6 +10,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/decorated_text.h"
 #import "ui/gfx/decorated_text_mac.h"
+#include "ui/gfx/mac/menu_text_elider_mac.h"
 #include "ui/menus/cocoa/text_services_context_menu.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -65,9 +66,12 @@ ViewsTextServicesContextMenuMac::ViewsTextServicesContextMenuMac(
   const std::u16string_view text = GetSelectedText();
   if (!text.empty()) {
     menu->InsertSeparatorAt(0, ui::NORMAL_SEPARATOR);
+    // Truncate the selected text to prevent overly long menu item titles.
+    const std::u16string truncated_text =
+        gfx::ElideMenuItemTitle(std::u16string(text));
     menu->InsertItemAt(0, IDS_CONTENT_CONTEXT_LOOK_UP,
                        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_LOOK_UP,
-                                                  std::u16string(text)));
+                                                  truncated_text));
 
     text_services_menu_.AppendToContextMenu(menu);
   }

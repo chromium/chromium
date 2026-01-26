@@ -25,6 +25,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
+#include "ui/gfx/mac/menu_text_elider_mac.h"
 
 using MenuItemCallback = base::RepeatingCallback<void(NSMenuItem*)>;
 
@@ -52,10 +53,11 @@ void UpdateItemForWebContents(NSMenuItem* item,
       emoji = u"\U0001F50A";
     }
 
-    item.title =
-        l10n_util::GetNSStringF(title_id, tab_ui_helper->GetTitle(), emoji);
+    item.title = l10n_util::GetNSStringF(
+        title_id, gfx::ElideMenuItemTitle(tab_ui_helper->GetTitle()), emoji);
   } else {
-    item.title = base::SysUTF16ToNSString(tab_ui_helper->GetTitle());
+    item.title = base::SysUTF16ToNSString(
+        gfx::ElideMenuItemTitle(tab_ui_helper->GetTitle()));
   }
 
   if (base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu)) {

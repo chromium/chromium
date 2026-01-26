@@ -333,9 +333,15 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
   NSString* s = [short_item title];
   EXPECT_NSEQ(@(short_url), s);
 
-  // Long titles are shortened, but only once drawn by AppKit.
+  // Long titles are now truncated with middle ellipsis.
   s = [long_item title];
-  EXPECT_NSEQ(@(long_url), s);
+  EXPECT_LT([s length], strlen(long_url));
+  // Should contain ellipsis character.
+  EXPECT_TRUE([s containsString:@"…"]);
+  // Should start with the beginning of the original URL.
+  EXPECT_TRUE([s hasPrefix:@"http://super-duper"]);
+  // Should end with the end of the original URL.
+  EXPECT_TRUE([s hasSuffix:@".com/"]);
 
   // Confirm tooltips and confirm they are not trimmed (like the item
   // name might be).  Add tolerance for URL fixer-upping;

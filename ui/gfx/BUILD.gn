@@ -261,6 +261,8 @@ component("gfx") {
       "image/image_util_mac.mm",
       "mac/coordinate_conversion.h",
       "mac/coordinate_conversion.mm",
+      "mac/menu_text_elider_mac.h",
+      "mac/menu_text_elider_mac.mm",
       "mac/nswindow_frame_controls.h",
       "mac/nswindow_frame_controls.mm",
       "mac/scoped_cocoa_disable_screen_updates.h",
@@ -773,6 +775,7 @@ test("gfx_unittests") {
       "image/image_mac_unittest.mm",
       "mac/coordinate_conversion_unittest.mm",
       "mac/io_surface_unittest.cc",
+      "mac/menu_text_elider_mac_unittest.mm",
       "platform_font_mac_unittest.mm",
       "range/range_mac_unittest.mm",
     ]

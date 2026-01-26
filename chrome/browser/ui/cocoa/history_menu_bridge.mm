@@ -42,6 +42,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
+#include "ui/gfx/mac/menu_text_elider_mac.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/resources/grit/ui_resources.h"
 
@@ -277,8 +278,11 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
   const std::u16string& title =
       full_title.empty() ? base::UTF8ToUTF16(url) : full_title;
 
+  // Truncate the title for display using middle ellipsis.
+  const std::u16string display_title = gfx::ElideMenuItemTitle(title);
+
   item->menu_item =
-      [[NSMenuItem alloc] initWithTitle:base::SysUTF16ToNSString(title)
+      [[NSMenuItem alloc] initWithTitle:base::SysUTF16ToNSString(display_title)
                                  action:nil
                           keyEquivalent:@""];
   [item->menu_item setTarget:controller_];
