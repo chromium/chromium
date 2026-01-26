@@ -71,6 +71,12 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
   }
 
  protected:
+  auto HideCaret(const ui::ElementIdentifier& web_contents_id,
+                 const DeepQuery& query) {
+    return ExecuteJsAt(web_contents_id, query,
+                       R"((el) => { el.style.caretColor = 'transparent'; })");
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
@@ -176,8 +182,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
                       url::kAboutBlankURL),
 
       // Disable the blinking caret to reduce flakiness.
-      ExecuteJsAt(kActiveTab, kComposeBoxInput,
-                  R"((el) => {el.style.caretColor = 'transparent'})"),
+      HideCaret(kActiveTab, kComposeBoxInput),
 
       // Focus the composebox if specified.
       If([]() { return GetParam().focused; },
@@ -257,6 +262,9 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const DeepQuery kApp = {"contextual-tasks-app"};
   const DeepQuery kAiPageWebView = {"contextual-tasks-app", "webview"};
+  const DeepQuery kComposeBoxInput = {"contextual-tasks-app",
+                                      "contextual-tasks-composebox",
+                                      "#composebox", "textarea"};
 
   RunTestSequence(
       SetupWebUIEnvironment(kActiveTab,
@@ -283,6 +291,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksAppPixelTest, Screenshots) {
       // are.
       ExecuteJsAt(kActiveTab, kAiPageWebView,
                   "(el) => { el.style.border = '1px solid green'; }"),
+      // Disable the blinking caret to reduce flakiness.
+      HideCaret(kActiveTab, kComposeBoxInput),
       WaitForWebContentsPainted(kActiveTab),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshots not captured on this platform."),
@@ -365,13 +375,7 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-// TODO(crbug.com/475916124): Flakily fails on Win10 x64
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Screenshots DISABLED_Screenshots
-#else
-#define MAYBE_Screenshots ScreenShots
-#endif
-IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, MAYBE_Screenshots) {
+IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DeepQuery app = {"contextual-tasks-app"};
   DeepQuery toolbar = app + "top-toolbar";
