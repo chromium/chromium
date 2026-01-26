@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/prefs/pref_filter.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
@@ -164,6 +166,29 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
         feature_engagement::kIPHReadingModePageActionLabelFeature);
     page_action_controller->Hide(kActionSidePanelShowReadAnything);
   }
+}
+
+// static
+void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
+    BrowserWindowInterface* bwi,
+    base::OnceCallback<void(bool)> result_callback) {
+  if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
+    return;
+  }
+
+  // Don't show the omnibox entrypoint for non-HTTP(S) URLs. These URLs are
+  // not supported by Readability, which is used to check whether the current
+  // page is a good candidate for distillation.
+  content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
+  const GURL& url = contents->GetLastCommittedURL();
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+
+  // Readability will callback with whether or not the current contents are a
+  // good candidate for distillation.
+  RunReadabilityHeuristicsOnWebContents(contents, std::move(result_callback));
 }
 
 // static

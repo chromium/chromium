@@ -44,6 +44,11 @@ class ReadAnythingEntryPointController {
   // user.
   static void OnPageActionIgnored(BrowserWindowInterface* bwi);
 
+  // Checks whether to suggest reading mode to the user on the current page.
+  static void CheckIfShouldSuggestReadingMode(
+      BrowserWindowInterface* bwi,
+      base::OnceCallback<void(bool)> result_callback);
+
  private:
   static void ToggleUI(BrowserWindowInterface* bwi,
                        ReadAnythingOpenTrigger open_trigger);

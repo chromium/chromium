@@ -11405,6 +11405,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/fullscreen_keyboard_browsertest_base.cc",
       "../browser/ui/fullscreen_keyboard_browsertest_base.h",
       "../browser/ui/keyboard_lock_interactive_uitest.cc",
+      "../browser/ui/read_anything/read_anything_omnibox_controller_interactive_uitest.cc",
       "../browser/ui/read_anything/read_anything_service_interactive_uitest.cc",
       "../browser/ui/read_anything/read_anything_side_panel_controller_interactive_uitest.cc",
       "../browser/ui/test/browser_ui_interactive_uitest.cc",

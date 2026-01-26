@@ -20,6 +20,8 @@ source_set("read_anything") {
     "read_anything_immersive_web_view.cc",
     "read_anything_immersive_web_view.h",
     "read_anything_lifecycle_observer.h",
+    "read_anything_omnibox_controller.cc",
+    "read_anything_omnibox_controller.h",
     "read_anything_prefs.cc",
     "read_anything_prefs.h",
     "read_anything_service.cc",

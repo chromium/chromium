@@ -15,8 +15,8 @@ class ReadAnythingLifecycleObserver : public base::CheckedObserver {
   virtual void Activate(bool active,
                         std::optional<ReadAnythingOpenTrigger> trigger) {}
   virtual void OnDestroyed() = 0;
-  virtual void OnTabWillDetach() = 0;
-  virtual void OnReadingModePresenterChanged() = 0;
+  virtual void OnTabWillDetach() {}
+  virtual void OnReadingModePresenterChanged() {}
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_LIFECYCLE_OBSERVER_H_

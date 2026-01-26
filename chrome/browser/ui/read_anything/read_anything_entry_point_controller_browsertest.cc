@@ -22,9 +22,11 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "url/url_constants.h"
 
 class ReadAnythingEntryPointControllerTestBase
     : public InProcessBrowserTest,
@@ -237,6 +239,38 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
+                       CheckIfShouldSuggestReadingMode_RunsHeuristic) {
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.google.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  static bool called_back = false;
+  auto result_callback =
+      base::BindOnce([](bool is_good_candidate) { called_back = true; });
+
+  read_anything::ReadAnythingEntryPointController::
+      CheckIfShouldSuggestReadingMode(browser(), std::move(result_callback));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() { return called_back; }));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
+                       CheckIfShouldSuggestReadingMode_NonHttpIsNotCandidate) {
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  static bool is_good_candidate_ = true;
+  auto result_callback = base::BindOnce(
+      [](bool is_good_candidate) { is_good_candidate_ = is_good_candidate; });
+
+  read_anything::ReadAnythingEntryPointController::
+      CheckIfShouldSuggestReadingMode(browser(), std::move(result_callback));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !is_good_candidate_; }));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
                        OnPageActionIgnored_IncrementsIgnoredCount) {
   auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
   ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
@@ -252,4 +286,3 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
   EXPECT_EQ(4, browser()->GetProfile()->GetPrefs()->GetInteger(
                    prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount));
 }
-
