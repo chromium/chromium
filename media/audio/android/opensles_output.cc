@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -28,23 +29,16 @@
 
 namespace media {
 
+static constexpr SampleFormat kSampleFormat = kSampleFormatF32;
+
 OpenSLESOutputStream::OpenSLESOutputStream(AudioManagerAndroid* manager,
                                            const AudioParameters& params,
                                            SLint32 stream_type)
     : audio_manager_(manager),
       stream_type_(stream_type),
-      callback_(nullptr),
-      player_(nullptr),
-      simple_buffer_queue_(nullptr),
-      audio_data_(),
-      active_buffer_index_(0),
-      started_(false),
-      muted_(false),
-      volume_(1.0),
       samples_per_second_(params.sample_rate()),
-      sample_format_(kSampleFormatF32),
-      bytes_per_frame_(params.GetBytesPerFrame(sample_format_)),
-      buffer_size_bytes_(params.GetBytesPerBuffer(sample_format_)),
+      bytes_per_frame_(params.GetBytesPerFrame(kSampleFormat)),
+      buffer_size_bytes_(params.GetBytesPerBuffer(kSampleFormat)),
       performance_mode_(SL_ANDROID_PERFORMANCE_NONE),
       delay_calculator_(samples_per_second_) {
   DVLOG(2) << "OpenSLESOutputStream::OpenSLESOutputStream("
@@ -63,7 +57,7 @@ OpenSLESOutputStream::OpenSLESOutputStream(AudioManagerAndroid* manager,
   // Despite the name, this field is actually the sampling rate in millihertz.
   float_format_.sampleRate = static_cast<SLuint32>(samples_per_second_ * 1000);
   float_format_.bitsPerSample = float_format_.containerSize =
-      SampleFormatToBitsPerChannel(sample_format_);
+      SampleFormatToBitsPerChannel(kSampleFormat);
   float_format_.endianness = SL_BYTEORDER_LITTLEENDIAN;
   float_format_.channelMask = ChannelCountToSLESChannelMask(params.channels());
   float_format_.representation = SL_ANDROID_PCM_REPRESENTATION_FLOAT;
@@ -397,17 +391,22 @@ void OpenSLESOutputStream::FillBufferQueueNoLock() {
     return;
   }
 
+  const size_t num_filled_bytes = frames_filled * bytes_per_frame_;
+
+  auto [interleaved_dest, samples_to_zero] =
+      base::span(audio_data_[active_buffer_index_]).split_at(num_filled_bytes);
+
+  std::ranges::fill(samples_to_zero, 0);
+
   // Note: If the internal representation ever changes from 16-bit PCM to
   // raw float, the data must be clipped and sanitized since it may come
   // from an untrusted source such as NaCl.
   audio_bus_->Scale(muted_ ? 0.0f : volume_);
   // We skip clipping since that occurs at the shared memory boundary.
-  audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
-      frames_filled,
-      reinterpret_cast<float*>(audio_data_[active_buffer_index_].data()));
+  audio_bus_->ToInterleavedBytes<Float32SampleTypeTraitsNoClip>(
+      interleaved_dest);
 
   delay_calculator_.AddFrames(frames_filled);
-  const int num_filled_bytes = frames_filled * bytes_per_frame_;
   DCHECK_LE(static_cast<size_t>(num_filled_bytes), buffer_size_bytes_);
 
   // Enqueue the buffer for playback.

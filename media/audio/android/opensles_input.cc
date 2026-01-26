@@ -28,13 +28,7 @@ OpenSLESInputStream::OpenSLESInputStream(AudioManagerAndroid* audio_manager,
     : peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
                                          base::Unretained(audio_manager),
                                          /*trace_start=*/true)),
-      audio_manager_(audio_manager),
-      callback_(nullptr),
-      recorder_(nullptr),
-      simple_buffer_queue_(nullptr),
-      active_buffer_index_(0),
-      buffer_size_bytes_(0),
-      started_(false),
+      audio_manager_(*audio_manager),
       audio_bus_(media::AudioBus::Create(params)),
       no_effects_(params.effects() == AudioParameters::NO_EFFECTS) {
   DVLOG(2) << __PRETTY_FUNCTION__;
@@ -54,8 +48,6 @@ OpenSLESInputStream::OpenSLESInputStream(AudioManagerAndroid* audio_manager,
   buffer_size_bytes_ = params.GetBytesPerBuffer(kSampleFormat);
   hardware_delay_ = base::Seconds(params.frames_per_buffer() /
                                   static_cast<double>(params.sample_rate()));
-
-  std::ranges::fill(audio_data_, nullptr);
 }
 
 OpenSLESInputStream::~OpenSLESInputStream() {
@@ -65,7 +57,6 @@ OpenSLESInputStream::~OpenSLESInputStream() {
   DCHECK(!engine_object_.Get());
   DCHECK(!recorder_);
   DCHECK(!simple_buffer_queue_);
-  DCHECK(!audio_data_[0]);
 }
 
 AudioInputStream::OpenOutcome OpenSLESInputStream::Open() {
@@ -102,8 +93,9 @@ void OpenSLESInputStream::Start(AudioInputCallback* callback) {
   // calling Start() again.
   SLresult err = SL_RESULT_UNKNOWN_ERROR;
   for (int i = 0; i < kMaxNumOfBuffersInQueue; ++i) {
-    err = (*simple_buffer_queue_)->Enqueue(
-        simple_buffer_queue_, audio_data_[i], buffer_size_bytes_);
+    err = (*simple_buffer_queue_)
+              ->Enqueue(simple_buffer_queue_, audio_data_[i].data(),
+                        buffer_size_bytes_);
     if (SL_RESULT_SUCCESS != err) {
       HandleError(err);
       started_ = false;
@@ -163,7 +155,6 @@ void OpenSLESInputStream::Close() {
     // Destroy the engine object. We don't store any associated interface for
     // this object.
     engine_object_.Reset();
-    ReleaseAudioBuffer();
   }
 
   audio_manager_->ReleaseInputStream(this);
@@ -309,9 +300,8 @@ void OpenSLESInputStream::ReadBufferQueue() {
   TRACE_EVENT0("audio", "OpenSLESOutputStream::ReadBufferQueue");
 
   // Convert from interleaved format to deinterleaved audio bus format.
-  audio_bus_->FromInterleaved<SignedInt16SampleTypeTraits>(
-      reinterpret_cast<int16_t*>(audio_data_[active_buffer_index_]),
-      audio_bus_->frames());
+  audio_bus_->FromInterleavedBytes<SignedInt16SampleTypeTraits>(
+      audio_data_[active_buffer_index_]);
 
   peak_detector_.FindPeak(audio_bus_.get());
 
@@ -321,10 +311,10 @@ void OpenSLESInputStream::ReadBufferQueue() {
                     0.0, {});
 
   // Done with this buffer. Send it to device for recording.
-  SLresult err =
-      (*simple_buffer_queue_)->Enqueue(simple_buffer_queue_,
-                                       audio_data_[active_buffer_index_],
-                                       buffer_size_bytes_);
+  SLresult err = (*simple_buffer_queue_)
+                     ->Enqueue(simple_buffer_queue_,
+                               audio_data_[active_buffer_index_].data(),
+                               buffer_size_bytes_);
   if (SL_RESULT_SUCCESS != err)
     HandleError(err);
 
@@ -333,19 +323,9 @@ void OpenSLESInputStream::ReadBufferQueue() {
 
 void OpenSLESInputStream::SetupAudioBuffer() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!audio_data_[0]);
+  DCHECK(audio_data_[0].empty());
   for (int i = 0; i < kMaxNumOfBuffersInQueue; ++i) {
-    audio_data_[i] = new uint8_t[buffer_size_bytes_];
-  }
-}
-
-void OpenSLESInputStream::ReleaseAudioBuffer() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  if (audio_data_[0]) {
-    for (int i = 0; i < kMaxNumOfBuffersInQueue; ++i) {
-      delete[] audio_data_[i];
-      audio_data_[i] = nullptr;
-    }
+    audio_data_[i] = base::HeapArray<uint8_t>::WithSize(buffer_size_bytes_);
   }
 }
 
