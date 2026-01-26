@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.view.View;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -50,5 +51,29 @@ public class ExtensionsToolbarDragTouchHandler extends DragTouchHandler {
         animatorSet.setDuration(ANIMATION_DURATION_MS);
         animatorSet.play(elevationAnimator);
         animatorSet.start();
+    }
+
+    @Override
+    public void onChildDraw(
+            Canvas c,
+            RecyclerView recyclerView,
+            RecyclerView.ViewHolder viewHolder,
+            float dX,
+            float dY,
+            int actionState,
+            boolean isCurrentlyActive) {
+        View view = viewHolder.itemView;
+
+        float newLeft = view.getLeft() + dX;
+        float newRight = view.getRight() + dX;
+
+        // Clamp dX so that the icon doesn't go outside RecyclerView's bounds.
+        if (newLeft < 0) {
+            dX = -view.getLeft();
+        } else if (newRight > recyclerView.getWidth()) {
+            dX = recyclerView.getWidth() - view.getRight();
+        }
+
+        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
 }
