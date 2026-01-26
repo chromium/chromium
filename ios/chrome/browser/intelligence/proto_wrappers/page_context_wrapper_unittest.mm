@@ -51,7 +51,6 @@
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -172,10 +171,9 @@ class PageContextWrapperTest : public PlatformTest,
     });
 
     // Set the fake env used for testing errors.
-    fake_browser_state_ = std::make_unique<web::FakeBrowserState>();
+    profile2_ = TestProfileIOS::Builder().Build();
     web::test::OverrideJavaScriptFeatures(
-        fake_browser_state_.get(),
-        {web::FindInPageJavaScriptFeature::GetInstance()});
+        profile2_.get(), {web::FindInPageJavaScriptFeature::GetInstance()});
     fake_web_state_ = std::make_unique<FakeWebStateForFailureTest>();
 
     // Set fake web frames managers for scenarios to simulate a state where
@@ -262,9 +260,7 @@ class PageContextWrapperTest : public PlatformTest,
   }
 
   // Getters for fake env.
-  web::FakeBrowserState* fake_browser_state() {
-    return fake_browser_state_.get();
-  }
+  TestProfileIOS* profile2() { return profile2_.get(); }
   web::FakeWebState* fake_web_state() { return fake_web_state_.get(); }
 
   web::WebTaskEnvironment task_environment_;
@@ -280,7 +276,7 @@ class PageContextWrapperTest : public PlatformTest,
   net::EmbeddedTestServer xorigin_test_server_c_;
   id<SnapshotStorage> snapshot_storage_ = nil;
   ControllableFakeSnapshotGeneratorDelegate* snapshot_delegate_ = nil;
-  std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile2_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   std::unique_ptr<PageContext> page_helper_;
 };

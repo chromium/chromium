@@ -18,8 +18,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_observer.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -70,7 +70,7 @@ class DownloadRecordServiceImplTest : public PlatformTest {
   void TearDown() override {
     service_.reset();
     web_states_.clear();
-    browser_states_.clear();
+    profiles_.clear();
     PlatformTest::TearDown();
   }
 
@@ -93,16 +93,16 @@ class DownloadRecordServiceImplTest : public PlatformTest {
         std::make_unique<web::FakeDownloadTask>(GURL(original_url), mime_type);
     task->SetIdentifier(@(identifier.c_str()));
 
-    // Set up WebState with appropriate BrowserState.
-    auto browser_state = std::make_unique<web::FakeBrowserState>();
-    browser_state->SetOffTheRecord(is_incognito);
+    // Set up WebState with appropriate ProfileIOS.
+    auto profile = TestProfileIOS::Builder().Build();
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state.get());
+    web_state->SetBrowserState(is_incognito ? profile->GetOffTheRecordProfile()
+                                            : profile.get());
 
     task->SetWebState(web_state.get());
 
     // Store objects to ensure they remain alive during test execution.
-    browser_states_.push_back(std::move(browser_state));
+    profiles_.push_back(std::move(profile));
     web_states_.push_back(std::move(web_state));
 
     EXPECT_NSEQ(@(identifier.c_str()), task->GetIdentifier());
@@ -129,7 +129,7 @@ class DownloadRecordServiceImplTest : public PlatformTest {
   std::unique_ptr<DownloadRecordService> service_;
 
   // Containers to maintain object lifetimes during tests
-  std::vector<std::unique_ptr<web::FakeBrowserState>> browser_states_;
+  std::vector<std::unique_ptr<TestProfileIOS>> profiles_;
   std::vector<std::unique_ptr<web::FakeWebState>> web_states_;
 };
 
@@ -431,7 +431,7 @@ TEST_F(DownloadRecordServiceImplTest, PersistOnlyNonIncognitoRecords) {
       }));
   run_loop2.Run();
 
-  EXPECT_EQ(1u, persistent_result.size());
+  ASSERT_EQ(1u, persistent_result.size());
   EXPECT_EQ(normal_id, persistent_result[0].download_id);
   EXPECT_FALSE(persistent_result[0].is_incognito);
 }
