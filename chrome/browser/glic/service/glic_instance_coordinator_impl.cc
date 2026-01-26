@@ -496,6 +496,10 @@ void GlicInstanceCoordinatorImpl::ShowInstanceForTabs(
     ShowOptions show_opts(side_panel_options);
     show_opts.focus_on_show =
         IsActive(tab->GetBrowserWindowInterface()) && tab->IsActivated();
+    // Explicitly pin the tabs for the context menu trigger.
+    if (pin_trigger == GlicPinTrigger::kContextMenu) {
+      instance->sharing_manager().PinTabs({tab->GetHandle()}, pin_trigger);
+    }
     instance->Show(show_opts);
   }
 }

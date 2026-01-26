@@ -414,4 +414,20 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_FALSE(instance->GetActiveEmbedderTabForTesting());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       ExplicitPinningUsingShowInstanceForTabs) {
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  ToggleGlic();
+  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(tab);
+  ASSERT_TRUE(instance);
+
+  // Unpin the tab.
+  instance->sharing_manager().UnpinTabs({tab->GetHandle()});
+  EXPECT_FALSE(instance->sharing_manager().IsTabPinned(tab->GetHandle()));
+
+  // Verify kContextMenu trigger explicitly pins the tab.
+  coordinator().ShowInstanceForTabs({tab}, instance->id());
+  EXPECT_TRUE(instance->sharing_manager().IsTabPinned(tab->GetHandle()));
+}
+
 }  // namespace glic
