@@ -1,0 +1,86 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "rb"
+      }, {
+         "Desc": "Unchecked with title",
+         "O": "PrintField"
+      } ],
+      "type": "Form"
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "rb"
+      }, {
+         "Desc": "Unchecked with aria-label",
+         "O": "PrintField"
+      } ],
+      "type": "Form"
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "rb"
+      } ],
+      "type": "Form"
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "rb"
+      }, {
+         "O": "PrintField",
+         "checked": "on"
+      } ],
+      "type": "Form"
+   }, {
+      "type": "NonStruct"
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "rb"
+      } ],
+      "type": "Form"
+   }, {
+      "type": "NonStruct"
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "rb"
+      }, {
+         "O": "PrintField",
+         "checked": "on"
+      } ],
+      "type": "Form"
+   }, {
+      "type": "NonStruct"
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "rb"
+      }, {
+         "O": "PrintField",
+         "checked": "on"
+      }, {
+         "Desc": "ARIA checked radio",
+         "O": "PrintField"
+      } ],
+      "type": "Form",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   }, {
+      "attributes": [ {
+         "O": "PrintField",
+         "Role": "rb"
+      }, {
+         "Desc": "ARIA unchecked radio",
+         "O": "PrintField"
+      } ],
+      "type": "Form",
+      "~children": [ {
+         "type": "NonStruct"
+      } ]
+   } ]
+}

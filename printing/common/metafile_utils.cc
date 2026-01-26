@@ -86,6 +86,30 @@ sk_sp<SkPicture> GetEmptyPicture() {
   return rec.finishRecordingAsPicture();
 }
 
+void AppendFormFieldDescFromAccessibleName(const ui::AXNode* ax_node,
+                                           SkPDF::StructureElementNode* tag) {
+  auto name_from = ax_node->GetNameFrom();
+  if (name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
+    // Represent explicitly empty name (aria-label="") as an empty Desc.
+    tag->fAttributes.appendTextString(chrome_pdf::kPDFPrintFieldAttributeOwner,
+                                      chrome_pdf::kPDFPrintFieldDescAttribute,
+                                      "");
+  } else if (name_from == ax::mojom::NameFrom::kAttribute ||
+             name_from == ax::mojom::NameFrom::kTitle ||
+             name_from == ax::mojom::NameFrom::kCssAltText) {
+    // `appendTextString` does not copy, it only saves a `const char*`.
+    // The ax_node->data() is expected to persist, as part of the AXTree,
+    // until that value is read in `SkDocument::Close()`.
+    const std::string& name_ref =
+        ax_node->data().GetStringAttribute(ax::mojom::StringAttribute::kName);
+    if (!name_ref.empty()) {
+      tag->fAttributes.appendTextString(
+          chrome_pdf::kPDFPrintFieldAttributeOwner,
+          chrome_pdf::kPDFPrintFieldDescAttribute, name_ref.c_str());
+    }
+  }
+}
+
 // Convert an AXNode into a SkPDF::StructureElementNode in order to make a
 // tagged (accessible) PDF. Returns true on success and false if we don't
 // have enough data to build a valid tree.
@@ -229,26 +253,30 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
                                     chrome_pdf::kPDFCheckedOnAttribute);
       }
 
-      // If the name comes from an attribute, it's unlikely to otherwise
-      // appear as text in the PDF, so provide this name as the Desc.
-      auto name_from = ax_node->GetNameFrom();
-      if (name_from == ax::mojom::NameFrom::kAttribute ||
-          name_from == ax::mojom::NameFrom::kTitle ||
-          name_from == ax::mojom::NameFrom::kCssAltText) {
-        // `appendTextString` does not copy, it only saves a `const char*`.
-        // The ax_node->data() is expected to persist, as part of the AXTree,
-        // until that value is read in `SkDocument::Close()`.
-        const std::string& name_ref = ax_node->data().GetStringAttribute(
-            ax::mojom::StringAttribute::kName);
-        if (!name_ref.empty()) {
-          tag->fAttributes.appendTextString(
-              chrome_pdf::kPDFPrintFieldAttributeOwner,
-              chrome_pdf::kPDFPrintFieldDescAttribute, name_ref.c_str());
-        }
-      }
+      // Add Desc attribute from accessible name.
+      AppendFormFieldDescFromAccessibleName(ax_node, tag);
 
       // In case someone is printing to PDF a web page that is 100% checkboxes
       // (no kStaticText nodes), the PDF should still be tagged.
+      valid = true;
+      break;
+    }
+    case ax::mojom::Role::kRadioButton: {
+      tag->fTypeString = chrome_pdf::kPDFStructureTypeForm;
+      tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
+                                  chrome_pdf::kPDFPrintFieldRoleAttribute,
+                                  chrome_pdf::kPDFRoleRadioButtonAttribute);
+
+      // Handle checked state (default "off").
+      if (ax_node->data().GetCheckedState() == ax::mojom::CheckedState::kTrue) {
+        tag->fAttributes.appendName(chrome_pdf::kPDFPrintFieldAttributeOwner,
+                                    chrome_pdf::kPDFPrintFieldCheckedAttribute,
+                                    chrome_pdf::kPDFCheckedOnAttribute);
+      }
+
+      // Add Desc attribute from accessible name.
+      AppendFormFieldDescFromAccessibleName(ax_node, tag);
+
       valid = true;
       break;
     }

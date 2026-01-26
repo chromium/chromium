@@ -634,6 +634,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, OrderedList) {
   RunTaggedPDFTest("/structured_doc_ordered_list.html");
 }
 
+IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Radio) {
+  RunTaggedPDFTest("/structured_doc_radio.html");
+}
+
 IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Strong) {
   RunTaggedPDFTest("/structured_doc_strong.html");
 }

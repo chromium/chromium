@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+  <input type="radio" name="group1" title="Unchecked with title">
+  <input type="radio" name="group1" aria-label="Unchecked with aria-label">
+  <input type="radio" name="group1" aria-label="">
+  <input type="radio" name="group1" id="radio1" checked>
+  <label for="radio1">Checked with for/id label</label>
+
+  <label><input type="radio" name="group2">Unchecked with wrapped label</label>
+  <label><input type="radio" name="group2" checked>Checked with wrapped label</label>
+
+  <div role="radio" aria-checked="true" aria-label="ARIA checked radio">●</div>
+  <div role="radio" aria-checked="false" aria-label="ARIA unchecked radio">○</div>
+</body>
+</html>
