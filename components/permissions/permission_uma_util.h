@@ -374,6 +374,7 @@ enum class OsScreenAction {
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "OneTimePermissionEvent" in tools/metrics/histograms/enums.xml.
+// LINT.IfChange(OneTimePermissionEvent)
 enum class OneTimePermissionEvent {
   // Recorded for each one time grant
   GRANTED_ONE_TIME = 0,
@@ -398,6 +399,7 @@ enum class OneTimePermissionEvent {
 
   kMaxValue = EXPIRED_ON_SUSPEND,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:OneTimePermissionEvent)
 
 // LINT.IfChange(ElementAnchoredBubbleVariant)
 // Prompt views shown after the user clicks on the embedded permission prompt.

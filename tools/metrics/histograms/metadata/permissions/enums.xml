@@ -107,6 +107,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:LanguageDetectionStatus) -->
 
+<!-- LINT.IfChange(OneTimePermissionEvent) -->
+
 <enum name="OneTimePermissionEvent">
   <summary>One-time permission events.</summary>
   <int value="0" label="Granted one time"/>
@@ -116,6 +118,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Expired after maximum lifetime"/>
   <int value="5" label="Expired because the device was suspended"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:OneTimePermissionEvent) -->
 
 <!-- LINT.IfChange(OsScreenAction) -->
 
