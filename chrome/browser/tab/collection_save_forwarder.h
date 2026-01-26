@@ -31,6 +31,10 @@ class CollectionSaveForwarder {
       TabStripCollection* collection,
       TabStateStorageService* service);
 
+  static CollectionSaveForwarder CreateForTabStripCollection(
+      TabStripCollection* collection,
+      TabStateStorageService* service);
+
   void SavePayload();
 
  private:

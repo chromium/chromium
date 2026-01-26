@@ -118,11 +118,18 @@ public class ModelTrackingOrchestrator {
 
     private @Nullable StorageCollectionSynchronizer mIncognitoSynchronizer;
     private @Nullable StorageCollectionSynchronizer mRegularSynchronizer;
+    private @Nullable CollectionSaveForwarder mRegularWindowForwarder;
+    private @Nullable CollectionSaveForwarder mIncognitoWindowForwarder;
     private boolean mLoadIncognitoTabsOnStart;
 
     private final SynchronizerManager mRegularSynchronizerManager =
             new RegularSynchronizerManager();
     private final @Nullable SynchronizerManager mIncognitoSynchronizerManager;
+
+    private final Callback<@Nullable Tab> mRegularActiveTabObserver =
+            this::onRegularActiveTabChange;
+    private final Callback<@Nullable Tab> mIncognitoActiveTabObserver =
+            this::onIncognitoActiveTabChange;
 
     private final TabGroupModelFilterObserver mVisualDataUpdateObserver =
             new TabGroupModelFilterObserver() {
@@ -254,6 +261,7 @@ public class ModelTrackingOrchestrator {
         for (CollectionSaveForwarder forwarder : mGroupForwarderMap.values()) {
             forwarder.destroy();
         }
+        mGroupForwarderMap.clear();
 
         for (boolean incognito : new boolean[] {false, true}) {
             TabGroupModelFilter filter = getFilter(incognito);
@@ -319,14 +327,30 @@ public class ModelTrackingOrchestrator {
             var profileAndCollection = getProfileAndCollection(mTabModelSelector, incognito);
             getSynchronizer(profileAndCollection, incognito).fullSave();
         }
-        initCollectionTracking(incognito);
-        initVisualDataTracking(incognito);
+
+        initializeTrackingSuite(incognito);
     }
 
     private void saveTabGroupPayload(Token tabGroupId) {
         CollectionSaveForwarder forwarder = mGroupForwarderMap.get(tabGroupId);
         if (forwarder == null) return;
         forwarder.savePayload();
+    }
+
+    private void initActiveTabTracking(boolean incognito) {
+        var profileAndCollection = getProfileAndCollection(mTabModelSelector, incognito);
+        if (incognito) {
+            mIncognitoWindowForwarder =
+                    CollectionSaveForwarder.createForTabStripCollection(
+                            profileAndCollection.profile, profileAndCollection.collection);
+        } else {
+            mRegularWindowForwarder =
+                    CollectionSaveForwarder.createForTabStripCollection(
+                            profileAndCollection.profile, profileAndCollection.collection);
+        }
+        Callback<@Nullable Tab> obs =
+                incognito ? mIncognitoActiveTabObserver : mRegularActiveTabObserver;
+        mTabModelSelector.getModel(incognito).getCurrentTabSupplier().addObserver(obs);
     }
 
     private void initVisualDataTracking(boolean incognito) {
@@ -370,6 +394,39 @@ public class ModelTrackingOrchestrator {
         return new ProfileAndCollection(profile, tabStripCollection);
     }
 
+    private void initializeTrackingSuite(boolean incognito) {
+        initVisualDataTracking(incognito);
+        initActiveTabTracking(incognito);
+        initCollectionTracking(incognito);
+    }
+
+    private void onIncognitoActiveTabChange(@Nullable Tab ignored) {
+        if (mIncognitoWindowForwarder == null) return;
+        mIncognitoWindowForwarder.savePayload();
+    }
+
+    private void onRegularActiveTabChange(@Nullable Tab ignored) {
+        if (mRegularWindowForwarder == null) return;
+        mRegularWindowForwarder.savePayload();
+    }
+
+    private void cleanActiveTabTracking(boolean incognito) {
+        TabModel model = mTabModelSelector.getModel(incognito);
+        if (incognito) {
+            if (mIncognitoWindowForwarder != null) {
+                model.getCurrentTabSupplier().removeObserver(mIncognitoActiveTabObserver);
+                mIncognitoWindowForwarder.destroy();
+                mIncognitoWindowForwarder = null;
+            }
+        } else {
+            if (mRegularWindowForwarder != null) {
+                model.getCurrentTabSupplier().removeObserver(mRegularActiveTabObserver);
+                mRegularWindowForwarder.destroy();
+                mRegularWindowForwarder = null;
+            }
+        }
+    }
+
     private static class ProfileAndCollection {
         public final Profile profile;
         public final TabStripCollection collection;
@@ -391,6 +448,7 @@ public class ModelTrackingOrchestrator {
                 mState = SynchronizerState.RESTORING;
                 initRestoreOrchestrator(data, /* incognito= */ false);
                 initVisualDataTracking(/* incognito= */ false);
+                initActiveTabTracking(/* incognito= */ false);
             }
         }
 
@@ -414,6 +472,7 @@ public class ModelTrackingOrchestrator {
                 mRegularSynchronizer = null;
             }
             mState = SynchronizerState.START;
+            cleanActiveTabTracking(/* incognito= */ false);
         }
     }
 
@@ -443,18 +502,15 @@ public class ModelTrackingOrchestrator {
                     mState = SynchronizerState.RESTORING;
                     assumeNonNull(mInitRestoreOrchestratorCallback).run();
                     initVisualDataTracking(/* incognito= */ true);
+                    initActiveTabTracking(/* incognito= */ true);
                     mInitRestoreOrchestratorCallback = null;
                 } else if (mState == SynchronizerState.START) {
                     mState = SynchronizerState.TRACKING;
-                    initVisualDataTracking(/* incognito= */ true);
-                    initCollectionTracking(/* incognito= */ true);
+                    initializeTrackingSuite(/* incognito= */ true);
                 }
-            } else {
-                if (mState == SynchronizerState.START && !mLoadIncognitoTabsOnStart) {
-                    mState = SynchronizerState.TRACKING;
-                    initVisualDataTracking(/* incognito= */ true);
-                    initCollectionTracking(/* incognito= */ true);
-                }
+            } else if (mState == SynchronizerState.START && !mLoadIncognitoTabsOnStart) {
+                mState = SynchronizerState.TRACKING;
+                initializeTrackingSuite(/* incognito= */ true);
             }
         }
 
@@ -465,11 +521,9 @@ public class ModelTrackingOrchestrator {
                     mState = SynchronizerState.TRACKING;
                     initCollectionTracking(/* incognito= */ true);
                 }
-            } else {
-                if (mState == SynchronizerState.START && mLoadIncognitoTabsOnStart) {
-                    fullSaveAndInitTracking(/* incognito= */ true);
-                    mState = SynchronizerState.TRACKING;
-                }
+            } else if (mState == SynchronizerState.START && mLoadIncognitoTabsOnStart) {
+                fullSaveAndInitTracking(/* incognito= */ true);
+                mState = SynchronizerState.TRACKING;
             }
             mLoadIncognitoTabsOnStart = false;
         }
@@ -484,6 +538,8 @@ public class ModelTrackingOrchestrator {
             mState = SynchronizerState.START;
             mLoadIncognitoTabsOnStart = false;
             mInitRestoreOrchestratorCallback = null;
+
+            cleanActiveTabTracking(/* incognito= */ true);
         }
     }
 }

@@ -33,6 +33,13 @@ CollectionSaveForwarder CollectionSaveForwarder::CreateForTabGroupTabCollection(
       tab_strip_collection->GetTabGroupCollection(group_id), service);
 }
 
+// static
+CollectionSaveForwarder CollectionSaveForwarder::CreateForTabStripCollection(
+    TabStripCollection* tab_strip_collection,
+    TabStateStorageService* service) {
+  return CollectionSaveForwarder(tab_strip_collection, service);
+}
+
 void CollectionSaveForwarder::SavePayload() {
   service_->SavePayload(collection_);
 }

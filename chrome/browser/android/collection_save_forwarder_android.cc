@@ -47,6 +47,19 @@ static int64_t JNI_CollectionSaveForwarder_CreateForTabGroup(
   return reinterpret_cast<intptr_t>(wrapper);
 }
 
+static int64_t JNI_CollectionSaveForwarder_CreateForTabStripCollection(
+    JNIEnv* env,
+    Profile* profile,
+    tabs::TabStripCollection* collection) {
+  TabStateStorageService* service =
+      TabStateStorageServiceFactory::GetForProfile(profile);
+
+  CollectionSaveForwarderAndroid* wrapper = new CollectionSaveForwarderAndroid(
+      CollectionSaveForwarder::CreateForTabStripCollection(collection,
+                                                           service));
+  return reinterpret_cast<intptr_t>(wrapper);
+}
+
 void CollectionSaveForwarderAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
