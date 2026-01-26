@@ -436,6 +436,7 @@ android_library("unit_device_javatests") {
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/util/android:test_support_java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:guava_java",
     "//third_party/android_deps:org_jspecify_jspecify_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

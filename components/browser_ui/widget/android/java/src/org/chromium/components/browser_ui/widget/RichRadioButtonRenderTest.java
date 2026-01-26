@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -13,10 +15,11 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.AfterClass;
+import com.google.common.collect.ImmutableList;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,23 +49,59 @@ import java.util.List;
 public class RichRadioButtonRenderTest {
     @ClassParameter
     private static final List<ParameterSet> sClassParams =
-            new NightModeTestUtils.NightModeParams().getParameters();
+            ImmutableList.of(
+                    new ParameterSet().value(false, false).name("LTR"),
+                    new ParameterSet().value(true, false).name("RTL"),
+                    new ParameterSet().value(false, true).name("NightMode"));
 
     @ClassRule
     public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
 
     private static final int REVISION = 3;
     private static final String REVISION_DESCRIPTION =
             "Render test for RichRadioButton covering various states and orientations, with"
                     + " improved layout and ellipsized text in the vertical layout";
 
-    private static final String sVeryLongTitle =
-            "This is an extremely long title, which cannot possibly fit in one line.";
-    private static final String sVeryLongDescription =
-            "And this is a very long description, which cannot possibly fit in one line.";
+    private final boolean mIsRightToLeftLayout;
+
+    private String veryLongTitle() {
+        return mIsRightToLeftLayout
+                ? "هذا عنوان طويل للغاية، ولا يمكن أن يتسع في سطر واحد."
+                : "This is an extremely long title, which cannot possibly fit in one line.";
+    }
+
+    private String veryLongDescription() {
+        return mIsRightToLeftLayout
+                ? "وهذا وصف طويل جداً، لا يمكن أن يتسع في سطر واحد."
+                : "And this is a very long description, which cannot possibly fit in one line.";
+    }
+
+    private String preciseLocation() {
+        return mIsRightToLeftLayout ? "الموقع الدقيق" : "Precise Location";
+    }
+
+    private String preciseLocationDescription() {
+        return mIsRightToLeftLayout
+                ? "يوفر إحداثيات الموقع الدقيقة."
+                : "Provides exact location coordinates.";
+    }
+
+    private String simpleOption() {
+        return mIsRightToLeftLayout ? "خيار بسيط" : "Simple Option";
+    }
+
+    private String minimalOption() {
+        return mIsRightToLeftLayout ? "خيار الحد الأدنى" : "Minimal Option";
+    }
+
+    private String checkedItem() {
+        return mIsRightToLeftLayout ? "البند المحدد" : "Checked Item";
+    }
+
+    private String checkedItemDescription() {
+        return mIsRightToLeftLayout ? "تم فحص هذا العنصر الآن." : "This item is now checked.";
+    }
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -72,6 +111,8 @@ public class RichRadioButtonRenderTest {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
                     .build();
 
+    private View mContent;
+
     private LinearLayout mLayout;
 
     private RichRadioButton mRichRbHorizontalFullUnchecked;
@@ -79,35 +120,46 @@ public class RichRadioButtonRenderTest {
     private RichRadioButton mRichRbHorizontalMinimalUnchecked;
     private RichRadioButton mRichRbVerticalFullUnchecked;
 
+    private Activity mActivity;
+
     private final int mFakeBgColor;
 
-    public RichRadioButtonRenderTest(boolean nightModeEnabled) {
+    public RichRadioButtonRenderTest(boolean isRightToLeftLayout, boolean nightModeEnabled) {
+        mIsRightToLeftLayout = isRightToLeftLayout;
         mFakeBgColor = nightModeEnabled ? Color.BLACK : Color.WHITE;
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+        if (isRightToLeftLayout) {
+            mRenderTestRule.setVariantPrefix("RTL");
+        }
     }
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
-    }
-
-    @AfterClass
-    public static void tearDownSuite() {
+    @After
+    public void tearDown() {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
+        try {
+            finishActivity(mActivity);
+        } catch (Exception e) {
+            // Activity was already closed (e.g. due to last test tearing down the suite).
+        }
     }
 
     @Before
     public void setUp() throws Exception {
-        Activity activity = sActivity;
+        mActivity = sActivityTestRule.launchActivity(null);
+        Activity activity = mActivity;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    View content =
+                    mContent =
                             LayoutInflater.from(activity)
                                     .inflate(R.layout.rich_radio_button_render_test, null, false);
-                    activity.setContentView(content);
+                    mContent.setLayoutDirection(
+                            mIsRightToLeftLayout
+                                    ? View.LAYOUT_DIRECTION_RTL
+                                    : View.LAYOUT_DIRECTION_LTR);
+                    activity.setContentView(mContent);
 
-                    mLayout = content.findViewById(R.id.test_rich_radio_button_layout);
+                    mLayout = mContent.findViewById(R.id.test_rich_radio_button_layout);
                     mLayout.setBackgroundColor(mFakeBgColor);
 
                     int displayWidth = activity.getResources().getDisplayMetrics().widthPixels;
@@ -141,8 +193,8 @@ public class RichRadioButtonRenderTest {
                 () -> {
                     mRichRbHorizontalFullUnchecked.setItemData(
                             R.drawable.test_location_precise,
-                            "Precise Location",
-                            "Provides exact location coordinates.",
+                            preciseLocation(),
+                            preciseLocationDescription(),
                             false);
                     mRichRbHorizontalFullUnchecked.setChecked(false);
                 });
@@ -157,7 +209,7 @@ public class RichRadioButtonRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRichRbHorizontalTitleChecked.setItemData(
-                            R.drawable.test_location_precise, "Simple Option", null, false);
+                            R.drawable.test_location_precise, simpleOption(), null, false);
                     mRichRbHorizontalTitleChecked.setChecked(true);
                 });
         mRenderTestRule.render(mRichRbHorizontalTitleChecked, "rich_rb_horizontal_title_checked");
@@ -169,7 +221,7 @@ public class RichRadioButtonRenderTest {
     public void testRichRbHorizontalMinimalUnchecked() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mRichRbHorizontalMinimalUnchecked.setItemData(0, "Minimal Option", null, false);
+                    mRichRbHorizontalMinimalUnchecked.setItemData(0, minimalOption(), null, false);
                     mRichRbHorizontalMinimalUnchecked.setChecked(false);
                 });
         mRenderTestRule.render(
@@ -185,8 +237,8 @@ public class RichRadioButtonRenderTest {
                 () -> {
                     mRichRbHorizontalFullUnchecked.setItemData(
                             R.drawable.test_location_precise,
-                            "Checked Item",
-                            "This item is now checked.",
+                            checkedItem(),
+                            checkedItemDescription(),
                             false);
                     mRichRbHorizontalFullUnchecked.setChecked(true);
                 });
@@ -201,8 +253,8 @@ public class RichRadioButtonRenderTest {
                 () -> {
                     mRichRbVerticalFullUnchecked.setItemData(
                             R.drawable.test_location_precise,
-                            sVeryLongTitle,
-                            sVeryLongDescription,
+                            veryLongTitle(),
+                            veryLongDescription(),
                             true);
                     mRichRbVerticalFullUnchecked.setChecked(false);
                 });

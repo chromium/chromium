@@ -155,7 +155,10 @@ public class RichRadioButton extends ConstraintLayout implements Checkable {
                 (LinearLayout.LayoutParams) mItemTitle.getLayoutParams();
         LinearLayout.LayoutParams newTitleParams =
                 new LinearLayout.LayoutParams(currentTitleParams);
-        newTitleParams.setMargins(titleMarginPx, titleMarginPx, 0, titleMarginPx);
+        newTitleParams.setMarginStart(titleMarginPx);
+        newTitleParams.setMarginEnd(0);
+        newTitleParams.topMargin = titleMarginPx;
+        newTitleParams.bottomMargin = titleMarginPx;
         mItemTitle.setLayoutParams(newTitleParams);
         int radioButtonMarginPx =
                 getContext()
