@@ -185,6 +185,7 @@ enum class PermissionEmbargoStatus {
 // configured to allow sub-frame origin. Any new values should be inserted
 // immediately prior to NUM. All values here should have corresponding entries
 // PermissionsPolicyConfiguration area of enums.xml.
+// LINT.IfChange(PermissionHeaderPolicyForUMA)
 enum class PermissionHeaderPolicyForUMA {
   // No (or an invalid) Permissions-Policy header was present, results in an
   // empty features list. It indicates none security-awareness of permissions
@@ -216,6 +217,7 @@ enum class PermissionHeaderPolicyForUMA {
   // Always keep this at the end.
   NUM,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionsPolicyConfiguration)
 
 // The kind of permission prompt UX used to surface a permission request.
 // Enum used in UKMs and UMAs, do not re-order or change values. Deprecated

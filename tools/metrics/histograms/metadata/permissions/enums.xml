@@ -277,6 +277,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionSourceUI) -->
 
+<!-- LINT.IfChange(PermissionsPolicyConfiguration) -->
+
 <enum name="PermissionsPolicyConfiguration">
   <int value="0" label="HEADER_NOT_PRESENT_OR_INVALID"/>
   <int value="1" label="FEATURE_NOT_PRESENT"/>
@@ -285,6 +287,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="FEATURE_ALLOWLIST_IS_NONE"/>
   <int value="5" label="FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionHeaderPolicyForUMA) -->
 
 <enum name="SerialChooserOutcome">
   <int value="0" label="Chooser cancelled"/>
