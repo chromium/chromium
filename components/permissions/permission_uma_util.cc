@@ -24,6 +24,7 @@
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/permission_actions_history.h"
@@ -2132,10 +2133,7 @@ void PermissionUmaUtil::RecordTopLevelPermissionsHeaderPolicyOnNavigation(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
   const ContentSettingsType kContentSettingsTypesForMetrics[] = {
-      base::FeatureList::IsEnabled(
-          content_settings::features::kApproximateGeolocationPermission)
-          ? ContentSettingsType::GEOLOCATION_WITH_OPTIONS
-          : ContentSettingsType::GEOLOCATION,
+      content_settings::GeolocationContentSettingsType(),
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::MEDIASTREAM_MIC};
 
