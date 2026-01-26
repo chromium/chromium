@@ -14,11 +14,17 @@
 
 NSString* const kUtilsSampleMessageHandlerName =
     @"UtilsSampleMessageHandlerName";
+NSString* const kUtilsSampleMessageReplyHandlerName =
+    @"UtilsSampleMessageReplyHandlerName";
 
 // A WKScriptMessageHandler which stores the last received WKScriptMessage;
-@interface FakeScriptMessageHandler : NSObject <WKScriptMessageHandler>
+@interface FakeScriptMessageHandler
+    : NSObject <WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
 
 @property(nonatomic, strong) WKScriptMessage* lastReceivedMessage;
+
+@property(nonatomic, strong) WKScriptMessage* lastReceivedMessageWithReply;
+@property(nonatomic, strong) id replyToNextCall;
 
 @end
 
@@ -27,6 +33,13 @@ NSString* const kUtilsSampleMessageHandlerName =
 - (void)userContentController:(WKUserContentController*)userContentController
       didReceiveScriptMessage:(WKScriptMessage*)message {
   _lastReceivedMessage = message;
+}
+
+- (void)userContentController:(WKUserContentController*)userContentController
+      didReceiveScriptMessage:(WKScriptMessage*)message
+                 replyHandler:(void (^)(id, NSString*))replyHandler {
+  _lastReceivedMessageWithReply = message;
+  replyHandler(_replyToNextCall, nil);
 }
 
 @end
@@ -38,6 +51,10 @@ class UtilsJavaScriptTest : public web::JavascriptTest {
     [web_view().configuration.userContentController
         addScriptMessageHandler:handler_
                            name:kUtilsSampleMessageHandlerName];
+    [web_view().configuration.userContentController
+        addScriptMessageHandlerWithReply:handler_
+                            contentWorld:[WKContentWorld pageWorld]
+                                    name:kUtilsSampleMessageReplyHandlerName];
   }
   ~UtilsJavaScriptTest() override {}
 
@@ -186,6 +203,49 @@ TEST_F(UtilsJavaScriptTest, SendWebKitMessage) {
 
     EXPECT_NSEQ(data.expected_output, handler_.lastReceivedMessage.body)
         << " with input: " << base::SysNSStringToUTF8(data.input);
+  }
+}
+
+// Tests that sendWebKitMessageWithReply works as expected
+TEST_F(UtilsJavaScriptTest, SendWebKitMessageWithReply) {
+  struct TestData {
+    NSString* input;
+    id expected_output;
+    id reply;
+  };
+
+  const auto kTestData = std::to_array<TestData>({
+      {@"1", @1, @2},
+      {@"1.5", @1.5, @4},
+      {@"'String data'", @"String data", @"Success"},
+      {@"['a', 'b', 'c']", @[ @"a", @"b", @"c" ], @[ @"d", @"e", @"f" ]},
+      {@"{'a' : 'x', 'b' : 'y', 'c' : 'z'}",
+       @{@"a" : @"x", @"b" : @"y", @"c" : @"z"}, @{@"d" : @1, @"e" : @2}},
+  });
+
+  for (const TestData& data : kTestData) {
+    // Reset value to ensure wait below stops at correct time.
+    handler_.lastReceivedMessage = nil;
+    handler_.replyToNextCall = data.reply;
+
+    NSString* js = [NSString
+        stringWithFormat:
+            @"var r = "
+            @"__gCrWeb.getRegisteredApi('utils_tests').getFunction('"
+            @"sendWebKitMessageWithReply')('%@', %@);await r;return r;",
+            kUtilsSampleMessageReplyHandlerName, data.input];
+    NSError* error;
+    id result = web::test::ExecuteAsyncJavaScript(web_view(), js, &error);
+
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForJSCompletionTimeout, ^bool() {
+          return handler_.lastReceivedMessageWithReply;
+        }));
+
+    EXPECT_NSEQ(data.expected_output,
+                handler_.lastReceivedMessageWithReply.body)
+        << " with input: " << base::SysNSStringToUTF8(data.input);
+    EXPECT_NSEQ(data.reply, result);
   }
 }
 

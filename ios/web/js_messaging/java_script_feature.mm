@@ -226,6 +226,10 @@ JavaScriptFeature::JavaScriptFeature(
 
 JavaScriptFeature::~JavaScriptFeature() = default;
 
+base::WeakPtr<JavaScriptFeature> JavaScriptFeature::AsWeakPtr() const {
+  return weak_factory_.GetMutableWeakPtr();
+}
+
 ContentWorld JavaScriptFeature::GetSupportedContentWorld() const {
   return supported_world_;
 }
@@ -249,18 +253,25 @@ std::optional<std::string> JavaScriptFeature::GetScriptMessageHandlerName()
   return std::nullopt;
 }
 
-std::optional<JavaScriptFeature::ScriptMessageHandler>
-JavaScriptFeature::GetScriptMessageHandler() const {
-  if (!GetScriptMessageHandlerName()) {
-    return std::nullopt;
-  }
-
-  return base::BindRepeating(&JavaScriptFeature::ScriptMessageReceived,
-                             weak_factory_.GetMutableWeakPtr());
+bool JavaScriptFeature::GetFeatureRepliesToMessages() const {
+  return false;
 }
 
 void JavaScriptFeature::ScriptMessageReceived(WebState* web_state,
-                                              const ScriptMessage& message) {}
+                                              const ScriptMessage& message) {
+  // If the feature receives message, this function must be overriden in the
+  // subclass.
+  NOTREACHED();
+}
+
+void JavaScriptFeature::ScriptMessageReceivedWithReply(
+    WebState* web_state,
+    const ScriptMessage& message,
+    ScriptMessageReplyCallback callback) {
+  // If the feature receives message, this function must be overriden in the
+  // subclass.
+  NOTREACHED();
+}
 
 bool JavaScriptFeature::CallJavaScriptFunction(
     WebFrame* web_frame,

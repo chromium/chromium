@@ -158,6 +158,9 @@ class JavaScriptFeature {
                     std::vector<const JavaScriptFeature*> dependent_features);
   virtual ~JavaScriptFeature();
 
+  // Returns a weak ptr to the feature.
+  base::WeakPtr<JavaScriptFeature> AsWeakPtr() const;
+
   // Returns the supported content world for this feature.
   ContentWorld GetSupportedContentWorld() const;
 
@@ -182,12 +185,8 @@ class JavaScriptFeature {
   // messages from JavaScript. Returning null will not register any handler.
   virtual std::optional<std::string> GetScriptMessageHandlerName() const;
 
-  using ScriptMessageHandler =
-      base::RepeatingCallback<void(WebState* web_state,
-                                   const ScriptMessage& message)>;
-  // Returns the script message handler callback if
-  // `GetScriptMessageHandlerName()` returns a handler name.
-  std::optional<ScriptMessageHandler> GetScriptMessageHandler() const;
+  // Returns whether the feature replies to messages sent from JavaScript.
+  virtual bool GetFeatureRepliesToMessages() const;
 
   JavaScriptFeature(const JavaScriptFeature&) = delete;
 
@@ -222,11 +221,30 @@ class JavaScriptFeature {
                          const std::u16string& script,
                          ExecuteJavaScriptCallbackWithError callback);
 
+  // Friending JavaScriptContentWorld so it can bind ScriptMessageReceived and
+  // ScriptMessageReceivedWithReply.
+  friend class JavaScriptContentWorld;
+
   // Callback for script messages registered through `GetScriptMessageHandler`.
   // `ScriptMessageReceived` is called when `web_state` receives a `message`.
   // `web_state` will always be non-null.
+  // Must be overridden in subclass for features that opt out to reply to
+  // messages.
   virtual void ScriptMessageReceived(WebState* web_state,
                                      const ScriptMessage& message);
+
+  using ScriptMessageReplyCallback =
+      base::OnceCallback<void(const base::Value* reply, NSString* error)>;
+
+  // Callback for script messages registered through
+  // `GetScriptMessageHandlerWithReply`. `ScriptMessageReceived` is called when
+  // `web_state` receives a `message`. `web_state` will always be non-null.
+  // Must be overridden in subclass for features that opt in to reply to
+  // messages.
+  virtual void ScriptMessageReceivedWithReply(
+      WebState* web_state,
+      const ScriptMessage& message,
+      ScriptMessageReplyCallback callback);
 
  private:
   ContentWorld supported_world_;

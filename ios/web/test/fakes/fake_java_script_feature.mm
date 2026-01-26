@@ -34,6 +34,12 @@ const char kFakeJavaScriptFeaturePostMessageReplyValue[] = "some text";
 const char kScriptReplyWithPostMessage[] =
     "javaScriptFeatureTest.replyWithPostMessage";
 
+// The function exposed by the feature JS which returns the parameter value as a
+// postMessage to the script message handler with name
+// `kFakeJavaScriptFeatureScriptHandlerName`.
+const char kScriptReplyWithPostMessageAndPostReply[] =
+    "javaScriptFeatureTest.replyWithPostMessageAndPostReply";
+
 // The function exposed by the feature JS which returns the count of errors
 // received in the JS error listener.
 const char kGetErrorCount[] = "javaScriptFeatureTest.getErrorCount";
@@ -55,7 +61,8 @@ FakeJavaScriptFeature::FakeJavaScriptFeature(ContentWorld content_world)
                FeatureScript::TargetFrames::kAllFrames,
                FeatureScript::ReinjectionBehavior::
                    kReinjectOnDocumentRecreation)},
-          {}) {}
+          {}),
+      weak_factory_(this) {}
 FakeJavaScriptFeature::~FakeJavaScriptFeature() = default;
 
 void FakeJavaScriptFeature::ReplaceDivContents(WebFrame* web_frame) {
@@ -65,7 +72,12 @@ void FakeJavaScriptFeature::ReplaceDivContents(WebFrame* web_frame) {
 void FakeJavaScriptFeature::ReplyWithPostMessage(
     WebFrame* web_frame,
     const base::ListValue& parameters) {
-  CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessage, parameters);
+  if (reply_to_messages_) {
+    CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessageAndPostReply,
+                           parameters);
+  } else {
+    CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessage, parameters);
+  }
 }
 
 void FakeJavaScriptFeature::GetErrorCount(
@@ -80,11 +92,41 @@ std::optional<std::string> FakeJavaScriptFeature::GetScriptMessageHandlerName()
   return std::string(kFakeJavaScriptFeatureScriptHandlerName);
 }
 
+void FakeJavaScriptFeature::SetReplyToMessages(bool reply) {
+  reply_to_messages_ = reply;
+}
+
+bool FakeJavaScriptFeature::GetFeatureRepliesToMessages() const {
+  return reply_to_messages_;
+}
+
+void FakeJavaScriptFeature::SetResponseToNextMessage(std::string response) {
+  response_to_next_message_ = response;
+}
+
 void FakeJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& message) {
   last_received_web_state_ = web_state;
   last_received_message_ = std::make_unique<const ScriptMessage>(message);
+  received_message_count_++;
+}
+
+void FakeJavaScriptFeature::ScriptMessageReceivedWithReply(
+    WebState* web_state,
+    const ScriptMessage& message,
+    ScriptMessageReplyCallback callback) {
+  last_received_web_state_ = web_state;
+  last_received_message_ = std::make_unique<const ScriptMessage>(message);
+  received_message_count_++;
+
+  if (response_to_next_message_) {
+    base::Value response(*response_to_next_message_);
+    std::move(callback).Run(&response, nil);
+    response_to_next_message_.reset();
+  } else {
+    std::move(callback).Run(nullptr, @"Error");
+  }
 }
 
 }  // namespace web

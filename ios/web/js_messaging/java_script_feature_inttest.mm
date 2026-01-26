@@ -25,6 +25,9 @@ static NSString* kPageHTML =
      "  <div id=\"div\">contents1</div><div id=\"div2\">contents2</div>"
      "</body></html>";
 
+// String to be sent back to the page after a message.
+const char kReplyString[] = "reply_string";
+
 namespace web {
 
 // typedef WebTestWithWebState JavaScriptFeatureTest;
@@ -100,6 +103,34 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
       feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
+}
+
+// Tests that a JavaScriptFeature receives post messages from JavaScript for
+// registered names in the page content world and can reply to it.
+TEST_F(JavaScriptFeaturePageContentWorldTest,
+       MessageHandlerWithReplyInPageContentWorld) {
+  feature()->SetReplyToMessages(true);
+  LoadHtml(kPageHTML);
+
+  ASSERT_FALSE(feature()->last_received_web_state());
+  ASSERT_FALSE(feature()->last_received_message());
+
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+  feature()->SetResponseToNextMessage(kReplyString);
+  feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return feature()->received_message_count() == 2;
+  }));
+
+  EXPECT_EQ(web_state(), feature()->last_received_web_state());
+
+  ASSERT_TRUE(feature()->last_received_message()->body());
+  const std::string* reply =
+      feature()->last_received_message()->body()->GetIfString();
+  ASSERT_TRUE(reply);
+  EXPECT_STREQ(kReplyString, reply->c_str());
 }
 
 // Tests that a page which overrides the window.webkit object does not break the
@@ -255,6 +286,34 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, MessageHandlerInIsolatedWorld) {
       feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
+}
+
+// Tests that a JavaScriptFeature receives post messages from JavaScript for
+// registered names in an isolated world and can reply to it.
+TEST_F(JavaScriptFeatureAnyContentWorldTest,
+       MessageHandlerWithReplyInIsolatedWorld) {
+  feature()->SetReplyToMessages(true);
+  LoadHtml(kPageHTML);
+
+  ASSERT_FALSE(feature()->last_received_web_state());
+  ASSERT_FALSE(feature()->last_received_message());
+
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+  feature()->SetResponseToNextMessage(kReplyString);
+  feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return feature()->received_message_count() == 2;
+  }));
+
+  EXPECT_EQ(web_state(), feature()->last_received_web_state());
+
+  ASSERT_TRUE(feature()->last_received_message()->body());
+  const std::string* reply =
+      feature()->last_received_message()->body()->GetIfString();
+  ASSERT_TRUE(reply);
+  EXPECT_STREQ(kReplyString, reply->c_str());
 }
 
 // Tests that a JavaScriptFeature with

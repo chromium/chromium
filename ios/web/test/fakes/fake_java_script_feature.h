@@ -55,14 +55,36 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
     return last_received_message_.get();
   }
 
+  // Number of message received from the web page.
+  int received_message_count() const { return received_message_count_; }
+
+  // Sets the feature to reply to messages from the page.
+  void SetReplyToMessages(bool reply);
+
+  // Sets the reply for the next message received.
+  void SetResponseToNextMessage(std::string response);
+
  private:
   // JavaScriptFeature:
   std::optional<std::string> GetScriptMessageHandlerName() const override;
+  bool GetFeatureRepliesToMessages() const override;
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& message) override;
 
+  void ScriptMessageReceivedWithReply(
+      WebState* web_state,
+      const ScriptMessage& message,
+      ScriptMessageReplyCallback callback) override;
+
   raw_ptr<WebState, DanglingUntriaged> last_received_web_state_ = nullptr;
   std::unique_ptr<const ScriptMessage> last_received_message_;
+  int received_message_count_ = 0;
+  bool reply_to_messages_ = false;
+  std::optional<std::string> response_to_next_message_;
+
+  // FakeJavaScriptFeature has its own WeakPtrFactory to bind
+  // ScriptMessageReceivedWithReply.
+  base::WeakPtrFactory<FakeJavaScriptFeature> weak_factory_;
 };
 
 }  // namespace web
