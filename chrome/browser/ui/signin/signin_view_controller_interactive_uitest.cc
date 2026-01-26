@@ -133,35 +133,6 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }
 
-// Tests that the confirm button is focused by default in the sync confirmation
-// dialog.
-IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
-                       // TODO(crbug.com/40927355): Re-enable this test
-                       DISABLED_SyncConfirmationDefaultFocus) {
-  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
-                                      signin::ConsentLevel::kSync);
-  content::TestNavigationObserver content_observer(
-      GURL("chrome://sync-confirmation/"));
-  content_observer.StartWatchingNewWebContents();
-  auto* signin_view_controller =
-      browser()->GetFeatures().signin_view_controller();
-  signin_view_controller->ShowModalSyncConfirmationDialog(
-      /*is_signin_intercept=*/false, /*is_sync_promo=*/false);
-  EXPECT_TRUE(signin_view_controller->ShowsModalDialog());
-  content_observer.Wait();
-
-  SyncConfirmationClosedObserver sync_confirmation_observer(browser());
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
-                                              /*control=*/false,
-                                              /*shift=*/false, /*alt=*/false,
-                                              /*command=*/false));
-
-  LoginUIService::SyncConfirmationUIClosedResult result =
-      sync_confirmation_observer.WaitForConfirmationClosed();
-  EXPECT_EQ(result, LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-  EXPECT_FALSE(signin_view_controller->ShowsModalDialog());
-}
-
 class SignInViewControllerInteractiveBrowserTest
     : public InteractiveBrowserTest {
  public:
