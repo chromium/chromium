@@ -3328,7 +3328,9 @@ const char kChromeAppStoreUrl[] =
   if (BWGService->IsBwgAvailableForWebState(webState)) {
     geminiBrowserAgent->ShowFloatyIfInvoked(/*animated=*/YES);
   } else {
-    geminiBrowserAgent->HideFloatyIfInvoked(/*animated=*/YES);
+    // Removes animation when hiding the floaty as a result of ineligible sites
+    // such as the new tab page.
+    geminiBrowserAgent->HideFloatyIfInvoked(/*animated=*/NO);
   }
 }
 
