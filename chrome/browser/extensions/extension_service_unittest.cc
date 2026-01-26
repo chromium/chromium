@@ -1660,7 +1660,7 @@ TEST_F(ExtensionServiceTest, InstallExtensionDuringShutdown) {
   base::FilePath path = data_dir().AppendASCII("good.crx");
   scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   // Simulate shutdown.
-  installer->set_browser_terminating_for_test(true);
+  installer->Shutdown();
   installer->set_allow_silent_install(true);
   installer->InstallCrx(path);
   task_environment()->RunUntilIdle();

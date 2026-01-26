@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/extension_system.h"
@@ -34,7 +33,6 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class ExtensionServiceTest;
 class SkBitmap;
 
 namespace base {
@@ -46,6 +44,8 @@ class BrowserContext;
 }
 
 namespace extensions {
+FORWARD_DECLARE_TEST(ExtensionServiceTest, InstallExtensionDuringShutdown);
+
 class CrxInstallError;
 class ExtensionRegistrar;
 class ExtensionUpdaterTest;
@@ -55,7 +55,7 @@ class MockCrxInstaller;
 class PreloadCheckGroup;
 class ScopedBrowserContextKeepAlive;
 
-// This class installs a crx file into a profile.
+// This class installs a crx file into a browser context.
 //
 // Installing a CRX is a multi-step process, including unpacking the crx,
 // validating it, prompting the user, and installing. Since many of these
@@ -81,7 +81,7 @@ class ScopedBrowserContextKeepAlive;
 //
 // Installation is aborted if the CrxInstaller object learns that Chrome is
 // terminating during the install.
-class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
+class CrxInstaller : public SandboxedUnpackerClient {
  public:
   // A callback to be executed when the install finishes.
   using InstallerResultCallback = ExtensionSystem::InstallUpdateCallback;
@@ -103,6 +103,8 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
 
   CrxInstaller(const CrxInstaller&) = delete;
   CrxInstaller& operator=(const CrxInstaller&) = delete;
+
+  static void EnsureShutdownNotifierFactoryBuilt();
 
   // Extensions will be installed into the default install directory, then
   // registered with the extensions system. This does a silent install - see
@@ -250,9 +252,6 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   void set_bypassed_safebrowsing_friction_for_testing(bool val) {
     set_install_flag(kInstallFlagBypassedSafeBrowsingFriction, val);
   }
-  void set_browser_terminating_for_test(bool val) {
-    browser_terminating_ = val;
-  }
 
   // Callback to be invoked when the crx file has passed the expectations check
   // after unpack success and the ownership of the crx file lies with the
@@ -262,7 +261,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
 
   bool did_handle_successfully() const { return did_handle_successfully_; }
 
-  Profile* profile() { return profile_; }
+  content::BrowserContext* browser_context() { return browser_context_; }
 
   const Extension* extension() const { return extension_.get(); }
 
@@ -276,7 +275,8 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   void RunInstallerCallbacks(const std::optional<CrxInstallError>& error);
 
  private:
-  friend class ::ExtensionServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
+                           InstallExtensionDuringShutdown);
   friend class BookmarkAppInstallFinalizerTest;
   friend class ExtensionUpdaterTest;
   friend class FakeCrxInstaller;
@@ -322,8 +322,8 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
                        base::DictValue ruleset_install_prefs) override;
   void OnStageChanged(InstallationStage stage) override;
 
-  // ProfileObserver
-  void OnProfileWillBeDestroyed(Profile* profile) override;
+  // Called on BrowserContext shutdown.
+  void Shutdown();
 
   // Called on the UI thread to start the requirements, policy and blocklist
   // checks on the extension.
@@ -340,8 +340,8 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   void UpdateCreationFlagsAndCompleteInstall(
       WithholdingBehavior withholding_behavior);
 
-  // Runs on File thread. Install the unpacked extension into the profile and
-  // notify the frontend.
+  // Runs on File thread. Install the unpacked extension into the browser
+  // context and notify the frontend.
   void CompleteInstall(bool updates_from_webstore);
 
   // Reloads extension on File thread and reports installation result back
@@ -403,15 +403,11 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // policy overrides.
   bool UpdatesFromWebstore(const Extension& extension);
 
-  // The Profile the extension is being installed in.
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  // The BrowserContext the extension is being installed in.
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Prevent Profile destruction until the CrxInstaller is done.
   std::unique_ptr<ScopedBrowserContextKeepAlive> profile_keep_alive_;
-
-  // ... but `profile_` could still get destroyed early, if Chrome shuts down
-  // completely. We need to perform some cleanup if that happens.
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // Cached for convenience.
   raw_ptr<ExtensionRegistrar> registrar_;
@@ -579,11 +575,9 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // after unpack success.
   ExpectationsVerifiedCallback expectations_verified_callback_;
 
-  // Subscription to browser termination.
-  base::CallbackListSubscription on_browser_terminating_subscription_;
-
-  // True if the browser is terminating.
-  bool browser_terminating_ = false;
+  // Subscription for a callback that runs when the BrowserContext is
+  // destroyed.
+  base::CallbackListSubscription browser_context_shutdown_subscription_;
 };
 
 }  // namespace extensions

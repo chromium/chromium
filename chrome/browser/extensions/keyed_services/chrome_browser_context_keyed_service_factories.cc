@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/component_loader_factory.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
+#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
@@ -61,6 +62,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ChromeExtensionSystemFactory::GetInstance();
   extensions::ComponentLoaderFactory::GetInstance();
   extensions::CorruptedExtensionReinstallerFactory::GetInstance();
+  extensions::CrxInstaller::EnsureShutdownNotifierFactoryBuilt();
   extensions::CWSInfoServiceFactory::GetInstance();
   extensions::ErrorConsoleFactory::GetInstance();
   extensions::ExtensionActionDispatcher::GetFactoryInstance();
