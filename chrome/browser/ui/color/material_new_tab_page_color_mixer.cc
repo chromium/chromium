@@ -153,7 +153,7 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnSurfaceSubtle};
 
   // Threads rail colors.
-  mixer[kColorNewTabPageThreadsRailBackground] = {ui::kColorSysBaseContainer};
+  mixer[kColorNewTabPageThreadsRailBackground] = {ui::kColorSysSurface2};
 
   mixer[kColorNewTabPageModuleBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorNewTabPageModuleIconBackground] = {ui::kColorSysNeutralContainer};
