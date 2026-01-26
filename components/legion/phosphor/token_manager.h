@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "components/legion/phosphor/data_types.h"
 #include "components/legion/proto/legion.pb.h"
 
@@ -16,14 +17,19 @@ namespace legion::phosphor {
 // Manages the cache of blind-signed auth tokens for Legion.
 class TokenManager {
  public:
+  using GetAuthTokenCallback =
+      base::OnceCallback<void(std::optional<BlindSignedAuthToken>)>;
+
   virtual ~TokenManager() = default;
 
-  // Checks whether tokens are available for a particular feature name.
-  virtual bool IsAuthTokenAvailable(proto::FeatureName feature_name) = 0;
+  // Gets a token for the given feature asynchronously.
+  virtual void GetAuthToken(proto::FeatureName feature_name,
+                            GetAuthTokenCallback callback) = 0;
 
-  // Gets a token, if one is available for the given feature.
-  virtual std::optional<BlindSignedAuthToken> GetAuthToken(
-      proto::FeatureName feature_name) = 0;
+  // Ensures that tokens are available for the given feature, fetching them if
+  // necessary. This method is intended for pre-fetching and does not return a
+  // token.
+  virtual void PrefetchAuthTokens(proto::FeatureName feature_name) = 0;
 };
 
 }  // namespace legion::phosphor

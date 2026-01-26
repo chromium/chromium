@@ -92,6 +92,10 @@ class ClientImpl : public Client {
   // Sends client attestation request using blind signed token.
   void TrySendClientAttestationRequest();
 
+  // The callback for when a token is available for client attestation.
+  void OnGetAuthTokenForAttestation(
+      std::optional<phosphor::BlindSignedAuthToken> auth_token);
+
   void OnClientAttestationRequest(
       base::expected<BinaryEncodedProtoResponse, ErrorCode> result);
 

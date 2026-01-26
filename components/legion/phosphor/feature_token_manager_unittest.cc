@@ -12,9 +12,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/legion/features.h"
@@ -69,14 +72,19 @@ class MockTokenFetcher : public TokenFetcher {
                       GetAuthnTokensCallback callback) override {
     CHECK(!expected_get_authn_token_calls_.empty())
         << "Unexpected call to GetAuthnTokens";
-    auto& exp = expected_get_authn_token_calls_.front();
-    EXPECT_EQ(batch_size, exp.batch_size);
-    if (exp.bsa_tokens) {
-      std::move(callback).Run(base::ok(*std::move(exp.bsa_tokens)));
-    } else {
-      std::move(callback).Run(base::unexpected(*exp.try_again_after));
-    }
+    auto exp = std::move(expected_get_authn_token_calls_.front());
     expected_get_authn_token_calls_.pop_front();
+    EXPECT_EQ(batch_size, exp.batch_size);
+
+    base::expected<std::vector<BlindSignedAuthToken>, base::Time> result;
+    if (exp.bsa_tokens) {
+      result = base::ok(std::move(*exp.bsa_tokens));
+    } else {
+      result = base::unexpected(*exp.try_again_after);
+    }
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
   }
 
  protected:
@@ -100,6 +108,7 @@ class FeatureTokenManagerTest : public testing::Test {
     for (int i = 0; i < count; i++) {
       tokens.emplace_back(
           BlindSignedAuthToken{.token = "token-" + base::NumberToString(i),
+                               .encoded_extensions = "ext",
                                .expiration = expiration});
     }
     return tokens;
@@ -123,18 +132,68 @@ TEST_F(FeatureTokenManagerTest, GetAuthToken) {
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
-  // The first call to `GetAuthToken` will return nullopt and trigger a token
-  // fetch.
-  EXPECT_FALSE(feature_token_manager_->GetAuthToken());
+  // The first call to `GetAuthToken` will be asynchronous.
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
+  feature_token_manager_->GetAuthToken(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
 
+  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
+
+  // The future should have completed with a token.
+  EXPECT_TRUE(future.Get().has_value());
+
+  // The second call should succeed asynchronously from the cache.
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future2;
+  feature_token_manager_->GetAuthToken(future2.GetCallback());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_TRUE(future2.Get().has_value());
+}
+
+TEST_F(FeatureTokenManagerTest, OnGotAuthTokens_FewerTokensThanCallbacks) {
+  // The first fetch will return only 2 tokens.
+  mock_fetcher_->ExpectGetAuthnTokensCall(expected_batch_size_,
+                                          TokenBatch(2, kFutureExpiration));
+  // The pending callback will trigger another fetch.
+  mock_fetcher_->ExpectGetAuthnTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration));
+
+  // Queue 3 token requests.
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future1;
+  feature_token_manager_->GetAuthToken(future1.GetCallback());
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future2;
+  feature_token_manager_->GetAuthToken(future2.GetCallback());
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future3;
+  feature_token_manager_->GetAuthToken(future3.GetCallback());
+
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
+
+  // All 3 futures should have completed with a token.
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future1.Get().has_value());
+  EXPECT_TRUE(future2.IsReady());
+  EXPECT_TRUE(future2.Get().has_value());
+  EXPECT_TRUE(future3.IsReady());
+  EXPECT_TRUE(future3.Get().has_value());
+}
+
+TEST_F(FeatureTokenManagerTest, PrefetchAuthTokens) {
+  mock_fetcher_->ExpectGetAuthnTokensCall(
+      expected_batch_size_,
+      TokenBatch(expected_batch_size_, kFutureExpiration));
+
+  feature_token_manager_->PrefetchAuthTokens();
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(feature_token_manager_->IsAuthTokenAvailable());
 
-  // The second call should succeed.
-  auto token = feature_token_manager_->GetAuthToken();
-  ASSERT_TRUE(token.has_value());
+  // A subsequent call to GetAuthToken should succeed asynchronously from the
+  // cache.
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
+  feature_token_manager_->GetAuthToken(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Get().has_value());
 }
 
 TEST_F(FeatureTokenManagerTest, ExpiredToken) {
@@ -143,13 +202,12 @@ TEST_F(FeatureTokenManagerTest, ExpiredToken) {
       TokenBatch(expected_batch_size_, base::Time::Now() + base::Seconds(1)));
 
   // This will trigger the first fetch.
-  EXPECT_FALSE(feature_token_manager_->GetAuthToken());
-  task_environment_.RunUntilIdle();
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
+  feature_token_manager_->GetAuthToken(future.GetCallback());
   ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
+  EXPECT_TRUE(future.Get().has_value());
 
   // A token should be available.
-  EXPECT_TRUE(feature_token_manager_->IsAuthTokenAvailable());
-
   // Another fetch should be triggered automatically when the token expires.
   mock_fetcher_->ExpectGetAuthnTokensCall(
       expected_batch_size_,
@@ -157,11 +215,13 @@ TEST_F(FeatureTokenManagerTest, ExpiredToken) {
 
   // Advance time so the token expires and the timer for refill fires.
   task_environment_.FastForwardBy(base::Seconds(2));
-  task_environment_.RunUntilIdle();
   ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
 
   // Now a token should be available.
-  EXPECT_TRUE(feature_token_manager_->IsAuthTokenAvailable());
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future2;
+  feature_token_manager_->GetAuthToken(future2.GetCallback());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_TRUE(future2.Get().has_value());
 }
 
 TEST_F(FeatureTokenManagerTest, FetchError_BacksOff) {
@@ -170,16 +230,17 @@ TEST_F(FeatureTokenManagerTest, FetchError_BacksOff) {
                                           try_again_after);
 
   // This will trigger the first fetch, which will fail.
-  EXPECT_FALSE(feature_token_manager_->GetAuthToken());
-  task_environment_.RunUntilIdle();
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
+  feature_token_manager_->GetAuthToken(future.GetCallback());
   ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
+  EXPECT_FALSE(future.Get().has_value());
 
   // No token should be available.
-  EXPECT_FALSE(feature_token_manager_->IsAuthTokenAvailable());
-
   // Calling GetAuthToken again should not trigger a new fetch due to backoff.
-  EXPECT_FALSE(feature_token_manager_->GetAuthToken());
+  base::test::TestFuture<std::optional<BlindSignedAuthToken>> future2;
+  feature_token_manager_->GetAuthToken(future2.GetCallback());
   ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
+  EXPECT_FALSE(future2.IsReady());
 
   // Expect a new fetch to be triggered automatically after the backoff period.
   mock_fetcher_->ExpectGetAuthnTokensCall(
@@ -188,9 +249,9 @@ TEST_F(FeatureTokenManagerTest, FetchError_BacksOff) {
 
   // Advance time past the backoff period.
   task_environment_.FastForwardBy(base::Seconds(11));
-  task_environment_.RunUntilIdle();
   ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-  EXPECT_TRUE(feature_token_manager_->IsAuthTokenAvailable());
+
+  EXPECT_TRUE(future2.Get().has_value());
 }
 
 }  // namespace

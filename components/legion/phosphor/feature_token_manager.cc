@@ -16,24 +16,19 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/legion/features.h"
 #include "components/legion/phosphor/data_types.h"
 #include "components/legion/phosphor/token_fetcher.h"
+#include "components/legion/phosphor/token_manager.h"
 #include "net/base/features.h"
 
 namespace legion::phosphor::internal {
 
-namespace {
 
-auto kBlindSignedAuthTokenComparator = [](const BlindSignedAuthToken& a,
-                                          const BlindSignedAuthToken& b) {
-  return a.expiration > b.expiration;
-};
-
-}  // namespace
 
 FeatureTokenManager::FeatureTokenManager(TokenFetcher* fetcher,
                                          int batch_size,
@@ -44,28 +39,37 @@ FeatureTokenManager::FeatureTokenManager(TokenFetcher* fetcher,
 
 FeatureTokenManager::~FeatureTokenManager() = default;
 
-bool FeatureTokenManager::IsAuthTokenAvailable() {
+void FeatureTokenManager::PrefetchAuthTokens() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemoveExpiredTokens();
-  return !cache_.empty();
+  MaybeRefillCache();
 }
 
-std::optional<BlindSignedAuthToken> FeatureTokenManager::GetAuthToken() {
+void FeatureTokenManager::GetAuthToken(
+    TokenManager::GetAuthTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RemoveExpiredTokens();
 
-  std::optional<BlindSignedAuthToken> result;
   if (!cache_.empty()) {
-    std::pop_heap(cache_.begin(), cache_.end(),
-                  kBlindSignedAuthTokenComparator);
-    result.emplace(std::move(cache_.back()));
-    cache_.pop_back();
-  }
+    std::optional<BlindSignedAuthToken> result;
+    result.emplace(std::move(cache_.front()));
+    cache_.pop_front();
 
-  VLOG(2) << "Legion ATC::GetAuthToken with " << cache_.size()
-          << " tokens available";
+    VLOG(2) << "Legion ATC::GetAuthToken with " << cache_.size()
+            << " tokens available";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+  } else {
+    VLOG(2)
+        << "Legion ATC::GetAuthToken with no tokens available, queuing request";
+    pending_callbacks_.push_back(std::move(callback));
+  }
   MaybeRefillCache();
-  return result;
+}
+
+void FeatureTokenManager::FailPendingCallbacks() {
+  for (auto& callback : std::exchange(pending_callbacks_, {})) {
+    std::move(callback).Run(std::nullopt);
+  }
 }
 
 void FeatureTokenManager::OnGotAuthTokens(
@@ -76,6 +80,7 @@ void FeatureTokenManager::OnGotAuthTokens(
   if (!result.has_value()) {
     VLOG(2) << "Legion ATC::OnGotAuthTokens back off until " << result.error();
     try_get_auth_tokens_after_ = result.error();
+    FailPendingCallbacks();
     ScheduleMaybeRefillCache();
     return;
   }
@@ -92,14 +97,23 @@ void FeatureTokenManager::OnGotAuthTokens(
     try_get_auth_tokens_after_ =
         base::Time::Now() +
         legion::kLegionTryGetAuthTokensTransientBackoff.Get();
+    FailPendingCallbacks();
     ScheduleMaybeRefillCache();
     return;
   }
 
   for (auto& token : *result) {
     cache_.push_back(std::move(token));
-    std::push_heap(cache_.begin(), cache_.end(),
-                   kBlindSignedAuthTokenComparator);
+  }
+
+  while (!cache_.empty() && !pending_callbacks_.empty()) {
+    std::optional<BlindSignedAuthToken> token;
+    token.emplace(std::move(cache_.front()));
+    cache_.pop_front();
+    TokenManager::GetAuthTokenCallback callback =
+        std::move(pending_callbacks_.front());
+    pending_callbacks_.pop_front();
+    std::move(callback).Run(std::move(token));
   }
 
   ScheduleMaybeRefillCache();
@@ -108,9 +122,7 @@ void FeatureTokenManager::OnGotAuthTokens(
 void FeatureTokenManager::RemoveExpiredTokens() {
   base::Time fresh_after = base::Time::Now();
   while (!cache_.empty() && cache_.front().expiration <= fresh_after) {
-    std::pop_heap(cache_.begin(), cache_.end(),
-                  kBlindSignedAuthTokenComparator);
-    cache_.pop_back();
+    cache_.pop_front();
   }
 }
 
@@ -134,6 +146,7 @@ void FeatureTokenManager::MaybeRefillCache() {
     fetcher_->GetAuthnTokens(
         batch_size_, base::BindOnce(&FeatureTokenManager::OnGotAuthTokens,
                                     weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
 
   ScheduleMaybeRefillCache();
@@ -165,7 +178,7 @@ void FeatureTokenManager::ScheduleMaybeRefillCache() {
 }
 
 bool FeatureTokenManager::NeedsRefill() const {
-  return cache_.size() < cache_low_water_mark_;
+  return !pending_callbacks_.empty() || cache_.size() < cache_low_water_mark_;
 }
 
 }  // namespace legion::phosphor::internal

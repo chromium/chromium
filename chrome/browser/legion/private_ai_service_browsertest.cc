@@ -131,30 +131,67 @@ IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest, GetAuthToken) {
   tokens.push_back(std::move(bsa_token));
   test_private_ai_service->mock_bsa()->set_tokens(std::move(tokens));
 
-  base::RunLoop run_loop;
-  // This quit closure is thread-safe and will signal the main loop to wake up
-  // after the background thread has processed the mock call.
-  test_private_ai_service->mock_bsa()->set_on_get_tokens_callback(
-      run_loop.QuitClosure());
+  base::test::TestFuture<std::optional<legion::phosphor::BlindSignedAuthToken>>
+      future;
 
-  // First call returns null and starts the fetch.
-  std::optional<legion::phosphor::BlindSignedAuthToken> token =
-      token_manager->GetAuthToken(
-          legion::proto::FeatureName::
-              FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
-  EXPECT_FALSE(token.has_value());
+  // First call is async and starts the fetch.
+  token_manager->GetAuthToken(
+      legion::proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
 
-  // Wait for the background MockBlindSignAuth call to complete.
-  // When this returns, the result task has been posted to the main thread.
-  run_loop.Run();
-
-  // Second call should return a token.
-  token = token_manager->GetAuthToken(
-      legion::proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
+  // Wait for the async fetch to complete.
+  std::optional<legion::phosphor::BlindSignedAuthToken> token = future.Get();
   ASSERT_TRUE(token.has_value());
 
-  EXPECT_THAT(token->token,
-              testing::HasSubstr(base::Base64Encode("test_token")));
+  EXPECT_EQ(token->token, base::Base64Encode("test_token"));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest,
+                       GetAuthToken_SyncAfterAsync) {
+  TestPrivateAiService* test_private_ai_service =
+      static_cast<TestPrivateAiService*>(
+          PrivateAiServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(test_private_ai_service);
+
+  auto* token_manager = test_private_ai_service->GetTokenManager();
+  ASSERT_TRUE(test_private_ai_service->mock_bsa());
+
+  identity_test_env()->MakePrimaryAccountAvailable("test@example.com",
+                                                   signin::ConsentLevel::kSync);
+
+  // Setup tokens.
+  std::vector<quiche::BlindSignToken> tokens;
+  for (int i = 0; i < 2; ++i) {
+    privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
+    privacy_pass_token_data.set_token(base::Base64Encode("test_token"));
+    privacy_pass_token_data.set_encoded_extensions(base::Base64Encode("ext"));
+
+    quiche::BlindSignToken bsa_token;
+    bsa_token.token = privacy_pass_token_data.SerializeAsString();
+    bsa_token.expiration =
+        absl::FromTimeT((base::Time::Now() + base::Hours(1)).ToTimeT());
+    tokens.push_back(std::move(bsa_token));
+  }
+  test_private_ai_service->mock_bsa()->set_tokens(std::move(tokens));
+
+  // First call is async and starts the fetch.
+  base::test::TestFuture<std::optional<legion::phosphor::BlindSignedAuthToken>>
+      future;
+  token_manager->GetAuthToken(
+      legion::proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+      future.GetCallback());
+
+  ASSERT_TRUE(future.Get().has_value());
+
+  // Second call should be async and return a token from the cache.
+  base::test::TestFuture<std::optional<legion::phosphor::BlindSignedAuthToken>>
+      future2;
+  token_manager->GetAuthToken(
+      legion::proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+      future2.GetCallback());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_TRUE(future2.Get().has_value());
 }
 
 }  // namespace legion

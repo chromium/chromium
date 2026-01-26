@@ -158,20 +158,20 @@ class FakeTokenManager : public phosphor::TokenManager {
   FakeTokenManager() = default;
   ~FakeTokenManager() override = default;
 
-  bool IsAuthTokenAvailable(proto::FeatureName feature_name) override {
-    return return_token_;
+  void GetAuthToken(proto::FeatureName feature_name,
+                    GetAuthTokenCallback callback) override {
+    if (!return_token_) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(std::make_optional<phosphor::BlindSignedAuthToken>(
+        phosphor::BlindSignedAuthToken{
+            .token = "test_token",
+            .encoded_extensions = "test_extensions",
+            .expiration = base::Time::Now() + base::Minutes(1)}));
   }
 
-  std::optional<phosphor::BlindSignedAuthToken> GetAuthToken(
-      proto::FeatureName feature_name) override {
-    if (!return_token_) {
-      return std::nullopt;
-    }
-    return phosphor::BlindSignedAuthToken{
-        .token = "test_token",
-        .encoded_extensions = "test_extensions",
-        .expiration = base::Time::Now() + base::Minutes(1)};
-  }
+  void PrefetchAuthTokens(proto::FeatureName feature_name) override {}
 
   void SetReturnToken(bool return_token) { return_token_ = return_token; }
 
@@ -258,10 +258,9 @@ TEST_F(ClientImplTest, SendPaicRequestSuccess) {
 
   auto* mock_channel = factory_.CreateNewChannel();
   EXPECT_CALL(*mock_channel, Write(IsPaicRequest()))
-      .WillOnce([=, &response_callback_ = factory_.response_callback_](
-                    const Request& request_payload) {
+      .WillOnce([&](const Request& request_payload) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(response_callback_,
+            FROM_HERE, base::BindOnce(factory_.response_callback_,
                                       base::ok(std::move(response_data))));
         return true;
       });

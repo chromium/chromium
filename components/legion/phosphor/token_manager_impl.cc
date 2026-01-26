@@ -38,19 +38,15 @@ internal::FeatureTokenManager* TokenManagerImpl::GetOrCreateFeatureManager(
   return new_manager_ptr;
 }
 
-bool TokenManagerImpl::IsAuthTokenAvailable(proto::FeatureName feature_name) {
+void TokenManagerImpl::GetAuthToken(proto::FeatureName feature_name,
+                                    GetAuthTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = feature_managers_.find(feature_name);
-  if (it == feature_managers_.end()) {
-    return false;
-  }
-  return it->second->IsAuthTokenAvailable();
+  GetOrCreateFeatureManager(feature_name)->GetAuthToken(std::move(callback));
 }
 
-std::optional<BlindSignedAuthToken> TokenManagerImpl::GetAuthToken(
-    proto::FeatureName feature_name) {
+void TokenManagerImpl::PrefetchAuthTokens(proto::FeatureName feature_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetOrCreateFeatureManager(feature_name)->GetAuthToken();
+  GetOrCreateFeatureManager(feature_name)->PrefetchAuthTokens();
 }
 
 }  // namespace legion::phosphor

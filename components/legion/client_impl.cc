@@ -144,11 +144,18 @@ int32_t ClientImpl::CreateRequestId() {
 }
 
 void ClientImpl::TrySendClientAttestationRequest() {
-  // TODO(b/469382780): Make GetAuthToken() async.
   // TODO(b/475513974): Make it possible to get a token without a feature name.
-  std::optional<phosphor::BlindSignedAuthToken> auth_token =
-      token_manager_->GetAuthToken(
-          proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
+  token_manager_->GetAuthToken(
+      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+      base::BindOnce(&ClientImpl::OnGetAuthTokenForAttestation,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ClientImpl::OnGetAuthTokenForAttestation(
+    std::optional<phosphor::BlindSignedAuthToken> auth_token) {
+  if (!secure_channel_) {
+    return;
+  }
 
   if (!auth_token.has_value()) {
     base::UmaHistogramEnumeration("Legion.Client.RequestErrorCode",
