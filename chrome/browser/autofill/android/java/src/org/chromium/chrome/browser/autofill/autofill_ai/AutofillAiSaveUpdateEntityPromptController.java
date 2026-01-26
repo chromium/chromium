@@ -37,6 +37,13 @@ final class AutofillAiSaveUpdateEntityPromptController {
         mNativeAutofillAiSaveUpdateEntityPromptController = 0;
     }
 
+    public void openManagePasses() {
+        if (mNativeAutofillAiSaveUpdateEntityPromptController != 0) {
+            AutofillAiSaveUpdateEntityPromptControllerJni.get()
+                    .openManagePasses(mNativeAutofillAiSaveUpdateEntityPromptController);
+        }
+    }
+
     public void onPromptDismissed() {
         if (mNativeAutofillAiSaveUpdateEntityPromptController != 0) {
             AutofillAiSaveUpdateEntityPromptControllerJni.get()
@@ -60,6 +67,8 @@ final class AutofillAiSaveUpdateEntityPromptController {
 
     @NativeMethods
     interface Natives {
+        void openManagePasses(long nativeAutofillAiSaveUpdateEntityPromptController);
+
         void onPromptDismissed(long nativeAutofillAiSaveUpdateEntityPromptController);
 
         void onUserAccepted(long nativeAutofillAiSaveUpdateEntityPromptController);

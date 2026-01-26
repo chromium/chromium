@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Paint;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -16,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
@@ -28,6 +28,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
 
@@ -36,7 +38,6 @@ import java.util.List;
  *
  * <p>TODO: crbug.com/460410690 - Write render tests.
  */
-@JNINamespace("autofill")
 @NullMarked
 public class AutofillAiSaveUpdateEntityPrompt {
     private final AutofillAiSaveUpdateEntityPromptController mController;
@@ -140,9 +141,35 @@ public class AutofillAiSaveUpdateEntityPrompt {
 
     @CalledByNative
     @VisibleForTesting
-    void setSourceNotice(@JniType("std::u16string") String sourceNotice) {
-        showTextIfNotEmpty(
-                mDialogView.findViewById(R.id.autofill_ai_entity_source_notice), sourceNotice);
+    void setSourceNotice(@JniType("std::u16string") String sourceNotice, boolean insertWalletLink) {
+        TextView sourceNoticeView = mDialogView.findViewById(R.id.autofill_ai_entity_source_notice);
+        if (TextUtils.isEmpty(sourceNotice)) {
+            // The source notice can be empty if the C++ controller fails to retrieve the email
+            // address of the user.
+            sourceNoticeView.setVisibility(View.GONE);
+            return;
+        }
+
+        if (!insertWalletLink) {
+            // Local entity source notice doesn't need a link.
+            sourceNoticeView.setText(sourceNotice);
+            return;
+        }
+
+        CharSequence sourceNoticeWithLink =
+                SpanApplier.applySpans(
+                        sourceNotice,
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        mContext,
+                                        view -> {
+                                            // TODO: crbug.com/460410690 - Record user actions.
+                                            mController.openManagePasses();
+                                        })));
+        sourceNoticeView.setText(sourceNoticeWithLink, TextView.BufferType.SPANNABLE);
+        sourceNoticeView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /** Dismisses the prompt without returning any user response. */
@@ -168,7 +195,7 @@ public class AutofillAiSaveUpdateEntityPrompt {
         mController.onPromptDismissed();
     }
 
-    private void showTextIfNotEmpty(TextView textView, String text) {
+    private void showTextIfNotEmpty(TextView textView, CharSequence text) {
         if (TextUtils.isEmpty(text)) {
             textView.setVisibility(View.GONE);
         } else {

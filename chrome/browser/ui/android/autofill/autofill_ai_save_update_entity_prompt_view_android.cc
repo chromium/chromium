@@ -82,7 +82,10 @@ void AutofillAiSaveUpdateEntityPromptViewAndroid::SetContent(
       env, java_object_, controller->GetEntityUpdateDetails());
 
   Java_AutofillAiSaveUpdateEntityPrompt_setSourceNotice(
-      env, java_object_, controller->GetSourceNotice());
+      env, java_object_, controller->GetSourceNotice(),
+      controller->IsWalletableEntity());
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillAiSaveUpdateEntityPrompt)

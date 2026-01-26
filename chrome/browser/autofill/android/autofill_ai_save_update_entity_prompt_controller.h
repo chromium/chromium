@@ -52,8 +52,13 @@ class AutofillAiSaveUpdateEntityPromptController {
   std::vector<EntityAttributeUpdateDetails> GetEntityUpdateDetails() const;
 
   std::u16string GetSourceNotice() const;
+  // Returns true if the entity to be saved or updated will be stored in the
+  // wallet server.
+  bool IsWalletableEntity() const;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
+  // Called by AutofillAiSaveUpdateEntityPromptController.java
+  void OpenManagePasses(JNIEnv* env);
   void OnUserAccepted(JNIEnv* env);
   void OnUserDeclined(JNIEnv* env);
   // Called whenever the prompt is dismissed (e.g. because the user already
