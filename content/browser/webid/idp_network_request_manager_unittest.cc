@@ -787,7 +787,7 @@ TEST_F(IdpNetworkRequestManagerTest, CacheProfilePictures) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory().GetPendingRequest(0);
   ASSERT_TRUE(pending_request);
-  network::ResourceRequest resource_request = pending_request->request;
+  const network::ResourceRequest& resource_request = pending_request->request;
   EXPECT_FALSE(resource_request.load_flags & net::LOAD_ONLY_FROM_CACHE);
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther,
@@ -812,7 +812,7 @@ TEST_F(IdpNetworkRequestManagerTest, DownloadAndDecodeCachedImage) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory().GetPendingRequest(0);
   ASSERT_TRUE(pending_request);
-  network::ResourceRequest resource_request = pending_request->request;
+  const network::ResourceRequest& resource_request = pending_request->request;
   EXPECT_TRUE(resource_request.load_flags & net::LOAD_ONLY_FROM_CACHE);
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther,
