@@ -29,6 +29,7 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.TaskVisibilityListener;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
@@ -231,6 +232,8 @@ final class ChromeAndroidTaskImpl
                     }
                 }
             };
+
+    private final Callback<TabModel> mOnTabModelSelectedCallback = this::onTabModelSelected;
 
     private @Nullable TabModelSelectorTabModelObserver mPreventAddTabToOtherModelObserver;
 
@@ -495,10 +498,19 @@ final class ChromeAndroidTaskImpl
                     "Feature is profile-scoped but the profile doesn't match the task's profile.");
         }
 
+        var topActivityScopedObjects = mActivityScopedObjectsDeque.peekFirst();
+        var tabModelSelector =
+                topActivityScopedObjects == null
+                        ? null
+                        : topActivityScopedObjects.mTabModelSelector;
+
         var feature = featureSupplier.get();
         if (feature != null) {
             mFeatures.put(featureKey, feature);
             feature.onAddedToTask();
+            if (tabModelSelector != null) {
+                feature.onTabModelSelected(tabModelSelector.getCurrentModel());
+            }
         }
     }
 
@@ -1018,6 +1030,9 @@ final class ChromeAndroidTaskImpl
         // TODO(crbug.com/475200706): Associate both models in MIXED state.
         TabModel currentTabModel = tabModelSelector.getCurrentModel();
         currentTabModel.associateWithBrowserWindow(mAndroidBrowserWindow.getOrCreateNativePtr());
+
+        tabModelSelector.getCurrentTabModelSupplier().addObserver(mOnTabModelSelectedCallback);
+        onTabModelSelected(tabModelSelector.getCurrentModel());
     }
 
     private void unregisterListenersForTopActivity() {
@@ -1045,6 +1060,13 @@ final class ChromeAndroidTaskImpl
         if (mPreventAddTabToOtherModelObserver != null) {
             mPreventAddTabToOtherModelObserver.destroy();
             mPreventAddTabToOtherModelObserver = null;
+        }
+
+        var tabModelSelector = topActivityScopedObjects.mTabModelSelector;
+        if (tabModelSelector != null) {
+            tabModelSelector
+                    .getCurrentTabModelSupplier()
+                    .removeObserver(mOnTabModelSelectedCallback);
         }
     }
 
@@ -1378,6 +1400,12 @@ final class ChromeAndroidTaskImpl
             }
         }
         mState = State.IDLE;
+    }
+
+    private void onTabModelSelected(TabModel tabModel) {
+        for (var feature : mFeatures.values()) {
+            feature.onTabModelSelected(tabModel);
+        }
     }
 
     @VisibleForTesting

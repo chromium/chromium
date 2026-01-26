@@ -38,6 +38,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreator;
@@ -293,6 +295,10 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(mockTabModel.getProfile()).thenReturn(profile);
 
         var mockTabModelSelector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModel> tabModelSupplier =
+                ObservableSuppliers.createMonotonic();
+        tabModelSupplier.set(mockTabModel);
+        when(mockTabModelSelector.getCurrentTabModelSupplier()).thenReturn(tabModelSupplier);
         when(mockTabModelSelector.getCurrentModel()).thenReturn(mockTabModel);
         when(mockTabModelSelector.getModels())
                 .thenReturn(java.util.Collections.singletonList(mockTabModel));
