@@ -215,14 +215,16 @@ def AddCommonOptions(parser):
       namespace.local_output = True
       namespace.num_retries = 0
       namespace.skip_clear_data = True
+      namespace.use_persistent_shell = True
 
-  parser.add_argument('--fast-local-dev',
-                      type=bool,
-                      nargs=0,
-                      action=FastLocalDevAction,
-                      help='Alias for: --num-retries=0 --enable-device-cache '
-                      '--enable-concurrent-adb --skip-clear-data '
-                      '--extract-test-list-from-filter --local-output')
+  parser.add_argument(
+      '--fast-local-dev',
+      type=bool,
+      nargs=0,
+      action=FastLocalDevAction,
+      help='Alias for: --num-retries=0 --enable-device-cache '
+      '--enable-concurrent-adb --skip-clear-data '
+      '--extract-test-list-from-filter --use-persistent-shell --local-output')
 
   # TODO(jbudorick): Remove this once downstream bots have switched to
   # api.test_results.
@@ -251,12 +253,11 @@ def AddCommonOptions(parser):
       dest='repeat', type=int, default=0,
       help='Number of times to repeat the specified set of tests.')
 
-  # There may be steps that involve setting up a new emulator or device
-  # resets that may not interact well with a persistent shell connection.
+  # Not useful for junit tests.
   parser.add_argument(
-      '--disable-persistent-adb',
+      '--use-persistent-shell',
       action='store_true',
-      help='Use a non-persistent shell connection for the adb connection.')
+      help='Uses a persistent shell connection for the adb connection.')
 
   # This is currently only implemented for gtests and instrumentation tests.
   parser.add_argument(
