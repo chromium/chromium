@@ -162,6 +162,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return true;
   }
 
+  bool IsMonolithic() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+
   // ReplacedPainter doesn't support CompositeBackgroundAttachmentFixed yet.
   bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
     NOT_DESTROYED();
