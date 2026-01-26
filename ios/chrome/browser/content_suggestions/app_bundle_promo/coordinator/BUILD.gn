@@ -6,10 +6,10 @@ source_set("coordinator") {
   sources = [
     "app_bundle_promo_mediator.h",
     "app_bundle_promo_mediator.mm",
+    "app_bundle_promo_mediator_delegate.h",
   ]
-
+  public_deps = [ "//base" ]
   deps = [
-    "//base",
     "//components/ntp_tiles:pref_names",
     "//components/prefs",
     "//components/prefs/ios",
@@ -18,14 +18,12 @@ source_set("coordinator") {
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/content_suggestions/ui:public",
   ]
-
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [ "app_bundle_promo_mediator_unittest.mm" ]
-
   deps = [
     ":coordinator",
     "//components/ntp_tiles:pref_names",

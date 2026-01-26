@@ -9,23 +9,12 @@
 
 #import "base/ios/block_types.h"
 
-@protocol ContentSuggestionsViewControllerAudience;
 @class AppBundlePromoConfig;
-enum class ContentSuggestionsModuleType;
+@protocol AppBundlePromoMediatorDelegate;
 class AppStoreBundleService;
+enum class ContentSuggestionsModuleType;
+@protocol ContentSuggestionsViewControllerAudience;
 class PrefService;
-
-// Handles App Bundle promo module events.
-@protocol AppBundlePromoMediatorDelegate
-
-// Indicates to the receiver that the App Bundle promo module should be removed.
-// The `completion` is called after the removal is finished.
-- (void)removeAppBundlePromoModuleWithCompletion:(ProceduralBlock)completion;
-
-// Logs a user Magic Stack engagement for module `type`.
-- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
-
-@end
 
 // Mediator for managing the state of the App Bundle Promo (Magic Stack) module.
 @interface AppBundlePromoMediator : NSObject
@@ -33,7 +22,7 @@ class PrefService;
 // Used by the App Bundle promo module for the module config.
 @property(nonatomic, strong) AppBundlePromoConfig* config;
 
-// Delegate.
+// Delegate for this mediator.
 @property(nonatomic, weak) id<AppBundlePromoMediatorDelegate> delegate;
 
 // Audience for presentation actions.
@@ -50,9 +39,6 @@ class PrefService;
 // Disconnects this mediator.
 - (void)disconnect;
 
-// Called when the promo is selected by the user.
-- (void)didSelectAppBundlePromo;
-
 // Removes the module from the Magic Stack on the current homepage without
 // disabling the underlying feature. This prevents the module from being shown
 // on the current homepage but does not affect its functionality elsewhere.
@@ -63,6 +49,9 @@ class PrefService;
 // `baseViewController`. Runs `completion` when the sheet is dismissed.
 - (void)presentAppStoreBundlePage:(UIViewController*)baseViewController
                    withCompletion:(ProceduralBlock)completion;
+
+// Called when the promo is selected by the user.
+- (void)didSelectAppBundlePromo;
 
 @end
 

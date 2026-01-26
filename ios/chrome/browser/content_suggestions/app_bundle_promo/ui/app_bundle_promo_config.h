@@ -12,8 +12,15 @@
 // Config object for the App Bundle promo module.
 @interface AppBundlePromoConfig : MagicStackModule
 
+// The name of the image resource being used for the promo card's icon.
+@property(nonatomic, copy) NSString* imageName;
+
 // The object that should handle user events.
 @property(nonatomic, weak) id<AppBundlePromoAudience> audience;
+
+// Initializes config with an image file named `imageName`.
+- (instancetype)initWithImageNamed:(NSString*)imageName
+    NS_DESIGNATED_INITIALIZER;
 
 @end
 

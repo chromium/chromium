@@ -4,9 +4,18 @@
 
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_view.h"
 
+#import "ios/chrome/browser/content_suggestions/app_bundle_promo/public/app_bundle_promo_constants.h"
+#import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_audience.h"
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view_configuration.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view.h"
+#import "ios/chrome/browser/content_suggestions/ui/cells/icon_view_configuration.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -16,31 +25,33 @@
 
 namespace {
 
-// `AppBundlePromoView` accessibility ID.
-NSString* const kAppBundlePromoViewID = @"kAppBundlePromoViewID";
-
-// The spacing between the title and description.
-constexpr CGFloat kTitleDescriptionSpacing = 2;
-
-// The spacing between elements within the item.
-constexpr CGFloat kContentStackSpacing = 14;
-
-// Constants related to the icon container view.
-constexpr CGFloat kIconSize = 40;
-constexpr CGFloat kIconContainerSize = 56;
-constexpr CGFloat kIconContainerCornerRadius = 12;
+/// Constants related to the icon container view.
+constexpr CGFloat kAppBundleIconSize = 40;
 
 }  // namespace
 
+@interface AppBundlePromoView () <IconDetailViewTapDelegate,
+                                  NewTabPageColorUpdating>
+@end
+
 @implementation AppBundlePromoView {
-  // UI tap gesture recognizer.
-  UITapGestureRecognizer* _tapGestureRecognizer;
+  // The current configuration of the App Bundle promo module.
   AppBundlePromoConfig* _config;
+  // The root view of the App Bundle promo module.
+  UIView* _contentView;
+  // The background color of the container if the icon is rendered in a
+  // container.
+  UIColor* _containerBackgroundColor;
 }
 
 - (instancetype)initWithConfig:(AppBundlePromoConfig*)config {
-  if ((self = [super init])) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     _config = config;
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                         withAction:@selector(applyBackgroundColors)];
+    }
+    [self applyBackgroundColors];
   }
   return self;
 }
@@ -52,125 +63,72 @@ constexpr CGFloat kIconContainerCornerRadius = 12;
   [self createSubviews];
 }
 
+#pragma mark - IconDetailViewTapDelegate
+
+- (void)didTapIconDetailView:(IconDetailView*)view {
+  [self.audience didSelectAppBundlePromo];
+}
+
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+
+  _containerBackgroundColor = colorPalette ? colorPalette.tertiaryColor
+                                           : [UIColor colorNamed:kGrey100Color];
+
+  // Redraws the view by removing and recreating the content view.
+  [_contentView removeFromSuperview];
+  [self createSubviews];
+}
+
 #pragma mark - Private
 
+// Creates and adds subviews for the promo card.
 - (void)createSubviews {
+  // Return if the subviews have already been created and added.
   if (!(self.subviews.count == 0)) {
     return;
   }
 
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_APP_BUNDLE_PROMO_CARD_TITLE);
-  NSString* description =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-          ? l10n_util::GetNSString(
-                IDS_IOS_MAGIC_STACK_APP_BUNDLE_PROMO_CARD_IPAD_DESCRIPTION)
-          : l10n_util::GetNSString(
-                IDS_IOS_MAGIC_STACK_APP_BUNDLE_PROMO_CARD_IPHONE_DESCRIPTION);
-
   self.translatesAutoresizingMaskIntoConstraints = NO;
-  self.accessibilityIdentifier = kAppBundlePromoViewID;
-  self.isAccessibilityElement = YES;
-  self.accessibilityTraits = UIAccessibilityTraitButton;
-  self.accessibilityLabel =
-      [NSString stringWithFormat:@"%@, %@", title, description];
-
-  NSMutableArray* arrangedSubviews = [[NSMutableArray alloc] init];
-
-  UIView* imageContainerView = [self imageInContainer];
-  [arrangedSubviews addObject:imageContainerView];
-
-  UILabel* titleLabel = [self createTitleLabel:title];
-  [titleLabel
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
-                                      forAxis:UILayoutConstraintAxisVertical];
-  UILabel* descriptionLabel = [self createDescriptionLabel:description];
-  [descriptionLabel
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                      forAxis:UILayoutConstraintAxisVertical];
-
-  UIStackView* textStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ titleLabel, descriptionLabel ]];
-  textStack.axis = UILayoutConstraintAxisVertical;
-  textStack.translatesAutoresizingMaskIntoConstraints = NO;
-  textStack.spacing = kTitleDescriptionSpacing;
-  [textStack setContentHuggingPriority:UILayoutPriorityDefaultLow
-                               forAxis:UILayoutConstraintAxisHorizontal];
-
-  [arrangedSubviews addObject:textStack];
-
-  UIStackView* contentStack =
-      [[UIStackView alloc] initWithArrangedSubviews:arrangedSubviews];
-  contentStack.translatesAutoresizingMaskIntoConstraints = NO;
-  contentStack.axis = UILayoutConstraintAxisHorizontal;
-  contentStack.alignment = UIStackViewAlignmentCenter;
-  contentStack.spacing = kContentStackSpacing;
-
-  [self addSubview:contentStack];
-  AddSameConstraints(contentStack, self);
-
-  _tapGestureRecognizer =
-      [[UITapGestureRecognizer alloc] initWithTarget:self
-                                              action:@selector(handleTap:)];
-  [self addGestureRecognizer:_tapGestureRecognizer];
+  _contentView = [self createIconDetailView];
+  [self addSubview:_contentView];
+  AddSameConstraints(_contentView, self);
+  return;
 }
 
-- (void)handleTap:(UITapGestureRecognizer*)sender {
-  if (sender.state == UIGestureRecognizerStateEnded) {
-    [self.audience didSelectAppBundlePromo];
-  }
+// Creates and returns an `IconDetailView` configured for the promo card.
+- (IconDetailView*)createIconDetailView {
+  IconDetailViewConfiguration* viewConfig = [IconDetailViewConfiguration
+      configurationWithTitleText:[self titleText]
+                 descriptionText:[self descriptionText]];
+  viewConfig.iconName = _config.imageName;
+  viewConfig.iconSource = IconViewSourceType::kImage;
+  viewConfig.iconContainerBackgroundColor = _containerBackgroundColor;
+  viewConfig.iconWidth = kAppBundleIconSize;
+  viewConfig.accessibilityIdentifier = kAppBundlePromoViewID;
+
+  IconDetailView* view =
+      [[IconDetailView alloc] initWithConfiguration:viewConfig];
+  view.tapDelegate = self;
+  return view;
 }
 
-- (UIView*)imageInContainer {
-  UIView* iconContainer = [[UIView alloc] init];
-
-  iconContainer.backgroundColor = [UIColor colorNamed:kGrey100Color];
-  iconContainer.layer.cornerRadius = kIconContainerCornerRadius;
-
-  UIImageView* imageView =
-      [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"app_bundle"]];
-  imageView.contentMode = UIViewContentModeScaleAspectFit;
-  imageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [imageView.heightAnchor constraintEqualToConstant:kIconSize],
-    [imageView.widthAnchor constraintEqualToConstant:kIconSize],
-  ]];
-  [iconContainer addSubview:imageView];
-  AddSameCenterConstraints(imageView, iconContainer);
-
-  [NSLayoutConstraint activateConstraints:@[
-    [iconContainer.widthAnchor constraintEqualToConstant:kIconContainerSize],
-    [iconContainer.widthAnchor
-        constraintEqualToAnchor:iconContainer.heightAnchor],
-  ]];
-
-  return iconContainer;
+// Returns the title text for the promo card.
+- (NSString*)titleText {
+  return l10n_util::GetNSString(
+      IDS_IOS_MAGIC_STACK_APP_BUNDLE_PROMO_CARD_TITLE);
 }
 
-- (UILabel*)createTitleLabel:(NSString*)title {
-  UILabel* label = [[UILabel alloc] init];
-  label.text = title;
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.numberOfLines = 0;
-  label.lineBreakMode = NSLineBreakByWordWrapping;
-  label.font =
-      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold,
-                                kMaxTextSizeForStyleFootnote);
-  label.adjustsFontForContentSizeCategory = YES;
-  label.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  return label;
-}
-
-- (UILabel*)createDescriptionLabel:(NSString*)description {
-  UILabel* label = [[UILabel alloc] init];
-  label.text = description;
-  label.numberOfLines = 2;
-  label.lineBreakMode = NSLineBreakByTruncatingTail;
-  label.font = PreferredFontForTextStyle(UIFontTextStyleFootnote, std::nullopt,
-                                         kMaxTextSizeForStyleFootnote);
-  label.adjustsFontForContentSizeCategory = YES;
-  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  return label;
+// Returns the description text for the promo card.
+- (NSString*)descriptionText {
+  return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+             ? l10n_util::GetNSString(
+                   IDS_IOS_MAGIC_STACK_APP_BUNDLE_PROMO_CARD_IPAD_DESCRIPTION)
+             : l10n_util::GetNSString(
+                   IDS_IOS_MAGIC_STACK_APP_BUNDLE_PROMO_CARD_IPHONE_DESCRIPTION);
 }
 
 @end

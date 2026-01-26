@@ -19,6 +19,10 @@
 
 @end
 
+/// TODO(crbug.com/478823701): Consider making the `IconDetailView` conform to
+/// `NewTabPageColorUpdating` and updating the implementation to make this an
+/// inherited class similar to the `StandaloneModuleView`.
+
 // A view to display an icon, title, description, and (optional) chevron. This
 // view can be configured with different layout types to suit various display
 // needs.

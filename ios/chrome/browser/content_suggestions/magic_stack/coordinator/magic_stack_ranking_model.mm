@@ -42,6 +42,7 @@
 #import "components/send_tab_to_self/pref_names.h"
 #import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service.h"
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/coordinator/app_bundle_promo_mediator.h"
+#import "ios/chrome/browser/content_suggestions/app_bundle_promo/coordinator/app_bundle_promo_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/default_browser/coordinator/default_browser_mediator.h"
 #import "ios/chrome/browser/content_suggestions/default_browser/public/features.h"

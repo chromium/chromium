@@ -11,6 +11,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service.h"
+#import "ios/chrome/browser/content_suggestions/app_bundle_promo/coordinator/app_bundle_promo_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_audience.h"
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
@@ -43,8 +44,8 @@
     CHECK(profilePrefService);
     _appStoreBundleService = appStoreBundleService;
     _profilePrefService = profilePrefService;
-    self.config = [[AppBundlePromoConfig alloc] init];
-    self.config.audience = self;
+    _config = [[AppBundlePromoConfig alloc] init];
+    _config.audience = self;
 
     if (!_prefObserverBridge) {
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
@@ -71,16 +72,18 @@
   [self.delegate removeAppBundlePromoModuleWithCompletion:completion];
 }
 
-- (void)didSelectAppBundlePromo {
-  [self.delegate logMagicStackEngagementForType:self.config.type];
-  [self.presentationAudience didSelectAppBundlePromo];
-}
-
 - (void)presentAppStoreBundlePage:(UIViewController*)baseViewController
                    withCompletion:(ProceduralBlock)completion {
   CHECK(_appStoreBundleService);
   _appStoreBundleService->PresentAppStoreBundlePromo(baseViewController,
                                                      completion);
+}
+
+#pragma mark - AppBundlePromoAudience
+
+- (void)didSelectAppBundlePromo {
+  [self.delegate logMagicStackEngagementForType:self.config.type];
+  [self.presentationAudience didSelectAppBundlePromo];
 }
 
 #pragma mark - PrefObserverDelegate

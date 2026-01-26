@@ -7,14 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_audience.h"
-
+@protocol AppBundlePromoAudience;
 @class AppBundlePromoConfig;
 
+// A view displaying the App Bundle promo module in the Magic Stack.
 @interface AppBundlePromoView : UIView
 
-// Default initializer.
-- (instancetype)initWithConfig:(AppBundlePromoConfig*)config;
+// Default initializer with `config`.
+- (instancetype)initWithConfig:(AppBundlePromoConfig*)config
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 // The object that should handle user events.
 @property(nonatomic, weak) id<AppBundlePromoAudience> audience;

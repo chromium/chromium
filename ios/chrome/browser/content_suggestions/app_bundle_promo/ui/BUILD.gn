@@ -10,20 +10,21 @@ source_set("ui") {
     "app_bundle_promo_view.h",
     "app_bundle_promo_view.mm",
   ]
-
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/app_bundle_promo/public:constants",
     "//ios/chrome/browser/content_suggestions/app_bundle_promo/ui/resources",
     "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui:public",
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/content_suggestions/ui/cells:icon_detail_view",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
-
   frameworks = [ "UIKit.framework" ]
 }

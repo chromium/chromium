@@ -7,6 +7,7 @@
 #import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/content_suggestions/app_bundle_promo/coordinator/app_bundle_promo_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/test/providers/app_store_bundle/test_app_store_bundle_service.h"
 #import "ios/web/public/test/web_task_environment.h"
