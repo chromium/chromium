@@ -589,6 +589,12 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
     return;
   }
 
+  if (tab_data.is_crashed) {
+    hover_card_->SetCrashedImage();
+    thumbnail_observer_->Observe(nullptr);
+    return;
+  }
+
   auto thumbnail = anchor_target->data().thumbnail;
   if (!thumbnail) {
     hover_card_->SetPlaceholderImage();

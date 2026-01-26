@@ -85,6 +85,10 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // specifying that no preview for the tab is available (yet).
   void SetPlaceholderImage();
 
+  // Specifies that the hover card should display a crashed image
+  // specifying that the tab has crashed.
+  void SetCrashedImage();
+
   // Accessors used by tests.
   std::u16string_view GetTitleTextForTesting() const;
   std::u16string_view GetDomainTextForTesting() const;
