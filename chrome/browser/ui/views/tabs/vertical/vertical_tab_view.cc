@@ -184,8 +184,8 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   // hover.
   SetNotifyEnterExitOnChild(true);
 
-  // TODO(crbug.com/476156783): Change to ACCESSIBLE_ONLY.
-  SetFocusBehavior(FocusBehavior::ALWAYS);
+  // Add accessibility and focus ring
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Install(this);
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetHaloInset(kFocusRingInset);

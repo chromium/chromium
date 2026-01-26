@@ -62,30 +62,24 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeInteractiveUiTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return unpinned_node->children().size() == 2u; }));
 
-  auto* group_view = static_cast<VerticalTabGroupView*>(group_node->view());
-  VerticalTabGroupHeaderView* group_header_view = group_view->group_header();
-  views::LabelButton* editor_button = group_header_view->editor_bubble_button();
-
-  // Ensure the header and its internal button are focusable for the test runner
-  group_header_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  if (group_header_view->editor_bubble_button()) {
-    editor_button->SetVisible(true);
-    group_header_view->editor_bubble_button()->SetFocusBehavior(
-        views::View::FocusBehavior::ALWAYS);
-  }
+  auto* group_view =
+      views::AsViewClass<VerticalTabGroupView>(group_node->view());
+  CHECK(group_view);
+  group_view->group_header()->editor_bubble_button()->SetVisible(true);
 
   // Focus Order: D, E, A, B, C, F.
   const std::vector<views::View*> views_focus_order = {
       pinned_node->children()[0]->view(),
       pinned_node->children()[1]->view(),
-      group_header_view,
-      editor_button,
+      group_view->group_header(),
+      group_view->group_header()->editor_bubble_button(),
       group_node->children()[0]->view(),
       group_node->children()[1]->view(),
       group_node->children()[2]->view(),
       unpinned_node->children()[1]->view()};
 
   // Assert focus order.
+  GetFocusManager()->SetKeyboardAccessible(true);
   for (size_t i = 0; i < views_focus_order.size() - 1; ++i) {
     views::View* next = GetFocusManager()->GetNextFocusableView(
         views_focus_order[i], nullptr, false, true);
