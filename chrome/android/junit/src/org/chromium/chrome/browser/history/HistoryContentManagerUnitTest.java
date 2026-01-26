@@ -83,14 +83,13 @@ public class HistoryContentManagerUnitTest {
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
 
         mHistoryContentManager =
-                new HistoryContentManager(
+                HistoryContentManager.create(
                         mActivity,
                         mObserver,
                         /* isSeparateActivity= */ false,
                         mProfile,
                         /* shouldShowPrivacyDisclaimers= */ false,
                         /* shouldShowClearDataIfAvailable= */ false,
-                        null,
                         mSelectionDelegate,
                         mBottomSheetController,
                         mTabSupplier,

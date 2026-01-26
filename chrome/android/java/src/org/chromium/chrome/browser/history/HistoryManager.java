@@ -187,14 +187,13 @@ public class HistoryManager
         boolean shouldShowInfoHeader = mHeaderPref.isVisible();
 
         mContentManager =
-                new HistoryContentManager(
+                HistoryContentManager.create(
                         mActivity,
                         this,
                         isSeparateActivity,
                         profile,
                         shouldShowInfoHeader,
                         shouldShowClearData,
-                        /* hostName= */ null,
                         mSelectionDelegate,
                         bottomSheetController,
                         tabSupplier,

@@ -90,24 +90,14 @@ public class PageInfoHistoryController
         assert !mDelegate.isIncognito();
         Profile profile = (Profile) mDelegate.getBrowserContext();
         mContentManager =
-                new HistoryContentManager(
+                HistoryContentManager.createForPageInfo(
                         mMainController.getActivity(),
                         this,
-                        /* isSeparateActivity= */ false,
-                        /* profile= */ profile,
-                        /* shouldShowPrivacyDisclaimers= */ true,
-                        /* shouldShowClearDataIfAvailable= */ false,
+                        profile,
                         mHost,
-                        /* selectionDelegate= */ null,
-                        /* bottomSheetController= */ null,
                         mTabSupplier,
-                        /* hideSoftKeyboard= */ null,
-                        /* umaRecorder= */ new HistoryUmaRecorder(),
+                        new HistoryUmaRecorder(),
                         new BrowsingHistoryBridge(profile),
-                        null,
-                        /* launchedForApp= */ false,
-                        /* showAppFilter= */ false,
-                        /* openHistoryItemCallback= */ null,
                         new ChromeAsyncTabLauncher(/* incognito= */ false),
                         new ChromeAsyncTabLauncher(/* incognito= */ true));
         mContentManager.startLoadingItems();

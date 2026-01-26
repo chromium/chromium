@@ -135,7 +135,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final @Nullable Supplier<@Nullable Tab> mTabSupplier;
     private final AppInfoCache mAppInfoCache;
     private final @Nullable Runnable mOpenHistoryItemCallback;
-    private final SigninPromoCoordinator mHistorySyncPromoCoordinator;
+    // Null when shown in the Page Info UI.
+    private final @Nullable SigninPromoCoordinator mHistorySyncPromoCoordinator;
     private final HistoryAdapter mHistoryAdapter;
     private final RecyclerView mRecyclerView;
     private LargeIconBridge mLargeIconBridge;
@@ -151,7 +152,70 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final AsyncTabLauncher mIncognitoAsyncTabLauncher;
 
     /**
-     * Creates a new HistoryContentManager.
+     * Creates a new HistoryContentManager for the Page Info UI. See {@link
+     * #HistoryContentManager()}.
+     *
+     * <p>The Page Info UI is accessed by clicking the security indicator (e.g., lock icon) in the
+     * omnibox for the currently active web page. As opposed to the standard history view, the
+     * history UI triggered from the Page Info UI is more lightweight: it provides context about the
+     * user's past interactions with this specific site or origin. It also contains less headers and
+     * allows less interactions with the history items.
+     *
+     * @param activity The Activity associated with the HistoryContentManager.
+     * @param observer The Observer to receive updates from this manager.
+     * @param profile The Profile associated with this history.
+     * @param hostName The hostName to retrieve history entries for, or null for all hosts.
+     * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
+     *     separate activity. separate activity.
+     * @param umaRecorder Records UMA user action/histograms.
+     * @param historyProvider Provider of methods for querying and managing browsing history.
+     * @param regularAsyncTabLauncher Class to launch tabs asynchronously when a history item is
+     *     opened in a new tab.
+     * @param incognitoAsyncTabLauncher Class to launch incognito tabs asynchronously when a history
+     *     item is opened in a .new tab.
+     */
+    public static HistoryContentManager createForPageInfo(
+            Activity activity,
+            Observer observer,
+            Profile profile,
+            String hostName,
+            Supplier<@Nullable Tab> tabSupplier,
+            HistoryUmaRecorder umaRecorder,
+            HistoryProvider historyProvider,
+            AsyncTabLauncher regularAsyncTabLauncher,
+            AsyncTabLauncher incognitoAsyncTabLauncher) {
+
+        return new HistoryContentManager(
+                activity,
+                observer,
+                /* isSeparateActivity= */ false,
+                /* profile= */ profile,
+                /* shouldShowPrivacyDisclaimers= */ true,
+                /* shouldShowClearDataIfAvailable= */ false,
+                /* canShowSigninPromo= */ false,
+                hostName,
+                /* selectionDelegate= */ null,
+                /* bottomSheetController= */ null,
+                tabSupplier,
+                /* hideSoftKeyboard= */ null,
+                umaRecorder,
+                historyProvider,
+                null,
+                /* launchedForApp= */ false,
+                /* showAppFilter= */ false,
+                /* openHistoryItemCallback= */ null,
+                regularAsyncTabLauncher,
+                incognitoAsyncTabLauncher);
+    }
+
+    /**
+     * Creates a new HistoryContentManager for a standard history view. See {@link
+     * #HistoryContentManager()}.
+     *
+     * <p>The standard history view is able to show the user's entire browsing history, and to allow
+     * the users to search, filter, and delete entries across all sites and potentially synced
+     * devices. It's different from the Page Info history UI which only shows the user's past
+     * interactions with the currently shown web site/origin.
      *
      * @param activity The Activity associated with the HistoryContentManager.
      * @param observer The Observer to receive updates from this manager.
@@ -162,9 +226,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      *     available.
      * @param shouldShowClearDataIfAvailable Whether the the clear history data button should be
      *     shown, if available.
-     * @param hostName The hostName to retrieve history entries for, or null for all hosts.
      * @param selectionDelegate A class responsible for handling list item selection, null for
      *     unselectable items.
+     * @param bottomSheetController Supplier of the {@link BottomSheetController}.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *     separate activity. separate activity.
      * @param umaRecorder Records UMA user action/histograms.
@@ -179,13 +243,57 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param incognitoAsyncTabLauncher Class to launch incognito tabs asynchronously when a history
      *     item is opened in a .new tab.
      */
-    public HistoryContentManager(
+    public static HistoryContentManager create(
             Activity activity,
             Observer observer,
             boolean isSeparateActivity,
             Profile profile,
             boolean shouldShowPrivacyDisclaimers,
             boolean shouldShowClearDataIfAvailable,
+            SelectionDelegate<HistoryItem> selectionDelegate,
+            Supplier<@Nullable BottomSheetController> bottomSheetController,
+            @Nullable Supplier<@Nullable Tab> tabSupplier,
+            Runnable hideSoftKeyboard,
+            HistoryUmaRecorder umaRecorder,
+            HistoryProvider historyProvider,
+            @Nullable String appId,
+            boolean launchedForApp,
+            boolean showAppFilter,
+            @Nullable Runnable openHistoryItemCallback,
+            AsyncTabLauncher regularAsyncTabLauncher,
+            AsyncTabLauncher incognitoAsyncTabLauncher) {
+
+        return new HistoryContentManager(
+                activity,
+                observer,
+                isSeparateActivity,
+                profile,
+                shouldShowPrivacyDisclaimers,
+                shouldShowClearDataIfAvailable,
+                /* canShowSigninPromo= */ true,
+                /* hostName= */ null,
+                selectionDelegate,
+                bottomSheetController,
+                tabSupplier,
+                hideSoftKeyboard,
+                umaRecorder,
+                historyProvider,
+                appId,
+                launchedForApp,
+                showAppFilter,
+                openHistoryItemCallback,
+                regularAsyncTabLauncher,
+                incognitoAsyncTabLauncher);
+    }
+
+    private HistoryContentManager(
+            Activity activity,
+            Observer observer,
+            boolean isSeparateActivity,
+            Profile profile,
+            boolean shouldShowPrivacyDisclaimers,
+            boolean shouldShowClearDataIfAvailable,
+            boolean canShowSigninPromo,
             @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
             @Nullable Supplier<@Nullable BottomSheetController> bottomSheetController,
@@ -240,16 +348,20 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         };
         mTabSupplier = tabSupplier;
 
-        mHistorySyncPromoCoordinator =
-                new SigninPromoCoordinator(
-                        mActivity,
-                        profile,
-                        new HistoryPageSigninPromoDelegate(
-                                mActivity,
-                                profile,
-                                SigninAndHistorySyncActivityLauncherImpl.get(),
-                                this::updateHistorySyncPromoVisibility,
-                                /* isCreatedInCct= */ launchedForApp));
+        if (canShowSigninPromo) {
+            mHistorySyncPromoCoordinator =
+                    new SigninPromoCoordinator(
+                            mActivity,
+                            profile,
+                            new HistoryPageSigninPromoDelegate(
+                                    mActivity,
+                                    profile,
+                                    SigninAndHistorySyncActivityLauncherImpl.get(),
+                                    this::updateHistorySyncPromoVisibility,
+                                    /* isCreatedInCct= */ launchedForApp));
+        } else {
+            mHistorySyncPromoCoordinator = null;
+        }
 
         // History service is not keyed for Incognito profiles and {@link HistoryServiceFactory}
         // explicitly redirects to use regular profile for Incognito case.
