@@ -317,8 +317,9 @@ CreateInputDataFromAnnotatedPageContent(
   NSUInteger availableSlots = _items.availableSlots;
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
+    case ComposeboxMode::kCanvas:
     case ComposeboxMode::kAIM: {
-      // For RegularSearch and AIM, allow up to kAttachmentLimit items.
+      // For Regular search, canvas & AIM allow up to kAttachmentLimit items.
       return availableSlots;
     }
     case ComposeboxMode::kImageGeneration: {
@@ -490,6 +491,7 @@ CreateInputDataFromAnnotatedPageContent(
   [self.consumer setAIModeEnabled:mode == ComposeboxMode::kAIM];
   [self.consumer
       setImageGenerationEnabled:mode == ComposeboxMode::kImageGeneration];
+  [self.consumer setCanvasEnabled:mode == ComposeboxMode::kCanvas];
 
   switch (mode) {
     case ComposeboxMode::kRegularSearch:
@@ -509,6 +511,11 @@ CreateInputDataFromAnnotatedPageContent(
         _modeHolder.mode = ComposeboxMode::kRegularSearch;
       }
       [self cleanAttachmentsForImageGeneration];
+      break;
+    case ComposeboxMode::kCanvas:
+      if (![self isEligibleToCanvas]) {
+        _modeHolder.mode = ComposeboxMode::kRegularSearch;
+      }
       break;
   }
 
@@ -951,6 +958,9 @@ CreateInputDataFromAnnotatedPageContent(
                                         requestType:AutocompleteRequestType::
                                                         kImageGeneration];
       break;
+    case ComposeboxMode::kCanvas:
+      // TODO(crbug.com/477244841): Add metrics recording for canvas.
+      break;
   }
 }
 
@@ -1257,6 +1267,20 @@ CreateInputDataFromAnnotatedPageContent(
   return _aimEligibilityService->IsCreateImagesEligible();
 }
 
+// Whether the client is eligible to access canvas mode.
+- (BOOL)isEligibleToCanvas {
+  if (!ShowComposeboxAdditionalAdvancedTools()) {
+    return NO;
+  }
+  if (experimental_flags::ShouldForceDisableComposeboxCanvas()) {
+    return NO;
+  }
+  if (!_aimEligibilityService) {
+    return NO;
+  }
+  return _aimEligibilityService->IsCanvasEligible();
+}
+
 // Checks if the user is eligible to upload PDFs, taking into account
 // experimental settings overrides.
 - (BOOL)isEligibleToUploadPdf {
@@ -1290,9 +1314,8 @@ CreateInputDataFromAnnotatedPageContent(
   if (!IsComposeboxCompactModeEnabled()) {
     return NO;
   }
-  BOOL requiresExpansion = _isMultiline ||
-                           _modeHolder.mode == ComposeboxMode::kAIM ||
-                           _modeHolder.mode == ComposeboxMode::kImageGeneration;
+  BOOL requiresExpansion =
+      _isMultiline || _modeHolder.mode != ComposeboxMode::kRegularSearch;
   return !requiresExpansion;
 }
 
@@ -1340,6 +1363,10 @@ CreateInputDataFromAnnotatedPageContent(
     case ComposeboxMode::kImageGeneration:
       [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
                                 AutocompleteRequestType::kImageGeneration];
+      [self sendText:[NSString cr_fromString16:text]];
+      break;
+    case ComposeboxMode::kCanvas:
+      // TODO(crbug.com/477244841): Add metrics recording for canvas.
       [self sendText:[NSString cr_fromString16:text]];
       break;
   }
@@ -1402,6 +1429,9 @@ CreateInputDataFromAnnotatedPageContent(
     case ComposeboxMode::kRegularSearch:
       modeSwitchButton = shouldPersistAIMButton ? kAIM : kNone;
       break;
+    case ComposeboxMode::kCanvas:
+      modeSwitchButton = kCanvas;
+      break;
   }
 
   ComposeboxInputPlateControls trailingAction = kNone;
@@ -1443,15 +1473,21 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL canUploadFiles = [self isEligibleToUploadPdf];
   BOOL canCreateImage = [self isEligibleToCreateImages];
   BOOL canSearchWithAI = [self isEligibleToAIM];
+  BOOL canUseCanvas = [self isEligibleToCanvas];
+
   BOOL isImageCreationMode =
       _modeHolder.mode == ComposeboxMode::kImageGeneration;
   BOOL attachmentsAvailable =
-      (canCreateImage || canSearchWithAI) && [self isContentSharingEnabled];
+      (canUseCanvas || canCreateImage || canSearchWithAI) &&
+      [self isContentSharingEnabled];
   BOOL canAddMoreAttachments = [self canAddMoreAttachments];
 
   // Image generation action.
   [self.consumer disableCreateImageActions:hasTabOrFile];
   [self.consumer hideCreateImageActions:!canCreateImage];
+
+  // Canvas action.
+  [self.consumer hideCanvasActions:!canUseCanvas];
 
   // Add tabs action.
   [self.consumer

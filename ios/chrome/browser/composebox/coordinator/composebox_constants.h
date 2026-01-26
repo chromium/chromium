@@ -9,9 +9,14 @@
 
 // The different modes for the composebox.
 enum class ComposeboxMode {
+  // Performs a regular search.
   kRegularSearch,
+  // Performs an AI Mode search.
   kAIM,
+  // Creates an image based on the input.
   kImageGeneration,
+  // Generates a new canvas based on the input query.
+  kCanvas,
 };
 
 // The maximum number of attachments that can be added to a prompt.

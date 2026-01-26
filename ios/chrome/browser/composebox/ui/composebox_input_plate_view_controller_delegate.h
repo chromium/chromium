@@ -57,6 +57,10 @@ enum class ComposeboxMode;
 - (void)composeboxViewControllerDidTapImageGenerationButton:
     (ComposeboxInputPlateViewController*)composeboxViewController;
 
+/// Informs the delegate that a user did tap on the canvas button.
+- (void)composeboxViewControllerDidTapCanvasButton:
+    (ComposeboxInputPlateViewController*)composeboxViewController;
+
 /// Informs the delegate that a user did tap on the lens button.
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController

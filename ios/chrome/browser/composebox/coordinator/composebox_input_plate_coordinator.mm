@@ -397,12 +397,22 @@ const CGFloat kSnackbarBottomMargin = 10;
   [_omniboxCoordinator acceptInput];
 }
 
+- (void)composeboxViewControllerDidTapCanvasButton:
+    (ComposeboxInputPlateViewController*)composeboxViewController {
+  if (_modeHolder.mode == ComposeboxMode::kCanvas) {
+    _modeHolder.mode = ComposeboxMode::kRegularSearch;
+  } else {
+    _modeHolder.mode = ComposeboxMode::kCanvas;
+  }
+}
+
 - (void)didFailToAttachDueToIneligibleAttachments:
     (ComposeboxInputPlateViewController*)composeboxViewController {
   CHECK_EQ(_viewController, composeboxViewController);
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
     case ComposeboxMode::kAIM:
+    case ComposeboxMode::kCanvas:
       [self showMaxAttachmentSnackbarError];
       return;
     case ComposeboxMode::kImageGeneration:

@@ -62,6 +62,8 @@
 }
 - (void)setImageGenerationEnabled:(BOOL)enabled {
 }
+- (void)setCanvasEnabled:(BOOL)enabled {
+}
 - (void)setCompact:(BOOL)compact {
 }
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
@@ -87,6 +89,8 @@
 - (void)hideGalleryActions:(BOOL)hidden {
 }
 - (void)disableGalleryActions:(BOOL)disabled {
+}
+- (void)hideCanvasActions:(BOOL)hidden {
 }
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {
 }

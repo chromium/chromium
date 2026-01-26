@@ -190,6 +190,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIView* _aimButtonXIndicator;
   /// The button to toggle Image Generation mode.
   UIButton* _imageGenerationButton;
+  /// The button to toggle Canvas mode.
+  UIButton* _canvasButton;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
   /// The plus button.
@@ -217,6 +219,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   /// Create image action state.
   BOOL _createImageActionsHidden;
   BOOL _createImageActionsDisabled;
+  /// Canvas action state.
+  BOOL _canvasActionsHidden;
   /// Camera action state.
   BOOL _cameraActionsDisabled;
   BOOL _cameraActionsHidden;
@@ -239,6 +243,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   /// Whether the image generation mode is enabled.
   BOOL _imageGenerationEnabled;
 
+  /// Whether the canvas mode is enabled.
+  BOOL _canvasEnabled;
+
   /// Whether items are being dragged within the input plate view.
   BOOL _dragSessionWithinInputPlate;
 
@@ -254,6 +261,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   if ((self = [super initWithNibName:nil bundle:nil])) {
     _omniboxContainer = [[UIView alloc] init];
     _theme = theme;
+    _canvasActionsHidden = YES;
   }
   return self;
 }
@@ -276,6 +284,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _aimButton = [self createAIMButton];
   [self setupAIMButtonSizeConstraints];
   _imageGenerationButton = [self createImageGenerationButton];
+  _canvasButton = [self createCanvasButton];
   [self updatePlusButtonItems];
   [self setupCarouselContainer];
 
@@ -472,6 +481,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self animateButton:_aimButton hidden:!(controls & kAIM)];
   [self animateButton:_sendButton hidden:!(controls & kSend)];
   [self animateButton:_imageGenerationButton hidden:!(controls & kCreateImage)];
+  [self animateButton:_canvasButton hidden:!(controls & kCanvas)];
   [self animateLeadingImageHidden:!(controls & kLeadingImage)];
 }
 
@@ -563,6 +573,17 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self triggerGlowEffect];
 }
 
+// Enables usage of canvas mode.
+- (void)setCanvasEnabled:(BOOL)enabled {
+  if (_canvasEnabled == enabled) {
+    return;
+  }
+  _canvasEnabled = enabled;
+  [self updatePlaceholderText];
+  [self updatePlusButtonItems];
+  [self triggerGlowEffect];
+}
+
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
   _currentTabFavicon = favicon;
   [self updatePlusButtonItems];
@@ -624,6 +645,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self updatePlusButtonItems];
 }
 
+// Hides the canvas actions in the plus menu.
+- (void)hideCanvasActions:(BOOL)hidden {
+  if (_canvasActionsHidden == hidden) {
+    return;
+  }
+  _canvasActionsHidden = hidden;
+  [self updatePlusButtonItems];
+}
+
 - (void)hideCameraActions:(BOOL)hidden {
   if (_cameraActionsHidden == hidden) {
     return;
@@ -679,6 +709,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (void)imageGenerationButtonTapped {
   [self.delegate composeboxViewControllerDidTapImageGenerationButton:self];
+}
+
+// Called when the canvas button in the input plate is tapped.
+- (void)canvasButtonTapped {
+  [self.delegate composeboxViewControllerDidTapCanvasButton:self];
 }
 
 - (void)plusButtonTouchDown {
@@ -845,9 +880,14 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                             AiModeActivationSource::kToolMenu];
 }
 
-/// Notifies the delegate to handle image generation tapped from the tool menu.
+/// Notifies the delegate to handle canvas button tapped from the tool menu.
 - (void)handleImageGenTappedFromToolMenu {
   [self.delegate composeboxViewControllerDidTapImageGenerationButton:self];
+}
+
+/// Notifies the delegate to handle image generation tapped from the tool menu.
+- (void)handleCanvasTappedFromToolMenu {
+  [self.delegate composeboxViewControllerDidTapCanvasButton:self];
 }
 
 /// Updates the visibility of the leading/trailing fade views for the carousel.
@@ -909,7 +949,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     return;
   }
 
-  if (_AIModeEnabled || _imageGenerationEnabled) {
+  if (_AIModeEnabled || _imageGenerationEnabled || _canvasEnabled) {
     // When turning on, ensure the glow is started. The view's state machine
     // will prevent it from restarting if it's already active.
     [_glowEffectView startGlow];
@@ -988,6 +1028,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [_editView
         setCustomPlaceholderText:l10n_util::GetNSString(
                                      IDS_IOS_COMPOSEBOX_IMAGE_GEN_PLACEHOLDER)];
+  } else if (_canvasEnabled) {
+    [_editView setCustomPlaceholderText:
+                   l10n_util::GetNSString(
+                       IDS_IOS_COMPOSEBOX_CANVAS_ENABLED_PLACEHOLDER)];
   } else {
     [_editView setCustomPlaceholderText:nil];
   }
@@ -1233,8 +1277,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                 forAxis:UILayoutConstraintAxisHorizontal];
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        _plusButton, _aimButton, _imageGenerationButton, spacerView,
-        _sendButton, _micButton, _visualSearchButton
+        _plusButton, _aimButton, _imageGenerationButton, _canvasButton,
+        spacerView, _sendButton, _micButton, _visualSearchButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
@@ -1410,11 +1454,27 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                      galleryAction, fileAction
                    ]];
 
+  NSMutableArray<UIMenuElement*>* availableModes =
+      [[NSMutableArray alloc] initWithArray:@[ aimAction, createImageAction ]];
+  if (!_canvasActionsHidden) {
+    CHECK(ShowComposeboxAdditionalAdvancedTools());
+    // TODO(crbug.com/477243979): Replace icon once defined.
+    UIAction* canvasAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANVAS_ACTION)
+                  image:DefaultSymbolWithPointSize(kEditActionSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf handleCanvasTappedFromToolMenu];
+                }];
+    [availableModes addObject:canvasAction];
+  }
+
   UIMenu* modeMenu = [UIMenu menuWithTitle:@""
                                      image:nil
                                 identifier:nil
                                    options:UIMenuOptionsDisplayInline
-                                  children:@[ aimAction, createImageAction ]];
+                                  children:availableModes];
 
   _plusButton.menu = [UIMenu
       menuWithTitle:IsComposeboxMenuTitleEnabled()
@@ -1668,6 +1728,42 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   button.tintColor = [_theme imageGenerationButtonTextColor];
 
   button.configuration = config;
+  [self setupXMarkInButton:button];
+
+  return button;
+}
+
+// Creates a new canvas button to be displayed in the input plate.
+- (UIButton*)createCanvasButton {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  [button addTarget:self
+                action:@selector(canvasButtonTapped)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.layer.borderWidth = 0;
+
+  UIButtonConfiguration* config = [self
+      modeIndicatorButtonConfigWithTitle:l10n_util::GetNSString(
+                                             IDS_IOS_COMPOSEBOX_CANVAS_ACTION)
+                                   image:DefaultSymbolWithPointSize(
+                                             kEditActionSymbol,
+                                             kAIMButtonSymbolPointSize)];
+  NSDirectionalEdgeInsets insets = kModeIndicatorButtonInsets;
+  insets.trailing = kModeIndicatorButtonInsets.trailing + kXButtonWidthInButton;
+  config.contentInsets = insets;
+
+  config.background.backgroundColor = [_theme canvasButtonBackgroundColor];
+  config.baseForegroundColor = [_theme canvasButtonTextColor];
+  button.tintColor = [_theme canvasButtonTextColor];
+
+  button.configuration = config;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [button.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kAIMButtonBaseWidth +
+                                               kXButtonWidthInButton]
+  ]];
+
   [self setupXMarkInButton:button];
 
   return button;

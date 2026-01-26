@@ -30,6 +30,9 @@ enum class ComposeboxInputPlateControls : unsigned int;
 // Sets whether Image Generation mode is enabled.
 - (void)setImageGenerationEnabled:(BOOL)enabled;
 
+// Sets whether Canvas mode is enabled.
+- (void)setCanvasEnabled:(BOOL)enabled;
+
 // Whether to present in compact (single line) mode.
 - (void)setCompact:(BOOL)compact;
 
@@ -53,6 +56,9 @@ enum class ComposeboxInputPlateControls : unsigned int;
 
 // Sets whether the create image actions are hidden.
 - (void)hideCreateImageActions:(BOOL)hidden;
+
+// Sets whether the canvas actions are hidden.
+- (void)hideCanvasActions:(BOOL)hidden;
 
 // Sets whether the create image actions are disabled.
 - (void)disableCreateImageActions:(BOOL)disabled;

@@ -1452,6 +1452,12 @@
       <message name="IDS_IOS_COMPOSEBOX_CANNOT_RELOAD_TAB_ERROR" desc="Message displayed in a snackbar when reloading a tab fails. [iOS only].">
         Can’t reload tabs
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_CANVAS_ACTION" desc="The contextual menu option for opening the tool where users can dynamically build and edit content with the help of AI. [iOS only].">
+        Canvas
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_CANVAS_ENABLED_PLACEHOLDER" desc="The placeholder to show when Canvas is enabled and no user text was added.">
+        Create anything
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION" desc="The contextual menu option instructing the input plate to use the image generation tool. [iOS only].">
         Create image
       </message>

@@ -157,7 +157,8 @@ metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
   BOOL is_in_ai_mode =
       ([delegate_ composeboxMode] == ComposeboxMode::kAIM) ||
-      ([delegate_ composeboxMode] == ComposeboxMode::kImageGeneration);
+      ([delegate_ composeboxMode] == ComposeboxMode::kImageGeneration) ||
+      ([delegate_ composeboxMode] == ComposeboxMode::kCanvas);
 
   if (is_in_ai_mode) {
     return location_bar_->GetLocationBarModel()

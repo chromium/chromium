@@ -70,6 +70,8 @@ NSString* const kLensResultPanelGwsURL = @"LensResultPanelGwsURL";
 NSString* const kForceDisableAIMEligibility = @"ForceDisableAIMEligibility";
 NSString* const kForceDisableCreateImagesEligibility =
     @"ForceDisableCreateImagesEligibility";
+NSString* const kForceDisableCanvasEligibility =
+    @"ForceDisableCanvasEligibility";
 NSString* const kForceDisablePdfUploadEligibility =
     @"ForceDisablePdfUploadEligibility";
 NSString* const kShowCatalogItems = @"ShowCatalogItems";
@@ -368,6 +370,11 @@ bool ShouldForceDisableComposeboxAIM() {
 bool ShouldForceDisableComposeboxCreateImages() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kForceDisableCreateImagesEligibility];
+}
+
+bool ShouldForceDisableComposeboxCanvas() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kForceDisableCanvasEligibility];
 }
 
 bool ShouldForceDisableComposeboxPdfUpload() {
