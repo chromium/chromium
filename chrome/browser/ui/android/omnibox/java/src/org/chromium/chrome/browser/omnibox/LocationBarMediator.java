@@ -1017,8 +1017,10 @@ class LocationBarMediator
         if (hasFocus) {
             var input = getAutocompleteInputForCurrentTab();
             mAutocompleteCoordinator.beginInput(input);
+            mFuseboxCoordinator.beginInput(input);
         } else {
             mAutocompleteCoordinator.endInput();
+            mFuseboxCoordinator.endInput();
         }
 
         for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {

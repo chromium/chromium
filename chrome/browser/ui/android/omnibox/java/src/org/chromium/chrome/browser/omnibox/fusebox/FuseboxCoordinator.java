@@ -26,9 +26,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
@@ -37,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -57,7 +56,7 @@ import java.lang.annotation.Target;
 
 /** Coordinator for the Fusebox component. */
 @NullMarked
-public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlServiceObserver {
+public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     @IntDef({FuseboxState.DISABLED, FuseboxState.COMPACT, FuseboxState.EXPANDED})
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.TYPE_USE)
@@ -68,7 +67,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     }
 
     private final @Nullable FuseboxViewHolder mViewHolder;
-    private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
+
     private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
 
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
@@ -89,12 +88,23 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     private final SnackbarManager mSnackbarManager;
     private final @Nullable ViewportRectProvider mViewportRectProvider;
 
+    /**
+     * Creates a new instance of {@link FuseboxCoordinator}.
+     *
+     * @param context The context to create views and retrieve resources.
+     * @param windowAndroid The window to attach views to.
+     * @param parent The parent view to attach the fusebox to.
+     * @param profileObservableSupplier The supplier of the current profile.
+     * @param tabModelSelectorSupplier The supplier of the tab model selector.
+     * @param templateUrlServiceSupplier The supplier of the template URL service.
+     * @param autocompleteRequestTypeSupplier The supplier of the autocomplete request type.
+     * @param snackbarManager The snackbar manager to show messages.
+     */
     public FuseboxCoordinator(
             Context context,
             WindowAndroid windowAndroid,
             ConstraintLayout parent,
             MonotonicObservableSupplier<Profile> profileObservableSupplier,
-            LocationBarDataProvider locationBarDataProvider,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
@@ -111,13 +121,10 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
             mViewHolder = null;
-            mLocationBarDataProvider = null;
             mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
             mViewportRectProvider = null;
             return;
         }
-
-        mLocationBarDataProvider = locationBarDataProvider;
         templateUrlServiceSupplier.onAvailable(this::onTemplateUrlServiceAvailable);
 
         var contextButton = parent.findViewById(R.id.location_bar_attachments_add);
@@ -242,19 +249,19 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         mMediator.activateAiMode(AiModeActivationSource.NTP_BUTTON);
     }
 
-    /** Called when the URL focus changes. */
-    @Override
-    public void onUrlFocusChange(boolean hasFocus) {
-        if (mMediator == null
-                || mLocationBarDataProvider == null
-                || !mDefaultSearchEngineIsGoogle) {
-            return;
-        }
-
-        int pageClass = mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
-
+    /**
+     * Called when the user begins interacting with the Omnibox.
+     *
+     * <p>This method evaluates the current context to decide whether to activate the Fusebox UI.
+     * Fusebox will not be activated if the feature is not initialized, the current page is not
+     * supported, or if the default search engine is not Google.
+     *
+     * @param input The {@link AutocompleteInput} object containing the context of the current
+     *     Omnibox session.
+     */
+    public void beginInput(AutocompleteInput input) {
         boolean isSupportedPageClass =
-                switch (pageClass) {
+                switch (input.getPageClassification()) {
                     // LINT.IfChange(FuseboxSupportedPageClassifications)
                     case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
                             PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
@@ -264,12 +271,21 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                     default -> false;
                 };
 
-        boolean isChangeable = hasFocus && isSupportedPageClass;
-        mMediator.setAutocompleteRequestTypeChangeable(isChangeable);
-        mMediator.setToolbarVisible(isChangeable);
-        if (isChangeable) {
-            FuseboxMetrics.notifyOmniboxSessionStarted();
+        if (mMediator == null || !isSupportedPageClass || !mDefaultSearchEngineIsGoogle) {
+            endInput();
+            return;
         }
+
+        mMediator.setAutocompleteRequestTypeChangeable(true);
+        mMediator.setToolbarVisible(true);
+        FuseboxMetrics.notifyOmniboxSessionStarted();
+    }
+
+    /** Called when the user stops interacting with the Omnibox. */
+    public void endInput() {
+        if (mMediator == null) return;
+        mMediator.setAutocompleteRequestTypeChangeable(false);
+        mMediator.setToolbarVisible(false);
     }
 
     // TemplateUrlServiceObserver

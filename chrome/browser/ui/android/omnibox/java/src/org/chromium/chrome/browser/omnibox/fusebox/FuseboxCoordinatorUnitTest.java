@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
@@ -50,7 +49,6 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.ViewportRectProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -62,6 +60,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -83,7 +82,6 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private AutocompleteController mAutocompleteController;
     @Mock private AutocompleteController.Natives mControllerJniMock;
     @Mock private ComposeBoxQueryControllerBridge.Natives mComposeboxController;
-    @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private FuseboxMediator mMediator;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
@@ -92,6 +90,8 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SnackbarManager mSnackbarManager;
+
+    private AutocompleteInput mAutocompleteInput;
 
     private ActivityController<TestActivity> mActivityController;
     private WindowAndroid mWindowAndroid;
@@ -127,12 +127,14 @@ public class FuseboxCoordinatorUnitTest {
 
         lenient().doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         lenient().doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
-        lenient()
-                .doReturn(PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE)
-                .when(mLocationBarDataProvider)
-                .getPageClassification(anyBoolean());
 
         doReturn(true).when(mIncognitoProfile).isIncognitoBranded();
+
+        mAutocompleteInput =
+                new AutocompleteInput()
+                        .setPageClassification(
+                                PageClassification
+                                        .INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
 
         mCoordinator =
                 new FuseboxCoordinator(
@@ -140,7 +142,6 @@ public class FuseboxCoordinatorUnitTest {
                         mWindowAndroid,
                         parent,
                         mProfileSupplier,
-                        mLocationBarDataProvider,
                         mTabModelSelectorSupplier,
                         mTemplateUrlServiceSupplier,
                         mAutocompleteRequestTypeSupplier,
@@ -221,8 +222,8 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.setMediatorForTesting(null);
 
         // Nothing should happen (including no crashes).
-        mCoordinator.onUrlFocusChange(true);
-        mCoordinator.onUrlFocusChange(false);
+        mCoordinator.beginInput(mAutocompleteInput);
+        mCoordinator.endInput();
     }
 
     @Test
@@ -230,10 +231,10 @@ public class FuseboxCoordinatorUnitTest {
     public void testToolbarVisibility_featureEnabled_mediatorInitialized() {
         // Mediator set by setUp().
 
-        mCoordinator.onUrlFocusChange(true);
+        mCoordinator.beginInput(mAutocompleteInput);
         verify(mMediator).setToolbarVisible(true);
 
-        mCoordinator.onUrlFocusChange(false);
+        mCoordinator.endInput();
         verify(mMediator).setToolbarVisible(false);
     }
 
@@ -262,17 +263,15 @@ public class FuseboxCoordinatorUnitTest {
 
         for (PageClassification pageClass : PageClassification.values()) {
             reset(mMediator);
-            doReturn(pageClass.getNumber())
-                    .when(mLocationBarDataProvider)
-                    .getPageClassification(anyBoolean());
+            mAutocompleteInput.setPageClassification(pageClass.getNumber());
 
-            mCoordinator.onUrlFocusChange(true);
+            mCoordinator.beginInput(mAutocompleteInput);
 
             boolean shouldBeVisible = supportedPageClassifications.contains(pageClass);
             verify(mMediator).setToolbarVisible(shouldBeVisible);
 
             if (shouldBeVisible) {
-                mCoordinator.onUrlFocusChange(false);
+                mCoordinator.endInput();
                 verify(mMediator).setToolbarVisible(false);
             }
         }
@@ -298,7 +297,7 @@ public class FuseboxCoordinatorUnitTest {
         ShadowLooper.idleMainLooper();
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
 
-        mCoordinator.onUrlFocusChange(true);
+        mCoordinator.beginInput(mAutocompleteInput);
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
                 (long) mCoordinator.getAutocompleteRequestTypeSupplier().get());
