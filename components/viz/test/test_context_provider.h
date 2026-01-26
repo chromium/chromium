@@ -94,12 +94,12 @@ class TestContextProvider
 
  protected:
   friend class base::RefCountedThreadSafe<TestContextProvider>;
-  TestContextProvider(std::unique_ptr<TestContextSupport> support,
-                      std::unique_ptr<TestRasterInterface> raster,
-                      bool support_locking);
   ~TestContextProvider() override;
 
  private:
+  TestContextProvider(std::unique_ptr<TestContextSupport> support,
+                      std::unique_ptr<TestRasterInterface> raster,
+                      bool support_locking);
   TestContextProvider(std::unique_ptr<TestContextSupport> support,
                       std::unique_ptr<TestGLES2Interface> gl,
                       bool support_locking);
