@@ -355,7 +355,8 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   // TODO(452883239): Clean this up when model is downloaded on start-up for
   // everybody.
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kDownloadModelForPasswordChange)) {
+          password_manager::features::
+              kProactivelyDownloadModelForPasswordChange)) {
     PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
         originator_->GetBrowserContext());
   }

@@ -115,7 +115,8 @@ ChangePasswordFormWaiter::Builder::SetFieldsToIgnore(
 std::unique_ptr<ChangePasswordFormWaiter>
 ChangePasswordFormWaiter::Builder::Build() {
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kDownloadModelForPasswordChange)) {
+          password_manager::features::
+              kProactivelyDownloadModelForPasswordChange)) {
     form_waiter_->WaitForLocalMLModelAvailability();
   } else {
     form_waiter_->Init();

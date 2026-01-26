@@ -76,9 +76,6 @@ BASE_FEATURE(kClearUndecryptablePasswordsOnSync,
 
 BASE_FEATURE(kDebugUiForOtps, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDownloadModelForPasswordChange,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDisableFillingOnPageLoadForLeakedCredentials,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -137,6 +134,9 @@ BASE_FEATURE(kPasswordManualFallbackAvailable,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kPasswordManagerLogToTerminal, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kProactivelyDownloadModelForPasswordChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kRestartToGainAccessToKeychain,

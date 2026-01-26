@@ -91,11 +91,6 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 // launched.
 BASE_DECLARE_FEATURE(kDebugUiForOtps);
 
-// Updates password change flow to await for local ML model availability. The
-// model has a superior performance compared to existing password manager
-// classifications.
-BASE_DECLARE_FEATURE(kDownloadModelForPasswordChange);
-
 // This feature disables filling on page load for leaked credentials on some
 // sites. Filling on page load interferes with password change feature.
 BASE_DECLARE_FEATURE(kDisableFillingOnPageLoadForLeakedCredentials);
@@ -170,6 +165,11 @@ BASE_DECLARE_FEATURE(kPasswordManualFallbackAvailable);
 // Enables logging the content of chrome://password-manager-internals to the
 // terminal.
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
+
+// Updates password change flow to await for local ML model availability. The
+// model has a superior performance compared to existing password manager
+// classifications.
+BASE_DECLARE_FEATURE(kProactivelyDownloadModelForPasswordChange);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables "Needs access to keychain, restart chrome" bubble and banner.

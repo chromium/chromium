@@ -710,7 +710,7 @@ TEST_P(ChangePasswordFormWaiterTest, FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {password_manager::features::kPasswordFormClientsideClassifier},
-      {password_manager::features::kDownloadModelForPasswordChange});
+      {password_manager::features::kProactivelyDownloadModelForPasswordChange});
 
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
@@ -752,7 +752,7 @@ TEST_P(ChangePasswordFormWaiterTest, FeatureEnabled_ModelAvailable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {password_manager::features::kPasswordFormClientsideClassifier,
-       password_manager::features::kDownloadModelForPasswordChange},
+       password_manager::features::kProactivelyDownloadModelForPasswordChange},
       {});
 
   model_handler()->SetModelAvailability(/*available=*/true);
@@ -797,7 +797,7 @@ TEST_P(ChangePasswordFormWaiterTest, FeatureEnabled_ModelBecomesAvailable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {password_manager::features::kPasswordFormClientsideClassifier,
-       password_manager::features::kDownloadModelForPasswordChange},
+       password_manager::features::kProactivelyDownloadModelForPasswordChange},
       {});
   model_handler()->SetModelAvailability(/*available=*/false);
 
@@ -843,7 +843,7 @@ TEST_P(ChangePasswordFormWaiterTest, FeatureEnabled_ModelNotAvailable_Timeout) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {password_manager::features::kPasswordFormClientsideClassifier,
-       password_manager::features::kDownloadModelForPasswordChange},
+       password_manager::features::kProactivelyDownloadModelForPasswordChange},
       {});
 
   model_handler()->SetModelAvailability(/*available=*/false);
