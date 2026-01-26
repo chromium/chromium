@@ -128,6 +128,9 @@ bool EnumTraits<composebox_query::mojom::InputType, omnibox::InputType>::
     case UsedInputType::kLensFile:
       *output = omnibox::InputType::INPUT_TYPE_LENS_FILE;
       return true;
+    case UsedInputType::kBrowserTab:
+      *output = omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
+      return true;
   }
   NOTREACHED();
 }

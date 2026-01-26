@@ -80,6 +80,8 @@ enum InputType {
   kLensImage = 1,
   // Input is a file.
   kLensFile = 2,
+  // Input is a browser tab.
+  kBrowserTab = 3,
 };
 
 // Represents the current state of inputs, models, and tools within AIM.
