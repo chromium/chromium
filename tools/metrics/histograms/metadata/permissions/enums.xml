@@ -164,6 +164,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionChangeAction) -->
 
+<!-- LINT.IfChange(PermissionChangeInfo) -->
+
 <enum name="PermissionChangeInfo">
   <int value="0" label="Infobar shown, page reloaded, permission used"/>
   <int value="1" label="Infobar shown, page reloaded, permission not used"/>
@@ -175,6 +177,8 @@ chromium-metrics-reviews@google.com.
   <int value="7"
       label="Infobar not shown, no page reloaded, permission not used"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionChangeInfo) -->
 
 <!-- LINT.IfChange(PermissionEmbargoStatus) -->
 

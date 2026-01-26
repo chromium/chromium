@@ -541,6 +541,7 @@ enum class PermissionIgnoredReason {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PermissionChangeInfo)
 enum class PermissionChangeInfo {
   kInfobarShownPageReloadPermissionUsed = 0,
 
@@ -561,6 +562,7 @@ enum class PermissionChangeInfo {
   // Always keep at the end.
   kMaxValue = kInfobarNotShownNoPageReloadPermissionNotUsed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionChangeInfo)
 
 // LINT.IfChange(DismissalType)
 
