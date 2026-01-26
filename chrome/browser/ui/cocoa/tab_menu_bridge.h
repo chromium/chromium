@@ -42,6 +42,8 @@ class TabMenuBridge : public TabStripModelObserver {
   // the new model if `model` isn't nullptr.
   void SetTabStripModel(TabStripModel* model);
 
+  // Test hook to force rebuilding menu immediately on modal change instead of
+  // doing so during menu show.
   void SetForceRebuildMenuForTesting(bool force);
 
  private:
@@ -80,9 +82,9 @@ class TabMenuBridge : public TabStripModelObserver {
   // their underlying tabs.
   int dynamic_items_start_;
 
-  // Test hook to rebuild menu immediately on modal change instead of doing so
-  // during menu show.
-  bool force_rebuild_menu_for_testing_ = false;
+  // Flag when set forces the menu to be immediately rebuilt on modal change
+  // instead of only doing so during menu show.
+  bool force_rebuild_menu_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_TAB_MENU_BRIDGE_H_

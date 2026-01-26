@@ -182,7 +182,7 @@ void TabMenuBridge::SetTabStripModel(TabStripModel* model) {
 }
 
 void TabMenuBridge::SetForceRebuildMenuForTesting(bool force) {
-  force_rebuild_menu_for_testing_ = force;
+  force_rebuild_menu_ = force;
 }
 
 NSMutableArray* TabMenuBridge::DynamicMenuItems() {
@@ -254,7 +254,7 @@ void TabMenuBridge::OnTabStripModelChanged(
   DCHECK(tab_strip_model);
   DCHECK_EQ(tab_strip_model, model_);
 
-  if (!force_rebuild_menu_for_testing_ && ![menu_listener_ isMenuOpen]) {
+  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
     [menu_listener_ setRebuildMenu:YES];
     return;
   }
@@ -283,7 +283,7 @@ void TabMenuBridge::OnTabChangedAt(tabs::TabInterface* tab,
     return;
   }
 
-  if (!force_rebuild_menu_for_testing_ && ![menu_listener_ isMenuOpen]) {
+  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
     [menu_listener_ setRebuildMenu:YES];
     return;
   }
@@ -312,7 +312,7 @@ void TabMenuBridge::OnTabChangedAt(tabs::TabInterface* tab,
 
 // If a tab group is changed, update group indicator for each tab.
 void TabMenuBridge::OnTabGroupChanged(const TabGroupChange& change) {
-  if (!force_rebuild_menu_for_testing_ && ![menu_listener_ isMenuOpen]) {
+  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
     [menu_listener_ setRebuildMenu:YES];
     return;
   }
@@ -331,7 +331,7 @@ void TabMenuBridge::TabGroupedStateChanged(
   DCHECK(tab_strip_model);
   DCHECK_EQ(tab_strip_model, model_);
 
-  if (!force_rebuild_menu_for_testing_ && ![menu_listener_ isMenuOpen]) {
+  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
     [menu_listener_ setRebuildMenu:YES];
     return;
   }
