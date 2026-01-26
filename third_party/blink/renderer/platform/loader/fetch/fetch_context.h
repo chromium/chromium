@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/guardrail_policy_asset_type.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
@@ -162,6 +163,13 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       ResourceRequest::RedirectStatus) const {
     return ResourceRequestBlockedReason::kOther;
   }
+
+  // Check for guardrails policy state and report large asset violation if
+  // necessary.
+  virtual void CheckGuardrailsPolicyForAssetSize(
+      GuardrailPolicyAssetType asset_type,
+      size_t bytes,
+      const KURL& url) {}
 
   // Check for policy on the resource and report if necessary, per the explainer
   // here: https://aka.ms/webembeddedperf

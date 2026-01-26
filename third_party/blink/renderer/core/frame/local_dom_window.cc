@@ -2677,6 +2677,69 @@ net::StorageAccessApiStatus LocalDOMWindow::GetStorageAccessApiStatus() const {
   return storage_access_api_status_;
 }
 
+std::optional<mojom::blink::PolicyDisposition>
+LocalDOMWindow::GetGuardrailsPolicyState() const {
+  // Probe the policy lists to set disposition accordingly. IsFeatureEnabled
+  // assumes a value of |false| is stricter than |true|, but that's reversed for
+  // this configuration point.
+  const DocumentPolicy* enforced_policy =
+      GetSecurityContext().GetDocumentPolicy();
+  bool has_enforced_policy =
+      enforced_policy &&
+      enforced_policy
+          ->GetFeatureValue(
+              mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails)
+          .BoolValue();
+
+  const DocumentPolicy* report_only_policy =
+      GetSecurityContext().GetReportOnlyDocumentPolicy();
+  bool has_report_only_policy =
+      report_only_policy &&
+      report_only_policy
+          ->GetFeatureValue(
+              mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails)
+          .BoolValue();
+
+  if (!has_enforced_policy && !has_report_only_policy) {
+    return std::nullopt;
+  }
+
+  return has_enforced_policy ? mojom::blink::PolicyDisposition::kEnforce
+                             : mojom::blink::PolicyDisposition::kReport;
+}
+
+bool LocalDOMWindow::CheckGuardrailsPolicyForAssetSize(
+    GuardrailPolicyAssetType asset_type,
+    size_t bytes,
+    const KURL& url) const {
+  String message;
+  switch (asset_type) {
+    case GuardrailPolicyAssetType::kData:
+      if (bytes <= kGuardrailsLargeDataThresholdBytes) {
+        return false;
+      }
+      message = "large data URLs are disallowed by policy";
+      break;
+    case GuardrailPolicyAssetType::kImage:
+      if (bytes <= kGuardrailsLargeImageThresholdBytes) {
+        return false;
+      }
+      message = "large media is disallowed by policy";
+      break;
+  }
+
+  std::optional<mojom::blink::PolicyDisposition> disposition =
+      GetGuardrailsPolicyState();
+  if (disposition.has_value()) {
+    ReportDocumentPolicyViolation(
+        mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails,
+        disposition.value(), message, url);
+    return true;
+  }
+
+  return false;
+}
+
 void LocalDOMWindow::SetStorageAccessApiStatus(
     net::StorageAccessApiStatus status,
     StorageAccessApiNotifyEmbedder notify) {

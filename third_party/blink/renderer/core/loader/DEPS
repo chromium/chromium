@@ -27,6 +27,10 @@ specific_include_rules = {
     "frame_fetch_context.cc" : [
       "+base/command_line.h"
     ],
+    "frame_fetch_context_test.cc" : [
+      "+base/files/file_util.h",
+      "+base/files/scoped_temp_dir.h"
+    ],
 }
 include_rules = [
   "+base/containers/flat_map.h",

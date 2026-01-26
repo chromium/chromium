@@ -1054,6 +1054,16 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
     if (!IsSupportedMimeType(response.MimeType().Utf8())) {
       return nullptr;
     }
+
+    if (data && data->size()) {
+      // For cases where size limit is violated, including the URL in the report
+      // would send the large data. Use an empty URL in the report for now. This
+      // needs to be resolved by the spec.
+      // TODO(crbug.com/475522251): update report URL once behavior is defined
+      // in spec.
+      Context().CheckGuardrailsPolicyForAssetSize(
+          GuardrailPolicyAssetType::kData, data->size(), KURL());
+    }
   } else {
     ArchiveResource* archive_resource =
         archive_->SubresourceForURL(params.Url());

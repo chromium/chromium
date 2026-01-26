@@ -119,6 +119,13 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
 
  public:
+  // Size thresholds for network efficiency guardrails policy enforcement.
+  // These are const public for testing purpose.
+  static constexpr size_t kGuardrailsLargeDataThresholdBytes =
+      100 * 1024;  // 100kB
+  static constexpr size_t kGuardrailsLargeImageThresholdBytes =
+      200 * 1024;  // 200kB
+
   class CORE_EXPORT EventListenerObserver : public GarbageCollectedMixin {
    public:
     virtual void DidAddEventListener(LocalDOMWindow*, const AtomicString&) = 0;
@@ -215,6 +222,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       const String& source_file = g_empty_string) const final;
   void SetIsInBackForwardCache(bool) final;
   net::StorageAccessApiStatus GetStorageAccessApiStatus() const final;
+  std::optional<mojom::blink::PolicyDisposition> GetGuardrailsPolicyState()
+      const final;
+  bool CheckGuardrailsPolicyForAssetSize(GuardrailPolicyAssetType asset_type,
+                                         size_t bytes,
+                                         const KURL& url) const final;
 
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
 

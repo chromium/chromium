@@ -33,6 +33,9 @@
 #include <memory>
 #include <optional>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/features.h"
@@ -43,6 +46,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -60,6 +64,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/frame_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -77,6 +82,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 
@@ -1847,6 +1853,334 @@ TEST_P(FrameFetchContextDisableReduceAcceptLanguageTest,
   SetupForAcceptLanguageTest(/*is_detached=*/std::get<0>(GetParam()), request);
   // Expect no Accept-Language header set when feature is disabled.
   EXPECT_EQ(nullptr, request.HttpHeaderField(http_names::kAcceptLanguage));
+}
+
+class FrameFetchContextNetworkGuardrailsTest
+    : public FrameFetchContextTestBase {
+ public:
+  struct TestCase {
+    bool network_accessed = true;
+    bool service_worker = false;
+    bool cached = false;
+    const ResourceType resource_type = ResourceType::kScript;
+    const mojom::blink::RequestContextType context_type =
+        mojom::blink::RequestContextType::UNSPECIFIED;
+    std::optional<String> content_encoding = std::nullopt;
+    std::optional<String> content_length = std::nullopt;
+    const std::optional<String> mime = std::nullopt;
+    bool expect_violation = true;
+
+   public:
+    explicit TestCase(ResourceType resource_type,
+                      mojom::blink::RequestContextType type =
+                          mojom::blink::RequestContextType::UNSPECIFIED,
+                      std::optional<String> mime = std::nullopt)
+        : resource_type(resource_type), context_type(type), mime(mime) {}
+
+    static TestCase FromNetwork(bool network_accessed,
+                                ResourceType resource_type) {
+      TestCase tc(resource_type);
+      tc.network_accessed = network_accessed;
+      return tc;
+    }
+
+    static TestCase FromCache(ResourceType resource_type) {
+      TestCase tc(resource_type);
+      tc.cached = true;
+      return tc;
+    }
+
+    static TestCase FromServiceWorker(ResourceType resource_type) {
+      TestCase tc(resource_type);
+      tc.service_worker = true;
+      return tc;
+    }
+
+    TestCase& WithCompression(const String& encoding = "gzip") {
+      content_encoding = encoding;
+      return *this;
+    }
+
+    TestCase& WithLength(const String& size) {
+      content_length = size;
+      return *this;
+    }
+
+    TestCase& ExpectingViolation(bool violation = true) {
+      expect_violation = violation;
+      return *this;
+    }
+  };
+
+  void ResetDocument(bool enable_policy = true) {
+    RecreateFetchContext();
+
+    if (enable_policy) {
+      DocumentPolicyFeatureState feature_state;
+      feature_state.emplace(
+          mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails,
+          PolicyValue::CreateBool(true));
+
+      std::unique_ptr<DocumentPolicy> policy =
+          DocumentPolicy::CreateWithHeaderPolicy({feature_state,
+                                                  /* endpoint_map */ {}});
+      GetFetchContext()
+          ->GetExecutionContext()
+          ->GetSecurityContext()
+          .SetDocumentPolicy(std::move(policy));
+    }
+  }
+
+  void CheckViolation(const TestCase& test_case) {
+    // Use fresh document so histogram is reset
+    ResetDocument();
+
+    const KURL url("https://www.example.test/resource");
+    const std::string histogram_name =
+        "Blink.UseCounter.DocumentPolicy.Enforced";
+
+    base::HistogramTester histogram_tester;
+    const int expected_count = test_case.expect_violation ? 1 : 0;
+
+    ResourceResponse response;
+    response.SetNetworkAccessed(test_case.network_accessed);
+    response.SetWasFetchedViaServiceWorker(test_case.service_worker);
+    response.SetWasCached(test_case.cached);
+
+    if (test_case.content_encoding.has_value()) {
+      response.SetHttpHeaderField(
+          AtomicString("Content-Encoding"),
+          AtomicString(test_case.content_encoding.value()));
+    }
+
+    if (test_case.content_length.has_value()) {
+      response.SetHttpHeaderField(
+          AtomicString("Content-Length"),
+          AtomicString(test_case.content_length.value()));
+    }
+
+    if (test_case.mime.has_value()) {
+      response.SetMimeType(AtomicString(test_case.mime.value()));
+    }
+
+    GetFetchContext()->CheckGuardrailsPolicyForRequest(
+        test_case.resource_type, test_case.context_type, response, url);
+
+    histogram_tester.ExpectBucketCount(
+        histogram_name,
+        mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails,
+        expected_count);
+  }
+
+  void CheckImageLoadViolation(const size_t image_size,
+                               bool expect_violation,
+                               bool enable_policy = true) {
+    // Use fresh document so histogram is reset
+    ResetDocument(enable_policy);
+
+    const KURL image_url("https://www.example.com/image.png");
+    const std::string histogram_name =
+        "Blink.UseCounter.DocumentPolicy.Enforced";
+
+    base::HistogramTester histogram_tester;
+    const int expected_count = expect_violation ? 1 : 0;
+
+    Vector<char> image_data(image_size);
+    std::fill(image_data.begin(), image_data.end(), 'x');
+
+    base::ScopedTempDir temp_dir;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    base::FilePath temp_file_path = temp_dir.GetPath().AppendASCII("image.png");
+
+    ASSERT_TRUE(base::WriteFile(temp_file_path,
+                                base::as_bytes(base::span(image_data))));
+
+    WebURLResponse custom_response(image_url);
+    custom_response.SetHttpStatusCode(200);
+    custom_response.SetMimeType("image/png");
+    custom_response.SetExpectedContentLength(image_size);
+
+    // TODO(crbug.com/475473963): mock resource load using chunks instead of
+    // URLLoaderMockFactory's single-span SharedBuffer.
+    url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+        image_url, WebString::FromUTF8(temp_file_path.AsUTF8Unsafe()),
+        custom_response);
+
+    ResourceFetcher* fetcher = document->Fetcher();
+    ResourceRequest request(image_url);
+    request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
+
+    const ResourceLoaderOptions options(nullptr);
+    FetchParameters fetch_params(std::move(request), std::move(options));
+
+    // Image resources are deferred by default so start the load manually. This
+    // will trigger the entire loading process.
+    Resource* resource = ImageResource::Fetch(fetch_params, fetcher);
+    fetcher->StartLoad(resource);
+    url_test_helpers::ServeAsynchronousRequests();
+
+    EXPECT_NE(resource, nullptr);
+    histogram_tester.ExpectBucketCount(
+        histogram_name,
+        static_cast<int>(
+            mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails),
+        expected_count);
+
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+  }
+};
+
+TEST_F(FrameFetchContextNetworkGuardrailsTest, ResponseEligibility) {
+  CheckViolation(TestCase::FromNetwork(false, ResourceType::kScript)
+                     .ExpectingViolation(false));
+  CheckViolation(
+      TestCase::FromCache(ResourceType::kScript).ExpectingViolation(false));
+  CheckViolation(TestCase::FromServiceWorker(ResourceType::kScript)
+                     .ExpectingViolation(false));
+}
+
+TEST_F(FrameFetchContextNetworkGuardrailsTest, ResourceCompression) {
+  CheckViolation(TestCase(ResourceType::kImage).ExpectingViolation(false));
+  CheckViolation(TestCase(ResourceType::kScript).ExpectingViolation());
+  CheckViolation(TestCase(ResourceType::kScript)
+                     .WithCompression()
+                     .ExpectingViolation(false));
+
+  CheckViolation(TestCase(ResourceType::kCSSStyleSheet).ExpectingViolation());
+  CheckViolation(TestCase(ResourceType::kCSSStyleSheet)
+                     .WithCompression()
+                     .ExpectingViolation(false));
+
+  CheckViolation(
+      TestCase(ResourceType::kRaw, mojom::blink::RequestContextType::DOWNLOAD)
+          .ExpectingViolation(false));
+  CheckViolation(TestCase(ResourceType::kRaw,
+                          mojom::blink::RequestContextType::JSON,
+                          "application/json")
+                     .ExpectingViolation());
+  CheckViolation(TestCase(ResourceType::kRaw,
+                          mojom::blink::RequestContextType::JSON,
+                          "application/json")
+                     .WithCompression()
+                     .ExpectingViolation(false));
+}
+
+TEST_F(FrameFetchContextNetworkGuardrailsTest, ContentLength) {
+  const size_t large_image_size =
+      LocalDOMWindow::kGuardrailsLargeImageThresholdBytes + 1;
+  CheckViolation(TestCase(ResourceType::kImage).ExpectingViolation(false));
+  CheckViolation(TestCase(ResourceType::kImage)
+                     .WithLength("200")
+                     .ExpectingViolation(false));
+  CheckViolation(TestCase(ResourceType::kImage)
+                     .WithLength(String::Number(
+                         LocalDOMWindow::kGuardrailsLargeImageThresholdBytes))
+                     .ExpectingViolation(false));
+  CheckViolation(TestCase(ResourceType::kImage)
+                     .WithLength(String::Number(large_image_size))
+                     .ExpectingViolation());
+
+  // Threshold should not apply to arbitrary resource types.
+  CheckViolation(TestCase(ResourceType::kAudio)
+                     .WithLength("200")
+                     .ExpectingViolation(false));
+  CheckViolation(TestCase(ResourceType::kAudio)
+                     .WithLength(String::Number(large_image_size))
+                     .ExpectingViolation(false));
+}
+
+TEST_F(FrameFetchContextNetworkGuardrailsTest, LargeImageResourceSizeLimit) {
+  const size_t large_image_size =
+      LocalDOMWindow::kGuardrailsLargeImageThresholdBytes + 1;
+
+  CheckImageLoadViolation(large_image_size, false, /*enable_policy=*/false);
+  CheckImageLoadViolation(LocalDOMWindow::kGuardrailsLargeImageThresholdBytes,
+                          false);
+  CheckImageLoadViolation(large_image_size, true);
+  CheckImageLoadViolation(100 * 1024, false);
+}
+
+class AssetSizeGuardrailsTest : public FrameFetchContextNetworkGuardrailsTest {
+ public:
+  void TestDataUrlAssetSize(const String& data_url,
+                            bool expect_violation,
+                            bool enable_policy = true,
+                            mojom::blink::RequestContextType context_type =
+                                mojom::blink::RequestContextType::FAVICON) {
+    ResetDocument(enable_policy);
+
+    const std::string histogram_name =
+        "Blink.UseCounter.DocumentPolicy.Enforced";
+    base::HistogramTester histogram_tester;
+    const int expected_count = expect_violation ? 1 : 0;
+
+    ResourceFetcher* fetcher = document->Fetcher();
+    ResourceRequest request = ResourceRequest(KURL(data_url));
+    request.SetRequestContext(context_type);
+    ResourceLoaderOptions options(nullptr);
+    options.data_buffering_policy =
+        blink::DataBufferingPolicy::kDoNotBufferData;
+    FetchParameters fetch_params(std::move(request), std::move(options));
+
+    // Should trigger CheckGuardrailsPolicyForAssetSize
+    const Resource* resource =
+        MockResource::Fetch(fetch_params, fetcher, nullptr);
+
+    histogram_tester.ExpectBucketCount(
+        histogram_name,
+        mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails,
+        expected_count);
+
+    EXPECT_NE(resource, nullptr);
+    EXPECT_EQ(ResourceStatus::kCached, resource->GetStatus());
+  }
+
+  // Base64 URL length needed to represent the largest data <= bytes.
+  size_t GetEncodedLength(size_t bytes) { return (bytes * 4) / 3; }
+
+  String GetLargeDataURL() {
+    const size_t large_data_size =
+        GetEncodedLength(LocalDOMWindow::kGuardrailsLargeDataThresholdBytes) +
+        1;
+    String large_data =
+        "data:text/plain," + String(std::string(large_data_size, 'x'));
+    return large_data;
+  }
+};
+
+TEST_F(AssetSizeGuardrailsTest, SmallDataUrl) {
+  TestDataUrlAssetSize("data:text/plain,hello", false);
+
+  String data_url =
+      "data:text/plain," +
+      String(
+          std::string((GetEncodedLength(
+                          LocalDOMWindow::kGuardrailsLargeDataThresholdBytes)),
+                      'x'));
+  TestDataUrlAssetSize(data_url, true);
+}
+
+TEST_F(AssetSizeGuardrailsTest, LargeDataUrl) {
+  TestDataUrlAssetSize(GetLargeDataURL(), true);
+}
+
+TEST_F(AssetSizeGuardrailsTest, NoGuardrailsPolicySet) {
+  TestDataUrlAssetSize(GetLargeDataURL(), false, /*enable_policy=*/false);
+}
+
+TEST_F(AssetSizeGuardrailsTest, DifferentResourceTypes) {
+  Vector<mojom::blink::RequestContextType> contexts = {
+      mojom::blink::RequestContextType::IMAGE,
+      mojom::blink::RequestContextType::SCRIPT,
+      mojom::blink::RequestContextType::STYLE,
+      mojom::blink::RequestContextType::FONT,
+      mojom::blink::RequestContextType::FETCH,
+      mojom::blink::RequestContextType::XML_HTTP_REQUEST};
+
+  for (auto context : contexts) {
+    TestDataUrlAssetSize(GetLargeDataURL(), true, /*enable_policy=*/true,
+                         context);
+  }
 }
 
 }  // namespace blink
