@@ -1657,7 +1657,6 @@ interface DisposableStack
     method move
     method use
 interface Document : Node
-    static method parseHTML
     static method parseHTMLUnsafe
     attribute @@toStringTag
     attribute @@unscopables
@@ -2262,7 +2261,6 @@ interface Element : Node
     method setAttributeNS
     method setAttributeNode
     method setAttributeNodeNS
-    method setHTML
     method setHTMLUnsafe
     method setPointerCapture
     method toggleAttribute
@@ -8422,18 +8420,6 @@ interface SVGViewElement : SVGElement
     getter zoomAndPan
     method constructor
     setter zoomAndPan
-interface Sanitizer
-    attribute @@toStringTag
-    method allowAttribute
-    method allowElement
-    method constructor
-    method get
-    method removeAttribute
-    method removeElement
-    method removeUnsafe
-    method replaceElementWithChildren
-    method setComments
-    method setDataAttributes
 interface Scheduler
     attribute @@toStringTag
     method constructor
@@ -8624,7 +8610,6 @@ interface ShadowRoot : DocumentFragment
     method getAnimations
     method getHTML
     method getSelection
-    method setHTML
     method setHTMLUnsafe
     setter adoptedStyleSheets
     setter fullscreenElement
