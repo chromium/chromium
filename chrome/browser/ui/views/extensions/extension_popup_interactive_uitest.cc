@@ -242,8 +242,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
 
 // Tests that an extension popup does not close on deactivation while it is
 // under inspection.
+// TODO(crbug.com/478799302): Flakily fails on TSAN bots
+#if defined(THREAD_SANITIZER)
+#define MAYBE_ExtensionPopupDoesNotCloseWhileInpsecting \
+  DISABLED_ExtensionPopupDoesNotCloseWhileInpsecting
+#else
+#define MAYBE_ExtensionPopupDoesNotCloseWhileInpsecting \
+  ExtensionPopupDoesNotCloseWhileInpsecting
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
-                       ExtensionPopupDoesNotCloseWhileInpsecting) {
+                       MAYBE_ExtensionPopupDoesNotCloseWhileInpsecting) {
   static constexpr char kManifest[] =
       R"({
            "name": "Test Extension",
