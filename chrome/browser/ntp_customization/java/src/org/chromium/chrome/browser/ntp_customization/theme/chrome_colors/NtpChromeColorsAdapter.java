@@ -156,12 +156,17 @@ public class NtpChromeColorsAdapter
             colorCircle.setForeground(colorInfo.iconDrawable);
             itemView.setOnClickListener(onClickListener);
 
-            // Sets the activated status.
-            if (bindingAdaptorPosition == selectedPosition) {
-                itemView.setActivated(true);
-            } else {
-                itemView.setActivated(false);
+            if (colorInfo.colorStringResId != NtpThemeColorUtils.INVALID_ID) {
+                String contentDescription =
+                        itemView.getResources().getString(colorInfo.colorStringResId);
+                itemView.setContentDescription(contentDescription);
             }
+
+            // Sets the activated status.
+            boolean isSelected = bindingAdaptorPosition == selectedPosition;
+            itemView.setActivated(isSelected);
+            // It allows to pronounce "selected" when isSelected is true.
+            itemView.setSelected(isSelected);
         }
     }
 }

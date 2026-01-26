@@ -1543,6 +1543,33 @@
       <message name="IDS_NTP_CUSTOMIZATION_HINT_TO_TYPE_COLOR_HEX" desc="Hint in the edit box to ask users to type a color hex.">
         Type hex here
       </message>
+      <message name="IDS_ACCESSIBILITY_NTP_BLUE_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Blue theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_AQUA_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Aqua theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_GREEN_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Green theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_VIRIDIAN_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Viridian theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_CITRON_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Citron theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_ORANGE_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Orange theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_ROSE_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Rose theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_FUCHSIA_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Fuchsia theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_VIOLET_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Violet theme
+      </message>
 
       <!-- Time Last Accessed strings -->
       <message name="IDS_TIME_LAST_ACCESSED_TODAY" desc="A subtitle explaining that a given component was last accessed today.">

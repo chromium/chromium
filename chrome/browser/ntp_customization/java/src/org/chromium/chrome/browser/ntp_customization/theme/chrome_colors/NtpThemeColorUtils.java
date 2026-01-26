@@ -12,6 +12,7 @@ import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +29,7 @@ import java.util.List;
 /** Utility class for Chrome NTP's theme colors. */
 @NullMarked
 public class NtpThemeColorUtils {
-    private static final int INVALID_ID = 0;
+    static final int INVALID_ID = 0;
 
     /**
      * Creates a {@link NtpThemeColorInfo} instance for the given color Id.
@@ -66,6 +67,35 @@ public class NtpThemeColorUtils {
                 return R.color.ntp_color_fuchsia_primary;
             case NtpThemeColorId.NTP_COLORS_VIOLET:
                 return R.color.ntp_color_violet_primary;
+            default:
+                return INVALID_ID;
+        }
+    }
+
+    /**
+     * Gets the accessibility string resource id of color theme when selected if exists, INVALID_ID
+     * otherwise.
+     */
+    public static @StringRes int getNtpColorThemeStringResId(@NtpThemeColorId int colorId) {
+        switch (colorId) {
+            case NtpThemeColorId.NTP_COLORS_BLUE:
+                return R.string.accessibility_ntp_blue_color_theme;
+            case NtpThemeColorId.NTP_COLORS_AQUA:
+                return R.string.accessibility_ntp_aqua_color_theme;
+            case NtpThemeColorId.NTP_COLORS_GREEN:
+                return R.string.accessibility_ntp_green_color_theme;
+            case NtpThemeColorId.NTP_COLORS_VIRIDIAN:
+                return R.string.accessibility_ntp_viridian_color_theme;
+            case NtpThemeColorId.NTP_COLORS_CITRON:
+                return R.string.accessibility_ntp_citron_color_theme;
+            case NtpThemeColorId.NTP_COLORS_ORANGE:
+                return R.string.accessibility_ntp_orange_color_theme;
+            case NtpThemeColorId.NTP_COLORS_ROSE:
+                return R.string.accessibility_ntp_rose_color_theme;
+            case NtpThemeColorId.NTP_COLORS_FUCHSIA:
+                return R.string.accessibility_ntp_fuchsia_color_theme;
+            case NtpThemeColorId.NTP_COLORS_VIOLET:
+                return R.string.accessibility_ntp_violet_color_theme;
             default:
                 return INVALID_ID;
         }

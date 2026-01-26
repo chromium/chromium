@@ -42,6 +42,7 @@ public class NtpThemeColorInfoUnitTest {
 
         assertEquals(NtpThemeColorId.NTP_COLORS_AQUA, info.id);
         assertEquals(R.color.ntp_color_aqua_primary, info.primaryColorResId);
+        assertEquals(R.string.accessibility_ntp_aqua_color_theme, info.colorStringResId);
         assertNotNull(info.iconDrawable);
 
         int primaryColor = ContextCompat.getColor(mContext, R.color.ntp_color_aqua_primary);
