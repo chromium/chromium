@@ -7,10 +7,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace default_browser {
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DefaultBrowserModalDialog,
+                                      kDefaultBrowserModalDialogId);
 
 // static
 void DefaultBrowserModalDialog::Show(Profile* profile, gfx::NativeView parent) {
@@ -23,10 +27,11 @@ DefaultBrowserModalDialog::DefaultBrowserModalDialog() {
   set_can_minimize(false);
   set_show_close_button(false);
   set_dialog_modal_type(ui::mojom::ModalType::kWindow);
-  set_dialog_content_url(GURL());
+  set_dialog_content_url(GURL(chrome::kChromeUIDefaultBrowserModalURL));
   set_dialog_size(gfx::Size(605, 590));
   set_can_close(true);
   set_show_dialog_title(false);
+  set_web_view_element_id(kDefaultBrowserModalDialogId);
 }
 
 DefaultBrowserModalDialog::~DefaultBrowserModalDialog() = default;

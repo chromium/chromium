@@ -81,7 +81,10 @@ source_set("configs") {
     ]
 
     if (!is_chromeos) {
-      deps += [ "//chrome/browser/ui/webui/app_home" ]
+      deps += [
+        "//chrome/browser/ui/webui/app_home",
+        "//chrome/browser/ui/webui/default_browser:default_browser_modal",
+      ]
     }
   } else {
     #is_android

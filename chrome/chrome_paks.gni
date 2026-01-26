@@ -470,10 +470,12 @@ template("chrome_extra_paks") {
     }
     if (!is_android && !is_chromeos) {
       sources += [
+        "$root_gen_dir/chrome/default_browser_modal_resources.pak",
         "$root_gen_dir/chrome/intro_resources.pak",
         "$root_gen_dir/chrome/profile_picker_resources.pak",
       ]
       deps += [
+        "//chrome/browser/resources/default_browser/default_browser_modal:resources",
         "//chrome/browser/resources/intro:resources",
         "//chrome/browser/resources/signin/profile_picker:resources",
       ]

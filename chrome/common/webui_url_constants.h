@@ -567,6 +567,10 @@ inline constexpr char kChromeUIDiscardsURL[] = "chrome://discards/";
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+inline constexpr char kChromeUIDefaultBrowserModalURL[] =
+    "chrome://default-browser-modal/";
+inline constexpr char kChromeUIDefaultBrowserModalHost[] =
+    "default-browser-modal";
 inline constexpr char kChromeUIWebAppSettingsHost[] = "app-settings";
 inline constexpr char kChromeUIWebAppSettingsURL[] = "chrome://app-settings/";
 inline constexpr char kChromeUIWhatsNewHost[] = "whats-new";

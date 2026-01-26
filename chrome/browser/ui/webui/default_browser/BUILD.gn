@@ -2,20 +2,51 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(!is_android && !is_chromeos)
+
 source_set("default_browser_modal") {
   sources = [
     "default_browser_modal_dialog_delegate.cc",
     "default_browser_modal_dialog_delegate.h",
+    "default_browser_modal_ui.cc",
+    "default_browser_modal_ui.h",
   ]
 
   public_deps = [ "//base" ]
 
   deps = [
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/default_browser/default_browser_modal:resources",
     "//chrome/browser/ui/dialogs",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
+    "//content/public/browser",
+    "//ui/base/interaction",
     "//ui/gfx",
     "//ui/web_dialogs",
+    "//ui/webui",
     "//url",
+  ]
+}
+
+source_set("pixel_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "default_browser_modal_pixeltest.cc" ]
+
+  deps = [
+    ":default_browser_modal",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/base/interaction",
+    "//ui/gfx",
   ]
 }

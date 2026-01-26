@@ -191,6 +191,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/default_browser/default_browser_modal_ui.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
@@ -438,6 +439,7 @@ void RegisterChromeWebUIConfigs() {
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+  map.AddWebUIConfig(std::make_unique<DefaultBrowserModalUIConfig>());
   map.AddWebUIConfig(std::make_unique<ManagedUserProfileNoticeUIConfig>());
   map.AddWebUIConfig(std::make_unique<IntroUIConfig>());
   map.AddWebUIConfig(std::make_unique<ProfileCustomizationUIConfig>());

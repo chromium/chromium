@@ -405,6 +405,10 @@
     "META": {"sizes": {"includes": [15]}},
     "includes": [3860],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/default_browser/default_browser_modal/resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
+    "includes": [3870],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/downloads/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [3880],

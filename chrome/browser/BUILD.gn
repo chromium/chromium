@@ -4714,6 +4714,7 @@ static_library("browser") {
         "//chrome/browser/shortcuts",
         "//chrome/browser/ui/download",
         "//chrome/browser/ui/download:impl",
+        "//chrome/browser/ui/webui/default_browser:default_browser_modal",
 
         # TODO(crbug.com/369883710): Remove this dependency when profiles/profile_manager.h
         # gets componentized.

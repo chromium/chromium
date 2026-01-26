@@ -865,6 +865,7 @@ chromium-metrics-reviews@google.com.
   <int value="110166858" label="chrome://saved-tab-groups-unsupported/"/>
   <int value="112165789" label="chrome://device-emulator/"/>
   <int value="114748825" label="chrome-devtools://devtools/"/>
+  <int value="147345232" label="chrome://default-browser-modal/"/>
   <int value="164517522" label="chrome://discards/"/>
   <int value="171659041" label="chrome://webrtc-device-provider/"/>
   <int value="182993612" label="chrome-untrusted://help-app-kids-magazine/"/>

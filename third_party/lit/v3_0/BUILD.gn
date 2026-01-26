@@ -38,6 +38,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/color_pipeline_internals:build_ts",
     "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/contextual_tasks:build_ts",
+    "//chrome/browser/resources/default_browser/default_browser_modal:build_ts",
     "//chrome/browser/resources/device_log:build_ts",
     "//chrome/browser/resources/discards:build_ts",
     "//chrome/browser/resources/downloads:build_ts",

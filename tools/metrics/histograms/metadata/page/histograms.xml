@@ -324,6 +324,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".customize-chrome-side-panel.top-chrome"/>
   <variant name=".data-sharing"/>
   <variant name=".debug-webuis-disabled"/>
+  <variant name=".default-browser-modal"/>
   <variant name=".demo-mode-app"/>
   <variant name=".device-emulator"/>
   <variant name=".device-log"/>

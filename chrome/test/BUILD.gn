@@ -11721,6 +11721,10 @@ if (!is_android && !is_chromeos_device) {
       "//ui/web_dialogs:test_support",
     ]
 
+    if (!is_android && !is_chromeos) {
+      deps += [ "//chrome/browser/ui/webui/default_browser:pixel_tests" ]
+    }
+
     # TODO(413315837): Remove this dependency when
     # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_interactive_ui_test.cc
     # gets modularized.
