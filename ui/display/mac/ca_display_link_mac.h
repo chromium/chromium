@@ -52,11 +52,6 @@ class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
 
   base::WeakPtr<VSyncCallbackMac> vsync_callback_;
 
-  // The number of consecutive DisplayLink VSyncs received after zero
-  // |callbacks_|. DisplayLink will be stopped after |kMaxExtraVSyncs| is
-  // reached.
-  int consecutive_vsyncs_with_no_callbacks_ = 0;
-
   base::WeakPtrFactory<CADisplayLinkMac> weak_factory_{this};
 };
 
