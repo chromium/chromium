@@ -340,7 +340,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   [_progressiveBlurEffect removeFromSuperview];
   [_closeButton removeFromSuperview];
 
-  [self.view addSubview:_closeButton];
+  [self.view insertSubview:_closeButton belowSubview:_inputViewController.view];
   switch ([self currentInputPlatePosition]) {
     case ComposeboxInputPlatePosition::kBottom: {
       _progressiveBlurEffect = [self
