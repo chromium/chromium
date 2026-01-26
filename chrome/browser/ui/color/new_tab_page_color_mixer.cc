@@ -466,6 +466,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
 
   /* NewTabPageThreadsRail */
   mixer[kColorNewTabPageThreadsRailBackground] = {kColorToolbar};
+  mixer[kColorNewTabPageThreadsRailIconButton] = {ui::kColorSysOnSurfaceSubtle};
 }
 
 void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
