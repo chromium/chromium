@@ -26,7 +26,7 @@ class AwComponentInstallerPolicy
 
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value::Dict manifest) final;
+                      base::DictValue manifest) final;
   void OnCustomUninstall() final;
 
  private:

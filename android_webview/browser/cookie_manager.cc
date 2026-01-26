@@ -765,7 +765,7 @@ void CookieManager::ClearClientHintsCachedPerOriginMapIfNeeded() {
   // next check and see that the browser has been started.
   if (should_clear_client_hints_cached_per_origin_map_) {
     GetContext()->GetPrefService()->SetDict(
-        prefs::kClientHintsCachedPerOriginMap, base::Value::Dict());
+        prefs::kClientHintsCachedPerOriginMap, base::DictValue());
     should_clear_client_hints_cached_per_origin_map_ = false;
   }
 }

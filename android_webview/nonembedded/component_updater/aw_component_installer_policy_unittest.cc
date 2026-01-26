@@ -34,8 +34,8 @@ constexpr uint8_t kSha256Hash[] = {
 
 int highest_seq_num = 0;
 
-base::Value::Dict test_manifest(const base::Version& version) {
-  base::Value::Dict manifest;
+base::DictValue test_manifest(const base::Version& version) {
+  base::DictValue manifest;
   manifest.Set("version", version.GetString());
   return manifest;
 }
@@ -74,10 +74,10 @@ class TestAwComponentInstallerPolicy : public AwComponentInstallerPolicy {
       const TestAwComponentInstallerPolicy&) = delete;
 
   MOCK_METHOD2(OnCustomInstall,
-               update_client::CrxInstaller::Result(const base::Value::Dict&,
+               update_client::CrxInstaller::Result(const base::DictValue&,
                                                    const base::FilePath&));
   MOCK_CONST_METHOD2(VerifyInstallation,
-                     bool(const base::Value::Dict& manifest,
+                     bool(const base::DictValue& manifest,
                           const base::FilePath& dir));
   MOCK_CONST_METHOD0(SupportsGroupPolicyEnabledComponentUpdates, bool());
   MOCK_CONST_METHOD0(RequiresNetworkEncryption, bool());

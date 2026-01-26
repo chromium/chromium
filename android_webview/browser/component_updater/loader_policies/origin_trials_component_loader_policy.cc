@@ -38,7 +38,7 @@ OriginTrialsComponentLoaderPolicy::~OriginTrialsComponentLoaderPolicy() =
 void OriginTrialsComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   // Read the configuration from the manifest and set values in browser
   // local_state. These will be used on the next browser restart.
   // If an individual configuration value is missing, treat as a reset to the

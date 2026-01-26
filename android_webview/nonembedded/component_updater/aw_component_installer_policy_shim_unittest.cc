@@ -42,15 +42,15 @@ class MockComponentInstallerPolicy
       delete;
 
   MOCK_METHOD2(OnCustomInstall,
-               update_client::CrxInstaller::Result(const base::Value::Dict&,
+               update_client::CrxInstaller::Result(const base::DictValue&,
                                                    const base::FilePath&));
   MOCK_METHOD0(OnCustomUninstall, void());
   MOCK_METHOD3(ComponentReady,
                void(const base::Version&,
                     const base::FilePath&,
-                    base::Value::Dict));
+                    base::DictValue));
   MOCK_CONST_METHOD2(VerifyInstallation,
-                     bool(const base::Value::Dict& manifest,
+                     bool(const base::DictValue& manifest,
                           const base::FilePath& dir));
   MOCK_CONST_METHOD0(SupportsGroupPolicyEnabledComponentUpdates, bool());
   MOCK_CONST_METHOD0(RequiresNetworkEncryption, bool());
@@ -92,8 +92,8 @@ TEST_F(AwComponentInstallerPolicyShimTest, TestDelegatedFunctions) {
   EXPECT_CALL(*mock_policy_ptr, GetInstallerAttributes()).Times(1);
   EXPECT_CALL(*mock_policy_ptr, GetHash).Times(testing::AtLeast(1));
 
-  shim->OnCustomInstall(base::Value::Dict(), base::FilePath());
-  shim->VerifyInstallation(base::Value::Dict(), base::FilePath());
+  shim->OnCustomInstall(base::DictValue(), base::FilePath());
+  shim->VerifyInstallation(base::DictValue(), base::FilePath());
   shim->SupportsGroupPolicyEnabledComponentUpdates();
   shim->RequiresNetworkEncryption();
   shim->GetRelativeInstallDir();

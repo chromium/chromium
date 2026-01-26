@@ -28,7 +28,7 @@ std::string AwDevToolsManagerDelegate::GetTargetDescription(
       android_webview::BrowserViewRenderer::FromWebContents(web_contents);
   if (!bvr)
     return "";
-  base::Value::Dict description;
+  base::DictValue description;
   description.Set("attached", bvr->attached_to_window());
   description.Set("never_attached", !bvr->was_attached());
   description.Set("visible", bvr->IsVisible());

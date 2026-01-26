@@ -153,12 +153,12 @@ void AwClientHintsControllerDelegate::PersistClientHints(
 
   // Assemble and store the list if no issues.
   const auto& persistence_started = base::TimeTicks::Now();
-  base::Value::List client_hints_list;
+  base::ListValue client_hints_list;
   client_hints_list.reserve(client_hints.size());
   for (const auto& entry : client_hints) {
     client_hints_list.Append(static_cast<int>(entry));
   }
-  base::Value::Dict ch_per_origin;
+  base::DictValue ch_per_origin;
   if (context_pref_service_->HasPrefPath(
           prefs::kClientHintsCachedPerOriginMap)) {
     ch_per_origin =

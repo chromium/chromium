@@ -289,7 +289,7 @@ void AwComponentUpdateService::UpdateMetadataFiles(
     base::FilePath dest_path =
         cps_component_base_path.AppendASCII(highest_sequence_number_dir);
 
-    base::Value::Dict metadata_file_contents;
+    base::DictValue metadata_file_contents;
     metadata_file_contents.Set(component_updater::kMetadataFileCohortIdKey,
                                GetCohortId(component_id));
     std::optional<std::string> metadata_file_contents_json =

@@ -54,7 +54,7 @@ class AvailableComponentLoaderPolicy : public ComponentLoaderPolicy {
 
   void ComponentLoaded(const base::Version& version,
                        base::flat_map<std::string, base::ScopedFD>& fd_map,
-                       base::Value::Dict manifest) override {
+                       base::DictValue manifest) override {
     // Make sure these values match the values in the
     // EmbeddedComponentLoaderTest.
     ExpectTrueToJava(version.GetString() == "123.456.789",
@@ -86,7 +86,7 @@ class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
 
   void ComponentLoaded(const base::Version& version,
                        base::flat_map<std::string, base::ScopedFD>& fd_map,
-                       base::Value::Dict manifest) override {
+                       base::DictValue manifest) override {
     ExpectTrueToJava(
         false, "UnavailableComponentLoaderPolicy#ComponentLoaded is called");
   }

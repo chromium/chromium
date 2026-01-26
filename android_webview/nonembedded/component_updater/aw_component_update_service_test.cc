@@ -279,7 +279,7 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
   bool RequiresNetworkEncryption() const override { return false; }
 
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) override {
     return update_client::CrxInstaller::Result(0);
   }
@@ -288,13 +288,13 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
 
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override {
+                      base::DictValue manifest) override {
     version_ = version;
     install_dir_ = install_dir;
     manifest_ = std::move(manifest);
   }
 
-  bool VerifyInstallation(const base::Value::Dict& manifest,
+  bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override {
     return true;
   }
@@ -314,12 +314,12 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
   }
 
   bool IsComponentReadyInvoked() { return !!manifest_; }
-  base::Value::Dict& GetManifest() { return *manifest_; }
+  base::DictValue& GetManifest() { return *manifest_; }
   base::FilePath GetInstallDir() const { return install_dir_; }
   base::Version GetVersion() const { return version_; }
 
  private:
-  std::optional<base::Value::Dict> manifest_;
+  std::optional<base::DictValue> manifest_;
   base::FilePath install_dir_;
   base::Version version_;
 };

@@ -61,9 +61,9 @@ AwBrowserContextStore::AwBrowserContextStore(PrefService* pref_service)
   // profiles. The default profile (which could need migrations or on-disk
   // initialization) exists implicitly and is not tracked in the pref store.
   ScopedListPrefUpdate update(&*prefs_, prefs::kProfileListPref);
-  base::Value::List& profiles = update.Get();
+  base::ListValue& profiles = update.Get();
   for (const auto& profile : profiles) {
-    const base::Value::Dict& profile_dict = profile.GetDict();
+    const base::DictValue& profile_dict = profile.GetDict();
     const std::string* name = profile_dict.FindString(kProfileNameKey);
     CHECK(name);
     const std::string* path_string = profile_dict.FindString(kProfilePathKey);
@@ -191,10 +191,10 @@ AwBrowserContextStore::DeletionResult AwBrowserContextStore::Delete(
         base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kShortTimes);
   }
   ScopedListPrefUpdate update(&*prefs_, prefs::kProfileListPref);
-  base::Value::List& profiles = update.Get();
+  base::ListValue& profiles = update.Get();
   for (auto profile_it = profiles.begin(); profile_it != profiles.end();
        profile_it++) {
-    const base::Value::Dict& dict = profile_it->GetDict();
+    const base::DictValue& dict = profile_it->GetDict();
     const std::string* cur_name = dict.FindString(kProfileNameKey);
     CHECK(cur_name);
     if (*cur_name == name) {
@@ -228,7 +228,7 @@ AwBrowserContextStore::Entry* AwBrowserContextStore::CreateNewContext(
   Entry* entry = &emplace_result.first->second;
 
   ScopedListPrefUpdate update(&*prefs_, prefs::kProfileListPref);
-  base::Value::List& profiles = update.Get();
+  base::ListValue& profiles = update.Get();
   if (name == kDefaultContextName) {
     entry->path = base::FilePath(AwBrowserContextStore::kDefaultContextPath);
     // Do not store the default profile in prefs - it is implicit.
@@ -237,8 +237,8 @@ AwBrowserContextStore::Entry* AwBrowserContextStore::CreateNewContext(
     entry->path = base::FilePath(
         base::StrCat({"Profile ", base::NumberToString(number)}));
     AwBrowserContext::PrepareNewContext(entry->path);
-    base::Value::Dict profileDict =
-        base::Value::Dict()
+    base::DictValue profileDict =
+        base::DictValue()
             .Set(kProfileNameKey, name)
             .Set(kProfilePathKey, entry->path.value());
     profiles.Append(std::move(profileDict));
@@ -320,7 +320,7 @@ JNI_AwBrowserContextStore_ListAllContexts(JNIEnv* env) {
 
 // static
 void AwBrowserContextStore::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kProfileListPref, base::Value::List());
+  registry->RegisterListPref(prefs::kProfileListPref, base::ListValue());
   registry->RegisterIntegerPref(prefs::kProfileCounterPref, 0);
 }
 
