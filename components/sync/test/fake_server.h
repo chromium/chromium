@@ -237,6 +237,13 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // true if triggered error alternating was successful.
   bool EnableAlternatingTriggeredErrors();
 
+  // Simulates the state where a client's progress markers for `data_type` are
+  // too old and will be rejected by the server. Instead, the server will *once*
+  // respond with a full update along with a "clear all" GC directive. After the
+  // server has returned the GC directive, this automatically gets reset, so
+  // future GetUpdates requests will be treated normally again.
+  void SetRejectOldProgressMarkerForType(syncer::DataType data_type);
+
   // If called, all subsequent GetUpdatesResponses won't contain
   // encryption_keys.
   void DisallowSendingEncryptionKeys();
@@ -354,6 +361,8 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // lifetime.
   bool alternate_triggered_errors_ = false;
   int request_counter_ = 0;
+
+  syncer::DataTypeSet old_progress_marker_types_;
 
   // If set to true all `this` will clear `encryption_keys` in all
   // GetUpdateResponse's.

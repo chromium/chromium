@@ -80,6 +80,36 @@ RemoveFullUpdateTypeProgressMarkerIfExists(
   return nullptr;
 }
 
+bool ClearProgressTokenIfExists(DataType data_type,
+                                sync_pb::ClientToServerMessage* message) {
+  google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>*
+      progress_markers =
+          message->mutable_get_updates()->mutable_from_progress_marker();
+  for (int index = 0; index < progress_markers->size(); ++index) {
+    if (syncer::GetDataTypeFromSpecificsFieldNumber(
+            progress_markers->Get(index).data_type_id()) == data_type) {
+      progress_markers->at(index).clear_token();
+      return true;
+    }
+  }
+  return false;
+}
+
+DataTypeSet ClearProgressTokensForTypes(
+    DataTypeSet data_types,
+    sync_pb::ClientToServerMessage* message) {
+  syncer::DataTypeSet removed_token_types;
+  if (message->message_contents() ==
+      sync_pb::ClientToServerMessage::GET_UPDATES) {
+    for (const syncer::DataType type : data_types) {
+      if (ClearProgressTokenIfExists(type, message)) {
+        removed_token_types.Put(type);
+      }
+    }
+  }
+  return removed_token_types;
+}
+
 void VerifyNoProgressMarkerExistsInResponseForFullUpdateType(
     sync_pb::GetUpdatesResponse* gu_response) {
   for (const sync_pb::DataTypeProgressMarker& marker :
@@ -171,6 +201,18 @@ void PopulateFullUpdateTypeResults(
     new_marker->mutable_gc_directive()->set_type(
         sync_pb::GarbageCollectionDirective::VERSION_WATERMARK);
     new_marker->mutable_gc_directive()->set_version_watermark(version - 1);
+  }
+}
+
+void AddClearAllGCDirectives(syncer::DataTypeSet data_types,
+                             sync_pb::GetUpdatesResponse* gu_response) {
+  google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>*
+      progress_markers = gu_response->mutable_new_progress_marker();
+  for (sync_pb::DataTypeProgressMarker& progress_marker : *progress_markers) {
+    if (data_types.Has(syncer::GetDataTypeFromSpecificsFieldNumber(
+            progress_marker.data_type_id()))) {
+      progress_marker.mutable_gc_directive()->set_version_watermark(0);
+    }
   }
 }
 
@@ -273,19 +315,27 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
   // loopback server has a strong expectations about how progress tokens are
   // structured. To not interfere with this, we remove progress markers for
   // full-update types before passing the request to the loopback server.
-  sync_pb::ClientToServerMessage message_without_full_update_type = message;
+  sync_pb::ClientToServerMessage message_for_loopback_server = message;
   std::unique_ptr<sync_pb::DataTypeProgressMarker> wallet_marker =
-      RemoveFullUpdateTypeProgressMarkerIfExists(
-          syncer::AUTOFILL_WALLET_DATA, &message_without_full_update_type);
+      RemoveFullUpdateTypeProgressMarkerIfExists(syncer::AUTOFILL_WALLET_DATA,
+                                                 &message_for_loopback_server);
   std::unique_ptr<sync_pb::DataTypeProgressMarker> offer_marker =
-      RemoveFullUpdateTypeProgressMarkerIfExists(
-          syncer::AUTOFILL_WALLET_OFFER, &message_without_full_update_type);
+      RemoveFullUpdateTypeProgressMarkerIfExists(syncer::AUTOFILL_WALLET_OFFER,
+                                                 &message_for_loopback_server);
   std::unique_ptr<sync_pb::DataTypeProgressMarker> valuable_marker =
-      RemoveFullUpdateTypeProgressMarkerIfExists(
-          syncer::AUTOFILL_VALUABLE, &message_without_full_update_type);
+      RemoveFullUpdateTypeProgressMarkerIfExists(syncer::AUTOFILL_VALUABLE,
+                                                 &message_for_loopback_server);
+
+  // If any of the data type progress markers are (simulated to be) too old,
+  // drop them from the message to the loopback server, so it'll respond with a
+  // full update.
+  syncer::DataTypeSet send_clear_all_directive_types =
+      ClearProgressTokensForTypes(old_progress_marker_types_,
+                                  &message_for_loopback_server);
+  old_progress_marker_types_.RemoveAll(send_clear_all_directive_types);
 
   net::HttpStatusCode http_status_code =
-      SendToLoopbackServer(message_without_full_update_type, response);
+      SendToLoopbackServer(message_for_loopback_server, response);
 
   if (response->has_get_updates() && disallow_sending_encryption_keys_) {
     response->mutable_get_updates()->clear_encryption_keys();
@@ -315,6 +365,12 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
                                     response->mutable_get_updates());
     }
 
+    if (!send_clear_all_directive_types.empty()) {
+      AddClearAllGCDirectives(send_clear_all_directive_types,
+                              response->mutable_get_updates());
+    }
+
+    // Populate `active_collaboration_ids`.
     for (sync_pb::DataTypeProgressMarker& progress_marker :
          *response->mutable_get_updates()->mutable_new_progress_marker()) {
       DataType type = syncer::GetDataTypeFromSpecificsFieldNumber(
@@ -644,6 +700,10 @@ bool FakeServer::EnableAlternatingTriggeredErrors() {
   // Reset the counter so that the the first request yields a triggered error.
   request_counter_ = 0;
   return true;
+}
+
+void FakeServer::SetRejectOldProgressMarkerForType(syncer::DataType data_type) {
+  old_progress_marker_types_.Put(data_type);
 }
 
 void FakeServer::DisallowSendingEncryptionKeys() {
