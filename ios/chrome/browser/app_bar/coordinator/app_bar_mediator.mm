@@ -21,7 +21,7 @@
                               WebStateListObserving>
 
 // The web state list currently observed by this mediator.
-@property(nonatomic, assign) WebStateList* webStateList;
+@property(nonatomic, assign) WebStateList* currentWebStateList;
 
 @end
 
@@ -68,18 +68,18 @@
   _incognitoWebStateList = incognitoWebStateList;
   if (_tabGridState.tabGridVisible &&
       _currentPage == TabGridPageIncognitoTabs) {
-    self.webStateList = _incognitoWebStateList;
+    self.currentWebStateList = _incognitoWebStateList;
     [self updateConsumer];
   } else if (_incognitoState.incognitoContentVisible) {
-    self.webStateList = _incognitoWebStateList;
+    self.currentWebStateList = _incognitoWebStateList;
   }
 }
 
 - (void)disconnect {
   self.consumer = nil;
-  if (self.webStateList) {
-    self.webStateList->RemoveObserver(_observerBridge.get());
-    self.webStateList = nullptr;
+  if (self.currentWebStateList) {
+    self.currentWebStateList->RemoveObserver(_observerBridge.get());
+    self.currentWebStateList = nullptr;
   }
   _observerBridge.reset();
   _regularWebStateList = nullptr;
@@ -100,14 +100,14 @@
   if (_tabGridState.tabGridVisible) {
     return;
   }
-  self.webStateList = _incognitoWebStateList;
+  self.currentWebStateList = _incognitoWebStateList;
 }
 
 - (void)willExitIncognitoForState:(IncognitoState*)incognitoState {
   if (_tabGridState.tabGridVisible) {
     return;
   }
-  self.webStateList = _regularWebStateList;
+  self.currentWebStateList = _regularWebStateList;
 }
 
 #pragma mark - TabGridStateObserver
@@ -149,13 +149,13 @@
 
 #pragma mark - Properties
 
-- (void)setWebStateList:(WebStateList*)webStateList {
-  if (_webStateList) {
-    _webStateList->RemoveObserver(_observerBridge.get());
+- (void)setCurrentWebStateList:(WebStateList*)currentWebStateList {
+  if (_currentWebStateList) {
+    _currentWebStateList->RemoveObserver(_observerBridge.get());
   }
-  _webStateList = webStateList;
-  if (_webStateList) {
-    _webStateList->AddObserver(_observerBridge.get());
+  _currentWebStateList = currentWebStateList;
+  if (_currentWebStateList) {
+    _currentWebStateList->AddObserver(_observerBridge.get());
   }
   [self updateConsumer];
 }
@@ -164,20 +164,20 @@
 
 // Updates the consumer with the current state of the web state list.
 - (void)updateConsumer {
-  if (!self.consumer || !self.webStateList) {
+  if (!self.consumer || !self.currentWebStateList) {
     return;
   }
-  [self.consumer updateTabCount:self.webStateList->count()];
+  [self.consumer updateTabCount:self.currentWebStateList->count()];
 }
 
 // Updates for entering tab grid `page`.
 - (void)updateForTabGridPage:(TabGridPage)page {
   switch (page) {
     case TabGridPageIncognitoTabs:
-      self.webStateList = _incognitoWebStateList;
+      self.currentWebStateList = _incognitoWebStateList;
       break;
     case TabGridPageRegularTabs:
-      self.webStateList = _regularWebStateList;
+      self.currentWebStateList = _regularWebStateList;
       break;
     case TabGridPageTabGroups:
       // TODO(crbug.com/472279443): Handle tab groups page.
@@ -188,9 +188,9 @@
 // Updates for `incognito` being visible.
 - (void)updateForIncognitoVisible:(BOOL)incognitoVisible {
   if (incognitoVisible) {
-    self.webStateList = _incognitoWebStateList;
+    self.currentWebStateList = _incognitoWebStateList;
   } else {
-    self.webStateList = _regularWebStateList;
+    self.currentWebStateList = _regularWebStateList;
   }
 }
 
