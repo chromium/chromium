@@ -197,11 +197,15 @@ source_set("sync_integration_tests_impl") {
         "two_client_dictionary_sync_test.cc",
       ]
     }
-    if (is_win || is_mac || is_linux) {
+
+    # TODO(crbug.com/478187672): Fix flakiness and enable on ASan.
+    if (is_win || is_mac || (is_linux && !is_asan)) {
       sources +=
           [ "web_apps/two_client_web_apps_integration_test_mac_win_linux.cc" ]
     }
-    if (is_win || is_linux) {
+
+    # TODO(crbug.com/478187672): Fix flakiness and enable on ASan.
+    if (is_win || (is_linux && !is_asan)) {
       sources +=
           [ "web_apps/two_client_web_apps_integration_test_win_linux.cc" ]
     }
