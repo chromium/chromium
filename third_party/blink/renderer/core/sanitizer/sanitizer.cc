@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerconfig_sanitizerpresets.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespace_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizerelementnamespacewithattributes_string.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -808,6 +809,58 @@ void Sanitizer::SanitizeUnsafe(Node* root) const {
   Sanitize(root, /*safe*/ false);
 }
 
+Sanitizer::Action Sanitizer::ActionForNode(Node* node, Node* root) const {
+  switch (node->getNodeType()) {
+    case Node::NodeType::kElementNode: {
+      // Step 5: Child implements Element.
+      // Step 5.1: Let elementName [...]. Here: Get the element pointer.
+      Element* element = To<Element>(node);
+      if (replace_elements_ &&
+          replace_elements_->Contains(element->TagQName())) {
+        // Step 5.2: If [...configuration["replaceWithChildrenElements"]...]
+        return Action::kReplaceWithChildren;
+      }
+
+      if (allow_elements_) {
+        // Step 5.3: If configuration["elements"] exists:
+        // 5.3.1: If configuration["elements"] does not contain elementName:
+        return allow_elements_->Contains(element->TagQName())
+                   ? Action::kKeepElement
+                   : Action::kDrop;
+      }
+
+      // Step 5.4: Otherwise.
+      // Step 5.4.1: If configuration["removeElements"] contains elementName
+      DCHECK(remove_elements_);
+      return remove_elements_->Contains(element->TagQName())
+                 ? Action::kDrop
+                 : Action::kKeepElement;
+      // Steps 5.5-5.9 are in the subsequent switch-case, based on |action|.
+    }
+    case Node::NodeType::kCommentNode:
+      // Step 4: If child implement Comments & config["comments"] is not true:
+      return (comments_ == SanitizerBoolWithAbsence::kTrue) ? Action::kKeep
+                                                            : Action::kDrop;
+    case Node::NodeType::kTextNode:
+      // Step 3: If child implements Text, then continue.
+      return Action::kKeep;
+    case Node::NodeType::kDocumentTypeNode:
+      // Step 2: If child implement DocumentType, then continue.
+      // Should only happen when parsing full documents w/ parseHTML.
+      DCHECK(root->IsDocumentNode());
+      return Action::kKeep;
+    default:
+      // Step 1: Assert: child implements Text, Comment, Element, DocType.
+      // TODO(nrosenthal): check if this holds true for streaming sanitizer.
+      NOTREACHED();
+  }
+}
+
+void Sanitizer::ProcessElement(Element* element, bool safe) const {
+  SanitizeElement(element);
+  SanitizeJavascriptNavigationAttributes(element, safe);
+}
+
 void Sanitizer::Sanitize(Node* root, bool safe) const {
   // https://wicg.github.io/sanitizer-api/#sanitize-core
   // This is structured a little differently than the spec, for better
@@ -816,67 +869,21 @@ void Sanitizer::Sanitize(Node* root, bool safe) const {
   SanitizeTemplate(root, safe);
   Node* node = NodeTraversal::Next(*root);
   while (node) {
-    enum { kKeep, kKeepElement, kDrop, kReplaceWithChildren } action = kDrop;
-    switch (node->getNodeType()) {
-      case Node::NodeType::kElementNode: {
-        // Step 5: Child implements Element.
-        // Step 5.1: Let elementName [...]. Here: Get the element pointer.
-        Element* element = To<Element>(node);
-        if (replace_elements_ &&
-            replace_elements_->Contains(element->TagQName())) {
-          // Step 5.2: If [...configuration["replaceWithChildrenElements"]...]
-          action = kReplaceWithChildren;
-        } else if (allow_elements_) {
-          // Step 5.3: If configuration["elements"] exists:
-          // 5.3.1: If configuration["elements"] does not contain elementName:
-          action = allow_elements_->Contains(element->TagQName()) ? kKeepElement
-                                                                  : kDrop;
-        } else {
-          // Step 5.4: Otherwise.
-          // Step 5.4.1: If configuration["removeElements"] contains elementName
-          DCHECK(remove_elements_);
-          action = remove_elements_->Contains(element->TagQName())
-                       ? kDrop
-                       : kKeepElement;
-        }
-        // Steps 5.5-5.9 are in the subsequent switch-case, based on |action|.
-        break;
-      }
-      case Node::NodeType::kCommentNode:
-        // Step 4: If child implement Comments & config["comments"] is not true:
-        action = (comments_ == SanitizerBoolWithAbsence::kTrue) ? kKeep : kDrop;
-        break;
-      case Node::NodeType::kTextNode:
-        // Step 3: If child implements Text, then continue.
-        action = kKeep;
-        break;
-      case Node::NodeType::kDocumentTypeNode:
-        // Step 2: If child implement DocumentType, then continue.
-        // Should only happen when parsing full documents w/ parseHTML.
-        DCHECK(root->IsDocumentNode());
-        action = kKeep;
-        break;
-      default:
-        // Step 1: Assert: child implements Text, Comment, Element, DocType.
-        NOTREACHED();
-    }
-
-    switch (action) {
-      case kKeepElement: {
+    switch (ActionForNode(node, root)) {
+      case Action::kKeepElement: {
         // This performs Steps 5.5 - 5.9:
         CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
-        SanitizeElement(To<Element>(node));
-        SanitizeJavascriptNavigationAttributes(To<Element>(node), safe);
+        ProcessElement(To<Element>(node), safe);
         SanitizeTemplate(node, safe);
         node = NodeTraversal::Next(*node);
         break;
       }
-      case kKeep: {
+      case Action::kKeep: {
         CHECK_NE(node->getNodeType(), Node::NodeType::kElementNode);
         node = NodeTraversal::Next(*node);
         break;
       }
-      case kReplaceWithChildren: {
+      case Action::kReplaceWithChildren: {
         // Steps 5.2.*:
         CHECK_EQ(node->getNodeType(), Node::NodeType::kElementNode);
         Node* next_node = node->firstChild();
@@ -891,7 +898,7 @@ void Sanitizer::Sanitize(Node* root, bool safe) const {
         node = next_node;
         break;
       }
-      case kDrop: {
+      case Action::kDrop: {
         Node* next_node = NodeTraversal::NextSkippingChildren(*node);
         node->parentNode()->removeChild(node);
         node = next_node;
@@ -901,12 +908,28 @@ void Sanitizer::Sanitize(Node* root, bool safe) const {
   }
 }
 
+bool Sanitizer::SanitizeSingleNode(Node* node, bool safe) const {
+  Action action = ActionForNode(node, node);
+  if (action == Action::kKeepElement) {
+    ProcessElement(To<Element>(node), safe);
+    return true;
+  }
+
+  return action == Action::kKeep;
+}
+
+bool Sanitizer::ShouldReplaceNodeWithChildren(Node* node) const {
+  return replace_elements_ && node->IsElementNode() &&
+         !IsA<HTMLTemplateElement>(node) &&
+         replace_elements_->Contains(To<Element>(node)->TagQName());
+}
+
 bool Sanitizer::setFrom(const SanitizerConfig* config,
                         bool allowCommentsAndDataAttributes) {
   // https://wicg.github.io/sanitizer-api/#configuration-set
   //
-  // Since out internal representation is quite different from the external one,
-  // the structure here is quite different from the spec text.
+  // Since out internal representation is quite different from the external
+  // one, the structure here is quite different from the spec text.
 
   // This method assumes a newly constructed instance.
   CHECK(!allow_elements_);
@@ -1109,7 +1132,8 @@ bool Sanitizer::isValid() const {
   if (allow_elements_ && remove_elements_) {
     return false;
   }
-  // Step 2: [..] either an attributes or a removeAttributes key, but not both.
+  // Step 2: [..] either an attributes or a removeAttributes key, but not
+  // both.
   if (allow_attrs_ && remove_attrs_) {
     return false;
   }
@@ -1124,7 +1148,8 @@ bool Sanitizer::isValid() const {
   }
   // Step 6: If both config[removeElements] and
   //   config[replaceWithChildrenElements] exist, then the intersection of
-  //   config[removeElements] and config[replaceWithChildrenElements] is empty.
+  //   config[removeElements] and config[replaceWithChildrenElements] is
+  //   empty.
   if (Intersect(remove_elements_, replace_elements_)) {
     return false;
   }
@@ -1135,7 +1160,8 @@ bool Sanitizer::isValid() const {
       // Step 7.1.1: For each element of config[elements]:
       for (const auto& element : *allow_elements_) {
         // Step 7.1.1.1: [No dupes:] element[attributes] +
-        //   element[removeAttributes] (Not meaningful here, since we use sets.)
+        //   element[removeAttributes] (Not meaningful here, since we use
+        //   sets.)
         // Step 7.1.1.2: The intersection of config[attributes] and
         //   element[attributes] [..] is empty.
         if (allow_attrs_per_element_.Contains(element) &&

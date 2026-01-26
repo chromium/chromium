@@ -365,7 +365,8 @@ HTMLDocumentParser::HTMLDocumentParser(
     Element* context_element,
     ParserContentPolicy parser_content_policy,
     ParserPrefetchPolicy parser_prefetch_policy,
-    CustomElementRegistry* registry)
+    CustomElementRegistry* registry,
+    StreamingSanitizer* sanitizer)
     : HTMLDocumentParser(fragment_target->GetDocument(),
                          parser_content_policy,
                          kForceSynchronousParsing,
@@ -384,7 +385,7 @@ HTMLDocumentParser::HTMLDocumentParser(
   // No script_runner_ in fragment parser.
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
       this, fragment_target, context_element, parser_content_policy, options_,
-      include_shadow_roots, registry);
+      include_shadow_roots, registry, sanitizer);
 }
 
 HTMLDocumentParser::HTMLDocumentParser(Document& document,
@@ -1371,7 +1372,7 @@ void HTMLDocumentParser::ParseDocumentFragment(
     ParserContentPolicy parser_content_policy) {
   auto* parser = MakeGarbageCollected<HTMLDocumentParser>(
       fragment, context_element, parser_content_policy,
-      ParserPrefetchPolicy::kAllowPrefetching, registry);
+      ParserPrefetchPolicy::kAllowPrefetching, registry, /*sanitizer*/ nullptr);
 
   if (RuntimeEnabledFeatures::DOMPartsAPIEnabled()) {
     // Within templates containing the `parseparts` attribute, allow parsing

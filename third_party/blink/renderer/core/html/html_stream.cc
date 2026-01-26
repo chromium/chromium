@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -38,13 +39,18 @@ class HTMLSink : public UnderlyingSinkBase {
 
   ScriptPromise<IDLUndefined> start(ScriptState* script_state,
                                     WritableStreamDefaultController*,
-                                    ExceptionState&) override {
+                                    ExceptionState& exception_state) override {
     Element* context_element = DynamicTo<Element>(target.Get());
     if (!context_element) {
       if (ShadowRoot* shadow = DynamicTo<ShadowRoot>(target.Get())) {
         context_element = &shadow->host();
       }
     }
+
+    // TODO(nrosenthal): support safe sanitizer.
+    StreamingSanitizer* sanitizer =
+        SanitizerAPI::CreateStreamingSanitizerUnsafeInternal(options, target,
+                                                             exception_state);
     // FIXME(nrosenthal): support more methods. This currently assumes "append".
     // FIXME(nrosenthal): custom element registry support?
     parser = MakeGarbageCollected<HTMLDocumentParser>(
@@ -53,7 +59,9 @@ class HTMLSink : public UnderlyingSinkBase {
             ? ParserContentPolicy::
                   kAllowScriptingContentAndDoNotMarkAlreadyStarted
             : ParserContentPolicy::kAllowScriptingContent,
-        ParserPrefetchPolicy::kDisallowPrefetching, /*registry*/ nullptr);
+        ParserPrefetchPolicy::kDisallowPrefetching, /*registry*/ nullptr,
+        /*sanitizer*/ sanitizer);
+
     return ToResolvedUndefinedPromise(script_state);
   }
 
