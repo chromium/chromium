@@ -36,8 +36,8 @@ constexpr CGFloat kDefaultSymbolPointSize = 22;
 
 - (ToolbarButton*)makeReloadButton {
   ToolbarButton* button = [[ToolbarButton alloc] initWithImageLoader:^UIImage* {
-    return DefaultSymbolWithPointSize(kArrowClockWiseSymbol,
-                                      kDefaultSymbolPointSize);
+    return CustomSymbolWithPointSize(kArrowClockWiseSymbol,
+                                     kDefaultSymbolPointSize);
   }];
   button.visibilityMask = ToolbarButtonVisibility::kRegularRegular;
   button.accessibilityIdentifier = kToolbarReloadButtonIdentifier;

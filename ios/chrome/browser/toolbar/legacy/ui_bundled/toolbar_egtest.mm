@@ -69,10 +69,10 @@ void WaitForEmpyOmnibox() {
 }  // namespace
 
 // Toolbar integration tests for Chrome.
-@interface ToolbarTestCase : ChromeTestCase
+@interface LegacyToolbarTestCase : ChromeTestCase
 @end
 
-@implementation ToolbarTestCase
+@implementation LegacyToolbarTestCase
 
 - (void)setUp {
   [super setUp];
