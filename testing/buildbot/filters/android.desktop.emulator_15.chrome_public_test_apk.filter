@@ -26,11 +26,6 @@
 -org.chromium.chrome.browser.payments.PaymentRequestShowPromiseInvalidDetailsTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestShowPromiseRejectTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestShowPromiseSingleOptionShippingDelayTest.*
--org.chromium.chrome.browser.payments.PaymentRequestShowPromiseSingleOptionShippingTest.*
--org.chromium.chrome.browser.payments.PaymentRequestShowPromiseSingleOptionShippingWithUpdateTest.*
--org.chromium.chrome.browser.payments.PaymentRequestShowPromiseUSOnlyShippingTest.*
--org.chromium.chrome.browser.payments.PaymentRequestShowPromiseUnsupportedTest.*
--org.chromium.chrome.browser.payments.PaymentRequestTabTest.*
 
 # crbug.com/446934111
 -org.chromium.chrome.browser.incognito.IncognitoPermissionLeakageTest.*
