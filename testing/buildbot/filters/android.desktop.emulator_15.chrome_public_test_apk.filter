@@ -48,9 +48,6 @@
 -org.chromium.chrome.browser.tabmodel.ContextMenuLoadUrlParamsTest.testOpenInIncognitoTabNoReferrer
 
 # crbug.com/376375165
--org.chromium.chrome.browser.NavigateTest.testOpenLink
--org.chromium.chrome.browser.NavigateTest.testTabObserverOnPageLoadStarted
--org.chromium.chrome.browser.NavigateTest.testWindowOpenUrlSpoof
 
 # crbug.com/376371633
 -org.chromium.chrome.browser.tabmodel.ChromeTabCreatorTest.testCreateNewTabInBackground
@@ -119,8 +116,6 @@
 -org.chromium.chrome.browser.input.SelectPopupOtherContentViewTest.testPopupNotClosedByOtherContentView
 -org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.*
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
--org.chromium.chrome.browser.LauncherShortcutTest.testDynamicShortcuts
--org.chromium.chrome.browser.LauncherShortcutTest.testDynamicShortcuts_LanguageChange
 -org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testMutedPlaybackDoesNotTakeAudioFocus
 -org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testUnmutedPlaybackTakesAudioFocus
 -org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.*
@@ -162,9 +157,4 @@
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testTypedSuggestions_Incognito
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testTypedSuggestions_OpenSearchSuggestion_Incognito
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testZeroPrefixSuggestions_Incognito
--org.chromium.chrome.browser.TabsTest.testLastClosedTabTriggersNotifyChangedCall
--org.chromium.chrome.browser.TabsTest.testLastClosedUndoableTabGetsHidden
 -org.chromium.chrome.browser.toolbar.TabSwitcherDrawableRenderTest.testTabSwitcherDrawable_newTabPageIncognito
--org.chromium.chrome.browser.ToolbarSwipeTest.testToolbarSwipeNextThenPrevTabIncognito
--org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsChildSnapshotControlsOverlay
--org.chromium.chrome.browser.ViewTransitionPixelTest.testBrowserControlsRootSnapshotControlsOverlay

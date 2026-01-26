@@ -227,8 +227,8 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/339299609
-    public void testOpenLink() throws Exception {
+        @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // https://crbug.com/339299609, https://crbug.com/376375165
+        public void testOpenLink() throws Exception {
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
 
@@ -362,7 +362,8 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/339299609
+    @DisableIf.Device(
+            DeviceFormFactor.TABLET_OR_DESKTOP) // https://crbug.com/339299609, https://crbug.com/376375165
     public void testTabObserverOnPageLoadStarted() throws Exception {
         final String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         final String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
@@ -745,6 +746,7 @@ public class NavigateTest {
 
     @Test
     @DisableIf.Build(hardware_is = "sprout", message = "fails on android-one: crbug.com/540723")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376375165
     @MediumTest
     @Feature({"Navigation"})
     @CommandLineFlags.Add({"ip-address-space-overrides=[::1]:0=public"})
