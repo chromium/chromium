@@ -21,6 +21,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogMediator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettings.java",
+    "java/src/org/chromium/chrome/browser/search_engines/settings/SiteSearchSettings.java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]

@@ -481,6 +481,11 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         You can choose your search engine
       </message>
 
+      <!-- Manage search engines and site search -->
+      <message name="IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH" desc="Title shown in the menu item that takes the user to 'Manage search engines and site search' in Settings.">
+        Manage search engines and site search
+      </message>
+
       <!-- Address bar settings -->
       <message name="IDS_ADDRESS_BAR_SETTINGS" desc="Title for Address Bar settings. [CHAR_LIMIT=32]">
         Address bar
