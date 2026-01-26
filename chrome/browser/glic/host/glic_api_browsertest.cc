@@ -72,8 +72,11 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -93,6 +96,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
@@ -592,16 +596,35 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
         &policy_provider_);
   }
 
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     &test_url_loader_factory_));
+
+    GlicApiTestWithOneTab::SetUpBrowserContextKeyedServices(context);
+  }
+
   void SetUpOnMainThread() override {
     GlicApiTestWithOneTab::SetUpOnMainThread();
+
+    adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
+    identity_test_env_ = adaptor_->identity_test_env();
+    identity_test_env_->SetTestURLLoaderFactory(&test_url_loader_factory_);
+    identity_manager_ = IdentityManagerFactory::GetForProfile(GetProfile());
+    SimulatePrimaryAccountChangedSignIn("foo@bar.com", "");
+
     policy_provider_.SetupPolicyServiceForPolicyUpdates(
         browser()->profile()->GetProfilePolicyConnector()->policy_service());
-    actor::ActorKeyedService::Get(browser()->profile())
-        ->GetPolicyChecker()
-        .set_account_eligible_for_actuation_for_testing(true);
   }
 
   void TearDownOnMainThread() override {
+    identity_manager_ = nullptr;
+    identity_test_env_ = nullptr;
+    adaptor_.reset();
     policy_provider_.SetupPolicyServiceForPolicyUpdates(nullptr);
     GlicApiTestWithOneTab::TearDownOnMainThread();
   }
@@ -617,6 +640,32 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
   }
 
  private:
+  // `email` must be non-empty. Empty `host_domain` simulates a consumer
+  // account.
+  void SimulatePrimaryAccountChangedSignIn(std::string_view email,
+                                           std::string_view host_domain) {
+    identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
+
+    AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
+        std::string(email), signin::ConsentLevel::kSignin);
+
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+    mutator.set_is_subject_to_enterprise_features(!host_domain.empty());
+
+    identity_test_env_->UpdateAccountInfoForAccount(account_info);
+    identity_test_env_->SimulateSuccessfulFetchOfAccountInfo(
+        account_info.account_id, account_info.email, account_info.gaia,
+        std::string(host_domain), base::StrCat({"full_name-", email}),
+        base::StrCat({"given_name-", email}), base::StrCat({"local-", email}),
+        base::StrCat({"full_name-", email}));
+  }
+
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+
   ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

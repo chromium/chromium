@@ -76,12 +76,6 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
                    TaskId task_id,
                    DecisionCallbackWithReason callback);
 
-  // Allows the test to bypass the enterprise account eligibility checking
-  // completely. Does NOT bypass the policy checks for management.
-  void set_account_eligible_for_actuation_for_testing(bool enabled) {
-    account_eligible_for_actuation_for_testing_ = enabled;
-  }
-
 #if BUILDFLAG(ENABLE_GLIC)
   // Allows tests to synchronize on allow/blocklist updates.
   base::CallbackListSubscription AddUrlListsUpdateObserverForTesting(
@@ -127,8 +121,6 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer,
 
   CanActOutcome can_act_on_web_ = CanActOutcome::kYes;
   CannotActReason cannot_act_on_web_reason_;
-
-  bool account_eligible_for_actuation_for_testing_ = false;
 
 #if BUILDFLAG(ENABLE_GLIC)
   // Stores enterprise allowlist/blocklist policies for specific URLs.

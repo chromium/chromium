@@ -457,9 +457,6 @@ ActorPolicyChecker::ComputeActOnWebCapability() {
 
   bool account_eligible_for_actuation =
       IsAccountEligibleForActuation(*profile, *journal_);
-  if (account_eligible_for_actuation_for_testing_) [[unlikely]] {
-    account_eligible_for_actuation = true;
-  }
   if (!account_eligible_for_actuation) {
     return log_and_return(CanActOutcome::kNo,
                           CannotActReason::kManagedOrDataProtected);
