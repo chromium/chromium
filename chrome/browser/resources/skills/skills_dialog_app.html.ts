@@ -9,7 +9,7 @@ import type {SkillsDialogAppElement} from './skills_dialog_app.js';
 // TODO(b/477385863): Use i18n string once finalized.
 export function getHtml(this: SkillsDialogAppElement) {
   // clang-format off
-  return html`
+  return html`<!--_html_template_start_-->
 <h1 id="header">Add Skill</h1>
 <p id="description" class="description">Skills help simplify and automate repetitive tasks</p>
 <div class="form-group">
@@ -32,6 +32,6 @@ export function getHtml(this: SkillsDialogAppElement) {
       $i18n{save}
   </cr-button>
 </div>
-`;
+<!--_html_template_end_-->`;
   // clang-format on
 }
