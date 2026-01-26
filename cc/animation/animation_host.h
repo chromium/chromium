@@ -88,6 +88,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   scoped_refptr<AnimationTimeline> GetScopedRefTimelineById(int timeline_id);
   const AnimationTrigger* GetTriggerById(int id) const;
+  AnimationTrigger* GetTriggerById(int id);
 
   void RegisterAnimationForElement(ElementId element_id, Animation* animation);
   void UnregisterAnimationForElement(ElementId element_id,
@@ -279,6 +280,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void PushPropertiesToImplThread(AnimationHost* host_impl);
 
   void EraseTimeline(scoped_refptr<AnimationTimeline> timeline);
+  void EraseTrigger(scoped_refptr<AnimationTrigger> trigger);
 
   // Return true if there are any animations that get mutated.
   void TickMutator(base::TimeTicks monotonic_time,

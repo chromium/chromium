@@ -2089,6 +2089,13 @@ bool AffectsBackgroundColor(const AnimationEffect& effect) {
   return effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor()));
 }
 
+bool HasAnimationTrigger(size_t animation_index,
+                         ComputedStyleBuilder& builder) {
+  CSSAnimationData* data = builder.Animations();
+  return data && animation_index < data->NameList().size() &&
+         data->GetTriggerAttachments(animation_index);
+}
+
 void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
                                    ComputedStyleBuilder& builder) {
   if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
@@ -2110,10 +2117,19 @@ void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
 }
 
 // Called for animations that are newly created or updated.
-void UpdateAnimationFlagsForInertEffect(const InertEffect& effect,
-                                        ComputedStyleBuilder& builder) {
-  if (!effect.IsCurrent())
+void UpdateAnimationFlagsForInertEffect(
+    const InertEffect& effect,
+    ComputedStyleBuilder& builder,
+    std::optional<size_t> animation_index = std::nullopt) {
+  bool has_triggers = RuntimeEnabledFeatures::AnimationTriggerEnabled() &&
+                      animation_index.has_value() &&
+                      HasAnimationTrigger(*animation_index, builder);
+
+  if (!effect.IsCurrent() && !has_triggers) {
+    // If the animation has triggers, the triggers will eventually make it
+    // current. Ensure that we create the necessary property nodes.
     return;
+  }
 
   UpdateAnimationFlagsForEffect(effect, builder);
 }
@@ -2123,7 +2139,12 @@ void UpdateAnimationFlagsForAnimation(const Animation& animation,
                                       ComputedStyleBuilder& builder) {
   const AnimationEffect& effect = *animation.effect();
 
-  if (!effect.IsCurrent() && !effect.IsInEffect()) {
+  const CSSAnimation* css_animation = DynamicTo<CSSAnimation>(&animation);
+  bool has_triggers =
+      RuntimeEnabledFeatures::AnimationTriggerEnabled() && css_animation &&
+      HasAnimationTrigger(css_animation->AnimationIndex(), builder);
+
+  if (!effect.IsCurrent() && !effect.IsInEffect() && !has_triggers) {
     return;
   }
 
@@ -2135,8 +2156,10 @@ void UpdateAnimationFlagsForAnimation(const Animation& animation,
 void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
                                          CSSAnimationUpdate& update,
                                          ComputedStyleBuilder& builder) {
-  for (const auto& new_animation : update.NewAnimations())
-    UpdateAnimationFlagsForInertEffect(*new_animation.effect, builder);
+  for (const auto& new_animation : update.NewAnimations()) {
+    UpdateAnimationFlagsForInertEffect(*new_animation.effect, builder,
+                                       new_animation.name_index);
+  }
 
   for (const auto& updated_animation : update.AnimationsWithUpdates())
     UpdateAnimationFlagsForInertEffect(*updated_animation.effect, builder);

@@ -4,11 +4,30 @@
 
 #include "cc/animation/animation_trigger.h"
 
+#include <vector>
+
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_effect.h"
 
 namespace cc {
+
+AnimationTrigger::AnimationData::AnimationData(int animation_id,
+                                               int timeline_id,
+                                               Behavior activate_behavior,
+                                               Behavior deactivate_behavior)
+    : animation_id(animation_id),
+      timeline_id(timeline_id),
+      activate_behavior(activate_behavior),
+      deactivate_behavior(deactivate_behavior) {}
+
+AnimationTrigger::AnimationData::AnimationData(const AnimationData& data) =
+    default;
+
+bool AnimationTrigger::AnimationData::operator==(
+    const AnimationData& other) const = default;
+
+AnimationTrigger::AnimationData::~AnimationData() = default;
 
 AnimationTrigger::AnimationTrigger(int id) : id_(id) {}
 
@@ -36,9 +55,26 @@ void AnimationTrigger::WaitForProtectedSequenceCompletion() const {
   }
 }
 
+void AnimationTrigger::PushPropertiesTo(AnimationTrigger* trigger_impl) {
+  trigger_impl->animation_data_.Write(*trigger_impl) =
+      animation_data_.Read(*this);
+}
+
 void AnimationTrigger::SetNeedsPushProperties() {
   if (animation_host_) {
     animation_host_->SetNeedsPushProperties();
+  }
+}
+
+const std::vector<AnimationTrigger::AnimationData>&
+AnimationTrigger::GetAnimationDataForTest() {
+  return animation_data_.Read(*this);
+}
+
+void AnimationTrigger::SetAnimationData(std::vector<AnimationData>& data) {
+  if (animation_data_.Read(*this) != data) {
+    SetNeedsPushProperties();
+    animation_data_.Write(*this) = data;
   }
 }
 

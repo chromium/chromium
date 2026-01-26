@@ -223,7 +223,7 @@ void DocumentAnimations::UpdateAnimations(
     document_->View()->ScheduleAnimation();
   }
 
-  UpdateCompositorAnimationTriggers();
+  UpdateCompositorAnimationTriggers(paint_artifact_compositor);
 
   document_->GetWorkletAnimationController().UpdateAnimationStates();
   document_->GetFrame()->ScheduleNextServiceForPostLayoutSnapshotClients();
@@ -413,14 +413,15 @@ void DocumentAnimations::AddAnimationTrigger(AnimationTrigger& trigger) {
   triggers_.insert(&trigger);
 }
 
-void DocumentAnimations::UpdateCompositorAnimationTriggers() {
+void DocumentAnimations::UpdateCompositorAnimationTriggers(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
   if (!RuntimeEnabledFeatures::AnimationTriggerEnabled() ||
       !Platform::Current()->IsThreadedAnimationEnabled()) {
     return;
   }
 
   for (AnimationTrigger* trigger : triggers_) {
-    trigger->UpdateCompositorTrigger();
+    trigger->UpdateCompositorTrigger(paint_artifact_compositor);
   }
 }
 

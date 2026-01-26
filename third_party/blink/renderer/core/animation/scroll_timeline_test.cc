@@ -1166,7 +1166,8 @@ TEST_F(ScrollTimelineTest, CompositedDeferredTimelineReattachment) {
   animation->play();
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(nullptr),
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric),
             CompositorAnimations::kNoFailure);
 
   EXPECT_FALSE(animation->CompositorPending());

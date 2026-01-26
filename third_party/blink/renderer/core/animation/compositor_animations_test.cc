@@ -37,7 +37,9 @@
 #include "base/auto_reset.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
+#include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/single_thread_proxy.h"
@@ -45,6 +47,7 @@
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
@@ -2551,7 +2554,8 @@ TEST_P(AnimationCompositorAnimationsTest, UnsupportedSVGCSSProperty) {
       *element->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
             animation.CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -2632,7 +2636,8 @@ TEST_P(AnimationCompositorAnimationsTest, Fragmented) {
   EXPECT_TRUE(target->GetLayoutObject()->IsFragmented());
   EXPECT_EQ(CompositorAnimations::kTargetHasInvalidCompositingState,
             animation.CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -2712,7 +2717,8 @@ TEST_P(AnimationCompositorAnimationsTest,
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   // Setting a small negative playback rate has the following effects:
   // The scaled active duration in microseconds now exceeds the max
   // for an int64. Since the playback rate is negative we need to jump
@@ -2721,7 +2727,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   animation->setPlaybackRate(-0.01);
   EXPECT_TRUE(CompositorAnimations::kInvalidAnimationOrEffect &
               animation->CheckCanStartAnimationOnCompositor(
-                  GetDocument().View()->GetPaintArtifactCompositor()));
+                  GetDocument().View()->GetPaintArtifactCompositor(),
+                  StartOnCompositorReason::kGeneric));
 }
 
 class ScopedBackgroundColorPaintImageGenerator {
@@ -2892,7 +2899,8 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
   // Restricted to 1 native paint worklet property per animation.
   EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNotComposited,
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNotComposited,
@@ -2905,7 +2913,8 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
       animation->GetNativePaintWorkletReasons());
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
@@ -2917,7 +2926,8 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
             animation->GetNativePaintWorkletReasons());
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
@@ -2929,14 +2939,16 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
   auto it = target->GetElementAnimations()->Animations().begin();
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             it->key->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_TRUE(it->key->HasActiveAnimationsOnCompositor());
   // Intentionally flattening the traversal of the animations so that in the
   // event of a failure, we know which animation was problematic.
   it++;
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             it->key->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
 
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
@@ -2992,7 +3004,8 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletForcedColorsMode) {
             animation->GetNativePaintWorkletReasons());
   EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
 }
@@ -3030,7 +3043,8 @@ TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
 
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
 
   EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
@@ -3090,7 +3104,8 @@ TEST_P(AnimationCompositorAnimationsTest, ClipPathWithViewTimeline) {
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()) &
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric) &
                 CompositorAnimations::kUnsupportedCSSProperty);
 
   GetElementById("adjustable-spacer")
@@ -3196,7 +3211,8 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
@@ -3205,7 +3221,8 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation2->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
             target2->GetElementAnimations()->CompositedBackgroundColorStatus());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
@@ -3214,7 +3231,8 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation3->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
             target3->GetElementAnimations()->CompositedBackgroundColorStatus());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
@@ -3298,12 +3316,14 @@ TEST_P(AnimationCompositorAnimationsTest,
   HeapVector<Member<Animation>> animations = target->getAnimations();
   EXPECT_EQ(CompositorAnimations::kTargetHasIncompatibleAnimations,
             animations[0]->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_FALSE(animations[0]->HasActiveAnimationsOnCompositor());
   EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty |
                 CompositorAnimations::kTargetHasIncompatibleAnimations,
             animations[1]->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_FALSE(animations[1]->HasActiveAnimationsOnCompositor());
 
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNotComposited,
@@ -3352,7 +3372,8 @@ TEST_P(AnimationCompositorAnimationsTest, StaticNonCompositableProperty) {
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
@@ -3378,7 +3399,8 @@ TEST_P(AnimationCompositorAnimationsTest, StaticCompositableProperty) {
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_TRUE(CompositorAnimations::kAnimationHasNoVisibleChange &
               animation->CheckCanStartAnimationOnCompositor(
-                  GetDocument().View()->GetPaintArtifactCompositor()));
+                  GetDocument().View()->GetPaintArtifactCompositor(),
+                  StartOnCompositorReason::kGeneric));
   EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
@@ -3401,7 +3423,8 @@ TEST_P(AnimationCompositorAnimationsTest, EmptyKeyframes) {
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_TRUE(CompositorAnimations::kAnimationHasNoVisibleChange &
               animation->CheckCanStartAnimationOnCompositor(
-                  GetDocument().View()->GetPaintArtifactCompositor()));
+                  GetDocument().View()->GetPaintArtifactCompositor(),
+                  StartOnCompositorReason::kGeneric));
   EXPECT_FALSE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
@@ -3427,7 +3450,8 @@ TEST_P(AnimationCompositorAnimationsTest, StaticPropertiesPlusStartDelay) {
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
@@ -3489,10 +3513,12 @@ TEST_P(AnimationCompositorAnimationsTest,
   // values.
   EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
             animation1->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
             animation2->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
 
   target1->classList().add({"tweak"}, ASSERT_NO_EXCEPTION);
   target2->classList().add({"tweak"}, ASSERT_NO_EXCEPTION);
@@ -3500,11 +3526,13 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   // Start ticking the animation on the main thread.
   EXPECT_EQ(animation1->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()) &
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric) &
                 CompositorAnimations::kUnsupportedCSSProperty,
             CompositorAnimations::kUnsupportedCSSProperty);
   EXPECT_EQ(animation2->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()) &
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric) &
                 CompositorAnimations::kUnsupportedCSSProperty,
             CompositorAnimations::kUnsupportedCSSProperty);
 }
@@ -3544,14 +3572,16 @@ TEST_P(AnimationCompositorAnimationsTest,
   // Presently static as the underlying values matches the keyframe values.
   EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
 
   container->classList().add({"tweak"}, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
   // Start ticking the animation on the main thread.
   EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()) &
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric) &
                 CompositorAnimations::kUnsupportedCSSProperty,
             CompositorAnimations::kUnsupportedCSSProperty);
 }
@@ -3581,7 +3611,8 @@ TEST_P(AnimationCompositorAnimationsTest, NeutralKeyframeCompositeAdd) {
 
   // Not static due to composite mode.
   EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()) &
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric) &
                 CompositorAnimations::kUnsupportedCSSProperty,
             CompositorAnimations::kUnsupportedCSSProperty);
 }
@@ -3614,7 +3645,8 @@ TEST_P(AnimationCompositorAnimationsTest,
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+                GetDocument().View()->GetPaintArtifactCompositor(),
+                StartOnCompositorReason::kGeneric));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 }
@@ -3669,25 +3701,24 @@ TEST_F(CompositorAnimationTriggerTest, AddTimelineTriggers) {
         from { transform: scaleX(1); }
         to { transform: scaleX(5); }
       }
-      @keyframes expand2 {
-        from { transform: scaleX(1); }
-        to { transform: scaleX(5); }
+      @keyframes fadein {
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
-      @keyframes expand3 {
-        from { transform: scaleX(1); }
-        to { transform: scaleX(5); }
+      @keyframes blur {
+        to { backdrop-filter: blur(5px); }
       }
 
       .single-animation {
         timeline-trigger: --trigger view();
-        animation: expand .5s, expand;
-        animation-trigger: --trigger play;
+        animation: expand .5s;
+        animation-trigger: --trigger none;
       }
       .multiple-animations {
         timeline-trigger: --trigger view(), --trigger2 view(),
                           --trigger3 view();
-        animation: expand .5s, expand2 .4s, expand3 .3s;
-        animation-trigger: --trigger play, --trigger2 play, --trigger3 play;
+        animation: expand .5s, fadein .4s, blur .3s;
+        animation-trigger: --trigger none, --trigger2 none, --trigger3 none;
       }
 
       #target {
@@ -3715,10 +3746,24 @@ TEST_F(CompositorAnimationTriggerTest, AddTimelineTriggers) {
   auto test_for_n_triggers = [&](int n) {
     EXPECT_EQ(triggers.size(), n);
     for (auto& it : triggers) {
-      const cc::AnimationTrigger* trigger = it.second.get();
+      cc::AnimationTrigger* trigger = it.second.get();
       EXPECT_TRUE(trigger->IsTimelineTrigger());
       EXPECT_FALSE(trigger->IsEventTrigger());
-      // TODO(crbug.com/451238244): Test cc animations held by the trigger.
+      EXPECT_EQ(trigger->GetAnimationDataForTest().size(), 1);
+      int timeline_id = trigger->GetAnimationDataForTest().begin()->timeline_id;
+      cc::AnimationTimeline* timeline = host->GetTimelineById(timeline_id);
+      int animation_id =
+          trigger->GetAnimationDataForTest().begin()->animation_id;
+      // TODO(crbug.com/451238244): Modify this to check that the animation *is*
+      // playing (perhaps after a few impl frames promoting the KeyframeModels)
+      // as the target is within the trigger range. For now,
+      // cc::AnimationTriggers are not functional, so the Keyframes remain
+      // paused.
+      cc::Animation* cc_animation = timeline->GetAnimationById(animation_id);
+      cc::KeyframeEffect* effect = cc_animation->keyframe_effect();
+      for (const auto& km : effect->keyframe_models()) {
+        EXPECT_EQ(km->run_state(), gfx::KeyframeModel::RunState::PAUSED);
+      }
     }
   };
 
@@ -3764,7 +3809,7 @@ TEST_F(CompositorAnimationTriggerTest, ChangeTimelineTrigger) {
       }
 
       #target {
-        animation: expand .5s, expand;
+        animation: expand .5s;
         animation-trigger: --trigger play;
         background: green;
         height: 100px;
@@ -3804,6 +3849,187 @@ TEST_F(CompositorAnimationTriggerTest, ChangeTimelineTrigger) {
   EXPECT_NE(trigger1->id(), trigger2->id());
   EXPECT_NE(trigger2, trigger3);
   EXPECT_NE(trigger2->id(), trigger3->id());
+}
+
+TEST_F(CompositorAnimationTriggerTest, MultipleAnimationsPerTimelineTrigger) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      @keyframes expand {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      @keyframes fadein {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes blur {
+        to { backdrop-filter: blur(5px); }
+      }
+
+      .one {
+        timeline-trigger: --trigger view();
+        animation: expand .5s;
+        animation-trigger: --trigger play;
+      }
+      .two {
+        timeline-trigger: --trigger view();
+        animation: expand .5s, fadein .4s;
+        animation-trigger: --trigger play, --trigger pause;
+      }
+      .three {
+        timeline-trigger: --trigger view();
+        animation: expand .5s, fadein .4s, blur .3s;
+        animation-trigger: --trigger play, --trigger pause, --trigger reset;
+      }
+
+      #target {
+        background: green;
+        height: 100px;
+        width: 100px;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* target = GetElement("target");
+
+  const cc::AnimationHost::IdToTriggerMap& trigger_map =
+      GetAnimationHostImpl()->GetTriggersForTesting();
+
+  EXPECT_EQ(trigger_map.size(), 0);
+
+  auto test_for_n_animations = [&](int n) {
+    EXPECT_EQ(GetAnimationHostImpl()->GetTriggersForTesting().size(), 1);
+    cc::AnimationTrigger* trigger =
+        GetAnimationHostImpl()->GetTriggersForTesting().begin()->second.get();
+    EXPECT_TRUE(trigger->IsTimelineTrigger());
+    EXPECT_FALSE(trigger->IsEventTrigger());
+    EXPECT_EQ(trigger->GetAnimationDataForTest().size(), n);
+  };
+
+  target->classList().add({"one"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_animations(1);
+
+  target->classList().remove({"one"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  EXPECT_EQ(trigger_map.size(), 0);
+
+  target->classList().add({"two"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_animations(2);
+
+  target->classList().remove({"two"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  EXPECT_EQ(trigger_map.size(), 0);
+
+  target->classList().add({"three"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_animations(3);
+
+  target->classList().remove({"three"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  EXPECT_EQ(trigger_map.size(), 0);
+}
+
+TEST_F(CompositorAnimationTriggerTest, NonCompositedAnimation) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      @keyframes expand_composited {
+        0% { transform: scaleX(1); }
+        100% { transform: scaleX(5); }
+      }
+
+      @keyframes expand_noncomposited {
+        0% { width: 100%; }
+        100% { width: 200%; }
+      }
+
+      .source {
+        timeline-trigger: --trigger view();
+      }
+
+      .target, .source {
+        background: green;
+        height: 100px;
+        width: 100px;
+      }
+
+      .composited {
+        animation: expand_composited .5s;
+        animation-trigger: --trigger play;
+      }
+
+      .noncomposited {
+        animation: expand_noncomposited .5s;
+        animation-trigger: --trigger play;
+      }
+
+      .long {
+        height: 200%;
+        width: 50%;
+      }
+      .scroller {
+        height: 500px;
+        width: 500px;
+        overflow-y: scroll;
+      }
+    </style>
+    <div id="composited_target" class="composited target"></div>
+    <div class="scroller">
+      <div class="long"></div>
+      <div id="source" class="source"></div>
+      <div class="long"></div>
+    </div>
+    <div id="noncomposited_target" class="noncomposited target"></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* source = GetElement("source");
+  // The blink trigger should have 2 animations.
+  AnimationTrigger* blink_trigger = source->NamedTriggers()->begin()->value;
+  EXPECT_EQ(blink_trigger->BehaviorMapForTest().size(), 2);
+
+  Element* composited_target = GetElement("composited_target");
+  Element* noncomposited_target = GetElement("noncomposited_target");
+
+  Animation* composited_animation =
+      composited_target->GetElementAnimations()->Animations().begin()->key;
+  Animation* noncomposited_animation =
+      noncomposited_target->GetElementAnimations()->Animations().begin()->key;
+
+  EXPECT_EQ(composited_animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kPaused);
+  EXPECT_EQ(noncomposited_animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kPaused);
+  Compositor().BeginFrame();
+
+  const cc::AnimationHost::IdToTriggerMap& trigger_map =
+      GetAnimationHostImpl()->GetTriggersForTesting();
+  // There should be one composited trigger.
+  EXPECT_EQ(trigger_map.size(), 1);
+  // That composited trigger should have 1 animation.
+  cc::AnimationTrigger* impl_trigger = trigger_map.begin()->second.get();
+  EXPECT_EQ(impl_trigger->GetAnimationDataForTest().size(), 1);
+
+  // Instigate the trigger condition.
+  source->scrollIntoView(nullptr);
+  Compositor().BeginFrame();
+
+  // TODO(crbug.com/451238244): The composited animation should also be played
+  // by the trigger but as cc triggers are currently not functional, the
+  // animation remains paused.
+  EXPECT_EQ(composited_animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kPaused);
+  EXPECT_EQ(noncomposited_animation->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kRunning);
 }
 
 }  // namespace blink

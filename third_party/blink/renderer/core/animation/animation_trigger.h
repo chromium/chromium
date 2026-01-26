@@ -33,6 +33,14 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   // (second) behaviors.
   using AnimationBehaviorMap =
       HeapHashMap<WeakMember<Animation>, std::pair<Behavior, Behavior>>;
+  using CcBehavior = cc::AnimationTrigger::Behavior;
+
+  // To avoid expensive compositing checks, we maintain a whitelist of
+  // compositing failure reasons for which a re-check is warranted from an
+  // animation trigger's point of view. In other words, for reasons not in this
+  // whitelist, we should not even bother running the check function.
+  static const CompositorAnimations::FailureReasons kRecheckCompositingReasons =
+      CompositorAnimations::kInvalidAnimationOrEffect;
 
   void addAnimation(Animation* animation,
                     V8AnimationTriggerBehavior activate_behavior,
@@ -49,10 +57,15 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   void UpdateBehaviorMap(Animation& animation,
                          Behavior activate_behavior,
                          Behavior deactivate_behavior);
+  const AnimationBehaviorMap& BehaviorMapForTest() const {
+    return animation_behavior_map_;
+  }
 
   static bool HasPausedCSSPlayState(Animation* animation);
+  static CcBehavior ToCcAnimationTriggerBehavior(Behavior behavior);
 
-  void UpdateCompositorTrigger();
+  void UpdateCompositorTrigger(
+      const PaintArtifactCompositor* paint_artifact_compositor);
   virtual void CreateCompositorTrigger() {}
   virtual void DestroyCompositorTrigger() {}
   cc::AnimationTrigger* CompositorTrigger() { return nullptr; }
@@ -70,6 +83,12 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
                               Behavior behavior,
                               ExceptionState& exception_state);
 
+  // Gets the document associated with this AnimationTrigger. For a timeline
+  // trigger, it corresponds to the document of the trigger's underlying
+  // timeline. For an event trigger, it corresponds to the document to which the
+  // event source (the element) is connected.
+  virtual Document* GetDocument() { return nullptr; }
+
   // The (main thread) cc::AnimationTrigger corresponding to |this|. The impl
   // thread version is cloned from this.
   scoped_refptr<cc::AnimationTrigger> compositor_trigger_;
@@ -83,6 +102,10 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
                                 ExceptionState& exception_state);
   virtual void DidAddAnimation();
   virtual void DidRemoveAnimation(Animation* animation);
+
+  bool IsTriggeredOnCompositor(Animation* animation);
+  void UpdateCompositorTriggerAnimations(
+      const PaintArtifactCompositor* paint_artifact_compositor);
 
   AnimationBehaviorMap animation_behavior_map_;
 };

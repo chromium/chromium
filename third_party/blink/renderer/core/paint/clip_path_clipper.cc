@@ -144,7 +144,8 @@ bool AdjustClipPathStatusForCompositingFailureReasons(
     const Animation& animation,
     bool for_painting) {
   CompositorAnimations::FailureReasons failure_reasons =
-      animation.CheckCanStartAnimationOnCompositor(nullptr);
+      animation.CheckCanStartAnimationOnCompositor(
+          nullptr, StartOnCompositorReason::kGeneric);
   if (failure_reasons == CompositorAnimations::kNoFailure) {
     SetCompositeClipPathStatus(layout_object.GetNode(),
                                CompositedPaintStatus::kComposited);
@@ -272,7 +273,8 @@ Animation* ClipPathClipper::GetClipPathAnimation(
   if (animation &&
       CompositeClipPathStatus(element) == CompositedPaintStatus::kComposited) {
     CHECK(animation->HasActiveAnimationsOnCompositor() ||
-          animation->CheckCanStartAnimationOnCompositor(nullptr) ==
+          animation->CheckCanStartAnimationOnCompositor(
+              nullptr, StartOnCompositorReason::kGeneric) ==
               CompositorAnimations::kNoFailure);
   }
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()

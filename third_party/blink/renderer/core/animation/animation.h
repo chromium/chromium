@@ -77,6 +77,9 @@ enum class BlinkAnimationType : int {
   kAnimationTypeEnumMax = 6
 };
 
+// Enum indicating why we're calling StartAnimationOnCompositor.
+enum class StartOnCompositorReason { kGeneric, kAnimationTrigger };
+
 class CORE_EXPORT Animation : public EventTarget,
                               public ActiveScriptWrappable<Animation>,
                               public ExecutionContextLifecycleObserver,
@@ -337,15 +340,26 @@ class CORE_EXPORT Animation : public EventTarget,
 
   CompositorAnimations::FailureReasons CheckCanStartAnimationOnCompositor(
       const PaintArtifactCompositor* paint_artifact_compositor,
+      StartOnCompositorReason check_reason,
       PropertyHandleSet* unsupported_properties_for_tracing = nullptr) const;
   void StartAnimationOnCompositor(
-      const PaintArtifactCompositor* paint_artifact_compositor);
+      const PaintArtifactCompositor* paint_artifact_compositor,
+      StartOnCompositorReason check_reason);
+  // Returns true if the cc::Animation related to this animation will be under
+  // the influence of the compositor animation trigger attempting to push the
+  // animation to the compositor. Returns false otherwise.
+  bool StartTriggeredAnimationOnCompositor(
+      const PaintArtifactCompositor* paint_artifact_compositor,
+      bool& pause_keyframe_models);
   void CancelAnimationOnCompositor();
   void RestartAnimationOnCompositor(
       CompositorPendingReason reason =
           CompositorPendingReason::kPendingRestart);
   void CancelIncompatibleAnimationsOnCompositor();
   bool HasActiveAnimationsOnCompositor() const;
+  CompositorAnimations::FailureReasons LastCompositorFailureReason() const {
+    return last_compositor_failure_reasons_;
+  }
 
   void NotifyReady(AnimationTimeDelta ready_time);
   void CommitPendingPlay(AnimationTimeDelta ready_time);
@@ -755,6 +769,8 @@ class CORE_EXPORT Animation : public EventTarget,
   int compositor_group_;
 
   Member<CompositorAnimationHolder> compositor_animation_;
+
+  CompositorAnimations::FailureReasons last_compositor_failure_reasons_;
 
   bool effect_suppressed_;
 

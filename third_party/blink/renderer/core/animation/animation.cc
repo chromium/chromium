@@ -441,7 +441,7 @@ Animation::Animation(ExecutionContext* execution_context,
       committed_finish_notification_(false),
       compositor_state_(nullptr),
       compositor_pending_(false),
-      compositor_group_(0),
+      compositor_group_(PendingAnimations::kCompositorGroupAutoAssign),
       effect_suppressed_(false),
       compositor_property_animations_have_no_effect_(false),
       animation_has_no_effect_(false) {
@@ -842,8 +842,9 @@ bool Animation::PreCommit(
       }
       CompositorAnimations::FailureReasons failure_reasons =
           CheckCanStartAnimationOnCompositor(
-              paint_artifact_compositor,
+              paint_artifact_compositor, StartOnCompositorReason::kGeneric,
               base::OptionalToPtr(unsupported_properties_for_tracing));
+      last_compositor_failure_reasons_ = failure_reasons;
       RecordCompositorAnimationFailureReasons(failure_reasons);
 
       // Record animation type metrics
@@ -860,7 +861,8 @@ bool Animation::PreCommit(
         // for a marquee element does not depend on having a layout object.
         CancelAnimationOnCompositor();
         CreateCompositorAnimation(replaced_cc_animation_id);
-        StartAnimationOnCompositor(paint_artifact_compositor);
+        StartAnimationOnCompositor(paint_artifact_compositor,
+                                   StartOnCompositorReason::kGeneric);
         compositor_state_ = std::make_unique<CompositorState>(*this);
       } else {
         CancelIncompatibleAnimationsOnCompositor();
@@ -2359,11 +2361,26 @@ void Animation::ForceServiceOnNextFrame() {
 CompositorAnimations::FailureReasons
 Animation::CheckCanStartAnimationOnCompositor(
     const PaintArtifactCompositor* paint_artifact_compositor,
+    StartOnCompositorReason check_reason,
     PropertyHandleSet* unsupported_properties_for_tracing) const {
   CompositorAnimations::FailureReasons reasons =
       CheckCanStartAnimationOnCompositorInternal();
+  bool for_trigger = check_reason == StartOnCompositorReason::kAnimationTrigger;
+
+  // An Animation that is not playing will not produce a visual, so there is no
+  // reason to composite it, unless it is attached to an animation trigger.
+  if (!EffectivelyPlaying() && !for_trigger) {
+    reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
+  }
 
   if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get())) {
+    if (!keyframe_effect->IsCurrent() && !for_trigger) {
+      // Unless attached to an animation trigger, there is no reason to
+      // composite an effect that is not current, and
+      // CheckCanStartAnimationOnCompositor might assert about having some but
+      // not all properties if we call it on such an animation.
+      reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
+    }
     reasons |= keyframe_effect->CheckCanStartAnimationOnCompositor(
         paint_artifact_compositor, playback_rate_,
         unsupported_properties_for_tracing);
@@ -2431,12 +2448,6 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // reason to composite it.
   if (!IsA<KeyframeEffect>(content_.Get()))
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
-
-  // An Animation that is not playing will not produce a visual, so there is no
-  // reason to composite it.
-  if (!EffectivelyPlaying()) {
-    reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
-  }
 
   return reasons;
 }
@@ -2544,10 +2555,11 @@ void Animation::OnPaintWorkletImageCreated() {
 }
 
 void Animation::StartAnimationOnCompositor(
-    const PaintArtifactCompositor* paint_artifact_compositor) {
-  DCHECK_EQ(
-      CheckCanStartAnimationOnCompositor(paint_artifact_compositor, nullptr),
-      CompositorAnimations::kNoFailure);
+    const PaintArtifactCompositor* paint_artifact_compositor,
+    StartOnCompositorReason check_reason) {
+  DCHECK_EQ(CheckCanStartAnimationOnCompositor(paint_artifact_compositor,
+                                               check_reason, nullptr),
+            CompositorAnimations::kNoFailure);
 
   // If PlaybackRate is 0, then we will run into divide by 0 issues.
   DCHECK(!TimingCalculations::IsWithinAnimationTimeEpsilon(
@@ -2581,7 +2593,7 @@ void Animation::StartAnimationOnCompositor(
     time_offset = ComputeCompositorTimeOffset();
   }
 
-  DCHECK_NE(compositor_group_, 0);
+  DCHECK_NE(compositor_group_, PendingAnimations::kCompositorGroupAutoAssign);
   DCHECK(To<KeyframeEffect>(content_.Get()));
   std::optional<double> start_time_s;
   if (start_time) {
@@ -3341,6 +3353,62 @@ void Animation::DetachCompositedLayers() {
   if (compositor_animation_ &&
       compositor_animation_->GetAnimation()->IsElementAttached())
     compositor_animation_->GetAnimation()->DetachElement();
+}
+
+bool Animation::StartTriggeredAnimationOnCompositor(
+    const PaintArtifactCompositor* paint_artifact_compositor,
+    bool& pause_keyframe_models) {
+  CompositorAnimation* compositor_anim = GetCompositorAnimation();
+  bool has_cc_animation = compositor_anim && compositor_anim->CcAnimation();
+
+  if (Playing() && !has_cc_animation) {
+    // Do not create a cc::Animation for an animation that is currently running
+    // on the main thread. This avoids the conflict of running the animation
+    // running on the main thread and on the compositor thread simultaneously.
+    return false;
+  }
+
+  if (has_cc_animation) {
+    compositor_group_ = PendingAnimations::kCompositorGroupTriggered;
+    return true;
+  }
+
+  // We would like to avoid the CheckCanComposite check as it can be expensive.
+  // If compositing has previously failed for reasons other than those
+  // whitelisted in kRecheckCompositingReasons, the trigger is not going to
+  // affect that compositing decision and we can avoid the check altogether.
+  bool should_check_compositing_reasons =
+      (last_compositor_failure_reasons_ &
+       ~AnimationTrigger::kRecheckCompositingReasons) ==
+      CompositorAnimations::kNoFailure;
+
+  if (!should_check_compositing_reasons) {
+    return false;
+  }
+
+  CompositorAnimations::FailureReasons failure_reasons =
+      CheckCanStartAnimationOnCompositor(
+          paint_artifact_compositor, StartOnCompositorReason::kAnimationTrigger,
+          /*unsupported_categories_for_tracing*/ nullptr);
+  last_compositor_failure_reasons_ = failure_reasons;
+
+  if (failure_reasons != CompositorAnimations::kNoFailure) {
+    return false;
+  }
+
+  CreateCompositorAnimation(std::nullopt);
+  compositor_state_ = std::make_unique<CompositorState>(*this);
+  compositor_group_ = PendingAnimations::kCompositorGroupTriggered;
+  StartAnimationOnCompositor(paint_artifact_compositor,
+                             StartOnCompositorReason::kAnimationTrigger);
+
+  // An animation attached to a trigger should either be paused, running or
+  // finished. We should pause the cc keyframes only in the paused and finished
+  // cases to prevent the compositor from playing the animation while waiting
+  // for the trigger condition.
+  pause_keyframe_models = !Playing();
+
+  return true;
 }
 
 void Animation::NotifyAnimationStarted(base::TimeDelta monotonic_time,

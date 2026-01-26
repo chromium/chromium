@@ -178,18 +178,12 @@ void TimelineTrigger::CreateCompositorTrigger() {
     return;
   }
 
-  // TODO(crbug.com/473568234): Support multiple timelines.
-  AnimationTimeline* timeline = Timeline();
-
-  if (!timeline || !timeline->GetDocument()) {
-    return;
-  }
-
-  cc::AnimationTimeline* cc_timeline = timeline->EnsureCompositorTimeline();
+  cc::AnimationTimeline* cc_timeline =
+      Timeline() ? Timeline()->EnsureCompositorTimeline() : nullptr;
   if (!cc_timeline) {
     return;
   }
-  timeline->GetDocument()->AttachCompositorTimeline(cc_timeline);
+  GetDocument()->AttachCompositorTimeline(cc_timeline);
   cc::AnimationHost* host = cc_timeline->animation_host();
   CHECK(host);
 
@@ -208,7 +202,7 @@ void TimelineTrigger::DestroyCompositorTrigger() {
   if (compositor_trigger_) {
     cc::AnimationHost* host = compositor_trigger_->GetAnimationHost();
     if (host) {
-      host->RemoveTrigger(compositor_trigger_.get());
+      host->RemoveTrigger(compositor_trigger_);
     }
     compositor_trigger_ = nullptr;
   }

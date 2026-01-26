@@ -100,12 +100,18 @@ const AnimationTrigger* AnimationHost::GetTriggerById(int id) const {
                                                     : it->second.get();
 }
 
+AnimationTrigger* AnimationHost::GetTriggerById(int id) {
+  auto it = id_to_trigger_map_.Write(*this).find(id);
+  return it == id_to_trigger_map_.Write(*this).end() ? nullptr
+                                                     : it->second.get();
+}
+
 void AnimationHost::ClearMutators() {
   for (auto& kv : id_to_timeline_map_.Read(*this))
     EraseTimeline(kv.second);
   id_to_timeline_map_.Write(*this).clear();
   for (auto& it : id_to_trigger_map_.Write(*this)) {
-    it.second->SetAnimationHost(nullptr);
+    EraseTrigger(it.second);
   }
   id_to_trigger_map_.Write(*this).clear();
 }
@@ -127,6 +133,10 @@ base::TimeDelta AnimationHost::MinimumTickInterval() const {
 void AnimationHost::EraseTimeline(scoped_refptr<AnimationTimeline> timeline) {
   timeline->ClearAnimations();
   timeline->SetAnimationHost(nullptr);
+}
+
+void AnimationHost::EraseTrigger(scoped_refptr<AnimationTrigger> trigger) {
+  trigger->SetAnimationHost(nullptr);
 }
 
 void AnimationHost::AddAnimationTimeline(
@@ -515,6 +525,14 @@ void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
     if (auto element_animations_impl =
             host_impl->GetElementAnimationsForElementId(kv.first)) {
       element_animations->PushPropertiesTo(std::move(element_animations_impl));
+    }
+  }
+
+  for (auto& kv : id_to_trigger_map_.Read(*this)) {
+    AnimationTrigger* trigger = kv.second.get();
+    if (AnimationTrigger* trigger_impl =
+            host_impl->GetTriggerById(trigger->id())) {
+      trigger->PushPropertiesTo(trigger_impl);
     }
   }
 

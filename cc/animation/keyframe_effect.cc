@@ -306,6 +306,17 @@ void KeyframeEffect::PauseKeyframeModel(int keyframe_model_id,
   }
 }
 
+void KeyframeEffect::PauseKeyframeModels(base::TimeDelta time_offset) {
+  for (auto& keyframe_model : keyframe_models()) {
+    keyframe_model->Pause(time_offset);
+  }
+
+  if (has_bound_element_animations()) {
+    animation_->SetNeedsCommit();
+    SetNeedsPushProperties();
+  }
+}
+
 void KeyframeEffect::AbortKeyframeModel(int keyframe_model_id) {
   if (gfx::KeyframeModel* keyframe_model =
           GetKeyframeModelById(keyframe_model_id)) {

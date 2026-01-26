@@ -104,6 +104,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   void AddKeyframeModel(
       std::unique_ptr<gfx::KeyframeModel> keyframe_model) override;
   void PauseKeyframeModel(int keyframe_model_id, base::TimeDelta time_offset);
+  void PauseKeyframeModels(base::TimeDelta time_offset);
   void AbortKeyframeModel(int keyframe_model_id);
   void AbortKeyframeModelsWithProperty(TargetProperty::Type target_property,
                                        bool needs_completion);

@@ -695,6 +695,7 @@ _CONFIG = [
 
             # Animation
             "cc::PropertyChangeForcesCommitCriteria",
+            "cc::Animation",
             "cc::AnimationHost",
             "cc::AnimationIdProvider",
             "cc::AnimationTrigger",

@@ -121,7 +121,8 @@ class CORE_EXPORT DocumentAnimations final
   void ExecuteTriggerAttachmentUpdates();
   void AddTriggeredAnimation(CSSAnimation* animation);
 
-  void UpdateCompositorAnimationTriggers();
+  void UpdateCompositorAnimationTriggers(
+      const PaintArtifactCompositor* paint_artifact_compositor);
 
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
