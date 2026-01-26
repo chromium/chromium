@@ -88,6 +88,11 @@ cr-most-visited {
       var(--color-new-tab-page-add-shortcut-background);
   --add-shortcut-foreground-color:
       var(--color-new-tab-page-add-shortcut-foreground);
+  --cr-menu-shadow: var(--ntp-menu-shadow);
+  --most-visited-focus-shadow: var(--ntp-focus-shadow);
+  --most-visited-text-color:
+      var(--color-new-tab-page-most-visited-foreground);
+  --most-visited-text-shadow: var(--ntp-theme-text-shadow);
 }
 
 :host([show-background-image_]) {
@@ -197,13 +202,6 @@ cr-searchbox[shown] {
   visibility: visible;
 }
 
-cr-most-visited {
-  --cr-menu-shadow: var(--ntp-menu-shadow);
-  --most-visited-focus-shadow: var(--ntp-focus-shadow);
-  --most-visited-text-color:
-      var(--color-new-tab-page-most-visited-foreground);
-  --most-visited-text-shadow: var(--ntp-theme-text-shadow);
-}
 
 /* ~ because the dom-if results in a template between the middle-slot-promo
    and ntp-modules. */

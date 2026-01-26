@@ -193,17 +193,13 @@ cr-button {
 
 #name,
 #file-link {
+  font-weight: 500;
   max-width: 100%;
   overflow: hidden;
+  text-align: start;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-#name,
-#file-link {
-  font-weight: 500;
   word-break: break-all;
-  text-align: start;
 }
 
 @media (prefers-color-scheme: light) {

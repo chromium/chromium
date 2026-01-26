@@ -78,10 +78,12 @@
 .dropdown-item {
   display: flex;
   align-items: center;
+  color: var(--toolbar-text-color);
 }
 
 cr-action-menu {
   --cr-menu-border-radius: 16px;
+  --cr-menu-background-color: var(--toolbar-menu-background-color);
 }
 
 cr-action-menu > button {
@@ -101,14 +103,6 @@ cr-icon-button {
 
 cr-icon-button[hidden] {
   display: none;
-}
-
-cr-action-menu {
-  --cr-menu-background-color: var(--toolbar-menu-background-color);
-}
-
-.dropdown-item {
-  color: var(--toolbar-text-color);
 }
 
 .dropdown-item cr-icon {

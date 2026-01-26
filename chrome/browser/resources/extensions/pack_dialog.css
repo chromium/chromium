@@ -12,13 +12,10 @@
 cr-input {
   margin-top: var(--cr-form-field-bottom-spacing);
   --cr-input-error-display: none;
+  /* Prevent focus-outline from being chopped by bottom of dialog body. */
+  margin-bottom: 4px;
 }
 
 cr-button[slot='suffix'] {
   margin-inline-start: 10px;
-}
-
-/* Prevent focus-outline from being chopped by bottom of dialog body. */
-cr-input {
-  margin-bottom: 4px;
 }

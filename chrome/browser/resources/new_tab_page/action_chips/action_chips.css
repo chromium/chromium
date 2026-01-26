@@ -215,11 +215,6 @@
   gap: 4px;
 }
 
-:host([show-simplified-ui_]) .action-chip-text-container {
-  flex-direction: row;
-  gap: 4px;
-}
-
 .chip-title {
   color: var(--color-sys-on-surface);
   font-size: 13px;

@@ -31,6 +31,7 @@ cr-grid {
 
 .image-container {
   background-color: var(--color-side-panel-customize-chrome-theme-background);
+  border-radius: 12px;
   overflow: hidden;
   padding-top: 100%;
   position: relative;
@@ -86,6 +87,7 @@ cr-grid {
   line-height: 16px;
   text-align: center;
   overflow-wrap: break-word;
+  padding-top: 4px;
 }
 
 .tile:nth-of-type(-n+4) {
@@ -120,15 +122,6 @@ cr-grid {
   padding-top: 8px;
 }
 
-.image-container {
-  border-radius: 12px;
-}
-
-.label {
-  font-size: 11px;
-  line-height: 16px;
-  padding-top: 4px;
-}
 
 .icon-external {
   --cr-icon-size: 13px;

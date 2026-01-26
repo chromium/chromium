@@ -98,14 +98,12 @@
   margin-top: 16px;
   padding-inline-start: var(--batch-upload-dialog-padding);
   padding-inline-end: var(--batch-upload-dialog-padding);
-}
 
 <if expr="is_macosx or is_linux or is_chromeos">
-#action-row {
   flex-flow: row-reverse;
   justify-content: flex-start;
-}
 </if>
+}
 
 .custom-scrollbar::-webkit-scrollbar {
   width: var(--scrollbar-width);

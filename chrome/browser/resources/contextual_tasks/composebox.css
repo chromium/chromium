@@ -104,6 +104,8 @@
   width: calc(100% - (15px + var(--inset-start-indent_)));
   border: 1px solid var(--color-composebox-input-plate-outline);
   box-sizing: border-box;
+  /* Fast out (start), slow in (end) box shadow transition. */
+  transition: box-shadow 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 :host([is-side-panel]) #composebox {
@@ -361,10 +363,6 @@
   transition-delay: 0ms;
 }
 
-#composebox::part(label) {
-  display: none;
-}
-
 #composebox::part(dropdown) {
   --cr-composebox-match-height: 54px;
 
@@ -431,11 +429,6 @@
 
 #composebox::part(composebox-background)::before {
  transition: background-color 400ms ease-in-out;
-}
-
-#composebox {
- /* Fast out (start), slow in (end) box shadow transition. */
- transition: box-shadow 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 #composebox[in-voice-search-mode_] {

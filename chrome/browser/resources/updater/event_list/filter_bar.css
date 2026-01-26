@@ -45,10 +45,6 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  padding: 4px 0;
-}
-
-.filter-bar {
   border: 1px solid var(--filter-border-color);
   border-radius: 24px;
   padding: 4px 12px;
