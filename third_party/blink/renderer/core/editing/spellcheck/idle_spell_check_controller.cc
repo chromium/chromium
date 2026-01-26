@@ -121,20 +121,17 @@ void IdleSpellCheckController::RespondToChangedSelection() {
     return;
   }
 
-  // We can skip this pass if the selection isn't the result of a user gesture
-  // and `kRestrictSpellingAndGrammarHighlightsChangedSelection` is enabled.
+  // We can skip this pass if the selection isn't the result of a user gesture.
   // For more see:
   // https://explainers-by-googlers.github.io/user-dictionary-leaks/
-  if (base::FeatureList::IsEnabled(
-          features::kRestrictSpellingAndGrammarHighlights) &&
-      features::kRestrictSpellingAndGrammarHighlightsChangedSelection.Get()) {
-    const Element* focused_element = GetDocument().FocusedElement();
-    if (focused_element && !focused_element->WasLastFocusFromUserGesture()) {
-      Deactivate();
-      base::UmaHistogramBoolean(
-          "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Selection", true);
-      return;
-    }
+  const Element* focused_element = GetDocument().FocusedElement();
+  if (focused_element && !focused_element->WasLastFocusFromUserGesture() &&
+      !base::FeatureList::IsEnabled(
+          features::kUnrestrictSpellingAndGrammarForTesting)) {
+    Deactivate();
+    base::UmaHistogramBoolean(
+        "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Selection", true);
+    return;
   }
   base::UmaHistogramBoolean(
       "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Selection", false);
@@ -152,16 +149,14 @@ void IdleSpellCheckController::RespondToChangedContents() {
     return;
   }
 
-  // We can skip this pass if the page isn't being interacted with and
-  // `kRestrictSpellingAndGrammarHighlightsChangedContents` is enabled.
+  // We can skip this pass if the page isn't being interacted with.
   // This isn't the ideal signal, as it has a 5 second timeout, but it's
   // enough to prevent a user focused field from being taken advantage of.
   // For more see:
   // https://explainers-by-googlers.github.io/user-dictionary-leaks/
-  if (base::FeatureList::IsEnabled(
-          features::kRestrictSpellingAndGrammarHighlights) &&
-      features::kRestrictSpellingAndGrammarHighlightsChangedContents.Get() &&
-      !LocalFrame::HasTransientUserActivation(GetWindow().GetFrame())) {
+  if (!LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()) &&
+      !base::FeatureList::IsEnabled(
+          features::kUnrestrictSpellingAndGrammarForTesting)) {
     Deactivate();
     base::UmaHistogramBoolean(
         "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Contents", true);
@@ -183,13 +178,11 @@ void IdleSpellCheckController::RespondToChangedEnablement() {
     return;
   }
 
-  // We can skip this pass as it must be the result of a script if
-  // and `kRestrictSpellingAndGrammarHighlightsChangedEnablement` is enabled.
+  // We can skip this pass as it must be the result of a script.
   // For more see:
   // https://explainers-by-googlers.github.io/user-dictionary-leaks/
-  if (base::FeatureList::IsEnabled(
-          features::kRestrictSpellingAndGrammarHighlights) &&
-      features::kRestrictSpellingAndGrammarHighlightsChangedEnablement.Get()) {
+  if (!base::FeatureList::IsEnabled(
+          features::kUnrestrictSpellingAndGrammarForTesting)) {
     Deactivate();
     base::UmaHistogramBoolean(
         "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Enablement", true);
@@ -396,10 +389,6 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
       Invoke(deadline);
       break;
     case State::kInactive:
-      if (!base::FeatureList::IsEnabled(
-              features::kRestrictSpellingAndGrammarHighlights)) {
-        NOTREACHED();
-      }
       break;
     case State::kInHotModeInvocation:
     case State::kInColdModeInvocation:

@@ -1596,29 +1596,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // feature param.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingScrollEvents);
 
-// This experiment evaluates various restrictions on the application of
-// spelling/grammar highlights to prevent user dictionary leaks.
-// For more see:
+// This bypasses restrictions on selection sources and allows the spelling and
+// grammar checks to proceed for testing purposes.
 // https://explainers-by-googlers.github.io/user-dictionary-leaks/
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRestrictSpellingAndGrammarHighlights);
-
-// If true, this disables spelling/grammar highlights performed on script
-// edit (requiring user input to invoke).
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kRestrictSpellingAndGrammarHighlightsChangedContents);
-
-// If true, this disables spelling/grammar highlights performed on script
-// enablement (requiring contents or selection change).
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kRestrictSpellingAndGrammarHighlightsChangedEnablement);
-
-// If true, this disables spelling/grammar highlights performed on script
-// focus (requiring user gesture to invoke).
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kRestrictSpellingAndGrammarHighlightsChangedSelection);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kUnrestrictSpellingAndGrammarForTesting);
 
 // Aggregated flag for the restriction on HTTP Link headers on subresource
 // responses. See crbug.com/417529151 for details.

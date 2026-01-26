@@ -338,8 +338,8 @@ class WebFrameTest : public PageTestBase {
     // which is needed for Javascript URL security checks to work properly in
     // tests below.
     url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
-    feature_list_.InitAndDisableFeature(
-        blink::features::kRestrictSpellingAndGrammarHighlights);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kUnrestrictSpellingAndGrammarForTesting);
   }
 
   ~WebFrameTest() override {

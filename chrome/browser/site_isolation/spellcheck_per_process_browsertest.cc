@@ -263,8 +263,8 @@ class SpellCheckBrowserTestHelper {
 class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
  public:
   ChromeSitePerProcessSpellCheckTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kRestrictSpellingAndGrammarHighlights);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kUnrestrictSpellingAndGrammarForTesting);
   }
 
   void SetUp() override { ChromeSitePerProcessTest::SetUp(); }

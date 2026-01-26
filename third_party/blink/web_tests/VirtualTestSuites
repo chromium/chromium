@@ -6058,9 +6058,9 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--disable-features=RestrictSpellingAndGrammarHighlights"
+      "--enable-features=UnrestrictSpellingAndGrammarForTesting"
     ],
-    "expires": "Oct 24, 2026"
+    "expires": "never"
   },
   "Currently, XSLT is disabled on ToT for tests, via the",
   "fieldtrial_testing_config.json file which enables the XSLTSpecialTrial",

@@ -2119,23 +2119,8 @@ BASE_FEATURE_PARAM(bool,
                    "disable_resource_load",
                    false);
 
-BASE_FEATURE(kRestrictSpellingAndGrammarHighlights,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(bool,
-                   kRestrictSpellingAndGrammarHighlightsChangedContents,
-                   &kRestrictSpellingAndGrammarHighlights,
-                   "RestrictSpellingAndGrammarHighlightsChangedContents",
-                   true);
-BASE_FEATURE_PARAM(bool,
-                   kRestrictSpellingAndGrammarHighlightsChangedEnablement,
-                   &kRestrictSpellingAndGrammarHighlights,
-                   "RestrictSpellingAndGrammarHighlightsChangedEnablement",
-                   true);
-BASE_FEATURE_PARAM(bool,
-                   kRestrictSpellingAndGrammarHighlightsChangedSelection,
-                   &kRestrictSpellingAndGrammarHighlights,
-                   "RestrictSpellingAndGrammarHighlightsChangedSelection",
-                   true);
+BASE_FEATURE(kUnrestrictSpellingAndGrammarForTesting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
 BASE_FEATURE(kSafelistPaytoToRegisterProtocolHandler,

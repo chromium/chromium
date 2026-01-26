@@ -21,38 +21,16 @@ namespace blink {
 
 using State = IdleSpellCheckController::State;
 
-class IdleSpellCheckControllerTest
-    : public SpellCheckTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+class IdleSpellCheckControllerTest : public SpellCheckTestBase,
+                                     public testing::WithParamInterface<bool> {
  protected:
   IdleSpellCheckController& IdleChecker() {
     return GetSpellChecker().GetIdleSpellCheckController();
   }
 
   void SetUp() override {
-    if (IsRestrictionActiveForContents() ||
-        IsRestrictionActiveForEnablement() ||
-        IsRestrictionActiveForSelection()) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kRestrictSpellingAndGrammarHighlights,
-          {
-              {
-                  "RestrictSpellingAndGrammarHighlightsChangedContents",
-                  IsRestrictionActiveForContents() ? "true" : "false",
-              },
-              {
-                  "RestrictSpellingAndGrammarHighlightsChangedEnablement",
-                  IsRestrictionActiveForEnablement() ? "true" : "false",
-              },
-              {
-                  "RestrictSpellingAndGrammarHighlightsChangedSelection",
-                  IsRestrictionActiveForSelection() ? "true" : "false",
-              },
-          });
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kRestrictSpellingAndGrammarHighlights);
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUnrestrictSpellingAndGrammarForTesting, IsUnrestricted());
     SpellCheckTestBase::SetUp();
 
     // The initial cold mode request is on on document startup. This doesn't
@@ -80,22 +58,13 @@ class IdleSpellCheckControllerTest
     }
   }
 
-  bool IsRestrictionActiveForContents() { return std::get<0>(GetParam()); }
-
-  bool IsRestrictionActiveForEnablement() { return std::get<1>(GetParam()); }
-
-  bool IsRestrictionActiveForSelection() { return std::get<2>(GetParam()); }
+  bool IsUnrestricted() { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    IdleSpellCheckControllerTest,
-    ::testing::Combine(/*restrict_contents=*/::testing::Bool(),
-                       /*restrict_enablement=*/::testing::Bool(),
-                       /*restrict_selection=*/::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(, IdleSpellCheckControllerTest, ::testing::Bool());
 
 // Test cases for lifecycle state transitions.
 
@@ -106,41 +75,41 @@ TEST_P(IdleSpellCheckControllerTest, InitializationWithColdMode) {
 TEST_P(IdleSpellCheckControllerTest, RequestWhenInactive) {
   TransitTo(State::kInactive);
   IdleChecker().RespondToChangedContents();
-  if (IsRestrictionActiveForContents()) {
-    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
-    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
-  } else {
+  if (IsUnrestricted()) {
     EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
     EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
   }
 }
 
 TEST_P(IdleSpellCheckControllerTest, RequestWhenHotModeRequested) {
   TransitTo(State::kHotModeRequested);
-  if (IsRestrictionActiveForContents()) {
-    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
-  } else {
+  if (IsUnrestricted()) {
     EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
   }
   IdleChecker().RespondToChangedContents();
-  if (IsRestrictionActiveForContents()) {
-    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
-    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
-  } else {
+  if (IsUnrestricted()) {
     EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
     EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
   }
 }
 
 TEST_P(IdleSpellCheckControllerTest, RequestWhenColdModeTimerStarted) {
   TransitTo(State::kColdModeTimerStarted);
   IdleChecker().RespondToChangedContents();
-  if (IsRestrictionActiveForContents()) {
-    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
-    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
-  } else {
+  if (IsUnrestricted()) {
     EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
     EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
   }
 }
 
@@ -148,22 +117,22 @@ TEST_P(IdleSpellCheckControllerTest, RequestWhenColdModeRequested) {
   TransitTo(State::kColdModeRequested);
   EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
   IdleChecker().RespondToChangedContents();
-  if (IsRestrictionActiveForContents()) {
-    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
-    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
-  } else {
+  if (IsUnrestricted()) {
     EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
     EXPECT_NE(-1, IdleChecker().IdleCallbackHandle());
+  } else {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+    EXPECT_EQ(-1, IdleChecker().IdleCallbackHandle());
   }
 }
 
 TEST_P(IdleSpellCheckControllerTest, HotModeTransitToColdMode) {
   TransitTo(State::kHotModeRequested);
   IdleChecker().ForceInvocationForTesting();
-  if (IsRestrictionActiveForContents()) {
-    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
-  } else {
+  if (IsUnrestricted()) {
     EXPECT_EQ(State::kColdModeTimerStarted, IdleChecker().GetState());
+  } else {
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
   }
 }
 
@@ -227,11 +196,11 @@ TEST_P(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
 
   // Advance to cold mode invocation
   IdleChecker().ForceInvocationForTesting();
-  if (IsRestrictionActiveForSelection()) {
-    ASSERT_EQ(State::kInactive, IdleChecker().GetState());
-  } else {
+  if (IsUnrestricted()) {
     IdleChecker().SkipColdModeTimerForTesting();
     ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
+  } else {
+    ASSERT_EQ(State::kInactive, IdleChecker().GetState());
   }
 
   // Shouldn't crash
@@ -295,14 +264,14 @@ TEST_P(IdleSpellCheckControllerTest, SpellcheckAttribute) {
   QuerySelector("div")->setAttribute(html_names::kSpellcheckAttr,
                                      keywords::kTrue);
   UpdateAllLifecyclePhasesForTest();
-  if (IsRestrictionActiveForEnablement()) {
-    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
-  } else {
+  if (IsUnrestricted()) {
     EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
     IdleChecker().ForceInvocationForTesting();
     IdleChecker().SkipColdModeTimerForTesting();
     ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
     IdleChecker().ForceInvocationForTesting();
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+  } else {
     EXPECT_EQ(State::kInactive, IdleChecker().GetState());
   }
 }
@@ -313,12 +282,12 @@ TEST_P(IdleSpellCheckControllerTest, UserActivation) {
   TransitTo(State::kHotModeRequested);
   UpdateAllLifecyclePhasesForTest();
   IdleChecker().ForceInvocationForTesting();
-  if (IsRestrictionActiveForContents()) {
-    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
-  } else {
+  if (IsUnrestricted()) {
     IdleChecker().SkipColdModeTimerForTesting();
     ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
     IdleChecker().ForceInvocationForTesting();
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+  } else {
     EXPECT_EQ(State::kInactive, IdleChecker().GetState());
   }
 
@@ -351,11 +320,10 @@ TEST_P(IdleSpellCheckControllerTest, SelectionFocusType) {
                                             /*capabilities=*/nullptr));
     UpdateAllLifecyclePhasesForTest();
     IdleChecker().ForceInvocationForTesting();
-    if (IsRestrictionActiveForSelection() &&
-        ((mojom::blink::FocusType)focus_type ==
-             mojom::blink::FocusType::kNone ||
-         (mojom::blink::FocusType)focus_type ==
-             mojom::blink::FocusType::kScript)) {
+    if (!IsUnrestricted() && ((mojom::blink::FocusType)focus_type ==
+                                  mojom::blink::FocusType::kNone ||
+                              (mojom::blink::FocusType)focus_type ==
+                                  mojom::blink::FocusType::kScript)) {
       ASSERT_EQ(State::kInactive, IdleChecker().GetState());
     } else {
       IdleChecker().SkipColdModeTimerForTesting();
