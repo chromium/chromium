@@ -1193,8 +1193,6 @@ void PrefetchService::OnGotEligibilityForNonRedirect(
   }
 
   if (!is_decoy) {
-    prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchNotStarted);
-
     // Registers a cookie listener for this prefetch if it is using an isolated
     // network context. If the cookies in the default partition associated with
     // this URL change after this point, then the prefetched resources should

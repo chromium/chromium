@@ -733,6 +733,9 @@ void PrefetchContainer::OnEligibilityCheckComplete(
     // prefetched.
     if (is_eligible) {
       SetLoadState(LoadState::kEligible);
+      if (!IsDecoy()) {
+        SetPrefetchStatus(PrefetchStatus::kPrefetchNotStarted);
+      }
     } else {
       SetLoadState(LoadState::kFailedIneligible);
       PrefetchStatus new_prefetch_status =
