@@ -227,7 +227,7 @@ void BirchBarController::ProvideFeedbackForCoral() {
     return;
   }
 
-  base::Value::List root;
+  base::ListValue root;
   for (auto& item : items_) {
     if (item->GetType() == BirchItemType::kCoral) {
       root.Append(

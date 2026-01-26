@@ -50,7 +50,7 @@ bool ShouldPersistSetting(std::string_view setting_key,
                           T new_value,
                           T default_value,
                           bool force_persistence,
-                          const ::base::Value::Dict* existing_settings_dict);
+                          const ::base::DictValue* existing_settings_dict);
 
 // Decides based on the policy, existing settings storage, and default value if
 // the given setting should be persisted. Settings should be persisted if any of
@@ -75,14 +75,14 @@ ASH_EXPORT bool ShouldPersistSetting(
     bool new_value,
     bool default_value,
     bool force_persistence,
-    const base::Value::Dict* existing_settings_dict);
+    const base::DictValue* existing_settings_dict);
 
 ASH_EXPORT bool ShouldPersistFkeySetting(
     const mojom::InputDeviceSettingsFkeyPolicyPtr& policy,
     std::string_view setting_key,
     std::optional<ui::mojom::ExtendedFkeysModifier> new_value,
     ui::mojom::ExtendedFkeysModifier default_value,
-    const base::Value::Dict* existing_settings_dict);
+    const base::DictValue* existing_settings_dict);
 
 // Templates exported for each valid value type.
 extern template EXPORT_TEMPLATE_DECLARE(ASH_EXPORT) bool ShouldPersistSetting(
@@ -90,40 +90,40 @@ extern template EXPORT_TEMPLATE_DECLARE(ASH_EXPORT) bool ShouldPersistSetting(
     bool new_value,
     bool default_value,
     bool force_persistence,
-    const base::Value::Dict* existing_settings_dict);
+    const base::DictValue* existing_settings_dict);
 
 extern template EXPORT_TEMPLATE_DECLARE(ASH_EXPORT) bool ShouldPersistSetting(
     std::string_view setting_key,
     int new_value,
     int default_value,
     bool force_persistence,
-    const base::Value::Dict* existing_settings_dict);
+    const base::DictValue* existing_settings_dict);
 
 // Retrieve cached internal/external device settings dictionary (if it exists).
-ASH_EXPORT const base::Value::Dict* GetLoginScreenSettingsDict(
+ASH_EXPORT const base::DictValue* GetLoginScreenSettingsDict(
     PrefService* local_state,
     AccountId account_id,
     const std::string& pref_name);
 
 // Retrieve cached button remapping list (if it exists).
-ASH_EXPORT const base::Value::List* GetLoginScreenButtonRemappingList(
+ASH_EXPORT const base::ListValue* GetLoginScreenButtonRemappingList(
     PrefService* local_state,
     AccountId account_id,
     const std::string& pref_name);
 
 // These two functions are used to convert the button remapping or dict
 // in order to save the mojom object to the prefs as a dict.
-ASH_EXPORT base::Value::Dict ConvertButtonRemappingToDict(
+ASH_EXPORT base::DictValue ConvertButtonRemappingToDict(
     const mojom::ButtonRemapping& remapping,
     mojom::CustomizationRestriction customization_restriction,
     bool redact_button_names = false);
 ASH_EXPORT mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     mojom::CustomizationRestriction customization_restriction);
 
 // This helper function converts the button remapping object array
 // to a list of dicts to be stored in prefs.
-ASH_EXPORT base::Value::List ConvertButtonRemappingArrayToList(
+ASH_EXPORT base::ListValue ConvertButtonRemappingArrayToList(
     const std::vector<mojom::ButtonRemappingPtr>& remappings,
     mojom::CustomizationRestriction customization_restriction,
     bool redact_button_names = false);
@@ -132,7 +132,7 @@ ASH_EXPORT base::Value::List ConvertButtonRemappingArrayToList(
 // a button remapping object array. The dicts will be stored in prefs.
 ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
 ConvertListToButtonRemappingArray(
-    const base::Value::List& list,
+    const base::ListValue& list,
     mojom::CustomizationRestriction customization_restriction);
 
 // Returns whether the given keyboard is ChromeOS layout keyboard.

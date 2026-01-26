@@ -77,7 +77,7 @@ class FullscreenControllerTest : public AshTestBase {
 
   void SetKeepFullscreenWithoutNotificationAllowList(
       const std::string& pattern) {
-    base::Value::List list;
+    base::ListValue list;
     list.Append(pattern);
     Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetList(
         chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
@@ -131,7 +131,7 @@ TEST_F(FullscreenControllerTest, KeepFullscreenIfMatchingPref) {
   SetUpShellDelegate();
 
   // Set up the URL exempt list with one matching and one non-matching pattern.
-  base::Value::List list;
+  base::ListValue list;
   list.Append(kNonMatchingPattern);
   list.Append(kMatchingPattern);
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetList(

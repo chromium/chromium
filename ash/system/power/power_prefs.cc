@@ -396,7 +396,7 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
       local_state_->IsManagedPreference(
           prefs::kPowerPeakShiftBatteryThreshold) &&
       local_state_->IsManagedPreference(prefs::kPowerPeakShiftDayConfig)) {
-    const base::Value::Dict& configs_value =
+    const base::DictValue& configs_value =
         local_state_->GetDict(prefs::kPowerPeakShiftDayConfig);
     std::vector<PeakShiftDayConfig> configs;
     if (chromeos::PowerPolicyController::GetPeakShiftDayConfigs(configs_value,
@@ -416,7 +416,7 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
           prefs::kAdvancedBatteryChargeModeEnabled) &&
       local_state_->IsManagedPreference(
           prefs::kAdvancedBatteryChargeModeDayConfig)) {
-    const base::Value::Dict& configs_value =
+    const base::DictValue& configs_value =
         local_state_->GetDict(prefs::kAdvancedBatteryChargeModeDayConfig);
     std::vector<AdvancedBatteryChargeModeDayConfig> configs;
     if (chromeos::PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(

@@ -60,9 +60,9 @@ std::string GetPerDisplayPref(PrefService* prefs,
   std::string pref_key = base::NumberToString(display_id);
   bool has_per_display_prefs = false;
   if (!pref_key.empty()) {
-    const base::Value::Dict& shelf_prefs =
+    const base::DictValue& shelf_prefs =
         prefs->GetDict(prefs::kShelfPreferences);
-    const base::Value::Dict* display_pref = shelf_prefs.FindDict(pref_key);
+    const base::DictValue* display_pref = shelf_prefs.FindDict(pref_key);
     if (display_pref) {
       const std::string* per_display_value =
           display_pref->FindStringByDottedPath(path);
@@ -150,10 +150,10 @@ void SetPerDisplayShelfPref(PrefService* prefs,
     return;
 
   // Avoid ScopedDictPrefUpdate's notifications for read but unmodified prefs.
-  const base::Value::Dict& current_shelf_prefs =
+  const base::DictValue& current_shelf_prefs =
       prefs->GetDict(prefs::kShelfPreferences);
   std::string display_key = base::NumberToString(display_id);
-  const base::Value::Dict* current_display_prefs =
+  const base::DictValue* current_display_prefs =
       current_shelf_prefs.FindDict(display_key);
   if (current_display_prefs) {
     const std::string* current_value =
@@ -163,8 +163,8 @@ void SetPerDisplayShelfPref(PrefService* prefs,
   }
 
   ScopedDictPrefUpdate update(prefs, prefs::kShelfPreferences);
-  base::Value::Dict& shelf_prefs = update.Get();
-  base::Value::Dict* display_prefs_weak = shelf_prefs.EnsureDict(display_key);
+  base::DictValue& shelf_prefs = update.Get();
+  base::DictValue* display_prefs_weak = shelf_prefs.EnsureDict(display_key);
   display_prefs_weak->Set(pref_key, value);
 }
 

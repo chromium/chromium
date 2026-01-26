@@ -68,7 +68,7 @@ void AssertWallpaperInfoInPrefs(const PrefService* pref_service,
                                 const char pref_name[],
                                 AccountId account_id,
                                 const WallpaperInfo& info) {
-  const base::Value::Dict* stored_info_dict =
+  const base::DictValue* stored_info_dict =
       pref_service->GetDict(pref_name).FindDict(account_id.GetUserEmail());
   DCHECK(stored_info_dict);
   EXPECT_EQ(info.ToDict(), *stored_info_dict);
@@ -493,7 +493,7 @@ TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfo_InvalidLayoutEnum) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
-  base::Value::Dict wallpaper_info_dict = info.ToDict();
+  base::DictValue wallpaper_info_dict = info.ToDict();
 
   // Mangles pref data with invalid layout.
   int invalid_layout = 1000;
@@ -518,7 +518,7 @@ TEST_F(WallpaperPrefManagerTest, GetSyncedWallpaperInfo_InvalidWallpaperType) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
-  base::Value::Dict wallpaper_info_dict = info.ToDict();
+  base::DictValue wallpaper_info_dict = info.ToDict();
 
   // Mangles pref data with invalid wallpaper type.
   int invalid_wallpaper_type = 1000;
@@ -553,7 +553,7 @@ TEST_F(WallpaperPrefManagerTest,
   info.collection_id = "_test_collection_id";
   info.asset_id = kAssetId;
   info.unit_id = kAssetId;
-  base::Value::Dict wallpaper_info_dict = info.ToDict();
+  base::DictValue wallpaper_info_dict = info.ToDict();
 
   PrefService* syncable_prefs =
       profile_helper_->GetUserPrefServiceSyncable(account_id_1);

@@ -28,7 +28,7 @@ void PluralStringHandler::AddStringToPluralMap(const std::string& name,
   string_id_map_[name] = string_id;
 }
 
-void PluralStringHandler::HandleGetPluralString(const base::Value::List& args) {
+void PluralStringHandler::HandleGetPluralString(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(3U, args.size());
   const std::string callback = args[0].GetString();

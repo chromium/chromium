@@ -57,7 +57,7 @@ std::string GetPrefPath(AppListNudgeController::NudgeType type) {
 
 // Returns true if the app list has been reordered before.
 bool WasAppListReorderedPreviously(PrefService* prefs) {
-  const base::Value::Dict& dictionary =
+  const base::DictValue& dictionary =
       prefs->GetDict(prefs::kAppListReorderNudge);
   return dictionary.FindBool(kReorderNudgeConfirmed).value_or(false);
 }
@@ -75,7 +75,7 @@ void AppListNudgeController::RegisterProfilePrefs(
 
 // static
 int AppListNudgeController::GetShownCount(PrefService* prefs, NudgeType type) {
-  const base::Value::Dict& dictionary = prefs->GetDict(GetPrefPath(type));
+  const base::DictValue& dictionary = prefs->GetDict(GetPrefPath(type));
 
   return dictionary.FindInt(kReorderNudgeShownCount).value_or(0);
 }

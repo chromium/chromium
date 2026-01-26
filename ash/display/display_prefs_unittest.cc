@@ -175,7 +175,7 @@ class DisplayPrefsTest : public AshTestBase {
 
     DCHECK(!name.empty());
 
-    base::Value::Dict* layout_dict = update->EnsureDict(name);
+    base::DictValue* layout_dict = update->EnsureDict(name);
     display::DisplayLayoutToJson(display_layout, *layout_dict);
   }
 
@@ -185,10 +185,10 @@ class DisplayPrefsTest : public AshTestBase {
     std::string name = display::DisplayIdListToString(list);
 
     ScopedDictPrefUpdate update(local_state(), prefs::kSecondaryDisplays);
-    if (base::Value::Dict* existing_layout_value = update->FindDict(name)) {
+    if (base::DictValue* existing_layout_value = update->FindDict(name)) {
       existing_layout_value->Set(key, std::move(value));
     } else {
-      base::Value::Dict layout_dict;
+      base::DictValue layout_dict;
       layout_dict.Set(key, true);
       update->SetByDottedPath(name, std::move(layout_dict));
     }
@@ -210,7 +210,7 @@ class DisplayPrefsTest : public AshTestBase {
     ScopedDictPrefUpdate update(local_state(), prefs::kDisplayProperties);
     const std::string name = base::NumberToString(id);
 
-    base::Value::Dict insets_value;
+    base::DictValue insets_value;
     insets_value.Set("insets_top", insets.top());
     insets_value.Set("insets_left", insets.left());
     insets_value.Set("insets_bottom", insets.bottom());
@@ -229,7 +229,7 @@ class DisplayPrefsTest : public AshTestBase {
       const std::set<int64_t>& external_display_mirror_info) {
     ScopedListPrefUpdate update(local_state(),
                                 prefs::kExternalDisplayMirrorInfo);
-    base::Value::List& pref_data = update.Get();
+    base::ListValue& pref_data = update.Get();
     pref_data.clear();
     for (const auto& id : external_display_mirror_info)
       pref_data.Append(base::NumberToString(id));
@@ -245,10 +245,10 @@ class DisplayPrefsTest : public AshTestBase {
         .ToString();
   }
 
-  const base::Value::Dict* ReadPropertiesForDisplay(int64_t display_id) {
-    const base::Value::Dict& properties =
+  const base::DictValue* ReadPropertiesForDisplay(int64_t display_id) {
+    const base::DictValue& properties =
         local_state()->GetDict(prefs::kDisplayProperties);
-    const base::Value::Dict* property =
+    const base::DictValue* property =
         properties.FindDict(base::NumberToString(display_id));
     EXPECT_TRUE(property);
     return property;
@@ -266,7 +266,7 @@ class DisplayPrefsTest : public AshTestBase {
                     "mirroring_source_id="
                  << source_id << " and mirroring_destination_ids="
                  << base::JoinString(expected_dest_id_strs, ","));
-    const base::Value::Dict& prefs =
+    const base::DictValue& prefs =
         local_state()->GetDict(prefs::kDisplayMixedMirrorModeParams);
     EXPECT_THAT(prefs.FindString("mirroring_source_id"),
                 testing::Pointee(base::NumberToString(source_id)));
@@ -290,7 +290,7 @@ class DisplayPrefsTest : public AshTestBase {
         testing::Message()
         << "Expected to read kExternalDisplayMirrorInfo with list values="
         << base::JoinString(expected_display_id_strs, ","));
-    const base::Value::List& prefs =
+    const base::ListValue& prefs =
         local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
     std::set<int64_t> read_ids;
     for (const auto& value : prefs) {
@@ -453,12 +453,12 @@ TEST_F(DisplayPrefsTest, BasicStores) {
       id2, point_pair_quad_2, touch_size_1, touchdevice_3,
       /*apply_spatial_calibration=*/true);
 
-  const base::Value::Dict& displays =
+  const base::DictValue& displays =
       local_state()->GetDict(prefs::kSecondaryDisplays);
   std::string key = base::NumberToString(id1) + "," + base::NumberToString(id2);
   std::string dummy_key =
       base::NumberToString(id1) + "," + base::NumberToString(dummy_id);
-  const base::Value::Dict* layout_value = displays.FindDict(dummy_key);
+  const base::DictValue* layout_value = displays.FindDict(dummy_key);
   EXPECT_TRUE(layout_value);
 
   display::DisplayLayout stored_layout;
@@ -470,13 +470,13 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   EXPECT_EQ(dummy_layout->placement_list[0].offset,
             stored_layout.placement_list[0].offset);
 
-  const base::Value::List* external_display_mirror_info =
+  const base::ListValue* external_display_mirror_info =
       &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(0U, external_display_mirror_info->size());
 
-  const base::Value::Dict& properties =
+  const base::DictValue& properties =
       local_state()->GetDict(prefs::kDisplayProperties);
-  const base::Value::Dict* property =
+  const base::DictValue* property =
       properties.FindDict(base::NumberToString(id1));
   EXPECT_TRUE(property);
   EXPECT_EQ(1, property->FindInt("rotation"));
@@ -486,7 +486,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   ASSERT_TRUE(display_zoom_1);
   EXPECT_NEAR(*display_zoom_1, zoom_factor_1, 0.0001);
 
-  const base::Value::Dict* display_zoom_dict_1 =
+  const base::DictValue* display_zoom_dict_1 =
       property->FindDict("display_zoom_factor_map");
   std::optional<double> display_zoom_from_map_1 =
       display_zoom_dict_1->FindDouble("300x200");
@@ -536,7 +536,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   ASSERT_TRUE(display_zoom_2);
   EXPECT_NEAR(*display_zoom_2, zoom_factor_2, 0.0001);
 
-  const base::Value::Dict* display_zoom_dict_2 =
+  const base::DictValue* display_zoom_dict_2 =
       property->FindDict("display_zoom_factor_map");
   std::optional<double> display_zoom_from_map_2 =
       display_zoom_dict_2->FindDouble("500x400");
@@ -681,9 +681,9 @@ TEST_F(DisplayPrefsTest, PreventStore) {
                       base::OnceClosure()));
   UpdateDisplay("500x400#500x400|400x300|300x200");
 
-  const base::Value::Dict& properties =
+  const base::DictValue& properties =
       local_state()->GetDict(prefs::kDisplayProperties);
-  const base::Value::Dict* property =
+  const base::DictValue* property =
       properties.FindDict(base::NumberToString(id));
   EXPECT_TRUE(property);
   EXPECT_FALSE(property->FindInt("width"));
@@ -716,11 +716,11 @@ TEST_F(DisplayPrefsTest, StoreForSwappedDisplay) {
   ASSERT_EQ(id1, display_manager_test.GetSecondaryDisplay().id());
 
   std::string key = base::NumberToString(id1) + "," + base::NumberToString(id2);
-  const base::Value::Dict& displays =
+  const base::DictValue& displays =
       local_state()->GetDict(prefs::kSecondaryDisplays);
   // Initial saved value is swapped.
   {
-    const base::Value::Dict* new_value = displays.FindDict(key);
+    const base::DictValue* new_value = displays.FindDict(key);
     EXPECT_TRUE(new_value);
     display::DisplayLayout stored_layout;
     EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
@@ -739,7 +739,7 @@ TEST_F(DisplayPrefsTest, StoreForSwappedDisplay) {
     display_manager()->SetLayoutForCurrentDisplays(
         display::test::CreateDisplayLayout(display_manager(),
                                            display::DisplayPlacement::TOP, 10));
-    const base::Value::Dict* new_value = displays.FindDict(key);
+    const base::DictValue* new_value = displays.FindDict(key);
     ASSERT_TRUE(new_value);
     display::DisplayLayout stored_layout;
     EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
@@ -756,7 +756,7 @@ TEST_F(DisplayPrefsTest, StoreForSwappedDisplay) {
   // Swapping primary will save the swapped value.
   {
     SwapPrimaryDisplay();
-    const base::Value::Dict* new_value = displays.FindDict(key);
+    const base::DictValue* new_value = displays.FindDict(key);
     ASSERT_TRUE(new_value);
     display::DisplayLayout stored_layout;
     EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
@@ -991,9 +991,9 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
   shell->screen_orientation_controller()->OnAccelerometerUpdated(update);
   EXPECT_EQ(display::Display::ROTATE_90, GetCurrentInternalDisplayRotation());
 
-  const base::Value::Dict* properties =
+  const base::DictValue* properties =
       &local_state()->GetDict(prefs::kDisplayProperties);
-  const base::Value::Dict* property = properties->FindDict(
+  const base::DictValue* property = properties->FindDict(
       base::NumberToString(display::Display::InternalDisplayId()));
   EXPECT_TRUE(property);
   EXPECT_EQ(display::Display::ROTATE_0, property->FindInt("rotation"));
@@ -1019,7 +1019,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNoLogin) {
                                                     current_rotation_lock);
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
-  const base::Value::Dict& properties =
+  const base::DictValue& properties =
       local_state()->GetDict(prefs::kDisplayRotationLock);
   std::optional<bool> rotation_lock = properties.FindBool("lock");
   ASSERT_TRUE(rotation_lock.has_value());
@@ -1042,7 +1042,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateGuest) {
                                                     current_rotation_lock);
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
-  const base::Value::Dict& properties =
+  const base::DictValue& properties =
       local_state()->GetDict(prefs::kDisplayRotationLock);
   std::optional<bool> rotation_lock = properties.FindBool("lock");
   ASSERT_TRUE(rotation_lock.has_value());
@@ -1065,7 +1065,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNormalUser) {
                                                     current_rotation_lock);
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
-  const base::Value::Dict& properties =
+  const base::DictValue& properties =
       local_state()->GetDict(prefs::kDisplayRotationLock);
   std::optional<bool> rotation_lock = properties.FindBool("lock");
   ASSERT_TRUE(rotation_lock.has_value());
@@ -1138,7 +1138,7 @@ TEST_F(DisplayPrefsTest, RotationLockTriggersStore) {
 
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
-  const base::Value::Dict& properties =
+  const base::DictValue& properties =
       local_state()->GetDict(prefs::kDisplayRotationLock);
   std::optional<bool> rotation_lock = properties.FindBool("lock");
   EXPECT_TRUE(rotation_lock.has_value());
@@ -1153,9 +1153,9 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
   EXPECT_EQ(gfx::Size(700, 200),
             display::Screen::Get()->GetPrimaryDisplay().size());
 
-  const base::Value::Dict& secondary_displays =
+  const base::DictValue& secondary_displays =
       local_state()->GetDict(prefs::kSecondaryDisplays);
-  const base::Value::Dict* new_value =
+  const base::DictValue* new_value =
       secondary_displays.FindDict(display::DisplayIdListToString(list));
   EXPECT_TRUE(new_value);
 
@@ -1163,7 +1163,7 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
   EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
   EXPECT_TRUE(stored_layout.default_unified);
 
-  const base::Value::Dict& displays =
+  const base::DictValue& displays =
       local_state()->GetDict(prefs::kDisplayProperties);
   int64_t unified_id = display::Screen::Get()->GetPrimaryDisplay().id();
   new_value = displays.FindDict(base::NumberToString(unified_id));
@@ -1280,9 +1280,9 @@ TEST_F(DisplayPrefsTest, SaveThreeDisplays) {
                               display::DisplayPlacement::BOTTOM, 100);
   display_manager()->SetLayoutForCurrentDisplays(builder.Build());
 
-  const base::Value::Dict& secondary_displays =
+  const base::DictValue& secondary_displays =
       local_state()->GetDict(prefs::kSecondaryDisplays);
-  const base::Value::Dict* new_value =
+  const base::DictValue* new_value =
       secondary_displays.FindDict(display::DisplayIdListToString(list));
   EXPECT_TRUE(new_value);
 }
@@ -1414,7 +1414,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   external_display_mirror_info.emplace(first_display_masked_id);
   StoreExternalDisplayMirrorInfo(external_display_mirror_info);
   LoadDisplayPreferences();
-  const base::Value::List* pref_external_display_mirror_info =
+  const base::ListValue* pref_external_display_mirror_info =
       &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(1U, pref_external_display_mirror_info->size());
   EXPECT_EQ(base::NumberToString(first_display_masked_id),
@@ -1561,11 +1561,11 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   EXPECT_EQ(first_display_id, destination_ids[0]);
 
   // Check the preferences.
-  const base::Value::Dict* pref_data =
+  const base::DictValue* pref_data =
       &local_state()->GetDict(prefs::kDisplayMixedMirrorModeParams);
   EXPECT_EQ(base::NumberToString(internal_display_id),
             *pref_data->FindString("mirroring_source_id"));
-  const base::Value::List* destination_ids_list =
+  const base::ListValue* destination_ids_list =
       pref_data->FindList("mirroring_destination_ids");
   EXPECT_EQ(1U, destination_ids_list->size());
   EXPECT_EQ(base::NumberToString(first_display_id),
@@ -1610,7 +1610,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithSingleDisplay) {
                           .SetFirstDisplayAsInternalDisplay();
 
   EXPECT_FALSE(display::Screen::Get()->InTabletMode());
-  const base::Value::Dict* properties = ReadPropertiesForDisplay(id0);
+  const base::DictValue* properties = ReadPropertiesForDisplay(id0);
   EXPECT_THAT(properties->FindDouble("display_zoom_factor"),
               Optional(DoubleEq(1.25f)));
   EXPECT_THAT(properties->FindInt("rotation"),
@@ -1691,7 +1691,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
   EXPECT_FALSE(display::Screen::Get()->InTabletMode());
 
   // Verify initial stored display prefs.
-  const base::Value::Dict* properties = ReadPropertiesForDisplay(ids[0]);
+  const base::DictValue* properties = ReadPropertiesForDisplay(ids[0]);
   EXPECT_THAT(properties->FindDouble("display_zoom_factor"),
               Optional(DoubleEq(1.25f)));
   EXPECT_THAT(properties->FindInt("rotation"),
@@ -1873,7 +1873,7 @@ TEST_F(DisplayPrefsStartupTest, RotationLockInfoDuringStartupInTabletMode) {
   EXPECT_EQ(display::Display::Rotation::ROTATE_90, display.rotation());
   EXPECT_TRUE(screen_orientation_controller->rotation_locked());
 
-  const base::Value::Dict& properties =
+  const base::DictValue& properties =
       local_state()->GetDict(prefs::kDisplayRotationLock);
   const std::optional<bool> rotation_lock = properties.FindBool("lock");
   EXPECT_TRUE(rotation_lock.value_or(false));

@@ -4559,7 +4559,7 @@ class WallpaperControllerPrefTest : public AshTestBase {
   WallpaperControllerPrefTest() {
     scoped_feature_list_.InitWithFeatures(
         personalization_app::GetTimeOfDayFeatures(), {});
-    base::Value::Dict property;
+    base::DictValue property;
     property.Set("rotation", static_cast<int>(display::Display::ROTATE_90));
     property.Set("width", 800);
     property.Set("height", 600);
@@ -4672,7 +4672,7 @@ TEST_P(WallpaperControllerTest, OldOnlineInfoSynced_Discarded) {
   SimulateUserLogin(kAccountId1);
   // Create a dictionary that looks like the preference from crrev.com/a040384.
   // DO NOT CHANGE as there are preferences like this in production.
-  base::Value::Dict wallpaper_info_dict;
+  base::DictValue wallpaper_info_dict;
   wallpaper_info_dict.Set(
       WallpaperInfo::kNewWallpaperDateNodeName,
       base::NumberToString(

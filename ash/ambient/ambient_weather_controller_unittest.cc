@@ -138,7 +138,7 @@ TEST_F(AmbientWeatherControllerTest, DisabledByPolicy) {
   EXPECT_EQ(backend_controller()->fetch_weather_count(), 0);
 
   // Enable weather integration by policy.
-  base::Value::List enabled_integrations;
+  base::ListValue enabled_integrations;
   enabled_integrations.Append(prefs::kWeatherIntegrationName);
   pref_service->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
                         std::move(enabled_integrations));

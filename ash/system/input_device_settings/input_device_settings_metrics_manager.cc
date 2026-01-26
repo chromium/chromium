@@ -509,7 +509,7 @@ std::optional<uint32_t> CountNumberOfDevicesUsedInLast28Days(
   }
 
   uint32_t num_devices_used = 0;
-  const base::Value::Dict& devices_dict = pref_service->GetDict(pref_name);
+  const base::DictValue& devices_dict = pref_service->GetDict(pref_name);
   for (const auto device_entry : devices_dict) {
     const auto* device = device_entry.second.GetIfDict();
     if (!device) {

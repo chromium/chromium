@@ -58,7 +58,7 @@ class AutotestAmbientApiTest : public AmbientAshTestBase {
           GetContainerView()->GetViewByID(kAmbientVideoWebView));
       ASSERT_THAT(web_view, NotNull());
       ASSERT_FALSE(web_view->GetVisibleURL().is_empty());
-      base::Value::Dict url_fragment_dict;
+      base::DictValue url_fragment_dict;
       url_fragment_dict.Set("playback_started", success);
       std::optional<std::string> url_fragment =
           base::WriteJson(url_fragment_dict);

@@ -128,7 +128,7 @@ std::string GetHashedFileNameForUrl(const std::string& url) {
 }
 
 std::vector<std::string> GetImageUrlsToProcess(
-    const base::Value::List& image_url_list) {
+    const base::ListValue& image_url_list) {
   std::vector<std::string> urls;
   for (size_t i = 0;
        i < kMaxUrlsToProcessFromPolicy && i < image_url_list.size(); ++i) {
@@ -228,7 +228,7 @@ ScreensaverImageDownloader::ScreensaverImageDownloader(
 ScreensaverImageDownloader::~ScreensaverImageDownloader() = default;
 
 void ScreensaverImageDownloader::UpdateImageUrlList(
-    const base::Value::List& image_url_list) {
+    const base::ListValue& image_url_list) {
   if (image_url_list.empty()) {
     // If the screensaver is listening to updates, notify that the images are no
     // longer available before deleting them.

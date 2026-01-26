@@ -182,7 +182,7 @@ class KeyboardControllerImplTest : public AshTestBase {
   }
 
   void SetKeyboardConfigToPref(const base::Value& value) {
-    auto features = base::Value::Dict()
+    auto features = base::DictValue()
                         .Set("auto_complete_enabled", value.Clone())
                         .Set("auto_correct_enabled", value.Clone())
                         .Set("handwriting_enabled", value.Clone())

@@ -131,24 +131,24 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   static bool IsSuggestionType(HoldingSpaceItem::Type type);
 
   // TODO(http://b/288471183): Update comment after removing file system URL.
-  // Deserializes from `base::Value::Dict` to `HoldingSpaceItem`.
+  // Deserializes from `base::DictValue` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.
   // The item should be fully initialized using `Initialize()`.
   static std::unique_ptr<HoldingSpaceItem> Deserialize(
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       ImageResolver image_resolver);
 
   // Deserializes `id_` from a serialized `HoldingSpaceItem`.
-  static const std::string& DeserializeId(const base::Value::Dict& dict);
+  static const std::string& DeserializeId(const base::DictValue& dict);
 
   // Deserializes file path from a serialized `HoldingSpaceItem`.
-  static base::FilePath DeserializeFilePath(const base::Value::Dict& dict);
+  static base::FilePath DeserializeFilePath(const base::DictValue& dict);
 
   // Deserializes `type_` from a serialized `HoldingSpaceItem`.
-  static Type DeserializeType(const base::Value::Dict& dict);
+  static Type DeserializeType(const base::DictValue& dict);
 
-  // Serializes from `HoldingSpaceItem` to `base::Value::Dict`.
-  base::Value::Dict Serialize() const;
+  // Serializes from `HoldingSpaceItem` to `base::DictValue`.
+  base::DictValue Serialize() const;
 
   // Adds `callback` to be notified when `this` gets deleted.
   base::CallbackListSubscription AddDeletionCallback(

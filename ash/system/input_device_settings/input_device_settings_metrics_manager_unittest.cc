@@ -1505,11 +1505,11 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordNumMiceUsedInLast28Days) {
   mouse.device_key = kExternalMouseId;
   mouse.settings = mojom::MouseSettings::New();
 
-  base::Value::Dict test_pref_dict;
+  base::DictValue test_pref_dict;
 
   // Add 5 devices in the window we care about.
   for (int i = 1; i <= 5; i++) {
-    base::Value::Dict device_dict;
+    base::DictValue device_dict;
     device_dict.Set(prefs::kLastUpdatedKey,
                     base::TimeToValue(base::Time::Now() - base::Days(4 * i)));
     test_pref_dict.Set("in_window_" + base::NumberToString(i),
@@ -1518,7 +1518,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordNumMiceUsedInLast28Days) {
 
   // Add a device that is outside the window we want to measure.
   {
-    base::Value::Dict device_dict;
+    base::DictValue device_dict;
     device_dict.Set(prefs::kLastUpdatedKey,
                     base::TimeToValue(base::Time::Now() - base::Days(29)));
     test_pref_dict.Set("out_of_window", std::move(device_dict));
@@ -1544,11 +1544,11 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   keyboard.settings = mojom::KeyboardSettings::New();
   keyboard.settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
 
-  base::Value::Dict test_pref_dict;
+  base::DictValue test_pref_dict;
 
   // Add 5 devices in the window we care about.
   for (int i = 1; i <= 5; i++) {
-    base::Value::Dict device_dict;
+    base::DictValue device_dict;
     device_dict.Set(prefs::kLastUpdatedKey,
                     base::TimeToValue(base::Time::Now() - base::Days(4 * i)));
     test_pref_dict.Set("in_window_" + base::NumberToString(i),
@@ -1557,7 +1557,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
 
   // Add a device that is outside the window we want to measure.
   {
-    base::Value::Dict device_dict;
+    base::DictValue device_dict;
     device_dict.Set(prefs::kLastUpdatedKey,
                     base::TimeToValue(base::Time::Now() - base::Days(29)));
     test_pref_dict.Set("out_of_window", std::move(device_dict));
@@ -1583,11 +1583,11 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   touchpad.is_external = true;
   touchpad.settings = mojom::TouchpadSettings::New();
 
-  base::Value::Dict test_pref_dict;
+  base::DictValue test_pref_dict;
 
   // Add 5 devices in the window we care about.
   for (int i = 1; i <= 5; i++) {
-    base::Value::Dict device_dict;
+    base::DictValue device_dict;
     device_dict.Set(prefs::kLastUpdatedKey,
                     base::TimeToValue(base::Time::Now() - base::Days(4 * i)));
     test_pref_dict.Set("in_window_" + base::NumberToString(i),
@@ -1596,7 +1596,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
 
   // Add a device that is outside the window we want to measure.
   {
-    base::Value::Dict device_dict;
+    base::DictValue device_dict;
     device_dict.Set(prefs::kLastUpdatedKey,
                     base::TimeToValue(base::Time::Now() - base::Days(29)));
     test_pref_dict.Set("out_of_window", std::move(device_dict));
@@ -1654,7 +1654,7 @@ TEST_P(SettingsUpdatedTimePeriodMetricsTest, KeyboardMetrics) {
   SettingsUpdatedMetricsInfo metrics_info(
       category_metric_name_data_.category,
       base::Time::Now() - time_period_metric_data_.time_delta);
-  base::Value::Dict updated_dict;
+  base::DictValue updated_dict;
   updated_dict.Set(kExternalKeyboardId, metrics_info.ToDict());
 
   PrefService* pref_service =
@@ -1681,7 +1681,7 @@ TEST_P(SettingsUpdatedTimePeriodMetricsTest, MouseMetrics) {
   SettingsUpdatedMetricsInfo metrics_info(
       category_metric_name_data_.category,
       base::Time::Now() - time_period_metric_data_.time_delta);
-  base::Value::Dict updated_dict;
+  base::DictValue updated_dict;
   updated_dict.Set(kExternalMouseId, metrics_info.ToDict());
 
   PrefService* pref_service =
@@ -1707,7 +1707,7 @@ TEST_P(SettingsUpdatedTimePeriodMetricsTest, TouchpadMetrics) {
   SettingsUpdatedMetricsInfo metrics_info(
       category_metric_name_data_.category,
       base::Time::Now() - time_period_metric_data_.time_delta);
-  base::Value::Dict updated_dict;
+  base::DictValue updated_dict;
   updated_dict.Set(kExternalTouchpadId, metrics_info.ToDict());
 
   PrefService* pref_service =
@@ -1734,7 +1734,7 @@ TEST_P(SettingsUpdatedTimePeriodMetricsTest, PointingStickMetrics) {
   SettingsUpdatedMetricsInfo metrics_info(
       category_metric_name_data_.category,
       base::Time::Now() - time_period_metric_data_.time_delta);
-  base::Value::Dict updated_dict;
+  base::DictValue updated_dict;
   updated_dict.Set(kPointingStickId, metrics_info.ToDict());
 
   PrefService* pref_service =

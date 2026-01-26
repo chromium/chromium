@@ -86,21 +86,21 @@ TEST(SettingsUpdatedMetricsInfoTest, ConvertToDict) {
 }
 
 TEST(SettingsUpdatedMetricsInfoTest, InvalidConversionMissingTime) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kCategoryKey, static_cast<int>(Category::kFirstEver));
   auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(dict);
   EXPECT_FALSE(metrics_info);
 }
 
 TEST(SettingsUpdatedMetricsInfoTest, InvalidConversionMissingCategory) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kLocalFirstConnectionKey, base::TimeToValue(base::Time::Now()));
   auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(dict);
   EXPECT_FALSE(metrics_info);
 }
 
 TEST(SettingsUpdatedMetricsInfoTest, ConversionNoPeriods) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   const base::Time expected_time =
       base::Time::FromDeltaSinceWindowsEpoch(base::Days(10000));
   dict.Set(kCategoryKey, static_cast<int>(Category::kFirstEver));
@@ -112,7 +112,7 @@ TEST(SettingsUpdatedMetricsInfoTest, ConversionNoPeriods) {
 }
 
 TEST(SettingsUpdatedMetricsInfoTest, ConversionInvalidCategory) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   const base::Time expected_time =
       base::Time::FromDeltaSinceWindowsEpoch(base::Days(10000));
   dict.Set(kCategoryKey, static_cast<int>(Category::kMaxValue) + 1);
@@ -122,7 +122,7 @@ TEST(SettingsUpdatedMetricsInfoTest, ConversionInvalidCategory) {
 }
 
 TEST(SettingsUpdatedMetricsInfoTest, ConversionCheckPeriodCounts) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   const base::Time expected_time =
       base::Time::FromDeltaSinceWindowsEpoch(base::Days(10000));
   dict.Set(kCategoryKey, static_cast<int>(Category::kMaxValue));
@@ -144,7 +144,7 @@ TEST(SettingsUpdatedMetricsInfoTest, ConversionCheckPeriodCounts) {
 }
 
 TEST(SettingsUpdatedMetricsInfoTest, ConversionCheckPeriodCountsRoundTrip) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   const base::Time expected_time =
       base::Time::FromDeltaSinceWindowsEpoch(base::Days(10000));
   dict.Set(kCategoryKey, static_cast<int>(Category::kMaxValue));
@@ -157,12 +157,12 @@ TEST(SettingsUpdatedMetricsInfoTest, ConversionCheckPeriodCountsRoundTrip) {
 
   auto metrics_info = SettingsUpdatedMetricsInfo::FromDict(dict);
   ASSERT_TRUE(metrics_info);
-  base::Value::Dict duplicate_dict = metrics_info->ToDict();
+  base::DictValue duplicate_dict = metrics_info->ToDict();
   EXPECT_EQ(dict, duplicate_dict);
 }
 
 TEST(SettingsUpdatedMetricsInfoTest, ConversionCheckPeriodCountsAllZero) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   const base::Time expected_time =
       base::Time::FromDeltaSinceWindowsEpoch(base::Days(10000));
   dict.Set(kCategoryKey, static_cast<int>(Category::kMaxValue));

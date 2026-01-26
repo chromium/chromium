@@ -79,17 +79,17 @@ void AutozoomNudgeController::HandleNudgeShown() {
 }
 
 bool AutozoomNudgeController::GetHadEnabled(PrefService* prefs) {
-  const base::Value::Dict& dictionary = prefs->GetDict(prefs::kAutozoomNudges);
+  const base::DictValue& dictionary = prefs->GetDict(prefs::kAutozoomNudges);
   return dictionary.FindBool(kHadEnabled).value_or(false);
 }
 
 int AutozoomNudgeController::GetShownCount(PrefService* prefs) {
-  const base::Value::Dict& dictionary = prefs->GetDict(prefs::kAutozoomNudges);
+  const base::DictValue& dictionary = prefs->GetDict(prefs::kAutozoomNudges);
   return dictionary.FindInt(kShownCount).value_or(0);
 }
 
 base::Time AutozoomNudgeController::GetLastShownTime(PrefService* prefs) {
-  const base::Value::Dict& dictionary = prefs->GetDict(prefs::kAutozoomNudges);
+  const base::DictValue& dictionary = prefs->GetDict(prefs::kAutozoomNudges);
   std::optional<base::Time> last_shown_time =
       base::ValueToTime(dictionary.Find(kLastTimeShown));
   return last_shown_time.value_or(base::Time());

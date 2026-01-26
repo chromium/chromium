@@ -41,7 +41,7 @@ std::optional<std::u16string> GetCreationTimeInfo(
   return base::TimeFormatShortDate(*time);
 }
 
-std::optional<base::Value::Dict> ParseAsOptionalDict(const std::string& json) {
+std::optional<base::DictValue> ParseAsOptionalDict(const std::string& json) {
   std::optional<base::Value> parsed =
       base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed.has_value()) {
@@ -52,7 +52,7 @@ std::optional<base::Value::Dict> ParseAsOptionalDict(const std::string& json) {
     LOG(WARNING) << "Parsed JSON is not a dictionary";
     return std::nullopt;
   }
-  base::Value::Dict& dict = parsed->GetDict();
+  base::DictValue& dict = parsed->GetDict();
   if (!dict.contains(kSeaPenFreeformQueryKey) &&
       !dict.contains(kSeaPenTemplateIdKey)) {
     LOG(WARNING) << "Parsed JSON does not contain required keys";
@@ -63,7 +63,7 @@ std::optional<base::Value::Dict> ParseAsOptionalDict(const std::string& json) {
 
 personalization_app::mojom::RecentSeaPenImageInfoPtr
 SeaPenQueryDictToRecentImageInfo(
-    const std::optional<base::Value::Dict> query_dict) {
+    const std::optional<base::DictValue> query_dict) {
   if (!query_dict.has_value()) {
     DVLOG(2) << __func__ << " query_dict nullopt";
     return nullptr;
@@ -145,7 +145,7 @@ SeaPenQueryDictToRecentImageInfo(
 }
 
 std::optional<int> ExtractTemplateIdFromSeaPenQueryDict(
-    const std::optional<base::Value::Dict> query_dict) {
+    const std::optional<base::DictValue> query_dict) {
   if (!query_dict.has_value()) {
     DVLOG(2) << __func__ << " query_dict nullopt";
     return std::nullopt;
@@ -161,9 +161,9 @@ std::optional<int> ExtractTemplateIdFromSeaPenQueryDict(
 
 }  // namespace
 
-base::Value::Dict SeaPenQueryToDict(
+base::DictValue SeaPenQueryToDict(
     const personalization_app::mojom::SeaPenQueryPtr& query) {
-  base::Value::Dict query_dict = base::Value::Dict();
+  base::DictValue query_dict = base::DictValue();
   query_dict.Set(kSeaPenCreationTimeKey, base::TimeToValue(base::Time::Now()));
 
   switch (query->which()) {
@@ -175,7 +175,7 @@ base::Value::Dict SeaPenQueryToDict(
       query_dict.Set(kSeaPenTemplateIdKey,
                      base::NumberToString(static_cast<int32_t>(
                          query->get_template_query()->id)));
-      base::Value::Dict options_dict = base::Value::Dict();
+      base::DictValue options_dict = base::DictValue();
       for (const auto& [chip, option] : query->get_template_query()->options) {
         options_dict.Set(base::NumberToString(static_cast<int32_t>(chip)),
                          base::NumberToString(static_cast<int32_t>(option)));
@@ -202,7 +202,7 @@ std::string ExtractDcDescriptionContents(std::string_view data) {
   return result;
 }
 
-std::string QueryDictToXmpString(const base::Value::Dict& query_dict) {
+std::string QueryDictToXmpString(const base::DictValue& query_dict) {
   static constexpr char kXmpData[] = R"(
             <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 6.0.0">
                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">

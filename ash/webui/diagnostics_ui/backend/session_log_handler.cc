@@ -150,7 +150,7 @@ void SessionLogHandler::SetLogCreatedClosureForTest(base::OnceClosure closure) {
 }
 
 void SessionLogHandler::HandleSaveSessionLogRequest(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   CHECK_EQ(1U, args.size());
   DCHECK(save_session_log_callback_id_.empty());
@@ -177,7 +177,7 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
       /*default_extension=*/base::FilePath::StringType(), owning_window);
 }
 
-void SessionLogHandler::HandleInitialize(const base::Value::List& args) {
+void SessionLogHandler::HandleInitialize(const base::ListValue& args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   DCHECK(args.empty());
   AllowJavascript();

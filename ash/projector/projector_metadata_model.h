@@ -51,7 +51,7 @@ class MetadataItem {
   std::string& text() { return text_; }
 
   // Return the serialized metadata item. This is used for storage.
-  virtual base::Value::Dict ToJson() = 0;
+  virtual base::DictValue ToJson() = 0;
 
  protected:
   // The start time of the metadata item from the start of the recording
@@ -73,7 +73,7 @@ class ASH_EXPORT ProjectorKeyIdea : public MetadataItem {
   ProjectorKeyIdea& operator=(const ProjectorKeyIdea&) = delete;
   ~ProjectorKeyIdea() override;
 
-  base::Value::Dict ToJson() override;
+  base::DictValue ToJson() override;
 };
 
 // Class to describe a transcription.
@@ -89,7 +89,7 @@ class ASH_EXPORT ProjectorTranscript : public MetadataItem {
   ProjectorTranscript& operator=(const ProjectorTranscript&) = delete;
   ~ProjectorTranscript() override;
 
-  base::Value::Dict ToJson() override;
+  base::DictValue ToJson() override;
 
   std::vector<media::HypothesisParts>& hypothesis_parts() {
     return hypothesis_parts_;
@@ -127,7 +127,7 @@ class ASH_EXPORT ProjectorMetadata {
   size_t GetTranscriptsCount() const { return transcripts_.size(); }
 
  private:
-  base::Value::Dict ToJson();
+  base::DictValue ToJson();
   // Add sentence transcripts to the metadata.
   void AddSentenceTranscripts(
       std::vector<std::unique_ptr<ProjectorTranscript>> sentence_transcripts);

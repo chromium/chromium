@@ -49,7 +49,7 @@ std::string HexEncode(uint16_t v) {
 }
 
 bool ExistingSettingsHasValue(std::string_view setting_key,
-                              const base::Value::Dict* existing_settings_dict) {
+                              const base::DictValue* existing_settings_dict) {
   if (!existing_settings_dict) {
     return false;
   }
@@ -162,7 +162,7 @@ bool ShouldPersistSetting(std::string_view setting_key,
                           T new_value,
                           T default_value,
                           bool force_persistence,
-                          const base::Value::Dict* existing_settings_dict) {
+                          const base::DictValue* existing_settings_dict) {
   return ExistingSettingsHasValue(setting_key, existing_settings_dict) ||
          new_value != default_value || force_persistence;
 }
@@ -172,7 +172,7 @@ bool ShouldPersistSetting(const mojom::InputDeviceSettingsPolicyPtr& policy,
                           bool new_value,
                           bool default_value,
                           bool force_persistence,
-                          const base::Value::Dict* existing_settings_dict) {
+                          const base::DictValue* existing_settings_dict) {
   if (force_persistence) {
     return true;
   }
@@ -196,7 +196,7 @@ bool ShouldPersistFkeySetting(
     std::string_view setting_key,
     std::optional<ui::mojom::ExtendedFkeysModifier> new_value,
     ui::mojom::ExtendedFkeysModifier default_value,
-    const base::Value::Dict* existing_settings_dict) {
+    const base::DictValue* existing_settings_dict) {
   if (!new_value.has_value()) {
     return false;
   }
@@ -221,16 +221,16 @@ template EXPORT_TEMPLATE_DEFINE(ASH_EXPORT) bool ShouldPersistSetting(
     bool new_value,
     bool default_value,
     bool force_persistence,
-    const base::Value::Dict* existing_settings_dict);
+    const base::DictValue* existing_settings_dict);
 
 template EXPORT_TEMPLATE_DEFINE(ASH_EXPORT) bool ShouldPersistSetting(
     std::string_view setting_key,
     int value,
     int default_value,
     bool force_persistence,
-    const base::Value::Dict* existing_settings_dict);
+    const base::DictValue* existing_settings_dict);
 
-const base::Value::Dict* GetLoginScreenSettingsDict(
+const base::DictValue* GetLoginScreenSettingsDict(
     PrefService* local_state,
     AccountId account_id,
     const std::string& pref_name) {
@@ -242,7 +242,7 @@ const base::Value::Dict* GetLoginScreenSettingsDict(
   return &dict_value->GetDict();
 }
 
-const base::Value::List* GetLoginScreenButtonRemappingList(
+const base::ListValue* GetLoginScreenButtonRemappingList(
     PrefService* local_state,
     AccountId account_id,
     const std::string& pref_name) {
@@ -254,11 +254,11 @@ const base::Value::List* GetLoginScreenButtonRemappingList(
   return &list_value->GetList();
 }
 
-base::Value::Dict ConvertButtonRemappingToDict(
+base::DictValue ConvertButtonRemappingToDict(
     const mojom::ButtonRemapping& remapping,
     mojom::CustomizationRestriction customization_restriction,
     bool redact_button_names) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   if (RestrictionBlocksRemapping(remapping, customization_restriction)) {
     return dict;
@@ -278,7 +278,7 @@ base::Value::Dict ConvertButtonRemappingToDict(
     return dict;
   }
   if (remapping.remapping_action->is_key_event()) {
-    base::Value::Dict key_event;
+    base::DictValue key_event;
     key_event.Set(prefs::kButtonRemappingDomCode,
                   static_cast<int>(
                       remapping.remapping_action->get_key_event()->dom_code));
@@ -305,13 +305,13 @@ base::Value::Dict ConvertButtonRemappingToDict(
   return dict;
 }
 
-base::Value::List ConvertButtonRemappingArrayToList(
+base::ListValue ConvertButtonRemappingArrayToList(
     const std::vector<mojom::ButtonRemappingPtr>& remappings,
     mojom::CustomizationRestriction customization_restriction,
     bool redact_button_names) {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& remapping : remappings) {
-    base::Value::Dict dict = ConvertButtonRemappingToDict(
+    base::DictValue dict = ConvertButtonRemappingToDict(
         *remapping, customization_restriction, redact_button_names);
     // Remove empty dicts.
     if (dict.empty()) {
@@ -324,7 +324,7 @@ base::Value::List ConvertButtonRemappingArrayToList(
 }
 
 std::vector<mojom::ButtonRemappingPtr> ConvertListToButtonRemappingArray(
-    const base::Value::List& list,
+    const base::ListValue& list,
     mojom::CustomizationRestriction customization_restriction) {
   std::vector<mojom::ButtonRemappingPtr> array;
   for (const auto& element : list) {
@@ -342,7 +342,7 @@ std::vector<mojom::ButtonRemappingPtr> ConvertListToButtonRemappingArray(
 }
 
 mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     mojom::CustomizationRestriction customization_restriction) {
   if (customization_restriction ==
       mojom::CustomizationRestriction::kDisallowCustomizations) {
@@ -390,7 +390,7 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
 
   // remapping_action is an optional union.
   mojom::RemappingActionPtr remapping_action;
-  const base::Value::Dict* key_event =
+  const base::DictValue* key_event =
       dict.FindDict(prefs::kButtonRemappingKeyEvent);
   const std::optional<int> accelerator_action =
       dict.FindInt(prefs::kButtonRemappingAcceleratorAction);

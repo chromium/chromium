@@ -67,18 +67,18 @@ class ConnectivityDiagnosticsMessageHandler
   }
 
  private:
-  void SendFeedbackReportRequest(const base::Value::List& value) {
+  void SendFeedbackReportRequest(const base::ListValue& value) {
     send_feedback_report_callback_.Run(/*extra_diagnostics*/ "");
   }
 
   // TODO(crbug/1220965): Remove conditional feedback button when WebUI feedback
   // is launched.
-  void GetShowFeedbackButton(const base::Value::List& args) {
+  void GetShowFeedbackButton(const base::ListValue& args) {
     if (args.size() < 1 || !args[0].is_string())
       return;
 
     auto callback_id = args[0].GetString();
-    base::Value::List response;
+    base::ListValue response;
     response.Append(base::Value(show_feedback_button_));
 
     AllowJavascript();

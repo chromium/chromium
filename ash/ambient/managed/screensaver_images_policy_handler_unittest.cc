@@ -300,7 +300,7 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest, DownloadImagesTest) {
   ASSERT_NE(GetExpectedFilePath(kImageUrl1),
             GetExpectedFilePath(kImageUrl1Alt));
 
-  base::Value::List image_urls;
+  base::ListValue image_urls;
   image_urls.Append(kImageUrl1);
   image_urls.Append(kImageUrl1Alt);
   image_urls.Append(kImageUrl2);
@@ -345,7 +345,7 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest, VerifyPolicyLimit) {
   policy_handler()->SetScreensaverImagesUpdatedCallback(
       test_future.GetRepeatingCallback<const std::vector<base::FilePath>&>());
 
-  base::Value::List image_urls;
+  base::ListValue image_urls;
   // Append the same URL request `kMaxUrlsToProcessFromPolicy` times. This
   // should be the only URL that can be requested.
   for (size_t i = 0; i < kMaxUrlsToProcessFromPolicy; ++i) {

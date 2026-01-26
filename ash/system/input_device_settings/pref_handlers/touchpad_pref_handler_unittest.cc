@@ -186,7 +186,7 @@ class TouchpadPrefHandlerTest : public AshTestBase {
 
   void CheckTouchpadSettingsAndDictAreEqual(
       const mojom::TouchpadSettings& settings,
-      const base::Value::Dict& settings_dict) {
+      const base::DictValue& settings_dict) {
     const auto sensitivity =
         settings_dict.FindInt(prefs::kTouchpadSettingSensitivity);
     if (sensitivity.has_value()) {
@@ -353,8 +353,8 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     return std::move(touchpad_ptr->settings);
   }
 
-  const base::Value::Dict* GetSettingsDict(const std::string& device_key,
-                                           bool is_external = true) {
+  const base::DictValue* GetSettingsDict(const std::string& device_key,
+                                         bool is_external = true) {
     if (!is_external) {
       return &pref_service_->GetDict(prefs::kTouchpadInternalSettings);
     }
@@ -384,7 +384,7 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     return dict && dict->is_dict();
   }
 
-  base::Value::Dict GetInternalLoginScreenSettingsDict(AccountId account_id) {
+  base::DictValue GetInternalLoginScreenSettingsDict(AccountId account_id) {
     return known_user()
         .FindPath(account_id, prefs::kTouchpadLoginScreenInternalSettingsPref)
         ->GetDict()
@@ -777,7 +777,7 @@ TEST_F(TouchpadPrefHandlerTest, SettingsUpdateMetricTest) {
   {
     auto devices_dict =
         pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
-    devices_dict.Set(kTouchpadKey3, base::Value::Dict());
+    devices_dict.Set(kTouchpadKey3, base::DictValue());
     pref_service_->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
                            std::move(devices_dict));
 

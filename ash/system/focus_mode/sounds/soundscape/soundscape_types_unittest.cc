@@ -20,7 +20,7 @@ constexpr char kTrackUrl[] = "/tracks/track.mp3";
 constexpr char kUuid[] = "bee58263-412c-4f6c-9eb5-7abacc89b2e8";
 
 base::Value TestTrack() {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("name", "Test Track");
   dict.Set("path", kTrackUrl);
 
@@ -31,22 +31,22 @@ base::Value TestTrack() {
 }
 
 base::Value TestPlaylist() {
-  base::Value::List track_list;
+  base::ListValue track_list;
   for (int i = 0; i < 3; i++) {
     track_list.Append(TestTrack());
   }
 
-  base::Value::List name_list =
-      base::Value::List()
-          .Append(base::Value::Dict()
+  base::ListValue name_list =
+      base::ListValue()
+          .Append(base::DictValue()
                       .Set("locale", "en-US")
                       .Set("name", "World's Most Awesome Playlist"))
           .Append(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("locale", "es-US")
                   .Set("name",
                        "La lista de reproducción más impresionante del mundo"));
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("uuid", kUuid);
   dict.Set("name", std::move(name_list));
   dict.Set("thumbnail", "/thumbs/pic_123453.png");

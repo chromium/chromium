@@ -597,8 +597,8 @@ void SystemRoutineController::OnPowerRoutineResultFetched(
     return;
   }
 
-  const base::Value::Dict& parsed_json = result->GetDict();
-  const base::Value::Dict* result_details_dict =
+  const base::DictValue& parsed_json = result->GetDict();
+  const base::DictValue* result_details_dict =
       parsed_json.FindDict(kResultDetailsKey);
   if (!result_details_dict) {
     OnPowerRoutineResult(routine_type,

@@ -84,9 +84,9 @@ constexpr std::string_view kGoogleCalendarHost = "calendar.google.com";
 constexpr std::string_view kGoogleCalendarRenderPath = "/calendar/render";
 
 // gMock matchers must match on const refs. Turning a `Contact` into a
-// `base::Value::Dict` requires a rvalue reference, so explicitly create a copy
+// `base::DictValue` requires a rvalue reference, so explicitly create a copy
 // to turn it into a dict.
-base::Value::Dict ContactToDict(const google_apis::people::Contact& contact) {
+base::DictValue ContactToDict(const google_apis::people::Contact& contact) {
   return google_apis::people::Contact(contact).ToDict();
 }
 

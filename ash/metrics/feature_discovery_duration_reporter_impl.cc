@@ -111,7 +111,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeActivateObservation(
   if (!is_active())
     return;
 
-  const base::Value::Dict& observed_features =
+  const base::DictValue& observed_features =
       active_pref_service_->GetDict(kObservedFeatures);
 
   // If `feature` is already under observation, return early.
@@ -125,7 +125,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeActivateObservation(
     return;
 
   // Initialize the pref data for the new observation.
-  base::Value::Dict observed_feature_data;
+  base::DictValue observed_feature_data;
   observed_feature_data.Set(kCumulatedDuration,
                             base::TimeDeltaToValue(base::TimeDelta()));
   observed_feature_data.Set(kIsObservationFinished, false);
@@ -154,10 +154,10 @@ void FeatureDiscoveryDurationReporterImpl::MaybeFinishObservation(
   if (iter == active_time_recordings_.end())
     return;
 
-  const base::Value::Dict& observed_features =
+  const base::DictValue& observed_features =
       active_pref_service_->GetDict(kObservedFeatures);
   const char* const feature_name = FindMappedName(feature);
-  const base::Value::Dict* feature_pref_data =
+  const base::DictValue* feature_pref_data =
       observed_features.Find(feature_name)->GetIfDict();
   DCHECK(feature_pref_data);
 
@@ -200,7 +200,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeFinishObservation(
   // 2. Marking that the observation finishes
   // 3. Erasing the saved tablet state if any
   ScopedDictPrefUpdate update(active_pref_service_, kObservedFeatures);
-  base::Value::Dict* mutable_feature_pref_data = update->FindDict(feature_name);
+  base::DictValue* mutable_feature_pref_data = update->FindDict(feature_name);
   mutable_feature_pref_data->Remove(kCumulatedDuration);
   mutable_feature_pref_data->Set(kIsObservationFinished, true);
   mutable_feature_pref_data->Remove(kActivatedInTablet);
@@ -245,9 +245,9 @@ void FeatureDiscoveryDurationReporterImpl::Activate() {
   DCHECK(active_pref_service_);
 
   is_active_ = true;
-  const base::Value::Dict& observed_features =
+  const base::DictValue& observed_features =
       active_pref_service_->GetDict(kObservedFeatures);
-  const base::Value::Dict& immutable_observed_features_dict = observed_features;
+  const base::DictValue& immutable_observed_features_dict = observed_features;
 
   // Iterate trackable features and resume unfinished observations.
   for (const auto& feature_info : feature_discovery::kTrackableFeatureArray) {
@@ -276,7 +276,7 @@ void FeatureDiscoveryDurationReporterImpl::Deactivate() {
   if (!active_time_recordings_.empty()) {
     CHECK(active_pref_service_);
     ScopedDictPrefUpdate update(active_pref_service_, kObservedFeatures);
-    base::Value::Dict& mutable_observed_features_dict = update.Get();
+    base::DictValue& mutable_observed_features_dict = update.Get();
 
     // Store the accumulated time duration as pref data.
     for (const auto& name_timestamp_pair : active_time_recordings_) {
@@ -285,7 +285,7 @@ void FeatureDiscoveryDurationReporterImpl::Deactivate() {
       base::Value* feature_data =
           mutable_observed_features_dict.Find(feature_name);
       DCHECK(feature_data);
-      base::Value::Dict& mutable_data_dict = feature_data->GetDict();
+      base::DictValue& mutable_data_dict = feature_data->GetDict();
       const base::Value* cumulated_duration_value =
           mutable_data_dict.Find(kCumulatedDuration);
       DCHECK(cumulated_duration_value);

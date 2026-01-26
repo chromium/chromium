@@ -684,7 +684,7 @@ bool FocusModeSoundsController::IsPlaylistAllowed(
 void FocusModeSoundsController::SaveUserPref() {
   if (PrefService* active_user_prefs =
           Shell::Get()->session_controller()->GetActivePrefService()) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(focus_mode_util::kSoundTypeKey, static_cast<int>(sound_type_));
     dict.Set(focus_mode_util::kPlaylistIdKey, selected_playlist_.id);
     active_user_prefs->SetDict(prefs::kFocusModeSoundSection, std::move(dict));

@@ -94,8 +94,8 @@ std::u16string GetLinkLabel(int string_id, const char* url) {
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
 
-base::Value::Dict GetDataSourceUpdate() {
-  base::Value::Dict update;
+base::DictValue GetDataSourceUpdate() {
+  base::DictValue update;
   update.Set("settingsLinkText",
              GetLinkLabel(IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT,
                           "chrome://os-settings/"));

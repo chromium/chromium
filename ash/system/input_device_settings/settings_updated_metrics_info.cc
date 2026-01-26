@@ -56,7 +56,7 @@ SettingsUpdatedMetricsInfo::SettingsUpdatedMetricsInfo(
 
 // static
 std::optional<SettingsUpdatedMetricsInfo> SettingsUpdatedMetricsInfo::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   auto category_int = dict.FindInt(kCategoryKey);
   if (!category_int || !IsValidCategory(*category_int)) {
     return std::nullopt;
@@ -94,8 +94,8 @@ std::optional<TimePeriod> SettingsUpdatedMetricsInfo::RecordSettingsUpdate(
   return std::nullopt;
 }
 
-base::Value::Dict SettingsUpdatedMetricsInfo::ToDict() const {
-  base::Value::Dict dict;
+base::DictValue SettingsUpdatedMetricsInfo::ToDict() const {
+  base::DictValue dict;
   dict.Set(kLocalFirstConnectionKey,
            base::TimeToValue(initial_connection_time_));
   dict.Set(kCategoryKey, static_cast<int>(category_));

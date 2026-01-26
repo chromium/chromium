@@ -80,7 +80,7 @@ std::string SystemInfoProvider::GetHashedWiFiSsid() {
 void SystemInfoProvider::GetSystemInfo(
     base::OnceCallback<void(const std::string&)> callback) {
   PA_LOG(INFO) << "echeapi SystemInfoProvider GetSystemInfo";
-  base::Value::Dict json_dictionary;
+  base::DictValue json_dictionary;
   json_dictionary.Set(kJsonDeviceNameKey, system_info_->GetDeviceName());
   json_dictionary.Set(kJsonBoardNameKey, system_info_->GetBoardName());
   json_dictionary.Set(kJsonTabletModeKey,

@@ -505,7 +505,7 @@ TEST_F(BirchWeatherProviderTest, DisabledByPolicy) {
   EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 0);
 
   // Enable weather integration by policy, weather should be fetched.
-  base::Value::List enabled_integrations;
+  base::ListValue enabled_integrations;
   enabled_integrations.Append(prefs::kWeatherIntegrationName);
   pref_service->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
                         std::move(enabled_integrations));

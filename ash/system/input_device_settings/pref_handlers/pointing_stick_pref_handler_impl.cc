@@ -77,7 +77,7 @@ mojom::PointingStickSettingsPtr GetPointingStickSettingsFromPrefs(
 
 mojom::PointingStickSettingsPtr RetrievePointingStickSettings(
     const mojom::PointingStick& pointing_stick,
-    const base::Value::Dict& settings_dict) {
+    const base::DictValue& settings_dict) {
   mojom::PointingStickSettingsPtr settings =
       mojom::PointingStickSettings::New();
   settings->sensitivity =
@@ -92,12 +92,12 @@ mojom::PointingStickSettingsPtr RetrievePointingStickSettings(
   return settings;
 }
 
-base::Value::Dict ConvertSettingsToDict(
+base::DictValue ConvertSettingsToDict(
     const mojom::PointingStick& pointing_stick,
     const ForcePointingStickSettingPersistence& force_persistence,
-    const base::Value::Dict* existing_settings_dict) {
+    const base::DictValue* existing_settings_dict) {
   // Populate `settings_dict` with all settings in `settings`.
-  base::Value::Dict settings_dict;
+  base::DictValue settings_dict;
 
   if (ShouldPersistSetting(prefs::kPointingStickSettingSwapRight,
                            pointing_stick.settings->swap_right,
@@ -135,9 +135,9 @@ void UpdateInternalPointingStickImpl(
   CHECK(pointing_stick.settings);
   CHECK(!pointing_stick.is_external);
 
-  base::Value::Dict existing_settings_dict =
+  base::DictValue existing_settings_dict =
       pref_service->GetDict(prefs::kPointingStickInternalSettings).Clone();
-  base::Value::Dict settings_dict = ConvertSettingsToDict(
+  base::DictValue settings_dict = ConvertSettingsToDict(
       pointing_stick, force_persistence, &existing_settings_dict);
 
   // Merge the new settings into the old settings so that all settings are
@@ -159,13 +159,13 @@ void UpdatePointingStickSettingsImpl(
     return;
   }
 
-  base::Value::Dict devices_dict =
+  base::DictValue devices_dict =
       pref_service->GetDict(prefs::kPointingStickDeviceSettingsDictPref)
           .Clone();
-  base::Value::Dict* existing_settings_dict =
+  base::DictValue* existing_settings_dict =
       devices_dict.FindDict(pointing_stick.device_key);
 
-  base::Value::Dict settings_dict = ConvertSettingsToDict(
+  base::DictValue settings_dict = ConvertSettingsToDict(
       pointing_stick, force_persistence, existing_settings_dict);
   const base::Time time_stamp = base::Time::Now();
   settings_dict.Set(prefs::kLastUpdatedKey, base::TimeToValue(time_stamp));
@@ -234,7 +234,7 @@ void PointingStickPrefHandlerImpl::InitializePointingStickSettings(
     return;
   }
 
-  const base::Value::Dict* settings_dict = nullptr;
+  const base::DictValue* settings_dict = nullptr;
   if (!pointing_stick->is_external) {
     settings_dict =
         &pref_service->GetDict(prefs::kPointingStickInternalSettings);

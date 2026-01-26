@@ -109,7 +109,7 @@ void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
 
   // Load time data: add files app strings and feature flags.
   source->EnableReplaceI18nInJS();
-  base::Value::Dict dict = delegate_->GetLoadTimeData();
+  base::DictValue dict = delegate_->GetLoadTimeData();
   dict.Set("WINDOW_NUMBER", window_number);
   source->AddLocalizedStrings(dict);
   source->UseStringsJs();

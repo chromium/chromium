@@ -35,7 +35,7 @@ bool EnumInRange(T val) {
 
 // static
 std::optional<AmbientUiSettings> AmbientUiSettings::CreateFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   std::optional<int> theme_as_int =
       dict.FindInt(ambient::prefs::kAmbientUiSettingsFieldTheme);
   if (!theme_as_int) {
@@ -58,7 +58,7 @@ std::optional<AmbientUiSettings> AmbientUiSettings::CreateFromDict(
 // static
 AmbientUiSettings AmbientUiSettings::ReadFromPrefService(
     PrefService& pref_service) {
-  const base::Value::Dict& settings_dict =
+  const base::DictValue& settings_dict =
       pref_service.GetDict(ambient::prefs::kAmbientUiSettings);
   std::optional<AmbientUiSettings> settings_loaded =
       CreateFromDict(settings_dict);
@@ -101,7 +101,7 @@ bool AmbientUiSettings::operator!=(const AmbientUiSettings& other) const {
 }
 
 void AmbientUiSettings::WriteToPrefService(PrefService& pref_service) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(ambient::prefs::kAmbientUiSettingsFieldTheme,
            static_cast<int>(theme_));
   if (video_) {

@@ -2832,7 +2832,7 @@ PrefService* GetPrimaryUserPrefService() {
 
 // Returns the desk names in the given `user_prefs`.
 std::vector<std::string> GetDeskRestoreNames(PrefService* user_prefs) {
-  const base::Value::List& desk_restore_names =
+  const base::ListValue& desk_restore_names =
       user_prefs->GetList(prefs::kDesksNamesList);
 
   std::vector<std::string> names;
@@ -2844,7 +2844,7 @@ std::vector<std::string> GetDeskRestoreNames(PrefService* user_prefs) {
 
 // Returns the GUIDs in the given `user_prefs`.
 std::vector<base::Uuid> GetDeskRestoreGuids(PrefService* user_prefs) {
-  const base::Value::List& desks_restore_guids =
+  const base::ListValue& desks_restore_guids =
       user_prefs->GetList(prefs::kDesksGuidsList);
 
   std::vector<base::Uuid> guids;
@@ -4847,7 +4847,7 @@ class DesksMultiUserTest : public NoSessionAshTestBase {
                                      std::vector<std::string> desk_names) {
     DCHECK(prefs);
     ScopedListPrefUpdate update(prefs, prefs::kDesksNamesList);
-    base::Value::List& pref_data = update.Get();
+    base::ListValue& pref_data = update.Get();
     ASSERT_TRUE(pref_data.empty());
     for (auto desk_name : desk_names) {
       pref_data.Append(desk_name);

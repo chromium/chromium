@@ -171,7 +171,7 @@ bool HoldingSpaceItem::IsSuggestionType(HoldingSpaceItem::Type type) {
 // NOTE: This method must remain in sync with `Serialize()`. If multiple
 // serialization versions are supported, care must be taken to handle each.
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     ImageResolver image_resolver) {
   const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
@@ -191,7 +191,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
 // NOTE: This method must remain in sync with `Serialize()`. If multiple
 // serialization versions are supported, care must be taken to handle each.
 const std::string& HoldingSpaceItem::DeserializeId(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
@@ -205,7 +205,7 @@ const std::string& HoldingSpaceItem::DeserializeId(
 // NOTE: This method must remain in sync with `Serialize()`. If multiple
 // serialization versions are supported, care must be taken to handle each.
 base::FilePath HoldingSpaceItem::DeserializeFilePath(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
@@ -220,7 +220,7 @@ base::FilePath HoldingSpaceItem::DeserializeFilePath(
 // NOTE: This method must remain in sync with `Serialize()`. If multiple
 // serialization versions are supported, care must be taken to handle each.
 HoldingSpaceItem::Type HoldingSpaceItem::DeserializeType(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
@@ -230,8 +230,8 @@ HoldingSpaceItem::Type HoldingSpaceItem::DeserializeType(
 // NOTE: This method must remain in sync with `Deserialize()`. The
 // return value will be written to preferences so this implementation must
 // maintain backwards compatibility so long as `kVersion` remains unchanged.
-base::Value::Dict HoldingSpaceItem::Serialize() const {
-  base::Value::Dict dict;
+base::DictValue HoldingSpaceItem::Serialize() const {
+  base::DictValue dict;
   dict.Set(kVersionPath, kVersion);
   dict.Set(kTypePath, static_cast<int>(type_));
   dict.Set(kIdPath, id_);

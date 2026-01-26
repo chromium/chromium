@@ -63,7 +63,7 @@ void AppendAcceleratorData(
 base::Value AcceleratorModificationDataToValue(
     const ui::Accelerator& accelerator,
     AcceleratorModificationAction action) {
-  base::Value::Dict accelerator_values;
+  base::DictValue accelerator_values;
   accelerator_values.Set(kAcceleratorModifiersKey, accelerator.modifiers());
   accelerator_values.Set(kAcceleratorKeyCodeKey,
                          static_cast<int>(accelerator.key_code()));
@@ -81,7 +81,7 @@ base::Value AcceleratorModificationDataToValue(
 }
 
 AcceleratorModificationData ValueToAcceleratorModificationData(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   std::optional<int> keycode = value.FindInt(kAcceleratorKeyCodeKey);
   std::optional<int> modifier = value.FindInt(kAcceleratorModifiersKey);
   std::optional<int> modification_action =
@@ -709,7 +709,7 @@ void AshAcceleratorConfiguration::ApplyPrefOverrides() {
                  << "a list. Skipping applying customization for this action.";
       continue;
     }
-    base::Value::List& override_list = entry.second.GetList();
+    base::ListValue& override_list = entry.second.GetList();
     if (override_list.empty()) {
       VLOG(1) << "Override list is unexpectedly empty for action ID: "
               << action_id << ". Skipping applying customization for "
@@ -724,7 +724,7 @@ void AshAcceleratorConfiguration::ApplyPrefOverrides() {
                    << "applying customization for action ID: " << action_id;
         continue;
       }
-      base::Value::Dict& override_dict = override_list_iter->GetDict();
+      base::DictValue& override_dict = override_list_iter->GetDict();
       AcceleratorModificationData override_data =
           ValueToAcceleratorModificationData(override_dict);
       if (override_data.action == AcceleratorModificationAction::kRemove) {
@@ -784,7 +784,7 @@ void AshAcceleratorConfiguration::UpdateOverrides(
   base::Value* action_entry = accelerator_overrides_.Find(action_id_key);
 
   if (!action_entry) {
-    base::Value::List accelerator_override_list;
+    base::ListValue accelerator_override_list;
     // No existing overrides, add the override entry and return.
     accelerator_override_list.Append(
         AcceleratorModificationDataToValue(accelerator, action));
@@ -798,7 +798,7 @@ void AshAcceleratorConfiguration::UpdateOverrides(
                << "a list. Cannot apply updates for action ID: " << action_id;
     return;
   }
-  base::Value::List& override_list = action_entry->GetList();
+  base::ListValue& override_list = action_entry->GetList();
   if (action_entry->GetList().empty()) {
     VLOG(1) << "No entries inside action ID: " << action_id
             << ". Cannot apply updates.";

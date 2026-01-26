@@ -28,7 +28,7 @@ bool ValidString(const std::string* str) {
   return !!str && !str->empty() && str->length() <= kStringMax;
 }
 
-bool ValidList(const base::Value::List* list) {
+bool ValidList(const base::ListValue* list) {
   return !!list && !list->empty();
 }
 
@@ -37,12 +37,12 @@ bool ValidList(const base::Value::List* list) {
 // found, returns the result for the default locale (en-US). If a suitable name
 // is not found, nullptr is returned.
 const std::string* BestLocalizedName(std::string_view locale,
-                                     const base::Value::List& localized_names) {
+                                     const base::ListValue& localized_names) {
   const std::string* default_name = nullptr;
   const std::string* language_match = nullptr;
 
   for (const base::Value& localized_name : localized_names) {
-    const base::Value::Dict* dict = localized_name.GetIfDict();
+    const base::DictValue* dict = localized_name.GetIfDict();
     if (!dict) {
       continue;
     }
@@ -86,7 +86,7 @@ const std::string* BestLocalizedName(std::string_view locale,
 // static
 std::optional<SoundscapeTrack> SoundscapeTrack::FromValue(
     const base::Value& value) {
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     return std::nullopt;
   }
@@ -118,15 +118,15 @@ std::optional<SoundscapePlaylist> SoundscapePlaylist::FromValue(
     return std::nullopt;
   }
 
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     return std::nullopt;
   }
 
-  const base::Value::List* localized_names = dict->FindList("name");
+  const base::ListValue* localized_names = dict->FindList("name");
   const std::string* thumbnail = dict->FindString("thumbnail");
   const std::string* uuid = dict->FindString("uuid");
-  const base::Value::List* tracks = dict->FindList("tracks");
+  const base::ListValue* tracks = dict->FindList("tracks");
 
   if (!ValidList(localized_names) || !ValidList(tracks) ||
       !ValidString(thumbnail) || !ValidString(uuid)) {
@@ -198,13 +198,13 @@ SoundscapeConfiguration::ParseConfiguration(std::string_view locale,
     return std::nullopt;
   }
 
-  const base::Value::Dict* dict = value->GetIfDict();
+  const base::DictValue* dict = value->GetIfDict();
   if (!dict) {
     LOG(WARNING) << "Configuration is not a dictionary";
     return std::nullopt;
   }
 
-  const base::Value::List* playlists = dict->FindList("playlists");
+  const base::ListValue* playlists = dict->FindList("playlists");
   // We always expect exactly 4 playlists.
   if (!playlists || playlists->size() != kNumPlaylists) {
     LOG(WARNING) << "Playlists are invalid";

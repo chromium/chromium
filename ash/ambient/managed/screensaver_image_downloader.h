@@ -75,7 +75,7 @@ class ASH_EXPORT ScreensaverImageDownloader {
   // Updates the list of images to be cached to `image_url_list`. Processing the
   // new list can download new images and delete images that are no longer being
   // referenced in the new list.
-  void UpdateImageUrlList(const base::Value::List& image_url_list);
+  void UpdateImageUrlList(const base::ListValue& image_url_list);
 
   std::vector<base::FilePath> GetScreensaverImages();
 

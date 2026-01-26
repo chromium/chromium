@@ -176,12 +176,12 @@ class SmsObserverSuppressTextMessagesEnabled : public SmsObserverTest {
         break;
     }
 
-    base::Value::Dict global_config;
+    base::DictValue global_config;
     global_config.Set(::onc::global_network_config::kAllowTextMessages,
                       state_onc);
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-        base::Value::List(), global_config);
+        base::ListValue(), global_config);
     base::RunLoop().RunUntilIdle();
   }
 

@@ -294,7 +294,7 @@ ShortcutCustomizationAppUI::~ShortcutCustomizationAppUI() {
 }
 
 void ShortcutCustomizationAppUI::OnShortcutPolicyUpdated() {
-  base::Value::Dict update_data;
+  base::DictValue update_data;
   // Update 'isCustomizationAllowed" when policy changes.
   update_data.Set("isCustomizationAllowed",
                   Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());

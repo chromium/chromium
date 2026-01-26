@@ -209,7 +209,7 @@ class KeyboardPrefHandlerTest : public AshTestBase {
 
   void CheckKeyboardSettingsAndDictAreEqual(
       const mojom::KeyboardSettings& settings,
-      const base::Value::Dict& settings_dict,
+      const base::DictValue& settings_dict,
       bool is_external = false) {
     auto suppress_meta_fkey_rewrites =
         settings_dict.FindBool(prefs::kKeyboardSettingSuppressMetaFKeyRewrites);
@@ -368,7 +368,7 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     return std::move(keyboard_ptr->settings);
   }
 
-  const base::Value::Dict* GetSettingsDictForDeviceKey(
+  const base::DictValue* GetSettingsDictForDeviceKey(
       const std::string& device_key,
       bool is_external = false) {
     if (!is_external) {
@@ -400,14 +400,14 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     return dict && dict->is_dict();
   }
 
-  base::Value::Dict GetInternalLoginScreenSettingsDict(AccountId account_id) {
+  base::DictValue GetInternalLoginScreenSettingsDict(AccountId account_id) {
     return known_user()
         .FindPath(account_id, prefs::kKeyboardLoginScreenInternalSettingsPref)
         ->GetDict()
         .Clone();
   }
 
-  base::Value::Dict GetExternalLoginScreenSettingsDict(AccountId account_id) {
+  base::DictValue GetExternalLoginScreenSettingsDict(AccountId account_id) {
     return known_user()
         .FindPath(account_id, prefs::kKeyboardLoginScreenExternalSettingsPref)
         ->GetDict()
@@ -682,7 +682,7 @@ TEST_F(KeyboardPrefHandlerTest, InvalidModifierRemappings) {
       pref_service_->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
   auto* settings_dict = devices_dict.FindDict(kKeyboardKey1);
 
-  base::Value::Dict invalid_modifier_remappings;
+  base::DictValue invalid_modifier_remappings;
   invalid_modifier_remappings.Set(
       base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kMaxValue) +
                            1),
@@ -1128,8 +1128,8 @@ TEST_F(KeyboardPrefHandlerTest,
   split_modifier_keyboard.meta_key = ui::mojom::MetaKey::kLauncher;
   split_modifier_keyboard.modifier_keys = {ui::mojom::ModifierKey::kFunction};
 
-  base::Value::Dict dict1;
-  base::Value::Dict modifier_remappings;
+  base::DictValue dict1;
+  base::DictValue modifier_remappings;
   modifier_remappings.Set(
       base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kFunction)),
       static_cast<int>(ui::mojom::ModifierKey::kControl));
@@ -1232,7 +1232,7 @@ TEST_F(KeyboardPrefHandlerTest, SettingsUpdateMetricTest) {
   {
     auto devices_dict =
         pref_service_->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
-    devices_dict.Set(kKeyboardKey3, base::Value::Dict());
+    devices_dict.Set(kKeyboardKey3, base::DictValue());
     pref_service_->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
                            std::move(devices_dict));
 

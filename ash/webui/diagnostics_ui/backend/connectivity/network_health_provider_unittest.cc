@@ -201,8 +201,8 @@ class NetworkHealthProviderTest : public AshTestBase {
     managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::Value::List(),
-        /*global_network_config=*/base::Value::Dict());
+        /*network_configs_onc=*/base::ListValue(),
+        /*global_network_config=*/base::DictValue());
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     network_health_provider_ = std::make_unique<NetworkHealthProvider>();
@@ -404,7 +404,7 @@ class NetworkHealthProviderTest : public AshTestBase {
   }
 
   void SetCellularSimLockStatus(std::string lock_type, bool sim_locked) {
-    base::Value::Dict sim_lock_status;
+    base::DictValue sim_lock_status;
     sim_lock_status.Set(shill::kSIMLockEnabledProperty, sim_locked);
     sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_type);
     sim_lock_status.Set(shill::kSIMLockRetriesLeftProperty, 3);
@@ -466,7 +466,7 @@ class NetworkHealthProviderTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetNameServersForIPConfig(base::Value::List dns_servers) {
+  void SetNameServersForIPConfig(base::ListValue dns_servers) {
     ShillIPConfigClient::Get()->SetProperty(
         dbus::ObjectPath(kTestIPConfigPath), shill::kNameServersProperty,
         base::Value(std::move(dns_servers)), base::DoNothing());
@@ -1271,7 +1271,7 @@ TEST_F(NetworkHealthProviderTest, IPConfig) {
   SetIPAddressForIPConfig(ip_address);
   const int routing_prefix = 1;
   SetRoutingPrefixForIPConfig(routing_prefix);
-  base::Value::List dns_servers;
+  base::ListValue dns_servers;
   const std::string dns_server_1 = "192.168.1.100";
   const std::string dns_server_2 = "192.168.1.101";
   dns_servers.Append(dns_server_1);

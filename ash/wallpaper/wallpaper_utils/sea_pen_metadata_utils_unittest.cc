@@ -27,14 +27,13 @@ std::string escaped_user_search_query = "search%20query";
 std::string user_visible_query_text = "test template query text";
 std::string user_visible_query_template = "test template title";
 
-base::Value::Dict GetTestTemplateQueryDict(
-    base::Time time = base::Time::Now()) {
-  return base::Value::Dict()
+base::DictValue GetTestTemplateQueryDict(base::Time time = base::Time::Now()) {
+  return base::DictValue()
       .Set("creation_time", base::TimeToValue(time))
       .Set("template_id",
            base::NumberToString(static_cast<int32_t>(
                ash::personalization_app::mojom::SeaPenTemplateId::kFlower)))
-      .Set("options", base::Value::Dict()
+      .Set("options", base::DictValue()
                           .Set(base::NumberToString(static_cast<int32_t>(
                                    ash::personalization_app::mojom::
                                        SeaPenTemplateChip::kFlowerColor)),
@@ -51,16 +50,15 @@ base::Value::Dict GetTestTemplateQueryDict(
       .Set("user_visible_query_template", user_visible_query_template);
 }
 
-base::Value::Dict GetTestFreeformQueryDict(
-    base::Time time = base::Time::Now()) {
-  return base::Value::Dict()
+base::DictValue GetTestFreeformQueryDict(base::Time time = base::Time::Now()) {
+  return base::DictValue()
       .Set("creation_time", base::TimeToValue(time))
       .Set("freeform_query", escaped_user_search_query);
 }
 
-base::Value::Dict GetTestInvalidTemplateQueryDict(
+base::DictValue GetTestInvalidTemplateQueryDict(
     const std::string& missing_field) {
-  base::Value::Dict template_query_dict = GetTestTemplateQueryDict();
+  base::DictValue template_query_dict = GetTestTemplateQueryDict();
   if (template_query_dict.contains(missing_field)) {
     template_query_dict.Remove(missing_field);
   }
@@ -80,7 +78,7 @@ base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {
 }
 
 personalization_app::mojom::RecentSeaPenImageInfoPtr
-SeaPenQueryDictToRecentImageInfo(const base::Value::Dict& dict) {
+SeaPenQueryDictToRecentImageInfo(const base::DictValue& dict) {
   std::string json_string = base::WriteJson(dict).value_or(std::string());
   base::test::TestFuture<personalization_app::mojom::RecentSeaPenImageInfoPtr>
       future;
@@ -108,7 +106,7 @@ TEST_F(SeaPenMetadataUtilsTest, SeaPenTextQueryToDict) {
       ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
           user_search_query);
 
-  base::Value::Dict result = SeaPenQueryToDict(search_query);
+  base::DictValue result = SeaPenQueryToDict(search_query);
 
   EXPECT_EQ(GetTestFreeformQueryDict(), result);
 }
@@ -121,7 +119,7 @@ TEST_F(SeaPenMetadataUtilsTest, QueryDictEscapesFreeformQuery) {
       ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
           freeform_query);
 
-  base::Value::Dict result = SeaPenQueryToDict(search_query);
+  base::DictValue result = SeaPenQueryToDict(search_query);
 
   EXPECT_EQ(escaped_freeform_query, *result.FindString("freeform_query"));
 }
@@ -146,7 +144,7 @@ TEST_F(SeaPenMetadataUtilsTest, SeaPenTemplateQueryToDict) {
               ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
                   user_visible_query_text, user_visible_query_template)));
 
-  base::Value::Dict result = SeaPenQueryToDict(search_query);
+  base::DictValue result = SeaPenQueryToDict(search_query);
 
   EXPECT_EQ(GetTestTemplateQueryDict(), result);
 }
@@ -170,7 +168,7 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoInvalidCreationTime) {
-  base::Value::Dict invalid_creation_time_query_dict =
+  base::DictValue invalid_creation_time_query_dict =
       GetTestFreeformQueryDict().Set("creation_time", "invalid creation time");
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(invalid_creation_time_query_dict);
@@ -217,7 +215,7 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoMissingCreationTime) {
-  base::Value::Dict invalid_template_query_dict =
+  base::DictValue invalid_template_query_dict =
       GetTestInvalidTemplateQueryDict(/*missing_field=*/"creation_time");
 
   auto recent_image_info =
@@ -228,7 +226,7 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoMissingTemplateId) {
-  base::Value::Dict invalid_template_query_dict =
+  base::DictValue invalid_template_query_dict =
       GetTestInvalidTemplateQueryDict(/*missing_field=*/"template_id");
 
   auto recent_image_info =
@@ -239,7 +237,7 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoInvalidTemplateId) {
-  base::Value::Dict invalid_template_id_query_dict =
+  base::DictValue invalid_template_id_query_dict =
       GetTestTemplateQueryDict().Set("template_id", 10000);
 
   auto recent_image_info =
@@ -250,7 +248,7 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoMissingOptions) {
-  base::Value::Dict invalid_template_query_dict =
+  base::DictValue invalid_template_query_dict =
       GetTestInvalidTemplateQueryDict(/*missing_field=*/"options");
 
   auto recent_image_info =
@@ -261,7 +259,7 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoInvalidOptionsChipId) {
-  base::Value::Dict template_query_dict = GetTestTemplateQueryDict();
+  base::DictValue template_query_dict = GetTestTemplateQueryDict();
   auto* options = template_query_dict.FindDict("options");
   ASSERT_TRUE(options);
   // Update `options` Value::Dict with an invalid chip id.
@@ -277,7 +275,7 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoInvalidOptionsOptionId) {
-  base::Value::Dict template_query_dict = GetTestTemplateQueryDict();
+  base::DictValue template_query_dict = GetTestTemplateQueryDict();
   auto* options = template_query_dict.FindDict("options");
   ASSERT_TRUE(options);
   // Update `options` Value::Dict with an invalid option id.
@@ -294,9 +292,8 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoMissingUserVisibleQueryText) {
-  base::Value::Dict invalid_template_query_dict =
-      GetTestInvalidTemplateQueryDict(
-          /*missing_field=*/"user_visible_query_text");
+  base::DictValue invalid_template_query_dict = GetTestInvalidTemplateQueryDict(
+      /*missing_field=*/"user_visible_query_text");
 
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(invalid_template_query_dict);
@@ -306,9 +303,8 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoMissingUserVisibleQueryTemplate) {
-  base::Value::Dict invalid_template_query_dict =
-      GetTestInvalidTemplateQueryDict(
-          /*missing_field=*/"user_visible_query_template");
+  base::DictValue invalid_template_query_dict = GetTestInvalidTemplateQueryDict(
+      /*missing_field=*/"user_visible_query_template");
 
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(invalid_template_query_dict);

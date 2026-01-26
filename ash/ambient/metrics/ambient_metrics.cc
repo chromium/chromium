@@ -86,7 +86,7 @@ void RecordEngagementTime(const std::string& histogram_name,
 // Retrieves the the JSON dictionary in the `web_view`'s URL fragment.
 void GetAmbientVideoPlaybackMetrics(
     AshWebView* web_view,
-    base::OnceCallback<void(base::Value::Dict)> completion_cb) {
+    base::OnceCallback<void(base::DictValue)> completion_cb) {
   CHECK(web_view);
   CHECK(completion_cb);
   // The URL fragment identifier is used as a way of communicating the playback
@@ -99,7 +99,7 @@ void GetAmbientVideoPlaybackMetrics(
     // and it's still unclear whether playback has started successfully or
     // failed.
     DVLOG(2) << "Ambient video still loading";
-    std::move(completion_cb).Run(base::Value::Dict());
+    std::move(completion_cb).Run(base::DictValue());
     return;
   }
   std::optional<base::Value> result = base::JSONReader::Read(
@@ -108,19 +108,19 @@ void GetAmbientVideoPlaybackMetrics(
   // enough to crash the whole process over.
   if (!result.has_value()) {
     LOG(ERROR) << "JSON parsing failed";
-    std::move(completion_cb).Run(base::Value::Dict());
+    std::move(completion_cb).Run(base::DictValue());
     return;
   }
   if (!result->is_dict()) {
     LOG(ERROR) << "Expected JSON dictionary for metrics";
-    std::move(completion_cb).Run(base::Value::Dict());
+    std::move(completion_cb).Run(base::DictValue());
     return;
   }
   std::move(completion_cb).Run(std::move(*result).TakeDict());
 }
 
 AmbientVideoSessionStatus ParseAmbientVideoSessionStatus(
-    const base::Value::Dict& playback_metrics) {
+    const base::DictValue& playback_metrics) {
   std::optional<bool> playback_started =
       playback_metrics.FindBool(kVideoFieldPlaybackStarted);
   if (playback_started.has_value()) {
@@ -137,7 +137,7 @@ AmbientVideoSessionStatus ParseAmbientVideoSessionStatus(
 // After the `playback_metrics` have been parsed from the URL fragment:
 void CompleteGetAmbientVideoSessionStatus(
     base::OnceCallback<void(AmbientVideoSessionStatus)> completion_cb,
-    base::Value::Dict playback_metrics) {
+    base::DictValue playback_metrics) {
   CHECK(completion_cb);
   std::move(completion_cb)
       .Run(ParseAmbientVideoSessionStatus(playback_metrics));
@@ -158,7 +158,7 @@ void RecordAmbientModeVideoSessionStatusInternal(
 // After the `playback_metrics` have been parsed from the URL fragment:
 void RecordAmbientModeVideoSmoothnessInternal(
     const AmbientUiSettings& ui_settings,
-    base::Value::Dict playback_metrics) {
+    base::DictValue playback_metrics) {
   CHECK_EQ(ui_settings.theme(),
            personalization_app::mojom::AmbientTheme::kVideo);
   if (ParseAmbientVideoSessionStatus(playback_metrics) !=

@@ -189,7 +189,7 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
 
   // A local copy of the pref overrides, allows modifying the overrides before
   // updating the override pref.
-  base::Value::Dict accelerator_overrides_;
+  base::DictValue accelerator_overrides_;
 
   std::vector<ui::Accelerator> accelerators_;
 

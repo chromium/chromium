@@ -112,15 +112,14 @@ CoralRequest::CoralRequest() = default;
 CoralRequest::~CoralRequest() = default;
 
 std::string CoralRequest::ToString() const {
-  auto request_value = base::Value::Dict();
+  auto request_value = base::DictValue();
   request_value.Set("source", CoralSourceToString(source_));
   request_value.Set("requested entities",
                     coral_util::EntitiesToListValue(content_));
   request_value.Set("suppression context",
                     coral_util::EntitiesToListValue(suppression_context_));
   request_value.Set("language", language_);
-  auto root =
-      base::Value::Dict().Set("Coral request", std::move(request_value));
+  auto root = base::DictValue().Set("Coral request", std::move(request_value));
   return root.DebugString();
 }
 

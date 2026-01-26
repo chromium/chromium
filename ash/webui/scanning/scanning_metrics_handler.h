@@ -24,16 +24,16 @@ class ScanningMetricsHandler : public content::WebUIMessageHandler {
 
  private:
   // Records the number of scan setting changes before a scan is initiated.
-  void HandleRecordNumScanSettingChanges(const base::Value::List& args);
+  void HandleRecordNumScanSettingChanges(const base::ListValue& args);
 
   // Records the action taken after a completed scan job.
-  void HandleRecordScanCompleteAction(const base::Value::List& args);
+  void HandleRecordScanCompleteAction(const base::ListValue& args);
 
   // Records the settings for a scan job.
-  void HandleRecordScanJobSettings(const base::Value::List& args);
+  void HandleRecordScanJobSettings(const base::ListValue& args);
 
   // Records the number of completed scans in a Scan app session.
-  void HandleRecordNumCompletedScans(const base::Value::List& args);
+  void HandleRecordNumCompletedScans(const base::ListValue& args);
 };
 
 }  // namespace ash

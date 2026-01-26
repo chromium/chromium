@@ -822,8 +822,8 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
 
-  base::Value::Dict test_pref_value;
-  test_pref_value.Set("Fake Key", base::Value::Dict());
+  base::DictValue test_pref_value;
+  test_pref_value.Set("Fake Key", base::DictValue());
   pref_service->SetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref,
                         test_pref_value.Clone());
   pref_service->SetDict(prefs::kGraphicsTabletTabletButtonRemappingsDictPref,
@@ -835,14 +835,14 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  EXPECT_EQ(base::Value::Dict(),
+  EXPECT_EQ(base::DictValue(),
             active_pref_service->GetDict(
                 prefs::kGraphicsTabletPenButtonRemappingsDictPref));
-  EXPECT_EQ(base::Value::Dict(),
+  EXPECT_EQ(base::DictValue(),
             active_pref_service->GetDict(
                 prefs::kGraphicsTabletTabletButtonRemappingsDictPref));
-  EXPECT_EQ(base::Value::Dict(), active_pref_service->GetDict(
-                                     prefs::kMouseButtonRemappingsDictPref));
+  EXPECT_EQ(base::DictValue(), active_pref_service->GetDict(
+                                   prefs::kMouseButtonRemappingsDictPref));
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
@@ -852,8 +852,8 @@ TEST_F(InputDeviceSettingsControllerTest,
       features::kAltClickAndSixPackCustomization);
   auto user_prefs = TestPrefServiceProvider::CreateUserPrefServiceSimple();
 
-  base::Value::Dict test_pref_value;
-  base::Value::Dict six_pack_remappings_dict;
+  base::DictValue test_pref_value;
+  base::DictValue six_pack_remappings_dict;
   six_pack_remappings_dict.Set(
       prefs::kTouchpadSettingSimulateRightClick,
       static_cast<int>(ui::mojom::SimulateRightClickModifier::kAlt));
@@ -864,11 +864,11 @@ TEST_F(InputDeviceSettingsControllerTest,
   SimulateUserLogin({}, kAccountId3, std::move(user_prefs));
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict devices_dict =
+  base::DictValue devices_dict =
       active_pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref)
           .Clone();
-  base::Value::Dict* existing_settings_dict = devices_dict.FindDict("key");
-  EXPECT_EQ(base::Value::Dict(), *existing_settings_dict);
+  base::DictValue* existing_settings_dict = devices_dict.FindDict("key");
+  EXPECT_EQ(base::DictValue(), *existing_settings_dict);
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
@@ -877,9 +877,9 @@ TEST_F(InputDeviceSettingsControllerTest,
   feature_list.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
 
-  base::Value::Dict test_pref_value;
-  base::Value::Dict six_pack_remappings_dict;
-  base::Value::Dict settings_dict;
+  base::DictValue test_pref_value;
+  base::DictValue six_pack_remappings_dict;
+  base::DictValue settings_dict;
 
   six_pack_remappings_dict.Set(
       prefs::kSixPackKeyPageUp,
@@ -897,11 +897,11 @@ TEST_F(InputDeviceSettingsControllerTest,
   SimulateUserLogin({}, kAccountId3, std::move(user_prefs));
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict devices_dict =
+  base::DictValue devices_dict =
       active_pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref)
           .Clone();
-  base::Value::Dict* existing_settings_dict = devices_dict.FindDict("key");
-  EXPECT_EQ(base::Value::Dict(), *existing_settings_dict);
+  base::DictValue* existing_settings_dict = devices_dict.FindDict("key");
+  EXPECT_EQ(base::DictValue(), *existing_settings_dict);
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
@@ -1891,7 +1891,7 @@ TEST_F(InputDeviceSettingsControllerTest, InternalTouchpadUpdatedWithPrefs) {
 
   PrefService* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict updated_dict;
+  base::DictValue updated_dict;
   updated_dict.Set("test_key", 1);
   pref_service->SetDict(prefs::kTouchpadInternalSettings, updated_dict.Clone());
   EXPECT_EQ(2u, observer_->num_touchpad_settings_updated());
@@ -1915,7 +1915,7 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   PrefService* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict updated_dict;
+  base::DictValue updated_dict;
   updated_dict.Set("test_key", 1);
   pref_service->SetDict(prefs::kPointingStickInternalSettings,
                         updated_dict.Clone());
@@ -2065,7 +2065,7 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict updated_defaults;
+  base::DictValue updated_defaults;
   updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
                        !kDefaultTopRowAreFKeys);
   active_pref_service->SetDict(prefs::kKeyboardDefaultChromeOSSettings,
@@ -2094,7 +2094,7 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict updated_defaults;
+  base::DictValue updated_defaults;
   updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
                        !kDefaultTopRowAreFKeys);
   active_pref_service->SetDict(prefs::kKeyboardDefaultChromeOSSettings,
@@ -2113,7 +2113,7 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict updated_defaults;
+  base::DictValue updated_defaults;
   updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
                        !kDefaultTopRowAreFKeys);
   active_pref_service->SetDict(prefs::kKeyboardDefaultNonChromeOSSettings,
@@ -2133,7 +2133,7 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict updated_defaults;
+  base::DictValue updated_defaults;
   updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
                        !kDefaultTopRowAreFKeys);
   active_pref_service->SetDict(prefs::kKeyboardDefaultChromeOSSettings,
@@ -2165,7 +2165,7 @@ TEST_F(InputDeviceSettingsControllerTest,
 
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict updated_defaults;
+  base::DictValue updated_defaults;
   updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
                        !kDefaultTopRowAreFKeys);
   active_pref_service->SetDict(prefs::kKeyboardDefaultSplitModifierSettings,
@@ -2186,7 +2186,7 @@ TEST_F(InputDeviceSettingsControllerTest, MouseDefaultsUpdatedDuringOobe) {
 
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict updated_defaults;
+  base::DictValue updated_defaults;
   updated_defaults.Set(prefs::kMouseSettingReverseScrolling,
                        !kDefaultReverseScrolling);
   active_pref_service->SetDict(prefs::kMouseDefaultSettings,
@@ -2206,7 +2206,7 @@ TEST_F(InputDeviceSettingsControllerTest, TouchpadDefaultsUpdatedDuringOobe) {
 
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
-  base::Value::Dict updated_defaults;
+  base::DictValue updated_defaults;
   updated_defaults.Set(prefs::kTouchpadSettingReverseScrolling,
                        !kDefaultReverseScrolling);
   active_pref_service->SetDict(prefs::kTouchpadDefaultSettings,

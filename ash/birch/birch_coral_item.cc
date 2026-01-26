@@ -200,31 +200,31 @@ BirchItemType BirchCoralItem::GetType() const {
 }
 
 std::string BirchCoralItem::ToString() const {
-  auto root = base::Value::Dict().Set(
+  auto root = base::DictValue().Set(
       "Coral item",
-      base::Value::Dict().Set("Title", title()).Set("Subtitle", subtitle()));
+      base::DictValue().Set("Title", title()).Set("Subtitle", subtitle()));
   return root.DebugString();
 }
 
-base::Value::Dict BirchCoralItem::ToCoralItemDetails() const {
+base::DictValue BirchCoralItem::ToCoralItemDetails() const {
   const coral::mojom::GroupPtr& group =
       BirchCoralProvider::Get()->GetGroupById(group_id_);
-  base::Value::List items;
+  base::ListValue items;
   for (const auto& entity : group->entities) {
     if (entity->is_tab()) {
-      items.Append(base::Value::Dict()
+      items.Append(base::DictValue()
                        .Set("type", "tab")
                        .Set("title", entity->get_tab()->title)
                        .Set("url", entity->get_tab()->url.spec()));
     } else {
-      items.Append(base::Value::Dict()
+      items.Append(base::DictValue()
                        .Set("type", "app")
                        .Set("title", entity->get_app()->title)
                        .Set("id", entity->get_app()->id));
     }
   }
   return std::move(
-      base::Value::Dict().Set("title", title()).Set("items", std::move(items)));
+      base::DictValue().Set("title", title()).Set("items", std::move(items)));
 }
 
 void BirchCoralItem::PerformAction() {}

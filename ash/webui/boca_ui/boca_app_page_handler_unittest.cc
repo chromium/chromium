@@ -525,7 +525,7 @@ class BocaAppPageHandlerTest : public testing::Test {
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     ash::boca_util::RegisterPrefs(local_state_.registry());
     local_state_.SetDict(ash::prefs::kClassManagementToolsKioskReceiverCodes,
-                         base::Value::Dict().Set(kReceiverId, kReceiverName));
+                         base::DictValue().Set(kReceiverId, kReceiverName));
     content_settings::PolicyProvider::RegisterProfilePrefs(
         pref_service_.registry());
     fake_user_manager_.Reset(
@@ -2709,8 +2709,8 @@ TEST_F(BocaAppPageHandlerProducerTest, TestPrefGetter) {
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, TestPrefGetterAndSetter) {
-  base::Value::Dict nav_map;
-  base::Value::Dict nav_occurrence;
+  base::DictValue nav_map;
+  base::DictValue nav_occurrence;
   nav_occurrence.Set("navRule", 0);
   nav_occurrence.Set("occurence", 1);
   nav_map.Set("google.com", std::move(nav_occurrence));

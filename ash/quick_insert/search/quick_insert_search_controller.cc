@@ -68,7 +68,7 @@ base::span<const emoji::EmojiSearchEntry> FirstNOrFewerElements(
   return container.first(std::min(container.size(), n));
 }
 
-const base::Value::Dict* LoadEmojiVariantsFromPrefs(PrefService* prefs) {
+const base::DictValue* LoadEmojiVariantsFromPrefs(PrefService* prefs) {
   if (prefs == nullptr) {
     return nullptr;
   }
@@ -206,7 +206,7 @@ void QuickInsertSearchController::StartEmojiSearch(
   emoji_results.reserve(kMaxEmojiResults + kMaxSymbolResults +
                         kMaxEmoticonResults);
 
-  const base::Value::Dict* emoji_variants = LoadEmojiVariantsFromPrefs(prefs);
+  const base::DictValue* emoji_variants = LoadEmojiVariantsFromPrefs(prefs);
 
   for (const emoji::EmojiSearchEntry& result :
        FirstNOrFewerElements(results.emojis, kMaxEmojiResults)) {

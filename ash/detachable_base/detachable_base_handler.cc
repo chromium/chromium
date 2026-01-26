@@ -215,9 +215,9 @@ DetachableBaseHandler::GetLastUsedDeviceForUser(const UserInfo& user) const {
   if (user.is_ephemeral)
     return "";
 
-  const base::Value::Dict& detachable_base_info =
+  const base::DictValue& detachable_base_info =
       local_state_->GetDict(prefs::kDetachableBaseDevices);
-  const base::Value::Dict* account_info =
+  const base::DictValue* account_info =
       detachable_base_info.FindDictByDottedPath(
           GetKeyForPrefs(user.account_id));
   if (!account_info)

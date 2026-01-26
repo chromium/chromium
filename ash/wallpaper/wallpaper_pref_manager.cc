@@ -48,9 +48,9 @@ bool GetWallpaperInfo(const AccountId& account_id,
   if (!pref_service) {
     return false;
   }
-  const base::Value::Dict& users_dict = pref_service->GetDict(pref_name);
+  const base::DictValue& users_dict = pref_service->GetDict(pref_name);
 
-  const base::Value::Dict* info_dict =
+  const base::DictValue* info_dict =
       users_dict.FindDict(account_id.GetUserEmail());
   if (!info_dict) {
     return false;
@@ -290,7 +290,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
       return false;
     ScopedDictPrefUpdate daily_google_photos_ids_update(
         local_state_, prefs::kRecentDailyGooglePhotosWallpapers);
-    base::Value::List id_list;
+    base::ListValue id_list;
     for (const auto& id : base::Reversed(ids)) {
       id_list.Append(base::NumberToString(id));
     }
@@ -306,10 +306,10 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     if (!local_state_)
       return false;
 
-    const base::Value::Dict& dict =
+    const base::DictValue& dict =
         local_state_->GetDict(prefs::kRecentDailyGooglePhotosWallpapers);
 
-    const base::Value::List* id_list = dict.FindList(account_id.GetUserEmail());
+    const base::ListValue* id_list = dict.FindList(account_id.GetUserEmail());
     if (!id_list)
       return false;
 
@@ -407,7 +407,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
       return std::nullopt;
     }
 
-    const base::Value::Dict& color_dict = local_state_->GetDict(pref_name);
+    const base::DictValue& color_dict = local_state_->GetDict(pref_name);
     auto* color_value = color_dict.Find(location);
     if (!color_value) {
       return std::nullopt;

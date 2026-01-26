@@ -615,13 +615,13 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
           kSixPackKeyNoMatchNudgeId);
   ASSERT_FALSE(nudge);
-  base::Value::Dict overrides;
+  base::DictValue overrides;
   overrides.Set(prefs::kSixPackKeyInsert, /*kSearch*/ 2);
   overrides.Set(prefs::kSixPackKeyDelete, /*kAlt*/ 1);
   overrides.Set(prefs::kSixPackKeyHome, /*kSearch*/ 2);
   overrides.Set(prefs::kSixPackKeyPageUp, /*kAlt*/ 1);
   overrides.Set(prefs::kSixPackKeyEnd, /*kSearch*/ 2);
-  base::Value::Dict remappings;
+  base::DictValue remappings;
   remappings.Set(prefs::kKeyboardSettingSixPackKeyRemappings,
                  std::move(overrides));
   Shell::Get()->session_controller()->GetActivePrefService()->SetDict(

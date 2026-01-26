@@ -171,7 +171,7 @@ ui::mojom::SixPackShortcutModifier GetSixPackKeyModifierFromPrefCount(
 }
 
 ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifierFromSettingsDict(
-    const base::Value::Dict& six_pack_key_remappings_dict,
+    const base::DictValue& six_pack_key_remappings_dict,
     const char* pref_name) {
   return static_cast<ui::mojom::SixPackShortcutModifier>(
       *six_pack_key_remappings_dict.FindInt(pref_name));
@@ -310,7 +310,7 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
 
 mojom::SixPackKeyInfoPtr RetrieveSixPackRemappings(
     PrefService* pref_service,
-    const base::Value::Dict& settings_dict) {
+    const base::DictValue& settings_dict) {
   const auto* six_pack_key_remappings_dict =
       settings_dict.FindDict(prefs::kKeyboardSettingSixPackKeyRemappings);
   if (!six_pack_key_remappings_dict) {
@@ -336,7 +336,7 @@ mojom::SixPackKeyInfoPtr RetrieveSixPackRemappings(
 
 base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>
 RetrieveModifierRemappings(const mojom::Keyboard& keyboard,
-                           const base::Value::Dict& modifier_remappings_dict) {
+                           const base::DictValue& modifier_remappings_dict) {
   base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>
       modifier_remappings;
 
@@ -402,7 +402,7 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
     PrefService* pref_service,
     const mojom::KeyboardPolicies& keyboard_policies,
     const mojom::Keyboard& keyboard,
-    const base::Value::Dict& settings_dict) {
+    const base::DictValue& settings_dict) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
   settings->suppress_meta_fkey_rewrites =
       settings_dict.FindBool(prefs::kKeyboardSettingSuppressMetaFKeyRewrites)
@@ -455,10 +455,10 @@ mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
                                     default_settings_dict);
   }
 
-  base::Value::Dict settings_dict;
+  base::DictValue settings_dict;
   if (Shell::Get()->keyboard_capability()->HasQuickInsertKeyForOobe(
           keyboard.id)) {
-    base::Value::Dict modifier_remappings_dict;
+    base::DictValue modifier_remappings_dict;
     modifier_remappings_dict.Set(
         base::NumberToString(
             static_cast<int>(ui::mojom::ModifierKey::kAssistant)),
@@ -471,12 +471,12 @@ mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
                                   std::move(settings_dict));
 }
 
-base::Value::Dict ConvertModifierRemappingsToDict(
+base::DictValue ConvertModifierRemappingsToDict(
     const mojom::Keyboard& keyboard) {
   // Modifier remappings get stored in a dict by casting the
-  // `ui::mojom::ModifierKey` enum to ints. Since `base::Value::Dict` only
+  // `ui::mojom::ModifierKey` enum to ints. Since `base::DictValue` only
   // supports strings as keys, this is then converted into a string.
-  base::Value::Dict modifier_remappings;
+  base::DictValue modifier_remappings;
   for (const auto& [from, to] : keyboard.settings->modifier_remappings) {
     // Avoid saving modifier remappings that are default for apple keyboards.
     if (keyboard.meta_key == ui::mojom::MetaKey::kCommand &&
@@ -511,13 +511,13 @@ base::Value::Dict ConvertModifierRemappingsToDict(
   return modifier_remappings;
 }
 
-base::Value::Dict ConvertSettingsToDict(
+base::DictValue ConvertSettingsToDict(
     const mojom::Keyboard& keyboard,
     const mojom::KeyboardPolicies& keyboard_policies,
     const ForceKeyboardSettingPersistence& force_persistence,
-    const base::Value::Dict* existing_settings_dict) {
+    const base::DictValue* existing_settings_dict) {
   // Populate `settings_dict` with all settings in `settings`.
-  base::Value::Dict settings_dict;
+  base::DictValue settings_dict;
 
   if (ShouldPersistSetting(
           prefs::kKeyboardSettingSuppressMetaFKeyRewrites,
@@ -559,7 +559,7 @@ base::Value::Dict ConvertSettingsToDict(
   }
 
   if (ShouldAddSixPackKeyProperties(keyboard)) {
-    base::Value::Dict six_pack_key_remappings;
+    base::DictValue six_pack_key_remappings;
     six_pack_key_remappings.Set(
         prefs::kSixPackKeyPageUp,
         static_cast<int>(keyboard.settings->six_pack_key_remappings->page_up));
@@ -596,9 +596,9 @@ void UpdateInternalKeyboardSettingsImpl(
   CHECK(keyboard.settings);
   CHECK(!keyboard.is_external);
 
-  base::Value::Dict existing_settings_dict =
+  base::DictValue existing_settings_dict =
       pref_service->GetDict(prefs::kKeyboardInternalSettings).Clone();
-  base::Value::Dict settings_dict = ConvertSettingsToDict(
+  base::DictValue settings_dict = ConvertSettingsToDict(
       keyboard, keyboard_policies, force_persistence, &existing_settings_dict);
 
   // Merge all settings except modifier remappings. Modifier remappings need
@@ -626,11 +626,11 @@ void UpdateKeyboardSettingsImpl(
     return;
   }
 
-  base::Value::Dict devices_dict =
+  base::DictValue devices_dict =
       pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
-  base::Value::Dict* existing_settings_dict =
+  base::DictValue* existing_settings_dict =
       devices_dict.FindDict(keyboard.device_key);
-  base::Value::Dict settings_dict = ConvertSettingsToDict(
+  base::DictValue settings_dict = ConvertSettingsToDict(
       keyboard, keyboard_policies, force_persistence, existing_settings_dict);
   const base::Time time_stamp = base::Time::Now();
   settings_dict.Set(prefs::kLastUpdatedKey, base::TimeToValue(time_stamp));
@@ -716,7 +716,7 @@ void InitializeKeyboardSettingsImpl(
     return;
   }
 
-  const base::Value::Dict* settings_dict = nullptr;
+  const base::DictValue* settings_dict = nullptr;
   if (!keyboard->is_external) {
     settings_dict = &pref_service->GetDict(prefs::kKeyboardInternalSettings);
     if (settings_dict->empty()) {

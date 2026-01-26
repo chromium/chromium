@@ -26,7 +26,7 @@ constexpr char kYearKey[] = "year";
 // Returns a Time object representing a date at local midnight if the date is
 // valid. Returns std::nullopt if the date is invalid.
 std::optional<base::Time> GetLocalMidnightTimeForDate(
-    const base::Value::Dict* date) {
+    const base::DictValue* date) {
   CHECK(date);
   std::optional<int> day = date->FindInt(kDayKey);
   std::optional<int> month = date->FindInt(kMonthKey);
@@ -53,7 +53,7 @@ std::optional<base::Time> GetLocalMidnightTimeForDate(
 }
 
 // Returns true if the `is_enabled` key in the policy is set to true.
-bool IsPolicyEnabled(const base::Value::Dict& graduation_policy_pref) {
+bool IsPolicyEnabled(const base::DictValue& graduation_policy_pref) {
   if (graduation_policy_pref.empty()) {
     return false;
   }
@@ -66,7 +66,7 @@ bool IsPolicyEnabled(const base::Value::Dict& graduation_policy_pref) {
 
 bool HasUpcomingGraduationEnablementChange(PrefService* pref_service) {
   CHECK(pref_service);
-  const base::Value::Dict& graduation_policy_pref =
+  const base::DictValue& graduation_policy_pref =
       pref_service->GetDict(prefs::kGraduationEnablementStatus);
   if (!IsPolicyEnabled(graduation_policy_pref)) {
     return false;
@@ -74,7 +74,7 @@ bool HasUpcomingGraduationEnablementChange(PrefService* pref_service) {
 
   base::Time current_time = base::Time::Now().LocalMidnight();
 
-  const base::Value::Dict* start_date_dict =
+  const base::DictValue* start_date_dict =
       graduation_policy_pref.FindDict(kStartDateKey);
   bool is_future_start_time = false;
 
@@ -87,7 +87,7 @@ bool HasUpcomingGraduationEnablementChange(PrefService* pref_service) {
     is_future_start_time = current_time < *start_time;
   }
 
-  const base::Value::Dict* end_date_dict =
+  const base::DictValue* end_date_dict =
       graduation_policy_pref.FindDict(kEndDateKey);
   bool is_future_end_time = false;
 
@@ -107,7 +107,7 @@ bool HasUpcomingGraduationEnablementChange(PrefService* pref_service) {
 
 bool IsEligibleForGraduation(PrefService* pref_service) {
   CHECK(pref_service);
-  const base::Value::Dict& graduation_policy_pref =
+  const base::DictValue& graduation_policy_pref =
       pref_service->GetDict(prefs::kGraduationEnablementStatus);
   if (!IsPolicyEnabled(graduation_policy_pref)) {
     return false;
@@ -117,7 +117,7 @@ bool IsEligibleForGraduation(PrefService* pref_service) {
   // at local midnight time.
   base::Time current_time = base::Time::Now().LocalMidnight();
 
-  const base::Value::Dict* start_date_dict =
+  const base::DictValue* start_date_dict =
       graduation_policy_pref.FindDict(kStartDateKey);
   if (start_date_dict) {
     std::optional<base::Time> start_time =
@@ -130,7 +130,7 @@ bool IsEligibleForGraduation(PrefService* pref_service) {
     }
   }
 
-  const base::Value::Dict* end_date_dict =
+  const base::DictValue* end_date_dict =
       graduation_policy_pref.FindDict(kEndDateKey);
   if (end_date_dict) {
     std::optional<base::Time> end_time =

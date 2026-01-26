@@ -127,7 +127,7 @@ mojom::MouseSettingsPtr GetMouseSettingsFromPrefs(
 
 mojom::MouseSettingsPtr RetrieveMouseSettings(
     const mojom::MousePolicies& mouse_policies,
-    const base::Value::Dict& settings_dict) {
+    const base::DictValue& settings_dict) {
   mojom::MouseSettingsPtr settings = mojom::MouseSettings::New();
   settings->swap_right =
       settings_dict.FindBool(prefs::kMouseSettingSwapRight)
@@ -160,13 +160,13 @@ mojom::MouseSettingsPtr GetDefaultMouseSettings(
   return RetrieveMouseSettings(mouse_policies, /*settings_dict=*/{});
 }
 
-base::Value::Dict ConvertSettingsToDict(
+base::DictValue ConvertSettingsToDict(
     const mojom::Mouse& mouse,
     const mojom::MousePolicies& mouse_policies,
     const ForceMouseSettingPersistence& force_persistence,
-    const base::Value::Dict* existing_settings_dict) {
+    const base::DictValue* existing_settings_dict) {
   // Populate `settings_dict` with all settings in `settings`.
-  base::Value::Dict settings_dict;
+  base::DictValue settings_dict;
 
   if (ShouldPersistSetting(
           mouse_policies.swap_right_policy, prefs::kMouseSettingSwapRight,
@@ -225,9 +225,9 @@ void UpdateButtonRemappingDictPref(PrefService* pref_service,
                                    const mojom::Mouse& mouse,
                                    const base::Time time_stamp) {
   const mojom::MouseSettings& settings = *mouse.settings;
-  base::Value::List button_remappings = ConvertButtonRemappingArrayToList(
+  base::ListValue button_remappings = ConvertButtonRemappingArrayToList(
       settings.button_remappings, mouse.customization_restriction);
-  base::Value::Dict button_remappings_dict =
+  base::DictValue button_remappings_dict =
       pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref).Clone();
   button_remappings_dict.Set(mouse.device_key, std::move(button_remappings));
   const auto time_stamp_path =
@@ -245,12 +245,12 @@ void UpdateMouseSettingsImpl(
     const ForceMouseSettingPersistence& force_persistence) {
   DCHECK(mouse.settings);
   const base::Time time_stamp = base::Time::Now();
-  base::Value::Dict devices_dict =
+  base::DictValue devices_dict =
       pref_service->GetDict(prefs::kMouseDeviceSettingsDictPref).Clone();
-  base::Value::Dict* existing_settings_dict =
+  base::DictValue* existing_settings_dict =
       devices_dict.FindDict(mouse.device_key);
 
-  base::Value::Dict settings_dict = ConvertSettingsToDict(
+  base::DictValue settings_dict = ConvertSettingsToDict(
       mouse, mouse_policies, force_persistence, existing_settings_dict);
 
   settings_dict.Set(prefs::kLastUpdatedKey, base::TimeToValue(time_stamp));

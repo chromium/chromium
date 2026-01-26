@@ -43,10 +43,9 @@ TEST_F(QuickInsertEmojiHistoryModelTest, ReturnsRecentEmojisFromPrefs) {
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
   update->Set(
       "emoji",
-      base::Value::List()
-          .Append(base::Value::Dict().Set("text", "abc").Set("timestamp", "10"))
-          .Append(
-              base::Value::Dict().Set("text", "xyz").Set("timestamp", "5")));
+      base::ListValue()
+          .Append(base::DictValue().Set("text", "abc").Set("timestamp", "10"))
+          .Append(base::DictValue().Set("text", "xyz").Set("timestamp", "5")));
   QuickInsertEmojiHistoryModel model(pref_service());
 
   EXPECT_THAT(
@@ -63,10 +62,9 @@ TEST_F(QuickInsertEmojiHistoryModelTest, AddsNewRecentEmoji) {
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
   update->Set(
       "emoji",
-      base::Value::List()
-          .Append(base::Value::Dict().Set("text", "abc").Set("timestamp", "10"))
-          .Append(
-              base::Value::Dict().Set("text", "xyz").Set("timestamp", "5")));
+      base::ListValue()
+          .Append(base::DictValue().Set("text", "abc").Set("timestamp", "10"))
+          .Append(base::DictValue().Set("text", "xyz").Set("timestamp", "5")));
   base::SimpleTestClock clock;
   QuickInsertEmojiHistoryModel model(pref_service(), &clock);
   clock.SetNow(TimeFromMicroSeconds(20));
@@ -90,10 +88,9 @@ TEST_F(QuickInsertEmojiHistoryModelTest, AddsExistingRecentEmoji) {
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
   update->Set(
       "emoji",
-      base::Value::List()
-          .Append(base::Value::Dict().Set("text", "abc").Set("timestamp", "10"))
-          .Append(
-              base::Value::Dict().Set("text", "xyz").Set("timestamp", "5")));
+      base::ListValue()
+          .Append(base::DictValue().Set("text", "abc").Set("timestamp", "10"))
+          .Append(base::DictValue().Set("text", "xyz").Set("timestamp", "5")));
   base::SimpleTestClock clock;
   QuickInsertEmojiHistoryModel model(pref_service(), &clock);
   clock.SetNow(TimeFromMicroSeconds(20));

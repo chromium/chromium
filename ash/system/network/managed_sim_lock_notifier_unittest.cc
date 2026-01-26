@@ -82,7 +82,7 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
       bool enable,
       const std::optional<std::string>& lock_type = std::nullopt) {
     // Simulate a locked SIM.
-    base::Value::Dict sim_lock_status;
+    base::DictValue sim_lock_status;
     sim_lock_status.Set(shill::kSIMLockEnabledProperty, enable);
     if (lock_type.has_value())
       sim_lock_status.Set(shill::kSIMLockTypeProperty, *lock_type);
@@ -93,8 +93,8 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
             base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
 
     // Set the cellular service to be the active profile.
-    base::Value::List sim_slot_infos;
-    base::Value::Dict slot_info_item;
+    base::ListValue sim_slot_infos;
+    base::DictValue slot_info_item;
     slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
     slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
     sim_slot_infos.Append(std::move(slot_info_item));
@@ -108,12 +108,12 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
   }
 
   void SetAllowCellularSimLock(bool allow_cellular_sim_lock) {
-    base::Value::Dict global_config;
+    base::DictValue global_config;
     global_config.Set(::onc::global_network_config::kAllowCellularSimLock,
                       allow_cellular_sim_lock);
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-        base::Value::List(), global_config);
+        base::ListValue(), global_config);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -266,13 +266,13 @@ TEST_F(ManagedSimLockNotifierTest, PrimarySimIccidChanged) {
 
   EXPECT_FALSE(GetManagedSimLockNotification());
   // Simulate primary ICCID changed. Notification should be shown after.
-  base::Value::List sim_slot_infos;
-  base::Value::Dict slot_info_item;
+  base::ListValue sim_slot_infos;
+  base::DictValue slot_info_item;
   slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
   slot_info_item.Set(shill::kSIMSlotInfoPrimary, false);
   sim_slot_infos.Append(std::move(slot_info_item));
 
-  base::Value::Dict slot_info_item_2;
+  base::DictValue slot_info_item_2;
   slot_info_item_2.Set(shill::kSIMSlotInfoICCID, "kTestIccid2");
   slot_info_item_2.Set(shill::kSIMSlotInfoPrimary, true);
   sim_slot_infos.Append(std::move(slot_info_item_2));

@@ -994,7 +994,7 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataInAllLanguages) {
       "_comp_ime_jkghodnilhceideoidjikpgommlajknknacl_mozc_jp,"
       "_comp_ime_jkghodnilhceideoidjikpgommlajknknacl_mozc_us");
   prefs_service().registry()->RegisterDictionaryPref(
-      prefs::kEmojiPickerPreferences, base::Value::Dict());
+      prefs::kEmojiPickerPreferences, base::DictValue());
   MockEmojiSearchResultsCallback results_callback;
   EXPECT_CALL(
       results_callback,
@@ -1043,7 +1043,7 @@ TEST_F(QuickInsertSearchControllerTest,
       "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:notareallanguage"
       "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:someotherfakelanguage");
   prefs_service().registry()->RegisterDictionaryPref(
-      prefs::kEmojiPickerPreferences, base::Value::Dict());
+      prefs::kEmojiPickerPreferences, base::DictValue());
   MockEmojiSearchResultsCallback results_callback;
   EXPECT_CALL(results_callback,
               Call(ElementsAre(
@@ -1094,7 +1094,7 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
       prefs::kLanguagePreloadEngines,
       "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng");
   prefs_service().registry()->RegisterDictionaryPref(
-      prefs::kEmojiPickerPreferences, base::Value::Dict());
+      prefs::kEmojiPickerPreferences, base::DictValue());
 
   QuickInsertSearchController controller(
       /*burn_in_period=*/base::Milliseconds(100));
@@ -1165,7 +1165,7 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
       prefs::kLanguagePreloadEngines,
       "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng");
   prefs_service().registry()->RegisterDictionaryPref(
-      prefs::kEmojiPickerPreferences, base::Value::Dict());
+      prefs::kEmojiPickerPreferences, base::DictValue());
 
   QuickInsertSearchController controller(
       /*burn_in_period=*/base::Milliseconds(100));

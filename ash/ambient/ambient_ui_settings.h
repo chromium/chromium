@@ -49,7 +49,7 @@ class ASH_EXPORT AmbientUiSettings {
  private:
   // Returns nullopt if the |dict| contains an invalid group of settings.
   static std::optional<AmbientUiSettings> CreateFromDict(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
   // This is private because the caller by design should never be working with
   // an invalid instance. A fatal error should occur before then.

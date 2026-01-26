@@ -1043,14 +1043,14 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   // If the flag is disabled, clear the new touchpad and keyboard settings from
   // all settings dictionaries and reset the notification prefs.
   if (!features::IsAltClickAndSixPackCustomizationEnabled() && pref_service) {
-    base::Value::Dict updated_touchpad_dict =
+    base::DictValue updated_touchpad_dict =
         pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
     for (auto [key, dict] : updated_touchpad_dict) {
       CHECK(dict.is_dict());
       dict.GetDict().Remove(prefs::kTouchpadSettingSimulateRightClick);
     }
 
-    base::Value::Dict updated_keyboard_dict =
+    base::DictValue updated_keyboard_dict =
         pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref).Clone();
 
     for (auto [key, dict] : updated_keyboard_dict) {
@@ -1063,7 +1063,7 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
                           std::move(updated_keyboard_dict));
 
     // Remove six pack remappings from internal keyboard as well.
-    base::Value::Dict updated_internal_keyboard_dict =
+    base::DictValue updated_internal_keyboard_dict =
         pref_service->GetDict(prefs::kKeyboardInternalSettings).Clone();
     updated_internal_keyboard_dict.Remove(
         prefs::kKeyboardSettingSixPackKeyRemappings);

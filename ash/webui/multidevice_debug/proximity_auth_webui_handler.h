@@ -48,14 +48,14 @@ class ProximityAuthWebUIHandler
   void OnNewDevicesSynced() override;
 
   // Message handler callbacks.
-  void OnWebContentsInitialized(const base::Value::List& args);
-  void GetLogMessages(const base::Value::List& args);
-  void ClearLogBuffer(const base::Value::List& args);
-  void GetLocalState(const base::Value::List& args);
-  void ForceEnrollment(const base::Value::List& args);
-  void ForceDeviceSync(const base::Value::List& args);
+  void OnWebContentsInitialized(const base::ListValue& args);
+  void GetLogMessages(const base::ListValue& args);
+  void ClearLogBuffer(const base::ListValue& args);
+  void GetLocalState(const base::ListValue& args);
+  void ForceEnrollment(const base::ListValue& args);
+  void ForceDeviceSync(const base::ListValue& args);
 
-  base::Value::Dict RemoteDeviceToDictionary(
+  base::DictValue RemoteDeviceToDictionary(
       const multidevice::RemoteDeviceRef& remote_device);
 
   void OnForceEnrollmentNow(bool success);
@@ -66,17 +66,17 @@ class ProximityAuthWebUIHandler
   void OnGetDebugInfo(device_sync::mojom::DebugInfoPtr debug_info_ptr);
 
   void NotifyOnEnrollmentFinished(bool success,
-                                  base::Value::Dict enrollment_state);
+                                  base::DictValue enrollment_state);
   void NotifyOnSyncFinished(bool was_sync_successful,
                             bool changed,
-                            base::Value::Dict device_sync_state);
+                            base::DictValue device_sync_state);
   void NotifyGotLocalState(base::Value truncated_local_device_id,
-                           base::Value::Dict enrollment_state,
-                           base::Value::Dict device_sync_state,
-                           base::Value::List synced_devices);
+                           base::DictValue enrollment_state,
+                           base::DictValue device_sync_state,
+                           base::ListValue synced_devices);
 
   base::Value GetTruncatedLocalDeviceId();
-  base::Value::List GetRemoteDevicesList();
+  base::ListValue GetRemoteDevicesList();
 
   // The delegate used to fetch dependencies. Must outlive this instance.
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;

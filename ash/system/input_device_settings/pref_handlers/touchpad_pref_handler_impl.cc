@@ -166,7 +166,7 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromPrefs(
 mojom::TouchpadSettingsPtr RetrieveTouchpadSettings(
     PrefService* pref_service,
     const mojom::Touchpad& touchpad,
-    const base::Value::Dict& settings_dict) {
+    const base::DictValue& settings_dict) {
   mojom::TouchpadSettingsPtr settings = mojom::TouchpadSettings::New();
   settings->sensitivity =
       settings_dict.FindInt(prefs::kTouchpadSettingSensitivity)
@@ -228,12 +228,12 @@ mojom::TouchpadSettingsPtr GetDefaultTouchpadSettings(
   return RetrieveTouchpadSettings(pref_service, touchpad, /*settings_dict=*/{});
 }
 
-base::Value::Dict ConvertSettingsToDict(
+base::DictValue ConvertSettingsToDict(
     const mojom::Touchpad& touchpad,
     const ForceTouchpadSettingPersistence& force_persistence,
-    const base::Value::Dict* existing_settings_dict) {
+    const base::DictValue* existing_settings_dict) {
   // Populate `settings_dict` with all settings in `settings`.
-  base::Value::Dict settings_dict;
+  base::DictValue settings_dict;
 
   if (ShouldPersistSetting(prefs::kTouchpadSettingSensitivity,
                            static_cast<int>(touchpad.settings->sensitivity),
@@ -336,9 +336,9 @@ void UpdateInternalTouchpadSettingsImpl(
   CHECK(touchpad.settings);
   CHECK(!touchpad.is_external);
 
-  base::Value::Dict existing_settings_dict =
+  base::DictValue existing_settings_dict =
       pref_service->GetDict(prefs::kTouchpadInternalSettings).Clone();
-  base::Value::Dict settings_dict = ConvertSettingsToDict(
+  base::DictValue settings_dict = ConvertSettingsToDict(
       touchpad, force_persistence, &existing_settings_dict);
 
   // Merge the new settings into the old settings so that all settings are
@@ -361,12 +361,12 @@ void UpdateTouchpadSettingsImpl(
     return;
   }
 
-  base::Value::Dict devices_dict =
+  base::DictValue devices_dict =
       pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
-  base::Value::Dict* existing_settings_dict =
+  base::DictValue* existing_settings_dict =
       devices_dict.FindDict(touchpad.device_key);
 
-  base::Value::Dict settings_dict = ConvertSettingsToDict(
+  base::DictValue settings_dict = ConvertSettingsToDict(
       touchpad, force_persistence, existing_settings_dict);
   const base::Time time_stamp = base::Time::Now();
   settings_dict.Set(prefs::kLastUpdatedKey, base::TimeToValue(time_stamp));
@@ -435,7 +435,7 @@ void InitializeTouchpadSettingsImpl(PrefService* pref_service,
     return;
   }
 
-  const base::Value::Dict* settings_dict = nullptr;
+  const base::DictValue* settings_dict = nullptr;
   if (!touchpad->is_external) {
     settings_dict = &pref_service->GetDict(prefs::kTouchpadInternalSettings);
     if (settings_dict->empty()) {

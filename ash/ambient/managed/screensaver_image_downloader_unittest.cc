@@ -302,7 +302,7 @@ TEST_F(ScreensaverImageDownloaderTest,
   VerifySucessfulImageRequest(expected_images);
 
   // Verify that images saved into disk are deleted properly.
-  screensaver_image_downloader()->UpdateImageUrlList(base::Value::List());
+  screensaver_image_downloader()->UpdateImageUrlList(base::ListValue());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(base::PathExists(test_download_folder()));
   VerifyScreensaverImagesCacheSize(0u);
@@ -321,7 +321,7 @@ TEST_F(ScreensaverImageDownloaderTest,
   VerifyDownloadingQueueSize(2u);
 
   // Simulate a new policy update that clears the queue.
-  screensaver_image_downloader()->UpdateImageUrlList(base::Value::List());
+  screensaver_image_downloader()->UpdateImageUrlList(base::ListValue());
 
   // Resolve the request for the first image, the image should not be saved to
   // file.
@@ -347,7 +347,7 @@ TEST_F(ScreensaverImageDownloaderTest,
 TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
   {
     // Add two image to the policy list and confirm that are indeed downloaded.
-    base::Value::List image_urls;
+    base::ListValue image_urls;
     image_urls.Append(kImageUrl1);
     screensaver_image_downloader()->UpdateImageUrlList(image_urls);
 
@@ -373,7 +373,7 @@ TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
     // Case: Verify that when the first file is removed from policy image list
     // and only the second file remains, the first file is indeed cleaned-up
     // from the disk and the second file is still present on the disk.
-    base::Value::List image_urls;
+    base::ListValue image_urls;
     image_urls.Append(kImageUrl2);
     screensaver_image_downloader()->UpdateImageUrlList(image_urls);
 
@@ -404,7 +404,7 @@ TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
     base::WriteFile(orphan_cache_file, "test_data");
     EXPECT_TRUE(base::PathExists(orphan_cache_file));
 
-    base::Value::List image_urls;
+    base::ListValue image_urls;
     image_urls.Append(kImageUrl2);
     screensaver_image_downloader()->UpdateImageUrlList(image_urls);
     VerifySucessfulImageRequest(

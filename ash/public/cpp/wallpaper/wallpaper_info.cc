@@ -20,7 +20,7 @@ namespace {
 
 // Populates online wallpaper related info in `info`.
 void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
-                                 const base::Value::Dict& info_dict) {
+                                 const base::DictValue& info_dict) {
   const std::string* asset_id_str =
       info_dict.FindString(WallpaperInfo::kNewWallpaperAssetIdNodeName);
   const std::string* collection_id =
@@ -29,7 +29,7 @@ void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
       info_dict.FindString(WallpaperInfo::kNewWallpaperDedupKeyNodeName);
   const std::string* unit_id_str =
       info_dict.FindString(WallpaperInfo::kNewWallpaperUnitIdNodeName);
-  const base::Value::List* variant_list =
+  const base::ListValue* variant_list =
       info_dict.FindList(WallpaperInfo::kNewWallpaperVariantListNodeName);
 
   info->collection_id = collection_id ? *collection_id : std::string();
@@ -53,7 +53,7 @@ void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
       if (!variant_info_value.is_dict()) {
         continue;
       }
-      const base::Value::Dict& variant_info = variant_info_value.GetDict();
+      const base::DictValue& variant_info = variant_info_value.GetDict();
       const std::string* variant_asset_id_str =
           variant_info.FindString(WallpaperInfo::kNewWallpaperAssetIdNodeName);
       const std::string* url =
@@ -183,7 +183,7 @@ bool WallpaperInfo::MatchesAsset(const WallpaperInfo& other) const {
 
 // static
 std::optional<WallpaperInfo> WallpaperInfo::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* location =
       dict.FindString(WallpaperInfo::kNewWallpaperLocationNodeName);
   const std::string* file_path =
@@ -239,8 +239,8 @@ std::optional<WallpaperInfo> WallpaperInfo::FromDict(
   return info;
 }
 
-base::Value::Dict WallpaperInfo::ToDict() const {
-  base::Value::Dict wallpaper_info_dict;
+base::DictValue WallpaperInfo::ToDict() const {
+  base::DictValue wallpaper_info_dict;
   if (asset_id.has_value()) {
     wallpaper_info_dict.Set(kNewWallpaperAssetIdNodeName,
                             base::NumberToString(asset_id.value()));
@@ -249,9 +249,9 @@ base::Value::Dict WallpaperInfo::ToDict() const {
     wallpaper_info_dict.Set(kNewWallpaperUnitIdNodeName,
                             base::NumberToString(unit_id.value()));
   }
-  base::Value::List online_wallpaper_variant_list;
+  base::ListValue online_wallpaper_variant_list;
   for (const auto& variant : variants) {
-    base::Value::Dict online_wallpaper_variant_dict;
+    base::DictValue online_wallpaper_variant_dict;
     online_wallpaper_variant_dict.Set(kNewWallpaperAssetIdNodeName,
                                       base::NumberToString(variant.asset_id));
     online_wallpaper_variant_dict.Set(kOnlineWallpaperUrlNodeName,

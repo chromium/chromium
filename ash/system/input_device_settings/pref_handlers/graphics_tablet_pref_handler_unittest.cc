@@ -411,13 +411,13 @@ TEST_F(GraphicsTabletPrefHandlerTest, InitializeSettings) {
   tablet_button_remappings.push_back(button_remapping1.Clone());
   tablet_button_remappings.push_back(button_remapping2.Clone());
   pen_button_remappings.push_back(button_remapping1.Clone());
-  base::Value::Dict updated_graphics_tablet1_tablet_button_remappings_dict;
+  base::DictValue updated_graphics_tablet1_tablet_button_remappings_dict;
   updated_graphics_tablet1_tablet_button_remappings_dict.Set(
       kGraphicsTabletKey1,
       ConvertButtonRemappingArrayToList(
           tablet_button_remappings,
           mojom::CustomizationRestriction::kAllowCustomizations));
-  base::Value::Dict updated_graphics_tablet1_pen_button_remappings_dict;
+  base::DictValue updated_graphics_tablet1_pen_button_remappings_dict;
   updated_graphics_tablet1_pen_button_remappings_dict.Set(
       kGraphicsTabletKey1,
       ConvertButtonRemappingArrayToList(

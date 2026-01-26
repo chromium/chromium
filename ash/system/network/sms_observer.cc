@@ -32,7 +32,7 @@ const char kNotifierSms[] = "ash.sms";
 
 // Send the |message| to notification center to display to users. Note that each
 // notification will be assigned with different |message_id| as notification id.
-void ShowNotification(const base::Value::Dict* message,
+void ShowNotification(const base::DictValue* message,
                       const std::string& message_text,
                       const std::string& message_number,
                       int message_id) {

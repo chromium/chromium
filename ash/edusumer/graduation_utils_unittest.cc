@@ -58,7 +58,7 @@ class GraduationUtilsTest : public AshTestBase {
 };
 
 TEST_F(GraduationUtilsTest, EnabledWithoutStartAndEndDates) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
@@ -69,9 +69,9 @@ TEST_F(GraduationUtilsTest, EnabledWithoutStartAndEndDates) {
 }
 
 TEST_F(GraduationUtilsTest, EnabledWithPastStartDate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict start_date;
+  base::DictValue start_date;
   start_date.Set("day", kFakeDayOfMonth - 1);
   start_date.Set("month", kFakeMonth);
   start_date.Set("year", kFakeYear);
@@ -85,9 +85,9 @@ TEST_F(GraduationUtilsTest, EnabledWithPastStartDate) {
 }
 
 TEST_F(GraduationUtilsTest, DisabledWithFutureStartDate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict start_date;
+  base::DictValue start_date;
   start_date.Set("day", kFakeDayOfMonth + 1);
   start_date.Set("month", kFakeMonth);
   start_date.Set("year", kFakeYear);
@@ -101,9 +101,9 @@ TEST_F(GraduationUtilsTest, DisabledWithFutureStartDate) {
 }
 
 TEST_F(GraduationUtilsTest, DisabledWithPastEndDate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict end_date;
+  base::DictValue end_date;
   end_date.Set("day", kFakeDayOfMonth - 1);
   end_date.Set("month", kFakeMonth);
   end_date.Set("year", kFakeYear);
@@ -117,9 +117,9 @@ TEST_F(GraduationUtilsTest, DisabledWithPastEndDate) {
 }
 
 TEST_F(GraduationUtilsTest, EnabledWithFutureEndDate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict end_date;
+  base::DictValue end_date;
   end_date.Set("day", kFakeDayOfMonth + 1);
   end_date.Set("month", kFakeMonth);
   end_date.Set("year", kFakeYear);
@@ -133,9 +133,9 @@ TEST_F(GraduationUtilsTest, EnabledWithFutureEndDate) {
 }
 
 TEST_F(GraduationUtilsTest, EnabledOnTheEndDate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict end_date;
+  base::DictValue end_date;
   end_date.Set("day", kFakeDayOfMonth);
   end_date.Set("month", kFakeMonth);
   end_date.Set("year", kFakeYear);
@@ -149,14 +149,14 @@ TEST_F(GraduationUtilsTest, EnabledOnTheEndDate) {
 }
 
 TEST_F(GraduationUtilsTest, DisabledWithPastStartAndEndDates) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict start_date;
+  base::DictValue start_date;
   start_date.Set("day", kFakeDayOfMonth - 3);
   start_date.Set("month", kFakeMonth);
   start_date.Set("year", kFakeYear);
   dict.Set("start_date", start_date.Clone());
-  base::Value::Dict end_date;
+  base::DictValue end_date;
   end_date.Set("day", kFakeDayOfMonth - 1);
   end_date.Set("month", kFakeMonth);
   end_date.Set("year", kFakeYear);
@@ -170,14 +170,14 @@ TEST_F(GraduationUtilsTest, DisabledWithPastStartAndEndDates) {
 }
 
 TEST_F(GraduationUtilsTest, DisabledWithFutureStartAndEndDates) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict start_date;
+  base::DictValue start_date;
   start_date.Set("day", kFakeDayOfMonth + 1);
   start_date.Set("month", kFakeMonth);
   start_date.Set("year", kFakeYear);
   dict.Set("start_date", start_date.Clone());
-  base::Value::Dict end_date;
+  base::DictValue end_date;
   end_date.Set("day", kFakeDayOfMonth + 3);
   end_date.Set("month", kFakeMonth);
   end_date.Set("year", kFakeYear);
@@ -191,13 +191,13 @@ TEST_F(GraduationUtilsTest, DisabledWithFutureStartAndEndDates) {
 }
 
 TEST_F(GraduationUtilsTest, DisabledWithMissingDateFields) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict start_date;
+  base::DictValue start_date;
   start_date.Set("day", kFakeDayOfMonth + 1);
   start_date.Set("year", kFakeYear);
   dict.Set("start_date", start_date.Clone());
-  base::Value::Dict end_date;
+  base::DictValue end_date;
   end_date.Set("day", kFakeDayOfMonth + 3);
   end_date.Set("month", kFakeMonth);
   dict.Set("end_date", end_date.Clone());
@@ -210,14 +210,14 @@ TEST_F(GraduationUtilsTest, DisabledWithMissingDateFields) {
 }
 
 TEST_F(GraduationUtilsTest, EnabledWithStartAndEndDates) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict start_date;
+  base::DictValue start_date;
   start_date.Set("day", kFakeDayOfMonth - 1);
   start_date.Set("month", kFakeMonth);
   start_date.Set("year", kFakeYear);
   dict.Set("start_date", start_date.Clone());
-  base::Value::Dict end_date;
+  base::DictValue end_date;
   end_date.Set("day", kFakeDayOfMonth + 1);
   end_date.Set("month", kFakeMonth);
   end_date.Set("year", kFakeYear);
@@ -231,9 +231,9 @@ TEST_F(GraduationUtilsTest, EnabledWithStartAndEndDates) {
 }
 
 TEST_F(GraduationUtilsTest, DisabledWithInvalidStartDate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict start_date;
+  base::DictValue start_date;
   start_date.Set("day", 0);
   start_date.Set("month", kFakeMonth);
   start_date.Set("year", kFakeYear);
@@ -247,9 +247,9 @@ TEST_F(GraduationUtilsTest, DisabledWithInvalidStartDate) {
 }
 
 TEST_F(GraduationUtilsTest, EnabledWithInvalidEndDate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict end_date;
+  base::DictValue end_date;
   end_date.Set("day", kFakeDayOfMonth + 1);
   end_date.Set("month", 0);
   end_date.Set("year", kFakeYear);
@@ -263,13 +263,13 @@ TEST_F(GraduationUtilsTest, EnabledWithInvalidEndDate) {
 }
 
 TEST_F(GraduationUtilsTest, DisabledWithInvalidDateRange) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", true);
-  base::Value::Dict start_date;
+  base::DictValue start_date;
   start_date.Set("day", kFakeDayOfMonth - 1);
   start_date.Set("month", kFakeMonth);
   start_date.Set("year", kFakeYear);
-  base::Value::Dict end_date;
+  base::DictValue end_date;
   end_date.Set("day", kFakeDayOfMonth - 3);
   end_date.Set("month", kFakeMonth);
   end_date.Set("year", kFakeYear);
@@ -284,7 +284,7 @@ TEST_F(GraduationUtilsTest, DisabledWithInvalidDateRange) {
 }
 
 TEST_F(GraduationUtilsTest, Disabled) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_enabled", false);
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());

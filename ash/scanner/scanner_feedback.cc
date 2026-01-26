@@ -21,10 +21,10 @@ namespace ash {
 
 namespace {
 
-// Converts a `NewContactAction::EmailAddress` to a `base::Value::Dict`.
-base::Value::Dict EmailAddressToDict(
+// Converts a `NewContactAction::EmailAddress` to a `base::DictValue`.
+base::DictValue EmailAddressToDict(
     manta::proto::NewContactAction::EmailAddress&& email_address) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   if (!email_address.value().empty()) {
     dict.Set("value", std::move(*email_address.mutable_value()));
@@ -36,10 +36,10 @@ base::Value::Dict EmailAddressToDict(
   return dict;
 }
 
-// Converts a `NewContactAction::PhoneNumber` to a `base::Value::Dict`.
-base::Value::Dict PhoneNumberToDict(
+// Converts a `NewContactAction::PhoneNumber` to a `base::DictValue`.
+base::DictValue PhoneNumberToDict(
     manta::proto::NewContactAction::PhoneNumber&& phone_number) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   if (!phone_number.value().empty()) {
     dict.Set("value", std::move(*phone_number.mutable_value()));
@@ -52,9 +52,9 @@ base::Value::Dict PhoneNumberToDict(
 }
 
 // Converts a `ScannerAction` variant into an "externally tagged"
-// `base::Value::Dict`.
-base::Value::Dict NewEventToDict(manta::proto::NewEventAction&& new_event) {
-  base::Value::Dict dict;
+// `base::DictValue`.
+base::DictValue NewEventToDict(manta::proto::NewEventAction&& new_event) {
+  base::DictValue dict;
 
   if (!new_event.title().empty()) {
     dict.Set("title", std::move(*new_event.mutable_title()));
@@ -69,12 +69,11 @@ base::Value::Dict NewEventToDict(manta::proto::NewEventAction&& new_event) {
     dict.Set("location", std::move(*new_event.mutable_location()));
   }
 
-  return base::Value::Dict().Set("new_event", std::move(dict));
+  return base::DictValue().Set("new_event", std::move(dict));
 }
 
-base::Value::Dict NewContactToDict(
-    manta::proto::NewContactAction&& new_contact) {
-  base::Value::Dict dict;
+base::DictValue NewContactToDict(manta::proto::NewContactAction&& new_contact) {
+  base::DictValue dict;
 
   if (!new_contact.given_name().empty()) {
     dict.Set("given_name", std::move(*new_contact.mutable_given_name()));
@@ -106,12 +105,12 @@ base::Value::Dict NewContactToDict(
                  }));
   }
 
-  return base::Value::Dict().Set("new_contact", std::move(dict));
+  return base::DictValue().Set("new_contact", std::move(dict));
 }
 
-base::Value::Dict NewGoogleDocToDict(
+base::DictValue NewGoogleDocToDict(
     manta::proto::NewGoogleDocAction&& new_google_doc) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   if (!new_google_doc.title().empty()) {
     dict.Set("title", std::move(*new_google_doc.mutable_title()));
@@ -121,12 +120,12 @@ base::Value::Dict NewGoogleDocToDict(
              std::move(*new_google_doc.mutable_html_contents()));
   }
 
-  return base::Value::Dict().Set("new_google_doc", std::move(dict));
+  return base::DictValue().Set("new_google_doc", std::move(dict));
 }
 
-base::Value::Dict NewGoogleSheetToDict(
+base::DictValue NewGoogleSheetToDict(
     manta::proto::NewGoogleSheetAction&& new_google_sheet) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   if (!new_google_sheet.title().empty()) {
     dict.Set("title", std::move(*new_google_sheet.mutable_title()));
@@ -136,12 +135,12 @@ base::Value::Dict NewGoogleSheetToDict(
              std::move(*new_google_sheet.mutable_csv_contents()));
   }
 
-  return base::Value::Dict().Set("new_google_sheet", std::move(dict));
+  return base::DictValue().Set("new_google_sheet", std::move(dict));
 }
 
-base::Value::Dict CopyToClipboardToDict(
+base::DictValue CopyToClipboardToDict(
     manta::proto::CopyToClipboardAction&& copy_to_clipboard) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   if (!copy_to_clipboard.plain_text().empty()) {
     dict.Set("plain_text", std::move(*copy_to_clipboard.mutable_plain_text()));
@@ -150,7 +149,7 @@ base::Value::Dict CopyToClipboardToDict(
     dict.Set("html_text", std::move(*copy_to_clipboard.mutable_html_text()));
   }
 
-  return base::Value::Dict().Set("copy_to_clipboard", std::move(dict));
+  return base::DictValue().Set("copy_to_clipboard", std::move(dict));
 }
 
 class UserFacingValueWriter {
@@ -168,7 +167,7 @@ class UserFacingValueWriter {
   void BuildString(const base::Value::BlobStorage& node) {
     user_facing_string_.reset();
   }
-  void BuildString(const base::Value::Dict& node) {
+  void BuildString(const base::DictValue& node) {
     if (path_.size() >= depth_limit_) {
       user_facing_string_.reset();
       return;
@@ -180,7 +179,7 @@ class UserFacingValueWriter {
       path_.pop_back();
     }
   }
-  void BuildString(const base::Value::List& node) {
+  void BuildString(const base::ListValue& node) {
     if (path_.size() >= depth_limit_) {
       user_facing_string_.reset();
       return;
@@ -230,7 +229,7 @@ class UserFacingValueWriter {
 
 }  // namespace
 
-base::Value::Dict ScannerActionToDict(manta::proto::ScannerAction action) {
+base::DictValue ScannerActionToDict(manta::proto::ScannerAction action) {
   switch (action.action_case()) {
     case manta::proto::ScannerAction::kNewEvent:
       return NewEventToDict(std::move(*action.mutable_new_event()));
@@ -250,7 +249,7 @@ base::Value::Dict ScannerActionToDict(manta::proto::ScannerAction action) {
           std::move(*action.mutable_copy_to_clipboard()));
 
     case manta::proto::ScannerAction::ACTION_NOT_SET:
-      return base::Value::Dict();
+      return base::DictValue();
   }
 }
 
