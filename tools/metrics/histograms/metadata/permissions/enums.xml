@@ -168,13 +168,17 @@ chromium-metrics-reviews@google.com.
       label="Infobar not shown, no page reloaded, permission not used"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionEmbargoStatus) -->
+
 <enum name="PermissionEmbargoStatus">
   <int value="0" label="NOT_EMBARGOED"/>
-  <int value="1" label="BLACKLISTED"/>
+  <int value="1" label="(Obsolete) BLACKLISTED"/>
   <int value="2" label="REPEATED_DISMISSALS"/>
   <int value="3" label="REPEATED_IGNORES"/>
   <int value="4" label="RECENT_DISPLAY"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionEmbargoStatus) -->
 
 <!-- LINT.IfChange(PermissionPredictionSource) -->
 

@@ -168,6 +168,7 @@ enum class PermissionSourceUI {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionSourceUI)
 
 // Any new values should be inserted immediately prior to NUM.
+// LINT.IfChange(PermissionEmbargoStatus)
 enum class PermissionEmbargoStatus {
   NOT_EMBARGOED = 0,
   // Removed: PERMISSIONS_BLACKLISTING = 1,
@@ -178,6 +179,7 @@ enum class PermissionEmbargoStatus {
   // Keep this at the end.
   NUM,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionEmbargoStatus)
 
 // Used for UMA to record the strict level of permission policy which is
 // configured to allow sub-frame origin. Any new values should be inserted
