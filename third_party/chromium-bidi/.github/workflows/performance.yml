@@ -69,10 +69,18 @@ jobs:
           node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
       - name: Extract and store performance metrics
         id: extract_metrics
+        # Publish 2 metrics: mean and median relative difference. Group them together by
+        # providing the same `extra` field.
         run: |
-          value=$(grep 'PERF_METRIC:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:VALUE://')
-          range=$(grep 'PERF_METRIC:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:RANGE://')
-          echo "{\"name\": \"${{ matrix.os }}:pup-perf-metric\", \"value\": $value, \"range\": $range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}\"}" > pup_perf_metrics.json
+          echo "" > pup_perf_metrics.json
+
+          mean_value=$(grep 'PERF_METRIC:DIFF_MEAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:VALUE://')
+          mean_range=$(grep 'PERF_METRIC:DIFF_MEAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:RANGE://')
+          echo "{\"name\": \"${{ matrix.os }}:pup-perf-metric:diff_mean_rel\", \"value\": $mean_value, \"range\": $mean_range, \"unit\": \"Percent\", \"extra\": \"${{ matrix.os }}:pup-perf-metric:diff_rel\"}," >> pup_perf_metrics.json
+
+          median_value=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:VALUE://')
+          median_range=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:RANGE://')
+          echo "{\"name\": \"${{ matrix.os }}:pup-perf-metric:diff_median_rel\", \"value\": $median_value, \"range\": $median_range, \"unit\": \"Percent\", \"extra\": \"${{ matrix.os }}:pup-perf-metric:diff_rel\"}" >> pup_perf_metrics.json
           echo "Extracted performance metrics:"
           cat pup_perf_metrics.json
       - name: Upload performance result as artifact
@@ -147,15 +155,32 @@ jobs:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
       - name: Extract and store performance metrics
         id: extract_metrics
+        env:
+          PREFIX: ${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
         run: |
-          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}:/" > e2e_perf_metrics.txt
-          echo "Extracted performance metrics:"
-          cat e2e_perf_metrics.txt
+          if [ -f tests_output.txt ] && grep -q 'PERF_METRIC:' tests_output.txt; then
+            echo "" > e2e_perf_metrics.json
+            grep 'PERF_METRIC:' tests_output.txt | awk -F'PERF_METRIC:' -v prefix="$PREFIX" '
+              BEGIN { count=0 }
+              {
+                split($2, parts, ":");
+                if (length(parts) >= 2) {
+                  if (count > 0) printf ",";
+                  printf "{\"name\": \"%s:%s\", \"value\": %s, \"unit\": \"ms\"}", prefix, parts[1], parts[2];
+                  count++;
+                }
+              }
+            ' >> e2e_perf_metrics.json
+            echo "Extracted performance metrics:"
+            cat e2e_perf_metrics.json
+          else
+            echo "No performance metrics found or output file missing."
+          fi
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: e2e-perf-metrics-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
-          path: e2e_perf_metrics.txt
+          path: e2e_perf_metrics.json
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
   combine_metrics:
@@ -182,29 +207,16 @@ jobs:
           path: artifacts
       - name: Combine metrics into a single file
         run: |
-          find artifacts -name "*metrics.txt" -exec cat {} + > performance-metrics-all.txt
-          echo "Combined performance metrics:"
-          cat performance-metrics-all.txt
-
-          # Convert to JSON format suitable for github-action-benchmark
           echo "[" > performance-metrics-all.json
-          first_metric=true
-          while IFS= read -r line; do
-            if [ "$first_metric" = false ]; then
-              echo "," >> performance-metrics-all.json
-            fi
-            key=${line%:*}
-            value=${line##*:}
-            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"ms\"}" >> performance-metrics-all.json
-            first_metric=false
-          done < performance-metrics-all.txt
 
           find artifacts -name "*metrics.json" -print0 | while IFS= read -r -d '' file; do
-            if [ "$first_metric" = false ]; then
-              echo "," >> performance-metrics-all.json
+            if grep -q '[^[:space:]]' "$file"; then
+              if [ "$first_metric" = false ]; then
+                echo "," >> performance-metrics-all.json
+              fi
+              cat "$file" >> performance-metrics-all.json
+              first_metric=false
             fi
-            cat "$file" >> performance-metrics-all.json
-            first_metric=false
           done
 
           echo "]" >> performance-metrics-all.json

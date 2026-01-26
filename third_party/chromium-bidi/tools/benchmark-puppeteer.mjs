@@ -48,61 +48,89 @@ const BENCHMARK_HTML = `
 function calculateStats(latencies) {
   latencies.sort((a, b) => a - b);
   const count = latencies.length;
-  const totalTime = latencies.reduce((sum, val) => sum + val, 0);
+  const totalSum = latencies.reduce((sum, val) => sum + val, 0);
 
-  // Arithmetic Mean (x̄): The central tendency of the run means.
+  // Arithmetic Mean (x̄): The sum of all measurements divided by the count.
   // x̄ = (Σx) / n
-  const averageTime = totalTime / count;
+  const mean = totalSum / count;
   const min = latencies[0];
   const max = latencies[count - 1];
 
-  // Sample Variance (s²): Measures the spread of the run means around the average.
-  // We use Sample Variance (divided by n-1) instead of Population Variance (divided by n)
-  // because we are estimating the true variance from a small sample of runs (Bessel's
-  // correction).
+  // Median: The value separating the higher half from the lower half of the data samples.
+  let median;
+  if (count % 2 === 0) {
+    median = (latencies[count / 2 - 1] + latencies[count / 2]) / 2;
+  } else {
+    median = latencies[Math.floor(count / 2)];
+  }
+
+  // Sample Variance (s²): Unbiased estimator of the population variance.
+  // Uses Bessel's correction (n - 1) because we are estimating the true variance
+  // from a sample, not the entire population.
   // s² = Σ(x - x̄)² / (n - 1)
   const variance =
-    latencies.reduce((sum, val) => sum + Math.pow(val - averageTime, 2), 0) /
+    latencies.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
     (count - 1);
 
-  // Sample Standard Deviation (s): The square root of the variance, representing spread
-  // in the same units as the data (ms).
+  // Sample Standard Deviation (s): The square root of the sample variance.
+  // Represents the dispersion of the data in the same units as the data itself.
   // s = √s²
   const stdDev = Math.sqrt(variance);
 
-  // Relative Standard Deviation (RSD), also known as Coefficient of Variation (CV).
-  // Expresses standard deviation as a percentage of the mean, allowing comparison of
-  // variability across different scales.
+  // Coefficient of Variation (CV) / Relative Standard Deviation (RSD):
+  // The ratio of the standard deviation to the mean, expressed as a percentage.
+  // Useful for comparing the degree of variation from one data series to another,
+  // even if the means are drastically different.
   // RSD = (s / x̄) * 100
-  const rsd = (stdDev / averageTime) * 100;
+  const rsd = (stdDev / mean) * 100;
 
-  // Standard Error of the Mean (SE): Estimates how far the sample mean (x̄) is likely to
-  // be from the true population mean (μ).
-  // SE = s / √n
-  const standardError = stdDev / Math.sqrt(count);
+  // Standard Error of the Mean (SE_mean): The standard deviation of the sampling
+  // distribution of the sample mean. Estimates the precision of the sample mean
+  // as an estimate of the population mean.
+  // SE_mean = s / √n
+  const standardErrorMean = stdDev / Math.sqrt(count);
 
-  // Critical Value for 95% Confidence Interval.
-  // Since the sample size is large (N > 1000), the T-distribution converges to the Normal
-  // (Z) distribution. We use the standard Z-score of 1.96.
+  // Critical Value (z*) for 95% Confidence Interval:
+  // For a large sample size (n >= 30), the sampling distribution of the mean is
+  // approximately normal (Central Limit Theorem). We use the Z-score 1.96 for 95% confidence.
   const tCrit = T_CRIT_95_LARGE_N;
 
-  // Margin of Error (ME): The half-width of the Confidence Interval.
-  // ME = t_crit * SE
-  const marginOfError = tCrit * standardError;
+  // Margin of Error (MOE) for the Mean:
+  // The radius of the confidence interval. We can be 95% confident that the true
+  // population mean lies within x̄ ± MOE.
+  // MOE_mean = z* * SE_mean
+  const marginOfErrorMean = tCrit * standardErrorMean;
 
-  // CI Relative Standard Deviation (CI RSD): Margin of Error derived as a percentage of
-  // the mean.
-  const ciRsd = (marginOfError / averageTime) * 100;
+  // CI Relative Standard Deviation (CI RSD) for Mean:
+  // The Margin of Error expressed as a percentage of the mean.
+  const ciRsdMean = (marginOfErrorMean / mean) * 100;
+
+  // Standard Error of the Median (SE_med) approximation:
+  // Under the assumption of a Normal distribution, the asymptotic variance of the median
+  // is (π/2) * (σ^2 / n). Thus, SE_med ≈ SE_mean * √1.57 ≈ 1.253 * SE_mean.
+  const standardErrorMedian = 1.253 * standardErrorMean;
+
+  // Margin of Error (MOE) for the Median:
+  // MOE_med = z* * SE_med
+  const marginOfErrorMedian = tCrit * standardErrorMedian;
+
+  // CI Relative Standard Deviation (CI RSD) for Median:
+  // The Margin of Error expressed as a percentage of the median.
+  const ciRsdMedian = (marginOfErrorMedian / median) * 100;
 
   return {
-    averageTime,
+    mean,
+    median,
     min,
     max,
     stdDev,
     rsd,
-    standardError,
-    marginOfError,
-    ciRsd,
+    standardErrorMean,
+    marginOfErrorMean,
+    ciRsdMean,
+    standardErrorMedian,
+    marginOfErrorMedian,
+    ciRsdMedian,
   };
 }
 
@@ -201,47 +229,94 @@ async function main() {
 
   console.log('\n=== Results (Mean of Runs) ===');
   console.log('Puppeteer CDP:');
-  console.log(`  Mean: ${cdpFinal.averageTime.toFixed(4)}ms`);
   console.log(
-    `  95% CI: ±${cdpFinal.marginOfError.toFixed(4)}ms (±${cdpFinal.ciRsd.toFixed(2)}%)`,
+    `  Mean: ${cdpFinal.mean.toFixed(4)}ms ±${cdpFinal.marginOfErrorMean.toFixed(4)}ms (±${cdpFinal.ciRsdMean.toFixed(2)}%)`,
   );
-  console.log('Puppeteer BiDi:');
-  console.log(`  Mean: ${bidiFinal.averageTime.toFixed(4)}ms`);
   console.log(
-    `  95% CI: ±${bidiFinal.marginOfError.toFixed(4)}ms (±${bidiFinal.ciRsd.toFixed(2)}%)`,
+    `  Median: ${cdpFinal.median.toFixed(4)}ms ±${cdpFinal.marginOfErrorMedian.toFixed(4)}ms (±${cdpFinal.ciRsdMedian.toFixed(2)}%)`,
+  );
+
+  console.log('Puppeteer BiDi:');
+  console.log(
+    `  Mean: ${bidiFinal.mean.toFixed(4)}ms ±${bidiFinal.marginOfErrorMean.toFixed(4)}ms (±${bidiFinal.ciRsdMean.toFixed(2)}%)`,
+  );
+  console.log(
+    `  Median: ${bidiFinal.median.toFixed(4)}ms ±${bidiFinal.marginOfErrorMedian.toFixed(4)}ms (±${bidiFinal.ciRsdMedian.toFixed(2)}%)`,
   );
 
   console.log('\n=== Comparison (BiDi vs CDP) ===');
-  const diff = bidiFinal.averageTime - cdpFinal.averageTime;
-  const diffPercent = (diff / cdpFinal.averageTime) * 100;
+  const meanDiffAbs = bidiFinal.mean - cdpFinal.mean;
+  const meanDiffRel = (meanDiffAbs / cdpFinal.mean) * 100;
 
   // Standard Error of the Difference (SE_diff).
   // Formula: SE_diff = sqrt(SE_cdp^2 + SE_bidi^2)
   // Assumes independent samples and unequal variances (unpooled SE).
-  const seDiff = Math.sqrt(
-    Math.pow(cdpFinal.standardError, 2) + Math.pow(bidiFinal.standardError, 2),
+  const meanDiffStandardError = Math.sqrt(
+    Math.pow(cdpFinal.standardErrorMean, 2) +
+      Math.pow(bidiFinal.standardErrorMean, 2),
   );
-
-  // Critical Value (t_crit) from Student's t-distribution for 95% Confidence.
-  // Degrees of Freedom (df) is conservatively estimated as min(N1-1, N2-1).
-  // With large N (e.g. 1000), this will be 1.96.
-  const tCrit = T_CRIT_95_LARGE_N;
 
   // Margin of Error for the Difference (ME_diff).
   // Formula: ME_diff = t_crit * SE_diff
-  const moeDiff = tCrit * seDiff;
+  const meanDiffAbsMoe = meanDiffStandardError * T_CRIT_95_LARGE_N;
+  // Margin of Error as a percentage of the baseline (CDP) mean time.
+  const meanDiffRelMoe = (meanDiffAbsMoe / cdpFinal.mean) * 100;
 
-  // Margin of Error as a percentage of the baseline (CDP) average time.
-  const moeDiffPercent = (moeDiff / cdpFinal.averageTime) * 100;
+  const medianDiffAbs = bidiFinal.median - cdpFinal.median;
+  const medianDiffRel = (medianDiffAbs / cdpFinal.median) * 100;
 
-  const slowerOrFaster = diff >= 0 ? 'slower' : 'faster';
-
-  console.log(
-    `BiDi is ${Math.abs(diff).toFixed(4)}ms ±${moeDiff.toFixed(4)}ms (${Math.abs(diffPercent).toFixed(4)}% ±${moeDiffPercent.toFixed(2)}%) ${slowerOrFaster} than CDP`,
+  // Standard Error of the Difference (SE_diff).
+  // Formula: SE_diff = sqrt(SE_cdp^2 + SE_bidi^2)
+  // Assumes independent samples and unequal variances (unpooled SE).
+  const medianDiffStandardError = Math.sqrt(
+    Math.pow(cdpFinal.standardErrorMedian, 2) +
+      Math.pow(bidiFinal.standardErrorMedian, 2),
   );
 
-  console.log(`PERF_METRIC:VALUE:${diffPercent.toFixed(4)}`);
-  console.log(`PERF_METRIC:RANGE:${moeDiffPercent.toFixed(4)}`);
+  // Margin of Error for the Difference (ME_diff).
+  // Formula: ME_diff = t_crit * SE_diff
+  const medianDiffAbsMoe = medianDiffStandardError * T_CRIT_95_LARGE_N;
+  // Margin of Error as a percentage of the baseline (CDP) Median time.
+  const medianDiffRelMoe = (medianDiffAbsMoe / cdpFinal.median) * 100;
+
+  console.log(
+    `  Mean:   ${meanDiffRel.toFixed(2)}% ±${meanDiffRelMoe.toFixed(2)}% / ${meanDiffAbs.toFixed(4)}ms ±${meanDiffAbsMoe.toFixed(4)}ms`,
+  );
+  console.log(
+    `  Median: ${medianDiffRel.toFixed(2)}% ±${medianDiffRelMoe.toFixed(2)}% / ${medianDiffAbs.toFixed(4)}ms ±${medianDiffAbsMoe.toFixed(4)}ms`,
+  );
+
+  console.log('\n=== CI output ===');
+
+  console.log(`PERF_METRIC:CDP_MEAN_ABS:VALUE:${cdpFinal.mean.toFixed(4)}`);
+  console.log(
+    `PERF_METRIC:CDP_MEAN_ABS:RANGE:${cdpFinal.marginOfErrorMean.toFixed(4)}`,
+  );
+
+  console.log(`PERF_METRIC:CDP_MEDIAN_ABS:VALUE:${cdpFinal.median.toFixed(4)}`);
+  console.log(
+    `PERF_METRIC:CDP_MEDIAN_ABS:RANGE:${cdpFinal.marginOfErrorMedian.toFixed(4)}`,
+  );
+
+  console.log(`PERF_METRIC:BIDI_MEAN_ABS:VALUE:${bidiFinal.mean.toFixed(4)}`);
+  console.log(
+    `PERF_METRIC:BIDI_MEAN_ABS:RANGE:${bidiFinal.marginOfErrorMean.toFixed(4)}`,
+  );
+
+  console.log(
+    `PERF_METRIC:BIDI_MEDIAN_ABS:VALUE:${bidiFinal.median.toFixed(4)}`,
+  );
+  console.log(
+    `PERF_METRIC:BIDI_MEDIAN_ABS:RANGE:${bidiFinal.marginOfErrorMedian.toFixed(4)}`,
+  );
+
+  console.log(`PERF_METRIC:DIFF_MEAN_REL:VALUE:${meanDiffRel.toFixed(4)}`);
+  console.log(`PERF_METRIC:DIFF_MEAN_REL:RANGE:${meanDiffRelMoe.toFixed(4)}`);
+
+  console.log(`PERF_METRIC:DIFF_MEDIAN_REL:VALUE:${medianDiffRel.toFixed(4)}`);
+  console.log(
+    `PERF_METRIC:DIFF_MEDIAN_REL:RANGE:${medianDiffRelMoe.toFixed(4)}`,
+  );
 }
 
 await main();

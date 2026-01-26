@@ -227,6 +227,7 @@
   },
   "dependencies": {
     "mitt": "^3.0.1",
+    "puppeteer": "^24.36.0",
     "zod": "^3.24.1"
   }
 }
