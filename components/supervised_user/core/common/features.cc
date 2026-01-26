@@ -94,5 +94,6 @@ BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
 
 BASE_FEATURE(kSupervisedUserUseUrlFilteringService,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
+BASE_FEATURE(kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace supervised_user

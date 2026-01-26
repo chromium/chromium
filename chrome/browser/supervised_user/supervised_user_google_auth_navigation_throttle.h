@@ -25,6 +25,10 @@ class SupervisedUserGoogleAuthNavigationThrottle
   // throttling is required.
   static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
+  // If set, the throttle will pass the navigations. Use to simplify
+  // browser-test setup where mocking gaia flows is not practical.
+  static void SetPassThrottleForTesting();
+
   SupervisedUserGoogleAuthNavigationThrottle(
       const SupervisedUserGoogleAuthNavigationThrottle&) = delete;
   SupervisedUserGoogleAuthNavigationThrottle& operator=(

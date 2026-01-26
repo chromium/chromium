@@ -85,7 +85,7 @@ class SupervisedUserPrefStore : public PrefStore {
   // which must own a valid pointer.
   void NotifyObserversAboutChanges(std::unique_ptr<PrefValueMap> diff_base);
 
-  base::CallbackListSubscription user_settings_subscription_;
+  base::CallbackListSubscription family_link_settings_subscription_;
 
   base::CallbackListSubscription device_parental_controls_subscription_;
 
@@ -94,7 +94,7 @@ class SupervisedUserPrefStore : public PrefStore {
   std::unique_ptr<PrefValueMap> prefs_;
 
   base::WeakPtr<const supervised_user::FamilyLinkSettingsService>
-      settings_service_;
+      family_link_settings_service_;
 
   base::ObserverList<PrefStore::Observer, true> observers_;
 

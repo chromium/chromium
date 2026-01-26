@@ -48,6 +48,12 @@ BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 // related supervision services.
 BASE_DECLARE_FEATURE(kSupervisedUserUseUrlFilteringService);
 
+// The SupervisedUserPrefStore will merge all of the non-web filtering device
+// parental controls settings with the Family Link settings and emit merged
+// values as prefs.
+BASE_DECLARE_FEATURE(
+    kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs);
+
 // Returns whether the V3 version of the URL filter interstitial is
 // enabled.
 bool IsBlockInterstitialV3Enabled();
