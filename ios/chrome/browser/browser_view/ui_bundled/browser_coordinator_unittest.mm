@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
-#import "ios/chrome/browser/download/model/download_record_service_factory.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -88,10 +87,6 @@
 class BrowserCoordinatorTest : public PlatformTest {
  protected:
   BrowserCoordinatorTest() {
-    // Ensure DownloadRecordServiceFactory is registered before profile
-    // creation.
-    DownloadRecordServiceFactory::GetInstance();
-
     base_view_controller_ = [[UIViewController alloc] init];
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
 

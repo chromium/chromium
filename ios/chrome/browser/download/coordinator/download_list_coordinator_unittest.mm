@@ -16,7 +16,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_record.h"
-#import "ios/chrome/browser/download/model/download_record_service_factory.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -57,7 +56,6 @@ class DownloadListCoordinatorTest : public PlatformTest {
  protected:
   DownloadListCoordinatorTest() {
     feature_list_.InitAndEnableFeature(kDownloadList);
-    DownloadRecordServiceFactory::GetInstance();
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     base_view_controller_ = [[UIViewController alloc] init];

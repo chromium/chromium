@@ -294,9 +294,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   DistillerServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();
   DownloadFileServiceFactory::GetInstance();
-  if (IsDownloadListEnabled()) {
-    DownloadRecordServiceFactory::GetInstance();
-  }
+  DownloadRecordServiceFactory::GetInstance();
   ExternalFileRemoverFactory::GetInstance();
   BwgServiceFactory::GetInstance();
   GoogleGroupsManagerFactory::GetInstance();
@@ -342,7 +340,6 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   MailtoHandlerServiceFactory::GetInstance();
   ManagedBookmarkServiceFactory::GetInstance();
   NTPBackgroundImageCacheServiceFactory::GetInstance();
-
   OhttpKeyServiceFactory::GetInstance();
   OnDeviceTailModelServiceFactory::GetInstance();
   OptimizationGuideServiceFactory::GetInstance();

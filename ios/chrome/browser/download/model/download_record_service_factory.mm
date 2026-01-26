@@ -9,6 +9,7 @@
 #import "base/files/file_path.h"
 #import "ios/chrome/browser/download/model/download_record_service_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 DownloadRecordServiceFactory* DownloadRecordServiceFactory::GetInstance() {
   static base::NoDestructor<DownloadRecordServiceFactory> instance;
@@ -31,5 +32,8 @@ DownloadRecordServiceFactory::~DownloadRecordServiceFactory() = default;
 std::unique_ptr<KeyedService>
 DownloadRecordServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
+  if (!IsDownloadListEnabled()) {
+    return nullptr;
+  }
   return std::make_unique<DownloadRecordServiceImpl>(profile->GetStatePath());
 }
