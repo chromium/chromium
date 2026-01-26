@@ -3119,6 +3119,7 @@ test("content_unittests") {
       "../browser/child_process_task_port_provider_mac_unittest.cc",
       "../browser/cocoa/system_hotkey_map_unittest.mm",
       "../browser/file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker_unittest.cc",
+      "../browser/media/capture/screen_capture_kit_device_mac_unittest.mm",
       "../browser/media/capture/screen_capture_kit_fullscreen_module_unittest.mm",
       "../browser/renderer_host/input/mouse_wheel_rails_filter_unittest_mac.cc",
       "../browser/renderer_host/media/video_capture_devices_changed_observer_unittest.cc",
@@ -3569,6 +3570,8 @@ test("content_unittests") {
       "AuthenticationServices.framework",
       "AVFAudio.framework",
       "Carbon.framework",
+      "CoreMedia.framework",
+      "CoreVideo.framework",
       "IOSurface.framework",
     ]
     weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 12.3

@@ -19,7 +19,8 @@ class VideoCaptureDevice;
 
 namespace content {
 
-std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
+std::unique_ptr<media::VideoCaptureDevice> CONTENT_EXPORT
+CreateScreenCaptureKitDeviceMac(
     const DesktopMediaID& source,
     SCContentFilter* filter,
     base::OnceCallback<void(content::DesktopMediaID::Id, SCStream*)>

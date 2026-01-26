@@ -7802,6 +7802,7 @@ test("unit_tests") {
       "//chrome/utility/safe_browsing",
       "//chrome/utility/safe_browsing/mac:dmg_common",
       "//components/power_metrics",
+      "//media/capture:test_support",
       "//ui/events/devices:test_support",
     ]
 

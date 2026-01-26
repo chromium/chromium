@@ -751,7 +751,7 @@ std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
       break;
     default:
       // ScreenCaptureKitDeviceMac supports only TYPE_SCREEN and TYPE_WINDOW.
-      // https://crbug.com/1176900
+      // See https://crbug.com/1176900
       return nullptr;
   }
 

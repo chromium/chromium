@@ -444,6 +444,14 @@ source_set("test_support") {
     ]
   }
 
+  if (is_mac) {
+    sources += [
+      "video/mac/test/screen_capture_kit_test_helper.h",
+      "video/mac/test/screen_capture_kit_test_helper.mm",
+    ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]
+  }
+
   if (is_chromeos) {
     sources += [
       "video/chromeos/mock_camera_module.cc",

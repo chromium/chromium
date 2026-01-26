@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "media/capture/video/mac/test/screen_capture_kit_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -44,103 +45,6 @@ NSArray* g_simulated_displays = nil;
 NSArray* g_last_excluded_windows = nil;
 
 }  // namespace
-
-// --- Fake Classes ------------------------------------------------------------
-
-// Fake classes to avoid mocking system classes which can be unstable or
-// unavailable in test environments (e.g., restricted by TCC).
-
-@interface FakeSCRunningApplication : NSObject
-@property(readonly) pid_t processID;
-@property(readonly) NSString* applicationName;
-- (instancetype)initWithProcessID:(pid_t)pid applicationName:(NSString*)name;
-@end
-
-@implementation FakeSCRunningApplication
-@synthesize processID = _processID;
-@synthesize applicationName = _applicationName;
-- (instancetype)initWithProcessID:(pid_t)pid applicationName:(NSString*)name {
-  if (self = [super init]) {
-    _processID = pid;
-    _applicationName = name;
-  }
-  return self;
-}
-@end
-
-@interface FakeSCWindow : NSObject
-@property(readonly) CGWindowID windowID;
-@property(readonly) CGRect frame;
-@property(readonly) NSString* title;
-@property(readonly) NSInteger windowLayer;
-@property(readonly) FakeSCRunningApplication* owningApplication;
-- (instancetype)initWithID:(CGWindowID)wid
-                     title:(NSString*)title
-         owningApplication:(FakeSCRunningApplication*)app
-               windowLayer:(NSInteger)layer
-                     frame:(CGRect)frame;
-@end
-
-@implementation FakeSCWindow
-@synthesize windowID = _windowID;
-@synthesize frame = _frame;
-@synthesize title = _title;
-@synthesize windowLayer = _windowLayer;
-@synthesize owningApplication = _owningApplication;
-
-- (instancetype)initWithID:(CGWindowID)wid
-                     title:(NSString*)title
-         owningApplication:(FakeSCRunningApplication*)app
-               windowLayer:(NSInteger)layer
-                     frame:(CGRect)frame {
-  if (self = [super init]) {
-    _windowID = wid;
-    _title = title;
-    _owningApplication = app;
-    _windowLayer = layer;
-    _frame = frame;
-  }
-  return self;
-}
-@end
-
-@interface FakeSCDisplay : NSObject
-@property(readonly) CGDirectDisplayID displayID;
-@property(readonly) CGRect frame;
-- (instancetype)initWithID:(CGDirectDisplayID)did frame:(CGRect)frame;
-@end
-
-@implementation FakeSCDisplay
-@synthesize displayID = _displayID;
-@synthesize frame = _frame;
-- (instancetype)initWithID:(CGDirectDisplayID)did frame:(CGRect)frame {
-  if (self = [super init]) {
-    _displayID = did;
-    _frame = frame;
-  }
-  return self;
-}
-@end
-
-@interface FakeSCShareableContent : NSObject
-@property(readonly) NSArray<FakeSCWindow*>* windows;
-@property(readonly) NSArray<FakeSCDisplay*>* displays;
-- (instancetype)initWithWindows:(NSArray<FakeSCWindow*>*)windows
-                       displays:(NSArray<FakeSCDisplay*>*)displays;
-@end
-
-@implementation FakeSCShareableContent
-@synthesize windows = _windows;
-@synthesize displays = _displays;
-- (instancetype)initWithWindows:(NSArray<FakeSCWindow*>*)windows
-                       displays:(NSArray<FakeSCDisplay*>*)displays {
-  if (self = [super init]) {
-    _windows = windows;
-    _displays = displays;
-  }
-  return self;
-}
-@end
 
 // --- Swizzling Categories ----------------------------------------------------
 
@@ -173,18 +77,18 @@ NSArray* g_last_excluded_windows = nil;
 //    We swizzle the init methods to return 'self' (or a valid dummy) and ignore
 //    the invalid input arguments.
 @interface SCContentFilter (ThumbnailCapturerMacTest)
-- (instancetype)fakeInitWithDisplay:(id)display
+- (instancetype)initFakeWithDisplay:(id)display
                    excludingWindows:(NSArray*)windows;
-- (instancetype)fakeInitWithDesktopIndependentWindow:(id)window;
+- (instancetype)initFakeWithDesktopIndependentWindow:(id)window;
 @end
 
 @implementation SCContentFilter (ThumbnailCapturerMacTest)
-- (instancetype)fakeInitWithDisplay:(id)display
+- (instancetype)initFakeWithDisplay:(id)display
                    excludingWindows:(NSArray*)windows {
   g_last_excluded_windows = windows;
   return [super init];
 }
-- (instancetype)fakeInitWithDesktopIndependentWindow:(id)window {
+- (instancetype)initFakeWithDesktopIndependentWindow:(id)window {
   g_last_excluded_windows = nil;
   return [super init];
 }
@@ -282,13 +186,13 @@ class ThumbnailCapturerMacTest : public testing::Test {
           std::make_unique<base::apple::ScopedObjCClassSwizzler>(
               [SCContentFilter class],
               @selector(initWithDesktopIndependentWindow:),
-              @selector(fakeInitWithDesktopIndependentWindow:));
+              @selector(initFakeWithDesktopIndependentWindow:));
 
       content_filter_display_swizzler_ =
           std::make_unique<base::apple::ScopedObjCClassSwizzler>(
               [SCContentFilter class],
               @selector(initWithDisplay:excludingWindows:),
-              @selector(fakeInitWithDisplay:excludingWindows:));
+              @selector(initFakeWithDisplay:excludingWindows:));
 
       // 3. Swizzle SCScreenshotManager
       screenshot_manager_swizzler_ =
@@ -352,13 +256,15 @@ class ThumbnailCapturerMacTest : public testing::Test {
   void SetSimulatedWindowAndDisplay(int window_id, int display_id = 0) {
     FakeSCRunningApplication* app =
         [[FakeSCRunningApplication alloc] initWithProcessID:100
-                                            applicationName:@"Fake App"];
+                                            applicationName:@"Fake App"
+                                           bundleIdentifier:@"com.test.app"];
     FakeSCWindow* window =
         [[FakeSCWindow alloc] initWithID:window_id
                                    title:@"Fake Window"
                        owningApplication:app
                              windowLayer:0
-                                   frame:CGRectMake(0, 0, 100, 100)];
+                                   frame:CGRectMake(0, 0, 100, 100)
+                                onScreen:YES];
 
     SetSimulatedWindows(@[ window ]);
 
@@ -434,13 +340,15 @@ class ThumbnailCapturerMacTest : public testing::Test {
 TEST_F(ThumbnailCapturerMacTest, UpdateWindowsList) {
   FakeSCRunningApplication* app =
       [[FakeSCRunningApplication alloc] initWithProcessID:100
-                                          applicationName:@"Fake App"];
+                                          applicationName:@"Fake App"
+                                         bundleIdentifier:@"com.test.app"];
   FakeSCWindow* valid_window =
       [[FakeSCWindow alloc] initWithID:kWindowId
                                  title:@"Valid Window"
                      owningApplication:app
                            windowLayer:0
-                                 frame:CGRectMake(0, 0, 100, 100)];
+                                 frame:CGRectMake(0, 0, 100, 100)
+                              onScreen:YES];
 
   // Window with layer != 0 (e.g. dialog/overlay) should be excluded.
   FakeSCWindow* dialog_window =
@@ -448,7 +356,8 @@ TEST_F(ThumbnailCapturerMacTest, UpdateWindowsList) {
                                  title:@"Dialog Window"
                      owningApplication:app
                            windowLayer:1
-                                 frame:CGRectMake(50, 50, 100, 100)];
+                                 frame:CGRectMake(50, 50, 100, 100)
+                              onScreen:YES];
 
   // Window smaller than kThumbnailCapturerMacMinWindowSize (40) should be
   // excluded.
@@ -457,7 +366,8 @@ TEST_F(ThumbnailCapturerMacTest, UpdateWindowsList) {
                                  title:@"Small Window"
                      owningApplication:app
                            windowLayer:0
-                                 frame:CGRectMake(0, 0, 10, 10)];
+                                 frame:CGRectMake(0, 0, 10, 10)
+                              onScreen:YES];
 
   SetSimulatedWindows(@[ valid_window, dialog_window, small_window ]);
 
