@@ -561,14 +561,10 @@ inline EAnimationTriggerBehavior CssValueIDToPlatformEnum(CSSValueID v) {
       return EAnimationTriggerBehavior::kReset;
     case CSSValueID::kPlayOnce:
       return EAnimationTriggerBehavior::kPlayOnce;
-    case CSSValueID::kPlayAlternate:
-      return EAnimationTriggerBehavior::kPlayAlternate;
     case CSSValueID::kPlayForwards:
       return EAnimationTriggerBehavior::kPlayForwards;
     case CSSValueID::kPlayBackwards:
       return EAnimationTriggerBehavior::kPlayBackwards;
-    case CSSValueID::kPlayPause:
-      return EAnimationTriggerBehavior::kPlayPause;
     case CSSValueID::kReplay:
       return EAnimationTriggerBehavior::kReplay;
     case CSSValueID::kNone:
@@ -589,14 +585,10 @@ inline CSSValueID PlatformEnumToCSSValueID(EAnimationTriggerBehavior v) {
       return CSSValueID::kReset;
     case EAnimationTriggerBehavior::kPlayOnce:
       return CSSValueID::kPlayOnce;
-    case EAnimationTriggerBehavior::kPlayAlternate:
-      return CSSValueID::kPlayAlternate;
     case EAnimationTriggerBehavior::kPlayForwards:
       return CSSValueID::kPlayForwards;
     case EAnimationTriggerBehavior::kPlayBackwards:
       return CSSValueID::kPlayBackwards;
-    case EAnimationTriggerBehavior::kPlayPause:
-      return CSSValueID::kPlayPause;
     case EAnimationTriggerBehavior::kReplay:
       return CSSValueID::kReplay;
     case EAnimationTriggerBehavior::kNone:

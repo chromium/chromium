@@ -42,16 +42,6 @@ void PerformPlayForwards(Animation& animation,
   animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
 }
 
-void PerformPlayAlternate(Animation& animation,
-                          V8AnimationPlayState::Enum play_state,
-                          ExceptionState& exception_state) {
-  if (play_state == V8AnimationPlayState::Enum::kIdle) {
-    animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
-  } else {
-    animation.ReverseInternal(exception_state);
-  }
-}
-
 void PerformPlayBackwards(Animation& animation,
                           V8AnimationPlayState::Enum play_state,
                           ExceptionState& exception_state) {
@@ -67,16 +57,6 @@ void PerformPlayOnce(Animation& animation,
                      ExceptionState& exception_state) {
   if (play_state != V8AnimationPlayState::Enum::kFinished) {
     animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
-  }
-}
-
-void PerformPlayPause(Animation& animation,
-                      V8AnimationPlayState::Enum play_state,
-                      ExceptionState& exception_state) {
-  if (play_state != V8AnimationPlayState::Enum::kRunning) {
-    animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
-  } else {
-    animation.PauseInternal(ASSERT_NO_EXCEPTION);
   }
 }
 
@@ -115,14 +95,8 @@ void AnimationTrigger::PerformBehavior(Animation& animation,
     case Behavior::kPlayBackwards:
       PerformPlayBackwards(animation, play_state, exception_state);
       break;
-    case Behavior::kPlayAlternate:
-      PerformPlayAlternate(animation, play_state, exception_state);
-      break;
     case Behavior::kPlayOnce:
       PerformPlayOnce(animation, play_state, exception_state);
-      break;
-    case Behavior::kPlayPause:
-      PerformPlayPause(animation, play_state, exception_state);
       break;
     case Behavior::kReset:
       PerformReset(animation, play_state, exception_state);
