@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 #include <optional>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -20,8 +19,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/extend.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
@@ -42,6 +39,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -78,10 +76,8 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
-#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/liburlpattern/part.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -212,49 +208,6 @@ web_package::SignedWebBundleId CreateSignedWebBundleIdFromKeyPair(
       key_pair);
 }
 
-std::string UrlPatternPartsToString(
-    const std::vector<liburlpattern::Part>& parts) {
-  std::stringstream ss;
-  for (const auto& part : parts) {
-    switch (part.type) {
-      case liburlpattern::PartType::kFullWildcard:
-        ss << part.prefix << "*";
-        break;
-      case liburlpattern::PartType::kSegmentWildcard:
-        ss << part.prefix << ":" << part.name;
-        break;
-      case liburlpattern::PartType::kRegex:
-      case liburlpattern::PartType::kFixed:
-        ss << part.value;
-        break;
-    }
-  }
-  return ss.str();
-}
-
-base::DictValue UrlPatternToValue(const blink::SafeUrlPattern& pattern) {
-  static constexpr auto kFields =
-      base::MakeFixedFlatMap<std::string_view, std::vector<liburlpattern::Part>
-                                                   blink::SafeUrlPattern::*>({
-          {"protocol", &blink::SafeUrlPattern::protocol},
-          {"username", &blink::SafeUrlPattern::username},
-          {"password", &blink::SafeUrlPattern::password},
-          {"hostname", &blink::SafeUrlPattern::hostname},
-          {"port", &blink::SafeUrlPattern::port},
-          {"pathname", &blink::SafeUrlPattern::pathname},
-          {"search", &blink::SafeUrlPattern::search},
-          {"hash", &blink::SafeUrlPattern::hash},
-      });
-
-  base::DictValue result;
-  for (const auto& [field, getter] : kFields) {
-    if (!(pattern.*getter).empty()) {
-      result.Set(field, UrlPatternPartsToString(pattern.*getter));
-    }
-  }
-  return result;
-}
-
 }  // namespace
 
 ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
@@ -370,12 +323,6 @@ ManifestBuilder& ManifestBuilder::AddScopeExtension(url::Origin origin,
   return *this;
 }
 
-ManifestBuilder& ManifestBuilder::AddBorderlessUrlPattern(
-    blink::SafeUrlPattern pattern) {
-  borderless_url_patterns_.emplace_back(std::move(pattern));
-  return *this;
-}
-
 const std::string& ManifestBuilder::start_url() const {
   return start_url_;
 }
@@ -481,11 +428,6 @@ std::string ManifestBuilder::ToJson() const {
     json.Set("file_handlers", std::move(file_handlers));
   }
 
-  if (!borderless_url_patterns_.empty()) {
-    json.Set("borderless_url_patterns",
-             base::ToValueList(borderless_url_patterns_, &UrlPatternToValue));
-  }
-
   if (!scope_extensions_.empty()) {
     json.Set("scope_extensions",
              base::ToValueList(scope_extensions_, [](const ScopeExtension& it) {
@@ -585,8 +527,6 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     handler->accept = accept;
     manifest->file_handlers.push_back(std::move(handler));
   }
-
-  base::Extend(manifest->borderless_url_patterns, borderless_url_patterns_);
 
   for (const ScopeExtension& it : scope_extensions_) {
     auto scope_extension = blink::mojom::ManifestScopeExtension::New();

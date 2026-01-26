@@ -33,7 +33,6 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
@@ -142,8 +141,6 @@ class ManifestBuilder {
   ManifestBuilder& AddScopeExtension(url::Origin origin,
                                      bool has_origin_wildcard);
 
-  ManifestBuilder& AddBorderlessUrlPattern(blink::SafeUrlPattern pattern);
-
   const std::string& start_url() const;
   const std::optional<GURL>& update_manifest_url() const;
   const std::vector<IconMetadata>& icons() const;
@@ -168,7 +165,6 @@ class ManifestBuilder {
   std::vector<std::pair<std::string, std::string>> protocol_handlers_;
   std::map<std::string, FileHandlerAccept> file_handlers_;
   std::vector<ScopeExtension> scope_extensions_;
-  std::vector<blink::SafeUrlPattern> borderless_url_patterns_;
 };
 
 // A builder for Isolated Web Apps that supports adding resources from disk
