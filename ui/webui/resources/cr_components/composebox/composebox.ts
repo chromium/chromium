@@ -912,6 +912,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected async setDeepSearchMode_(
       e: CustomEvent<{inDeepSearchMode: boolean}>) {
     this.inDeepSearchMode_ = e.detail.inDeepSearchMode;
+    this.searchboxHandler_.setActiveToolMode(
+        this.inDeepSearchMode_ ? ToolMode.kDeepSearch : ToolMode.kUnspecified);
     this.pageHandler_.setDeepSearchMode(e.detail.inDeepSearchMode);
     this.queryAutocomplete_(/* clearMatches= */ true);
     this.updateInputPlaceholder_();
@@ -923,6 +925,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected async setCreateImageMode_(
       e: CustomEvent<{inCreateImageMode: boolean, imagePresent: boolean}>) {
     this.inCreateImageMode_ = e.detail.inCreateImageMode;
+    this.searchboxHandler_.setActiveToolMode(
+        this.inCreateImageMode_ ? ToolMode.kImageGen : ToolMode.kUnspecified);
     this.pageHandler_.setCreateImageMode(
         e.detail.inCreateImageMode, e.detail.imagePresent);
     this.queryAutocomplete_(/* clearMatches= */ true);
@@ -934,6 +938,8 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected async setCanvasMode_(e: CustomEvent<{inCanvasMode: boolean}>) {
     this.inCanvasMode_ = e.detail.inCanvasMode;
+    this.searchboxHandler_.setActiveToolMode(
+        this.inCanvasMode_ ? ToolMode.kCanvas : ToolMode.kUnspecified);
     this.queryAutocomplete(/* clearMatches= */ true);
 
     await this.updateComplete;
@@ -941,8 +947,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
-    // TODO(dhruvkathpalia): Set the active model based on the clicked model.
-    this.inputState_!.activeModel = e.detail.model;
+    this.searchboxHandler_.setActiveModelMode(e.detail.model);
   }
 
   protected onErrorScrimVisibilityChanged_(
