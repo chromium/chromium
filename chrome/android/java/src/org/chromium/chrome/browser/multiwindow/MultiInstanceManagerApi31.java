@@ -1360,8 +1360,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         mActivity.startActivity(intent);
 
         // If a new activity was started, it implies that an inactive instance was restored.
-        for (InstanceStateObserver observer : mInstanceStateObservers) {
-            observer.onInstanceRestored(instanceId);
+        if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
+            for (InstanceStateObserver observer : mInstanceStateObservers) {
+              observer.onInstanceRestored(instanceId);
+            }
         }
 
         RecordHistogram.recordEnumeratedHistogram(
@@ -1430,6 +1432,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
      * @param isPermanentDeletion Whether the instance is permanently deleted.
      */
     private void notifyInstanceClosed(int instanceId, boolean isPermanentDeletion) {
+        if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) return;
+
         // Note that instance state (for e.g. taskId) may not be updated if a live activity for the
         // closed instance was finished, because activity destruction is asynchronous.
         // InstanceStateObserver's will receive an InstanceInfo that is created synchronously so
