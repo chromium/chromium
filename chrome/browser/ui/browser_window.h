@@ -482,12 +482,6 @@ class BrowserWindow : public ui::BaseWindow {
                                      const std::string& target_language,
                                      const std::u16string& text_selection) = 0;
 
-  // Shows the one-click sign in confirmation UI. |email| holds the full email
-  // address of the account that has signed in.
-  virtual void ShowOneClickSigninConfirmation(
-      const std::u16string& email,
-      base::OnceCallback<void(bool)> confirmed_callback) = 0;
-
   // Returns the DownloadBubbleUIController. Returns null if Download Bubble
   // UI is not enabled, or if the download toolbar button does not exist.
   virtual DownloadBubbleUIController* GetDownloadBubbleUIController() = 0;

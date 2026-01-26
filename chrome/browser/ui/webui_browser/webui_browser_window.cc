@@ -889,12 +889,6 @@ void WebUIBrowserWindow::StartPartialTranslate(
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void WebUIBrowserWindow::ShowOneClickSigninConfirmation(
-    const std::u16string& email,
-    base::OnceCallback<void(bool)> confirmed_callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 DownloadBubbleUIController*
 WebUIBrowserWindow::GetDownloadBubbleUIController() {
   NOTIMPLEMENTED_LOG_ONCE();

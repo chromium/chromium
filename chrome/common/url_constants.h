@@ -992,10 +992,6 @@ inline constexpr char kWindows78DeprecationURL[] =
     "https://support.google.com/chrome?p=unsupported_windows";
 #endif
 
-// "Learn more" URL for the one click signin infobar.
-inline constexpr char kChromeSyncLearnMoreURL[] =
-    "https://support.google.com/chrome?p=chrome_sync";
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 // The URL for the "Learn more" page for the outdated plugin infobar.
 inline constexpr char kOutdatedPluginLearnMoreURL[] =

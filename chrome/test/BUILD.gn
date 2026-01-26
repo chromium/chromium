@@ -2638,7 +2638,6 @@ if (!is_android) {
       "//chrome/browser/ui/signin:browser_tests",
       "//chrome/browser/ui/startup:browser_tests",
       "//chrome/browser/ui/startup:startup_tab",
-      "//chrome/browser/ui/sync:browser_tests",
       "//chrome/browser/ui/tab_contents:browser_tests",
       "//chrome/browser/ui/tab_sharing",
       "//chrome/browser/ui/tab_sharing:test_support",
@@ -10776,7 +10775,6 @@ test("unit_tests") {
         "../browser/enterprise/remote_commands/user_remote_commands_factory_unittest.cc",
         "../browser/ui/views/frame/opaque_browser_frame_view_layout_unittest.cc",
         "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc",
-        "../browser/ui/views/sync/one_click_signin_dialog_view_unittest.cc",
         "../browser/ui/webui/settings/settings_default_browser_handler_unittest.cc",
       ]
 

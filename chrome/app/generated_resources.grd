@@ -14330,21 +14330,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
       </if>
 
-      <!-- One click sign-in bubble and dialog -->
+      <!-- Used in `HomePageUndoBubble` -->
       <message name="IDS_ONE_CLICK_BUBBLE_UNDO" desc="The text for the undo button in the one click sign-in bubble.">
         Undo
-      </message>
-      <message name="IDS_ONE_CLICK_SIGNIN_BUBBLE_MESSAGE" desc="The body of the sync promo NTP bubble.">
-        Your bookmarks, history, and other settings will be synced to your Google Account.
-      </message>
-      <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_OK_BUTTON" desc="The text of the OK button of the one click sign-in dialog.">
-        OK, got it
-      </message>
-      <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_UNDO_BUTTON" desc="The text of the undo button of the one click sign-in dialog.">
-        Undo
-      </message>
-      <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_ADVANCED" desc="The advanced link in the one click sign-in dialog. Clicking the link will take the user to advanced settings.">
-        Advanced
       </message>
       <!-- Enterprise sign-in profile linking -->
       <message name="IDS_ENTERPRISE_SIGNIN_CANCEL" desc="Text of the button to cancel sign-in">

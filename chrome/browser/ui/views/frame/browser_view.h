@@ -626,9 +626,6 @@ class BrowserView : public BrowserWindow,
   void StartPartialTranslate(const std::string& source_language,
                              const std::string& target_language,
                              const std::u16string& text_selection) override;
-  void ShowOneClickSigninConfirmation(
-      const std::u16string& email,
-      base::OnceCallback<void(bool)> confirmed_callback) override;
   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
   void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,

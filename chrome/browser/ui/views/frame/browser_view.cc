@@ -100,7 +100,6 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
-#include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -192,7 +191,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
-#include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
@@ -3292,16 +3290,6 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
           GetActiveWebContents(),
           toolbar_button_provider()->GetBubbleAnchor(kActionShowTranslate),
           translate_icon, source_language, target_language, text_selection);
-}
-
-void BrowserView::ShowOneClickSigninConfirmation(
-    const std::u16string& email,
-    base::OnceCallback<void(bool)> confirmed_callback) {
-  std::unique_ptr<OneClickSigninLinksDelegate> delegate(
-      new OneClickSigninLinksDelegateImpl(browser()));
-  OneClickSigninDialogView::ShowDialog(email, std::move(delegate),
-                                       GetNativeWindow(),
-                                       std::move(confirmed_callback));
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {

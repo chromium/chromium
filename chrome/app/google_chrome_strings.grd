@@ -1124,13 +1124,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_SUGGESTED_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chrome with their enterprise account.">
           Sign in to Chrome?
         </message>
-        <!-- New one-click sign-in dialog contents for SAML support -->
-        <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW" desc="The title of the modal dialog window that opens when the user chooses to use one click sign-in.">
-          You're signed in to Chrome!
-        </message>
-        <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_MESSAGE_NEW" desc="The message of the one click sign-in dialog.">
-          You're signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>. Now you can access your bookmarks, history, and other settings on all your signed in devices.
-        </message>
       </if>
 
       <!-- Management bubble -->
