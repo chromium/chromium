@@ -16,6 +16,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -88,6 +89,12 @@ class TabContextualizationController : public content::WebContentsObserver {
   virtual void CaptureScreenshot(
       std::optional<lens::ImageEncodingOptions> image_options,
       CaptureScreenshotCallback callback);
+
+ protected:
+  // Returns whether the page is context eligible. Virtual for testing.
+  virtual bool IsPageContextEligible(
+      const GURL& url,
+      const std::vector<optimization_guide::FrameMetadata>& frame_metadata);
 
  private:
   // Creates the eligibility API if it has not been created.
