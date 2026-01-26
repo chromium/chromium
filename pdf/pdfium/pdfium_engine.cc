@@ -3934,7 +3934,7 @@ void PDFiumEngine::Highlight(const RegionData& region,
   }
 
   highlighted_rects.push_back(new_rect);
-  int l = std::max(0, new_rect.x());
+  int l = new_rect.x();
   int t = new_rect.y();
   int w = new_rect.width();
   int h = new_rect.height();
