@@ -679,6 +679,7 @@ bool GlicButton::IsHighlightVisible() const {
 
 void GlicButton::ShowNudge() {
   WidthState old_width_state = width_state_;
+  collapsed_before_nudge_shown_ = width_state_ == WidthState::kCollapsed;
   // Don't restart the animation if already nudging.
   if (width_state_ == WidthState::kNudge) {
     return;
@@ -717,10 +718,17 @@ void GlicButton::ShowNudge() {
 
 void GlicButton::HideNudge() {
   WidthState old_width_state = width_state_;
-  // Only animate if transitioning from kNudge to kNormal.
+  // Only animate if transitioning from kNudge to kNormal or kCollapsed.
   if (width_state_ != WidthState::kNudge) {
     return;
   }
+  // If the label was previously collapsed, return to the collapsed state.
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
+      collapsed_before_nudge_shown_) {
+    Collapse();
+    return;
+  }
+  // If the button wasn't collapsed, it must be transitioning back to kNormal.
   SetWidthState(WidthState::kNormal);
 
   if (!EntrypointVariationsEnabled()) {
@@ -795,6 +803,12 @@ int GlicButton::CalculateExpandedWidth() {
     // If transitioning from empty label to nudge label, make sure the label
     // margin is included.
     new_width += kLabelRightMargin;
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiGlobalTaskIndicator) &&
+      last_width_state_ == WidthState::kCollapsed) {
+    // Add extra margin if the label was previously collapsed, as the old_width
+    // is smaller.
+    new_width += kCloseButtonMargin;
   }
   return new_width;
 }
@@ -875,7 +889,10 @@ bool GlicButton::IsAnimatingTextVisibility() const {
 }
 
 bool GlicButton::IsHidingNudge() const {
-  return width_state_ == WidthState::kNormal &&
+  return (width_state_ == WidthState::kNormal ||
+          (base::FeatureList::IsEnabled(
+               features::kGlicActorUiGlobalTaskIndicator) &&
+           width_state_ == WidthState::kCollapsed)) &&
          last_width_state_ == WidthState::kNudge;
 }
 

@@ -211,6 +211,8 @@ class GlicButton : public TabStripNudgeButton,
   int normal_width_ = 0;
   WidthState last_width_state_ = WidthState::kNormal;
   WidthState width_state_ = WidthState::kNormal;
+  // Whether or not the button was collapsed before the nudge was shown.
+  bool collapsed_before_nudge_shown_ = false;
 
   class WidthAnimationController;
   std::unique_ptr<WidthAnimationController> width_animation_controller_;
