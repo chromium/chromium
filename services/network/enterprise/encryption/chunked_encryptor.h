@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "crypto/aead.h"
+#include "crypto/process_bound_string.h"
 
 namespace network::enterprise_encryption {
 
@@ -49,16 +50,15 @@ inline constexpr size_t kChunkDataSize = 4096u;
 inline constexpr size_t kEncryptedChunkSize = kChunkDataSize + kAuthTagSize;
 
 struct COMPONENT_EXPORT(NETWORK_SERVICE) EncryptionContext {
-  EncryptionContext() = default;
-  ~EncryptionContext() = default;
   EncryptionContext(const EncryptionContext&) = delete;
   EncryptionContext& operator=(const EncryptionContext&) = delete;
-  EncryptionContext(EncryptionContext&&) = default;
-  EncryptionContext& operator=(EncryptionContext&&) = default;
+  EncryptionContext(EncryptionContext&&);
+  EncryptionContext& operator=(EncryptionContext&&);
+  ~EncryptionContext();
   EncryptionContext(base::span<const uint8_t, kKeySize> key,
                     base::span<const uint8_t, kNoncePrefixSize> nonce_prefix);
 
-  std::array<uint8_t, kKeySize> derived_key;
+  crypto::ProcessBoundString derived_key;
   std::array<uint8_t, kNoncePrefixSize> nonce_prefix;
 };
 
@@ -113,7 +113,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ChunkedEncryptor {
                                               bool is_last_chunk) const;
 
  private:
-  std::array<uint8_t, kKeySize> derived_key_;
   std::array<uint8_t, kNoncePrefixSize> nonce_prefix_;
   crypto::Aead aead_;
 };

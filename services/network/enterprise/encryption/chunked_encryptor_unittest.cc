@@ -51,7 +51,8 @@ TEST_F(ChunkedEncryptorTest, ParseHeader_Success) {
   const EncryptionContext& original_encryption_context = header_result->second;
 
   // Verify derived data matches.
-  EXPECT_EQ(parsed_data.derived_key, original_encryption_context.derived_key);
+  EXPECT_EQ(parsed_data.derived_key.secure_value(),
+            original_encryption_context.derived_key.secure_value());
   EXPECT_EQ(parsed_data.nonce_prefix, original_encryption_context.nonce_prefix);
 }
 

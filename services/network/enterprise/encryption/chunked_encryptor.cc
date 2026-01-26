@@ -16,10 +16,14 @@ namespace network::enterprise_encryption {
 
 EncryptionContext::EncryptionContext(
     base::span<const uint8_t, kKeySize> key,
-    base::span<const uint8_t, kNoncePrefixSize> prefix) {
-  base::span(derived_key).copy_from(key);
+    base::span<const uint8_t, kNoncePrefixSize> prefix)
+    : derived_key(std::string(key.begin(), key.end())) {
   base::span(nonce_prefix).copy_from(prefix);
 }
+
+EncryptionContext::EncryptionContext(EncryptionContext&&) = default;
+EncryptionContext& EncryptionContext::operator=(EncryptionContext&&) = default;
+EncryptionContext::~EncryptionContext() = default;
 
 base::expected<std::pair<std::vector<uint8_t>, EncryptionContext>,
                EncryptionError>
@@ -81,10 +85,9 @@ base::expected<EncryptionContext, EncryptionError> ParseHeader(
 }
 
 ChunkedEncryptor::ChunkedEncryptor(const EncryptionContext& encryption_context)
-    : derived_key_(encryption_context.derived_key),
-      nonce_prefix_(encryption_context.nonce_prefix),
+    : nonce_prefix_(encryption_context.nonce_prefix),
       aead_(crypto::Aead::AES_256_GCM_SIV) {
-  aead_.Init(derived_key_);
+  aead_.Init(base::as_byte_span(encryption_context.derived_key.secure_value()));
 }
 
 ChunkedEncryptor::~ChunkedEncryptor() = default;
