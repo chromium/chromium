@@ -9,12 +9,8 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
@@ -26,6 +22,7 @@
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "headless/test/headless_devtooled_browsertest.h"
+#include "headless/test/headless_pdf_browsertest.h"
 #include "pdf/pdf.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/pdf_render_settings.h"
@@ -38,13 +35,6 @@
 #include "ui/gfx/geometry/size_f.h"
 
 namespace headless {
-
-namespace {
-
-static const base::FilePath kTestDataDir(
-    FILE_PATH_LITERAL("headless/test/data"));
-
-}  // namespace
 
 class HeadlessPDFPagesBrowserTest : public HeadlessDevTooledBrowserTest {
  public:
@@ -219,80 +209,10 @@ class HeadlessPDFStreamBrowserTest : public HeadlessDevTooledBrowserTest {
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFStreamBrowserTest);
 
-class HeadlessPDFBrowserTestBase : public HeadlessDevTooledBrowserTest {
- public:
-  void RunDevTooledTest() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    devtools_client_.AddEventHandler(
-        "Page.loadEventFired",
-        base::BindRepeating(&HeadlessPDFBrowserTestBase::OnLoadEventFired,
-                            base::Unretained(this)));
-    SendCommandSync(devtools_client_, "Page.enable");
-
-    devtools_client_.SendCommand(
-        "Page.navigate",
-        Param("url", embedded_test_server()->GetURL(GetUrl()).spec()));
-  }
-
-  void OnLoadEventFired(const base::DictValue&) {
-    devtools_client_.SendCommand(
-        "Page.printToPDF", GetPrintToPDFParams(),
-        base::BindOnce(&HeadlessPDFBrowserTestBase::OnPDFCreated,
-                       base::Unretained(this)));
-  }
-
-  void OnPDFCreated(base::DictValue result) {
-    std::optional<int> error_code = result.FindIntByDottedPath("error.code");
-    const std::string* error_message =
-        result.FindStringByDottedPath("error.message");
-    ASSERT_EQ(error_code.has_value(), !!error_message);
-    if (error_code || error_message) {
-      OnPDFFailure(*error_code, *error_message);
-    } else {
-      std::string pdf_data_base64 = DictString(result, "result.data");
-      ASSERT_FALSE(pdf_data_base64.empty());
-
-      std::string pdf_data;
-      ASSERT_TRUE(base::Base64Decode(pdf_data_base64, &pdf_data));
-      ASSERT_GT(pdf_data.size(), 0U);
-
-      auto pdf_span = base::as_byte_span(pdf_data);
-      int num_pages;
-      ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
-      OnPDFReady(pdf_span, num_pages);
-    }
-
-    FinishAsynchronousTest();
-  }
-
-  virtual const char* GetUrl() = 0;
-
-  virtual base::DictValue GetPrintToPDFParams() {
-    base::DictValue params;
-    params.Set("printBackground", true);
-    params.Set("paperHeight", 41);
-    params.Set("paperWidth", 41);
-    params.Set("marginTop", 0);
-    params.Set("marginBottom", 0);
-    params.Set("marginLeft", 0);
-    params.Set("marginRight", 0);
-
-    return params;
-  }
-
-  virtual void OnPDFReady(base::span<const uint8_t> pdf_span,
-                          int num_pages) = 0;
-
-  virtual void OnPDFFailure(int code, const std::string& message) {
-    ADD_FAILURE() << "code=" << code << " message: " << message;
-  }
-};
-
 class HeadlessPDFPageSizeRoundingBrowserTest
     : public HeadlessPDFBrowserTestBase {
  public:
-  const char* GetUrl() override { return "/red_square.html"; }
+  std::string GetTestPath() override { return "red_square.html"; }
 
   void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
@@ -304,7 +224,7 @@ HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFPageSizeRoundingBrowserTest);
 class HeadlessPDFPageOrientationBrowserTest
     : public HeadlessPDFBrowserTestBase {
  public:
-  const char* GetUrl() override { return "/pages_with_orientation.html"; }
+  std::string GetTestPath() override { return "pages_with_orientation.html"; }
 
   base::DictValue GetPrintToPDFParams() override {
     base::DictValue params;
@@ -344,7 +264,7 @@ class HeadlessPDFPageRangesBrowserTest
       public testing::WithParamInterface<
           std::tuple<const char*, int, const char*>> {
  public:
-  const char* GetUrl() override { return "/lorem_ipsum.html"; }
+  std::string GetTestPath() override { return "lorem_ipsum.html"; }
 
   base::DictValue GetPrintToPDFParams() override {
     base::DictValue params;
@@ -391,7 +311,7 @@ HEADLESS_DEVTOOLED_TEST_P(HeadlessPDFPageRangesBrowserTest);
 
 class HeadlessPDFOOPIFBrowserTest : public HeadlessPDFBrowserTestBase {
  public:
-  const char* GetUrl() override { return "/oopif.html"; }
+  std::string GetTestPath() override { return "oopif.html"; }
 
   base::DictValue GetPrintToPDFParams() override {
     base::DictValue params;
@@ -425,7 +345,7 @@ class HeadlessPDFTinyPageBrowserTest
     : public HeadlessPDFBrowserTestBase,
       public testing::WithParamInterface<gfx::SizeF> {
  public:
-  const char* GetUrl() override { return "/hello.html"; }
+  std::string GetTestPath() override { return "hello.html"; }
 
   base::DictValue GetPrintToPDFParams() override {
     // This tests that we can print into tiny pages as some WPT
@@ -466,7 +386,7 @@ HEADLESS_DEVTOOLED_TEST_P(HeadlessPDFTinyPageBrowserTest);
 class HeadlessPDFOversizeMarginsBrowserTest
     : public HeadlessPDFBrowserTestBase {
  public:
-  const char* GetUrl() override { return "/hello.html"; }
+  std::string GetTestPath() override { return "hello.html"; }
 
   base::DictValue GetPrintToPDFParams() override {
     // Set paper size to be smaller than the margins and expect content size
@@ -499,7 +419,7 @@ HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFOversizeMarginsBrowserTest);
 
 class HeadlessPDFDisableLazyLoading : public HeadlessPDFBrowserTestBase {
  public:
-  const char* GetUrl() override { return "/page_with_lazy_image.html"; }
+  std::string GetTestPath() override { return "page_with_lazy_image.html"; }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessPDFBrowserTestBase::SetUpCommandLine(command_line);
@@ -524,136 +444,6 @@ class HeadlessPDFDisableLazyLoading : public HeadlessPDFBrowserTestBase {
 
 HEADLESS_DEVTOOLED_TEST_F(HeadlessPDFDisableLazyLoading);
 
-class HeadlessTaggedPDFBrowserTest : public HeadlessPDFBrowserTestBase {
- public:
-  const char* GetUrl() override { return url_.c_str(); }
-
-  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
-    EXPECT_THAT(num_pages, testing::Eq(1));
-
-    std::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
-    ASSERT_THAT(tagged, testing::Optional(true));
-
-    constexpr int kFirstPage = 0;
-    base::Value struct_tree =
-        chrome_pdf::GetPDFStructTreeForPage(pdf_span, kFirstPage);
-    std::string json;
-    base::JSONWriter::WriteWithOptions(
-        struct_tree, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-
-    // Map Windows line endings to Unix by removing '\r'.
-    base::RemoveChars(json, "\r", &json);
-
-    base::FilePath expectation_file;
-    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
-                                 &expectation_file));
-    expectation_file =
-        expectation_file.Append(kTestDataDir).AppendASCII(url_.substr(1));
-
-    expectation_file =
-        expectation_file.ReplaceExtension(FILE_PATH_LITERAL(".txt"));
-    expectation_file =
-        expectation_file.InsertBeforeExtension(FILE_PATH_LITERAL("_expected"));
-
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    if (ShouldUpdateExpectations()) {
-      LOG(INFO) << "Updating expectations at " << expectation_file;
-      CHECK(base::WriteFile(expectation_file, json));
-    }
-
-    std::string expected_json = "";
-    if (!base::ReadFileToString(expectation_file, &expected_json)) {
-      ADD_FAILURE() << "Unable to read expectations at " << expectation_file;
-    }
-    EXPECT_EQ(expected_json, json);
-  }
-
-  void RunTaggedPDFTest(std::string url) {
-    url_ = url;
-    RunTest();
-  }
-
- private:
-  std::string url_;
-};
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Article) {
-  RunTaggedPDFTest("/structured_doc_article.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Aside) {
-  RunTaggedPDFTest("/structured_doc_aside.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Blockquote) {
-  RunTaggedPDFTest("/structured_doc_blockquote.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Checkbox) {
-  RunTaggedPDFTest("/structured_doc_checkbox.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Code) {
-  RunTaggedPDFTest("/structured_doc_code.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Div) {
-  RunTaggedPDFTest("/structured_doc_div.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Doc) {
-  RunTaggedPDFTest("/structured_doc.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Emphasis) {
-  RunTaggedPDFTest("/structured_doc_emphasis.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Figure) {
-  RunTaggedPDFTest("/structured_doc_only_figure.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, FigureRole) {
-  RunTaggedPDFTest("/structured_doc_only_figure_role.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Grid) {
-  RunTaggedPDFTest("/structured_doc_grid.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Image) {
-  RunTaggedPDFTest("/structured_doc_only_image.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, ImageRole) {
-  RunTaggedPDFTest("/structured_doc_only_image_role.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, OrderedList) {
-  RunTaggedPDFTest("/structured_doc_ordered_list.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Radio) {
-  RunTaggedPDFTest("/structured_doc_radio.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Strong) {
-  RunTaggedPDFTest("/structured_doc_strong.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Table) {
-  RunTaggedPDFTest("/structured_doc_table.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, TableCaption) {
-  RunTaggedPDFTest("/structured_doc_table_caption.html");
-}
-
-IN_PROC_BROWSER_TEST_F(HeadlessTaggedPDFBrowserTest, Treegrid) {
-  RunTaggedPDFTest("/structured_doc_treegrid.html");
-}
-
 class HeadlessTaggedPDFDisabledBrowserTest : public HeadlessPDFBrowserTestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -661,7 +451,7 @@ class HeadlessTaggedPDFDisabledBrowserTest : public HeadlessPDFBrowserTestBase {
     command_line->AppendSwitch(switches::kDisablePDFTagging);
   }
 
-  const char* GetUrl() override { return "/structured_doc.html"; }
+  std::string GetTestPath() override { return "structured_doc.html"; }
 
   void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
@@ -677,7 +467,7 @@ class HeadlessGenerateTaggedPDFBrowserTest
     : public HeadlessPDFBrowserTestBase,
       public ::testing::WithParamInterface<bool> {
  public:
-  const char* GetUrl() override { return "/structured_doc.html"; }
+  std::string GetTestPath() override { return "structured_doc.html"; }
 
   base::DictValue GetPrintToPDFParams() override {
     base::DictValue params;
@@ -705,7 +495,7 @@ class HeadlessGenerateDocumentOutlinePDFBrowserTest
     : public HeadlessPDFBrowserTestBase,
       public ::testing::WithParamInterface<bool> {
  public:
-  const char* GetUrl() override { return "/structured_doc.html"; }
+  std::string GetTestPath() override { return "structured_doc.html"; }
 
   base::DictValue GetPrintToPDFParams() override {
     base::DictValue params;
