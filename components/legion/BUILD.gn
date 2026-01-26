@@ -51,6 +51,8 @@ source_set("legion") {
     "connection_factory.h",
     "connection_timeout.cc",
     "connection_timeout.h",
+    "connection_token_attestation.cc",
+    "connection_token_attestation.h",
     "error_code.h",
     "legion_common.h",
     "secure_channel.h",
@@ -108,6 +110,7 @@ source_set("unit_tests") {
     "client_impl_unittest.cc",
     "connection_basic_unittest.cc",
     "connection_timeout_unittest.cc",
+    "connection_token_attestation_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
   ]
