@@ -114,6 +114,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsBuildflags;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -247,6 +248,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private PageZoomManager mPageZoomManagerMock;
+    @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -374,6 +376,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
 
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
     }
 
     @After
@@ -1664,6 +1667,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void testDefaultBrowserPromo_Enabled() {
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions());
+        doReturn(true).when(mMockDefaultBrowserPromoUtils).shouldShowAppMenuItemEntryPoint();
 
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 

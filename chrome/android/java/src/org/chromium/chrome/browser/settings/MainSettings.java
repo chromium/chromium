@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardPreference;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
@@ -510,7 +511,16 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         if (shouldShowDefaultBrowserSetting()) {
-            addPreferenceIfAbsent(PREF_DEFAULT_BROWSER);
+            Preference pref = addPreferenceIfAbsent(PREF_DEFAULT_BROWSER);
+
+            pref.setOnPreferenceClickListener(
+                    preference -> {
+                        // We decided not to show the Role Model Dialog at all when the menu item in
+                        // Settings is clicked.
+                        DefaultBrowserPromoUtils.getInstance()
+                                .onMenuItemClick(getActivity(), /* windowAndroid= */ null);
+                        return true;
+                    });
         } else {
             removePreferenceIfPresent(PREF_DEFAULT_BROWSER);
         }

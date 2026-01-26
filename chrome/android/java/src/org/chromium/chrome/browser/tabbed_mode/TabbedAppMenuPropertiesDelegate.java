@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -1110,7 +1111,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowDefaultBrowserPromo() {
-        return ChromeFeatureList.sDefaultBrowserPromoEntryPoint.isEnabled()
+        return DefaultBrowserPromoUtils.getInstance().shouldShowAppMenuItemEntryPoint()
                 && ChromeFeatureList.sDefaultBrowserPromoEntryPointShowAppMenu.getValue();
     }
 

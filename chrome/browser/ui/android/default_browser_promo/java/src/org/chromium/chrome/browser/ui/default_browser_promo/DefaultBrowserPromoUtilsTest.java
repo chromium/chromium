@@ -14,8 +14,10 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.app.role.RoleManager;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
+import android.provider.Settings;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -330,6 +332,90 @@ public class DefaultBrowserPromoUtilsTest {
         mUtils.removeListener(listener);
         mUtils.notifyDefaultBrowserPromoVisible();
         verify(listener).onDefaultBrowserPromoTriggered();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/true"
+    })
+    public void testOnAppMenuItemClick_ShowRoleManager() {
+        // Promo (Role Manager Dialog) has never been shown. mShadowRoleManger is set up so that the
+        // role is available but not held (Chrome is not set to default).
+        when(mCounter.getPromoCount()).thenReturn(0);
+
+        mUtils.onMenuItemClick(mActivity, mWindowAndroid);
+
+        // Verify we incremented the counter.
+        verify(mCounter).onPromoShown();
+
+        // Get the last Intent this activity tried to launch.
+        Intent intent = shadowOf(mActivity).getNextStartedActivity();
+        Assert.assertNotNull("Should have launched an Intent", intent);
+
+        // Check the "Action" of the Role Manager Dialog.
+        Assert.assertEquals(
+                "Should launch Role Manager Intent",
+                "android.app.role.action.REQUEST_ROLE",
+                intent.getAction());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/true"
+    })
+    public void testOnMenuItemClick_FallbackToSettings_RoleHeld() {
+        // Promo (Role Manager Dialog) has never been shown.
+        when(mCounter.getPromoCount()).thenReturn(0);
+        // Chrome is already the default browser (Role is Held).
+        mShadowRoleManager.addHeldRole(RoleManager.ROLE_BROWSER);
+
+        mUtils.onMenuItemClick(mActivity, mWindowAndroid);
+
+        // Should not increment counter since we skipped Role Manager.
+        verify(mCounter, never()).onPromoShown();
+        verifyOSSettingsFallbackIntentLaunched();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/true"
+    })
+    public void testOnMenuItemClick_FallbackToSettings_PromoShownBefore() {
+        // Promo Count > 0 (Already shown once). Chrome is not set to default.
+        when(mCounter.getPromoCount()).thenReturn(1);
+
+        mUtils.onMenuItemClick(mActivity, mWindowAndroid);
+
+        // Should not increment counter again.
+        verify(mCounter, never()).onPromoShown();
+        verifyOSSettingsFallbackIntentLaunched();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/true"
+    })
+    public void testOnMenuItemClick_FallbackToSettings_NullWindow() {
+        // Promo never shown. Chrome is not set to default.
+        when(mCounter.getPromoCount()).thenReturn(0);
+
+        // Pass null for WindowAndroid. This would happen when the menu item in Settings (not App
+        // Menu) is clicked.
+        mUtils.onMenuItemClick(mActivity, null);
+
+        // Should not increment counter since we are not showing the RoleManaerDialog.
+        verify(mCounter, never()).onPromoShown();
+        verifyOSSettingsFallbackIntentLaunched();
+    }
+
+    private void verifyOSSettingsFallbackIntentLaunched() {
+        // Should fallback to System Settings Intent.
+        Intent intent = shadowOf(mActivity).getNextStartedActivity();
+        Assert.assertNotNull("Should have launched an Intent", intent);
+        Assert.assertEquals(
+                "Should launch System Settings",
+                Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS,
+                intent.getAction());
     }
 
     private void setDepsMockWithDefaultValues() {
