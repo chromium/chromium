@@ -80,7 +80,8 @@ gfx::Insets GetBorderInsets() {
 
 SidePanel::HorizontalAlignment GetHorizontalAlignment(
     PrefService* pref_service,
-    SidePanelEntry::PanelType type) {
+    SidePanelEntry::PanelType type,
+    bool use_default_horizontal_alignment) {
   bool is_right_aligned =
       pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
   is_right_aligned = type == SidePanelEntry::PanelType::kToolbar &&
@@ -89,8 +90,9 @@ SidePanel::HorizontalAlignment GetHorizontalAlignment(
                                      kShowPanelsOnOppositeSides
                          ? !is_right_aligned
                          : is_right_aligned;
-  return is_right_aligned ? SidePanel::HorizontalAlignment::kRight
-                          : SidePanel::HorizontalAlignment::kLeft;
+  return is_right_aligned == use_default_horizontal_alignment
+             ? SidePanel::HorizontalAlignment::kRight
+             : SidePanel::HorizontalAlignment::kLeft;
 }
 
 // This border paints the toolbar color around the side panel content and draws
@@ -395,7 +397,8 @@ SidePanel::SidePanel(BrowserView* browser_view,
       visible_bounds_view_clipper_(
           std::make_unique<VisibleBoundsViewClipper>(this)) {
   horizontal_alignment_ =
-      GetHorizontalAlignment(browser_view->GetProfile()->GetPrefs(), type_);
+      GetHorizontalAlignment(browser_view->GetProfile()->GetPrefs(), type_,
+                             use_default_horizontal_alignment_);
 
   // The default z-order is the order in which children were added to the
   // parent view. content_parent_view_ is added first so it exists behind
@@ -787,6 +790,15 @@ void SidePanel::ResetSidePanelAnimationContent() {
   }
 }
 
+void SidePanel::SetActiveEntryUsesDefaultHorizontalAlignment(
+    bool use_default_horizontal_alignment) {
+  if (use_default_horizontal_alignment_ == use_default_horizontal_alignment) {
+    return;
+  }
+  use_default_horizontal_alignment_ = use_default_horizontal_alignment;
+  UpdateHorizontalAlignment();
+}
+
 views::View* SidePanel::GetContentParentView() {
   return content_parent_view_;
 }
@@ -920,7 +932,8 @@ void SidePanel::AnnounceResize() {
 
 void SidePanel::UpdateHorizontalAlignment() {
   horizontal_alignment_ =
-      GetHorizontalAlignment(browser_view_->GetProfile()->GetPrefs(), type_);
+      GetHorizontalAlignment(browser_view_->GetProfile()->GetPrefs(), type_,
+                             use_default_horizontal_alignment_);
 
   InvalidateLayout();
 }
