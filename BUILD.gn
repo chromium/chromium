@@ -971,37 +971,53 @@ if (is_win) {
 }
 
 if (is_chromeos) {
+  # This group is used to collect minimal targets used when verifying a new
+  # version of Chrome for Chrome OS for all group:mainline non-informational
+  # tast tests.
+  group("chromiumos_preflight_minimal") {
+    testonly = true
+    data_deps = [
+      "//chrome",
+      "//chrome/test/chromedriver:chromedriver_server",
+      "//components/policy/test_support:fake_dmserver",
+      "//sandbox/linux:chrome_sandbox",
+      "//sandbox/linux:sandbox_linux_unittests",
+      "//third_party/breakpad:minidump_stackwalk($host_system_allocator_toolchain)",
+
+      # Blocked on https://github.com/catapult-project/catapult/issues/2297
+      #"//third_party/catapult/telemetry:bitmaptools",
+      "//tools/perf/clear_system_cache",
+    ]
+
+    if (use_linux_video_acceleration) {
+      data_deps +=
+          [ "//components/chromeos_camera:jpeg_encode_accelerator_unittest" ]
+    }
+  }
+
   # This group is used to collect all targets used when verifying a new version
   # of Chrome for Chrome OS.
   group("chromiumos_preflight") {
     testonly = true
     data_deps = [
-      "//chrome",
-      "//chrome/test/chromedriver:chromedriver_server",
+      "//:chromiumos_preflight_minimal",
+
+      # tast.camera.DecodeAccelJPEG is informational.
       "//components/chromeos_camera:jpeg_decode_accelerator_unittest",
       "//components/exo/wayland:wayland_client_integration_tests",
       "//components/exo/wayland:wayland_client_perftests",
       "//components/exo/wayland:wayland_client_tests",
-      "//components/policy/test_support:fake_dmserver",
       "//media:media_unittests",
       "//media/capture:capture_unittests",
-      "//sandbox/linux:chrome_sandbox",
-      "//sandbox/linux:sandbox_linux_unittests",
       "//services/screen_ai:screen_ai_ocr_perf_test",
-      "//third_party/breakpad:minidump_stackwalk($host_system_allocator_toolchain)",
       "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
       "//third_party/dawn/src/dawn/tests:dawn_unittests",
       "//ui/ozone:ozone_integration_tests",
-
-      # Blocked on https://github.com/catapult-project/catapult/issues/2297
-      #"//third_party/catapult/telemetry:bitmaptools",
-      "//tools/perf/clear_system_cache",
       "//ui/ozone/gl:ozone_gl_unittests",
     ]
 
     if (use_linux_video_acceleration) {
       data_deps += [
-        "//components/chromeos_camera:jpeg_encode_accelerator_unittest",
         "//media/gpu/chromeos:image_processor_test",
         "//media/gpu/test/:video_decode_accelerator_perf_tests",
         "//media/gpu/test/:video_decode_accelerator_tests",
@@ -1011,6 +1027,8 @@ if (is_chromeos) {
       if (use_vaapi) {
         data_deps += [
           "//media/gpu/vaapi:decode_test",
+
+          # tast.video.VAAPIUnittest is informational.
           "//media/gpu/vaapi:vaapi_unittest",
           "//media/gpu/vaapi/test/fake_libva_driver:fake_libva_driver_unittest",
         ]
