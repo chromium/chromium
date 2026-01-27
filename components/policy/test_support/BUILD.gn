@@ -65,7 +65,7 @@ static_library("test_support") {
     "test_server_helpers.cc",
     "test_server_helpers.h",
   ]
-  if (is_chromeos || (is_linux && !is_cfi) || is_mac) {
+  if (is_chromeos || (is_linux && !is_cfi)) {
     sources += [
       "fake_dmserver.cc",
       "fake_dmserver.h",
@@ -92,7 +92,7 @@ static_library("test_support") {
     "//third_party/re2",
   ]
 
-  if (is_chromeos || (is_linux && !is_cfi) || is_mac) {
+  if (is_chromeos || (is_linux && !is_cfi)) {
     public_deps += [ ":remote_commands_service_castcore" ]
   }
   if (is_chromeos) {
@@ -110,7 +110,7 @@ static_library("test_support") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-if (is_chromeos || (is_linux && !is_cfi) || is_mac) {
+if (is_chromeos || (is_linux && !is_cfi)) {
   cast_core_grpc_library("remote_commands_service") {
     testonly = true
     sources = [ "remote_commands_service.proto" ]
@@ -179,7 +179,7 @@ source_set("unittests") {
     "signature_provider_unittest.cc",
   ]
 
-  if (is_chromeos || (is_linux && !is_cfi) || is_mac) {
+  if (is_chromeos || (is_linux && !is_cfi)) {
     sources += [ "fake_dmserver_unittest.cc" ]
   }
   if (is_chromeos) {
