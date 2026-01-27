@@ -116,10 +116,10 @@ class ContextualTasksOmniboxClient : public ContextualOmniboxClient {
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ContextualTasksOmniboxClient::GetLensOverlaySuggestInputs() const {
   if (!contextual_tasks::GetIsContextualTasksSuggestionsEnabled()) {
-    return lens::proto::LensOverlaySuggestInputs();
+    return std::nullopt;
   }
 
-  return SearchboxOmniboxClient::GetLensOverlaySuggestInputs();
+  return ContextualOmniboxClient::GetLensOverlaySuggestInputs();
 }
 
 void ContextualTasksOmniboxClient::OnAutocompleteAccept(
