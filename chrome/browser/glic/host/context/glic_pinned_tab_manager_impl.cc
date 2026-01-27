@@ -28,6 +28,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -35,10 +36,6 @@
 #include "content/public/browser/web_contents.h"
 #include "glic_pinned_tab_manager.h"
 #include "url/origin.h"
-
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#endif
 
 namespace glic {
 
@@ -546,9 +543,6 @@ void GlicPinnedTabManagerImpl::SendPinCandidatesUpdate() {
 std::vector<content::WebContents*>
 GlicPinnedTabManagerImpl::GetUnsortedPinCandidates() {
   std::vector<content::WebContents*> candidates;
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: This can be done one
-                            // BrowserWindowInterface::GetAllTabs is available
-                            // on Android.
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, &candidates](BrowserWindowInterface* browser_window_interface) {
         if (browser_window_interface->GetProfile() != profile_ ||
@@ -556,10 +550,9 @@ GlicPinnedTabManagerImpl::GetUnsortedPinCandidates() {
                 BrowserWindowInterface::Type::TYPE_NORMAL) {
           return true;
         }
-        TabStripModel* const tab_strip_model =
-            browser_window_interface->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->count(); ++i) {
-          auto* const tab = tab_strip_model->GetTabAtIndex(i);
+        auto all_tabs =
+            TabListInterface::From(browser_window_interface)->GetAllTabs();
+        for (auto* tab : all_tabs) {
           if (IsTabPinned(tab->GetHandle())) {
             continue;
           }
@@ -577,7 +570,6 @@ GlicPinnedTabManagerImpl::GetUnsortedPinCandidates() {
         }
         return true;
       });
-#endif
   return candidates;
 }
 
