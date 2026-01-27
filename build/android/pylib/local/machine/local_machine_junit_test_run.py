@@ -92,9 +92,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                  'android_resource_apk=%s\n' % resource_apk)
       props = [
           'application = android.app.Application',
-          # TODO(https://crbug.com/450954710): Turn this on.
-          #'sdk = 29,36',
-          'sdk = 29',
+          'sdk = 29,36',
           ('shadows = org.chromium.testing.local.'
            'CustomShadowApplicationPackageManager'),
       ]
@@ -228,7 +226,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       # 3 seconds per method.
       num_classes = len(test_group.methods_by_class)
       num_tests = sum(len(x) for x in test_group.methods_by_class.values())
-      timeout = 30 + 5 * num_classes + num_tests * 3
+      timeout = 60 + 10 * num_classes + num_tests * 5
     return _Job(shard_id=shard_id,
                 cmd=cmd,
                 timeout=timeout,

@@ -268,7 +268,6 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "android_desktop_junit_tests",
             targets.bundle(
                 targets = "android_desktop_gtests",
                 mixins = [
