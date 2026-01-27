@@ -59,10 +59,9 @@ export class ContextualEntrypointButtonElement extends
         reflect: true,
         type: Boolean,
       },
-      hideEntrypointButton: {type: Boolean},
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
-      entrypointName: {type: String},
+      showMenuOnClick: {type: Boolean},
       searchboxLayoutMode: {type: String},
       glifAnimationState: {type: String, reflect: true},
 
@@ -80,10 +79,9 @@ export class ContextualEntrypointButtonElement extends
   accessor fileNum: number = 0;
   accessor showContextMenuDescription: boolean = false;
   accessor hasImageFiles: boolean = false;
-  accessor hideEntrypointButton: boolean = false;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
-  accessor entrypointName: string = '';
+  accessor showMenuOnClick: boolean = true;
   accessor searchboxLayoutMode: string = '';
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
@@ -120,7 +118,7 @@ export class ContextualEntrypointButtonElement extends
       x: entrypoint.getBoundingClientRect().left,
       y: entrypoint.getBoundingClientRect().bottom,
     });
-    if (this.entrypointName !== 'Omnibox') {
+    if (this.showMenuOnClick) {
       this.showMenuAtEntrypoint_();
     }
   }

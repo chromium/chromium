@@ -71,8 +71,7 @@ cr-button#entrypoint.ai-mode-button {
 }
 
 /*
-  The current animation consists of three states:
-
+  The current animation consists of the following states:
   1. ineligible state: The state where the animation is not enabled.
   2. spinner-only state: The state where the spinner endlessly rotates.
   3. started state: The state where the transition to the fourth state starts.

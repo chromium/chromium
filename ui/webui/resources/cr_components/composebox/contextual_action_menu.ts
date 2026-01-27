@@ -53,7 +53,6 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
       fileNum: {type: Number},
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
-      entrypointName: {type: String},
       searchboxLayoutMode: {type: String},
       enableMultiTabSelection_: {
         reflect: true,
@@ -70,7 +69,6 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   accessor fileNum: number = 0;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
-  accessor entrypointName: string = '';
   accessor searchboxLayoutMode: string = '';
 
   protected accessor enableMultiTabSelection_: boolean =
@@ -165,7 +163,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
         origin: TabUploadOrigin.CONTEXT_MENU,
       },
     }));
-    if (!this.enableMultiTabSelection_ || this.entrypointName === 'Realbox' ||
+    if (!this.enableMultiTabSelection_ ||
         this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
       this.$.menu.close();
     }
