@@ -95,11 +95,6 @@ std::u16string GetDriversLicenseName(const EntityInstance& entity) {
       ->GetCompleteInfo(kAppLocaleUS);
 }
 
-std::u16string GetVehicleVIN(const EntityInstance& entity) {
-  return entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
-      ->GetCompleteInfo(kAppLocaleUS);
-}
-
 class AutofillAiSuggestionGeneratorTest : public testing::Test {
  public:
   AutofillAiSuggestionGeneratorTest() {
@@ -208,15 +203,16 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
 // Tests that the suggestions's main text is obfuscated when the triggering
 // field is from an attribute type that should be obfuscated.
 TEST_F(AutofillAiSuggestionGeneratorTest, SuggestionMainTextIsObfuscated) {
-  EntityInstance vehicle_entity = test::GetVehicleEntityInstanceWithRandomGuid(
-      {.plate = u"123", .number = u"VIN123"});
-  SetEntities({vehicle_entity});
-  SetForm({VEHICLE_VIN});
+  EntityInstance passport_entity =
+      test::GetPassportEntityInstanceWithRandomGuid(
+          {.number = u"123456", .country = u"Brazil"});
+  SetEntities({passport_entity});
+  SetForm({PASSPORT_NUMBER});
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
       SuggestionsAre(HasMainText(GetObfuscatedValue(
-          GetVehicleVIN(vehicle_entity), /*visible_suffix_length=*/4))));
+          GetPassportNumber(passport_entity), /*visible_suffix_length=*/4))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesAutofillAiSuggestions) {

@@ -1418,11 +1418,12 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 
-  EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
-  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
+  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(passport);
   webdata_helper().WaitUntilIdle();
-  // Create form with a VIN, which triggers obfuscation and thus re-auth.
-  IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
+  // Create form with a passport number, which triggers obfuscation and thus
+  // re-auth.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
 
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -1440,7 +1441,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
                         IsQueriedFieldId(), _, DefaultTriggerSource()));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
@@ -1499,11 +1500,12 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthRejected) {
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 
-  EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
-  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
+  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(passport);
   webdata_helper().WaitUntilIdle();
-  // Create form with a VIN, which triggers obfuscation and thus re-auth.
-  IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
+  // Create form with a passport number, which triggers obfuscation and thus
+  // re-auth.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
 
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -1517,7 +1519,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthRejected) {
   EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
@@ -1531,11 +1533,12 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_NoAuthenticator) {
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 
-  EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
-  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
+  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(passport);
   webdata_helper().WaitUntilIdle();
-  // Create form with a VIN, which triggers obfuscation and thus re-auth.
-  IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
+  // Create form with a passport number, which triggers obfuscation and thus
+  // re-auth.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
 
   EXPECT_CALL(autofill_client(),
               GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
@@ -1546,7 +1549,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_NoAuthenticator) {
                         IsQueriedFieldId(), _, DefaultTriggerSource()));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
@@ -1558,11 +1561,12 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_FlagOff) {
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 
-  EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
-  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
+  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(passport);
   webdata_helper().WaitUntilIdle();
-  // Create form with a VIN, which triggers obfuscation and thus re-auth.
-  IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
+  // Create form with a passport number, which triggers obfuscation and thus
+  // re-auth.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
 
   EXPECT_CALL(autofill_client(),
               GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
@@ -1573,7 +1577,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_FlagOff) {
                         IsQueriedFieldId(), _, DefaultTriggerSource()));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
@@ -1589,11 +1593,12 @@ TEST_F(AutofillExternalDelegateTest,
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiReauthBeforeViewingSensitiveData, false);
 
-  EntityInstance vehicle = test::GetVehicleEntityInstanceWithRandomGuid();
-  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(vehicle);
+  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(passport);
   webdata_helper().WaitUntilIdle();
-  // Create form with a VIN, which triggers obfuscation and thus re-auth.
-  IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
+  // Create form with a passport number, which triggers obfuscation and thus
+  // re-auth.
+  IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
 
   EXPECT_CALL(autofill_client(),
               GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
@@ -1604,7 +1609,7 @@ TEST_F(AutofillExternalDelegateTest,
                         IsQueriedFieldId(), _, DefaultTriggerSource()));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 #endif

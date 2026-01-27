@@ -43,7 +43,7 @@
   {
     "name": "Vehicle",
     "attributes": [ "Make", "Model", "Year", "Owner", "Plate number", "Plate state", "VIN" ],
-    "obfuscated attributes": [ "VIN" ],
+    "obfuscated attributes": [ ],
     "required fields": "any",
     "import constraints": [
       [ "Plate number" ],
