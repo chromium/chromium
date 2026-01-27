@@ -435,28 +435,13 @@ const CGFloat kSnackbarBottomMargin = 10;
   }
 
   BrowserList* browserList = BrowserListFactory::GetForProfile(tabInfo.profile);
-
   WebStateSearchCriteria tabSearchCriteria = WebStateSearchCriteria{
       .identifier = tabInfo.tabID,
       .pinned_state = WebStateSearchCriteria::PinnedState::kAny,
   };
 
-  Browser* browser =
-      GetBrowserForTabWithCriteria(browserList, tabSearchCriteria,
-                                   /*is_otr_tab*/ _theme.incognito);
-
-  if (!browser) {
-    return nullptr;
-  }
-
-  WebStateList* webStateList = browser->GetWebStateList();
-  int tabIndex = GetWebStateIndex(webStateList, tabSearchCriteria);
-
-  if (tabIndex == WebStateList::kInvalidIndex) {
-    return nullptr;
-  }
-
-  return webStateList->GetWebStateAt(tabIndex);
+  return GetWebStateForTabWithCriteria(browserList, tabSearchCriteria,
+                                       _theme.incognito);
 }
 
 #pragma mark - PHPickerViewControllerDelegate
