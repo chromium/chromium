@@ -14,6 +14,7 @@
   --aim-header-height: 66px;
   --cancel-button-inline-end: 16px;
   --cancel-button-top: 12px;
+  --composebox-border-radius: 24px;
   --composebox-collapsed-height: 90px;
   --composebox-margin-bottom: 30px;
   --composebox-start-indent: 15px;
@@ -88,7 +89,7 @@
 #composebox {
   --composebox-thumbnail-img-chip-size: 44px;
   --composebox-width: calc(100% - 30px); /* 15px on each side */
-  --expanded-border-radius: 24px;
+  --expanded-border-radius: var(--composebox-border-radius);
   --input-bottom-spacing: 16px;
   --inset-start-indent_: 15px;
   --text-input-left-spacing: 24px;
@@ -96,16 +97,16 @@
   --composebox-context-menu-entrypoint-button-color: var(--color-composebox-voice-lens-button);
 
   box-shadow: none;
+  box-sizing: border-box;
   display: block;
   inset-inline-start: var(--inset-start-indent_);
   max-width: var(--composebox-max-width);
   position: relative;
-  /* 100% - (right indent + left indent), up to max width. */
-  width: calc(100% - (15px + var(--inset-start-indent_)));
-  border: 1px solid var(--color-composebox-input-plate-outline);
-  box-sizing: border-box;
   /* Fast out (start), slow in (end) box shadow transition. */
   transition: box-shadow 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  /* 100% - (right indent + left indent), up to max width. */
+  width: calc(100% - (15px + var(--inset-start-indent_)));
+  z-index: 1;
 }
 
 :host([is-side-panel]) #composebox {
@@ -114,6 +115,31 @@
   min-width: 200px;
   /* 15px on each side -> 30px. */
   width: calc(100% - 30px);
+}
+
+:host(:not([is-zero-state])) #composebox::before {
+  background: var(--search-background-color);
+  border-radius: var(--composebox-border-radius);
+  content: '';
+  display: block;
+  height: 40vh;
+  position: absolute;
+  width: 100%;
+  z-index: 0;
+}
+
+/* Add border in ::after instead of '#composebox' so it
+ * is on top of ::before.
+ */
+#composebox::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--color-composebox-input-plate-outline);
+  border-radius: var(--composebox-border-radius);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* TODO(crbug.com/466201452): Check this relayout logic
