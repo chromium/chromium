@@ -2985,9 +2985,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ShouldUpdateHistory" enum="Boolean"
-    expires_after="2026-01-29">
+    expires_after="2027-01-29">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>janiceliu@chromium.org</owner>
+  <owner>tiffanysong@google.com</owner>
   <summary>
     Whether HistoryTabHelper::DidFinishNavigation() returned early due to
     !ShouldUpdateHistory() in chrome/ or IsError() in ios/. This will help us
@@ -3097,9 +3097,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.NumSaltsForNavigationsDuringBuild"
-    units="salts" expires_after="2026-03-01">
+    units="salts" expires_after="2027-03-01">
   <owner>kyraseevers@chromium.org</owner>
-  <owner>janiceliu@chromium.org</owner>
+  <owner>tiffanysong@google.com</owner>
   <summary>
     After the partitioned hashtable has completed building on the DB thread, we
     return to the main thread and determine the per-origin salts corresponding
