@@ -9,6 +9,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/ime/mojom/ime_types.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -441,6 +442,19 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
 
 #pragma mark - NSObject
 
+- (NSArray*)accessibilityElements {
+  ui::BrowserAccessibilityManager* manager =
+      _view->host()->GetRootBrowserAccessibilityManager();
+  if (manager) {
+    id root =
+        manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible().Get();
+    if (root) {
+      return @[ root ];
+    }
+  }
+  return nil;
+}
+
 - (void)observeValueForKeyPath:(NSString*)keyPath
                       ofObject:(id)object
                         change:(NSDictionary*)change
@@ -454,6 +468,12 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
                            change:change
                           context:context];
   }
+}
+
+#pragma mark - UIAccessibilityElement
+
+- (BOOL)isAccessibilityElement {
+  return NO;
 }
 
 #pragma mark - UIResponder
