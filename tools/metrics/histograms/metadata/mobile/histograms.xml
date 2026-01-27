@@ -1135,24 +1135,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileOmnibox.PressedClipboardSuggestionAge" units="ms"
-    expires_after="2026-07-01">
-  <owner>gangwu@chromium.org</owner>
-  <owner>ender@google.com</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <summary>
-    When a user presses an omnibox suggestion based on the content of the
-    clipboard, this histograms records how long ago Chrome detected a change in
-    the clipboard.
-
-    Intended to be compared to Omnibox.ClipboardSuggestionShownAge.
-
-    If Chrome never detected a change to the clipboard, no clipboard suggestion
-    is shown, meaning this histogram will never be emitted to.
-  </summary>
-</histogram>
-
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons"
     units="impressions" expires_after="2026-04-01">
   <owner>jlebel@chromium.org</owner>

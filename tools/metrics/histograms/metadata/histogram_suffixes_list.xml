@@ -354,19 +354,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Navigation.TimeToReadyToCommit2.Subframe"/>
 </histogram_suffixes>
 
-<!-- TODO(crbug.com/40829943): Migrate these histograms to use the patterned histograms instead. -->
-
-<histogram_suffixes name="OmniboxClipboardSuggestionType" separator=".">
-  <suffix name="IMAGE" label="IMAGE from clipboard."/>
-  <suffix name="TEXT" label="Text from clipboard."/>
-  <suffix name="URL" label="URL from clipboard."/>
-  <affected-histogram name="MobileOmnibox.PressedClipboardSuggestionAge"/>
-  <affected-histogram name="Omnibox.ClipboardSuggestionRemovedAge"/>
-  <affected-histogram name="Omnibox.ClipboardSuggestionShownAge"/>
-  <affected-histogram name="Omnibox.ClipboardSuggestionShownNumTimes"/>
-  <affected-histogram name="Omnibox.ClipboardSuggestionShownWithCurrentURL"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PageLoadBackgrounded2" separator=".">
   <suffix name="Background"
       label="The page was backgrounded at least once from navigation start to
