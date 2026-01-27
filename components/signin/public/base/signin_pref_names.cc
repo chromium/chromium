@@ -75,6 +75,11 @@ const char kGoogleServicesSyncingGaiaIdMigratedToSignedIn[] =
 const char kGoogleServicesSyncingUsernameMigratedToSignedIn[] =
     "google.services.syncing_username_migrated_to_signed_in";
 
+// An integer indicating the sync-to-signin migration type of the user.
+// Possible values are defined in SyncToSigninMigrationType enum.
+const char kGoogleServicesSyncingUserMigrationType[] =
+    "google.services.syncing_user_migration_type";
+
 // Local state pref containing a string regex that restricts which accounts
 // can be used to log in to chrome (e.g. "*@google.com"). If missing or blank,
 // all accounts are allowed (no restrictions).

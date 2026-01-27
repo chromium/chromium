@@ -1690,6 +1690,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/base/data_type_histogram.h:SyncToSigninMigrationReadingListStep) -->
 
+<!-- LINT.IfChange(SyncToSigninMigrationType) -->
+
+<enum name="SyncToSigninMigrationType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Migrated"/>
+  <int value="2" label="Force migrated"/>
+  <int value="3" label="Not migrated yet"/>
+  <int value="4" label="Migration not needed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationType) -->
+
 <!-- LINT.IfChange(SyncUserEventType) -->
 
 <enum name="SyncUserEventType">

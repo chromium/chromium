@@ -2373,6 +2373,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncToSigninMigration.MigrationType"
+    enum="SyncToSigninMigrationType" expires_after="2026-12-05">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    This records the type of Sync-to-Signin migration that a user underwent,
+    either just now or in a previous browser run. This is recorded upon profile
+    creation/startup for all users.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncToSigninMigration.ReadingListMigrationStep"
     enum="SyncToSigninMigrationReadingListStep" expires_after="2026-12-05">
   <owner>treib@chromium.org</owner>

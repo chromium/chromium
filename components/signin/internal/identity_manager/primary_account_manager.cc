@@ -320,6 +320,8 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn, std::string());
   registry->RegisterStringPref(
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn, std::string());
+  registry->RegisterIntegerPref(prefs::kGoogleServicesSyncingUserMigrationType,
+                                /*SyncToSigninMigrationType::kUnknown=*/0);
   registry->RegisterBooleanPref(prefs::kSigninAllowed, true);
   registry->RegisterBooleanPref(prefs::kSignedInWithCredentialProvider, false);
   registry->RegisterBooleanPref(kExplicitBrowserSigninWithoutFeatureEnabled,
@@ -564,6 +566,8 @@ void PrimaryAccountManager::SetPrimaryAccountInternal(
         prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
     scoped_pref_commit.ClearPref(
         prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn);
+    scoped_pref_commit.ClearPref(
+        prefs::kGoogleServicesSyncingUserMigrationType);
   } else {
     scoped_pref_commit.SetString(prefs::kGoogleServicesLastSignedInUsername,
                                  account_info.email);

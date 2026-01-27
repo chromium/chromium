@@ -56,6 +56,28 @@ enum class SyncToSigninMigrationDecision {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationDecisionOverall)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Additionally, they're also persisted
+// in a pref, so no existing entry should be removed.
+// LINT.IfChange(SyncToSigninMigrationType)
+enum class SyncToSigninMigrationType {
+  // The user was migrated, but the migration type is unknown. This is logged in
+  // case the migration happened before the corresponding histogram was
+  // introduced.
+  kUnknown = 0,
+  // The user was migrated following the standard migration logic.
+  kMigrated = 1,
+  // The user was migrated with the force migration flag enabled.
+  kForceMigrated = 2,
+  // The user was have not yet been migrated.
+  kNotMigratedYet = 3,
+  // The users are already in the desired state, and the migration is not
+  // needed.
+  kMigrationNotNeeded = 4,
+  kMaxValue = kMigrationNotNeeded
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationType)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -197,6 +219,7 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
         prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
     pref_service->ClearPref(
         prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn);
+    pref_service->ClearPref(prefs::kGoogleServicesSyncingUserMigrationType);
     return;
   }
 
@@ -227,6 +250,7 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
       prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
   pref_service->ClearPref(
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn);
+  pref_service->ClearPref(prefs::kGoogleServicesSyncingUserMigrationType);
 
   // Selected-data-types prefs: No reverse migration - the user will just go
   // back to their previous Sync settings.
@@ -292,6 +316,59 @@ void RecordMigrationResult(base::Time start_time, bool migration_successful) {
                           base::Time::Now() - start_time);
 }
 
+void RecordMigrationType(PrefService* pref_service,
+                         SyncToSigninMigrationDecision decision) {
+  SyncToSigninMigrationType type =
+      SyncToSigninMigrationType::kMigrationNotNeeded;
+  switch (decision) {
+    case SyncToSigninMigrationDecision::kDontMigrateNotSignedIn:
+    case SyncToSigninMigrationDecision::kDontMigrateNotSyncing:
+      // The user is already in the desired state.
+      {
+        const bool was_migrated =
+            !pref_service
+                 ->GetString(
+                     prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn)
+                 .empty();
+        if (was_migrated) {
+          // This returns kUnknown (the default value) if the pref is unset,
+          // which implies that the migration happened before this metric
+          // logging was introduced.
+          type =
+              static_cast<SyncToSigninMigrationType>(pref_service->GetInteger(
+                  prefs::kGoogleServicesSyncingUserMigrationType));
+        }
+        // Else, the user was always in the desired state, so `type` remains
+        // `kMigrationNotNeeded`.
+      }
+      break;
+    case SyncToSigninMigrationDecision::kMigrate:
+      // The user is currently undergoing regular migration.
+      type = SyncToSigninMigrationType::kMigrated;
+      break;
+    case SyncToSigninMigrationDecision::kMigrateForced:
+      // The user is currently undergoing forced migration.
+      type = SyncToSigninMigrationType::kForceMigrated;
+      break;
+    case SyncToSigninMigrationDecision::kDontMigrateFlagDisabled:
+    case SyncToSigninMigrationDecision::kDontMigrateSyncStatusUndefined:
+    case SyncToSigninMigrationDecision::kDontMigrateSyncStatusInitializing:
+    case SyncToSigninMigrationDecision::kDontMigrateAuthError:
+      // These cases should not be reached in case the migration has already
+      // happened, or is happening right now. But rather, this implies the user
+      // is eligible for regular migration but some pre-condition has not been
+      // met.
+      type = SyncToSigninMigrationType::kNotMigratedYet;
+      break;
+    case SyncToSigninMigrationDecision::kUndoMigration:
+    case SyncToSigninMigrationDecision::kUndoNotNecessary:
+      // No need to record the metric in this case.
+      return;
+  }
+  base::UmaHistogramEnumeration("Sync.SyncToSigninMigration.MigrationType",
+                                type);
+}
+
 // Helper used to share the logic between MaybeMigrateSyncingUserToSignedIn()
 // and MaybeMigrateSyncingUserToSignedInAsync(). If `closure` is null, all is
 // run on the current sequence otherwise IO ops are scheduled on a background
@@ -323,7 +400,7 @@ void MaybeMigrateSyncingUserToSignedInInternal(
   const SyncToSigninMigrationDecision decision =
       GetSyncToSigninMigrationDecision(pref_service);
   base::UmaHistogramEnumeration("Sync.SyncToSigninMigrationDecision", decision);
-
+  RecordMigrationType(pref_service, decision);
   switch (decision) {
     case SyncToSigninMigrationDecision::kUndoMigration:
       // Undo the migration (if appropriate) and nothing else.
@@ -438,6 +515,11 @@ void MaybeMigrateSyncingUserToSignedInInternal(
   pref_service->SetString(
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
       pref_service->GetString(prefs::kGoogleServicesLastSyncingUsername));
+  pref_service->SetInteger(
+      prefs::kGoogleServicesSyncingUserMigrationType,
+      static_cast<int>(decision == SyncToSigninMigrationDecision::kMigrate
+                           ? SyncToSigninMigrationType::kMigrated
+                           : SyncToSigninMigrationType::kForceMigrated));
   // Clear the "previously syncing user" prefs, to prevent accidental misuse.
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingUsername);

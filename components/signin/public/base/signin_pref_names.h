@@ -40,6 +40,8 @@ extern const char kGoogleServicesSyncingGaiaIdMigratedToSignedIn[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesSyncingUsernameMigratedToSignedIn[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kGoogleServicesSyncingUserMigrationType[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGoogleServicesUsernamePattern[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kHistorySyncLastDeclinedTimestamp[];
