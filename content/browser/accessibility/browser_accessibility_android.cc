@@ -965,8 +965,8 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
     return;
   }
 
-  if (ComputeAndroidNameTo() == AndroidNameTo::kText &&
-      !is_non_atomic_text_field) {
+  AndroidNameTo name_to = ComputeAndroidNameTo();
+  if (name_to == AndroidNameTo::kText && !is_non_atomic_text_field) {
     text = GetNameAsString16();
   }
 
@@ -1011,17 +1011,22 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
     }
   }
 
+  // Compute whether this node's name attribute should override its text. This
+  // is used in the below block to determine whether we should proceed with
+  // surfacing text at all. Name overrides text when we've mapped name to
+  // Android's content description, it is non-empty, and this node's role
+  // supports name overriding child text contents.
+  bool name_overrides_text =
+      ui::SupportsNamingWithChildContent(GetRole()) &&
+      name_to == AndroidNameTo::kContentDescription &&
+      !GetStringAttribute(ax::mojom::StringAttribute::kName).empty();
+
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
   // Only for roles that do not support naming with child content, we loop
   // through the children, in order to populate the visual content (use Android
   // text API), in addition to populating the aria label information.
-
-  // TODO(crbug.com/478117323): figure out if we can remove the
-  // !SupportsNamingWithChildContent check below based on spec or what to
-  // replace it with. As is, this prevents SupportsNamingWithChildContent roles
-  // from having their text computed which is supposed to occur.
-  if (text.empty() && !ui::SupportsNamingWithChildContent(GetRole()) &&
+  if (text.empty() && !name_overrides_text &&
       ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
        (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {

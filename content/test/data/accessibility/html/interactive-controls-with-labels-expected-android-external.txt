@@ -5,7 +5,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++EditText text:"Textbox" supplementalDescription:"aria label" clickable editable textSelectionStart:0 textSelectionEnd:0 actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField"]
 ++EditText text:"Textbox with aria-labelledby" supplementalDescription:"Test label" clickable editable textSelectionStart:0 textSelectionEnd:0 actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COPY, PASTE, CUT, SET_SELECTION, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField"]
 ++Button contentDescription:"aria label" clickable actions:[CLICK, AX_FOCUS] bundle:[chromeRole="button"]
-++Button supplementalDescription:"Test label" clickable actions:[CLICK, AX_FOCUS] bundle:[chromeRole="button"]
+++Button text:"Button with aria-labelledby" supplementalDescription:"Test label" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="button"]
 ++EditText supplementalDescription:"aria label" canOpenPopUp clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textFieldWithComboBox", clickableScore="300"]
 ++ListView viewIdResName:"listbox-for-input-1" clickable CollectionInfo:[rows=2, cols=1] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="listBox"]
 ++++View text:"Option 1" viewIdResName:"option1" focusable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="listBoxOption"]
