@@ -121,17 +121,14 @@ ui::ImageModel GetNormalIcon() {
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_GLIC_BUTTON_ALT_ICON));
   }
-  return ui::ImageModel::FromVectorIcon(
-      GlicVectorIcon(),
-      ShouldUseAltIcon() ? kForegroundOnAltBackground : kForeground, kIconSize);
+  return ui::ImageModel::FromVectorIcon(GlicVectorIcon(), kForeground,
+                                        kIconSize);
 }
 
 ui::ImageModel GetIconForHighlight() {
-  if (HighlightNudgeEnabled()) {
-    return ui::ImageModel::FromVectorIcon(GlicVectorIcon(), kTextOnHighlight,
-                                          kIconSize);
-  }
-  return {};
+  return ui::ImageModel::FromVectorIcon(
+      GlicVectorIcon(),
+      HighlightNudgeEnabled() ? kTextOnHighlight : kForeground, kIconSize);
 }
 
 gfx::Insets GetIconMargins(bool label_shown) {
@@ -314,6 +311,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   layout_manager->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
 
+
   // Subscribe to changes in state of glic FRE dialog and glic window.
   glic::GlicKeyedService* const service = glic::GlicKeyedService::Get(profile_);
   glic_window_activation_subscription_ =
@@ -415,10 +413,13 @@ void GlicButton::RestoreDefaultLabel() {
 }
 
 void GlicButton::SetGlicPanelIsOpen(bool open) {
-  if (glic_panel_is_open_ != open) {
-    glic_panel_is_open_ = open;
-    UpdateTextAndBackgroundColors();
+  if (glic_panel_is_open_ == open) {
+    return;
   }
+
+  glic_panel_is_open_ = open;
+  UpdateTextAndBackgroundColors();
+  UpdateIcon();
 }
 
 void GlicButton::OnFreWebUiStateChanged(mojom::FreWebUiState new_state) {
@@ -673,8 +674,13 @@ void GlicButton::NotifyClick(const ui::Event& event) {
 }
 
 void GlicButton::UpdateIcon() {
+  const bool solid_icon_for_pressed_state =
+      base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
+      features::kGlicButtonPressedForceSolidIcon.Get() && glic_panel_is_open_;
   const ui::ImageModel& model =
-      IsHighlightVisible() ? icon_for_highlight_ : normal_icon_;
+      (solid_icon_for_pressed_state || IsHighlightVisible())
+          ? icon_for_highlight_
+          : normal_icon_;
 
   SetImageModel(views::Button::STATE_NORMAL, model);
   SetImageModel(views::Button::STATE_HOVERED, model);
