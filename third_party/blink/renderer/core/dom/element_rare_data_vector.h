@@ -572,7 +572,7 @@ class CORE_EXPORT ElementRareDataVector final
 
   explicit ElementRareDataVector(PassKey) {}
   ElementRareDataVector(PassKey, ElementRareDataVector&& other)
-      : flags_(other.flags_), fields_bitfield_(other.fields_bitfield_) {
+      : flags_(other.flags_), fields_bitfield_(other.fields_bitfield_.load()) {
     UNSAFE_BUFFERS(
         VectorTypeOperations<Member<ElementRareDataField>, HeapAllocator>::Move(
             other.ArrayBase(), other.ArrayBase() + other.size(), ArrayBase(),
@@ -755,7 +755,7 @@ class CORE_EXPORT ElementRareDataVector final
   // This must be a power of two.
   static constexpr unsigned kMinimumVectorSize = 2;
 
-  wtf_size_t size() const { return std::popcount(fields_bitfield_); }
+  wtf_size_t size() const { return std::popcount(fields_bitfield_.load()); }
 
   // Returns whether the field exists. Time complexity is O(1).
   bool HasField(FieldId field_id) const {
@@ -835,7 +835,9 @@ class CORE_EXPORT ElementRareDataVector final
   };
 
   Flags flags_;
-  BitfieldType fields_bitfield_ = 0;
+
+  // Atomic because we might get traced from another thread.
+  std::atomic<BitfieldType> fields_bitfield_ = 0;
 };
 
 template <>

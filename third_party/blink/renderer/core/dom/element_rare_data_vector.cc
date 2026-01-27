@@ -86,6 +86,12 @@ ElementRareDataVector* ElementRareDataVector::SetField(
           AdditionalBytes(kSlotSizeBytes * new_size), PassKey(),
           std::move(*this));
     }
+
+    // Update the bitfield first, so that if we're tracing in parallel,
+    // we're not missing the last field. AdditionalBytes is guaranteed to
+    // initially be zero, so tracing the newly visible member is safe.
+    vec->fields_bitfield_ |= FieldIdMask(field_id);
+
     size_t idx = GetFieldIndex(field_id);
     UNSAFE_BUFFERS(
         VectorTypeOperations<Member<ElementRareDataField>, HeapAllocator>::
@@ -93,7 +99,6 @@ ElementRareDataVector* ElementRareDataVector::SetField(
                             vec->ArrayBase() + current_size,
                             vec->ArrayBase() + idx + 1,
                             VectorOperationOrigin::kRegularModification));
-    vec->fields_bitfield_ |= FieldIdMask(field_id);
   }
   vec->ArraySlot(field_id) = field;
   return vec;
