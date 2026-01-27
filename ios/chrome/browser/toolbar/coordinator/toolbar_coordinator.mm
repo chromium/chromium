@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator_parity.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -37,7 +38,9 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
@@ -203,6 +206,15 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
         createToolbarViewControllerForMediator:_bottomToolbarMediator
                                    locationBar:_bottomLocationBarCoordinator
                                                    .locationBarViewController];
+
+    LayoutGuideCenter* layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
+    [layoutGuideCenter referenceView:_topToolbarViewController.view
+                           underName:kPrimaryToolbarGuide];
+    [layoutGuideCenter
+        referenceView:_topLocationBarCoordinator.locationBarViewController.view
+            underName:kTopOmniboxGuide];
+    [layoutGuideCenter referenceView:_bottomToolbarViewController.view
+                           underName:kSecondaryToolbarGuide];
 
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self
