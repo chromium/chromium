@@ -116,8 +116,8 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
           display::Display::InternalDisplayId(), &internal_display)) {
     // GetDisplayWithDisplayId() returns false if the laptop's lid is closed.
     // Return the preferred size instead.
-    // TODO(crbug.com/40737061): Test this edge case with displays
-    // (lid closed with external monitors).
+    // This edge case with external monitors when the lid is closed is not
+    // covered by tests. See crbug.com/40737061 for context.
     return preferred_size;
   }
 
