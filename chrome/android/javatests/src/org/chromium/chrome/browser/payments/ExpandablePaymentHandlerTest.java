@@ -324,6 +324,7 @@ public class ExpandablePaymentHandlerTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testIncognitoTrue() throws Throwable {
         startDefaultServer();
         WebPageStation webPage =

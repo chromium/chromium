@@ -4,8 +4,6 @@
 -org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
 
 # crbug.com/376100658
--org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.*
--org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentQueryNoCardTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestIncompletePhoneTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestInputProtectionTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestJourneyLoggerTest.*
@@ -101,11 +99,6 @@
 -org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeader
 -org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeaderForOneTimeGrant
 -org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalsTest.*
--org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest.testPageLoadMetricEmitted
--org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest.testPageLoadMetricForPrerendering
--org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest.testPageLoadMetricNavigationIdSetCorrectly
--org.chromium.chrome.browser.partnercustomizations.PartnerDisableIncognitoModeIntegrationTest.*
--org.chromium.chrome.browser.payments.ExpandablePaymentHandlerTest.testIncognitoTrue
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testAllowRuntimeLocationIncognito
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testRuntimeMediaPromptHistogram
 -org.chromium.chrome.browser.picture_in_picture.AutoPictureInPictureTabHelperTest.testBackToTabFromAutoPip
