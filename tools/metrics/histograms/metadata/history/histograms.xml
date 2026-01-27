@@ -3170,6 +3170,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.WebHistory.QueryHistoryResultsCount" units="visits"
+    expires_after="2026-09-01">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/history/OWNERS</owner>
+  <component>1456716</component>
+  <summary>
+    Recorded whenever a QueryHistory request in WebHistoryService completes
+    successfully. Records the number of visits that were returned.
+  </summary>
+</histogram>
+
+<histogram name="History.WebHistory.QueryWebAndAppActivityResult"
+    enum="BooleanOptedIn" expires_after="2026-09-01">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/history/OWNERS</owner>
+  <component>1456716</component>
+  <summary>
+    Recorded whenever a QueryWebAndAppActivity request in WebHistoryService
+    completes successfully. Records the outcome, i.e. whether the user is opted
+    in to web and app activity.
+  </summary>
+</histogram>
+
 <histogram name="History.WebHistoryMergeResult.{LocalOrRemote}.{VisitAge}"
     units="visits" expires_after="2026-07-01">
   <owner>treib@chromium.org</owner>

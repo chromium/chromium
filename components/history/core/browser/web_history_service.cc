@@ -818,7 +818,13 @@ WebHistoryService::QueryHistoryCompletionCallbackImpl(
     return RequestOutcome::kInvalidResponse;
   }
 
-  std::move(callback).Run(request, ParseQueryResponse(*response));
+  QueryHistoryResult result = ParseQueryResponse(*response);
+  // Note: The histogram max of 150 is chosen to match `RESULTS_PER_PAGE` from
+  // chrome/browser/resources/history/constants.ts and `kMaxQueryCount` from
+  // chrome/browser/android/history/browsing_history_bridge.cc.
+  base::UmaHistogramCustomCounts("History.WebHistory.QueryHistoryResultsCount",
+                                 result.visits.size(), 0, 150, 50);
+  std::move(callback).Run(request, std::move(result));
   return RequestOutcome::kSuccess;
 }
 
@@ -893,6 +899,7 @@ WebHistoryService::QueryWebAndAppActivityCompletionCallbackImpl(
     return RequestOutcome::kFailure;
   }
 
+  std::optional<bool> enabled;
   if (std::optional<base::DictValue> response = ReadResponse(*request)) {
     if (base::FeatureList::IsEnabled(kWebHistoryUseNewApi)) {
       if (const base::ListValue* facs_setting =
@@ -900,27 +907,24 @@ WebHistoryService::QueryWebAndAppActivityCompletionCallbackImpl(
         if (facs_setting->size() == 1) {
           if (const base::DictValue* setting_dict =
                   facs_setting->front().GetIfDict()) {
-            if (std::optional<bool> enabled =
-                    setting_dict->FindBool("dataRecordingEnabled")) {
-              std::move(callback).Run(
-                  /*web_and_app_activity_enabled=*/*enabled);
-              return RequestOutcome::kSuccess;
-            }
+            enabled = setting_dict->FindBool("dataRecordingEnabled");
           }
         }
       }
     } else {
-      if (std::optional<bool> enabled =
-              response->FindBool("history_recording_enabled")) {
-        std::move(callback).Run(
-            /*web_and_app_activity_enabled=*/*enabled);
-        return RequestOutcome::kSuccess;
-      }
+      enabled = response->FindBool("history_recording_enabled");
     }
   }
 
-  std::move(callback).Run(/*web_and_app_activity_enabled=*/false);
-  return RequestOutcome::kFailure;
+  if (enabled.has_value()) {
+    base::UmaHistogramBoolean("History.WebHistory.QueryWebAndAppActivityResult",
+                              *enabled);
+    std::move(callback).Run(/*web_and_app_activity_enabled=*/*enabled);
+    return RequestOutcome::kSuccess;
+  } else {
+    std::move(callback).Run(/*web_and_app_activity_enabled=*/false);
+    return RequestOutcome::kInvalidResponse;
+  }
 }
 
 void WebHistoryService::QueryOtherFormsOfBrowsingHistoryCompletionCallback(
