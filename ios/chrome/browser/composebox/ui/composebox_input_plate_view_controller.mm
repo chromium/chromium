@@ -74,7 +74,6 @@ const CGFloat kButtonsStackViewSpacing = 6.0f;
 const CGFloat kShortcutsSpacing = 16.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 6.0f;
-const CGFloat kInputPlateStackViewCarouselSpacing = 10.0f;
 /// The default vertical padding for the input plate. When the text view is the
 /// top most element the padding must be 0. Otherwise, it won't extend to the
 /// top edge when scrolling (crbug.com/464259064).
@@ -1571,8 +1570,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [_inputPlateStackView addArrangedSubview:_toolbarView];
     _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
     _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
-    [_inputPlateStackView setCustomSpacing:kInputPlateStackViewCarouselSpacing
-                                 afterView:_carouselContainer];
     // `_bottomPaddingConstraint` is updated in `updateToolbarVisibility`.
     [self updateToolbarVisibility];
     _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
