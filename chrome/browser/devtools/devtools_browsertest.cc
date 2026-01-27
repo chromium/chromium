@@ -3467,13 +3467,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlockedDevTools) {
   WebContents* wc = browser()->tab_strip_model()->GetActiveWebContents();
   scoped_refptr<content::DevToolsAgentHost> agent(
       GetOrCreateDevToolsHostForWebContents(wc));
-  DevToolsWindow::OpenDevToolsWindow(wc, DevToolsOpenedByAction::kUnknown);
   DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent.get());
+  ASSERT_EQ(nullptr, window);
+  DevToolsWindow::OpenDevToolsWindow(wc, DevToolsOpenedByAction::kUnknown);
+  window = DevToolsWindow::FindDevToolsWindow(agent.get());
   if (window) {
     base::RunLoop run_loop;
     DevToolsWindowTesting::Get(window)->SetCloseCallback(
         run_loop.QuitClosure());
     run_loop.Run();
+  } else {
+    LOG(INFO) << "DevTools window was not found";
   }
   window = DevToolsWindow::FindDevToolsWindow(agent.get());
   ASSERT_EQ(nullptr, window);
