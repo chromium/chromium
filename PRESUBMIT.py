@@ -7846,7 +7846,7 @@ def CheckDanglingUntriaged(input_api, output_api):
 
     count = 0
     try:
-         for f in input_api.AffectedFiles(file_filter=FilterFile):
+        for f in input_api.AffectedFiles(file_filter=FilterFile):
             count -= sum(
                 [l.count('DanglingUntriaged') for l in f.OldContents()])
             count += sum(
@@ -8052,6 +8052,39 @@ def CheckBaseFeatureMacro(input_api, output_api):
         output_api.PresubmitPromptWarning('BASE_FEATURE() macro naming:',
                                           warnings)
     ]
+
+
+def CheckTestFileNamesOnUpload(input_api, output_api):
+    """Warns if file names end with _unittests.cc or _browsertests.cc."""
+    bad_files = []
+    for f in input_api.AffectedFiles(include_deletes=False):
+        local_path = f.LocalPath()
+        if input_api.os_path.basename(local_path) == 'run_all_unittests.cc':
+            continue
+        if 'third_party/' in local_path and 'third_party/blink/' not in local_path:
+            continue
+
+        if local_path.endswith('_unittests.cc'):
+            bad_files.append(
+                '%s (should be %s)' %
+                (local_path, local_path.replace('_unittests.cc',
+                                                '_unittest.cc')))
+        elif local_path.endswith('_browsertests.cc'):
+            bad_files.append(
+                '%s (should be %s)' %
+                (local_path,
+                 local_path.replace('_browsertests.cc', '_browsertest.cc')))
+
+    if not bad_files:
+        return []
+
+    return [
+        output_api.PresubmitPromptWarning(
+            'File names should be singular (_unittest.cc or _browsertest.cc), '
+            'not plural (_unittests.cc or _browsertests.cc).',
+            items=bad_files)
+    ]
+
 
 def CheckAyeAye(input_api, output_api):
     """Runs AyeAye checks locally via the alint tool.

@@ -6038,5 +6038,43 @@ class CheckNoMojomDataViewIncludesTest(unittest.TestCase):
         self.assertEqual(0, len(results))
 
 
+class TestFileNamesTest(unittest.TestCase):
+
+    def testInvalidTestNames(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('path/to/foo_unittests.cc', []),
+            MockFile('path/to/bar_browsertests.cc', []),
+            MockFile('path/to/baz_unittest.cc', []),
+            MockFile('path/to/qux_browsertest.cc', []),
+            MockFile('third_party/blink/renderer/core/foo_unittests.cc', []),
+        ]
+        results = PRESUBMIT.CheckTestFileNamesOnUpload(input_api,
+                                                       MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(3, len(results[0].items))
+        self.assertIn(
+            'path/to/foo_unittests.cc (should be path/to/foo_unittest.cc)',
+            results[0].items)
+        self.assertIn(
+            'path/to/bar_browsertests.cc (should be path/to/bar_browsertest.cc)',
+            results[0].items)
+        self.assertIn(
+            'third_party/blink/renderer/core/foo_unittests.cc (should be third_party/blink/renderer/core/foo_unittest.cc)',
+            results[0].items)
+
+    def testNoInvalidTestNames(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('path/to/baz_unittest.cc', []),
+            MockFile('path/to/qux_browsertest.cc', []),
+            MockFile('path/to/run_all_unittests.cc', []),
+            MockFile('third_party/foo/bar_unittests.cc', []),
+        ]
+        results = PRESUBMIT.CheckTestFileNamesOnUpload(input_api,
+                                                       MockOutputApi())
+        self.assertEqual(0, len(results))
+
+
 if __name__ == '__main__':
     unittest.main()
