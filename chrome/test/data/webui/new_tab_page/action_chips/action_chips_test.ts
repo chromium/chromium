@@ -196,6 +196,29 @@ suite('NewTabPageActionChipsTest', () => {
     assertEquals(null, deepDiveChipTitle);
   });
 
+  test(
+      'deep dive chip with empty subtitle uses title as subtitle', async () => {
+        const chipTitle = 'Example Tab Title';
+        await initializeChips({
+          actionChips: [{
+            type: ChipType.kDeepDive,
+            title: chipTitle,
+            subtitle: '',
+            suggestion: 'Suggestion for deep dive',
+            tab: {
+              url: {url: 'https://example.com'},
+              tabId: 0,
+              title: 'Example Tab',
+              lastActiveTime: {internalValue: BigInt(0)},
+            },
+          }],
+        });
+
+        const body = chips.shadowRoot.querySelector('.chip-body');
+        assertTrue(!!body);
+        assertEquals(chipTitle, body.textContent.trim());
+      });
+
   suite('metrics collection', () => {
     let metrics: MetricsTracker;
     setup(async () => {

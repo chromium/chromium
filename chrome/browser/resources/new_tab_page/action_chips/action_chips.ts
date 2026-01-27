@@ -266,6 +266,14 @@ export class ActionChipsElement extends CrLitElement {
     return chip.type !== ChipType.kDeepDive && this.showSimplifiedUI_;
   }
 
+  protected getChipSubtitle_(chip: ActionChip): string {
+    const prefix = this.showDashSimplifiedUI_(chip) ? ' - ' : '';
+    const subtitle = (this.isDeepDiveChip_(chip) && chip.subtitle === '') ?
+        chip.title :
+        chip.subtitle;
+    return `${prefix}${subtitle}`;
+  }
+
   protected getChipTitle_(chip: ActionChip) {
     const suggestion = chip.suggestion;
 

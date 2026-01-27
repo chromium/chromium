@@ -8,7 +8,9 @@ import {type ActionChip} from '../action_chips.mojom-webui.js';
 import {type ActionChipsElement} from './action_chips.js';
 
 export function getHtml(this: ActionChipsElement) {
+  // clang-format off
   return html`
+  <!--_html_template_start_-->
   <div class="action-chips-wrapper">
     ${
       this.actionChips_.length ?
@@ -38,9 +40,7 @@ export function getHtml(this: ActionChipsElement) {
             <span
               title="${this.getChipTitle_(chip)}"
               class="chip-body">
-                ${this.showDashSimplifiedUI_(chip)
-                    ? ' - '
-                    : ''}${chip.subtitle}
+              ${this.getChipSubtitle_(chip)}
             </span>
           </div>
           ${this.showDismissalUI_ ? html`
@@ -52,5 +52,7 @@ export function getHtml(this: ActionChipsElement) {
         </button>`)}
       </div>
       ` : nothing}
-  </div>`;
+  </div>
+  <!--_html_template_end_-->`;
+                // clang-format on
 }
