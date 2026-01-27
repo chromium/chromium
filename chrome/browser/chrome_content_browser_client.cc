@@ -7748,14 +7748,14 @@ void ChromeContentBrowserClient::
         // BUILDFLAG(IS_CHROMEOS)
 }
 
-content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride
-ChromeContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
+content::ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+ChromeContentBrowserClient::ShouldOverrideLocalNetworkAccessRequestPolicy(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::device_info::is_automotive()) {
-    return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-        kBlockInsteadOfWarn;
+    return content::ContentBrowserClient::
+        LocalNetworkAccessRequestPolicyOverride::kBlockInsteadOfWarn;
   }
 #endif
 
@@ -7763,12 +7763,12 @@ ChromeContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
 
   if (profile->GetPrefs()->GetBoolean(
           prefs::kManagedLocalNetworkAccessRestrictionsTemporaryOptOut)) {
-    return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-        kWarnInsteadOfBlock;
+    return content::ContentBrowserClient::
+        LocalNetworkAccessRequestPolicyOverride::kWarnInsteadOfBlock;
   }
 
-  return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-      kDefault;
+  return content::ContentBrowserClient::
+      LocalNetworkAccessRequestPolicyOverride::kDefault;
 }
 
 bool ChromeContentBrowserClient::IsJitDisabledForSite(

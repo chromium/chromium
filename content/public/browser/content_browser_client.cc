@@ -1601,11 +1601,11 @@ void ContentBrowserClient::GrantAdditionalRequestPrivilegesToWorkerProcess(
     int child_id,
     const GURL& script_url) {}
 
-ContentBrowserClient::PrivateNetworkRequestPolicyOverride
-ContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
+ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+ContentBrowserClient::ShouldOverrideLocalNetworkAccessRequestPolicy(
     BrowserContext* browser_context,
     const url::Origin& origin) {
-  return PrivateNetworkRequestPolicyOverride::kDefault;
+  return LocalNetworkAccessRequestPolicyOverride::kDefault;
 }
 
 bool ContentBrowserClient::IsJitDisabledForSite(BrowserContext* browser_context,

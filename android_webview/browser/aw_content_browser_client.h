@@ -268,7 +268,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   void LogWebDXFeatureForCurrentPage(
       content::RenderFrameHost* render_frame_host,
       blink::mojom::WebDXFeature feature) override;
-  PrivateNetworkRequestPolicyOverride ShouldOverridePrivateNetworkRequestPolicy(
+  LocalNetworkAccessRequestPolicyOverride
+  ShouldOverrideLocalNetworkAccessRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
   content::SpeechRecognitionManagerDelegate*

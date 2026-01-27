@@ -25,7 +25,7 @@
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/private_network_access_util.h"
+#include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -448,11 +448,11 @@ void DedicatedWorkerHost::DidStartScriptLoad(
             .allow_non_secure_local_network_access;
 
     worker_client_security_state_->private_network_request_policy =
-        DerivePrivateNetworkRequestPolicy(
+        DeriveLocalNetworkAccessRequestPolicy(
             worker_client_security_state_->ip_address_space,
             worker_client_security_state_->is_web_secure_context,
             allow_non_secure_local_network_access,
-            PrivateNetworkRequestContext::kWorker);
+            LocalNetworkAccessRequestContext::kWorker);
 
     // Check for policy overrides on LNA. For dedicated workers, we apply
     // policy based on origin of the document that owns the worker.
@@ -460,8 +460,9 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     ContentBrowserClient* client = GetContentClient()->browser();
     BrowserContext* context = ancestor_render_frame_host->GetBrowserContext();
     url::Origin origin = ancestor_render_frame_host->GetLastCommittedOrigin();
-    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
-        client->ShouldOverridePrivateNetworkRequestPolicy(context, origin);
+    ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+        policy_override = client->ShouldOverrideLocalNetworkAccessRequestPolicy(
+            context, origin);
     worker_client_security_state_->private_network_request_policy =
         OverrideLocalNetworkAccessPolicy(
             worker_client_security_state_->private_network_request_policy,
