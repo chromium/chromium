@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -779,20 +780,18 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
       error);
 }
 
-// TODO(crbug.com/405219902): Port to desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that tab groups aren't edited while dragging.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, IsTabStripEditable) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
-  int group_id = ExtensionTabUtil::GetGroupId(
-      browser()->tab_strip_model()->AddToNewGroup({0}));
+  int group_id = ExtensionTabUtil::GetGroupId(CreateTabGroup({0}));
   const std::string args =
       base::StringPrintf(R"([%d, {"index": %d}])", group_id, 1);
 
-  BrowserWindow* browser_window = browser()->window();
-  EXPECT_TRUE(browser_window->IsTabStripEditable());
+  auto* window_controller =
+      BrowserExtensionWindowController::From(browser_window_interface());
+  EXPECT_TRUE(window_controller->HasEditableTabStrip());
 
   // Succeed moving group when tab strip is editable.
   {
@@ -803,8 +802,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, IsTabStripEditable) {
   }
 
   // Make tab strip uneditable.
-  browser_window->DisableTabStripEditingForTesting();
-  EXPECT_FALSE(browser_window->IsTabStripEditable());
+  window_controller->disable_tab_strip_editing_for_test();
+  EXPECT_FALSE(window_controller->HasEditableTabStrip());
 
   // Succeed querying group when tab strip is not editable.
   {
@@ -825,7 +824,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, IsTabStripEditable) {
     EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that moving a group within the same window but specifying the window id
 // does not cause unexpected behavior.
