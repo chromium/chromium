@@ -328,7 +328,8 @@ class CrossThreadOnceFunction<R(Args...)> {
 // comment block above for the correct usage of those.
 template <typename FunctionType, typename... BoundParameters>
 // `auto` here deduces to an appropriate `base::OnceCallback<>`.
-auto BindOnce(FunctionType&& function, BoundParameters&&... bound_parameters) {
+[[nodiscard]] auto BindOnce(FunctionType&& function,
+                            BoundParameters&&... bound_parameters) {
   static_assert(functional_internal::CheckGCedTypeRestrictions<
                     std::index_sequence_for<BoundParameters...>,
                     std::decay_t<BoundParameters>...>::ok,
@@ -349,8 +350,8 @@ auto BindOnce(FunctionType&& function, BoundParameters&&... bound_parameters) {
 
 template <typename FunctionType, typename... BoundParameters>
 // `auto` here deduces to an appropriate `base::RepeatingCallback<>`.
-auto BindRepeating(FunctionType function,
-                   BoundParameters&&... bound_parameters) {
+[[nodiscard]] auto BindRepeating(FunctionType function,
+                                 BoundParameters&&... bound_parameters) {
   static_assert(functional_internal::CheckGCedTypeRestrictions<
                     std::index_sequence_for<BoundParameters...>,
                     std::decay_t<BoundParameters>...>::ok,
