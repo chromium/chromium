@@ -26,6 +26,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace {
@@ -97,8 +99,8 @@ struct FileData {
 };
 
 struct Snapshot {
-  std::unordered_map<std::string, FileData> files;
-  std::unordered_set<std::string> directories;
+  absl::flat_hash_map<std::string, FileData> files;
+  absl::flat_hash_set<std::string> directories;
 };
 
 bool ComputeFileHash(const base::FilePath& file_path, uint32_t* hash_code) {
