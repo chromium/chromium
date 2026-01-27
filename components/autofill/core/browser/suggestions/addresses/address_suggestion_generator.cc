@@ -223,21 +223,6 @@ std::u16string GetProfileSuggestionMainText(
   return profile.GetInfo(trigger_field_type, app_locale);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Returns the minimum number of fields that should be returned by
-// `AutofillProfile::CreateInferredLabels()`, based on the type of the
-// triggering field.
-int GetNumberOfMinimalFieldsToShow(FieldType trigger_field_type) {
-  if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone) {
-    // Phone fields are a special case. For them we want both the
-    // `FULL_NAME` and `ADDRESS_HOME_LINE1` to be present.
-    return 2;
-  } else {
-    return 1;
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 // Returns for each profile in `profiles` a differentiating label string to be
 // used as a secondary text in the corresponding suggestion bubble.
 // `field_types` the types of the fields that will be filled by the suggestion.
@@ -247,25 +232,11 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     FieldType trigger_field_type,
     const std::string& app_locale) {
   // Generate disambiguating labels based on the list of matches.
-  std::vector<std::u16string> differentiating_labels;
   std::vector<const AutofillProfile*> profile_ptrs = base::ToVector(
       profiles, [](const AutofillProfile& profile) { return &profile; });
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)) {
-    differentiating_labels = AutofillProfile::CreateInferredLabels(
-        profile_ptrs, /*suggested_fields=*/std::nullopt, trigger_field_type,
-        {trigger_field_type},
-        GetNumberOfMinimalFieldsToShow(trigger_field_type), app_locale,
-        /*use_improved_labels_order=*/true);
-  } else
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  {
-    differentiating_labels = AutofillProfile::CreateInferredLabels(
-        profile_ptrs, field_types, /*triggering_field_type=*/std::nullopt,
-        {trigger_field_type},
-        /*minimal_fields_shown=*/1, app_locale);
-  }
-  return differentiating_labels;
+  return AutofillProfile::CreateInferredLabels(
+      profile_ptrs, field_types, {trigger_field_type},
+      /*minimal_fields_shown=*/1, app_locale);
 }
 
 // For each profile in `profiles`, returns a vector of `Suggestion::labels` to

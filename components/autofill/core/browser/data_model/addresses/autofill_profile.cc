@@ -889,7 +889,6 @@ std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
     std::string_view app_locale) {
   const size_t kMinimalFieldsShown = 2;
   return CreateInferredLabels(profiles, /*suggested_fields=*/std::nullopt,
-                              /*triggering_field_type=*/std::nullopt,
                               /*excluded_fields=*/{}, kMinimalFieldsShown,
                               app_locale);
 }
@@ -898,17 +897,9 @@ std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
 std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
     base::span<const AutofillProfile* const> profiles,
     const std::optional<FieldTypeSet> suggested_fields,
-    std::optional<FieldType> triggering_field_type,
     FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
-    std::string_view app_locale,
-    bool use_improved_labels_order) {
-  // TODO(crbug.com/380273791): Clean up after launch.
-  CHECK(!triggering_field_type ||
-        base::FeatureList::IsEnabled(features::kAutofillImprovedLabels));
-  CHECK(!use_improved_labels_order ||
-        base::FeatureList::IsEnabled(features::kAutofillImprovedLabels));
-
+    std::string_view app_locale) {
   std::vector<FieldType> fields_to_use;
   std::vector<FieldType> suggested_fields_types =
       suggested_fields
@@ -916,25 +907,18 @@ std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
           : std::vector<FieldType>();
   GetFieldsForDistinguishingProfiles(
       suggested_fields ? &suggested_fields_types : nullptr, excluded_fields,
-      &fields_to_use, use_improved_labels_order);
+      &fields_to_use, false);
 
   // Construct the default label for each profile. Also construct a map that
-  // associates each (main_text, label) pair with the profiles that have this
-  // info. This map is then used to detect which labels need further
-  // differentiating fields.
-  // Note that the actual displayed main text might slightly differ due to
-  // formatting, but it is not needed to format the text for differentiating the
-  // labels.
-  std::map<std::pair<std::u16string, std::u16string>, std::list<size_t>>
-      labels_to_profiles;
+  // associates each label with the profiles that have this info. This map is
+  // then used to detect which labels need further differentiating fields. Note
+  // that the actual displayed label might slightly differ due to formatting,
+  // but it is not needed to format the text for differentiating the labels.
+  std::map<std::u16string, std::list<size_t>> labels_to_profiles;
   for (size_t i = 0; i < profiles.size(); ++i) {
     std::u16string label = profiles[i]->ConstructInferredLabel(
         fields_to_use, minimal_fields_shown, app_locale);
-    std::u16string main_text =
-        triggering_field_type
-            ? profiles[i]->GetInfo(*triggering_field_type, app_locale)
-            : u"";
-    labels_to_profiles[{main_text, label}].push_back(i);
+    labels_to_profiles[label].push_back(i);
   }
 
   std::vector<std::u16string> labels;
@@ -942,9 +926,8 @@ std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
   for (auto& it : labels_to_profiles) {
     if (it.second.size() == 1) {
       // This label is unique, so use it without any further ado.
-      std::u16string label = it.first.second;
       size_t profile_index = it.second.front();
-      labels[profile_index] = label;
+      labels[profile_index] = it.first;
     } else {
       // We have more than one profile with the same label, so add
       // differentiating fields.
