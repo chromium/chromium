@@ -32,16 +32,24 @@
 // Selected identity.
 @property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
+// Whether a method of the delegate was called.
+@property(nonatomic, assign) BOOL delegateCalled;
+
 @end
 
 @implementation IdentityChooserCoordinatorTestDelegate
 
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
       didCloseWithSelectedIdentity:(id<SystemIdentity>)identity {
+  ASSERT_FALSE(self.delegateCalled);
   self.selectedIdentity = identity;
+  self.delegateCalled = YES;
 }
+
 - (void)identityChooserCoordinatorDidTapOnAddAccount:
     (IdentityChooserCoordinator*)coordinator {
+  ASSERT_FALSE(self.delegateCalled);
+  self.delegateCalled = YES;
 }
 
 @end
@@ -110,8 +118,9 @@ TEST_F(IdentityChooserCoordinatorTest, testValidIdentity) {
         didSelectIdentityWithGaiaID:identity.gaiaId];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {
-        return [identity isEqual:delegate_.selectedIdentity];
+        return delegate_.delegateCalled;
       }));
+  EXPECT_NSEQ(identity, delegate_.selectedIdentity);
   [coordinator_ stop];
 }
 
@@ -127,6 +136,10 @@ TEST_F(IdentityChooserCoordinatorTest, testIdentityInvalidatedDuringSelection) {
   [GetViewControllerDelegate()
       identityChooserViewController:presented_view_controller
         didSelectIdentityWithGaiaID:GaiaId("1")];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool() {
+        return delegate_.delegateCalled;
+      }));
   EXPECT_NSEQ(nil, delegate_.selectedIdentity);
   [coordinator_ stop];
 }
