@@ -63,7 +63,7 @@ class UpdateRequiredNotificationTest
   MOCK_METHOD0(RestartToLoginScreen, void());
   MOCK_METHOD0(HideUpdateRequiredScreenIfShown, void());
   MOCK_CONST_METHOD0(IsLoginSessionState, bool());
-  MOCK_CONST_METHOD0(IsKioskMode, bool());
+  MOCK_CONST_METHOD1(IsKioskMode, bool(const PrefService&));
   MOCK_CONST_METHOD0(IsLoginInProgress, bool());
   MOCK_CONST_METHOD0(IsDeviceEnterpriseManaged, bool());
   MOCK_CONST_METHOD0(IsUserLoggedIn, bool());

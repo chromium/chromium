@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,11 +27,12 @@ namespace policy {
 MinimumVersionPolicyHandlerDelegateImpl::
     MinimumVersionPolicyHandlerDelegateImpl() = default;
 
-bool MinimumVersionPolicyHandlerDelegateImpl::IsKioskMode() const {
+bool MinimumVersionPolicyHandlerDelegateImpl::IsKioskMode(
+    const PrefService& local_state) const {
   return user_manager::UserManager::IsInitialized() &&
          (ash::ShouldAutoLaunchKioskApp(
               CHECK_DEREF(base::CommandLine::ForCurrentProcess()),
-              CHECK_DEREF(g_browser_process->local_state())) ||
+              local_state) ||
           user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
 }
 

@@ -60,7 +60,7 @@ class MinimumVersionPolicyHandlerTest
   void TearDown() override;
 
   // MinimumVersionPolicyHandler::Delegate:
-  bool IsKioskMode() const override;
+  bool IsKioskMode(const PrefService&) const override;
   bool IsDeviceEnterpriseManaged() const override;
   base::Version GetCurrentVersion() const override;
   bool IsUserEnterpriseManaged() const override;
@@ -143,7 +143,7 @@ void MinimumVersionPolicyHandlerTest::SetCurrentVersionString(
   ASSERT_TRUE(current_version_->IsValid());
 }
 
-bool MinimumVersionPolicyHandlerTest::IsKioskMode() const {
+bool MinimumVersionPolicyHandlerTest::IsKioskMode(const PrefService&) const {
   return false;
 }
 

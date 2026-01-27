@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system_tray.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -207,8 +208,12 @@ bool MinimumVersionPolicyHandler::IsDeadlineTimerRunningForTesting() const {
 }
 
 bool MinimumVersionPolicyHandler::IsPolicyApplicable() {
+  // TODO(crbug.com/404133022): Avoid using g_browser_process.
+  const PrefService& local_state =
+      CHECK_DEREF(g_browser_process->local_state());
+
   bool device_managed = delegate_->IsDeviceEnterpriseManaged();
-  bool is_kiosk = delegate_->IsKioskMode();
+  bool is_kiosk = delegate_->IsKioskMode(local_state);
   return device_managed && !is_kiosk;
 }
 

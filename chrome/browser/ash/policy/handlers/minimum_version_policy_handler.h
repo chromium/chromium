@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 class NetworkStateHandler;
@@ -64,7 +65,7 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
 
     // Checks if the user is logged in as any kiosk app or this is an
     // auto-launch kiosk device.
-    virtual bool IsKioskMode() const = 0;
+    virtual bool IsKioskMode(const PrefService& local_state) const = 0;
 
     // Checks if the device is enterprise managed.
     virtual bool IsDeviceEnterpriseManaged() const = 0;
