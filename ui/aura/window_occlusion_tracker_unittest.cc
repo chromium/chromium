@@ -1712,8 +1712,9 @@ class ObserverDestroyingWindowOnAnimationEnded
 
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
     EXPECT_TRUE(window_);
-    delete window_;
+    aura::Window* ptr = window_.get();
     window_ = nullptr;
+    delete ptr;
   }
 
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
@@ -1721,7 +1722,7 @@ class ObserverDestroyingWindowOnAnimationEnded
       ui::LayerAnimationSequence* sequence) override {}
 
  private:
-  raw_ptr<Window, DanglingUntriaged> window_;
+  raw_ptr<Window> window_;
 };
 
 }  // namespace

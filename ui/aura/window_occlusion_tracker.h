@@ -115,7 +115,7 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
     void OnWindowDestroying(Window* window) override;
 
     void Shutdown();
-    raw_ptr<Window, DanglingUntriaged> window_;
+    raw_ptr<Window> window_;
   };
 
   // Forces the occlusion state of a window to VISIBLE regardless of the drawn
@@ -145,7 +145,7 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
 
     void Shutdown();
 
-    raw_ptr<Window, DanglingUntriaged> window_;
+    raw_ptr<Window> window_;
   };
 
   // Locks the occlusion state and occluded region on the `window` and suppress
