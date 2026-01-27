@@ -229,7 +229,6 @@ export class ComposeboxElement extends I18nMixinLit
   accessor disableVoiceSearchAnimation: boolean = false;
   accessor tabSuggestions: TabInfo[] = [];
   accessor lensButtonDisabled: boolean = false;
-  accessor showModelPicker: boolean = false;
   accessor showCanvas: boolean = false;
   protected composeboxNoFlickerSuggestionsFix_: boolean =
       loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
@@ -271,6 +270,10 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
   protected showVoiceSearchInExpandedComposebox_: boolean =
       loadTimeData.getBoolean('expandedComposeboxShowVoiceSearch');
+  protected showModelPicker_: boolean =
+      loadTimeData.valueExists('contextualMenuShowModelPicker') ?
+      loadTimeData.getBoolean('contextualMenuShowModelPicker') :
+      false;
   protected dragAndDropHandler_: DragAndDropHandler;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');

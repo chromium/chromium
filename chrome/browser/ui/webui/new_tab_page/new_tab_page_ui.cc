@@ -713,8 +713,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       ntp_composebox::kAddTabUploadDelayOnRecentTabChipClick.Get());
   source->AddBoolean("enableThreadsRail",
                      ntp_composebox::kEnableThreadsRail.Get());
-  source->AddBoolean("showModelPicker", ntp_composebox::kShowModelPicker.Get());
-  source->AddBoolean("showCanvas", ntp_composebox::kShowCanvas.Get());
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddBoolean("enableThreadsRailLogo",

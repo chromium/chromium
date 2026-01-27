@@ -415,7 +415,7 @@ export class SearchboxElement extends SearchboxElementBase implements
       showCanvas: {
         type: Boolean,
       },
-      showModelPicker: {
+      showModelPicker_: {
         type: Boolean,
       },
     };
@@ -443,7 +443,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       GlifAnimationState.INELIGIBLE;
   accessor cyclingPlaceholders: boolean = false;
   accessor showCanvas: boolean = false;
-  accessor showModelPicker: boolean = false;
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
   accessor showThumbnail: boolean = false;
@@ -467,6 +466,10 @@ export class SearchboxElement extends SearchboxElementBase implements
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
+  protected accessor showModelPicker_: boolean =
+      loadTimeData.valueExists('contextualMenuShowModelPicker') ?
+      loadTimeData.getBoolean('contextualMenuShowModelPicker') :
+      false;
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor selectedMatch_: AutocompleteMatch|null = null;
   protected accessor selectedMatchIndex_: number = -1;
