@@ -26,14 +26,6 @@
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.*
 -org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManagerTest.*
 
-# crbug.com/376168546
--org.chromium.chrome.browser.tabmodel.ContextMenuLoadUrlParamsTest.testOpenInIncognitoTabNoReferrer
-
-# crbug.com/376375165
-
-# crbug.com/376371633
--org.chromium.chrome.browser.tabmodel.ChromeTabCreatorTest.testCreateNewTabInBackground
-
 # crbug.com/368117896
 -org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
 
@@ -85,11 +77,6 @@
 -org.chromium.chrome.browser.sensitive_content.SensitiveContentTest.testSensitiveContentIsRestoredFromTabState
 -org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromAppMenu
 -org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromTabSwitcherActionMenu
--org.chromium.chrome.browser.tab.SadTabTest.testSadTabBrowserControlsVisibility
--org.chromium.chrome.browser.tabbed_mode.TabbedNavigationBarColorControllerTest.testToggleIncognito
--org.chromium.chrome.browser.tabmodel.TabModelImplTest.testCloseIncognitoTabSwitchesToNormalModelAndUpdatesIncognitoIndex
--org.chromium.chrome.browser.tabmodel.TabModelImplTest.testSetMuteSetting_Incognito
--org.chromium.chrome.browser.tabmodel.TabModelImplTest.validIndexAfterRestored_FromPreviousActivity_WithIncognitoTabs
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchRenderTest.testRenderTypedSuggestions_Incognito
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchRenderTest.testZeroPrefixSuggestions_HiddenInIncognito
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherSearchTest.testSearchActivityBackButton_Incognito

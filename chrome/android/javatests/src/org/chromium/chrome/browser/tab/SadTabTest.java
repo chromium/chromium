@@ -24,6 +24,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -38,6 +39,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests related to the sad tab logic. */
@@ -198,6 +200,7 @@ public class SadTabTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // Browser controls don't move in auto
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
     @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testSadTabBrowserControlsVisibility() {
         ThreadUtils.runOnUiThreadBlocking(
                 TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);
