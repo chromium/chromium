@@ -17,6 +17,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -67,6 +68,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/common/aliases.h"
@@ -78,6 +80,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -759,8 +762,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kFillAutofillAi:
-      FillAutofillAiForm(suggestion);
-      break;
+      // Autofill AI is responsible for hiding the popup since it may keep it
+      // open longer during reauth and server fetching.
+      FillAutofillAiFormAndHidePopup(suggestion);
+      return;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
@@ -1343,7 +1348,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
 void AutofillExternalDelegate::MaybeAuthenticateBeforeFilling(
     const std::u16string& reauth_message,
     std::string histogram,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(bool)> callback) {
   if (authenticator_) {
     authenticator_->Cancel();
     authenticator_.reset();
@@ -1353,7 +1358,7 @@ void AutofillExternalDelegate::MaybeAuthenticateBeforeFilling(
 
   if (!authenticator ||
       !authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
-    std::move(callback).Run();
+    std::move(callback).Run(/*auth_suceeded=*/true);
     return;
   }
 
@@ -1364,8 +1369,12 @@ void AutofillExternalDelegate::MaybeAuthenticateBeforeFilling(
                      std::move(callback)));
 }
 
-void AutofillExternalDelegate::FillAutofillAiForm(
+void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
     const Suggestion& suggestion) {
+  absl::Cleanup popup_closer = [this] {
+    manager_->client().HideAutofillSuggestions(
+        SuggestionHidingReason::kAcceptSuggestion);
+  };
   const EntityDataManager* const edm =
       manager_->client().GetEntityDataManager();
   if (!edm) {
@@ -1400,6 +1409,19 @@ void AutofillExternalDelegate::FillAutofillAiForm(
                                 trigger_source);
     return;
   }
+
+  // Show a loading state.
+  if (base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
+    AttemptToDisplayAutofillSuggestions(
+        PrepareLoadingStateSuggestions(
+            base::ToVector(manager_->client().GetAutofillSuggestions()),
+            suggestion),
+        trigger_source_,
+        /*is_update=*/true);
+    std::move(popup_closer).Cancel();
+  }
+
+  // Authenticate and fill on success.
   std::u16string message;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   const std::u16string origin =
@@ -1411,24 +1433,27 @@ void AutofillExternalDelegate::FillAutofillAiForm(
       base::BindOnce(
           [](base::WeakPtr<BrowserAutofillManager> manager,
              const FormData& form, const FieldGlobalId& field_id,
-             const EntityInstance& entity,
-             AutofillTriggerSource trigger_source) {
+             const EntityInstance& entity, AutofillTriggerSource trigger_source,
+             bool auth_succeeded) {
             if (!manager) {
               return;
             }
-            manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                       field_id, &entity, trigger_source);
+            if (auth_succeeded) {
+              manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                                         field_id, &entity, trigger_source);
+            }
+            manager->client().HideAutofillSuggestions(
+                SuggestionHidingReason::kAcceptSuggestion);
           },
           manager_->GetBrowserAutofillManagerWeakPtr(), query_form_,
           query_field_.global_id(), *entity, trigger_source));
 }
 
-void AutofillExternalDelegate::OnReauthCompleted(base::OnceClosure callback,
-                                                 bool auth_succeeded) {
+void AutofillExternalDelegate::OnReauthCompleted(
+    base::OnceCallback<void(bool)> callback,
+    bool auth_succeeded) {
   authenticator_.reset();
-  if (auth_succeeded) {
-    std::move(callback).Run();
-  }
+  std::move(callback).Run(auth_succeeded);
 }
 
 }  // namespace autofill

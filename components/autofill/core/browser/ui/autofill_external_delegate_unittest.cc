@@ -1412,9 +1412,10 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
 // filled upon success.
 TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kAutofillAiWithDataSchema,
-                                        features::kAutofillAiReauthRequired},
-                                       {});
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillAiWithDataSchema, features::kAutofillAiReauthRequired,
+       features::kAutofillAiWalletPrivatePasses},
+      {});
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 
@@ -1425,23 +1426,42 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
   // re-auth.
   IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
 
+  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
+  std::vector<Suggestion> all_suggestions = {
+      fill_suggestion, Suggestion(SuggestionType::kFillAutofillAi)};
+  OnSuggestionsReturned(queried_field().global_id(), all_suggestions);
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(all_suggestions));
+
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
-  EXPECT_CALL(autofill_client(),
-              GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
-      .WillOnce(Return(std::move(authenticator)));
 
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), _, DefaultTriggerSource()));
+  {
+    InSequence s;
+    auto is_loading =
+        Field(&Suggestion::is_loading, Suggestion::IsLoading(true));
+    auto is_deactivated =
+        AllOf(Field(&Suggestion::acceptability,
+                    Suggestion::Acceptability::kUnacceptable),
+              Field(&Suggestion::is_loading, Suggestion::IsLoading(false)));
+    EXPECT_CALL(autofill_client(),
+                UpdateAutofillSuggestions(_, FillingProduct::kAutofillAi,
+                                          kDefaultSuggestionTriggerSource));
+    EXPECT_CALL(autofill_client(),
+                GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
+        .WillOnce(Return(std::move(authenticator)));
 
-  Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
+    EXPECT_CALL(
+        autofill_manager(),
+        FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                          IsQueriedFieldId(), _, DefaultTriggerSource()));
+  }
+
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
