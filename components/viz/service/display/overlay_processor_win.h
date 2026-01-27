@@ -66,7 +66,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list_in_root_space,
-      const PrimaryPlaneParams& primary_plane_params,
+      std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* overlay_candidates,
       gfx::Rect* root_damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;

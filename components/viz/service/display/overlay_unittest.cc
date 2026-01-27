@@ -102,6 +102,7 @@ const gfx::Rect kOverlayBottomRightRect(128, 128, 128, 128);
 const gfx::Rect kOverlayClipRect(0, 0, 128, 128);
 const gfx::PointF kUVTopLeft(0.1f, 0.2f);
 const gfx::PointF kUVBottomRight(1.0f, 1.0f);
+const SharedImageFormat kDefaultSIFormat = SinglePlaneFormat::kRGBA_8888;
 const OverlayCandidateFactory::OverlayContext kTestOverlayContext;
 
 class TimeTicksOverride {
@@ -152,7 +153,7 @@ class MultiOverlayHysteresisProcessor : public TestOverlayProcessor {
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      const PrimaryPlaneParams& primary_plane_params,
+      std::optional<OverlayCandidate>& primary_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) override {
@@ -163,7 +164,7 @@ class MultiOverlayHysteresisProcessor : public TestOverlayProcessor {
     OverlayProcessorUsingStrategy::ProcessForOverlays(
         resource_provider, render_passes, output_color_matrix,
         render_pass_filters, render_pass_backdrop_filters,
-        surface_damage_rect_list, primary_plane_params, overlay_candidates,
+        surface_damage_rect_list, primary_plane, overlay_candidates,
         damage_rect, content_bounds);
   }
 
@@ -309,7 +310,7 @@ class MultiOverlayProcessorBase : public TestOverlayProcessor {
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      const PrimaryPlaneParams& primary_plane_params,
+      std::optional<OverlayCandidate>& primary_plane,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) override {
@@ -320,7 +321,7 @@ class MultiOverlayProcessorBase : public TestOverlayProcessor {
     OverlayProcessorUsingStrategy::ProcessForOverlays(
         resource_provider, render_passes, output_color_matrix,
         render_pass_filters, render_pass_backdrop_filters,
-        surface_damage_rect_list, primary_plane_params, overlay_candidates,
+        surface_damage_rect_list, primary_plane, overlay_candidates,
         damage_rect, content_bounds);
   }
 
@@ -925,24 +926,18 @@ class OverlayTest : public testing::Test {
     return resource_factory_->resource_provider();
   }
 
-  OverlayProcessorInterface::PrimaryPlaneParams GetDefaultPrimaryPlane() {
-    return OverlayProcessorInterface::PrimaryPlaneParams{
-        .viewport_size = kDisplaySize,
-        .resource_size_in_pixels = kDisplaySize,
-        .supports_hdr = false,
-        .is_opaque = true,
-#if BUILDFLAG(IS_OZONE)
-        .si_format = SinglePlaneFormat::kRGBA_8888,
-        .color_space = gfx::ColorSpace::CreateSRGB(),
-        .overlay_testing_mailbox = gpu::Mailbox(),
-#endif
-    };
+  std::optional<OverlayCandidate>& GetDefaultPrimaryPlane() {
+    primary_plane_ = OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
+        kDisplaySize, kDisplaySize, kDefaultSIFormat,
+        gfx::ColorSpace::CreateSRGB(), false, 1.0, gpu::Mailbox());
+    return primary_plane_;
   }
 
   std::unique_ptr<TestResourceFactory> resource_factory_;
   std::unique_ptr<OverlayProcessorType> overlay_processor_;
   gfx::Rect damage_rect_;
   std::vector<gfx::Rect> content_bounds_;
+  std::optional<OverlayCandidate> primary_plane_;
 };
 
 template <typename OverlayProcessorType>
@@ -3864,9 +3859,14 @@ TEST_F(UnderlayTest, PrimaryPlaneOverlayIsTransparentWithUnderlay) {
   pass_list.push_back(std::move(pass));
   SurfaceDamageRectList surface_damage_rect_list;
 
+  std::optional<OverlayCandidate> output_surface_plane =
+      overlay_processor_->ProcessOutputSurfaceAsOverlay(
+          kDisplaySize, kDisplaySize, kDefaultSIFormat, gfx::ColorSpace(),
+          false /* has_alpha */, 1.0f /* opacity */, gpu::Mailbox());
+
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
+      std::move(surface_damage_rect_list), output_surface_plane,
       &candidate_list, &damage_rect_, &content_bounds_);
 
   ASSERT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(candidate_list));
@@ -4238,8 +4238,8 @@ TEST_F(UnderlayCastTest, ReplacementQuad) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, pass_list.size());
   ASSERT_EQ(1U, pass_list.front()->quad_list.size());
   EXPECT_EQ(SkColors::kTransparent, static_cast<SolidColorDrawQuad*>(
@@ -4264,8 +4264,8 @@ TEST_F(UnderlayCastTest, NoOverlayContentBounds) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
   EXPECT_EQ(0U, content_bounds_.size());
 }
 
@@ -4281,8 +4281,8 @@ TEST_F(UnderlayCastTest, FullScreenOverlayContentBounds) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(1U, content_bounds_.size());
   EXPECT_TRUE(content_bounds_[0].IsEmpty());
@@ -4309,8 +4309,8 @@ TEST_F(UnderlayCastTest, BlackOutsideOverlayContentBounds) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(1U, content_bounds_.size());
   EXPECT_TRUE(content_bounds_[0].IsEmpty());
@@ -4330,8 +4330,8 @@ TEST_F(UnderlayCastTest, OverlayOccludedContentBounds) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(1U, content_bounds_.size());
   EXPECT_EQ(kOverlayTopLeftRect, content_bounds_[0]);
@@ -4353,8 +4353,8 @@ TEST_F(UnderlayCastTest, OverlayOccludedUnionContentBounds) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(1U, content_bounds_.size());
   EXPECT_EQ(kOverlayRect, content_bounds_[0]);
@@ -4382,8 +4382,8 @@ TEST_F(UnderlayCastTest, RoundOverlayContentBounds) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(1U, content_bounds_.size());
   EXPECT_EQ(gfx::Rect(0, 0, 11, 11), content_bounds_[0]);
@@ -4412,8 +4412,8 @@ TEST_F(UnderlayCastTest, RoundContentBounds) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(1U, content_bounds_.size());
   EXPECT_EQ(kOverlayRect, content_bounds_[0]);
@@ -4431,8 +4431,8 @@ TEST_F(UnderlayCastTest, NoOverlayPromotionWithoutProtectedContent) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
 
   ASSERT_TRUE(candidate_list.empty());
   EXPECT_TRUE(content_bounds_.empty());
@@ -4456,8 +4456,8 @@ TEST_F(UnderlayCastTest, OverlayPromotionWithMaskFilter) {
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
-      &candidate_list, &damage_rect_, &content_bounds_);
+      std::move(surface_damage_rect_list), primary_plane_, &candidate_list,
+      &damage_rect_, &content_bounds_);
 
   ASSERT_EQ(1U, content_bounds_.size());
   EXPECT_TRUE(content_bounds_.front().IsEmpty());
@@ -4487,11 +4487,15 @@ TEST_F(UnderlayCastTest, PrimaryPlaneOverlayIsAlwaysTransparent) {
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
+  std::optional<OverlayCandidate> output_surface_plane =
+      overlay_processor_->ProcessOutputSurfaceAsOverlay(
+          kDisplaySize, kDisplaySize, kDefaultSIFormat, gfx::ColorSpace(),
+          false /* has_alpha */, 1.0f /* opacity */, gpu::Mailbox());
 
   SurfaceDamageRectList surface_damage_rect_list;
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
+      std::move(surface_damage_rect_list), output_surface_plane,
       &candidate_list, &damage_rect_, &content_bounds_);
 
   EXPECT_EQ(0U, content_bounds_.size());
@@ -4822,6 +4826,10 @@ TEST_F(UnderlayTest, DisableOverlayWithRootCopies) {
   SurfaceDamageRectList surface_damage_rect_list;
 
   render_pass_list.push_back(std::move(root_pass));
+  std::optional<OverlayCandidate> output_surface_plane =
+      overlay_processor_->ProcessOutputSurfaceAsOverlay(
+          kDisplaySize, kDisplaySize, kDefaultSIFormat, gfx::ColorSpace(),
+          false /* has_alpha */, 1.0f /* opacity */, gpu::Mailbox());
 
   // Choose 5 here for testing purpose, this value will not change
   constexpr int kDisableOverlayTestVectorSize =
@@ -4860,7 +4868,7 @@ TEST_F(UnderlayTest, DisableOverlayWithRootCopies) {
     OverlayCandidateList candidate_list;
     overlay_processor_->ProcessForOverlays(
         resource_provider(), &render_pass_list, GetIdentityColorMatrix(),
-        surface_damage_rect_list, GetDefaultPrimaryPlane(), &candidate_list,
+        surface_damage_rect_list, output_surface_plane, &candidate_list,
         &damage_rect_, &content_bounds_);
 
     EXPECT_EQ(expected_overlays[i],
@@ -6401,10 +6409,14 @@ TEST_P(MultiUnderlayPromotedTest, UnderlaysBlendPrimaryPlane) {
   OverlayCandidateList candidate_list;
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
+  std::optional<OverlayCandidate> output_surface_plane =
+      overlay_processor_->ProcessOutputSurfaceAsOverlay(
+          kDisplaySize, kDisplaySize, kDefaultSIFormat, gfx::ColorSpace(),
+          false /* has_alpha */, 1.0f /* opacity */, gpu::Mailbox());
 
   overlay_processor_->ProcessForOverlays(
       resource_provider(), &pass_list, GetIdentityColorMatrix(),
-      std::move(surface_damage_rect_list), GetDefaultPrimaryPlane(),
+      std::move(surface_damage_rect_list), output_surface_plane,
       &candidate_list, &damage_rect_, &content_bounds_);
 
   if (promoted) {

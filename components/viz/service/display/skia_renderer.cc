@@ -4255,8 +4255,11 @@ void SkiaRenderer::EnsureMinNumberOfBuffers(int n) {
   buffer_queue_->EnsureMinNumberOfBuffers(n);
 }
 
-#if BUILDFLAG(IS_OZONE)
 gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
+#if BUILDFLAG(IS_WIN)
+  // Windows dcomp uses a swap chain for primary plane instead of BufferQueue.
+  return gpu::Mailbox();
+#else
   // For the purpose of testing the overlay configuration, the mailbox for ANY
   // buffer from BufferQueue is good enough because they're all created with
   // identical properties.
@@ -4266,7 +4269,10 @@ gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
   // previous frame's mailbox.)
   CHECK(buffer_queue_);
   return buffer_queue_->GetLastSwappedBuffer();
+#endif
 }
+
+#if BUILDFLAG(IS_OZONE)
 
 DBG_FLAG_FBOOL("delegated.overlay.background_candidate.colored",
                toggle_background_overlay_color)  // False by default.

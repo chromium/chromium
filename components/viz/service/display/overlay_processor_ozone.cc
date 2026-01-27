@@ -498,14 +498,6 @@ void OverlayProcessorOzone::InsertPrimaryPlane(
   candidates.insert(insert_positon, std::move(primary_plane));
 }
 
-bool OverlayProcessorOzone::ShouldCreatePrimaryPlane() const {
-#if BUILDFLAG(IS_CASTOS)
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     ui::OverlaySurfaceCandidate* candidate,
     const gpu::Mailbox& mailbox,
