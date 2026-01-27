@@ -38,7 +38,7 @@
 #include "components/performance_manager/test_support/graph_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/tabs/public/split_tab_visual_data.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_web_contents_observer.h"

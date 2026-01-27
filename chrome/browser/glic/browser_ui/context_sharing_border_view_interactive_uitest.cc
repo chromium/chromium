@@ -33,7 +33,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
-#include "components/tabs/public/split_tab_visual_data.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"

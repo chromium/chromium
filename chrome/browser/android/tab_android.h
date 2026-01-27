@@ -25,9 +25,9 @@
 #include "chrome/browser/tab/web_contents_state.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/sessions/core/session_id.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/token_id.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 

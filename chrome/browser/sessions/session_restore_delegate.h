@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "base/token.h"
 #include "components/sessions/core/session_id.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {

@@ -343,8 +343,8 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/split_tab_data.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/page_transition_types.h"
 #endif
