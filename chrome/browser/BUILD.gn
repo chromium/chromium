@@ -1159,6 +1159,8 @@ static_library("browser") {
     "preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h",
     "preloading/prefetch/search_prefetch/field_trial_settings.cc",
     "preloading/prefetch/search_prefetch/field_trial_settings.h",
+    "preloading/prefetch/search_prefetch/search_prefetch_keep_alive_request_tracker.cc",
+    "preloading/prefetch/search_prefetch/search_prefetch_keep_alive_request_tracker.h",
     "preloading/prefetch/search_prefetch/search_prefetch_request.cc",
     "preloading/prefetch/search_prefetch/search_prefetch_request.h",
     "preloading/prefetch/search_prefetch/search_prefetch_service.cc",

@@ -3287,14 +3287,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // mirroring, etc). Defaults to returning true.
   virtual bool IsRendererProcessPriorityEnabled();
 
-  // Returns a `KeepAliveRequestTracker` instance if `request` is eligible to
-  // be tracked.
+  // Returns a list of `KeepAliveRequestTracker` instances if `request` is
+  // eligible to be tracked, or returns an empty list otherwise.
   //
   // `ukm_source_id` is the UKM ID to associate with the events logged by the
   // returned tracker.
   // `is_context_detached_callback` tells if the context of `request` is
   // detached at the time running the callback.
-  virtual std::unique_ptr<KeepAliveRequestTracker>
+  virtual std::vector<std::unique_ptr<KeepAliveRequestTracker>>
   MaybeCreateKeepAliveRequestTracker(
       const network::ResourceRequest& request,
       std::optional<ukm::SourceId> ukm_source_id,

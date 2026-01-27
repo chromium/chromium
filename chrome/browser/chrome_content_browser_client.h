@@ -1178,7 +1178,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const GURL& url) override;
 
-  std::unique_ptr<content::KeepAliveRequestTracker>
+  std::vector<std::unique_ptr<content::KeepAliveRequestTracker>>
   MaybeCreateKeepAliveRequestTracker(
       const network::ResourceRequest& request,
       std::optional<ukm::SourceId> ukm_source_id,
