@@ -5,6 +5,7 @@
 import './icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_components/composebox/icons.html.js';
 
 import {assert} from '//resources/js/assert.js';
@@ -93,11 +94,6 @@ export class SourcesMenuElement extends CrLitElement {
   protected faviconUrl_(tab: Tab): string {
     return getFaviconForPageURL(tab.url.url, false);
   }
-
-  protected getImageUrl_(image: Image): string {
-    return 'chrome://image/?' + image.url;
-  }
-
 
   protected getHostname_(url: string): string {
     try {
