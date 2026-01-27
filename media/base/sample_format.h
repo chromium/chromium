@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_SAMPLE_FORMAT_H_
 #define MEDIA_BASE_SAMPLE_FORMAT_H_
 
+#include "base/notreached.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -44,9 +45,40 @@ enum SampleFormat {
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:SampleFormat)
 
 // Returns the number of bytes used per channel for the specified
-// |sample_format|.
-MEDIA_EXPORT int SampleFormatToBytesPerChannel(SampleFormat sample_format);
-MEDIA_EXPORT int SampleFormatToBitsPerChannel(SampleFormat sample_format);
+// `sample_format`.
+constexpr int SampleFormatToBytesPerChannel(SampleFormat sample_format) {
+  switch (sample_format) {
+    case kUnknownSampleFormat:
+      return 0;
+    case kSampleFormatU8:
+    case kSampleFormatPlanarU8:
+    case kSampleFormatAc3:
+    case kSampleFormatEac3:
+    case kSampleFormatMpegHAudio:
+    case kSampleFormatDts:
+    case kSampleFormatDtsxP2:
+    case kSampleFormatDtse:
+      return 1;
+    case kSampleFormatS16:
+    case kSampleFormatPlanarS16:
+      return 2;
+    case kSampleFormatS24:
+    case kSampleFormatS32:
+    case kSampleFormatF32:
+    case kSampleFormatPlanarF32:
+    case kSampleFormatPlanarS32:
+    case kSampleFormatIECDts:
+      return 4;
+  }
+
+  NOTREACHED();
+}
+
+// Returns the number of bytes used per channel for the specified
+// `sample_format`.
+constexpr int SampleFormatToBitsPerChannel(SampleFormat sample_format) {
+  return SampleFormatToBytesPerChannel(sample_format) * 8;
+}
 
 // Returns the name of the sample format as a string
 MEDIA_EXPORT const char* SampleFormatToString(SampleFormat sample_format);
