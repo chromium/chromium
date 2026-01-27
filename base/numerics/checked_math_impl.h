@@ -590,7 +590,8 @@ class CheckedNumericState<T, NUMERIC_FLOATING> {
       : CheckedNumericState(rhs.value(), rhs.is_valid()) {}
 
   constexpr bool is_valid() const {
-    // Written this way because std::isfinite is not constexpr before C++23.
+    // Written this way because std::isfinite is not constexpr on the Windows
+    // toolchain yet.
     // TODO(C++23): Use `std::isfinite()` unconditionally.
     return std::is_constant_evaluated()
                ? value_ <= std::numeric_limits<T>::max() &&

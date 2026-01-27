@@ -126,8 +126,8 @@ constexpr TimeDelta Microseconds(T n);
 
 namespace {
 
-// TODO: Replace usage of this with std::isnan() once Chromium uses C++23,
-// where that is constexpr.
+// TODO: Replace usage of this with std::isnan() once the Windows toolchain
+// supports that being constexpr (other toolchains already do).
 constexpr bool isnan(double d) {
   return d != d;
 }
