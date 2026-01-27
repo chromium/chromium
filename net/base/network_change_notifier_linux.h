@@ -6,7 +6,6 @@
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_LINUX_H_
 
 #include <memory>
-#include <unordered_set>
 
 #include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
@@ -14,6 +13,7 @@
 #include "base/types/pass_key.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -28,7 +28,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierLinux
   // Creates the object mostly like normal, but the AddressTrackerLinux will use
   // |netlink_fd| instead of creating and binding its own netlink socket.
   static std::unique_ptr<NetworkChangeNotifierLinux> CreateWithSocketForTesting(
-      const std::unordered_set<std::string>& ignored_interfaces,
+      const absl::flat_hash_set<std::string>& ignored_interfaces,
       base::ScopedFD netlink_fd);
 
   // Creates NetworkChangeNotifierLinux with a list of ignored interfaces.
@@ -38,14 +38,14 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierLinux
   // interfaces used to connect to the internet can cause critical network
   // changed signals to be lost allowing incorrect stale state to persist.
   explicit NetworkChangeNotifierLinux(
-      const std::unordered_set<std::string>& ignored_interfaces);
+      const absl::flat_hash_set<std::string>& ignored_interfaces);
 
   // This constructor can leave the BlockingThreadObjects uninitialized. This
   // is useful in tests that want to mock the netlink dependency of
   // AddressTrackerLinux. The PassKey makes this essentially a private
   // constructor.
   NetworkChangeNotifierLinux(
-      const std::unordered_set<std::string>& ignored_interfaces,
+      const absl::flat_hash_set<std::string>& ignored_interfaces,
       bool initialize_blocking_thread_objects,
       base::PassKey<NetworkChangeNotifierLinux>);
 

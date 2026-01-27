@@ -33,6 +33,7 @@
 #include "build/build_config.h"
 #include "net/base/net_platform_api_util.h"
 #include "net/base/network_interfaces_linux.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
@@ -184,7 +185,7 @@ AddressTrackerLinux::AddressTrackerLinux(
         void(NetworkChangeNotifier::IPAddressChangeType)>& address_callback,
     const base::RepeatingClosure& link_callback,
     const base::RepeatingClosure& tunnel_callback,
-    const std::unordered_set<std::string>& ignored_interfaces,
+    const absl::flat_hash_set<std::string>& ignored_interfaces,
     scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner)
     : get_interface_name_(GetInterfaceName),
       address_callback_(address_callback),
@@ -321,7 +322,7 @@ bool AddressTrackerLinux::IsInterfaceIgnored(int interface_index) const {
     return false;
 
   std::string interface_name = get_interface_name_(interface_index);
-  return ignored_interfaces_.find(interface_name) != ignored_interfaces_.end();
+  return ignored_interfaces_.contains(interface_name);
 }
 
 NetworkChangeNotifier::ConnectionType

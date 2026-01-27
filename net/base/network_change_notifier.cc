@@ -7,7 +7,6 @@
 #include <limits>
 #include <optional>
 #include <string>
-#include <unordered_set>
 #include <utility>
 
 #include "base/memory/ref_counted.h"
@@ -36,6 +35,7 @@
 #include "net/base/network_change_notifier_win.h"
 #elif BUILDFLAG(IS_LINUX)
 #include "net/base/network_change_notifier_linux.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #elif BUILDFLAG(IS_APPLE)
 #include "net/base/network_change_notifier_apple.h"
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -319,7 +319,7 @@ std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
                                                         initial_subtype);
 #elif BUILDFLAG(IS_LINUX)
   return std::make_unique<NetworkChangeNotifierLinux>(
-      std::unordered_set<std::string>());
+      absl::flat_hash_set<std::string>());
 #elif BUILDFLAG(IS_APPLE)
   return std::make_unique<NetworkChangeNotifierApple>();
 #elif BUILDFLAG(IS_FUCHSIA)
