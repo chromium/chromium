@@ -215,7 +215,7 @@ ValuePatternsMetric GetValuePattern(const std::u16string& value) {
 
 void LogValuePatternsMetric(const FormData& form) {
   for (const FormFieldData& field : form.fields()) {
-    if (!field.IsFocusable()) {
+    if (!field.is_focusable()) {
       continue;
     }
     std::u16string value;

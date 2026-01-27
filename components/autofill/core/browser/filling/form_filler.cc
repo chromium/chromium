@@ -580,7 +580,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
 
   // Don't fill unfocusable fields, with the exception of <select> fields, for
   // the sake of filling the synthetic fields.
-  add_if(!autofill_field.IsFocusable() && !autofill_field.IsSelectElement(),
+  add_if(!autofill_field.is_focusable() && !autofill_field.IsSelectElement(),
          FieldFillingSkipReason::kInvisibleField);
 
   // Do not fill fields that have been edited by the user, except if the field
@@ -917,7 +917,7 @@ void FormFiller::FillOrPreviewForm(
         FieldFillingSkipReason::kNotFocused};
     if (!kPreUkmLoggingSkips.contains_any(
             skip_reasons[autofill_field.global_id()]) &&
-        !autofill_field.IsFocusable()) {
+        !autofill_field.is_focusable()) {
       manager_->client()
           .GetFormInteractionsUkmLogger()
           .LogHiddenRepresentationalFieldSkipDecision(
@@ -1243,7 +1243,7 @@ void FormFiller::TriggerRefill(const FormData& form,
       [&](const std::unique_ptr<AutofillField>& field) {
         return std::make_tuple(
             field->origin() == refill_context->filled_origin,
-            field->IsFocusable(),
+            field->is_focusable(),
             field->global_id() == refill_context->filled_field_id,
             field->GetFieldSignature() ==
                 refill_context->filled_field_signature,

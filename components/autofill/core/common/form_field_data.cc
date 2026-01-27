@@ -315,14 +315,6 @@ bool FormFieldData::IsSelectElement() const {
   return form_control_type() == FormControlType::kSelectOne;
 }
 
-bool FormFieldData::IsFocusable() const {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSupportPresentationRole)) {
-    return is_focusable();
-  }
-  return is_focusable() && role() != RoleAttribute::kPresentation;
-}
-
 // static
 bool FormFieldData::IdenticalAndEquivalentDomElements(
     const FormFieldData& a,

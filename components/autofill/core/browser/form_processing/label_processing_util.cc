@@ -102,7 +102,7 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
   std::vector<std::u16string_view> field_labels;
   field_labels.reserve(fields.size());
   for (const T& field : fields) {
-    if (!get(field).IsTextInputElement() || !get(field).IsFocusable()) {
+    if (!get(field).IsTextInputElement() || !get(field).is_focusable()) {
       continue;
     }
     field_labels.push_back(get(field).label());
@@ -118,7 +118,7 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
   // later.
   auto it = parseable_labels.rbegin();
   for (const T& field : base::Reversed(fields)) {
-    if (!get(field).IsTextInputElement() || !get(field).IsFocusable()) {
+    if (!get(field).IsTextInputElement() || !get(field).is_focusable()) {
       continue;
     }
     CHECK(it != parseable_labels.rend());

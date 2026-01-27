@@ -197,14 +197,14 @@ bool ShouldUploadUkm(const FormStructure& form, bool require_classified_field) {
 
   auto is_focusable_text_field =
       [](const std::unique_ptr<AutofillField>& field) {
-        return field->IsTextInputElement() && field->IsFocusable();
+        return field->IsTextInputElement() && field->is_focusable();
       };
 
   // Return true if the field is a visible text input field which has predicted
   // types from heuristics or the server.
   auto is_focusable_predicted_text_field =
       [](const std::unique_ptr<AutofillField>& field) {
-        return field->IsTextInputElement() && field->IsFocusable() &&
+        return field->IsTextInputElement() && field->is_focusable() &&
                ((field->server_type() != NO_SERVER_DATA &&
                  field->server_type() != UNKNOWN_TYPE) ||
                 field->heuristic_type() != UNKNOWN_TYPE ||

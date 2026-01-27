@@ -68,7 +68,7 @@ bool ConsecutiveSimilarFieldType(const AutofillType& current_type,
 // common in custom select elements. To confine the impact of hidden <select>
 // elements, this exception only applies if their type is actually autofillable.
 bool IsSectionable(const AutofillField& field) {
-  return field.IsFocusable() ||
+  return field.is_focusable() ||
          (field.IsSelectElement() && field.IsFieldFillable());
 }
 
@@ -161,7 +161,7 @@ base::span<const std::unique_ptr<AutofillField>>::iterator
 FindBeginOfNextSection(
     base::span<const std::unique_ptr<AutofillField>>::iterator begin,
     base::span<const std::unique_ptr<AutofillField>>::iterator end) {
-  while (begin != end && ((*begin)->section() || !(*begin)->IsFocusable())) {
+  while (begin != end && ((*begin)->section() || !(*begin)->is_focusable())) {
     begin++;
   }
   return begin;

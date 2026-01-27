@@ -114,7 +114,7 @@ TEST_F(FormFieldDataAndroidTest, OnFormFieldVisibilityDidChange) {
   FormFieldData field;
   field.set_is_focusable(false);
   field.set_role(FormFieldData::RoleAttribute::kOther);
-  EXPECT_FALSE(field.IsFocusable());
+  EXPECT_FALSE(field.is_focusable());
 
   FormFieldDataAndroid field_android(&field);
   FormFieldData field_copy = field;

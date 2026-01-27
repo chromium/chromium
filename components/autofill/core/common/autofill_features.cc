@@ -859,13 +859,6 @@ BASE_FEATURE(kAutofillSupportLastNamePrefix, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillSupportPhoneticNameForJP,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch: If true, FormFieldData::IsFocusable will allow returning false
-// for fields with role="presentation" html attribute.
-// TODO(crbug.com/444754999): Clean up after confirming this is safe after M143
-// release.
-BASE_FEATURE(kAutofillSupportPresentationRole,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables splitting two-part zip codes into two fields while filling and
 // importing split zip codes from two adjacent fields.
 // TODO(crbug.com/369503318): Clean up when launched.

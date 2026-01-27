@@ -445,7 +445,7 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
       .SetAutocompleteState(std::to_underlying(autocomplete_state))
       .SetFieldLogEventCount(field_log_events.size());
 
-  SetStatusVector(AutofillStatus::kIsFocusable, field.IsFocusable());
+  SetStatusVector(AutofillStatus::kIsFocusable, field.is_focusable());
   SetStatusVector(AutofillStatus::kUserTypedIntoField,
                   OptionalBooleanToBool(user_typed_into_field));
   SetStatusVector(AutofillStatus::kWasFocused, field.was_focused());

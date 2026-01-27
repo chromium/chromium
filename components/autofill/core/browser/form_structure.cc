@@ -962,7 +962,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
 
     buffer << Tr{} << "Is empty:" << ToYesOrNo(field->value().empty());
     buffer << Tr{} << "Is focusable:"
-           << (field->IsFocusable() ? "Yes (focusable)" : "No (unfocusable)");
+           << (field->is_focusable() ? "Yes (focusable)" : "No (unfocusable)");
     buffer << Tr{} << "Is visible:"
            << (field->is_visible() ? "Yes (visible)" : "No (invisible)");
     buffer << Tr{} << "Ranks: "

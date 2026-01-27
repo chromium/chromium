@@ -50,7 +50,7 @@ namespace {
 
 // Checks if the field is focusable and empty.
 bool IsFieldFocusableAndEmpty(const AutofillField& field) {
-  return field.IsFocusable() && SanitizedFieldIsEmpty(field.value());
+  return field.is_focusable() && SanitizedFieldIsEmpty(field.value());
 }
 
 // The form is considered correctly filled if all autofilled fields were not
