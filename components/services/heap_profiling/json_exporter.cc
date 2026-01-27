@@ -9,14 +9,15 @@
 #include <array>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -134,72 +135,66 @@ std::string ApplyPathFiltering(const std::string& file,
   return file;
 }
 
-void MemoryMapsAsValueInto(
+base::Value MemoryMapsAsValue(
     const std::vector<memory_instrumentation::mojom::VmRegionPtr>& memory_maps,
-    base::trace_event::TracedValue* value,
     bool is_argument_filtering_enabled) {
   static const char kHexFmt[] = "%" PRIx64;
 
   // Refer to the design doc goo.gl/sxfFY8 for the semantics of these fields.
-  value->BeginArray("vm_regions");
+  base::ListValue vm_regions;
   for (const auto& region : memory_maps) {
-    value->BeginDictionary();
+    base::DictValue region_dict =
+        base::DictValue()
+            .Set("sa", base::StringPrintf(kHexFmt, region->start_address))
+            .Set("sz", base::StringPrintf(kHexFmt, region->size_in_bytes))
+            .Set("pf", base::saturated_cast<int>(region->protection_flags))
+            // The module path will be the basename when argument filtering is
+            // activated. The allowlisting implemented for filtering string
+            // values doesn't allow rewriting. Therefore, a different path is
+            // produced here when argument filtering is activated.
+            .Set("mf", ApplyPathFiltering(region->mapped_file,
+                                          is_argument_filtering_enabled));
 
-    value->SetString("sa", base::StringPrintf(kHexFmt, region->start_address));
-    value->SetString("sz", base::StringPrintf(kHexFmt, region->size_in_bytes));
     if (region->module_timestamp) {
-      value->SetString("ts",
-                       base::StringPrintf(kHexFmt, region->module_timestamp));
+      region_dict.Set("ts",
+                      base::StringPrintf(kHexFmt, region->module_timestamp));
     }
     if (!region->module_debugid.empty()) {
-      value->SetString("id", region->module_debugid);
+      region_dict.Set("id", region->module_debugid);
     }
     if (!region->module_debug_path.empty()) {
-      value->SetString("df", ApplyPathFiltering(region->module_debug_path,
-                                                is_argument_filtering_enabled));
+      region_dict.Set("df", ApplyPathFiltering(region->module_debug_path,
+                                               is_argument_filtering_enabled));
     }
-    value->SetInteger("pf", region->protection_flags);
-
-    // The module path will be the basename when argument filtering is
-    // activated. The allowlisting implemented for filtering string values
-    // doesn't allow rewriting. Therefore, a different path is produced here
-    // when argument filtering is activated.
-    value->SetString("mf", ApplyPathFiltering(region->mapped_file,
-                                              is_argument_filtering_enabled));
 
 // The following stats are only well defined on Linux-derived OSes.
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
-    value->BeginDictionary("bs");  // byte stats
-    value->SetString(
-        "pss",
-        base::StringPrintf(kHexFmt, region->byte_stats_proportional_resident));
-    value->SetString(
-        "pd",
-        base::StringPrintf(kHexFmt, region->byte_stats_private_dirty_resident));
-    value->SetString(
-        "pc",
-        base::StringPrintf(kHexFmt, region->byte_stats_private_clean_resident));
-    value->SetString(
-        "sd",
-        base::StringPrintf(kHexFmt, region->byte_stats_shared_dirty_resident));
-    value->SetString(
-        "sc",
-        base::StringPrintf(kHexFmt, region->byte_stats_shared_clean_resident));
-    value->SetString("sw",
-                     base::StringPrintf(kHexFmt, region->byte_stats_swapped));
-    value->EndDictionary();
+    // byte stats
+    region_dict.Set(
+        "bs",
+        base::Value::Dict()
+            .Set("pss", base::StringPrintf(
+                            kHexFmt, region->byte_stats_proportional_resident))
+            .Set("pd", base::StringPrintf(
+                           kHexFmt, region->byte_stats_private_dirty_resident))
+            .Set("pc", base::StringPrintf(
+                           kHexFmt, region->byte_stats_private_clean_resident))
+            .Set("sd", base::StringPrintf(
+                           kHexFmt, region->byte_stats_shared_dirty_resident))
+            .Set("sc", base::StringPrintf(
+                           kHexFmt, region->byte_stats_shared_clean_resident))
+            .Set("sw",
+                 base::StringPrintf(kHexFmt, region->byte_stats_swapped)));
 #endif
 
-    value->EndDictionary();
+    vm_regions.Append(std::move(region_dict));
   }
-  value->EndArray();
+  return base::Value(
+      base::DictValue().Set("vm_regions", std::move(vm_regions)));
 }
 
 base::Value BuildMemoryMaps(const ExportParams& params) {
-  base::trace_event::TracedValueJSON traced_value;
-  MemoryMapsAsValueInto(params.maps, &traced_value,
-                        params.strip_path_from_mapped_files);
-  return std::move(*traced_value.ToBaseValue());
+  return MemoryMapsAsValue(params.maps, params.strip_path_from_mapped_files);
 }
 
 // Inserts or retrieves the ID for a string in the string table.
