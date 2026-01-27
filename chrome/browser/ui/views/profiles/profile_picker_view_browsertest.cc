@@ -3235,6 +3235,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        LoginErrorWhenProfileNotAllowsCookies) {
   constexpr char kEmail[] = "joe.consumer@gmail.com";
   constexpr char16_t kEmailU16[] = u"joe.consumer@gmail.com";
+  base::HistogramTester histogram_tester;
 
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
@@ -3273,6 +3274,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE, kEmailU16),
         GetSigninErrorDialogTitleText(picker_web_contents));
+    histogram_tester.ExpectBucketCount(
+        "ProfilePicker.ProfilePickerFlow.SignInError",
+        static_cast<int>(SigninUIError::Type::kSigninCookiesDisallowed), 1);
   }
 }
 
@@ -4310,6 +4314,7 @@ class SigninErrorProfilePickerBrowserTest
 IN_PROC_BROWSER_TEST_F(SigninErrorProfilePickerBrowserTest,
                        FromGoogleServiceAuthError) {
   constexpr char kEmail[] = "test@gmail.com";
+  base::HistogramTester histogram_tester;
 
   // Start the sign in.
   StartDiceSignIn();
@@ -4344,4 +4349,7 @@ IN_PROC_BROWSER_TEST_F(SigninErrorProfilePickerBrowserTest,
             GetSigninErrorDialogBodyText(picker_web_contents));
   EXPECT_TRUE(ClickSigninErrorDialogOkButton(picker_web_contents));
   EXPECT_FALSE(IsSigninErrorDialogShown(picker_web_contents));
+  histogram_tester.ExpectBucketCount(
+      "ProfilePicker.ProfilePickerFlow.SignInError",
+      static_cast<int>(SigninUIError::Type::kFromGoogleServiceAuthError), 1);
 }

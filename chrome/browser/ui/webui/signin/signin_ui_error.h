@@ -23,6 +23,7 @@ class SigninUIError {
  public:
   // An error type.
   // Different types of UI might be shown for different error types.
+  // LINT.IfChange(SigninUIErrorType)
   enum class Type : int {
     kOk = 0,
     kUsernameNotAllowedByPatternFromPrefs = 1,
@@ -35,7 +36,9 @@ class SigninUIError {
     kSigninDisallowed = 7,
     kSigninCookiesDisallowed = 8,
     kNoIdentityManager = 9,
+    kMaxValue = kNoIdentityManager,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:SigninUIErrorType)
 
   // Following static functions construct a `SigninUIError` with a corresponding
   // type and error message.
