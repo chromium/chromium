@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -58,10 +59,12 @@ void ExpectNoLatencyRecorded(base::HistogramTester* tester) {
 class MockSupervisedUserURLFilter : public FamilyLinkUrlFilter {
  public:
   explicit MockSupervisedUserURLFilter(
+      FamilyLinkSettingsService& settings_service,
       PrefService& prefs,
       std::unique_ptr<FamilyLinkUrlFilter::Delegate> delegate,
       std::unique_ptr<safe_search_api::URLCheckerClient> checker_client)
-      : FamilyLinkUrlFilter(prefs,
+      : FamilyLinkUrlFilter(settings_service,
+                            prefs,
                             std::move(delegate),
                             std::move(checker_client)) {}
   MOCK_METHOD(bool,
@@ -79,12 +82,15 @@ std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
+  FamilyLinkSettingsService& settings_service =
+      CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey()));
   return std::make_unique<SupervisedUserService>(
       identity_manager, url_loader_factory, *profile->GetPrefs(),
-      *FamilyLinkSettingsServiceFactory::GetForKey(profile->GetProfileKey()),
-      SyncServiceFactory::GetForProfile(profile),
+      settings_service, SyncServiceFactory::GetForProfile(profile),
       std::make_unique<MockSupervisedUserURLFilter>(
-          *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
+          settings_service, *profile->GetPrefs(),
+          std::make_unique<FakeURLFilterDelegate>(),
           std::make_unique<KidsChromeManagementURLCheckerClient>(
               identity_manager, url_loader_factory, *profile->GetPrefs(),
               platform_delegate->GetCountryCode(),

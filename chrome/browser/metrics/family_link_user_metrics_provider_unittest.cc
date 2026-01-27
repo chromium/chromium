@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -558,17 +559,19 @@ class FamilyLinkUserMetricsProviderWithContentFiltersAndroidTest
 
     std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
+    FamilyLinkSettingsService& settings_service =
+        CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
+            profile->GetProfileKey()));
 
     return std::make_unique<SupervisedUserService>(
         IdentityManagerFactory::GetForProfile(profile),
         profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
-        *profile->GetPrefs(),
-        *FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
-            profile->GetProfileKey()),
+        *profile->GetPrefs(), settings_service,
         SyncServiceFactory::GetInstance()->GetForProfile(profile),
         std::make_unique<FamilyLinkUrlFilter>(
-            *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
+            settings_service, *profile->GetPrefs(),
+            std::make_unique<FakeURLFilterDelegate>(),
             std::make_unique<KidsChromeManagementURLCheckerClient>(
                 IdentityManagerFactory::GetForProfile(profile),
                 profile->GetDefaultStoragePartition()

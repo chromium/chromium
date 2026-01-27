@@ -48,24 +48,38 @@ class FamilyLinkUrlFilterManualBehaviorTestBase : public ::testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-// Test cases only parametrized by kSupervisedUserUseUrlFilteringService
-// feature.
-class FamilyLinkUrlFilterManualBehaviorTest
-    : public FamilyLinkUrlFilterManualBehaviorTestBase,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  FamilyLinkUrlFilterManualBehaviorTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kSupervisedUserUseUrlFilteringService);
+// Helper class to override the feature for the duration of the test suite
+// *before* SupervisedUserTestEnvironment is created. Simply use this class in
+// the class hierarchy before FamilyLinkUrlFilterManualBehaviorTestBase.
+template <typename TestCase>
+class WithFeatureOverrideAndParamInterface
+    : public testing::WithParamInterface<std::tuple<bool, TestCase>> {
+ public:
+  using ::testing::WithParamInterface<std::tuple<bool, TestCase>>::GetParam;
+
+  explicit WithFeatureOverrideAndParamInterface(const base::Feature& feature) {
+    if (IsFeatureEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(feature);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kSupervisedUserUseUrlFilteringService);
+      scoped_feature_list_.InitAndDisableFeature(feature);
     }
   }
+  static bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
+  static TestCase GetTestCase() { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test cases only parametrized by kSupervisedUserUseUrlFilteringService
+// feature.
+class FamilyLinkUrlFilterManualBehaviorTest
+    : public base::test::WithFeatureOverride,
+      public FamilyLinkUrlFilterManualBehaviorTestBase {
+ protected:
+  FamilyLinkUrlFilterManualBehaviorTest()
+      : base::test::WithFeatureOverride(kSupervisedUserUseUrlFilteringService),
+        FamilyLinkUrlFilterManualBehaviorTestBase() {}
 };
 
 TEST_P(FamilyLinkUrlFilterManualBehaviorTest,
@@ -207,25 +221,13 @@ struct CertainSitesTestCase {
 
 // Test cases where manual behavior only allows listed hosts.
 class FamilyLinkUrlFilterManualBehaviorCertainSitesTest
-    : public FamilyLinkUrlFilterManualBehaviorTestBase,
-      public ::testing::WithParamInterface<
-          std::tuple<bool, CertainSitesTestCase>> {
+    : public WithFeatureOverrideAndParamInterface<CertainSitesTestCase>,
+      public FamilyLinkUrlFilterManualBehaviorTestBase {
  protected:
-  static bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
-  static CertainSitesTestCase GetTestCase() { return std::get<1>(GetParam()); }
-
-  FamilyLinkUrlFilterManualBehaviorCertainSitesTest() {
-    if (IsFeatureEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kSupervisedUserUseUrlFilteringService);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kSupervisedUserUseUrlFilteringService);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  FamilyLinkUrlFilterManualBehaviorCertainSitesTest()
+      : WithFeatureOverrideAndParamInterface(
+            kSupervisedUserUseUrlFilteringService),
+        FamilyLinkUrlFilterManualBehaviorTestBase() {}
 };
 
 TEST_P(FamilyLinkUrlFilterManualBehaviorCertainSitesTest, FilteringBehavior) {
@@ -526,22 +528,13 @@ struct HostConflictsTestCase {
 
 // Test cases where manual behavior only allows listed hosts.
 class FamilyLinkUrlFilterManualBehaviorHostConflictsTest
-    : public FamilyLinkUrlFilterManualBehaviorTestBase,
-      public ::testing::WithParamInterface<
-          std::tuple<bool, HostConflictsTestCase>> {
+    : public WithFeatureOverrideAndParamInterface<HostConflictsTestCase>,
+      public FamilyLinkUrlFilterManualBehaviorTestBase {
  protected:
-  static bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
-  static HostConflictsTestCase GetTestCase() { return std::get<1>(GetParam()); }
-
-  FamilyLinkUrlFilterManualBehaviorHostConflictsTest() {
-    if (IsFeatureEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kSupervisedUserUseUrlFilteringService);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kSupervisedUserUseUrlFilteringService);
-    }
-  }
+  FamilyLinkUrlFilterManualBehaviorHostConflictsTest()
+      : WithFeatureOverrideAndParamInterface<HostConflictsTestCase>(
+            kSupervisedUserUseUrlFilteringService),
+        FamilyLinkUrlFilterManualBehaviorTestBase() {}
 
   void SetUp() override {
     EnableParentalControls(*test_env().pref_service());
@@ -552,9 +545,6 @@ class FamilyLinkUrlFilterManualBehaviorHostConflictsTest
       test_env().SetManualFilterForHost(host, false);
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(FamilyLinkUrlFilterManualBehaviorHostConflictsTest, CertainSites) {
@@ -712,33 +702,19 @@ struct HostConflictTypeTestCase {
 
 // Test cases where manual behavior only allows listed hosts.
 class FamilyLinkUrlFilterManualBehaviorHostConflictTypesTest
-    : public FamilyLinkUrlFilterManualBehaviorTestBase,
-      public ::testing::WithParamInterface<
-          std::tuple<bool, HostConflictTypeTestCase>> {
+    : public WithFeatureOverrideAndParamInterface<HostConflictTypeTestCase>,
+      public FamilyLinkUrlFilterManualBehaviorTestBase {
  protected:
-  static bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
-  static HostConflictTypeTestCase GetTestCase() {
-    return std::get<1>(GetParam());
-  }
-
-  FamilyLinkUrlFilterManualBehaviorHostConflictTypesTest() {
-    if (IsFeatureEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kSupervisedUserUseUrlFilteringService);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kSupervisedUserUseUrlFilteringService);
-    }
-  }
+  FamilyLinkUrlFilterManualBehaviorHostConflictTypesTest()
+      : WithFeatureOverrideAndParamInterface<HostConflictTypeTestCase>(
+            kSupervisedUserUseUrlFilteringService),
+        FamilyLinkUrlFilterManualBehaviorTestBase() {}
 
   void SetUp() override {
     EnableParentalControls(*test_env().pref_service());
     test_env().SetWebFilterType(WebFilterType::kCertainSites);
     test_env().SetManualFilterForHosts(GetTestCase().host_exceptions);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(FamilyLinkUrlFilterManualBehaviorHostConflictTypesTest,

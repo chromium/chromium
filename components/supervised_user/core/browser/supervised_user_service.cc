@@ -197,7 +197,12 @@ void SupervisedUserService::OnFamilyLinkParentalControlsEnabled() {
   // consists of multiple prefs changing at once but producing separate
   // notifications).
   AddCustodianPrefChangeHandlers();
-  AddURLFilterPrefChangeHandlers();
+
+  if (!base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    // Add handler at the end to avoid multiple notifications (if the Url filter
+    // is still reading its configuration from the PrefService).
+    AddURLFilterPrefChangeHandlers();
+  }
 
   // Synchronize the filter.
   UpdateURLFilter();
@@ -213,8 +218,11 @@ void SupervisedUserService::OnFamilyLinkParentalControlsDisabled() {
   SetSettingsServiceActive(false);
   remote_web_approvals_manager_.ClearApprovalRequestsCreators();
 
-  // Add handler at the end to avoid multiple notifications.
-  AddURLFilterPrefChangeHandlers();
+  if (!base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    // Add handler at the end to avoid multiple notifications (if the Url filter
+    // is still reading its configuration from the PrefService).
+    AddURLFilterPrefChangeHandlers();
+  }
 
   // Synchronize the filter.
   UpdateURLFilter();

@@ -63,14 +63,16 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetSharedURLLoaderFactory();
-  return std::make_unique<supervised_user::SupervisedUserService>(
-      identity_manager, url_loader_factory, CHECK_DEREF(profile->GetPrefs()),
+  supervised_user::FamilyLinkSettingsService& family_link_settings_service =
       CHECK_DEREF(
           supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
-              profile)),
+              profile));
+  return std::make_unique<supervised_user::SupervisedUserService>(
+      identity_manager, url_loader_factory, CHECK_DEREF(profile->GetPrefs()),
+      family_link_settings_service,
       &CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)),
       std::make_unique<supervised_user::FamilyLinkUrlFilter>(
-          CHECK_DEREF(profile->GetPrefs()),
+          family_link_settings_service, CHECK_DEREF(profile->GetPrefs()),
           std::make_unique<FilterDelegateImpl>(),
           std::make_unique<
               supervised_user::KidsChromeManagementURLCheckerClient>(

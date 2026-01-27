@@ -55,10 +55,13 @@ class IOSWebContentHandlerImplTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
+  supervised_user::FamilyLinkSettingsService family_link_settings_service_;
 
   // Filter with no checker client, as it will be only used in offline manner.
+  // Conversely, the settings service is used uninitialized too.
   supervised_user::FamilyLinkUrlFilter filter_ =
       supervised_user::FamilyLinkUrlFilter(
+          family_link_settings_service_,
           pref_service_,
           std::make_unique<supervised_user::FakeURLFilterDelegate>(),
           /*url_checker_client=*/nullptr);

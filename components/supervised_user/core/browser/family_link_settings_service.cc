@@ -597,6 +597,11 @@ WebFilterType FamilyLinkSettingsService::GetWebFilterType() const {
   // LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_url_filter.cc:GetWebFilterType)
 }
 
+FilteringBehavior FamilyLinkSettingsService::GetDefaultFilteringBehavior()
+    const {
+  return GetDefaultFilteringBehavior(GetSettingsWithDefault());
+}
+
 FilteringBehavior FamilyLinkSettingsService::GetDefaultFilteringBehavior(
     const base::DictValue& settings) const {
   // The default value for the default filtering behavior is "allow", including
@@ -618,4 +623,49 @@ bool FamilyLinkSettingsService::IsSafeSitesEnabled(
   // In Family Link, safe sites setting defaults to true.
   return settings.FindBool(kSafeSitesEnabled).value_or(true);
 }
+
+FamilyLinkSettingsService::HostExceptions
+FamilyLinkSettingsService::GetHostExceptions() const {
+  const base::DictValue defaults = GetSettingsWithDefault();
+  const base::DictValue* manual_behavior_hosts =
+      defaults.FindDict(kContentPackManualBehaviorHosts);
+  if (!manual_behavior_hosts) {
+    return {};
+  }
+
+  HostExceptions host_exceptions;
+  for (const auto&& [host, value] : *manual_behavior_hosts) {
+    if (value.GetIfBool().value_or(false)) {
+      host_exceptions.allowed_hosts.insert(host);
+    } else {
+      host_exceptions.blocked_hosts.insert(host);
+    }
+  }
+
+  return host_exceptions;
+}
+
+FamilyLinkSettingsService::UrlExceptions
+FamilyLinkSettingsService::GetUrlExceptions() const {
+  const base::DictValue defaults = GetSettingsWithDefault();
+  const base::DictValue* manual_behavior_urls =
+      defaults.FindDict(kContentPackManualBehaviorURLs);
+  if (!manual_behavior_urls) {
+    return {};
+  }
+
+  UrlExceptions url_exceptions;
+  for (const auto&& [url, value] : *manual_behavior_urls) {
+    url_exceptions.emplace(GURL(url), value.GetIfBool().value_or(false));
+  }
+  return url_exceptions;
+}
+
+FamilyLinkSettingsService::HostExceptions::HostExceptions() = default;
+FamilyLinkSettingsService::HostExceptions::~HostExceptions() = default;
+FamilyLinkSettingsService::HostExceptions::HostExceptions(
+    const HostExceptions& other) = default;
+FamilyLinkSettingsService::HostExceptions&
+FamilyLinkSettingsService::HostExceptions::operator=(
+    const HostExceptions& other) = default;
 }  // namespace supervised_user

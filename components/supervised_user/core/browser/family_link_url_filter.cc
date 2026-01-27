@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,6 +28,7 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_formatter/url_formatter.h"
@@ -355,13 +357,23 @@ std::optional<FilteringSubdomainConflictType> AddConflict(
 }  // namespace
 
 FamilyLinkUrlFilter::FamilyLinkUrlFilter(
-    PrefService& user_prefs,
+    FamilyLinkSettingsService& family_link_settings_service,
+    const PrefService& user_prefs,
     std::unique_ptr<Delegate> delegate,
     std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client)
-    : user_prefs_(user_prefs),
+    : family_link_settings_service_(family_link_settings_service),
+      user_prefs_(user_prefs),
       delegate_(std::move(delegate)),
       async_url_checker_(std::make_unique<safe_search_api::URLChecker>(
-          std::move(url_checker_client))) {}
+          std::move(url_checker_client))) {
+  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    family_link_settings_subscription_ =
+        family_link_settings_service.SubscribeForSettingsChange(
+            base::BindRepeating(
+                &FamilyLinkUrlFilter::OnFamilyLinkSettingsChanged,
+                base::Unretained(this)));
+  }
+}
 
 FamilyLinkUrlFilter::~FamilyLinkUrlFilter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -377,6 +389,13 @@ FamilyLinkUrlFilter::GetManagedSiteListConflictHistogramNameForTest() {
 const char*
 FamilyLinkUrlFilter::GetManagedSiteListConflictTypeHistogramNameForTest() {
   return kManagedSiteListSubdomainConflictTypeHistogramName;
+}
+
+void FamilyLinkUrlFilter::OnFamilyLinkSettingsChanged(
+    const base::DictValue& settings) {
+  // Refresh auxiliary data structures.
+  UpdateManualHosts();
+  UpdateManualUrls();
 }
 
 FamilyLinkUrlFilter::ManagedSiteList
@@ -490,8 +509,13 @@ WebFilteringResult FamilyLinkUrlFilter::GetFilteringBehavior(
   }
 
   // Fall back to the default behavior.
-  return {url, GetDefaultFilteringBehavior(user_prefs_.get()),
-          FilteringBehaviorReason::DEFAULT};
+  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    return {url, family_link_settings_service_->GetDefaultFilteringBehavior(),
+            FilteringBehaviorReason::DEFAULT};
+  } else {
+    return {url, GetDefaultFilteringBehavior(user_prefs_.get()),
+            FilteringBehaviorReason::DEFAULT};
+  }
 }
 
 // There may be conflicting patterns, say, "allow *.google.com" and "block
@@ -659,13 +683,20 @@ void FamilyLinkUrlFilter::UpdateManualHosts() {
   blocked_host_list_.clear();
   allowed_host_list_.clear();
 
-  for (auto&& [host, value] :
-       user_prefs_->GetDict(prefs::kSupervisedUserManualHosts)) {
-    DCHECK(value.is_bool());
-    if (value.GetIfBool().value_or(false)) {
-      allowed_host_list_.emplace(host);
-    } else {
-      blocked_host_list_.emplace(host);
+  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    FamilyLinkSettingsService::HostExceptions host_exceptions =
+        family_link_settings_service_->GetHostExceptions();
+    blocked_host_list_ = std::move(host_exceptions.blocked_hosts);
+    allowed_host_list_ = std::move(host_exceptions.allowed_hosts);
+  } else {
+    for (auto&& [host, value] :
+         user_prefs_->GetDict(prefs::kSupervisedUserManualHosts)) {
+      DCHECK(value.is_bool());
+      if (value.GetIfBool().value_or(false)) {
+        allowed_host_list_.emplace(host);
+      } else {
+        blocked_host_list_.emplace(host);
+      }
     }
   }
 
@@ -679,16 +710,27 @@ void FamilyLinkUrlFilter::UpdateManualUrls() {
   statistics_.blocked_urls_count = 0;
   statistics_.allowed_urls_count = 0;
 
-  for (auto&& [url, value] :
-       user_prefs_->GetDict(prefs::kSupervisedUserManualURLs)) {
-    DCHECK(value.is_bool());
-    // TODO(crbug.com/417951669): Remove overly defensive reads.
-    bool is_allowed = value.GetIfBool().value_or(false);
-    url_map_[GURL(url)] = is_allowed;
-    if (is_allowed) {
-      statistics_.allowed_urls_count++;
-    } else {
-      statistics_.blocked_urls_count++;
+  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    url_map_ = family_link_settings_service_->GetUrlExceptions();
+    for (auto&& [url, value] : url_map_) {
+      if (value) {
+        statistics_.allowed_urls_count++;
+      } else {
+        statistics_.blocked_urls_count++;
+      }
+    }
+  } else {
+    for (auto&& [url, value] :
+         user_prefs_->GetDict(prefs::kSupervisedUserManualURLs)) {
+      DCHECK(value.is_bool());
+      // TODO(crbug.com/417951669): Remove overly defensive reads.
+      const bool is_allowed = value.GetIfBool().value_or(false);
+      url_map_[GURL(url)] = is_allowed;
+      if (is_allowed) {
+        statistics_.allowed_urls_count++;
+      } else {
+        statistics_.blocked_urls_count++;
+      }
     }
   }
 }
@@ -707,6 +749,10 @@ void FamilyLinkUrlFilter::RemoveObserver(Observer* observer) {
 }
 
 WebFilterType FamilyLinkUrlFilter::GetWebFilterType() const {
+  if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
+    return family_link_settings_service_->GetWebFilterType();
+  }
+
   // LINT.IfChange(GetWebFilterType)
   if (FilterIsDisabled(user_prefs_.get())) {
     return WebFilterType::kDisabled;

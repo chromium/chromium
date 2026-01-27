@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/safe_search_api/url_checker.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -121,7 +122,8 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
   };
 
   FamilyLinkUrlFilter(
-      PrefService& user_prefs,
+      FamilyLinkSettingsService& family_link_settings_service,
+      const PrefService& user_prefs,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client);
 
@@ -215,6 +217,8 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
   // normalization it (eg. stripping username, password, query params, ref).
   GURL GetUnnormalizedEffectiveUrlToUnblock(WebFilteringResult result) const;
 
+  void OnFamilyLinkSettingsChanged(const base::DictValue& settings);
+
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Maps from a URL to whether it is manually allowed (true) or blocked
@@ -223,16 +227,21 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
 
   // Blocked and Allowed host lists.
   std::set<std::string, std::less<>> blocked_host_list_;
-  std::set<std::string> allowed_host_list_;
+  std::set<std::string, std::less<>> allowed_host_list_;
 
   // Statistics about this filter configuration
   Statistics statistics_;
 
-  const raw_ref<PrefService> user_prefs_;
+  // Two sources of settings: directly from FamilyLinkSettingsService or through
+  // PrefService (deprecated, guarded by feature flag).
+  raw_ref<const FamilyLinkSettingsService> family_link_settings_service_;
+  raw_ref<const PrefService> user_prefs_;
 
   std::unique_ptr<Delegate> delegate_;
 
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
+
+  base::CallbackListSubscription family_link_settings_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
@@ -79,13 +80,17 @@ std::unique_ptr<KeyedService> SupervisedUserServiceFactory::BuildInstanceFor(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
+  supervised_user::FamilyLinkSettingsService& family_link_settings_service =
+      CHECK_DEREF(
+          supervised_user::FamilyLinkSettingsServiceFactory::GetInstance()
+              ->GetForKey(profile->GetProfileKey()));
   return std::make_unique<supervised_user::SupervisedUserService>(
       identity_manager, url_loader_factory, *profile->GetPrefs(),
-      *supervised_user::FamilyLinkSettingsServiceFactory::GetInstance()
-           ->GetForKey(profile->GetProfileKey()),
+      family_link_settings_service,
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
       std::make_unique<supervised_user::FamilyLinkUrlFilter>(
-          *profile->GetPrefs(), std::make_unique<FilterDelegateImpl>(),
+          family_link_settings_service, *profile->GetPrefs(),
+          std::make_unique<FilterDelegateImpl>(),
           std::make_unique<
               supervised_user::KidsChromeManagementURLCheckerClient>(
               identity_manager, url_loader_factory, *profile->GetPrefs(),

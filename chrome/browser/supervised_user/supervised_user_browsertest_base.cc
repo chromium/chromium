@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -65,16 +66,18 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   ProfileKey* profile_key = profile->GetProfileKey();
+  FamilyLinkSettingsService& settings_service = CHECK_DEREF(
+      FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(profile_key));
 
   return std::make_unique<SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      *profile->GetPrefs(),
-      *FamilyLinkSettingsServiceFactory::GetForKey(profile_key),
+      *profile->GetPrefs(), settings_service,
       SyncServiceFactory::GetForProfile(profile),
       std::make_unique<FamilyLinkUrlFilter>(
-          *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
+          settings_service, *profile->GetPrefs(),
+          std::make_unique<FakeURLFilterDelegate>(),
           std::make_unique<WrappedUrlCheckerClient>(mock_url_checker_client)),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
       g_browser_process->device_parental_controls());

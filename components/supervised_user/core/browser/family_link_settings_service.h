@@ -66,24 +66,30 @@ class FamilyLinkSettingsService : public KeyedService,
   // A callback whose first parameter is a dictionary containing all Family Link
   // user settings. If the dictionary is empty, it means that the service is
   // inactive, i.e. the user is not supervised.
-  using SettingsCallbackType = void(const base::DictValue&);
-  using SettingsCallback = base::RepeatingCallback<SettingsCallbackType>;
-  using SettingsCallbackList =
-      base::RepeatingCallbackList<SettingsCallbackType>;
+  using SettingsCallback =
+      base::RepeatingCallback<void(const base::DictValue&)>;
 
   // Called when a new host is remotely approved for this Family Link user. The
   // first param is newly approved host, which might be a pattern containing
   // wildcards (e.g. "*.google.*"").
-  using WebsiteApprovalCallbackType = void(const std::string& hostname);
   using WebsiteApprovalCallback =
-      base::RepeatingCallback<WebsiteApprovalCallbackType>;
-  using WebsiteApprovalCallbackList =
-      base::RepeatingCallbackList<WebsiteApprovalCallbackType>;
+      base::RepeatingCallback<void(const std::string& hostname)>;
 
-  using ShutdownCallbackType = void();
-  using ShutdownCallback = base::RepeatingCallback<ShutdownCallbackType>;
-  using ShutdownCallbackList =
-      base::RepeatingCallbackList<ShutdownCallbackType>;
+  using ShutdownCallback = base::RepeatingCallback<void()>;
+
+  // Host exceptions from Family Link Settings. It is possible that the same
+  // host in on both lists (allowed and blocked).
+  struct HostExceptions {
+    HostExceptions();
+    HostExceptions(const HostExceptions&);
+    HostExceptions& operator=(const HostExceptions&);
+    ~HostExceptions();
+    std::set<std::string, std::less<>> allowed_hosts;
+    std::set<std::string, std::less<>> blocked_hosts;
+  };
+  // Url exceptions from Family Link Settings. True value means that the url is
+  // allowed, false value means that the url is blocked.
+  using UrlExceptions = std::map<GURL, bool>;
 
   FamilyLinkSettingsService();
 
@@ -197,6 +203,14 @@ class FamilyLinkSettingsService : public KeyedService,
   // Returns the type of web filter that is applied to the current profile.
   WebFilterType GetWebFilterType() const;
 
+  // Returns the default filtering behavior for the current profile, using the
+  // current settings.
+  FilteringBehavior GetDefaultFilteringBehavior() const;
+
+  // Returns manually allowed and blocked hosts or urls.
+  HostExceptions GetHostExceptions() const;
+  UrlExceptions GetUrlExceptions() const;
+
  private:
   // Returns parsed logical value for the default filtering behavior setting,
   // considering its default value.
@@ -241,11 +255,14 @@ class FamilyLinkSettingsService : public KeyedService,
   // A set of local settings that are fixed and not configured remotely.
   base::DictValue local_settings_;
 
-  SettingsCallbackList settings_callback_list_;
+  base::RepeatingCallbackList<SettingsCallback::RunType>
+      settings_callback_list_;
 
-  WebsiteApprovalCallbackList website_approval_callback_list_;
+  base::RepeatingCallbackList<WebsiteApprovalCallback::RunType>
+      website_approval_callback_list_;
 
-  ShutdownCallbackList shutdown_callback_list_;
+  base::RepeatingCallbackList<ShutdownCallback::RunType>
+      shutdown_callback_list_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
 
