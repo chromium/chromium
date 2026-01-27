@@ -37,6 +37,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/css_color_channel_keywords.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
@@ -718,6 +719,33 @@ bool CanEagerlySimplify(const CSSMathExpressionOperation::Operands& operands) {
     }
   }
   return true;
+}
+
+std::optional<CSSMathExpressionNode*> MaybeSimplifyComparisonFunction(
+    const CSSMathExpressionOperation::Operands& operands) {
+  DCHECK_EQ(operands.size(), 3u);
+  const CSSMathExpressionNode* min = operands[0];
+  const CSSMathExpressionNode* val = operands[1];
+  const CSSMathExpressionNode* max = operands[2];
+  // clamp(MIN, none, MAX) is not allowed
+  if (val->IsKeywordLiteral()) {
+    return nullptr;
+  }
+  // clamp(none, VAL, none) is equivalent to just calc(VAL)
+  if (min->IsKeywordLiteral() && max->IsKeywordLiteral()) {
+    return val->Copy();
+  }
+  // clamp(none, VAL, MAX) is equivalent to min(VAL, MAX)
+  if (min->IsKeywordLiteral()) {
+    return CSSMathExpressionOperation::CreateComparisonFunction(
+        {val->Copy(), max->Copy()}, CSSMathOperator::kMin);
+  }
+  // clamp(MIN, VAL, none) is equivalent to max(MIN, VAL)
+  if (max->IsKeywordLiteral()) {
+    return CSSMathExpressionOperation::CreateComparisonFunction(
+        {min->Copy(), val->Copy()}, CSSMathOperator::kMax);
+  }
+  return std::nullopt;
 }
 
 enum class ProgressArgsSimplificationStatus {
@@ -1611,6 +1639,12 @@ CalculationResultCategory DetermineKeywordCategory(
       return kCalcLengthFunction;
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
       return kCalcNumber;
+    case CSSMathExpressionKeywordLiteral::Context::kClamp:
+      // "none" keyword used in clamp() bounds can be any category, not only
+      // number, but since we simplify clamp() with "none" bounds anyway to
+      // min()/max()/calc(), we don't care about the category here. We just need
+      // to use any category other than `kCalcOther` to create a keyword node.
+      return kCalcIdent;
   };
 }
 
@@ -1647,6 +1681,8 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
       return MakeGarbageCollected<CalculationExpressionColorChannelKeywordNode>(
           CSSValueIDToColorChannelKeyword(keyword_));
+    case CSSMathExpressionKeywordLiteral::Context::kClamp:
+      NOTREACHED();
   };
 }
 
@@ -1665,6 +1701,8 @@ double CSSMathExpressionKeywordLiteral::ComputeDouble(
     }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
+      NOTREACHED();
+    case CSSMathExpressionKeywordLiteral::Context::kClamp:
       NOTREACHED();
   };
 }
@@ -1685,6 +1723,8 @@ CSSMathExpressionKeywordLiteral::ToPixelsAndPercent(
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
       return std::nullopt;
+    case CSSMathExpressionKeywordLiteral::Context::kClamp:
+      NOTREACHED();
   }
 }
 
@@ -1762,6 +1802,14 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
     CSSMathOperator op) {
   DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax ||
          op == CSSMathOperator::kClamp);
+
+  if (op == CSSMathOperator::kClamp) {
+    std::optional<CSSMathExpressionNode*> simplified_comparisson_operation =
+        MaybeSimplifyComparisonFunction(operands);
+    if (simplified_comparisson_operation.has_value()) {
+      return *simplified_comparisson_operation;
+    }
+  }
 
   CalculationResultCategory category = DetermineComparisonCategory(operands);
   if (category == kCalcOther) {
@@ -2200,6 +2248,12 @@ inline bool CanArithmeticOperationBeSimplified(
          !DetermineType(*left_side, *right_side, op).IsIntermediateResult();
 }
 
+bool IsClampKeywordLiteral(const CSSMathExpressionNode* exp_node) {
+  return exp_node->IsKeywordLiteral() &&
+         DynamicTo<CSSMathExpressionKeywordLiteral>(exp_node)->GetContext() ==
+             CSSMathExpressionKeywordLiteral::Context::kClamp;
+}
+
 }  // namespace
 
 // static
@@ -2210,6 +2264,13 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
     CSSMathOperator op) {
   DCHECK(op == CSSMathOperator::kAdd || op == CSSMathOperator::kSubtract ||
          op == CSSMathOperator::kMultiply || op == CSSMathOperator::kDivide);
+
+  // 'none' keyword for clamp() upper and lower bounds is only allowed
+  // as a single top level keyword, cannot be combined with other
+  // <calc-sum>.
+  if (IsClampKeywordLiteral(left_side) || IsClampKeywordLiteral(right_side)) {
+    return nullptr;
+  }
 
   if (CSSMathExpressionNode* result =
           MaybeDistributeArithmeticOperation(left_side, right_side, op)) {
@@ -4097,6 +4158,7 @@ class CSSMathExpressionNodeParser {
    public:
     uint8_t depth;
     bool allow_size_keyword;
+    bool allow_clamp_none = false;
 
     static_assert(uint8_t(kMaxExpressionDepth + 1) == kMaxExpressionDepth + 1);
 
@@ -4425,6 +4487,7 @@ class CSSMathExpressionNodeParser {
   CSSMathExpressionNode* ParseMathFunction(CSSValueID function_id,
                                            CSSParserTokenStream& stream,
                                            State state) {
+    state.allow_clamp_none = false;
     if (!IsSupportedMathFunction(function_id)) {
       return nullptr;
     }
@@ -4463,6 +4526,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kClamp:
         min_argument_count = 3;
         max_argument_count = 3;
+        state.allow_clamp_none = true;
         break;
       case CSSValueID::kSin:
       case CSSValueID::kCos:
@@ -4717,6 +4781,10 @@ class CSSMathExpressionNodeParser {
           CSSValueID::kSize,
           CSSMathExpressionKeywordLiteral::Context::kCalcSize);
     }
+    if (state.allow_clamp_none && token.Id() == CSSValueID::kNone) {
+      return CSSMathExpressionKeywordLiteral::Create(
+          CSSValueID::kNone, CSSMathExpressionKeywordLiteral::Context::kClamp);
+    }
     if (!(token.GetType() == kNumberToken ||
           (token.GetType() == kPercentageToken &&
            parsing_flags_.Has(Flag::AllowPercent)) ||
@@ -4788,7 +4856,9 @@ class CSSMathExpressionNodeParser {
         CSSParserTokenStream::BlockGuard guard(stream);
         stream.ConsumeWhitespace();
         result = ParseValueExpression(stream, state);
-        if (!result || !stream.AtEnd()) {
+        // 'none' keyword for clamp() upper and lower bounds is only allowed
+        // as a single top level keyword, not inside parenthesis.
+        if (!result || !stream.AtEnd() || IsClampKeywordLiteral(result)) {
           return nullptr;
         }
         result->SetIsNestedCalc();
