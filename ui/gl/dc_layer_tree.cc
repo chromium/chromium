@@ -461,8 +461,8 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
       video_processor_wrapper.video_device->CreateVideoProcessorEnumerator(
           &desc, &video_processor_wrapper.video_processor_enumerator);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "CreateVideoProcessorEnumerator failed with error 0x"
-                << std::hex << hr;
+    DLOG(ERROR) << "CreateVideoProcessorEnumerator failed:"
+                << logging::SystemErrorCodeToString(hr);
     // It might fail again next time. Disable overlay support so
     // overlay processor will stop sending down overlay frames.
     DisableDirectCompositionOverlays();
@@ -472,8 +472,8 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
       video_processor_wrapper.video_processor_enumerator.Get(), 0,
       &video_processor_wrapper.video_processor);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "CreateVideoProcessor failed with error 0x" << std::hex
-                << hr;
+    DLOG(ERROR) << "CreateVideoProcessor failed:"
+                << logging::SystemErrorCodeToString(hr);
     // It might fail again next time. Disable overlay support so
     // overlay processor will stop sending down overlay frames.
     DisableDirectCompositionOverlays();
