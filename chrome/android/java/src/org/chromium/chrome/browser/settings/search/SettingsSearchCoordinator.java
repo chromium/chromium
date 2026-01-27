@@ -370,9 +370,15 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         return null;
     }
 
-    private void handleBackAction() {
+    /**
+     * Handle back press action when search UI is enabled.
+     *
+     * @return Whether the search coordinator consumed the action.
+     */
+    public boolean handleBackAction() {
         if (mFragmentState == FS_SETTINGS) {
             // Do nothing. Let the default back action handler take care of it.
+            return false;
         } else if (mFragmentState == FS_SEARCH) {
             exitSearchState(/* clearFragment= */ true);
         } else if (mFragmentState == FS_RESULTS) {
@@ -380,6 +386,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         } else {
             assert false : "Unreachable state.";
         }
+        return true;
     }
 
     /** Returns the size in px for a given dimension resource ID. */

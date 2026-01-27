@@ -866,15 +866,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 if (mMultiColumnSettings.isTwoColumn()) {
                     // In two pane mode, selecting back always exits from the settings activity.
                     finish();
-                    return true;
+                } else {
+                    // PreferenceHeaderFragmentCompat implements back button behavior.
+                    // In order to forward the event to there, translate the event to the back
+                    // button.
+                    onBackPressed();
                 }
-                // PreferenceHeaderFragmentCompat implements back button behavior.
-                // In order to forward the event to there, translate the event to the back button.
-                onBackPressed();
-                return true;
+            } else if (!(mSearchCoordinator != null && mSearchCoordinator.handleBackAction())) {
+                // Search UI may handle the back action if it's showing its own fragment. Finish
+                // the main fragment only it didn't.
+                finishCurrentSettings(assumeNonNull(mainFragment));
             }
-            assumeNonNull(mainFragment);
-            finishCurrentSettings(mainFragment);
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
             RecordUserAction.record("Settings.MobileHelpAndFeedback");
