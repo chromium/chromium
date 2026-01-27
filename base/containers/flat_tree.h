@@ -169,6 +169,12 @@ class flat_tree {
             InputIterator last,
             const key_compare& comp = key_compare());
 
+  template <class Range>
+    requires(std::ranges::input_range<Range>)
+  flat_tree(std::from_range_t,
+            Range&& range,
+            const key_compare& comp = key_compare());
+
   flat_tree(const container_type& items,
             const key_compare& comp = key_compare());
 
@@ -182,6 +188,13 @@ class flat_tree {
   flat_tree(sorted_unique_t,
             InputIterator first,
             InputIterator last,
+            const key_compare& comp = key_compare());
+
+  template <class Range>
+    requires(std::ranges::input_range<Range>)
+  flat_tree(std::from_range_t,
+            sorted_unique_t,
+            Range&& range,
             const key_compare& comp = key_compare());
 
   flat_tree(sorted_unique_t,
@@ -555,6 +568,17 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
+template <class Range>
+  requires(std::ranges::input_range<Range>)
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
+    std::from_range_t,
+    Range&& range,
+    const KeyCompare& comp)
+    : comp_(comp), body_(std::from_range, std::forward<Range>(range)) {
+  sort_and_unique();
+}
+
+template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     const container_type& items,
     const KeyCompare& comp)
@@ -585,6 +609,18 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     InputIterator last,
     const KeyCompare& comp)
     : comp_(comp), body_(first, last) {
+  DCHECK(is_sorted_and_unique(*this, value_comp()));
+}
+
+template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
+template <class Range>
+  requires(std::ranges::input_range<Range>)
+flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
+    std::from_range_t,
+    sorted_unique_t,
+    Range&& range,
+    const KeyCompare& comp)
+    : comp_(comp), body_(std::from_range, std::forward<Range>(range)) {
   DCHECK(is_sorted_and_unique(*this, value_comp()));
 }
 
