@@ -2536,16 +2536,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PageLoad.Clients.LinkPreview.Usage" enum="LinkPreviewUsage"
-    expires_after="2026-06-07">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>src/chrome/browser/preloading/preview/OWNERS</owner>
-  <summary>
-    Records the LinkPreview feature usages per page visit. The metric is emitted
-    on leaving a page, e.g. primary page changes, or tab closures.
-  </summary>
-</histogram>
-
 <histogram
     name="PageLoad.Clients.MultiTabLoading{OtherLoadingCount}.{Timing}{Background}"
     units="ms" expires_after="2027-01-10">
@@ -3651,17 +3641,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Experimental.PageVisitType2" enum="PageVisitType"
-    expires_after="2026-06-28">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    The page visit type that represents if the page follows a link navigation,
-    and the page is followed by another link navigation. This metrics is
-    recorded when the page is destructed.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Experimental.PaintTiming.InputToFirstContentfulPaint"
     units="ms" expires_after="2026-12-04">
   <owner>sullivan@chromium.org</owner>
@@ -3669,18 +3648,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time between the OS-level input event that initiated a navigation, and
     the first contentful paint of the page that was loaded in the navigation.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.PreviewFinalStatus"
-    enum="PreviewFinalStatus" expires_after="2026-05-03">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>src/chrome/browser/preloading/preview/OWNERS</owner>
-  <summary>
-    This metric records the previewed page final status on each page
-    destruction, or on a potential last timing to run before the destruction.
-    This will be a hint to understand how the previewed page is used or was
-    useful for users.
   </summary>
 </histogram>
 
@@ -3696,15 +3663,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Experimental.TotalForegroundDuration{PageVisitType}"
-    units="ms" expires_after="2026-07-26">
+<histogram name="PageLoad.Experimental.TotalForegroundDuration" units="ms"
+    expires_after="2026-07-26">
   <owner>npm@chromium.org</owner>
-  <owner>toyoshim@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
-    The total amount of time the page spent in the foreground on
-    {PageVisitType}.
+    The total amount of time the page spent in the foreground.
 
     Note that this metric adds all foreground durations occurring for the page.
     For example: if the page starts foregrounded during 1 second, then goes to
@@ -3713,25 +3678,7 @@ chromium-metrics-reviews@google.com.
     the end of each page load. As usual with PageLoad metrics, we consider app
     backgrounding on Android to be the end of page load as well as the app could
     be evicted by Android anytime after that happens.
-
-    See also PageLoad.Experimental.PageVisitType for each page visit type
-    definition.
   </summary>
-  <token key="PageVisitType">
-    <variant name=""
-        summary="all page visits, recorded in UkmPageLoadMetricsObserver"/>
-    <variant name=".AllVisit"
-        summary="all page visits, recorded in PreviewPageLoadMetricsObserver"/>
-    <variant name=".HistoryVisit" summary="history page visits"/>
-    <variant name=".IndependentLinkVisit"
-        summary="independent page visits in a new tab"/>
-    <variant name=".IndependentUIVisit"
-        summary="independent page visits from UI"/>
-    <variant name=".OriginLinkVisit" summary="origin page visits in a new tab"/>
-    <variant name=".OriginUIVisit" summary="origin page visits from UI"/>
-    <variant name=".PassingVisit" summary="passing page visits"/>
-    <variant name=".TerminalVisit" summary="terminal page visits"/>
-  </token>
 </histogram>
 
 <histogram

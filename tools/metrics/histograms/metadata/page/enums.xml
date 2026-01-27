@@ -158,12 +158,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="LinkPreviewUsage">
-  <int value="0" label="Not used"/>
-  <int value="1" label="Used but not promited"/>
-  <int value="2" label="Used and promoted"/>
-</enum>
-
 <enum name="MhtmlLoadResult">
   <int value="0" label="Success">Archive loaded successfully</int>
   <int value="1" label="Empty file">
@@ -402,11 +396,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h:PrerenderPrewarmNavigationStatus) -->
-
-<enum name="PreviewFinalStatus">
-  <int value="0" label="just previewed"/>
-  <int value="1" label="previewed and promoted"/>
-</enum>
 
 <!-- LINT.IfChange(WebViewPageAttemptResult) -->
 

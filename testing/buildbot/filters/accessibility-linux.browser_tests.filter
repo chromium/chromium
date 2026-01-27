@@ -127,10 +127,7 @@
 -PreviewBrowserTest.ZoomUsageRecordedOnCancel
 # https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewBrowserTest.ZoomUsageRecordedOnPromoteToNewTab
 -PreviewBrowserTest.ZoomUsageRecordedOnPromoteToNewTab
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewPageLoadMetricsObserverBrowserTest.LinkPreviewUsageUsedButNotPromoted
--PreviewPageLoadMetricsObserverBrowserTest.LinkPreviewUsageUsedButNotPromoted
-# https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPreviewPageLoadMetricsObserverBrowserTest.PreviewFinalStatus
--PreviewPageLoadMetricsObserverBrowserTest.PreviewFinalStatus
+
 # https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPrintPreviewScalingSettingsTest.InputNotDisabledOnValidityChange
 -PrintPreviewScalingSettingsTest.InputNotDisabledOnValidityChange
 # https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPrintPreviewScalingSettingsTest.InputNotDisabledOnValidityChange__ScalingSettingsTest_InputNotDisabledOnValidityChange
