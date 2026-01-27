@@ -314,7 +314,8 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
     partition_alloc::TagViolationReportingMode reporting_mode =
         partition_alloc::TagViolationReportingMode::kUndefined;
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    reporting_mode = allocator_shim::internal::PartitionAllocMalloc::Allocator()
+    reporting_mode = allocator_shim::internal::PartitionAllocMalloc::Allocator(
+                         kDefaultAllocToken)
                          ->memory_tagging_reporting_mode();
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     switch (bootloader_override) {
@@ -873,8 +874,12 @@ void ReconfigureSchedulerLoopQuarantineBranch(
   std::string process_type = GetProcessType();
   partition_alloc::internal::SchedulerLoopQuarantineConfig config =
       GetSchedulerLoopQuarantineConfiguration(process_type, branch_type);
-  allocator_shim::internal::PartitionAllocMalloc::Allocator()
-      ->ReconfigureSchedulerLoopQuarantineForCurrentThread(config);
+  for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+       alloc_token++) {
+    allocator_shim::internal::PartitionAllocMalloc::Allocator(
+        AllocToken(alloc_token))
+        ->ReconfigureSchedulerLoopQuarantineForCurrentThread(config);
+  }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
@@ -1286,15 +1291,23 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated(
       partition_alloc::internal::GetStackTop());
 
-  allocator_shim::internal::PartitionAllocMalloc::Allocator()
-      ->EnableThreadCacheIfSupported();
+  for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+       alloc_token++) {
+    allocator_shim::internal::PartitionAllocMalloc::Allocator(
+        AllocToken(alloc_token))
+        ->EnableThreadCacheIfSupported();
+  }
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeEmptySlotSpanRing)) {
     int16_t size = static_cast<int16_t>(
         features::kPartitionAllocLargeEmptySlotSpanRingSize.Get());
-    allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->AdjustSlotSpanRing(size, kDefaultMaxEmptySlotSpansDirtyBytesShift);
+    for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+         alloc_token++) {
+      allocator_shim::internal::PartitionAllocMalloc::Allocator(
+          AllocToken(alloc_token))
+          ->AdjustSlotSpanRing(size, kDefaultMaxEmptySlotSpansDirtyBytesShift);
+    }
   }
 
   // `ReconfigureAfterTaskRunnerInit()` is called on the Main thread.
@@ -1420,8 +1433,13 @@ void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
           features::kPartitionAllocAdjustSizeWhenInForeground)) {
     int16_t size = static_cast<int16_t>(
         features::kPartitionAllocForegroundEmptySlotSpanRingSize.Get());
-    allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->AdjustSlotSpanRing(size, kForegroundMaxEmptySlotSpansDirtyBytesShift);
+    for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+         alloc_token++) {
+      allocator_shim::internal::PartitionAllocMalloc::Allocator(
+          AllocToken(alloc_token))
+          ->AdjustSlotSpanRing(size,
+                               kForegroundMaxEmptySlotSpansDirtyBytesShift);
+    }
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
@@ -1462,8 +1480,13 @@ void PartitionAllocSupport::OnBackgrounded() {
           features::kPartitionAllocAdjustSizeWhenInForeground)) {
     int16_t size = static_cast<int16_t>(
         features::kPartitionAllocBackgroundEmptySlotSpanRingSize.Get());
-    allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->AdjustSlotSpanRing(size, kBackgroundMaxEmptySlotSpansDirtyBytesShift);
+    for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+         alloc_token++) {
+      allocator_shim::internal::PartitionAllocMalloc::Allocator(
+          AllocToken(alloc_token))
+          ->AdjustSlotSpanRing(size,
+                               kBackgroundMaxEmptySlotSpansDirtyBytesShift);
+    }
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }

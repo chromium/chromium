@@ -739,3 +739,88 @@ config("not_fuzzed") {
     }
   }
 }
+
+# This config defines the Clang flags required for alloc_token sanitization, and
+# linker flags to dynamically export the new symbols on Linux/ChromeOS.
+# This is used by allocator_shim on non-component builds if
+# shim_supports_alloc_token, and is propagated to the dependant targets via
+# all_dependent_config. In linux component build, it is propagated to directly
+# dependant targets using public_config.
+config("alloc_token") {
+  if (is_clang) {
+    cflags = [
+      "-fsanitize=alloc-token",
+      "-fsanitize-alloc-token-fast-abi",
+    ]
+    if (is_win) {
+      cflags += [
+        "-Xclang",
+        "-falloc-token-max=2",
+      ]
+    } else {
+      cflags += [ "-falloc-token-max=2" ]
+    }
+    if (is_linux) {
+      if (!defined(alloc_token_linux_ignorelist_path)) {
+        alloc_token_linux_ignorelist_path =
+            rebase_path("//tools/clang/alloc_token/ignores_linux.txt",
+                        root_build_dir)
+      }
+      cflags += [ "-fsanitize-ignorelist=$alloc_token_linux_ignorelist_path" ]
+    }
+    if (is_apple) {
+      if (!defined(alloc_token_apple_ignorelist_path)) {
+        alloc_token_apple_ignorelist_path =
+            rebase_path("//tools/clang/alloc_token/ignores_apple.txt",
+                        root_build_dir)
+      }
+      cflags += [ "-fsanitize-ignorelist=$alloc_token_apple_ignorelist_path" ]
+    }
+    if (is_android) {
+      if (!defined(alloc_token_android_ignorelist_path)) {
+        alloc_token_android_ignorelist_path =
+            rebase_path("//tools/clang/alloc_token/ignores_android.txt",
+                        root_build_dir)
+      }
+      cflags += [ "-fsanitize-ignorelist=$alloc_token_android_ignorelist_path" ]
+    }
+    if (is_linux || is_chromeos) {
+      ldflags = [
+        # go/keep-sorted start
+        "-Wl,--export-dynamic-symbol=__alloc_token_0__Znam",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnamRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnamSt11align_val_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnamSt11align_val_tRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0__Znwm",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnwmRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnwmSt11align_val_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0__ZnwmSt11align_val_tRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0_aligned_alloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0_calloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0_malloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0_memalign",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0_posix_memalign",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0_pvalloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0_realloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_0_valloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1__Znam",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnamRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnamSt11align_val_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnamSt11align_val_tRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1__Znwm",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnwmRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnwmSt11align_val_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1__ZnwmSt11align_val_tRKSt9nothrow_t",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1_aligned_alloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1_calloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1_malloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1_memalign",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1_posix_memalign",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1_pvalloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1_realloc",
+        "-Wl,--export-dynamic-symbol=__alloc_token_1_valloc",
+        # go/keep-sorted end
+      ]
+    }
+  }
+}

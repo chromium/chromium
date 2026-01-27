@@ -6431,19 +6431,24 @@ TEST_P(PartitionAllocTest, SwitchBucketDistributionAfterAlloc) {
 }
 
 TEST_P(PartitionAllocTest, MultipleThreadCachePerThread) {
-  ASSERT_FALSE(ThreadCache::IsValid(ThreadCache::Get(1)));
-  ASSERT_FALSE(ThreadCache::IsValid(ThreadCache::Get(2)));
-  auto root1 =
-      CreateCustomTestRootWithThreadCache(GetCommonPartitionOptions(), {}, 1);
-  auto root2 =
-      CreateCustomTestRootWithThreadCache(GetCommonPartitionOptions(), {}, 2);
+  // Use thread cache indices which are not used by default partitions.
+  constexpr size_t index1 = kNumDefaultPartitions;
+  constexpr size_t index2 = kNumDefaultPartitions + 1;
+  static_assert(index1 < internal::kMaxThreadCacheIndex);
+  static_assert(index2 < internal::kMaxThreadCacheIndex);
+  ASSERT_FALSE(ThreadCache::IsValid(ThreadCache::Get(index1)));
+  ASSERT_FALSE(ThreadCache::IsValid(ThreadCache::Get(index2)));
+  auto root1 = CreateCustomTestRootWithThreadCache(GetCommonPartitionOptions(),
+                                                   {}, index1);
+  auto root2 = CreateCustomTestRootWithThreadCache(GetCommonPartitionOptions(),
+                                                   {}, index2);
   auto* ptr1 = root1->Alloc(kTestAllocSize);
   auto* ptr2 = root2->Alloc(kTestAllocSize);
   root1->Free(ptr1);
   root2->Free(ptr2);
 
-  ThreadCache* tcache1 = ThreadCache::Get(1);
-  ThreadCache* tcache2 = ThreadCache::Get(2);
+  ThreadCache* tcache1 = ThreadCache::Get(index1);
+  ThreadCache* tcache2 = ThreadCache::Get(index2);
   EXPECT_NE(tcache1, tcache2);
   size_t bucket_index =
       SizeToIndex(kTestAllocSize + kExtraAllocSizeWithoutMetadata);

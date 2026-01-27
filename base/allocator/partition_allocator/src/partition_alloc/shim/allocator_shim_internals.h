@@ -38,15 +38,19 @@
 // To work around the bug we use noinline to prevent the symbols from being
 // inlined.
 //
+// Also the `used` attribute is required to prevent dead-code elimination.
+// Without it, LLVM LTO can causes an undefined symbol error, even if the symbol
+// is defined within liballocator_shim.a.
+//
 // In the long run we probably want to avoid linking the allocator bits into
 // DSOs altogether. This will save a little space and stop giving DSOs the false
 // impression that they can hook the allocator.
-#define SHIM_ALWAYS_EXPORT __attribute__((visibility("default"), noinline))
+#define SHIM_ALWAYS_EXPORT __attribute__((used, visibility("default"), noinline))
 
 #elif PA_BUILDFLAG(IS_WIN)  // __GNUC__
 
 #define __THROW
-#define SHIM_ALWAYS_EXPORT __declspec(noinline)
+#define SHIM_ALWAYS_EXPORT __declspec(noinline) __attribute__((used))
 
 #endif  // __GNUC__
 

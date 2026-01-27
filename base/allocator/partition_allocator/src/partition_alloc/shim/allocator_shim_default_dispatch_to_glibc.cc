@@ -33,7 +33,7 @@ using allocator_shim::AllocatorDispatch;
 // most platforms), and tests expect that.
 constexpr size_t kMaxAllowedSize = std::numeric_limits<int>::max() - (1 << 12);
 
-void* GlibcMalloc(size_t size, void* context) {
+void* GlibcMalloc(size_t size, AllocToken, void* context) {
   // Cannot force glibc's malloc() to crash when a large size is requested, do
   // it in the shim instead.
   if (size >= kMaxAllowedSize) [[unlikely]] {
@@ -43,7 +43,7 @@ void* GlibcMalloc(size_t size, void* context) {
   return __libc_malloc(size);
 }
 
-void* GlibcUncheckedMalloc(size_t size, void* context) {
+void* GlibcUncheckedMalloc(size_t size, AllocToken, void* context) {
   if (size >= kMaxAllowedSize) [[unlikely]] {
     return nullptr;
   }
@@ -51,7 +51,7 @@ void* GlibcUncheckedMalloc(size_t size, void* context) {
   return __libc_malloc(size);
 }
 
-void* GlibcCalloc(size_t n, size_t size, void* context) {
+void* GlibcCalloc(size_t n, size_t size, AllocToken, void* context) {
   const auto total = partition_alloc::internal::base::CheckMul(n, size);
   if (!total.IsValid() || total.ValueOrDie() >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size * n);
@@ -60,7 +60,7 @@ void* GlibcCalloc(size_t n, size_t size, void* context) {
   return __libc_calloc(n, size);
 }
 
-void* GlibcUncheckedCalloc(size_t n, size_t size, void* context) {
+void* GlibcUncheckedCalloc(size_t n, size_t size, AllocToken, void* context) {
   const auto total = partition_alloc::internal::base::CheckMul(n, size);
   if (!total.IsValid() || total.ValueOrDie() >= kMaxAllowedSize) [[unlikely]] {
     return nullptr;
@@ -69,7 +69,7 @@ void* GlibcUncheckedCalloc(size_t n, size_t size, void* context) {
   return __libc_calloc(n, size);
 }
 
-void* GlibcRealloc(void* address, size_t size, void* context) {
+void* GlibcRealloc(void* address, size_t size, AllocToken, void* context) {
   if (size >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
@@ -77,7 +77,10 @@ void* GlibcRealloc(void* address, size_t size, void* context) {
   return __libc_realloc(address, size);
 }
 
-void* GlibcUncheckedRealloc(void* address, size_t size, void* context) {
+void* GlibcUncheckedRealloc(void* address,
+                            size_t size,
+                            AllocToken,
+                            void* context) {
   if (size >= kMaxAllowedSize) [[unlikely]] {
     return nullptr;
   }
@@ -85,7 +88,7 @@ void* GlibcUncheckedRealloc(void* address, size_t size, void* context) {
   return __libc_realloc(address, size);
 }
 
-void* GlibcMemalign(size_t alignment, size_t size, void* context) {
+void* GlibcMemalign(size_t alignment, size_t size, AllocToken, void* context) {
   if (size >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }

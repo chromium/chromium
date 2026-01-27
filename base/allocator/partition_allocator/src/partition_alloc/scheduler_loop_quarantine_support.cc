@@ -9,12 +9,14 @@
 namespace partition_alloc {
 ScopedSchedulerLoopQuarantineExclusion::
     ScopedSchedulerLoopQuarantineExclusion() {
-  // The thread cache storing the SchedulerLoopQuarantineBranch is in index 0.
-  ThreadCache* tcache = ThreadCache::Get(internal::kThreadCacheQuarantineIndex);
-  if (!ThreadCache::IsValid(tcache)) {
-    return;
+  for (size_t index = 0; index < kNumDefaultPartitions; ++index) {
+    ThreadCache* tcache = ThreadCache::Get(index);
+    if (!ThreadCache::IsValid(tcache)) {
+      return;
+    }
+    PA_UNSAFE_TODO(instances_[index])
+        .emplace(tcache->GetSchedulerLoopQuarantineBranch());
   }
-  instance_.emplace(tcache->GetSchedulerLoopQuarantineBranch());
 }
 ScopedSchedulerLoopQuarantineExclusion::
     ~ScopedSchedulerLoopQuarantineExclusion() {}

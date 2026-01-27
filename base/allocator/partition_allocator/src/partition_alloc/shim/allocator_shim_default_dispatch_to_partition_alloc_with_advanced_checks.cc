@@ -21,44 +21,62 @@ PA_ALWAYS_INLINE const AllocatorDispatch* GetDelegate() {
   return g_delegate_dispatch.load(std::memory_order_relaxed);
 }
 
-void* DelegatedAllocFn(size_t size, void* context) {
+void* DelegatedAllocFn(size_t size, AllocToken alloc_token, void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
-  PA_MUSTTAIL return delegate->alloc_function(size, context);
+  PA_MUSTTAIL return delegate->alloc_function(size, alloc_token, context);
 }
 
-void* DelegatedAllocUncheckedFn(size_t size, void* context) {
+void* DelegatedAllocUncheckedFn(size_t size,
+                                AllocToken alloc_token,
+                                void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
-  PA_MUSTTAIL return delegate->alloc_unchecked_function(size, context);
+  PA_MUSTTAIL return delegate->alloc_unchecked_function(size, alloc_token,
+                                                        context);
 }
 
-void* DelegatedAllocZeroInitializedFn(size_t n, size_t size, void* context) {
+void* DelegatedAllocZeroInitializedFn(size_t n,
+                                      size_t size,
+                                      AllocToken alloc_token,
+                                      void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
-  PA_MUSTTAIL return delegate->alloc_zero_initialized_function(n, size,
-                                                               context);
+  PA_MUSTTAIL return delegate->alloc_zero_initialized_function(
+      n, size, alloc_token, context);
 }
 
 void* DelegatedAllocZeroInitializedUncheckedFn(size_t n,
                                                size_t size,
+                                               AllocToken alloc_token,
                                                void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->alloc_zero_initialized_unchecked_function(
-      n, size, context);
+      n, size, alloc_token, context);
 }
 
-void* DelegatedAllocAlignedFn(size_t alignment, size_t size, void* context) {
+void* DelegatedAllocAlignedFn(size_t alignment,
+                              size_t size,
+                              AllocToken alloc_token,
+                              void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
-  PA_MUSTTAIL return delegate->alloc_aligned_function(alignment, size, context);
+  PA_MUSTTAIL return delegate->alloc_aligned_function(alignment, size,
+                                                      alloc_token, context);
 }
 
-void* DelegatedReallocFn(void* address, size_t size, void* context) {
+void* DelegatedReallocFn(void* address,
+                         size_t size,
+                         AllocToken alloc_token,
+                         void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
-  PA_MUSTTAIL return delegate->realloc_function(address, size, context);
+  PA_MUSTTAIL return delegate->realloc_function(address, size, alloc_token,
+                                                context);
 }
 
-void* DelegatedReallocUncheckedFn(void* address, size_t size, void* context) {
+void* DelegatedReallocUncheckedFn(void* address,
+                                  size_t size,
+                                  AllocToken alloc_token,
+                                  void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->realloc_unchecked_function(address, size,
-                                                          context);
+                                                          alloc_token, context);
 }
 
 void DelegatedFreeFn(void* address, void* context) {
@@ -125,36 +143,42 @@ void DelegatedTryFreeDefaultFn(void* address, void* context) {
   PA_MUSTTAIL return delegate->try_free_default_function(address, context);
 }
 
-void* DelegatedAlignedMallocFn(size_t size, size_t alignment, void* context) {
+void* DelegatedAlignedMallocFn(size_t size,
+                               size_t alignment,
+                               AllocToken alloc_token,
+                               void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->aligned_malloc_function(size, alignment,
-                                                       context);
+                                                       alloc_token, context);
 }
 
 void* DelegatedAlignedMallocUncheckedFn(size_t size,
                                         size_t alignment,
+                                        AllocToken alloc_token,
                                         void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->aligned_malloc_unchecked_function(
-      size, alignment, context);
+      size, alignment, alloc_token, context);
 }
 
 void* DelegatedAlignedReallocFn(void* address,
                                 size_t size,
                                 size_t alignment,
+                                AllocToken alloc_token,
                                 void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
-  PA_MUSTTAIL return delegate->aligned_realloc_function(address, size,
-                                                        alignment, context);
+  PA_MUSTTAIL return delegate->aligned_realloc_function(
+      address, size, alignment, alloc_token, context);
 }
 
 void* DelegatedAlignedReallocUncheckedFn(void* address,
                                          size_t size,
                                          size_t alignment,
+                                         AllocToken alloc_token,
                                          void* context) {
   const AllocatorDispatch* delegate = GetDelegate();
   PA_MUSTTAIL return delegate->aligned_realloc_unchecked_function(
-      address, size, alignment, context);
+      address, size, alignment, alloc_token, context);
 }
 
 void DelegatedAlignedFreeFn(void* address, void* context) {

@@ -150,11 +150,18 @@ declare_args() {
   # provides an extended API to swap PartitionAlloc.
   enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support =
       use_partition_alloc_as_malloc
+  # Whether the allocator shim supports alloc token or not. If true, malloc()
+  # and operator new() families are injected with an alloc token parameter,
+  # which is used to select the partition in PartitionAlloc.
+  # shim_supports_alloc_token = use_partition_alloc_as_malloc
+  shim_supports_alloc_token = false
 }
 
 assert(
     !enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support || use_partition_alloc_as_malloc,
     "PartitionAlloc with advanced checks requires PartitionAlloc itself.")
+assert(!is_component_build || is_linux || !shim_supports_alloc_token,
+       "In the component build, alloc token is only supported on Linux.")
 
 if (use_allocator_shim && is_win) {
   # It's hard to override CRT's malloc family in every case in the component
@@ -395,6 +402,7 @@ if (!use_partition_alloc ||
   backup_ref_ptr_extra_oob_checks = false
   enable_backup_ref_ptr_instance_tracer = false
   use_full_mte = false
+  shim_supports_alloc_token = false
 }
 
 # Disable |use_full_mte| if memory tagging is not available. This is for targets that run as part the build process.

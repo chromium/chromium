@@ -1213,7 +1213,6 @@ void PartitionRoot::EnableThreadCacheIfSupported() {
   // `internal::ThreadCacheInit()` are visible. To prevent that, we fake thread
   // cache creation being in-progress while this is running.
 
-  settings_.thread_cache_index = internal::kDefaultRootThreadCacheIndex;
   {
     ::partition_alloc::internal::ScopedGuard construction_guard{
         thread_cache_construction_lock_};

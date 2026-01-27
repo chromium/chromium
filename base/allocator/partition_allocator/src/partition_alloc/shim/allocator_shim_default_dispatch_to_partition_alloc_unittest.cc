@@ -26,6 +26,11 @@
     PA_BUILDFLAG(USE_PARTITION_ALLOC)
 namespace allocator_shim::internal {
 
+namespace {
+// TODO(crbug.com/477186304): Support tests with multiple alloc tokens.
+inline static constexpr AllocToken kAllocTokenForTesting = AllocToken(0);
+}  // namespace
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // Platforms on which we override weak libc symbols.
@@ -97,29 +102,34 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
 // for PartitionAlloc-Everywhere. Most of these directly dispatch to
 // PartitionAlloc, which has much more extensive tests.
 TEST(PartitionAllocAsMalloc, Simple) {
-  void* data = PartitionAllocFunctions::Malloc(10, nullptr);
+  void* data =
+      PartitionAllocFunctions::Malloc(10, kAllocTokenForTesting, nullptr);
   EXPECT_TRUE(data);
   PartitionAllocFunctions::Free(data, nullptr);
 }
 
 TEST(PartitionAllocAsMalloc, SimpleWithSize) {
-  void* data = PartitionAllocFunctions::Malloc(10, nullptr);
+  void* data =
+      PartitionAllocFunctions::Malloc(10, kAllocTokenForTesting, nullptr);
   EXPECT_TRUE(data);
   PartitionAllocFunctions::FreeWithSize(data, 10, nullptr);
 }
 
 TEST(PartitionAllocAsMalloc, MallocUnchecked) {
-  void* data = PartitionAllocFunctions::MallocUnchecked(10, nullptr);
+  void* data = PartitionAllocFunctions::MallocUnchecked(
+      10, kAllocTokenForTesting, nullptr);
   EXPECT_TRUE(data);
   PartitionAllocFunctions::Free(data, nullptr);
 
-  void* too_large = PartitionAllocFunctions::MallocUnchecked(4e9, nullptr);
+  void* too_large = PartitionAllocFunctions::MallocUnchecked(
+      4e9, kAllocTokenForTesting, nullptr);
   EXPECT_FALSE(too_large);  // No crash.
 }
 
 TEST(PartitionAllocAsMalloc, Calloc) {
   constexpr size_t alloc_size = 100;
-  void* data = PartitionAllocFunctions::Calloc(1, alloc_size, nullptr);
+  void* data = PartitionAllocFunctions::Calloc(1, alloc_size,
+                                               kAllocTokenForTesting, nullptr);
   EXPECT_TRUE(data);
 
   char* zeroes[alloc_size];
@@ -131,7 +141,8 @@ TEST(PartitionAllocAsMalloc, Calloc) {
 
 TEST(PartitionAllocAsMalloc, CallocUnchecked) {
   constexpr size_t alloc_size = 100;
-  void* data = PartitionAllocFunctions::CallocUnchecked(1, alloc_size, nullptr);
+  void* data = PartitionAllocFunctions::CallocUnchecked(
+      1, alloc_size, kAllocTokenForTesting, nullptr);
   EXPECT_TRUE(data);
 
   char* zeroes[alloc_size];
@@ -144,8 +155,8 @@ TEST(PartitionAllocAsMalloc, CallocUnchecked) {
 TEST(PartitionAllocAsMalloc, Memalign) {
   constexpr size_t alloc_size = 100;
   constexpr size_t alignment = 1024;
-  void* data =
-      PartitionAllocFunctions::Memalign(alignment, alloc_size, nullptr);
+  void* data = PartitionAllocFunctions::Memalign(
+      alignment, alloc_size, kAllocTokenForTesting, nullptr);
   EXPECT_TRUE(data);
   EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(data) % alignment);
   PartitionAllocFunctions::Free(data, nullptr);
@@ -156,8 +167,8 @@ TEST(PartitionAllocAsMalloc, AlignedAlloc) {
     for (size_t alignment = 1;
          alignment <= partition_alloc::kMaxSupportedAlignment;
          alignment <<= 1) {
-      void* data =
-          PartitionAllocFunctions::AlignedAlloc(alloc_size, alignment, nullptr);
+      void* data = PartitionAllocFunctions::AlignedAlloc(
+          alloc_size, alignment, kAllocTokenForTesting, nullptr);
       EXPECT_TRUE(data);
       EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(data) % alignment);
       PartitionAllocFunctions::Free(data, nullptr);
@@ -170,12 +181,12 @@ TEST(PartitionAllocAsMalloc, AlignedRealloc) {
     for (size_t alignment = 1;
          alignment <= partition_alloc::kMaxSupportedAlignment;
          alignment <<= 1) {
-      void* data =
-          PartitionAllocFunctions::AlignedAlloc(alloc_size, alignment, nullptr);
+      void* data = PartitionAllocFunctions::AlignedAlloc(
+          alloc_size, alignment, kAllocTokenForTesting, nullptr);
       EXPECT_TRUE(data);
 
-      void* data2 = PartitionAllocFunctions::AlignedRealloc(data, alloc_size,
-                                                            alignment, nullptr);
+      void* data2 = PartitionAllocFunctions::AlignedRealloc(
+          data, alloc_size, alignment, kAllocTokenForTesting, nullptr);
       EXPECT_TRUE(data2);
 
       // Aligned realloc always relocates.
@@ -188,10 +199,11 @@ TEST(PartitionAllocAsMalloc, AlignedRealloc) {
 
 TEST(PartitionAllocAsMalloc, Realloc) {
   constexpr size_t alloc_size = 100;
-  void* data = PartitionAllocFunctions::Malloc(alloc_size, nullptr);
+  void* data = PartitionAllocFunctions::Malloc(alloc_size,
+                                               kAllocTokenForTesting, nullptr);
   EXPECT_TRUE(data);
-  void* data2 =
-      PartitionAllocFunctions::Realloc(data, 2u * alloc_size, nullptr);
+  void* data2 = PartitionAllocFunctions::Realloc(
+      data, 2u * alloc_size, kAllocTokenForTesting, nullptr);
   EXPECT_TRUE(data2);
   EXPECT_NE(data2, data);
   PartitionAllocFunctions::Free(data2, nullptr);

@@ -36,22 +36,41 @@ void DisableThreadCacheForRootIfEnabled(PartitionRoot* root) {
   // time. For the main thread, we leak it.
 }
 
-void EnablePartitionAllocThreadCacheForRootIfDisabled(PartitionRoot* root) {
+void EnablePartitionAllocThreadCacheForRootIfDisabled(
+    PartitionRoot* root,
+    size_t thread_cache_index = kDefaultRootThreadCacheIndex) {
   if (!root) {
     return;
   }
   root->settings_.with_thread_cache = true;
-  root->settings_.thread_cache_index = kDefaultRootThreadCacheIndex;
+  root->settings_.thread_cache_index = thread_cache_index;
 }
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void DisablePartitionAllocThreadCacheForProcess() {
   PA_CHECK(allocator_shim::internal::PartitionAllocMalloc::
                AllocatorConfigurationFinalized());
-  DisableThreadCacheForRootIfEnabled(
-      allocator_shim::internal::PartitionAllocMalloc::Allocator());
-  DisableThreadCacheForRootIfEnabled(
-      allocator_shim::internal::PartitionAllocMalloc::OriginalAllocator());
+  for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+       alloc_token++) {
+    DisableThreadCacheForRootIfEnabled(
+        allocator_shim::internal::PartitionAllocMalloc::Allocator(
+            AllocToken(alloc_token)));
+    DisableThreadCacheForRootIfEnabled(
+        allocator_shim::internal::PartitionAllocMalloc::OriginalAllocator(
+            AllocToken(alloc_token)));
+  }
+}
+
+void EnablePartitionAllocThreadCacheForProcess() {
+  PA_CHECK(allocator_shim::internal::PartitionAllocMalloc::
+               AllocatorConfigurationFinalized());
+  for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+       alloc_token++) {
+    EnablePartitionAllocThreadCacheForRootIfDisabled(
+        allocator_shim::internal::PartitionAllocMalloc::Allocator(
+            AllocToken(alloc_token)),
+        alloc_token);
+  }
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -121,7 +140,7 @@ ThreadCacheProcessScopeForTesting::~ThreadCacheProcessScopeForTesting() {
   if (regular_was_enabled_) {
     if (!regular_enabled) {
       // Need to re-enable ThreadCache for the process.
-      EnablePartitionAllocThreadCacheForRootIfDisabled(regular_allocator);
+      EnablePartitionAllocThreadCacheForProcess();
       // In the case, |regular_allocator| must be ThreadCache's root.
       ThreadCache::SwapForTesting(regular_allocator,
                                   kDefaultRootThreadCacheIndex);
