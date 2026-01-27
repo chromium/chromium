@@ -1009,7 +1009,10 @@ sk_sp<SkSurface> CanvasResourceProviderSharedImage::CreateSkSurface() const {
   TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateSkSurface");
   if (is_software_) {
     const auto props = GetSkSurfaceProps();
-    return SkSurfaces::Raster(GetSkImageInfo(), &props);
+    const auto info = SkImageInfo::Make(
+        size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
+        alpha_type_, color_space_.ToSkColorSpace());
+    return SkSurfaces::Raster(info, &props);
   }
 
   if (IsGpuContextLost() || !resource_) {
