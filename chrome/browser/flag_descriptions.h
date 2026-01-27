@@ -5056,12 +5056,6 @@ inline constexpr char kAnimatedImageDragShadowName[] =
 inline constexpr char kAnimatedImageDragShadowDescription[] =
     "Animate the shadow image from its original bound to the touch point. ";
 
-inline constexpr char kAnimateSuggestionsListAppearanceName[] =
-    "Animate appearance of the omnibox suggestions list";
-inline constexpr char kAnimateSuggestionsListAppearanceDescription[] =
-    "Animate the omnibox suggestions list when it appears instead of "
-    "immediately setting it to visible";
-
 inline constexpr char kAppSpecificHistoryName[] = "Allow app specific history";
 inline constexpr char kAppSpecificHistoryDescription[] =
     "If enabled, history results will also be categorized by application.";

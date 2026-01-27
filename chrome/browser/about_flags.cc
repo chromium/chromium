@@ -7251,12 +7251,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kAimServerEligibilityEnabled)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"animate-suggestions-list-appearance",
-     flag_descriptions::kAnimateSuggestionsListAppearanceName,
-     flag_descriptions::kAnimateSuggestionsListAppearanceDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kAnimateSuggestionsListAppearance)},
-
     {"omnibox-asynchronous-view-inflation",
      flag_descriptions::kOmniboxAsyncViewInflationName,
      flag_descriptions::kOmniboxAsyncViewInflationDescription, kOsAndroid,
