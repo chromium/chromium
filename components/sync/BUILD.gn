@@ -34,6 +34,8 @@ static_library("test_support") {
     "test/data_type_store_test_util.h",
     "test/data_type_test_util.cc",
     "test/data_type_test_util.h",
+    "test/embedded_fake_server_adapter.cc",
+    "test/embedded_fake_server_adapter.h",
     "test/entity_builder_factory.cc",
     "test/entity_builder_factory.h",
     "test/fake_cryptographer.cc",
@@ -169,6 +171,7 @@ static_library("test_support") {
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
     "//ui/gfx",
     "//url",
   ]

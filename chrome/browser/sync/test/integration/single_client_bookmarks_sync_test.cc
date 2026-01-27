@@ -56,7 +56,6 @@
 #include "components/sync/test/bookmark_entity_builder.h"
 #include "components/sync/test/entity_builder_factory.h"
 #include "components/sync/test/fake_server.h"
-#include "components/sync/test/fake_server_http_post_provider.h"
 #include "components/sync/test/fake_server_verifier.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
@@ -1879,7 +1878,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
 
   // Mimic the user being offline (until the next restart), to make sure the
   // entity is unsync-ed upon browser startup (next test).
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
 
   SetTitle(kSingleProfileIndex, bookmark, new_title);
 }
@@ -3012,7 +3011,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   // Mimic the user being offline to verify that account bookmarks are loaded
   // from disk instead of being redownloaded.
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
 
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
@@ -3484,7 +3483,7 @@ IN_PROC_BROWSER_TEST_F(
     SyncToSigninMigration) {
   // Mimic the user being offline to verify that account bookmarks are loaded
   // from disk instead of being redownloaded.
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
 
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());

@@ -82,12 +82,14 @@
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "components/sync/test/fake_server_network_resources.h"
+#include "components/sync/test/embedded_fake_server_adapter.h"
+#include "components/sync/test/fake_server.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/fake_oauth2_token_response.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -95,6 +97,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -241,6 +244,9 @@ void SyncTest::TearDown() {
 }
 
 void SyncTest::PostRunTestOnMainThread() {
+  // Needs to be destroyed before the task environment is shut down.
+  url_loader_interceptor_.reset();
+
   PlatformBrowserTest::PostRunTestOnMainThread();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -283,12 +289,25 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     cl->AppendSwitch(switches::kBypassAccountAlreadyUsedByAnotherProfileCheck);
   }
 
-  if (server_type_ == EXTERNAL_LIVE_SERVER &&
-      !cl->HasSwitch(switches::kDisableSyncInvalidationOptimizations)) {
-    // This flag is required because multiple devices in tests become active at
-    // the same time, and they may populate a single client optimization flag
-    // incorrectly resulting in missed invalidations.
-    cl->AppendSwitch(switches::kDisableSyncInvalidationOptimizations);
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER: {
+      if (!cl->HasSwitch(switches::kDisableSyncInvalidationOptimizations)) {
+        // This flag is required because multiple devices in tests become active
+        // at the same time, and they may populate a single client optimization
+        // flag incorrectly resulting in missed invalidations.
+        cl->AppendSwitch(switches::kDisableSyncInvalidationOptimizations);
+      }
+      break;
+    }
+    case IN_PROCESS_FAKE_SERVER: {
+      CHECK(!cl->HasSwitch(syncer::kSyncServiceURL));
+      cl->AppendSwitchASCII(
+          syncer::kSyncServiceURL,
+          embedded_test_server()
+              ->GetURL(fake_server::EmbeddedFakeServerAdapter::kPath)
+              .spec());
+      break;
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -339,11 +358,17 @@ void SyncTest::PostCreateThreads() {
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
       fake_server_ = std::make_unique<fake_server::FakeServer>(
           user_data_dir.AppendASCII("FakeServer"));
+      embedded_fake_server_adapter_ =
+          std::make_unique<fake_server::EmbeddedFakeServerAdapter>(
+              fake_server_->AsWeakPtr());
       fake_server_sync_invalidation_sender_ =
           std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
               fake_server_.get());
 
       SetupMockGaiaResponses();
+
+      embedded_fake_server_adapter_->RegisterRequestHandler(
+          *embedded_test_server());
       break;
     }
   }
@@ -831,6 +856,7 @@ void SyncTest::TearDownOnMainThread() {
 
   if (fake_server_.get()) {
     fake_server_sync_invalidation_sender_.reset();
+    embedded_fake_server_adapter_.reset();
     fake_server_.reset();
   }
 
@@ -942,10 +968,6 @@ void SyncTest::OnProfileCreationStarted(Profile* profile) {
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(&SyncTest::CreateGCMProfileService,
                                    base::Unretained(this)));
-  SyncServiceFactory::GetInstance()->SetTestingFactory(
-      profile, SyncServiceFactory::GetDefaultFactory(
-                   fake_server::CreateFakeServerHttpPostProviderFactory(
-                       GetFakeServer()->AsWeakPtr())));
   ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                                    &test_url_loader_factory_));
@@ -1063,6 +1085,26 @@ void SyncTest::TriggerMigrationDoneError(syncer::DataTypeSet data_types) {
 
 fake_server::FakeServer* SyncTest::GetFakeServer() const {
   return fake_server_.get();
+}
+
+void SyncTest::DisableNetwork() {
+  // Prevent communication with EmbeddedTestServer or any other server.
+  url_loader_interceptor_ =
+      std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+          [](content::URLLoaderInterceptor::RequestParams* params) -> bool {
+            params->client->OnComplete(network::URLLoaderCompletionStatus(
+                net::ERR_INTERNET_DISCONNECTED));
+            return true;
+          }));
+
+  connection_change_simulator_.SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+}
+
+void SyncTest::EnableNetwork() {
+  url_loader_interceptor_.reset();
+  connection_change_simulator_.SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_ETHERNET);
 }
 
 void SyncTest::TriggerSyncForDataTypes(int index,

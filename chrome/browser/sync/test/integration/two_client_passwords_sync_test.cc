@@ -29,9 +29,7 @@
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
-#include "net/base/network_change_notifier.h"
 
 using passwords_helper::AllProfilesContainSamePasswordForms;
 using passwords_helper::AllProfilesContainSamePasswordFormsAsVerifier;
@@ -691,7 +689,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(GetPasswordCount(0, GetPasswordStoreType()), 1);
 
   // Simulate going offline on both clients.
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
 
   // Remove the password from both clients to simulate a conflict with matching
   // remote and local deletion after Client 1 comes back online.
@@ -699,9 +697,7 @@ IN_PROC_BROWSER_TEST_P(
   GetPasswordStore(1)->RemoveLogin(FROM_HERE, form);
 
   // Simulate going online again.
-  fake_server::FakeServerHttpPostProvider::EnableNetwork();
-  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-      net::NetworkChangeNotifier::CONNECTION_ETHERNET);
+  EnableNetwork();
 
   // Checks that the client does not crash due to trimming entity specifics for
   // caching for a deleted entity (without a password field).

@@ -14,5 +14,6 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/test",
   "+third_party/protobuf/src/google/protobuf",
+  "+third_party/zlib/google",
   "+ui/gfx/image",
 ]

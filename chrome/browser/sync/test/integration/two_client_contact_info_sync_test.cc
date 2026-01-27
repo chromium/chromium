@@ -17,7 +17,6 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -173,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientContactInfoSyncTest, DuplicateGUID) {
 
   // Since `AddProfile()` happens asynchronously, wait for the change to
   // propagate locally.
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
   GetAddressDataManager(GetProfile(0))->AddProfile(kProfile0);
   GetAddressDataManager(GetProfile(1))->AddProfile(kProfile1);
   EXPECT_TRUE(
@@ -186,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientContactInfoSyncTest, DuplicateGUID) {
           .Wait());
 
   // Sync and expect equal profiles eventually.
-  fake_server::FakeServerHttpPostProvider::EnableNetwork();
+  EnableNetwork();
   EXPECT_TRUE(AutofillProfilesEqualChecker(GetAllProfiles()).Wait());
 }
 
