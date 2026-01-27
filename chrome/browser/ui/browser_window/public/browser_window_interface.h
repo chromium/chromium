@@ -185,6 +185,13 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Please do not add new features here without consulting desktop leads
   // (erikchen@) and Clank leads (twellington@, dtrainor@). See comment at the
   // top of this file.
+  //
+  // As alternatives, consider:
+  // Tab/Navigation: `TabListInterface::From(BrowserWindowInterface*)`.
+  // Windowing: `base::Window* GetWindow()`.
+  //
+  // For other methods, consult the leads above for guidance.
+  //
   // The following methods will be removed in the future.
 
 #if !BUILDFLAG(IS_ANDROID)
