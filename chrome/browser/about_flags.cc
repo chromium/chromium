@@ -1124,11 +1124,20 @@ const FeatureEntry::FeatureParam
     kOptimizationGuideOnDeviceModelBypassPerfParams[] = {
         {"compatible_on_device_performance_classes", "*"},
 };
+const FeatureEntry::FeatureParam
+    kOptimizationGuideOnDeviceModelBypassPerfSmallModelParams[] = {
+        {"compatible_on_device_performance_classes", "*"},
+        {"compatible_low_tier_on_device_performance_classes", "*"},
+};
 const FeatureEntry::FeatureVariation
     kOptimizationGuideOnDeviceModelVariations[] = {
         {"BypassPerfRequirement",
          kOptimizationGuideOnDeviceModelBypassPerfParams,
          std::size(kOptimizationGuideOnDeviceModelBypassPerfParams), nullptr},
+        {"Force Small Model",
+         kOptimizationGuideOnDeviceModelBypassPerfSmallModelParams,
+         std::size(kOptimizationGuideOnDeviceModelBypassPerfSmallModelParams),
+         nullptr},
 };
 
 const FeatureEntry::FeatureParam kTextSafetyClassifierNoRetractParams[] = {
