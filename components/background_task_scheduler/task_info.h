@@ -38,8 +38,8 @@ struct OneOffInfo {
 // the required parameters, such as whether a special type of network is
 // available.
 struct TaskInfo {
-  TaskInfo(TaskIds task_id, const PeriodicInfo& timing_info);
-  TaskInfo(TaskIds task_id, const OneOffInfo& timing_info);
+  TaskInfo(int task_id, const PeriodicInfo& timing_info);
+  TaskInfo(int task_id, const OneOffInfo& timing_info);
 
   TaskInfo(const TaskInfo&) = delete;
   TaskInfo& operator=(const TaskInfo&) = delete;
@@ -58,7 +58,7 @@ struct TaskInfo {
     UNMETERED = 2,
   };
 
-  TaskIds task_id;
+  int task_id;
   NetworkType network_type = NetworkType::NONE;
   bool requires_charging = false;
   bool is_persisted = false;

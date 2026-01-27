@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BACKGROUND_TASK_SCHEDULER_BACKGROUND_TASK_SCHEDULER_H_
 #define COMPONENTS_BACKGROUND_TASK_SCHEDULER_BACKGROUND_TASK_SCHEDULER_H_
 
-#include "components/background_task_scheduler/task_ids.h"
 #include "components/background_task_scheduler/task_info.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -24,8 +23,8 @@ class BackgroundTaskScheduler : public KeyedService {
   // contained in |task_info|.
   virtual bool Schedule(const TaskInfo& task_info) = 0;
 
-  // Cancels the task specified by the |task_id|.
-  virtual void Cancel(TaskIds task_id) = 0;
+  // Cancels the task specified by the |task_id}.
+  virtual void Cancel(int task_id) = 0;
 
  protected:
   BackgroundTaskScheduler() = default;

@@ -48,7 +48,8 @@ void RefreshTaskSchedulerImpl::EnsureScheduled(RefreshTaskId task_id,
       delay.InMilliseconds() +
       GetFeedConfig().background_refresh_window_length.InMilliseconds();
   one_off.expires_after_window_end_time = true;
-  background_task::TaskInfo task_info(ToBackgroundTaskId(task_id), one_off);
+  background_task::TaskInfo task_info(
+      static_cast<int>(ToBackgroundTaskId(task_id)), one_off);
   task_info.is_persisted = true;
   task_info.update_current = true;
   task_info.network_type = background_task::TaskInfo::ANY;
@@ -56,7 +57,7 @@ void RefreshTaskSchedulerImpl::EnsureScheduled(RefreshTaskId task_id,
 }
 
 void RefreshTaskSchedulerImpl::Cancel(RefreshTaskId task_id) {
-  scheduler_->Cancel(ToBackgroundTaskId(task_id));
+  scheduler_->Cancel(static_cast<int>(ToBackgroundTaskId(task_id)));
 }
 
 void RefreshTaskSchedulerImpl::RefreshTaskComplete(RefreshTaskId task_id) {
