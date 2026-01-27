@@ -93,6 +93,7 @@ class ModelExecutionManager final {
       FetcherId fetcher_id,
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       OptimizationGuideModelExecutionResultCallback callback,
+      base::TimeTicks start_time,
       base::expected<const proto::ExecuteResponse,
                      OptimizationGuideModelExecutionError> execute_response);
 

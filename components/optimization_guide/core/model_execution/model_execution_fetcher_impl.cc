@@ -551,11 +551,7 @@ void ModelExecutionFetcherImpl::OnURLLoadComplete(
                 ModelExecutionError::kGenericFailure)));
     return;
   }
-  base::UmaHistogramMediumTimes(
-      base::StrCat(
-          {"OptimizationGuide.ModelExecutionFetcher.FetchLatency.",
-           GetStringNameForModelExecutionFeature(*model_execution_feature_)}),
-      base::TimeTicks::Now() - fetch_start_time_);
+
   RecordRequestStatusHistogram(*model_execution_feature_,
                                FetcherRequestStatus::kSuccess);
   // This should be the last call, since the callback could be deleting `this`.

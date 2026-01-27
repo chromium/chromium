@@ -1016,6 +1016,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.FetchLatency2.{ModelExecutionFeature}"
+    units="ms" expires_after="2026-12-01">
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <owner>sophiechang@google.com</owner>
+  <summary>
+    Records the latency of a model execution request for a given feature. This
+    is the time from when the request is sent from the manager to when the
+    response is received. Recorded for every request. This metric supersedes
+    OptimizationGuide.ModelExecutionFetcher.FetchLatency.{ModelExecutionFeature}.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability.{ModelExecutionFeature}"
     enum="OnDeviceModelAdaptationAvailability" expires_after="2026-07-05">
   <owner>rajendrant@chromium.org</owner>
@@ -1372,19 +1390,6 @@ chromium-metrics-reviews@google.com.
     time text is received from the model.
 
     Note: This metric is dropped for clients without high-precision clocks.
-  </summary>
-  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.ModelExecutionFetcher.FetchLatency.{ModelExecutionFeature}"
-    units="ms" expires_after="2026-06-28">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>freedjm@google.com</owner>
-  <summary>
-    The duration of a request to fetch model execution from the remote
-    Optimization Guide Service starts until it completes. Recorded every time
-    model execution results are fetched and parsed successfully.
   </summary>
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
