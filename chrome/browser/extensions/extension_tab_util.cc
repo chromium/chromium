@@ -268,7 +268,6 @@ int GetWindowIdOfGroup(const tab_groups::TabGroupId& id) {
   return -1;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Creates a tab MutedInfo object (see chrome/common/extensions/api/tabs.json)
 // with information about the mute state of a browser tab.
 api::tabs::MutedInfo CreateMutedInfo(content::WebContents* contents) {
@@ -292,7 +291,6 @@ api::tabs::MutedInfo CreateMutedInfo(content::WebContents* contents) {
   }
   return info;
 }
-#endif
 
 }  // namespace
 
@@ -432,9 +430,9 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   tab_object.frozen = tab_lifecycle_unit_external &&
                       tab_lifecycle_unit_external->GetTabState() ==
                           ::mojom::LifecycleUnitState::FROZEN;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   tab_object.muted_info = CreateMutedInfo(contents);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   tab_object.incognito = contents->GetBrowserContext()->IsOffTheRecord();
   gfx::Size contents_size = contents->GetContainerBounds().size();
