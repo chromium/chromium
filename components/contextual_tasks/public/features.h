@@ -110,6 +110,10 @@ extern int GetContextualTasksOnboardingTooltipDismissedCap();
 // The delay in milliseconds before the onboarding tooltip is considered shown.
 extern int GetContextualTasksOnboardingTooltipImpressionDelay();
 
+// The number of seconds inactive side panel WebContents should keep in cache.
+// Expired side panel WebContents will be destroyed.
+extern int ContextualTasksInactiveSidePanelKeepInCacheMinutes();
+
 // Returns if voice search is allowed in expanded composebox.
 extern bool GetIsExpandedComposeboxVoiceSearchEnabled();
 

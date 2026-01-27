@@ -110,7 +110,9 @@ namespace contextual_tasks {
 ContextualTasksSidePanelCoordinator::WebContentsCacheItem::WebContentsCacheItem(
     std::unique_ptr<content::WebContents> wc,
     bool open)
-    : web_contents(std::move(wc)), is_open(open) {}
+    : web_contents(std::move(wc)),
+      is_open(open),
+      last_active_time_ticks(base::TimeTicks::Now()) {}
 ContextualTasksSidePanelCoordinator::WebContentsCacheItem::
     ~WebContentsCacheItem() = default;
 
@@ -469,6 +471,17 @@ ContextualTasksSidePanelCoordinator::GetSidePanelWebContentsList() const {
   return result;
 }
 
+ContextualTasksSidePanelCoordinator::WebContentsCacheItem*
+ContextualTasksSidePanelCoordinator::GetWebContentsCacheItemForWebContents(
+    content::WebContents* web_contents) {
+  for (auto& it : task_id_to_web_contents_cache_) {
+    if (it.second->web_contents.get() == web_contents) {
+      return it.second.get();
+    }
+  }
+  return nullptr;
+}
+
 std::optional<ContextualTask>
 ContextualTasksSidePanelCoordinator::GetCurrentTask() {
   tabs::TabInterface* active_tab_interface =
@@ -504,20 +517,40 @@ void ContextualTasksSidePanelCoordinator::CleanUpUnusedWebContents() {
   for (auto it = task_id_to_web_contents_cache_.begin();
        it != task_id_to_web_contents_cache_.end();) {
     base::Uuid task_id = it->first;
-    // If the WebContents has no open tabs associated with it in the current
-    // window, then remove it.
-    bool found = false;
+    content::WebContents* web_contents = it->second->web_contents.get();
+
+    bool associated_with_tab = false;
     for (auto tab_id :
          contextual_tasks_service_->GetTabsAssociatedWithTask(task_id)) {
       if (tab_ids.contains(tab_id)) {
-        found = true;
+        associated_with_tab = true;
         break;
       }
     }
 
-    if (!found) {
-      MaybeDetachWebContentsFromWebView(it->second->web_contents.get());
+    bool is_active = GetActiveWebContents() == web_contents;
+    bool expired =
+        base::TimeTicks::Now() - it->second->last_active_time_ticks >
+        base::Minutes(ContextualTasksInactiveSidePanelKeepInCacheMinutes());
+
+    // If the WebContents has no open tabs associated with it in the current
+    // window, or is not active for long enough time, then remove it.
+    if (!associated_with_tab || (!is_active && expired)) {
+      MaybeDetachWebContentsFromWebView(web_contents);
       it = task_id_to_web_contents_cache_.erase(it);
+      if (!kTaskScopedSidePanel.Get()) {
+        // Remove tab scoped open state for the current task.
+        for (auto tab_it = tab_scoped_open_state_.begin();
+             tab_it != tab_scoped_open_state_.end();) {
+          std::optional<ContextualTask> task =
+              contextual_tasks_service_->GetContextualTaskForTab(tab_it->first);
+          if (task && task->GetTaskId() == task_id) {
+            tab_it = tab_scoped_open_state_.erase(tab_it);
+          } else {
+            tab_it++;
+          }
+        }
+      }
     } else {
       ++it;
     }
@@ -534,6 +567,13 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
   }
 
   content::WebContents* prev_web_contents = web_view_->GetWebContents();
+  if (prev_web_contents) {
+    auto* cache_item = GetWebContentsCacheItemForWebContents(prev_web_contents);
+    if (cache_item) {
+      cache_item->last_active_time_ticks = base::TimeTicks::Now();
+    }
+  }
+
   content::WebContents* web_contents = GetSidePanelWebContentsForActiveTab();
   if (web_contents) {
     web_view_->SetWebContents(web_contents);
@@ -623,14 +663,14 @@ void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
         DisassociateTabFromTask(content.contents);
       }
     }
-    CleanUpUnusedWebContents();
+
   } else if (change.type() == TabStripModelChange::kReplaced) {
     DisassociateTabFromTask(change.GetReplace()->old_contents);
-    CleanUpUnusedWebContents();
   }
 
   if (selection.active_tab_changed() && !tab_strip_model->empty()) {
     OnActiveTabChanged();
+    CleanUpUnusedWebContents();
   }
 }
 
