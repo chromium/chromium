@@ -35,7 +35,7 @@ class ExtensionsMenuDelegateAndroid : public ExtensionsMenuViewModel::Delegate,
       const extensions::ExtensionId& extension_id) override;
 
   // ExtensionsMenuViewModel::Observer:
-  void OnActiveWebContentsChanged(content::WebContents* web_contents) override;
+  void OnActiveWebContentsChanged() override;
   void OnActionAdded(ExtensionActionViewModel* action_model,
                      int index) override;
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id,

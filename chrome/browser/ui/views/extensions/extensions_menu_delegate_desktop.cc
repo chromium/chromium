@@ -105,10 +105,8 @@ ExtensionsMenuDelegateDesktop::CreateActionViewModel(
           browser_, &extensions_container_.get(), extensions_container_views_));
 }
 
-void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(
-    content::WebContents* web_contents) {
+void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged() {
   DCHECK(current_page_);
-  DCHECK(web_contents);
 
   // Update main page if it is open.
   auto* main_page = GetMainPage(current_page_.view());
@@ -123,7 +121,7 @@ void ExtensionsMenuDelegateDesktop::OnActiveWebContentsChanged(
           site_permissions_page->extension_id())) {
     // Update site permissions page if it is open and the extension can have
     // one.
-    UpdateSitePermissionsPage(site_permissions_page, web_contents);
+    UpdateSitePermissionsPage(site_permissions_page);
   } else {
     // Otherwise navigate back to the main page.
     OpenMainPage();
@@ -294,7 +292,7 @@ void ExtensionsMenuDelegateDesktop::OnActionUpdated(
   // Update the site permissions page if it can be shown for the updated action,
   // otherwise go back to the main page.
   if (menu_model_->CanShowSitePermissionsPage(action_id)) {
-    UpdateSitePermissionsPage(site_permissions_page, GetActiveWebContents());
+    UpdateSitePermissionsPage(site_permissions_page);
   } else {
     OpenMainPage();
   }
@@ -340,7 +338,8 @@ void ExtensionsMenuDelegateDesktop::OnUserPermissionsSettingsChanged() {
     // "customize by extension". Thus, when site settings changed, we have to
     // return to main page.
     DCHECK_NE(PermissionsManager::Get(browser_->profile())
-                  ->GetUserSiteSetting(GetActiveWebContents()
+                  ->GetUserSiteSetting(browser_->tab_strip_model()
+                                           ->GetActiveWebContents()
                                            ->GetPrimaryMainFrame()
                                            ->GetLastCommittedOrigin()),
               PermissionsManager::UserSiteSetting::kCustomizeByExtension);
@@ -374,8 +373,7 @@ void ExtensionsMenuDelegateDesktop::OpenSitePermissionsPage(
   auto site_permissions_page =
       std::make_unique<ExtensionsMenuSitePermissionsPageView>(
           browser_, extension_id, this);
-  UpdateSitePermissionsPage(site_permissions_page.get(),
-                            GetActiveWebContents());
+  UpdateSitePermissionsPage(site_permissions_page.get());
 
   SwitchToPage(std::move(site_permissions_page));
 
@@ -473,10 +471,7 @@ void ExtensionsMenuDelegateDesktop::UpdateMainPage(
 }
 
 void ExtensionsMenuDelegateDesktop::UpdateSitePermissionsPage(
-    ExtensionsMenuSitePermissionsPageView* site_permissions_page,
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-
+    ExtensionsMenuSitePermissionsPageView* site_permissions_page) {
   extensions::ExtensionId extension_id = site_permissions_page->extension_id();
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
@@ -524,9 +519,4 @@ void ExtensionsMenuDelegateDesktop::InsertMenuEntry(
   ExtensionsMenuViewModel::MenuEntryState menu_item =
       menu_model_->GetMenuEntryState(action_model->GetId());
   main_page->CreateAndInsertMenuEntry(action_model, menu_item, index);
-}
-
-content::WebContents* ExtensionsMenuDelegateDesktop::GetActiveWebContents()
-    const {
-  return browser_->tab_strip_model()->GetActiveWebContents();
 }

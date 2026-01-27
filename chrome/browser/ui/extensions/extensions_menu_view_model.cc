@@ -1288,7 +1288,7 @@ void ExtensionsMenuViewModel::OnWebContentsChanged(
   UpdateHostAccessRequests();
 
   for (Observer& observer : observers_) {
-    observer.OnActiveWebContentsChanged(web_contents);
+    observer.OnActiveWebContentsChanged();
   }
 }
 

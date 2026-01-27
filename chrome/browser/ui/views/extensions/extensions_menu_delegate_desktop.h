@@ -14,10 +14,6 @@
 #include "extensions/common/extension.h"
 #include "ui/views/view_tracker.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace views {
 class View;
 }  // namespace views
@@ -51,7 +47,7 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
       const extensions::ExtensionId& extension_id) override;
 
   // ExtensionsMenuViewModel::Observer:
-  void OnActiveWebContentsChanged(content::WebContents* web_contents) override;
+  void OnActiveWebContentsChanged() override;
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int index) override;
   void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
@@ -103,10 +99,9 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   // Updates the menu's main page.
   void UpdateMainPage(ExtensionsMenuMainPageView* main_page);
 
-  // Updates `site_permissions_page` for the given `web_contents`.
+  // Updates the menu's site permissions page.
   void UpdateSitePermissionsPage(
-      ExtensionsMenuSitePermissionsPageView* site_permissions_page,
-      content::WebContents* web_contents);
+      ExtensionsMenuSitePermissionsPageView* site_permissions_page);
 
   // Populates menu entries in `main_page`.
   void PopulateMainPage(ExtensionsMenuMainPageView* main_page);
@@ -115,9 +110,6 @@ class ExtensionsMenuDelegateDesktop : public ExtensionsMenuViewModel::Delegate,
   void InsertMenuEntry(ExtensionsMenuMainPageView* main_page,
                        ExtensionActionViewModel* action_model,
                        int index);
-
-  // Returns the currently active web contents.
-  content::WebContents* GetActiveWebContents() const;
 
   const raw_ptr<Browser> browser_;
   const raw_ref<ExtensionsContainer> extensions_container_;

@@ -48,11 +48,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Observer used to notify platforms about changes to the model.
   class Observer : public base::CheckedObserver {
    public:
-    // Notifies the delegate that the active web contents changed to
-    // `web_contents`, which may have impacted the model's content (e.g host
-    // access requests may have changed).
-    virtual void OnActiveWebContentsChanged(
-        content::WebContents* web_contents) = 0;
+    // Notifies the delegate that the active web contents changed, which may
+    // have impacted the model's content (e.g host access requests may have
+    // changed).
+    virtual void OnActiveWebContentsChanged() = 0;
 
     // Notifies the delegate that a new host access request was added
     // with `extension_ind` on `index`.
