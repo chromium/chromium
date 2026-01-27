@@ -392,45 +392,45 @@ public class ModalDialogViewTest {
     public void testMessageParagraphs() {
         ArrayList<CharSequence> paragraphs = new ArrayList<>();
         String p1 = "This is the first paragraph.";
-        String p2_original = "This is the original second paragraph.";
+        String p2Original = "This is the original second paragraph.";
         paragraphs.add(p1);
-        paragraphs.add(p2_original);
+        paragraphs.add(p2Original);
 
         ThreadUtils.runOnUiThreadBlocking(() -> mModalDialogView.setMessageParagraphs(paragraphs));
 
         // Replace the second paragraph in the ArrayList
-        String p2_updated = "This is the updated second paragraph.";
-        paragraphs.set(1, p2_updated);
+        String p2Updated = "This is the updated second paragraph.";
+        paragraphs.set(1, p2Updated);
 
         // Verify the views are correct.
         onView(withId(R.id.message_paragraphs_container)).check(matches(isDisplayed()));
         onView(withText(p1)).check(matches(isDisplayed()));
-        onView(withText(p2_original)).check(matches(isDisplayed()));
+        onView(withText(p2Original)).check(matches(isDisplayed()));
         Assert.assertEquals(
                 "Initial paragraph 0 has wrong text.",
                 p1,
                 mModalDialogView.getMessageParagraphAtIndexForTesting(0).getText().toString());
         Assert.assertEquals(
                 "Initial paragraph 1 has wrong text.",
-                p2_original,
+                p2Original,
                 mModalDialogView.getMessageParagraphAtIndexForTesting(1).getText().toString());
 
         // Replace the 2nd paragraph in the view.
         ThreadUtils.runOnUiThreadBlocking(() -> mModalDialogView.setMessageParagraphs(paragraphs));
 
         // Verify only the 2nd paragraph changed.
-        onView(withText(p2_original)).check(doesNotExist());
+        onView(withText(p2Original)).check(doesNotExist());
 
         onView(withId(R.id.message_paragraphs_container)).check(matches(isDisplayed()));
         onView(withText(p1)).check(matches(isDisplayed()));
-        onView(withText(p2_updated)).check(matches(isDisplayed()));
+        onView(withText(p2Updated)).check(matches(isDisplayed()));
         Assert.assertEquals(
                 "Updated paragraph 0 has wrong text.",
                 p1,
                 mModalDialogView.getMessageParagraphAtIndexForTesting(0).getText().toString());
         Assert.assertEquals(
                 "Updated paragraph 1 has wrong text.",
-                p2_updated,
+                p2Updated,
                 mModalDialogView.getMessageParagraphAtIndexForTesting(1).getText().toString());
     }
 
@@ -730,10 +730,10 @@ public class ModalDialogViewTest {
     @Feature({"ModalDialog"})
     @DisabledTest(message = "crbug.com/329163841")
     public void testButtonGroupIsScrollable() throws InterruptedException {
-        ModalDialogProperties.ModalDialogButtonSpec[] button_spec_list =
+        ModalDialogProperties.ModalDialogButtonSpec[] buttonSpecList =
                 new ModalDialogButtonSpec[20];
-        for (int i = 0; i < button_spec_list.length; i++) {
-            button_spec_list[i] =
+        for (int i = 0; i < buttonSpecList.length; i++) {
+            buttonSpecList[i] =
                     new ModalDialogProperties.ModalDialogButtonSpec(
                             1000 + i, // ModalDialogProperties.ButtonType defines a button enum.
                             // Choose values outside the defined range.
@@ -742,14 +742,14 @@ public class ModalDialogViewTest {
 
         createModel(
                 mModelBuilder.with(
-                        ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST, button_spec_list));
+                        ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST, buttonSpecList));
 
         // Check that the first button is visible.
         onView(
                         withTagValue(
                                 is(
                                         ModalDialogView.getTagForButtonType(
-                                                button_spec_list[0].getButtonType()))))
+                                                buttonSpecList[0].getButtonType()))))
                 .check(matches(isDisplayed()));
 
         // Swipe up a few times.
@@ -758,7 +758,7 @@ public class ModalDialogViewTest {
                             withTagValue(
                                     is(
                                             ModalDialogView.getTagForButtonType(
-                                                    button_spec_list[3].getButtonType()))))
+                                                    buttonSpecList[3].getButtonType()))))
                     .perform(ViewActions.swipeUp());
         }
 
@@ -767,7 +767,7 @@ public class ModalDialogViewTest {
                         withTagValue(
                                 is(
                                         ModalDialogView.getTagForButtonType(
-                                                button_spec_list[0].getButtonType()))))
+                                                buttonSpecList[0].getButtonType()))))
                 .check(matches(not(isDisplayed())));
     }
 

@@ -437,15 +437,11 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             button.setText(spec.getText());
             button.setContentDescription(spec.getContentDescription());
 
-            int button_padding_in_px =
+            int buttonPaddingPx =
                     getContext()
                             .getResources()
                             .getDimensionPixelSize(R.dimen.modal_dialog_button_group_padding);
-            button.setPadding(
-                    button_padding_in_px,
-                    button_padding_in_px,
-                    button_padding_in_px,
-                    button_padding_in_px);
+            button.setPadding(buttonPaddingPx, buttonPaddingPx, buttonPaddingPx, buttonPaddingPx);
 
             setupClickableView(button, spec.getButtonType());
             setFilterTouchForSecurityIfNecessary(button);
