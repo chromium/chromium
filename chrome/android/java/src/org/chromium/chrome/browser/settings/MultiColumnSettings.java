@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -585,6 +586,17 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                     for (int i = mTitles.size() - 1; i > index; --i) {
                         mTitles.remove(i);
                         updated = true;
+                    }
+                }
+                if (!updated) {
+                    // All the search results fragments share their |titleSupplier|. Replaces its
+                    // uuid to the latest one if the fragment is present at the end of the list.
+                    int pos = mTitles.size() - 1;
+                    Title result = mTitles.get(pos);
+                    if (titleSupplier == result.titleSupplier
+                            && !TextUtils.equals(uuid, result.uuid)) {
+                        mTitles.set(
+                                pos, new Title(uuid, titleSupplier, result.backStackCount, null));
                     }
                 }
             }
