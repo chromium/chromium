@@ -47,7 +47,7 @@ namespace supervised_user {
 // user service, it is present all the time. However, when parental controls
 // are off or filtering is not requested, the filter operates in a disabled
 // state which transparently classifies all urls as allowed.
-class FamilyLinkUrlFilter : public SupervisedUserUrlFilteringService::Delegate {
+class FamilyLinkUrlFilter : public UrlFilteringDelegate {
  public:
   // This enum describes whether the approved list or blocked list is used on
   // Chrome on Chrome OS, which is set by Family Link App or at
@@ -173,7 +173,7 @@ class FamilyLinkUrlFilter : public SupervisedUserUrlFilteringService::Delegate {
   // renamed to FamilyLinkUserSettingsService.
   GURL GetEffectiveUrlToUnblock(WebFilteringResult result) const;
 
-  // SupervisedUserUrlFilteringService::Delegate implementation.
+  // UrlFilteringDelegate:
   WebFilterType GetWebFilterType() const override;
   WebFilteringResult GetFilteringBehavior(const GURL& url) const override;
   void GetFilteringBehavior(const GURL& url,

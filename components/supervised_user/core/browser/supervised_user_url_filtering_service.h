@@ -57,34 +57,35 @@ struct WebFilteringResult {
   }
 };
 
+// Interface for actual implementations of URL filtering logic. The outer
+// service subscribes to individual delegates and forwards notifications to
+// its own subscribers.
+class UrlFilteringDelegate {
+ public:
+  virtual ~UrlFilteringDelegate();
+
+  virtual WebFilterType GetWebFilterType() const = 0;
+  virtual WebFilteringResult GetFilteringBehavior(const GURL& url) const = 0;
+
+  // TODO(crbug.com/478188599): Declare const after url_checker_ clients are
+  // owned in this service and passed to delegates.
+  virtual void GetFilteringBehavior(const GURL& url,
+                                    bool skip_manual_parent_filter,
+                                    WebFilteringResult::Callback callback,
+                                    const WebFilterMetricsOptions& options) = 0;
+  // TODO(crbug.com/478188599): Declare const after url_checker_ clients are
+  // owned in this service and passed to delegates.
+  virtual void GetFilteringBehaviorForSubFrame(
+      const GURL& url,
+      const GURL& main_frame_url,
+      WebFilteringResult::Callback callback,
+      const WebFilterMetricsOptions& options) = 0;
+};
+
 // Performs URL filtering workflows for supervised users, combining effects of
 // subservices that define the status of these users.
 class SupervisedUserUrlFilteringService : public KeyedService {
  public:
-  // Interface for actual implementations of URL filtering logic.
-  class Delegate {
-   public:
-    virtual ~Delegate();
-
-    virtual WebFilterType GetWebFilterType() const = 0;
-    virtual WebFilteringResult GetFilteringBehavior(const GURL& url) const = 0;
-
-    // TODO(crbug.com/478188599): Declare const after url_checker_ clients are
-    // owned in this service and passed to delegates.
-    virtual void GetFilteringBehavior(
-        const GURL& url,
-        bool skip_manual_parent_filter,
-        WebFilteringResult::Callback callback,
-        const WebFilterMetricsOptions& options) = 0;
-    // TODO(crbug.com/478188599): Declare const after url_checker_ clients are
-    // owned in this service and passed to delegates.
-    virtual void GetFilteringBehaviorForSubFrame(
-        const GURL& url,
-        const GURL& main_frame_url,
-        WebFilteringResult::Callback callback,
-        const WebFilterMetricsOptions& options) = 0;
-  };
-
   SupervisedUserUrlFilteringService(
       const SupervisedUserService& supervised_user_service,
       const FamilyLinkSettingsService& family_link_settings_service);

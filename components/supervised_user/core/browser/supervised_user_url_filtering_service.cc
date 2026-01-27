@@ -50,5 +50,5 @@ void SupervisedUserUrlFilteringService::GetFilteringBehaviorForSubFrame(
       url, main_frame_url, std::move(callback), options);
 }
 
-SupervisedUserUrlFilteringService::Delegate::~Delegate() = default;
+UrlFilteringDelegate::~UrlFilteringDelegate() = default;
 }  // namespace supervised_user
