@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>* { content: counter(c, upper-alpha); }</style>
+<textarea >foo</textarea>
+<h6 id="h6">
+<style>style</style>
+</h6>
+<script>
+function eventhandler2() {
+  document.querySelector('textarea').select();
+  let h6html = h6.outerHTML;
+  document.execCommand("insertHTML", false, h6html);
+  if (document.head)
+    h6.appendChild(document.head);
+}
+
+test(() => {
+  eventhandler2();
+  eventhandler2();
+}, 'crbug.com/477971111. Pass if no crash');
+</script>
