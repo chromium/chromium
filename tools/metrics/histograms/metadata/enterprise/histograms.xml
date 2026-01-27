@@ -3837,7 +3837,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.TokenBasedEnrollmentOobeConfig.{OobeConfigSource}.Success"
-    enum="BooleanSuccess" expires_after="2026-01-28">
+    enum="BooleanSuccess" expires_after="2027-01-28">
   <owner>justinoue@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
