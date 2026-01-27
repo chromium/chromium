@@ -1924,6 +1924,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   // Open a second browser window.
   Browser* second_browser = CreateBrowser(browser()->profile());
   ASSERT_TRUE(second_browser);
+  ui_test_utils::BrowserDidBecomeActiveWaiter(second_browser).Wait();
 
   SidePanelUI* const first_side_panel_ui =
       browser()->GetFeatures().side_panel_ui();
@@ -2727,13 +2728,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
 
   // Move the first tab (at index 0) to a new window. This action correctly
   // simulates the user dragging the tab out.
+  ui_test_utils::BrowserCreatedObserver observer;
   chrome::MoveTabsToNewWindow(browser(), {0});
 
   // Get the new browser window.
-  BrowserWindowInterface* const new_browser =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  Browser* new_browser = observer.Wait();
   ASSERT_TRUE(new_browser);
-  EXPECT_NE(browser()->window(), new_browser->GetWindow());
+  EXPECT_NE(browser()->window(), new_browser->window());
 
   // Get the session IDs for the new window and its active tab.
   const int new_window_id = new_browser->GetSessionID().id();
