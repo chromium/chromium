@@ -6,3 +6,12 @@ source_set("public") {
   sources = [ "credential_import_stage.h" ]
   deps = []
 }
+
+source_set("metrics") {
+  sources = [
+    "metrics.h",
+    "metrics.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+}

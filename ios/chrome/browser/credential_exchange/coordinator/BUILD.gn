@@ -22,6 +22,7 @@ source_set("import_coordinator") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/credential_exchange/model",
+    "//ios/chrome/browser/credential_exchange/public",
     "//ios/chrome/browser/credential_exchange/ui",
     "//ios/chrome/browser/data_import/public",
     "//ios/chrome/browser/data_import/ui",
