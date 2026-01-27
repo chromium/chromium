@@ -30,12 +30,15 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
@@ -1518,4 +1521,43 @@ IN_PROC_BROWSER_TEST_F(
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    HandleKeyboardEvent_WhenFullscreenInImmersiveMode_EscapeClosesFullscreen) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EmitWebUIShowEvent();
+  views::View* overlay_view = GetImmersiveOverlay();
+  AssertOverlayVisibility(/*visible=*/true);
+
+  // Get the ReadAnythingImmersiveWebView
+  ASSERT_FALSE(overlay_view->children().empty());
+  ReadAnythingImmersiveWebView* web_view =
+      static_cast<ReadAnythingImmersiveWebView*>(overlay_view->children()[0]);
+
+  // Put the browser in fullscreen mode
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ASSERT_TRUE(browser()->window()->IsFullscreen());
+
+  // Create an event that holds down the escape button
+  input::NativeWebKeyboardEvent escape_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  escape_event.windows_key_code = ui::VKEY_ESCAPE;
+  web_view->HandleKeyboardEvent(web_view->GetWebContents(), escape_event);
+
+  // Wait for the "press and hold" timer (1.5s) to trigger the exit.
+  // We use a FullscreenWaiter to wait for the state change.
+  ui_test_utils::FullscreenWaiter waiter(browser(),
+                                         {.browser_fullscreen = false});
+  waiter.Wait();
+
+  // Verify the browser has exited fullscreen.
+  ASSERT_FALSE(browser()->window()->IsFullscreen());
 }

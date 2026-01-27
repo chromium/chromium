@@ -57,6 +57,7 @@ source_set("read_anything") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/page_action",

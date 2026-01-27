@@ -45,6 +45,8 @@ class ReadAnythingImmersiveWebView : public views::WebView,
   void CloseUI() override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
  private:
   base::OnceClosure on_show_ui_callback_;

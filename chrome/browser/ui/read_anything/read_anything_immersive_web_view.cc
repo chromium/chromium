@@ -8,12 +8,17 @@
 
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
     base::OnceClosure on_show_ui_callback,
@@ -41,6 +46,27 @@ ReadAnythingImmersiveWebView::~ReadAnythingImmersiveWebView() = default;
 bool ReadAnythingImmersiveWebView::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  return false;
+}
+
+bool ReadAnythingImmersiveWebView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.windows_key_code == ui::VKEY_ESCAPE) {
+    auto* controller =
+        ReadAnythingControllerGlue::FromWebContents(web_contents())
+            ->controller();
+    if (controller && controller->tab() &&
+        controller->tab()->GetBrowserWindowInterface()) {
+      controller->tab()
+          ->GetBrowserWindowInterface()
+          ->GetExclusiveAccessManager()
+          ->HandleUserKeyEvent(event);
+      return true;
+    }
+  }
+  // Return false to signal that the event was not handled and allow it to
+  // propagate
   return false;
 }
 
