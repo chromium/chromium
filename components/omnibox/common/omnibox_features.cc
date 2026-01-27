@@ -66,6 +66,9 @@ BASE_FEATURE(kFocusTriggersWebAndSRPZeroSuggest,
              "OmniboxFocusTriggersWebAndSRPZeroSuggest",
              ENABLED);
 
+// Enables on-clobber suggestions on iOS.
+BASE_FEATURE(kOnClobberSuggestIOS, ENABLED);
+
 // If enabled, suggestion group headers in the Omnibox popup will be hidden
 // (e.g. in order to minimize visual clutter in the zero-prefix state).
 BASE_FEATURE(kHideSuggestionGroupHeaders,
