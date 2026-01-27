@@ -8,29 +8,16 @@
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
-/* Colors: */
 html {
+  /* Colors: */
   --annotation-background-color: var(--google-green-50);
   --annotation-text-color: var(--google-green-600);
   --border-color: var(--google-grey-300);
   --entity-image-background-color: var(--google-grey-50);
   --icon-color: var(--google-grey-600);
   --url-color: var(--google-blue-600);
-}
 
-@media (prefers-color-scheme: dark) {
-html {
-  --annotation-background-color: var(--google-green-300);
-  --annotation-text-color: var(--google-grey-900);
-  --border-color: var(--google-grey-700);
-  --entity-image-background-color: var(--google-grey-800);
-  --icon-color: white;
-  --url-color: var(--google-blue-300);
-}
-}
-
-/* Sizes: */
-html {
+  /* Sizes: */
   --card-max-width: 960px;
   --card-min-width: 550px;
   --card-padding-between: 16px;
@@ -47,4 +34,15 @@ html {
   --pill-padding-icon: 12px;
   --pill-padding-text: 16px;
   --top-visit-favicon-size: 24px;
+}
+
+@media (prefers-color-scheme: dark) {
+html {
+  --annotation-background-color: var(--google-green-300);
+  --annotation-text-color: var(--google-grey-900);
+  --border-color: var(--google-grey-700);
+  --entity-image-background-color: var(--google-grey-800);
+  --icon-color: white;
+  --url-color: var(--google-blue-300);
+}
 }

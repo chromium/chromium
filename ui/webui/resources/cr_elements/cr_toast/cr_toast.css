@@ -16,9 +16,7 @@
   --cr-toast-text-color: var(--color-toast-foreground,
       var(--cr-fallback-color-inverse-on-surface));
   --cr-focus-outline-color: var(--cr-focus-outline-inverse-color);
-}
 
-:host {
   align-items: center;
   background: var(--cr-toast-background);
   border-radius: 8px;

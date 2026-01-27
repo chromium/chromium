@@ -65,6 +65,10 @@
 }
 
 #icon {
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--cr-searchbox-results-search-icon-size, 16px);
+  background-color: var(--color-searchbox-search-icon-background);
   height: 24px;
   width: 24px;
 }
@@ -81,13 +85,6 @@
 #faviconImage {
   height: 16px;
   width: 16px;
-}
-
-#icon {
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: var(--cr-searchbox-results-search-icon-size, 16px);
-  background-color: var(--color-searchbox-search-icon-background);
 }
 
 @media (forced-colors: active) {

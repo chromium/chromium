@@ -110,6 +110,11 @@
 
 :host([ntp-realbox-next-enabled]) .contextualEntrypointContainer {
   overflow: visible;
+  left: unset;
+  position: relative;
+  right: unset;
+  top: unset;
+  width: 100%;
 }
 
 :host([is-lens-searchbox_]) #inputWrapper {
@@ -451,14 +456,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   width: 100%;
 }
 
-:host([ntp-realbox-next-enabled]) .contextualEntrypointContainer {
-  left: unset;
-  position: relative;
-  right: unset;
-  top: unset;
-  width: 100%;
-}
-
 :host([ntp-realbox-next-enabled][dropdown-is-visible]),
 :host([ntp-realbox-next-enabled]:not([context-files-count_='0'])) {
   box-shadow: none;
@@ -533,6 +530,8 @@ cr-searchbox-dropdown::part(dropdown-content) {
   --cr-searchbox-dropdown-padding-bottom: 10px;
   --cr-searchbox-dropdown-padding-top: 10px;
   --cr-searchbox-height: 56px;
+  /* Used in search-animated-glow-element. */
+  --search-animated-glow-drag-drop-placeholder-top: 16px;
 }
 
 :host([searchbox-layout-mode='Compact']) cr-searchbox-icon {
@@ -578,11 +577,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   margin-inline-end: calc(var(--cr-compose-button-width));
   margin-inline-start: auto;
   z-index: 100;
-}
-
-:host([searchbox-layout-mode='Compact']) {
-  /* Used in search-animated-glow-element. */
-  --search-animated-glow-drag-drop-placeholder-top: 16px;
 }
 
 :host([ntp-realbox-next-enabled][is-dragging-file]) {

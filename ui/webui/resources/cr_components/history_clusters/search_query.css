@@ -32,10 +32,6 @@ a {
 }
 
 :host-context(.focus-outline-visible) a:focus {
-  box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
-}
-
-:host-context(.focus-outline-visible) a:focus {
   --pill-padding-icon: 9px;
   --pill-padding-text: 13px;
   border: none;

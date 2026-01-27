@@ -134,9 +134,6 @@
   height: auto;
   min-height: 24px;
   padding-block: 10px;
-}
-
-:host-context([in-deep-search-mode_]) .container {
   border-start-end-radius: 24px;
   border-end-end-radius: 24px;
 }

@@ -25,6 +25,7 @@
 /* the stripe for the indeterminate animation*/
 :host([indeterminate]) #primaryProgress::after {
   height: var(--cr-progress-height, 4px);
+  background: var(--cr-progress-container-color, var(--google-grey-300));
 }
 
 #primaryProgress,
@@ -36,18 +37,10 @@
   left: 0;
 }
 
-#progressContainer,
-:host([indeterminate]) #primaryProgress::after {
-  background: var(--cr-progress-container-color, var(--google-grey-300));
-}
-
 #primaryProgress {
   transform-origin: left center;
   transform: scaleX(0);
   will-change: transform;
-}
-
-#primaryProgress {
   background: var(--cr-progress-active-color, var(--google-green-500));
 }
 

@@ -90,6 +90,8 @@ cr-button#entrypoint.ai-mode-button {
   overflow: hidden;
   pointer-events: none;
   position: absolute;
+  animation: rotate-gradient calc(var(--duration) / 1.5) var(--standard-curve)
+    infinite;
 }
 
 .aim-gradient-outer-blur:before,
@@ -125,12 +127,6 @@ cr-button#entrypoint.ai-mode-button {
   to {
     transform: rotate(360deg);
   }
-}
-
-.aim-gradient-outer-blur,
-.aim-gradient-solid {
-  animation: rotate-gradient calc(var(--duration) / 1.5) var(--standard-curve)
-    infinite;
 }
 
 :host([glif-animation-state='finished']) .aim-gradient-outer-blur,
