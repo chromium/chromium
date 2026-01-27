@@ -53,6 +53,11 @@ BASE_FEATURE(kAutofillActorRewriteCreditCardTriggerField,
 // saving to Autocomplete.
 BASE_FEATURE(kAutofillActorSuppressImport, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to improve the building number regex.
+// TODO(crbug.com/376084078): Cleanup when launched.
+BASE_FEATURE(kAutofillAddressImproveBuildingNumberRegex,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch: If enabled, NameFieldParser will parse 'Last name, First name'
 // sequence.
 // TODO(crbug.com/329016404): Remove after M146 branch point (2026-02-09).

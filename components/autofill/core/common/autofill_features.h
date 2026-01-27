@@ -29,6 +29,8 @@ BASE_DECLARE_FEATURE(kAutofillActorRewriteCreditCardTriggerField);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillActorSuppressImport);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAddressImproveBuildingNumberRegex);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressParseSurnameNameSequence);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressSuggestionsOnTyping);

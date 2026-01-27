@@ -247,6 +247,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ACCEPT_DOM_MUTATION_AFTER_AUTOFILL_SUBMISSION,
                 "Accepts DOM_MUTATION_AFTER_AUTOFILL submissions detected on password forms."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ADDRESS_IMPROVE_BUILDING_NUMBER_REGEX,
+                "Enables building number regex improvement."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_AND_PASSWORDS_IN_SAME_SURFACE,
                 "Changes how password requests are passed to the embedder. Ideally a noop."),
         Flag.baseFeature(
