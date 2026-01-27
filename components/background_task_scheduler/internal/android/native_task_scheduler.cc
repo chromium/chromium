@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "components/background_task_scheduler/internal/android/task_info_bridge.h"
+#include "components/background_task_scheduler/task_ids.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/background_task_scheduler/internal/jni_headers/NativeTaskScheduler_jni.h"
@@ -22,9 +23,9 @@ bool NativeTaskScheduler::Schedule(const TaskInfo& task_info) {
       env, TaskInfoBridge::CreateTaskInfo(env, task_info));
 }
 
-void NativeTaskScheduler::Cancel(int task_id) {
+void NativeTaskScheduler::Cancel(TaskIds task_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_NativeTaskScheduler_cancel(env, task_id);
+  Java_NativeTaskScheduler_cancel(env, static_cast<int>(task_id));
 }
 
 }  // namespace background_task
