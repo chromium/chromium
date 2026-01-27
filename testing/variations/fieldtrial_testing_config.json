@@ -12110,7 +12110,6 @@
             "platforms": [
                 "android",
                 "chromeos",
-                "linux",
                 "mac",
                 "windows"
             ],
