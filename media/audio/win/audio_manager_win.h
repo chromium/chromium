@@ -55,10 +55,12 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
       const AudioParameters& params,
       const std::string& device_id,
       const LogCallback& log_callback) override;
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   AudioOutputStream* MakeBitstreamOutputStream(
       const AudioParameters& params,
       const std::string& device_id,
       const LogCallback& log_callback) override;
+#endif
   std::string GetDefaultInputDeviceID() override;
   std::string GetDefaultOutputDeviceID() override;
   std::string GetCommunicationsInputDeviceID() override;

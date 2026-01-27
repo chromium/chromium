@@ -22,6 +22,7 @@
 #include "media/audio/audio_device_name.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_output_dispatcher.h"
+#include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace media {
@@ -74,11 +75,13 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
       const std::string& device_id,
       const LogCallback& log_callback) = 0;
 
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   // Creates the output stream for the |AUDIO_BITSTREAM_XXX| format.
   virtual AudioOutputStream* MakeBitstreamOutputStream(
       const AudioParameters& params,
       const std::string& device_id,
       const LogCallback& log_callback);
+#endif
 
   // Creates the input stream for the |AUDIO_PCM_LINEAR| format. The legacy
   // name is also from |AUDIO_PCM_LINEAR|.

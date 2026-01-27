@@ -871,7 +871,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     // Read a data packet from the registered client source and
     // deliver a delay estimate in the same callback to the client.
 
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS) && \
+    BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     if (params_.format() == AudioParameters::AUDIO_BITSTREAM_DTS) {
       // SAFETY: `audio_data` points to a WASAPI-allocated buffer of
       // `packet_size_bytes_` bytes. The Windows audio API guarantees this
@@ -901,7 +902,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       num_written_frames_ += packet_size_frames_;
       return true;
     }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     int frames_filled = source_->OnMoreData(
         BoundedDelay(delay), delay_timestamp,
         glitch_info_accumulator.GetAndReset(), audio_bus_.get());
