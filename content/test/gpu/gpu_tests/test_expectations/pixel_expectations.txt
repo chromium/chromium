@@ -478,6 +478,11 @@ crbug.com/372055518 [ angle-metal asan intel-0x3e9b mac ] Pixel_WebGLReadPixelsT
 crbug.com/40277254 [ mac angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
 
+# Win/AMD RX 5500 failures
+crbug.com/479032532 [ win11 amd-0x7340 passthrough ] Pixel_WebGPUDestroyed_OffscreenCanvas_DrawImage [ RetryOnFailure ]
+crbug.com/479032532 [ win11 amd-0x7340 passthrough ] Pixel_WebGPUDestroyed_OffscreenCanvas_CopyExternalImageToTexture [ RetryOnFailure ]
+crbug.com/479032532 [ win11 amd-0x7340 passthrough ] Pixel_WebGPUDestroyed_OffscreenCanvas_GlTexImage2D [ RetryOnFailure ]
+
 # Win/AMD RX 7600 failures
 crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
 crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_BGRA [ Failure ]
