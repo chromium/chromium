@@ -83,8 +83,62 @@ bool lower_is_better(const std::string& key, bool any_is_speedometer) {
 
 void usage_exit() {
   LOG(WARNING)
-      << "USAGE: pinpoint_ci [--sort-by-value] CSV_FILE [CONFIDENCE_LEVEL]";
+      << "USAGE: pinpoint_ci [--sort-by-value|--speedometer-spreadsheet] "
+         "CSV_FILE [CONFIDENCE_LEVEL]";
   exit(1);
+}
+
+// Print the data in a form suitable for writing into the Speedometer data
+// tracking spreadsheet (e.g., go/benchmark-performance-impact-tracking-2026).
+// The main difference with the normal printing is that we print point estimates
+// instead of ranges (though only the ones that we've found are statistically
+// significant at the given level), and that we print the columns in the order
+// given in the spreadsheet instead of alphabetical or sorted by value.
+//
+// Note that the point estimates sometimes differ from Pinpoint's, since
+// Pinpoint rounds incorrectly.
+void PrintDataForSpeedometerSpreadsheet(
+    const vector<RatioBootstrapEstimator::Estimate>& estimates,
+    const unordered_map<string, unsigned>& key_to_data_index) {
+  for (const string& key : {"Score",
+                            "TodoMVC-JavaScript-ES5",
+                            "TodoMVC-WebComponents",
+                            "TodoMVC-React-Complex-DOM",
+                            "TodoMVC-React-Redux",
+                            "TodoMVC-Backbone",
+                            "TodoMVC-Vue",
+                            "TodoMVC-jQuery",
+                            "TodoMVC-JavaScript-ES6-Webpack-Complex-DOM",
+                            "TodoMVC-Angular-Complex-DOM",
+                            "TodoMVC-Preact-Complex-DOM",
+                            "TodoMVC-Svelte-Complex-DOM",
+                            "TodoMVC-Lit-Complex-DOM",
+                            "NewsSite-Next",
+                            "NewsSite-Nuxt",
+                            "Editor-CodeMirror",
+                            "Editor-TipTap",
+                            "Charts-observable-plot",
+                            "Charts-chartjs",
+                            "React-Stockcharts-SVG",
+                            "Perf-Dashboard"}) {
+    const auto index_it = key_to_data_index.find(key);
+    if (index_it == key_to_data_index.end()) {
+      printf("%-45s  -------  (not found in data)\n", key.c_str());
+      continue;
+    }
+    const RatioBootstrapEstimator::Estimate& estimate =
+        estimates[index_it->second];
+    if ((estimate.upper > 1.0 && estimate.lower > 1.0) ||
+        (estimate.upper < 1.0 && estimate.lower < 1.0)) {
+      double point_estimate = 100.0 * (1.0 / estimate.point_estimate - 1.0);
+      if (key != "Score") {
+        point_estimate = -point_estimate;
+      }
+      printf("%-45s  %5.1f%%\n", key.c_str(), point_estimate);
+    } else {
+      printf("%-45s  -------  (not significant)\n", key.c_str());
+    }
+  }
 }
 
 }  // namespace
@@ -96,8 +150,12 @@ int main(int argc, char** argv) {
   argv_span.take_first_elem();  // Skip argv[0].
 
   bool sort_by_value = false;
+  bool speedometer_spreadsheet = false;
   if (std::string(argv_span[0]) == "--sort-by-value") {
     sort_by_value = true;
+    argv_span.take_first_elem();
+  } else if (std::string(argv_span[0]) == "--speedometer-spreadsheet") {
+    speedometer_spreadsheet = true;
     argv_span.take_first_elem();
   }
 
@@ -170,6 +228,7 @@ int main(int argc, char** argv) {
 
   // Estimate the ratios for all of our data.
   vector<vector<RatioBootstrapEstimator::Sample>> data;
+  unordered_map<string, unsigned> key_to_data_index;
   for (const auto& [key, story_samples] : samples) {
     // These should always be the same in Pinpoint, but just to be sure.
     unsigned num_samples =
@@ -179,6 +238,7 @@ int main(int argc, char** argv) {
       story_data.push_back(RatioBootstrapEstimator::Sample{
           story_samples.first[i], story_samples.second[i]});
     }
+    key_to_data_index.emplace(key, data.size());
     data.push_back(std::move(story_data));
   }
   RatioBootstrapEstimator estimator(base::RandUint64());
@@ -187,13 +247,16 @@ int main(int argc, char** argv) {
       estimator.ComputeRatioEstimates(data, kNumRuns, confidence_level,
                                       /*compute_geometric_mean=*/false);
 
+  if (speedometer_spreadsheet) {
+    PrintDataForSpeedometerSpreadsheet(estimates, key_to_data_index);
+    exit(0);
+  }
+
   // Sort, then print. (We assume all names are ASCII.)
-  unsigned data_index = 0;
   int max_key_len = 0;
   vector<pair<string, RatioBootstrapEstimator::Estimate>> to_print;
   for (const auto& [key, story_samples] : samples) {
-    to_print.emplace_back(key, std::move(estimates[data_index]));
-    ++data_index;
+    to_print.emplace_back(key, std::move(estimates[key_to_data_index[key]]));
     max_key_len = std::max<int>(max_key_len, key.length());
   }
   std::ranges::sort(
