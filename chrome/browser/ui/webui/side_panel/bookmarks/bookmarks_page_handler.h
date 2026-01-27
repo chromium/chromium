@@ -50,6 +50,9 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   void ExecuteOpenInIncognitoWindowCommand(
       const std::vector<std::string>& side_panel_ids,
       side_panel::mojom::ActionSource source) override;
+  void CanOpenBookmarksInIncognitoWindow(
+      const std::vector<std::string>& side_panel_ids,
+      CanOpenBookmarksInIncognitoWindowCallback callback) override;
   void ExecuteOpenInNewTabGroupCommand(
       const std::vector<std::string>& side_panel_ids,
       side_panel::mojom::ActionSource source) override;

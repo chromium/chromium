@@ -123,6 +123,13 @@ bool HasBookmarkURLsAllowedInIncognitoMode(
     const std::vector<
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection);
 
+// Returns true if the "Open in Incognito Window" command should be enabled
+// for the given |selection| and |profile|.
+bool IsOpenInIncognitoAllowed(
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection,
+    Profile* profile);
+
 // Populates |folder_data| with all tab items and sub-folders for any open tab
 // groups.
 void GetURLsAndFoldersForTabEntries(

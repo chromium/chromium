@@ -26,6 +26,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'isActiveTabInSplit',
       'bookmarkCurrentTabInFolder',
       'openBookmark',
+      'canOpenBookmarksInIncognitoWindow',
       'contextMenuOpenBookmarkInNewTab',
       'contextMenuOpenBookmarkInNewWindow',
       'contextMenuOpenBookmarkInIncognitoWindow',
@@ -90,6 +91,11 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
   contextMenuOpenBookmarkInIncognitoWindow(
       ids: string[], source: ActionSource) {
     this.methodCalled('contextMenuOpenBookmarkInIncognitoWindow', ids, source);
+  }
+
+  canOpenBookmarksInIncognitoWindow(ids: string[]) {
+    this.methodCalled('canOpenBookmarksInIncognitoWindow', ids);
+    return Promise.resolve({canOpenInIncognito: true});
   }
 
   contextMenuOpenBookmarkInNewTabGroup(ids: string[], source: ActionSource) {

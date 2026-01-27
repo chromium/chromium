@@ -608,9 +608,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
              incognito_avail != policy::IncognitoModeAvailability::kDisabled;
 
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
-      return bookmarks::HasBookmarkURLsAllowedInIncognitoMode(selection_) &&
-             !profile_->IsOffTheRecord() &&
-             incognito_avail != policy::IncognitoModeAvailability::kDisabled;
+      return bookmarks::IsOpenInIncognitoAllowed(selection_, profile_);
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
       return bookmarks::HasBookmarkURLs(selection_);

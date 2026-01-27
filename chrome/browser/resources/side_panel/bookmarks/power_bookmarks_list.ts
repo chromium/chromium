@@ -1083,19 +1083,24 @@ export class PowerBookmarksListElement extends PolymerElement implements
         !!this.bookmarksService_.getAvailableProductInfo(event.detail.bookmark);
     const bookmark = event.detail.bookmark;
     const target = event.detail.event.target as HTMLElement;
-    if (event.detail.event.button === 0) {
-      this.bookmarksApi_.isActiveTabInSplit().then((isSplit: boolean) => {
-        this.$.contextMenu.showAt(
-            target, [bookmark], priceTracked, priceTrackingEligible, isSplit,
-            this.onContextMenuShown_.bind(this, bookmark));
-      });
-    } else {
-      this.bookmarksApi_.isActiveTabInSplit().then((isSplit: boolean) => {
-        this.$.contextMenu.showAtPosition(
-            event.detail.event, [bookmark], priceTracked, priceTrackingEligible,
-            isSplit, this.onContextMenuShown_.bind(this, bookmark));
-      });
-    }
+    Promise
+        .all([
+          this.bookmarksApi_.isActiveTabInSplit(),
+          this.bookmarksApi_.canOpenBookmarksInIncognitoWindow([bookmark.id]),
+        ])
+        .then(([isSplit, incognito]) => {
+          if (event.detail.event.button === 0) {
+            this.$.contextMenu.showAt(
+                target, [bookmark], priceTracked, priceTrackingEligible,
+                isSplit, incognito.canOpenInIncognito,
+                this.onContextMenuShown_.bind(this, bookmark));
+          } else {
+            this.$.contextMenu.showAtPosition(
+                event.detail.event, [bookmark], priceTracked,
+                priceTrackingEligible, isSplit, incognito.canOpenInIncognito,
+                this.onContextMenuShown_.bind(this, bookmark));
+          }
+        });
   }
 
   private getParentFolder_(): BookmarksTreeNode {
@@ -1252,10 +1257,18 @@ export class PowerBookmarksListElement extends PolymerElement implements
     event.preventDefault();
     event.stopPropagation();
     const target = event.target as HTMLElement;
-    this.bookmarksApi_.isActiveTabInSplit().then((isSplit: boolean) => {
-      this.$.contextMenu.showAt(
-          target, this.getSelectedBookmarksList_(), false, false, isSplit);
-    });
+    const selectedBookmarks = this.getSelectedBookmarksList_();
+    const ids = selectedBookmarks.map(b => b.id);
+    Promise
+        .all([
+          this.bookmarksApi_.isActiveTabInSplit(),
+          this.bookmarksApi_.canOpenBookmarksInIncognitoWindow(ids),
+        ])
+        .then(([isSplit, incognito]) => {
+          this.$.contextMenu.showAt(
+              target, selectedBookmarks, false, false, isSplit,
+              incognito.canOpenInIncognito);
+        });
   }
 
   private onSortTypeClicked_(event: DomRepeatEvent<SortOption>) {

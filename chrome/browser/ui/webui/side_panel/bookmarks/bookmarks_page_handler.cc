@@ -57,6 +57,7 @@
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -542,6 +543,34 @@ void BookmarksPageHandler::ExecuteOpenInIncognitoWindowCommand(
   }
   ExecuteContextMenuCommand(node_ids, source,
                             IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
+}
+
+void BookmarksPageHandler::CanOpenBookmarksInIncognitoWindow(
+    const std::vector<std::string>& side_panel_ids,
+    CanOpenBookmarksInIncognitoWindowCallback callback) {
+  const std::vector<int64_t> node_ids =
+      GetBookmarkIDsFromSidePanelIDs(*bookmark_merged_surface_, side_panel_ids);
+  if (node_ids.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bookmarks::BookmarkModel* bookmark_model =
+      bookmark_merged_surface_->bookmark_model();
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      bookmarks = {};
+  for (const int64_t id : node_ids) {
+    const bookmarks::BookmarkNode* bookmark =
+        bookmarks::GetBookmarkNodeByID(bookmark_model, id);
+    if (bookmark) {
+      bookmarks.push_back(bookmark);
+    }
+  }
+
+  Profile* profile = browser_window_interface_->GetProfile();
+  bool can_open = bookmarks::IsOpenInIncognitoAllowed(bookmarks, profile);
+
+  std::move(callback).Run(can_open);
 }
 
 void BookmarksPageHandler::ExecuteOpenInNewTabGroupCommand(

@@ -69,6 +69,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       priceTracked_: Boolean,
       priceTrackingEligible_: Boolean,
       isInSplitView_: Boolean,
+      hasIncognitoAllowedUrls_: Boolean,
     };
   }
 
@@ -80,15 +81,18 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
   declare private priceTracked_: boolean;
   declare private priceTrackingEligible_: boolean;
   declare private isInSplitView_: boolean;
+  declare private hasIncognitoAllowedUrls_: boolean;
 
   showAt(
       target: HTMLElement, bookmarks: BookmarksTreeNode[],
       priceTracked: boolean, priceTrackingEligible: boolean,
-      isInSplitView: boolean, onShown: Function = () => {}) {
+      isInSplitView: boolean, hasIncognitoAllowedUrls: boolean,
+      onShown: Function = () => {}) {
     this.bookmarks_ = bookmarks;
     this.priceTracked_ = priceTracked;
     this.priceTrackingEligible_ = priceTrackingEligible;
     this.isInSplitView_ = isInSplitView;
+    this.hasIncognitoAllowedUrls_ = hasIncognitoAllowedUrls;
     afterNextRender(this, () => {
       this.$.menu.showAt(target);
       onShown();
@@ -98,11 +102,12 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
   showAtPosition(
       event: MouseEvent, bookmarks: BookmarksTreeNode[], priceTracked: boolean,
       priceTrackingEligible: boolean, isInSplitView: boolean,
-      onShown: Function = () => {}) {
+      hasIncognitoAllowedUrls: boolean, onShown: Function = () => {}) {
     this.bookmarks_ = bookmarks;
     this.priceTracked_ = priceTracked;
     this.priceTrackingEligible_ = priceTrackingEligible;
     this.isInSplitView_ = isInSplitView;
+    this.hasIncognitoAllowedUrls_ = hasIncognitoAllowedUrls;
     const menuMargin = 20;
     const doc = document.scrollingElement!;
     const minX = doc.scrollLeft + menuMargin;
@@ -159,7 +164,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
             loadTimeData.getString('menuOpenIncognito') :
             loadTimeData.getStringF(
                 'menuOpenIncognitoWithCount', bookmarkCount),
-        disabled: bookmarkCount === 0,
+        disabled: bookmarkCount === 0 || !this.hasIncognitoAllowedUrls_,
       });
     }
 
