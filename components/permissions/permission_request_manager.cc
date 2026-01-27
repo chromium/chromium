@@ -100,6 +100,18 @@ constexpr char kDisruptiveNotificationBehaviorEnforcementMessage[] =
     "Chrome is blocking notification permission requests on this site because "
     "the site exhibits behaviors that may be disruptive to users.";
 
+const char kGestureGatedNotificationMessage[] =
+    "The Notification permission request was suppressed and shown as a quiet "
+    "prompt because it was requested without a user gesture. Users are more "
+    "likely to grant permissions when requested in context. See "
+    "https://developer.chrome.com/blog/permissions-chip#without_user_gesture.";
+
+const char kGestureGatedGeolocationMessage[] =
+    "The Geolocation permission request was suppressed and shown as a quiet "
+    "prompt because it was requested without a user gesture. Users are more "
+    "likely to grant permissions when requested in context. See "
+    "https://developer.chrome.com/blog/permissions-chip#without_user_gesture.";
+
 namespace {
 
 // In case of multiple permission requests that use chip UI, a newly added
@@ -1168,7 +1180,12 @@ void PermissionRequestManager::ShowPrompt() {
               kDisruptiveNotificationBehaviorEnforcementMessage);
           break;
         case QuietUiReason::kTriggeredDueToLackOfGesture:
-          // TODO(crbug.com/412962300) Add LogWarningToConsole
+          if (requests_[0]->request_type() == RequestType::kNotifications) {
+            LogWarningToConsole(kGestureGatedNotificationMessage);
+          } else if (requests_[0]->request_type() ==
+                     RequestType::kGeolocation) {
+            LogWarningToConsole(kGestureGatedGeolocationMessage);
+          }
           break;
       }
       base::RecordAction(base::UserMetricsAction(

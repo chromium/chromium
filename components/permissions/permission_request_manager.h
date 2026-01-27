@@ -69,6 +69,16 @@ extern const char kAbusiveNotificationContentEnforcementMessage[];
 // the warning list for showing abusive notification content.
 extern const char kAbusiveNotificationContentWarningMessage[];
 
+// The message to be printed in the Developer Tools console when the
+// Notification permission request was suppressed and shown as a quiet prompt
+// because it was not initiated with a user gesture.
+extern const char kGestureGatedNotificationMessage[];
+
+// The message to be printed in the Developer Tools console when the
+// Geolocation permission request was suppressed and shown as a quiet prompt
+// because it was not initiated with a user gesture.
+extern const char kGestureGatedGeolocationMessage[];
+
 // Provides access to permissions bubbles. Allows clients to add a request
 // callback interface to the existing permission bubble configuration.
 // Depending on the situation and policy, that may add new UI to an existing
