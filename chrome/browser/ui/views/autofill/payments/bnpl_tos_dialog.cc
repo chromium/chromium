@@ -132,17 +132,27 @@ void BnplTosDialog::OnWidgetInitialized() {
 }
 
 TitleWithIconAfterLabelView::Icon BnplTosDialog::GetTitleIcon() const {
+  bool is_wallet_branding_enabled =
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding);
   switch (controller_->GetIssuerId()) {
     case BnplIssuer::IssuerId::kBnplAffirm:
-      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM;
+      return is_wallet_branding_enabled
+                 ? TitleWithIconAfterLabelView::Icon::AFFIRM
+                 : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM;
     case BnplIssuer::IssuerId::kBnplZip:
-      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP;
+      return is_wallet_branding_enabled
+                 ? TitleWithIconAfterLabelView::Icon::ZIP
+                 : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP;
     // TODO(crbug.com/408268581): Handle Afterpay issuer enum value when adding
     // Afterpay to the BNPL flow.
     case BnplIssuer::IssuerId::kBnplAfterpay:
-      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY;
+      return is_wallet_branding_enabled
+                 ? TitleWithIconAfterLabelView::Icon::AFTERPAY
+                 : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY;
     case BnplIssuer::IssuerId::kBnplKlarna:
-      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_KLARNA;
+      return is_wallet_branding_enabled
+                 ? TitleWithIconAfterLabelView::Icon::KLARNA
+                 : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_KLARNA;
   }
   NOTREACHED();
 }
