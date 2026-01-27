@@ -22,15 +22,13 @@ namespace web_app {
 
 class IsolatedWebAppInstallerModel;
 class IsolatedWebAppInstallerViewController;
-class IsolatedWebAppsEnabledPrefObserver;
 
 class IsolatedWebAppInstallerCoordinator {
  public:
   static IsolatedWebAppInstallerCoordinator* CreateAndStart(
       Profile* profile,
       const base::FilePath& bundle_path,
-      base::OnceClosure on_closed_callback,
-      std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer);
+      base::OnceClosure on_closed_callback);
 
   ~IsolatedWebAppInstallerCoordinator();
 
@@ -41,11 +39,9 @@ class IsolatedWebAppInstallerCoordinator {
   IsolatedWebAppInstallerViewController* GetControllerForTesting();
 
  private:
-  IsolatedWebAppInstallerCoordinator(
-      Profile* profile,
-      const base::FilePath& bundle_path,
-      base::OnceClosure on_closed_callback,
-      std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer);
+  IsolatedWebAppInstallerCoordinator(Profile* profile,
+                                     const base::FilePath& bundle_path,
+                                     base::OnceClosure on_closed_callback);
 
   void Start(base::OnceCallback<void(std::optional<webapps::AppId>)> callback);
 

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
@@ -427,8 +428,12 @@ class FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest
 // Check that virtual tasks are handled by the policy.
 TEST_P(FileManagerFileTaskVirtualTaskPolicyDefaultHandlersTest, VirtualTask) {
   auto [policy_id, action_id, file_extension] = GetParam();
-
+  if (action_id == kActionIdInstallIsolatedWebApp) {
+    profile()->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled,
+                                      true);
+  }
   const std::string file_name = base::StrCat({"foo", file_extension});
+
   entries().emplace_back(base::FilePath::FromUTF8Unsafe(file_name),
                          /*mime_type=*/"", /*is_directory=*/false);
 

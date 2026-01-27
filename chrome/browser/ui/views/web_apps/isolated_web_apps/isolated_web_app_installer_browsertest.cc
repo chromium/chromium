@@ -10,12 +10,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/fake_pref_observer.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
@@ -37,6 +37,10 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 namespace {
@@ -77,10 +81,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
 
   base::test::TestFuture<void> on_closed_future;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  profile()->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled, true);
+#endif
+
   IsolatedWebAppInstallerCoordinator* coordinator =
       IsolatedWebAppInstallerCoordinator::CreateAndStart(
-          profile(), app->path(), on_closed_future.GetCallback(),
-          std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true));
+          profile(), app->path(), on_closed_future.GetCallback());
 
   IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
   ASSERT_TRUE(model);
@@ -141,6 +148,7 @@ class IsolatedWebAppInstallerDisabledBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerDisabledBrowserTest,
                        DoesNotLaunchIfUnmanagedInstallIsDisabled) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
@@ -149,10 +157,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerDisabledBrowserTest,
 
   base::test::TestFuture<void> on_closed_future;
 
+  profile()->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled, true);
+
   IsolatedWebAppInstallerCoordinator* coordinator =
       IsolatedWebAppInstallerCoordinator::CreateAndStart(
-          profile(), app->path(), on_closed_future.GetCallback(),
-          std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true));
+          profile(), app->path(), on_closed_future.GetCallback());
 
   IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
   ASSERT_TRUE(model);
@@ -161,5 +170,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerDisabledBrowserTest,
 
   EXPECT_EQ(model->step(), IsolatedWebAppInstallerModel::Step::kNone);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

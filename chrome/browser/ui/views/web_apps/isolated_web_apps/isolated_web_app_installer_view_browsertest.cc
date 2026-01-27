@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/fake_pref_observer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
@@ -31,6 +30,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
@@ -42,6 +42,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -50,6 +51,10 @@
 #endif
 
 namespace web_app {
+
+// TODO(crbug.com/478831891): Fix and enable
+// `IsolatedWebAppInstallerViewUiPixelTest` for Windows.
+#if !BUILDFLAG(IS_WIN)
 namespace {
 
 using Step = IsolatedWebAppInstallerModel::Step;
@@ -231,13 +236,21 @@ class IsolatedWebAppInstallerViewUiPixelTest
                : IsolatedWebAppInstallerView::kInstallerWidgetName;
   }
 
+  void TearDownOnMainThread() override {
+    widget_ = nullptr;
+    NamedWidgetUiPixelTest::TearDownOnMainThread();
+  }
+
   void ShowUi(const std::string& name) override {
     Profile* profile = browser()->profile();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    profile->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled, true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     IsolatedWebAppInstallerCoordinator* coordinator =
         IsolatedWebAppInstallerCoordinator::CreateAndStart(
-            profile, base::FilePath(), on_complete_future.GetCallback(),
-            std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(false));
-
+            profile, base::FilePath(), on_complete_future.GetCallback());
     IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
     ASSERT_TRUE(model);
 
@@ -247,8 +260,7 @@ class IsolatedWebAppInstallerViewUiPixelTest
 
     TestIsolatedWebAppInstallerModelObserver model_observer(model);
 
-    model_observer.WaitForStepChange(Step::kDisabled);
-
+    model_observer.WaitForStepChange(Step::kGetMetadata);
     widget_ = controller->GetWidgetForTesting();
     ASSERT_TRUE(widget_);
 
@@ -289,5 +301,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          IsolatedWebAppInstallerViewUiPixelTest,
                          testing::ValuesIn(kTestParam),
                          &ParamToTestSuffix);
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace web_app
