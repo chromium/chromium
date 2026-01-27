@@ -308,8 +308,14 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
 }
 
 // Run 2, where the metrics ID gets reset following the clone detection.
+// TODO(https://crbug.com/419039727): Fix the flakiness.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_StaticConditions DISABLED_StaticConditions
+#else
+#define MAYBE_StaticConditions StaticConditions
+#endif
 IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
-                       StaticConditions) {
+                       MAYBE_StaticConditions) {
   // The clone was detected in the previous session, but we reset the ID
   // starting in this one.
   ASSERT_FALSE(g_browser_process->GetMetricsServicesManager()
