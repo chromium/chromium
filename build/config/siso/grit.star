@@ -17,6 +17,9 @@ def __step_config(ctx, step_config):
             "action": "__chrome_app_generated_resources_grit.*",
             # TODO: enable this.
             # "remote": config.get(ctx, "googlechrome"),
+
+            # Only runs on Linux workers.
+            "remote_command": "python3",
         },
     ])
     return step_config
