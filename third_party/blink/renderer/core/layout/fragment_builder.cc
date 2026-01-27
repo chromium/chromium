@@ -95,12 +95,10 @@ PhysicalFragment::BoxType FragmentBuilder::GetBoxType() const {
   if (layout_object_->StyleRef().IsPageMarginBox()) {
     return PhysicalFragment::BoxType::kPageMargin;
   }
+  if (layout_object_->IsAtomicInline()) {
+    return PhysicalFragment::BoxType::kAtomicInline;
+  }
   if (layout_object_->IsInline()) {
-    // Check |IsAtomicInlineLevel()| after |IsInline()| because |LayoutReplaced|
-    // sets |IsAtomicInlineLevel()| even when it's block-level. crbug.com/567964
-    if (layout_object_->IsAtomicInlineLevel()) {
-      return PhysicalFragment::BoxType::kAtomicInline;
-    }
     return PhysicalFragment::BoxType::kInlineBox;
   }
   DCHECK(node_) << "Must call SetBoxType if there is no node";
