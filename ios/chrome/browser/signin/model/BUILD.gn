@@ -529,6 +529,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base:test_support",
   ]
 }
 
