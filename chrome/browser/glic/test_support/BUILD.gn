@@ -8,15 +8,16 @@ assert(enable_glic)
 
 source_set("test_support") {
   testonly = true
-  sources = []
+  sources = [
+    "glic_test_environment.cc",
+    "glic_test_environment.h",
+    "glic_test_util.cc",
+    "glic_test_util.h",
+  ]
   if (!is_android) {
     sources += [
       "glic_api_test.cc",
       "glic_api_test.h",
-      "glic_test_environment.cc",
-      "glic_test_environment.h",
-      "glic_test_util.cc",
-      "glic_test_util.h",
       "interactive_glic_test.cc",
       "interactive_glic_test.h",
       "interactive_test_util.cc",
@@ -29,17 +30,19 @@ source_set("test_support") {
       "non_interactive_glic_test.h",
     ]
   }
-  deps = []
+  deps = [
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:impl",
+    "//chrome/browser/glic/fre",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs:tab_list_interface",
+    "//components/signin/public/identity_manager:test_support",
+  ]
   if (!is_android) {
     deps += [
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:impl",
-      "//chrome/browser/glic/fre",
-      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/tabs:glic",
-      "//components/signin/public/identity_manager:test_support",
       "//ui/events:test_support",
     ]
   }

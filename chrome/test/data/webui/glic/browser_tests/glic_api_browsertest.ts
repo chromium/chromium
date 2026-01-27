@@ -1678,7 +1678,7 @@ class ApiTests extends ApiTestFixtureBase {
 
   // Helper for `testFetchInactiveTabScreenshot` and
   // `testFetchInactiveTabScreenshotWhileMinimized`.
-  async fetchInactiveTabScreenshot() {
+  async fetchInactiveTabScreenshot(expectNoFocus: boolean = false) {
     assertDefined(this.host.getFocusedTabStateV2);
     assertDefined(this.host.getContextFromTab);
     assertDefined(this.host.pinTabs);
@@ -1693,7 +1693,8 @@ class ApiTests extends ApiTestFixtureBase {
     // Select the other tab.
     await this.advanceToNextStep();
     focus = await focusSequence.waitFor(
-        (f) => !!f.hasFocus && f.hasFocus.tabData.tabId !== tabId);
+        (f) => (!!f.hasFocus && f.hasFocus.tabData.tabId !== tabId) ||
+            (expectNoFocus && !!f.hasNoFocus));
 
     // Get context and verify we have a screenshot.
     const context = await this.host.getContextFromTab(tabId, {
@@ -1717,7 +1718,8 @@ class ApiTests extends ApiTestFixtureBase {
     // Tests fetching the screenshot of a tab while the browser is minimized.
     // Ideally this would work, but it currently times out and provides no
     // screenshot on some platforms.
-    const context = await this.fetchInactiveTabScreenshot();
+    const context = await this.fetchInactiveTabScreenshot(
+        /*expectNoFocus=*/ true);
     assertFalse(checkDefined(context.tabData.isObservable));
 
     if (shouldGetScreenshot) {
@@ -2715,8 +2717,7 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
   async testGetSkillSuccess() {
     assertDefined(this.host.getSkillPreviews);
     assertDefined(this.host.getSkill);
-    const skillPreviewsSequence =
-        observeSequence(this.host.getSkillPreviews());
+    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
     const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
     const targetSkill = skills.find(s => s.name === 'test_skill_1');
     assertDefined(targetSkill);
@@ -2730,8 +2731,7 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
 
   async testGetSkillPreviewsSuccess() {
     assertDefined(this.host.getSkillPreviews);
-    const skillPreviewsSequence =
-        observeSequence(this.host.getSkillPreviews());
+    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
     const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
     const skill1 = skills.find(s => s.name === 'test_skill_1');
     assertDefined(skill1);
