@@ -10,12 +10,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -39,9 +37,7 @@ const base::TimeDelta kTPMUpdatePlannedNotificationWaitTime = base::Days(1);
 AutoUpdateMode GetTPMAutoUpdateModeSetting(
     const ash::CrosSettings* cros_settings,
     const base::RepeatingClosure callback) {
-  if (!g_browser_process->platform_part()
-           ->browser_policy_connector_ash()
-           ->IsDeviceEnterpriseManaged()) {
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return AutoUpdateMode::kNever;
   }
 
