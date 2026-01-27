@@ -936,12 +936,54 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_dawn_android_compat_telemetry_tests",
+            "gpu_dawn_integration_gtests_passthrough",
+            "gpu_dawn_android_isolated_scripts",
         ],
         mixins = [
-            "has_native_resultdb_integration",
             "gpu_pixel_10_stable",
+            "has_native_resultdb_integration",
+            # TODO(crbug.com/443001330): Remove the limited_capacity_bot mixin
+            # once additional devices are deployed. 49 devices is likely not enough
+            # to run both standard GPU and WebGPU tests on CI + have enough
+            # capacity for trybots without this.
+            "limited_capacity_bot",
         ],
+        per_test_modifications = {
+            "dawn_end2end_skip_validation_tests": targets.remove(
+                reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
+            ),
+            "dawn_end2end_validation_layers_tests": targets.remove(
+                reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
+            ),
+            "dawn_end2end_wire_tests": targets.remove(
+                reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
+            ),
+            "dawn_perf_tests": targets.remove(
+                reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
+            ),
+            "gl_tests_passthrough": targets.remove(
+                reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
+            ),
+            "gl_unittests": targets.remove(
+                reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
+            ),
+            "webgpu_blink_web_tests": targets.remove(
+                reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
+            ),
+            "webgpu_blink_web_tests_with_backend_validation": targets.remove(
+                reason = "TODO(crbug.com/40238674): Enable once it's shown to work on Android.",
+            ),
+            "webgpu_cts_compat_min_es31_tests": targets.remove(
+                reason = "Too many failures.",
+            ),
+            "webgpu_cts_shared_worker_tests": targets.remove(
+                reason = [
+                    "We only need coverage on one GPU per OS, so remove from lower capacity",
+                    "configs. Additionally, shared workers are not supported on Android.",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.ANDROID_CHROMIUM,
