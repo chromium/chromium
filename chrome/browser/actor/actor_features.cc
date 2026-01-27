@@ -13,6 +13,10 @@ namespace actor {
 
 BASE_FEATURE(kGlicActionAllowlist, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kActorEnableAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE_PARAM(std::string,
                    kAllowlist,
                    &kGlicActionAllowlist,

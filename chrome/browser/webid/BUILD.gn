@@ -111,6 +111,7 @@ source_set("impl") {
   deps = [
     ":webid",
     "//base",
+    "//chrome/browser/actor",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/permissions",
     "//chrome/browser/profiles:profile",
@@ -130,9 +131,6 @@ source_set("impl") {
     "//third_party/blink/public/common:headers",
     "//url",
   ]
-  if (!is_android) {
-    deps += [ "//chrome/browser/actor" ]
-  }
 }
 
 source_set("unit_tests") {

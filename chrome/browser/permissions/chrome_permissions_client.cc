@@ -83,7 +83,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/actor/actor_keyed_service.h"
 #endif
 
@@ -847,7 +847,7 @@ bool ChromePermissionsClient::CanPromptSystemPermission(
 
 bool ChromePermissionsClient::IsActorOperatingOnWebContents(
     content::WebContents* web_contents) const {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   auto* actor_service =
       actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
   if (!actor_service) {

@@ -46,8 +46,6 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
