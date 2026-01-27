@@ -220,7 +220,7 @@ impl JxlRsDecoder {
                 // Use try_as_icc() which returns None on error instead of
                 // as_icc() which panics on malformed color profiles.
                 if self.icc_profile.is_empty() {
-                    if let Some(profile) = self.decoder.embedded_color_profile() {
+                    if let Some(profile) = self.decoder.output_color_profile() {
                         if let Some(icc) = profile.try_as_icc() {
                             if !icc.is_empty() {
                                 self.icc_profile = icc.into_owned();
