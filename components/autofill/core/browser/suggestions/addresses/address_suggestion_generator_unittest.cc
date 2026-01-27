@@ -57,25 +57,6 @@ using ::testing::SizeIs;
 constexpr char kAddressesSuppressedHistogramName[] =
     "Autofill.AddressesSuppressedForDisuse";
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-Matcher<Suggestion> EqualLabels(
-    const std::vector<std::vector<Suggestion::Text>>& suggestion_objects) {
-  return Field(&Suggestion::labels, suggestion_objects);
-}
-
-Matcher<Suggestion> EqualLabels(
-    const std::vector<std::vector<std::u16string>>& labels) {
-  std::vector<std::vector<Suggestion::Text>> suggestion_objects;
-  for (const auto& row : labels) {
-    suggestion_objects.emplace_back();
-    for (const auto& col : row) {
-      suggestion_objects.back().emplace_back(col);
-    }
-  }
-  return EqualLabels(suggestion_objects);
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 #if !BUILDFLAG(IS_IOS)
 Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
   return EqualsSuggestion(SuggestionType::kUndoOrClear,
@@ -1183,41 +1164,16 @@ class AddressLabelSuggestionGeneratorTest
   }
 
   FieldType GetTriggeringFieldType() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillImprovedLabels};
 };
 
-INSTANTIATE_TEST_SUITE_P(AddressSuggestionGeneratorTest,
-                         AddressLabelSuggestionGeneratorTest,
-                         ::testing::ValuesIn({NAME_FULL, ADDRESS_HOME_ZIP,
-                                              ADDRESS_HOME_STREET_ADDRESS,
-                                              PHONE_HOME_WHOLE_NUMBER}));
 
-TEST_F(AddressLabelSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_PartialNameFieldHasFullNameMainText) {
-  base::test::ScopedFeatureList features(features::kAutofillImprovedLabels);
-  AutofillProfile profile = test::GetFullProfile();
-  FormFieldData triggering_field;
-  triggering_field.set_label(u"Name");
-
-  EXPECT_THAT(
-      CreateSuggestionsFromProfilesForTest({profile}, {NAME_FIRST, NAME_LAST},
-                                           SuggestionType::kAddressEntry,
-                                           NAME_FIRST, triggering_field),
-      SuggestionVectorMainTextsAre(Suggestion::Text(
-          profile.GetRawInfo(NAME_FULL), Suggestion::Text::IsPrimary(true))));
-}
 
 // Tests that suggestions for alternative name fields have the alternative name
 // as the main text.
 TEST_F(AddressLabelSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_AlternativeNameFieldMainText) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAutofillImprovedLabels,
-                             features::kAutofillSupportPhoneticNameForJP},
-                            {});
+  base::test::ScopedFeatureList features{
+      features::kAutofillSupportPhoneticNameForJP};
   AutofillProfile profile(AddressCountryCode("JP"));
   test::SetProfileInfo(&profile, "firstName", "middleName", "lastName",
                        "mail@mail.com", "company", "line1", "line2", "city",
@@ -1244,10 +1200,8 @@ TEST_F(AddressLabelSuggestionGeneratorTest,
 TEST_F(
     AddressLabelSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_TransliteratesHiraganaToKatakana_WhenLabelInKatakana) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAutofillImprovedLabels,
-                             features::kAutofillSupportPhoneticNameForJP},
-                            {});
+  base::test::ScopedFeatureList features{
+      features::kAutofillSupportPhoneticNameForJP};
   AutofillProfile profile(AddressCountryCode("JP"));
   test::SetProfileInfo(&profile, "firstName", "middleName", "lastName",
                        "mail@mail.com", "company", "line1", "line2", "city",
@@ -1275,10 +1229,8 @@ TEST_F(
 TEST_F(
     AddressLabelSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_DoesNotTransliterateHiraganaToKatakana_WhenLabelInHiragana) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAutofillImprovedLabels,
-                             features::kAutofillSupportPhoneticNameForJP},
-                            {});
+  base::test::ScopedFeatureList features{
+      features::kAutofillSupportPhoneticNameForJP};
   AutofillProfile profile(AddressCountryCode("JP"));
   test::SetProfileInfo(&profile, "firstName", "middleName", "lastName",
                        "mail@mail.com", "company", "line1", "line2", "city",
@@ -1300,74 +1252,6 @@ TEST_F(
                                hiragana, Suggestion::Text::IsPrimary(true))));
 }
 
-// Suggestions for `ADDRESS_HOME_LINE1` should have `NAME_FULL` as the label.
-// Suggestions for name or address fields which do not include
-// `ADDRESS_HOME_LINE1` should have `ADDRESS_HOME_LINE1` as the label.
-TEST_P(AddressLabelSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_SuggestionsHaveCorrectLabels) {
-  AutofillProfile profile = test::GetFullProfile();
-  FieldType triggering_field_type = GetTriggeringFieldType();
-  const std::u16string full_form_filling_label =
-      GetFullFormFillingLabel(profile);
-  FormFieldData ignored;
-
-  EXPECT_THAT(
-      CreateSuggestionsFromProfilesForTest(
-          {profile}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
-          SuggestionType::kAddressEntry, triggering_field_type, ignored),
-      ElementsAre(AllOf(EqualLabels({{full_form_filling_label}}))));
-}
-
-TEST_P(
-    AddressLabelSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_SuggestionsNeedMoreLabelsForDifferentiation) {
-  AutofillProfile profile1 = test::GetFullProfile();
-  AutofillProfile profile2 = test::GetFullProfile();
-  profile1.SetRawInfo(EMAIL_ADDRESS, u"hoa@gmail.com");
-  profile2.SetRawInfo(EMAIL_ADDRESS, u"pham@gmail.com");
-
-  // The only difference between the two profiles is the email address.
-  // That's why the email address is part of the differentiating label.
-  FieldType triggering_field_type = GetTriggeringFieldType();
-  const std::u16string full_form_filling_label =
-      GetFullFormFillingLabel(profile1) +
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
-  FormFieldData ignored;
-
-  EXPECT_THAT(
-      CreateSuggestionsFromProfilesForTest(
-          {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          SuggestionType::kAddressEntry, triggering_field_type, ignored),
-      ElementsAre(
-          AllOf(EqualLabels({{full_form_filling_label + u"hoa@gmail.com"}})),
-          AllOf(EqualLabels({{full_form_filling_label + u"pham@gmail.com"}}))));
-}
-
-// The logic which adds the country as a differentiating label is slightly
-// different than the logic which adds any other differentiating label. Since
-// the country is the last candidate for a differentiating label, this test also
-// prevents random label behaviour (such as non-differentiating label being
-// chosen or label not showing at all).
-TEST_P(AddressLabelSuggestionGeneratorTest,
-       CreateSuggestionsFromProfiles_CountryIsChosenAsDifferentiatingLabel) {
-  AutofillProfile profile1 = test::GetFullProfile();
-  AutofillProfile profile2 = profile1;
-  profile2.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CH");
-
-  FieldType triggering_field_type = GetTriggeringFieldType();
-  const std::u16string full_form_filling_label =
-      GetFullFormFillingLabel(profile1) +
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
-  FormFieldData ignored;
-
-  EXPECT_THAT(
-      CreateSuggestionsFromProfilesForTest(
-          {profile1, profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-          SuggestionType::kAddressEntry, triggering_field_type, ignored),
-      ElementsAre(
-          AllOf(EqualLabels({{full_form_filling_label + u"United States"}})),
-          AllOf(EqualLabels({{full_form_filling_label + u"Switzerland"}}))));
-}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
