@@ -259,8 +259,9 @@ class IdentityDialogControllerBrowserTest : public InProcessBrowserTest {
   }
 };
 
+// TODO(crbug.com/478952817): Test is flaky on fieldtrial-tester.
 IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
-                       ActorTaskStateChangesCanShowWidget) {
+                       DISABLED_ActorTaskStateChangesCanShowWidget) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents_);
   auto mock_view = std::make_unique<MockAccountSelectionView>();
@@ -280,8 +281,9 @@ IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
   EXPECT_FALSE(HasActingTaskId(controller.get()));
 }
 
+// TODO(crbug.com/478952817): Test is flaky on fieldtrial-tester.
 IN_PROC_BROWSER_TEST_F(IdentityDialogControllerBrowserTest,
-                       ActorTaskHidesUiOnShow) {
+                       DISABLED_ActorTaskHidesUiOnShow) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents_);
   auto mock_view = std::make_unique<MockAccountSelectionView>();
