@@ -325,6 +325,16 @@ LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
 
 void LinkStyle::Process(LinkLoadParameters::Reason reason) {
   DCHECK(owner_->ShouldProcessStyle());
+
+  // A media change is not a reason to re-process the stylesheet.
+  // See https://html.spec.whatwg.org/multipage/links.html#link-type-stylesheet
+  if (sheet_ && reason == LinkLoadParameters::Reason::kMediaChange) {
+    sheet_->SetMediaQueries(
+        MediaQuerySet::Create(owner_->Media(), GetExecutionContext()));
+    GetDocument().GetStyleEngine().ModifiedStyleSheetCandidateNode(*owner_);
+    return;
+  }
+
   const LinkLoadParameters params(
       owner_->RelAttribute(),
       GetCrossOriginAttributeValue(
