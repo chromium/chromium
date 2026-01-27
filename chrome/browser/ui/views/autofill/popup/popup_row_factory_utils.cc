@@ -84,12 +84,10 @@ constexpr int kCloseIconSize = 16;
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
     {SuggestionType::kAllLoyaltyCardsEntry,
      SuggestionType::kAllSavedPasswordsEntry, SuggestionType::kManageAddress,
-     SuggestionType::kManageCreditCard, SuggestionType::kManageAutofillAi,
-     SuggestionType::kManageAutofillAiIdentityDocs,
-     SuggestionType::kManageAutofillAiTravel, SuggestionType::kManageIban,
-     SuggestionType::kManageLoyaltyCard, SuggestionType::kManagePlusAddress,
-     SuggestionType::kUndoOrClear, SuggestionType::kViewPasswordDetails,
-     SuggestionType::kPendingStateSignin,
+     SuggestionType::kManageAutofillAi, SuggestionType::kManageCreditCard,
+     SuggestionType::kManageIban, SuggestionType::kManageLoyaltyCard,
+     SuggestionType::kManagePlusAddress, SuggestionType::kUndoOrClear,
+     SuggestionType::kViewPasswordDetails, SuggestionType::kPendingStateSignin,
      SuggestionType::kWebauthnSignInWithAnotherDevice});
 
 // Max width for the username and masked password.

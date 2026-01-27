@@ -22,10 +22,6 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kManageAddress";
     case SuggestionType::kManageAutofillAi:
       return "kManageAutofillAi";
-    case SuggestionType::kManageAutofillAiIdentityDocs:
-      return "kManageAutofillAiIdentityDocs";
-    case SuggestionType::kManageAutofillAiTravel:
-      return "kManageAutofillAiTravel";
     case SuggestionType::kManageCreditCard:
       return "kManageCreditCard";
     case SuggestionType::kManageIban:

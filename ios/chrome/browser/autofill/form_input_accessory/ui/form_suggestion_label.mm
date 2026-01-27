@@ -248,8 +248,6 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageAutofillAi:
-    case SuggestionType::kManageAutofillAiIdentityDocs:
-    case SuggestionType::kManageAutofillAiTravel:
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
     case SuggestionType::kManagePlusAddress:

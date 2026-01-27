@@ -1013,12 +1013,6 @@ BASE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
 BASE_FEATURE(kShowSugesstionsOnAlreadyAutofilledUnrecognized,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, "Manage information" menu item for enhanced autofill will
-// redirect user either to "/travel" or "/identityDocs" pages instead of
-// "/yourSavedInfo" always.
-BASE_FEATURE(kSuggestionManageButtonSplitForEnhancedAutofill,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the address add/edit editor in the payments request would be
 // removed and instead, the address editor from the settings will be used.
 // TODO: crbug.com/399071964 - Remove when launched.

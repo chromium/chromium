@@ -1036,12 +1036,6 @@
   <message name="IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT" desc="The label for a button that opens the Autofill for AI information management interface in Chrome settings. When users choose this option, they can edit, delete, and “create” new information, like a new passport or driver’s license.">
     Manage information
   </message>
-  <message name="IDS_AUTOFILL_AI_MANAGE_IDENTITY_DOCS_SUGGESTION_MAIN_TEXT" desc="The label for a button that opens the Identity docs management interface in Chrome settings. When users choose this option, they can edit, delete, and “create” new information, like a new passport or driver’s license.">
-    Manage identity docs
-  </message>
-  <message name="IDS_AUTOFILL_AI_MANAGE_TRAVEL_SUGGESTION_MAIN_TEXT" desc="The label for a button that opens the Travel infromation management interface in Chrome settings. When users choose this option, they can edit, delete, and “create” new information, like a new vehicle or known travel number.">
-    Manage travel info
-  </message>
 
   <!-- Save/Update prompt -->
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON" desc="Text displayed on the decline/cancel button of the save/update dialog.">
