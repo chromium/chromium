@@ -42,6 +42,11 @@ WebAppOriginAssociationManager::Task::Task(
     url::Origin origin =
         url::Origin::Create(GURL(migration_source.manifest_id()));
     CHECK(!origin.opaque());
+    // Same origin migration is allowed without checking a .well-known file, so
+    // no need to do origin validation for that source.
+    if (origin.IsSameOriginWith(web_app_identity_)) {
+      continue;
+    }
     unique_origins.insert(origin);
   }
   pending_origins_.assign(unique_origins.begin(), unique_origins.end());
@@ -120,6 +125,11 @@ void WebAppOriginAssociationManager::Task::Finalize() {
     url::Origin origin_to_check =
         url::Origin::Create(GURL(migration_source.manifest_id()));
     if (origin_to_check.opaque()) {
+      continue;
+    }
+
+    if (origin_to_check.IsSameOriginWith(web_app_identity_)) {
+      result_.migration_sources.push_back(migration_source);
       continue;
     }
 
