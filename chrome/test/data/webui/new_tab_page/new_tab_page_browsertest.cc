@@ -86,7 +86,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileThumbnail) {
   RunTest("new_tab_page/composebox/file_thumbnail_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ContextualEntrypointAndCarousel) {
+// TODO(crbug.com/452644435): Test is flaky on no_field_trial.
+IN_PROC_BROWSER_TEST_F(NewTabPageTest,
+                       DISABLED_ContextualEntrypointAndCarousel) {
   RunTest("new_tab_page/composebox/contextual_entrypoint_and_carousel_test.js",
           "mocha.run()");
 }
