@@ -59,7 +59,8 @@ void SignInFunctions::SignInFromWeb(
 
 void SignInFunctions::SignInFromSettings(
     const TestAccountSigninCredentials& test_account,
-    int previously_signed_in_accounts) {
+    int previously_signed_in_accounts,
+    bool complete_signin_operation) {
   GURL settings_url("chrome://settings");
   Browser* browser = browser_.Run();
   ASSERT_TRUE(add_tab_function_.Run(0, settings_url,
@@ -76,14 +77,17 @@ void SignInFunctions::SignInFromSettings(
   // Ensure the gaia login tab is loaded before proceeding.
   auto* gaia_login_tab = browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(gaia_login_tab));
-  SignInFromCurrentPage(gaia_login_tab, test_account,
-                        previously_signed_in_accounts);
+  if (complete_signin_operation) {
+    SignInFromCurrentPage(gaia_login_tab, test_account,
+                          previously_signed_in_accounts);
+  }
 }
 
 void SignInFunctions::SignInFromCurrentPage(
     content::WebContents* web_contents,
     const TestAccountSigninCredentials& test_account,
     int previously_signed_in_accounts) {
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   SignInTestObserver observer(IdentityManagerFactory::GetForProfile(profile),
@@ -130,24 +134,6 @@ void SignInFunctions::TurnOffSync() {
           kSettingsScriptWrapperFormat,
           "settings.SyncBrowserProxyImpl.getInstance().signOut(false)")));
   observer.WaitForAccountChanges(0, PrimarySyncAccountWait::kWaitForCleared);
-}
-
-void SignInFunctions::StartSignInFromSettings() {
-  GURL settings_url("chrome://settings");
-  Browser* browser = browser_.Run();
-  ASSERT_TRUE(add_tab_function_.Run(0, settings_url,
-                                    ui::PageTransition::PAGE_TRANSITION_TYPED));
-  ui_test_utils::TabAddedWaiter signin_tab_waiter(browser);
-  auto* settings_tab = browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(content::ExecJs(
-      settings_tab,
-      base::StringPrintf(
-          kSettingsScriptWrapperFormat,
-          "settings.SyncBrowserProxyImpl.getInstance()."
-          "startSignIn(settings.ChromeSigninAccessPoint.SETTINGS);")));
-  signin_tab_waiter.Wait();
-  login_ui_test_utils::WaitForSigninPageToLoad(
-      browser->tab_strip_model()->GetActiveWebContents());
 }
 
 }  // namespace signin::test

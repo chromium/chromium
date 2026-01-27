@@ -675,35 +675,36 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
       "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 1);
 }
 
-class LiveSignInGaiaIntegrationTest : public LiveSignInTest,
-                                      public testing::WithParamInterface<bool> {
-};
+class LiveSignInGaiaIntegrationTest : public LiveSignInTest {};
 
 // Regression test for crbug.com/420635510.
 // Tests that a doing a web signin from a tab that was previously opened for
 // a browser signin, does not sign in the user in the browser.
 // TODO(crbug.com/467170772): Remove the logging once flakiness reason is identified.
-IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
+IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
                        MANUAL_WebSignInFromExistingChromeSignInTab) {
   LOG(WARNING) << "Test starting.";
   base::HistogramTester histogram_tester;
-  sign_in_functions.StartSignInFromSettings();
-  int current_tab_count = browser()->tab_strip_model()->count();
-  DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  ASSERT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
-  LOG(WARNING) << "Browser signin page open.";
-
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
   CHECK(test_account.has_value());
+
+  sign_in_functions.SignInFromSettings(
+    test_account.value(), 0, /*complete_signin_operation=*/false);
+  int current_tab_count = browser()->tab_strip_model()->count();
+  auto* signin_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(signin_tab);
+  ASSERT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
+  LOG(WARNING) << "Browser signin page open.";
+
   // Use the same tab for a web sign-in.
   content::OpenURLParams params(
       GaiaUrls::GetInstance()->add_account_url(), content::Referrer(),
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false);
-  browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
-      params, /*navigation_handle_callback=*/{});
+  content::WebContents* contents =
+      signin_tab->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
+  ASSERT_EQ(signin_tab, contents);
   LOG(WARNING) << "Moved to web sign in tab.";
 
   GURL interception_bubble_url(
@@ -711,27 +712,37 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
   content::TestNavigationObserver interception_bubble_observer(
       interception_bubble_url);
   interception_bubble_observer.StartWatchingNewWebContents();
+  LOG(WARNING) << "Bubble observation started.";
 
-  login_ui_test_utils::WaitForSigninPageToLoad(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  sign_in_functions.SignInFromCurrentPage(
-      browser()->tab_strip_model()->GetActiveWebContents(), *test_account, 0);
-  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
+  sign_in_functions.SignInFromCurrentPage(signin_tab, *test_account, 0);
   LOG(WARNING) << "Signin in done.";
 
-  if (GetParam()) {
-    interception_bubble_observer.Wait();
-    LOG(WARNING) << "Interception bubble awaited";
-    histogram_tester.ExpectBucketCount(
-        "Signin.Intercept.HeuristicOutcome",
-        SigninInterceptionHeuristicOutcome::kInterceptChromeSignin, 1);
-  }
+  const AccountsInCookieJarInfo& accounts_in_cookie_jar_1 =
+      identity_manager()->GetAccountsInCookieJar();
+  EXPECT_TRUE(accounts_in_cookie_jar_1.AreAccountsFresh());
+  ASSERT_EQ(
+      1u,
+      accounts_in_cookie_jar_1.GetPotentiallyInvalidSignedInAccounts().size());
+  EXPECT_TRUE(accounts_in_cookie_jar_1.GetSignedOutAccounts().empty());
+  const gaia::ListedAccount& account_1 =
+      accounts_in_cookie_jar_1.GetPotentiallyInvalidSignedInAccounts()[0];
+  EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account_1.email));
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_1.id));
+  // Web signin does not automatically propagate to Chrome.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
+  interception_bubble_observer.Wait();
+  LOG(WARNING) << "Interception bubble awaited";
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin, 1);
+
   // The user should not be signed-in in the browser.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   LOG(WARNING) << "Signin complete with no primary user.";
 }
-
-INSTANTIATE_TEST_SUITE_P(All, LiveSignInGaiaIntegrationTest, ::testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
