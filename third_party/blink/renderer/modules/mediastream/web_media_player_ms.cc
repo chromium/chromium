@@ -153,12 +153,12 @@ constexpr base::TimeDelta kForceBeginFramesTimeout = base::Seconds(1);
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
-// Since we do not have native GMB support in Windows, using GMBs can cause a
-// CPU regression. This is more apparent and can have adverse affects in lower
-// resolution content which are defined by these thresholds, see
-// https://crbug.com/835752.
+// Since we do not have native MappableSharedImage support in Windows, using
+// mappable SharedImages can cause a CPU regression. This is more apparent and
+// can have adverse affects in lower resolution content which are defined by
+// these thresholds, see https://crbug.com/835752.
 // static
-const gfx::Size WebMediaPlayerMS::kUseGpuMemoryBufferVideoFramesMinResolution =
+const gfx::Size WebMediaPlayerMS::kUseMappableSIVideoFramesMinResolution =
     gfx::Size(1920, 1080);
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -185,7 +185,7 @@ class WebMediaPlayerMS::FrameDeliverer {
         gpu_factories_(gpu_factories) {
     DETACH_FROM_SEQUENCE(video_sequence_checker_);
 
-    CreateGpuMemoryBufferPoolIfNecessary();
+    CreateMappableSharedImagePoolIfNecessary();
   }
 
   FrameDeliverer(const FrameDeliverer&) = delete;
@@ -193,7 +193,7 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   ~FrameDeliverer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-    FreeGpuMemoryBufferPool();
+    FreeMappableSharedImagePool();
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame) {
@@ -212,20 +212,20 @@ class WebMediaPlayerMS::FrameDeliverer {
     }
 
     // If |render_frame_suspended_|, we can keep passing the frames to keep the
-    // latest frame in compositor up to date. However, creating GMB backed
-    // frames is unnecessary, because the frames are not going to be shown for
-    // the time period.
-    bool skip_creating_gpu_memory_buffer = render_frame_suspended_;
+    // latest frame in compositor up to date. However, creating
+    // MappableSharedImage-backed frames is unnecessary, because the frames are
+    // not going to be shown for the time period.
+    bool skip_creating_mappable_si = render_frame_suspended_;
 
 #if BUILDFLAG(IS_WIN)
-    skip_creating_gpu_memory_buffer |=
+    skip_creating_mappable_si |=
         frame->visible_rect().width() <
-            kUseGpuMemoryBufferVideoFramesMinResolution.width() ||
+            kUseMappableSIVideoFramesMinResolution.width() ||
         frame->visible_rect().height() <
-            kUseGpuMemoryBufferVideoFramesMinResolution.height();
+            kUseMappableSIVideoFramesMinResolution.height();
 #endif  // BUILDFLAG(IS_WIN)
 
-    if (skip_creating_gpu_memory_buffer) {
+    if (skip_creating_mappable_si) {
       media::VideoFrame::ID original_frame_id = frame->unique_id();
       EnqueueFrame(original_frame_id, std::move(frame));
       // If there are any existing MaybeCreateHardwareFrame() calls, we do not
@@ -255,10 +255,10 @@ class WebMediaPlayerMS::FrameDeliverer {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
     render_frame_suspended_ = render_frame_suspended;
     if (render_frame_suspended_) {
-      // Drop GpuMemoryBuffer pool to free memory.
-      FreeGpuMemoryBufferPool();
+      // Drop MappableSharedImage pool to free memory.
+      FreeMappableSharedImagePool();
     } else {
-      CreateGpuMemoryBufferPoolIfNecessary();
+      CreateMappableSharedImagePoolIfNecessary();
     }
   }
 
@@ -271,7 +271,7 @@ class WebMediaPlayerMS::FrameDeliverer {
  private:
   friend class WebMediaPlayerMS;
 
-  void CreateGpuMemoryBufferPoolIfNecessary() {
+  void CreateMappableSharedImagePoolIfNecessary() {
     if (!mappable_shared_image_pool_ && gpu_factories_ &&
         gpu_factories_->ShouldUseMappableSharedImagesForVideoFrames(
             true /* for_media_stream */)) {
@@ -281,7 +281,7 @@ class WebMediaPlayerMS::FrameDeliverer {
     }
   }
 
-  void FreeGpuMemoryBufferPool() {
+  void FreeMappableSharedImagePool() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
 
     if (mappable_shared_image_pool_) {
@@ -334,7 +334,7 @@ class WebMediaPlayerMS::FrameDeliverer {
   const base::WeakPtr<WebMediaPlayerMS> player_;
   RepaintCB enqueue_frame_cb_;
 
-  // Pool of GpuMemoryBuffers and resources used to create hardware frames.
+  // Pool of MappableSharedImages and resources used to create hardware frames.
   std::unique_ptr<media::MappableSharedImageVideoFramePool>
       mappable_shared_image_pool_;
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

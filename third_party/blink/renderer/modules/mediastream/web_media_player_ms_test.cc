@@ -618,7 +618,7 @@ class WebMediaPlayerMSTest
   void SetMappableSharedImagePoolForTesting() {
 #if BUILDFLAG(IS_WIN)
     render_factory_->provider()->set_standard_size(
-        WebMediaPlayerMS::kUseGpuMemoryBufferVideoFramesMinResolution);
+        WebMediaPlayerMS::kUseMappableSIVideoFramesMinResolution);
 #endif  // BUILDFLAG(IS_WIN)
 
     player_->SetMappableSharedImagePoolForTesting(
