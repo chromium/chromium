@@ -985,8 +985,16 @@ class ContextSharingBorderViewWithActorGlowUiTest
   base::test::ScopedFeatureList features_;
 };
 
+// TODO(https://crbug.com/478360939): Fix the flakiness.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff \
+  DISABLED_ActorGlowShowsBorderWhenIndicatorIsOff
+#else
+#define MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff \
+  ActorGlowShowsBorderWhenIndicatorIsOff
+#endif
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
-                       ActorGlowShowsBorderWhenIndicatorIsOff) {
+                       MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
