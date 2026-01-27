@@ -11682,7 +11682,7 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
 
   base::HistogramTester histogram_tester;
   RunRequestToCompletion(std::move(network_context), std::move(params),
-                         request);
+                         std::move(request));
 
   EXPECT_THAT(most_recent_request_headers(),
               ElementsAre(Not(Contains(Key(kSecFetchStorageAccess)))));
@@ -11720,7 +11720,7 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
   base::HistogramTester histogram_tester;
 
   RunRequestToCompletion(std::move(network_context), std::move(params),
-                         request);
+                         std::move(request));
 
   // Since credentials are blocked, no header should be attached.
   EXPECT_THAT(most_recent_request_headers(),
@@ -11756,7 +11756,7 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_None) {
   base::HistogramTester histogram_tester;
 
   RunRequestToCompletion(std::move(network_context), std::move(params),
-                         request);
+                         std::move(request));
   EXPECT_THAT(most_recent_request_headers(),
               ElementsAre(Contains(Pair(kSecFetchStorageAccess, "none"))));
   histogram_tester.ExpectUniqueSample(
@@ -11802,7 +11802,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
       ContentSetting::CONTENT_SETTING_ALLOW, network_context.get());
 
   RunRequestToCompletion(std::move(network_context), std::move(params),
-                         request);
+                         std::move(request));
 
   if (permissions_policy_matches_all_origins()) {
     EXPECT_THAT(most_recent_request_headers(),
@@ -11867,7 +11867,7 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_Active) {
       ContentSetting::CONTENT_SETTING_ALLOW, network_context.get());
 
   RunRequestToCompletion(std::move(network_context), std::move(params),
-                         request);
+                         std::move(request));
 
   EXPECT_THAT(most_recent_request_headers(),
               ElementsAre(Contains(Pair(kSecFetchStorageAccess, "active"))));
@@ -11927,7 +11927,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RetryAfterInactive) {
       ContentSetting::CONTENT_SETTING_ALLOW, network_context.get());
 
   RunRequestToCompletion(std::move(network_context), std::move(params),
-                         request);
+                         std::move(request));
 
   if (permissions_policy_matches_all_origins()) {
     EXPECT_THAT(
