@@ -20,6 +20,7 @@
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
@@ -261,9 +262,23 @@ TEST_F(SaveCardBottomSheetMediatorTest, SetConsumer) {
 }
 
 // Test that mediator provides logoType and logoAccessibilityLabel as a data
-// source for upload save bottomsheet.
+// source for upload save bottomsheet with Wallet branding.
 TEST_F(SaveCardBottomSheetMediatorTest, DataSource) {
-  EXPECT_EQ(kGooglePayLogo, mediator_.logoType);
+  base::test::ScopedFeatureList feature_list(
+      autofill::features::kAutofillEnableWalletBranding);
+  EXPECT_EQ(kGoogleWalletLogo, mediator_.logoType);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)),
+              mediator_.logoAccessibilityLabel);
+}
+
+// Test that mediator provides logoType and logoAccessibilityLabel as a data
+// source for upload save bottomsheet.
+TEST_F(SaveCardBottomSheetMediatorTest, DataSource_BrandingFlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableWalletBranding);
+  EXPECT_EQ(kGoogleWalletLogo, mediator_.logoType);
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)),
               mediator_.logoAccessibilityLabel);
