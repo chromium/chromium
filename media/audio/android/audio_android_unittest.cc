@@ -221,74 +221,6 @@ class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
   MOCK_METHOD0(OnError, void());
 };
 
-// Implements AudioOutputStream::AudioSourceCallback and provides audio data
-// by reading from a data file.
-class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
- public:
-  explicit FileAudioSource(base::WaitableEvent* event, const std::string& name)
-      : event_(event) {
-    // Reads a test file from media/test/data directory and stores it in
-    // a DecoderBuffer.
-    file_ = ReadTestDataFile(name);
-
-    // Log the name of the file which is used as input for this test.
-    base::FilePath file_path = GetTestDataFilePath(name);
-    DVLOG(0) << "Reading from file: " << file_path.value().c_str();
-  }
-
-  FileAudioSource(const FileAudioSource&) = delete;
-  FileAudioSource& operator=(const FileAudioSource&) = delete;
-
-  ~FileAudioSource() override {}
-
-  // AudioOutputStream::AudioSourceCallback implementation.
-
-  // Use samples read from a data file and fill up the audio buffer
-  // provided to us in the callback.
-  int OnMoreData(base::TimeDelta /* delay */,
-                 base::TimeTicks /* delay_timestamp */,
-                 const AudioGlitchInfo& /* glitch_info */,
-                 AudioBus* dest) override {
-    bool stop_playing = false;
-    size_t max_size = dest->frames() * dest->channels() * kBytesPerSample;
-
-    // Adjust data size and prepare for end signal if file has ended.
-    if (pos_ + max_size > file_size()) {
-      stop_playing = true;
-      max_size = file_size() - pos_;
-    }
-
-    // File data is stored as interleaved 16-bit values. Copy data samples from
-    // the file and deinterleave to match the audio bus format.
-    // FromInterleaved() will zero out any unfilled frames when there is not
-    // sufficient data remaining in the file to fill up the complete frame.
-    size_t frames = max_size / (dest->channels() * kBytesPerSample);
-    if (max_size) {
-      auto* source = reinterpret_cast<const int16_t*>(
-          base::span<const uint8_t>(*file_).subspan(pos_).data());
-      dest->FromInterleaved<SignedInt16SampleTypeTraits>(
-          source, base::checked_cast<int>(frames));
-      pos_ += max_size;
-    }
-
-    // Set event to ensure that the test can stop when the file has ended.
-    if (stop_playing) {
-      event_->Signal();
-    }
-
-    return frames;
-  }
-
-  void OnError(ErrorType type) override {}
-
-  size_t file_size() const { return file_->size(); }
-
- private:
-  raw_ptr<base::WaitableEvent> event_;
-  size_t pos_ = 0;
-  scoped_refptr<DecoderBuffer> file_;
-};
-
 // Implements AudioInputStream::AudioInputCallback and writes the recorded
 // audio data to a local output file. Note that this implementation should
 // only be used for manually invoked and evaluated tests, hence the created
@@ -343,8 +275,7 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
               const AudioGlitchInfo& glitch_info) override {
     const int num_samples = src->frames() * src->channels();
     auto interleaved = base::HeapArray<int16_t>::Uninit(num_samples);
-    src->ToInterleaved<SignedInt16SampleTypeTraits>(src->frames(),
-                                                    interleaved.data());
+    src->ToInterleaved<SignedInt16SampleTypeTraits>(interleaved);
 
     // Store data data in a temporary buffer to avoid making blocking
     // fwrite() calls in the audio callback. The complete buffer will be
@@ -396,8 +327,7 @@ class FullDuplexAudioSinkSource
 
     const int num_samples = src->frames() * src->channels();
     auto interleaved = base::HeapArray<int16_t>::Uninit(num_samples);
-    src->ToInterleaved<SignedInt16SampleTypeTraits>(src->frames(),
-                                                    interleaved.data());
+    src->ToInterleaved<SignedInt16SampleTypeTraits>(interleaved);
 
     const auto byte_span = base::as_bytes(interleaved.as_span());
     base::AutoLock lock(lock_);
@@ -453,9 +383,8 @@ class FullDuplexAudioSinkSource
     if (fifo_->forward_bytes() < size_in_bytes) {
       dest->Zero();
     } else {
-      fifo_->Read(buffer_.subspan(size_in_bytes));
-      dest->FromInterleaved<SignedInt16SampleTypeTraits>(
-          reinterpret_cast<int16_t*>(buffer_.data()), dest->frames());
+      fifo_->Read(buffer_.first(size_in_bytes));
+      dest->FromInterleavedBytes<SignedInt16SampleTypeTraits>(buffer_);
     }
 
     return dest->frames();
