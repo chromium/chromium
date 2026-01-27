@@ -37,6 +37,8 @@ class CORE_EXPORT AgentClusterKey {
   static AgentClusterKey CreateOriginKeyed(
       scoped_refptr<const SecurityOrigin> origin);
 
+  static AgentClusterKey CreateUniversalFileAgent();
+
   // Cross-origin isolated agent clusters have an additional isolation key that
   // tracks the origin that enabled cross-origin isolation.
   // https://wicg.github.io/document-isolation-policy/#coi-agent-cluster-key
@@ -81,6 +83,10 @@ class CORE_EXPORT AgentClusterKey {
   bool IsSiteKeyed() const;
   bool IsOriginKeyed() const;
 
+  // Whether the Agent Cluster is the universal file AgentCluster, shared
+  // between all file URLs.
+  bool IsUniversalFileAgent() const;
+
   // Returns the origin or URL that keys the AgentClusterKey. Note that the
   // the functions should only be used if the AgentClusterKey is origin-keyed or
   // site-keyed respectively.
@@ -95,6 +101,11 @@ class CORE_EXPORT AgentClusterKey {
 
  private:
   friend class WebAgentClusterKey;
+
+  // Marker for the universal file agent.
+  struct File {
+    bool operator==(const File& b) const;
+  };
 
   // Tombstone markers for `blink::HashTraits`.
   struct Empty {
@@ -115,6 +126,7 @@ class CORE_EXPORT AgentClusterKey {
   explicit AgentClusterKey(const OriginKey& origin_key);
   explicit AgentClusterKey(Empty);
   explicit AgentClusterKey(Deleted);
+  explicit AgentClusterKey(File);
 
   // The origin or site URL that all execution contexts in the agent cluster
   // must share. By default, this is a site URL and the agent cluster is
@@ -135,7 +147,7 @@ class CORE_EXPORT AgentClusterKey {
   // with extra-capabilities in an agent cluster with the appropriate
   // cross-origin isolation status. Setting the cross-origin isolation key to
   // nullopt means that the AgentClusterKey is not cross-origin isolated.
-  std::variant<KURL, OriginKey, Empty, Deleted> key_;
+  std::variant<KURL, OriginKey, Empty, Deleted, File> key_;
 };
 
 template <>
@@ -163,6 +175,9 @@ struct HashTraits<AgentClusterKey> : GenericHashTraits<AgentClusterKey> {
     }
     if (agent_cluster_key.IsDeleted(PassKey())) {
       key_status |= (1 << 2);
+    }
+    if (agent_cluster_key.IsUniversalFileAgent()) {
+      key_status |= (1 << 3);
     }
     unsigned hash_codes[] = {
         key_status,

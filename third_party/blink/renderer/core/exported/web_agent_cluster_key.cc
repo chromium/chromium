@@ -36,6 +36,11 @@ WebAgentClusterKey::WebAgentClusterKey(const AgentClusterKey& key)
                     .origin = origin_key.origin,
                 };
               },
+              [](const AgentClusterKey::File& file) -> decltype(key_) {
+                // This is the universal file AgentClusterKey, which is a blink
+                // internal. Return a site-keyed key with a default file URL.
+                return WebURL(KURL("file:///"));
+              },
               [](const auto&) -> decltype(key_) { NOTREACHED(); },
           },
           key.key_)) {}

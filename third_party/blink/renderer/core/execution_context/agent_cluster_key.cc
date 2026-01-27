@@ -24,6 +24,11 @@ AgentClusterKey AgentClusterKey::CreateOriginKeyed(
       OriginKey{.origin = std::move(origin), .isolation_key = std::nullopt});
 }
 
+// static
+AgentClusterKey AgentClusterKey::CreateUniversalFileAgent() {
+  return AgentClusterKey(File());
+}
+
 AgentClusterKey::CrossOriginIsolationKey::CrossOriginIsolationKey(
     scoped_refptr<const SecurityOrigin> common_origin,
     mojom::blink::CrossOriginIsolationMode mode)
@@ -69,6 +74,10 @@ bool AgentClusterKey::IsOriginKeyed() const {
   return std::holds_alternative<OriginKey>(key_);
 }
 
+bool AgentClusterKey::IsUniversalFileAgent() const {
+  return std::holds_alternative<File>(key_);
+}
+
 const AgentClusterKey::CrossOriginIsolationKey*
 AgentClusterKey::GetCrossOriginIsolationKey() const {
   if (!IsOriginKeyed()) {
@@ -85,6 +94,10 @@ AgentClusterKey::GetCrossOriginIsolationKey() const {
 }
 
 bool AgentClusterKey::operator==(const AgentClusterKey& b) const = default;
+
+bool AgentClusterKey::File::operator==(const AgentClusterKey::File& b) const {
+  return true;
+}
 
 bool AgentClusterKey::Empty::operator==(const AgentClusterKey::Empty& b) const {
   return true;
@@ -110,5 +123,6 @@ AgentClusterKey::AgentClusterKey(const OriginKey& origin_key)
 
 AgentClusterKey::AgentClusterKey(Empty empty) : key_(empty) {}
 AgentClusterKey::AgentClusterKey(Deleted deleted) : key_(deleted) {}
+AgentClusterKey::AgentClusterKey(File file) : key_(file) {}
 
 }  // namespace blink

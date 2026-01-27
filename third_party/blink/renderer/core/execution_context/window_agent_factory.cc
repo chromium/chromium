@@ -31,22 +31,9 @@ WindowAgent* WindowAgentFactory::GetAgentForAgentClusterKey(
     return universal_access_agent_.Get();
   }
 
-  scoped_refptr<const SecurityOrigin> origin =
-      agent_cluster_key.IsOriginKeyed()
-          ? scoped_refptr<const SecurityOrigin>(agent_cluster_key.GetOrigin())
-          : SecurityOrigin::Create(agent_cluster_key.GetURL());
-
   // For `file:` scheme origins.
-  if (origin->IsLocal()) {
+  if (agent_cluster_key.IsUniversalFileAgent()) {
     if (!file_url_agent_) {
-      // We create the |file_url_agent_| with the passed AgentClusterKey as it
-      // ensures that any document created by a document using the
-      // |file_url_agent_| will be inherit an AgentClusterKey with a local
-      // origin, which will allow to put it in the |file_url_agent_|. Do note
-      // that because the |file_url_agent_| is shared by all local origins,
-      // there can be a discrepency between the origin recorded in the
-      // AgentClusterKey of the |file_url_agent_| and that of the documents that
-      // use it.
       file_url_agent_ = MakeGarbageCollected<WindowAgent>(
           *agent_group_scheduler_, agent_cluster_key);
     }
@@ -57,6 +44,10 @@ WindowAgent* WindowAgentFactory::GetAgentForAgentClusterKey(
 
   // All chrome extensions need to share the same agent because they can
   // access each other's windows directly.
+  scoped_refptr<const SecurityOrigin> origin =
+      agent_cluster_key.IsOriginKeyed()
+          ? scoped_refptr<const SecurityOrigin>(agent_cluster_key.GetOrigin())
+          : SecurityOrigin::Create(agent_cluster_key.GetURL());
   if (CommonSchemeRegistry::IsExtensionScheme(origin->Protocol().Ascii())) {
     using AgentsMapHolder = DisallowNewWrapper<AgentsMap>;
     DEFINE_STATIC_LOCAL(Persistent<AgentsMapHolder>, static_agents_map,

@@ -2637,14 +2637,10 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // In this case we either have AllowUniversalAccessFromFileURLs enabled, or
     // WebSecurity is disabled, or it's a local scheme such as file://; any of
     // these cases forces us to use a common WindowAgent for all origins, so
-    // don't attempt to pass the AgentClusterKey sent from the browser. Instead
-    // recreate a site-keyed one based on the SecurityOrigin. For file URLs,
-    // this will be picked up by the WindowAgentFactory to assign the common
-    // file WindowAgent. Note:
+    // don't attempt to pass the AgentClusterKey sent from the browser. Note:
     // AllowUniversalAccessFromFileURLs is deprecated as of Android R, so
     // eventually this use case will diminish.
-    agent_cluster_key =
-        AgentClusterKey::CreateSiteKeyed(KURL(security_origin->ToString()));
+    agent_cluster_key = AgentClusterKey::CreateUniversalFileAgent();
   } else if (ShouldInheritAgentClusterKey(Url(), commit_reason_) &&
              owner_document && owner_document->domWindow()) {
     // Since we're inheriting the owner document's origin, we should also use
