@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/safety_checks.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
@@ -672,6 +673,10 @@ gfx::Size OmniboxViewViews::GetMinimumSize() const {
 }
 
 void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
+  // The metric below is a critical user journey to avoid impact we exclude
+  // free-d memory from additional safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   if (latency_histogram_state_ == LatencyHistogramState::kCharTyped) {
     DCHECK(!insert_char_time_.is_null());
     const auto now = base::TimeTicks::Now();
@@ -1823,6 +1828,10 @@ std::u16string OmniboxViewViews::GetSelectionClipboardText() const {
 }
 
 void OmniboxViewViews::DoInsertChar(char16_t ch) {
+  // `insert_char_time_` is part of a critical user journey, to avoid impact we
+  // exclude free-d memory from additional safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   // When the fakebox is focused, ignore whitespace input because if the
   // fakebox is hidden and there's only whitespace in the omnibox, it's
   // difficult for the user to see that the focus moved to the omnibox.
@@ -1960,6 +1969,10 @@ void OmniboxViewViews::ContentsChanged(views::Textfield* sender,
 
 bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
                                       const ui::KeyEvent& event) {
+  // Typing in the Omnibox is a critical user journey to avoid impact on this we
+  // exclude free-d memory from additional safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   PermitExternalProtocolHandler();
 
   if (event.type() == ui::EventType::kKeyReleased) {
