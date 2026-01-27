@@ -291,8 +291,12 @@ void BrowserPolicyConnectorAsh::Init(
   minimum_version_policy_handler_delegate_ =
       std::make_unique<MinimumVersionPolicyHandlerDelegateImpl>();
 
+  // TODO(crbug.com/404133022): Avoid using g_browser_process.
+  BuildState* build_state = g_browser_process->GetBuildState();
+
   minimum_version_policy_handler_ =
       std::make_unique<MinimumVersionPolicyHandler>(
+          local_state, build_state, this,
           minimum_version_policy_handler_delegate_.get(),
           ash::CrosSettings::Get());
 

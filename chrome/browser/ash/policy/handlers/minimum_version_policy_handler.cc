@@ -23,8 +23,6 @@
 #include "chrome/browser/ash/notifications/update_required_notification.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -48,10 +46,6 @@ using MinimumVersionRequirement =
 
 const int kOneWeekEolNotificationInDays = 7;
 
-PrefService* local_state() {
-  return g_browser_process->local_state();
-}
-
 MinimumVersionPolicyHandler::NetworkStatus GetCurrentNetworkStatus() {
   ash::NetworkStateHandler* network_state_handler =
       ash::NetworkHandler::Get()->network_state_handler();
@@ -70,16 +64,6 @@ void OpenNetworkSettings() {
 
 void OpenEnterpriseInfoPage() {
   SystemTrayClientImpl::Get()->ShowEnterpriseInfo();
-}
-
-std::string GetEnterpriseManager() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetEnterpriseDomainManager();
-}
-
-BuildState* GetBuildState() {
-  return g_browser_process->GetBuildState();
 }
 
 int GetDaysRounded(base::TimeDelta time) {
@@ -150,9 +134,15 @@ int MinimumVersionRequirement::Compare(
 }
 
 MinimumVersionPolicyHandler::MinimumVersionPolicyHandler(
+    PrefService* local_state,
+    BuildState* build_state,
+    BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     Delegate* delegate,
     ash::CrosSettings* cros_settings)
-    : delegate_(delegate),
+    : local_state_(CHECK_DEREF(local_state)),
+      build_state_(CHECK_DEREF(build_state)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      delegate_(delegate),
       cros_settings_(cros_settings),
       clock_(base::DefaultClock::GetInstance()) {
   policy_subscription_ = cros_settings_->AddSettingsObserver(
@@ -165,7 +155,7 @@ MinimumVersionPolicyHandler::MinimumVersionPolicyHandler(
 }
 
 MinimumVersionPolicyHandler::~MinimumVersionPolicyHandler() {
-  GetBuildState()->RemoveObserver(this);
+  build_state_->RemoveObserver(this);
   StopObservingNetwork();
   UpdateEngineClient::Get()->RemoveObserver(this);
 }
@@ -208,12 +198,8 @@ bool MinimumVersionPolicyHandler::IsDeadlineTimerRunningForTesting() const {
 }
 
 bool MinimumVersionPolicyHandler::IsPolicyApplicable() {
-  // TODO(crbug.com/404133022): Avoid using g_browser_process.
-  const PrefService& local_state =
-      CHECK_DEREF(g_browser_process->local_state());
-
   bool device_managed = delegate_->IsDeviceEnterpriseManaged();
-  bool is_kiosk = delegate_->IsKioskMode(local_state);
+  bool is_kiosk = delegate_->IsKioskMode(local_state_.get());
   return device_managed && !is_kiosk;
 }
 
@@ -306,7 +292,7 @@ void MinimumVersionPolicyHandler::Reset() {
   update_required_time_ = base::Time();
   update_required_deadline_timer_.Stop();
   notification_timer_.Stop();
-  GetBuildState()->RemoveObserver(this);
+  build_state_->RemoveObserver(this);
   state_.reset();
   HideNotification();
   notification_handler_.reset();
@@ -317,7 +303,7 @@ void MinimumVersionPolicyHandler::Reset() {
 void MinimumVersionPolicyHandler::ResetOnUpdateCompleted() {
   update_required_deadline_timer_.Stop();
   notification_timer_.Stop();
-  GetBuildState()->RemoveObserver(this);
+  build_state_->RemoveObserver(this);
   HideNotification();
   notification_handler_.reset();
 }
@@ -354,9 +340,9 @@ void MinimumVersionPolicyHandler::OnFetchEolInfo(
 void MinimumVersionPolicyHandler::HandleUpdateRequired(
     base::TimeDelta warning_time) {
   const base::Time stored_timer_start_time =
-      local_state()->GetTime(prefs::kUpdateRequiredTimerStartTime);
+      local_state_->GetTime(prefs::kUpdateRequiredTimerStartTime);
   const base::TimeDelta stored_warning_time =
-      local_state()->GetTimeDelta(prefs::kUpdateRequiredWarningPeriod);
+      local_state_->GetTimeDelta(prefs::kUpdateRequiredWarningPeriod);
   base::Time previous_deadline = stored_timer_start_time + stored_warning_time;
 
   // If update is already required, use the existing timer start time to
@@ -414,7 +400,7 @@ void MinimumVersionPolicyHandler::HandleUpdateRequired(
 
   // The device has already downloaded the update in-session and waiting for
   // reboot to apply it.
-  if (GetBuildState()->update_type() == BuildState::UpdateType::kNormalUpdate) {
+  if (build_state_->update_type() == BuildState::UpdateType::kNormalUpdate) {
     OverrideRelaunchNotification(update_required_deadline_);
     DLOG(WARNING) << "Update is already installed.";
     return;
@@ -427,21 +413,20 @@ void MinimumVersionPolicyHandler::HandleUpdateRequired(
 }
 
 void MinimumVersionPolicyHandler::ResetLocalState() {
-  local_state()->ClearPref(prefs::kUpdateRequiredTimerStartTime);
-  local_state()->ClearPref(prefs::kUpdateRequiredWarningPeriod);
+  local_state_->ClearPref(prefs::kUpdateRequiredTimerStartTime);
+  local_state_->ClearPref(prefs::kUpdateRequiredWarningPeriod);
 }
 
 void MinimumVersionPolicyHandler::UpdateLocalState(
     base::TimeDelta warning_time) {
   base::Time timer_start_time =
-      local_state()->GetTime(prefs::kUpdateRequiredTimerStartTime);
+      local_state_->GetTime(prefs::kUpdateRequiredTimerStartTime);
   if (timer_start_time.is_null()) {
-    local_state()->SetTime(prefs::kUpdateRequiredTimerStartTime,
-                           update_required_time_);
+    local_state_->SetTime(prefs::kUpdateRequiredTimerStartTime,
+                          update_required_time_);
   }
-  local_state()->SetTimeDelta(prefs::kUpdateRequiredWarningPeriod,
-                              warning_time);
-  local_state()->CommitPendingWrite();
+  local_state_->SetTimeDelta(prefs::kUpdateRequiredWarningPeriod, warning_time);
+  local_state_->CommitPendingWrite();
 }
 
 void MinimumVersionPolicyHandler::StartDeadlineTimer(base::Time deadline) {
@@ -454,9 +439,9 @@ void MinimumVersionPolicyHandler::StartDeadlineTimer(base::Time deadline) {
 }
 
 void MinimumVersionPolicyHandler::StartObservingUpdate() {
-  auto* build_state = GetBuildState();
-  if (!build_state->HasObserver(this))
-    build_state->AddObserver(this);
+  if (!build_state_->HasObserver(this)) {
+    build_state_->AddObserver(this);
+  }
 }
 
 std::optional<int> MinimumVersionPolicyHandler::GetTimeRemainingInDays() {
@@ -490,7 +475,8 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
 
   NotificationType type = NotificationType::kNoConnection;
   base::OnceClosure button_click_callback;
-  std::string manager = GetEnterpriseManager();
+  std::string manager =
+      browser_policy_connector_ash_->GetEnterpriseDomainManager();
   std::u16string device_type = ui::GetChromeOSDeviceName();
   auto close_callback =
       base::BindOnce(&MinimumVersionPolicyHandler::StopObservingNetwork,
@@ -555,12 +541,14 @@ void MinimumVersionPolicyHandler::ShowAndScheduleNotification(
 }
 
 void MinimumVersionPolicyHandler::OnUpdate(const BuildState* build_state) {
+  CHECK_EQ(&build_state_.get(), build_state);
+
   // If the device has been successfully updated, the relaunch notifications
   // will reboot it for applying the updates.
   VLOG(1) << "Update installed successfully at " << clock_->Now()
           << " with deadline " << update_required_deadline_;
   UpdateEngineClient::Get()->RemoveObserver(this);
-  if (build_state->update_type() == BuildState::UpdateType::kNormalUpdate) {
+  if (build_state_->update_type() == BuildState::UpdateType::kNormalUpdate) {
     ResetOnUpdateCompleted();
     OverrideRelaunchNotification(update_required_deadline_);
   }

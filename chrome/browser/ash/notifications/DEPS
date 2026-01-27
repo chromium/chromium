@@ -46,4 +46,7 @@ specific_include_rules = {
     "+chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h",
     "+chrome/browser/prefs/browser_prefs.h",
   ],
+  "update_required_notification_unittest\\.cc": [
+    "+chrome/browser/browser_process_platform_part.h",
+  ]
 }

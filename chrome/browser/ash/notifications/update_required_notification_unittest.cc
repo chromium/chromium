@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -141,6 +142,11 @@ void UpdateRequiredNotificationTest::TearDown() {
 void UpdateRequiredNotificationTest::CreateMinimumVersionHandler() {
   minimum_version_policy_handler_ =
       std::make_unique<policy::MinimumVersionPolicyHandler>(
+          TestingBrowserProcess::GetGlobal()->local_state(),
+          TestingBrowserProcess::GetGlobal()->GetBuildState(),
+          TestingBrowserProcess::GetGlobal()
+              ->platform_part()
+              ->browser_policy_connector_ash(),
           this, CrosSettings::Get());
 }
 
