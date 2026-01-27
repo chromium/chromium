@@ -177,6 +177,7 @@ TEST_P(BackingStoreTest, Snapshots) {
                                         IndexedDBKeyPath(u"object_store_key"),
                                         /*auto_increment=*/true)
                     .ok());
+    EXPECT_TRUE(transaction->SetDatabaseVersion(2).ok());
     CommitTransactionAndVerify(*transaction);
   }
 
@@ -256,6 +257,8 @@ TEST_P(BackingStoreTest, Snapshots) {
   // actually omitted from the debug string due to being a binary, but even if
   // we were to encode it as a string (e.g. with base64), this check would pass.
   EXPECT_EQ(snapshot6->DebugString().size(), snapshot5->DebugString().size());
+
+  VerifyClone(db);
 
   // Delete all records and verify the snapshot works, and is distinct from the
   // one for a database that lacks object stores/indices.

@@ -31,6 +31,13 @@ namespace content::indexed_db {
 CONTENT_EXPORT StatusOr<base::DictValue> SnapshotDatabase(
     BackingStore::Database& db);
 
+// Writes the contents of `source_db` into `target_db`, to be used for database
+// migration from LevelDB to SQLite. It does NOT lock either database, so it is
+// up to callers to ensure the DBs are not otherwise in use.
+// TODO(crbug.com/419264073): this doesn't yet handle errors or blobs.
+CONTENT_EXPORT void CloneDatabase(BackingStore::Database& source_db,
+                                  BackingStore::Database& target_db);
+
 }  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_BACKING_STORE_UTIL_H_

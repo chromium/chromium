@@ -218,7 +218,10 @@ BucketContext::BucketContext(
           base::trace_event::MemoryDumpProvider::Options());
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketContext::OnReceiverDisconnected, base::Unretained(this)));
-  should_use_sqlite_ = content::indexed_db::ShouldUseSqlite(in_memory());
+
+  // It's intentional that this is lazily initialized, which should not happen
+  // until the caller has had a chance to override it.
+  CHECK(!should_use_sqlite_.has_value());
 }
 
 BucketContext::~BucketContext() {
@@ -452,6 +455,13 @@ void BucketContext::CreateAllExternalObjects(
       }
     }
   }
+}
+
+bool BucketContext::ShouldUseSqlite() {
+  if (!should_use_sqlite_) {
+    should_use_sqlite_ = content::indexed_db::ShouldUseSqlite(in_memory());
+  }
+  return *should_use_sqlite_;
 }
 
 void BucketContext::QueueRunTasks() {
@@ -853,6 +863,11 @@ BucketContext::OverrideShouldUseSqliteForTesting(bool use_sqlite) {
   base::AutoReset<std::optional<bool>> scoped_override(
       &g_should_use_sqlite_for_testing, use_sqlite);
   return scoped_override;
+}
+
+void BucketContext::SetShouldUseSqliteForTesting(bool use_sqlite) {
+  CHECK(!should_use_sqlite_.has_value());
+  should_use_sqlite_ = use_sqlite;
 }
 
 // static

@@ -38,6 +38,10 @@ class BackingStoreTestBase : public testing::Test {
 
   void CreateFactoryAndBackingStore();
 
+  std::unique_ptr<BucketContext> CreateBucketContext(
+      bool use_sqlite,
+      const base::FilePath& data_path);
+
   void UpdateDatabaseVersion(indexed_db::BackingStore::Database& db,
                              int64_t version);
 
@@ -55,6 +59,9 @@ class BackingStoreTestBase : public testing::Test {
   std::vector<PartitionedLock> CreateDummyLock();
 
   void DestroyFactoryAndBackingStore();
+
+  // Clones the give database and attempts to verify the cloning worked.
+  void VerifyClone(BackingStore::Database& db);
 
   BackingStore* backing_store();
 
@@ -93,7 +100,7 @@ class BackingStoreTestBase : public testing::Test {
   raw_ptr<BackingStore> backing_store_ = nullptr;
 
  private:
-  base::AutoReset<std::optional<bool>> sqlite_override_;
+  bool use_sqlite_;
 };
 
 class BackingStoreWithExternalObjectsTestBase : public BackingStoreTestBase {

@@ -153,7 +153,8 @@ class CONTENT_EXPORT BucketContext
       const base::FilePath& data_path);
 
   // All `BucketContext` instances created during the lifetime of the returned
-  // object will use SQLite iff `use_sqlite` is true.
+  // object will use SQLite iff `use_sqlite` is true, unless overridden for a
+  // specific instance with `set_should_use_sqlite_for_testing()`.
   static base::AutoReset<std::optional<bool>> OverrideShouldUseSqliteForTesting(
       bool use_sqlite);
 
@@ -161,7 +162,7 @@ class CONTENT_EXPORT BucketContext
   // crbug.com/340398745.
   static void InsertTeardownStepForTesting(base::OnceClosure on_teardown);
 
-  bool ShouldUseSqlite() const { return should_use_sqlite_; }
+  bool ShouldUseSqlite();
 
   void QueueRunTasks();
 
@@ -318,6 +319,10 @@ class CONTENT_EXPORT BucketContext
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, BucketSpaceDecay);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, MetadataRecordingStateHistory);
 
+  // Overrides the backing store type for this instance only. Must be called
+  // right after object construction.
+  void SetShouldUseSqliteForTesting(bool use_sqlite);
+
   // The data structure that stores everything bound to the receiver. This will
   // be stored together with the receiver in the `mojo::ReceiverSet`.
   struct ReceiverContext {
@@ -390,8 +395,10 @@ class CONTENT_EXPORT BucketContext
   // Base directory for blobs and backing store files.
   const base::FilePath data_path_;
 
-  // True if the backing store is SQLite, or would be SQLite if it existed.
-  bool should_use_sqlite_ = false;
+  // True if the backing store is SQLite, or would be SQLite if it existed. This
+  // is lazily initialized based on flag state, or overridden with
+  // `set_should_use_sqlite_for_testing()`.
+  std::optional<bool> should_use_sqlite_;
 
   // True if there are blobs referencing this backing store that are still
   // alive. This is used as closing criteria for this object, see CanClose.
