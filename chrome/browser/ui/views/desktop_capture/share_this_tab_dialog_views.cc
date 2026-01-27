@@ -188,11 +188,13 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   // Make sure web modal dialogs are supported before trying to show the picker
   // as a web model dialog.
   if (MediaPickerCanShowAsWebModal(params.web_contents)) {
-    const Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
     // Close the extension popup to prevent spoofing.
-    if (browser && browser->window() &&
-        browser->window()->GetExtensionsContainer()) {
-      browser->window()->GetExtensionsContainer()->HideActivePopup();
+    if (browser) {
+      ExtensionsContainer* container = ExtensionsContainer::From(*browser);
+      if (container) {
+        container->HideActivePopup();
+      }
     }
     constrained_window::ShowWebModalDialogViews(this, params.web_contents);
   } else {

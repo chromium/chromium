@@ -43,7 +43,6 @@ class Browser;
 class BrowserView;
 class DownloadBubbleUIController;
 class ExclusiveAccessContext;
-class ExtensionsContainer;
 class FindBar;
 class GURL;
 class LocationBar;
@@ -346,9 +345,6 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Focuses the toolbar (for accessibility).
   virtual void FocusToolbar() = 0;
-
-  // Returns the ExtensionsContainer associated with the window, if any.
-  virtual ExtensionsContainer* GetExtensionsContainer() = 0;
 
   // Called from toolbar subviews during their show/hide animations.
   virtual void ToolbarSizeChanged(bool is_animating) = 0;

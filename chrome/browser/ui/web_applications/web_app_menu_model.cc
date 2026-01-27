@@ -104,7 +104,7 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
           webapps::WebappUninstallSource::kAppMenu);
       break;
     case kExtensionsMenuCommandId:
-      browser()->window()->GetExtensionsContainer()->ToggleExtensionsMenu();
+      ExtensionsContainer::From(*browser())->ToggleExtensionsMenu();
       break;
     case IDC_OPEN_IN_CHROME:
       if (ShouldAllowOpenInChrome(browser())) {
@@ -178,10 +178,10 @@ void WebAppMenuModel::Build() {
 
   AddSeparator(ui::NORMAL_SEPARATOR);
 
+  ExtensionsContainer* container = ExtensionsContainer::From(*browser());
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsElidedExtensionsMenu) &&
-      browser()->window()->GetExtensionsContainer() &&
-      browser()->window()->GetExtensionsContainer()->HasAnyExtensions() &&
+      container && container->HasAnyExtensions() &&
       // Extensions are not supported inside Isolated Web Apps.
       !is_isolated_web_app) {
     AddItemWithStringIdAndVectorIcon(this, kExtensionsMenuCommandId,

@@ -2340,12 +2340,6 @@ void BrowserView::FocusToolbar() {
   toolbar_button_provider_->FocusToolbar();
 }
 
-ExtensionsContainer* BrowserView::GetExtensionsContainer() {
-  ExtensionsToolbarDesktop* container =
-      toolbar_button_provider_->GetExtensionsToolbarDesktop();
-  return container ? container->GetToolbarViewModel() : nullptr;
-}
-
 void BrowserView::ToolbarSizeChanged(bool is_animating) {
   // No need to re-layout if the browser has already closed. This is unnecessary
   // and dangerous. For tab modal, its modal dialog manager have already gone.

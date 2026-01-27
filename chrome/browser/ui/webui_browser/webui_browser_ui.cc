@@ -217,7 +217,7 @@ void WebUIBrowserUI::CreatePageHandler(
     mojo::PendingRemote<extensions_bar::mojom::Page> page,
     mojo::PendingReceiver<extensions_bar::mojom::PageHandler> receiver) {
   static_cast<WebUIBrowserExtensionsContainer*>(
-      browser_window()->GetExtensionsContainer())
+      ExtensionsContainer::From(*browser()))
       ->Bind(std::move(page), std::move(receiver));
 }
 

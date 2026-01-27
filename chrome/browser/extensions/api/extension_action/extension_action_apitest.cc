@@ -683,7 +683,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   ASSERT_TRUE(extension);
 
   ExtensionsContainer* extensions_container =
-      browser()->window()->GetExtensionsContainer();
+      ExtensionsContainer::From(*browser());
   ASSERT_TRUE(extensions_container);
   ToolbarActionViewModel* model =
       extensions_container->GetActionForId(extension->id());

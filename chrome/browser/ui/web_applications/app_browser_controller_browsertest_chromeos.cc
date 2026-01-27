@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -366,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
                        NoExtensionsContainerExists) {
   InstallAndLaunchMockPopup();
-  EXPECT_EQ(app_browser_->window()->GetExtensionsContainer(), nullptr);
+  EXPECT_EQ(ExtensionsContainer::From(*app_browser_), nullptr);
 }
 
 class AppBrowserControllerChromeUntrustedBrowserTest

@@ -93,7 +93,7 @@ bool OpenPopupInBrowser(Browser& browser,
   }
 
   ExtensionsContainer* extensions_container =
-      browser.window()->GetExtensionsContainer();
+      ExtensionsContainer::From(browser);
   // The ExtensionsContainer could be null if, e.g., this is a popup window with
   // no toolbar.
   // TODO(devlin): Is that still possible, given the checks above?

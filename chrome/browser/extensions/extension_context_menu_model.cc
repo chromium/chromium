@@ -650,10 +650,7 @@ void ExtensionContextMenuModel::MenuClosed(ui::SimpleMenuModel* menu) {
 #if !BUILDFLAG(IS_ANDROID)
     if (source_ == ContextMenuSource::kMenuItem &&
         was_side_panel_action_taken) {
-      browser_->GetBrowserForMigrationOnly()
-          ->window()
-          ->GetExtensionsContainer()
-          ->CloseOverflowMenuIfOpen();
+      ExtensionsContainer::From(*browser_)->CloseOverflowMenuIfOpen();
       // WARNING: The overflow menu was the parent for this menu, so it's
       // possible `this` is now deleted.
     }

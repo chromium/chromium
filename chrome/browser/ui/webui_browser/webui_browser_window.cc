@@ -739,10 +739,6 @@ void WebUIBrowserWindow::FocusToolbar() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-ExtensionsContainer* WebUIBrowserWindow::GetExtensionsContainer() {
-  return extensions_container_.get();
-}
-
 void WebUIBrowserWindow::ToolbarSizeChanged(bool is_animating) {
   NOTIMPLEMENTED_LOG_ONCE();
 }

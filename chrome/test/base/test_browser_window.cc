@@ -242,10 +242,6 @@ autofill::AutofillBubbleHandler* TestBrowserWindow::GetAutofillBubbleHandler() {
   return &autofill_bubble_handler_;
 }
 
-ExtensionsContainer* TestBrowserWindow::GetExtensionsContainer() {
-  return nullptr;
-}
-
 content::KeyboardEventProcessingResult
 TestBrowserWindow::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
