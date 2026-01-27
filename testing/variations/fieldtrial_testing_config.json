@@ -16326,6 +16326,33 @@
             ]
         }
     ],
+    "MemoryReducerGcCount": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "compaction_max_evacuated_bytes_mb_for_reduce_memory": "36",
+                        "compaction_target_fragmentation_percent_for_reduce_memory": "20",
+                        "memory_reducer_gc_count": "1"
+                    },
+                    "enable_features": [
+                        "V8Flag_memory_reducer"
+                    ]
+                }
+            ]
+        }
+    ],
     "MessagesPreinstall": [
         {
             "platforms": [

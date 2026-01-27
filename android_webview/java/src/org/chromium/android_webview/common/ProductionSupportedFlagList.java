@@ -644,6 +644,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8Flag_new_old_generation_heap_size"),
         Flag.baseFeature("V8Flag_trim_descriptor_arrays_in_gc"),
         Flag.baseFeature("V8Flag_trim_descriptor_arrays_in_gc_with_stack"),
+        Flag.baseFeature("V8Flag_memory_reducer"),
         Flag.baseFeature("V8FlushBaselineCode"),
         Flag.baseFeature("V8FlushCodeBasedOnTabVisibility"),
         Flag.baseFeature("V8FlushCodeBasedOnTime"),
