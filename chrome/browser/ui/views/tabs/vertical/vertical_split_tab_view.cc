@@ -41,14 +41,9 @@ VerticalSplitTabView::VerticalSplitTabView(TabCollectionNode* collection_node)
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalSplitTabView::ResetCollectionNode, base::Unretained(this)));
-  data_changed_subscription_ =
-      collection_node_->RegisterDataChangedCallback(base::BindRepeating(
-          &VerticalSplitTabView::OnDataChanged, base::Unretained(this)));
 
   // Ensures this view gets mouse events as well its children.
   SetNotifyEnterExitOnChild(true);
-
-  OnDataChanged();
 }
 
 VerticalSplitTabView::~VerticalSplitTabView() = default;
@@ -62,6 +57,8 @@ void VerticalSplitTabView::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &VerticalSplitTabView::UpdateBorder, base::Unretained(this)));
+
+  OnDataChanged();
   UpdateHovered(IsMouseHovered());
 }
 
@@ -196,7 +193,7 @@ void VerticalSplitTabView::UpdateBorder() {
         GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius),
         is_frame_active ? kColorTabDividerFrameActive
                         : kColorTabDividerFrameInactive));
-  } else {
+  } else if (GetBorder()) {
     SetBorder(nullptr);
   }
 }

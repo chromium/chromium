@@ -198,6 +198,7 @@ void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
   if (tab_strip_model_->closing_all()) {
     return;
   }
+
   TabCollectionNode* group_node =
       GetNodeForHandle(change.model->group_model()
                            ->GetTabGroup(change.group)
@@ -206,15 +207,11 @@ void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
     return;
   }
 
-  if (change.type == TabGroupChange::kEditorOpened) {
+  if (change.type == TabGroupChange::kVisualsChanged) {
+    group_node->NotifyDataChanged();
+  } else if (change.type == TabGroupChange::kEditorOpened) {
     group_node->GetController()->ShowGroupEditorBubble(group_node);
   }
-
-  if (change.type != TabGroupChange::kVisualsChanged) {
-    return;
-  }
-
-  group_node->NotifyDataChanged();
 }
 
 void RootTabCollectionNode::OnTabChangedAt(tabs::TabInterface* tab,
@@ -227,51 +224,9 @@ void RootTabCollectionNode::OnTabChangedAt(tabs::TabInterface* tab,
   UpdateTabData(tab);
 }
 
-void RootTabCollectionNode::OnTabPinnedStateChanged(tabs::TabInterface* tab,
-                                                    int model_index) {
-  UpdateTabData(tab);
-}
-
 void RootTabCollectionNode::OnTabBlockedStateChanged(tabs::TabInterface* tab,
                                                      int model_index) {
   UpdateTabData(tab);
-}
-
-void RootTabCollectionNode::OnSplitTabChanged(const SplitTabChange& change) {
-  if (tab_strip_model_->closing_all()) {
-    return;
-  }
-
-  std::set<tabs::TabInterface*> tabs_to_update;
-
-  switch (change.type) {
-    case SplitTabChange::Type::kAdded:
-      if (const auto* added = change.GetAddedChange()) {
-        for (const auto& pair : added->tabs()) {
-          tabs_to_update.insert(pair.first);
-        }
-      }
-      break;
-
-    case SplitTabChange::Type::kContentsChanged:
-      if (const auto* contents = change.GetContentsChange()) {
-        for (const auto& pair : contents->prev_tabs()) {
-          tabs_to_update.insert(pair.first);
-        }
-        for (const auto& pair : contents->new_tabs()) {
-          tabs_to_update.insert(pair.first);
-        }
-      }
-      break;
-
-    case SplitTabChange::Type::kRemoved:
-    case SplitTabChange::Type::kVisualsChanged:
-      break;
-  }
-
-  for (auto* tab : tabs_to_update) {
-    UpdateTabData(tab);
-  }
 }
 
 void RootTabCollectionNode::UpdateTabData(tabs::TabInterface* tab) {

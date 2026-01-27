@@ -62,7 +62,6 @@ class VerticalSplitTabView : public views::View, public views::LayoutDelegate {
   bool pinned_ = false;
   std::unique_ptr<GlowHoverController> hover_controller_;
 
-  base::CallbackListSubscription data_changed_subscription_;
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
 };

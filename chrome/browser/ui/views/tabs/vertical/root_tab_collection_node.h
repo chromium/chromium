@@ -17,7 +17,7 @@
 
 class TabStripModel;
 
-// The viewmodel for the VerticalTabStrip.
+// The view model for the VerticalTabStrip.
 class RootTabCollectionNode : public TabCollectionNode,
                               public tabs::TabCollectionObserver,
                               public TabStripModelObserver {
@@ -52,11 +52,8 @@ class RootTabCollectionNode : public TabCollectionNode,
   void OnTabChangedAt(tabs::TabInterface* tab,
                       int model_index,
                       TabChangeType change_type) override;
-  void OnTabPinnedStateChanged(tabs::TabInterface* tab,
-                               int model_index) override;
   void OnTabBlockedStateChanged(tabs::TabInterface* tab,
                                 int model_index) override;
-  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   void UpdateTabData(tabs::TabInterface* tab);
 
