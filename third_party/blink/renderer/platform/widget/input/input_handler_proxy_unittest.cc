@@ -3220,6 +3220,7 @@ TEST_P(InputHandlerProxyEventQueueTest, MomentumScrollEventsTracking) {
     EXPECT_FALSE(input_handler_proxy_->HandlingFlingForTesting());
   }
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
+  input_handler_proxy_.reset();
 }
 
 TEST_P(InputHandlerProxyEventQueueTest, KeyEventAttribution) {
