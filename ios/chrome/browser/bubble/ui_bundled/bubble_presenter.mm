@@ -295,6 +295,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 - (void)presentHomeBackgroundCustomizationTipBubble {
+  // Scroll the NTP to top to show the IPH on the home customization button.
+  [self.delegate scrollNTPToTopForBubblePresenter:self];
+
   NSString* text = l10n_util::GetNSStringWithFixup(
       IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_IPH);
 

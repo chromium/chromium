@@ -502,6 +502,10 @@
   return [self.NTPViewController isNTPScrolledToTop];
 }
 
+- (void)scrollToTop {
+  [self.NTPViewController setContentOffsetToTop];
+}
+
 - (void)willUpdateSnapshot {
   if (self.contentSuggestionsCoordinator.started) {
     [self.NTPViewController willUpdateSnapshot];

@@ -4667,6 +4667,10 @@ const char kChromeAppStoreUrl[] =
   return [self.NTPCoordinator isScrolledToTop];
 }
 
+- (void)scrollNTPToTopForBubblePresenter:(BubblePresenter*)bubblePresenter {
+  [self.NTPCoordinator scrollToTop];
+}
+
 - (BOOL)isOverscrollActionsSupportedForBubblePresenter:
     (BubblePresenter*)bubblePresenter {
   return [self shouldAllowOverscrollActions];
