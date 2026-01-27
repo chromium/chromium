@@ -4420,15 +4420,6 @@ void RenderProcessHostImpl::Cleanup() {
   // shutdown delay has now been cancelled.
   StopTrackingProcessForShutdownDelay();
 
-  if (IsEmptyRendererProcessesReuseAllowed()) {
-    // Remove this host from the tracker of empty processes. This is required
-    // to ensure that the process' id is not kept in the tracker if it's
-    // cleaned up while non-empty.
-    SiteProcessCountTracker::GetInstance(GetBrowserContext(),
-                                         kEmptySiteProcessCountTrackerKey)
-        ->ClearProcessForAllSites(GetID());
-  }
-
   // Use `DeleteSoon` to delete `this` RenderProcessHost *after* the tasks
   // that are *already* queued on the UI thread have been given a chance to run
   // (this may include IPC handling tasks that depend on the existence of
@@ -4601,11 +4592,22 @@ void RenderProcessHostImpl::UnregisterHost(ChildProcessId host_id) {
                           host->GetBrowserContext()->GetUserData(
                               kCommittedSiteProcessCountTrackerKey)));
 
+  if (IsEmptyRendererProcessesReuseAllowed()) {
+    // Remove this host from the tracker of empty processes. This guarantees
+    // the tracker is cleaned up if the process is destroyed if the standard
+    // RenderProcessHostImpl::Cleanup() path is bypassed (e.g.
+    // MockRenderProcessHost in unit tests).
+    SiteProcessCountTracker::GetInstance(host->GetBrowserContext(),
+                                         kEmptySiteProcessCountTrackerKey)
+        ->ClearProcessForAllSites(host_id);
+  }
+
   // Look up the map of site to process for the given browser_context,
   // in case we need to remove this process from it.  It will be registered
   // under any sites it rendered that use process-per-site mode.
   SiteProcessMap* map =
       GetSiteProcessMapForBrowserContext(host->GetBrowserContext());
+
   map->RemoveProcess(host);
 }
 
