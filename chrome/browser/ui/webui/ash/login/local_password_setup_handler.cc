@@ -16,8 +16,11 @@ LocalPasswordSetupHandler::LocalPasswordSetupHandler()
 
 LocalPasswordSetupHandler::~LocalPasswordSetupHandler() = default;
 
-void LocalPasswordSetupHandler::Show(bool can_go_back, bool is_recovery_flow) {
+void LocalPasswordSetupHandler::Show(const std::string& auth_token,
+                                     bool can_go_back,
+                                     bool is_recovery_flow) {
   base::DictValue dict;
+  dict.Set("authToken", base::Value(auth_token));
   dict.Set("showBackButton", can_go_back);
   dict.Set("isRecoveryFlow", is_recovery_flow);
   ShowInWebUI(std::move(dict));

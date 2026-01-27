@@ -90,6 +90,13 @@ export class SetLocalPasswordInputElement extends
       },
 
       /**
+       * Auth token for making mojo calls.
+       */
+      authToken: {
+        type: String,
+      },
+
+      /**
        * Aria label to apply to the first input.
        */
       firstInputAriaLabel: {
@@ -126,6 +133,7 @@ export class SetLocalPasswordInputElement extends
 
   value: string|null;
   locale: string;
+  authToken: string|undefined|null;
 
   private firstInputValidity_: null|FirstInputValidity;
   private confirmInputValidity_: null|ConfirmInputValidity;

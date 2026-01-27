@@ -21,7 +21,9 @@ class LocalPasswordSetupView {
   LocalPasswordSetupView(const LocalPasswordSetupView&) = delete;
   LocalPasswordSetupView& operator=(const LocalPasswordSetupView&) = delete;
 
-  virtual void Show(bool can_go_back, bool is_recovery_flow) = 0;
+  virtual void Show(const std::string& auth_token,
+                    bool can_go_back,
+                    bool is_recovery_flow) = 0;
   virtual void ShowLocalPasswordSetupFailure() = 0;
   virtual base::WeakPtr<LocalPasswordSetupView> AsWeakPtr() = 0;
 };
@@ -41,7 +43,9 @@ class LocalPasswordSetupHandler final : public BaseScreenHandler,
   ~LocalPasswordSetupHandler() override;
 
   // LocalPasswordSetupView:
-  void Show(bool can_go_back, bool is_recovery_flow) override;
+  void Show(const std::string& auth_token,
+            bool can_go_back,
+            bool is_recovery_flow) override;
   void ShowLocalPasswordSetupFailure() override;
   base::WeakPtr<LocalPasswordSetupView> AsWeakPtr() override;
 

@@ -88,13 +88,13 @@ void LocalPasswordSetupScreen::DoShow() {
   // 1. They were presented the choice between local vs. online password on the
   //    LocalPasswordSetup screen.
   // 2. They clicked on 'Choose password instead' during main PIN setup.
+  std::string auth_token = GetToken();
   bool can_go_back = !context()->knowledge_factor_setup.local_password_forced ||
                      context()->knowledge_factor_setup.pin_setup_mode ==
                          WizardContext::PinSetupMode::kUserChosePasswordInstead;
   bool is_recovery_flow = context()->knowledge_factor_setup.auth_setup_flow ==
                           WizardContext::AuthChangeFlow::kRecovery;
-  view_->Show(/*can_go_back=*/can_go_back,
-              /*is_recovery_flow=*/is_recovery_flow);
+  view_->Show(auth_token, can_go_back, is_recovery_flow);
 }
 
 void LocalPasswordSetupScreen::OnUserAction(const base::ListValue& args) {
