@@ -142,15 +142,13 @@ BrowserWindowInterface* CreateBrowser(Profile* profile, bool user_gesture) {
 // Use this function for reporting a tab id to an extension. It will
 // take care of setting the id to TAB_ID_NONE if necessary (for
 // example with devtools).
-int GetTabIdForExtensions(const WebContents* web_contents) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(https://crbug.com/430344931): Port this logic.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+int GetTabIdForExtensions(WebContents& web_contents) {
+  BrowserWindowInterface* browser =
+      browser_window_util::GetBrowserForTabContents(web_contents);
   if (browser && !ExtensionTabUtil::BrowserSupportsTabs(browser)) {
     return -1;
   }
-#endif
-  return sessions::SessionTabHelper::IdForTab(web_contents).id();
+  return sessions::SessionTabHelper::IdForTab(&web_contents).id();
 }
 
 bool IsFileUrl(const GURL& url) {
@@ -368,7 +366,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     GetTabListInterface(*contents, &tab_list, &tab_index);
   }
   api::tabs::Tab tab_object;
-  tab_object.id = GetTabIdForExtensions(contents);
+  tab_object.id = GetTabIdForExtensions(*contents);
   tab_object.index = tab_index;
   tab_object.window_id = GetWindowIdOfTab(contents);
   tab_object.status = GetLoadingStatus(contents);
@@ -462,8 +460,9 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   if (tab_strip) {
     tabs::TabInterface* opener = tab_strip->GetOpenerOfTabAt(tab_index);
     if (opener) {
-      CHECK(opener->GetContents());
-      tab_object.opener_tab_id = GetTabIdForExtensions(opener->GetContents());
+      content::WebContents* opener_contents = opener->GetContents();
+      CHECK(opener_contents);
+      tab_object.opener_tab_id = GetTabIdForExtensions(*opener_contents);
     }
   }
 #endif
