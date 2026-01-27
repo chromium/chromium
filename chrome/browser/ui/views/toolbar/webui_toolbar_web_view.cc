@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
@@ -89,7 +90,10 @@ END_METADATA
 WebUIToolbarWebView::WebUIToolbarWebView(
     BrowserWindowInterface* browser,
     chrome::BrowserCommandController* controller)
-    : browser_(browser), controller_(controller), reload_control_(this) {
+    : browser_(browser),
+      controller_(controller),
+      reload_control_(this),
+      clock_(base::DefaultTickClock::GetInstance()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view =
@@ -184,11 +188,12 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
   }
 
   // Reset the crash count if when the reset interval is reached.
-  if (base::TimeTicks::Now() - last_crash_time_ >=
+  if (clock_->NowTicks() - last_crash_time_ >=
       features::kWebUIReloadButtonCrashRecoverResetInterval.Get()) {
     crash_count_ = 0;
   }
-  last_crash_time_ = base::TimeTicks::Now();
+
+  last_crash_time_ = clock_->NowTicks();
 
   if (++crash_count_ <=
       base::checked_cast<uint32_t>(
@@ -225,6 +230,10 @@ void WebUIToolbarWebView::SetDidFirstNonEmptyPaintCallbackForTesting(
     return;
   }
   did_first_non_empty_paint_callback_ = std::move(callback);
+}
+
+void WebUIToolbarWebView::SetTickClockForTesting(const base::TickClock* clock) {
+  clock_ = clock;
 }
 
 WebUIToolbarUI* WebUIToolbarWebView::GetWebUIToolbarUI() {

@@ -5,8 +5,12 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
 #include "base/command_line.h"
+#include "base/strings/to_string.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -32,6 +36,11 @@
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+constexpr int kNumMaxRecoveryTime = 2;
+constexpr base::TimeDelta kRecoveryResetInterval = base::Seconds(10);
+}  // namespace
 
 class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
  public:
@@ -156,8 +165,10 @@ class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kInitialWebUI, {}},
          {features::kWebUIReloadButton,
-          {{"WebUIReloadButtonMaxCrashRecoveryTimes", "1"},
-           {"WebUIReloadButtonCrashRecoverResetInterval", "10s"},
+          {{"WebUIReloadButtonMaxCrashRecoveryTimes",
+            base::ToString(kNumMaxRecoveryTime)},
+           {"WebUIReloadButtonCrashRecoverResetInterval",
+            base::NumberToString(kRecoveryResetInterval.InSeconds()) + "s"},
            {"WebUIReloadButtonRestartUnresponsive", "true"}}},
          {features::kSkipIPCChannelPausingForNonGuests, {}},
          {features::kWebUIInProcessResourceLoadingV2, {}},
@@ -196,9 +207,9 @@ class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Verify that the crash is recovered by reloading the page for the first time,
-// but it will remain crashed for the second time, as
-// `WebUIReloadButtonMaxCrashRecoveryTimes` was set to 1.
+// Verify that the crash is recovered by reloading the page until it hits the
+// limit set in `WebUIReloadButtonMaxCrashRecoveryTimes`, after that it will
+// remain crashed.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest, CrashRecovery) {
   WebUIToolbarWebView* toolbar_view = GetWebUIToolbarWebView();
   ASSERT_TRUE(toolbar_view);
@@ -206,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest, CrashRecovery) {
   auto* web_contents = GetWebContents(toolbar_view);
   ASSERT_TRUE(web_contents);
 
-  // Wait for the first crash and the recovery navigation.
-  {
+  // Recover `kNumMaxRecoveryTime` times to hit the limit.
+  for (int i = 0; i < kNumMaxRecoveryTime; ++i) {
     content::TestNavigationObserver navigation_observer(web_contents);
     content::NavigationHandleObserver navigation_handle_observer(
         web_contents, GURL(chrome::kChromeUIWebUIToolbarURL));
@@ -226,15 +237,15 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest, CrashRecovery) {
     ASSERT_FALSE(navigation_handle_observer.is_renderer_initiated());
     ASSERT_EQ(navigation_handle_observer.reload_type(),
               content::ReloadType::NORMAL);
+
+    // The `WebContents` should be reused and not crashed.
+    ASSERT_EQ(GetWebContents(toolbar_view), web_contents);
+    ASSERT_FALSE(web_contents->IsCrashed());
+    ASSERT_EQ(web_contents->GetLastCommittedURL(),
+              GURL(chrome::kChromeUIWebUIToolbarURL));
   }
 
-  // The `WebContents` should be reused and not crashed.
-  ASSERT_EQ(GetWebContents(toolbar_view), web_contents);
-  ASSERT_FALSE(web_contents->IsCrashed());
-  ASSERT_EQ(web_contents->GetLastCommittedURL(),
-            GURL(chrome::kChromeUIWebUIToolbarURL));
-
-  // Wait for the second crash, there will be no recover.
+  // Wait for the last crash, there will be no recover.
   {
     content::RenderProcessHostWatcher crash_observer(
         web_contents,
@@ -253,6 +264,70 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest, CrashRecovery) {
 
   ASSERT_EQ(GetWebContents(toolbar_view), web_contents);
   ASSERT_TRUE(web_contents->IsCrashed());
+}
+
+// Verify that the crash recovery count resets if the interval between crashes
+// exceeds the `WebUIReloadButtonCrashRecoverResetInterval`.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
+                       CrashRecoveryWithResetInterval) {
+  base::SimpleTestTickClock clock_;
+  WebUIToolbarWebView* toolbar_view = GetWebUIToolbarWebView();
+  ASSERT_TRUE(toolbar_view);
+  toolbar_view->SetTickClockForTesting(&clock_);
+
+  auto* web_contents = GetWebContents(toolbar_view);
+  ASSERT_TRUE(web_contents);
+
+  // Recover `kNumMaxRecoveryTime` times to hit the limit.
+  for (int i = 0; i < kNumMaxRecoveryTime; ++i) {
+    content::TestNavigationObserver navigation_observer(web_contents);
+    content::NavigationHandleObserver navigation_handle_observer(
+        web_contents, GURL(chrome::kChromeUIWebUIToolbarURL));
+    content::RenderProcessHostWatcher crash_observer(
+        web_contents,
+        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+        /*exit_code=*/1);
+    crash_observer.Wait();
+    ASSERT_TRUE(web_contents->IsCrashed());
+    navigation_observer.Wait();
+    ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+    ASSERT_EQ(navigation_observer.last_navigation_url(),
+              GURL(chrome::kChromeUIWebUIToolbarURL));
+    ASSERT_TRUE(navigation_handle_observer.has_committed());
+    ASSERT_FALSE(navigation_handle_observer.is_renderer_initiated());
+    ASSERT_EQ(navigation_handle_observer.reload_type(),
+              content::ReloadType::NORMAL);
+
+    // The `WebContents` should be reused and not crashed.
+    ASSERT_EQ(GetWebContents(toolbar_view), web_contents);
+    ASSERT_FALSE(web_contents->IsCrashed());
+    ASSERT_EQ(web_contents->GetLastCommittedURL(),
+              GURL(chrome::kChromeUIWebUIToolbarURL));
+  }
+
+  clock_.Advance(base::Seconds(1) + kRecoveryResetInterval);
+
+  // A next crash should now be recovered because the interval has passed and
+  // the crash count should have been reset.
+  {
+    content::TestNavigationObserver navigation_observer(web_contents);
+    content::RenderProcessHostWatcher crash_observer(
+        web_contents,
+        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+        /*exit_code=*/1);
+    crash_observer.Wait();
+    ASSERT_TRUE(web_contents->IsCrashed());
+    navigation_observer.Wait();
+    ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+    ASSERT_EQ(navigation_observer.last_navigation_url(),
+              GURL(chrome::kChromeUIWebUIToolbarURL));
+  }
+
+  // The `WebContents` should be recovered and not crashed.
+  ASSERT_EQ(GetWebContents(toolbar_view), web_contents);
+  ASSERT_FALSE(web_contents->IsCrashed());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
