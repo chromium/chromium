@@ -1579,4 +1579,10 @@ CreateInputDataFromAnnotatedPageContent(
   [self commitUIUpdates];
 }
 
+#pragma mark - VoiceSearchDelegate
+
+- (void)voiceSearchDidReceiveSearchQuery:(NSString*)query {
+  [self sendText:query];
+}
+
 @end

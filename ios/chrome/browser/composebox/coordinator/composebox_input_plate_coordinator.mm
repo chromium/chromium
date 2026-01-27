@@ -189,6 +189,8 @@ const CGFloat kSnackbarBottomMargin = 10;
   _mediator.metricsRecorder = _metricsRecorder;
 
   _viewController.mutator = _mediator;
+  // Mediator is the voice search delegate to load queries in composebox.
+  _voiceSearchController.delegate = _mediator;
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
