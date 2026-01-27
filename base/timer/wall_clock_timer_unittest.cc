@@ -11,6 +11,7 @@
 #include "base/test/power_monitor_test.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -252,6 +253,30 @@ TEST_F(WallClockTimerTest, NonStopTickClockWithLongPause) {
 
   ::testing::Mock::VerifyAndClearExpectations(&callback);
   EXPECT_FALSE(wall_clock_timer.IsRunning());
+}
+
+TEST_F(WallClockTimerTest, SetTaskRunner) {
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  ::testing::StrictMock<base::MockOnceClosure> callback;
+  clock_.SetNow(base::Time::Now());
+
+  WallClockTimer wall_clock_timer(&clock_, task_runner->GetMockTickClock());
+  wall_clock_timer.SetTaskRunner(task_runner);
+
+  constexpr auto kDelay = base::Seconds(60);
+  wall_clock_timer.Start(FROM_HERE, clock_.Now() + kDelay, callback.Get());
+
+  // Task should be scheduled on task_runner.
+  EXPECT_TRUE(task_runner->HasPendingTask());
+
+  // Task shouldn't run yet.
+  task_runner->FastForwardBy(base::Seconds(30));
+  ::testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Task runs after delay.
+  EXPECT_CALL(callback, Run());
+  task_runner->FastForwardBy(base::Seconds(30));
+  ::testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
 }  // namespace base

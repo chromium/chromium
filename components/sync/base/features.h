@@ -212,6 +212,10 @@ BASE_DECLARE_FEATURE(kSyncEnableNewSyncDashboardUrl);
 // and record summary metrics about them.
 BASE_DECLARE_FEATURE(kSyncRecordDeviceStatisticsMetrics);
 
+// If enabled, DeviceInfoSyncBridge uses WallClockTimer for pulse updates,
+// which is more resilient to device suspension.
+BASE_DECLARE_FEATURE(kSyncDeviceInfoUseWallClockTimer);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

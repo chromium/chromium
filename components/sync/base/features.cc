@@ -182,4 +182,7 @@ BASE_FEATURE(kSyncEnableNewSyncDashboardUrl, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSyncRecordDeviceStatisticsMetrics,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncDeviceInfoUseWallClockTimer,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer
