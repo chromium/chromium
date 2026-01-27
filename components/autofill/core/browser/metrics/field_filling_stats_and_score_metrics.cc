@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/html_field_types.h"
 
 namespace autofill::autofill_metrics {
 
@@ -254,8 +255,7 @@ void LogFieldFillingStatsAndScore(
     if (is_address_form_field &&
         (field->filling_product() == FillingProduct::kAddress ||
          field->filling_product() == FillingProduct::kNone) &&
-        field->ShouldSuppressSuggestionsAndFillingByDefault(
-            ac_unrecognized_behavior)) {
+        field->html_type() == HtmlFieldType::kUnrecognized) {
       ac_unrecognized_address_field_stats.AddFieldFillingStatus(
           GetFieldFillingStatus(*field));
     }

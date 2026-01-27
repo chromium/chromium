@@ -1010,6 +1010,11 @@ BASE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
 BASE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: if enabled, suggestions are shown for fields with unrecognized
+// autocomplete attribute if they are already autofilled.
+BASE_FEATURE(kShowSugesstionsOnAlreadyAutofilledUnrecognized,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, the address add/edit editor in the payments request would be
 // removed and instead, the address editor from the settings will be used.
 // TODO: crbug.com/399071964 - Remove when launched.

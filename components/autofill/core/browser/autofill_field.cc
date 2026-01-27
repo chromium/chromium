@@ -789,6 +789,16 @@ bool AutofillField::HasExpirationDateType() const {
 
 bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault(
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const {
+  // This is an exception - a field was autofilled and then JS on site changed
+  // autocomplete attribute's value to unrecognized. This is done in order to
+  // preserve the ability to swap an autofilled value for a different one.
+  // See crbug.com/469057923 for details.
+  if (is_autofilled() &&
+      base::FeatureList::IsEnabled(
+          features::kShowSugesstionsOnAlreadyAutofilledUnrecognized)) {
+    return false;
+  }
+
   // The field will not be suppressed (i.e., it will be filled/suggested) if one
   // of the following is true:
   // 1. The autocomplete attribute is valid type (that can be seen in the HTML

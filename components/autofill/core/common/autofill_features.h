@@ -349,12 +349,14 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
-
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kShowSugesstionsOnAlreadyAutofilledUnrecognized);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kUseSettingsAddressEditorInPaymentsRequest);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoBrandingInSettings);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPage);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPage);
 
 }  // namespace autofill::features
 

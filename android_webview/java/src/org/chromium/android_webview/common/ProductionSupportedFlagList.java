@@ -260,6 +260,10 @@ public final class ProductionSupportedFlagList {
                 "Allows autofill to ignore suppressing predicitons on fields with"
                         + " autocomplete=unrecognized."),
         Flag.baseFeature(
+                AutofillFeatures.SHOW_SUGESSTIONS_ON_ALREADY_AUTOFILLED_UNRECOGNIZED,
+                "Allows autofill to offer filling again on fields that were autofilled and now hold"
+                        + " autocomplete=unrecognized value."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PARSING_WITH_SHARED_LABELS,
                 "Splits Autofill labels among consecutive fields for better heuristic"
                         + " predictions."),
