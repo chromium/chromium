@@ -70,8 +70,10 @@ class HttpStreamPool::Attempt {
     // Callback methods. Only one of these methods will be called. Once one of
     // these methods is called, the Attempt must immediately be deleted, or it
     // will enter an undefined state.
-    virtual void OnStreamSocketReady(Attempt* attempt,
-                                     std::unique_ptr<StreamSocket> stream) = 0;
+    virtual void OnStreamSocketReady(
+        Attempt* attempt,
+        std::unique_ptr<StreamSocket> stream,
+        LoadTimingInfo::ConnectTiming connect_timing) = 0;
     virtual void OnAttemptFailure(Attempt* attempt, int rv) = 0;
     virtual void OnCertificateError(Attempt* attempt,
                                     int rv,

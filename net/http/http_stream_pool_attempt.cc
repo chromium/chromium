@@ -415,6 +415,8 @@ void HttpStreamPool::Attempt::OnTcpAttemptComplete(TcpAttempt* attempt,
   std::unique_ptr<StreamSocket> stream_socket =
       completed_attempt->stream_attempt().ReleaseStreamSocket();
   CHECK(stream_socket);
+  LoadTimingInfo::ConnectTiming connect_timing =
+      completed_attempt->stream_attempt().connect_timing();
   HostResolver::ServiceEndpointRequest& service_endpoint_request =
       delegate_->GetServiceEndpointRequest();
   stream_socket->SetDnsAliases(service_endpoint_request.GetDnsAliasResults());
@@ -423,7 +425,8 @@ void HttpStreamPool::Attempt::OnTcpAttemptComplete(TcpAttempt* attempt,
   // pointer.
   completed_attempt.reset();
   base::WeakPtr<Attempt> weak_this = weak_ptr_factory_.GetWeakPtr();
-  delegate_->OnStreamSocketReady(this, std::move(stream_socket));
+  delegate_->OnStreamSocketReady(this, std::move(stream_socket),
+                                 std::move(connect_timing));
   // `this` is deleted.
   CHECK(!weak_this);
 }
