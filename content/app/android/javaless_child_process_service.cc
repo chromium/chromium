@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,8 +30,6 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/thread_pool.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/simple_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version_info/android/channel_getter.h"
@@ -234,19 +233,17 @@ ScopedAStatus ChildProcessService::forceKill() {
 }
 
 ScopedAStatus ChildProcessService::onMemoryPressure(int32_t pressure) {
-  // Need to make sure the threadpool exists. If it doesn't exist, that means we
-  // are probably before starting the renderer main thread, and notifying memory
-  // pressure likely won't work either.
-  if (base::ThreadPoolInstance::Get()) {
+  // Make sure the renderer main thread has been initialized. If it hasn't, it's
+  // probably too early during startup, and notifying memory pressure likely
+  // won't work either.
+  if (base::SingleThreadTaskRunner::HasMainThreadDefault()) {
     // This logic doesn't match the Java equivalent. In the Java implementation,
     // we assume that the ChildProcessService is getting memory pressure signals
     // from the browser process (this function), and ComponentCallbacks2. We
     // only have signals from the browser process available to a javaless
     // renderer, so we trust what it sends entirely.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        base::BindOnce(&base::MemoryPressureListener::NotifyMemoryPressure,
-                       static_cast<base::MemoryPressureLevel>(pressure)));
+    base::MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
+        static_cast<base::MemoryPressureLevel>(pressure));
   }
   return ScopedAStatus::ok();
 }
