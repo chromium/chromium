@@ -11,5 +11,11 @@ import org.chromium.build.annotations.NullMarked;
 final class SidePanelContainerCoordinatorImpl implements SidePanelContainerCoordinator {
 
     @Override
+    public void populateContent(SidePanelContent content) {}
+
+    @Override
+    public void removeContent() {}
+
+    @Override
     public void destroy() {}
 }

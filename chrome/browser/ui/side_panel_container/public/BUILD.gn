@@ -7,7 +7,10 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 # Public Java interfaces
 android_library("java") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContainerCoordinator.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContainerCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContent.java",
+  ]
   deps = [ "//build/android:build_java" ]
 }
 
