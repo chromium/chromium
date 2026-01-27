@@ -237,8 +237,8 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Returns true when an app's effective display mode is borderless.
   virtual bool AppUsesBorderlessMode() const;
 
-  // Returns true when `url` matches one of the borderless URL patterns of this
-  // app, or when there are no patterns to match.
+  // Returns true when `url` matches the display mode override patterns for
+  // borderless mode, or when there are no patterns to match.
   virtual bool UrlMatchesBorderlessPattern(const GURL& url) const;
 
   // Returns true when an app's effective display mode is tabbed.
