@@ -157,4 +157,9 @@ PermissionSetting ContentSettingsInfo::Delegate::ApplyPermissionEmbargo(
   return setting;
 }
 
+PermissionSetting ContentSettingsInfo::Delegate::ToPermissionSetting(
+    ContentSetting setting) const {
+  return setting;
+}
+
 }  // namespace content_settings

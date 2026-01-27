@@ -12,6 +12,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 
 namespace content_settings {
 
@@ -152,6 +153,12 @@ PermissionSetting GeolocationSettingDelegate::ApplyPermissionEmbargo(
     geo_setting.precise = PermissionOption::kDenied;
   }
   return geo_setting;
+}
+
+PermissionSetting GeolocationSettingDelegate::ToPermissionSetting(
+    ContentSetting setting) const {
+  return GeolocationSetting{ToPermissionOption(setting),
+                            ToPermissionOption(setting)};
 }
 
 }  // namespace content_settings
