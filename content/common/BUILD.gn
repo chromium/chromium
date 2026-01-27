@@ -626,9 +626,11 @@ mojom("mojo_bindings") {
             cpp = "::blink::ScrollerStyle"
           },
         ]
-        traits_headers =
-            [ "//third_party/blink/public/platform/mac/web_scrollbar_theme.h" ]
-        traits_public_deps = [ "//third_party/blink/public:blink_headers" ]
+        traits_headers = [ "scroller_style_mojom_traits.h" ]
+        traits_public_deps = [
+          "//base",
+          "//third_party/blink/public:blink_headers",
+        ]
       },
     ]
   }

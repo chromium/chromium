@@ -8,10 +8,6 @@ module content.mojom;
 // ParamTraits for serialization. All of these should eventually be converted to
 // proper mojom definitions.
 
-// NOTE: This type is only mapped and usable on Mac.
-[Native, EnableIf=is_mac]
-enum ScrollerStyle;
-
 // TODO(rockot): This should most likely be defined by network service mojom,
 // but the network service doesn't exist yet.
 [Native]

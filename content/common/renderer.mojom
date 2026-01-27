@@ -19,6 +19,12 @@ import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "url/mojom/url.mojom";
 
 [EnableIf=is_mac]
+enum ScrollerStyle {
+  kScrollerStyleLegacy,
+  kScrollerStyleOverlay,
+};
+
+[EnableIf=is_mac]
 struct UpdateScrollbarThemeParams {
   // TODO(avi): Update these to optional values when optional numeric types are
   // allowed. (https://crbug.com/657632)
