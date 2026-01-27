@@ -1011,6 +1011,12 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
       verbatim.SetAnswerType(match_with_answer->answer_type);
       verbatim.SetRichAnswerTemplate(*match_with_answer->answer_template);
     }
+    if (omnibox::IsComposebox(input_.current_page_classification())) {
+      omnibox::SuggestTemplateInfo suggest_template;
+      suggest_template.set_type_icon(
+          omnibox::SuggestTemplateInfo_IconType_SEARCH_LOOP_WITH_SPARKLE);
+      verbatim.SetSuggestTemplateInfo(suggest_template);
+    }
     AddMatchToMap(verbatim, GetInput(verbatim.from_keyword()),
                   GetTemplateURL(verbatim.from_keyword()),
                   client()->GetTemplateURLService()->search_terms_data(),
