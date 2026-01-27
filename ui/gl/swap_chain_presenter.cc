@@ -1732,8 +1732,8 @@ bool SwapChainPresenter::SetupPresentToSwapChain(
       // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only
       // indicates that the window is occluded and we can stop rendering.
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
-        DLOG(ERROR) << "Present failed: "
-                    << logging::SystemErrorCodeToString(hr);
+        LOG(ERROR) << "Present failed: "
+                   << logging::SystemErrorCodeToString(hr);
         return false;
       }
 
@@ -1875,8 +1875,8 @@ bool SwapChainPresenter::FinishPresentToSwapChain() {
       // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only
       // indicates that the window is occluded and we can stop rendering.
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
-        DLOG(ERROR) << "PresentBuffer failed: "
-                    << logging::SystemErrorCodeToString(hr);
+        LOG(ERROR) << "PresentBuffer failed: "
+                   << logging::SystemErrorCodeToString(hr);
         return false;
       }
     } else {
@@ -1894,8 +1894,8 @@ bool SwapChainPresenter::FinishPresentToSwapChain() {
       // indicates that the window is occluded and we can stop rendering.
       HRESULT hr = swap_chain_->Present(interval, flags);
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
-        DLOG(ERROR) << "Present failed: "
-                    << logging::SystemErrorCodeToString(hr);
+        LOG(ERROR) << "Present failed: "
+                   << logging::SystemErrorCodeToString(hr);
         return false;
       }
     }
@@ -2143,8 +2143,8 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
     const HRESULT hr =
         dcomp_device_->CreateSurfaceFromHandle(surface_handle, &dcomp_surface);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "CreateSurfaceFromHandle failed: "
-                  << logging::SystemErrorCodeToString(hr);
+      LOG(ERROR) << "CreateSurfaceFromHandle failed: "
+                 << logging::SystemErrorCodeToString(hr);
       return false;
     }
 
@@ -2279,8 +2279,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
         input_texture.Get(), video_processor_enumerator.Get(), &input_desc,
         &input_view);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "CreateVideoProcessorInputView failed: "
-                  << logging::SystemErrorCodeToString(hr);
+      LOG(ERROR) << "CreateVideoProcessorInputView failed: "
+                 << logging::SystemErrorCodeToString(hr);
       return false;
     }
 
@@ -2312,8 +2312,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
           swap_chain_buffer.Get(), video_processor_enumerator.Get(),
           &output_desc, &output_view_);
       if (FAILED(hr)) {
-        DLOG(ERROR) << "CreateVideoProcessorOutputView failed: "
-                    << logging::SystemErrorCodeToString(hr);
+        LOG(ERROR) << "CreateVideoProcessorOutputView failed: "
+                   << logging::SystemErrorCodeToString(hr);
         return false;
       }
       DCHECK(output_view_);
@@ -2404,8 +2404,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
     }
 
     if (FAILED(hr)) {
-      DLOG(ERROR) << "VideoProcessorBlt failed: "
-                  << logging::SystemErrorCodeToString(hr);
+      LOG(ERROR) << "VideoProcessorBlt failed: "
+                 << logging::SystemErrorCodeToString(hr);
 
       // To prevent it from failing in all coming frames, disable overlay if
       // VideoProcessorBlt is not implemented in the GPU driver.
@@ -2558,11 +2558,10 @@ bool SwapChainPresenter::ReallocateSwapChain(
       // Disable overlay support so dc_layer_overlay will stop sending down
       // overlay frames here and uses GL Composition instead.
       DisableDirectCompositionOverlays();
-      DLOG(ERROR) << "Failed to create "
-                  << DxgiFormatToString(swap_chain_format)
-                  << " swap chain of size " << swap_chain_size.ToString()
-                  << ": " << logging::SystemErrorCodeToString(hr)
-                  << ". Disable overlay swap chains";
+      LOG(ERROR) << "Failed to create " << DxgiFormatToString(swap_chain_format)
+                 << " swap chain of size " << swap_chain_size.ToString() << ": "
+                 << logging::SystemErrorCodeToString(hr)
+                 << ". Disable overlay swap chains";
       return false;
     }
 
@@ -2675,8 +2674,8 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
       swap_chain_buffer.Get(), video_processor_enumerator.Get(), &output_desc,
       &output_view_);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "CreateVideoProcessorOutputView failed: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "CreateVideoProcessorOutputView failed: "
+               << logging::SystemErrorCodeToString(hr);
     return false;
   }
   DCHECK(output_view_);
@@ -2692,8 +2691,8 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
                                                output_dxgi_color_space);
   hr = swap_chain3->SetColorSpace1(output_dxgi_color_space);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "SetColorSpace1 failed: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "SetColorSpace1 failed: "
+               << logging::SystemErrorCodeToString(hr);
     return false;
   }
 
