@@ -95,8 +95,6 @@ class MockNetwork {
     access_network_ = access_network;
   }
 
-  network::ResourceRequest last_request() const { return last_request_; }
-
   bool InterceptNetworkRequest(URLLoaderInterceptor::RequestParams* params) {
     const network::ResourceRequest& url_request = params->url_request;
     last_request_ = url_request;
