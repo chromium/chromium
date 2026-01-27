@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
+#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
@@ -207,6 +208,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL _inNavigation;
   // Used to count the number of images added in the session.
   int _imageUploadCount;
+  // The currrent choice of model.
+  ComposeboxModelOption _modelOption;
 }
 
 - (instancetype)
@@ -479,6 +482,21 @@ CreateInputDataFromAnnotatedPageContent(
                 }];
 }
 
+- (void)setModelOption:(ComposeboxModelOption)modelOption {
+  using enum ComposeboxModelOption;
+  _modelOption = modelOption;
+  [_consumer setModelOption:modelOption];
+  if (modelOption == kNone) {
+    return;
+  }
+
+  // TODO(crbug.com/477888273): Handle model incompatibility with composebox
+  // modes based on server-side logic.
+  if (_modeHolder.isRegularSearch) {
+    _modeHolder.mode = ComposeboxMode::kAIM;
+  }
+}
+
 #pragma mark - ComposeboxModeObserver
 
 - (void)composeboxModeDidChange:(ComposeboxMode)mode {
@@ -519,6 +537,7 @@ CreateInputDataFromAnnotatedPageContent(
       break;
   }
 
+  [self updateModelOnModeChange];
   [self commitUIUpdates];
 }
 
@@ -1391,6 +1410,19 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - Private helpers
 
+// Reacts to a change in the model choice.
+- (void)updateModelOnModeChange {
+  if (_modeHolder.isRegularSearch) {
+    [self setModelOption:ComposeboxModelOption::kNone];
+    return;
+  }
+
+  if (_modelOption == ComposeboxModelOption::kNone) {
+    [self setModelOption:ComposeboxModelOption::kAuto];
+    return;
+  }
+}
+
 - (void)handleFailedAttachment:(base::UnguessableToken)identifier {
   [self.delegate showSnackbarForItemUploadDidFail];
   [self removeItem:[_items itemForIdentifier:identifier]];
@@ -1488,6 +1520,11 @@ CreateInputDataFromAnnotatedPageContent(
 
   // Canvas action.
   [self.consumer hideCanvasActions:!canUseCanvas];
+
+  // Model picker.
+  // TODO(crbug.com/477888273): Handle attachment incompatibility based on
+  // server-side logic.
+  [self.consumer allowModelPicker:ShowComposeboxAdditionalAdvancedTools()];
 
   // Add tabs action.
   [self.consumer

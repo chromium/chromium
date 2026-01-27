@@ -20,6 +20,7 @@
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
+#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
@@ -209,6 +210,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIView* _carouselContainer;
   /// Controls that should be visible.
   ComposeboxInputPlateControls _visibleControls;
+  /// The current model choice.
+  ComposeboxModelOption _modelOption;
   /// Attach current tab action state.
   BOOL _attachCurrentTabActionHidden;
   /// Attach tabs actions state.
@@ -246,6 +249,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   /// Whether the canvas mode is enabled.
   BOOL _canvasEnabled;
+
+  /// Whether the model picker is allowed.
+  BOOL _modelPickerAllowed;
 
   /// Whether items are being dragged within the input plate view.
   BOOL _dragSessionWithinInputPlate;
@@ -585,6 +591,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self triggerGlowEffect];
 }
 
+- (void)allowModelPicker:(BOOL)allowed {
+  if (_modelPickerAllowed == allowed) {
+    return;
+  }
+  _modelPickerAllowed = allowed;
+  [self updatePlaceholderText];
+  [self updatePlusButtonItems];
+}
+
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
   _currentTabFavicon = favicon;
   [self updatePlusButtonItems];
@@ -689,6 +704,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {
   _remainingAttachmentCapacity = capacity;
+}
+
+- (void)setModelOption:(ComposeboxModelOption)modelOption {
+  _modelOption = modelOption;
+  [self updatePlusButtonItems];
 }
 
 #pragma mark - Actions
@@ -889,6 +909,12 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 /// Notifies the delegate to handle image generation tapped from the tool menu.
 - (void)handleCanvasTappedFromToolMenu {
   [self.delegate composeboxViewControllerDidTapCanvasButton:self];
+}
+
+/// Notifies the mutator to handle the selection of a new model option.
+- (void)handleModelChangeFromToolsMenuWithOption:
+    (ComposeboxModelOption)modelOption {
+  [self.mutator setModelOption:modelOption];
 }
 
 /// Updates the visibility of the leading/trailing fade views for the carousel.
@@ -1477,11 +1503,56 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                    options:UIMenuOptionsDisplayInline
                                   children:availableModes];
 
+  NSMutableArray<UIMenuElement*>* sections =
+      [[NSMutableArray alloc] initWithArray:@[ attachmentMenu, modeMenu ]];
+  if (_modelPickerAllowed) {
+    CHECK(ShowComposeboxAdditionalAdvancedTools());
+    UIAction* autoModelOption = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO)
+                  image:DefaultSymbolWithPointSize(kSyncEnabledSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf handleModelChangeFromToolsMenuWithOption:
+                                ComposeboxModelOption::kAuto];
+                }];
+    if (_modelOption == ComposeboxModelOption::kAuto) {
+      [autoModelOption setState:UIMenuElementStateOn];
+    }
+
+    UIAction* thinkingModelOption = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING)
+                  image:DefaultSymbolWithPointSize(kClockSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf handleModelChangeFromToolsMenuWithOption:
+                                ComposeboxModelOption::kThinking];
+                }];
+
+    if (_modelOption == ComposeboxModelOption::kThinking) {
+      [thinkingModelOption setState:UIMenuElementStateOn];
+    }
+
+    UIMenu* modelPickerMenu =
+        [UIMenu menuWithTitle:l10n_util::GetNSStringF(
+                                  IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE,
+                                  base::SysNSStringToUTF16(@"3"))
+                        image:nil
+                   identifier:nil
+                      options:UIMenuOptionsDisplayInline
+                     children:@[ autoModelOption, thinkingModelOption ]];
+
+    [sections addObject:modelPickerMenu];
+  }
+
   _plusButton.menu = [UIMenu
       menuWithTitle:IsComposeboxMenuTitleEnabled()
                         ? l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_TITLE)
                         : @""
-           children:@[ attachmentMenu, modeMenu ]];
+           children:sections];
   _plusButton.preferredMenuElementOrder =
       UIContextMenuConfigurationElementOrderFixed;
 }

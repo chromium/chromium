@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_MUTATOR_H_
 
 @class ComposeboxInputItem;
+enum class ComposeboxModelOption;
 class GURL;
 @class TabInfo;
 
@@ -42,6 +43,9 @@ class WebStateID;
 
 /// Processes the given `text`.
 - (void)processText:(NSString*)text;
+
+/// Sets the model option to use in queries.
+- (void)setModelOption:(ComposeboxModelOption)modelOption;
 
 @end
 

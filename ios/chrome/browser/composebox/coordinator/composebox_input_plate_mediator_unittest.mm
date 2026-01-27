@@ -24,6 +24,7 @@
 #import "components/version_info/channel.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
+#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -64,6 +65,8 @@
 }
 - (void)setCanvasEnabled:(BOOL)enabled {
 }
+- (void)allowModelPicker:(BOOL)allowed {
+}
 - (void)setCompact:(BOOL)compact {
 }
 - (void)setCurrentTabFavicon:(UIImage*)favicon {
@@ -93,6 +96,8 @@
 - (void)hideCanvasActions:(BOOL)hidden {
 }
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {
+}
+- (void)setModelOption:(ComposeboxModelOption)modelOption {
 }
 - (void)updateVisibleControls:(ComposeboxInputPlateControls)visibleControls {
   _visibleControls = visibleControls;
