@@ -59,6 +59,7 @@ source_set("unit_tests") {
     "//components/contextual_tasks/public",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
+    "//components/sync/base",
     "//ui/views",
     "//ui/views:test_support",
   ]

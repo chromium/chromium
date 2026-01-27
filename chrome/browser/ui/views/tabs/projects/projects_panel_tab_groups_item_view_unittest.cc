@@ -6,6 +6,7 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/sync/base/collaboration_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -40,4 +41,30 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestTabGroupOpen) {
       std::make_unique<ProjectsPanelTabGroupsItemView>(open_group);
   EXPECT_EQ(&kTabGroupIcon,
             &tab_groups_open_item->tab_group_vector_icon_for_testing());
+}
+
+TEST_F(ProjectsPanelTabGroupsItemViewTest, TestChildrenNonSharedTabGroup) {
+  tab_groups::SavedTabGroup non_collaboration_group(
+      std::u16string(u"my_group"), tab_groups::TabGroupColorId::kGrey, {});
+
+  auto non_collaboration_group_view =
+      std::make_unique<ProjectsPanelTabGroupsItemView>(non_collaboration_group);
+  EXPECT_EQ(3u, non_collaboration_group_view->children().size());
+}
+
+TEST_F(ProjectsPanelTabGroupsItemViewTest, TestChildrenSharedTabGroup) {
+  tab_groups::SavedTabGroup collaboration_group(
+      std::u16string(u"my_group"), tab_groups::TabGroupColorId::kGrey, {});
+  collaboration_group.SetCollaborationId(
+      syncer::CollaborationId("collaboration_id"));
+
+  auto collaboration_group_view =
+      std::make_unique<ProjectsPanelTabGroupsItemView>(collaboration_group);
+  EXPECT_EQ(4u, collaboration_group_view->children().size());
+  views::ImageView* collaboration_view =
+      static_cast<views::ImageView*>(collaboration_group_view->children()[3]);
+  EXPECT_NE(nullptr, collaboration_view);
+  EXPECT_TRUE(collaboration_view->GetImageModel().IsVectorIcon());
+  EXPECT_EQ(&kPeopleGroupIcon,
+            collaboration_view->GetImageModel().GetVectorIcon().vector_icon());
 }
