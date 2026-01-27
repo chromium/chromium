@@ -640,9 +640,9 @@ void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
   CHECK(alert_indicator_);
   if (!alert_indicator_->GetVisible()) {
     base::RecordAction(base::UserMetricsAction("CloseTab_NoAlertIndicator"));
-  } else {
-    std::optional<tabs::TabAlert> alert_state =
-        tabs::TabAlertController::GetAlertStateToShow(tab_data_.alert_state);
+  } else if (auto alert_state = tabs::TabAlertController::GetAlertStateToShow(
+                 tab_data_.alert_state);
+             alert_state.has_value()) {
     if (alert_state.value() == tabs::TabAlert::kAudioPlaying) {
       base::RecordAction(base::UserMetricsAction("CloseTab_AudioIndicator"));
     } else if (alert_state.value() == tabs::TabAlert::kAudioRecording ||
