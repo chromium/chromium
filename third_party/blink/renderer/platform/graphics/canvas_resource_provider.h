@@ -213,11 +213,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason = FlushReason::kOther);
   virtual ScopedRasterTimer CreateScopedRasterTimer();
 
-  // TODO(crbug.com/371227617): Trim callsites of this method to those that
-  // actually need to pass this info to Skia APIs and then eliminate the
-  // method/this class holding `info_` by inlining creation of SkImageInfo at
-  // those callsites.
-  const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return format_;
@@ -343,9 +338,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // callsites.
   void ClearAtCreation();
 
-  // Note that `info_` should be const, but the relevant SkImageInfo
-  // constructors do not exist.
-  SkImageInfo info_;
   gfx::Size size_;
   viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;

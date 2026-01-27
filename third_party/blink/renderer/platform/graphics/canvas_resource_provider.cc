@@ -1440,11 +1440,6 @@ CanvasResourceProvider::CanvasResourceProvider(
     const gfx::ColorSpace& color_space,
     Delegate* delegate)
     : type_(type),
-      info_(SkImageInfo::Make(size.width(),
-                              size.height(),
-                              viz::ToClosestSkColorType(format),
-                              alpha_type,
-                              color_space.ToSkColorSpace())),
       size_(size),
       format_(format),
       alpha_type_(alpha_type),
