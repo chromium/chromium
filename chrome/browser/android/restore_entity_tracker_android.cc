@@ -13,6 +13,7 @@
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/token.pb.h"
 #include "chrome/browser/tab/storage_id.h"
+#include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 #include "components/tabs/public/tab_strip_collection.h"
 
@@ -26,18 +27,32 @@ RestoreEntityTrackerAndroid::RestoreEntityTrackerAndroid(
 
 RestoreEntityTrackerAndroid::~RestoreEntityTrackerAndroid() = default;
 
+void RestoreEntityTrackerAndroid::SetLoadingContext(
+    StorageLoadingContext* context) {
+  context_ = context;
+}
+
 void RestoreEntityTrackerAndroid::RegisterCollection(
     StorageId storage_id,
     TabStorageType type,
     const tabs_pb::Children& children,
     base::PassKey<TabStateStorageDatabase>) {
+  DCHECK(context_);
+  if (context_->HasError()) {
+    return;
+  }
+
   // Build a mapping of children IDs to parent IDs;
   for (const tabs_pb::Token& child_id : children.storage_id()) {
     id_to_parent_id_[StorageIdFromTokenProto(child_id)] = storage_id;
   }
 
   if (type == TabStorageType::kPinned) {
-    DCHECK(!pinned_collection_id_) << "Should only have one pinned collection.";
+    if (pinned_collection_id_) {
+      context_->SetStatus(StorageLoadingStatus::kParseError,
+                          "Should only have one pinned collection.");
+      return;
+    }
     pinned_collection_id_ = storage_id;
   }
 }
@@ -46,11 +61,19 @@ void RestoreEntityTrackerAndroid::RegisterTab(
     StorageId storage_id,
     const tabs_pb::TabState& tab_state,
     base::PassKey<TabStateStorageDatabase>) {
+  DCHECK(context_);
+  if (context_->HasError()) {
+    return;
+  }
   tab_android_id_to_storage_id_[tab_state.tab_id()] = storage_id;
 }
 
 bool RestoreEntityTrackerAndroid::AssociateTabAndAncestors(
     const TabInterface* tab) {
+  DCHECK(context_);
+  if (context_->HasError()) {
+    return false;
+  }
   const TabAndroid* tab_android = ToTabAndroidChecked(tab);
   auto it = tab_android_id_to_storage_id_.find(tab_android->GetAndroidId());
   if (it == tab_android_id_to_storage_id_.end()) {
@@ -66,6 +89,10 @@ bool RestoreEntityTrackerAndroid::AssociateTabAndAncestors(
 
 void RestoreEntityTrackerAndroid::AssociatePinnedCollection(
     const PinnedTabCollection* collection) {
+  DCHECK(context_);
+  if (context_->HasError()) {
+    return;
+  }
   if (pinned_collection_id_) {
     on_collection_association_.Run(pinned_collection_id_.value(), collection);
     associated_collections_.insert(collection->GetHandle());
@@ -74,6 +101,10 @@ void RestoreEntityTrackerAndroid::AssociatePinnedCollection(
 
 bool RestoreEntityTrackerAndroid::HasCollectionBeenAssociated(
     TabCollection::Handle handle) {
+  DCHECK(context_);
+  if (context_->HasError()) {
+    return false;
+  }
   return associated_collections_.contains(handle);
 }
 

@@ -73,6 +73,7 @@ android_library("java") {
   ]
 
   srcjar_deps = [
+    ":enums_java",
     ":jni_headers",
 
     # TabSelectionType, TabLaunchType
@@ -304,4 +305,8 @@ source_set("unit_tests") {
     "//components/tabs:public",
     "//testing/gtest",
   ]
+}
+
+java_cpp_enum("enums_java") {
+  sources = [ "tab_storage_type.h" ]
 }

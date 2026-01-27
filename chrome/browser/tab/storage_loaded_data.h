@@ -31,6 +31,30 @@ class TabStateStorageDatabase;
 // Represents data loaded from the database.
 class StorageLoadedData {
  public:
+  // Holds the error state for storage loading. Will be successful, unless
+  // marked otherwise.
+  class StorageLoadingContext {
+   public:
+    StorageLoadingContext();
+    ~StorageLoadingContext();
+
+    StorageLoadingContext(const StorageLoadingContext&) = delete;
+    StorageLoadingContext& operator=(const StorageLoadingContext&) = delete;
+
+    StorageLoadingContext(StorageLoadingContext&&);
+    StorageLoadingContext& operator=(StorageLoadingContext&&);
+
+    void SetStatus(StorageLoadingStatus status, std::string message);
+    bool HasError() const;
+
+    StorageLoadingStatus status() const;
+    const std::optional<std::string>& error_message() const;
+
+   private:
+    StorageLoadingStatus status_ = StorageLoadingStatus::kSuccess;
+    std::optional<std::string> error_message_;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when the child of a node is rejected. This occurs when the child
@@ -76,12 +100,15 @@ class StorageLoadedData {
     std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups_;
     std::optional<StorageId> root_storage_id_;
     std::optional<StorageId> active_tab_storage_id_;
+    StorageLoadingContext context_;
   };
 
   RestoreEntityTracker* GetTracker() const;
   std::vector<tabs_pb::TabState>& GetLoadedTabs();
   std::vector<std::unique_ptr<TabGroupCollectionData>>& GetLoadedGroups();
   std::optional<int> GetActiveTabIndex() const;
+
+  const StorageLoadingContext& GetLoadingContext() const;
 
   // Alerts observers that a child node has been rejected during the restoration
   // process.
@@ -97,13 +124,15 @@ class StorageLoadedData {
       std::vector<tabs_pb::TabState> loaded_tabs,
       std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups,
       std::unique_ptr<RestoreEntityTracker> associator,
-      std::optional<int> active_tab_index);
+      std::optional<int> active_tab_index,
+      StorageLoadingContext context);
 
   base::ObserverList<Observer> observers_;
   std::vector<tabs_pb::TabState> loaded_tabs_;
   std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups_;
   std::unique_ptr<RestoreEntityTracker> tracker_;
   std::optional<int> active_tab_index_;
+  StorageLoadingContext context_;
 };
 
 }  // namespace tabs

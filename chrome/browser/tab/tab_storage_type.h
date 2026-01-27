@@ -21,6 +21,16 @@ enum class TabStorageType {
   kMaxValue = kSplit,
 };
 
+// Various statuses that can occur during storage loading.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
+enum class StorageLoadingStatus {
+  kSuccess = 0,
+  kParseError,
+  kMultipleRootNodesError,
+  kTreeTooDeepError,
+  kMissingTabError,
+};
+
 }  // namespace tabs
 
 #endif  // CHROME_BROWSER_TAB_TAB_STORAGE_TYPE_H_

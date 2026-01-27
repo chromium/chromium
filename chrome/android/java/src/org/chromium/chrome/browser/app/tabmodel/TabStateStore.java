@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
+import org.chromium.chrome.browser.tab.StorageLoadingStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageService.SharedStoreData;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -33,6 +35,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObser
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+
+import java.util.Locale;
 
 /** Orchestrates saving of tabs to the {@link TabStateStorageService}. */
 @NullMarked
@@ -272,7 +276,7 @@ public class TabStateStore implements TabPersistentStore {
                     incognitoFinal,
                     data -> {
                         if (mIsDestroyed) {
-                            data.destroy();
+                            fullyDestroyLoadedData(data);
                             return;
                         }
                         assumeNonNull(mMergeCombinedTabRestorer);
@@ -438,10 +442,30 @@ public class TabStateStore implements TabPersistentStore {
 
     /** Called when the data for one of the models has been loaded. */
     private void onDataLoaded(StorageLoadedData data, boolean incognito) {
+        assertInitialized();
         assertOtrOperationSafe(incognito);
 
+        if (data.getLoadingStatus() != StorageLoadingStatus.SUCCESS) {
+            mTabStateStorageService.clearUnusedNodesForWindow(
+                    mWindowTag, incognito, /* tabStripCollection= */ null);
+            String formattedErrorMessage =
+                    String.format(
+                            Locale.ROOT,
+                            "Failed to load data with error code %d: %s",
+                            data.getLoadingStatus(),
+                            assumeNonNull(data.getErrorMessage()));
+            Log.e(TAG, formattedErrorMessage);
+
+            // TODO(crbug.com/476447678): reset migration manager catch up status for this window.
+            fullyDestroyLoadedData(data);
+
+            // Leave to guarantee failures are caught in debug.
+            assert false : formattedErrorMessage;
+            return;
+        }
+
         if (mIsDestroyed) {
-            data.destroy();
+            fullyDestroyLoadedData(data);
             return;
         }
 
@@ -503,7 +527,9 @@ public class TabStateStore implements TabPersistentStore {
                 clearState();
                 sharedStoreData.onStoreRazed();
             } else {
-                mTabStateStorageService.clearWindow(mWindowTag);
+                // TODO(crbug.com/479152708): change this to clear only window data once lifecycle
+                // issues are resolved.
+                clearState();
             }
         }
     }
@@ -512,5 +538,15 @@ public class TabStateStore implements TabPersistentStore {
     private void assertInitialized() {
         assert mTabStateStorageService != null && mModelTrackingManager != null
                 : "The store has not been initialized";
+    }
+
+    private void fullyDestroyLoadedData(StorageLoadedData data) {
+        StorageLoadedData.LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
+        for (StorageLoadedData.LoadedTabState loadedTabState : loadedTabStates) {
+            WebContentsState contentsState = loadedTabState.tabState.contentsState;
+            if (contentsState == null) continue;
+            contentsState.destroy();
+        }
+        data.destroy();
     }
 }

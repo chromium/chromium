@@ -39,13 +39,21 @@ void SortTabsInOrder(
     absl::flat_hash_map<StorageId, tabs_pb::TabState>& loaded_tabs_map,
     std::vector<tabs_pb::TabState>& sorted_tabs,
     std::optional<int>& active_tab_index,
+    StorageLoadedData::StorageLoadingContext* context,
     int depth = 0) {
-  DCHECK_LE(depth, kMaxTreeHeight) << "Tree is too tall, possible cycle?";
+  if (depth > kMaxTreeHeight) {
+    context->SetStatus(StorageLoadingStatus::kTreeTooDeepError,
+                       "Tree is too tall, possible cycle?");
+    return;
+  }
   const auto it = children_map.find(current_node_storage_id);
   if (it != children_map.end()) {
     for (const auto& child_id : it->second) {
+      if (context->HasError()) {
+        return;
+      }
       SortTabsInOrder(child_id, active_tab_storage_id, children_map,
-                      loaded_tabs_map, sorted_tabs, active_tab_index,
+                      loaded_tabs_map, sorted_tabs, active_tab_index, context,
                       depth + 1);
     }
   } else {
@@ -66,9 +74,42 @@ void SortTabsInOrder(
 
 }  // namespace
 
+StorageLoadedData::StorageLoadingContext::StorageLoadingContext() = default;
+StorageLoadedData::StorageLoadingContext::~StorageLoadingContext() = default;
+
+StorageLoadedData::StorageLoadingContext::StorageLoadingContext(
+    StorageLoadingContext&&) = default;
+StorageLoadedData::StorageLoadingContext&
+StorageLoadedData::StorageLoadingContext::operator=(StorageLoadingContext&&) =
+    default;
+
+void StorageLoadedData::StorageLoadingContext::SetStatus(
+    StorageLoadingStatus status,
+    std::string message) {
+  if (status_ == StorageLoadingStatus::kSuccess) {
+    status_ = status;
+    error_message_ = std::move(message);
+  }
+}
+
+bool StorageLoadedData::StorageLoadingContext::HasError() const {
+  return status_ != StorageLoadingStatus::kSuccess;
+}
+
+StorageLoadingStatus StorageLoadedData::StorageLoadingContext::status() const {
+  return status_;
+}
+
+const std::optional<std::string>&
+StorageLoadedData::StorageLoadingContext::error_message() const {
+  return error_message_;
+}
+
 StorageLoadedData::Builder::Builder(
     std::unique_ptr<RestoreEntityTracker> tracker)
-    : tracker_(std::move(tracker)) {}
+    : tracker_(std::move(tracker)) {
+  tracker_->SetLoadingContext(&context_);
+}
 
 StorageLoadedData::Builder::~Builder() = default;
 
@@ -81,17 +122,25 @@ void StorageLoadedData::Builder::AddNode(
     TabStorageType type,
     base::span<const uint8_t> payload,
     base::PassKey<TabStateStorageDatabase> passkey) {
+  if (context_.HasError()) {
+    return;
+  }
+
   if (type == TabStorageType::kTab) {
     tabs_pb::TabState tab_state;
     if (tab_state.ParseFromArray(payload.data(), payload.size())) {
       tracker_->RegisterTab(id, tab_state, passkey);
       loaded_tabs_map_.emplace(id, std::move(tab_state));
     } else {
-      DLOG(ERROR) << "Failed to parse tab state for id: " << id;
+      context_.SetStatus(StorageLoadingStatus::kParseError,
+                         "Failed to parse tab state for id: " + id.ToString());
     }
   } else if (type == TabStorageType::kTabStrip) {
-    DCHECK(!root_storage_id_.has_value())
-        << "Multiple root nodes for window tag in the database.";
+    if (root_storage_id_.has_value()) {
+      context_.SetStatus(StorageLoadingStatus::kMultipleRootNodesError,
+                         "Multiple root nodes for window tag in the database.");
+      return;
+    }
     root_storage_id_ = id;
     tabs_pb::TabStripCollectionState tab_strip_state;
     if (tab_strip_state.ParseFromArray(payload.data(), payload.size())) {
@@ -100,7 +149,9 @@ void StorageLoadedData::Builder::AddNode(
             StorageIdFromTokenProto(tab_strip_state.active_tab_storage_id());
       }
     } else {
-      DLOG(ERROR) << "Failed to parse tab strip state for id: " << id;
+      context_.SetStatus(
+          StorageLoadingStatus::kParseError,
+          "Failed to parse tab strip state for id: " + id.ToString());
     }
   } else if (type == TabStorageType::kGroup) {
     tabs_pb::TabGroupCollectionState group_state;
@@ -108,7 +159,9 @@ void StorageLoadedData::Builder::AddNode(
       loaded_groups_.emplace_back(
           std::make_unique<TabGroupCollectionData>(group_state));
     } else {
-      DLOG(ERROR) << "Failed to parse group state for id: " << id;
+      context_.SetStatus(
+          StorageLoadingStatus::kParseError,
+          "Failed to parse group state for id: " + id.ToString());
     }
   }
 }
@@ -118,6 +171,10 @@ void StorageLoadedData::Builder::AddChildren(
     TabStorageType type,
     base::span<const uint8_t> children,
     base::PassKey<TabStateStorageDatabase> passkey) {
+  if (context_.HasError()) {
+    return;
+  }
+
   if (type == TabStorageType::kTab) {
     return;
   }
@@ -131,11 +188,19 @@ void StorageLoadedData::Builder::AddChildren(
     }
     children_map_.emplace(id, std::move(storage_ids_vector));
   } else {
-    DLOG(ERROR) << "Failed to parse children for id: " << id;
+    context_.SetStatus(StorageLoadingStatus::kParseError,
+                       "Failed to parse children for id: " + id.ToString());
   }
 }
 
 std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build() {
+  if (context_.HasError()) {
+    return base::WrapUnique(new StorageLoadedData(
+        std::vector<tabs_pb::TabState>(),
+        std::vector<std::unique_ptr<TabGroupCollectionData>>(),
+        std::move(tracker_), std::nullopt, std::move(context_)));
+  }
+
   std::vector<tabs_pb::TabState> loaded_tabs;
   loaded_tabs.reserve(loaded_tabs_map_.size());
   std::optional<int> active_tab_index;
@@ -145,7 +210,7 @@ std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build() {
   if (root_storage_id_.has_value()) {
     SortTabsInOrder(root_storage_id_.value(), active_tab_storage_id_,
                     children_map_, loaded_tabs_map_, loaded_tabs,
-                    active_tab_index);
+                    active_tab_index, &context_);
   } else {
     // Temporarily fallback to just loading the tabs in a random order. It is
     // not possible to determine the `active_tab_index` as
@@ -159,9 +224,9 @@ std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build() {
   // child traversal. Otherwise we've got an inconsistent state and cleanup
   // may be necessary.
 
-  StorageLoadedData* result =
-      new StorageLoadedData(std::move(loaded_tabs), std::move(loaded_groups_),
-                            std::move(tracker_), active_tab_index);
+  StorageLoadedData* result = new StorageLoadedData(
+      std::move(loaded_tabs), std::move(loaded_groups_), std::move(tracker_),
+      active_tab_index, std::move(context_));
   return base::WrapUnique(result);
 }
 
@@ -169,11 +234,14 @@ StorageLoadedData::StorageLoadedData(
     std::vector<tabs_pb::TabState> loaded_tabs,
     std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups,
     std::unique_ptr<RestoreEntityTracker> tracker,
-    std::optional<int> active_tab_index)
+    std::optional<int> active_tab_index,
+    StorageLoadingContext context)
     : loaded_tabs_(std::move(loaded_tabs)),
       loaded_groups_(std::move(loaded_groups)),
       tracker_(std::move(tracker)),
-      active_tab_index_(active_tab_index) {}
+      active_tab_index_(active_tab_index),
+      context_(std::move(context)) {}
+
 StorageLoadedData::~StorageLoadedData() = default;
 
 RestoreEntityTracker* StorageLoadedData::GetTracker() const {
@@ -191,6 +259,11 @@ StorageLoadedData::GetLoadedGroups() {
 
 std::optional<int> StorageLoadedData::GetActiveTabIndex() const {
   return active_tab_index_;
+}
+
+const StorageLoadedData::StorageLoadingContext&
+StorageLoadedData::GetLoadingContext() const {
+  return context_;
 }
 
 void StorageLoadedData::NotifyChildRejected(StorageId parent) {

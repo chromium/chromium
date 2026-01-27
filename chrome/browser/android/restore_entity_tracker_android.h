@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_RESTORE_ENTITY_TRACKER_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_RESTORE_ENTITY_TRACKER_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/tab/restore_entity_tracker.h"
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
@@ -21,10 +22,14 @@ namespace tabs {
 // layer.
 class RestoreEntityTrackerAndroid : public RestoreEntityTracker {
  public:
+  using StorageLoadingContext = StorageLoadedData::StorageLoadingContext;
+
   RestoreEntityTrackerAndroid(
       OnTabAssociation on_tab_association,
       OnCollectionAssociation on_collection_association);
   ~RestoreEntityTrackerAndroid() override;
+
+  void SetLoadingContext(StorageLoadingContext* context) override;
 
   void RegisterCollection(StorageId storage_id,
                           TabStorageType type,
@@ -60,6 +65,7 @@ class RestoreEntityTrackerAndroid : public RestoreEntityTracker {
 
   OnTabAssociation on_tab_association_;
   OnCollectionAssociation on_collection_association_;
+  raw_ptr<StorageLoadingContext> context_;
 };
 
 }  // namespace tabs

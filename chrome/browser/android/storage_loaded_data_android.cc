@@ -80,10 +80,13 @@ StorageLoadedDataAndroid::StorageLoadedDataAndroid(
         new TabGroupCollectionDataAndroid(std::move(loaded_group));
     tab_group_collection_data_android.push_back(android_group);
   }
+  const StorageLoadedData::StorageLoadingContext& context =
+      data_->GetLoadingContext();
   j_object_ = Java_StorageLoadedData_createData(
       env, reinterpret_cast<intptr_t>(this), data_->GetLoadedTabs(),
       tab_group_collection_data_android,
-      data_->GetActiveTabIndex().value_or(-1));
+      data_->GetActiveTabIndex().value_or(-1),
+      static_cast<int>(context.status()), context.error_message());
 }
 
 StorageLoadedDataAndroid::~StorageLoadedDataAndroid() = default;
