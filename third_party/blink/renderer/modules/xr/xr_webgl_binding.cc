@@ -475,12 +475,6 @@ XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
     ExceptionState& exception_state) {
   CHECK(layer);
   CHECK(view);
-  if (!OwnsLayer(layer)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Layer was not created with this binding.");
-    return nullptr;
-  }
 
   if (!view || view->session() != session()) {
     exception_state.ThrowDOMException(
@@ -502,7 +496,7 @@ XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
 
   gfx::Rect viewport = GetViewportForView(layer, viewData);
 
-  // The layer passed the OwnsLayer check, confirming it can only contain
+  // The layer passed the session check, confirming it can only contain
   // a WebGL drawing context. This makes the static_cast safe.
   auto* drawing_context =
       static_cast<XRWebGLDrawingContext*>(layer->drawing_context());
@@ -527,13 +521,6 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Layer does not belong to current session.");
-    return nullptr;
-  }
-
-  if (!OwnsLayer(layer)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Layer was not created with this binding.");
     return nullptr;
   }
 
@@ -569,7 +556,7 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
     }
   }
 
-  // The layer passed the OwnsLayer check, confirming it can only contain
+  // The layer passed the session check, confirming it can only contain
   // a WebGL drawing context. This makes the static_cast safe.
   auto* drawing_context =
       static_cast<XRWebGLDrawingContext*>(layer->drawing_context());
@@ -749,8 +736,6 @@ XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
 
 gfx::Rect XRWebGLBinding::GetViewportForView(XRProjectionLayer* layer,
                                              XRViewData* view) {
-  CHECK(OwnsLayer(layer));
-
   // If the layer is not side-by-side return the full texture size adjusted by
   // the viewport scale.
   if (layer->textureArrayLength() > 1) {
