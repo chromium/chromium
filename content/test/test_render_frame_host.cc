@@ -480,7 +480,7 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
   common_params->transition = ui::PAGE_TRANSITION_LINK;
   common_params->navigation_type =
       blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
-  common_params->has_user_gesture = has_user_gesture;
+  common_params->has_possibly_filtered_user_gesture = has_user_gesture;
   common_params->request_destination =
       network::mojom::RequestDestination::kDocument;
 

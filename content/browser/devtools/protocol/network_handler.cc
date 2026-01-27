@@ -3252,7 +3252,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
       current_wall_time, std::move(initiator), redirect_emitted_extra_info,
       std::move(redirect_response),
       std::string(Network::ResourceTypeEnum::Document), std::move(frame_token),
-      common_params.has_user_gesture);
+      common_params.has_possibly_filtered_user_gesture);
 }
 
 void NetworkHandler::FencedFrameReportRequestSent(

@@ -558,7 +558,7 @@ void FillNavigationParamsRequest(
       });
 
   navigation_params->had_transient_user_activation =
-      common_params.has_user_gesture;
+      common_params.has_possibly_filtered_user_gesture;
 
   navigation_params->force_enabled_origin_trials = base::ToVector(
       commit_params.force_enabled_origin_trials, &WebString::FromASCII);
@@ -3307,7 +3307,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     bool is_client_redirect = !!(navigation_state->common_params().transition &
                                  ui::PAGE_TRANSITION_CLIENT_REDIRECT);
     bool started_with_transient_activation =
-        navigation_state->common_params().has_user_gesture;
+        navigation_state->common_params().has_possibly_filtered_user_gesture;
     bool is_browser_initiated =
         navigation_state->commit_params().is_browser_initiated;
     bool has_ua_visual_transition =
@@ -6288,8 +6288,8 @@ void RenderFrameImpl::BeginNavigationInternal(
         common_params->method == "GET" && prev_common_params.method == "GET" &&
         common_params->initiator_origin ==
             prev_common_params.initiator_origin &&
-        common_params->has_user_gesture ==
-            prev_common_params.has_user_gesture &&
+        common_params->has_possibly_filtered_user_gesture ==
+            prev_common_params.has_possibly_filtered_user_gesture &&
         common_params->referrer == prev_common_params.referrer &&
         common_params->transition == prev_common_params.transition &&
         common_params->should_replace_current_entry ==
@@ -6321,7 +6321,7 @@ void RenderFrameImpl::BeginNavigationInternal(
             common_params->url, /*is_renderer_initiated=*/true)) {
       if (!base::FeatureList::IsEnabled(
               features::kIgnoreDuplicateNavsOnlyWithUserGesture) ||
-          common_params->has_user_gesture) {
+          common_params->has_possibly_filtered_user_gesture) {
         DVLOG(0) << "Ignoring duplicate navigation to " << common_params->url
                  << " due to the short interval of " << nav_start_diff
                  << " since the previous one.";

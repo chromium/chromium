@@ -2790,8 +2790,9 @@ void NavigationRequest::BeginNavigationImpl() {
   if (!GetContentClient()->browser()->ShouldOverrideUrlLoading(
           frame_tree_node_->frame_tree_node_id(),
           commit_params_->is_browser_initiated, commit_params_->original_url,
-          commit_params_->original_method, common_params_->has_user_gesture,
-          false, frame_tree_node_->IsOutermostMainFrame(),
+          commit_params_->original_method,
+          common_params_->has_possibly_filtered_user_gesture, false,
+          frame_tree_node_->IsOutermostMainFrame(),
           frame_tree_node_->frame_tree().is_prerendering(),
           ui::PageTransitionFromInt(common_params_->transition),
           &should_override_url_loading)) {
@@ -4712,7 +4713,7 @@ void NavigationRequest::OnResponseStarted(
       // TODO(crbug.com/41367031): the next check is relying on
       // sanitized_referrer_ but should ideally use a more reliable source for
       // the originating URL when the navigation is renderer initiated.
-    } else if (((common_params_->has_user_gesture &&
+    } else if (((common_params_->has_possibly_filtered_user_gesture &&
                  !commit_params_->is_browser_initiated) ||
                 common_params_->started_from_context_menu) &&
                ShouldPropagateUserActivation(
@@ -6123,7 +6124,8 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
       resource_request->method = common_params_->method;
       resource_request->request_initiator = common_params_->initiator_origin;
       resource_request->referrer = common_params_->referrer->url;
-      resource_request->has_user_gesture = common_params_->has_user_gesture;
+      resource_request->has_user_gesture =
+          common_params_->has_possibly_filtered_user_gesture;
       resource_request->mode = network::mojom::RequestMode::kNavigate;
       resource_request->transition_type = common_params_->transition;
       resource_request->trusted_params =
@@ -9587,7 +9589,7 @@ void NavigationRequest::SetReferrer(blink::mojom::ReferrerPtr referrer) {
 }
 
 bool NavigationRequest::HasUserGesture() {
-  return common_params().has_user_gesture;
+  return common_params().has_possibly_filtered_user_gesture;
 }
 
 ui::PageTransition NavigationRequest::GetPageTransition() {

@@ -466,7 +466,7 @@ void ValidateRequestMatchesEntry(NavigationRequest* request,
   }
   DCHECK_EQ(request->commit_params().should_clear_history_list,
             entry->should_clear_history_list());
-  DCHECK_EQ(request->common_params().has_user_gesture,
+  DCHECK_EQ(request->common_params().has_possibly_filtered_user_gesture,
             entry->has_user_gesture());
   DCHECK_EQ(request->common_params().base_url_for_data_url,
             entry->GetBaseURLForDataURL());

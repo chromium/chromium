@@ -277,8 +277,10 @@ struct CommonNavigationParams {
   // Whether or not this navigation was started from a context menu.
   bool started_from_context_menu = false;
 
-  // True if the request was user initiated.
-  bool has_user_gesture = false;
+  // True if the request was user initiated. This gesture is filtered out during
+  // proxy navigations, to prevent it from being exposed to the committed
+  // document in the renderer.
+  bool has_possibly_filtered_user_gesture = false;
 
   // True if the navigation should allow the target document to invoke a text
   // fragment (i.e. fragments with :~:text=). This is based on user gesture

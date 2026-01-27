@@ -698,7 +698,7 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   void set_has_user_gesture(bool has_user_gesture) {
-    common_params_->has_user_gesture = has_user_gesture;
+    common_params_->has_possibly_filtered_user_gesture = has_user_gesture;
   }
 
   // Ignores any interface disconnect that might happen to the

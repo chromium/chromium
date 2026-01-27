@@ -280,9 +280,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // redirects, then this must be called during DidRedirectNavigation().
   virtual void SetReferrer(blink::mojom::ReferrerPtr referrer) = 0;
 
-  // Whether the navigation was initiated by a user gesture. Note that this
-  // will return false for browser-initiated navigations.
-  // TODO(clamy): This should return true for browser-initiated navigations.
+  // Whether the navigation was initiated by a user gesture.
+  //
+  // Note: This gesture is filtered out during proxy navigations, to prevent it
+  // from being exposed to the committed document in the renderer.
   virtual bool HasUserGesture() = 0;
 
   // Returns the page transition type.
