@@ -30,6 +30,7 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/win/window_event_target.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -43,7 +44,6 @@
 
 namespace gfx {
 class ImageSkia;
-class Insets;
 }  // namespace gfx
 
 namespace ui {
@@ -827,6 +827,11 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // message causes black flickering in the titlebar region so we do it on for
   // the first message after frame type changes.
   bool needs_dwm_frame_clear_ = true;
+
+  // Tracks the last DWM frame insets sent via DwmExtendFrameIntoClientArea.
+  // Used to avoid redundant cross-process DWM calls when the margins haven't
+  // changed.
+  std::optional<gfx::Insets> last_dwm_frame_insets_;
 
   // True if is handling mouse WM_INPUT messages.
   bool using_wm_input_ = false;

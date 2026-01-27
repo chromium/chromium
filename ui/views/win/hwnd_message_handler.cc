@@ -673,10 +673,16 @@ std::vector<HWND> HWNDMessageHandler::GetOwnedWindows() {
 
 void HWNDMessageHandler::SetDwmFrameExtension(DwmFrameState state) {
   if (!delegate_->HasFrame() && !is_translucent_) {
-    MARGINS m = {0, 0, 0, 0};
+    gfx::Insets insets;
     if (state == DwmFrameState::kOn && !IsMaximized()) {
-      m = {0, 0, 1, 0};
+      insets.set_top(1);
     }
+    // Avoid redundant cross-process DWM calls when the margins haven't changed.
+    if (last_dwm_frame_insets_ == insets) {
+      return;
+    }
+    last_dwm_frame_insets_ = insets;
+    MARGINS m = {insets.left(), insets.right(), insets.top(), insets.bottom()};
     DwmExtendFrameIntoClientArea(hwnd(), &m);
   }
 }
@@ -3693,6 +3699,11 @@ void HWNDMessageHandler::UpdateDwmFrame() {
 
   gfx::Insets insets;
   if (delegate_->GetDwmFrameInsetsInPixels(&insets)) {
+    // Avoid redundant cross-process DWM calls when the margins haven't changed.
+    if (last_dwm_frame_insets_ == insets) {
+      return;
+    }
+    last_dwm_frame_insets_ = insets;
     MARGINS margins = {insets.left(), insets.right(), insets.top(),
                        insets.bottom()};
     DwmExtendFrameIntoClientArea(hwnd(), &margins);
