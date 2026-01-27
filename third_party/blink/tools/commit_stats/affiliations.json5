@@ -139,6 +139,7 @@
   },
   "seokho@chromium.org": {
     affiliations: [
+      { start: "2025-12-01", domain: "igalia.com" },
       { start: "2020-07-25", domain: "seokho.dev" },
     ]
   },
