@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -196,6 +197,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, CreateNewChatWithSingleTab) {
                                     handles_to_wait_for);
 
   // Execute the Create new chat command via the glic submenu model.
+  base::HistogramTester histogram_tester;
   auto submenu_model =
       std::make_unique<GlicTabSubMenuModel>(tab_strip_model, 0);
   submenu_model->ExecuteCommand(TabStripModel::CommandGlicCreateNewChat, 0);
@@ -215,6 +217,9 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, CreateNewChatWithSingleTab) {
   ASSERT_TRUE(pinned_tab_usage.has_value());
   EXPECT_EQ(pinned_tab_usage->pin_event.trigger,
             glic::GlicPinTrigger::kContextMenu);
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.TabContextMenu.PinnedTabsToNewConversation", 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, CreateNewChatWithMultipleTabs) {
@@ -247,6 +252,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, CreateNewChatWithMultipleTabs) {
                                     handles_to_wait_for);
 
   // Execute the Create new chat command via the glic submenu model.
+  base::HistogramTester histogram_tester;
   auto submenu_model =
       std::make_unique<GlicTabSubMenuModel>(tab_strip_model, 1);
   submenu_model->ExecuteCommand(TabStripModel::CommandGlicCreateNewChat, 0);
@@ -276,6 +282,9 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, CreateNewChatWithMultipleTabs) {
   ASSERT_TRUE(pinned_tab_usage1.has_value());
   EXPECT_EQ(pinned_tab_usage1->pin_event.trigger,
             glic::GlicPinTrigger::kContextMenu);
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.TabContextMenu.PinnedTabsToNewConversation", 2, 1);
 
   // Tab 2 should not be bound or pinned to anything.
   GlicInstance* instance3 = glic_instance_coordinator->GetInstanceForTab(
@@ -384,6 +393,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, SwitchToRecentConversation) {
     }
   }
   ASSERT_TRUE(found_target);
+  base::HistogramTester histogram_tester;
   submenu->ActivatedAt(target_index);
 
   tabs::TabInterface* tab1 = tab_strip_model->GetTabAtIndex(1);
@@ -400,13 +410,26 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, SwitchToRecentConversation) {
            inst2 &&
            static_cast<GlicInstanceImpl*>(inst2)->conversation_id() == "conv3";
   }));
+
+  histogram_tester.ExpectBucketCount(
+      "Glic.TabContextMenu.PinnedTabsToExistingConversation", 2, 1);
 }
 
 class TestMenuDelegate : public ui::SimpleMenuModel::Delegate {
  public:
+  explicit TestMenuDelegate(TabStripModel* tab_strip_model, int index)
+      : tab_strip_model_(tab_strip_model), index_(index) {}
+
   bool IsCommandIdChecked(int command_id) const override { return false; }
   bool IsCommandIdEnabled(int command_id) const override { return true; }
-  void ExecuteCommand(int command_id, int event_flags) override {}
+  void ExecuteCommand(int command_id, int event_flags) override {
+    tab_strip_model_->ExecuteContextMenuCommand(
+        index_, static_cast<TabStripModel::ContextMenuCommand>(command_id));
+  }
+
+ private:
+  raw_ptr<TabStripModel> tab_strip_model_;
+  int index_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest,
@@ -421,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest,
   tab_strip_model->ActivateTabAt(0);
 
   // Open the context menu without pinning anything
-  TestMenuDelegate delegate;
+  TestMenuDelegate delegate(tab_strip_model, 0);
   auto menu = std::make_unique<TabMenuModel>(
       &delegate, browser()->GetFeatures().tab_menu_model_delegate(),
       tab_strip_model, /*index=*/0);
@@ -469,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, UnshareCommandShown) {
   selection.set_active(0);
   tab_strip_model->SetSelectionFromModel(selection);
 
-  TestMenuDelegate delegate;
+  TestMenuDelegate delegate(tab_strip_model, 0);
   auto menu = std::make_unique<TabMenuModel>(
       &delegate, browser()->GetFeatures().tab_menu_model_delegate(),
       tab_strip_model, /*index=*/0);
@@ -484,6 +507,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabSubMenuModelTest, UnshareCommandShown) {
   }
   EXPECT_NE(unshare_command_index, -1);
   EXPECT_TRUE(menu->IsEnabledAt(unshare_command_index));
+
+  base::HistogramTester histogram_tester;
+  menu->ActivatedAt(unshare_command_index);
+  histogram_tester.ExpectBucketCount("Glic.TabContextMenu.UnpinnedTabs", 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -527,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Open the context menu for the first tab.
   // This tests the background/inactive conversation pinned status.
-  TestMenuDelegate delegate;
+  TestMenuDelegate delegate(tab_strip_model, 0);
   auto menu = std::make_unique<TabMenuModel>(
       &delegate, browser()->GetFeatures().tab_menu_model_delegate(),
       tab_strip_model, /*index=*/0);

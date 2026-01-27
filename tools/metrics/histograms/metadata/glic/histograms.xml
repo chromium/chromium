@@ -2079,6 +2079,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.TabContextMenu.PinnedTabsToExistingConversation"
+    units="tabs" expires_after="2026-09-30">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the number of tabs selected when pinning to an existing conversation
+    from the tab context menu.
+  </summary>
+</histogram>
+
+<histogram name="Glic.TabContextMenu.PinnedTabsToNewConversation" units="tabs"
+    expires_after="2026-09-30">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the number of tabs selected when pinning to a new conversation from
+    the tab context menu.
+  </summary>
+</histogram>
+
+<histogram name="Glic.TabContextMenu.UnpinnedTabs" units="tabs"
+    expires_after="2026-09-30">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the number of tabs selected when unpinning from the tab context
+    menu.
+  </summary>
+</histogram>
+
 <histogram name="Glic.TieredRolloutEnablementStatus"
     enum="GlicTieredRolloutEnablementStatus" expires_after="2026-07-26">
   <owner>sophiechang@chromium.org</owner>

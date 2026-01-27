@@ -3005,6 +3005,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       break;
     case CommandGlicUnshare: {
       std::vector<int> indices = GetIndicesForCommand(context_index);
+      base::UmaHistogramCounts100("Glic.TabContextMenu.UnpinnedTabs",
+                                  indices.size());
       std::vector<tabs::TabHandle> tab_handles;
       tab_handles.reserve(indices.size());
       std::transform(

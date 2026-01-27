@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -77,11 +78,15 @@ void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   }
 
   if (command_id == TabStripModel::CommandGlicCreateNewChat) {
+    base::UmaHistogramCounts100(
+        "Glic.TabContextMenu.PinnedTabsToNewConversation", tabs.size());
     service->window_controller().CreateNewConversationForTabs(tabs);
   } else if (command_id >= kMinRecentConversationCommandId &&
              command_id <= kMaxRecentConversationCommandId) {
     size_t conversation_index = command_id - kMinRecentConversationCommandId;
     CHECK_LT(conversation_index, recent_conversations_.size());
+    base::UmaHistogramCounts100(
+        "Glic.TabContextMenu.PinnedTabsToExistingConversation", tabs.size());
     service->window_controller().ShowInstanceForTabs(
         tabs, recent_conversations_[conversation_index].instance_id);
   }
