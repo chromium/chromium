@@ -9,6 +9,15 @@
 #include "chrome/browser/ui/views/status_icons/status_icon_chromeos.h"
 #include "chrome/common/chrome_features.h"
 
+namespace {
+
+constexpr int64_t kBaseIconId = 2;
+int64_t ReservedIconId(StatusTray::StatusIconType type) {
+  return kBaseIconId + static_cast<int64_t>(type);
+}
+
+}  // namespace
+
 StatusTrayChromeOS::StatusTrayChromeOS() = default;
 
 StatusTrayChromeOS::~StatusTrayChromeOS() = default;
@@ -17,8 +26,12 @@ std::unique_ptr<StatusIcon> StatusTrayChromeOS::CreatePlatformStatusIcon(
     StatusIconType type,
     const gfx::ImageSkia& image,
     const std::u16string& tool_tip) {
-  // TODO(b:463428431): Calculate correct icon id..
-  int64_t next_icon_id = 0;
+  int64_t next_icon_id;
+  if (type == StatusTray::OTHER_ICON) {
+    next_icon_id = NextIconId();
+  } else {
+    next_icon_id = ReservedIconId(type);
+  }
 
   auto icon = std::make_unique<StatusIconChromeOS>(next_icon_id);
   icon->SetImage(image);
@@ -26,6 +39,12 @@ std::unique_ptr<StatusIcon> StatusTrayChromeOS::CreatePlatformStatusIcon(
   icon->Initialize();
 
   return icon;
+}
+
+int64_t StatusTrayChromeOS::NextIconId() {
+  int64_t icon_id = next_icon_id_++;
+  return kBaseIconId +
+         static_cast<int64_t>(StatusTray::NAMED_STATUS_ICON_COUNT) + icon_id;
 }
 
 std::unique_ptr<StatusTray> StatusTray::Create() {
