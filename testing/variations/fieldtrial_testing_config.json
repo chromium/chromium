@@ -3544,12 +3544,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260122",
+                    "name": "Enabled",
                     "enable_features": [
                         "BlockV8OptimizerOnUnfamiliarSitesSetting"
-                    ],
-                    "disable_features": [
-                        "MigrateToBlockV8OptimizerOnUnfamiliarSites"
                     ]
                 }
             ]
