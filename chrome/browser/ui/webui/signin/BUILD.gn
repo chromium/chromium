@@ -17,9 +17,9 @@ if (!is_chromeos) {
 
     public_deps = [ "//base" ]
     deps = [
-      "//components/sync/base:features",
       "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
+      "//components/sync/base:features",
       "//google_apis",
       "//ui/base",
     ]
@@ -91,10 +91,11 @@ source_set("signin") {
   ]
 
   public_deps = [
-    ":login",
+    ":login_ui_service",
     "//base",
     "//chrome/browser/signin",
     "//chrome/browser/ui/browser_window",
+    "//chrome/common",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//content/public/browser",
@@ -199,7 +200,7 @@ source_set("signin_impl") {
     ]
 
     deps += [
-      ":login",
+      ":login_ui_service",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -222,9 +223,8 @@ source_set("signin_impl") {
   }
 }
 
-source_set("login") {
+source_set("login_ui_service") {
   sources = [
-    "inline_login_handler.h",
     "login_ui_service.h",
     "login_ui_service_factory.h",
   ]
@@ -233,83 +233,79 @@ source_set("login") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
-    "//content/public/browser",
-    "//google_apis",
-    "//net",
   ]
 
   if (!is_chromeos) {
     public_deps += [ ":signin_ui_error" ]
   }
-
-  if (enable_dice_support) {
-    sources += [ "inline_login_handler_impl.h" ]
-  }
-
-  if (enable_dice_support || is_chromeos) {
-    sources += [ "inline_login_ui.h" ]
-    public_deps += [
-      "//chrome/common",
-      "//ui/web_dialogs",
-    ]
-  }
 }
 
-source_set("login_impl") {
+source_set("login_ui_service_impl") {
   sources = [
-    "inline_login_handler.cc",
     "login_ui_service.cc",
     "login_ui_service_factory.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
-    ":login",
-    "//base",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/signin:signin_promo",
-    "//chrome/browser/ui:browser_navigator_params_headers",
-    "//chrome/browser/ui/profiles",
+    ":login_ui_service",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/signin",
-    "//chrome/common",
-    "//chrome/common:constants",
-    "//components/metrics:metrics_pref_names",
-    "//components/prefs",
-    "//components/signin/public/base",
-    "//content/public/browser",
-    "//google_apis",
-    "//net",
-    "//services/network/public/mojom:cookies_mojom",
-    "//third_party/blink/public/common:headers",
   ]
+}
 
-  if (enable_dice_support) {
-    sources += [ "inline_login_handler_impl.cc" ]
-    deps += [
-      ":signin",
-      ":signin_utils",
-      "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
-      "//chrome/browser/password_manager/factories",
-      "//chrome/browser/profiles",
-      "//chrome/browser/signin:signin_promo",
-      "//chrome/browser/themes",
-      "//components/password_manager/core/browser",
-      "//components/signin/core/browser",
+# "inline_login_*" code is only available on Windows and ChromeOS, since the
+# "chrome-signin" webui dialog is only used there.
+if (is_win || is_chromeos) {
+  source_set("inline_login") {
+    sources = [
+      "inline_login_handler.h",
+      "inline_login_ui.h",
     ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//components/keyed_service/core",
+      "//content/public/browser",
+      "//google_apis",
+      "//net",
+      "//ui/web_dialogs",
+    ]
+
+    if (is_win) {
+      sources += [ "inline_login_handler_impl.h" ]
+    }
   }
 
-  if (enable_dice_support || is_chromeos) {
-    sources += [ "inline_login_ui.cc" ]
-    deps += [
+  source_set("inline_login_impl") {
+    sources = [
+      "inline_login_handler.cc",
+      "inline_login_ui.cc",
+    ]
+
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    deps = [
+      ":inline_login",
+      "//chrome/browser:browser_process",
       "//chrome/browser/extensions",
       "//chrome/browser/prefs",
       "//chrome/browser/profiles",
-      "//chrome/browser/resources/gaia_auth_host:resources",
+      "//chrome/browser/resources/gaia_auth_host:resources_grit",
       "//chrome/browser/signin:signin_promo",
+      "//chrome/browser/ui:browser_navigator_params_headers",
+      "//components/signin/core/browser",
       "//ui/webui",
     ]
+
+    if (is_win) {
+      sources += [ "inline_login_handler_impl.cc" ]
+      deps += [
+        "//chrome/browser/resources/inline_login:resources_grit",
+        "//chrome/browser/ui/webui/signin:signin_ui_error",
+      ]
+    }
 
     if (is_chromeos) {
       deps += [
@@ -324,8 +320,6 @@ source_set("login_impl") {
         "//ui/chromeos",
         "//ui/strings:ui_strings_grit",
       ]
-    } else {
-      deps += [ "//chrome/browser/resources/inline_login:resources" ]
     }
   }
 }
@@ -375,7 +369,7 @@ if (!is_chromeos) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     deps = [
-      ":login",
+      ":login_ui_service",
       ":profile",
       ":signin_ui_error",
       ":signin_utils",
@@ -442,7 +436,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":login",
+    ":login_ui_service",
     ":signin",
     ":signin_utils",
     "//base",
@@ -519,7 +513,7 @@ source_set("test_support_ui") {
     "//components/signin/public/base",
   ]
   deps = [
-    ":login",
+    ":login_ui_service",
     ":signin_utils",
     "//base/test:test_support",
     "//chrome/browser",

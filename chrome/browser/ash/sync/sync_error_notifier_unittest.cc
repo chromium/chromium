@@ -26,12 +26,6 @@ namespace {
 constexpr char kNotificationId[] =
     "chrome://settings/sync/testing_profile@test";
 
-class FakeLoginUIService : public LoginUIService {
- public:
-  FakeLoginUIService() : LoginUIService(nullptr) {}
-  ~FakeLoginUIService() override = default;
-};
-
 class FakeLoginUI : public LoginUIService::LoginUI {
  public:
   FakeLoginUI() = default;
@@ -39,11 +33,6 @@ class FakeLoginUI : public LoginUIService::LoginUI {
 
   void FocusUI() override {}
 };
-
-std::unique_ptr<KeyedService> BuildFakeLoginUIService(
-    content::BrowserContext* profile) {
-  return std::make_unique<FakeLoginUIService>();
-}
 
 class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
  public:
@@ -57,9 +46,8 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    FakeLoginUIService* login_ui_service = static_cast<FakeLoginUIService*>(
-        LoginUIServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(), base::BindRepeating(&BuildFakeLoginUIService)));
+    LoginUIService* login_ui_service =
+        LoginUIServiceFactory::GetForProfile(profile());
     login_ui_service->SetLoginUI(&login_ui_);
 
     error_notifier_ = std::make_unique<SyncErrorNotifier>(&service_, profile());

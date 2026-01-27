@@ -183,7 +183,6 @@ source_set("browser_tests") {
     }
   } else if (!is_android) {
     sources += [
-      "inline_login/inline_login_browsertest.cc",
       "signin/profile_picker_browsertest.cc",
       "signin/signin_browsertest.cc",
     ]
@@ -194,8 +193,12 @@ source_set("browser_tests") {
     }
   }
 
-  if (enable_dice_support || is_chromeos) {
+  if (is_win || is_chromeos) {
     sources += [ "gaia_auth_host/gaia_auth_host_browsertest.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "inline_login/inline_login_browsertest.cc" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -724,7 +727,7 @@ generate_grd("build_grd") {
     grdp_files += [ "$target_gen_dir/skills/resources.grdp" ]
   }
 
-  if (enable_dice_support || is_chromeos) {
+  if (is_win || is_chromeos) {
     deps += [ "gaia_auth_host:build_grdp" ]
     grdp_files += [ "$target_gen_dir/gaia_auth_host/resources.grdp" ]
   }
@@ -817,12 +820,10 @@ generate_grd("build_grd") {
     ]
   } else if (!is_android) {
     deps += [
-      "inline_login:build_grdp",
       "intro:build_grdp",
       "signin:build_grdp",
     ]
     grdp_files += [
-      "$target_gen_dir/inline_login/resources.grdp",
       "$target_gen_dir/intro/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
     ]
@@ -832,6 +833,12 @@ generate_grd("build_grd") {
       grdp_files +=
           [ "$target_gen_dir/signin/signout_confirmation/resources.grdp" ]
     }
+  }
+
+  if (is_win) {
+    deps += [ "inline_login:build_grdp" ]
+
+    grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
   }
 
   if (enable_compose) {

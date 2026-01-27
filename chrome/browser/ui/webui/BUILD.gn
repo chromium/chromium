@@ -63,6 +63,10 @@ source_set("configs") {
     "//third_party/abseil-cpp:absl",
   ]
 
+  if (is_win || is_chromeos) {
+    deps += [ "//chrome/browser/ui/webui/signin:inline_login" ]
+  }
+
   if (!is_android) {
     deps += [
       "//chrome/browser/actor/ui",

@@ -3177,6 +3177,10 @@ if (!is_android) {
       }
     }
 
+    if (is_win || is_chromeos) {
+      deps += [ "//chrome/browser/ui/webui/signin:inline_login" ]
+    }
+
     if (is_mac) {
       deps += [ "//device/fido:icloud_keychain_test_support" ]
       deps += [ "//chrome/app_shim:browser_tests" ]

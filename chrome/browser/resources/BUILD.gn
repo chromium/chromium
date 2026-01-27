@@ -138,9 +138,12 @@ group("resources") {
   if (!is_android && !is_chromeos) {
     public_deps += [
       "default_browser/default_browser_modal:resources",
-      "inline_login:resources",
       "signin/profile_picker:resources",
     ]
+  }
+
+  if (is_win) {
+    public_deps += [ "inline_login:resources" ]
   }
 
   if (enable_dice_support) {

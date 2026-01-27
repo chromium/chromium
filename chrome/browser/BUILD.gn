@@ -4389,8 +4389,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/settings:impl",
       "//chrome/browser/ui/webui/signin",
-      "//chrome/browser/ui/webui/signin:login",
-      "//chrome/browser/ui/webui/signin:login_impl",
+      "//chrome/browser/ui/webui/signin:login_ui_service",
+      "//chrome/browser/ui/webui/signin:login_ui_service_impl",
       "//chrome/browser/ui/webui/signin:signin_impl",
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/browser/ui/webui/signin:signin_utils_impl",
@@ -4479,6 +4479,10 @@ static_library("browser") {
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
     ]
+
+    if (is_win || is_chromeos) {
+      deps += [ "//chrome/browser/ui/webui/signin:inline_login_impl" ]
+    }
 
     #!is_android
     deps += [
@@ -4584,7 +4588,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/new_tab_footer:impl",
       "//chrome/browser/ui/webui/signin:signin_impl",
       "//chrome/browser/ui/webui/signin:signin_utils_impl",
-      "//chrome/browser/ui/webui/signin:login_impl",
       "//chrome/browser/ui/webui_browser:impl",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/tabs:impl",
@@ -4644,6 +4647,11 @@ static_library("browser") {
       # - c/b/net/system_network_context_manager.h
       "//chrome/browser/device_api:impl",
     ]
+
+    if (is_win || is_chromeos) {
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/webui/signin:inline_login_impl" ]
+    }
 
     #!is_android
     if (!is_chromeos) {

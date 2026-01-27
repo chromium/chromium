@@ -209,7 +209,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/feedback_resources.pak",
         "$root_gen_dir/chrome/gaia_auth_host_resources.pak",
         "$root_gen_dir/chrome/history_resources.pak",
-        "$root_gen_dir/chrome/inline_login_resources.pak",
         "$root_gen_dir/chrome/inspect_resources.pak",
         "$root_gen_dir/chrome/key_value_pair_viewer_shared_resources.pak",
         "$root_gen_dir/chrome/legion_internals_resources.pak",
@@ -285,6 +284,11 @@ template("chrome_extra_paks") {
         deps += [ "//chrome/browser/resources/settings_shared:resources" ]
       }
     }
+
+    if (is_win || is_chromeos) {
+      sources += [ "$root_gen_dir/chrome/inline_login_resources.pak" ]
+    }
+
     if (is_chromeos) {
       sources += [
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",

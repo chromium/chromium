@@ -16,10 +16,6 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
 
-namespace content {
-class StoragePartition;
-}
-
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -60,50 +56,14 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
   void SetExtraInitParams(base::DictValue& params) override;
   void CompleteLogin(const CompleteLoginParams& params) override;
 
-  // This struct exists to pass parameters to the FinishCompleteLogin() method,
-  // since the base::BindRepeating() call does not support this many template
-  // args.
-  struct FinishCompleteLoginParams {
-   public:
-    FinishCompleteLoginParams(InlineLoginHandlerImpl* handler,
-                              content::StoragePartition* partition,
-                              const GURL& url,
-                              const std::string& email,
-                              const GaiaId& gaia_id,
-                              const std::string& password,
-                              const std::string& auth_code);
-    FinishCompleteLoginParams(const FinishCompleteLoginParams& other);
-    ~FinishCompleteLoginParams();
-
-    // Pointer to WebUI handler.  May be nullptr.
-    raw_ptr<InlineLoginHandlerImpl> handler;
-    // The isolate storage partition containing sign in cookies.
-    raw_ptr<content::StoragePartition> partition;
-    // URL of sign in containing parameters such as email, source, etc.
-    GURL url;
-    // Email address of the account used to sign in.
-    std::string email;
-    // Obfustcated gaia id of the account used to sign in.
-    GaiaId gaia_id;
-    // Password of the account used to sign in.
-    std::string password;
-    // Authentication code used to exchange for a login scoped refresh token
-    // for the account used to sign in.  Used only with password separated
-    // signin flow.
-    std::string auth_code;
-  };
-
-  static void FinishCompleteLogin(const FinishCompleteLoginParams& params,
-                                  Profile* profile);
-
   base::WeakPtrFactory<InlineLoginHandlerImpl> weak_factory_{this};
 };
 
-// Handles details of signing the user in with IdentityManager and turning on
-// sync after InlineLoginHandlerImpl has acquired the auth tokens from GAIA.
-// This is a separate class from InlineLoginHandlerImpl because the full signin
-// process is asynchronous and can outlive the signin UI.
-// InlineLoginHandlerImpl is destroyed once the UI is closed.
+// Handles details of signing the user in after InlineLoginHandlerImpl has
+// acquired the auth tokens from GAIA. This is a separate class from
+// `InlineLoginHandlerImpl` because the full signin process is asynchronous and
+// can outlive the signin UI. `InlineLoginHandlerImpl` is destroyed once the UI
+// is closed.
 class InlineSigninHelper : public GaiaAuthConsumer {
  public:
   InlineSigninHelper(

@@ -13,46 +13,72 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/location.h"
 #include "base/not_fatal_until.h"
-#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/signin_promo.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "google_apis/gaia/gaia_auth_fetcher.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/strings/string_split.h"
-#include "chrome/credential_provider/common/gcp_strings.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 namespace {
 
-#if BUILDFLAG(IS_WIN)
+// This struct exists to pass parameters to the FinishCompleteLogin() method,
+// since the base::BindRepeating() call does not support this many template
+// args.
+struct FinishCompleteLoginParams {
+ public:
+  FinishCompleteLoginParams(InlineLoginHandlerImpl* handler,
+                            content::StoragePartition* partition,
+                            const GURL& url,
+                            const std::string& email,
+                            const GaiaId& gaia_id,
+                            const std::string& password,
+                            const std::string& auth_code)
+      : handler(handler),
+        partition(partition),
+        url(url),
+        email(email),
+        gaia_id(gaia_id),
+        password(password),
+        auth_code(auth_code) {}
+  FinishCompleteLoginParams(const FinishCompleteLoginParams& other) = default;
+  ~FinishCompleteLoginParams() = default;
+
+  // Pointer to WebUI handler.  May be nullptr.
+  raw_ptr<InlineLoginHandlerImpl> handler;
+  // The isolate storage partition containing sign in cookies.
+  raw_ptr<content::StoragePartition> partition;
+  // URL of sign in containing parameters such as email, source, etc.
+  GURL url;
+  // Email address of the account used to sign in.
+  std::string email;
+  // Obfustcated gaia id of the account used to sign in.
+  GaiaId gaia_id;
+  // Password of the account used to sign in.
+  std::string password;
+  // Authentication code used to exchange for a login scoped refresh token
+  // for the account used to sign in.  Used only with password separated
+  // signin flow.
+  std::string auth_code;
+};
 
 // Returns a list of valid signin domains that were passed in
 // |email_domains_parameter| as an argument to the gcpw signin dialog.
@@ -94,7 +120,45 @@ credential_provider::UiExitCodes ValidateSigninEmail(
              : credential_provider::kUiecInvalidEmailDomain;
 }
 
-#endif
+void FinishCompleteLogin(const FinishCompleteLoginParams& params,
+                         Profile* profile) {
+  DCHECK(params.handler);
+  CHECK_EQ(signin::GetSigninReasonForEmbeddedPromoURL(params.url),
+           signin_metrics::Reason::kFetchLstOnly);
+
+  std::string validate_gaia_id;
+  net::GetValueForKeyInQuery(
+      params.url, credential_provider::kValidateGaiaIdSigninPromoParameter,
+      &validate_gaia_id);
+  std::string email_domains;
+  net::GetValueForKeyInQuery(
+      params.url, credential_provider::kEmailDomainsSigninPromoParameter,
+      &email_domains);
+  credential_provider::UiExitCodes exit_code = ValidateSigninEmail(
+      validate_gaia_id, email_domains, params.email, params.gaia_id);
+  if (exit_code != credential_provider::kUiecSuccess) {
+    params.handler->HandleLoginError(
+        SigninUIError::FromCredentialProviderUiExitCode(params.email,
+                                                        exit_code));
+    return;
+  }
+
+  AboutSigninInternals* about_signin_internals =
+      AboutSigninInternalsFactory::GetForProfile(profile);
+  if (about_signin_internals) {
+    about_signin_internals->OnAuthenticationResultReceived("Successful");
+  }
+
+  std::string signin_scoped_device_id =
+      GetSigninScopedDeviceIdForProfile(profile);
+
+  // InlineSigninHelper will delete itself.
+  new InlineSigninHelper(
+      params.handler->GetWeakPtr(),
+      params.partition->GetURLLoaderFactoryForBrowserProcess(), profile,
+      params.url, params.email, params.gaia_id, params.password,
+      params.auth_code, signin_scoped_device_id);
+}
 
 }  // namespace
 
@@ -130,9 +194,6 @@ InlineSigninHelper::~InlineSigninHelper() = default;
 void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
   CHECK_EQ(signin::GetSigninReasonForEmbeddedPromoURL(current_url_),
            signin_metrics::Reason::kFetchLstOnly);
-  // Constants are only available on Windows for the Google Credential
-  // Provider for Windows.
-#if BUILDFLAG(IS_WIN)
   std::string json_retval;
   base::DictValue args;
   args.Set(credential_provider::kKeyEmail, base::Value(email_));
@@ -146,10 +207,6 @@ void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
   handler_->SendLSTFetchResultsMessage(base::Value(std::move(args)));
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                 this);
-  return;
-#else
-  NOTREACHED() << "Google Credential Provider is only available on Windows";
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 void InlineSigninHelper::OnClientOAuthFailure(
@@ -186,7 +243,6 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictValue& params) {
   const GURL& current_url = contents->GetLastCommittedURL();
   CHECK_EQ(signin::GetSigninReasonForEmbeddedPromoURL(current_url),
            signin_metrics::Reason::kFetchLstOnly);
-#if BUILDFLAG(IS_WIN)
   std::string email_domains;
   if (net::GetValueForKeyInQuery(
           current_url, credential_provider::kEmailDomainsSigninPromoParameter,
@@ -225,10 +281,8 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictValue& params) {
     windows_endpoint_path = gcpw_endpoint_path;
   }
   params.Set("gaiaPath", windows_endpoint_path);
-#endif
 
   std::string flow;
-#if BUILDFLAG(IS_WIN)
   // Treat a sign in request that specifies a gaia id that must be validated as
   // a reauth request. We only get a gaia id from GCPW when trying to reauth an
   // existing user on the system.
@@ -241,9 +295,6 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictValue& params) {
   } else {
     flow = "reauth";
   }
-#else
-  flow = "signin";
-#endif
   params.Set("flow", flow);
 }
 
@@ -271,72 +322,6 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
                       profile);
 }
 
-InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
-    InlineLoginHandlerImpl* handler,
-    content::StoragePartition* partition,
-    const GURL& url,
-    const std::string& email,
-    const GaiaId& gaia_id,
-    const std::string& password,
-    const std::string& auth_code)
-    : handler(handler),
-      partition(partition),
-      url(url),
-      email(email),
-      gaia_id(gaia_id),
-      password(password),
-      auth_code(auth_code) {}
-
-InlineLoginHandlerImpl::FinishCompleteLoginParams::FinishCompleteLoginParams(
-    const FinishCompleteLoginParams& other) = default;
-
-InlineLoginHandlerImpl::FinishCompleteLoginParams::
-    ~FinishCompleteLoginParams() = default;
-
-// static
-void InlineLoginHandlerImpl::FinishCompleteLogin(
-    const FinishCompleteLoginParams& params,
-    Profile* profile) {
-  DCHECK(params.handler);
-  CHECK_EQ(signin::GetSigninReasonForEmbeddedPromoURL(params.url),
-           signin_metrics::Reason::kFetchLstOnly);
-
-#if BUILDFLAG(IS_WIN)
-  std::string validate_gaia_id;
-  net::GetValueForKeyInQuery(
-      params.url, credential_provider::kValidateGaiaIdSigninPromoParameter,
-      &validate_gaia_id);
-  std::string email_domains;
-  net::GetValueForKeyInQuery(
-      params.url, credential_provider::kEmailDomainsSigninPromoParameter,
-      &email_domains);
-  credential_provider::UiExitCodes exit_code = ValidateSigninEmail(
-      validate_gaia_id, email_domains, params.email, params.gaia_id);
-  if (exit_code != credential_provider::kUiecSuccess) {
-    params.handler->HandleLoginError(
-        SigninUIError::FromCredentialProviderUiExitCode(params.email,
-                                                        exit_code));
-    return;
-  }
-#endif
-
-  AboutSigninInternals* about_signin_internals =
-      AboutSigninInternalsFactory::GetForProfile(profile);
-  if (about_signin_internals) {
-    about_signin_internals->OnAuthenticationResultReceived("Successful");
-  }
-
-  std::string signin_scoped_device_id =
-      GetSigninScopedDeviceIdForProfile(profile);
-
-  // InlineSigninHelper will delete itself.
-  new InlineSigninHelper(
-      params.handler->GetWeakPtr(),
-      params.partition->GetURLLoaderFactoryForBrowserProcess(), profile,
-      params.url, params.email, params.gaia_id, params.password,
-      params.auth_code, signin_scoped_device_id);
-}
-
 void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetLastCommittedURL();
@@ -344,14 +329,12 @@ void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
            signin_metrics::Reason::kFetchLstOnly);
 
   base::DictValue error_value;
-#if BUILDFLAG(IS_WIN)
   // If the error contains an integer error code, send it as part of the
   // result.
   if (error.type() == SigninUIError::Type::kFromCredentialProviderUiExitCode) {
     error_value.Set(credential_provider::kKeyExitCode,
                     base::Value(error.credential_provider_exit_code()));
   }
-#endif
   SendLSTFetchResultsMessage(base::Value(std::move(error_value)));
 }
 
