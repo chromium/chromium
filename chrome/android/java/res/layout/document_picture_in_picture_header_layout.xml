@@ -17,4 +17,23 @@ by DocumentPictureInPictureHeaderViewBinder.
     android:layout_height="match_parent"
     android:gravity="center_vertical"
     android:orientation="horizontal" >
+
+    <!-- TODO(crbug.com/470284885): Remove this when adding the URL view. -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/document_picture_in_picture_header_back_to_tab"
+        android:src="@drawable/ic_back_to_tab_20dp"
+        android:contentDescription=
+            "@string/document_picture_in_picture_back_to_tab"
+        android:tooltipText="@string/document_picture_in_picture_back_to_tab"
+        android:background="@drawable/default_icon_background"
+        android:layout_width=
+            "@dimen/document_picture_in_picture_header_icon_size"
+        android:layout_height=
+            "@dimen/document_picture_in_picture_header_icon_size"
+        android:scaleType="center" />
 </LinearLayout>

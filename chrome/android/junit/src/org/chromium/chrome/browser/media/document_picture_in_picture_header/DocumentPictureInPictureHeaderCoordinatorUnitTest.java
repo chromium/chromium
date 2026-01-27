@@ -33,6 +33,7 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
 
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private DocumentPictureInPictureHeaderDelegate mDelegate;
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
@@ -55,7 +56,11 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
     public void testCreation() {
         mCoordinator =
                 new DocumentPictureInPictureHeaderCoordinator(
-                        mView, mDesktopWindowStateManager, mThemeColorProvider);
+                        mView,
+                        mDesktopWindowStateManager,
+                        mThemeColorProvider,
+                        mDelegate,
+                        /* isBackToTabShown= */ true);
 
         verify(mDesktopWindowStateManager).addObserver(any());
     }
@@ -64,10 +69,16 @@ public class DocumentPictureInPictureHeaderCoordinatorUnitTest {
     public void testDestroy() {
         mCoordinator =
                 new DocumentPictureInPictureHeaderCoordinator(
-                        mView, mDesktopWindowStateManager, mThemeColorProvider);
+                        mView,
+                        mDesktopWindowStateManager,
+                        mThemeColorProvider,
+                        mDelegate,
+                        /* isBackToTabShown= */ true);
         mCoordinator.destroy();
 
         verify(mDesktopWindowStateManager).removeObserver(any());
         verify(mThemeColorProvider).removeThemeColorObserver(any());
+        verify(mThemeColorProvider).removeTintObserver(any());
     }
+
 }

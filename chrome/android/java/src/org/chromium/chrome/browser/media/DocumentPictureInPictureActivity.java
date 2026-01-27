@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderCoordinator;
+import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderDelegate;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -57,7 +58,8 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.url.GURL;
 
 @NullMarked
-public class DocumentPictureInPictureActivity extends AsyncInitializationActivity {
+public class DocumentPictureInPictureActivity extends AsyncInitializationActivity
+        implements DocumentPictureInPictureHeaderDelegate {
     private static final String TAG = "DocumentPiPActivity";
     public static final String WEB_CONTENTS_KEY =
             "org.chromium.chrome.browser.media.DocumentPictureInPicture.WebContents";
@@ -67,8 +69,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     private Tab mInitiatorTab;
     private @MonotonicNonNull ThinWebView mThinWebView;
     private @MonotonicNonNull TabObserver mInitiatorTabObserver;
-    private @MonotonicNonNull @SuppressWarnings("unused") PictureInPictureWindowOptions
-            mWindowOptions;
+    private @MonotonicNonNull PictureInPictureWindowOptions mWindowOptions;
     private @MonotonicNonNull AppHeaderCoordinator mAppHeaderCoordinator;
     private @MonotonicNonNull DocumentPictureInPictureHeaderCoordinator mHeaderCoordinator;
     private @MonotonicNonNull AppThemeColorProvider mAppThemeColorProvider;
@@ -238,7 +239,9 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 new DocumentPictureInPictureHeaderCoordinator(
                         findViewById(R.id.document_picture_in_picture_header),
                         assumeNonNull(mAppHeaderCoordinator),
-                        assumeNonNull(mAppThemeColorProvider));
+                        assumeNonNull(mAppThemeColorProvider),
+                        /* delegate= */ this,
+                        !assumeNonNull(mWindowOptions).disallowReturnToOpener);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTO_DOC_PIP_PERMISSION_PROMPT_ANDROID)) {
             WebContents webContents = mInitiatorTab.getWebContents();
@@ -332,6 +335,11 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         super.onDestroy();
     }
 
+    @Override
+    public void onBackToTab() {
+        DocumentPictureInPictureActivityJni.get().onBackToTab();
+    }
+
     private class DocumentPictureInPictureWebContentsDelegate extends WebContentsDelegateAndroid {
         @Override
         public void closeContents() {
@@ -357,5 +365,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     @NativeMethods
     public interface Natives {
         void onActivityStart(WebContents parentWebContent, WebContents webContents);
+
+        void onBackToTab();
     }
 }

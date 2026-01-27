@@ -465,4 +465,7 @@ found in the LICENSE file.
     <!-- Auto PiP permission dialog dimensions -->
     <dimen name="auto_pip_permission_dialog_width">360dp</dimen>
     <dimen name="auto_pip_permission_dialog_padding">24dp</dimen>
+
+    <!-- Document PiP dimensions -->
+    <dimen name="document_picture_in_picture_header_icon_size">48dp</dimen>
 </resources>

@@ -34,13 +34,19 @@ public class DocumentPictureInPictureHeaderCoordinator {
     public DocumentPictureInPictureHeaderCoordinator(
             View view,
             DesktopWindowStateManager desktopWindowStateManager,
-            ThemeColorProvider themeColorProvider) {
+            ThemeColorProvider themeColorProvider,
+            DocumentPictureInPictureHeaderDelegate delegate,
+            boolean isBackToTabShown) {
         PropertyModel model =
                 new PropertyModel.Builder(DocumentPictureInPictureHeaderProperties.ALL_KEYS)
                         .build();
         mMediator =
                 new DocumentPictureInPictureHeaderMediator(
-                        model, desktopWindowStateManager, themeColorProvider);
+                        model,
+                        desktopWindowStateManager,
+                        themeColorProvider,
+                        delegate,
+                        isBackToTabShown);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         model, view, DocumentPictureInPictureHeaderViewBinder::bind);

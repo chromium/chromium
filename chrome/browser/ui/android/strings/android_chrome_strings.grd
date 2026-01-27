@@ -7510,6 +7510,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_AUTO_PICTURE_IN_PICTURE_PROMPT_TITLE" desc="Title for the auto-picture-in-picture permission prompt. The placeholder is the website's origin.">
         <ph name="URL">%1$s<ex>example.com</ex></ph> wants to enter picture-in-picture automatically
       </message>
+
+      <!-- Document Picture-in-Picture -->
+      <message name="IDS_DOCUMENT_PICTURE_IN_PICTURE_BACK_TO_TAB" desc="Content description for the back to tab button in the document picture-in-picture window header.">
+        Back to tab
+      </message>
     </messages>
   </release>
 </grit>
