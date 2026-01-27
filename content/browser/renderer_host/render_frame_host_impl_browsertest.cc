@@ -9853,7 +9853,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
-                       ConnectionAllowlistHistoryBackDisallowed) {
+                       ConnectionAllowlistHistoryBackAllowedBFCache) {
   GURL allowlist_url(
       embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
   GURL cross_origin_url(
@@ -9862,6 +9862,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   // 1. Navigate to a.com with Connection-Allowlist.
   EXPECT_TRUE(NavigateToURL(shell(), allowlist_url));
   EXPECT_EQ(allowlist_url, web_contents()->GetLastCommittedURL());
+  RenderFrameHostImpl* rfh_a =
+      web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
 
   // 2. Navigate to b.com (cross-origin). This will be allowed since
   // it is browser initiated.
@@ -9870,16 +9872,63 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
   EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
 
-  // 3. Now invoke history.back(). This should be disallowed
-  // because the connection allowlist restricts cross-origin
-  // navigations depending on the issue resolution:
-  //  https://github.com/WICG/connection-allowlists/issues/4
-  // TODO(crbug.com/447954811): Currently it is allowed. See TODO in
-  // NavigationRequest::IsAllowedByConnectionAllowlist().
+  bool is_in_bfcache = rfh_a->IsInBackForwardCache();
+
+  // 3. Now invoke history.back(). This should be allowed since it will be
+  // served from the BFCache.
   TestNavigationObserver navigation_observer(web_contents());
   EXPECT_TRUE(ExecJs(web_contents(), "history.back();"));
   navigation_observer.Wait();
-  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(is_in_bfcache, navigation_observer.last_navigation_succeeded());
+
+  if (!is_in_bfcache) {
+    return;
+  }
+
+  // 4. The document loaded from BFCache should restore its own connection
+  // allowlist. Fetch a cross-origin resource. It should be disallowed.
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  std::string cross_origin_fetch_resource = JsReplace(
+      "(async () => {"
+      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  return resp.status; })();",
+      d_url);
+  ASSERT_FALSE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                      cross_origin_fetch_resource));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       ConnectionAllowlistHistoryBackDisallowedNoBFCache) {
+  GURL allowlist_url(
+      embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
+  GURL cross_origin_url(
+      embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1. Navigate to a.com with Connection-Allowlist.
+  EXPECT_TRUE(NavigateToURL(shell(), allowlist_url));
+  EXPECT_EQ(allowlist_url, web_contents()->GetLastCommittedURL());
+  RenderFrameHostImpl* rfh_a =
+      web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2. Navigate to b.com (cross-origin). This will be allowed since
+  // it is browser initiated.
+  EXPECT_TRUE(NavigateToURL(shell(), cross_origin_url));
+  EXPECT_EQ(cross_origin_url, web_contents()->GetLastCommittedURL());
+
+  EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
+
+  // 3. Now clear the BFCache and invoke history.back(). This should be
+  // disallowed because the connection allowlist restricts cross-origin
+  // navigations.
+  // https://github.com/WICG/connection-allowlists/issues/4
+  web_contents()->GetController().GetBackForwardCache().Flush();
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  TestNavigationObserver navigation_observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), "history.back();"));
+  navigation_observer.Wait();
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
   EXPECT_EQ(allowlist_url, web_contents()->GetLastCommittedURL());
 }
 

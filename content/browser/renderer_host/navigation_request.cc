@@ -7322,15 +7322,15 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist() {
   // allowlist will be inherited as part of the PolicyContainerHost and
   // applied in the network service in
   // NetworkRestrictionsNavigationThrottle::WillCommitWithoutUrlLoader().
-  //
-  // TODO(crbug.com/447954811): If it is renderer-initiated and a
-  // history navigation, it is not currently checked.
-  // To be fixed based on the resolution of
-  // https://github.com/WICG/connection-allowlists/issues/4
-  // TODO(crbug.com/475251663) Also, if the resolution is to fail as per
-  // connection allowlist, then the crash in this issue needs to be fixed.
-  if (!initiator_frame_token_ || IsHistory() || IsSameDocument() ||
+  if (!initiator_frame_token_ || IsSameDocument() ||
       !IsURLHandledByNetworkStack(common_params_->url)) {
+    return true;
+  }
+
+  // If it is renderer-initiated and a history navigation, it should be
+  // checked against connection allowlist unless it is served from the BFcache.
+  // https://github.com/WICG/connection-allowlists/issues/4
+  if (IsServedFromBackForwardCache()) {
     return true;
   }
 
