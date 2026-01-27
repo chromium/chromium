@@ -32,6 +32,7 @@
 #include <ostream>
 
 #include "base/auto_reset.h"
+#include "base/debug/crash_logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -8290,6 +8291,8 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
 
 // Extra checks that only occur during serialization.
 void AXObject::PreSerializationConsistencyCheck() const{
+  SCOPED_CRASH_KEY_STRING256("AXObject", "Error",
+                             this->ToString().Utf8().c_str());
   CHECK(!IsDetached()) << "Do not serialize detached nodes: " << this;
   CHECK(AXObjectCache().IsFrozen());
   CHECK(!NeedsToUpdateCachedValues()) << "Stale values on: " << this;
