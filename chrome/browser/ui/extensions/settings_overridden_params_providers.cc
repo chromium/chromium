@@ -101,8 +101,7 @@ struct SecondarySearchInfo {
   // is not from another extension.
   GURL origin;
 
-  // The name of the search engine; only populated when |type| is
-  // kNonGoogleInDefaultList.
+  // The name of the search engine, if available.
   std::u16string name;
 };
 
@@ -161,18 +160,18 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
   const GURL search_url = secondary_search->GenerateSearchURL(
       template_url_service->search_terms_data());
   const GURL origin = search_url.DeprecatedGetOriginAsURL();
+  SecondarySearchInfo search_info;
+  search_info.origin = origin;
+  search_info.name = secondary_search->short_name();
   if (google_util::IsGoogleSearchUrl(search_url)) {
-    return {SecondarySearchInfo::Type::kGoogle, origin};
+    search_info.type = SecondarySearchInfo::Type::kGoogle;
+  } else if (template_url_service->ShowInDefaultList(secondary_search)) {
+    search_info.type = SecondarySearchInfo::Type::kNonGoogleInDefaultList;
+  } else {
+    search_info.type = SecondarySearchInfo::Type::kOther;
   }
 
-  if (!template_url_service->ShowInDefaultList(secondary_search)) {
-    // Found another search engine, but it's not one of the default options.
-    return {SecondarySearchInfo::Type::kOther, origin};
-  }
-
-  // The secondary search engine is another of the defaults.
-  return {SecondarySearchInfo::Type::kNonGoogleInDefaultList, origin,
-          secondary_search->short_name()};
+  return search_info;
 }
 
 // Creates a fallback icon for a search engine, in case a favicon can't be
@@ -194,7 +193,18 @@ ui::ImageModel CreateFallbackSearchIcon(
 // A descriptor containing information required to fetch an icon, and a pointer
 // to the ImageModel that should be populated with the result of the fetch.
 struct IconFetchParams {
-  // The favicon URL from which to fetch.
+  // The type of icon to be fetched.
+  enum IconSourceType {
+    // Fetches an image from a favicon URL.
+    kFaviconUrl,
+
+    // Fetches a favicon from the specified page URL.
+    kPageUrl,
+  };
+
+  IconSourceType source_type;
+
+  // The URL from which to fetch.
   GURL url;
 
   // If set, the Extension to which this icon pertains. Used to generate a
@@ -235,29 +245,37 @@ void FetchIconsThenRun(std::vector<IconFetchParams>& lookups,
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
 
-  for (auto [favicon_url, extension, image] : lookups) {
-    if (!favicon_service || !favicon_url.is_valid()) {
+  for (auto& lookup : lookups) {
+    if (!favicon_service || !lookup.url.is_valid()) {
       // Fallback if the service is unavailable.
-      *image = CreateFallbackSearchIcon(extension);
+      *lookup.image = CreateFallbackSearchIcon(lookup.extension);
       barrier_closure.Run();
       continue;
     }
 
-    favicon_service->GetFaviconImageForPageURL(
-        favicon_url,
-        base::BindOnce(
-            [](const extensions::Extension* extension,
-               ui::ImageModel* image_spot, base::RepeatingClosure barrier,
-               const favicon_base::FaviconImageResult& result) {
-              if (!result.image.IsEmpty()) {
-                *image_spot = ui::ImageModel::FromImage(result.image);
-              } else {
-                *image_spot = CreateFallbackSearchIcon(extension);
-              }
-              barrier.Run();
-            },
-            base::Unretained(extension), image, barrier_closure),
-        tracker_ptr);
+    auto lookup_callback = base::BindOnce(
+        [](const extensions::Extension* extension, ui::ImageModel* image_spot,
+           base::RepeatingClosure barrier,
+           const favicon_base::FaviconImageResult& result) {
+          if (!result.image.IsEmpty()) {
+            *image_spot = ui::ImageModel::FromImage(result.image);
+          } else {
+            *image_spot = CreateFallbackSearchIcon(extension);
+          }
+          barrier.Run();
+        },
+        base::Unretained(lookup.extension), lookup.image, barrier_closure);
+
+    switch (lookup.source_type) {
+      case IconFetchParams::IconSourceType::kFaviconUrl:
+        favicon_service->GetFaviconImage(lookup.url, std::move(lookup_callback),
+                                         tracker_ptr);
+        break;
+      case IconFetchParams::IconSourceType::kPageUrl:
+        favicon_service->GetFaviconImageForPageURL(
+            lookup.url, std::move(lookup_callback), tracker_ptr);
+        break;
+    }
   }
 }
 
@@ -357,10 +375,6 @@ void GetSearchOverriddenParamsThenRun(
     return;
   }
 
-  // The parameters fetched will depend on the style of dialog being shown.
-  const bool explicit_choice_dialog = base::FeatureList::IsEnabled(
-      extensions_features::kSearchEngineExplicitChoiceDialog);
-
   // For historical reasons, the search override preference is the same as the
   // one we use for the controlled home setting. We continue this so that
   // users won't see the bubble or dialog UI if they've already acknowledged
@@ -412,11 +426,76 @@ void GetSearchOverriddenParamsThenRun(
       "Extensions.SettingsOverridden.BackToGoogleSearchOverriddenDialogResult";
 
   const char* histogram_name = nullptr;
+  switch (secondary_search.type) {
+    case SecondarySearchInfo::Type::kGoogle:
+      histogram_name = kBackToGoogleHistogramName;
+      break;
+    case SecondarySearchInfo::Type::kNonGoogleInDefaultList:
+      DCHECK(!secondary_search.name.empty());
+      histogram_name = kBackToOtherHistogramName;
+      break;
+    case SecondarySearchInfo::Type::kOther:
+      histogram_name = kGenericDialogHistogramName;
+      break;
+  }
+
+  // The parameters fetched will depend on the style of dialog being shown.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kSearchEngineExplicitChoiceDialog) &&
+      (secondary_search.type == SecondarySearchInfo::Type::kGoogle)) {
+    // TODO(http://crbug.com/461806299): Support all types.
+
+    // Build an explicit-choice dialog.
+    std::u16string dialog_title = l10n_util::GetStringUTF16(
+        IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_EXPLICIT_CHOICE);
+    const std::u16string extension_name_for_ui =
+        extensions::util::GetFixupExtensionNameForUIDisplay(extension->name());
+    std::u16string dialog_message = l10n_util::GetStringFUTF16(
+        IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_EXPLICIT_CHOICE,
+        extension_name_for_ui, default_search->short_name());
+
+    // On the 'explicit choice' dialog, there is no icon at the title level.
+    SettingsOverriddenDialogController::ShowParams show_params(
+        std::move(dialog_title), std::move(dialog_message), /*icon=*/nullptr);
+    auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
+        extension->id(), preference_name, histogram_name,
+        std::move(show_params));
+
+    std::vector<IconFetchParams> icon_lookups;
+
+    // Previous search engine before the extension overrode it.
+    SettingsOverriddenDialogController::SettingOption& previous_setting =
+        params->content.previous_setting.emplace();
+    previous_setting.text = secondary_search.name;
+    previous_setting.description = l10n_util::GetStringUTF16(
+        IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_PREVIOUS_CHOICE);
+    icon_lookups.emplace_back(IconFetchParams::IconSourceType::kPageUrl,
+                              secondary_search.origin,
+                              /*extension=*/nullptr, &previous_setting.image);
+
+    // New search engine from the overriding extension:
+    SettingsOverriddenDialogController::SettingOption& new_setting =
+        params->content.new_setting.emplace();
+    new_setting.text = default_search->short_name();
+    new_setting.description = l10n_util::GetStringFUTF16(
+        IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE,
+        extension_name_for_ui);
+    icon_lookups.emplace_back(IconFetchParams::IconSourceType::kFaviconUrl,
+                              default_search->favicon_url(),
+
+                              extension, &new_setting.image);
+
+    // Asynchronously look up icons (if needed) then continue.
+    FetchIconsThenRun(
+        icon_lookups, profile,
+        base::BindOnce(std::move(done_callback), std::move(params)));
+    return;
+  }
+
   const gfx::VectorIcon* icon = nullptr;
   std::u16string dialog_title;
   switch (secondary_search.type) {
     case SecondarySearchInfo::Type::kGoogle:
-      histogram_name = kBackToGoogleHistogramName;
       dialog_title = l10n_util::GetStringUTF16(
           IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_BACK_TO_GOOGLE);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -425,13 +504,11 @@ void GetSearchOverriddenParamsThenRun(
       break;
     case SecondarySearchInfo::Type::kNonGoogleInDefaultList:
       DCHECK(!secondary_search.name.empty());
-      histogram_name = kBackToOtherHistogramName;
       dialog_title = l10n_util::GetStringFUTF16(
           IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_BACK_TO_OTHER,
           secondary_search.name);
       break;
     case SecondarySearchInfo::Type::kOther:
-      histogram_name = kGenericDialogHistogramName;
       dialog_title = l10n_util::GetStringUTF16(
           IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_GENERIC);
       break;
@@ -445,23 +522,9 @@ void GetSearchOverriddenParamsThenRun(
   auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
       extension->id(), preference_name, histogram_name, std::move(show_params));
 
-  if (explicit_choice_dialog) {
-    // TODO(crbug.com/461806299): Collect additional search engine details.
-    // The dialog is being reworked to show the choice differently, and will
-    // include icons. This is WIP.
-    std::vector<IconFetchParams> icon_lookups;
-
-    SettingsOverriddenDialogController::SettingOption& new_setting =
-        params->content.new_setting.emplace();
-    icon_lookups.emplace_back(default_search->favicon_url(), extension,
-                              &new_setting.image);
-    // Asynchronously look up icons (if needed) then continue.
-    FetchIconsThenRun(
-        icon_lookups, profile,
-        base::BindOnce(std::move(done_callback), std::move(params)));
-  } else {
-    std::move(done_callback).Run(std::move(params));
-  }
+  // There are no async operations needed for the non-explicit-choice dialog,
+  // so trigger the callback immediately.
+  std::move(done_callback).Run(std::move(params));
 }
 
 }  // namespace settings_overridden_params

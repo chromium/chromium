@@ -6494,8 +6494,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_BACK_TO_OTHER" desc="The title of the dialog informing the user that the default search engine has been overridden by an extension, and asking if they want to change back to their old provider.">
         Change back to <ph name="OLD_SEARCH_PROVIDER">$1<ex>DuckDuckGo</ex></ph>?
       </message>
+      <message name="IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_EXPLICIT_CHOICE" desc="The title of the dialog informing the user that the default search engine has been overridden by an extension, and presenting an explicit choice on whether to use the new or previous search providers.">
+        Confirm your default search engine
+      </message>
       <message name="IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_GENERIC" desc="The body of the dialog informing the user that the default search engine has been overridden by an extension, indicating which extension now controls it.">
         The "<ph name="EXTENSION_NAME">$2<ex>Some New Search</ex></ph>" extension changed search to use <ph name="SEARCH_PROVIDER_DOMAIN">$1<ex>google.com</ex></ph>
+      </message>
+      <message name="IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_EXPLICIT_CHOICE" desc="The title of the dialog informing the user that the default search engine has been overridden by an extension, and presenting an explicit choice on whether to use the new or previous search providers.">
+        The extension "<ph name="EXTENSION_NAME">$1<ex>Some Extension</ex></ph>" attempted to change your search engine to <ph name="SEARCH_PROVIDER">$2<ex>DuckDuckGo</ex></ph>. Confirm your preference below
+      </message>
+      <message name="IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE" desc="Describes why a new search provider (added by an extension) is listed as an option for which search to use.">
+        Recently changed to by <ph name="EXTENSION_NAME">$1<ex>Some Extension</ex></ph>
+      </message>
+      <message name="IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_PREVIOUS_CHOICE" desc="Describes why the previous search provider is being presented as an option for which search to use.">
+        Your previous choice
       </message>
       <!-- End Extension Settings Overridden Dialog strings. -->
       <!-- Force Installed Deprecated Apps Deletion Dialog strings. -->

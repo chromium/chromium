@@ -8,6 +8,7 @@
 #include <cstddef>
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -28,6 +29,14 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
+
+namespace {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+constexpr char16_t kSearchOverrideExtensionName[] =
+    u"Search Override Extension";
+constexpr char16_t kSearchOverrideExtensionSearchName[] = u"Example";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+}  // namespace
 
 class SettingsOverriddenParamsProvidersBrowserTest
     : public extensions::ExtensionBrowserTest {
@@ -562,7 +571,7 @@ class ExtensionControllingSearchExplicitChoiceParamsBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
-    ParamsHasNewSearchIcon) {
+    NewExtensionOrPreviousGoogleSearch) {
   const extensions::Extension* extension = AddExtensionControllingSearch();
   ASSERT_TRUE(extension);
 
@@ -570,9 +579,25 @@ IN_PROC_BROWSER_TEST_F(
       GetSearchOverriddenParamsSync(web_contents());
   ASSERT_TRUE(params);
 
+  EXPECT_EQ(params->content.dialog_title,
+            u"Confirm your default search engine");
+  EXPECT_TRUE(params->content.message.contains(
+      base::StrCat({u"The extension \"", kSearchOverrideExtensionName,
+                    u"\" attempted to change your search engine"})));
+
+  auto previous_setting = params->content.previous_setting;
+  ASSERT_TRUE(previous_setting.has_value());
+  EXPECT_FALSE(previous_setting.value().image.IsEmpty());
+  EXPECT_EQ(previous_setting.value().text, u"Google");
+  EXPECT_EQ(previous_setting.value().description, u"Your previous choice");
+
   auto new_setting = params->content.new_setting;
   ASSERT_TRUE(new_setting.has_value());
-  ASSERT_TRUE(new_setting.value().image.IsImage());
+  EXPECT_TRUE(new_setting.value().image.IsImage());
+  EXPECT_EQ(new_setting.value().text, kSearchOverrideExtensionSearchName);
+  EXPECT_EQ(
+      new_setting.value().description,
+      base::StrCat({u"Recently changed to by ", kSearchOverrideExtensionName}));
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
