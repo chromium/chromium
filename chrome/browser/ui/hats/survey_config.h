@@ -67,6 +67,7 @@ extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentControl[];
 extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentNotification[];
 extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction[];
 extern const char kHatsSurveyTriggerSettings[];
+extern const char kHatsSurveyTriggerSEHijacking[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];
 extern const char kHatsSurveyTriggerSettingsSecurity[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySettings[];
