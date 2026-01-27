@@ -70,12 +70,9 @@ public class SearchEngineAdapter extends BaseAdapter
                 TemplateUrlService.TemplateUrlServiceObserver,
                 OnClickListener {
 
-    @VisibleForTesting static final int VIEW_TYPE_ITEM = 0;
-    @VisibleForTesting static final int VIEW_TYPE_DIVIDER = 1;
-    private static final int VIEW_TYPE_COUNT = 2;
-
     public static final int MAX_RECENT_ENGINE_NUM = 3;
     public static final long MAX_DISPLAY_TIME_SPAN_MS = DateUtils.DAY_IN_MILLIS * 2;
+    private static final Runnable NO_OP = () -> {};
 
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
             NetworkTrafficAnnotationTag.createComplete(
@@ -109,6 +106,17 @@ public class SearchEngineAdapter extends BaseAdapter
                     }\
                     """);
 
+    private static final int VIEW_TYPE_COUNT = 3;
+
+    @VisibleForTesting
+    @IntDef({ViewType.ITEM, ViewType.DIVIDER, ViewType.SITE_SEARCH_SETTINGS})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ViewType {
+        int ITEM = 0;
+        int DIVIDER = 1;
+        int SITE_SEARCH_SETTINGS = 2;
+    }
+
     /**
      * Type for source of search engine. This is needed because if a custom search engine is set as
      * default, it will be moved to the prepopulated list.
@@ -129,6 +137,8 @@ public class SearchEngineAdapter extends BaseAdapter
     private final Context mContext;
 
     private final Profile mProfile;
+
+    private final Runnable mSiteSearchClickHandler;
 
     /** The layout inflater to use for the custom views. */
     private final LayoutInflater mLayoutInflater;
@@ -167,13 +177,22 @@ public class SearchEngineAdapter extends BaseAdapter
      *
      * @param context The current context.
      * @param profile The Profile associated with these settings.
+     * @param siteSearchClickHandler Used for "Manage search engines and site search". Only
+     *     avaliable when OmniboxFeatures.sOmniboxSiteSearch is enabled.
      */
-    public SearchEngineAdapter(Context context, Profile profile) {
+    public SearchEngineAdapter(
+            Context context, Profile profile, @Nullable Runnable siteSearchClickHandler) {
         mContext = context;
         mProfile = profile;
         mLayoutInflater =
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContainmentItemController = new ContainmentItemController(mContext);
+
+        if (OmniboxFeatures.sOmniboxSiteSearch.isEnabled() && siteSearchClickHandler != null) {
+            this.mSiteSearchClickHandler = siteSearchClickHandler;
+        } else {
+            this.mSiteSearchClickHandler = NO_OP;
+        }
     }
 
     /** Start the adapter to gather the available search engines and listen for updates. */
@@ -451,6 +470,9 @@ public class SearchEngineAdapter extends BaseAdapter
             // Account for the header by adding one to the size.
             size += mRecentSearchEngines.size() + 1;
         }
+        if (mSiteSearchClickHandler != NO_OP) {
+            size += 1;
+        }
         return size;
     }
 
@@ -461,6 +483,9 @@ public class SearchEngineAdapter extends BaseAdapter
 
     @Override
     public @Nullable Object getItem(int pos) {
+        if (getItemViewType(pos) == ViewType.SITE_SEARCH_SETTINGS) {
+            return null;
+        }
         if (pos < mPrepopulatedSearchEngines.size()) {
             return mPrepopulatedSearchEngines.get(pos);
         } else if (pos > mPrepopulatedSearchEngines.size()) {
@@ -476,11 +501,14 @@ public class SearchEngineAdapter extends BaseAdapter
     }
 
     @Override
-    public int getItemViewType(int position) {
-        if (position == mPrepopulatedSearchEngines.size() && mRecentSearchEngines.size() != 0) {
-            return VIEW_TYPE_DIVIDER;
+    public @ViewType int getItemViewType(int position) {
+        if (mSiteSearchClickHandler != NO_OP && position == getCount() - 1) {
+            return ViewType.SITE_SEARCH_SETTINGS;
+        } else if (position == mPrepopulatedSearchEngines.size()
+                && mRecentSearchEngines.size() != 0) {
+            return ViewType.DIVIDER;
         } else {
-            return VIEW_TYPE_ITEM;
+            return ViewType.ITEM;
         }
     }
 
@@ -490,7 +518,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
         View view = convertView;
         int itemViewType = getItemViewType(position);
-        if (itemViewType == VIEW_TYPE_DIVIDER) {
+        if (itemViewType == ViewType.DIVIDER) {
             if (convertView == null && mRecentSearchEngines.size() != 0) {
                 view = mLayoutInflater.inflate(R.layout.search_engine_recent_title, parent, false);
             }
@@ -498,15 +526,19 @@ public class SearchEngineAdapter extends BaseAdapter
         }
 
         if (convertView == null) {
-            int layoutId = R.layout.search_engine_with_logo;
+            int layoutId;
+            if (itemViewType == ViewType.SITE_SEARCH_SETTINGS) {
+                layoutId = R.layout.search_engine_site_search_link;
+            } else {
+                layoutId = R.layout.search_engine_with_logo;
+            }
             view = mLayoutInflater.inflate(layoutId, parent, false);
         }
 
         if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            boolean isTop = position == 0 || getItemViewType(position - 1) == VIEW_TYPE_DIVIDER;
+            boolean isTop = position == 0 || getItemViewType(position - 1) == ViewType.DIVIDER;
             boolean isBottom =
-                    position == getCount() - 1
-                            || getItemViewType(position + 1) == VIEW_TYPE_DIVIDER;
+                    position == getCount() - 1 || getItemViewType(position + 1) == ViewType.DIVIDER;
 
             View containerView = view.findViewById(R.id.container);
 
@@ -516,6 +548,12 @@ public class SearchEngineAdapter extends BaseAdapter
                             .build();
             ContainmentViewStyler.applyBackgroundStyle(containerView, containerStyle);
             ContainmentViewStyler.applyMargins(containerView, containerStyle);
+        }
+
+        if (itemViewType == ViewType.SITE_SEARCH_SETTINGS) {
+            view.setOnClickListener(this);
+            view.setTag(position);
+            return view;
         }
 
         view.setOnClickListener(this);
@@ -638,7 +676,12 @@ public class SearchEngineAdapter extends BaseAdapter
 
     @Override
     public void onClick(View view) {
-        searchEngineSelected((int) view.getTag());
+        int position = (int) view.getTag();
+        if (getItemViewType(position) == ViewType.SITE_SEARCH_SETTINGS) {
+            mSiteSearchClickHandler.run();
+            return;
+        }
+        searchEngineSelected(position);
     }
 
     private String searchEngineSelected(int position) {

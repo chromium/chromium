@@ -20,8 +20,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 
 /**
@@ -106,7 +108,12 @@ public class SearchEngineSettings extends ListFragment
     private void createAdapterIfNecessary() {
         if (mSearchEngineAdapter != null) return;
         assert mProfile != null;
-        mSearchEngineAdapter = new SearchEngineAdapter(getActivity(), mProfile);
+        Runnable siteSearchClickHandler =
+                OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
+                        ? this::openSiteSearchSettings
+                        : null;
+        mSearchEngineAdapter =
+                new SearchEngineAdapter(getActivity(), mProfile, siteSearchClickHandler);
     }
 
     @Override
@@ -126,5 +133,10 @@ public class SearchEngineSettings extends ListFragment
     @Override
     public @Nullable String getMainMenuKey() {
         return "search_engine";
+    }
+
+    private void openSiteSearchSettings() {
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(getContext(), SiteSearchSettings.class);
     }
 }

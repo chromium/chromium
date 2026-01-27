@@ -252,30 +252,31 @@ public class SearchEngineAdapterTest {
         doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
-        var adapter = new SearchEngineAdapter(mContext, mProfile);
+        var adapter =
+                new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
         adapter.start();
 
         assertEquals(4, adapter.getCount());
 
         // Checking the data that was used to render the view.
-        assertEquals(SearchEngineAdapter.VIEW_TYPE_ITEM, adapter.getItemViewType(0));
+        assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(0));
         verify(p1, never()).getShortName();
         View v = adapter.getView(0, null, null);
         verify(p1, atLeastOnce()).getShortName();
         assertEquals(View.VISIBLE, v.findViewById(R.id.url).getVisibility());
         assertThat(v.findViewById(R.id.logo), notNullValue());
 
-        assertEquals(SearchEngineAdapter.VIEW_TYPE_ITEM, adapter.getItemViewType(1));
+        assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(1));
         verify(p2, never()).getShortName();
         v = adapter.getView(1, null, null);
         verify(p2, atLeastOnce()).getShortName();
         assertEquals(View.GONE, v.findViewById(R.id.url).getVisibility()); // Because no keyword.
         assertThat(v.findViewById(R.id.logo), notNullValue());
 
-        assertEquals(SearchEngineAdapter.VIEW_TYPE_DIVIDER, adapter.getItemViewType(2));
+        assertEquals(SearchEngineAdapter.ViewType.DIVIDER, adapter.getItemViewType(2));
         assertNotNull(adapter.getView(2, null, null));
 
-        assertEquals(SearchEngineAdapter.VIEW_TYPE_ITEM, adapter.getItemViewType(3));
+        assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(3));
         verify(c1, never()).getShortName();
         v = adapter.getView(3, null, null);
         verify(c1, atLeastOnce()).getShortName();
@@ -301,7 +302,8 @@ public class SearchEngineAdapterTest {
         doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
-        var adapter = new SearchEngineAdapter(mContext, mProfile);
+        var adapter =
+                new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
         adapter.start();
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
@@ -315,7 +317,7 @@ public class SearchEngineAdapterTest {
         doReturn(true).when(mRegionalCapabilities).isInEeaCountry();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
-        adapter = new SearchEngineAdapter(mContext, mProfile);
+        adapter = new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
         adapter.start();
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
@@ -343,7 +345,8 @@ public class SearchEngineAdapterTest {
         doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
-        var adapter = new SearchEngineAdapter(mContext, mProfile);
+        var adapter =
+                new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
         adapter.start();
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.

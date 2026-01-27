@@ -83,6 +83,7 @@ android_resources("java_resources") {
     "java/res/layout/default_search_engine_dialog_view.xml",
     "java/res/layout/search_engine_choice_header.xml",
     "java/res/layout/search_engine_recent_title.xml",
+    "java/res/layout/search_engine_site_search_link.xml",
     "java/res/layout/search_engine_with_logo.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",

@@ -118,7 +118,9 @@ public class SearchEngineSettingsRenderTest {
 
                             SearchEngineAdapter adapter =
                                     new SearchEngineAdapter(
-                                            mActivityTestRule.getActivity(), mProfile) {
+                                            mActivityTestRule.getActivity(),
+                                            mProfile,
+                                            /* siteSearchClickHandler= */ null) {
                                         @Override
                                         LargeIconBridge createLargeIconBridge() {
                                             return largeIconBridge;
