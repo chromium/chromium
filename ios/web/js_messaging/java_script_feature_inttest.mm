@@ -116,7 +116,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ASSERT_FALSE(feature()->last_received_message());
 
   auto parameters =
-      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->SetResponseToNextMessage(kReplyString);
   feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
@@ -299,7 +299,7 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest,
   ASSERT_FALSE(feature()->last_received_message());
 
   auto parameters =
-      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->SetResponseToNextMessage(kReplyString);
   feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
