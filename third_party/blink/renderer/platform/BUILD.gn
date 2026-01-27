@@ -2844,6 +2844,7 @@ fuzzer_test("blink_avif_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  centipede_options = libfuzzer_options
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
