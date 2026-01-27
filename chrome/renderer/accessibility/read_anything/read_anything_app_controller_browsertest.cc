@@ -218,6 +218,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->read_aloud_model_;
   }
 
+  void Distill() { controller_->Distill(); }
+
   void SendBatchUpdates() {
     std::vector<ui::AXTreeUpdate> batch_updates;
     for (int i = 2; i < 5; i++) {
@@ -3258,6 +3260,29 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
                       kDistillationWithContent))
       .Times(1);
   controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnActiveAXTreeIDChanged_SetsDistillationInProgress) {
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
+                                       ukm::kInvalidSourceId, false);
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       Distill_SetsDistillationInProgress) {
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  Distill();
   page_handler_.FlushForTesting();
 }
 

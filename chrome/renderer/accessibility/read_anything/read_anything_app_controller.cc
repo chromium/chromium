@@ -742,6 +742,12 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
       base::BindOnce(&ReadAnythingAppController::RecordDistillationSuccess,
                      base::Unretained(this)));
 
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    page_handler_->OnDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationInProgress);
+  }
+
   // When the UI first constructs, this function may be called before tree_id
   // has been added to the tree list in AccessibilityEventReceived. In that
   // case, do not distill.
@@ -862,6 +868,11 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
   }
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   model_.set_distillation_in_progress(true);
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    page_handler_->OnDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationInProgress);
+  }
   VLOG(1) << "Distilling tree with ID: " << tree->GetAXTreeID();
   distiller_->Distill(*tree, snapshot, model_.GetUkmSourceId());
 }

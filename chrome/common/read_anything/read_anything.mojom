@@ -58,9 +58,11 @@ enum ReadAnythingDistillationState {
   kUndefined = 0, // The distillation state has not been initialized.
   kNotAttempted = 1, // The distillation state has been initialized, but
                      // distillation has not been attempted.
-  kDistillationEmpty = 2, // The distiller failed to process the content in the
+  kDistillationInProgress = 2, // Waiting for the distiller to finish
+                               // processing the content.
+  kDistillationEmpty = 3, // The distiller failed to process the content in the
                           // page (returned no content).
-  kDistillationWithContent = 3, // The distiller successfully processed the
+  kDistillationWithContent = 4, // The distiller successfully processed the
                                 // content in the page.
 };
 
