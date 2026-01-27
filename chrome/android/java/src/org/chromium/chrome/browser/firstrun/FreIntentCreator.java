@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -147,11 +149,12 @@ public class FreIntentCreator {
      * Adds fromIntent as a PendingIntent to the firstRunIntent. This should be used to add a
      * PendingIntent that will be sent when first run is completed.
      *
-     * @param context                        The context that corresponds to the Intent.
-     * @param firstRunIntent                 The intent that will be used to start first run.
+     * @param context The context that corresponds to the Intent.
+     * @param firstRunIntent The intent that will be used to start first run.
      * @param intentToLaunchAfterFreComplete The intent to launch when the user completes the FRE.
      */
-    private static void addPendingIntent(
+    @VisibleForTesting
+    public static void addPendingIntent(
             Context context, Intent firstRunIntent, Intent intentToLaunchAfterFreComplete) {
         int pendingIntentFlags =
                 PendingIntent.FLAG_UPDATE_CURRENT

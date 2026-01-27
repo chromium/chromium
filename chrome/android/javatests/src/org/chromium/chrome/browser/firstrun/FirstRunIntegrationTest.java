@@ -46,11 +46,13 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -98,6 +100,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.HashMap;
@@ -123,18 +126,28 @@ public class FirstRunIntegrationTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    // SigninTestRule must be initialized before and destroyed after BaseActivityTestRule.
+    @Rule(order = 0)
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule(order = 1)
+    public final BaseActivityTestRule<FirstRunActivity> mActivityTestRule =
+            new BaseActivityTestRule(FirstRunActivity.class);
+
     @Rule
     public BasePartnerBrowserCustomizationIntegrationTestRule mCustomizationRule =
             new BasePartnerBrowserCustomizationIntegrationTestRule();
-
-    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
 
     private final Set<Class> mSupportedActivities =
             Set.of(
+                    BlankUiTestActivity.class,
                     ChromeLauncherActivity.class,
                     FirstRunActivity.class,
+                    // TODO(crbug.com/431982831): Remove ChromeTabbedActivity and CustomTabActivity
+                    // after enabling all
+                    // tests to use BlankUiTestActivity instead.
                     ChromeTabbedActivity.class,
                     CustomTabActivity.class);
     private final Map<Class, ActivityMonitor> mMonitorMap = new HashMap<>();
@@ -195,15 +208,18 @@ public class FirstRunIntegrationTest {
         return mMonitorMap.get(activityClass);
     }
 
-    private FirstRunActivity launchFirstRunActivity() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(TEST_URL));
+    private Intent getIntentToLaunchAfterFirstRunActivity() {
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), BlankUiTestActivity.class);
         intent.setPackage(mContext.getPackageName());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(intent);
+        return intent;
+    }
 
-        // Because the AsyncInitializationActivity notices that the FRE hasn't been run yet, it
-        // redirects to it.  Once the user closes the FRE, the user should be kicked back into the
-        // startup flow where they were interrupted.
+    private FirstRunActivity launchFirstRunActivity() {
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), FirstRunActivity.class);
+        FreIntentCreator.addPendingIntent(
+                mContext, intent, getIntentToLaunchAfterFirstRunActivity());
+        mActivityTestRule.launchActivity(intent);
         return waitForFirstRunActivity();
     }
 
@@ -392,7 +408,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/430594808")
     public void testFirstRunPages_NoCctPolicy_AbsenceOfPromos() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase());
     }
@@ -417,7 +432,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_HistorySyncPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withHistorySyncPromo());
     }
@@ -426,7 +440,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_NoCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos());
 
@@ -447,14 +460,13 @@ public class FirstRunIntegrationTest {
                 .selectDefaultSearchEngine()
                 .dismissHistorySync();
 
-        waitForActivity(ChromeTabbedActivity.class);
+        waitForActivity(BlankUiTestActivity.class);
     }
 
     @Test
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos().withCctTosDisabled());
 
@@ -475,12 +487,11 @@ public class FirstRunIntegrationTest {
                 .selectDefaultSearchEngine()
                 .dismissHistorySync();
 
-        waitForActivity(ChromeTabbedActivity.class);
+        waitForActivity(BlankUiTestActivity.class);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_AbsenceOfPromos() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled());
     }
@@ -510,7 +521,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
         runFirstRunPagesTest(
                 new FirstRunPagesTestCase().withCctTosDisabled().withHistorySyncPromo());
@@ -528,7 +538,7 @@ public class FirstRunIntegrationTest {
         getObserverData(firstRunActivity)
                 .updateCachedEngineCallback
                 .waitForCallback("Failed to alert search widgets that an update is necessary", 0);
-        waitForActivity(ChromeTabbedActivity.class);
+        waitForActivity(BlankUiTestActivity.class);
     }
 
     private void initializePreferences(FirstRunPagesTestCase testCase) {
@@ -577,14 +587,13 @@ public class FirstRunIntegrationTest {
                 .selectDefaultSearchEngine()
                 .dismissHistorySync();
 
-        waitForActivity(ChromeTabbedActivity.class);
+        waitForActivity(BlankUiTestActivity.class);
 
         histograms.assertExpected();
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testFirstRunPages_ProgressHistogramRecording_NoPromos() throws Exception {
         HistogramWatcher.Builder histogramBuilder =
                 HistogramWatcher.newBuilder()
@@ -607,7 +616,7 @@ public class FirstRunIntegrationTest {
                 .ensurePagesCreationSucceeded()
                 .dismissSigninPromo();
 
-        waitForActivity(ChromeTabbedActivity.class);
+        waitForActivity(BlankUiTestActivity.class);
 
         histograms.assertExpected();
     }
