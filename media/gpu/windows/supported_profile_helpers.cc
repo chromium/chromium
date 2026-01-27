@@ -39,6 +39,7 @@ class D3DVideoDeviceWrapper {
   virtual bool IsResolutionSupported(const GUID& profile,
                                      const gfx::Size& resolution,
                                      DXGI_FORMAT format) = 0;
+  virtual UINT GetDecoderVendorID() const = 0;
 };
 
 class D3D11VideoDeviceWrapper : public D3DVideoDeviceWrapper {
@@ -74,6 +75,15 @@ class D3D11VideoDeviceWrapper : public D3DVideoDeviceWrapper {
     return SUCCEEDED(video_device_->GetVideoDecoderConfigCount(
                &desc, &config_count)) &&
            config_count > 0;
+  }
+
+  UINT GetDecoderVendorID() const override {
+    ComDXGIDevice dxgi_device;
+    if (FAILED(video_device_.As(&dxgi_device)) || !dxgi_device) {
+      return 0;
+    }
+
+    return GetGPUVendorID(dxgi_device);
   }
 
  private:
@@ -122,17 +132,61 @@ class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
            support.SupportFlags == D3D12_VIDEO_DECODE_SUPPORT_FLAG_SUPPORTED;
   }
 
+  UINT GetDecoderVendorID() const override {
+    ComDXGIDevice dxgi_device;
+    if (FAILED(video_device_.As(&dxgi_device)) || !dxgi_device) {
+      return 0;
+    }
+
+    return GetGPUVendorID(dxgi_device);
+  }
+
  private:
   ComD3D12VideoDevice video_device_;
 };
 
-// Windows Media Foundation H.264 decoding does not support decoding videos
-// with any dimension smaller than 48 pixels:
-// http://msdn.microsoft.com/en-us/library/windows/desktop/dd797815
-//
 // TODO(dalecurtis): These values are too low. We should only be using
 // hardware decode for videos above ~360p, see http://crbug.com/684792.
 constexpr gfx::Size kMinResolution(64, 64);
+constexpr gfx::Size kMinVP9ResolutionForNvidia(128, 128);
+constexpr gfx::Size kMinAV1ResolutionForNvidia(128, 128);
+constexpr gfx::Size kMinHEVCResolutionForNvidia(144, 144);
+constexpr gfx::Size kMinResolutionForQualcomm(96, 96);
+
+constexpr UINT kNvidiaDeviceId = 0x10DE;
+constexpr UINT kQualcommVendorPciId = 0x5143;
+constexpr UINT kQualcommVendorAcpiId = 0x4D4F4351;
+
+// Intel and AMD driver support minimum resolution of 16x16 for all codecs,
+// but we still keep them 64x64; For AVC, some Nvidia devices support 48x48, we
+// also keep them 64x64.
+gfx::Size GetMinResolutionForVendor(UINT vendor_id, VideoCodecProfile codec) {
+  switch (vendor_id) {
+    case kNvidiaDeviceId:
+      if (codec >= VP9PROFILE_MIN && codec <= VP9PROFILE_MAX) {
+        return kMinVP9ResolutionForNvidia;
+      } else if (codec >= AV1PROFILE_MIN && codec <= AV1PROFILE_MAX) {
+        return kMinAV1ResolutionForNvidia;
+      } else if ((codec >= HEVCPROFILE_MIN && codec <= HEVCPROFILE_MAX) ||
+                 (codec >= HEVCPROFILE_EXT_MIN &&
+                  codec <= HEVCPROFILE_EXT_MAX)) {
+        return kMinHEVCResolutionForNvidia;
+      }
+      return kMinResolution;
+    case kQualcommVendorPciId:
+    case kQualcommVendorAcpiId:
+      return kMinResolutionForQualcomm;
+    default:
+      return kMinResolution;
+  }
+}
+
+UINT GetDecoderDeviceVendorId(D3DVideoDeviceWrapper* video_device_wrapper) {
+  if (!video_device_wrapper) {
+    return 0;
+  }
+  return video_device_wrapper->GetDecoderVendorID();
+}
 
 std::optional<SupportedResolutionRange> GetResolutionsForGUID(
     D3DVideoDeviceWrapper* video_device_wrapper,
@@ -312,12 +366,16 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
   for (const GUID& profile_id :
        video_device_wrapper->GetVideoDecodeProfileGuids()) {
     if (profile_id == D3D11_DECODER_PROFILE_H264_VLD_NOFGT) {
-      const auto result =
-          GetResolutionsForGUID(video_device_wrapper, profile_id);
+      auto result = GetResolutionsForGUID(video_device_wrapper, profile_id);
 
       // Unlike the other codecs, H.264 support is assumed up to 1080p, even if
       // our initial queries fail. If they fail, we use the defaults set above.
       if (result) {
+        // All profiles of H.264 share the same minimum supported resolution, so
+        // we only query with one H.264 profile. Similar for other codec types.
+        static const gfx::Size kAvcMinResolution = GetMinResolutionForVendor(
+            GetDecoderDeviceVendorId(video_device_wrapper), H264PROFILE_MAIN);
+        result->min_resolution = kAvcMinResolution;
         for (const auto profile : kSupportedH264Profiles)
           supported_resolutions[profile] = *result;
       }
@@ -327,9 +385,13 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
     // Note: Each bit depth of AV1 uses a different DXGI_FORMAT, here we only
     // test for the 8-bit one (NV12).
     if (!workarounds.disable_accelerated_av1_decode) {
+      static const gfx::Size kAv1MinResolution = GetMinResolutionForVendor(
+          GetDecoderDeviceVendorId(video_device_wrapper),
+          AV1PROFILE_PROFILE_MAIN);
       if (profile_id == DXVA_ModeAV1_VLD_Profile0) {
         if (auto result =
                 GetResolutionsForGUID(video_device_wrapper, profile_id)) {
+          result->min_resolution = kAv1MinResolution;
           supported_resolutions.emplace(AV1PROFILE_PROFILE_MAIN,
                                         std::move(*result));
         }
@@ -341,6 +403,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
         // Y410.
         if (auto result = GetResolutionsForGUID(video_device_wrapper,
                                                 profile_id, DXGI_FORMAT_AYUV)) {
+          result->min_resolution = kAv1MinResolution;
           supported_resolutions.emplace(AV1PROFILE_PROFILE_HIGH,
                                         std::move(*result));
         }
@@ -355,6 +418,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
         // failing on the first decode (which will trigger software fallback).
         if (auto result = GetResolutionsForGUID(video_device_wrapper,
                                                 profile_id, DXGI_FORMAT_YUY2)) {
+          result->min_resolution = kAv1MinResolution;
           supported_resolutions.emplace(AV1PROFILE_PROFILE_PRO,
                                         std::move(*result));
         }
@@ -363,9 +427,12 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
     }
 
     if (!workarounds.disable_accelerated_vp9_decode) {
+      static const gfx::Size kVp9MinResolution = GetMinResolutionForVendor(
+          GetDecoderDeviceVendorId(video_device_wrapper), VP9PROFILE_PROFILE0);
       if (profile_id == D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0) {
         if (auto result =
                 GetResolutionsForGUID(video_device_wrapper, profile_id)) {
+          result->min_resolution = kVp9MinResolution;
           supported_resolutions.emplace(VP9PROFILE_PROFILE0,
                                         std::move(*result));
         }
@@ -378,6 +445,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
           base::win::GetVersion() != base::win::Version::WIN10_RS3) {
         if (auto result = GetResolutionsForGUID(video_device_wrapper,
                                                 profile_id, DXGI_FORMAT_P010)) {
+          result->min_resolution = kVp9MinResolution;
           supported_resolutions.emplace(VP9PROFILE_PROFILE2,
                                         std::move(*result));
         }
@@ -388,18 +456,26 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     if (!workarounds.disable_accelerated_hevc_decode &&
         base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+      // For the same vendor, we specify the same minimum supported resolution
+      // for HEVC. For example, NVidia HEVC decoders generically will not
+      // support decoding below 144x144 but there are some cards supporting
+      // 64x64. We limit the minimum supported resolution to 144x144.
+      static const gfx::Size kHevcMinResolution = GetMinResolutionForVendor(
+          GetDecoderDeviceVendorId(video_device_wrapper), HEVCPROFILE_MAIN);
+
       // Per DirectX Video Acceleration Specification for High Efficiency Video
       // Coding - 7.4, DXVA_ModeHEVC_VLD_Main GUID can be used for both main and
       // main still picture profile.
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN) {
-        const auto result =
-            GetResolutionsForGUID(video_device_wrapper, profile_id);
+        auto result = GetResolutionsForGUID(video_device_wrapper, profile_id);
         if (result) {
+          result->min_resolution = kHevcMinResolution;
           supported_resolutions[HEVCPROFILE_MAIN] = *result;
           supported_resolutions[HEVCPROFILE_MAIN_STILL_PICTURE] = *result;
         }
         continue;
       }
+
       // For range extensions only test main10_444 with Y410, and apply
       // the same resolution range to other formats to reduce profile
       // enumeration time for decoders. The selection of main10 444 is due to
@@ -414,13 +490,16 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
         // it is fine to override supported resolutions here.
         if (auto result = GetResolutionsForGUID(video_device_wrapper,
                                                 profile_id, DXGI_FORMAT_Y410)) {
+          result->min_resolution = kHevcMinResolution;
           supported_resolutions.emplace(HEVCPROFILE_REXT, std::move(*result));
         }
         continue;
       }
+
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10) {
         if (auto result = GetResolutionsForGUID(video_device_wrapper,
                                                 profile_id, DXGI_FORMAT_P010)) {
+          result->min_resolution = kHevcMinResolution;
           supported_resolutions.emplace(HEVCPROFILE_MAIN10, std::move(*result));
         }
         continue;
