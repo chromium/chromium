@@ -9,8 +9,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 
-FakeProfileManager::FakeProfileManager(const base::FilePath& user_data_dir)
-    : ProfileManagerWithoutInit(user_data_dir) {}
+FakeProfileManager::FakeProfileManager(const base::FilePath& user_data_dir,
+                                       bool defer_async_loading)
+    : ProfileManagerWithoutInit(user_data_dir) {
+  if (!defer_async_loading) {
+    UnblockAsyncLoading();
+  }
+}
 
 FakeProfileManager::~FakeProfileManager() = default;
 

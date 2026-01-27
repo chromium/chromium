@@ -437,6 +437,9 @@ bool ShouldGoOffTheRecord(Profile* profile) {
 
 }  // namespace
 
+BASE_FEATURE(kProfileManagerDeferAsyncLoading,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
     : user_data_dir_(user_data_dir)
 #if !BUILDFLAG(IS_ANDROID)
@@ -825,6 +828,15 @@ void ProfileManager::CreateProfileAsync(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT1("browser,startup", "ProfileManager::CreateProfileAsync",
                "profile_path", profile_path.AsUTF8Unsafe());
+
+  if (defer_async_loading_ &&
+      base::FeatureList::IsEnabled(kProfileManagerDeferAsyncLoading)) {
+    deferred_asynchronous_loads_.push_back(base::BindOnce(
+        &ProfileManager::CreateProfileAsync, base::Unretained(this),
+        profile_path, std::move(initialized_callback),
+        std::move(created_callback)));
+    return;
+  }
 
   if (!CanCreateProfileAtPath(profile_path)) {
     if (!initialized_callback.is_null())
@@ -2143,6 +2155,18 @@ void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
     if (entry) {
       entry->SetActiveTimeToNow();
     }
+  }
+}
+
+void ProfileManager::UnblockAsyncLoading() {
+  if (!defer_async_loading_) {
+    return;
+  }
+  defer_async_loading_ = false;
+  std::vector<base::OnceClosure> deferred_tasks;
+  deferred_tasks.swap(deferred_asynchronous_loads_);
+  for (auto& closure : deferred_tasks) {
+    std::move(closure).Run();
   }
 }
 

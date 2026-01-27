@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -49,6 +50,8 @@ enum class ProfileKeepAliveOrigin;
 class ProfileManagerObserver;
 class ScopedProfileKeepAlive;
 
+BASE_DECLARE_FEATURE(kProfileManagerDeferAsyncLoading);
+
 // Manages the lifecycle of Profile objects.
 //
 // Note that the Profile objects may be destroyed when their last browser window
@@ -74,9 +77,13 @@ class ProfileManager : public Profile::Delegate {
   // `GetLastUsedProfileAllowedByPolicy()` instead.
   // Except in ChromeOS guest sessions, the returned profile is always a regular
   // profile (non-OffTheRecord).
-  // WARNING: if the profile is not loaded, this function loads it
-  // synchronously, causing blocking file I/O. Use
-  // `GetLastUsedProfileIfLoaded()` to avoid loading the profile synchronously.
+  //
+  // WARNING: This function is unsafe and should not be used. If the profile is
+  // not loaded, this function loads it synchronously, causing blocking file
+  // I/O. Furthermore, it is not supported to call this function while the same
+  // profile is being loaded asynchronously.
+  // Use `GetLastUsedProfileIfLoaded()` to avoid loading the profile
+  // synchronously.
   static Profile* GetLastUsedProfile();
 
   // Same as `GetLastUsedProfile()` but returns nullptr if the profile is not
@@ -86,8 +93,11 @@ class ProfileManager : public Profile::Delegate {
   // Same as `GetLastUsedProfile()` but returns the incognito `Profile` if
   // incognito mode is forced. This should be used if the last used `Profile`
   // will be used to open new browser windows.
-  // WARNING: if the `Profile` is not loaded, this function loads it
-  // synchronously, causing blocking file I/O.
+  //
+  // WARNING: This function is unsafe and should not be used. If the profile is
+  // not loaded, this function loads it synchronously, causing blocking file
+  // I/O. Furthermore, it is not supported to call this function while the same
+  // profile is being loaded asynchronously.
   static Profile* GetLastUsedProfileAllowedByPolicy();
 
   // Helper function that returns the OffTheRecord profile if it is forced for
@@ -161,9 +171,10 @@ class ProfileManager : public Profile::Delegate {
   // Returns a profile for a specific profile directory within the user data
   // dir. This will return an existing profile it had already been created,
   // otherwise it will create and manage it.
-  // Because this method might synchronously load a new profile, it should
-  // only be called for the initial profile or in tests, where blocking is
-  // acceptable. Returns nullptr if loading the new profile fails.
+  //
+  // WARNING: Because this method might synchronously load a new profile, it
+  // should only be called for the initial profile or in tests, where blocking
+  // is acceptable. Returns nullptr if loading the new profile fails.
   // TODO(bauerb): Migrate calls from other code to `GetProfileByPath()`, then
   // make this method private.
   Profile* GetProfile(const base::FilePath& profile_dir);
@@ -370,6 +381,14 @@ class ProfileManager : public Profile::Delegate {
   // sets its last-active time to now.
   // Public so that `ProfileManagerAndroid` can call it.
   void SetProfileAsLastUsed(Profile* last_active);
+
+  // Asynchronous loading is initially deferred until the application main loop
+  // is started. The goal is to ensure that the initial profile load can succeed
+  // without conflicting with an asynchronous load of the same profile, as the
+  // `ProfileManager` does not support that.
+  // Asynchronous loading functions should always be preferred, regardless of
+  // this detail.
+  void UnblockAsyncLoading();
 
  protected:
   // Creates a new profile by calling into the profile's profile creation
@@ -620,6 +639,9 @@ class ProfileManager : public Profile::Delegate {
 
   // Controls whether to initialize some services. Only disabled for testing.
   bool do_final_services_init_ = true;
+
+  bool defer_async_loading_ = true;
+  std::vector<base::OnceClosure> deferred_asynchronous_loads_;
 
   // TODO(chrome/browser/profiles/OWNERS): Usage of this in profile_manager.cc
   // should likely be turned into DCHECK_CURRENTLY_ON(BrowserThread::UI) for
