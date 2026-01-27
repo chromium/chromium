@@ -529,4 +529,59 @@ TEST_F(ContextualTasksPageHandlerTest, OnTaskUpdated) {
                                ContextualTasksService::TriggerSource::kLocal);
 }
 
+TEST_F(ContextualTasksPageHandlerTest, OnContextUpdated_TabsImagesAndFiles) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  contextual_tasks_ui_->SetTaskId(task_id);
+
+  ContextualTask task(task_id);
+  UrlResource tab_resource(GURL(kQueryUrl), ResourceType::kWebpage);
+  tab_resource.title = "Example Tab";
+  tab_resource.tab_id = SessionID::NewUnique();
+  task.AddUrlResource(tab_resource);
+
+  UrlResource image_resource(GURL(kExampleUrl), ResourceType::kImage);
+  image_resource.title = "Example Image";
+  task.AddUrlResource(image_resource);
+
+  UrlResource pdf_resource(GURL(kExamplePdfUrl), ResourceType::kPdf);
+  pdf_resource.title = "Example PDF";
+  task.AddUrlResource(pdf_resource);
+
+  EXPECT_CALL(*mock_contextual_tasks_service_,
+              GetContextForTask(task_id, _, _, _))
+      .WillOnce(
+          [&](const base::Uuid&, const std::set<ContextualTaskContextSource>&,
+              std::unique_ptr<ContextDecorationParams>,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) {
+            std::move(callback).Run(
+                std::make_unique<ContextualTaskContext>(task));
+          });
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, OnContextUpdated(_, _, _))
+      .WillOnce([&](std::vector<mojom::TabPtr> context_tabs,
+                    std::vector<mojom::UploadedFilePtr> context_files,
+                    std::vector<mojom::ImagePtr> context_images) {
+        EXPECT_EQ(context_tabs.size(), 1u);
+        EXPECT_EQ(context_tabs[0]->title, "Example Tab");
+        EXPECT_EQ(context_tabs[0]->url, GURL(kQueryUrl));
+        EXPECT_EQ(context_tabs[0]->tab_id, tab_resource.tab_id->id());
+
+        EXPECT_EQ(context_images.size(), 1u);
+        EXPECT_EQ(context_images[0]->title, "Example Image");
+        EXPECT_EQ(context_images[0]->url, GURL(kExampleUrl));
+
+        EXPECT_EQ(context_files.size(), 1u);
+        EXPECT_EQ(context_files[0]->name, "Example PDF");
+        EXPECT_EQ(context_files[0]->url, GURL(kExamplePdfUrl));
+
+        run_loop.Quit();
+      });
+
+  page_handler_->OnTaskUpdated(task,
+                               ContextualTasksService::TriggerSource::kLocal);
+  run_loop.Run();
+}
+
 }  // namespace contextual_tasks
