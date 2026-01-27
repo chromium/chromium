@@ -5,19 +5,22 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/test/base/testing_browser_process.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using testing::_;
 
@@ -31,6 +34,15 @@ class MockBrowserCollectionObserver
 };
 
 class GlobalBrowserCollectionTest : public PlatformBrowserTest {
+ public:
+#if BUILDFLAG(IS_CHROMEOS)
+  // This makes multi-profile work on ChromeOS.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ash::switches::kIgnoreUserProfileMappingForTests);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  protected:
   BrowserWindowInterface* GetPrimaryBrowser() {
 #if BUILDFLAG(IS_ANDROID)
@@ -55,15 +67,17 @@ class GlobalBrowserCollectionTest : public PlatformBrowserTest {
   }
 
   // Creates a new Profile and an associated browser. Reuses the default test
-  // profile on ChromeOS as multi-profile is not supported.
-  BrowserWindowInterface* CreateAndActivateBrowserWithNewProfile() {
+  // profile if multi-profile is not supported (eg. on Android at the moment).
+  BrowserWindowInterface* CreateAndActivateBrowserWithNewProfileIfEnabled() {
     Profile* new_profile = GetPrimaryProfile();
-#if !BUILDFLAG(IS_CHROMEOS)
-    ProfileManager* const profile_manager =
-        g_browser_process->profile_manager();
-    new_profile = &profiles::testing::CreateProfileSync(
-        profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+    if (profiles::IsMultipleProfilesEnabled()) {
+      ProfileManager* const profile_manager =
+          g_browser_process->profile_manager();
+      new_profile = &profiles::testing::CreateProfileSync(
+          profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+    }
+
     return CreateAndActivateBrowser(new_profile);
   }
 
@@ -138,8 +152,6 @@ IN_PROC_BROWSER_TEST_F(GlobalBrowserCollectionTest,
   CloseBrowserSynchronouslyCrossPlatform(secondary_browser);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-
 // TODO(crbug.com/477251911): Make this test work on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestObservationWithMultipleProfiles \
@@ -150,6 +162,11 @@ IN_PROC_BROWSER_TEST_F(GlobalBrowserCollectionTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlobalBrowserCollectionTest,
                        MAYBE_TestObservationWithMultipleProfiles) {
+  // This test is only relevant on platforms that support multi-profile.
+  if (!profiles::IsMultipleProfilesEnabled()) {
+    GTEST_SKIP() << "Multiple profiles disabled";
+  }
+
   // Observe GlobalBrowserCollection.
   MockBrowserCollectionObserver observer;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
@@ -159,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(GlobalBrowserCollectionTest,
   // Create secondary browser and expect events.
   EXPECT_CALL(observer, OnBrowserCreated(_)).Times(1);
   BrowserWindowInterface* const secondary_browser =
-      CreateAndActivateBrowser(GetPrimaryProfile());
+      CreateAndActivateBrowserWithNewProfileIfEnabled();
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // Start with secondary browser active (and primary browser inactive).
@@ -181,7 +198,6 @@ IN_PROC_BROWSER_TEST_F(GlobalBrowserCollectionTest,
   EXPECT_CALL(observer, OnBrowserClosed(secondary_browser)).Times(1);
   CloseBrowserSynchronouslyCrossPlatform(secondary_browser);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Fixture that sets up 3 browsers.
 class GlobalBrowserCollectionTestWithOrder
@@ -194,8 +210,8 @@ class GlobalBrowserCollectionTestWithOrder
     // Browsers are activated in the order they are created, resulting in an
     // activation order the reverse of creation order.
     browsers_.push_back(GetPrimaryBrowser());
-    browsers_.push_back(CreateAndActivateBrowserWithNewProfile());
-    browsers_.push_back(CreateAndActivateBrowserWithNewProfile());
+    browsers_.push_back(CreateAndActivateBrowserWithNewProfileIfEnabled());
+    browsers_.push_back(CreateAndActivateBrowserWithNewProfileIfEnabled());
 
     const auto* global_colection = GlobalBrowserCollection::GetInstance();
     EXPECT_FALSE(global_colection->IsEmpty());
