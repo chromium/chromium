@@ -241,8 +241,7 @@ void GlicBackgroundModeManager::EnterBackgroundMode() {
   }
 
   if (!status_icon_) {
-    status_icon_ =
-        std::make_unique<GlicStatusIcon>(controller_.get(), status_tray_);
+    status_icon_ = GlicStatusIcon::Create(controller_.get(), status_tray_);
   }
 }
 

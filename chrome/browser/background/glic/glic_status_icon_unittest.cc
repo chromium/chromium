@@ -81,7 +81,7 @@ class GlicStatusIconTest : public testing::Test {
         /*profile_manager=*/true);
 
     glic_status_icon_ =
-        std::make_unique<GlicStatusIcon>(&glic_controller_, &status_tray_);
+        GlicStatusIcon::Create(&glic_controller_, &status_tray_);
   }
 
   void TearDown() override {

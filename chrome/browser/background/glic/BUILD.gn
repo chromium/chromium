@@ -32,6 +32,13 @@ if (!is_android) {
       "glic_status_icon.h",
     ]
 
+    if (is_win) {
+      sources += [
+        "glic_status_icon_win.cc",
+        "glic_status_icon_win.h",
+      ]
+    }
+
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     deps = [

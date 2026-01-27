@@ -42,16 +42,14 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#include "base/task/sequenced_task_runner.h"
-#include "base/win/registry.h"
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/background/glic/glic_status_icon_win.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -96,6 +94,17 @@ int GetTooltipMessageId(bool panel_showing) {
 
 namespace glic {
 
+// static
+std::unique_ptr<GlicStatusIcon> GlicStatusIcon::Create(
+    GlicController* controller,
+    StatusTray* status_tray) {
+#if BUILDFLAG(IS_WIN)
+  return std::make_unique<GlicStatusIconWin>(controller, status_tray);
+#else
+  return std::make_unique<GlicStatusIcon>(controller, status_tray);
+#endif
+}
+
 GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
     : controller_(controller), status_tray_(status_tray) {
@@ -132,22 +141,7 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   status_icon_->SetImageTemplate(true);
 #endif
 
-#if BUILDFLAG(IS_WIN)
-  if (hkcu_themes_regkey_.Open(
-          HKEY_CURRENT_USER,
-          L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-          KEY_READ | KEY_NOTIFY) == ERROR_SUCCESS) {
-    UpdateForThemesRegkey();
-    // If there's no sequenced task runner handle, we can't be called back for
-    // registry changes. This generally happens in tests.
-    if (base::SequencedTaskRunner::HasCurrentDefault()) {
-      RegisterThemesRegkeyObserver();
-    }
-  } else {
-    // Fall back to the native theme's preferred color scheme.
-    native_theme_observer_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-  }
-#elif BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   native_theme_observer_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 #endif
 
@@ -168,7 +162,6 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
 }
 
 GlicStatusIcon::~GlicStatusIcon() {
-
   context_menu_ = nullptr;
   if (status_icon_) {
 #if !BUILDFLAG(IS_LINUX)
@@ -238,16 +231,13 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void GlicStatusIcon::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-#if BUILDFLAG(IS_WIN)
-  CHECK(!hkcu_themes_regkey_.Valid());
-#endif  // BUILDFLAG(IS_WIN)
   in_dark_mode_ = observed_theme->preferred_color_scheme() ==
                   ui::NativeTheme::PreferredColorScheme::kDark;
   status_icon_->SetImage(GetIcon());
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void GlicStatusIcon::OnBrowserCreated(BrowserWindowInterface* browser) {
   UpdateVisibilityOfExitInContextMenu();
@@ -357,11 +347,7 @@ void GlicStatusIcon::UpdateVisibilityOfShowAndCloseInContextMenu() {
 }
 
 gfx::ImageSkia GlicStatusIcon::GetIcon() const {
-#if BUILDFLAG(IS_WIN)
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      glic::GetResourceID(in_dark_mode_ ? IDR_GLIC_STATUS_ICON_DARK
-                                        : IDR_GLIC_STATUS_ICON_LIGHT));
-#elif BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   const auto& icon =
       glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_STATUS_ICON);
   return gfx::CreateVectorIcon(icon,
@@ -401,29 +387,5 @@ std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
 #endif
   return menu;
 }
-
-#if BUILDFLAG(IS_WIN)
-void GlicStatusIcon::RegisterThemesRegkeyObserver() {
-  CHECK(hkcu_themes_regkey_.Valid());
-  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
-  hkcu_themes_regkey_.StartWatching(base::BindOnce(
-      [](GlicStatusIcon* icon) {
-        icon->UpdateForThemesRegkey();
-        // `StartWatching()`'s callback is one-shot and must be re-registered
-        // for future notifications.
-        icon->RegisterThemesRegkeyObserver();
-      },
-      base::Unretained(this)));
-}
-
-void GlicStatusIcon::UpdateForThemesRegkey() {
-  CHECK(hkcu_themes_regkey_.Valid());
-  DWORD system_uses_light_theme = 1;
-  hkcu_themes_regkey_.ReadValueDW(L"SystemUsesLightTheme",
-                                  &system_uses_light_theme);
-  in_dark_mode_ = !system_uses_light_theme;
-  status_icon_->SetImage(GetIcon());
-}
-#endif
 
 }  // namespace glic
