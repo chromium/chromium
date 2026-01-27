@@ -4,52 +4,27 @@
 
 import("//testing/test.gni")
 
-# This section can be updated from globbing rules using:
-#  find data -type f | sort | sed 's/\(.*\)/"\1",/g'
-bundle_data("test_support_bundle_data") {
-  visibility = [ ":test_support" ]
+# Aggregates all Cronet Python unit tests into a single isolate for CI bots.
+# Executes files ending in `_test.py` or `_unittest.py`, excluding those explicitly skipped.
+#
+# Note: Test discovery relies on the standard `unittest` loader. Subdirectories are
+# recursively explored only if they contain an `__init__.py` file or are explicitly
+# listed in the `top_level_dirs` of `run_all_python_unittests.py`.
+script_test("cronet_python_unittests") {
   testonly = true
-  sources = [
-    "test_server/data/cacheable.txt",
-    "test_server/data/cacheable.txt.mock-http-headers",
-    "test_server/data/content_length_mismatch.html",
-    "test_server/data/content_length_mismatch.html.mock-http-headers",
-    "test_server/data/gzipped.html",
-    "test_server/data/gzipped.html.mock-http-headers",
-    "test_server/data/multiredirect.html",
-    "test_server/data/multiredirect.html.mock-http-headers",
-    "test_server/data/notfound.html",
-    "test_server/data/notfound.html.mock-http-headers",
-    "test_server/data/quic_data/simple.txt",
-    "test_server/data/redirect.html",
-    "test_server/data/redirect.html.mock-http-headers",
-    "test_server/data/redirect_invalid_scheme.html",
-    "test_server/data/redirect_invalid_scheme.html.mock-http-headers",
-    "test_server/data/secureproxychecksuccess.txt",
-    "test_server/data/secureproxychecksuccess.txt.mock-http-headers",
-    "test_server/data/set_cookie.html",
-    "test_server/data/set_cookie.html.mock-http-headers",
-    "test_server/data/success.txt",
-    "test_server/data/success.txt.mock-http-headers",
+  script = "//testing/scripts/run_isolated_script_test.py"
+  args = [ "@WrappedPath(" + rebase_path(
+               "//components/cronet/testing/run_all_python_unittests.py",
+               root_build_dir) + ")" ]
+  data = [
+    "run_all_python_unittests.py",
+    "//third_party/catapult/third_party/typ/",
+
+    # A change to any file under cronet will invoke the unittests.
+    "//components/cronet/",
   ]
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
-}
-
-# Test support for Cronet common implementation.
-source_set("test_support") {
-  testonly = true
-
-  deps = [ "//net:test_support" ]
-
-  data = [ "test_server/data/" ]
-
-  sources = [
-    "test_server/test_server.cc",
-    "test_server/test_server.h",
+  data_deps = [
+    "//testing:test_scripts_shared",
+    "//third_party/catapult:telemetry_chrome_test_support",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
