@@ -4,16 +4,15 @@
 
 source_set("content_annotator") {
   sources = [
-    "content_annotator_service.cc",
-    "content_annotator_service.h",
     "content_annotator_service_factory.cc",
     "content_annotator_service_factory.h",
   ]
 
   deps = [
     "//base",
-    "//chrome/browser/accessibility_annotator:features",
     "//chrome/browser/profiles:profile",
+    "//components/accessibility_annotator/content/content_annotator",
+    "//components/accessibility_annotator/core/public:features",
     "//components/keyed_service/core",
   ]
 }
@@ -24,8 +23,8 @@ source_set("unit_tests") {
   deps = [
     ":content_annotator",
     "//base/test:test_support",
-    "//chrome/browser/accessibility_annotator:features",
     "//chrome/test:test_support",
+    "//components/accessibility_annotator/core/public:features",
     "//content/test:test_support",
     "//testing/gtest",
   ]

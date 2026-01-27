@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service.h"
+#include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 
 namespace accessibility_annotator {
 

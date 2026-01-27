@@ -5,9 +5,8 @@
 #include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service_factory.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/accessibility_annotator/accessibility_annotator_features.h"
-#include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/accessibility_annotator/core/public/accessibility_annotator_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
