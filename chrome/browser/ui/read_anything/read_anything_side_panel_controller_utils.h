@@ -8,11 +8,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 
-class Browser;
-
 // Used for reading mode option in context menu.
-void ShowReadAnythingSidePanel(Browser* browser,
-                               SidePanelOpenTrigger open_trigger);
 bool IsReadAnythingEntryShowing(BrowserWindowInterface* browser);
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_CONTROLLER_UTILS_H_
