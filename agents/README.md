@@ -25,6 +25,12 @@ Use `agents/extensions/install.py` to list and configure available servers.
 
 [`//agents/extensions/README.md`]: /agents/extensions/README.md
 
+### Skills
+
+On-demand expertise for specific tasks. See [`//agents/skills/README.md`].
+
+[`//agents/skills/README.md`]: /agents/skills/README.md
+
 ### Custom Commands
 
 Add these to [`//.gemini/commands`].
