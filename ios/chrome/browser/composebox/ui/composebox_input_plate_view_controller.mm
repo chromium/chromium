@@ -83,7 +83,8 @@ const CGFloat kInputPlateStackViewExpandedWithAttachmentsTopPadding = 10.0f;
 /// The bottom padding with the expanded input plate when AIM is available.
 const CGFloat kInputPlateStackViewExpandedBottomPadding = 10.0f;
 /// The horizontal padding for the input plate stack view.
-const CGFloat kInputPlateStackViewHorizontalPadding = 2.0f;
+const NSDirectionalEdgeInsets kInputPlateStackViewPadding = {.leading = 4.0f,
+                                                             .trailing = 2.0f};
 /// The side padding for the input plate stack view content (e.g. omnibox,
 /// toolbar).
 const CGFloat kInputPlateSidePadding = 8.0f;
@@ -284,8 +285,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   AddSameConstraintsToSidesWithInsets(
       _inputPlateStackView, _inputPlateInternalContainerView,
       (LayoutSides::kLeading | LayoutSides::kTrailing),
-      NSDirectionalEdgeInsetsMake(0, kInputPlateStackViewHorizontalPadding, 0,
-                                  kInputPlateStackViewHorizontalPadding));
+      kInputPlateStackViewPadding);
 
   [self updateInputPlateStackViewAnimated:NO];
 
