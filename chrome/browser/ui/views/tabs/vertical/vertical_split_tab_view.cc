@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
@@ -32,6 +33,11 @@ VerticalSplitTabView::VerticalSplitTabView(TabCollectionNode* collection_node)
                             ? std::make_unique<GlowHoverController>(this)
                             : nullptr) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+
+  collection_node->set_detach_child_from_node(
+      base::BindRepeating(&VerticalSplitTabView::RemoveChildViewForReparenting,
+                          base::Unretained(this)));
+
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalSplitTabView::ResetCollectionNode, base::Unretained(this)));
@@ -220,6 +226,31 @@ void VerticalSplitTabView::UpdateHovered(bool hovered) {
   }
 
   SchedulePaint();
+}
+
+std::unique_ptr<views::View>
+VerticalSplitTabView::RemoveChildViewForReparenting(views::View* child_view) {
+  DCHECK(std::ranges::contains(children(), child_view));
+  CHECK(collection_node_);
+
+  auto children = collection_node_->GetDirectChildren();
+  TabCollectionAnimatingLayoutManager::SetSourceLayoutInfo(
+      child_view,
+      std::make_unique<TabCollectionAnimatingLayoutManager::SourceLayoutInfo>(
+          TabCollectionAnimatingLayoutManager::SourceLayoutInfo{
+              .animation_axis = TabCollectionAnimatingLayoutManager::
+                  AnimationAxis::kHorizontal,
+              // Note: Tabs are removed from the split view collection from the
+              // front first so it is necessary to test the number of children
+              // in the collection when computing the animation direction.
+              .animation_direction =
+                  (children.size() == 2 && children[0] == child_view)
+                      ? TabCollectionAnimatingLayoutManager::
+                            AnimationDirection::kEndToStart
+                      : TabCollectionAnimatingLayoutManager::
+                            AnimationDirection::kStartToEnd,
+          }));
+  return RemoveChildViewT(child_view);
 }
 
 BEGIN_METADATA(VerticalSplitTabView)

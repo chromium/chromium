@@ -10,11 +10,16 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(
+    TabCollectionAnimatingLayoutManager::SourceLayoutInfo*)
 
 namespace {
 
@@ -26,6 +31,12 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPendingDeletion, false)
 // Stores the bounds in screen coordinates of the associated View prior to being
 // removed from its host TabCollectionNode. Used for collection move animations.
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kPreviousCollectionBounds)
+
+// Stores optional source layout information of the associated View. Used for
+// collection move animations.
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(
+    TabCollectionAnimatingLayoutManager::SourceLayoutInfo,
+    kSourceLayoutInfo)
 
 }  // namespace
 
@@ -104,6 +115,14 @@ void TabCollectionAnimatingLayoutManager::AnimationEnded(
   if (delegate_) {
     delegate_->OnAnimationEnded();
   }
+}
+
+// static.
+void TabCollectionAnimatingLayoutManager::SetSourceLayoutInfo(
+    views::View* view_to_reparent,
+    std::unique_ptr<SourceLayoutInfo> source_layout_info) {
+  view_to_reparent->SetProperty(kSourceLayoutInfo,
+                                std::move(source_layout_info));
 }
 
 views::ProposedLayout
@@ -338,6 +357,58 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     }
   }
 
+  // Animate out any child views moved into `host_view()` with their
+  // TabCollectioNode subsequently destroyed before a layout and animation has
+  // had the chance to occur. In such cases where the child view's
+  // TabCollectionNode is destroyed it will not appear in proposed layouts
+  // (which are based on the current TabStripCollection model). This can occur
+  // in compound model updates involving moving tabs into their parent
+  // collection after which the tab and its source collection are destroyed.
+  for (views::View* child_view : host_view()->children()) {
+    gfx::Rect* previous_collection_bounds =
+        child_view->GetProperty(kPreviousCollectionBounds);
+    if (previous_collection_bounds &&
+        !start_view_bounds_map_.contains(child_view) &&
+        !target_view_set_.contains(child_view)) {
+      const gfx::Rect start_bounds = views::View::ConvertRectFromScreen(
+          host_view(), *previous_collection_bounds);
+
+      // Target bounds for the animate-out animation depends on
+      // source_layout_info.
+      gfx::Rect target_bounds = start_bounds;
+      SourceLayoutInfo* source_layout_info =
+          child_view->GetProperty(kSourceLayoutInfo);
+      if (!source_layout_info) {
+        if (animation_axis_ == AnimationAxis::kVertical) {
+          target_bounds.set_height(0);
+        } else {
+          target_bounds.set_width(0);
+        }
+      } else if (source_layout_info->animation_axis.value_or(animation_axis_) ==
+                 AnimationAxis::kVertical) {
+        if (source_layout_info->animation_direction ==
+            AnimationDirection::kStartToEnd) {
+          target_bounds.set_y(start_bounds.bottom());
+        }
+        target_bounds.set_height(0);
+      } else {
+        if (source_layout_info->animation_direction ==
+            AnimationDirection::kStartToEnd) {
+          target_bounds.set_x(start_bounds.right());
+        }
+        target_bounds.set_width(0);
+      }
+
+      views::ChildLayout interpolated_child;
+      interpolated_child.visible = child_view->GetVisible();
+      interpolated_child.child_view = child_view;
+      interpolated_child.bounds =
+          gfx::Tween::RectValueBetween(value, start_bounds, target_bounds);
+
+      result.child_layouts.push_back(interpolated_child);
+    }
+  }
+
   return result;
 }
 
@@ -384,6 +455,9 @@ void TabCollectionAnimatingLayoutManager::ClearViewAnimationMetadata() {
     if (child_view->GetProperty(kPreviousCollectionBounds)) {
       child_view->DestroyLayer();
       child_view->ClearProperty(kPreviousCollectionBounds);
+    }
+    if (child_view->GetProperty(kSourceLayoutInfo)) {
+      child_view->ClearProperty(kSourceLayoutInfo);
     }
   }
 }

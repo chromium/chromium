@@ -51,6 +51,12 @@ class VerticalSplitTabView : public views::View, public views::LayoutDelegate {
   void UpdateBorder();
   void UpdateHovered(bool hovered);
 
+  // Handles removing a `child_view` from `this` for reparenting to other
+  // TabCollectionNode views. Records relevant metadata used for animating move
+  // operations.
+  std::unique_ptr<views::View> RemoveChildViewForReparenting(
+      views::View* child_view);
+
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   bool hovered_ = false;
   bool pinned_ = false;

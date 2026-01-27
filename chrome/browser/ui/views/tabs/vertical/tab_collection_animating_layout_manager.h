@@ -28,6 +28,22 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // animate-out transitions.
   enum class AnimationAxis { kVertical, kHorizontal };
 
+  // Represents how animations should progress along the animation axis.
+  enum class AnimationDirection { kStartToEnd, kEndToStart };
+
+  // Holds source layout information for views moved between TabCollectionNodes.
+  // This is used for the initial layout and animation in the destination
+  // collection, after which it is discarded and the view follows the layout
+  // rules of its destination layout manager.
+  struct SourceLayoutInfo {
+    // Optional override for the axis along which the moved view should animate.
+    // If unset host parameters will be used instead.
+    std::optional<AnimationAxis> animation_axis;
+
+    // The direction the moved view should animate.
+    AnimationDirection animation_direction = AnimationDirection::kEndToStart;
+  };
+
   class Delegate {
    public:
     virtual bool IsViewDragging(const views::View& child_view) const;
@@ -60,6 +76,12 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+
+  // Used by clients to directly set `SourceLayoutInfo` on `view_to_reparent`
+  // before it is added to its destination container.
+  static void SetSourceLayoutInfo(
+      views::View* view_to_reparent,
+      std::unique_ptr<SourceLayoutInfo> source_layout_info);
 
   // Snaps the container to the target layout.
   void ResetToTargetLayout();
