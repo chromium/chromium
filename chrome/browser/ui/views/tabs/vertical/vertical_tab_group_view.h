@@ -51,6 +51,7 @@ class VerticalTabGroupView
   void ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin origin) override;
   views::Widget* ShowGroupEditorBubble(
       bool stop_context_menu_propagation) override;
+  std::u16string GetGroupContentString() const override;
 
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsViewDragging(const views::View& child_view) const override;

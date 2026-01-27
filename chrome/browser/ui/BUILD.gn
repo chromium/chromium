@@ -4428,6 +4428,8 @@ static_library("ui") {
       "views/tabs/tab_container_impl.h",
       "views/tabs/tab_context_menu_controller.cc",
       "views/tabs/tab_context_menu_controller.h",
+      "views/tabs/tab_group_accessibility.cc",
+      "views/tabs/tab_group_accessibility.h",
       "views/tabs/tab_group_editor_bubble_tracker.cc",
       "views/tabs/tab_group_editor_bubble_tracker.h",
       "views/tabs/tab_group_editor_bubble_view.cc",

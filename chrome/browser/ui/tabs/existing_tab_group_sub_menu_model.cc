@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/tab_group_accessibility.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -46,17 +47,6 @@
 
 namespace {
 constexpr int kIconSize = 14;
-
-// TODO(crbug.com/418774949) Move to TabGroupFeatures for desktop.
-std::u16string GetContentString(const TabGroup& group) {
-  constexpr size_t kContextMenuTabTitleMaxLength = 30;
-  std::u16string format_string = l10n_util::GetPluralStringFUTF16(
-      IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, group.tab_count() - 1);
-  std::u16string short_title;
-  gfx::ElideString(TabUIHelper::From(group.GetFirstTab())->GetTitle(),
-                   kContextMenuTabTitleMaxLength, &short_title);
-  return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
-}
 
 // Ungroups all of the tabs specified by |tab_indices_to_close| and then tries
 // to close them and adds their URL to the end of the closed saved group
@@ -218,7 +208,8 @@ ExistingTabGroupSubMenuModel::GetMenuItemsFromModel(
     // TODO(dljames): Add method to tab_group.cc to return displayed_title.
     // TODO(dljames): Add unit tests for all of tab_group.h
     const std::u16string displayed_title =
-        group_title.empty() ? GetContentString(*tab_group) : group_title;
+        group_title.empty() ? tab_groups::GetGroupContentString(tab_group)
+                            : group_title;
 
     menu_item_infos.emplace_back(
         CreateMenuItemInfo(displayed_title, tab_group->visual_data()->color()));

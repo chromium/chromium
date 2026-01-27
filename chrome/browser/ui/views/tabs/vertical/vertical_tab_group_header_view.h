@@ -35,6 +35,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
         ToggleTabGroupCollapsedStateOrigin origin) = 0;
     virtual views::Widget* ShowGroupEditorBubble(
         bool stop_context_menu_propagation) = 0;
+    virtual std::u16string GetGroupContentString() const = 0;
   };
 
   explicit VerticalTabGroupHeaderView(
@@ -74,6 +75,10 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
  private:
   void UpdateEditorBubbleButtonVisibility();
   void ShowEditorBubble();
+  void UpdateAccessibleName(
+      const tab_groups::TabGroupVisualData* tab_group_visual_data);
+  void UpdateIsCollapsed(
+      const tab_groups::TabGroupVisualData* tab_group_visual_data);
 
   // The sync icon that is displayed in the tab group header of saved groups in
   // the tabstrip.

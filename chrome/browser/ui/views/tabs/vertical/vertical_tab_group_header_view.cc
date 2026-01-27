@@ -316,6 +316,52 @@ void VerticalTabGroupHeaderView::OnDataChanged(
     SetBackground(views::CreateRoundedRectBackground(background_color,
                                                      kGroupHeaderCornerRadius));
   }
+
+  UpdateIsCollapsed(tab_group_visual_data);
+  UpdateAccessibleName(tab_group_visual_data);
+}
+
+void VerticalTabGroupHeaderView::UpdateIsCollapsed(
+    const tab_groups::TabGroupVisualData* tab_group_visual_data) {
+  const bool is_collapsed = tab_group_visual_data->is_collapsed();
+  if (is_collapsed) {
+    GetViewAccessibility().SetIsCollapsed();
+  } else {
+    GetViewAccessibility().SetIsExpanded();
+  }
+}
+
+void VerticalTabGroupHeaderView::UpdateAccessibleName(
+    const tab_groups::TabGroupVisualData* tab_group_visual_data) {
+  const std::u16string title = tab_group_visual_data->title();
+
+  const std::u16string contents = delegate_->GetGroupContentString();
+  std::u16string group_status = std::u16string();
+
+  // Windows screen readers reads out the collapsed state based on the
+  // accessibility node data information.
+#if !BUILDFLAG(IS_WIN)
+  const bool is_collapsed = tab_group_visual_data->is_collapsed();
+  group_status = is_collapsed
+                     ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
+                     : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
+#endif
+
+  // TODO(crbug.com/439955962): Incorporate shared group state.
+  std::u16string shared_state = u"";
+
+  std::u16string final_name;
+  if (title.empty()) {
+    final_name =
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                   shared_state, contents, group_status);
+  } else {
+    final_name =
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT,
+                                   shared_state, title, contents, group_status);
+  }
+
+  GetViewAccessibility().SetName(final_name);
 }
 
 void VerticalTabGroupHeaderView::UpdateEditorBubbleButtonVisibility() {

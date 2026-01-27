@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -572,22 +573,10 @@ std::u16string BrowserTabStripController::GetGroupTitle(
   return model_->group_model()->GetTabGroup(group)->visual_data()->title();
 }
 
-// TODO(crbug.com/418774949) Combine with ExistingTabGroupSubMenuModel and move
-// To TabGroupFeatures.
 std::u16string BrowserTabStripController::GetGroupContentString(
     const tab_groups::TabGroupId& group) const {
-  CHECK(model_->SupportsTabGroups());
-
-  const TabGroup* tab_group = model_->group_model()->GetTabGroup(group);
-  CHECK(tab_group);
-
-  constexpr size_t kContextMenuTabTitleMaxLength = 30;
-  std::u16string format_string = l10n_util::GetPluralStringFUTF16(
-      IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, tab_group->tab_count() - 1);
-  std::u16string short_title;
-  gfx::ElideString(TabUIHelper::From(tab_group->GetFirstTab())->GetTitle(),
-                   kContextMenuTabTitleMaxLength, &short_title);
-  return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
+  return tab_groups::GetGroupContentString(
+      model_->group_model()->GetTabGroup(group));
 }
 
 tab_groups::TabGroupColorId BrowserTabStripController::GetGroupColorId(
