@@ -53,9 +53,7 @@ build_webui("build") {
     web_component_files += [ "cr_a11y_announcer/cr_a11y_announcer.ts" ]
 
     ts_files += [
-      "cr_container_shadow_mixin_lit.ts",
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
-      "cr_scroll_observer_mixin_lit.ts",
       "cr_search_field/cr_search_field_mixin_lit.ts",
       "i18n_mixin_lit.ts",
       "web_ui_listener_mixin_lit.ts",
@@ -146,10 +144,8 @@ build_webui("build") {
 
   if (!is_android && !is_ios) {
     ts_files += [
-      "cr_container_shadow_mixin.ts",
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_ripple/cr_ripple_mixin_polymer.ts",
-      "cr_scroll_observer_mixin.ts",
       "cr_search_field/cr_search_field_mixin.ts",
       "find_shortcut_manager.ts",
       "find_shortcut_mixin.ts",

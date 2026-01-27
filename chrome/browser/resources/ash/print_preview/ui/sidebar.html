@@ -1,4 +1,4 @@
-<style include="cr-hidden-style cr-shared-style">
+<style include="cr-hidden-style cr-shared-style cr-scrollable">
   :host {
     background-color: white;
     border-inline-start: var(--print-preview-settings-border);
@@ -39,7 +39,8 @@
     error="[[error]]" sheet-count="[[sheetCount_]]" state="[[state]]"
     settings="[[settings]]" managed="[[controlsManaged]]">
 </print-preview-header>
-<div id="container" show-bottom-shadow>
+<div id="container" class="cr-scrollable">
+  <div class="cr-scrollable-top-shadow"></div>
   <print-preview-destination-settings id="destinationSettings"
       dark="[[inDarkMode]]" destination="{{destination}}"
       destination-state="{{destinationState}}"
@@ -139,8 +140,8 @@
         hidden$="[[!settings.vendorItems.available]]"
         class="settings-section">
     </print-preview-advanced-options-settings>
-
   </cr-collapse>
+  <div class="cr-scrollable-bottom-shadow"></div>
 </div>
 <print-preview-button-strip destination="[[destination]]"
     state="[[state]]" first-load="[[firstLoad_]]" is-pin-valid="[[isPinValid_]]"

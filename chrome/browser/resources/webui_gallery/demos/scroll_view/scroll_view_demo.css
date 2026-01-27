@@ -11,13 +11,6 @@
  * #include=demo cr-scrollable-lit
  * #css_wrapper_metadata_end */
 
-/* Parent of #container for CrContainerShadowMixin needs to be flex column. */
-#layout {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
 #container {
   max-height: 300px;
   overflow: auto;
@@ -33,18 +26,6 @@
 .item:focus {
   background-color: var(--cr-focused-item-color);
   outline: none;
-}
-
-.can-scroll-log,
-.scrolled-to-top-log,
-.scrolled-to-bottom-log {
-  display: none;
-}
-
-.can-scroll ~ .can-scroll-log,
-.scrolled-to-top ~ .scrolled-to-top-log,
-.scrolled-to-bottom ~ .scrolled-to-bottom-log {
-  display: block;
 }
 
 #sliderContainer {
