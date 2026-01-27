@@ -142,38 +142,39 @@ void DCheckOverridesAllowed() {}
 
 // An allocator entry for a feature in shared memory. The FeatureEntry is
 // followed by a base::Pickle object that contains the feature and trial name.
-struct FeatureEntry {
+class FeatureEntry {
+ public:
   // SHA1(FeatureEntry): Increment this if structure changes!
   static constexpr uint32_t kPersistentTypeId = 0x06567CA6 + 2;
 
   // Expected size for 32/64-bit check.
   static constexpr size_t kExpectedInstanceSize = 16;
 
-  // Specifies whether a feature override enables or disables the feature. Same
-  // values as the OverrideState enum in feature_list.h
-  uint32_t override_state;
-
-  // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and alignment
-  // of `pickle_size` across platforms.
-  uint32_t padding;
-
-  // Size of the pickled structure, NOT the total size of this entry.
-  uint64_t pickle_size;
-
-  // Return a pointer to the pickled data area immediately following the entry.
-  uint8_t* GetPickledDataPtr() {
-    return reinterpret_cast<uint8_t*>(UNSAFE_TODO(this + 1));
+  static FeatureEntry* Create(PersistentMemoryAllocator* allocator,
+                              uint32_t override_state,
+                              const Pickle& pickle) {
+    size_t total_size = sizeof(FeatureEntry) + pickle.size();
+    FeatureEntry* entry = allocator->New<FeatureEntry>(total_size);
+    if (entry) {
+      entry->override_state_ = override_state;
+      entry->pickle_size_ = pickle.size();
+      entry->GetPickleData().copy_from(span(pickle));
+    }
+    return entry;
   }
-  const uint8_t* GetPickledDataPtr() const {
-    return reinterpret_cast<const uint8_t*>(UNSAFE_TODO(this + 1));
+
+  FeatureEntry(const FeatureEntry&) = delete;
+  FeatureEntry& operator=(const FeatureEntry&) = delete;
+
+  FeatureList::OverrideState override_state() const {
+    return static_cast<FeatureList::OverrideState>(override_state_);
   }
 
   // Reads the feature and trial name from the pickle. Calling this is only
   // valid on an initialized entry that's in shared memory.
   bool GetFeatureAndTrialName(std::string_view* feature_name,
                               std::string_view* trial_name) const {
-    Pickle pickle = Pickle::WithUnownedBuffer(UNSAFE_TODO(
-        span(GetPickledDataPtr(), checked_cast<size_t>(pickle_size))));
+    Pickle pickle = Pickle::WithUnownedBuffer(GetPickleData());
     PickleIterator pickle_iter(pickle);
     if (!pickle_iter.ReadStringPiece(feature_name)) {
       return false;
@@ -182,6 +183,36 @@ struct FeatureEntry {
     std::ignore = pickle_iter.ReadStringPiece(trial_name);
     return true;
   }
+
+ private:
+  friend class ::base::PersistentMemoryAllocator;
+
+  FeatureEntry() = default;
+
+  // Return a span to the pickled data area immediately following the entry.
+  span<uint8_t> GetPickleData() {
+    // SAFETY: `Create()` guarantees that `pickle_size_` bytes are allocated for
+    // Pickle data immediately following FeatureEntry data.
+    return UNSAFE_BUFFERS(span(reinterpret_cast<uint8_t*>(this + 1),
+                               checked_cast<size_t>(pickle_size_)));
+  }
+  span<const uint8_t> GetPickleData() const {
+    // SAFETY: `Create()` guarantees that `pickle_size_` bytes are allocated for
+    // Pickle data immediately following FeatureEntry data.
+    return UNSAFE_BUFFERS(span(reinterpret_cast<const uint8_t*>(this + 1),
+                               checked_cast<size_t>(pickle_size_)));
+  }
+
+  // Specifies whether a feature override enables or disables the feature. Same
+  // values as the OverrideState enum in feature_list.h
+  uint32_t override_state_;
+
+  // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and alignment
+  // of `pickle_size` across platforms.
+  uint32_t padding_;
+
+  // Size of the pickled structure, NOT the total size of this entry.
+  uint64_t pickle_size_;
 };
 
 // Splits |text| into two parts by the |separator| where the first part will be
@@ -351,8 +382,7 @@ void FeatureList::InitFromSharedMemory(PersistentMemoryAllocator* allocator) {
   PersistentMemoryAllocator::Iterator iter(allocator);
   const FeatureEntry* entry;
   while ((entry = iter.GetNextOfObject<FeatureEntry>()) != nullptr) {
-    OverrideState override_state =
-        static_cast<OverrideState>(entry->override_state);
+    OverrideState override_state = entry->override_state();
 
     std::string_view feature_name;
     std::string_view trial_name;
@@ -437,16 +467,11 @@ void FeatureList::AddFeaturesToAllocator(PersistentMemoryAllocator* allocator) {
       pickle.WriteString(override.second.field_trial->trial_name());
     }
 
-    size_t total_size = sizeof(FeatureEntry) + pickle.size();
-    FeatureEntry* entry = allocator->New<FeatureEntry>(total_size);
+    FeatureEntry* entry = FeatureEntry::Create(
+        allocator, override.second.overridden_state, pickle);
     if (!entry) {
       return;
     }
-
-    entry->override_state = override.second.overridden_state;
-    entry->pickle_size = pickle.size();
-    UNSAFE_TODO(
-        memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size()));
 
     allocator->MakeIterable(entry);
   }
