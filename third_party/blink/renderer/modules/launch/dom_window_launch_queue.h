@@ -31,14 +31,12 @@ class DOMWindowLaunchQueue final
   // IDL Interface.
   static LaunchQueue* launchQueue(LocalDOMWindow&);
 
-  static void UpdateLaunchFiles(LocalDOMWindow*,
-                                HeapVector<Member<FileSystemHandle>>);
-  // TODO(crbug.com/1250225): Unify UpdateLaunchFiles() into this method.
   static void EnqueueLaunchParams(
       LocalDOMWindow*,
       const KURL& launch_url,
       base::TimeTicks time_navigation_started_in_browser,
-      bool navigation_started);
+      bool navigation_started,
+      HeapVector<Member<FileSystemHandle>>);
 
   void Trace(Visitor*) const override;
 

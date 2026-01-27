@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -44,6 +45,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/browser/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
@@ -176,29 +178,42 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
         std::make_unique<content::WebContentsDestroyedWatcher>(web_contents_);
   }
 
+  bool HasLaunchParams() {
+    return content::EvalJs(web_contents_.get(), "!!window.launchParams")
+        .ExtractBool();
+  }
+
+  int GetLaunchParamsFilesLength() {
+    CHECK(HasLaunchParams());
+    return content::EvalJs(web_contents_.get(),
+                           "window.launchParams.files.length")
+        .ExtractInt();
+  }
+
   void VerifyPwaDidReceiveFileLaunchParams(
-      bool expect_got_launch_params,
-      const base::FilePath& expected_file_path = {}) {
-    bool got_launch_params =
-        content::EvalJs(web_contents_.get(), "!!window.launchParams")
-            .ExtractBool();
-    ASSERT_EQ(expect_got_launch_params, got_launch_params);
-    if (got_launch_params) {
-      EXPECT_EQ(1, content::EvalJs(web_contents_.get(),
-                                   "window.launchParams.files.length"));
-      EXPECT_EQ(expected_file_path.BaseName().AsUTF8Unsafe(),
-                content::EvalJs(web_contents_.get(),
-                                "window.launchParams.files[0].name"));
-      std::string check_permissions_js(
-          // clang-format off
+      const base::FilePath& expected_file_path) {
+    ASSERT_TRUE(HasLaunchParams());
+    EXPECT_EQ(1, content::EvalJs(web_contents_.get(),
+                                 "window.launchParams.files.length"));
+    EXPECT_EQ(expected_file_path.BaseName().AsUTF8Unsafe(),
+              content::EvalJs(web_contents_.get(),
+                              "window.launchParams.files[0].name"));
+    std::string check_permissions_js(
+        // clang-format off
         "(async () => {"
         "  return await window.launchParams.files[0].queryPermission("
         "             {mode: 'readwrite'}) === 'granted';"
         "})()");
-      // clang-format on
-      EXPECT_TRUE(content::EvalJs(web_contents_.get(), check_permissions_js)
-                      .ExtractBool());
-    }
+    // clang-format on
+    EXPECT_TRUE(content::EvalJs(web_contents_.get(), check_permissions_js)
+                    .ExtractBool());
+  }
+
+  GURL GetLaunchParamsTargetUrl() {
+    CHECK(HasLaunchParams());
+    return GURL(
+        content::EvalJs(web_contents_.get(), "window.launchParams.targetURL")
+            .ExtractString());
   }
 
   webapps::AppId InstallFileHandlingWebApp(const std::u16string& title,
@@ -274,7 +289,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   base::FilePath test_file_path = CreateTestFileWithExtension("txt");
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
 
-  VerifyPwaDidReceiveFileLaunchParams(true, test_file_path);
+  VerifyPwaDidReceiveFileLaunchParams(test_file_path);
+  EXPECT_EQ(GetLaunchParamsTargetUrl(), GetTextFileHandlerActionURL());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -283,7 +299,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   base::FilePath test_file_path = CreateTestFileWithExtension("TXT");
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
 
-  VerifyPwaDidReceiveFileLaunchParams(true, test_file_path);
+  VerifyPwaDidReceiveFileLaunchParams(test_file_path);
+  EXPECT_EQ(GetLaunchParamsTargetUrl(), GetTextFileHandlerActionURL());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -293,7 +310,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path},
                   apps::LaunchContainer::kLaunchContainerTab);
 
-  VerifyPwaDidReceiveFileLaunchParams(true, test_file_path);
+  VerifyPwaDidReceiveFileLaunchParams(test_file_path);
+  EXPECT_EQ(GetLaunchParamsTargetUrl(), GetTextFileHandlerActionURL());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -345,60 +363,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   }
 
   // The redirected-to page should get the launch queue.
-  VerifyPwaDidReceiveFileLaunchParams(true, file);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
-  GURL handler_url = https_server()->GetURL(
-      "app.com", "/web_app_file_handling/handle_files.html");
-  webapps::AppId app_id =
-      InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
-
-  base::FilePath file = CreateTestFileWithExtension("txt");
-  LaunchWithFiles(app_id, handler_url, {file});
-  VerifyPwaDidReceiveFileLaunchParams(true, file);
-
-  // Reload the page.
-  {
-    content::TestNavigationObserver navigation_observer(web_contents_);
-    chrome::Reload(chrome::FindBrowserWithTab(web_contents_),
-                   WindowOpenDisposition::CURRENT_TAB);
-    navigation_observer.Wait();
-    AttachTestConsumer(web_contents_);
-  }
-  VerifyPwaDidReceiveFileLaunchParams(true, file);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
-                       LaunchQueueSetOnReloadAfterPushState) {
-  GURL handler_url = https_server()->GetURL(
-      "app.com", "/web_app_file_handling/handle_files.html");
-  webapps::AppId app_id =
-      InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
-
-  base::FilePath file = CreateTestFileWithExtension("txt");
-  LaunchWithFiles(app_id, handler_url, {file});
-  VerifyPwaDidReceiveFileLaunchParams(true, file);
-
-  // page initiates pushstate
-  {
-    content::TestNavigationObserver navigation_observer(web_contents_);
-    auto result = content::EvalJs(web_contents_.get(),
-                                  "window.history.replaceState(null, '', "
-                                  "window.location.href + '#foo');");
-    EXPECT_TRUE(result.is_ok());
-    navigation_observer.Wait();
-  }
-
-  // Reload the page.
-  {
-    content::TestNavigationObserver navigation_observer(web_contents_);
-    chrome::Reload(chrome::FindBrowserWithTab(web_contents_),
-                   WindowOpenDisposition::CURRENT_TAB);
-    navigation_observer.Wait();
-    AttachTestConsumer(web_contents_);
-  }
-  VerifyPwaDidReceiveFileLaunchParams(true, file);
+  VerifyPwaDidReceiveFileLaunchParams(file);
+  EXPECT_EQ(GetLaunchParamsTargetUrl(), handler_url);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -424,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   }
 
   // The redirected-to page should NOT get the launch queue.
-  VerifyPwaDidReceiveFileLaunchParams(false);
+  EXPECT_FALSE(HasLaunchParams());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -438,17 +404,18 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   base::FilePath file = CreateTestFileWithExtension("txt");
   LaunchWithFiles(app_id, handler_url, {file});
-  VerifyPwaDidReceiveFileLaunchParams(true, file);
+  VerifyPwaDidReceiveFileLaunchParams(file);
+  EXPECT_EQ(GetLaunchParamsTargetUrl(), handler_url);
 
   // Navigating the page should not enqueue the LaunchParams again.
   ASSERT_TRUE(NavigateToURL(web_contents_, start_url));
   AttachTestConsumer(web_contents_);
-  VerifyPwaDidReceiveFileLaunchParams(false);
+  EXPECT_FALSE(HasLaunchParams());
 
   // Nor should navigating back to the handler page re-enqueue.
   ASSERT_TRUE(NavigateToURL(web_contents_, handler_url));
   AttachTestConsumer(web_contents_);
-  VerifyPwaDidReceiveFileLaunchParams(false);
+  EXPECT_FALSE(HasLaunchParams());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -550,5 +517,83 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
 // TODO(crbug.com/40185556): add more tests.
 
 INSTANTIATE_TEST_SUITE_P(, WebAppFileHandlingIconBrowserTest, testing::Bool());
+
+class WebAppFileHandlingLaunchQueueBrowserTest
+    : public WebAppFileHandlingBrowserTest,
+      public base::test::WithFeatureOverride {
+ public:
+  WebAppFileHandlingLaunchQueueBrowserTest()
+      : base::test::WithFeatureOverride(
+            ::webapps::features::kLaunchQueueStopSendingOnReload) {}
+};
+
+IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
+                       LaunchQueueSetOnReload) {
+  GURL handler_url = https_server()->GetURL(
+      "app.com", "/web_app_file_handling/handle_files.html");
+  webapps::AppId app_id =
+      InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
+
+  base::FilePath file = CreateTestFileWithExtension("txt");
+  LaunchWithFiles(app_id, handler_url, {file});
+  VerifyPwaDidReceiveFileLaunchParams(file);
+
+  // Reload the page.
+  {
+    content::TestNavigationObserver navigation_observer(web_contents_);
+    chrome::Reload(chrome::FindBrowserWithTab(web_contents_),
+                   WindowOpenDisposition::CURRENT_TAB);
+    navigation_observer.Wait();
+    AttachTestConsumer(web_contents_);
+  }
+  if (IsParamFeatureEnabled()) {
+    EXPECT_FALSE(HasLaunchParams());
+  } else {
+    EXPECT_TRUE(HasLaunchParams());
+    EXPECT_EQ(GetLaunchParamsTargetUrl(), handler_url);
+    VerifyPwaDidReceiveFileLaunchParams(file);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
+                       LaunchQueueSetOnReloadAfterPushState) {
+  GURL handler_url = https_server()->GetURL(
+      "app.com", "/web_app_file_handling/handle_files.html");
+  webapps::AppId app_id =
+      InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
+
+  base::FilePath file = CreateTestFileWithExtension("txt");
+  LaunchWithFiles(app_id, handler_url, {file});
+  VerifyPwaDidReceiveFileLaunchParams(file);
+
+  // page initiates pushstate
+  {
+    content::TestNavigationObserver navigation_observer(web_contents_);
+    auto result = content::EvalJs(web_contents_.get(),
+                                  "window.history.replaceState(null, '', "
+                                  "window.location.href + '#foo');");
+    EXPECT_TRUE(result.is_ok());
+    navigation_observer.Wait();
+  }
+
+  // Reload the page.
+  {
+    content::TestNavigationObserver navigation_observer(web_contents_);
+    chrome::Reload(chrome::FindBrowserWithTab(web_contents_),
+                   WindowOpenDisposition::CURRENT_TAB);
+    navigation_observer.Wait();
+    AttachTestConsumer(web_contents_);
+  }
+  if (IsParamFeatureEnabled()) {
+    EXPECT_FALSE(HasLaunchParams());
+  } else {
+    EXPECT_TRUE(HasLaunchParams());
+    EXPECT_EQ(GetLaunchParamsTargetUrl(), handler_url);
+    VerifyPwaDidReceiveFileLaunchParams(file);
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    WebAppFileHandlingLaunchQueueBrowserTest);
 
 }  // namespace web_app

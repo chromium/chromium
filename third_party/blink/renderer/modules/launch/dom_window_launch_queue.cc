@@ -22,20 +22,16 @@ LaunchQueue* DOMWindowLaunchQueue::launchQueue(LocalDOMWindow& window) {
   return FromState(&window)->launch_queue_.Get();
 }
 
-void DOMWindowLaunchQueue::UpdateLaunchFiles(
-    LocalDOMWindow* window,
-    HeapVector<Member<FileSystemHandle>> files) {
-  FromState(window)->launch_queue_->Enqueue(
-      MakeGarbageCollected<LaunchParams>(std::move(files)));
-}
-
 void DOMWindowLaunchQueue::EnqueueLaunchParams(
     LocalDOMWindow* window,
     const KURL& launch_url,
     base::TimeTicks time_navigation_started_in_browser,
-    bool navigation_started) {
+    bool navigation_started,
+    HeapVector<Member<FileSystemHandle>> optional_files) {
+  CHECK(launch_url.IsValid());
   FromState(window)->launch_queue_->Enqueue(MakeGarbageCollected<LaunchParams>(
-      launch_url, time_navigation_started_in_browser, navigation_started));
+      launch_url, time_navigation_started_in_browser, navigation_started,
+      optional_files));
 }
 
 void DOMWindowLaunchQueue::Trace(Visitor* visitor) const {

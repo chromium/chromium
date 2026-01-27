@@ -47,10 +47,12 @@ class MODULES_EXPORT WebLaunchServiceImpl final
   void Trace(Visitor* visitor) const override;
 
   // blink::mojom::WebLaunchService:
-  void SetLaunchFiles(Vector<mojom::blink::FileSystemAccessEntryPtr>) override;
-  void EnqueueLaunchParams(const KURL& launch_url,
-                           base::TimeTicks time_navigation_started_in_browser,
-                           bool navigation_started) override;
+  void EnqueueLaunchParams(
+      const KURL& launch_url,
+      base::TimeTicks time_navigation_started_in_browser,
+      bool navigation_started,
+      ::blink::Vector<::blink::mojom::blink::FileSystemAccessEntryPtr> files)
+      override;
 
  private:
   HeapMojoAssociatedReceiver<mojom::blink::WebLaunchService,

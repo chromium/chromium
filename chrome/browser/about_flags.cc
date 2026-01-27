@@ -13430,6 +13430,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(safe_browsing::kBundledSecuritySettingsSecureDnsV2)},
 
+    {"launch-queue-stop-sending-on-reload",
+     flag_descriptions::kWebAppLaunchQueueStopSendingOnReloadName,
+     flag_descriptions::kWebAppLaunchQueueStopSendingOnReloadDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(webapps::features::kLaunchQueueStopSendingOnReload)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"credential-management-unified-ui",
      flag_descriptions::kCredentialManagementUnifiedUiName,

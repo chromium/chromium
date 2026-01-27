@@ -56,27 +56,23 @@ void WebLaunchServiceImpl::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
-void WebLaunchServiceImpl::SetLaunchFiles(
-    Vector<mojom::blink::FileSystemAccessEntryPtr> entries) {
-  HeapVector<Member<FileSystemHandle>> files;
-  for (auto& entry : entries) {
-    files.push_back(FileSystemHandle::CreateFromMojoEntry(
-        std::move(entry), GetSupplementable()->GetExecutionContext()));
-  }
-
-  UseCounter::Count(GetSupplementable()->GetExecutionContext(),
-                    WebFeature::kFileHandlingLaunch);
-  DOMWindowLaunchQueue::UpdateLaunchFiles(GetSupplementable(),
-                                          std::move(files));
-}
-
 void WebLaunchServiceImpl::EnqueueLaunchParams(
     const KURL& launch_url,
     base::TimeTicks time_navigation_started_in_browser,
-    bool navigation_started) {
+    bool navigation_started,
+    ::blink::Vector<::blink::mojom::blink::FileSystemAccessEntryPtr> files) {
+  HeapVector<Member<FileSystemHandle>> files_vector;
+  if (files.size() > 0) {
+    UseCounter::Count(GetSupplementable()->GetExecutionContext(),
+                      WebFeature::kFileHandlingLaunch);
+  }
+  for (auto& entry : files) {
+    files_vector.push_back(FileSystemHandle::CreateFromMojoEntry(
+        std::move(entry), GetSupplementable()->GetExecutionContext()));
+  }
   DOMWindowLaunchQueue::EnqueueLaunchParams(GetSupplementable(), launch_url,
                                             time_navigation_started_in_browser,
-                                            navigation_started);
+                                            navigation_started, files_vector);
 }
 
 }  // namespace blink

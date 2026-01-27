@@ -13042,6 +13042,7 @@ from previous Chrome versions.
   <int value="-447104608" label="BiometricAuthenticationInSettings:enabled"/>
   <int value="-446879089" label="BluetoothSessionizedMetrics:enabled"/>
   <int value="-446560063" label="finch-seed-min-update-period"/>
+  <int value="-446254066" label="LaunchQueueStopSendingOnReload:enabled"/>
   <int value="-446220201" label="EnableIncognitoShortcutOnDesktop:enabled"/>
   <int value="-444867364" label="Metal:enabled"/>
   <int value="-444758854" label="CellularCarrierLock:disabled"/>
@@ -15694,6 +15695,7 @@ from previous Chrome versions.
   <int value="471560693" label="webview-verbose-logging"/>
   <int value="471865485" label="EnableNearbyBleV2ExtendedAdvertising:enabled"/>
   <int value="471969274" label="MediaControlsExpandGesture:enabled"/>
+  <int value="473085117" label="LaunchQueueStopSendingOnReload:disabled"/>
   <int value="473296799" label="NtpBackgroundImageErrorDetection:disabled"/>
   <int value="473958125" label="OmniboxWrapPopupPosition:enabled"/>
   <int value="474743272" label="material-design-ink-drop"/>

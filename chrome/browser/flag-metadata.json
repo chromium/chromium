@@ -5918,6 +5918,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "launch-queue-stop-sending-on-reload",
+    "owners": [ "dmurph@chromium.org", "pwa-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "launcher-continue-section-with-recents",
     "owners": ["tbarzic@chromium.org", "mmourgos@chromium.org"],
     "expiry_milestone": 130
