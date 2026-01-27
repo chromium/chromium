@@ -37,6 +37,9 @@ public class TabBottomSheetManager implements Destroyable {
      * @param activity The current {@link Activity} instance.
      * @param profileSupplier A supplier for the current {@link Profile}.
      * @param windowAndroid The {@link WindowAndroid} for managing window-level operations.
+     * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for managing activity
+     *     lifecycle.
+     * @param snackbarManager The {@link SnackbarManager} for showing snackbars.
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
      */
     public TabBottomSheetManager(

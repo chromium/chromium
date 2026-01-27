@@ -102,11 +102,7 @@ public class TabBottomSheetSimpleManager implements Destroyable {
     public static boolean isOpen(Tab tab) {
         TabBottomSheetManager tabBottomSheetManager =
                 TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
-        if (tabBottomSheetManager != null) {
-            return tabBottomSheetManager.isSheetShowing();
-        } else {
-            return false;
-        }
+        return tabBottomSheetManager != null ? tabBottomSheetManager.isSheetShowing() : false;
     }
 
     @CalledByNative
@@ -122,10 +118,6 @@ public class TabBottomSheetSimpleManager implements Destroyable {
     public static @Nullable WebContents getWebContents(Tab tab) {
         TabBottomSheetManager tabBottomSheetManager =
                 TabBottomSheetUtils.getManagerFromWindow(assumeNonNull(tab.getWindowAndroid()));
-        if (tabBottomSheetManager != null) {
-            return tabBottomSheetManager.getWebContents();
-        } else {
-            return null;
-        }
+        return tabBottomSheetManager != null ? tabBottomSheetManager.getWebContents() : null;
     }
 }
