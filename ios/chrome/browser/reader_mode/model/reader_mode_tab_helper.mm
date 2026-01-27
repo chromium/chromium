@@ -475,14 +475,22 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
   // during Reading Mode activation for active tabs.
   if (IsReaderModeTranslationAvailable()) {
     switch (reason) {
-      case ReaderModeDeactivationReason::kNavigationDeactivated:
+      case ReaderModeDeactivationReason::kNavigationDeactivated: {
+        // Do not apply Reading Mode translation to user navigations. In the case
+        // where the navigation URL is the same as the Reading Mode URL this will
+        // reset the translation to the default state.
+        break;
+      }
       case ReaderModeDeactivationReason::kUserDeactivated: {
+        // Display translation badge if a translation was applied before or
+        // during Reading Mode activation.
         ChromeIOSTranslateClient* translate_client =
             ChromeIOSTranslateClient::FromWebState(web_state_.get());
         ApplyLanguageSettingsFromClient(translate_client);
         break;
       }
       case ReaderModeDeactivationReason::kDistillationFailureDeactivated: {
+        // Keep the settings the same as the original page.
         ApplyLanguageSettingsFromSource();
         break;
       }
