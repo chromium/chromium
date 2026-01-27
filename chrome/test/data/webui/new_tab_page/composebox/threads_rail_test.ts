@@ -13,7 +13,7 @@ import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {installMock} from '../test_support.js';
 
 const AIM_THREADS_HISTORY_LABEL = 'AI Mode history';
-const AIM_THREADS_URL = 'https://www.google.com/search?udm=50&atvm=1';
+const AIM_THREADS_URL = 'https://www.google.com/search?udm=50&atvm=3';
 
 suite('NewTabPageThreadsRailTest', () => {
   let threadsRailElement: ThreadsRailElement;
