@@ -369,7 +369,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   open(anchor: HTMLElement) {
-    // TODO (crbug.com/470379596): Add keyboard navigation to settings menu
     openMenu(this.$.lazyMenu.get(), anchor);
     window.addEventListener('keydown', this.keyDownCallback_, {capture: true});
     this.interceptedEvents_.forEach(eventType => {

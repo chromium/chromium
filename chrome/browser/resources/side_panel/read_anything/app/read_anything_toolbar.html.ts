@@ -199,7 +199,6 @@ ${renderTextStyleOptions.call(this)}
 </cr-icon-button>
 <settings-menu
   id="settingsMenu"
-  .presentationState="${this.presentationState}"
   .settingsPrefs="${this.settingsPrefs}"
   @close-submenu-requested="${this.onCloseSubmenuRequested_}"
   @close-all-menus="${this.onCloseAllMenus_}"

@@ -39,7 +39,6 @@ export function getHtml(this: SettingsMenuElement) {
               data-index="${index}">
             </cr-toggle>
         ` : html`
-            <!-- TODO(crbug.com/473611756): Fix direction in RTL -->
             <cr-icon class="end-icon" icon="cr:chevron-right"></cr-icon>
         `}
       </button>
