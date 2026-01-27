@@ -102,6 +102,7 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/ntp_customization_theme_image_preview_pinch_to_resize"
+        android:contentDescription="@string/accessibility_ntp_customization_theme_image_preview_pinch_to_resize"
         android:textAppearance="@style/TextAppearance.PreviewDialogText"
         android:layout_marginBottom="@dimen/ntp_customization_edit_icon_margin"
         android:layout_marginStart="@dimen/ntp_customization_back_button_margin_start"

@@ -1534,6 +1534,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_THEME_IMAGE_PREVIEW_PINCH_TO_RESIZE" desc="Text explaining the image could be resized by pinching it.">
         Pinch to resize
       </message>
+      <message name="IDS_ACCESSIBILITY_NTP_CUSTOMIZATION_THEME_IMAGE_PREVIEW_PINCH_TO_RESIZE" desc="Accessibility string to announce the image could be resized by pinching it.">
+        Pinch screen to resize photo
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_TYPE_BACKGROUND_COLOR_HEX_TITLE" desc="Title of the edit text box to input a color hex for the background color.">
         Background Color Hex
       </message>
