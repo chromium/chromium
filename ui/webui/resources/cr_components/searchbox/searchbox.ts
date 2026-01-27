@@ -23,6 +23,7 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
+import {isMac} from '//resources/js/platform.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -914,6 +915,12 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected async onInputWrapperKeydown_(e: KeyboardEvent) {
+    const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
+    if (modifier && e.key === 'z') {
+      e.stopPropagation();
+      return;
+    }
+
     const KEYDOWN_HANDLED_KEYS = [
       'ArrowDown',
       'ArrowUp',

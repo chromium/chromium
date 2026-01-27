@@ -866,8 +866,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
     const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
     if (modifier && e.key === 'z') {
-      e.preventDefault();
-      this.onUndoClick_();
+      if (this.onUndoClick_()) {
+        e.preventDefault();
+      }
     }
   }
 
@@ -1101,12 +1102,13 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onUndoClick_() {
+  protected onUndoClick_(): boolean {
     if (!this.$.toastManager.isToastOpen || this.$.toastManager.slottedHidden) {
-      return;
+      return false;
     }
     this.$.toastManager.hide();
     this.pageHandler_.undoMostVisitedTileAction(this.toastSource_);
+    return true;
   }
 
   protected onTouchStart_(e: TouchEvent) {
