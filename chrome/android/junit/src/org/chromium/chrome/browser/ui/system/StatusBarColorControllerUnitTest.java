@@ -162,7 +162,7 @@ public class StatusBarColorControllerUnitTest {
     public void testOverviewModeOverlay() {
         initialize(/* isTablet= */ false, /* isInDesktopWindow= */ false);
         mStatusBarColorController.updateStatusBarColor();
-        mStatusBarColorController.setScrimColor(Color.TRANSPARENT);
+        mStatusBarColorController.onScrimColorChanged(Color.TRANSPARENT);
 
         @ColorInt int expectedColor = ColorUtils.setAlphaComponentWithFloat(Color.RED, 0.5f);
         mOverviewColorSupplier.set(expectedColor);

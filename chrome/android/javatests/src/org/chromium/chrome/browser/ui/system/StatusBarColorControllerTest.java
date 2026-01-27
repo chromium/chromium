@@ -563,6 +563,6 @@ public class StatusBarColorControllerTest {
             StatusBarColorController statusBarColorController, float fraction) {
         @ColorInt int compositeScrimColor = ColorUtils.applyAlphaFloat(mScrimColor, fraction);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> statusBarColorController.setScrimColor(compositeScrimColor));
+                () -> statusBarColorController.onScrimColorChanged(compositeScrimColor));
     }
 }

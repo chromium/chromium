@@ -1886,7 +1886,7 @@ public class RootUiCoordinator
     }
 
     protected void onScrimColorChanged(@ColorInt int scrimColor) {
-        mStatusBarColorController.setScrimColor(scrimColor);
+        mStatusBarColorController.onScrimColorChanged(scrimColor);
     }
 
     protected void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
