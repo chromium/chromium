@@ -19,23 +19,24 @@ CSSMathMax* CSSMathMax::Create(const HeapVector<Member<V8CSSNumberish>>& args,
     return nullptr;
   }
 
-  CSSMathMax* result = Create(CSSNumberishesToNumericValues(args));
-  if (!result) {
-    exception_state.ThrowTypeError("Incompatible types");
-    return nullptr;
-  }
-
-  return result;
+  return Create(CSSNumberishesToNumericValues(args), exception_state);
 }
 
-CSSMathMax* CSSMathMax::Create(CSSNumericValueVector values) {
+CSSMathMax* CSSMathMax::Create(CSSNumericValueVector values,
+                               ExceptionState& exception_state) {
   bool error = false;
   CSSNumericValueType final_type =
       CSSMathVariadic::TypeCheck(values, CSSNumericValueType::Add, error);
-  return error ? nullptr
-               : MakeGarbageCollected<CSSMathMax>(
-                     MakeGarbageCollected<CSSNumericArray>(std::move(values)),
-                     final_type);
+  CSSMathMax* result =
+      error ? nullptr
+            : MakeGarbageCollected<CSSMathMax>(
+                  MakeGarbageCollected<CSSNumericArray>(std::move(values)),
+                  final_type);
+  if (!result) {
+    exception_state.ThrowTypeError("Incompatible types");
+  }
+
+  return result;
 }
 
 std::optional<CSSNumericSumValue> CSSMathMax::SumValue() const {

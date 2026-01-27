@@ -23,7 +23,8 @@ class CORE_EXPORT CSSMathMax final : public CSSMathVariadic {
   static CSSMathMax* Create(const HeapVector<Member<V8CSSNumberish>>& args,
                             ExceptionState& exception_state);
   // Blink-internal constructor.
-  static CSSMathMax* Create(CSSNumericValueVector);
+  static CSSMathMax* Create(CSSNumericValueVector,
+                            ExceptionState& = IGNORE_EXCEPTION);
 
   CSSMathMax(CSSNumericArray* values, const CSSNumericValueType& type)
       : CSSMathVariadic(values, type) {}

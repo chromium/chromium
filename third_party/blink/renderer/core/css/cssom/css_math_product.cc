@@ -42,23 +42,24 @@ CSSMathProduct* CSSMathProduct::Create(
     return nullptr;
   }
 
-  CSSMathProduct* result = Create(CSSNumberishesToNumericValues(args));
-  if (!result) {
-    exception_state.ThrowTypeError("Incompatible types");
-    return nullptr;
-  }
-
-  return result;
+  return Create(CSSNumberishesToNumericValues(args), exception_state);
 }
 
-CSSMathProduct* CSSMathProduct::Create(CSSNumericValueVector values) {
+CSSMathProduct* CSSMathProduct::Create(CSSNumericValueVector values,
+                                       ExceptionState& exception_state) {
   bool error = false;
   CSSNumericValueType final_type =
       CSSMathVariadic::TypeCheck(values, CSSNumericValueType::Multiply, error);
-  return error ? nullptr
-               : MakeGarbageCollected<CSSMathProduct>(
-                     MakeGarbageCollected<CSSNumericArray>(std::move(values)),
-                     final_type);
+  CSSMathProduct* result =
+      error ? nullptr
+            : MakeGarbageCollected<CSSMathProduct>(
+                  MakeGarbageCollected<CSSNumericArray>(std::move(values)),
+                  final_type);
+  if (!result) {
+    exception_state.ThrowTypeError("Incompatible types");
+  }
+
+  return result;
 }
 
 std::optional<CSSNumericSumValue> CSSMathProduct::SumValue() const {

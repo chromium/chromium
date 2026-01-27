@@ -23,7 +23,8 @@ class CORE_EXPORT CSSMathProduct final : public CSSMathVariadic {
   static CSSMathProduct* Create(const HeapVector<Member<V8CSSNumberish>>& args,
                                 ExceptionState& exception_state);
   // Blink internal-constructor.
-  static CSSMathProduct* Create(CSSNumericValueVector);
+  static CSSMathProduct* Create(CSSNumericValueVector,
+                                ExceptionState& = IGNORE_EXCEPTION);
 
   CSSMathProduct(CSSNumericArray* values, const CSSNumericValueType& type)
       : CSSMathVariadic(values, type) {}

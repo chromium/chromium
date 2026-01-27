@@ -25,7 +25,8 @@ class CORE_EXPORT CSSMathMin final : public CSSMathVariadic {
   static CSSMathMin* Create(const HeapVector<Member<V8CSSNumberish>>& args,
                             ExceptionState& exception_state);
   // Blink-internal constructor.
-  static CSSMathMin* Create(CSSNumericValueVector);
+  static CSSMathMin* Create(CSSNumericValueVector,
+                            ExceptionState& = IGNORE_EXCEPTION);
 
   CSSMathMin(CSSNumericArray* values, const CSSNumericValueType& type)
       : CSSMathVariadic(values, type) {}
