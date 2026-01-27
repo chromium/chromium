@@ -2478,7 +2478,7 @@ void OmniboxViewViews::PerformDrop(
   const ui::OSExchangeData& data = event.data();
   std::u16string text;
   const std::vector<ui::ClipboardUrlInfo> url_infos =
-      data.GetURLsAndTitles(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+      data.GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
   if (!url_infos.empty()) {
     text = omnibox::StripJavascriptSchemas(
         base::UTF8ToUTF16(url_infos.front().url.spec()));

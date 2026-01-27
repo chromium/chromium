@@ -222,7 +222,7 @@ std::optional<std::u16string> OSExchangeDataProviderMac::GetString() const {
 
   // There was no NSString, check for an NSURL.
   std::vector<ClipboardUrlInfo> url_infos =
-      GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+      GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
   if (!url_infos.empty()) {
     return base::UTF8ToUTF16(url_infos.front().url.spec());
   }
@@ -230,7 +230,7 @@ std::optional<std::u16string> OSExchangeDataProviderMac::GetString() const {
   return std::nullopt;
 }
 
-std::vector<ClipboardUrlInfo> OSExchangeDataProviderMac::GetURLsAndTitles(
+std::vector<ClipboardUrlInfo> OSExchangeDataProviderMac::GetURLs(
     FilenameToURLPolicy policy) const {
   NSArray<URLAndTitle*>* urls_and_titles =
       clipboard_util::URLsAndTitlesFromPasteboard(
@@ -238,18 +238,6 @@ std::vector<ClipboardUrlInfo> OSExchangeDataProviderMac::GetURLsAndTitles(
   if (!urls_and_titles.count) {
     return {};
   }
-  std::vector<ClipboardUrlInfo> url_infos;
-  url_infos.emplace_back(
-      GURL(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL)),
-      base::SysNSStringToUTF16(urls_and_titles.firstObject.title));
-  return url_infos;
-}
-
-std::vector<ClipboardUrlInfo> OSExchangeDataProviderMac::GetURLs(
-    FilenameToURLPolicy policy) const {
-  NSArray<URLAndTitle*>* urls_and_titles =
-      clipboard_util::URLsAndTitlesFromPasteboard(
-          GetPasteboard(), policy == FilenameToURLPolicy::CONVERT_FILENAMES);
   std::vector<ClipboardUrlInfo> local_urls;
   for (URLAndTitle* url_and_title in urls_and_titles) {
     local_urls.emplace_back(GURL(base::SysNSStringToUTF8(url_and_title.URL)),
@@ -284,7 +272,7 @@ bool OSExchangeDataProviderMac::HasString() const {
 }
 
 bool OSExchangeDataProviderMac::HasURL(FilenameToURLPolicy policy) const {
-  return !GetURLsAndTitles(policy).empty();
+  return !GetURLs(policy).empty();
 }
 
 bool OSExchangeDataProviderMac::HasFile() const {

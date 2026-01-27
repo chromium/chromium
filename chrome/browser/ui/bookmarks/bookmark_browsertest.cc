@@ -664,9 +664,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
           std::unique_ptr<ui::OSExchangeData> drag_data,
           gfx::NativeView native_view, ui::mojom::DragEventSource source,
           gfx::Point point, int operation) {
-        std::vector<ui::ClipboardUrlInfo> url_infos =
-            drag_data->GetURLsAndTitles(
-                ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+        std::vector<ui::ClipboardUrlInfo> url_infos = drag_data->GetURLs(
+            ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
         ASSERT_FALSE(url_infos.empty());
         EXPECT_EQ(page_url, url_infos.front().url);
         EXPECT_EQ(page_title, url_infos.front().title);
@@ -748,9 +747,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
           std::unique_ptr<ui::OSExchangeData> drag_data,
           gfx::NativeView native_view, ui::mojom::DragEventSource source,
           gfx::Point point, int operation) {
-        const std::vector<ui::ClipboardUrlInfo> url_infos =
-            drag_data->GetURLsAndTitles(
-                ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+        const std::vector<ui::ClipboardUrlInfo> url_infos = drag_data->GetURLs(
+            ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
         ASSERT_FALSE(url_infos.empty());
 
         // The bookmarks are added in order, and the first is retrieved, so

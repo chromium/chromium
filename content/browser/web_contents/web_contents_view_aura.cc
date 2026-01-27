@@ -730,7 +730,7 @@ void WebContentsViewAura::PrepareDropData(
   }
 
   drop_data->url_infos =
-      data.GetURLsAndTitles(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+      data.GetURLs(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
 
   if (std::optional<ui::OSExchangeData::HtmlInfo> html = data.GetHtml();
       html.has_value()) {

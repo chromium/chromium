@@ -209,7 +209,7 @@ TEST_F(OSExchangeDataWinTest, StringDataWritingViaCOM) {
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   std::vector<ui::ClipboardUrlInfo> url_infos =
-      data2.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+      data2.GetURLs(FilenameToURLPolicy::CONVERT_FILENAMES);
   ASSERT_FALSE(url_infos.empty());
   const ui::ClipboardUrlInfo& url_info = url_infos.front();
   GURL reference_url(base::AsStringPiece16(input));
@@ -257,7 +257,7 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   std::vector<ui::ClipboardUrlInfo> url_infos =
-      data2.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+      data2.GetURLs(FilenameToURLPolicy::CONVERT_FILENAMES);
   ASSERT_FALSE(url_infos.empty());
   EXPECT_EQ(GURL(base::AsStringPiece16(input2)), url_infos.front().url);
 }
@@ -974,7 +974,7 @@ TEST_F(OSExchangeDataWinTest, ProvideURLForPlainTextURL) {
   OSExchangeData data2(data.provider().Clone());
   ASSERT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   std::vector<ui::ClipboardUrlInfo> url_infos =
-      data2.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+      data2.GetURLs(FilenameToURLPolicy::CONVERT_FILENAMES);
   ASSERT_FALSE(url_infos.empty());
   EXPECT_EQ(GURL("http://google.com"), url_infos.front().url);
 }

@@ -53,7 +53,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   EXPECT_EQ(kTestString, copy_string);
 
   const std::vector<ClipboardUrlInfo> url_infos =
-      copy->GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+      copy->GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
   EXPECT_FALSE(url_infos.empty());
   EXPECT_EQ(GURL(kUrl), url_infos.front().url);
   EXPECT_EQ(kUrlTitle, url_infos.front().title);

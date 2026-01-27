@@ -48,8 +48,8 @@ TEST_F(OSExchangeDataProviderX11Test, MozillaURL) {
   ClipboardUrlInfo url_title(GURL(kGoogleURL), kGoogleTitle);
   provider.SetURLs(base::span_from_ref(url_title));
   {
-    const std::vector<ClipboardUrlInfo> url_infos = provider.GetURLsAndTitles(
-        FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    const std::vector<ClipboardUrlInfo> url_infos =
+        provider.GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
     ASSERT_FALSE(url_infos.empty());
     EXPECT_EQ(kGoogleTitle, url_infos.front().title);
     EXPECT_EQ(kGoogleURL, url_infos.front().url.spec());
@@ -59,8 +59,8 @@ TEST_F(OSExchangeDataProviderX11Test, MozillaURL) {
   ClipboardUrlInfo url_none_title(GURL(kGoogleURL), (std::u16string()));
   provider.SetURLs(base::span_from_ref(url_none_title));
   {
-    const std::vector<ClipboardUrlInfo> url_infos = provider.GetURLsAndTitles(
-        FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    const std::vector<ClipboardUrlInfo> url_infos =
+        provider.GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
     ASSERT_FALSE(url_infos.empty());
     EXPECT_EQ(std::u16string(), url_infos.front().title);
     EXPECT_EQ(kGoogleURL, url_infos.front().url.spec());
@@ -98,7 +98,7 @@ TEST_F(OSExchangeDataProviderX11Test, URIListWithBoth) {
 
   // We should only receive the URL here.
   const std::vector<ClipboardUrlInfo> url_infos =
-      provider.GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+      provider.GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
   ASSERT_FALSE(url_infos.empty());
   EXPECT_EQ(std::u16string(), url_infos.front().title);
   EXPECT_EQ(kGoogleURL, url_infos.front().url.spec());

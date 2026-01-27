@@ -183,7 +183,7 @@ void HomeButton::UpdateHomePage(
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   const std::vector<ui::ClipboardUrlInfo> url_infos =
-      event.data().GetURLsAndTitles(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+      event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
   if (!url_infos.empty() && prefs_) {
     GURL old_homepage(prefs_->GetString(prefs::kHomePage));
     bool old_is_ntp = prefs_->GetBoolean(prefs::kHomePageIsNewTabPage);

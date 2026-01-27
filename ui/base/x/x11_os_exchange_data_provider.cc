@@ -240,7 +240,7 @@ std::optional<std::u16string> XOSExchangeDataProvider::GetString() const {
   return std::nullopt;
 }
 
-std::vector<ClipboardUrlInfo> XOSExchangeDataProvider::GetURLsAndTitles(
+std::vector<ClipboardUrlInfo> XOSExchangeDataProvider::GetURLs(
     FilenameToURLPolicy policy) const {
   std::vector<ClipboardUrlInfo> url_infos;
   std::vector<x11::Atom> url_atoms = ui::GetURLAtomsFrom();
@@ -252,11 +252,8 @@ std::vector<ClipboardUrlInfo> XOSExchangeDataProvider::GetURLsAndTitles(
     return url_infos;
   }
 
-  // TODO(erg): Technically, both of these forms can accept multiple URLs,
-  // but that doesn't match the assumptions of the rest of the system which
-  // expect single types.
+  // 1. Handle Mozilla URLs (UTF16: URL, newline, title).
   if (data.GetType() == x11::GetAtom(kMimeTypeMozillaUrl)) {
-    // Mozilla URLs are (UTF16: URL, newline, title).
     std::u16string unparsed;
     data.AssignTo(&unparsed);
 
@@ -269,66 +266,30 @@ std::vector<ClipboardUrlInfo> XOSExchangeDataProvider::GetURLsAndTitles(
             url, tokens.size() > 1 ? std::move(tokens[1]) : std::u16string());
       }
     }
-    return url_infos;
   }
 
+  // 2. Handle URI List (Standard Linux/X11 URL format)
   if (data.GetType() == x11::GetAtom(kMimeTypeUriList)) {
     std::vector<std::string> tokens = ui::ParseURIList(data);
     for (const std::string& token : tokens) {
-      GURL test_url(token);
-      if (!test_url.is_valid()) {
+      GURL url(token);
+      if (!url.is_valid()) {
         continue;
       }
-      if (!test_url.SchemeIsFile() ||
+
+      if (std::any_of(
+              url_infos.begin(), url_infos.end(),
+              [&](const ClipboardUrlInfo& info) { return info.url == url; })) {
+        continue;
+      }
+      if (!url.SchemeIsFile() ||
           policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
-        url_infos.emplace_back(test_url, std::u16string());
-        break;
+        url_infos.emplace_back(url, std::u16string());
       }
     }
   }
 
   return url_infos;
-}
-
-std::vector<ClipboardUrlInfo> XOSExchangeDataProvider::GetURLs(
-    FilenameToURLPolicy policy) const {
-  std::vector<ClipboardUrlInfo> local_urls;
-
-  ui::SelectionData data = format_map_.Get(x11::GetAtom(kMimeTypeUriList));
-  if (data.IsValid()) {
-    std::vector<std::string> tokens = ui::ParseURIList(data);
-    for (const std::string& token : tokens) {
-      GURL test_url(token);
-      if (!test_url.is_valid()) {
-        continue;
-      }
-      if (!test_url.SchemeIsFile() ||
-          policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
-        local_urls.emplace_back(test_url, std::u16string());
-      }
-    }
-  }
-
-  data = format_map_.Get(x11::GetAtom(kMimeTypeMozillaUrl));
-  if (data.IsValid()) {
-    std::u16string unparsed;
-    data.AssignTo(&unparsed);
-
-    // Mozilla URLs are (UTF16: URL, newline, title).
-    std::vector<std::u16string> tokens = base::SplitString(
-        unparsed, u"\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (tokens.size() > 0) {
-      GURL url(tokens[0]);
-      if (url.is_valid() && std::none_of(local_urls.begin(), local_urls.end(),
-                                         [&](const ClipboardUrlInfo& info) {
-                                           return info.url == url;
-                                         })) {
-        local_urls.emplace_back(url, std::u16string());
-      }
-    }
-  }
-
-  return local_urls;
 }
 
 std::optional<std::vector<FileInfo>> XOSExchangeDataProvider::GetFilenames()

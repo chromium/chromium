@@ -75,11 +75,6 @@ std::optional<std::u16string> OSExchangeData::GetString() const {
   return provider_->GetString();
 }
 
-std::vector<ClipboardUrlInfo> OSExchangeData::GetURLsAndTitles(
-    FilenameToURLPolicy policy) const {
-  return provider_->GetURLsAndTitles(policy);
-}
-
 std::vector<ui::ClipboardUrlInfo> OSExchangeData::GetURLs(
     FilenameToURLPolicy policy) const {
   return provider_->GetURLs(policy);

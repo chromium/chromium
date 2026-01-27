@@ -57,8 +57,8 @@ bool BookmarkNodeData::Read(const ui::OSExchangeData& data) {
         return false;
       }
     }
-  } else if (std::vector<ui::ClipboardUrlInfo> result = data.GetURLsAndTitles(
-                 ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  } else if (std::vector<ui::ClipboardUrlInfo> result =
+                 data.GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
              !result.empty()) {
     ReadFromTuple(result.front().url, result.front().title);
   }

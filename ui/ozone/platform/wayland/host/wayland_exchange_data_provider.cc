@@ -281,7 +281,7 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
   if (mime_type == ui::kMimeTypeMozillaUrl ||
       mime_type == ui::kMimeTypeUriList) {
     const std::vector<ClipboardUrlInfo> url_infos =
-        GetURLsAndTitles(kFilenameToURLPolicy);
+        GetURLs(kFilenameToURLPolicy);
     if (url_infos.empty()) {
       return false;
     }

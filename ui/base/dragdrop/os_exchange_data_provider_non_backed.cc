@@ -118,7 +118,7 @@ std::optional<std::u16string> OSExchangeDataProviderNonBacked::GetString()
   return string_;
 }
 
-std::vector<ClipboardUrlInfo> OSExchangeDataProviderNonBacked::GetURLsAndTitles(
+std::vector<ClipboardUrlInfo> OSExchangeDataProviderNonBacked::GetURLs(
     FilenameToURLPolicy policy) const {
   std::vector<ClipboardUrlInfo> url_infos;
   if ((formats_ & OSExchangeData::URL) == 0) {
@@ -127,45 +127,24 @@ std::vector<ClipboardUrlInfo> OSExchangeDataProviderNonBacked::GetURLsAndTitles(
       DCHECK(plaintext_url->is_valid());
       url_infos.push_back(
           ClipboardUrlInfo{plaintext_url.value(), std::u16string()});
-      return url_infos;
-    } else if (GURL url; policy == FilenameToURLPolicy::CONVERT_FILENAMES &&
-                         GetFileURL(&url)) {
-      DCHECK(url.is_valid());
-      url_infos.push_back(ClipboardUrlInfo{url, std::u16string()});
-      return url_infos;
     }
-    return url_infos;
-  }
-
-  if (!url_.is_valid()) {
-    return url_infos;
-  }
-
-  url_infos.push_back(ClipboardUrlInfo{url_, title_});
-  return url_infos;
-}
-
-std::vector<ClipboardUrlInfo> OSExchangeDataProviderNonBacked::GetURLs(
-    FilenameToURLPolicy policy) const {
-  std::vector<ClipboardUrlInfo> local_urls;
-
-  std::vector<ClipboardUrlInfo> url_infos =
-      GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-  if (!url_infos.empty()) {
-    local_urls.insert(local_urls.end(), url_infos.begin(), url_infos.end());
+  } else {
+    if (url_.is_valid()) {
+      url_infos.push_back(ClipboardUrlInfo{url_, title_});
+    }
   }
 
   if (policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
     if (std::optional<std::vector<FileInfo>> fileinfos = GetFilenames();
         fileinfos.has_value()) {
       for (const auto& fileinfo : fileinfos.value()) {
-        local_urls.push_back(
+        url_infos.push_back(
             ClipboardUrlInfo{net::FilePathToFileURL(fileinfo.path), u""});
       }
     }
   }
 
-  return local_urls;
+  return url_infos;
 }
 
 std::optional<std::vector<FileInfo>>

@@ -158,7 +158,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
 
   // Writing should also put the URL and title on the clipboard.
   std::vector<ui::ClipboardUrlInfo> url_infos =
-      data2.GetURLsAndTitles(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+      data2.GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
   ASSERT_FALSE(url_infos.empty());
   EXPECT_EQ(url, url_infos[0].url);
   EXPECT_EQ(title, url_infos[0].title);

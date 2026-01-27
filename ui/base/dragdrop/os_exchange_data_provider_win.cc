@@ -641,7 +641,7 @@ std::optional<std::u16string> OSExchangeDataProviderWin::GetString() const {
   return std::nullopt;
 }
 
-std::vector<ClipboardUrlInfo> OSExchangeDataProviderWin::GetURLsAndTitles(
+std::vector<ClipboardUrlInfo> OSExchangeDataProviderWin::GetURLs(
     FilenameToURLPolicy policy) const {
   std::vector<ClipboardUrlInfo> url_infos;
   if (clipboard_util::GetUrlInfos(
@@ -658,24 +658,6 @@ std::vector<ClipboardUrlInfo> OSExchangeDataProviderWin::GetURLsAndTitles(
     std::u16string title =
         net::GetSuggestedFilename(url, "", "", "", "", std::string());
     url_infos.emplace_back(std::move(url), std::move(title));
-  }
-
-  return url_infos;
-}
-
-std::vector<ClipboardUrlInfo> OSExchangeDataProviderWin::GetURLs(
-    FilenameToURLPolicy policy) const {
-  std::vector<ClipboardUrlInfo> url_infos =
-      GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-
-  if (policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
-    if (std::optional<std::vector<FileInfo>> fileinfos = GetFilenames();
-        fileinfos.has_value()) {
-      for (const auto& fileinfo : fileinfos.value()) {
-        url_infos.emplace_back(net::FilePathToFileURL(fileinfo.path),
-                               fileinfo.display_name.LossyDisplayName());
-      }
-    }
   }
 
   return url_infos;

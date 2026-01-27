@@ -170,8 +170,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   void SetHtml(const std::u16string& html, const GURL& base_url) override;
 
   std::optional<std::u16string> GetString() const override;
-  std::vector<ClipboardUrlInfo> GetURLsAndTitles(
-      FilenameToURLPolicy policy) const override;
   std::vector<ClipboardUrlInfo> GetURLs(
       FilenameToURLPolicy policy) const override;
   std::optional<std::vector<FileInfo>> GetFilenames() const override;

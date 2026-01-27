@@ -81,8 +81,6 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   // happen for HTTP-like URLs (i.e. http or https) if the data originates from
   // a renderer (i.e. `IsRendererTainted()` is true) to avoid bypassing the URL
   // filtering applied when a drag is started.
-  virtual std::vector<ClipboardUrlInfo> GetURLsAndTitles(
-      FilenameToURLPolicy policy) const = 0;
   virtual std::vector<ClipboardUrlInfo> GetURLs(
       FilenameToURLPolicy policy) const = 0;
   virtual std::optional<std::vector<FileInfo>> GetFilenames() const = 0;
