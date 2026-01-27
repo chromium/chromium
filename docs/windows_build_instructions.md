@@ -128,10 +128,10 @@ Python. Note that environment variable names are case insensitive).
   * If you don't have Administrator access, you can edit your **user-level**
   PATH. Search for "Edit environment variables for your account". Under "User
   variables for %USER%", select the Path variable for editing.
-* Modify the Path variable by adding `C:\src\depot_tools` at the front (or at
-  least in front of any directory that might already have a copy of Python).
-  Note: If you can only modify your user-level PATH and the system PATH has a
-  Python in it, you will be out of luck.
+* Modify the Path variable by adding `C:\src\depot_tools` at the **front** (or
+  at least in front of any directory that might already have a copy of Python
+  or git). Note: If you can only modify your user-level PATH and the system
+  PATH has a Python or git in it, you will be out of luck.
 
 Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and
 set it to 0. This tells depot_tools to use your locally installed version of
