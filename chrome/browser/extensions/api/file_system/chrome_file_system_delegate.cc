@@ -87,15 +87,17 @@ base::FilePath ChromeFileSystemDelegate::GetDefaultDirectory() {
 base::FilePath ChromeFileSystemDelegate::GetManagedSaveAsDirectory(
     content::BrowserContext* browser_context,
     const Extension& extension) {
-  if (extension.id() != extension_misc::kPdfExtensionId)
+  if (extension.id() != extension_misc::kPdfExtensionId) {
     return base::FilePath();
+  }
 
   ChromeDownloadManagerDelegate* download_manager =
       DownloadCoreServiceFactory::GetForBrowserContext(browser_context)
           ->GetDownloadManagerDelegate();
   DownloadPrefs* download_prefs = download_manager->download_prefs();
-  if (!download_prefs->IsDownloadPathManaged())
+  if (!download_prefs->IsDownloadPathManaged()) {
     return base::FilePath();
+  }
   return download_prefs->DownloadPath();
 }
 
@@ -110,8 +112,9 @@ bool ChromeFileSystemDelegate::ShowSelectFileDialog(
   content::WebContents* web_contents =
       extension_function->GetSenderWebContents();
 
-  if (!web_contents)
+  if (!web_contents) {
     return false;
+  }
 
   // TODO(asargent/benwells) - As a short term remediation for
   // crbug.com/179010 we're adding the ability for an allowlisted extension to
@@ -154,12 +157,15 @@ void ChromeFileSystemDelegate::ConfirmSensitiveDirectoryAccess(
 
 int ChromeFileSystemDelegate::GetDescriptionIdForAcceptType(
     const std::string& accept_type) {
-  if (accept_type == "image/*")
+  if (accept_type == "image/*") {
     return IDS_IMAGE_FILES;
-  if (accept_type == "audio/*")
+  }
+  if (accept_type == "audio/*") {
     return IDS_AUDIO_FILES;
-  if (accept_type == "video/*")
+  }
+  if (accept_type == "video/*") {
     return IDS_VIDEO_FILES;
+  }
   return 0;
 }
 
