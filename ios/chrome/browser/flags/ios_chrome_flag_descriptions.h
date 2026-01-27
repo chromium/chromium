@@ -306,9 +306,6 @@ extern const char kEditPasswordsInSettingsDescription[];
 extern const char kEnableACPrefetchName[];
 extern const char kEnableACPrefetchDescription[];
 
-extern const char kEnableASWebAuthenticationSessionName[];
-extern const char kEnableASWebAuthenticationSessionDescription[];
-
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
