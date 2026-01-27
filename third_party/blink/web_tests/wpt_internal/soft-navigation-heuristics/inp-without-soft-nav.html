@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/soft-navigation-heuristics/resources/soft-navigation-test-helper.js"></script>
+
+<div id="target"></div>
+<div><button id="navigateButton">Navigate!</button></div>
+
+<script>
+  promise_test(async t => {
+    navigateButton.addEventListener('click', async () => {
+      target.innerHTML = '<div id="candidate">Text</div>';
+    }, {once: true});
+
+    const icpPromise =
+        SoftNavigationTestHelper.getPerformanceEntries('interaction-contentful-paint');
+    if (test_driver) {
+      test_driver.click(navigateButton);
+    }
+
+    const helper = new SoftNavigationTestHelper(t);
+    const icps = await helper.withTimeoutMessage(
+        icpPromise, 'ICP not detected.', /*timeout=*/ 3000);
+    assert_equals(icps.length, 1, 'Expected exactly one ICP entry.');
+    assert_equals(icps[0].id, 'candidate', 'Expected ICP candidate to be "candidate"');
+  }, 'ICP entries are emitted without soft navigations');
+</script>

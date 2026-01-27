@@ -281,7 +281,8 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
   // If the soft nav entry for this context was emitted, emit the ICP entry now;
   // otherwise, buffer it until all the soft nav criteria are met, if ever, and
   // emit in `EmitSoftNavigation()`.
-  if (WasEmitted()) {
+  if (WasEmitted() ||
+      RuntimeEnabledFeatures::SoftNavigationEagerIcpEntryEmissionEnabled()) {
     CHECK(!latest_unemitted_icp_entry_);
     performance->OnInteractionContentfulPaintUpdated(entry);
   } else {
