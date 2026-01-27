@@ -18,20 +18,28 @@ with a C++ UI controller, as explained [here](webui_explainer.md).
 
 For WebUIs that are not served on iOS, the frontend resources (TS/HTML/CSS)
 should be placed in `chrome/browser/resources` and the backend code
-(WebUIController, WebUIConfig, and any handlers) should be placed in
-`chrome/browser/ui/webui/`. WebUIs that are available on iOS need to have
-2 separate backend implementations: one for iOS in ios/, and one for all
-other platforms in `chrome/browser/ui/webui`. To allow both implementations
-to access the frontend resources and other shared code (e.g., mojo interfaces),
+(WebUIController, WebUIConfig, and any handlers) should be placed next to the
+controller logic in `chrome/browser/ui/<feature>` or `chrome/browser/<feature>`.
+In the event that the WebUI is simple and there is no non-WebUI controller
+logic, then this guidance does not apply. For legacy reasons, many features
+still have the C++ code in `chrome/browser/ui/webui/<feature>`. For more
+guidance on overall directory and features structure, see [Design
+Principles](../chrome_browser_design_principles.md).
+
+WebUIs that are available on iOS need to have 2 separate backend
+implementations: one for iOS in ios/, and one for all other platforms in
+`chrome/browser/ui/<feature>`. If the backend or parts of it can be shared, that
+code will live in `components/<feature>`. To allow both implementations to
+access the frontend resources and other shared code (e.g., mojo interfaces),
 frontend resources and shared code for such WebUIs should be placed in
 `components/` instead of `chrome/`. Note: some legacy WebUIs are located in
-other folders, such as `content/`. This is discouraged for new WebUIs since
-code in `content/` and other folders may not be allowed to depend on WebUI
-shared infrastructure and utilities.
+other folders, such as `content/`. This is discouraged for new WebUIs since code
+in `content/` and other folders may not be allowed to depend on WebUI shared
+infrastructure and utilities.
 
 In this example, we can start by creating folders for the new page in
-`chrome/browser/[resources|ui/webui]/hello_world`. When creating WebUI
-resources, follow the
+`chrome/browser/resources/hello_world` and `chrome/browser/hello_world`. When
+creating WebUI resources, follow the
 [Web Development Style Guide](../../styleguide/web/web.md).
 
 ## Making a basic WebUI page
@@ -230,10 +238,10 @@ extern const char kChromeUIHelloWorldHost[];
 Next we need a class to handle requests to this new resource URL. Typically this will subclass `WebUIController` (WebUI
 dialogs will also need another class which will subclass `WebDialogDelegate`, this is shown later).
 
-`chrome/browser/ui/webui/hello_world/hello_world_ui.h`
+`chrome/browser/hello_world/hello_world_ui.h`
 ```c++
-#ifndef CHROME_BROWSER_UI_WEBUI_HELLO_WORLD_HELLO_WORLD_H_
-#define CHROME_BROWSER_UI_WEBUI_HELLO_WORLD_HELLO_WORLD_H_
+#ifndef CHROME_BROWSER_HELLO_WORLD_HELLO_WORLD_UI_H_
+#define CHROME_BROWSER_HELLO_WORLD_HELLO_WORLD_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
 
@@ -244,12 +252,12 @@ class HelloWorldUI : public content::WebUIController {
   ~HelloWorldUI() override;
 };
 
-#endif // CHROME_BROWSER_UI_WEBUI_HELLO_WORLD_HELLO_WORLD_H_
+#endif // CHROME_BROWSER_HELLO_WORLD_HELLO_WORLD_UI_H_
 ```
 
-`chrome/browser/ui/webui/hello_world/hello_world_ui.cc`
+`chrome/browser/hello_world/hello_world_ui.cc`
 ```c++
-#include "chrome/browser/ui/webui/hello_world/hello_world_ui.h"
+#include "chrome/browser/hello_world/hello_world_ui.h"
 
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -282,9 +290,9 @@ HelloWorldUI::~HelloWorldUI() = default;
 
 To ensure that your code actually gets compiled, you need to add a
 `BUILD.gn` file defining a target for it, and hook up this target in
-`chrome/browser/BUILD.gn`:
+`chrome/browser/hellow_world/BUILD.gn`:
 
-`chrome/browser/ui/webui/hello_world/BUILD.gn`
+`chrome/browser/hello_world/BUILD.gn`
 ```py
 source_set("hello_world") {
   sources = [
@@ -300,19 +308,17 @@ source_set("hello_world") {
 }
 ```
 
+You will also need to reference this from `//chrome/browser/BUILD.gn`
+
 `chrome/browser/BUILD.gn`
 ```py
-static_library("browser") {
 ...
-# Place in platform-specific deps += section if not on all platforms
-# (e.g., !is_android).
-deps = [
-... (lots)
-  "//chrome/browser/ui/webui/hello_world",
+  deps = [
+    ... (lots)
+    "//chrome/browser/hello_world:hello_world",
+    ... (lots)
+  ]
 ...
-]
-...
-}
 ```
 
 ### Preferred method: Add a WebUIConfig class and put it in the WebUIConfigMap
@@ -324,7 +330,7 @@ request handler is instantiated and used to handle any requests to the desired
 scheme + host. If you don't need to pass any arguments to your controller
 class, inherit from `DefaultWebUIConfig` to reduce the amount of code required:
 
-`chrome/browser/ui/webui/hello_world/hello_world_ui.h`
+`chrome/browser/hello_world/hello_world_ui.h`
 ```c++
 // Forward declaration so that config definition can come before controller.
 class HelloWorldUI;
@@ -411,7 +417,7 @@ do that, some small changes are needed to your code.  First, we need to add a ne
 `ui::WebDialogDelegate`.  The easiest way to do that is to edit the `hello_world_ui.*` files
 
 
-`chrome/browser/ui/webui/hello_world/hello_world_ui.h`
+`chrome/browser/hello_world/hello_world_ui.h`
 ```c++
  // Leave the old content, but add this new code
  class HelloWorldDialog : public ui::WebDialogDelegate {
@@ -441,7 +447,7 @@ do that, some small changes are needed to your code.  First, we need to add a ne
 };
 ```
 
-`chrome/browser/ui/webui/hello_world/hello_world_ui.cc`
+`chrome/browser/hello_world/hello_world_ui.cc`
 ```c++
  // Leave the old content, but add this new stuff
 
