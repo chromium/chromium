@@ -674,11 +674,11 @@ suite('SpeechController', () => {
     assertEquals(0, speech.getCallCount('speak'));
   });
 
-  test('onReadingModeWillHide while paused does nothing', () => {
+  test('onReadingModeWillHide while paused cancels speech', () => {
     speechController.onReadingModeWillClose();
 
+    assertEquals(1, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('pause'));
-    assertEquals(0, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('speak'));
   });
 

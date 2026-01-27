@@ -181,10 +181,10 @@ export class SpeechController {
   // stop speaking.
   onReadingModeWillClose() {
     // TODO: crbug.com/466967616 - Ensure Read Aloud resume honors word
-    // boundaries after ReadingModeWillClose is called
-    if (this.isSpeechActive()) {
-      this.stopSpeech_(PauseActionSource.DEFAULT);
-    }
+    // boundaries after ReadingModeWillClose is called.
+    // TODO: crbug.com/466967616 - Log when this is called when isSpeechActive
+    // is false, as this is likely indicative of a bug.
+    this.stopSpeech_(PauseActionSource.DEFAULT);
   }
 
   onTabMuteStateChange(muted: boolean) {

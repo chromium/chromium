@@ -2341,13 +2341,16 @@ void ReadAnythingAppController::OnTtsEngineInstalled() {
 void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
   page_handler_->AckReadingModeHidden();
   model_.set_will_hide(true);
+
   // If the tab is not active but RM is hidden, then the tab was switched and
   // speech was not stopped. If the tab is still active and RM is hidden, then
   // RM was closed, so log the speech stopped.
-  if (read_aloud_model_.speech_playing() && tab_active) {
-    read_aloud_model_.LogSpeechStop(
-        ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
+  if (tab_active) {
     ReadingModeWillClose();
+    if (read_aloud_model_.speech_playing()) {
+      read_aloud_model_.LogSpeechStop(
+          ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
+    }
   }
   LogLineFocusSession();
   RecordEstimatedWordsSeen();
