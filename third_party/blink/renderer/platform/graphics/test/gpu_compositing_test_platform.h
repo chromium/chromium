@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_GPU_MEMORY_BUFFER_TEST_PLATFORM_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_GPU_MEMORY_BUFFER_TEST_PLATFORM_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_GPU_COMPOSITING_TEST_PLATFORM_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_GPU_COMPOSITING_TEST_PLATFORM_H_
 
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
-class GpuMemoryBufferTestPlatform : public blink::TestingPlatformSupport {
+class GpuCompositingTestPlatform : public blink::TestingPlatformSupport {
  public:
-  GpuMemoryBufferTestPlatform() {}
+  GpuCompositingTestPlatform() {}
 
-  ~GpuMemoryBufferTestPlatform() override {}
+  ~GpuCompositingTestPlatform() override {}
 
   bool IsGpuCompositingDisabled() const override {
     return is_gpu_compositing_disabled_;
@@ -29,4 +29,4 @@ class GpuMemoryBufferTestPlatform : public blink::TestingPlatformSupport {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_GPU_MEMORY_BUFFER_TEST_PLATFORM_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_GPU_COMPOSITING_TEST_PLATFORM_H_

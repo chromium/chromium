@@ -1996,7 +1996,7 @@ static_library("test_support") {
     "graphics/paint/paint_controller_test.h",
     "graphics/test/fake_gles2_interface.h",
     "graphics/test/fake_web_graphics_context_3d_provider.h",
-    "graphics/test/gpu_memory_buffer_test_platform.h",
+    "graphics/test/gpu_compositing_test_platform.h",
     "graphics/test/gpu_test_utils.cc",
     "graphics/test/gpu_test_utils.h",
     "graphics/test/mock_compositor_frame_sink.h",

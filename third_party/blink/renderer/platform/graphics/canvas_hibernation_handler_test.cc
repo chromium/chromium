@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -125,7 +125,7 @@ namespace {
 void SetPageVisible(
     TestHibernationHandlerDelegate* delegate,
     CanvasHibernationHandler* hibernation_handler,
-    ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform>& platform,
+    ScopedTestingPlatformSupport<GpuCompositingTestPlatform>& platform,
     bool page_visible) {
   delegate->SetPageVisible(page_visible);
 
@@ -213,7 +213,7 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
   base::HistogramTester histogram_tester;
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   CanvasHibernationHandler handler(delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
@@ -266,7 +266,7 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   CanvasHibernationHandler handler(delegate);
 
@@ -288,7 +288,7 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {
 
 TEST_P(CanvasHibernationHandlerTest, BackgroundForeground) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   CanvasHibernationHandler handler(delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
@@ -314,7 +314,7 @@ TEST_P(CanvasHibernationHandlerTest, BackgroundForeground) {
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundAfterEncoding) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   CanvasHibernationHandler handler(delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
@@ -340,7 +340,7 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundAfterEncoding) {
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   CanvasHibernationHandler handler(delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
@@ -378,7 +378,7 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   CanvasHibernationHandler handler(delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
@@ -407,7 +407,7 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   CanvasHibernationHandler handler(delegate);
 
@@ -428,7 +428,7 @@ TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
 
 TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   CanvasHibernationHandler handler(delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
@@ -461,7 +461,7 @@ TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
 }
 
 TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
   auto handler = std::make_unique<CanvasHibernationHandler>(delegate);
 
