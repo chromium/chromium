@@ -91,6 +91,10 @@ void AutofillAiImportDataControllerImpl::ShowPrompt(
     AutofillClient::EntityImportPromptResultCallback prompt_closed_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view() || !MaySetUpBubble()) {
+    if (!prompt_closed_callback.is_null()) {
+      std::move(prompt_closed_callback)
+          .Run(AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
+    }
     return;
   }
 

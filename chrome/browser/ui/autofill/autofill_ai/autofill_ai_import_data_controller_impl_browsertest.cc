@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/browser.h"
@@ -180,6 +181,21 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
   SetNewEntitiesOptions({.record_type = EntityInstance::RecordType::kLocal});
   ShowUi("SaveNewEntity");
   EXPECT_FALSE(controller()->IsWalletableEntity());
+}
+
+// Tests that calling `ShowPrompt()` when a bubble is already visible result in
+// the prompt closed callback being called with the `kUnknown` reason.
+IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
+                       ShowPrompt_BubbleAlreadyVisible) {
+  ShowUi("SaveNewEntity");
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  base::test::TestFuture<AutofillClient::AutofillAiBubbleClosedReason>
+      prompt_closed_future;
+  controller()->ShowPrompt(test::GetPassportEntityInstance(), std::nullopt,
+                           prompt_closed_future.GetCallback());
+  EXPECT_EQ(prompt_closed_future.Get(),
+            AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AutofillAiImportDataControllerImplTest);
