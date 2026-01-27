@@ -112,7 +112,6 @@ _NATIVE_ALLOWLIST = {
     'content.mojom.NetworkConnectionType',
     'content.mojom.PageState',
     'content.mojom.PageTransition',
-    'content.mojom.ScrollbarButtonsPlacement',
     'content.mojom.ScrollerStyle',
     'content.mojom.WebPluginInfo',
     'gpu.mojom.SwapBuffersCompleteParams',
