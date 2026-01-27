@@ -15,7 +15,9 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions_win.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/access_control_list.h"
@@ -384,8 +386,33 @@ AccessToken::SecurityAttribute::SecurityAttribute(SecurityAttribute&&) =
     default;
 AccessToken::SecurityAttribute::~SecurityAttribute() = default;
 
+// static
+AccessToken::SecurityAttribute AccessToken::SecurityAttribute::CreateForTesting(
+    std::wstring_view name,
+    bool is_string,
+    ULONG flags,
+    base::span<std::wstring_view> values) {
+  CHECK(!values.empty());
+  return SecurityAttribute(name,
+                           is_string ? TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING
+                                     : TOKEN_SECURITY_ATTRIBUTE_TYPE_UINT64,
+                           flags, {values.begin(), values.end()});
+}
+
 bool AccessToken::SecurityAttribute::is_string() const {
   return type_ == TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING;
+}
+
+std::wstring AccessToken::SecurityAttribute::GetConditionalExpression() const {
+  std::wstring expr = StrCat({L"(", name_, L" == {"});
+  if (is_string()) {
+    // Note, SDDL doesn't support escaping double quotes in value strings.
+    StrAppend(&expr, {L"\"", JoinString(values_, L"\",\""), L"\""});
+  } else {
+    StrAppend(&expr, {JoinString(values_, L",")});
+  }
+  StrAppend(&expr, {L"})"});
+  return expr;
 }
 
 std::optional<AccessToken> AccessToken::FromToken(ScopedHandle&& token) {

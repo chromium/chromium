@@ -485,11 +485,24 @@ void TestAddSecurityAttribute(const AccessToken& token, bool inherit) {
     flags |= TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE;
   }
 
-  CheckSecurityAttribute(
-      *dup, AccessToken::SecurityAttribute(kAttributeName,
-                                           TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING,
-                                           flags, {kAttributeValue}));
+  std::wstring_view values[] = {kAttributeValue};
+  CheckSecurityAttribute(*dup, AccessToken::SecurityAttribute::CreateForTesting(
+                                   kAttributeName,
+                                   /*is_string=*/true, flags, values));
   EXPECT_TRUE(dup->HasSecurityAttribute(kAttributeName).value_or(false));
+}
+
+void TestConditionalExpression(std::wstring_view name,
+                               bool is_string,
+                               base::span<std::wstring_view> values,
+                               const std::wstring_view expected) {
+  auto expr = AccessToken::SecurityAttribute::CreateForTesting(name, is_string,
+                                                               0, values)
+                  .GetConditionalExpression();
+  EXPECT_EQ(expr, expected);
+  AccessControlList acl;
+  EXPECT_TRUE(
+      acl.AddAccessAllowedConditionalAce(Sid(WellKnownSid::kNull), 0, 0, expr));
 }
 
 }  // namespace
@@ -1114,6 +1127,23 @@ TEST(AccessTokenTest, AnonymousTokenHasNoSecurityAttributes) {
   ASSERT_TRUE(anon_token);
   EXPECT_FALSE(
       anon_token->HasSecurityAttribute(kProcUniqueAttribute).value_or(true));
+}
+
+TEST(AccessTokenTest, GetConditionalExpression) {
+  std::vector<std::wstring_view> values{L"1234"};
+  TestConditionalExpression(L"ABC", /*is_string=*/true, values,
+                            L"(ABC == {\"1234\"})");
+  TestConditionalExpression(L"ABC", /*is_string=*/false, values,
+                            L"(ABC == {1234})");
+  values.emplace_back(L"8765");
+  TestConditionalExpression(L"ABC", /*is_string=*/true, values,
+                            L"(ABC == {\"1234\",\"8765\"})");
+  TestConditionalExpression(L"ABC", /*is_string=*/false, values,
+                            L"(ABC == {1234,8765})");
+  TestConditionalExpression(L"XYZ", /*is_string=*/true, values,
+                            L"(XYZ == {\"1234\",\"8765\"})");
+  TestConditionalExpression(L"XYZ", /*is_string=*/false, values,
+                            L"(XYZ == {1234,8765})");
 }
 
 }  // namespace base::win

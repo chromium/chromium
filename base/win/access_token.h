@@ -13,6 +13,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/cstring_view.h"
 #include "base/win/access_control_list.h"
 #include "base/win/scoped_handle.h"
@@ -78,12 +79,15 @@ class BASE_EXPORT AccessToken {
 
   class BASE_EXPORT SecurityAttribute {
    public:
-    SecurityAttribute(std::wstring_view name,
-                      ULONG type,
-                      ULONG flags,
-                      std::vector<std::wstring> values);
     SecurityAttribute(SecurityAttribute&&);
     ~SecurityAttribute();
+
+    // Create a security attribute object for testing.
+    static SecurityAttribute CreateForTesting(
+        std::wstring_view name,
+        bool is_string,
+        ULONG flags,
+        base::span<std::wstring_view> values);
 
     // Indicates if the attribute was originally a list of strings types.
     bool is_string() const;
@@ -96,8 +100,17 @@ class BASE_EXPORT AccessToken {
     const std::vector<std::wstring>& values() const { return values_; }
     // The flags for the attribute.
     ULONG flags() const { return flags_; }
+    // Gets an SDDL format equality conditional expression for the security
+    // attribute. This can be used to add a conditional ACE to a security
+    // descriptor to limit access based on the presence of the attribute.
+    std::wstring GetConditionalExpression() const;
 
    private:
+    friend class AccessToken;
+    SecurityAttribute(std::wstring_view name,
+                      ULONG type,
+                      ULONG flags,
+                      std::vector<std::wstring> values);
     std::wstring name_;
     ULONG type_;
     ULONG flags_;

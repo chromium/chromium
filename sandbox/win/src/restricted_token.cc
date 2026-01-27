@@ -100,6 +100,10 @@ void RestrictedToken::AddDefaultDaclSid(
   sids_for_default_dacl_.emplace_back(known_sid, access_mode, access, 0);
 }
 
+void RestrictedToken::SetIsolationSecurityAttribute(std::wstring_view name) {
+  isolation_security_attr_ = name;
+}
+
 std::optional<base::win::AccessToken>
 RestrictedToken::GetRestrictedTokenForTesting(base::win::AccessToken& token) {
   return CreateRestricted(token);
@@ -206,11 +210,36 @@ std::optional<base::win::AccessToken> RestrictedToken::CreateRestricted(
     dacl_entries.push_back(entry.Clone());
   }
 
-  dacl_entries.emplace_back(
-      new_token->User(), base::win::SecurityAccessMode::kGrant, GENERIC_ALL, 0);
+  const bool isolation_default_dacl = !isolation_security_attr_.empty();
+  if (isolation_default_dacl) {
+    dacl_entries.emplace_back(new_token->User(),
+                              base::win::SecurityAccessMode::kRevoke,
+                              GENERIC_ALL, 0);
+    dacl_entries.emplace_back(
+        base::win::Sid(base::win::WellKnownSid::kCreatorOwnerRights),
+        base::win::SecurityAccessMode::kGrant, READ_CONTROL, 0);
+  } else {
+    dacl_entries.emplace_back(new_token->User(),
+                              base::win::SecurityAccessMode::kGrant,
+                              GENERIC_ALL, 0);
+  }
 
   if (!dacl->SetEntries(dacl_entries)) {
     return std::nullopt;
+  }
+
+  if (isolation_default_dacl) {
+    const auto attr_values =
+        token.GetSecurityAttribute(isolation_security_attr_);
+    if (!attr_values) {
+      return std::nullopt;
+    }
+
+    if (!dacl->AddAccessAllowedConditionalAce(
+            new_token->User(), /*ace_flags=*/0, GENERIC_ALL,
+            attr_values->GetConditionalExpression())) {
+      return std::nullopt;
+    }
   }
 
   if (!new_token->SetDefaultDacl(*dacl)) {

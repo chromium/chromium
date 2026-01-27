@@ -5,9 +5,11 @@
 #ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_H_
 #define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_H_
 
+#include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
-#include <optional>
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
 #include "base/win/sid.h"
@@ -127,6 +129,13 @@ class RestrictedToken {
                          base::win::SecurityAccessMode access_mode,
                          ACCESS_MASK access);
 
+  // Set the isolation security attribute for use in the default DACL. When the
+  // restricted token is created the attribute will be queried and a conditional
+  // expression built to restrict access to process resources. Note, if the base
+  // token used to created the restricted token does not have the attribute the
+  // creation process will fail.
+  void SetIsolationSecurityAttribute(std::wstring_view name);
+
   // Creates a restricted token. This is only used for testing to change the
   // token used to build the restricted token.
   std::optional<base::win::AccessToken> GetRestrictedTokenForTesting(
@@ -166,6 +175,8 @@ class RestrictedToken {
   bool add_restricting_sid_current_user_ = false;
   // Add all SIDs to the restricted SIDs.
   bool add_restricting_sid_all_sids_ = false;
+  // The isolation security attribute for the default DACL.
+  std::wstring isolation_security_attr_;
 };
 
 }  // namespace sandbox
