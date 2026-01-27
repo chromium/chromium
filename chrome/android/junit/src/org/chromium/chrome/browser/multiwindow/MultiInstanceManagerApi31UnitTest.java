@@ -2152,8 +2152,9 @@ public class MultiInstanceManagerApi31UnitTest {
 
         assertTrue(
                 "Access time for instance0 is not updated.", accessTime0 > instance0CreationTime);
-        assertTrue(
-                "Access time for instance1 is not updated.", accessTime1 > instance1CreationTime);
+        assertFalse(
+                "Access time for instance1 should not be updated.",
+                accessTime1 > instance1CreationTime);
     }
 
     @Test
