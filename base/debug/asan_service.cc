@@ -61,7 +61,8 @@ void TaskTraceErrorCallback(const char* reason,
     char buffer[4096] = {};
     void* address = const_cast<void*>(addresses[i]);
     __sanitizer_symbolize_pc(address, "%p %F %L", buffer, sizeof(buffer));
-    for (char* ptr = buffer; *ptr != 0; UNSAFE_TODO(ptr += strlen(ptr))) {
+    for (const char* ptr = buffer; *ptr != 0;
+         UNSAFE_TODO(ptr += strlen(ptr) + 1)) {
       AsanService::GetInstance()->Log("    #%i %s", frame_index++, ptr);
     }
   }
