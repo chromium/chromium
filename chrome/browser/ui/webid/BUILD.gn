@@ -51,6 +51,7 @@ if (!is_android) {
       ":webid",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/webid",
       "//chrome/test:test_support",
       "//components/optimization_guide/core:hints_test_support",
       "//components/permissions",

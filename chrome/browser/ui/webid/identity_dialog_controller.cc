@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
+#include "chrome/browser/webid/federated_actor_login_request.h"
 #include "chrome/browser/webid/identity_provider_permission_request.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
@@ -158,7 +159,8 @@ bool IdentityDialogController::ShowAccountsDialog(
   // If there is an actor login request, we will not show the accounts
   // dialog. Pretend that we did for the caller and automatically select the
   // account.
-  auto* actor_login_request = GetActorLoginRequest();
+  FederatedActorLoginRequest* actor_login_request =
+      FederatedActorLoginRequest::Get(rp_web_contents_->GetPrimaryPage());
   if (actor_login_request) {
     url::Origin idp_origin = actor_login_request->idp_origin();
     std::string account_id = actor_login_request->account_id();
@@ -333,7 +335,13 @@ void IdentityDialogController::OnAccountsDisplayed() {
 }
 
 void IdentityDialogController::OnFlowCompleted(bool success) {
-  auto* actor_login_request = GetActorLoginRequest();
+  // OnFlowCompleted() may be invoked while the WebContents is being destroyed,
+  // so be careful when trying to access the Page.
+  if (rp_web_contents_->IsBeingDestroyed()) {
+    return;
+  }
+  FederatedActorLoginRequest* actor_login_request =
+      FederatedActorLoginRequest::Get(rp_web_contents_->GetPrimaryPage());
   if (actor_login_request) {
     std::move(actor_login_request->on_federated_token_received_callback())
         .Run(success);
@@ -615,46 +623,6 @@ IdentityDialogController::GetFedCmClickthroughRateMetadata() {
   return parsed_metadata.value();
 }
 
-IdentityDialogController::ActorLoginRequest::ActorLoginRequest(
-    content::Page& page,
-    const url::Origin& idp_origin,
-    const std::string& account_id,
-    OnFederatedTokenReceivedCallback callback)
-    : content::PageUserData<ActorLoginRequest>(page),
-      idp_origin_(idp_origin),
-      account_id_(account_id),
-      on_federated_token_received_callback_(std::move(callback)) {}
-
-IdentityDialogController::ActorLoginRequest::~ActorLoginRequest() = default;
-
-PAGE_USER_DATA_KEY_IMPL(IdentityDialogController::ActorLoginRequest);
-
-// static
-void IdentityDialogController::SetActorLoginRequest(
-    content::Page& page,
-    const url::Origin& idp_origin,
-    const std::string& account_id,
-    OnFederatedTokenReceivedCallback callback) {
-  page.SetUserData(ActorLoginRequest::UserDataKey(),
-                   std::make_unique<ActorLoginRequest>(
-                       page, idp_origin, account_id, std::move(callback)));
-}
-
-// static
-void IdentityDialogController::UnsetActorLoginRequest(content::Page& page) {
-  IdentityDialogController::ActorLoginRequest::DeleteForPage(page);
-}
-
-IdentityDialogController::ActorLoginRequest*
-IdentityDialogController::GetActorLoginRequest() const {
-  if (rp_web_contents_->IsBeingDestroyed()) {
-    // If the WebContents is being destroyed, don't try to access the page. See
-    // crbug.com/476409625.
-    return nullptr;
-  }
-  return IdentityDialogController::ActorLoginRequest::GetForPage(
-      rp_web_contents_->GetPrimaryPage());
-}
 
 bool IdentityDialogController::ShouldShowFedCmUi() {
   return acting_task_id_.is_null();

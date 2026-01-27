@@ -61,6 +61,7 @@ if (is_android) {
 
 source_set("webid") {
   sources = [
+    "federated_actor_login_request.h",
     "federated_identity_account_keyed_permission_context.h",
     "federated_identity_api_permission_context.h",
     "federated_identity_api_permission_context_factory.h",
@@ -94,6 +95,7 @@ source_set("webid") {
 
 source_set("impl") {
   sources = [
+    "federated_actor_login_request.cc",
     "federated_identity_account_keyed_permission_context.cc",
     "federated_identity_api_permission_context.cc",
     "federated_identity_api_permission_context_factory.cc",
