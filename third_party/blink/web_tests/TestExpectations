@@ -2678,7 +2678,6 @@ crbug.com/671461 [ Webview ] external/wpt/mediacapture-streams/idlharness.https.
 
 # Incompatible with Webview
 # Refer to android_webview/tools/system_webview_shell/test/data/webexposed/not-webview-exposed.txt
-crbug.com/40417848 [ Webview ] external/wpt/speech-api/idlharness.window.html [ Failure ]
 crbug.com/40652382 [ Webview ] external/wpt/webxr/* [ Failure ]
 crbug.com/41441927 [ Webview ] external/wpt/webusb/* [ Failure ]
 crbug.com/41492543 [ Webview ] external/wpt/webtransport/idlharness.https.any.html [ Failure ]
@@ -2766,10 +2765,6 @@ crbug.com/395962971 [ Android ] external/wpt/webdriver/tests/bidi/input/perform_
 
 # ====== Test expectations added to unblock wpt-importer ======
 crbug.com/437034328 external/wpt/html/semantics/embedded-content/the-img-element/animated-webp-update.tentative.html [ Failure ]
-crbug.com/431542979 [ Android ] external/wpt/speech-api/idlharness.window.html [ Failure ]
-crbug.com/431542979 [ Linux ] external/wpt/speech-api/idlharness.window.html [ Failure ]
-crbug.com/431542979 [ Mac ] external/wpt/speech-api/idlharness.window.html [ Failure ]
-crbug.com/431542979 [ Win ] external/wpt/speech-api/idlharness.window.html [ Failure ]
 crbug.com/431542979 virtual/speech-with-unified-autoplay/external/wpt/speech-api/idlharness.window.html [ Failure ]
 crbug.com/431592647 external/wpt/webdriver/tests/bidi/browser/create_user_context/unhandled_prompt_behavior.py [ Failure Timeout ]
 crbug.com/431592647 external/wpt/webdriver/tests/classic/set_window_rect/set.py [ Failure ]
