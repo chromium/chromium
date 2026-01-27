@@ -187,7 +187,8 @@ LensSearchController* LensSearchController::FromTabWebContents(
 }
 
 void LensSearchController::OpenLensOverlay(
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    bool should_show_csb) {
   CheckInitialized(initialized_);
 
   // The overlay can only be reinvoked if the feature is enabled.
@@ -199,7 +200,8 @@ void LensSearchController::OpenLensOverlay(
           invocation_source,
           /*permission_granted_callback=*/base::BindRepeating(
               &LensSearchController::OpenLensOverlay,
-              weak_ptr_factory_.GetWeakPtr(), invocation_source))) {
+              weak_ptr_factory_.GetWeakPtr(), invocation_source,
+              should_show_csb))) {
     return;
   }
 
@@ -230,6 +232,7 @@ void LensSearchController::OpenLensOverlay(
     StartLensSession(invocation_source);
   }
 
+  should_show_csb_ = should_show_csb;
   lens_overlay_controller_->ShowUI(invocation_source);
 }
 
@@ -754,6 +757,7 @@ void LensSearchController::StartLensSession(
   // Reset session state.
   hats_triggered_in_session_ = false;
   is_handshake_complete_ = false;
+  should_show_csb_ = true;
 }
 
 bool LensSearchController::RunLensEligibilityChecks(

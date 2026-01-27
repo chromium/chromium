@@ -159,7 +159,8 @@ class MockLensSearchController : public LensSearchController {
 
   MOCK_METHOD(void,
               OpenLensOverlay,
-              (lens::LensOverlayInvocationSource invocation_source),
+              (lens::LensOverlayInvocationSource invocation_source,
+               bool should_show_csb),
               (override));
   MOCK_METHOD(void,
               CloseLensSync,
@@ -922,7 +923,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, HandleLensButtonClick) {
   EXPECT_CALL(
       *mock_lens_controller_,
       OpenLensOverlay(
-          lens::LensOverlayInvocationSource::kContextualTasksComposebox));
+          lens::LensOverlayInvocationSource::kContextualTasksComposebox, true));
   handler_->HandleLensButtonClick();
 }
 

@@ -7,16 +7,23 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fake_service_worker_context.h"
@@ -35,7 +42,8 @@ class MockLensSearchController : public lens::TestLensSearchController {
 
   MOCK_METHOD(void,
               OpenLensOverlay,
-              (lens::LensOverlayInvocationSource invocation_source),
+              (lens::LensOverlayInvocationSource invocation_source,
+               bool should_show_csb),
               (override));
 
   MOCK_METHOD(void,
@@ -54,6 +62,35 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
             base::BindRepeating([](tabs::TabInterface& tab) {
               return std::make_unique<MockLensSearchController>(&tab);
             }));
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&ChromeAutocompleteProviderClientTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          auto service =
+              std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                  *profile->GetPrefs(),
+                  TemplateURLServiceFactory::GetForProfile(profile),
+                  profile->GetDefaultStoragePartition()
+                      ->GetURLLoaderFactoryForBrowserProcess(),
+                  IdentityManagerFactory::GetForProfile(profile),
+                  profile->IsOffTheRecord());
+          ON_CALL(*service, IsAimEligible())
+              .WillByDefault(testing::Return(true));
+          return service;
+        }));
   }
 
   void SetUpOnMainThread() override {
@@ -98,15 +135,18 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
  private:
   content::TestStoragePartition storage_partition_;
   ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                        OpenLensOverlay_Show) {
-  EXPECT_CALL(*GetLensSearchController(), OpenLensOverlay(testing::_))
+  EXPECT_CALL(*GetLensSearchController(), OpenLensOverlay(testing::_, true))
       .Times(1)
-      .WillOnce([](lens::LensOverlayInvocationSource invocation_source) {
+      .WillOnce([](lens::LensOverlayInvocationSource invocation_source,
+                   bool should_show_csb) {
         EXPECT_EQ(lens::LensOverlayInvocationSource::kOmniboxPageAction,
                   invocation_source);
+        EXPECT_TRUE(should_show_csb);
       });
 
   GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
@@ -152,4 +192,32 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
   client_->StartServiceWorker(destination_url);
   EXPECT_FALSE(service_worker_context_
                    .start_service_worker_for_navigation_hint_called());
+}
+
+class ChromeAutocompleteProviderClientWithChipTest
+    : public ChromeAutocompleteProviderClientTest {
+ protected:
+  ChromeAutocompleteProviderClientWithChipTest() {
+    // Enable the AIM popup (which implies IsAimPopupFeatureEnabled = true) and
+    // the Lens Search Chip.
+    feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxAimPopup},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientWithChipTest,
+                       OpenLensOverlay_Show) {
+  EXPECT_CALL(*GetLensSearchController(), OpenLensOverlay(testing::_, false))
+      .Times(1)
+      .WillOnce([](lens::LensOverlayInvocationSource invocation_source,
+                   bool should_show_csb) {
+        EXPECT_EQ(lens::LensOverlayInvocationSource::kOmniboxPageAction,
+                  invocation_source);
+        EXPECT_FALSE(should_show_csb);
+      });
+
+  GetAutocompleteProviderClient()->OpenLensOverlay(/*show=*/true);
 }
