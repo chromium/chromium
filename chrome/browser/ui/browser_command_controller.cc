@@ -1194,6 +1194,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_ADD_NEW_TAB_RECENT_GROUP:
       AddNewTabToRecentGroup(browser_);
       break;
+    case IDC_UNFOCUS_TAB_GROUP:
+      UnfocusTabGroup(browser_);
+      break;
     case IDC_WINDOW_CLOSE_TABS_TO_RIGHT:
       CloseTabsToRight(browser_);
       break;
@@ -1476,6 +1479,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL,
                                         true);
   command_updater_.UpdateCommandEnabled(IDC_ADD_NEW_TAB_RECENT_GROUP, true);
+  command_updater_.UpdateCommandEnabled(IDC_UNFOCUS_TAB_GROUP, true);
 
   // Omnibox commands
   command_updater_.UpdateCommandEnabled(IDC_SHOW_FULL_URLS, true);

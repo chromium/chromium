@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_accessibility.h"
@@ -870,7 +871,8 @@ void BrowserTabStripController::OnSplitTabChanged(
 void BrowserTabStripController::OnTabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_group_id,
     std::optional<tab_groups::TabGroupId> old_group_id) {
-  tabstrip_->OnTabGroupFocusChanged(new_group_id);
+  browser_view_->tab_strip_view()->OnTabGroupFocusChanged(new_group_id,
+                                                          old_group_id);
 
   std::optional<SkColor> color;
   if (new_group_id.has_value()) {

@@ -1674,6 +1674,12 @@ void AddNewTabToRecentGroup(Browser* browser) {
   AddTabAt(browser, GURL(), -1, true, group_id);
 }
 
+void UnfocusTabGroup(Browser* browser) {
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    browser->tab_strip_model()->SetFocusedGroup(std::nullopt);
+  }
+}
+
 void MuteSite(Browser* browser) {
   browser->tab_strip_model()->ExecuteContextMenuCommand(
       browser->tab_strip_model()->active_index(),

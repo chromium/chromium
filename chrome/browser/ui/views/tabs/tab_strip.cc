@@ -1402,7 +1402,8 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
 }
 
 void TabStrip::OnTabGroupFocusChanged(
-    std::optional<tab_groups::TabGroupId> new_focused_group) {
+    std::optional<tab_groups::TabGroupId> new_focused_group,
+    std::optional<tab_groups::TabGroupId> old_focused_group) {
   // The TabStripLayoutHelper will query the controller for the focused group
   // and update the visibility of tabs and group headers. Calling
   // AnimateToIdealBounds() will trigger the animation to the new bounds.

@@ -93,6 +93,7 @@
   E(kActionShowMemorySaverChip) \
   E(kActionShowJsOptimizationsIcon) \
   E(kActionShowCookieControls) \
+  E(kActionUnfocusTabGroup, IDC_UNFOCUS_TAB_GROUP) \
   /* Page-manipulation commands that target a specified tab, which may not */ \
   /* be the active one. */ \
   E(kActionMuteTargetSite, IDC_MUTE_TARGET_SITE) \

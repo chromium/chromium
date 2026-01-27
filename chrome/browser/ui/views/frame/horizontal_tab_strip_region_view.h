@@ -17,6 +17,7 @@
 class BrowserView;
 
 namespace views {
+class ActionViewController;
 class Button;
 }
 class NewTabButton;
@@ -26,6 +27,7 @@ class TabStrip;
 class TabStripScrollContainer;
 class ProductSpecificationsButton;
 class TabSearchPositionMetricsLogger;
+class TabStripControlButton;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
@@ -110,6 +112,9 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   views::View* GetTabAnchorViewAt(int tab_index) override;
   views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) override;
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id) override;
   TabDragContext* GetDragContext() override;
   std::optional<BrowserRootView::DropIndex> GetDropIndex(
       const ui::DropTargetEvent& event) override;
@@ -147,6 +152,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
+  raw_ptr<TabStripControlButton> unfocus_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
   // laid out before the TabStrip. Storing this configuration prevents
@@ -155,6 +161,8 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
 
   std::unique_ptr<TabSearchPositionMetricsLogger>
       tab_search_position_metrics_logger_;
+
+  std::unique_ptr<views::ActionViewController> action_view_controller_;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(

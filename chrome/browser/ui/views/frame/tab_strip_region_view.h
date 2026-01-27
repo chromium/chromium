@@ -46,6 +46,11 @@ class TabStripRegionView : public views::AccessiblePaneView,
   virtual views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) = 0;
 
+  // -- Tab Group UI State --
+  virtual void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id) = 0;
+
   // -- Drag and drop --
   virtual TabDragContext* GetDragContext() = 0;
   std::optional<BrowserRootView::DropIndex> GetDropIndex(

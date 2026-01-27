@@ -272,3 +272,9 @@ bool VerticalTabStripController::GetContextMenuAccelerator(
                                                            &browser_cmd) &&
          browser_view_->GetWidget()->GetAccelerator(browser_cmd, accelerator);
 }
+
+void VerticalTabStripController::OnTabGroupFocusChanged(
+    std::optional<tab_groups::TabGroupId> new_focused_group_id,
+    std::optional<tab_groups::TabGroupId> old_focused_group_id) {
+  // TODO(crbug.com/479232024): Implement this.
+}

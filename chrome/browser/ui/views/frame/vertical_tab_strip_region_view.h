@@ -121,6 +121,9 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   views::View* GetTabAnchorViewAt(int tab_index) override;
   views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) override;
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id) override;
   TabDragContext* GetDragContext() override;
   std::optional<BrowserRootView::DropIndex> GetDropIndex(
       const ui::DropTargetEvent& event) override;

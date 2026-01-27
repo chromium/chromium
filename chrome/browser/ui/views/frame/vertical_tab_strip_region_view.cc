@@ -343,6 +343,12 @@ views::View* VerticalTabStripRegionView::GetTabGroupAnchorView(
   return nullptr;
 }
 
+void VerticalTabStripRegionView::OnTabGroupFocusChanged(
+    std::optional<tab_groups::TabGroupId> new_focused_group_id,
+    std::optional<tab_groups::TabGroupId> old_focused_group_id) {
+  // TODO(crbug.com/479232024): Implement this.
+}
+
 TabDragContext* VerticalTabStripRegionView::GetDragContext() {
   return drag_handler_->GetDragContext();
 }
