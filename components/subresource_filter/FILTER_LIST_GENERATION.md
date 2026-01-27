@@ -55,43 +55,14 @@ Chromium's tools are designed to work with a binary indexed version of filter
 lists. You can use the `subresource_indexing_tool` to convert a text based
 filter list to an indexed file.
 
-An example using [EasyList](https://easylist.to/easylist/easylist.txt) follows:
+The `derive_filterlist.sh` script oversees the automated process of downloading
+filterlist files, matching their rules against the requests gathered in the
+previous step, finding the most popular rules, and writing them out in
+an indexed format that Chromium can read.
 
 ```sh
-1. ninja -C out/Release/ subresource_filter_tools
-2. wget https://easylist.to/easylist/easylist.txt
-# Convert `||domain.xyz^` rules into `||domain.xyz^$third-party` so
-# that we don't match all of the subresource requests when visiting
-# a top-level frame with that domain as a first party.
-# crbug.com/448915986
-3. awk '{ if (/^\s*!|^\s*@@|^\s*$/) { print; next } if (/^\s*\|\|[^/]*\^\s*$/) { print $0 "$third-party"; next } print }' easylist.txt > easylist_third.txt
-4. mv easylist_third.txt easylist.txt
-5. out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=easylist.txt --output_file=easylist_unindexed
-6. out/Release/subresource_indexing_tool easylist_unindexed easylist_indexed
-```
-
-## 3. Generate the smaller filter list
-```sh
-1. ninja -C out/Release subresource_filter_tools
-2. sh components/subresource_filter/tools/filter_many.sh 8 . out/Release/subresource_filter_tool easylist_indexed > ordered_list.txt
-3. head -n 1000 ordered_list.txt | cut -d' ' -f2 > smaller_list.txt
-```
-
-## 4. Append all of the allowlist rules to be safe
-Appends allowlist rules and also deduplicates rules which only differ by their set of affected domains.
-```sh
-1. grep ^@@ easylist.txt >> smaller_list.txt
-2. sort smaller_list.txt | uniq > deduped_smaller_list.txt
-3. awk -F,domain= '{ if(!length($2)) table[$1] = ""; else table[$1 FS] = length(table[$1 FS]) ? table[$1 FS] "|" $2 : $2; } END{ for (key in table) print key table[key] }' deduped_smaller_list.txt > final_list.txt
-```
-
-## 5. Turn the final list into a form usable by Chromium tools
-The final filterlist has been generated. If you'd like to convert it to Chromium's binary indexed format, proceed with the following steps:
-
-```sh
-1. ninja -C out/Release/ subresource_filter_tools
-2. out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=final_list.txt --output_file=final_list_unindexed
-3. out/Release/subresource_indexing_tool final_list_unindexed final_list_indexed
+1. bash components/subresource_filter/tools/derive_filterlist.sh <out directory path> <path to files downloaded from step 1> <path to output>
+Example: bash components/subresource_filter/tools/derive_filterlist.sh ~/chromium/src/out/release ~/filterlist_data/pages/ ~/filterlist_data/out/
 ```
 
 # Generating and using a mock ruleset for development/testing
