@@ -961,14 +961,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
 
-  if (IsChromeNextIaEnabled()) {
-    _appBarCoordinator =
-        [[AppBarCoordinator alloc] initWithRegularBrowser:_regularBrowser
-                                         incognitoBrowser:_incognitoBrowser];
-    [_appBarCoordinator start];
-    [self.baseViewController setAppBar:_appBarCoordinator.viewController];
-  }
-
   _regularGridCoordinator = [[RegularGridCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:_regularBrowser
@@ -1054,6 +1046,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       _tabGroupsPanelCoordinator.disabledViewController;
   baseViewController.tabGroupsGridContainerViewController =
       _tabGroupsPanelCoordinator.gridContainerViewController;
+
+  if (IsChromeNextIaEnabled()) {
+    _appBarCoordinator =
+        [[AppBarCoordinator alloc] initWithRegularBrowser:_regularBrowser
+                                         incognitoBrowser:_incognitoBrowser];
+    [_appBarCoordinator start];
+    [self.baseViewController setAppBar:_appBarCoordinator.viewController];
+  }
 
   self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
       initWithBaseViewController:self.baseViewController
@@ -1728,6 +1728,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [self setActiveMode:TabGridMode::kNormal];
   }
   [self.baseViewController setCurrentPageAndPageControl:page animated:animated];
+}
+
+- (void)prepareToExitTabGrid {
+  [self.baseViewController
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
+  [self.baseViewController prepareForDismissal];
 }
 
 - (void)exitTabGrid {

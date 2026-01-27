@@ -322,6 +322,7 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)newTabButtonTapped:(id)sender {
+  CHECK(!IsChromeNextIaEnabled());
   if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
     // Start the tab group creation.
     [self.tabGroupsCommands showTabGroupCreationWithoutTabs];

@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -27,10 +29,16 @@ class AppBarCoordinatorTest : public PlatformTest {
     coordinator_ = [[AppBarCoordinator alloc]
         initWithRegularBrowser:regular_browser_.get()
               incognitoBrowser:incognito_browser_.get()];
-    application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
+    scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [regular_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:application_handler_
+        startDispatchingToTarget:scene_handler_
                      forProtocol:@protocol(SceneCommands)];
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:tab_grid_handler_
+                     forProtocol:@protocol(TabGridCommands)];
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:tab_group_handler_
+                     forProtocol:@protocol(TabGroupsCommands)];
   }
 
   ~AppBarCoordinatorTest() override { [coordinator_ stop]; }
@@ -41,7 +49,9 @@ class AppBarCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> regular_browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;
   AppBarCoordinator* coordinator_;
-  id application_handler_;
+  id scene_handler_;
+  id tab_grid_handler_;
+  id tab_group_handler_;
 };
 
 // Tests that the coordinator creates a view controller when started.

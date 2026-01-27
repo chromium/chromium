@@ -11,8 +11,12 @@
 
 @protocol AppBarConsumer;
 @class IncognitoState;
+class PrefService;
 @protocol SceneCommands;
+@protocol TabGridCommands;
+@protocol TabGroupsCommands;
 @class TabGridState;
+class UrlLoadingBrowserAgent;
 class WebStateList;
 
 // Mediator for the app bar coordinator.
@@ -21,12 +25,20 @@ class WebStateList;
 // Handler for the scene commands.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
+// Handler for the scene commands.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
+
+// The regular Tab Groups command handler.
+@property(nonatomic, weak) id<TabGroupsCommands> regularTabGroupsCommands;
+
 // The consumer of this mediator.
 @property(nonatomic, weak) id<AppBarConsumer> consumer;
 
 // Initializes the mediator with the two web state lists.
 - (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
                       incognitoWebStateList:(WebStateList*)incognitoWebStateList
+                                prefService:(PrefService*)prefService
+                                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
                                tabGridState:(TabGridState*)tabGridState
                              incognitoState:(IncognitoState*)incognitoState
     NS_DESIGNATED_INITIALIZER;
