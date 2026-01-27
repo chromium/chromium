@@ -98,6 +98,7 @@
 #include "base/path_service.h"
 #include "chrome/browser/performance_manager/policies/priority_boost_browser_network_policy.h"
 #include "chrome/browser/performance_manager/policies/priority_boost_gpu_browser_network_policy.h"
+#include "chrome/browser/performance_manager/policies/priority_boost_loading_browser_network_policy.h"
 #endif
 
 namespace {
@@ -216,6 +217,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
         graph->PassToGraph(
             std::make_unique<performance_manager::policies::
                                  PriorityBoostGpuBrowserNetworkPolicy>());
+        break;
+      case features::DisableBoostPriorityExemption::kLoadingBrowserNetwork:
+        graph->PassToGraph(
+            std::make_unique<performance_manager::policies::
+                                 PriorityBoostLoadingBrowserNetworkPolicy>());
         break;
     }
   }

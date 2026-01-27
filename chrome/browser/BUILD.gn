@@ -6386,6 +6386,8 @@ static_library("browser") {
       "performance_manager/policies/priority_boost_gpu_browser_network_policy.h",
       "performance_manager/policies/priority_boost_helpers.cc",
       "performance_manager/policies/priority_boost_helpers.h",
+      "performance_manager/policies/priority_boost_loading_browser_network_policy.cc",
+      "performance_manager/policies/priority_boost_loading_browser_network_policy.h",
       "performance_manager/public/dll_pre_read_policy_win.h",
       "performance_monitor/metric_evaluator_helper_win.cc",
       "performance_monitor/metric_evaluator_helper_win.h",
