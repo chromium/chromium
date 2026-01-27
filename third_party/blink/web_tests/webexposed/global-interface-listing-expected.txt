@@ -10219,8 +10219,10 @@ interface StyleSheetList
     method item
 interface SubmitEvent : Event
     attribute @@toStringTag
+    getter agentInvoked
     getter submitter
     method constructor
+    method respondWith
 interface Subscriber
     attribute @@toStringTag
     getter active

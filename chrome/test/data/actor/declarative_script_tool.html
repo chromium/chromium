@@ -13,3 +13,10 @@
   </select>
   <button type=submit name=submitname>Submit Content</button>
 </form>
+
+<script>
+  document.querySelector('form').addEventListener('submit',e => {
+    e.preventDefault();
+    e.respondWith(Promise.resolve("result value"));
+  })
+</script>

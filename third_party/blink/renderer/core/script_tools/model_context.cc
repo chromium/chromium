@@ -254,8 +254,9 @@ void ModelContext::DidFinishParsing() {
 //     renderer for the navigated page will then look for a <script> with the
 //     agent response type, and pass its contents back to OnToolExecuted().
 //   - if the form `submit` event is preventDefaulted, and the
-//     responseForAgent() function is called on the event, the passed Promise
-//     will contain the response, once it resolves.
+//     respondWith() function is called on the event, the passed Promise
+//     will contain the response, once it resolves. (If the event is prevented,
+//     but respondWith() isn't called, an error is reported back to the agent.)
 void ModelContext::ExecuteDeclarativeTool(
     DeclarativeWebMCPTool* tool,
     const String& input_arguments,

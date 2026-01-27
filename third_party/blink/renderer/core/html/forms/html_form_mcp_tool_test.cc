@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -33,7 +34,9 @@ class HTMLFormMcpToolTest : public PageTestBase {
                                const String& input_arguments) {
     CHECK(IsValidWebMCPForm(form_element));
     CHECK(form_element.active_webmcp_tool_);
-    return form_element.active_webmcp_tool_->FillFormControls(input_arguments);
+    HTMLFormControlElement* submit_button;
+    return form_element.active_webmcp_tool_->FillFormControls(input_arguments,
+                                                              &submit_button);
   }
 
  private:

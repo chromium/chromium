@@ -26,6 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_ELEMENT_H_
 
 #include "base/functional/callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
@@ -251,6 +252,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   base::OnceClosure cancel_last_submission_;
 
+  using McpToolCallback = base::OnceCallback<void(
+      base::expected<blink::String, blink::WebDocument::ScriptToolError>)>;
   class CORE_EXPORT HTMLFormMcpTool final
       : public GarbageCollected<HTMLFormMcpTool>,
         public DeclarativeWebMCPTool {
@@ -276,16 +279,31 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     // If 'true' is returned, then all specified tool parameters (form controls)
     // were filled successfully. Otherwise, the state of all form controls
     // are left unchanged.
-    bool FillFormControls(const String& input_arguments);
+    bool FillFormControls(const String& input_arguments,
+                          HTMLFormControlElement** submit_button);
     String ToolName() const { return tool_name_; }
     String ToolDescription() const { return tool_description_; }
     bool IsValidTool() const { return !tool_name_.IsNull(); }
+    McpToolCallback TakeDoneCallback() { return std::move(done_callback_); }
     void Trace(Visitor* visitor) const;
 
    private:
     String tool_name_;
     String tool_description_;
     Member<HTMLFormElement> form_;
+    McpToolCallback done_callback_;
+  };
+
+  class RespondWithHandler : public ThenCallable<IDLAny, RespondWithHandler> {
+   public:
+    RespondWithHandler(HTMLFormElement::HTMLFormMcpTool* tool, bool resolved)
+        : tool_(tool), resolved_(resolved) {}
+    void React(ScriptState* script_state, ScriptValue value);
+    void Trace(Visitor* visitor) const override;
+
+   private:
+    Member<HTMLFormMcpTool> tool_;
+    bool resolved_;
   };
 
   // Used only for (experimental) declarative WebMCP.
@@ -294,6 +312,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool is_submitting_ = false;
   bool in_user_js_submit_event_ = false;
   bool is_constructing_entry_list_ = false;
+  bool was_agent_filled_ = false;
 
   bool listed_elements_are_dirty_ : 1;
   bool listed_elements_for_autofill_are_dirty_ : 1;

@@ -8,7 +8,10 @@
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -65,11 +68,8 @@ TEST_F(ModelContextTest, ExecuteTool) {
       "echo", "{\"text\": \"hello\"}",
       base::BindLambdaForTesting(
           [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
-            if (res.has_value()) {
-              result = *res;
-            } else {
-              result = "error";
-            }
+            ASSERT_TRUE(res.has_value());
+            result = *res;
             run_loop.Quit();
           }));
 
@@ -122,11 +122,8 @@ TEST_F(ModelContextTest, ExecuteToolReturnsObject) {
       "echo", "{\"text\": \"hello\"}",
       base::BindLambdaForTesting(
           [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
-            if (res.has_value()) {
-              result = *res;
-            } else {
-              result = "error";
-            }
+            ASSERT_TRUE(res.has_value());
+            result = *res;
             run_loop.Quit();
           }));
 
@@ -158,9 +155,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Navigation) {
       base::BindLambdaForTesting(
           [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
             EXPECT_TRUE(res.has_value());
-            if (res.has_value()) {
-              EXPECT_TRUE(res->IsNull());
-            }
+            EXPECT_TRUE(res->IsNull());
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -194,6 +189,54 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
             run_loop.Quit();
           }));
   run_loop.Run();
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"(
+    <body>
+      <form toolname="search_tool" tooldescription="Search the web" action="/search">
+        <input type=text name=query>
+        <button type=submit>Submit</button>
+      </form>
+      <script>
+        document.querySelector('form').addEventListener('submit', e => {
+          window.submit_event_fired = true;
+          e.preventDefault();
+          e.respondWith(Promise.resolve("result value"));
+        });
+      </script>
+    </body>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState* script_state = ToScriptStateForMainWorld(Window().GetFrame());
+  ScriptState::Scope script_scope(script_state);
+
+  base::RunLoop run_loop;
+  bool got_result = false;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            got_result = true;
+            ASSERT_TRUE(res.has_value());
+            EXPECT_EQ(*res, "result value");
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(got_result);
+  EXPECT_TRUE(MainFrame()
+                  .ExecuteScriptAndReturnValue(
+                      WebScriptSource("window.submit_event_fired"))
+                  .As<v8::Boolean>()
+                  ->Value());
 }
 
 }  // namespace blink

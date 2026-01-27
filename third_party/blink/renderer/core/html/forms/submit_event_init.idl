@@ -6,4 +6,5 @@
 
 dictionary SubmitEventInit : EventInit {
   HTMLElement? submitter = null;
+  [RuntimeEnabled=WebMCP] boolean agentInvoked = false;
 };
