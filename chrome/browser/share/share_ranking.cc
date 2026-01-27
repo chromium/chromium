@@ -72,8 +72,14 @@ std::vector<std::string> OrderByUses(const std::vector<std::string>& ranking,
   std::vector<std::string> ordered_ranking(ranking.begin(), ranking.end());
   std::sort(ordered_ranking.begin(), ordered_ranking.end(),
             [&](const std::string& a, const std::string& b) -> bool {
-              int ua = uses.count(a) > 0 ? uses.at(a) : 0;
-              int ub = uses.count(b) > 0 ? uses.at(b) : 0;
+              int ua = 0;
+              int ub = 0;
+              if (auto it = uses.find(a); it != uses.end()) {
+                ua = it->second;
+              }
+              if (auto it = uses.find(b); it != uses.end()) {
+                ub = it->second;
+              }
               return ua > ub;
             });
   return ordered_ranking;
@@ -180,12 +186,18 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
   std::vector<std::string> new_ranking = old_ranking;
 
   auto recent_count_for = [&](const std::string& key) {
-    return recent_share_history.count(key) > 0 ? recent_share_history.at(key)
-                                               : 0;
+    if (auto it = recent_share_history.find(key);
+        it != recent_share_history.end()) {
+      return it->second;
+    }
+    return 0;
   };
 
   auto all_count_for = [&](const std::string& key) {
-    return all_share_history.count(key) > 0 ? all_share_history.at(key) : 0;
+    if (auto it = all_share_history.find(key); it != all_share_history.end()) {
+      return it->second;
+    }
+    return 0;
   };
 
   if (!highest_unshown_recent.empty() &&
