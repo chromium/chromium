@@ -130,13 +130,17 @@ void OnGotNSSCertDatabaseForUser(net::NSSCertDatabase* database) {
 
 }  // namespace
 
-UserSessionInitializer::UserSessionInitializer() {
+UserSessionInitializer::UserSessionInitializer(
+    session_manager::SessionManager* session_manager) {
+  CHECK(session_manager);
   DCHECK(!g_instance);
   g_instance = this;
+  session_manager_observation_.Observe(session_manager);
 }
 
 UserSessionInitializer::~UserSessionInitializer() {
   DCHECK(g_instance);
+  session_manager_observation_.Reset();
   g_instance = nullptr;
 }
 

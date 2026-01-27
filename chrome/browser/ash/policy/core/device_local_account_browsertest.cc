@@ -2168,8 +2168,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, SessionLengthLimit) {
   // Setup a fake delegate to advance clock.
   auto delegate_ptr = std::make_unique<FakeDelegateImpl>();
   auto* delegate = delegate_ptr.get();
-  static_cast<ash::ChromeSessionManager*>(
-      session_manager::SessionManager::Get())
+  g_browser_process->platform_part()
+      ->chrome_session_manager()
       ->GetSessionLengthLimiterForTesting()
       ->SetDelegateForTesting(std::move(delegate_ptr));
 

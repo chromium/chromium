@@ -50,6 +50,10 @@ class BrowserPolicyConnectorAsh;
 class DeviceRestrictionScheduleController;
 }  // namespace policy
 
+namespace session_manager {
+class SessionManager;
+}  // namespace session_manager
+
 namespace user_manager {
 class MultiUserSignInPolicyController;
 class UserManager;
@@ -118,8 +122,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash();
 
-  ash::ChromeSessionManager* session_manager() {
-    return session_manager_.get();
+  ash::ChromeSessionManager* chrome_session_manager() {
+    return chrome_session_manager_.get();
   }
 
   user_manager::UserManager* user_manager() { return user_manager_.get(); }
@@ -186,7 +190,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   void ShutdownPrimaryProfileServices();
 
-  std::unique_ptr<ash::ChromeSessionManager> session_manager_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  std::unique_ptr<ash::ChromeSessionManager> chrome_session_manager_;
 
   bool created_profile_helper_;
   std::unique_ptr<ash::ProfileHelper> profile_helper_;

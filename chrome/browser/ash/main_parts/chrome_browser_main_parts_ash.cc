@@ -1316,7 +1316,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         std::make_unique<parent_access::ParentAccessService>(
             g_browser_process->local_state());
 
-    g_browser_process->platform_part()->session_manager()->Initialize(
+    g_browser_process->platform_part()->chrome_session_manager()->Initialize(
         *base::CommandLine::ForCurrentProcess(), profile,
         is_integration_test());
 
@@ -1696,7 +1696,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   CHECK(g_browser_process);
   CHECK(g_browser_process->platform_part());
 
-  g_browser_process->platform_part()->session_manager()->Shutdown();
+  g_browser_process->platform_part()->chrome_session_manager()->Shutdown();
 
   // Let the UserManager unregister itself as an observer of the CrosSettings
   // singleton before it is destroyed. This also ensures that the UserManager
