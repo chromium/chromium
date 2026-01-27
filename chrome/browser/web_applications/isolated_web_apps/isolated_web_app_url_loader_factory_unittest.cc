@@ -135,7 +135,9 @@ class ScopedUrlHandler {
       : interceptor_(base::BindRepeating(&ScopedUrlHandler::Intercept,
                                          base::Unretained(this))) {}
 
-  std::optional<network::ResourceRequest> request() const { return request_; }
+  const std::optional<network::ResourceRequest>& request() const {
+    return request_;
+  }
 
   std::optional<GURL> intercepted_url() const {
     if (request_.has_value()) {
