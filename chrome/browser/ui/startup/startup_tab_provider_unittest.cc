@@ -421,6 +421,21 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
 #endif
   }
 
+  // Custom scheme case with opaque format (no slashes).
+  {
+    const std::string arg_ascii = base::StrCat(
+        {shell_integration::GetDirectLaunchUrlScheme(), ":http://example.com"});
+    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("http://example.com"), output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
+  }
+
   // Custom scheme case with no inner URL.
   {
     base::CommandLine command_line = MakeCommandLine(scheme_prefix);

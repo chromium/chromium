@@ -174,6 +174,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/login/http_auth_coordinator.h"
 #include "chrome/browser/ui/prefs/pref_watcher.h"
+#include "chrome/browser/ui/startup/google_chrome_scheme_util.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
@@ -6890,6 +6891,30 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  // Handle the google-chrome:// scheme (and chromium://).
+  // If the scheme is present, we strip it and navigate to the inner URL.
+  // This avoids launching a new browser instance via the OS handler.
+  if (std::optional<GURL> new_url =
+          startup::ExtractGoogleChromeSchemeInnerUrl(url)) {
+    if (startup::ValidateUrl(*new_url)) {
+      auto* web_contents = web_contents_getter.Run();
+      if (web_contents) {
+        content::OpenURLParams params(
+            *new_url,
+            content::Referrer(web_contents->GetLastCommittedURL(),
+                              network::mojom::ReferrerPolicy::kDefault),
+            WindowOpenDisposition::NEW_FOREGROUND_TAB, page_transition,
+            /*is_renderer_initiated=*/false);
+        params.initiator_origin = initiating_origin;
+        web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+        return true;
+      }
+    }
+  }
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents = web_contents_getter.Run();

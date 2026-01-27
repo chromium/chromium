@@ -393,7 +393,7 @@ StartupTabProviderImpl::ParseTabFromCommandLineArg(
     }
   } else if (!startup::StripGoogleChromeScheme(arg) || !arg.empty()) {
     // Otherwise, fall through to treating it as a URL; stripping off the
-    // `kGoogleChromeScheme` if present.
+    // direct-launch scheme (e.g. "google-chrome://") if present.
     // This will create a file URL or a regular URL.
     const base::FilePath arg_path(arg);
     GURL url(arg_path.MaybeAsASCII());

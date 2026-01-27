@@ -38,6 +38,8 @@
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/shell_integration.h"
+#include "chrome/browser/ui/startup/google_chrome_scheme_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -2007,3 +2009,61 @@ TEST_F(ChromeContentBrowserClientOopifPdfTest,
           .has_value());
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+class ChromeContentBrowserClientHandleExternalProtocolTest
+    : public ChromeRenderViewHostTestHarness {};
+
+class MockWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  MOCK_METHOD(content::WebContents*,
+              OpenURLFromTab,
+              (content::WebContents*,
+               const content::OpenURLParams&,
+               base::OnceCallback<void(content::NavigationHandle&)>),
+              (override));
+};
+
+TEST_F(ChromeContentBrowserClientHandleExternalProtocolTest,
+       GoogleChromeScheme) {
+  ChromeContentBrowserClient client;
+  base::test::ScopedFeatureList feature_list{features::kGoogleChromeScheme};
+
+  std::string scheme = shell_integration::GetDirectLaunchUrlScheme();
+  if (scheme.empty()) {
+    GTEST_SKIP() << "Direct launch scheme not defined.";
+  }
+
+  // Use the opaque format (scheme:inner_url) to avoid GURL canonicalization
+  // issues with nested standard schemes. StripGoogleChromeScheme now supports
+  // stripping "scheme:" as well as "scheme://".
+  GURL url(scheme + ":http://example.com");
+
+  // Mock factory for out param
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> out_factory;
+
+  MockWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  EXPECT_CALL(delegate, OpenURLFromTab(web_contents(), _, _))
+      .WillOnce([](content::WebContents* source,
+                   const content::OpenURLParams& params,
+                   base::OnceCallback<void(content::NavigationHandle&)>
+                       navigation_handle_callback) {
+        EXPECT_EQ(params.url, GURL("http://example.com/"));
+        return nullptr;
+      });
+
+  bool handled = client.HandleExternalProtocol(
+      url,
+      base::BindRepeating(
+          &ChromeContentBrowserClientHandleExternalProtocolTest::web_contents,
+          base::Unretained(this)),
+      content::FrameTreeNodeId(), nullptr, false, false,
+      network::mojom::WebSandboxFlags::kNone, ui::PAGE_TRANSITION_LINK, false,
+      std::nullopt, nullptr, net::IsolationInfo(), &out_factory);
+
+  EXPECT_TRUE(handled);
+}
+#endif
