@@ -35,6 +35,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObse
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.signin_promo.HistoryPageSigninPromoDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -60,7 +62,10 @@ import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -131,7 +136,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final @Nullable Runnable mHideSoftKeyboard;
     private final boolean mShowAppFilter;
     private final List<AppInfo> mAppInfoList = new ArrayList<>();
-    private final @Nullable Supplier<@Nullable BottomSheetController> mBottomSheetController;
+    private final @Nullable Supplier<BottomSheetController> mBottomSheetController;
     private final @Nullable Supplier<@Nullable Tab> mTabSupplier;
     private final AppInfoCache mAppInfoCache;
     private final @Nullable Runnable mOpenHistoryItemCallback;
@@ -186,6 +191,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             AsyncTabLauncher incognitoAsyncTabLauncher) {
 
         return new HistoryContentManager(
+                /* windowAndroid= */ null,
                 activity,
                 observer,
                 /* isSeparateActivity= */ false,
@@ -196,6 +202,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 hostName,
                 /* selectionDelegate= */ null,
                 /* bottomSheetController= */ null,
+                /* modalDialogManagerSupplier= */ null,
+                /* snackbarManager= */ null,
+                /* activityResultTracker= */ null,
                 tabSupplier,
                 /* hideSoftKeyboard= */ null,
                 umaRecorder,
@@ -217,6 +226,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * devices. It's different from the Page Info history UI which only shows the user's past
      * interactions with the currently shown web site/origin.
      *
+     * @param windowAndroid The current {@link WindowAndroid} showing the history UI.
      * @param activity The Activity associated with the HistoryContentManager.
      * @param observer The Observer to receive updates from this manager.
      * @param isSeparateActivity Whether the history UI will be shown in a separate activity than
@@ -229,6 +239,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param selectionDelegate A class responsible for handling list item selection, null for
      *     unselectable items.
      * @param bottomSheetController Supplier of the {@link BottomSheetController}.
+     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
+     * @param activityResultTracker Tracker of activity results.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *     separate activity. separate activity.
      * @param umaRecorder Records UMA user action/histograms.
@@ -244,6 +257,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      *     item is opened in a .new tab.
      */
     public static HistoryContentManager create(
+            WindowAndroid windowAndroid,
             Activity activity,
             Observer observer,
             boolean isSeparateActivity,
@@ -251,7 +265,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean shouldShowPrivacyDisclaimers,
             boolean shouldShowClearDataIfAvailable,
             SelectionDelegate<HistoryItem> selectionDelegate,
-            Supplier<@Nullable BottomSheetController> bottomSheetController,
+            Supplier<BottomSheetController> bottomSheetController,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            SnackbarManager snackbarManager,
+            ActivityResultTracker activityResultTracker,
             @Nullable Supplier<@Nullable Tab> tabSupplier,
             Runnable hideSoftKeyboard,
             HistoryUmaRecorder umaRecorder,
@@ -264,6 +281,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             AsyncTabLauncher incognitoAsyncTabLauncher) {
 
         return new HistoryContentManager(
+                windowAndroid,
                 activity,
                 observer,
                 isSeparateActivity,
@@ -274,6 +292,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 /* hostName= */ null,
                 selectionDelegate,
                 bottomSheetController,
+                modalDialogManagerSupplier,
+                snackbarManager,
+                activityResultTracker,
                 tabSupplier,
                 hideSoftKeyboard,
                 umaRecorder,
@@ -287,6 +308,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     private HistoryContentManager(
+            @Nullable WindowAndroid windowAndroid,
             Activity activity,
             Observer observer,
             boolean isSeparateActivity,
@@ -296,7 +318,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean canShowSigninPromo,
             @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
-            @Nullable Supplier<@Nullable BottomSheetController> bottomSheetController,
+            @Nullable Supplier<BottomSheetController> bottomSheetController,
+            @Nullable Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @Nullable SnackbarManager snackbarManager,
+            @Nullable ActivityResultTracker activityResultTracker,
             @Nullable Supplier<@Nullable Tab> tabSupplier,
             @Nullable Runnable hideSoftKeyboard,
             HistoryUmaRecorder umaRecorder,
@@ -351,8 +376,15 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         if (canShowSigninPromo) {
             mHistorySyncPromoCoordinator =
                     new SigninPromoCoordinator(
+                            assumeNonNull(windowAndroid),
                             mActivity,
                             profile,
+                            assumeNonNull(activityResultTracker),
+                            SigninAndHistorySyncActivityLauncherImpl.get(),
+                            assumeNonNull(bottomSheetController).get(),
+                            assumeNonNull(modalDialogManagerSupplier),
+                            assumeNonNull(snackbarManager),
+                            DeviceLockActivityLauncherImpl.get(),
                             new HistoryPageSigninPromoDelegate(
                                     mActivity,
                                     profile,

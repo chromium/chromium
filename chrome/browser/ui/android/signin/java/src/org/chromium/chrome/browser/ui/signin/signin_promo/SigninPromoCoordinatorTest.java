@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -268,27 +269,16 @@ public class SigninPromoCoordinatorTest {
                                 + getAccessPointToHistogramName(accessPoint),
                         1);
         var impressionHistogramWatcher =
-                getPromoImpressionHistogramWatcher(
-                        accessPoint,
-                        /* hasAccounts= */ accessPoint == SigninAccessPoint.HISTORY_PAGE);
+                getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
 
         onView(withId(primaryButtonId)).perform(click());
 
-        @HistorySyncConfig.OptInMode
-        int historyOptInMode =
-                (accessPoint == SigninAccessPoint.RECENT_TABS
-                                || accessPoint == SigninAccessPoint.HISTORY_PAGE)
-                        ? HistorySyncConfig.OptInMode.REQUIRED
-                        : HistorySyncConfig.OptInMode.NONE;
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        // TODO(https://crbug.com/437039516): Remove access point check after migrating all promos.
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                && (accessPoint == SigninAccessPoint.RECENT_TABS
-                        || accessPoint == SigninAccessPoint.NTP_FEED_TOP_PROMO
-                        || accessPoint == SigninAccessPoint.BOOKMARK_MANAGER)) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
             verify(mCoordinator).startSigninFlow(configCaptor.capture());
         } else {
             verify(mLauncher)
@@ -298,12 +288,29 @@ public class SigninPromoCoordinatorTest {
                             configCaptor.capture(),
                             eq(accessPoint));
         }
+
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
-        assertEquals(
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
-        assertEquals(historyOptInMode, config.historyOptInMode);
-        assertNull(config.selectedCoreAccountId);
+
+        @HistorySyncConfig.OptInMode
+        int expectedHistoryOptInMode =
+                (accessPoint == SigninAccessPoint.RECENT_TABS
+                                || accessPoint == SigninAccessPoint.HISTORY_PAGE)
+                        ? HistorySyncConfig.OptInMode.REQUIRED
+                        : HistorySyncConfig.OptInMode.NONE;
+        assertEquals(expectedHistoryOptInMode, config.historyOptInMode);
+
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+                && accessPoint != SigninAccessPoint.HISTORY_PAGE) {
+            assertEquals(WithAccountSigninMode.SEAMLESS_SIGNIN, config.withAccountSigninMode);
+            assertNotNull(config.selectedCoreAccountId);
+        } else {
+            assertEquals(
+                    WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                    config.withAccountSigninMode);
+            assertNull(config.selectedCoreAccountId);
+        }
+
         histogramWatcher.assertExpected();
         impressionHistogramWatcher.assertExpected();
     }
@@ -337,11 +344,7 @@ public class SigninPromoCoordinatorTest {
         // Extract the config passed to the sign-in flow launcher.
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        // TODO(https://crbug.com/437039516): Remove access point check after migrating all promos.
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                && (accessPoint == SigninAccessPoint.RECENT_TABS
-                        || accessPoint == SigninAccessPoint.NTP_FEED_TOP_PROMO
-                        || accessPoint == SigninAccessPoint.BOOKMARK_MANAGER)) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
             verify(mCoordinator).startSigninFlow(configCaptor.capture());
         } else {
             verify(mLauncher)
@@ -458,19 +461,7 @@ public class SigninPromoCoordinatorTest {
 
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        // TODO(https://crbug.com/437039516): Remove access point check after migrating all promos.
-        if (accessPoint == SigninAccessPoint.RECENT_TABS
-                || accessPoint == SigninAccessPoint.NTP_FEED_TOP_PROMO
-                || accessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
-            verify(mCoordinator).startSigninFlow(configCaptor.capture());
-        } else {
-            verify(mLauncher)
-                    .createBottomSheetSigninIntentOrShowError(
-                            eq(mActivityTestRule.getActivity()),
-                            eq(mProfile),
-                            configCaptor.capture(),
-                            eq(accessPoint));
-        }
+        verify(mCoordinator).startSigninFlow(configCaptor.capture());
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(

@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -99,14 +100,18 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.function.Supplier;
 
 /** Tests the History UI. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -140,7 +145,11 @@ public class HistoryUiTest {
     private LifecycleOwner mLifecycleOwner;
     private BackPressManager mBackPressManager;
 
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Supplier<BottomSheetController> mBottomSheetController;
+    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private Profile mProfile;
     @Mock LargeIconBridge.Natives mMockLargeIconBridgeJni;
     @Mock private UserPrefs.Natives mUserPrefsJni;
@@ -196,12 +205,15 @@ public class HistoryUiTest {
         mBackPressManager = new BackPressManager();
         mHistoryManager =
                 new HistoryManager(
+                        mProfile,
+                        mWindowAndroid,
                         mActivity,
                         true,
                         mSnackbarManager,
-                        mProfile,
-                        /* bottomSheetController= */ null,
-                        /* Supplier<Tab>= */ null,
+                        /* bottomSheetController= */ mBottomSheetController,
+                        /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
+                        /* activityResultTracker= */ mActivityResultTracker,
+                        /* tabSupplier= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
                         /* clientPackageName= */ null,
@@ -736,12 +748,15 @@ public class HistoryUiTest {
         DeviceInput.setSupportsKeyboardForTesting(true);
         mHistoryManager =
                 new HistoryManager(
+                        mProfile,
+                        mWindowAndroid,
                         mActivity,
                         true,
                         mSnackbarManager,
-                        mProfile,
-                        /* bottomSheetController= */ null,
-                        /* Supplier<Tab>= */ null,
+                        /* bottomSheetController= */ mBottomSheetController,
+                        /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
+                        /* activityResultTracker= */ mActivityResultTracker,
+                        /* tabSupplier= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
                         /* clientPackageName= */ null,
@@ -792,12 +807,15 @@ public class HistoryUiTest {
         when(mPackageManager.getApplicationInfo(eq(appId), anyInt())).thenReturn(mPackageAppInfo);
         mHistoryManager =
                 new HistoryManager(
+                        mProfile,
+                        mWindowAndroid,
                         mActivity,
                         true,
                         mSnackbarManager,
-                        mProfile,
-                        /* bottomSheetController= */ null,
-                        /* Supplier<Tab>= */ null,
+                        /* bottomSheetController= */ mBottomSheetController,
+                        /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
+                        /* activityResultTracker= */ mActivityResultTracker,
+                        /* tabSupplier= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
                         /* clientPackageName= */ appId,
@@ -830,12 +848,15 @@ public class HistoryUiTest {
         when(mPackageManager.getApplicationInfo(eq(appId), anyInt())).thenReturn(mPackageAppInfo);
         mHistoryManager =
                 new HistoryManager(
+                        mProfile,
+                        mWindowAndroid,
                         mActivity,
                         true,
                         mSnackbarManager,
-                        mProfile,
-                        /* bottomSheetController= */ null,
-                        /* Supplier<Tab>= */ null,
+                        /* bottomSheetController= */ mBottomSheetController,
+                        /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
+                        /* activityResultTracker= */ mActivityResultTracker,
+                        /* tabSupplier= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
                         /* clientPackageName= */ appId,
@@ -1007,20 +1028,23 @@ public class HistoryUiTest {
         DeviceInput.setSupportsKeyboardForTesting(true);
         HistoryManager historyManager =
                 new HistoryManager(
+                        mProfile,
+                        mWindowAndroid,
                         mActivity,
                         true,
                         mSnackbarManager,
-                        mProfile,
-                        null,
-                        null,
+                        /* bottomSheetController= */ mBottomSheetController,
+                        /* modalDialogManagerSupplier= */ mModalDialogManagerSupplier,
+                        /* activityResultTracker= */ mActivityResultTracker,
+                        /* tabSupplier= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
-                        null,
-                        true,
-                        false,
-                        false,
-                        null,
-                        null);
+                        /* clientPackageName= */ null,
+                        /* shouldShowClearData= */ true,
+                        /* launchedForApp= */ false,
+                        /* showAppFilter= */ false,
+                        /* openHistoryItemCallback= */ null,
+                        /* edgeToEdgePadAdjusterGenerator= */ null);
 
         // Arrange 2: Create a test-only handler that delegates to THIS specific historyManager.
         BackPressHandler testHandler =

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.lang.annotation.Retention;
@@ -87,9 +88,6 @@ public abstract class SigninPromoDelegate {
      */
     abstract boolean canShowPromo();
 
-    /** Returns whether this entry point supports seamless sign-in. */
-    abstract boolean isSeamlessSigninAllowed();
-
     /** Returns the number of times where the promo is shown to the user, */
     abstract int getPromoShownCount();
 
@@ -105,6 +103,11 @@ public abstract class SigninPromoDelegate {
      *     with new values retrieved from the delegate.
      */
     abstract boolean refreshPromoState(@Nullable CoreAccountInfo visibleAccount);
+
+    /** Returns whether this entry point supports seamless sign-in. */
+    boolean isSeamlessSigninAllowed() {
+        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+    }
 
     AccountPickerBottomSheetStrings getBottomSheetStrings() {
         return new AccountPickerBottomSheetStrings.Builder(
@@ -243,13 +246,13 @@ public abstract class SigninPromoDelegate {
     // TODO(https://crbug.com/474294917): Remove this.
     /** Returns true if the delegate should handle the primary button click. */
     boolean shouldOverridePrimaryButtonClick() {
-        return true;
+        return !SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
     }
 
     // TODO(https://crbug.com/474294917): Remove this.
     /** Returns true if the delegate should handle the secondary button click. */
     boolean shouldOverrideSecondaryButtonClick() {
-        return true;
+        return !SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
     }
 
     /** Returns the configuration for the flow started by the secondary button. */

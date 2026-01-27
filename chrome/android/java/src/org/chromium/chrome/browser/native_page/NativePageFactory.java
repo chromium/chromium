@@ -351,6 +351,8 @@ public class NativePageFactory {
 
         protected NativePage buildHistoryPage(Tab tab, String url) {
             return new HistoryPage(
+                    tab.getProfile(),
+                    mWindowAndroid,
                     mActivity,
                     new TabShim(
                             tab,
@@ -358,8 +360,9 @@ public class NativePageFactory {
                             mTabModelSelector,
                             mEdgeToEdgeControllerSupplier),
                     mSnackbarManagerSupplier.get(),
-                    tab.getProfile(),
                     mBottomSheetController,
+                    mModalDialogManagerSupplier,
+                    mActivityResultTracker,
                     mCurrentTabSupplier,
                     url,
                     mBackPressManager);

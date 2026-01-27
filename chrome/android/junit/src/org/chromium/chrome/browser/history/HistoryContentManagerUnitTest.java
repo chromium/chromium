@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridgeJni;
@@ -38,7 +39,10 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.util.function.Supplier;
@@ -52,10 +56,14 @@ public class HistoryContentManagerUnitTest {
 
     private Activity mActivity;
     private final IdentityManager mIdentityManager = new FakeIdentityManager();
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private HistoryContentManager.Observer mObserver;
     @Mock private Profile mProfile;
     @Mock private SelectionDelegate<HistoryItem> mSelectionDelegate;
     @Mock private Supplier<BottomSheetController> mBottomSheetController;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private Tab mTab;
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private HistoryUmaRecorder mUmaRecorder;
@@ -84,6 +92,7 @@ public class HistoryContentManagerUnitTest {
 
         mHistoryContentManager =
                 HistoryContentManager.create(
+                        mWindowAndroid,
                         mActivity,
                         mObserver,
                         /* isSeparateActivity= */ false,
@@ -92,6 +101,9 @@ public class HistoryContentManagerUnitTest {
                         /* shouldShowClearDataIfAvailable= */ false,
                         mSelectionDelegate,
                         mBottomSheetController,
+                        mModalDialogManagerSupplier,
+                        mSnackbarManager,
+                        mActivityResultTracker,
                         mTabSupplier,
                         () -> {},
                         mUmaRecorder,

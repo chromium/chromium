@@ -165,11 +165,6 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    boolean isSeamlessSigninAllowed() {
-        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
-    }
-
-    @Override
     boolean refreshPromoState(@Nullable CoreAccountInfo visibleAccount) {
         @PromoState int newState = computePromoState(visibleAccount);
         boolean wasStateChanged = mPromoState != newState;
@@ -213,16 +208,6 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     @SigninSurveyController.SigninSurveyType
     Integer getSurveyTriggerType() {
         return SigninSurveyController.SigninSurveyType.NTP_PROMO;
-    }
-
-    @Override
-    boolean shouldOverridePrimaryButtonClick() {
-        return !isSeamlessSigninAllowed();
-    }
-
-    @Override
-    boolean shouldOverrideSecondaryButtonClick() {
-        return !isSeamlessSigninAllowed();
     }
 
     private static boolean timeElapsedSinceFirstShownExceedsLimit() {

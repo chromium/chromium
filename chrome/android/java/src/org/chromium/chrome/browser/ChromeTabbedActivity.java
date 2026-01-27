@@ -1232,11 +1232,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private Pane createHistoryPane() {
         return new HistoryPane(
+                getProfileProviderSupplier(),
                 adaptOnOverviewColorAlphaChange(),
+                getWindowAndroid(),
                 this,
                 getSnackbarManager(),
-                getProfileProviderSupplier(),
                 mRootUiCoordinator::getBottomSheetController,
+                getModalDialogManagerSupplier(),
+                getActivityResultTracker(),
                 getCurrentTabModel().getCurrentTabSupplier());
     }
 

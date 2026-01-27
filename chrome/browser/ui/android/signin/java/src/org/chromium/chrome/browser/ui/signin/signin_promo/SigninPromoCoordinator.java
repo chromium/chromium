@@ -73,7 +73,7 @@ public class SigninPromoCoordinator
      *     original profile, not the incognito one.
      * @param delegate A {@link SigninPromoDelegate} to customize the view.
      */
-    // TODO(https://crbug.com/437039516): Remove the constructor below.
+    // TODO(https://crbug.com/448227402): Remove the constructor below.
     @Deprecated
     public SigninPromoCoordinator(Context context, Profile profile, SigninPromoDelegate delegate) {
         mContext = context;

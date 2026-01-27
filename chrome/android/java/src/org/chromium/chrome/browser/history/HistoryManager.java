@@ -54,10 +54,13 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 import java.util.function.Function;
@@ -112,13 +115,16 @@ public class HistoryManager
     /**
      * Creates a new HistoryManager.
      *
+     * @param profile The profile launching History.
+     * @param windowAndroid The current {@link WindowAndroid} showing the history UI.
      * @param activity The Activity associated with the HistoryManager.
      * @param isSeparateActivity Whether the history UI will be shown in a separate activity than
      *     the main Chrome activity.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
-     * @param profile The profile launching History.
      * @param bottomSheetController Supplier of {@link BottomSheetController} to show app filter
      *     sheet in.
+     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
+     * @param activityResultTracker Tracker of activity results.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *     separate activity.
      * @param historyProvider Provider of methods for querying and managing browsing history.
@@ -134,11 +140,14 @@ public class HistoryManager
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(
+            Profile profile,
+            WindowAndroid windowAndroid,
             Activity activity,
             boolean isSeparateActivity,
             SnackbarManager snackbarManager,
-            Profile profile,
-            Supplier<@Nullable BottomSheetController> bottomSheetController,
+            Supplier<BottomSheetController> bottomSheetController,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            ActivityResultTracker activityResultTracker,
             @Nullable Supplier<@Nullable Tab> tabSupplier,
             HistoryProvider historyProvider,
             HistoryUmaRecorder umaRecorder,
@@ -148,10 +157,10 @@ public class HistoryManager
             boolean showAppFilter,
             @Nullable Runnable openHistoryItemCallback,
             @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator) {
+        mProfile = profile;
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
-        mProfile = profile;
         mIsIncognito = profile.isOffTheRecord();
         mUmaRecorder = umaRecorder;
         mLaunchedForApp = launchedForApp;
@@ -188,6 +197,7 @@ public class HistoryManager
 
         mContentManager =
                 HistoryContentManager.create(
+                        windowAndroid,
                         mActivity,
                         this,
                         isSeparateActivity,
@@ -196,6 +206,9 @@ public class HistoryManager
                         shouldShowClearData,
                         mSelectionDelegate,
                         bottomSheetController,
+                        modalDialogManagerSupplier,
+                        snackbarManager,
+                        activityResultTracker,
                         tabSupplier,
                         () -> assumeNonNull(mToolbar).hideKeyboard(),
                         mUmaRecorder,
