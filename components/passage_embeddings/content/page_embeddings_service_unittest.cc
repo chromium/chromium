@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/passage_embeddings/page_embeddings_service.h"
+#include "components/passage_embeddings/content/page_embeddings_service.h"
 
 #include <memory>
 #include <optional>
@@ -10,14 +10,14 @@
 #include <vector>
 
 #include "base/check.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,21 +68,26 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    page_embeddings_service_.emplace(
-        base::BindRepeating(&GenerateCandidates),
-        page_content_annotations::PageContentExtractionServiceFactory::
-            GetForProfile(Profile::FromBrowserContext(GetBrowserContext())),
-        &embedder_mock_);
+
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
+    page_content_extraction_service_.emplace(os_crypt_async_.get(),
+                                             GetBrowserContext()->GetPath());
+
+    page_embeddings_service_.emplace(base::BindRepeating(&GenerateCandidates),
+                                     &page_content_extraction_service_.value(),
+                                     &embedder_mock_);
   }
 
   void TearDown() override {
     page_embeddings_service_.reset();
+    page_content_extraction_service_.reset();
+    os_crypt_async_.reset();
     RenderViewHostTestHarness::TearDown();
   }
 
  protected:
   std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
-    return std::make_unique<TestingProfile>();
+    return std::make_unique<content::TestBrowserContext>();
   }
 
   std::unique_ptr<content::WebContents> CreateTestWebContentsWithVisibility(
@@ -106,6 +111,9 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
   EmbedderMock& embedder_mock() { return embedder_mock_; }
 
  private:
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::optional<page_content_annotations::PageContentExtractionService>
+      page_content_extraction_service_;
   EmbedderMock embedder_mock_;
   std::optional<PageEmbeddingsService> page_embeddings_service_;
 };

@@ -8470,7 +8470,6 @@ test("unit_tests") {
       "//chrome/browser/engagement",
       "//chrome/browser/legion:unit_tests",
       "//chrome/browser/media:access_handler",
-      "//chrome/browser/passage_embeddings:unit_tests",
       "//chrome/browser/password_manager/actor_login:unit_tests",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/password_manager/password_change:unit_tests",

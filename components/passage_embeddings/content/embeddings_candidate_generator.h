@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSAGE_EMBEDDINGS_EMBEDDINGS_CANDIDATE_GENERATOR_H_
-#define CHROME_BROWSER_PASSAGE_EMBEDDINGS_EMBEDDINGS_CANDIDATE_GENERATOR_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_CONTENT_EMBEDDINGS_CANDIDATE_GENERATOR_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_CONTENT_EMBEDDINGS_CANDIDATE_GENERATOR_H_
 
 #include <string>
 #include <vector>
 
-#include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/passage_embeddings/content/page_embeddings_service.h"
 
 namespace passage_embeddings {
 
@@ -21,4 +21,4 @@ std::vector<std::pair<std::string, PassageType>> GenerateEmbeddingsCandidates(
 
 }  // namespace passage_embeddings
 
-#endif  // CHROME_BROWSER_PASSAGE_EMBEDDINGS_EMBEDDINGS_CANDIDATE_GENERATOR_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_CONTENT_EMBEDDINGS_CANDIDATE_GENERATOR_H_
