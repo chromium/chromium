@@ -2859,12 +2859,6 @@ inline constexpr char
     kNotificationSchedulerImmediateBackgroundTaskDescription[] =
         "Show scheduled notification right away.";
 
-inline constexpr char kNotificationsSystemFlagName[] =
-    "Enable system notifications.";
-inline constexpr char kNotificationsSystemFlagDescription[] =
-    "Enable support for using the system notification toasts and notification "
-    "center on platforms where these are available.";
-
 inline constexpr char kEnforceManagementDisclaimerName[] =
     "Enforce management disclaimer";
 inline constexpr char kEnforceManagementDisclaimerDescription[] =

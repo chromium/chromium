@@ -4043,11 +4043,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-system-notifications",
-    "owners": [ "peter@chromium.org", "finnur@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-system-proxy-for-system-services",
     "owners": [ "acostinas@chromium.org"],
     "expiry_milestone": 94
