@@ -529,7 +529,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
               context->unexportable_key_service()));
     }
     context->set_device_bound_session_service(
-        device_bound_sessions::SessionService::Create(context.get()));
+        device_bound_sessions::SessionService::Create(
+            context.get(), device_bound_sessions_restricted_sites_));
   } else {
     if (device_bound_session_service_) {
       context->set_device_bound_session_service(

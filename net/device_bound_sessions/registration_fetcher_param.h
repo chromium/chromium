@@ -45,7 +45,8 @@ class NET_EXPORT RegistrationFetcherParam {
   // appropriate.
   static std::vector<RegistrationFetcherParam> CreateIfValid(
       const GURL& request_url,
-      const HttpResponseHeaders* headers);
+      const HttpResponseHeaders* headers,
+      const std::vector<SchemefulSite>& restricted_sites);
 
   // Convenience constructor for testing.
   static RegistrationFetcherParam CreateInstanceForTesting(

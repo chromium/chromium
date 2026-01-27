@@ -408,6 +408,15 @@ class NET_EXPORT URLRequestContextBuilder {
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   }
 
+  void set_device_bound_sessions_restricted_sites(
+      const std::vector<SchemefulSite>& restricted_sites) {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    device_bound_sessions_restricted_sites_ = restricted_sites;
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  }
+
   // Must be called in conjunction with
   // `set_has_device_bound_session_service(true)`.
   void set_unexportable_key_service(
@@ -542,6 +551,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate_;
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   bool has_device_bound_session_service_ = false;
+  std::vector<SchemefulSite> device_bound_sessions_restricted_sites_;
   std::unique_ptr<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
   std::unique_ptr<device_bound_sessions::SessionService>

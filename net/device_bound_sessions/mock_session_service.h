@@ -113,6 +113,12 @@ class SessionServiceMock : public SessionService {
               AddSigningOccurrence,
               (const SchemefulSite& site),
               (override));
+  MOCK_METHOD(void,
+              HandleResponseHeaders,
+              (DbscRequest & request,
+               HttpResponseHeaders* headers,
+               const FirstPartySetMetadata& first_party_set_metadata),
+              (override));
 };
 
 }  // namespace net::device_bound_sessions
