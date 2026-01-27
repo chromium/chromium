@@ -615,10 +615,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            RespectsCSSOverflow();
   }
 
-  inline bool IsEligibleForPaintOrLayoutContainment() const {
+  virtual bool IsEligibleForPaintOrLayoutContainment() const {
     NOT_DESTROYED();
-    return (!IsInline() || IsAtomicInlineLevel()) &&
-           (!IsTablePart() || IsLayoutBlockFlow());
+    return false;
+  }
+
+  virtual bool IsEligibleForSizeContainment() const {
+    NOT_DESTROYED();
+    return false;
   }
 
   inline bool ShouldApplyPaintContainment(const ComputedStyle& style) const {
@@ -641,11 +645,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return ShouldApplyLayoutContainment(StyleRef());
   }
 
-  inline bool IsEligibleForSizeContainment() const {
-    NOT_DESTROYED();
-    return (!IsInline() || IsAtomicInlineLevel()) &&
-           (!IsTablePart() || IsTableCaption()) && !IsTable();
-  }
   inline bool ShouldApplySizeContainment() const {
     NOT_DESTROYED();
     return StyleRef().ContainsSize() && IsEligibleForSizeContainment();
@@ -704,8 +703,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // common logic, which is extracted here to avoid repeated computation.
     return style.IsStackingContextWithoutContainment() ||
            ((style.ContainsLayout() || style.ContainsPaint()) &&
-            (!IsInline() || IsAtomicInlineLevel()) &&
-            (!IsTablePart() || IsLayoutBlockFlow()));
+            IsEligibleForPaintOrLayoutContainment());
   }
 
   inline bool IsStacked() const {

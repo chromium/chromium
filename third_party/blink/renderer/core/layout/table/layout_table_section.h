@@ -83,6 +83,16 @@ class CORE_EXPORT LayoutTableSection : public LayoutBlock {
     return true;
   }
 
+  bool IsEligibleForPaintOrLayoutContainment() const final {
+    NOT_DESTROYED();
+    return false;
+  }
+
+  bool IsEligibleForSizeContainment() const final {
+    NOT_DESTROYED();
+    return false;
+  }
+
   bool CanMergeWith(const LayoutBoxModelObject& other) const override {
     NOT_DESTROYED();
     return other.IsTableSection();

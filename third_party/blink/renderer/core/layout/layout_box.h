@@ -1236,6 +1236,16 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  protected:
   ~LayoutBox() override;
 
+  bool IsEligibleForPaintOrLayoutContainment() const override {
+    NOT_DESTROYED();
+    return true;
+  }
+
+  bool IsEligibleForSizeContainment() const override {
+    NOT_DESTROYED();
+    return true;
+  }
+
   virtual OverflowClipAxes ComputeOverflowClipAxes() const;
 
   void WillBeDestroyed() override;

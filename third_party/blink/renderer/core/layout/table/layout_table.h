@@ -207,6 +207,11 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
     return true;
   }
 
+  bool IsEligibleForSizeContainment() const final {
+    NOT_DESTROYED();
+    return false;
+  }
+
   bool CanMergeWith(const LayoutBoxModelObject& other) const override {
     NOT_DESTROYED();
     return other.IsTable();
