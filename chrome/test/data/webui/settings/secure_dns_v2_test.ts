@@ -177,15 +177,11 @@ suite('SettingsSecureDnsV2', function() {
     await testBrowserProxy.whenCalled('getSecureDnsSetting');
     await flushTasks();
 
-    // Access toggle
-    secureDnsToggle =
-        testElement.shadowRoot!.querySelector('#secureDnsToggle')!;
-    assertTrue(!!secureDnsToggle);
+    secureDnsToggle = testElement.$.featureRow;
 
-    // Access expand button
-    const expandButton = secureDnsToggle.$.expandButton;
 
     // Expand the row.
+    const expandButton = secureDnsToggle.$.expandButton;
     expandButton.click();
     await flushTasks();
     assertTrue(isVisible(secureDnsToggle));

@@ -247,15 +247,15 @@
       </div>
     </settings-radio-group>
     <security-page-feature-row id="safeBrowsingRow"
-        on-expanded-changed="onSafeBrowsingRowClick_"
+        on-expanded-change="onSafeBrowsingRowClick_"
+        on-toggle-button-change="onSafeBrowsingToggleChange_"
         pref="{{prefs.generated.safe_browsing}}"
         label="$i18n{securitySafeBrowsingTitle}"
         sub-label="$i18n{securitySafeBrowsingDesc}" class="box"
         numeric-unchecked-values="[[safeBrowsingOff_]]"
         state-text-map="[[safeBrowsingStateTextMap_]]"
         icon="settings20:warning_outline"
-        icon-visible="[[isSafeBrowsingWarningIconVisible_]]"
-        on-change="onSafeBrowsingToggleChange_">
+        icon-visible="[[isSafeBrowsingWarningIconVisible_]]">
       <div slot="collapse">
         <settings-radio-group id="safeBrowsingRadioGroup"
             pref="{{prefs.generated.safe_browsing}}"
@@ -370,7 +370,13 @@
       </div>
     </security-page-feature-row>
     <template is="dom-if" if="[[enableBundledSecuritySettingsSecureDnsV2_]]">
-      <settings-secure-dns-v2 id="secureDnsV2" prefs="{{prefs}}" class="box">
+      <settings-secure-dns-v2
+        id="secureDnsV2Row"
+        prefs="{{prefs}}"
+        class="box"
+        on-toggle-button-change="onSecureDnsToggleChange_"
+        on-expanded-change="onSecureDnsRowExpandedChange_"
+        on-radio-group-change="onSecureDnsRadioGroupChange_">
       </settings-secure-dns-v2>
     </template>
   </settings-section>
@@ -382,11 +388,13 @@
           sub-label="$i18n{securityHttpsFirstModeToggleSublabel}"
           numeric-unchecked-values="[[httpsFirstModeUncheckedValues_]]"
           numeric-checked-value=
-              "[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]">
+              "[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]"
+          on-change="onHttpsFirstModeToggleChange_">
       </settings-toggle-button>
       <settings-radio-group id="httpsFirstModeRadioGroup"
           pref="{{prefs.generated.https_first_mode_enabled}}"
-          selectable-elements="controlled-radio-button">
+          selectable-elements="controlled-radio-button"
+          on-change="onHttpsFirstModeRadioGroupChange_">
         <controlled-radio-button id="httpsFirstModeEnabledBalanced"
             name="[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]"
             pref="[[prefs.generated.https_first_mode_enabled]]"
@@ -410,7 +418,8 @@
     <settings-toggle-button id="passwordsLeakToggle"
         pref="{{prefs.generated.password_leak_detection}}"
         label="$i18n{securityPasswordsLeakDetectionTitle}"
-        sub-label="$i18n{securityPasswordsLeakDetectionDesc}">
+        sub-label="$i18n{securityPasswordsLeakDetectionDesc}"
+        on-change="onPasswordsLeakToggleChange_">
     </settings-toggle-button>
     <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
       <cr-link-row id="securityKeysSubpageTrigger"

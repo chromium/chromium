@@ -21,6 +21,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -39,6 +40,8 @@ import type {HatsBrowserProxy} from '../hats_browser_proxy.js';
 import {HatsBrowserProxyImpl, SecurityPageV2Interaction} from '../hats_browser_proxy.js';
 
 import {SafeBrowsingSetting} from './safe_browsing_types.js';
+import {SecureDnsV2ResolverType} from './secure_dns_v2.js';
+import type {SettingsSecureDnsV2Element} from './secure_dns_v2.js';
 import type {SecurityPageFeatureRowElement} from './security_page_feature_row.js';
 import {getTemplate} from './security_page_v2.html.js';
 
@@ -66,6 +69,7 @@ export interface SettingsSecurityPageV2Element {
     bundlesRadioGroup: SettingsRadioGroupElement,
     httpsFirstModeEnabledBalanced: ControlledRadioButtonElement,
     httpsFirstModeEnabledStrict: ControlledRadioButtonElement,
+    httpsFirstModeRadioGroup: SettingsRadioGroupElement,
     httpsFirstModeToggle: SettingsToggleButtonElement,
     passwordsLeakToggle: SettingsToggleButtonElement,
     resetEnhancedBundleToDefaultsButton: CrButtonElement,
@@ -74,6 +78,7 @@ export interface SettingsSecurityPageV2Element {
     securitySettingsBundleStandard: ControlledRadioButtonElement,
     safeBrowsingRadioGroup: SettingsRadioGroupElement,
     safeBrowsingRow: SecurityPageFeatureRowElement,
+    secureDnsV2Row: SettingsSecureDnsV2Element,
   };
 }
 
@@ -314,6 +319,9 @@ export class SettingsSecurityPageV2Element extends
   }
 
   private onSafeBrowsingToggleChange_() {
+    this.interactions_.add(
+        SecurityPageV2Interaction.SAFE_BROWSING_TOGGLE_CLICK);
+
     if (!this.isSafeBrowsingEnabled_) {
       this.metricsBrowserProxy_.recordAction(
           'SafeBrowsing.Settings.DisableSafeBrowsingClicked');
@@ -337,6 +345,50 @@ export class SettingsSecurityPageV2Element extends
           SecurityPageV2Interaction.ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK);
       this.metricsBrowserProxy_.recordAction(
           'SafeBrowsing.Settings.EnhancedProtectionClicked');
+    }
+  }
+
+  private onSecureDnsRowExpandedChange_(e: CustomEvent<{value: boolean}>) {
+    // Contains the new state of the row (true if expanded, false if collapsed).
+    const isExpanded = e.detail.value;
+    if (isExpanded) {
+      this.interactions_.add(
+          SecurityPageV2Interaction.SECURE_DNS_V2_ROW_EXPANDED);
+    }
+  }
+
+  private onSecureDnsToggleChange_() {
+    this.interactions_.add(
+        SecurityPageV2Interaction.SECURE_DNS_V2_TOGGLE_CLICK);
+  }
+
+  /**
+   * Handles changes of the radio button selection inside the secure DNS
+   * settings row.
+   */
+  private onSecureDnsRadioGroupChange_(e: CustomEvent<{value: string}>) {
+    const selected = e.detail.value as SecureDnsV2ResolverType;
+
+    switch (selected) {
+      case SecureDnsV2ResolverType.AUTOMATIC:
+        this.interactions_.add(SecurityPageV2Interaction
+                                   .SECURE_DNS_V2_AUTOMATIC_RADIO_BUTTON_CLICK);
+        break;
+      case SecureDnsV2ResolverType.FALLBACK:
+        this.interactions_.add(SecurityPageV2Interaction
+                                   .SECURE_DNS_V2_FALLBACK_RADIO_BUTTON_CLICK);
+        break;
+      case SecureDnsV2ResolverType.CUSTOM:
+        this.interactions_.add(
+            SecurityPageV2Interaction.SECURE_DNS_V2_CUSTOM_RADIO_BUTTON_CLICK);
+        break;
+      case SecureDnsV2ResolverType.BUILT_IN:
+        // There is technically no button for the built-in resolver type.
+        break;
+      default:
+        assertNotReachedCase(
+            selected,
+            'Received unknown secure DNS radio button selection: ' + selected);
     }
   }
 
@@ -412,6 +464,28 @@ export class SettingsSecurityPageV2Element extends
         'generated.safe_browsing',
         this.getDefaultSafeBrowsingValue_(bundleSetting));
     this.isResettingToDefaults_ = false;
+  }
+
+  private onHttpsFirstModeToggleChange_() {
+    this.interactions_.add(
+        SecurityPageV2Interaction.HTTPS_FIRST_MODE_TOGGLE_CLICK);
+  }
+
+  private onHttpsFirstModeRadioGroupChange_() {
+    const selected =
+        Number.parseInt(this.$.httpsFirstModeRadioGroup.selected || '', 10);
+    if (selected === HttpsFirstModeSetting.ENABLED_BALANCED) {
+      this.interactions_.add(SecurityPageV2Interaction
+                                 .BALANCED_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK);
+    } else if (selected === HttpsFirstModeSetting.ENABLED_FULL) {
+      this.interactions_.add(
+          SecurityPageV2Interaction.STRICT_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK);
+    }
+  }
+
+  private onPasswordsLeakToggleChange_() {
+    this.interactions_.add(
+        SecurityPageV2Interaction.PASSWORD_LEAK_DETECTION_TOGGLE_CLICK);
   }
 
   private onManageCertificatesClick_() {

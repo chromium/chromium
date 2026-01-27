@@ -57,7 +57,8 @@
     <template is="dom-if" if="[[expanded]]" restamp>
       <settings-toggle-button id="toggleButton" pref="{{pref}}"
           numeric-unchecked-values="[[numericUncheckedValues]]"
-          numeric-checked-value="[[numericCheckedValue]]">
+          numeric-checked-value="[[numericCheckedValue]]"
+          on-change="onToggleButtonChange_">
       </settings-toggle-button>
     </template>
   </div>

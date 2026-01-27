@@ -21,12 +21,13 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import '/shared/settings/prefs/prefs.js';
 import './security_page_feature_row.js';
 import '../../controls/controlled_radio_button.js';
-import '../../controls/settings_radio_group.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import './secure_dns_input.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {PrivacyPageBrowserProxy, ResolverOption, SecureDnsSetting} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
@@ -38,17 +39,19 @@ import {loadTimeData} from '../../i18n_setup.js';
 
 import type {SecureDnsInputElement} from './secure_dns_input.js';
 import {getTemplate} from './secure_dns_v2.html.js';
+import type {SecurityPageFeatureRowElement} from './security_page_feature_row.js';
 
 export interface SettingsSecureDnsV2Element {
   $: {
     automaticRadioButton: ControlledRadioButtonElement,
-    fallbackRadioButton: ControlledRadioButtonElement,
     customRadioButton: ControlledRadioButtonElement,
+    fallbackRadioButton: ControlledRadioButtonElement,
+    featureRow: SecurityPageFeatureRowElement,
     privacyPolicy: HTMLElement,
     secureDnsInput: SecureDnsInputElement,
     secureDnsInputContainer: HTMLElement,
+    radioGroup: CrRadioGroupElement,
     resolverSelect: HTMLSelectElement,
-
   };
 }
 
@@ -200,6 +203,7 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
   declare private secureDnsStateTextMap_: object;
   declare private computedStateKey_: string;
 
+  private lastSelected_: SecureDnsV2ResolverType|undefined;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
 
@@ -268,6 +272,10 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
         assertNotReachedCase(setting.mode);
     }
 
+    // Update `lastSelected_` here to help filter out the
+    // selected-changed event triggered by the above pref update in
+    // `onRadioGroupChange_()`.
+    this.lastSelected_ = this.selectedMode_;
     this.updateManagementView_(setting);
     this.updateAppearance_();
   }
@@ -276,7 +284,13 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
    * Handles user clicks on the Radio Buttons.
    * Because of 'no-set-pref', we manually trigger the backend update.
    */
-  private onSecureDnsRadioGroupChange_() {
+  private onRadioGroupChange_(event: CustomEvent<{value: string}>) {
+    // Ignore events that were triggered by changes to the underlying prefs.
+    if (this.lastSelected_ === event.detail.value) {
+      return;
+    }
+    this.lastSelected_ = event.detail.value as SecureDnsV2ResolverType;
+
     // If the toggle is OFF, clicking a radio button should turn it ON.
     if (this.getPref('dns_over_https.mode').enforcement !==
             chrome.settingsPrivate.Enforcement.ENFORCED &&
@@ -284,9 +298,38 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
       this.set('secureDnsTogglePref_.value', true);
     }
 
+    this.applySelectionToPrefs_();
+
+    this.dispatchEvent(new CustomEvent('radio-group-change', {
+      bubbles: true,
+      composed: true,
+      detail: {value: this.$.radioGroup.selected},
+    }));
+  }
+
+
+  /**
+   * Updates the underlying secure DNS mode pref based on the new toggle
+   * selection.
+   */
+  private onToggleButtonChange_() {
+    if (!this.secureDnsTogglePref_.value) {
+      this.updateDnsPrefs_(SecureDnsMode.OFF);
+      return;
+    }
+
+    this.updateAppearance_();
+    // Restore the state based on the current radio selection
+    this.applySelectionToPrefs_();
+  }
+
+  /**
+   * Updates the underlying secure DNS preferences based on the new radio group
+   *  selection.
+   */
+  private applySelectionToPrefs_() {
     // Get currently selected radio button.
-    const radioGroup = this.shadowRoot!.querySelector('settings-radio-group');
-    const selected = radioGroup!.selected as SecureDnsV2ResolverType;
+    const selected = this.$.radioGroup.selected as SecureDnsV2ResolverType;
 
     switch (selected) {
       case SecureDnsV2ResolverType.AUTOMATIC:
@@ -329,21 +372,6 @@ export class SettingsSecureDnsV2Element extends SettingsSecureDnsV2ElementBase {
     }
 
     return '';
-  }
-
-  /**
-   * Updates the underlying secure DNS mode pref based on the new toggle
-   * selection.
-   */
-  private onToggleChanged_() {
-    if (!this.secureDnsTogglePref_.value) {
-      this.updateDnsPrefs_(SecureDnsMode.OFF);
-      return;
-    }
-
-    this.updateAppearance_();
-    // Restore the state based on the current radio selection
-    this.onSecureDnsRadioGroupChange_();
   }
 
   /**

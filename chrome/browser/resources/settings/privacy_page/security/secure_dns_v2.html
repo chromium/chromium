@@ -41,23 +41,21 @@
 </style>
 
 <security-page-feature-row
-    id="secureDnsToggle"
+    id="featureRow"
     pref="{{secureDnsTogglePref_}}"
     label="$i18n{securitySecureDnsTitle}"
     sub-label="$i18n{securitySecureDnsDescription}"
-    on-change="onToggleChanged_"
+    on-toggle-button-change="onToggleButtonChange_"
     numeric-unchecked-values="[[secureDnsModeUncheckedValues_]]"
     icon="settings20:warning_outline"
     icon-visible="[[isSecureDnsWarningIconVisible_]]"
     state-text-map="[[secureDnsStateTextMap_]]"
     current-state-override-key="[[computedStateKey_]]">
   <div slot="collapse">
-    <settings-radio-group id="secureDnsRadioGroup"
-        pref="{{prefs.dns_over_https.mode}}"
-        selectable-elements="controlled-radio-button"
+    <cr-radio-group id="radioGroup"
+        selectable="controlled-radio-button"
         selected="{{selectedMode_}}"
-        on-change="onSecureDnsRadioGroupChange_"
-        no-set-pref>
+        on-selected-changed="onRadioGroupChange_">
       <controlled-radio-button
           id="automaticRadioButton"
           name="[[resolverTypeEnum_.AUTOMATIC]]"
@@ -103,6 +101,6 @@
           </div>
         </div>
       </controlled-radio-button>
-    </settings-radio-group>
+    </cr-radio-group>
   </div>
 </security-page-feature-row>

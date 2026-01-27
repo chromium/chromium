@@ -181,6 +181,55 @@ SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
             "enhanced_safe_browsing_radio_button_clicked");
         break;
       }
+      case SecurityPageV2Interaction::SAFE_BROWSING_TOGGLE_CLICK: {
+        interaction_strings.push_back("safe_browsing_toggle_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::SECURE_DNS_V2_ROW_EXPANDED: {
+        interaction_strings.push_back("secure_dns_v2_row_expanded");
+        break;
+      }
+      case SecurityPageV2Interaction::
+          SECURE_DNS_V2_AUTOMATIC_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "secure_dns_v2_automatic_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::
+          SECURE_DNS_V2_FALLBACK_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "secure_dns_v2_fallback_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::SECURE_DNS_V2_CUSTOM_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "secure_dns_v2_custom_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::SECURE_DNS_V2_TOGGLE_CLICK: {
+        interaction_strings.push_back("secure_dns_v2_toggle_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::HTTPS_FIRST_MODE_TOGGLE_CLICK: {
+        interaction_strings.push_back("https_first_mode_toggle_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::
+          BALANCED_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "balanced_https_first_mode_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::
+          STRICT_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "strict_https_first_mode_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::PASSWORD_LEAK_DETECTION_TOGGLE_CLICK: {
+        interaction_strings.push_back("password_leak_detection_toggle_clicked");
+        break;
+      }
     }
   }
   if (interaction_strings.empty()) {

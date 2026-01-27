@@ -44,6 +44,18 @@ class HatsHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(
       HatsHandlerTest,
       HandleSecurityPageHatsRequest_NoSurveyIfInsufficientTimeOnPage);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsHandlerTest,
+      HandleSecurityPageHatsRequest_SafeBrowsingInteraction);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsHandlerTest,
+      HandleSecurityPageHatsRequest_SecureDnsV2Interaction);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsHandlerTest,
+      HandleSecurityPageHatsRequest_HttpsFirstModeInteractions);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsHandlerTest,
+      HandleSecurityPageHatsRequest_PasswordLeakInteraction);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, TrustSafetySentimentInteractions);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest, PrivacySettings);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,
@@ -77,6 +89,16 @@ class HatsHandler : public SettingsPageUIHandler {
     SAFE_BROWSING_ROW_EXPANDED = 2,
     STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK = 3,
     ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK = 4,
+    SAFE_BROWSING_TOGGLE_CLICK = 5,
+    SECURE_DNS_V2_ROW_EXPANDED = 6,
+    SECURE_DNS_V2_AUTOMATIC_RADIO_BUTTON_CLICK = 7,
+    SECURE_DNS_V2_FALLBACK_RADIO_BUTTON_CLICK = 8,
+    SECURE_DNS_V2_CUSTOM_RADIO_BUTTON_CLICK = 9,
+    SECURE_DNS_V2_TOGGLE_CLICK = 10,
+    HTTPS_FIRST_MODE_TOGGLE_CLICK = 11,
+    BALANCED_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK = 12,
+    STRICT_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK = 13,
+    PASSWORD_LEAK_DETECTION_TOGGLE_CLICK = 14,
   };
 
   // Requests the appropriate HaTS survey, which may be none, for |interaction|.

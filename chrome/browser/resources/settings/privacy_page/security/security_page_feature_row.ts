@@ -40,7 +40,7 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
         type: Boolean,
         notify: true,
         value: false,
-        observer: 'onExpandedChanged_',
+        observer: 'onExpandedChange_',
       },
 
       icon: {
@@ -98,7 +98,13 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
   declare private currentStateLabel_: string;
 
 
-  private onExpandedChanged_() {
+  private onExpandedChange_() {
+    this.dispatchEvent(new CustomEvent('expanded-change', {
+      bubbles: true,
+      composed: true,
+      detail: {value: this.expanded},
+    }));
+
     if (!this.expanded) {
       return;
     }
@@ -111,6 +117,13 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
     if (icon) {
       icon.classList.add('enable-transition');
     }
+  }
+
+  private onToggleButtonChange_() {
+    this.dispatchEvent(new CustomEvent('toggle-button-change', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private computeCurrentStateLabel_(): string {
