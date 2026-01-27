@@ -122,12 +122,20 @@ void PrivateKeyFactoryImpl::OnPrivateKeyCreated(
     PrivateKeyCallback callback,
     scoped_refptr<PrivateKey> private_key) {
   if (!private_key && source != PrivateKeySource::kSoftwareKey) {
-    auto it = sub_factories_.find(PrivateKeySource::kSoftwareKey);
-    if (it != sub_factories_.end()) {
-      // If a more secure key failed to be created, fallback to creating a
-      // software key (which should always succeed).
-      it->second->CreatePrivateKey(std::move(callback));
-      return;
+    for (auto fallback_source =
+             ++std::find(std::begin(kKeySourcesOrderedBySecurity),
+                         std::end(kKeySourcesOrderedBySecurity), source);
+         fallback_source != std::end(kKeySourcesOrderedBySecurity);
+         fallback_source++) {
+      auto it = sub_factories_.find(*fallback_source);
+      if (it != sub_factories_.end()) {
+        // If a more secure key failed to be created, fallback to creating a
+        // less secure key.
+        it->second->CreatePrivateKey(base::BindOnce(
+            &PrivateKeyFactoryImpl::OnPrivateKeyCreated,
+            weak_factory_.GetWeakPtr(), *fallback_source, std::move(callback)));
+        return;
+      }
     }
   }
 

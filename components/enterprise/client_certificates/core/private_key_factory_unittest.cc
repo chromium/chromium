@@ -169,6 +169,41 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources_UnexportableFail) {
         std::move(callback).Run(nullptr);
       });
 
+  EXPECT_CALL(*os_software_factory, CreatePrivateKey(_))
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
+      });
+
+  PrivateKeyFactory::PrivateKeyFactoriesMap map;
+  map.insert_or_assign(PrivateKeySource::kOsSoftwareKey,
+                       std::move(os_software_factory));
+  map.insert_or_assign(PrivateKeySource::kSoftwareKey,
+                       std::move(software_factory));
+  map.insert_or_assign(PrivateKeySource::kUnexportableKey,
+                       std::move(unexportable_factory));
+  auto factory = PrivateKeyFactory::Create(std::move(map));
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> test_future;
+  factory->CreatePrivateKey(test_future.GetCallback());
+
+  EXPECT_TRUE(test_future.Get());
+}
+
+TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources_SoftwareKeyFallback) {
+  auto unexportable_factory = CreateMockedFactory();
+  auto os_software_factory = CreateMockedFactory();
+  auto software_factory = CreateMockedFactory();
+
+  EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(nullptr);
+      });
+
+  EXPECT_CALL(*os_software_factory, CreatePrivateKey(_))
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(nullptr);
+      });
+
   EXPECT_CALL(*software_factory, CreatePrivateKey(_))
       .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(base::MakeRefCounted<MockPrivateKey>());
@@ -195,6 +230,11 @@ TEST(PrivateKeyFactoryTest, CreatePrivateKey_AllSources_AllFail) {
   auto software_factory = CreateMockedFactory();
 
   EXPECT_CALL(*unexportable_factory, CreatePrivateKey(_))
+      .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
+        std::move(callback).Run(nullptr);
+      });
+
+  EXPECT_CALL(*os_software_factory, CreatePrivateKey(_))
       .WillOnce([](PrivateKeyFactory::PrivateKeyCallback callback) {
         std::move(callback).Run(nullptr);
       });
