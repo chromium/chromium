@@ -132,7 +132,7 @@ public class DiscountsIntegrationTest {
     @Feature({"RenderTest"})
     @DisableIf.Build(sdk_equals = 32)
     // Disabled on Android Automotive. See b/368117896; Fully disabled due to new flakes.
-    @DisabledTest(message = "https://crbug.com/444441793")
+    @DisabledTest(message = "https://crbug.com/444441793, crbug.com/368117896")
     public void testRenderDiscountContextualPageActionIcon() throws IOException {
         navigateAndWaitForDiscountsContextualPageActionIcon();
         mRenderTestRule.render(

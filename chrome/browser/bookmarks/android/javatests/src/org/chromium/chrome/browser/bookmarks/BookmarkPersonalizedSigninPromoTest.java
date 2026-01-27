@@ -93,7 +93,8 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/372858049
+    @DisableIf.Device(
+            DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/372858049, https://crbug.com/446934111
     public void shouldHideBookmarksSigninPromoIfDataTypesAreManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
@@ -116,7 +117,8 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/372858049
+    @DisableIf.Device(
+            DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/372858049, crbug.com/394674606
     public void shouldHideBookmarksSigninPromoIfDataTypesSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);

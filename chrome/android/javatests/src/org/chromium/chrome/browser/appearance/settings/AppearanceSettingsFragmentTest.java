@@ -37,8 +37,8 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -52,7 +52,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
-import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.feature_engagement.Tracker;
@@ -62,22 +62,19 @@ import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /** Tests for {@link AppearanceSettingsFragment}. */
 @Batch(Batch.PER_CLASS)
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 public class AppearanceSettingsFragmentTest {
 
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsTestRule =
             new BlankUiTestActivitySettingsTestRule();
-
-    @Rule
-    public OverrideContextWrapperTestRule mOverrideContextRule =
-            new OverrideContextWrapperTestRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -156,9 +153,8 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.DESKTOP)
     public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_Desktop() {
-        mOverrideContextRule.setIsDesktop(true);
-
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
@@ -177,9 +173,8 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.DESKTOP)
     public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Desktop() {
-        mOverrideContextRule.setIsDesktop(true);
-
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
@@ -196,9 +191,8 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_Tablet() {
-        mOverrideContextRule.setIsDesktop(false);
-
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET) // https://crbug.com/446934111
+    public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_NonDesktop() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 
@@ -218,9 +212,8 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Tablet() {
-        mOverrideContextRule.setIsDesktop(false);
-
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET) // https://crbug.com/446934111
+    public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_NonDesktop() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 

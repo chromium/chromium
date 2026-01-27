@@ -13,17 +13,8 @@
 # crbug.com/446934111
 -org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManagerTest.*
 
-# crbug.com/368117896
--org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
-
-# crbug.com/376527109
-
 # crbug.com/376528174
 -org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
-
-# crbug.com/394674606
--org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy
--org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfDataTypesSyncing
 
 # crbug.com/394675204
 -org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
@@ -36,12 +27,6 @@
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testSearchBookmarks_Delete
 -org.chromium.chrome.browser.app.flags.ChromeCachedFlagsTest.testValueIsConsistentWithDefault
 -org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestratorTest.testOpenArchivedTabFromHubSearch_Incognito
--org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragmentTest.testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Tablet
--org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragmentTest.testBookmarkBarPreferenceUpdatesSettingWhenChanged_Tablet
--org.chromium.chrome.browser.autofill.TouchToFillCreditCardTest.testSelectingLocalCard
--org.chromium.chrome.browser.bookmarks.BookmarkOpenerTest.testOpenBookmarkInCurrentTab_Incognito
--org.chromium.chrome.browser.bookmarks.BookmarkOpenerTest.testOpenBookmarksInNewTabs_Incognito
--org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfDataTypesAreManagedByPolicy
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
 -org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testMutedPlaybackDoesNotTakeAudioFocus
 -org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testUnmutedPlaybackTakesAudioFocus
