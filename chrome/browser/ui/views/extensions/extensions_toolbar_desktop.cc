@@ -96,6 +96,8 @@ ExtensionsToolbarDesktop::ExtensionsToolbarDesktop(Browser* browser,
           std::make_unique<ToolbarActionHoverCardController>(this)),
       toolbar_view_model_(
           std::make_unique<ExtensionsToolbarViewModel>(this, browser, model_)),
+      scoped_toolbar_view_model_user_data_(browser->GetUnownedUserDataHost(),
+                                           *toolbar_view_model_),
       extensions_menu_coordinator_(
           base::FeatureList::IsEnabled(
               extensions_features::kExtensionsMenuAccessControl)

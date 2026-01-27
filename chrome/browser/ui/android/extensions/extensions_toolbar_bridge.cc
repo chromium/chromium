@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -33,6 +34,8 @@ ExtensionsToolbarBridge::ExtensionsToolbarBridge(
           this,
           browser,
           ToolbarActionsModel::Get(browser_->GetProfile()))),
+      scoped_toolbar_view_model_user_data_(browser->GetUnownedUserDataHost(),
+                                           *toolbar_view_model_),
       java_object_(java_object) {
   toolbar_view_model_observation_.Observe(toolbar_view_model_.get());
 }

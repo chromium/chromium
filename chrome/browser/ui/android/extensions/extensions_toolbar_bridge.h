@@ -79,6 +79,11 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
   // The view model for this container.
   std::unique_ptr<ExtensionsToolbarViewModel> toolbar_view_model_;
 
+  // Registers ExtensionsToolbarViewModel as the ExtensionsContainer for the
+  // browser window.
+  ui::ScopedUnownedUserData<ExtensionsContainer>
+      scoped_toolbar_view_model_user_data_;
+
   // Map of action IDs to their respective `ExtensionActionViewModel` update
   // subscriptions for icon updates.
   std::map<ToolbarActionsModel::ActionId, base::CallbackListSubscription>

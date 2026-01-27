@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/views/widget/widget.h"
@@ -28,6 +29,7 @@ class Widget;
 }  // namespace views
 
 class Browser;
+class ExtensionsContainer;
 class WebUIBrowserExtensionsContainer;
 class WebUIBrowserModalDialogHost;
 class WebUIBrowserSidePanelUI;
@@ -312,6 +314,8 @@ class WebUIBrowserWindow : public BrowserWindow,
 
   std::unique_ptr<WebUIBrowserModalDialogHost> modal_dialog_host_;
   std::unique_ptr<WebUIBrowserExtensionsContainer> extensions_container_;
+  std::unique_ptr<ui::ScopedUnownedUserData<ExtensionsContainer>>
+      scoped_extensions_container_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WINDOW_H_

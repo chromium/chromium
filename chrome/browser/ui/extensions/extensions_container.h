@@ -8,7 +8,9 @@
 #include <string>
 
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+class BrowserWindowInterface;
 class ToolbarActionViewModel;
 
 // An interface for containers in the toolbar that host extensions.
@@ -18,7 +20,12 @@ class ToolbarActionViewModel;
 // only if they are called from non-UI code.
 class ExtensionsContainer {
  public:
-  // Returns the action for the given |id|, if one exists.
+  DECLARE_USER_DATA(ExtensionsContainer);
+
+  // Returns the ExtensionsContainer for the given `browser`, if one exists.
+  static ExtensionsContainer* From(BrowserWindowInterface& browser);
+
+  // Returns the action for the given `id`, if one exists.
   virtual ToolbarActionViewModel* GetActionForId(
       const std::string& action_id) = 0;
 
@@ -29,8 +36,8 @@ class ExtensionsContainer {
   // overflow menu was closed.
   virtual bool CloseOverflowMenuIfOpen() = 0;
 
-  // Shows the popup for the action with |id| as the result of an API call,
-  // returning true if a popup is shown and invoking |callback| upon completion.
+  // Shows the popup for the action with `id` as the result of an API call,
+  // returning true if a popup is shown and invoking `callback` upon completion.
   virtual bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                                 ShowPopupCallback callback) = 0;
 

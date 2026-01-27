@@ -135,6 +135,9 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   modal_dialog_host_ = std::make_unique<WebUIBrowserModalDialogHost>(this);
   extensions_container_ =
       std::make_unique<WebUIBrowserExtensionsContainer>(*browser_, *this);
+  scoped_extensions_container_user_data_ =
+      std::make_unique<ui::ScopedUnownedUserData<ExtensionsContainer>>(
+          browser_->GetUnownedUserDataHost(), *extensions_container_);
 
   web_view->LoadInitialURL(GURL(chrome::kChromeUIWebuiBrowserURL));
   web_view_ = widget_->SetClientContentsView(std::move(web_view));
@@ -157,6 +160,7 @@ WebUIBrowserWindow::~WebUIBrowserWindow() {
   web_view_ = nullptr;
   // We want to destroy the extensions container before the `widget_` since
   // it wants to de-register itself for focus stuff.
+  scoped_extensions_container_user_data_.reset();
   extensions_container_.reset();
   widget_->RemoveObserver(this);
   widget_.reset();
