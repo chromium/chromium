@@ -194,6 +194,9 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
 TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
   main_resource.Complete(R"(
     <body>
       <form toolname="search_tool" tooldescription="Search the web" action="/search">
@@ -214,10 +217,6 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
       ModelContextSupplement::modelContext(*Window().navigator());
   ASSERT_TRUE(model_context);
 
-  v8::HandleScope handle_scope(Window().GetIsolate());
-  ScriptState* script_state = ToScriptStateForMainWorld(Window().GetFrame());
-  ScriptState::Scope script_scope(script_state);
-
   base::RunLoop run_loop;
   bool got_result = false;
   model_context->ExecuteTool(
@@ -237,6 +236,201 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
                       WebScriptSource("window.submit_event_fired"))
                   .As<v8::Boolean>()
                   ->Value());
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_Reject) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <body>
+      <form toolname="search_tool" tooldescription="Search the web" action="/search">
+        <input type=text name=query>
+        <button type=submit>Submit</button>
+      </form>
+      <script>
+        document.querySelector('form').addEventListener('submit', e => {
+          window.submit_event_fired = true;
+          e.preventDefault();
+          e.respondWith(Promise.reject("rejection"));
+        });
+      </script>
+    </body>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  bool got_result = false;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            got_result = true;
+            ASSERT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(),
+                      WebDocument::ScriptToolError::kToolInvocationFailed);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(got_result);
+  EXPECT_TRUE(MainFrame()
+                  .ExecuteScriptAndReturnValue(
+                      WebScriptSource("window.submit_event_fired"))
+                  .As<v8::Boolean>()
+                  ->Value());
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoPreventDefault) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest search_resource("https://example.com/search?query=testing",
+                             "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <body>
+      <form toolname="search_tool" tooldescription="Search the web" action="/search">
+        <input type=text name=query>
+        <button type=submit>Submit</button>
+      </form>
+      <script>
+        window.respond_with_error = "";
+        document.querySelector('form').addEventListener('submit', e => {
+          try {
+            e.respondWith(Promise.resolve("result"));
+          } catch (err) {
+            window.respond_with_error = err.name;
+          }
+        });
+      </script>
+    </body>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  bool got_result = false;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            got_result = true;
+            ASSERT_TRUE(res.has_value());
+            EXPECT_TRUE(res->IsNull());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  EXPECT_TRUE(got_result);
+
+  EXPECT_EQ(ToCoreString(Window().GetIsolate(),
+                         MainFrame()
+                             .ExecuteScriptAndReturnValue(
+                                 WebScriptSource("window.respond_with_error"))
+                             .As<v8::String>()),
+            "InvalidStateError");
+  search_resource.Complete("");
+}
+
+TEST_F(ModelContextTest, ManualSubmit_RespondWithThrows) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <body>
+      <form>
+        <input type=text name=query>
+      </form>
+      <script>
+        window.agent_invoked = undefined;
+        window.error_name = "";
+        document.querySelector('form').addEventListener('submit', e => {
+          window.agent_invoked = e.agentInvoked;
+          try {
+            e.respondWith(Promise.resolve("result"));
+          } catch (err) {
+            window.error_name = err.name;
+          }
+          e.preventDefault();
+        });
+      </script>
+    </body>
+  )");
+
+  MainFrame().ExecuteScript(
+      WebScriptSource("document.querySelector('form').requestSubmit();"));
+
+  EXPECT_FALSE(
+      MainFrame()
+          .ExecuteScriptAndReturnValue(WebScriptSource("window.agent_invoked"))
+          .As<v8::Boolean>()
+          ->Value());
+  EXPECT_EQ(ToCoreString(Window().GetIsolate(),
+                         MainFrame()
+                             .ExecuteScriptAndReturnValue(
+                                 WebScriptSource("window.error_name"))
+                             .As<v8::String>()),
+            "InvalidStateError");
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_LateRespondWithThrows) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <body>
+      <form toolname="search_tool" tooldescription="Search the web" action="/search">
+        <input type=text name=query>
+      </form>
+      <script>
+        window.saved_event = null;
+        document.querySelector('form').addEventListener('submit', e => {
+          window.saved_event = e;
+          e.preventDefault();
+          e.respondWith(Promise.resolve("result"));
+        });
+      </script>
+    </body>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            ASSERT_TRUE(res.has_value());
+            EXPECT_EQ(*res, "result");
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  v8::Local<v8::Value> error_name =
+      MainFrame().ExecuteScriptAndReturnValue(WebScriptSource(R"(
+        try {
+          window.saved_event.respondWith(Promise.resolve("late"));
+          "no error";
+        } catch (err) {
+          err.name;
+        }
+      )"));
+  EXPECT_EQ(ToCoreString(Window().GetIsolate(), error_name.As<v8::String>()),
+            "InvalidStateError");
 }
 
 }  // namespace blink

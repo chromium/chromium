@@ -35,11 +35,25 @@ const AtomicString& SubmitEvent::InterfaceName() const {
 void SubmitEvent::respondWith(ScriptState* script_state,
                               ScriptPromise<IDLAny> script_promise,
                               ExceptionState& exception_state) {
+  if (!agent_invoked_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "You can only call respondWith on an submit event that has "
+        "agentInvoked == true.");
+    return;
+  }
   if (!defaultPrevented()) {
-    LOG(ERROR) << "ERROR - event needs to be prevented first.";
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "To call respondWith, you must first call preventDefault.");
+    return;
   }
   if (!IsBeingDispatched()) {
-    LOG(ERROR) << "ERROR - event needs to be being dispatched.";
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "To call respondWith, the event must be currently being "
+        "dispatched.");
+    return;
   }
   respond_with_promise_ = {script_promise, script_state};
 }
