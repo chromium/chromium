@@ -582,9 +582,9 @@ void VerticalTabView::UpdateBorder() {
   }
 }
 
-absl::node_hash_map<views::View*, bool>
+absl::flat_hash_map<views::View*, bool>
 VerticalTabView::CalculateChildVisibilities() const {
-  absl::node_hash_map<views::View*, bool> child_visibility_map;
+  absl::flat_hash_map<views::View*, bool> child_visibility_map;
 
   child_visibility_map[title_] = !pinned_;
 
