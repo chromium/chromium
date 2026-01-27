@@ -4,7 +4,6 @@
 
 #include "net/tools/transport_security_state_generator/input_file_parsers.h"
 
-#include <set>
 #include <sstream>
 #include <string_view>
 #include <vector>
@@ -29,14 +28,10 @@ namespace net::transport_security_state {
 namespace {
 
 bool IsImportantWordInCertificateName(std::string_view name) {
-  const char* const important_words[] = {"Universal", "Global", "EV", "G1",
-                                         "G2",        "G3",     "G4", "G5"};
-  for (auto* important_word : important_words) {
-    if (name == important_word) {
-      return true;
-    }
-  }
-  return false;
+  static constexpr auto kImportantWords =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"Universal", "Global", "EV", "G1", "G2", "G3", "G4", "G5"});
+  return kImportantWords.contains(name);
 }
 
 // Strips all characters not matched by the RegEx [A-Za-z0-9_] from |name| and
@@ -334,9 +329,10 @@ bool ParseJSON(std::string_view hsts_json,
 
   // See the comments in net/http/transport_security_state_static.json for more
   // info on these policies.
-  std::set<std::string> valid_policies = {
-      "test",        "public-suffix", "google",      "custom",
-      "bulk-legacy", "bulk-18-weeks", "bulk-1-year", "public-suffix-requested"};
+  static constexpr auto kValidPolicies =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"test", "public-suffix", "google", "custom", "bulk-legacy",
+           "bulk-18-weeks", "bulk-1-year", "public-suffix-requested"});
 
   std::optional<base::DictValue> hsts_dict = base::JSONReader::ReadDict(
       hsts_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
@@ -442,7 +438,7 @@ bool ParseJSON(std::string_view hsts_json,
     }
 
     const std::string* policy = parsed->FindString(kPolicyJSONKey);
-    if (!policy || !valid_policies.contains(*policy)) {
+    if (!policy || !kValidPolicies.contains(*policy)) {
       LOG(ERROR) << "The entry for " << entry->hostname
                  << " does not have a valid policy";
       return false;
