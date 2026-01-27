@@ -571,11 +571,10 @@ static void JNI_WebsitePreferenceBridge_SetEphemeralGrantForTesting(  // IN-TEST
     const JavaRef<jobject>& jsecondary_url) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   auto type = static_cast<ContentSettingsType>(content_settings_type);
-  PermissionSetting setting = CONTENT_SETTING_ALLOW;
-  if (type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
-    setting = GeolocationSetting{PermissionOption::kAllowed,
-                                 PermissionOption::kAllowed};
-  }
+  PermissionSetting setting = PermissionSettingsRegistry::GetInstance()
+                                  ->Get(type)
+                                  ->delegate()
+                                  .ToPermissionSetting(CONTENT_SETTING_ALLOW);
   content_settings::ContentSettingConstraints constraints;
   constraints.set_session_model(
       content_settings::mojom::SessionModel::ONE_TIME);
@@ -1030,7 +1029,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
     }
   }
 
-  PermissionSetting value = CONTENT_SETTING_BLOCK;
+  ContentSetting value = CONTENT_SETTING_BLOCK;
   if (allow) {
     switch (type) {
       case ContentSettingsType::AR:
@@ -1040,6 +1039,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       case ContentSettingsType::CLIPBOARD_READ_WRITE:
       case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       case ContentSettingsType::GEOLOCATION:
+      case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
       case ContentSettingsType::HAND_TRACKING:
       case ContentSettingsType::IDLE_DETECTION:
       case ContentSettingsType::LOCAL_NETWORK:
@@ -1071,48 +1071,19 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       case ContentSettingsType::SOUND:
         value = CONTENT_SETTING_ALLOW;
         break;
-      case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
-        value =
-            GeolocationSetting{PermissionOption::kAsk, PermissionOption::kAsk};
-        break;
       default:
         NOTREACHED() << static_cast<int>(type);  // Not supported on Android.
     }
-  } else {
-    switch (type) {
-      case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
-        value = GeolocationSetting{PermissionOption::kDenied,
-                                   PermissionOption::kDenied};
-        break;
-      default:  // All other settings use BLOCK.
-        break;
-    }
   }
 
-  if (std::holds_alternative<ContentSetting>(value)) {
-    content_settings_uma_util::RecordContentSettingChange(
-        std::get<ContentSetting>(value), type);
-  } else {
-    if (std::get<GeolocationSetting>(value).approximate ==
-            PermissionOption::kAllowed ||
-        std::get<GeolocationSetting>(value).precise ==
-            PermissionOption::kAllowed) {
-      content_settings_uma_util::RecordContentSettingChange(
-          ContentSetting::CONTENT_SETTING_ALLOW, type);
-    } else if (std::get<GeolocationSetting>(value).approximate ==
-                   PermissionOption::kDenied ||
-               std::get<GeolocationSetting>(value).precise ==
-                   PermissionOption::kDenied) {
-      content_settings_uma_util::RecordContentSettingChange(
-          ContentSetting::CONTENT_SETTING_BLOCK, type);
-    } else {
-      content_settings_uma_util::RecordContentSettingChange(
-          ContentSetting::CONTENT_SETTING_ASK, type);
-    }
-  }
+  content_settings_uma_util::RecordContentSettingChange(value, type);
 
   GetHostContentSettingsMap(jbrowser_context_handle)
-      ->SetDefaultPermissionSetting(type, value);
+      ->SetDefaultPermissionSetting(type,
+                                    PermissionSettingsRegistry::GetInstance()
+                                        ->Get(type)
+                                        ->delegate()
+                                        .ToPermissionSetting(value));
 }
 
 static void JNI_WebsitePreferenceBridge_SetContentSettingDefaultScope(
