@@ -567,6 +567,7 @@ public class AccountPickerBottomSheetMediator
             mDismissalLogger.logDismissedButtonClick();
             // Seamless sign-in does not have an initial account picker view. Hide the bottom sheet.
             mDismissBottomSheet.run();
+            mAccountPickerDelegate.onSignInCancel();
         } else {
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
         }
@@ -580,6 +581,7 @@ public class AccountPickerBottomSheetMediator
         assert !mIsSeamlessSignin : "Account picker sheet is not supported for seamless sign-in";
         mDismissalLogger.logDismissedButtonClick();
         mDismissBottomSheet.run();
+        mAccountPickerDelegate.onSignInCancel();
     }
 
     void launchDeviceLockIfNeededAndSignIn() {
@@ -711,6 +713,7 @@ public class AccountPickerBottomSheetMediator
         }
 
         // Dismisses the bottom sheet, if shown.
+        mDismissBottomSheet.run();
         mAccountPickerDelegate.onSignInCancel();
     }
 

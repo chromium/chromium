@@ -49,9 +49,9 @@ public interface AccountPickerDelegate {
             CoreAccountInfo accountInfo, AccountPickerDelegate.SigninStateController controller);
 
     /**
-     * Called when the seamless sign-in process cannot proceed, for example, if the target account
-     * is removed. Implementers should use this to clean up resources and ensure any associated UI
-     * is dismissed.
+     * Called when the sign-in process cannot proceed and has been cancelled. This happens, for
+     * example, if the user manually dismisses the bottom sheet or the targent account is removed
+     * during the seamless sign-in process.
      */
     default void onSignInCancel() {}
 

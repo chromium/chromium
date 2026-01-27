@@ -105,6 +105,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/ExistingAccountRowViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/OnClickListenerViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/SeamlessSigninCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/account_picker/SigninBottomSheetUiCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/WebSigninAccountPickerDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FreManagementNoticeDialogHelper.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninConfig.java",

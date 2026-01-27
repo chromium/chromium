@@ -355,6 +355,7 @@ public class AccountPickerBottomSheetTest {
         Espresso.pressBack();
 
         Assert.assertFalse(controller.isSheetOpen());
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
         Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
         accountConsistencyHistogram.assertExpected();
@@ -387,6 +388,7 @@ public class AccountPickerBottomSheetTest {
         Espresso.pressBack();
 
         Assert.assertFalse(controller.isSheetOpen());
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
         Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
         accountConsistencyHistogram.assertExpected();
@@ -418,6 +420,7 @@ public class AccountPickerBottomSheetTest {
         onViewWaiting(withText(R.string.signin_account_picker_dismiss_button)).perform(click());
 
         Assert.assertFalse(controller.isSheetOpen());
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
         Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
         accountConsistencyHistogram.assertExpected();
@@ -450,6 +453,7 @@ public class AccountPickerBottomSheetTest {
         onVisibleView(withText(R.string.cancel)).perform(click());
 
         Assert.assertFalse(controller.isSheetOpen());
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
         Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
         accountConsistencyHistogram.assertExpected();
@@ -479,13 +483,12 @@ public class AccountPickerBottomSheetTest {
         Espresso.pressBack();
 
         CriteriaHelper.pollUiThread(
-                () -> {
-                    return getBottomSheetController().getSheetState() == SheetState.HIDDEN;
-                });
+                () -> getBottomSheetController().getSheetState() == SheetState.HIDDEN);
         Assert.assertEquals(
                 1,
                 SigninPreferencesManager.getInstance()
                         .getWebSigninAccountPickerActiveDismissalCount());
+        verify(mAccountPickerDelegateMock).onSignInCancel();
     }
 
     @Test
@@ -1374,6 +1377,7 @@ public class AccountPickerBottomSheetTest {
         onViewWaiting(withId(R.id.account_picker_state_collapsed)).perform(swipeDown());
 
         Assert.assertFalse(getBottomSheetController().isSheetOpen());
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
         accountConsistencyHistogram.assertExpected();
         Assert.assertEquals(

@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -134,13 +133,6 @@ public class SeamlessSigninTest {
                 .isAccountManaged(eq(TestAccounts.ACCOUNT1), any());
         when(mSigninManagerMock.extractDomainName(TestAccounts.ACCOUNT1.getEmail()))
                 .thenReturn(TEST_DOMAIN);
-        doAnswer(
-                        (invocation) -> {
-                            mCoordinator.dismissBottomSheet();
-                            return null;
-                        })
-                .when(mAccountPickerDelegateMock)
-                .onSignInCancel();
         when(mAccountPickerDelegateMock.getSigninFlowVariant()).thenReturn(FlowVariant.OTHER);
 
         mBottomSheetController =
@@ -237,6 +229,7 @@ public class SeamlessSigninTest {
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
         verifySignInNeverStarted();
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         accountConsistencyHistogram.assertExpected();
     }
 
@@ -261,6 +254,7 @@ public class SeamlessSigninTest {
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
         verifySignInNeverStarted();
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         accountConsistencyHistogram.assertExpected();
     }
 
@@ -285,6 +279,7 @@ public class SeamlessSigninTest {
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
         verifySignInNeverStarted();
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         accountConsistencyHistogram.assertExpected();
     }
 
@@ -387,7 +382,7 @@ public class SeamlessSigninTest {
         createCoordinatorAndLaunchSigninFlow();
 
         waitForErrorSheet();
-        verifySigninAborted();
+        verifySigninFailed();
         accountConsistencyHistogram.assertExpected();
     }
 
@@ -411,7 +406,8 @@ public class SeamlessSigninTest {
         Espresso.pressBack();
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
-        verifySigninAborted();
+        verifySigninFailed();
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         accountConsistencyHistogram.assertExpected();
     }
 
@@ -435,7 +431,8 @@ public class SeamlessSigninTest {
         onViewWaiting(withId(R.id.account_picker_state_general_error)).perform(swipeDown());
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
-        verifySigninAborted();
+        verifySigninFailed();
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         accountConsistencyHistogram.assertExpected();
     }
 
@@ -461,7 +458,7 @@ public class SeamlessSigninTest {
         clickContinueButtonManagementNotice();
 
         waitForErrorSheet();
-        verifySigninAborted();
+        verifySigninFailed();
         accountConsistencyHistogram.assertExpected();
     }
 
@@ -492,7 +489,8 @@ public class SeamlessSigninTest {
         Espresso.pressBack();
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
-        verifySigninAborted();
+        verifySigninFailed();
+        verify(mAccountPickerDelegateMock).onSignInCancel();
         accountConsistencyHistogram.assertExpected();
     }
 
@@ -695,7 +693,7 @@ public class SeamlessSigninTest {
                         .expectNoRecords("Signin.AccountConsistencyPromoAction")
                         .build();
         // Dismissing the error sheet should trigger destroy() in the mediator.
-        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.dismissBottomSheet());
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.dismiss());
 
         CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
@@ -710,8 +708,8 @@ public class SeamlessSigninTest {
 
         // In the successful scenario where the bottom sheet is never shown, calling dismiss
         // should still trigger destroy() in the mediator.
-        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.dismissBottomSheet());
-
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.dismiss());
+        verify(mAccountPickerDelegateMock, never()).onSignInCancel();
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
     }
 
@@ -808,9 +806,10 @@ public class SeamlessSigninTest {
         }
         verify(mSigninManagerMock).signin(eq(TestAccounts.ACCOUNT1), anyInt(), any());
         verify(mAccountPickerDelegateMock).onSignInComplete(eq(TestAccounts.ACCOUNT1), any());
+        verify(mAccountPickerDelegateMock, never()).onSignInCancel();
     }
 
-    private void verifySigninAborted() {
+    private void verifySigninFailed() {
         verify(mSigninManagerMock).signin(eq(TestAccounts.ACCOUNT1), anyInt(), any());
         verify(mAccountPickerDelegateMock, never())
                 .onSignInComplete(eq(TestAccounts.ACCOUNT1), any());
