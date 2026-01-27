@@ -61,6 +61,20 @@
   flex-direction: row;
 }
 
+.top-toolbar-action-buttons > :not(:first-child) {
+  /**
+  * cr-icon is 20px and cr-icon-button is 32px
+  * Add another 4px to visually make the margin 16px.
+  */
+  margin-inline-start: 4px;
+}
+
+.top-toolbar-action-buttons > contextual-tasks-favicon-group {
+  /* Add horizontal padding to match cr-icon-button. */
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -81,7 +95,6 @@ button > cr-icon {
 }
 
 cr-icon-button {
-  --cr-icon-button-margin-start: 12px;
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-fill-color: var(--toolbar-button-icon-color);
 }
