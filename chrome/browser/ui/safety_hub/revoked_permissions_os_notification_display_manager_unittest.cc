@@ -171,8 +171,8 @@ TEST_F(RevokedPermissionsOSNotificationDisplayManagerTest, FeatureDisabled) {
                            kSuspiciousContentAutoRevocation);
   AddDisruptiveRevocation(GURL(kUrl2));
 
-  // Only disruptive should be counted.
+  // Both disruptive and suspicious revocations should be counted.
   EXPECT_CALL(*mock_wrapper_,
-              DisplayNotification(1, testing::_, testing::_, testing::_));
+              DisplayNotification(2, testing::_, testing::_, testing::_));
   manager_->DisplayNotification();
 }

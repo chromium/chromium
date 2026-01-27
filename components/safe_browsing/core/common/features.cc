@@ -41,11 +41,11 @@ BASE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutoRevokeSuspiciousNotification,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int>
     kAutoRevokeSuspiciousNotificationLookBackPeriod{
         &kAutoRevokeSuspiciousNotification, "LookBackPeriod",
-        /*default_value=*/1};
+        /*default_value=*/7};
 constexpr base::FeatureParam<double>
     kAutoRevokeSuspiciousNotificationEngagementScoreCutOff{
         &kAutoRevokeSuspiciousNotification, "MaxEngagementScore",
@@ -53,7 +53,7 @@ constexpr base::FeatureParam<double>
 constexpr base::FeatureParam<int>
     kAutoRevokeSuspiciousNotificationMinNotificationCount{
         &kAutoRevokeSuspiciousNotification, "MinNotificationCount",
-        /*default_value=*/2};
+        /*default_value=*/9};
 
 BASE_FEATURE(kBundledSecuritySettings, base::FEATURE_DISABLED_BY_DEFAULT);
 

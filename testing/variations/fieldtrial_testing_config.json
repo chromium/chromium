@@ -2204,26 +2204,6 @@
             ]
         }
     ],
-    "AutoRevokeSuspiciousNotification": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledLookback7dHigherThreshold",
-                    "params": {
-                        "AutoRevokeSuspiciousNotificationEngagementScoreCutOff": "50.0",
-                        "AutoRevokeSuspiciousNotificationLookBackPeriod": "7",
-                        "AutoRevokeSuspiciousNotificationMinNotificationCount": "9"
-                    },
-                    "enable_features": [
-                        "AutoRevokeSuspiciousNotification"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutoSpeculationRules": [
         {
             "platforms": [
