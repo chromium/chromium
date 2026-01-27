@@ -45,7 +45,7 @@ namespace {
 constexpr char kBootstrapNameFormat[] = "%s.MachPortRendezvousServer.%d";
 
 // This can be safely increased if Info.plist grows in the future.
-constexpr size_t kMaxInfoPlistDataSize = 18 * 1024;
+constexpr size_t kMaxInfoPlistDataSize = 24 * 1024;
 
 // The state of the peer validation policy features is passed to child processes
 // via this environment variable as Mach port rendezvous is performed before the
