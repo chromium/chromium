@@ -235,6 +235,74 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.Discarding.DecisionResult{Trigger}"
+    enum="CanDiscardResult" expires_after="2027-01-21">
+  <owner>aattar@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded every time the DiscardEligibilityPolicy evaluates a tab for
+    discarding. Tracks whether the tab was Eligible, Protected (blocked by
+    policy), or Disallowed.
+
+    This metric is recorded for all decisions, and broken down by the {Trigger}
+    reason.
+  </summary>
+  <token key="Trigger">
+    <variant name="" summary="All triggers"/>
+    <variant name=".External" summary="Triggered by external request"/>
+    <variant name=".Frozen" summary="Triggered by frozen tab growing memory"/>
+    <variant name=".Proactive" summary="Triggered proactively"/>
+    <variant name=".Suggested" summary="Triggered by suggestion"/>
+    <variant name=".Urgent" summary="Triggered by urgent memory pressure"/>
+  </token>
+</histogram>
+
+<histogram name="PerformanceManager.Discarding.HadFormInteraction"
+    enum="Boolean" expires_after="2027-01-21">
+  <owner>aattar@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded at the moment a discard decision is made. This is recorded at the
+    same time as PerformanceManager.Discarding.DecisionResult. Indicates if the
+    tab had recorded form interactions.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.Discarding.HadUserEdits" enum="Boolean"
+    expires_after="2027-01-21">
+  <owner>aattar@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded at the moment a discard decision is made. This is recorded at the
+    same time as PerformanceManager.Discarding.DecisionResult. Indicates if the
+    tab had recorded user edits (typing).
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.Discarding.ProtectionReason"
+    enum="CannotDiscardReason" expires_after="2027-01-21">
+  <owner>aattar@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded when a tab is marked as 'Protected' during a discard evaluation.
+    This is recorded at the same time as
+    PerformanceManager.Discarding.DecisionResult. Logs the specific reason
+    (e.g., Audio, Form Interaction, Pinned) that prevented the discard.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.Discarding.TimeHiddenAtDecision" units="ms"
+    expires_after="2027-01-21">
+  <owner>aattar@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded at the moment a discard decision is made. This is recorded at the
+    same time as PerformanceManager.Discarding.DecisionResult. Measures how long
+    the tab has been hidden (in background). Short durations here correlate with
+    high user regret.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpaceMb"
     units="MB" expires_after="2025-08-24">
   <owner>anthonyvd@chromium.org</owner>

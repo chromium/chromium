@@ -26,6 +26,53 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(CanDiscardResult) -->
+
+<enum name="CanDiscardResult">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="Protected"/>
+  <int value="2" label="Disallowed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/policies/discard_eligibility_policy.h:CanDiscardResult) -->
+
+<!-- LINT.IfChange(CannotDiscardReason) -->
+
+<enum name="CannotDiscardReason">
+  <int value="0" label="Not a Tab"/>
+  <int value="1" label="Already Discarded"/>
+  <int value="2" label="Discard Attempted"/>
+  <int value="3" label="No Main Frame"/>
+  <int value="4" label="Visible"/>
+  <int value="5" label="Audible"/>
+  <int value="6" label="Recently Audible"/>
+  <int value="7" label="Recently Visible"/>
+  <int value="8" label="Picture-in-Picture"/>
+  <int value="9" label="PDF"/>
+  <int value="10" label="Not Web or Internal"/>
+  <int value="11" label="Invalid URL"/>
+  <int value="12" label="Opted Out"/>
+  <int value="13" label="Notifications Enabled"/>
+  <int value="14" label="Extension Protected"/>
+  <int value="15" label="Capturing Video"/>
+  <int value="16" label="Capturing Audio"/>
+  <int value="17" label="Being Mirrored"/>
+  <int value="18" label="Capturing Window"/>
+  <int value="19" label="Capturing Display"/>
+  <int value="20" label="Connected to Bluetooth"/>
+  <int value="21" label="Connected to USB"/>
+  <int value="22" label="Active Tab"/>
+  <int value="23" label="Pinned Tab"/>
+  <int value="24" label="DevTools Open"/>
+  <int value="25" label="Background Activity"/>
+  <int value="26" label="Form Interactions"/>
+  <int value="27" label="User Edits"/>
+  <int value="28" label="GLIC Shared"/>
+  <int value="29" label="Web App"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/policies/cannot_discard_reason.h:CannotDiscardReason) -->
+
 <!-- LINT.IfChange(ChildScenarioMappingResult) -->
 
 <enum name="ChildScenarioMappingResult">

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/common/chrome_features.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -423,6 +425,14 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
                                  CanDiscardResult::kProtected);
   }
 
+  // Record metrics regarding the discard decision.
+  // If |cannot_discard_reasons| is null, the caller isn't interested in the
+  // specific reasons, so pass an empty vector to the metrics helper.
+  RecordDiscardDecisionMetrics(page_node, discard_reason, result,
+                               cannot_discard_reasons
+                                   ? *cannot_discard_reasons
+                                   : std::vector<CannotDiscardReason>{});
+
   return result;
 }
 
@@ -470,6 +480,68 @@ base::DictValue DiscardEligibilityPolicy::DescribePageNodeData(
   }
 
   return ret;
+}
+
+void DiscardEligibilityPolicy::RecordDiscardDecisionMetrics(
+    const PageNode* page_node,
+    DiscardReason discard_reason,
+    CanDiscardResult result,
+    base::span<const CannotDiscardReason> protection_reasons) const {
+  base::UmaHistogramEnumeration("PerformanceManager.Discarding.DecisionResult",
+                                result);
+
+  // Break down the result by trigger (e.g. Urgent vs Proactive) to detect
+  // if specific triggers are disproportionately rejected.
+  // Initialize to empty string for safety.
+  std::string_view reason_suffix = "";
+
+  switch (discard_reason) {
+    case DiscardReason::URGENT:
+      reason_suffix = ".Urgent";
+      break;
+    case DiscardReason::PROACTIVE:
+      reason_suffix = ".Proactive";
+      break;
+    case DiscardReason::SUGGESTED:
+      reason_suffix = ".Suggested";
+      break;
+    case DiscardReason::EXTERNAL:
+      reason_suffix = ".External";
+      break;
+    case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
+      reason_suffix = ".Frozen";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"PerformanceManager.Discarding.DecisionResult", reason_suffix}),
+      result);
+
+  if (result == CanDiscardResult::kProtected) {
+    for (const auto& protection_reason : protection_reasons) {
+      base::UmaHistogramEnumeration(
+          "PerformanceManager.Discarding.ProtectionReason", protection_reason);
+    }
+  }
+
+  // Record heuristics signals to assist with future model tuning.
+  if (page_node) {
+    const base::TimeDelta time_hidden =
+        base::TimeTicks::Now() - page_node->GetLastVisibilityChangeTime();
+    base::UmaHistogramCustomTimes(
+        "PerformanceManager.Discarding.TimeHiddenAtDecision", time_hidden,
+        base::Seconds(1), base::Days(1), 50);
+
+    base::UmaHistogramBoolean(
+        "PerformanceManager.Discarding.HadFormInteraction",
+        page_node->HadFormInteraction());
+
+    base::UmaHistogramBoolean("PerformanceManager.Discarding.HadUserEdits",
+                              page_node->HadUserEdits());
+  }
 }
 
 }  // namespace performance_manager::policies
