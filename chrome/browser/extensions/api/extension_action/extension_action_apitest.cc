@@ -449,8 +449,8 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, TitleLocalization) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests dispatching the onClicked event to listeners when the extension action
 // in the toolbar is pressed.
-// TODO(crbug.com/419057482): Enable on Android when we have a cross-platform
-// window interface and can implement ExtensionActionTestHelper without Browser.
+// TODO(crbug.com/441364082): Enable on Android when we implement
+// ExtensionActionTestHelper without Browser.
 IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
   constexpr char kManifestTemplate[] =
       R"({
@@ -509,8 +509,8 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
 }
 
 // Tests the creation of a popup when one is specified in the manifest.
-// TODO(crbug.com/419057482): Enable on Android when we have a cross-platform
-// window interface and can implement ExtensionActionTestHelper without Browser.
+// TODO(crbug.com/441364082): Enable on Android when we implement
+// ExtensionActionTestHelper without Browser.
 IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
   constexpr char kManifestTemplate[] =
       R"({
@@ -634,8 +634,8 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupToEmptyString) {
 
 // Tests that sessionStorage does not persist between closing and opening of a
 // popup.
-// TODO(crbug.com/419057482): Enable on Android when we have a cross-platform
-// window interface and can implement ExtensionActionTestHelper without Browser.
+// TODO(crbug.com/441364082): Enable on Android when we implement
+// ExtensionActionTestHelper without Browser.
 // TODO(crbug.com/40795982): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_SessionStorageDoesNotPersistBetweenOpenings \

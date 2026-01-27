@@ -13,9 +13,8 @@ ActionOpenPopupFunction::ActionOpenPopupFunction() = default;
 ActionOpenPopupFunction::~ActionOpenPopupFunction() = default;
 
 ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
-  // TODO(crbug.com/419057482): Support this on desktop Android when we have a
-  // cross-platform representation of windows and tabs. Ideally, merge it with
-  // the non-Android implementation.
+  // TODO(crbug.com/393179880): Support this on desktop Android. Ideally, merge
+  // it with the non-Android implementation.
   return RespondNow(Error("openPopup is not yet supported on desktop Android"));
 }
 

@@ -745,8 +745,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingFilePermissions) {
   EXPECT_TRUE(extension->permissions_data()->HasHostPermission(file_url));
 }
 
-// TODO(crbug.com/419057482): Once we have a cross-platform interface for
-// browser windows, port this to desktop Android.
+// TODO(crbug.com/478893338): Port this to desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
  public:

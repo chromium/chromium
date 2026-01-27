@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/419057482): Port to desktop Android when we have tab helper
+// TODO(crbug.com/441362874): Port to desktop Android when we have tab helper
 // utilities like UrlLoadObserver.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, FromPopup) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
