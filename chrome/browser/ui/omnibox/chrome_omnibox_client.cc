@@ -908,6 +908,11 @@ void ChromeOmniboxClient::MaybePrewarmForDefaultSearchEngine(
       break;
     case PrewarmTrigger::kUserInteraction:
       CHECK(features::kPrewarmUserInteractionTrigger.Get());
+      if (!location_bar_->GetWebContents()) {
+        // There seems to be a subtle timing where the active tab does not have
+        // a valid WebContents instance on an user interaction trigger.
+        return;
+      }
       break;
   }
 
