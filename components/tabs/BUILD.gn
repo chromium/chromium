@@ -32,28 +32,13 @@ source_set("public") {
   sources += [ "public/tab_collection_storage.h" ]
 
   public_deps = [
-    ":split_tabs",
     "//base",
+    "//components/split_tabs",
     "//components/tab_groups",
     "//content/public/browser",
   ]
 
   deps = [ "//ui/gfx/range" ]
-}
-
-source_set("split_tabs") {
-  sources = [
-    "public/split_tab_id.h",
-    "public/split_tab_visual_data.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//components/split_tabs",
-    "//ui/gfx/range",
-  ]
-
-  deps = [ "//components/tab_groups" ]
 }
 
 source_set("tabs") {
@@ -72,7 +57,7 @@ source_set("tabs") {
     "impl/unpinned_tab_collection.cc",
   ]
 
-  deps = [ ":split_tabs" ]
+  deps = [ "//components/split_tabs" ]
 
   public_deps = [ ":public" ]
 }
@@ -112,9 +97,9 @@ source_set("unit_tests") {
 
   deps = [
     ":public",
-    ":split_tabs",
     ":tabs",
     ":test_support",
+    "//components/split_tabs",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/range",

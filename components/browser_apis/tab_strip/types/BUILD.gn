@@ -12,6 +12,7 @@ source_set("types") {
 
   public_deps = [
     "//base",
+    "//components/split_tabs",
     "//components/tab_groups",
     "//components/tabs:public",
   ]

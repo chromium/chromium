@@ -80,7 +80,7 @@ mojom("mojom") {
         "types/split_tab_visual_data_traits.h",
         "//components/tab_groups/tab_group_visual_data.h",
         "//ui/gfx/image/image_skia.h",
-        "//components/tabs/public/split_tab_visual_data.h",
+        "//components/split_tabs/split_tab_visual_data.h",
       ]
       traits_sources = [
         "types/image_traits.cc",

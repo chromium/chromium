@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_TABS_PUBLIC_SPLIT_TAB_COLLECTION_H_
 #define COMPONENTS_TABS_PUBLIC_SPLIT_TAB_COLLECTION_H_
 
-#include "components/tabs/public/split_tab_id.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/tab_collection.h"
 
 namespace split_tabs {

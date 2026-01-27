@@ -11,9 +11,9 @@
 #include <unordered_map>
 
 #include "base/types/pass_key.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_data.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_collection.h"
 
 class TabStripModel;
