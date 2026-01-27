@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -188,6 +189,7 @@ std::unique_ptr<views::Widget> CreateHandleWidget(gfx::NativeView parent) {
   // overridden by fade effects.
   widget->SetVisibilityChangedAnimationsEnabled(false);
   widget->SetOpacity(kSelectionHandleOpacity);
+  widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
 
   return widget;
 }
