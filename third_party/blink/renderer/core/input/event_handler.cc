@@ -2609,10 +2609,13 @@ void EventHandler::CaptureMouseEventsToWidget(bool capture) {
     return;
   }
 
-  if (capture == is_widget_capturing_mouse_events_)
+  LocalFrameClient* local_frame_root_client = frame_->LocalFrameRoot().Client();
+  if (!local_frame_root_client ||
+      (capture == is_widget_capturing_mouse_events_)) {
     return;
+  }
 
-  frame_->LocalFrameRoot().Client()->SetMouseCapture(capture);
+  local_frame_root_client->SetMouseCapture(capture);
   is_widget_capturing_mouse_events_ = capture;
 }
 
