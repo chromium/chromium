@@ -56,8 +56,8 @@ MultiCaptureDataService::GetCaptureAppsWithoutNotification() const {
 
 gfx::ImageSkia MultiCaptureDataService::GetAppIcon(
     const webapps::AppId& app_id) const {
-  if (app_icons_.contains(app_id)) {
-    return app_icons_.at(app_id);
+  if (auto it = app_icons_.find(app_id); it != app_icons_.end()) {
+    return it->second;
   }
   return gfx::ImageSkia();
 }
@@ -98,18 +98,20 @@ void MultiCaptureDataService::OnWebAppInstalled(const webapps::AppId& app_id) {
 void MultiCaptureDataService::OnWebAppUninstalled(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
-  if (app_icons_.contains(app_id)) {
-    app_icons_.erase(app_id);
+  if (auto it = app_icons_.find(app_id); it != app_icons_.end()) {
+    app_icons_.erase(it);
   }
 
-  if (capture_apps_with_notification_.contains(app_id)) {
-    capture_apps_with_notification_.erase(app_id);
+  if (auto it = capture_apps_with_notification_.find(app_id);
+      it != capture_apps_with_notification_.end()) {
+    capture_apps_with_notification_.erase(it);
     observers_.Notify(&Observer::MultiCaptureDataChanged);
     return;
   }
 
-  if (capture_apps_without_notification_.contains(app_id)) {
-    capture_apps_without_notification_.erase(app_id);
+  if (auto it = capture_apps_without_notification_.find(app_id);
+      it != capture_apps_without_notification_.end()) {
+    capture_apps_without_notification_.erase(it);
     observers_.Notify(&Observer::MultiCaptureDataChanged);
     return;
   }
