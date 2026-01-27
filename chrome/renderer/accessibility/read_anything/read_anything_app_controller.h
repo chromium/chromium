@@ -134,6 +134,8 @@ class ReadAnythingAppController
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
                                ukm::SourceId ukm_source_id,
                                bool is_pdf) override;
+  void SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState state);
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnImageDataDownloaded(const ui::AXTreeID& tree_id,
                              ui::AXNodeID node_id,

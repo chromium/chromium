@@ -402,6 +402,25 @@ class ReadAnythingAppModel {
 
   bool SelectionNodesContainedInDistilledContent() const;
 
+  read_anything::mojom::ReadAnythingPresentationState
+  active_presentation_state() const {
+    return active_presentation_state_;
+  }
+  void set_active_presentation_state(
+      read_anything::mojom::ReadAnythingPresentationState
+          active_presentation_state) {
+    active_presentation_state_ = active_presentation_state;
+  }
+
+  read_anything::mojom::ReadAnythingDistillationState distillation_state()
+      const {
+    return distillation_state_;
+  }
+  void set_distillation_state(
+      read_anything::mojom::ReadAnythingDistillationState distillation_state) {
+    distillation_state_ = distillation_state;
+  }
+
  private:
   struct SelectionEndpoint {
     enum class Source {
@@ -586,6 +605,12 @@ class ReadAnythingAppModel {
   // If reading mode should attempt to use child trees to distill content. This
   // should only be true if the root tree has no distillable content.
   bool may_use_child_for_active_tree_ = false;
+
+  read_anything::mojom::ReadAnythingPresentationState
+      active_presentation_state_ =
+          read_anything::mojom::ReadAnythingPresentationState::kUndefined;
+  read_anything::mojom::ReadAnythingDistillationState distillation_state_ =
+      read_anything::mojom::ReadAnythingDistillationState::kNotAttempted;
 
   // List of observers of model state changes.
   base::ObserverList<ModelObserver, /*check_empty=*/true> observers_;

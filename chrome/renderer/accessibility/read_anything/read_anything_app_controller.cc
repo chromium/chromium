@@ -570,8 +570,23 @@ void ReadAnythingAppController::OnStringAttributeChanged(
 }
 
 bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
-  return model_.distillation_in_progress() ||
-         read_aloud_model_.speech_playing();
+  if (model_.distillation_in_progress() || read_aloud_model_.speech_playing()) {
+    return true;
+  }
+
+  if (model_.active_presentation_state() ==
+      read_anything::mojom::ReadAnythingPresentationState::
+          kInImmersiveOverlay) {
+    // We only want to block the processing/distillation pipeline if there is
+    // already a good distillation on IRM. If a distillation is pending, or if
+    // the current distillation is empty, we don't want to block the pending
+    // update.
+    return model_.distillation_state() ==
+           read_anything::mojom::ReadAnythingDistillationState::
+               kDistillationWithContent;
+  }
+
+  return false;
 }
 
 void ReadAnythingAppController::ProcessPendingUpdatesIfAllowed() {
@@ -688,6 +703,15 @@ void ReadAnythingAppController::ExecuteJavaScript(const std::string& script) {
   render_frame()->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
+void ReadAnythingAppController::SetDistillationState(
+    read_anything::mojom::ReadAnythingDistillationState state) {
+  if (model_.distillation_state() == state) {
+    return;
+  }
+  page_handler_->OnDistillationStateChanged(state);
+  model_.set_distillation_state(state);
+}
+
 void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     const ui::AXTreeID& tree_id,
     ukm::SourceId ukm_source_id,
@@ -743,9 +767,8 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
                      base::Unretained(this)));
 
   if (features::IsImmersiveReadAnythingEnabled()) {
-    page_handler_->OnDistillationStateChanged(
-        read_anything::mojom::ReadAnythingDistillationState::
-            kDistillationInProgress);
+    SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                             kDistillationInProgress);
   }
 
   // When the UI first constructs, this function may be called before tree_id
@@ -869,9 +892,8 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   model_.set_distillation_in_progress(true);
   if (features::IsImmersiveReadAnythingEnabled()) {
-    page_handler_->OnDistillationStateChanged(
-        read_anything::mojom::ReadAnythingDistillationState::
-            kDistillationInProgress);
+    SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                             kDistillationInProgress);
   }
   VLOG(1) << "Distilling tree with ID: " << tree->GetAXTreeID();
   distiller_->Distill(*tree, snapshot, model_.GetUkmSourceId());
@@ -979,7 +1001,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // Google Docs to finish loading.
     if (!IsGoogleDocs() || model_.page_finished_loading()) {
       if (features::IsImmersiveReadAnythingEnabled()) {
-        page_handler_->OnDistillationStateChanged(
+        SetDistillationState(
             read_anything::mojom::ReadAnythingDistillationState::
                 kDistillationEmpty);
       }
@@ -987,9 +1009,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     }
   } else {
     if (features::IsImmersiveReadAnythingEnabled()) {
-      page_handler_->OnDistillationStateChanged(
-          read_anything::mojom::ReadAnythingDistillationState::
-              kDistillationWithContent);
+      SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                               kDistillationWithContent);
     }
   }
 
@@ -1751,6 +1772,11 @@ void ReadAnythingAppController::SendGetPresentationStateRequest() const {
 
 void ReadAnythingAppController::OnGetPresentationState(
     read_anything::mojom::ReadAnythingPresentationState presentation_state) {
+  model_.set_active_presentation_state(presentation_state);
+  // Now that the presentation state changed which is potentially one of the
+  // factors blocking processing, see if we can unblock processing of the
+  // updates.
+  ProcessPendingUpdatesIfAllowed();
   ExecuteJavaScript("chrome.readingMode.onPresentationStateReceived(" +
                     base::ToString(static_cast<int>(presentation_state)) +
                     ");");
@@ -2029,7 +2055,7 @@ void ReadAnythingAppController::OnConnected() {
   page_handler_->GetDependencyParserModel(
       base::BindOnce(&ReadAnythingAppController::UpdateDependencyParserModel,
                      weak_ptr_factory_.GetWeakPtr()));
-  page_handler_->OnDistillationStateChanged(
+  SetDistillationState(
       read_anything::mojom::ReadAnythingDistillationState::kNotAttempted);
 }
 
