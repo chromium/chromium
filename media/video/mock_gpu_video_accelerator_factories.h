@@ -84,8 +84,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
     fail_to_map_gpu_memory_buffer_ = fail;
   }
 
-  void SetGpuMemoryBuffersInUseByMacOSWindowServer(bool in_use);
-
   // Allocate & return a read-only shared memory region
   base::UnsafeSharedMemoryRegion CreateSharedMemoryRegion(size_t size) override;
 
