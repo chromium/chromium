@@ -290,7 +290,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
   DWORD last_error;
   int retry_count = 0;
   {
-    ScopedBoostPriority scoped_boost_priority(ThreadType::kPresentation);
+    ScopedBoostPriority scoped_boost_priority(ThreadType::kDisplayCritical);
     tmp_file.Close();
     result =
         replace_file_callback.Run(tmp_file_path, path, &replace_file_error);

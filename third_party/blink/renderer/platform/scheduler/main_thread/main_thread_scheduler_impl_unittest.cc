@@ -4458,7 +4458,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(MainThreadSchedulerImplTest, ThreadPriorityUseCaseChangesScrolling) {
   // The initial thread type outside of tests is kDisplayCritical.
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kPresentation);
+  base::PlatformThread::SetCurrentThreadType(
+      base::ThreadType::kDisplayCritical);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kLowerPriorityForCompositorGestures);
@@ -4473,7 +4474,7 @@ TEST_F(MainThreadSchedulerImplTest, ThreadPriorityUseCaseChangesScrolling) {
   test_task_runner_->AdvanceMockTickClock(base::Seconds(1));
   ForceUpdatePolicyAndGetCurrentUseCase();
   EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
-            base::ThreadType::kPresentation);
+            base::ThreadType::kDisplayCritical);
 
   // Compositor gesture, lower priority.
   SimulateCompositorGestureStart(TouchEventPolicy::kDontSendTouchStart);
@@ -4491,13 +4492,14 @@ TEST_F(MainThreadSchedulerImplTest, ThreadPriorityUseCaseChangesScrolling) {
   EXPECT_NE(ForceUpdatePolicyAndGetCurrentUseCase(),
             UseCase::kCompositorGesture);
   EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
-            base::ThreadType::kPresentation);
+            base::ThreadType::kDisplayCritical);
 }
 
 TEST_F(MainThreadSchedulerImplTest,
        ThreadPriorityUseCaseChangesMainThreadScrolling) {
   // The initial thread type outside of tests is kDisplayCritical.
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kPresentation);
+  base::PlatformThread::SetCurrentThreadType(
+      base::ThreadType::kDisplayCritical);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kLowerPriorityForCompositorGestures);

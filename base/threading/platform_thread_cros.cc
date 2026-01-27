@@ -177,7 +177,7 @@ void SetThreadLatencySensitivity(ProcessId process_id,
     case ThreadType::kUtility:
     case ThreadType::kDefault:
       break;
-    case ThreadType::kPresentation:
+    case ThreadType::kDisplayCritical:
     case ThreadType::kInteractive:
       // Compositing and display critical threads need a boost for consistent 60
       // fps.
@@ -234,7 +234,7 @@ std::optional<ThreadType> GetThreadTypeForNiceValue(int nice_value) {
     case 0:
       return ThreadType::kDefault;
     case -8:
-      return ThreadType::kPresentation;
+      return ThreadType::kDisplayCritical;
     case -10:
       return ThreadType::kRealtimeAudio;
     default:
@@ -285,7 +285,7 @@ void SetThreadRTPrioFromType(ProcessId process_id,
       prio = PlatformThreadChromeOS::kRealTimeAudioPrio;
       policy = SCHED_RR;
       break;
-    case ThreadType::kPresentation:
+    case ThreadType::kDisplayCritical:
     case ThreadType::kInteractive:
       if (!PlatformThreadChromeOS::IsDisplayThreadsRtFeatureEnabled()) {
         return;

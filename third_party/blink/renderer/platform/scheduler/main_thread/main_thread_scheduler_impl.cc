@@ -1675,7 +1675,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
         desired_thread_type = base::ThreadType::kDefault;
         break;
       default:
-        desired_thread_type = base::ThreadType::kPresentation;
+        desired_thread_type = base::ThreadType::kDisplayCritical;
         break;
     }
 

@@ -94,7 +94,7 @@ void PlatformThread::SetName(const std::string& name) {
 
 // static
 bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
-  return from == to || to == ThreadType::kPresentation ||
+  return from == to || to == ThreadType::kDisplayCritical ||
          to == ThreadType::kInteractive || to == ThreadType::kRealtimeAudio;
 }
 
@@ -117,7 +117,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       SetThreadRole("chromium.base.threading.utility");
       break;
 
-    case ThreadType::kPresentation:
+    case ThreadType::kDisplayCritical:
     case ThreadType::kInteractive:
       SetThreadRole("chromium.base.threading.display", kDisplaySchedulingPeriod,
                     kDisplaySchedulingCapacity);
@@ -149,7 +149,7 @@ ThreadType PlatformThread::GetCurrentEffectiveThreadTypeForTest() {
   // Use ThreadType stored in TLS as a proxy.
   const ThreadType thread_type = PlatformThread::GetCurrentThreadType();
   if (thread_type == ThreadType::kInteractive) {
-    return ThreadType::kPresentation;
+    return ThreadType::kDisplayCritical;
   }
   return thread_type;
 }

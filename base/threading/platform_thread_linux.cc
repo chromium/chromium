@@ -55,7 +55,7 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadType::kDefault:
       return cgroup_filepath;
-    case ThreadType::kPresentation:
+    case ThreadType::kDisplayCritical:
     case ThreadType::kInteractive:
     case ThreadType::kRealtimeAudio:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
@@ -92,7 +92,7 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
 namespace internal {
 
 const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
-    {ThreadType::kRealtimeAudio, -10}, {ThreadType::kPresentation, -8},
+    {ThreadType::kRealtimeAudio, -10}, {ThreadType::kDisplayCritical, -8},
     {ThreadType::kDefault, 0},         {ThreadType::kUtility, 2},
     {ThreadType::kBackground, 10},
 };
@@ -284,7 +284,7 @@ int ThreadTypeToNiceValue(const ThreadType thread_type) {
       return 2;
     case ThreadType::kDefault:
       return 0;
-    case ThreadType::kPresentation:
+    case ThreadType::kDisplayCritical:
     case ThreadType::kInteractive:
       return -8;
     case ThreadType::kRealtimeAudio:

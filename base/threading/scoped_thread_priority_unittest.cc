@@ -25,8 +25,8 @@ namespace {
                      "process.";
 
 static ThreadType kAllThreadTypes[] = {
-    ThreadType::kRealtimeAudio, ThreadType::kPresentation, ThreadType::kDefault,
-    ThreadType::kBackground};
+    ThreadType::kRealtimeAudio, ThreadType::kDisplayCritical,
+    ThreadType::kDefault, ThreadType::kBackground};
 
 static_assert(static_cast<int>(ThreadType::kBackground) == 0,
               "kBackground isn't lowest");
@@ -156,14 +156,14 @@ TEST_F(ScopedThreadPriorityTest, BoostableTest) {
   TestPriorityResultingFromBoost(ThreadType::kBackground, ThreadType::kUtility);
   TestPriorityResultingFromBoost(ThreadType::kBackground, ThreadType::kDefault);
   TestPriorityResultingFromBoost(ThreadType::kBackground,
-                                 ThreadType::kPresentation);
+                                 ThreadType::kDisplayCritical);
 
   TestPriorityResultingFromBoost(ThreadType::kUtility, ThreadType::kDefault);
   TestPriorityResultingFromBoost(ThreadType::kUtility,
-                                 ThreadType::kPresentation);
+                                 ThreadType::kDisplayCritical);
 
   TestPriorityResultingFromBoost(ThreadType::kDefault,
-                                 ThreadType::kPresentation);
+                                 ThreadType::kDisplayCritical);
 }
 
 TEST_F(ScopedThreadPriorityDeathTest, NoRealTime) {

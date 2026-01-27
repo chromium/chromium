@@ -287,7 +287,7 @@ std::optional<qos_class_t> ThreadTypeToQoSClass(ThreadType thread_type) {
       return QOS_CLASS_UTILITY;
     case ThreadType::kDefault:
       return QOS_CLASS_USER_INITIATED;
-    case ThreadType::kPresentation:
+    case ThreadType::kDisplayCritical:
     case ThreadType::kInteractive:
       return QOS_CLASS_USER_INTERACTIVE;
     case ThreadType::kRealtimeAudio:
@@ -363,7 +363,7 @@ ThreadType PlatformThreadBase::GetCurrentEffectiveThreadTypeForTest() {
     case QOS_CLASS_USER_INITIATED:
       return ThreadType::kDefault;
     case QOS_CLASS_USER_INTERACTIVE:
-      return ThreadType::kPresentation;
+      return ThreadType::kDisplayCritical;
     default:
       return ThreadType::kDefault;
   }

@@ -405,7 +405,7 @@ constexpr ThreadPriorityTestParam kThreadPriorityTestParams[] = {
     {true, true, false, base::ThreadType::kDefault},
 
     // Non-main frame, RT thread enabled by Finch.
-    {true, false, true, base::ThreadType::kPresentation},
+    {true, false, true, base::ThreadType::kDisplayCritical},
 
     // Non-main frame, RT thread disabled by Finch.
     {true, false, false, base::ThreadType::kDefault},
@@ -465,7 +465,7 @@ class AudioWorkletThreadPriorityTest
     // on OS_LINUX and OS_CHROMEOS regardless of the thread priority setting.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     if (expected_priority == base::ThreadType::kRealtimeAudio ||
-        expected_priority == base::ThreadType::kPresentation) {
+        expected_priority == base::ThreadType::kDisplayCritical) {
       EXPECT_EQ(actual_priority, base::ThreadType::kDefault);
     } else {
       EXPECT_EQ(actual_priority, expected_priority);

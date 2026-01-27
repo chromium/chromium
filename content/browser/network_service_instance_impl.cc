@@ -321,7 +321,7 @@ void CreateInProcessNetworkService(
     // from an unfair to a fair lock.
     if (base::android::BackgroundThreadPoolFieldTrial::
             ShouldUsePriorityInheritanceLocks()) {
-      options.thread_type = base::ThreadType::kPresentation;
+      options.thread_type = base::ThreadType::kDisplayCritical;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
     GetNetworkServiceDedicatedThread().StartWithOptions(std::move(options));

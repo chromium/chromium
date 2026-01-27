@@ -434,7 +434,7 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadType) {
       base::ThreadType::kDefault, base::IsViaIPC(false));
   base::PlatformThread::SetThreadType(
       process_.Pid(), base::PlatformThreadId::ForTest(104),
-      base::ThreadType::kPresentation, base::IsViaIPC(false));
+      base::ThreadType::kDisplayCritical, base::IsViaIPC(false));
   base::PlatformThread::SetThreadType(
       process_.Pid(), base::PlatformThreadId::ForTest(105),
       base::ThreadType::kInteractive, base::IsViaIPC(false));

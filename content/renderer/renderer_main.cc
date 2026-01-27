@@ -276,7 +276,8 @@ int RendererMain(MainFunctionParams parameters) {
     // Consider CrRendererMain a display critical thread. While some Javascript
     // running on the main thread might not be, experiments demonstrated that
     // overall this improves user-perceived performance.
-    base::PlatformThread::SetCurrentThreadType(base::ThreadType::kPresentation);
+    base::PlatformThread::SetCurrentThreadType(
+        base::ThreadType::kDisplayCritical);
 
     // Startup tracing creates a tracing thread, which is incompatible on
     // platforms that require single-threaded sandbox initialization. In these

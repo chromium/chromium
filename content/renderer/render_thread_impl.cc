@@ -570,7 +570,7 @@ void RenderThreadImpl::Init() {
       discardable_memory_allocator_.get());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  ChildProcess::current()->SetIOThreadType(base::ThreadType::kPresentation);
+  ChildProcess::current()->SetIOThreadType(base::ThreadType::kDisplayCritical);
 #endif
 
   process_foregrounded_count_ = 0;
@@ -1483,7 +1483,7 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     // TODO(crbug.com/40250424): Use kDisplayCritical to address media latency
     // on Fuchsia until alignment on new media thread types is achieved.
-    options.thread_type = base::ThreadType::kPresentation;
+    options.thread_type = base::ThreadType::kDisplayCritical;
 #else
     base::Thread::Options options;
     if (base::FeatureList::IsEnabled(

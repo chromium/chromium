@@ -83,7 +83,7 @@ void InProcessGpuThread::Init() {
   // will not change the thread name kept in Java VM.
   base::android::AttachCurrentThreadWithName(thread_name());
   // Up the priority of the |io_thread_| on Android.
-  io_thread_type = base::ThreadType::kPresentation;
+  io_thread_type = base::ThreadType::kDisplayCritical;
 #endif
 
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)

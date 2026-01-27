@@ -179,9 +179,9 @@ enum class ThreadType : int {
   // Default type. The thread priority or quality of service will be set to
   // platform default.
   kDefault,
-  // Suitable for user visible  threads, ie. compositing and presenting
-  // the foreground content.
-  kPresentation,
+  // Suitable for display critical threads, ie. threads critical to compositing
+  // and presenting the foreground content.
+  kDisplayCritical,
   // Suitable for threads that handle user interactions, or on the critical
   // path of performance.
   kInteractive,

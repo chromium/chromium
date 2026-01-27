@@ -42,7 +42,7 @@ SpotlightRemotingClientManagerImpl::SpotlightRemotingClientManagerImpl(
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
   // Thread will be processing incoming video frames.
-  options.thread_type = base::ThreadType::kPresentation;
+  options.thread_type = base::ThreadType::kDisplayCritical;
   CHECK(io_thread_.StartWithOptions(std::move(options)));
   remoting_client_io_proxy_ = std::make_unique<SequencedRemotingClientIOProxy>(
       io_thread_.task_runner(),
