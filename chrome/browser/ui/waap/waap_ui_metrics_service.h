@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -42,6 +43,24 @@ class WaapUIMetricsService : public KeyedService {
 
   // Called whenever the WaaP UI has its first contentful paint finished.
   void OnFirstContentfulPaint(base::TimeTicks time);
+
+  // Called when a new browser window (not the initial one) is first painted.
+  void OnNewWindowBrowserWindowFirstPresentation(
+      waap::NewWindowCreationSource source,
+      base::TimeTicks start_time,
+      base::TimeTicks paint_time);
+
+  // Called when the ReloadButton in a new browser window is first painted.
+  void OnNewWindowReloadButtonFirstPaint(waap::NewWindowCreationSource source,
+                                         base::TimeTicks start_time,
+                                         base::TimeTicks paint_time);
+
+  // Called when the ReloadButton in a new browser window is first contentful
+  // painted.
+  void OnNewWindowReloadButtonFirstContentfulPaint(
+      waap::NewWindowCreationSource source,
+      base::TimeTicks start_time,
+      base::TimeTicks paint_time);
 
   // Records the time duration from a mousedown event on the WaaP UI element to
   // its visual update, i.e. paint.

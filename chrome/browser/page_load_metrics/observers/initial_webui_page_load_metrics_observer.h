@@ -10,6 +10,7 @@
 
 class MetricsReporter;
 class WaapUIMetricsService;
+class InitialWebUIWindowMetricsManager;
 
 namespace content {
 class NavigationHandle;
@@ -61,6 +62,9 @@ class InitialWebUIPageLoadMetricsObserver
   // The MetricsReporter is tighted to WebContents, and so is this observer.
   // Thus the MetricsReporter is guaranteed to be non-null.
   MetricsReporter& GetMetricsReporter();
+
+  // Returns the MetricsManager for the current window.
+  InitialWebUIWindowMetricsManager* GetMetricsManager() const;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_INITIAL_WEBUI_PAGE_LOAD_METRICS_OBSERVER_H_

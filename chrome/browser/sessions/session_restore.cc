@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/extension_metrics.h"
@@ -1180,7 +1181,12 @@ class SessionRestoreImpl : public BrowserListObserver {
       }
     }
 
+    base::TimeTicks now = base::TimeTicks::Now();
     Browser* browser = Browser::Create(params);
+    if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+      manager->SetWindowCreationInfo(
+          waap::NewWindowCreationSource::kSessionRestore, now);
+    }
     g_is_any_session_restored = true;
     return browser;
   }

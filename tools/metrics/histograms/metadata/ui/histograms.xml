@@ -386,6 +386,62 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.NewWindow{CreationSource}.BrowserWindow.FirstPaint.{StartPoint}"
+    units="ms" expires_after="2026-07-05">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the time from {StartPoint} to 'First Paint' of the new browser
+    window. {CreationSource}
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="CreationSource">
+    <variant name=".AllSources" summary="Aggregated across all sources"/>
+    <variant name=".BrowserInitiated"
+        summary="Triggered by browser action, e.g. shortcut or menu"/>
+    <variant name=".DragToNewWindow"
+        summary="Triggered by dragging a tab to a new window"/>
+    <variant name=".SessionRestore" summary="Triggered by session restore"/>
+  </token>
+  <token key="StartPoint">
+    <variant name="FromConstructor"
+        summary="immediately before the Browser constructor is called"/>
+  </token>
+</histogram>
+
+<histogram
+    name="InitialWebUI.NewWindow{CreationSource}.ReloadButton.{PaintType}.{StartPoint}"
+    units="ms" expires_after="2026-07-05">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the time from {StartPoint} to first {PaintType} of the Reload Button
+    in the new browser window. {CreationSource}
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="CreationSource">
+    <variant name=".AllSources" summary="Aggregated across all sources"/>
+    <variant name=".BrowserInitiated"
+        summary="Triggered by browser action, e.g. shortcut or menu"/>
+    <variant name=".DragToNewWindow"
+        summary="Triggered by dragging a tab to a new window"/>
+    <variant name=".SessionRestore" summary="Triggered by session restore"/>
+  </token>
+  <token key="PaintType">
+    <variant name="FirstContentfulPaint" summary="contentful paint"/>
+    <variant name="FirstPaint" summary="paint"/>
+  </token>
+  <token key="StartPoint">
+    <variant name="FromConstructor"
+        summary="immediately before the Browser constructor is called"/>
+  </token>
+</histogram>
+
+<histogram
     name="InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintIn{VisibleMode}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
@@ -522,11 +578,13 @@ chromium-metrics-reviews@google.com.
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".Temperature.ColdStartup"
-        summary=", where startup was cold (mostly hard faults)"/>
+        summary=", where startup was cold (mostly hard faults). Only
+                 available on Windows."/>
     <variant name=".Temperature.Other"
         summary=", where startup temperature was undetermined"/>
     <variant name=".Temperature.WarmStartup"
-        summary=", where startup was warm (almost no hard faults)"/>
+        summary=", where startup was warm (almost no hard faults). Only
+                 available on Windows."/>
   </token>
 </histogram>
 
@@ -562,11 +620,13 @@ chromium-metrics-reviews@google.com.
   <token key="StartupTemperature">
     <variant name="" summary=""/>
     <variant name=".Temperature.ColdStartup"
-        summary=", where startup was cold (mostly hard faults)"/>
+        summary=", where startup was cold (mostly hard faults). Only
+                 available on Windows."/>
     <variant name=".Temperature.Other"
         summary=", where startup temperature was undetermined"/>
     <variant name=".Temperature.WarmStartup"
-        summary=", where startup was warm (almost no hard faults)"/>
+        summary=", where startup was warm (almost no hard faults). Only
+                 available on Windows."/>
   </token>
 </histogram>
 

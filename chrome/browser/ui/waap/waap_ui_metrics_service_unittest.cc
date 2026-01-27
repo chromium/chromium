@@ -15,6 +15,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+const base::TimeDelta kTestLatency = base::Milliseconds(100);
+
+}  // namespace
+
 class WaapUIMetricsServiceTest : public testing::Test {
  public:
   WaapUIMetricsServiceTest() = default;
@@ -210,4 +216,50 @@ TEST_F(WaapUIMetricsServiceTest, OnReloadButtonChangeVisibleModeToNextPaint) {
   histogram_tester.ExpectUniqueTimeSample(
       "InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintInStop", latency,
       1);
+}
+
+TEST_F(WaapUIMetricsServiceTest, OnNewWindowBrowserWindowFirstPaint) {
+  WaapUIMetricsService* service =
+      WaapUIMetricsServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histogram_tester;
+  const auto start_ticks = base::TimeTicks::Now();
+
+  // Test SessionRestore
+  service->OnNewWindowBrowserWindowFirstPresentation(
+      waap::NewWindowCreationSource::kSessionRestore, start_ticks,
+      start_ticks + kTestLatency);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.BrowserWindow.FirstPaint."
+      "FromConstructor",
+      kTestLatency, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.SessionRestore.BrowserWindow.FirstPaint."
+      "FromConstructor",
+      kTestLatency, 1);
+}
+
+TEST_F(WaapUIMetricsServiceTest, OnNewWindowReloadButtonFirstPaint) {
+  WaapUIMetricsService* service =
+      WaapUIMetricsServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histogram_tester;
+  const auto start_ticks = base::TimeTicks::Now();
+
+  // Test BrowserInitiated
+  service->OnNewWindowReloadButtonFirstPaint(
+      waap::NewWindowCreationSource::kBrowserInitiated, start_ticks,
+      start_ticks + kTestLatency);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.ReloadButton.FirstPaint."
+      "FromConstructor",
+      kTestLatency, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.BrowserInitiated.ReloadButton.FirstPaint."
+      "FromConstructor",
+      kTestLatency, 1);
 }

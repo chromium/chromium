@@ -82,7 +82,9 @@ class ReloadButtonTest : public ChromeViewsTestBase,
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     profile_ = std::make_unique<TestingProfile>();
-    reload_ = std::make_unique<ReloadButton>(GetProfile(), nullptr);
+    reload_ = std::make_unique<ReloadButton>(
+        profile_.get(), /*command_updater=*/nullptr,
+        /*window_metrics_manager=*/nullptr);
     SetupReloadButtonTimers(reload_.get());
   }
 
@@ -298,7 +300,8 @@ class ReloadButtonMetricsTest : public ChromeViewsTestBase,
     widget_->Show();
 
     auto button =
-        std::make_unique<ReloadButton>(profile_.get(), command_updater_.get());
+        std::make_unique<ReloadButton>(profile_.get(), command_updater_.get(),
+                                       /*window_metrics_manager=*/nullptr);
     reload_ = widget_->SetContentsView(std::move(button));
     SetupReloadButtonTimers(reload_);
   }
