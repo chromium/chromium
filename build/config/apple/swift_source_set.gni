@@ -88,13 +88,12 @@ if (enable_swift_cxx_interop) {
   #           Array of strings, list of C++ header files to be imported.
   #       apinotes:
   #           (optional) Array of strings, paths of apinotes files.
-  #   public_deps:
-  #       (optional) Array of strings, C++ targets that define the imported
-  #       symbols. Not required if the symbols are all defined inline in the
-  #       source headers.
   template("swift_modulemap") {
     assert(defined(invoker.modules),
            "'modules' must be defined in swift_modulemap")
+    assert(!defined(invoker.deps), "swift_modulemap should not have 'deps'.")
+    assert(!defined(invoker.public_deps),
+           "swift_modulemap should not have 'public_deps'.")
 
     _modulemap_path = "${target_gen_dir}/${target_name}.modulemap"
     _modulemap_contents = [
@@ -164,12 +163,7 @@ if (enable_swift_cxx_interop) {
         "//build/config/ios:swift_cxx_interop",
       ]
 
-      if (len(_apinotes_deps) > 0) {
-        if (!defined(deps)) {
-          deps = []
-        }
-        deps += _apinotes_deps
-      }
+      deps = _apinotes_deps
     }
   }
 }  # if (enable_swift_cxx_interop)

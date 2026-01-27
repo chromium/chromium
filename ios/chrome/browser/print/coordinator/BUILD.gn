@@ -12,7 +12,6 @@ if (enable_swift_cxx_interop) {
         sources = [ "//base/metrics/user_metrics.h" ]
       },
     ]
-    public_deps = [ "//base" ]
   }
 
   swift_source_set("swift_coordinator") {

@@ -29,10 +29,6 @@ if (enable_swift_cxx_interop) {
         ]
       },
     ]
-    public_deps = [
-      ":cxx_pointer",
-      "//base",
-    ]
   }
 
   swift_source_set("tests") {
@@ -43,7 +39,9 @@ if (enable_swift_cxx_interop) {
       "unique_ptr_xctest.swift",
     ]
     deps = [
+      ":cxx_pointer",
       ":swift_pointer",
+      "//base",
       "//build/config/ios:xctest",
     ]
   }

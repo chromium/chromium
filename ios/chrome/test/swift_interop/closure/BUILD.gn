@@ -25,10 +25,6 @@ if (enable_swift_cxx_interop) {
         ]
       },
     ]
-    public_deps = [
-      ":cxx_closure",
-      "//base",
-    ]
   }
 
   swift_source_set("tests") {
@@ -37,7 +33,9 @@ if (enable_swift_cxx_interop) {
       "observer_xctest.swift",
     ]
     deps = [
+      ":cxx_closure",
       ":swift_closure",
+      "//base",
       "//build/config/ios:xctest",
     ]
   }

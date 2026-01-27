@@ -30,7 +30,6 @@ if (enable_swift_cxx_interop) {
         sources = [ "polymorphism.h" ]
       },
     ]
-    public_deps = [ ":outlined" ]
   }
 
   swift_source_set("tests") {
@@ -41,6 +40,7 @@ if (enable_swift_cxx_interop) {
     ]
     deps = [
       ":classes",
+      ":outlined",
       "//build/config/ios:xctest",
     ]
   }
