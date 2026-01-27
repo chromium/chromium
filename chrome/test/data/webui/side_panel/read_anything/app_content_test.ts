@@ -115,6 +115,12 @@ suite('AppContent', () => {
 
   test('new content updates padding for line focus', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+        {detail: {data: LineFocusMovement.CURSOR}});
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
     assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
 
     app.updateContent();
@@ -127,6 +133,30 @@ suite('AppContent', () => {
       'new content does not update padding for line focus with flag disabled',
       async () => {
         chrome.readingMode.isLineFocusEnabled = false;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+            {detail: {data: LineFocusMovement.CURSOR}});
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.UNDERLINE}});
+        assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+
+        app.updateContent();
+        await microtasksFinished();
+
+        assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
+      });
+
+  test(
+      'new content does not update padding for line focus with line focus off',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
+            {detail: {data: LineFocusMovement.STATIC}});
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.OFF}});
         assertEquals('', app.style.getPropertyValue('--line-focus-padding'));
 
         app.updateContent();

@@ -237,6 +237,9 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('line focus movement change updates padding', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    emitEvent(
+        app, ToolbarEvent.LINE_FOCUS_STYLE,
+        {detail: {data: LineFocusStyle.UNDERLINE}});
     // The app needs content so it has a non-zero height.
     app.updateContent();
 

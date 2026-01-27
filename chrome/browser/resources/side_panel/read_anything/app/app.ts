@@ -637,6 +637,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
           event.detail.data, this.$.container,
           this.$.containerParent.clientHeight);
       this.setLineFocus_();
+      if (!this.lineFocusController_.isEnabled()) {
+        return;
+      }
 
       const padding = Math.floor(this.$.containerParent.clientHeight / 2);
       if (this.lineFocusController_.isStatic()) {
@@ -661,10 +664,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private onTextLocationsChange_() {
     if (chrome.readingMode.isLineFocusEnabled) {
-      const padding = this.lineFocusController_.isStatic() ?
-          Math.floor(this.$.containerParent.clientHeight / 2) :
-          0;
-      this.styleUpdater_.setPaddingForLineFocus(padding);
+      if (this.lineFocusController_.isEnabled()) {
+        const padding = this.lineFocusController_.isStatic() ?
+            Math.floor(this.$.containerParent.clientHeight / 2) :
+            0;
+        this.styleUpdater_.setPaddingForLineFocus(padding);
+      }
       this.lineFocusController_.onTextLocationsChange(
           this.$.container, this.$.containerParent.clientHeight);
     }
