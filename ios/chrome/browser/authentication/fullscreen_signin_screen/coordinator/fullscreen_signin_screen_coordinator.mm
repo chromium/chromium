@@ -243,6 +243,11 @@
 
 // Starts the sign in process.
 - (void)startSignIn {
+  if (self.mediator.signinInProgress) {
+    // Skip sign-in if there is a double tap.
+    // See crbug.com/478202195.
+    return;
+  }
   DCHECK(self.mediator.selectedIdentity);
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser

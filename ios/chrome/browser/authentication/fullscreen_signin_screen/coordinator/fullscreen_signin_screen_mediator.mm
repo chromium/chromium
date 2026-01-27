@@ -70,6 +70,8 @@ enum class SigninScreenState {
     first_run::SignInAttemptStatus attemptStatus;
 // Whether there was existing accounts when the screen was presented.
 @property(nonatomic, assign) BOOL hadIdentitiesAtStartup;
+// Override this property in readwrite.
+@property(nonatomic, assign, readwrite) BOOL signinInProgress;
 
 @end
 
@@ -85,7 +87,6 @@ enum class SigninScreenState {
   // State of the sign-in screen.
   SigninScreenState _screenState;
   ChangeProfileContinuationProvider _changeProfileContinuationProvider;
-  BOOL _signinInProgress;
 
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
@@ -188,8 +189,8 @@ enum class SigninScreenState {
 
 - (void)startSignInWithAuthenticationFlow:
     (AuthenticationFlow*)authenticationFlow {
-  CHECK(!_signinInProgress, base::NotFatalUntil::M145);
-  _signinInProgress = YES;
+  CHECK(!self.signinInProgress, base::NotFatalUntil::M145);
+  self.signinInProgress = YES;
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
 
@@ -327,7 +328,7 @@ enum class SigninScreenState {
                                                          identity:
                                                              (id<SystemIdentity>)
                                                                  identity {
-  _signinInProgress = NO;
+  self.signinInProgress = NO;
   [self.consumer setUIEnabled:YES];
   if (cancelationReason != signin_ui::CancelationReason::kNotCanceled) {
     return;
@@ -420,7 +421,7 @@ enum class SigninScreenState {
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  if (_signinInProgress) {
+  if (self.signinInProgress) {
     return;
   }
   CoreAccountInfo primaryAccount =
