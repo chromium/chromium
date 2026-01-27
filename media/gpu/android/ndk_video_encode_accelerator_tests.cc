@@ -4,11 +4,14 @@
 
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
+#include <android/hardware_buffer.h>
+
 #include <algorithm>
 #include <map>
 #include <optional>
 #include <vector>
 
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -50,7 +53,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
-#include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/init/gl_factory.h"
@@ -120,7 +122,6 @@ class NdkVideoEncoderAcceleratorTest
 
     if (args.use_gl_surface) {
       if (__builtin_available(android 35, *)) {
-        ASSERT_TRUE(gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault));
         SetupSharedImages();
       } else {
         GTEST_SKIP() << "Not supported Android version. "
@@ -129,6 +130,10 @@ class NdkVideoEncoderAcceleratorTest
       enabled_features.push_back(kSurfaceInputForAndroidVEA);
     } else {
       disabled_features.push_back(kSurfaceInputForAndroidVEA);
+      if (args.use_shared_image) {
+        enabled_features.push_back(media::kAndroidZeroCopyVideoCapture);
+        SetupSharedImages();
+      }
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -229,30 +234,157 @@ class NdkVideoEncoderAcceleratorTest
 
   scoped_refptr<VideoFrame> WrapInSharedImageFrame(
       scoped_refptr<VideoFrame> software_frame) {
-    CHECK_EQ(software_frame->format(), PIXEL_FORMAT_XBGR);
     gfx::Size size = software_frame->visible_rect().size();
     auto mailbox = gpu::Mailbox::Generate();
     auto color_space = gfx::ColorSpace::CreateSRGB();
     GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
     SkAlphaType alpha_type = kPremul_SkAlphaType;
-    auto viz_format = viz::SinglePlaneFormat::kRGBA_8888;
     auto sync_token = gpu::SyncToken();
     gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+                                     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                     gpu::SHARED_IMAGE_USAGE_CPU_READ;
 
-    // Create a SharedImage-backed frame from the software frame's data.
-    // AHardwareBufferImageBackingFactory expects tightly packed data. Create a
-    // buffer and copy the frame data into it.
-    const size_t row_bytes = size.width() * 4;
-    const size_t pixel_data_size = row_bytes * size.height();
-    std::vector<uint8_t> pixel_data(pixel_data_size);
-    libyuv::CopyPlane(software_frame->data(VideoFrame::Plane::kARGB),
-                      software_frame->stride(VideoFrame::Plane::kARGB),
-                      pixel_data.data(), row_bytes, row_bytes, size.height());
+    CHECK(backing_factory_);
 
-    auto backing = backing_factory_->CreateSharedImage(
-        mailbox, viz_format, size, color_space, surface_origin, alpha_type,
-        usage, "TestLabel", /*is_thread_safe=*/false, pixel_data);
+    std::unique_ptr<gpu::SharedImageBacking> backing;
+    viz::SharedImageFormat viz_format;
+    VideoFrameConverter converter;
+
+    if (software_frame->format() == PIXEL_FORMAT_NV12) {
+      viz_format = viz::MultiPlaneFormat::kNV12;
+      AHardwareBuffer_Desc desc = {};
+      desc.width = size.width();
+      desc.height = size.height();
+      desc.layers = 1;
+      desc.usage = AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN |
+                   AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN |
+                   AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+      desc.format = AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420;
+
+      AHardwareBuffer* buffer = nullptr;
+      int ret = AHardwareBuffer_allocate(&desc, &buffer);
+      CHECK_EQ(ret, 0);
+      AHardwareBuffer_describe(buffer, &desc);
+
+      auto ahb_handle =
+          base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+
+      AHardwareBuffer_Planes planes;
+      ret = AHardwareBuffer_lockPlanes(
+          buffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN, -1, nullptr, &planes);
+      CHECK_EQ(ret, 0);
+
+      scoped_refptr<VideoFrame> dst_frame;
+      if (planes.planeCount == 3) {
+        size_t y_stride = planes.planes[0].rowStride;
+        size_t u_stride = planes.planes[1].rowStride;
+        size_t v_stride = planes.planes[2].rowStride;
+        size_t u_pixel_stride = planes.planes[1].pixelStride;
+        size_t v_pixel_stride = planes.planes[2].pixelStride;
+
+        const gfx::Size coded_size(static_cast<int>(desc.width),
+                                   static_cast<int>(desc.height));
+
+        // SAFETY: AHardwareBuffer_lockPlanes guarantees valid pointers and
+        // strides for the lifetime of the lock.
+        auto y_span = UNSAFE_BUFFERS(
+            base::span(static_cast<uint8_t*>(planes.planes[0].data),
+                       y_stride * coded_size.height()));
+
+        if (u_pixel_stride == 1 && v_pixel_stride == 1) {
+          // I420
+          auto u_span = UNSAFE_BUFFERS(
+              base::span(static_cast<uint8_t*>(planes.planes[1].data),
+                         u_stride * VideoFrame::Rows(VideoFrame::Plane::kU,
+                                                     PIXEL_FORMAT_I420,
+                                                     coded_size.height())));
+          auto v_span = UNSAFE_BUFFERS(
+              base::span(static_cast<uint8_t*>(planes.planes[2].data),
+                         v_stride * VideoFrame::Rows(VideoFrame::Plane::kV,
+                                                     PIXEL_FORMAT_I420,
+                                                     coded_size.height())));
+          dst_frame = VideoFrame::WrapExternalYuvData(
+              PIXEL_FORMAT_I420, coded_size, gfx::Rect(coded_size), coded_size,
+              y_stride, u_stride, v_stride, y_span, u_span, v_span,
+              software_frame->timestamp());
+        } else if (u_pixel_stride == 2 && v_pixel_stride == 2 &&
+                   u_stride == v_stride) {
+          // NV12
+          auto uv_span = UNSAFE_BUFFERS(
+              base::span(static_cast<uint8_t*>(planes.planes[1].data),
+                         u_stride * VideoFrame::Rows(VideoFrame::Plane::kUV,
+                                                     PIXEL_FORMAT_NV12,
+                                                     coded_size.height())));
+          dst_frame = VideoFrame::WrapExternalYuvData(
+              PIXEL_FORMAT_NV12, coded_size, gfx::Rect(coded_size), coded_size,
+              y_stride, u_stride, y_span, uv_span, software_frame->timestamp());
+        }
+      }
+
+      CHECK(dst_frame);
+      dst_frame->set_color_space(software_frame->ColorSpace());
+      dst_frame->metadata().MergeMetadataFrom(software_frame->metadata());
+
+      auto status = converter.ConvertAndScale(*software_frame, *dst_frame);
+      CHECK(status.is_ok()) << status.message();
+
+      ret = AHardwareBuffer_unlock(buffer, nullptr);
+      CHECK_EQ(ret, 0);
+
+      gfx::GpuMemoryBufferHandle gmb_handle;
+      gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+      gmb_handle.android_hardware_buffer = std::move(ahb_handle);
+
+      backing = backing_factory_->CreateSharedImage(
+          mailbox, viz_format, size, color_space, surface_origin, alpha_type,
+          usage, "TestLabel", /*is_thread_safe=*/false, std::move(gmb_handle));
+
+    } else {
+      CHECK_EQ(software_frame->format(), PIXEL_FORMAT_XBGR);
+      viz_format = viz::SinglePlaneFormat::kRGBA_8888;
+
+      AHardwareBuffer_Desc desc = {};
+      desc.width = size.width();
+      desc.height = size.height();
+      desc.layers = 1;
+      desc.usage = AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN |
+                   AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN |
+                   AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+      desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+
+      AHardwareBuffer* buffer = nullptr;
+      int ret = AHardwareBuffer_allocate(&desc, &buffer);
+      CHECK_EQ(ret, 0);
+      AHardwareBuffer_describe(buffer, &desc);
+
+      auto ahb_handle =
+          base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+
+      void* buffer_data = nullptr;
+      ret = AHardwareBuffer_lock(buffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN,
+                                 -1, nullptr, &buffer_data);
+      CHECK_EQ(ret, 0);
+      CHECK(buffer_data);
+
+      const size_t bytes_per_pixel =
+          VideoFrame::BytesPerElement(PIXEL_FORMAT_XBGR, 0);
+      libyuv::CopyPlane(software_frame->visible_data(VideoFrame::Plane::kARGB),
+                        software_frame->stride(VideoFrame::Plane::kARGB),
+                        static_cast<uint8_t*>(buffer_data),
+                        desc.stride * bytes_per_pixel,
+                        size.width() * bytes_per_pixel, size.height());
+
+      ret = AHardwareBuffer_unlock(buffer, nullptr);
+      CHECK_EQ(ret, 0);
+
+      gfx::GpuMemoryBufferHandle gmb_handle;
+      gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+      gmb_handle.android_hardware_buffer = std::move(ahb_handle);
+
+      backing = backing_factory_->CreateSharedImage(
+          mailbox, viz_format, size, color_space, surface_origin, alpha_type,
+          usage, "TestLabel", /*is_thread_safe=*/false, std::move(gmb_handle));
+    }
     CHECK(backing);
 
     auto factory_ref = shared_image_manager_.Register(std::move(backing),
@@ -269,9 +401,10 @@ class NdkVideoEncoderAcceleratorTest
         base::MakeRefCounted<gpu::SharedImageInterfaceHolder>(test_ssi.get()),
         gfx::EMPTY_BUFFER);
 
-    return VideoFrame::WrapSharedImage(
-        PIXEL_FORMAT_XBGR, client_shared_image, sync_token, base::DoNothing(),
-        size, gfx::Rect(size), size, software_frame->timestamp());
+    return VideoFrame::WrapSharedImage(software_frame->format(),
+                                       client_shared_image, sync_token,
+                                       base::DoNothing(), size, gfx::Rect(size),
+                                       size, software_frame->timestamp());
   }
 
   VideoEncodeAccelerator::Config GetDefaultConfig() {
@@ -380,6 +513,10 @@ class NdkVideoEncoderAcceleratorTest
   }
 
   void SetupSharedImages() {
+    if (gl::kGLImplementationNone == gl::GetGLImplementation()) {
+      ASSERT_TRUE(gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault));
+    }
+
     gpu::GpuPreferences gpu_preferences;
     gpu::GpuDriverBugWorkarounds gpu_workarounds;
     gpu::GpuFeatureInfo gpu_feature_info;
@@ -763,23 +900,45 @@ TEST_P(NdkVideoEncoderAcceleratorTest, Histograms) {
   EXPECT_GT(latency_samples, 1u);
 }
 
-std::vector<VideoParams> GenerateSurfaceVariants(
-    base::span<const VideoParams> base_params) {
-  std::vector<VideoParams> all_params;
-  for (const auto& base : base_params) {
-    all_params.push_back({base.profile, base.pixel_format, false});
-    all_params.push_back({base.profile, base.pixel_format, true});
-  }
-  return all_params;
-}
-
-std::vector<VideoParams> EnableSharedImages(
+std::vector<VideoParams> GenerateVariants(
     base::span<const VideoParams> params) {
   std::vector<VideoParams> result;
   for (auto param : params) {
-    param.use_shared_image = true;
-    param.use_gl_surface = true;
-    result.push_back(param);
+    switch (param.pixel_format) {
+      case PIXEL_FORMAT_I420:
+        param.use_shared_image = false;
+        param.use_gl_surface = false;
+        result.push_back(param);
+        break;
+      case PIXEL_FORMAT_NV12:
+        param.use_shared_image = false;
+        param.use_gl_surface = false;
+        result.push_back(param);
+
+        param.use_shared_image = true;
+        param.use_gl_surface = false;
+        result.push_back(param);
+
+        param.use_shared_image = true;
+        param.use_gl_surface = true;
+        result.push_back(param);
+
+        param.use_shared_image = false;
+        param.use_gl_surface = true;
+        result.push_back(param);
+        break;
+      case PIXEL_FORMAT_XBGR:
+        // RGB always assumes shared image input
+        param.use_shared_image = true;
+        param.use_gl_surface = false;
+        result.push_back(param);
+
+        param.use_gl_surface = true;
+        result.push_back(param);
+        break;
+      default:
+        continue;
+    }
   }
   return result;
 }
@@ -787,58 +946,48 @@ std::vector<VideoParams> EnableSharedImages(
 constexpr VideoParams kBaseParams[] = {
     {VP8PROFILE_MIN, PIXEL_FORMAT_I420},
     {VP8PROFILE_MIN, PIXEL_FORMAT_NV12},
+    {VP8PROFILE_MIN, PIXEL_FORMAT_XBGR},
     {VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
     {VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
+    {VP9PROFILE_PROFILE0, PIXEL_FORMAT_XBGR},
     {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
     {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
+    {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_XBGR},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
     {H264PROFILE_MAIN, PIXEL_FORMAT_I420},
     {H264PROFILE_HIGH, PIXEL_FORMAT_I420},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_NV12},
+    {H264PROFILE_BASELINE, PIXEL_FORMAT_XBGR},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     {HEVCPROFILE_MAIN, PIXEL_FORMAT_I420},
     {HEVCPROFILE_MAIN, PIXEL_FORMAT_NV12},
+    {HEVCPROFILE_MAIN, PIXEL_FORMAT_XBGR},
 #endif
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    BaseNdkEncoderTests,
-    NdkVideoEncoderAcceleratorTest,
-    ::testing::ValuesIn(GenerateSurfaceVariants(kBaseParams)),
-    PrintTestParams);
-
-constexpr VideoParams kSIParams[] = {
-    {H264PROFILE_BASELINE, PIXEL_FORMAT_XBGR},
-    {H264PROFILE_MAIN, PIXEL_FORMAT_XBGR},
-    {H264PROFILE_HIGH, PIXEL_FORMAT_XBGR},
-    {VP9PROFILE_PROFILE0, PIXEL_FORMAT_XBGR},
-};
-
-INSTANTIATE_TEST_SUITE_P(SharedImagesNdkEncoderTests,
+INSTANTIATE_TEST_SUITE_P(BaseNdkEncoderTests,
                          NdkVideoEncoderAcceleratorTest,
-                         ::testing::ValuesIn(EnableSharedImages(kSIParams)),
-                         PrintTestParams);
-
-INSTANTIATE_TEST_SUITE_P(SharedImagesNdkEncoderE2ETests,
-                         NdkVideoEncoderAcceleratorE2ETest,
-                         ::testing::ValuesIn(EnableSharedImages(kSIParams)),
+                         ::testing::ValuesIn(GenerateVariants(kBaseParams)),
                          PrintTestParams);
 
 constexpr VideoParams kE2EParams[] = {
     {H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_NV12},
+    {H264PROFILE_BASELINE, PIXEL_FORMAT_XBGR},
     {H264PROFILE_MAIN, PIXEL_FORMAT_NV12},
     {H264PROFILE_MAIN, PIXEL_FORMAT_I420},
+    {H264PROFILE_MAIN, PIXEL_FORMAT_XBGR},
     {VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
     {VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
+    {VP9PROFILE_PROFILE0, PIXEL_FORMAT_XBGR},
     {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
     {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
-};
-INSTANTIATE_TEST_SUITE_P(
-    E2ENdkEncoderTests,
-    NdkVideoEncoderAcceleratorE2ETest,
-    ::testing::ValuesIn(GenerateSurfaceVariants(kE2EParams)),
-    PrintTestParams);
+    {AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_XBGR}};
+
+INSTANTIATE_TEST_SUITE_P(E2ENdkEncoderTests,
+                         NdkVideoEncoderAcceleratorE2ETest,
+                         ::testing::ValuesIn(GenerateVariants(kE2EParams)),
+                         PrintTestParams);
 
 }  // namespace media
 #pragma clang attribute pop

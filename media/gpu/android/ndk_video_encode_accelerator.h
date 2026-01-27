@@ -16,9 +16,12 @@
 #include "base/android/requires_api.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "gpu/command_buffer/service/memory_tracking.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_log.h"
 #include "media/base/video_encoder.h"
@@ -166,6 +169,10 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   void OnCommandBufferHelperAvailable(
       scoped_refptr<CommandBufferHelper> command_buffer_helper);
 
+  scoped_refptr<VideoFrame> MapSharedImage(const VideoFrame& frame);
+
+  std::vector<VideoPixelFormat> GetSupportedSharedImagePixelFormats();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // VideoEncodeAccelerator::Client callbacks go here.  Invalidated once any
@@ -249,6 +256,9 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   std::unique_ptr<VEAEncodingLatencyMetricsHelper> metrics_helper_;
 
   VideoFrameConverter video_frame_converter_;
+
+  raw_ptr<gpu::SharedImageManager> shared_image_manager_ = nullptr;
+  gpu::MemoryTypeTracker memory_type_tracker_{nullptr};
 
   base::WeakPtrFactory<NdkVideoEncodeAccelerator> weak_ptr_factory_{this};
 };
