@@ -47,6 +47,20 @@ class InputStateModelTest : public testing::Test {
 
 TEST_F(InputStateModelTest, TestInitialization) {
   EXPECT_TRUE(input_state_model_);
+  const auto& state = input_state_model_->get_state_for_testing();
+
+  // All values should be default since we are using a default
+  // `SearchboxConfig`. Except INPUT_TYPE_BROWSER_TAB should be added manually
+  // since it doesn't exist in the `allowed_input_types`.
+  EXPECT_TRUE(state.allowed_tools.empty());
+  EXPECT_TRUE(state.allowed_models.empty());
+  EXPECT_THAT(state.allowed_input_types,
+              testing::UnorderedElementsAre(omnibox::INPUT_TYPE_BROWSER_TAB));
+  EXPECT_EQ(state.active_tool, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_EQ(state.active_model, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_TRUE(state.disabled_tools.empty());
+  EXPECT_TRUE(state.disabled_models.empty());
+  EXPECT_TRUE(state.disabled_input_types.empty());
 }
 
 TEST_F(InputStateModelTest, TestSubscribeAndNotify) {
