@@ -249,6 +249,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -343,6 +344,16 @@ class AshVisibilityController : public ::wm::VisibilityController {
 };
 
 }  // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// TrayIconConfiguration, public:
+
+TrayIconConfiguration::TrayIconConfiguration() = default;
+
+TrayIconConfiguration::~TrayIconConfiguration() = default;
+
+////////////////////////////////////////////////////////////////////////////////
+// Shell, static:
 
 // static
 Shell* Shell::instance_ = nullptr;
@@ -677,6 +688,28 @@ void Shell::AddAccessibilityEventHandler(
 void Shell::RemoveAccessibilityEventHandler(ui::EventHandler* handler) {
   accessibility_event_handler_manager_->RemoveAccessibilityEventHandler(
       handler);
+}
+
+bool Shell::AddStatusTrayIcon(const TrayIconConfiguration& configuration,
+                              int64_t display_id,
+                              base::RepeatingClosure callback) {
+  aura::Window* root_window = GetRootWindowForDisplayId(display_id);
+  auto* status_area = StatusAreaWidget::ForWindow(root_window);
+  return status_area->AddTrayIcon(configuration, std::move(callback));
+}
+
+bool Shell::UpdateStatusTrayIcon(const TrayIconConfiguration& configuration,
+                                 int64_t display_id) {
+  aura::Window* root_window = GetRootWindowForDisplayId(display_id);
+  auto* status_area = StatusAreaWidget::ForWindow(root_window);
+  return status_area->UpdateTrayIcon(configuration);
+}
+
+bool Shell::RemoveStatusTrayIcon(const TrayIconConfiguration& configuration,
+                                 int64_t display_id) {
+  aura::Window* root_window = GetRootWindowForDisplayId(display_id);
+  auto* status_area = StatusAreaWidget::ForWindow(root_window);
+  return status_area->RemoveTrayIcon(configuration);
 }
 
 void Shell::RecreateMultiUserWindowManagerForTesting() {
