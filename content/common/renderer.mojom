@@ -18,6 +18,7 @@ import "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojo
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "url/mojom/url.mojom";
 
+[EnableIf=is_mac]
 struct UpdateScrollbarThemeParams {
   // TODO(avi): Update these to optional values when optional numeric types are
   // allowed. (https://crbug.com/657632)
@@ -57,7 +58,7 @@ interface Renderer {
   // associated with the process-wide or other groups' IPC channels, meaning
   // there is no guaranteed ordering between them.
   CreateAgentSchedulingGroup(
-    pending_receiver<IPC.mojom.ChannelBootstrap> bootstrap);
+      pending_receiver<IPC.mojom.ChannelBootstrap> bootstrap);
 
   // Tells the renderer to create a new AgentSchedulingGroup, that will
   // listen to messages sent by the host via the pending
@@ -66,7 +67,7 @@ interface Renderer {
   // process-wide IPC channel, preserving message ordering across different
   // agent scheduling groups.
   CreateAssociatedAgentSchedulingGroup(
-    pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group);
+      pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group);
 
   // Transfers the ReadOnlySharedMemoryRegion which is used to communicate the
   // `std::atomic<base::TimeTicks>` representing the time at which this renderer
@@ -77,8 +78,8 @@ interface Renderer {
 
   // Tells the renderer that the network type has changed so that
   // navigator.onLine and navigator.connection can be updated.
-  OnNetworkConnectionChanged(NetworkConnectionType connection_type,
-                             double max_bandwidth_mbps);
+  OnNetworkConnectionChanged(
+      NetworkConnectionType connection_type, double max_bandwidth_mbps);
 
   // Tells the renderer process that the network quality estimate has changed.
   // EffectiveConnectionType is the connection type whose typical performance is
@@ -95,13 +96,16 @@ interface Renderer {
 
   // Tells the renderer to suspend/resume the webkit timers. Only for use on
   // Android.
+  [EnableIf=is_android]
   SetWebKitSharedTimersSuspended(bool suspend);
 
   // Tells the renderer about a scrollbar appearance change. Only for use on
   // OS X.
+  [EnableIf=is_mac]
   UpdateScrollbarTheme(UpdateScrollbarThemeParams params);
 
   // Notification that the OS X Aqua color preferences changed.
+  [EnableIf=is_mac]
   OnSystemColorsChanged(int32 aqua_color_variant);
 
   // Tells the renderer process the new system color info.

@@ -9,11 +9,11 @@ module content.mojom;
 // proper mojom definitions.
 
 // NOTE: This type is only mapped and usable on Mac.
-[Native]
+[Native, EnableIf=is_mac]
 enum ScrollbarButtonsPlacement;
 
 // NOTE: This type is only mapped and usable on Mac.
-[Native]
+[Native, EnableIf=is_mac]
 enum ScrollerStyle;
 
 // TODO(rockot): This should most likely be defined by network service mojom,

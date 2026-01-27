@@ -1382,21 +1382,19 @@ void RenderThreadImpl::OnNetworkQualityChanged(
       transport_rtt, downlink_throughput_kbps);
 }
 
-void RenderThreadImpl::SetWebKitSharedTimersSuspended(bool suspend) {
 #if BUILDFLAG(IS_ANDROID)
+void RenderThreadImpl::SetWebKitSharedTimersSuspended(bool suspend) {
   if (suspend) {
     main_thread_scheduler_->PauseTimersForAndroidWebView();
   } else {
     main_thread_scheduler_->ResumeTimersForAndroidWebView();
   }
-#else
-  NOTREACHED();
-#endif
 }
+#endif
 
+#if BUILDFLAG(IS_MAC)
 void RenderThreadImpl::UpdateScrollbarTheme(
     mojom::UpdateScrollbarThemeParamsPtr params) {
-#if BUILDFLAG(IS_MAC)
   blink::WebScrollbarTheme::UpdateScrollbarsWithNSDefaults(
       params->has_initial_button_delay
           ? std::make_optional(params->initial_button_delay)
@@ -1406,24 +1404,16 @@ void RenderThreadImpl::UpdateScrollbarTheme(
           : std::nullopt,
       params->preferred_scroller_style, params->redraw,
       params->jump_on_track_click);
-#endif  // BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_APPLE)
   is_elastic_overscroll_enabled_on_root_ = params->scroll_view_rubber_banding;
   is_elastic_overscroll_supported_ = params->scroll_view_rubber_banding;
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_APPLE)
 }
 
 void RenderThreadImpl::OnSystemColorsChanged(int32_t aqua_color_variant) {
-#if BUILDFLAG(IS_MAC)
   // Let blink know it should invalidate and recalculate styles for elements
   // that rely on system colors, such as the accent and highlight colors.
   blink::SystemColorsChanged();
-#else
-  NOTREACHED();
-#endif
 }
+#endif
 
 void RenderThreadImpl::UpdateSystemColorInfo(
     mojom::UpdateSystemColorInfoParamsPtr params) {

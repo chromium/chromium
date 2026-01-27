@@ -391,7 +391,9 @@ class CONTENT_EXPORT RenderThreadImpl
                                base::TimeDelta http_rtt,
                                base::TimeDelta transport_rtt,
                                double bandwidth_kbps) override;
+#if BUILDFLAG(IS_ANDROID)
   void SetWebKitSharedTimersSuspended(bool suspend) override;
+#endif
   void InitializeRenderer(
       const std::string& user_agent,
       const blink::UserAgentMetadata& user_agent_metadata,
@@ -399,9 +401,11 @@ class CONTENT_EXPORT RenderThreadImpl
       blink::mojom::OriginTrialsSettingsPtr origin_trial_settings,
       blink::mojom::PerformanceTier cpu_performance_tier,
       uint64_t trace_id) override;
+#if BUILDFLAG(IS_MAC)
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
   void OnSystemColorsChanged(int32_t aqua_color_variant) override;
+#endif
   void UpdateSystemColorInfo(
       mojom::UpdateSystemColorInfoParamsPtr params) override;
   void PurgePluginListCache() override;
