@@ -59,37 +59,199 @@ To keep the dependency graph as precise as possible, we use a pattern called
 `BrowserWindowFeature` or `TabFeature` without depending on features. This also
 allows for easier unit and integration testing.
 
-## Feature Design Example
+## Feature Design Examples in Production
 
 All features should be designed in accordance with the above architecture.
-Consider the following simplified example of a Chrome feature: Users can
-opt-into the goat-counting feature. Enabling this feature adds a button to the
-operating system menu bar, and to every chrome window. Clicking either button
-will pop open a new window that shows goats, one for each time the current web
-page has used the window.alert API.
 
-* The opt-in state, like most Chrome settings, should be scoped to a profile. We
-  will create a new ProfileKeyedService subclass that tracks this state. We'll
-  call this GoatKeyedService. This also means that the user would need to enable
-  this feature on a per-profile basis.
-* The operating system button must be shared by all profiles. We will create a
-  new GoatOsButtonFeature stored in GlobalFeatures. This will observe
-  GoatKeyedServices to determine whether to show the button, and what clicking
-  the button will do.
-* The window button is per-window. We will create a new GoatWindowFeature stored
-  in BrowserWindowFeatures.
-* We must store state that is specific to each tab: number of calls to
-  window.alert. We will create a GoatTabFeature (one per tab) that is
-  responsible for tracking this on a per-tab basis. If the web-page navigates,
-  the count is reset.
-* When the user clicks either button, the new window will be scoped to the tab.
-  So closing the tab will close the new window. This means that the controller
-  for the new window will also be scoped to the GoatTabFeature.
+The following examples demonstrate best practices for Tab feature and Browser
+feature development, including dependency injection, construction, and modular
+BUILD.gn setup.
 
-Observation: All state should be scoped to the appropriate primitive, so that
-different layers don't need to know about each other. As an example, it's an
-anti-pattern to have a profile service care about or track state of individual
-tabs. This pattern also prevents categories of use-after-free and similar bugs.
+### Simple Tab Feature: `JsOptimizationsPageActionController`
+
+`JsOptimizationsPageActionController`
+[[link]](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/js_optimization/js_optimizations_page_action_controller.h)
+is a simple tab-scoped feature that controls the visibility of a page action
+icon.
+
+*   **Dependency Injection:** It avoids global state and `Browser*` by taking
+    exactly what it needs in its constructor, being `tabs::TabInterface&` and
+    `page_actions::PageActionController&`.
+*   **Construction:** It is instantiated in `TabFeatures::Init()`.
+*   **Modular BUILD.gn:** It lives in its own directory
+    `chrome/browser/ui/views/js_optimization/BUILD.gn`
+    [[link]](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/js_optimization/BUILD.gn),
+    defining separate `js_optimization` and `impl` targets for its headers and
+    implementation respectively.
+
+```cpp
+// chrome/browser/ui/views/js_optimization/js_optimizations_page_action_controller.h
+class JsOptimizationsPageActionController : public tabs::ContentsObservingTabFeature {
+ public:
+  JsOptimizationsPageActionController(
+      tabs::TabInterface& tab_interface,
+      page_actions::PageActionController& page_action_controller);
+  ...
+};
+
+// chrome/browser/ui/tabs/tab_features.cc
+js_optimizations_page_action_controller_ =
+    std::make_unique<JsOptimizationsPageActionController>(
+        tab, *page_action_controller_);
+```
+
+```gn
+# chrome/browser/ui/views/js_optimization/BUILD.gn
+source_set("js_optimization") {
+  sources = [ "js_optimizations_page_action_controller.h" ]
+  public_deps = [
+    "//chrome/browser/ui/tabs",
+    "//components/tabs:public",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "js_optimizations_page_action_controller.cc" ]
+  public_deps = [
+    ":js_optimization",
+    "//chrome/browser:primitives",
+    "//chrome/browser/site_protection",
+    "//chrome/browser/site_protection:utils",
+    "//chrome/browser/ui/actions",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/page_action",
+  ]
+}
+```
+
+### Complicated Tab Feature: `CommerceUiTabHelper`
+
+`CommerceUiTabHelper`
+[[link]](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/commerce/commerce_ui_tab_helper.h)
+is a more complex tab-scoped feature that manages tab-specific state and
+operations for commerce features. It requires several dependencies and
+integrates with `TabFeatures::GetUserDataFactory()`.
+
+*   **Dependency Injection:** It takes exactly the dependencies it needs, such
+    as `ShoppingService*`, in its constructor.
+*   **Construction:** It is instantiated in `TabFeatures::Init()` using
+    `GetUserDataFactory().CreateInstance<...>()`.
+    *   This automatically manages the lifetime of the object and allows it to
+        be accessed via `TabInterface::GetUnownedUserDataHost()`.
+    *   The impl uses the unowned user data pattern to to expose the class
+        instance via the static `CommerceUiTabHelper::From(TabInterface*)`.
+*   **Modular BUILD.gn:** It lives in its own directory
+    `chrome/browser/ui/commerce/BUILD.gn`
+    [[link]](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/commerce/BUILD.gn),
+    defining a `commerce` target for headers for itself and other classes in its
+    directory, with a separate `impl`.
+
+```cpp
+// chrome/browser/ui/commerce/commerce_ui_tab_helper.h
+class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
+ public:
+  CommerceUiTabHelper(tabs::TabInterface& tab_interface,
+                      ShoppingService* shopping_service,
+                      bookmarks::BookmarkModel* model,
+                      image_fetcher::ImageFetcher* image_fetcher,
+                      SidePanelRegistry* side_panel_registry);
+  ...
+};
+
+// chrome/browser/ui/tabs/tab_features.cc
+commerce_ui_tab_helper_ =
+    GetUserDataFactory().CreateInstance<commerce::CommerceUiTabHelper>(
+        tab, tab,
+        commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+        BookmarkModelFactory::GetForBrowserContext(profile),
+        ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+            ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly),
+        side_panel_registry_.get());
+```
+
+### Simple Browser Feature: `SessionServiceTabGroupSyncObserver`
+
+`SessionServiceTabGroupSyncObserver`
+[[link]](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h)
+is a simple browser-scoped feature that observes tab group sync events and
+updates the session service.
+
+*   **Dependency Injection:** It takes exactly what it needs in its constructor,
+    being `Profile*`, `TabStripModel*`, and `SessionID`.
+*   **Construction:** It is instantiated in `BrowserWindowFeatures::Init()`.
+*   **Modular BUILD.gn:** It lives in
+    `chrome/browser/ui/tabs/saved_tab_groups/BUILD.gn`
+    [[link]](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/tabs/saved_tab_groups/BUILD.gn),
+    defining a `saved_tab_groups` rule for headers with a corresponding separate
+    `impl`.
+
+```cpp
+// chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h
+class SessionServiceTabGroupSyncObserver
+    : public TabGroupSyncService::Observer {
+ public:
+  SessionServiceTabGroupSyncObserver(Profile* profile,
+                                     TabStripModel* tab_strip_model,
+                                     SessionID session_id);
+ ...
+};
+
+// chrome/browser/ui/browser_window/internal/browser_window_features.cc
+session_service_tab_group_sync_observer_ =
+    std::make_unique<tab_groups::SessionServiceTabGroupSyncObserver>(
+        profile, browser->GetTabStripModel(), browser->GetSessionID());
+```
+
+### Complicated Browser Feature: `VerticalTabStripStateController`
+
+`VerticalTabStripStateController`
+[[link]](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h)
+is a complex browser-scoped feature that manages the state of the vertical tab
+strip.
+
+*   **Dependency Injection:** It takes multiple dependencies via its
+    constructor, including `BrowserWindowInterface*`, `PrefService*`, and
+    `SessionService*`.
+*   **Construction:** It is instantiated in `BrowserWindowFeatures::Init()`
+    using `GetUserDataFactory().CreateInstance<...>()`.
+    *   This automatically manages the lifetime of the object and allows it to
+        be accessed via `BrowserWindowInterface::GetUnownedUserDataHost()`
+    *   The impl uses the unowned user data pattern to to expose the class
+        instance via the static
+        `VerticalTabStripStateController::From(BrowserWindowInterface*)`.
+*   **Modular BUILD.gn:** It has a modular build setup in
+    `chrome/browser/ui/tabs/BUILD.gn`
+    [[link]](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/tabs/BUILD.gn),
+    defining a `tabs` rule for headers with a separate `impl`.
+
+```cpp
+// chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h
+class VerticalTabStripStateController : public SessionServiceBaseObserver,
+                                        public BrowserListObserver {
+ public:
+  DECLARE_USER_DATA(VerticalTabStripStateController);
+
+  explicit VerticalTabStripStateController(
+      BrowserWindowInterface* browser_window,
+      PrefService* pref_service,
+      actions::ActionItem* root_action_item,
+      SessionService* session_service,
+      SessionID session_id,
+      std::optional<bool> restored_state_collapsed,
+      std::optional<int> restored_state_uncollapsed_width);
+  ...
+};
+
+// chrome/browser/ui/browser_window/internal/browser_window_features.cc
+vertical_tab_strip_state_controller_ =
+    GetUserDataFactory().CreateInstance<tabs::VerticalTabStripStateController>(
+        *browser, browser, profile->GetPrefs(),
+        browser_actions_->root_action_item(),
+        SessionServiceFactory::GetForProfile(browser_->GetProfile()),
+        browser_->GetSessionID(), restored_state_collapsed,
+        restored_state_uncollapsed_width);
+```
 
 ## Modularity
 All features should be logically grouped in the directory structure with
