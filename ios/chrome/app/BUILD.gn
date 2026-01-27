@@ -76,6 +76,23 @@ source_set("app") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("tasks_handling") {
+  sources = [
+    "task_orchestrator.h",
+    "task_orchestrator.mm",
+    "task_request.h",
+    "task_request.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("app_trampoline") {
   sources = [ "chrome_exe_main.mm" ]
 }
