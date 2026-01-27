@@ -183,6 +183,10 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
     return;
   }
 
+  if (![self canHandlePartialTranslateSelectionInWebState:webState]) {
+    return;
+  }
+
   base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   __weak __typeof(self) weakSelf = self;
 
