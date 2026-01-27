@@ -27,6 +27,7 @@
 class AccountCapabilities;
 class AccountCapabilitiesFetcher;
 class AccountCapabilitiesFetcherFactory;
+class AccountInfoFetcher;
 class GaiaAccountInfoFetcher;
 class AccountTrackerService;
 class ProfileOAuth2TokenService;
@@ -181,7 +182,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
   // Holds references to account info fetchers keyed by account_id.
-  std::unordered_map<CoreAccountId, std::unique_ptr<GaiaAccountInfoFetcher>>
+  std::unordered_map<CoreAccountId, std::unique_ptr<AccountInfoFetcher>>
       user_info_requests_;
 
   std::unique_ptr<AccountCapabilitiesFetcherFactory>

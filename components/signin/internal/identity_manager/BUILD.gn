@@ -13,6 +13,8 @@ source_set("identity_manager") {
     "account_capabilities_fetcher_factory.h",
     "account_fetcher_service.cc",
     "account_fetcher_service.h",
+    "account_info_fetcher.cc",
+    "account_info_fetcher.h",
     "account_info_util.cc",
     "account_info_util.h",
     "account_tracker_service.cc",

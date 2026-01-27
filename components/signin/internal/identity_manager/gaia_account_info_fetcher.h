@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/signin/internal/identity_manager/account_info_fetcher.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
@@ -24,7 +25,8 @@ class ProfileOAuth2TokenService;
 // scope and uses it to fetch account information. This does not handle
 // refreshing the information and is meant to be used in a one shot fashion.
 // Fetching is started automatically as soon as an instance is created.
-class GaiaAccountInfoFetcher : public OAuth2AccessTokenManager::Consumer,
+class GaiaAccountInfoFetcher : public AccountInfoFetcher,
+                               public OAuth2AccessTokenManager::Consumer,
                                public gaia::GaiaOAuthClient::Delegate {
  public:
   GaiaAccountInfoFetcher(
