@@ -699,6 +699,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [self destroyViewControllersAndMediators];
   [self notifyDestroyCompleted];
   self.exiting = NO;
+  [self.presentationEnvironment lensOverlayDidDisappear];
 }
 
 #pragma mark - Exit helpers
@@ -1193,6 +1194,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _associatedTabHelper->SetLensOverlayCommandsHandler(self);
   _associatedTabHelper->SetLensOverlayUIAttachedAndAlive(true);
 
+  [self.presentationEnvironment lensOverlayDidPrepare];
   return YES;
 }
 

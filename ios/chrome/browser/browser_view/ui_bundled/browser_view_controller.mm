@@ -2941,6 +2941,14 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
 #pragma mark - LensOverlayPresentationEnvironment
 
+- (void)lensOverlayDidPrepare {
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
+  }
+
+  [self.geminiHandler hideFloatyIfInvokedAnimated:NO];
+}
+
 - (void)lensOverlayWillAppear {
   [_sideSwipeCoordinator setEnabled:NO];
   _lensOverlayVisible = YES;
@@ -2951,6 +2959,14 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   [_sideSwipeCoordinator setEnabled:YES];
   _lensOverlayVisible = NO;
   self.contentArea.accessibilityElementsHidden = self.contentAreaObstructed;
+}
+
+- (void)lensOverlayDidDisappear {
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
+  }
+
+  [self.geminiHandler showFloatyIfInvokedAnimated:YES];
 }
 
 - (void)lensOverlayDidReadjustPresentation {
