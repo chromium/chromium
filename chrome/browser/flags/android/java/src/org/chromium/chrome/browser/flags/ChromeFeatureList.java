@@ -889,7 +889,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sClankStartupLatencyInjection =
             newCachedFlag(CLANK_STARTUP_LATENCY_INJECTION, false);
     public static final CachedFlag sClearIntentWhenRecreated =
-            newCachedFlag(CLEAR_INTENT_WHEN_RECREATED, /* defaultValue= */ true);
+            newCachedFlag(CLEAR_INTENT_WHEN_RECREATED, /* defaultValue= */ false);
     public static final CachedFlag sCommandLineOnNonRooted =
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
     public static final CachedFlag sContextMenuPictureInPictureAndroid =
