@@ -10,7 +10,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -52,6 +51,7 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
@@ -125,16 +125,7 @@ public class FeedStream implements Stream {
                                                     mRecyclerView, options.actionSourceView())
                                             != null;
                     if (isFromFeedContent) {
-                        boolean isCtrlOn = (mLastMetaState & KeyEvent.META_CTRL_ON) != 0;
-                        boolean isShiftOn = (mLastMetaState & KeyEvent.META_SHIFT_ON) != 0;
-                        if (isCtrlOn) {
-                            disposition =
-                                    isShiftOn
-                                            ? WindowOpenDisposition.NEW_FOREGROUND_TAB
-                                            : WindowOpenDisposition.NEW_BACKGROUND_TAB;
-                        } else if (isShiftOn) {
-                            disposition = WindowOpenDisposition.NEW_WINDOW;
-                        }
+                        disposition = BrowserUiUtils.getDispositionFromMetaState(mLastMetaState);
                     }
                     mLastMetaState = 0;
                     openSuggestionUrl(url, disposition, /* inGroup= */ false, options);
