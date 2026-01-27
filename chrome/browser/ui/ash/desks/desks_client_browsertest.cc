@@ -1449,7 +1449,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskTemplateJson) {
       GetTemplateJson(desk_template->uuid(), browser()->profile());
 
   // content of the conversion is tested in:
-  // components/desks_storage/core/desk_template_conversion_unittests.cc in this
+  // components/desks_storage/core/desk_template_conversion_unittest.cc in this
   // case we're simply interested in whether or not we got content back.
   ASSERT_TRUE(!template_json.empty());
 }

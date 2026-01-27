@@ -52,7 +52,7 @@ using storage::FileSystemURLSet;
 // multi-file-system-context environment.
 // Basic combined tests (single-thread / single-file-system-context)
 // that involve LocalFileSyncContext are also in
-// syncable_file_system_unittests.cc.
+// syncable_file_system_unittest.cc.
 
 namespace sync_file_system {
 

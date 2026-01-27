@@ -232,7 +232,7 @@ std::u16string GetStringFUTF16Int(int message_id, int64_t a);
 // For complex messages with input parameters of multiple types (int,
 // double, time, string; e.g. "At 3:45 on Feb 3, 2016, 5 files are downloaded
 // at 3 MB/s."), use base::i18n::MessageFormatter.
-// message_format_unittests.cc also has more examples of plural formatting.
+// message_formatter_unittest.cc also has more examples of plural formatting.
 COMPONENT_EXPORT(UI_BASE)
 std::u16string GetPluralStringFUTF16(int message_id, int number);
 COMPONENT_EXPORT(UI_BASE)
