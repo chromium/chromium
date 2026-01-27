@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 
 #include <algorithm>
+#include <iterator>
 #include <string>
-#include <unordered_set>
 
 #include "base/functional/bind.h"
 #include "base/timer/timer.h"
@@ -23,6 +23,7 @@
 #include "components/translate/core/browser/translate_prefs.h"
 #include "content/public/browser/web_ui.h"
 #include "media/base/media_switches.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -161,16 +162,16 @@ base::ListValue CaptionsHandler::GetAvailableLanguagePacks() {
   std::vector<std::string> enabled_and_available_languages;
   std::vector<base::DictValue> available_language_packs;
   {
-    auto enabled_languages =
+    std::vector<std::string> enabled_languages =
         speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages();
-    auto available_languages =
+    std::vector<std::string> available_languages =
         speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
-    auto available_languages_set = std::unordered_set<std::string>(
-        available_languages.begin(), available_languages.end());
-    for (const auto& enabled_language : enabled_languages) {
-      if (available_languages_set.find(enabled_language) !=
-          available_languages_set.end()) {
-        enabled_and_available_languages.push_back(enabled_language);
+    absl::flat_hash_set<std::string> available_languages_set = {
+        std::make_move_iterator(available_languages.begin()),
+        std::make_move_iterator(available_languages.end())};
+    for (auto& enabled_language : enabled_languages) {
+      if (available_languages_set.contains(enabled_language)) {
+        enabled_and_available_languages.push_back(std::move(enabled_language));
       }
     }
   }
