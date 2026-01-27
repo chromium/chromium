@@ -4,7 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {Page, type SkillsAppElement} from './app.js';
+import {type SkillsAppElement} from './app.js';
+import {Page} from './sidebar.js';
 
 // TODO(b/475607224): Instead of hardcoding, add resource strings for
 // labels and names.
@@ -22,18 +23,16 @@ export function getHtml(this: SkillsAppElement) {
 
 <div id="content" class="no-outline cr-scrollable">
   <div id="left">
-    <div role="navigation" id="sidebar">
-      <cr-menu-selector id="menu" selectable="a" selected-attribute="selected"
-          @iron-select="${this.onMenuItemSelect_}">
-        ${this.menuItems_.map(menuItem => html`
-          <a role="menuitem" href="${menuItem.page}" class="cr-nav-menu-item"
-              @click="${this.onMenuItemClick_}">
-            <cr-icon icon="${menuItem.icon}"></cr-icon>
-            <div class="name">${menuItem.name}</div>
-          </a>
-        `)}
-      </cr-menu-selector>
+    <div role="navigation" id="sidebar" ?hidden="${this.narrow_}">
+      <skills-sidebar id="menu" .selectedPage="${this.selectedPage_}">
+      </skills-sidebar>
     </div>
+    <cr-drawer id="drawer" heading="Skills"
+        @close="${this.onDrawerClose_}">
+      <skills-sidebar id="drawerMenu" slot="body"
+          .selectedPage="${this.selectedPage_}">
+      </skills-sidebar>
+    </cr-drawer>
   </div>
 <cr-page-selector id="page" attr-for-selected="page-index"
     .selected="${this.selectedPage_}">

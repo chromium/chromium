@@ -11,30 +11,33 @@ build_webui("build") {
   grd_prefix = "skills"
 
   static_files = [
-    "skills.html",
-    "skills_dialog.html",
     "images/skills_empty.svg",
     "images/skills_empty_dark.svg",
+    "skills.html",
+    "skills_dialog.html",
   ]
 
   ts_composite = true
   ts_files = [
-    "app.ts",
     "app.html.ts",
-    "icons.html.ts",
-    "user_skills_page.html.ts",
-    "user_skills_page.ts",
-    "discover_skills_page.ts",
+    "app.ts",
     "discover_skills_page.html.ts",
+    "discover_skills_page.ts",
+    "icons.html.ts",
+    "sidebar.html.ts",
+    "sidebar.ts",
     "skills_dialog_app.html.ts",
     "skills_dialog_app.ts",
     "skills_dialog_browser_proxy.ts",
+    "user_skills_page.html.ts",
+    "user_skills_page.ts",
   ]
 
   css_files = [
     "app.css",
-    "skills_dialog.css",
     "shared_vars.css",
+    "sidebar.css",
+    "skills_dialog.css",
     "user_skills_page.css",
   ]
 

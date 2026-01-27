@@ -5,10 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=./shared_vars.css.js
- * #import=//resources/cr_elements/cr_nav_menu_item_style_lit.css.js
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #scheme=relative
- * #include=cr-shared-style-lit cr-nav-menu-item-style-lit
+ * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -51,15 +50,6 @@ cr-page-selector {
   max-width: var(--main-content-max-width);
   margin: 0 auto;
   padding-top: 16px;
-}
-
-.cr-nav-menu-item {
-  display: flex;
-  --cr-icon-color: var(--iron-icon-fill-color);
-  padding-bottom: 14px;
-  padding-inline-end: 16px;
-  padding-inline-start: 24px;
-  padding-top: 14px;
 }
 
 .name {

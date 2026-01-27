@@ -6,7 +6,7 @@ import 'chrome://skills/app.js';
 
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import type {SkillsAppElement} from 'chrome://skills/app.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('SkillsAppPage', function() {
@@ -29,14 +29,16 @@ suite('SkillsAppPage', function() {
   test('InitialPageLoadsCorrectly', function() {
     assertEquals('Skills', app.$.toolbar.pageName);
 
-    const tabs =
-        app.shadowRoot.querySelectorAll<HTMLElement>('.cr-nav-menu-item');
+    const tabs = app.$.menu.shadowRoot.querySelectorAll<HTMLElement>(
+        '.cr-nav-menu-item');
+    assertTrue(!!tabs);
     assertEquals(2, tabs.length);
   });
 
   test('SkillMenuTabsNavigateCorrectly', async function() {
-    const tabs =
-        app.shadowRoot.querySelectorAll<HTMLElement>('.cr-nav-menu-item');
+    const tabs = app.$.menu.shadowRoot.querySelectorAll<HTMLElement>(
+        '.cr-nav-menu-item');
+    assertTrue(!!tabs);
 
     tabs[0]!.click();
     await microtasksFinished();
@@ -51,7 +53,7 @@ suite('SkillsAppPage', function() {
     navigateTo('/test');
     await microtasksFinished();
     const selectedTab =
-        app.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+        app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
     assertEquals('chrome://skills/user-skills', window.location.href);
     assertEquals(
         'Your skills', selectedTab!.querySelector('.name')!.textContent.trim());
@@ -60,11 +62,10 @@ suite('SkillsAppPage', function() {
   test('DiscoverSkillsPageLoadsCorrectly', async function() {
     navigateTo('/discover-skills');
     await eventToPromise('iron-select', app.$.menu);
-    assertEquals(1, app.$.menu.selected);
     assertEquals('chrome://skills/discover-skills', window.location.href);
     await microtasksFinished();
     const selectedTab =
-        app.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+        app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
     assertEquals(
         'Discover skills',
         selectedTab!.querySelector('.name')!.textContent.trim());
@@ -73,11 +74,10 @@ suite('SkillsAppPage', function() {
   test('UserSkillsPageLoadsCorrectly', async function() {
     navigateTo('/user-skills');
     await microtasksFinished();
-    assertEquals(0, app.$.menu.selected);
     assertEquals('chrome://skills/user-skills', window.location.href);
     await microtasksFinished();
     const selectedTab =
-        app.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+        app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
     assertEquals(
         'Your skills', selectedTab!.querySelector('.name')!.textContent.trim());
   });
@@ -92,9 +92,21 @@ suite('SkillsAppPage', function() {
     await microtasksFinished();
     assertEquals('/discover-skills', CrRouter.getInstance().getPath());
     const selectedTab =
-        app.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+        app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
     assertEquals(
         'Discover skills',
         selectedTab!.querySelector('.name')!.textContent.trim());
+  });
+
+  test('NarrowModeHidesSidebarAndShowsDrawer', async function() {
+    app.$.toolbar.narrow = true;
+    await microtasksFinished();
+    assertTrue(app.$.toolbar.showMenu);
+    assertFalse(app.$.drawer.open);
+    assertTrue(app.$.menu.parentElement!.hidden);
+
+    app.$.toolbar.dispatchEvent(new CustomEvent('cr-toolbar-menu-click'));
+    await microtasksFinished();
+    assertTrue(app.$.drawer.open);
   });
 });

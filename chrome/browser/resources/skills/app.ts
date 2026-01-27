@@ -3,39 +3,32 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import './icons.html.js';
 import './user_skills_page.js';
 import './discover_skills_page.js';
+import './sidebar.js';
 
-import type {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
+import type {CrToolbarElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrRouter} from '//resources/js/cr_router.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import type {SkillsSidebarElement} from './sidebar.js';
+import {Page} from './sidebar.js';
 import type {UserSkillsPageElement} from './user_skills_page.js';
-
-interface MenuItem {
-  icon: string;
-  name: string;
-  page: Page;
-}
-
-export enum Page {
-  USER_SKILLS = 'user-skills',
-  DISCOVER_SKILLS = 'discover-skills',
-}
 
 export interface SkillsAppElement {
   $: {
-    menu: CrMenuSelector,
+    menu: SkillsSidebarElement,
     toolbar: CrToolbarElement,
     userSkillsPage: UserSkillsPageElement,
+    drawer: CrDrawerElement,
   };
 }
 
@@ -54,29 +47,15 @@ export class SkillsAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      menuItems_: {type: Array},
       selectedPage_: {type: String},
       narrow_: {type: Boolean},
+      isDrawerOpen_: {type: Boolean},
     };
   }
 
-  // TODO(b/475607224): Instead of hardcoding, add resource strings for
-  // the name.
   protected accessor selectedPage_: Page = Page.USER_SKILLS;
-  protected accessor menuItems_: MenuItem[] = [
-    {
-      icon: 'skills:bolt',
-      name: 'Your skills',
-      page: Page.USER_SKILLS,
-    },
-    {
-      icon: 'skills:explore',
-      name: 'Discover skills',
-      page: Page.DISCOVER_SKILLS,
-    },
-  ];
   protected accessor narrow_: boolean = false;
-
+  protected accessor isDrawerOpen_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
 
   override connectedCallback() {
@@ -84,11 +63,12 @@ export class SkillsAppElement extends CrLitElement {
     const router = CrRouter.getInstance();
     // Initial load.
     this.onPathChanged_(router.getPath());
-    // Listen for path changes.
+    // Listen for path changes, only triggers via popstate.
     this.eventTracker_.add(
         router, 'cr-router-path-changed',
         (e: Event) => this.onPathChanged_((e as CustomEvent<string>).detail));
-    this.eventTracker_.add(this, 'navigate-to', (e: Event) => {
+    // Event-driven navigation changes.
+    this.eventTracker_.add(document, 'navigate-to', (e: Event) => {
       const detail = (e as CustomEvent<{path: string}>).detail;
       this.onPathChanged_(detail.path);
     });
@@ -102,46 +82,38 @@ export class SkillsAppElement extends CrLitElement {
   // Called when the page is narrow & the menu button appears.
   // Clicking it should open a cr-drawer.
   protected onMenuButtonClick_() {
-    // TODO(crbug.com/476409946): Implement this.
+    this.$.drawer.openDrawer();
+    this.isDrawerOpen_ = this.$.drawer.open;
   }
 
   // Called whenever the text in the search input field changes.
   protected onSearchChanged_() {
-    // TODO(crbug.com/475604659): Implement this.
+    // TODO(b/475604659): Implement this.
   }
 
   // Called whenever the browser window drops below the defined
   // narrow-threshold.
   protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
     this.narrow_ = e.detail.value;
-    // TODO(crbug.com/476409946): Add additional impl here.
+    if (this.isDrawerOpen_ && !this.narrow_) {
+      this.$.drawer.close();
+    }
   }
 
-  protected onMenuItemSelect_(e: CustomEvent<{item: HTMLAnchorElement}>): void {
-    const newUrl = new URL(e.detail.item.href);
-    // Does not trigger the popstate to update on path changes.
-    CrRouter.getInstance().setPath(newUrl.pathname);
-    // Manually trigger the path change event since setPath does not trigger it.
-    this.onPathChanged_(newUrl.pathname);
-  }
-
-  // Prevent clicks on sidebar items from navigating and reloading the page.
-  // onMenuItemSelect_() handles loading new pages.
-  protected onMenuItemClick_(e: Event) {
-    e.preventDefault();
+  protected onDrawerClose_() {
+    this.isDrawerOpen_ = this.$.drawer.open;
   }
 
   private onPathChanged_(newPath: string) {
     const path = newPath.substring(1);
-    let menuItem = this.menuItems_.find(item => item.page === path);
+    let menuItem = this.$.menu.menuItems.find(item => item.page === path);
     // If the menu item isn't found, replace the undefined path with the
     // first menu item.
     if (!menuItem) {
       window.history.replaceState(
-          undefined, '', '/' + this.menuItems_[0]!.page);
-      menuItem = this.menuItems_[0];
+          undefined, '', '/' + this.$.menu.menuItems[0]!.page);
+      menuItem = this.$.menu.menuItems[0];
     }
-    this.$.menu.selected = this.menuItems_.indexOf(menuItem!);
     this.selectedPage_ = menuItem!.page;
   }
 }
