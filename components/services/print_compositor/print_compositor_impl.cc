@@ -5,7 +5,6 @@
 #include "components/services/print_compositor/print_compositor_impl.h"
 
 #include <algorithm>
-#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -30,7 +29,6 @@
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/docs/SkMultiPictureDocument.h"
-#include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -58,7 +56,7 @@ namespace {
 sk_sp<SkDocument> MakeDocument(
     const std::string& creator,
     const std::string& title,
-    ui::AXTree* accessibility_tree,
+    ui::AXTreeUpdate* accessibility_tree,
     mojom::GenerateDocumentOutline generate_document_outline,
     mojom::PrintCompositor::DocumentType document_type,
     SkWStream& stream) {
@@ -68,8 +66,10 @@ sk_sp<SkDocument> MakeDocument(
   }
 #endif
   CHECK_EQ(document_type, mojom::PrintCompositor::DocumentType::kPDF);
-  return MakePdfDocument(creator, title, accessibility_tree,
-                         generate_document_outline, &stream);
+  return MakePdfDocument(
+      creator, title,
+      accessibility_tree ? *accessibility_tree : ui::AXTreeUpdate(),
+      generate_document_outline, &stream);
 }
 
 }  // namespace
@@ -207,11 +207,7 @@ void PrintCompositorImpl::AddSubframeContent(
 
 void PrintCompositorImpl::SetAccessibilityTree(
     const ui::AXTreeUpdate& accessibility_tree) {
-  if (!accessibility_tree.nodes.empty()) {
-    accessibility_tree_ = std::make_unique<ui::AXTree>(accessibility_tree);
-  } else {
-    accessibility_tree_.reset();
-  }
+  accessibility_tree_ = accessibility_tree;
 }
 
 void PrintCompositorImpl::CompositePage(
@@ -262,7 +258,7 @@ void PrintCompositorImpl::FinishDocumentComposition(
 
   if (!doc_info_->doc) {
     doc_info_->doc = MakeDocument(
-        creator_, title_, accessibility_tree_.get(), generate_document_outline_,
+        creator_, title_, &accessibility_tree_, generate_document_outline_,
         doc_info_->document_type, doc_info_->compositor_stream);
   }
 
@@ -432,17 +428,16 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
   // document composition is not in effect, i.e. when handling
   // CompositeDocumentToPdf() call.
   SkDynamicMemoryWStream wstream;
-  sk_sp<SkDocument> doc = MakeDocument(
-      creator_, title_, doc_info_ ? nullptr : accessibility_tree_.get(),
-      generate_document_outline_, document_type, wstream);
+  sk_sp<SkDocument> doc =
+      MakeDocument(creator_, title_, doc_info_ ? nullptr : &accessibility_tree_,
+                   generate_document_outline_, document_type, wstream);
 
   if (doc_info_) {
     // Create full document if needed.
     if (!doc_info_->doc) {
-      doc_info_->doc =
-          MakeDocument(creator_, title_, accessibility_tree_.get(),
-                       generate_document_outline_, doc_info_->document_type,
-                       doc_info_->compositor_stream);
+      doc_info_->doc = MakeDocument(
+          creator_, title_, &accessibility_tree_, generate_document_outline_,
+          doc_info_->document_type, doc_info_->compositor_stream);
     }
   }
 

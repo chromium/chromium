@@ -17,12 +17,9 @@
 #include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
+#include "ui/accessibility/ax_tree_update_forward.h"
 
 class SkWStream;
-
-namespace ui {
-class AXTree;
-}
 
 namespace printing {
 
@@ -46,14 +43,10 @@ using TypefaceSerializationContext = ContentProxySet;
 // Stores the set of serialized image ids used by the content.
 using ImageSerializationContext = ContentProxySet;
 
-// The AXTree, if it exists, must outlive the returned SkDocument.
-// When the SKDocument includes a tagged structured tree, the SKDocument may
-// have `const char *` references to c strings in the AXTree. These references
-// will be read when SkDocument::close() is called.
 sk_sp<SkDocument> MakePdfDocument(
     std::string_view creator,
     std::string_view title,
-    ui::AXTree* tree,
+    const ui::AXTreeUpdate& accessibility_tree,
     mojom::GenerateDocumentOutline generate_document_outline,
     SkWStream* stream);
 

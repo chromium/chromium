@@ -30,7 +30,6 @@
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/docs/SkMultiPictureDocument.h"
-#include "ui/accessibility/ax_tree.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -205,19 +204,9 @@ bool MetafileSkia::FinishDocument() {
   SkDynamicMemoryWStream stream;
   sk_sp<SkDocument> doc;
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
-
-  // Create the AXTree if accessibility data is available. If accessibility data
-  // is available, the SkDocument returned by MakePdfDocument will include
-  // pointers (`const char*`) to strings in the `AXTree tree`. These references
-  // are only read in `doc->close();`, so they must persist until then.
-  std::unique_ptr<ui::AXTree> tree;
-  if (!accessibility_tree_.nodes.empty()) {
-    tree = std::make_unique<ui::AXTree>(accessibility_tree_);
-  }
-
   switch (data_->type) {
     case mojom::SkiaDocumentType::kPDF:
-      doc = MakePdfDocument(printing::GetAgent(), title_, tree.get(),
+      doc = MakePdfDocument(printing::GetAgent(), title_, accessibility_tree_,
                             generate_document_outline_, &stream);
       break;
 #if BUILDFLAG(IS_WIN)

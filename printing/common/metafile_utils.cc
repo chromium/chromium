@@ -97,15 +97,12 @@ void AppendFormFieldDescFromAccessibleName(const ui::AXNode* ax_node,
   } else if (name_from == ax::mojom::NameFrom::kAttribute ||
              name_from == ax::mojom::NameFrom::kTitle ||
              name_from == ax::mojom::NameFrom::kCssAltText) {
-    // `appendTextString` does not copy, it only saves a `const char*`.
-    // The ax_node->data() is expected to persist, as part of the AXTree,
-    // until that value is read in `SkDocument::Close()`.
     const std::string& name_ref =
         ax_node->data().GetStringAttribute(ax::mojom::StringAttribute::kName);
     if (!name_ref.empty()) {
       tag->fAttributes.appendTextString(
           chrome_pdf::kPDFPrintFieldAttributeOwner,
-          chrome_pdf::kPDFPrintFieldDescAttribute, name_ref.c_str());
+          chrome_pdf::kPDFPrintFieldDescAttribute, SkString(name_ref));
     }
   }
 }
@@ -338,7 +335,7 @@ namespace printing {
 sk_sp<SkDocument> MakePdfDocument(
     std::string_view creator,
     std::string_view title,
-    ui::AXTree* tree,
+    const ui::AXTreeUpdate& accessibility_tree,
     mojom::GenerateDocumentOutline generate_document_outline,
     SkWStream* stream) {
   SkPDF::Metadata metadata;
@@ -351,12 +348,15 @@ sk_sp<SkDocument> MakePdfDocument(
   metadata.fRasterDPI = 300.0f;
 
   SkPDF::StructureElementNode tag_root = {};
-  if (tree && RecursiveBuildStructureTree(tree->root(), &tag_root)) {
-    metadata.fStructureElementTreeRoot = &tag_root;
-    metadata.fOutline =
-        generate_document_outline == mojom::GenerateDocumentOutline::kNone
-            ? SkPDF::Metadata::Outline::None
-            : SkPDF::Metadata::Outline::StructureElementHeaders;
+  if (!accessibility_tree.nodes.empty()) {
+    ui::AXTree tree(accessibility_tree);
+    if (RecursiveBuildStructureTree(tree.root(), &tag_root)) {
+      metadata.fStructureElementTreeRoot = &tag_root;
+      metadata.fOutline =
+          generate_document_outline == mojom::GenerateDocumentOutline::kNone
+              ? SkPDF::Metadata::Outline::None
+              : SkPDF::Metadata::Outline::StructureElementHeaders;
+    }
   }
 
   return SkPDF::MakeDocument(stream, metadata);
