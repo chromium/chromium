@@ -1319,6 +1319,7 @@ static_library("test_support") {
     "payments/test_payments_network_interface.h",
     "payments/test_virtual_card_enrollment_manager.cc",
     "payments/test_virtual_card_enrollment_manager.h",
+    "payments/virtual_card_enrollment_manager_test_api.h",
     "single_field_fillers/autocomplete/mock_autocomplete_history_manager.cc",
     "single_field_fillers/autocomplete/mock_autocomplete_history_manager.h",
     "single_field_fillers/mock_single_field_fill_router.cc",
