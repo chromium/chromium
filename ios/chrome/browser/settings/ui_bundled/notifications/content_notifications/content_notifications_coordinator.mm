@@ -55,6 +55,10 @@
 }
 
 - (void)start {
+  ContentNotificationsViewController* viewController =
+      [[ContentNotificationsViewController alloc]
+          initWithStyle:ChromeTableViewStyle()];
+  self.viewController = viewController;
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
