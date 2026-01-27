@@ -34,7 +34,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class InstanceSwitcherCoordinatorUnitTest {
     @Mock private FrameLayout mInstanceListContainer;
     @Mock private RecyclerView mActiveInstancesList;
+    @Mock private RecyclerView mInactiveInstancesList;
     @Mock private View mCommandItem;
+    @Mock private RecyclerView.Adapter mAdapter;
 
     private static final int MIN_COMMAND_ITEM_HEIGHT_PX = 173;
 
@@ -44,6 +46,7 @@ public class InstanceSwitcherCoordinatorUnitTest {
         when(mInstanceListContainer.getViewTreeObserver()).thenReturn(mock(ViewTreeObserver.class));
         when(mCommandItem.getVisibility()).thenReturn(View.VISIBLE);
         when(mCommandItem.getMeasuredHeight()).thenReturn(200);
+        when(mInactiveInstancesList.getAdapter()).thenReturn(mAdapter);
     }
 
     @Test
@@ -62,6 +65,7 @@ public class InstanceSwitcherCoordinatorUnitTest {
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
                         mInstanceListContainer,
                         mActiveInstancesList,
+                        mInactiveInstancesList,
                         /* isInactiveListShowing= */ false,
                         mCommandItem,
                         MIN_COMMAND_ITEM_HEIGHT_PX);
@@ -87,6 +91,7 @@ public class InstanceSwitcherCoordinatorUnitTest {
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
                         mInstanceListContainer,
                         mActiveInstancesList,
+                        mInactiveInstancesList,
                         /* isInactiveListShowing= */ false,
                         mCommandItem,
                         MIN_COMMAND_ITEM_HEIGHT_PX);
@@ -116,6 +121,7 @@ public class InstanceSwitcherCoordinatorUnitTest {
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
                         mInstanceListContainer,
                         mActiveInstancesList,
+                        mInactiveInstancesList,
                         /* isInactiveListShowing= */ false,
                         mCommandItem,
                         MIN_COMMAND_ITEM_HEIGHT_PX);
@@ -130,10 +136,12 @@ public class InstanceSwitcherCoordinatorUnitTest {
         when(mInstanceListContainer.getLayoutParams()).thenReturn(capturedParams);
 
         // Simulate switching to the inactive instances list, that adds the listener again.
+        when(mAdapter.getItemCount()).thenReturn(5);
         listener =
                 InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
                         mInstanceListContainer,
                         mActiveInstancesList,
+                        mInactiveInstancesList,
                         /* isInactiveListShowing= */ true,
                         mCommandItem,
                         MIN_COMMAND_ITEM_HEIGHT_PX);
@@ -143,5 +151,34 @@ public class InstanceSwitcherCoordinatorUnitTest {
         verify(mInstanceListContainer, times(2)).setLayoutParams(paramsCaptor.capture());
         assertEquals("Height is incorrect.", 0, paramsCaptor.getValue().height);
         assertEquals("Weight is incorrect.", 1, paramsCaptor.getValue().weight, 0);
+    }
+
+    @Test
+    public void testInstanceListGlobalLayoutListener_InactiveListEmpty() {
+        // Simulate XML spec.
+        var initialLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, 0);
+        initialLayoutParams.weight = 1;
+        when(mInstanceListContainer.getLayoutParams()).thenReturn(initialLayoutParams);
+
+        // Simulate an empty inactive instances list.
+        when(mAdapter.getItemCount()).thenReturn(0);
+
+        // Run the GlobalLayoutListener callback
+        var listener =
+                InstanceSwitcherCoordinator.addInstanceListGlobalLayoutListener(
+                        mInstanceListContainer,
+                        mActiveInstancesList,
+                        mInactiveInstancesList,
+                        /* isInactiveListShowing= */ true,
+                        mCommandItem,
+                        MIN_COMMAND_ITEM_HEIGHT_PX);
+        listener.onGlobalLayout();
+
+        // Verify layout params
+        ArgumentCaptor<LayoutParams> paramsCaptor = ArgumentCaptor.forClass(LayoutParams.class);
+        verify(mInstanceListContainer).setLayoutParams(paramsCaptor.capture());
+        assertEquals(
+                "Height is incorrect.", LayoutParams.WRAP_CONTENT, paramsCaptor.getValue().height);
+        assertEquals("Weight is incorrect.", 0, paramsCaptor.getValue().weight, 0);
     }
 }
