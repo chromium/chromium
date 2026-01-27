@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.isRestorableInstance;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
@@ -1574,9 +1575,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
         MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
 
-        // Notify Recent Tabs page that the instance is closing.
-        int normalTabCount = MultiInstancePersistentStore.readNormalTabCount(mInstanceId);
-        notifyInstanceClosed(mInstanceId, /* isPermanentDeletion= */ normalTabCount == 0);
+        // Activity#isFinishing() is true in case of explicit user intent, for eg. task swipe up
+        // from Android Recents or app trigger, for eg. programmatically invoking #finish() on the
+        // activity. When the activity gets destroyed by the system in the background while keeping
+        // its task alive, we don't want such closure to be reflected on Recent Tabs because an
+        // instance with a live task is still considered active. Therefore, we will notify Recent
+        // Tabs of activity destruction only if the activity is finishing, with the caveat that a
+        // subsequent task kill will also not be reflected as an instance closure until the Recent
+        // Tabs page is reopened.
+        if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
+            if (mActivity.isFinishing()) {
+                // Notify Recent Tabs page that the instance is closing.
+                int normalTabCount = MultiInstancePersistentStore.readNormalTabCount(mInstanceId);
+                notifyInstanceClosed(mInstanceId, /* isPermanentDeletion= */ normalTabCount == 0);
+            }
+        }
 
         if (mInstanceId != INVALID_WINDOW_ID) {
             ApplicationStatus.unregisterActivityStateListener(this);

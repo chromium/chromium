@@ -2932,11 +2932,13 @@ public class MultiInstanceManagerApi31UnitTest {
                 /* instanceId= */ 1, /* taskId= */ TASK_ID_63, SupportedProfileType.MIXED);
 
         // Destroy an instance with non-zero tab count.
+        when(mTabbedActivityTask62.isFinishing()).thenReturn(true);
         MultiInstancePersistentStore.writeTabCount(
                 /* instanceId= */ 0, /* normalTabCount= */ 3, /* incognitoTabCount= */ 0);
         manager1.onDestroy();
 
         // Destroy an instance with zero tabs.
+        when(mTabbedActivityTask63.isFinishing()).thenReturn(true);
         MultiInstancePersistentStore.writeTabCount(
                 /* instanceId= */ 1, /* normalTabCount= */ 0, /* incognitoTabCount= */ 0);
         manager2.onDestroy();
@@ -2944,6 +2946,38 @@ public class MultiInstanceManagerApi31UnitTest {
         InOrder inOrderVerifier = inOrder(mRecentlyClosedTracker);
         inOrderVerifier.verify(mRecentlyClosedTracker).onInstanceClosed(any(), eq(false));
         inOrderVerifier.verify(mRecentlyClosedTracker).onInstanceClosed(any(), eq(true));
+    }
+
+    @Test
+    public void testOnDestroy_notifiesInstanceClosedNotInvoked() {
+        var manager1 = createMultiInstanceManager(mTabbedActivityTask62);
+        var manager2 = createMultiInstanceManager(mTabbedActivityTask63);
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        manager1.initialize(
+                /* instanceId= */ 0, /* taskId= */ TASK_ID_62, SupportedProfileType.MIXED);
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
+        manager1.initialize(
+                /* instanceId= */ 1, /* taskId= */ TASK_ID_63, SupportedProfileType.MIXED);
+
+        // Simulate that the activity is being destroyed but task is still alive.
+        when(mTabbedActivityTask62.isFinishing()).thenReturn(false);
+
+        // Destroy an instance with non-zero tab count.
+        MultiInstancePersistentStore.writeTabCount(
+                /* instanceId= */ 0, /* normalTabCount= */ 3, /* incognitoTabCount= */ 0);
+        manager1.onDestroy();
+
+        // Simulate that the activity is being destroyed but task is still alive.
+        when(mTabbedActivityTask63.isFinishing()).thenReturn(false);
+
+        // Destroy an instance with zero tabs.
+        MultiInstancePersistentStore.writeTabCount(
+                /* instanceId= */ 1, /* normalTabCount= */ 0, /* incognitoTabCount= */ 0);
+        manager2.onDestroy();
+
+        InOrder inOrderVerifier = inOrder(mRecentlyClosedTracker);
+        inOrderVerifier.verify(mRecentlyClosedTracker, never()).onInstanceClosed(any(), eq(false));
+        inOrderVerifier.verify(mRecentlyClosedTracker, never()).onInstanceClosed(any(), eq(true));
     }
 
     private TabGroupMetadata getTabGroupMetadata(boolean isIncognito) {
