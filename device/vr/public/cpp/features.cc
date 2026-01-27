@@ -57,7 +57,7 @@ BASE_FEATURE(kOpenXrExtendedFeatureSupport, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the OpenXr runtime is allowed to try to use the spatial
 // entities framework.
-BASE_FEATURE(kOpenXrSpatialEntities, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOpenXrSpatialEntities, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the spatial entities framework is allowed to use depth-based
 // hit tests or only plane-based ones.
