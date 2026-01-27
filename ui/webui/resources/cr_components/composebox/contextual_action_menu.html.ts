@@ -71,6 +71,7 @@ export function getHtml(this: ContextualActionMenuElement) {
           data-model="${mode}"
           @click="${this.onModelClick_}"
           ?disabled="${this.isModelDisabled_(mode)}">
+        <cr-icon icon="${model.icon}"></cr-icon>
         <span>${this.i18n(model.id)}</span>
         ${this.isModelActive_(mode) ? html`
           <cr-icon class="multi-tab-icon"

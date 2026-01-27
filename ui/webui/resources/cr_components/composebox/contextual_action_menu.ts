@@ -108,18 +108,21 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
 
   protected get supportedModels_(): Map<ModelMode, {
     id: string,
+    icon: string,
   }> {
     return new Map([
       [
         ModelMode.kGeminiProAutoroute,
         {
           id: 'geminiModelAuto',
+          icon: 'composebox:autoModel',
         },
       ],
       [
         ModelMode.kGeminiPro,
         {
           id: 'geminiModelThinking',
+          icon: 'composebox:thinkingModel',
         },
       ],
     ]);
