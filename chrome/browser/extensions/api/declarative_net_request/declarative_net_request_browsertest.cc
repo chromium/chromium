@@ -51,6 +51,7 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -3766,11 +3767,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const GURL second_tab_url = get_url_for_host("nomatch.com");
   NavigateToURLInNewTab(second_tab_url);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/419057482): Support cross-platform browser windows.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
-#endif
+  TabListInterface* tab_list =
+      TabListInterface::From(browser_window_interface());
+  ASSERT_TRUE(tab_list);
+  ASSERT_EQ(2, tab_list->GetTabCount());
+  ASSERT_EQ(1, tab_list->GetActiveIndex());
 
   int second_tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
   EXPECT_EQ("", action->GetDisplayBadgeText(second_tab_id));
