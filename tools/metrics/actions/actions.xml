@@ -27725,6 +27725,11 @@ should be able to be added at any place in this file.
   <description>User opened the data saver item in the app menu.</description>
 </action>
 
+<action name="MobileMenuDefaultBrowserPromo">
+  <owner>eleanorlee@google.com</owner>
+  <description>MobileMenuDefaultBrowserPromo</description>
+</action>
+
 <action name="MobileMenuDeleteFromReadingList">
   <owner>wylieb@google.com</owner>
   <description>
