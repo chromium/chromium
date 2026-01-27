@@ -22,8 +22,14 @@ class ResizedAvatarCacheTest : public PlatformTest {
         initWithIdentityAvatarSize:IdentityAvatarSize::TableViewIcon];
     identity1_ = [FakeSystemIdentity fakeIdentity1];
     fake_system_identity_manager()->AddIdentity(identity1_);
+    // Resets the avatar to simulate that it was not fetched yet.
+    fake_system_identity_manager()->UpdateSystemIdentityAvatar(
+        identity1_.gaiaId, nil, /*send_notification=*/false);
     identity2_ = [FakeSystemIdentity fakeIdentity2];
     fake_system_identity_manager()->AddIdentity(identity2_);
+    // Resets the avatar to simulate that it was not fetched yet.
+    fake_system_identity_manager()->UpdateSystemIdentityAvatar(
+        identity2_.gaiaId, nil, /*send_notification=*/false);
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {

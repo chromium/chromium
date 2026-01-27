@@ -277,8 +277,6 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
 TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
 
-  OCMExpect([consumer_mock_ updatePrimaryAccount]);
-
   OCMExpect([consumer_mock_
       updateAccountListWithGaiaIDsToAdd:@[]
                         gaiaIDsToRemove:@[

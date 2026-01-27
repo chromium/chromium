@@ -324,6 +324,7 @@ source_set("fake_system_identity_manager") {
     "//google_apis",
     "//ios/chrome/browser/signin/model:constants",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
+    "//ui/base:test_support",
   ]
   frameworks = [ "Foundation.framework" ]
 }

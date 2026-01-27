@@ -7,6 +7,8 @@
 #import "base/check.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
 
 @implementation FakeSystemIdentityDetails {
   AccountCapabilities _pendingCapabilities;
@@ -19,6 +21,8 @@
     _pendingCapabilitiesMutator =
         std::make_unique<AccountCapabilitiesTestMutator>(&_pendingCapabilities);
     _fakeIdentity = fakeIdentity;
+    _cachedAvatar = ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+        CGSizeMake(32, 32), UIColor.whiteColor);
     DCHECK(_fakeIdentity);
   }
   return self;
@@ -36,6 +40,11 @@
 
 - (AccountCapabilitiesTestMutator*)pendingCapabilitiesMutator {
   return _pendingCapabilitiesMutator.get();
+}
+
+- (void)setCachedAvatar:(UIImage*)cachedAvatar {
+  _cachedAvatar = cachedAvatar;
+  _avatarUpdatedFromLastFetch = YES;
 }
 
 @end

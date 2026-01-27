@@ -142,6 +142,18 @@ void FakeSystemIdentityManager::ForgetIdentityFromOtherApplication(
   ForgetIdentityAsync(identity, base::DoNothing(), /*removed_by_user=*/false);
 }
 
+void FakeSystemIdentityManager::UpdateSystemIdentityAvatar(
+    const GaiaId& gaia_id,
+    UIImage* avatar,
+    bool send_notification) {
+  FakeSystemIdentityDetails* details = [storage_ detailsForGaiaID:gaia_id];
+  details.cachedAvatar = avatar;
+  details.avatarUpdatedFromLastFetch = YES;
+  if (send_notification) {
+    FireIdentityUpdated(details.fakeIdentity);
+  }
+}
+
 AccountCapabilitiesTestMutator*
 FakeSystemIdentityManager::GetPendingCapabilitiesMutator(
     id<SystemIdentity> identity) {
@@ -401,6 +413,14 @@ void FakeSystemIdentityManager::FetchAvatarForIdentity(
     // nothing to do.
     return;
   }
+  FakeSystemIdentityDetails* details =
+      [storage_ detailsForGaiaID:identity.gaiaId];
+  if (!details.avatarUpdatedFromLastFetch) {
+    // If the avatar was not updated, async fetch should not be triggered. This
+    // will avoid to call FireIdentityUpdated() for no reason, and simulate the
+    // real behavior.
+    return;
+  }
   PostClosure(
       FROM_HERE,
       base::BindOnce(&FakeSystemIdentityManager::FetchAvatarForIdentityAsync,
@@ -563,6 +583,7 @@ void FakeSystemIdentityManager::FetchAvatarForIdentityAsync(
   if (!details.cachedAvatar) {
     details.cachedAvatar = ios::provider::GetSigninDefaultAvatar();
   }
+  details.avatarUpdatedFromLastFetch = NO;
 
   FireIdentityUpdated(identity);
 }
