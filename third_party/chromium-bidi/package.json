@@ -205,7 +205,7 @@
     "eslint-plugin-mocha": "11.2.0",
     "eslint-plugin-prettier": "5.5.5",
     "eslint-plugin-promise": "7.2.1",
-    "globals": "17.1.0",
+    "globals": "17.2.0",
     "mocha": "11.7.5",
     "package-directory": "8.1.0",
     "prettier": "3.8.1",
