@@ -25,7 +25,7 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
  public:
   FakeSharedURLLoaderFactory() = default;
 
-  const std::vector<network::ResourceRequest> resource_requests() {
+  const std::vector<network::ResourceRequest>& resource_requests() {
     return resource_requests_;
   }
 
