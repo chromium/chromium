@@ -16,6 +16,8 @@ source_set("on_device_translation") {
     "component_manager.h",
     "file_operation_proxy_impl.cc",
     "file_operation_proxy_impl.h",
+    "installer_impl.cc",
+    "installer_impl.h",
     "service_controller.cc",
     "service_controller.h",
     "service_controller_manager.cc",
@@ -68,6 +70,7 @@ source_set("unit_tests") {
     "../component_updater/translate_kit_component_installer_unittest.cc",
     "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
     "file_operation_proxy_impl_unittest.cc",
+    "installer_impl_unittest.cc",
   ]
   deps = [
     ":on_device_translation",
@@ -82,7 +85,9 @@ source_set("unit_tests") {
     "//components/on_device_translation/public/mojom",
     "//components/on_device_translation/service/:test_support",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
+    "//components/update_client",
     "//content/test:test_support",
   ]
   if (is_chromeos) {
