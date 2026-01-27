@@ -332,6 +332,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_VP9Profile2) {
   ASSERT_EQ(kTestColorSpace, vpcc_box.color_space);
 }
 
+#if BUILDFLAG(ENABLE_AV1_DECODER)
 TEST(VTConfigUtil, CreateFormatExtensions_AV1) {
   // Dumped from a main profile 10-bit AV1 stream.
   constexpr uint8_t kAvc1Box[] = {0x81, 0x04, 0x4c, 0x00, 0x0a, 0x0b,
@@ -361,6 +362,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_AV1) {
   ASSERT_EQ(kTestProfile, av1c_box.profile);
   // No other fields are parsed by mp4::AV1CodecConfigurationRecord.
 }
+#endif
 
 TEST(VTConfigUtil, GetImageBufferColorSpace_BT601) {
   auto cs = VideoColorSpace::REC601();
