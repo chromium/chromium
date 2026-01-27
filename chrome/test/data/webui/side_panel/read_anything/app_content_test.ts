@@ -739,6 +739,42 @@ suite('AppContent', () => {
           app.$.container.className);
       assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
     });
+
+    test('toggles links with Readability', async () => {
+      const url = 'https://www.google.com/';
+      const text = 'the best link ever';
+      chrome.readingMode.isReadabilityEnabled = true;
+      contentController.configureTrustedTypes();
+      readingMode.htmlContent = `<a href="${url}">${text}</a>`;
+      app.updateContent();
+      await microtasksFinished();
+
+      // By default, links are enabled.
+      chrome.readingMode.linksEnabled = true;
+
+      let link = app.$.container.querySelector('a');
+      assertTrue(!!link, '<a> should be present before speech');
+
+      // When speech becomes active, the link should be converted to a `<span>`.
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+
+      link = app.$.container.querySelector('a');
+      assertFalse(!!link, '<a> should be gone after speech starts');
+      let span = app.$.container.querySelector<HTMLElement>('span[data-link]');
+      assertTrue(!!span, '<span> should be present after speech starts');
+      assertEquals(url, span.dataset['link']);
+
+      // Stop speech, which should show the link again.
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+
+      link = app.$.container.querySelector('a');
+      assertTrue(!!link, '<a> should be back after speech stops');
+      span = app.$.container.querySelector('span[data-link]');
+      assertFalse(!!span, '<span> should be gone after speech stops');
+      assertEquals(url, link.href);
+    });
   });
 
   test('playing from selection clears selection', () => {
