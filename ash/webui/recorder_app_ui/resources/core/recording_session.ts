@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {
+  POWER_BARS_PER_SECOND,
   POWER_SCALE_FACTOR,
   SAMPLE_RATE,
   SAMPLES_PER_POWER_BAR,
@@ -133,7 +134,7 @@ export class RecordingSession {
 
   readonly progress = computed<RecordingProgress>(() => {
     const powers = this.powers.value;
-    const length = powers.length * SAMPLES_PER_POWER_BAR / SAMPLE_RATE;
+    const length = powers.length / POWER_BARS_PER_SECOND;
     return {
       length,
       powers,
@@ -400,22 +401,27 @@ export class RecordingSession {
       this.initSystemAudioSourceNode(),
     ]);
 
-    // Resume the context and start the recorder & audio processor after we've
-    // initialized all sources.
-    await this.audioCtx.resume();
-
     this.audioProcessor.port.start();
     this.mediaRecorder.start(TIME_SLICE_MS);
+
+    // Resume the context after we've initialized all sources and started the
+    // recorder & audio processor, so they can catch the first block of samples.
+    await this.audioCtx.resume();
   }
 
   async finish(): Promise<Blob> {
     const stopped = new Promise((resolve) => {
       this.mediaRecorder.addEventListener('stop', resolve, {once: true});
     });
+    // Suspend the context first, so the worklet stops producing samples and
+    // we have a stable processedSamples count.
+    await this.audioCtx.suspend();
     this.mediaRecorder.stop();
-    this.audioProcessor.port.close();
-    await this.stopSodaSession().result;
     await stopped;
+    await this.stopSodaSession().result;
+    // Close the worklet port after stopping `mediaRecorder` and Soda session to
+    // make sure in-flight audio data is processed.
+    this.audioProcessor.port.close();
 
     this.closeMicAudioSourceNode();
     this.closeSystemAudioSourceNode();
