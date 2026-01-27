@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -37,6 +38,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /** Render tests for the {@link TabSwitcherDrawable} with notification feature. */
@@ -126,6 +128,7 @@ public class TabSwitcherDrawableRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testTabSwitcherDrawable_newTabPageIncognito() throws Exception {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 

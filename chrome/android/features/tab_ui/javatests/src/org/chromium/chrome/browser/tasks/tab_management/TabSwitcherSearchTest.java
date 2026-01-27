@@ -28,6 +28,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
@@ -212,6 +213,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testZeroPrefixSuggestions_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));
@@ -306,6 +308,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testTypedSuggestions_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));
@@ -325,6 +328,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testSearchActivityBackButton_Incognito() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         mPage.openNewIncognitoTabOrWindowFast()
@@ -496,6 +500,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testTypedSuggestions_OpenSearchSuggestion_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));
