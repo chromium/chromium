@@ -4,6 +4,7 @@
 
 #include "components/permissions/permission_manager.h"
 
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/common/url_constants.h"
@@ -11,6 +12,10 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
@@ -26,8 +31,13 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class PermissionManagerTest : public ChromeRenderViewHostTestHarness {
+class PermissionManagerTest : public base::test::WithFeatureOverride,
+                              public ChromeRenderViewHostTestHarness {
  public:
+  PermissionManagerTest()
+      : base::test::WithFeatureOverride(
+            content_settings::features::kApproximateGeolocationPermission) {}
+
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
         /*profile_manager=*/false);
@@ -85,16 +95,18 @@ class PermissionManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetPermission(const GURL& url,
-                     blink::PermissionType permission,
+                     ContentSettingsType content_settings_type,
                      PermissionStatus status) {
     permissions::PermissionsClient::Get()
         ->GetSettingsMap(GetBrowserContext())
-        ->SetContentSettingDefaultScope(
-            url, url,
-            permissions::PermissionUtil::PermissionTypeToContentSettingsType(
-                permission),
-            permissions::PermissionUtil::PermissionStatusToContentSetting(
-                status));
+        ->SetPermissionSettingDefaultScope(
+            url, url, content_settings_type,
+            content_settings::PermissionSettingsRegistry::GetInstance()
+                ->Get(content_settings_type)
+                ->delegate()
+                .ToPermissionSetting(
+                    permissions::PermissionUtil::
+                        PermissionStatusToContentSetting(status)));
   }
 
  private:
@@ -103,7 +115,9 @@ class PermissionManagerTest : public ChromeRenderViewHostTestHarness {
   base::OnceClosure quit_closure_;
 };
 
-TEST_F(PermissionManagerTest, GetCanonicalOriginSearch) {
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PermissionManagerTest);
+
+TEST_P(PermissionManagerTest, GetCanonicalOriginSearch) {
   const GURL google_com("https://www.google.com");
   const GURL google_de("https://www.google.de");
   const GURL other_url("https://other.url");
@@ -116,46 +130,47 @@ TEST_F(PermissionManagerTest, GetCanonicalOriginSearch) {
   const GURL webui_ntp = GURL(chrome::kChromeUINewTabPageURL);
 
   // "Normal" URLs are not affected by GetCanonicalOrigin.
-  EXPECT_EQ(google_com,
-            permissions::PermissionUtil::GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, google_com, google_com));
-  EXPECT_EQ(google_de,
-            permissions::PermissionUtil::GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, google_de, google_de));
-  EXPECT_EQ(other_url,
-            permissions::PermissionUtil::GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, other_url, other_url));
-  EXPECT_EQ(google_base,
-            permissions::PermissionUtil::GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, google_base, google_base));
+  EXPECT_EQ(google_com, permissions::PermissionUtil::GetCanonicalOrigin(
+                            content_settings::GeolocationContentSettingsType(),
+                            google_com, google_com));
+  EXPECT_EQ(google_de, permissions::PermissionUtil::GetCanonicalOrigin(
+                           content_settings::GeolocationContentSettingsType(),
+                           google_de, google_de));
+  EXPECT_EQ(other_url, permissions::PermissionUtil::GetCanonicalOrigin(
+                           content_settings::GeolocationContentSettingsType(),
+                           other_url, other_url));
+  EXPECT_EQ(google_base, permissions::PermissionUtil::GetCanonicalOrigin(
+                             content_settings::GeolocationContentSettingsType(),
+                             google_base, google_base));
 
   // The WebUI NTP URL gets mapped to the Google base URL.
-  EXPECT_EQ(google_base,
-            permissions::PermissionUtil::GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, webui_ntp, top_level_ntp));
+  EXPECT_EQ(google_base, permissions::PermissionUtil::GetCanonicalOrigin(
+                             content_settings::GeolocationContentSettingsType(),
+                             webui_ntp, top_level_ntp));
 
   // chrome-search://remote-ntp and other URLs are not affected.
-  EXPECT_EQ(remote_ntp,
-            permissions::PermissionUtil::GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, remote_ntp, top_level_ntp));
-  EXPECT_EQ(google_com,
-            permissions::PermissionUtil::GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, google_com, top_level_ntp));
+  EXPECT_EQ(remote_ntp, permissions::PermissionUtil::GetCanonicalOrigin(
+                            content_settings::GeolocationContentSettingsType(),
+                            remote_ntp, top_level_ntp));
+  EXPECT_EQ(google_com, permissions::PermissionUtil::GetCanonicalOrigin(
+                            content_settings::GeolocationContentSettingsType(),
+                            google_com, top_level_ntp));
   EXPECT_EQ(other_chrome_search,
             permissions::PermissionUtil::GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, other_chrome_search,
-                top_level_ntp));
+                content_settings::GeolocationContentSettingsType(),
+                other_chrome_search, top_level_ntp));
 }
 
-TEST_F(PermissionManagerTest, GetCanonicalOriginPermissionDelegation) {
+TEST_P(PermissionManagerTest, GetCanonicalOriginPermissionDelegation) {
   const GURL requesting_origin("https://www.requesting.com");
   const GURL embedding_origin("https://www.google.de");
 
   // The embedding origin should be returned except in the case of notifications
   // and, if they're enabled, extensions.
-  EXPECT_EQ(embedding_origin, permissions::PermissionUtil::GetCanonicalOrigin(
-                                  ContentSettingsType::GEOLOCATION,
-                                  requesting_origin, embedding_origin));
+  EXPECT_EQ(embedding_origin,
+            permissions::PermissionUtil::GetCanonicalOrigin(
+                content_settings::GeolocationContentSettingsType(),
+                requesting_origin, embedding_origin));
   EXPECT_EQ(requesting_origin, permissions::PermissionUtil::GetCanonicalOrigin(
                                    ContentSettingsType::NOTIFICATIONS,
                                    requesting_origin, embedding_origin));
@@ -164,12 +179,12 @@ TEST_F(PermissionManagerTest, GetCanonicalOriginPermissionDelegation) {
       "chrome-extension://abcdefghijklmnopqrstuvxyz");
   EXPECT_EQ(extensions_requesting_origin,
             permissions::PermissionUtil::GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, extensions_requesting_origin,
-                embedding_origin));
+                content_settings::GeolocationContentSettingsType(),
+                extensions_requesting_origin, embedding_origin));
 #endif
 }
 
-TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
+TEST_P(PermissionManagerTest, SubscribeWithPermissionDelegation) {
   const char* kOrigin1 = "https://example.com";
   const char* kOrigin2 = "https://google.com";
   const GURL url1 = GURL(kOrigin1);
@@ -202,7 +217,7 @@ TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
                 geolocation_permission_descriptor, child));
 
   // Allow access for the top level origin.
-  SetPermission(url1, blink::PermissionType::GEOLOCATION,
+  SetPermission(url1, content_settings::GeolocationContentSettingsType(),
                 PermissionStatus::GRANTED);
 
   EXPECT_EQ(PermissionStatus::GRANTED,
