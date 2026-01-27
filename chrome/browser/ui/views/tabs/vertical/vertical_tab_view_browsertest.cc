@@ -108,7 +108,12 @@ class NewTabTitleObserver : public TabStripModelObserver {
 };
 
 class VerticalTabViewTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {};
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  void WaitForLayout(views::View* view) {
+    ASSERT_TRUE(base::test::RunUntil([&]() { return !view->needs_layout(); }));
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -223,6 +228,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleLoading) {
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
+  TabCollectionNode* tab_node = root_node()->children()[1]->children()[0].get();
+  VerticalTabView* tab_view = static_cast<VerticalTabView*>(tab_node->view());
   auto* alert_indicator =
       BrowserElementsViews::From(browser())->GetViewAs<AlertIndicatorButton>(
           kTabAlertIndicatorButtonElementId);
@@ -240,6 +247,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
   web_contents->SetAudioMuted(false);
   tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetActiveTab(),
                                       TabChangeType::kAll);
+  WaitForLayout(tab_view);
   EXPECT_TRUE(alert_indicator->GetVisible());
   EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
             alert_indicator->alert_state_for_testing());
@@ -250,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
   web_contents->SetAudioMuted(true);
   tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetActiveTab(),
                                       TabChangeType::kAll);
-  EXPECT_TRUE(alert_indicator->GetVisible());
+  WaitForLayout(tab_view);
   EXPECT_EQ(tabs::TabAlert::kAudioMuting,
             alert_indicator->alert_state_for_testing());
   EXPECT_EQ(tabs::TabAlert::kAudioMuting,
@@ -267,6 +275,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
   recently_audible_helper->FireRecentlyAudibleTimerForTesting();
   tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetActiveTab(),
                                       TabChangeType::kAll);
+  WaitForLayout(tab_view);
   EXPECT_TRUE(alert_indicator->GetVisible());
   EXPECT_EQ(std::nullopt, alert_indicator->alert_state_for_testing());
   EXPECT_EQ(tabs::TabAlert::kAudioMuting,
@@ -276,6 +285,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
 // This test doesn't need the EnableTabMuting feature flag because it directly
 // calls NotifyClick() on the button controller.
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
+  TabCollectionNode* tab_node = root_node()->children()[1]->children()[0].get();
+  VerticalTabView* tab_view = static_cast<VerticalTabView*>(tab_node->view());
   auto* alert_indicator =
       BrowserElementsViews::From(browser())->GetViewAs<AlertIndicatorButton>(
           kTabAlertIndicatorButtonElementId);
@@ -287,6 +298,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
                                       TabChangeType::kAll);
 
   // Audio should be playing initially.
+  WaitForLayout(tab_view);
   ASSERT_TRUE(alert_indicator->GetVisible());
   ASSERT_EQ(tabs::TabAlert::kAudioPlaying,
             alert_indicator->alert_state_for_testing());
@@ -294,6 +306,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
 
   // After clicking the alert indicator, audio should be muted.
   alert_indicator->button_controller()->NotifyClick();
+  WaitForLayout(tab_view);
   EXPECT_TRUE(alert_indicator->GetVisible());
   EXPECT_EQ(tabs::TabAlert::kAudioMuting,
             alert_indicator->alert_state_for_testing());
@@ -301,6 +314,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorMute) {
 
   // After clicking the alert indicator again, audio should no longer be muted.
   alert_indicator->button_controller()->NotifyClick();
+  WaitForLayout(tab_view);
   EXPECT_TRUE(alert_indicator->GetVisible());
   EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
             alert_indicator->alert_state_for_testing());
@@ -329,10 +343,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
 
   // After the mouse enters the tab, the close button should be showing.
   event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
+  WaitForLayout(tab_view);
   EXPECT_TRUE(close_button->GetVisible());
 
   // After the mouse exits the tab, the close button should be hidden.
   event_generator.MoveMouseTo(gfx::Point());
+  WaitForLayout(tab_view);
   EXPECT_FALSE(close_button->GetVisible());
 
   // Collapse the tab strip.
@@ -343,6 +359,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
   // After the mouse enters the tab, the close button should still be hidden
   // since the tab is not active.
   event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
+  WaitForLayout(tab_view);
   EXPECT_FALSE(close_button->GetVisible());
 }
 
@@ -497,6 +514,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, LogsTabCloseMetrics_SplitView) {
                          ->GetHandle());
   close_button = static_cast<VerticalTabView*>(tab_node->view())
                      ->close_button_for_testing();
+  WaitForLayout(tab_node->view());
   ASSERT_TRUE(close_button->GetVisible());
 
   close_button->button_controller()->NotifyClick();

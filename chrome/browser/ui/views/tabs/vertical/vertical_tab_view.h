@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/common/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/container/node_hash_map.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/context_menu_controller.h"
@@ -69,6 +70,7 @@ class VerticalTabView : public views::View,
 
  private:
   // views::View
+  void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -122,8 +124,8 @@ class VerticalTabView : public views::View,
 
   void UpdateBorder();
 
-  void UpdateAlertIndicatorVisibility();
-  void UpdateCloseButtonVisibility();
+  // Calculates the visibilities of child views based on various states.
+  absl::node_hash_map<views::View*, bool> CalculateChildVisibilities() const;
 
   void UpdateColors();
   void UpdateContrastRatioValues();

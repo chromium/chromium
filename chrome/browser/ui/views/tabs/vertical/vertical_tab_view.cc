@@ -233,7 +233,7 @@ void VerticalTabView::UpdateHovered(bool hovered) {
   }
 
   UpdateColors();
-  UpdateCloseButtonVisibility();
+  InvalidateLayout();
 }
 
 std::optional<SkColor> VerticalTabView::GetBackgroundColor() {
@@ -245,6 +245,11 @@ std::optional<SkColor> VerticalTabView::GetBackgroundColor() {
         IsFrameActive(), GetColorProvider());
   }
   return std::nullopt;
+}
+
+void VerticalTabView::Layout(PassKey) {
+  LayoutSuperclass<views::View>(this);
+  alert_indicator_->UpdateAlertIndicatorAnimation();
 }
 
 bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -420,6 +425,8 @@ gfx::Rect VerticalTabView::GetChildBounds(const gfx::Rect& container,
 
 views::ProposedLayout VerticalTabView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
+  auto child_visibility_map = CalculateChildVisibilities();
+
   const int width = size_bounds.width().value_or(
       VerticalTabStripRegionView::kUncollapsedMaxWidth);
   const int height = GetLayoutConstant(LayoutConstant::kVerticalTabHeight);
@@ -439,9 +446,9 @@ views::ProposedLayout VerticalTabView::CalculateProposedLayout(
             ? (placed_children == 0)
             : (child.min_width + child.padding < bounds_remaining.width() ||
                placed_children < 2);
-    if (child.view->GetVisible() && can_render_child) {
+    if (child_visibility_map[child.view] && can_render_child) {
       layouts.child_layouts.emplace_back(
-          child.view.get(), child.view->GetVisible(),
+          child.view.get(), child_visibility_map[child.view],
           GetChildBounds(bounds_remaining, child, is_centered));
 
       if (!is_centered) {
@@ -454,7 +461,7 @@ views::ProposedLayout VerticalTabView::CalculateProposedLayout(
       placed_children += 1;
     } else {
       layouts.child_layouts.emplace_back(
-          child.view.get(), child.view->GetVisible(),
+          child.view.get(), child_visibility_map[child.view],
           gfx::Rect(bounds_remaining.x(), bounds_remaining.y(), 0, 0));
     }
   }
@@ -493,7 +500,6 @@ bool VerticalTabView::IsApparentlyActive() const {
 
 void VerticalTabView::AlertStateChanged() {
   // TODO(crbug.com/457525548): Update hover card.
-  UpdateAlertIndicatorVisibility();
   InvalidateLayout();
 }
 
@@ -536,13 +542,9 @@ void VerticalTabView::OnDataChanged() {
                       tab_data_.needs_attention);
 
   UpdateTitle();
-  title_->SetVisible(!pinned_);
 
   alert_indicator_->TransitionToAlertState(
       tabs::TabAlertController::GetAlertStateToShow(tab_data_.alert_state));
-
-  UpdateAlertIndicatorVisibility();
-  UpdateCloseButtonVisibility();
 
   UpdateColors();
   InvalidateLayout();
@@ -578,25 +580,37 @@ void VerticalTabView::UpdateBorder() {
   }
 }
 
-void VerticalTabView::UpdateAlertIndicatorVisibility() {
-  alert_indicator_->UpdateAlertIndicatorAnimation();
-  bool alert_indicator_visible =
-      alert_indicator_->showing_alert_state().has_value();
+absl::node_hash_map<views::View*, bool>
+VerticalTabView::CalculateChildVisibilities() const {
+  absl::node_hash_map<views::View*, bool> child_visibility_map;
 
+  child_visibility_map[title_] = !pinned_;
+
+  child_visibility_map[alert_indicator_] =
+      alert_indicator_->showing_alert_state().has_value();
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_tab_underline_view_ && (alert_indicator_->showing_alert_state() ==
                                        tabs::TabAlert::kGlicAccessing ||
                                    alert_indicator_->showing_alert_state() ==
                                        tabs::TabAlert::kGlicSharing)) {
-    alert_indicator_visible = false;
+    child_visibility_map[alert_indicator_] = false;
   }
 #endif
-  alert_indicator_->SetVisible(alert_indicator_visible);
-  icon_->SetVisible(!pinned_ || !alert_indicator_visible);
-}
 
-void VerticalTabView::UpdateCloseButtonVisibility() {
-  close_button_->SetVisible((active_ || (!collapsed_ && hovered_)) && !pinned_);
+  child_visibility_map[icon_] =
+      !pinned_ || !child_visibility_map[alert_indicator_];
+
+  if (pinned_) {
+    child_visibility_map[close_button_] = false;
+  } else if (active_) {
+    child_visibility_map[close_button_] = true;
+  } else if (collapsed_) {
+    child_visibility_map[close_button_] = false;
+  } else {
+    child_visibility_map[close_button_] = hovered_;
+  }
+
+  return child_visibility_map;
 }
 
 void VerticalTabView::UpdateColors() {
