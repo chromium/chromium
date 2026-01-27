@@ -23,7 +23,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/bottom_sheet/test:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
-    "//ios/chrome/browser/passwords/ui_bundled:constants",
+    "//ios/chrome/browser/passwords/password_suggestion/public",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/test:eg_test_support+eg2",

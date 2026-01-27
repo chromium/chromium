@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "password_suggestion_view_controller.h",
+    "password_suggestion_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/passwords/password_suggestion/public",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("password_suggestion_utils") {
+  sources = [
+    "password_suggestion_utils.h",
+    "password_suggestion_utils.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/passwords/password_suggestion/public",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ui/gfx",
+  ]
+}

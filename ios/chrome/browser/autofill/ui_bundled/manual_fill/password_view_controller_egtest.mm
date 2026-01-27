@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/test/credential_suggestion_bottom_sheet_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
+#import "ios/chrome/browser/passwords/password_suggestion/public/password_suggestion_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"

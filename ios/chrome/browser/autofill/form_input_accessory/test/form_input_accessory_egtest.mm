@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/test/credential_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
+#import "ios/chrome/browser/passwords/password_suggestion/public/password_suggestion_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"

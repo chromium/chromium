@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
+#import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"

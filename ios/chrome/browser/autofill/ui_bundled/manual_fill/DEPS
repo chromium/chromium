@@ -3,7 +3,7 @@ include_rules = [
   "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/menu/ui_bundled",
-  "+ios/chrome/browser/passwords/ui_bundled",
+  "+ios/chrome/browser/passwords/password_suggestion/ui",
   "+ios/chrome/browser/webauthn/model",
   # keep-sorted end
 ]

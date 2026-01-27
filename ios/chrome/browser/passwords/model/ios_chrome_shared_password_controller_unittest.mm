@@ -13,7 +13,7 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
 #import "components/test/ios/test_utils.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
+#import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_utils.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

@@ -43,7 +43,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_controller_delegate",
     "//ios/chrome/browser/passwords/model:store_factory",
-    "//ios/chrome/browser/passwords/ui_bundled:password_suggestion_utils",
+    "//ios/chrome/browser/passwords/password_suggestion/ui:password_suggestion_utils",
     "//ios/chrome/browser/settings/ui_bundled/password/password_sharing:password_sharing_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

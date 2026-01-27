@@ -194,6 +194,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/passwords/bottom_sheet/test:eg_app_support+eg2",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:eg_app_support+eg2",
+    "//ios/chrome/browser/passwords/password_suggestion/coordinator",
     "//ios/chrome/browser/passwords/ui_bundled",
     "//ios/chrome/browser/passwords/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/permissions/ui_bundled:eg_app_support+eg2",

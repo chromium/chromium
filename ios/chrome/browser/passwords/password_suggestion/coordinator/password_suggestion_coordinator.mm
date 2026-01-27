@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_coordinator.h"
+#import "ios/chrome/browser/passwords/password_suggestion/coordinator/password_suggestion_coordinator.h"
 
 #import "base/check.h"
 #import "base/memory/weak_ptr.h"
@@ -18,7 +18,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_view_controller.h"
+#import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

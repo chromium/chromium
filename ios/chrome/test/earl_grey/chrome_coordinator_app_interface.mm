@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_coordinator.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_coordinator.h"
+#import "ios/chrome/browser/passwords/password_suggestion/coordinator/password_suggestion_coordinator.h"
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
 #import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator.h"

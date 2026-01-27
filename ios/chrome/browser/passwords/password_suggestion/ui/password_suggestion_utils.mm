@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
+#import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_utils.h"
 
-#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
+#import "ios/chrome/browser/passwords/password_suggestion/public/password_suggestion_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"

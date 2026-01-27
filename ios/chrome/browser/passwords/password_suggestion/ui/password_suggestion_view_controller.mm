@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_view_controller.h"
+#import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/common/password_generation_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
+#import "ios/chrome/browser/passwords/password_suggestion/public/password_suggestion_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -85,7 +85,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
   [super viewDidLoad];
 
   self.view.accessibilityIdentifier =
-      kPasswordProtectionViewAccessibilityIdentifier;
+      kPasswordSuggestionViewAccessibilityIdentifier;
 }
 
 - (BOOL)canBecomeFirstResponder {

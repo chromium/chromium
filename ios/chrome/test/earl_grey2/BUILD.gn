@@ -233,6 +233,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/overscroll_actions/ui_bundled:eg2_tests",
     "//ios/chrome/browser/page_info/test",
     "//ios/chrome/browser/passwords/bottom_sheet/test:eg2_tests",
+    "//ios/chrome/browser/passwords/password_suggestion/test:eg2_tests",
     "//ios/chrome/browser/passwords/ui_bundled:eg2_tests",
     "//ios/chrome/browser/permissions/ui_bundled:eg2_tests",
     "//ios/chrome/browser/phone_number/ui_bundled:eg2_tests",

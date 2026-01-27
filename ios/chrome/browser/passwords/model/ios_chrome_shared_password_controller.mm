@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_shared_password_controller.h"
 
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_utils.h"
+#import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_utils.h"
 
 @implementation IOSChromeSharedPasswordController
 
