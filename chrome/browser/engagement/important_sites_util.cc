@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 #include <string_view>
-#include <unordered_set>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
@@ -33,6 +32,7 @@
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -172,11 +172,11 @@ bool CompareDescendingImportantInfo(
   return a.second.engagement_score > b.second.engagement_score;
 }
 
-std::unordered_set<std::string> GetSuppressedImportantDomains(
+absl::flat_hash_set<std::string> GetSuppressedImportantDomains(
     Profile* profile) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  std::unordered_set<std::string> ignoring_domains;
+  absl::flat_hash_set<std::string> ignoring_domains;
   for (ContentSettingPatternSource& site :
        map->GetSettingsForOneType(ContentSettingsType::IMPORTANT_SITE_INFO)) {
     GURL origin(site.primary_pattern.ToString());
@@ -373,26 +373,28 @@ ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
 
   PopulateInfoMapWithBookmarks(profile, engagement_map, &important_info);
 
-  std::unordered_set<std::string> suppressed_domains =
+  absl::flat_hash_set<std::string> suppressed_domains =
       GetSuppressedImportantDomains(profile);
 
-  std::vector<std::pair<std::string, ImportantDomainInfo>> items;
-  for (auto& item : important_info)
-    items.emplace_back(std::move(item));
+  std::vector<std::pair<std::string, ImportantDomainInfo>> items = {
+      std::make_move_iterator(important_info.begin()),
+      std::make_move_iterator(important_info.end())};
   std::sort(items.begin(), items.end(), &CompareDescendingImportantInfo);
 
   std::vector<ImportantDomainInfo> final_list;
-  for (std::pair<std::string, ImportantDomainInfo>& domain_info : items) {
+  final_list.reserve(std::max(max_results, items.size()));
+  for (auto& [domain, domain_info] : items) {
     if (final_list.size() >= max_results)
       return final_list;
-    if (suppressed_domains.find(domain_info.first) != suppressed_domains.end())
+    if (suppressed_domains.contains(domain)) {
       continue;
+    }
 
-    final_list.push_back(std::move(domain_info.second));
+    int32_t reason_bitfield = domain_info.reason_bitfield;
+    final_list.push_back(std::move(domain_info));
     RECORD_UMA_FOR_IMPORTANT_REASON(
         "Storage.ImportantSites.GeneratedReason",
-        "Storage.ImportantSites.GeneratedReasonCount",
-        domain_info.second.reason_bitfield);
+        "Storage.ImportantSites.GeneratedReasonCount", reason_bitfield);
   }
 
   return final_list;
