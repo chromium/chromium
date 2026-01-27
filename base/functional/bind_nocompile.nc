@@ -26,9 +26,9 @@ void NonConstFunctionWithConstObject() {
   } s;
   const S* const const_s_ptr = &s;
   // Non-`const` methods may not be bound with a `const` receiver.
-  BindRepeating(&S::Method, const_s_ptr);  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
+  std::ignore = BindRepeating(&S::Method, const_s_ptr);  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
   // `const` pointer cannot be bound to non-`const` parameter.
-  BindRepeating([] (S*) {}, const_s_ptr);  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
+  std::ignore = BindRepeating([] (S*) {}, const_s_ptr);  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
 }
 
 void WrongReceiverTypeForNonRefcounted() {
@@ -61,27 +61,27 @@ void WrongReceiverTypeForNonRefcounted() {
   D& ref_d = d;
   const E const_e;
   const E& const_ref_e = const_e;
-  BindRepeating(&A::Method, &a);                   // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&A::Method, ptr_a);                // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&A::Method, a);                    // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&C::Method, ref_c);                // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, std::ref(a));          // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, std::cref(a));         // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, rawptr_a);             // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&A::Method, rawref_a);             // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
-  BindRepeating(&B::ConstMethod, &b);              // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, &const_b);        // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, ptr_b);           // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, const_ptr_b);     // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, b);               // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&D::ConstMethod, ref_d);           // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&E::ConstMethod, const_ref_e);     // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&B::ConstMethod, std::ref(b));     // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&B::ConstMethod, std::cref(b));    // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&B::ConstMethod, rawptr_b);        // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, const_rawptr_b);  // expected-error@*:* {{Receivers may not be raw pointers.}}
-  BindRepeating(&B::ConstMethod, rawref_b);        // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
-  BindRepeating(&B::ConstMethod, const_rawref_b);  // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
+  std::ignore = BindRepeating(&A::Method, &a);                   // expected-error@*:* {{Receivers may not be raw pointers.}}
+  std::ignore = BindRepeating(&A::Method, ptr_a);                // expected-error@*:* {{Receivers may not be raw pointers.}}
+  std::ignore = BindRepeating(&A::Method, a);                    // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&C::Method, ref_c);                // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&A::Method, std::ref(a));          // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&A::Method, std::cref(a));         // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&A::Method, rawptr_a);             // expected-error@*:* {{Receivers may not be raw pointers.}}
+  std::ignore = BindRepeating(&A::Method, rawref_a);             // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
+  std::ignore = BindRepeating(&B::ConstMethod, &b);              // expected-error@*:* {{Receivers may not be raw pointers.}}
+  std::ignore = BindRepeating(&B::ConstMethod, &const_b);        // expected-error@*:* {{Receivers may not be raw pointers.}}
+  std::ignore = BindRepeating(&B::ConstMethod, ptr_b);           // expected-error@*:* {{Receivers may not be raw pointers.}}
+  std::ignore = BindRepeating(&B::ConstMethod, const_ptr_b);     // expected-error@*:* {{Receivers may not be raw pointers.}}
+  std::ignore = BindRepeating(&B::ConstMethod, b);               // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&D::ConstMethod, ref_d);           // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&E::ConstMethod, const_ref_e);     // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&B::ConstMethod, std::ref(b));     // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&B::ConstMethod, std::cref(b));    // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&B::ConstMethod, rawptr_b);        // expected-error@*:* {{Receivers may not be raw pointers.}}
+  std::ignore = BindRepeating(&B::ConstMethod, const_rawptr_b);  // expected-error@*:* {{Receivers may not be raw pointers.}}
+  std::ignore = BindRepeating(&B::ConstMethod, rawref_b);        // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
+  std::ignore = BindRepeating(&B::ConstMethod, const_rawref_b);  // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
 }
 
 void WrongReceiverTypeForRefcounted() {
@@ -99,13 +99,13 @@ void WrongReceiverTypeForRefcounted() {
   const C& const_ref_c = const_c;
   raw_ref<A> rawref_a(a);
   raw_ref<const A> const_rawref_a(const_a);
-  BindRepeating(&A::Method, a);               // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&B::Method, ref_b);           // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&C::Method, const_ref_c);     // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, std::ref(a));     // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, std::cref(a));    // expected-error@*:* {{Cannot convert `this` argument to address.}}
-  BindRepeating(&A::Method, rawref_a);        // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
-  BindRepeating(&A::Method, const_rawref_a);  // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
+  std::ignore = BindRepeating(&A::Method, a);               // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&B::Method, ref_b);           // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&C::Method, const_ref_c);     // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&A::Method, std::ref(a));     // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&A::Method, std::cref(a));    // expected-error@*:* {{Cannot convert `this` argument to address.}}
+  std::ignore = BindRepeating(&A::Method, rawref_a);        // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
+  std::ignore = BindRepeating(&A::Method, const_rawref_a);  // expected-error@*:* {{Receivers may not be raw_ref<T>.}}
 }
 
 void RemovesConst() {
@@ -114,7 +114,7 @@ void RemovesConst() {
   const int i = 0;
   const int* p = &i;
   BindRepeating([] (int&) {}).Run(i);  // expected-error {{no matching member function for call to 'Run'}}
-  BindRepeating([] (int*) {}, p);      // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
+  std::ignore = BindRepeating([] (int*) {}, p);      // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
   BindRepeating([] (int*) {}).Run(p);  // expected-error {{no matching member function for call to 'Run'}}
 }
 
@@ -124,12 +124,12 @@ void PassingIncorrectRef() {
   int i = 1;
   float f = 1.0f;
   // No wrapper.
-  BindOnce([] (int&) {}, i);       // expected-error@*:* {{Bound argument for non-const reference parameter must be wrapped in std::ref() or base::OwnedRef().}}
-  BindRepeating([] (int&) {}, i);  // expected-error@*:* {{Bound argument for non-const reference parameter must be wrapped in std::ref() or base::OwnedRef().}}
+  std::ignore = BindOnce([] (int&) {}, i);       // expected-error@*:* {{Bound argument for non-const reference parameter must be wrapped in std::ref() or base::OwnedRef().}}
+  std::ignore = BindRepeating([] (int&) {}, i);  // expected-error@*:* {{Bound argument for non-const reference parameter must be wrapped in std::ref() or base::OwnedRef().}}
   // Wrapper, but with mismatched type.
-  BindOnce([] (int&) {}, f);            // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
-  BindOnce([] (int&) {}, std::ref(f));  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
-  BindOnce([] (int&) {}, OwnedRef(f));  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
+  std::ignore = BindOnce([] (int&) {}, f);            // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
+  std::ignore = BindOnce([] (int&) {}, std::ref(f));  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
+  std::ignore = BindOnce([] (int&) {}, OwnedRef(f));  // expected-error@*:* {{Type mismatch between bound argument and bound functor's parameter.}}
 }
 
 void ArrayAsReceiver() {
@@ -139,7 +139,7 @@ void ArrayAsReceiver() {
     void Method() const {}
   };
   S s[2];
-  BindRepeating(&S::Method, s);  // expected-error@*:* {{First bound argument to a method cannot be an array.}}
+  std::ignore = BindRepeating(&S::Method, s);  // expected-error@*:* {{First bound argument to a method cannot be an array.}}
 }
 
 void RefCountedArgs() {
@@ -153,14 +153,14 @@ void RefCountedArgs() {
   raw_ptr<const S> const_rawptr(&const_s);
   raw_ref<S> rawref(s);
   raw_ref<const S> const_rawref(const_s);
-  BindRepeating([] (S*) {}, &s);                          // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (const S*) {}, &const_s);              // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (S*) {}, ptr_s);                       // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (const S*) {}, const_ptr_s);           // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (S*) {}, rawptr);                      // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (const S*) {}, const_rawptr);          // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (raw_ref<S>) {}, rawref);              // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
-  BindRepeating([] (raw_ref<const S>) {}, const_rawref);  // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
+  std::ignore = BindRepeating([] (S*) {}, &s);                          // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
+  std::ignore = BindRepeating([] (const S*) {}, &const_s);              // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
+  std::ignore = BindRepeating([] (S*) {}, ptr_s);                       // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
+  std::ignore = BindRepeating([] (const S*) {}, const_ptr_s);           // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
+  std::ignore = BindRepeating([] (S*) {}, rawptr);                      // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
+  std::ignore = BindRepeating([] (const S*) {}, const_rawptr);          // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
+  std::ignore = BindRepeating([] (raw_ref<S>) {}, rawref);              // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
+  std::ignore = BindRepeating([] (raw_ref<const S>) {}, const_rawref);  // expected-error@*:* {{A parameter is a refcounted type and needs scoped_refptr.}}
 }
 
 void WeakPtrWithReturnType() {
@@ -171,7 +171,7 @@ void WeakPtrWithReturnType() {
     int ReturnsInt() const { return 1; }
   } s;
   WeakPtrFactory<S> weak_factory(&s);
-  BindRepeating(&S::ReturnsInt, weak_factory.GetWeakPtr());  // expected-error@*:* {{WeakPtrs can only bind to methods without return values.}}
+  std::ignore = BindRepeating(&S::ReturnsInt, weak_factory.GetWeakPtr());  // expected-error@*:* {{WeakPtrs can only bind to methods without return values.}}
 }
 
 void CallbackConversion() {
@@ -191,9 +191,9 @@ void CapturingLambdaOrFunctor() {
     void operator()() const {}
     int x;
   };
-  BindOnce([&] { j = i; });        // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
-  BindRepeating([&] { j = i; });   // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
-  BindRepeating(S());                // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
+  std::ignore = BindOnce([&] { j = i; });        // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
+  std::ignore = BindRepeating([&] { j = i; });   // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
+  std::ignore = BindRepeating(S());                // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
 }
 
 void OnceCallbackRequiresNonConstRvalue() {
@@ -215,13 +215,13 @@ void OnceCallbackAsArgMustBeNonConstRvalue() {
   // A `OnceCallback` passed to another callback must be a non-const rvalue.
   auto cb = BindOnce([] (int) {});
   const auto const_cb = BindOnce([] (int) {});
-  BindOnce(cb, 0);                   // expected-error@*:* {{BindOnce() requires non-const rvalue for OnceCallback binding, i.e. base::BindOnce(std::move(callback)).}}
-  BindOnce(std::move(const_cb), 0);  // expected-error@*:* {{BindOnce() requires non-const rvalue for OnceCallback binding, i.e. base::BindOnce(std::move(callback)).}}
+  std::ignore = BindOnce(cb, 0);                   // expected-error@*:* {{BindOnce() requires non-const rvalue for OnceCallback binding, i.e. base::BindOnce(std::move(callback)).}}
+  std::ignore = BindOnce(std::move(const_cb), 0);  // expected-error@*:* {{BindOnce() requires non-const rvalue for OnceCallback binding, i.e. base::BindOnce(std::move(callback)).}}
 }
 
 void OnceCallbackBoundByRepeatingCallback() {
   // `BindRepeating()` does not accept `OnceCallback`s.
-  BindRepeating(BindOnce([] (int) {}), 0);  // expected-error@*:* {{BindRepeating() cannot bind OnceCallback. Use BindOnce() with std::move().}}
+  std::ignore = BindRepeating(BindOnce([] (int) {}), 0);  // expected-error@*:* {{BindRepeating() cannot bind OnceCallback. Use BindOnce() with std::move().}}
 }
 
 void MoveOnlyArg() {
@@ -231,10 +231,10 @@ void MoveOnlyArg() {
     S(S&&) = default;
     S& operator=(S&&) = default;
   } s1, s2;
-  BindOnce([] (S) {}, s1);                  // expected-error@*:* {{Attempting to bind a move-only type. Use std::move() to transfer ownership to the created callback.}}
-  BindOnce([] (S) {}, Passed(&s1));         // expected-error@*:* {{Use std::move() instead of base::Passed() with base::BindOnce().}}
-  BindRepeating([] (S) {}, s2);             // expected-error@*:* {{base::BindRepeating() argument is a move-only type. Use base::Passed() instead of std::move() to transfer ownership from the callback to the bound functor.}}
-  BindRepeating([] (S) {}, std::move(s2));  // expected-error@*:* {{base::BindRepeating() argument is a move-only type. Use base::Passed() instead of std::move() to transfer ownership from the callback to the bound functor.}}
+  std::ignore = BindOnce([] (S) {}, s1);                  // expected-error@*:* {{Attempting to bind a move-only type. Use std::move() to transfer ownership to the created callback.}}
+  std::ignore = BindOnce([] (S) {}, Passed(&s1));         // expected-error@*:* {{Use std::move() instead of base::Passed() with base::BindOnce().}}
+  std::ignore = BindRepeating([] (S) {}, s2);             // expected-error@*:* {{base::BindRepeating() argument is a move-only type. Use base::Passed() instead of std::move() to transfer ownership from the callback to the bound functor.}}
+  std::ignore = BindRepeating([] (S) {}, std::move(s2));  // expected-error@*:* {{base::BindRepeating() argument is a move-only type. Use base::Passed() instead of std::move() to transfer ownership from the callback to the bound functor.}}
 }
 
 void NonCopyableNonMovable() {
@@ -244,7 +244,7 @@ void NonCopyableNonMovable() {
     S(const S&) = delete;
     S& operator=(const S&) = delete;
   } s;
-  BindOnce([](const S&) {}, s);  // expected-error@*:* {{Cannot capture argument: is the argument copyable or movable?}}
+  std::ignore = BindOnce([](const S&) {}, s);  // expected-error@*:* {{Cannot capture argument: is the argument copyable or movable?}}
 }
 
 void OverloadedFunction() {
@@ -252,8 +252,8 @@ void OverloadedFunction() {
   // this.)
   void F(int);
   void F(float);
-  BindOnce(&F, 1);          // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
-  BindRepeating(&F, 1.0f);  // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+  std::ignore = BindOnce(&F, 1);          // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
+  std::ignore = BindRepeating(&F, 1.0f);  // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
 }
 
 void OverloadedOperator() {
@@ -272,14 +272,14 @@ void OverloadedOperator() {
 
   // Partial function application isn't supported, even if it's sufficient to
   // "narrow the field" to a single candidate that _could_ eventually match.
-  BindOnce(a);              // expected-error@*:* {{Could not determine how to invoke functor.}}
-  BindOnce(b, 1.0);         // expected-error@*:* {{Could not determine how to invoke functor.}}
+  std::ignore = BindOnce(a);              // expected-error@*:* {{Could not determine how to invoke functor.}}
+  std::ignore = BindOnce(b, 1.0);         // expected-error@*:* {{Could not determine how to invoke functor.}}
 
   // The supplied args don't match any candidates.
-  BindOnce(c, 1, nullptr);  // expected-error@*:* {{Could not determine how to invoke functor.}}
+  std::ignore = BindOnce(c, 1, nullptr);  // expected-error@*:* {{Could not determine how to invoke functor.}}
 
   // The supplied args inexactly match multiple candidates.
-  BindOnce(d, 1, 1);        // expected-error@*:* {{Could not determine how to invoke functor.}}
+  std::ignore = BindOnce(d, 1, 1);        // expected-error@*:* {{Could not determine how to invoke functor.}}
 }
 
 void RefQualifiedOverloadedOperator() {
@@ -292,8 +292,8 @@ void RefQualifiedOverloadedOperator() {
   // Using distinct types causes distinct template instantiations, so we get
   // assertion failures below where we expect. This type facilitates that.
   struct B : A {};
-  BindRepeating(a);    // expected-error@*:* {{Could not determine how to invoke functor.}}
-  BindRepeating(B());  // expected-error@*:* {{Could not determine how to invoke functor.}}
+  std::ignore = BindRepeating(a);    // expected-error@*:* {{Could not determine how to invoke functor.}}
+  std::ignore = BindRepeating(B());  // expected-error@*:* {{Could not determine how to invoke functor.}}
 
   // Invocations with rvalues should attempt to use rvalue-ref-qualified
   // methods.
@@ -301,8 +301,8 @@ void RefQualifiedOverloadedOperator() {
     void operator()() const& {}
     void operator()() && = delete;
   };
-  BindRepeating(Passed(C()));  // expected-error@*:* {{Could not determine how to invoke functor.}}
-  BindOnce(C());               // expected-error@*:* {{Could not determine how to invoke functor.}}
+  std::ignore = BindRepeating(Passed(C()));  // expected-error@*:* {{Could not determine how to invoke functor.}}
+  std::ignore = BindOnce(C());               // expected-error@*:* {{Could not determine how to invoke functor.}}
 }
 
 // Define a type that disallows `Unretained()` via the internal customization
@@ -328,11 +328,11 @@ void CanDetectTypesThatDisallowUnretained() {
   BlockViaCustomizationPoint customization;
   struct BlockDueToBeingIncomplete;
   BlockDueToBeingIncomplete* ptr_incomplete;
-  BindOnce([](BlockPublicly*) {}, &publicly);                    // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  BindOnce([](BlockPrivately*) {}, &privately);                  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  BindOnce([](BlockViaInheritance*) {}, &inheritance);           // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  BindOnce([](BlockViaCustomizationPoint*) {}, &customization);  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  BindOnce([](BlockDueToBeingIncomplete*) {}, ptr_incomplete);   // expected-error@*:* {{Argument requires unretained storage, but type is not fully defined.}}
+  std::ignore = BindOnce([](BlockPublicly*) {}, &publicly);                    // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  std::ignore = BindOnce([](BlockPrivately*) {}, &privately);                  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  std::ignore = BindOnce([](BlockViaInheritance*) {}, &inheritance);           // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  std::ignore = BindOnce([](BlockViaCustomizationPoint*) {}, &customization);  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  std::ignore = BindOnce([](BlockDueToBeingIncomplete*) {}, ptr_incomplete);   // expected-error@*:* {{Argument requires unretained storage, but type is not fully defined.}}
 }
 
 void OtherWaysOfPassingDisallowedTypes() {
@@ -345,19 +345,19 @@ void OtherWaysOfPassingDisallowedTypes() {
   // Using distinct types causes distinct template instantiations, so we get
   // assertion failures below where we expect. This type facilitates that.
   struct B : A {} b;
-  BindOnce(&A::Method, Unretained(&a));      // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  BindOnce([] (const A&) {}, std::cref(a));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  BindOnce([] (B&) {}, std::ref(b));         // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  std::ignore = BindOnce(&A::Method, Unretained(&a));      // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  std::ignore = BindOnce([] (const A&) {}, std::cref(a));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  std::ignore = BindOnce([] (B&) {}, std::ref(b));         // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
 }
 
 void UnsafeDangling() {
   // Pointers marked as `UnsafeDangling` may only be be received by
   // `MayBeDangling` args with matching traits.
   int i;
-  BindOnce([] (int*) {}, UnsafeDangling(&i));                      // expected-error@*:* {{base::UnsafeDangling() pointers should only be passed to parameters marked MayBeDangling<T>.}}
-  BindOnce([] (MayBeDangling<int>) {},
+  std::ignore = BindOnce([] (int*) {}, UnsafeDangling(&i));                      // expected-error@*:* {{base::UnsafeDangling() pointers should only be passed to parameters marked MayBeDangling<T>.}}
+  std::ignore = BindOnce([] (MayBeDangling<int>) {},
            UnsafeDangling<int, RawPtrTraits::kDummyForTest>(&i));  // expected-error@*:* {{Pointers passed to MayBeDangling<T> parameters must be created by base::UnsafeDangling() with the same RawPtrTraits.}}
-  BindOnce([] (raw_ptr<int>) {}, UnsafeDanglingUntriaged(&i));     // expected-error@*:* {{Use T* or T& instead of raw_ptr<T> for function parameters, unless you must mark the parameter as MayBeDangling<T>.}}
+  std::ignore = BindOnce([] (raw_ptr<int>) {}, UnsafeDanglingUntriaged(&i));     // expected-error@*:* {{Use T* or T& instead of raw_ptr<T> for function parameters, unless you must mark the parameter as MayBeDangling<T>.}}
 }
 
 }  // namespace base

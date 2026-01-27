@@ -72,7 +72,7 @@ void BindRawPtrParam() {
   // `raw_ptr` is not intended to be used as a function param type, so trying to
   // bind to a function with a `raw_ptr<T>` param should error out.
   raw_ptr<int> ptr = new int(3);
-  base::BindOnce([](raw_ptr<int> ptr) {}, ptr);  // expected-error@*:* {{Use T* or T& instead of raw_ptr<T> for function parameters, unless you must mark the parameter as MayBeDangling<T>.}}
+  std::ignore = base::BindOnce([](raw_ptr<int> ptr) {}, ptr);  // expected-error@*:* {{Use T* or T& instead of raw_ptr<T> for function parameters, unless you must mark the parameter as MayBeDangling<T>.}}
 }
 
 void PointerArithmetic() {
