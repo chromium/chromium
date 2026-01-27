@@ -16,7 +16,6 @@
 #include "base/i18n/base_i18n_switches.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 
@@ -45,8 +44,6 @@ AshPixelTestHelper::AshPixelTestHelper(pixel_test::InitParams params)
         ::switches::kForceUIDirection, ::switches::kForceDirectionRTL);
   }
 
-  scoped_feature_list_.InitWithFeatureState(
-      chromeos::features::kDisableSystemBlur, !IsSystemBlurEnabled());
   if (!IsSystemBlurEnabled()) {
     // This switch simulates a device with less than 4GB of memory, which is
     // necessary to disable system blur. See

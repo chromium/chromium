@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/test/icu_test_util.h"
-#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
@@ -69,7 +68,6 @@ class AshPixelTestHelper : public WallpaperControllerObserver {
   // Used for setting the locale and the time zone.
   const base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
   const base::test::ScopedRestoreDefaultTimezone time_zone_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace ash
