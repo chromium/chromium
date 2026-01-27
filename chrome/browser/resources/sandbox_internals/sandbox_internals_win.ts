@@ -387,6 +387,7 @@ function makeExpandableEntry(mainEntry: string, expandable: Expandable): Node {
   });
   const fixed = document.createElement('div');
   fixed.classList.add('mitigations');
+  expand.classList.add('mitigations');
   fixed.innerText = mainEntry;
 
   const col = document.createElement('td');
