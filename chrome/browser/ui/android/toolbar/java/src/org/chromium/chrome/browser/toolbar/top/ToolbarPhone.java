@@ -1283,7 +1283,7 @@ public class ToolbarPhone extends ToolbarLayout
             // (mDisableLocationBarRelayout), so the location bar's left margin and
             // mUnfocusedLocationBarLayoutLeft have not been updated to take into account the
             // appearance of the optional icon. The views to left of the location bar will
-            // be wider than mUnfocusedlocationBarLayoutLeft in RTL, so adjust the translation by
+            // be wider than mUnfocusedLocationBarLayoutLeft in RTL, so adjust the translation by
             // that amount.
             // When hiding the button, we force a relayout without the optional toolbar button
             // (mLayoutLocationBarWithoutExtraButton). mUnfocusedLocationBarLayoutLeft reflects
