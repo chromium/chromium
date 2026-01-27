@@ -41,10 +41,7 @@ bool IsPrefix(const StringView& term) {
 }
 
 bool IsSuffix(const StringView& term) {
-  if (term.empty())
-    return false;
-
-  return term[0] == '-';
+  return term.starts_with('-');
 }
 
 }  // namespace
