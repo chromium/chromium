@@ -468,8 +468,7 @@ LayoutObject* ScrollAnchor::PriorityCandidateFromNode(const Node* node) const {
   while (node) {
     if (auto* layout_object = node->GetLayoutObject()) {
       if (!layout_object->IsAnonymous() &&
-          (!layout_object->IsInline() ||
-           layout_object->IsAtomicInlineLevel())) {
+          !layout_object->IsNonAtomicInline()) {
         return layout_object;
       }
     }
