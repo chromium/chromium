@@ -625,6 +625,7 @@ src/webgpu/shader/execution/expression/call/builtin/round.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/round.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/saturate.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/saturate.spec.ts
+src/webgpu/shader/execution/flow_control/harness.ts
 src/webgpu/shader/execution/expression/call/builtin/select.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/sign.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/sign.spec.ts
@@ -733,7 +734,6 @@ src/webgpu/shader/execution/expression/unary/i32_conversion.spec.ts
 src/webgpu/shader/execution/expression/unary/u32_complement.spec.ts
 src/webgpu/shader/execution/expression/unary/u32_conversion.cache.ts
 src/webgpu/shader/execution/expression/unary/u32_conversion.spec.ts
-src/webgpu/shader/execution/flow_control/harness.ts
 src/webgpu/shader/execution/flow_control/call.spec.ts
 src/webgpu/shader/execution/flow_control/complex.spec.ts
 src/webgpu/shader/execution/flow_control/eval_order.spec.ts
