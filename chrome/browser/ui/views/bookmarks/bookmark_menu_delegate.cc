@@ -905,21 +905,6 @@ void BookmarkMenuDelegate::DidRemoveBookmarks() {
 
   std::vector<raw_ref<MenuItemView>> updated_menus =
       GetAndUpdateStaleMenuArtifacts();
-
-  // Update "open all" commands. Only the root menu (menu_) can have these
-  // commands since they're only added to direct children of the bookmark bar.
-  if (menu_ &&
-      base::FeatureList::IsEnabled(features::kTabGroupMenuImprovements)) {
-    const auto iter = menu_id_to_node_map_.find(menu_->GetCommand());
-    if (iter != menu_id_to_node_map_.end()) {
-      if (const BookmarkParentFolder* folder =
-              iter->second.GetIfBookmarkFolder()) {
-        UpdateOpenAllCommands(menu_, *folder);
-        updated_menus.emplace_back(*menu_);
-      }
-    }
-  }
-
   for (raw_ref<MenuItemView> updated_menu : updated_menus) {
     updated_menu->ChildrenChanged();
   }
