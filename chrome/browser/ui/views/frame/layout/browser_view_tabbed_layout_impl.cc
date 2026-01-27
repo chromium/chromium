@@ -549,12 +549,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     gfx::Rect vertical_tab_strip_bounds;
     if (tab_strip_type == TabStripType::kVertical) {
       vertical_tab_strip_animation = CalculateVerticalTabStripAnimation(params);
-      if (horizontal_layout.vertical_tab_strip_collapsed_state ==
-          VerticalTabStripCollapsedState::kCollapsed) {
+      if (vertical_tab_strip_animation.top_offset > 0) {
         collapsed_vertical_tab_strip_adjustment =
-            vertical_tab_strip_animation.top_offset > 0
-                ? horizontal_layout.vertical_tab_strip_width
-                : 0;
+            horizontal_layout.vertical_tab_strip_width;
       }
       vertical_tab_strip_bounds =
           gfx::Rect(params.visual_client_area.x(),
@@ -568,10 +565,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       if (delegate().GetBrowserWindowState() != WindowState::kFullscreen) {
         IncreasePaddingToMinimum(params, kVerticalTabsGrabHandleSize);
       }
-      if (vertical_tab_strip_animation.top_offset == 0) {
-        params.InsetHorizontal(horizontal_layout.vertical_tab_strip_width,
-                               /*leading=*/true);
-      }
+      params.InsetHorizontal(horizontal_layout.vertical_tab_strip_width,
+                             /*leading=*/true);
     }
     layout.AddChild(views().vertical_tab_strip_region_view,
                     vertical_tab_strip_bounds,
