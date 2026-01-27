@@ -2,6 +2,7 @@
 # dependencies to a minimal set.
 include_rules = [
   "-components",
+  "+components/background_task_scheduler",
   "+components/country_codes",
   "+components/regional_capabilities",
   "+components/component_updater",

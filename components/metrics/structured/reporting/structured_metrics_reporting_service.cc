@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
+#include "components/background_task_scheduler/task_ids.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/server_urls.h"
 #include "components/metrics/structured/reporting/structured_metrics_log_metrics.h"
@@ -18,10 +19,12 @@ StructuredMetricsReportingService::StructuredMetricsReportingService(
     MetricsServiceClient* client,
     PrefService* local_state,
     const UnsentLogStore::UnsentLogStoreLimits& storage_limits)
-    : ReportingService(client,
-                       local_state,
-                       storage_limits.max_log_size_bytes,
-                       /*logs_event_manager=*/nullptr),
+    : ReportingService(
+          client,
+          local_state,
+          storage_limits.max_log_size_bytes,
+          /*logs_event_manager=*/nullptr,
+          background_task::TaskIds::STRUCTURED_METRICS_UPLOAD_JOB_ID),
       log_store_(std::make_unique<StructuredMetricsLogMetrics>(),
                  local_state,
                  prefs::kLogStoreName,

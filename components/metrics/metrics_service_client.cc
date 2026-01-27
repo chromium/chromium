@@ -129,6 +129,12 @@ GURL MetricsServiceClient::GetInsecureMetricsServerUrl() {
   return metrics::GetInsecureMetricsServerUrl();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool MetricsServiceClient::IsJobSchedulerSupported() const {
+  return base::FeatureList::IsEnabled(features::kMetricsLogJobSchedulerUpload);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 base::TimeDelta MetricsServiceClient::GetUploadInterval() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();

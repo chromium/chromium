@@ -53,6 +53,7 @@ source_set("structured") {
     ":structured_events",
     ":structured_metrics_validator",
     "//base",
+    "//components/background_task_scheduler",
     "//components/metrics",
     "//components/metrics/structured/lib",
     "//components/metrics/structured/lib:proto",

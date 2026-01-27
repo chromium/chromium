@@ -40,6 +40,12 @@ void MetricsScheduler::Stop() {
     timer_.Stop();
 }
 
+void MetricsScheduler::SetDoneCallback(base::OnceClosure done_callback) {
+  CHECK(done_callback_.is_null());
+  CHECK(callback_pending_);
+  done_callback_ = std::move(done_callback);
+}
+
 // static
 int MetricsScheduler::GetInitialIntervalSeconds() {
   return kInitialIntervalSeconds;
@@ -49,8 +55,12 @@ void MetricsScheduler::TaskDone(base::TimeDelta next_interval) {
   DCHECK(callback_pending_);
   callback_pending_ = false;
   SetInterval(next_interval);
-  if (running_)
+  if (running_) {
     ScheduleNextTask();
+  }
+  if (!done_callback_.is_null()) {
+    std::move(done_callback_).Run();
+  }
 }
 
 void MetricsScheduler::TriggerTask() {

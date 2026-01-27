@@ -97,7 +97,8 @@ class TestReportingService : public ReportingService {
       : ReportingService(client,
                          local_state,
                          100,
-                         /*logs_event_manager=*/nullptr) {
+                         /*logs_event_manager=*/nullptr,
+                         background_task::TaskIds::UMA_UPLOAD_JOB_ID) {
     Initialize();
   }
 

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/background_task_scheduler/task_ids.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service_client.h"
@@ -35,7 +36,8 @@ MetricsReportingService::MetricsReportingService(
                        local_state,
                        client->GetStorageLimits()
                            .ongoing_log_queue_limits.max_log_size_bytes,
-                       logs_event_manager_),
+                       logs_event_manager_,
+                       background_task::TaskIds::UMA_UPLOAD_JOB_ID),
       metrics_log_store_(local_state,
                          client->GetStorageLimits(),
                          client->GetUploadSigningKey(),

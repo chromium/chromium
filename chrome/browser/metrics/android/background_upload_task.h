@@ -31,7 +31,11 @@ class BackgroundUploadTask : public background_task::BackgroundTask {
   void OnFullBrowserLoaded(content::BrowserContext* browser_context) override;
   bool OnStopTask(const background_task::TaskParameters& task_params) override;
 
-  [[maybe_unused]] background_task::TaskIds task_id_;
+  // Starts the upload of the currently staged log.
+  void StartUpload(background_task::TaskFinishedCallback callback);
+
+  background_task::TaskIds task_id_;
+  background_task::TaskFinishedCallback callback_;
 };
 
 }  // namespace metrics
