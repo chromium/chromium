@@ -65,6 +65,10 @@ class UserSelectableTypeTest : public ::testing::Test {
     // selectable type or to a new one and remove it from here (unless it's
     // ambiguous).
     data_types.Put(SKILL);
+    // TODO(crbug.com/476335087): In CL #3, map GEMINI_THREAD to an existing
+    // selectable type or to a new one and remove it from here (unless it's
+    // ambiguous).
+    data_types.Put(GEMINI_THREAD);
 
     return data_types;
   }

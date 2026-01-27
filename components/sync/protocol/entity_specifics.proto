@@ -68,6 +68,7 @@ import "components/sync/protocol/wifi_configuration_specifics.proto";
 import "components/sync/protocol/workspace_desk_specifics.proto";
 import "components/sync/protocol/shared_tab_group_account_data_specifics.proto";
 import "components/sync/protocol/skill_specifics.proto";
+import "components/sync/protocol/gemini_thread_specifics.proto";
 
 message EntitySpecifics {
   // If a datatype is encrypted, this field will contain the encrypted
@@ -168,6 +169,7 @@ message EntitySpecifics {
     ContextualTaskSpecifics contextual_task = 1518931;
     AutofillValuableMetadataSpecifics autofill_valuable_metadata = 1520954;
     SkillSpecifics skill = 1564245;
+    GeminiThreadSpecifics gemini_thread = 1569348;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/

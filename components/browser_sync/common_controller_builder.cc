@@ -929,6 +929,22 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
   }
 
+  if (!disabled_types.Has(syncer::GEMINI_THREAD) &&
+      base::FeatureList::IsEnabled(syncer::kSyncGeminiThread)) {
+    // TODO(crbug.com/476335087): In CL #4, register the type, i.e. instantiate
+    // the DataTypeController. There is more than one way to go about it,
+    // but one option is:
+    // - Create a trivial implementation of DataTypeSyncBridge which lives in
+    //   your feature's directory. It should have synchronous access to your
+    //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
+    //   CoolKeyedService (often the model itself).
+    // - Expose CoolKeyedService::GetControllerDelegate() which calls
+    //   bridge->change_processor()->GetControllerDelegate().
+    // - Inject CoolKeyedService in this class and call GetControllerDelegate()
+    //   on it to create the DataTypeController.
+    // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
+  }
+
   if (!disabled_types.Has(syncer::CONTEXTUAL_TASK) &&
       base::FeatureList::IsEnabled(syncer::kSyncContextualTask)) {
     // TODO(crbug.com/445840788): In CL #4, register the type, i.e. instantiate

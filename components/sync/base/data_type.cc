@@ -16,11 +16,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(60 == syncer::GetNumDataTypes(),
+static_assert(61 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(60 == syncer::GetNumDataTypes(),
+static_assert(61 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -117,6 +117,7 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
         {sync_pb::EntitySpecifics::kAiThreadFieldNumber, AI_THREAD},
         {sync_pb::EntitySpecifics::kContextualTaskFieldNumber, CONTEXTUAL_TASK},
         {sync_pb::EntitySpecifics::kSkillFieldNumber, SKILL},
+        {sync_pb::EntitySpecifics::kGeminiThreadFieldNumber, GEMINI_THREAD},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
     });
@@ -305,6 +306,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case SKILL:
       specifics->mutable_skill();
       break;
+    case GEMINI_THREAD:
+      specifics->mutable_gemini_thread();
+      break;
   }
 }
 
@@ -441,6 +445,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kNigoriFieldNumber;
     case SKILL:
       return sync_pb::EntitySpecifics::kSkillFieldNumber;
+    case GEMINI_THREAD:
+      return sync_pb::EntitySpecifics::kGeminiThreadFieldNumber;
   }
   NOTREACHED();
 }
@@ -494,7 +500,7 @@ DataTypeSet AlwaysPreferredUserTypes() {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(60 == syncer::GetNumDataTypes(),
+  static_assert(61 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
@@ -665,6 +671,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Encryption Keys";
     case SKILL:
       return "Skill";
+    case GEMINI_THREAD:
+      return "Gemini Thread";
   }
   NOTREACHED();
 }
@@ -792,6 +800,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "ACCOUNT_SETTING";
     case SKILL:
       return "SKILL";
+    case GEMINI_THREAD:
+      return "GEMINI_THREAD";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
   NOTREACHED();
@@ -919,6 +929,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kNigori;
     case SKILL:
       return DataTypeForHistograms::kSkill;
+    case GEMINI_THREAD:
+      return DataTypeForHistograms::kGeminiThread;
   }
   NOTREACHED();
 }
@@ -1063,6 +1075,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "nigori";
     case SKILL:
       return "skill";
+    case GEMINI_THREAD:
+      return "gemini_thread";
   }
   // WARNING: existing strings must not be changed without migration, they
   // are persisted!

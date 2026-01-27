@@ -59,6 +59,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".DICTIONARY" summary="DICTIONARY"/>
   <variant name=".EXTENSION" summary="EXTENSION"/>
   <variant name=".EXTENSION_SETTING" summary="EXTENSION_SETTING"/>
+  <variant name=".GEMINI_THREAD" summary="GEMINI_THREAD"/>
   <variant name=".HISTORY" summary="HISTORY"/>
   <variant name=".HISTORY_DELETE_DIRECTIVE" summary="HISTORY_DELETE_DIRECTIVE"/>
   <variant name=".INCOMING_PASSWORD_SHARING_INVITATION"

@@ -48,6 +48,9 @@ BASE_DECLARE_FEATURE(kSyncAIThread);
 // Enables syncing of contextual tasks.
 BASE_DECLARE_FEATURE(kSyncContextualTask);
 
+// Enables syncing of Gemini threads across devices.
+BASE_DECLARE_FEATURE(kSyncGeminiThread);
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // Flag that controls Uno fast-follow features which are:
 // On Android:

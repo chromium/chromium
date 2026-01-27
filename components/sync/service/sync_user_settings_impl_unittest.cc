@@ -176,6 +176,10 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   // to a selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);
 
+  // TODO(crbug.com/476335087): In CL #3, delete (GEMINI_THREAD is now mapped to
+  // a selectable type.
+  expected_types.Remove(GEMINI_THREAD);
+
 #if BUILDFLAG(IS_CHROMEOS)
   expected_types.RemoveAll({WEB_APKS});
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -354,6 +358,9 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   // TODO(crbug.com/397767033): In CL #3, delete (CONTEXTUAL_TASK is now mapped
   // to a selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);
+  // TODO(crbug.com/476335087): In CL #3, delete (GEMINI_THREAD is now mapped to
+  // a selectable type.
+  expected_types.Remove(GEMINI_THREAD);
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_THAT(GetPreferredUserTypes(*sync_user_settings),
               ContainerEq(expected_types));

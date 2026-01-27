@@ -36,6 +36,7 @@ sync_protocol_sources = [
   "extension_setting_specifics.proto",
   "extension_specifics.proto",
   "gaia_password_reuse.proto",
+  "gemini_thread_specifics.proto",
   "get_updates_caller_info.proto",
   "history_delete_directive_specifics.proto",
   "history_specifics.proto",

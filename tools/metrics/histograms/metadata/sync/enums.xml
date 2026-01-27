@@ -1029,6 +1029,7 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="Contextual Task"/>
   <int value="75" label="Autofill Valuable Metadata"/>
   <int value="76" label="Skill"/>
+  <int value="77" label="Gemini Thread"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->

@@ -396,7 +396,7 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   // though they're technically not registered.
   types.PutAll(ControlTypes());
 
-  static_assert(60 == GetNumDataTypes(),
+  static_assert(61 == GetNumDataTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync, aka"
                 " roaming profiles on Windows.");
@@ -432,6 +432,7 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
     types.Remove(AI_THREAD);
     types.Remove(CONTEXTUAL_TASK);
     types.Remove(SKILL);
+    types.Remove(GEMINI_THREAD);
   }
   return types;
 }
