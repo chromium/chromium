@@ -8344,6 +8344,28 @@
             ]
         }
     ],
+    "DelayMainJob": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithDelayMainJob",
+                    "params": {
+                        "AdditionalDelay": "100ms"
+                    },
+                    "enable_features": [
+                        "AdditionalDelayMainJob"
+                    ]
+                }
+            ]
+        }
+    ],
     "DelayRfhDestructionsOnUnloadAndDetach": [
         {
             "platforms": [
