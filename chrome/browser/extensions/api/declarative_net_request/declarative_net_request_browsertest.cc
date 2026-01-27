@@ -5154,11 +5154,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // matched.
   NavigateToURLInNewTab(page_url);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/419057482): Support cross-platform browser windows.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
-#endif
+  TabListInterface* tab_list =
+      TabListInterface::From(browser_window_interface());
+  ASSERT_TRUE(tab_list);
+  ASSERT_EQ(2, tab_list->GetTabCount());
+  ASSERT_EQ(1, tab_list->GetActiveIndex());
 
   // Get the ActiveTabPermissionGranter for the second tab.
   ActiveTabPermissionGranter* active_tab_granter =
