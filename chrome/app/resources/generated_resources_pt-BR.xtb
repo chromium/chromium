@@ -4933,7 +4933,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4298660926525614540">Nomes de armazenamento removíveis</translation>
 <translation id="4299022904780065004">Nova &amp;janela anônima</translation>
 <translation id="4300272766492248925">Abrir app</translation>
-<translation id="4301231341924904092">Mude por mim</translation>
+<translation id="4301231341924904092">Mude para mim</translation>
 <translation id="4301671483919369635">Esta página tem permissão para editar arquivos</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o recurso "<ph name="FEATURE_NAME" />" com esses contatos, adicione o endereço de e-mail associado à Conta do Google deles.}}</translation>
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
@@ -7433,7 +7433,7 @@ Não exponha nenhuma informação confidencial.</translation>
     Use-a para acessar com facilidade todos os seus favoritos, arquivos e muito mais. Se você não tiver uma conta, crie uma na próxima tela.</translation>
 <translation id="6054138466019582920">Pesquisar nesta página com o Google…</translation>
 <translation id="6054284857788651331">Grupo de guias fechadas recentemente</translation>
-<translation id="6054819000749443354">Abra os Ajustes do Sistema</translation>
+<translation id="6054819000749443354">Abrir os Ajustes do Sistema</translation>
 <translation id="6054961935262556546">Mudar visibilidade</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 com criptografia RSA</translation>
 <translation id="6055544610007596637">Instale apps para o dispositivo <ph name="DEVICE_TYPE" /> na Google Play Store</translation>
@@ -9524,7 +9524,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7502804472671406749">As guias compartilhadas podem ser roladas e ampliadas</translation>
 <translation id="750314150962284310">Foco da linha</translation>
 <translation id="7503191893372251637">Tipo de certificado do Netscape</translation>
-<translation id="7503259455663961898">Mude por mim</translation>
+<translation id="7503259455663961898">Mude para mim</translation>
 <translation id="7503985202154027481">Um registro da visita a este site será mantido na sua chave de segurança.</translation>
 <translation id="7504145862399276792">O áudio desta guia está sendo desativado</translation>
 <translation id="750509436279396091">Abrir pasta de downloads</translation>

@@ -5005,7 +5005,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4363262124589131906">La sincronizzazione automatica con questo Chromebook dei nuovi file in Il mio Drive verrà interrotta</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 elemento è salvato solo su questo dispositivo. Per usarlo sugli altri dispositivi, salvalo nel tuo Account Google.}other{{ITEM_COUNT} elementi sono salvati solo su questo dispositivo. Per usarli sugli altri dispositivi, salvali nel tuo Account Google.}}</translation>
-<translation id="4364567974334641491"><ph name="APP_NAME" /> condivide una finestra.</translation>
+<translation id="4364567974334641491"><ph name="APP_NAME" /> sta condividendo una finestra.</translation>
 <translation id="4364830672918311045">Mostrare notifiche</translation>
 <translation id="4367971618859387374">Nome visualizzato</translation>
 <translation id="4368960422722232719">Mostra utilizzo della memoria su una scheda popup quando passi il mouse sopra la scheda</translation>
@@ -7414,7 +7414,7 @@ Puoi assegnare più sensori a questa azione.</translation>
     Usalo per accedere facilmente a tutti i tuoi preferiti, file e altro ancora. Se non disponi già di un account, nella prossima schermata potrai creare un nuovo account.</translation>
 <translation id="6054138466019582920">Cerca questa pagina con Google…</translation>
 <translation id="6054284857788651331">Gruppo di schede chiuse di recente</translation>
-<translation id="6054819000749443354">Apri le Impostazioni di sistema</translation>
+<translation id="6054819000749443354">Apri Impostazioni di sistema</translation>
 <translation id="6054961935262556546">Cambia visibilità</translation>
 <translation id="6055392876709372977">PKCS #1 SHA-256 con crittografia RSA</translation>
 <translation id="6055544610007596637">Installa app per <ph name="DEVICE_TYPE" /> dal Google Play Store</translation>
