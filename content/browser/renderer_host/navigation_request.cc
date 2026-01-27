@@ -6111,16 +6111,17 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
           ssl_info_.has_value() ? ssl_info_->cert_status : 0,
           frame_tree_node_->frame_tree_node_id(),
           from_download_cross_origin_redirect_);
+      if (!this_ptr) {
+        return;
+      }
 
       auto completion_status =
           network::URLLoaderCompletionStatus(net::ERR_ABORTED);
       error_navigation_trigger_ =
           ErrorNavigationTrigger::kShouldNotRenderResponse;
-      if (this_ptr) {
-        OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
-                                std::nullopt /*error_page_content*/,
-                                false /*collapse_frame*/);
-      }
+      OnRequestFailedInternal(completion_status, false /*skip_throttles*/,
+                              std::nullopt /*error_page_content*/,
+                              false /*collapse_frame*/);
       // DO NOT ADD CODE after this. The previous call to OnRequestFailed has
       // destroyed the NavigationRequest.
       return;
