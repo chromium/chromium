@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -42,8 +43,8 @@ bool ShouldCreateGlobalMenuBar() {
 }
 #endif
 
-std::unordered_set<std::string>& SentStartupIds() {
-  static base::NoDestructor<std::unordered_set<std::string>> sent_startup_ids;
+absl::flat_hash_set<std::string>& SentStartupIds() {
+  static base::NoDestructor<absl::flat_hash_set<std::string>> sent_startup_ids;
   return *sent_startup_ids;
 }
 
@@ -300,7 +301,7 @@ void BrowserDesktopWindowTreeHostLinux::Show(
 
   const std::string& startup_id =
       browser_view_->browser()->create_params().startup_id;
-  if (!startup_id.empty() && !SentStartupIds().count(startup_id)) {
+  if (!startup_id.empty() && !SentStartupIds().contains(startup_id)) {
     platform_window()->NotifyStartupComplete(startup_id);
     SentStartupIds().insert(startup_id);
   }
