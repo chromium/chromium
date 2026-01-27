@@ -1019,6 +1019,8 @@ class LocationBarMediator
             mAutocompleteCoordinator.beginInput(input);
             mFuseboxCoordinator.beginInput(input);
         } else {
+            var state = LocationBarState.from(mLocationBarDataProvider.getTab());
+            if (state != null && !state.isUrlBarFocused) state.autocompleteInput.reset();
             mAutocompleteCoordinator.endInput();
             mFuseboxCoordinator.endInput();
         }
@@ -1824,11 +1826,13 @@ class LocationBarMediator
                     OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION,
                     AutocompleteRequestType.SEARCH);
             if (mPersistEditingState) {
-                mAutocompleteRequestTypeSupplier.set(
-                        currentState.autocompleteInput.getRequestType());
-                mUrlCoordinator.setSelection(
-                        currentState.autocompleteInput.getSelectionStart(),
-                        currentState.autocompleteInput.getSelectionEnd());
+                // Need to post this as the url will not apply the text instantly.
+                PostTask.postTask(
+                        TaskTraits.UI_USER_VISIBLE,
+                        () ->
+                                mUrlCoordinator.setSelection(
+                                        currentState.autocompleteInput.getSelectionStart(),
+                                        currentState.autocompleteInput.getSelectionEnd()));
             }
         }
 

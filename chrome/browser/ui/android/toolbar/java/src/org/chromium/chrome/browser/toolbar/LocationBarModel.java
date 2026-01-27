@@ -292,11 +292,15 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         updateUsingBrandColor();
+        boolean isUrlChanging = updateVisibleGurl();
+
         notifyTitleChanged();
         if (isTabChanging) {
             notifyTabChanged(previousTab);
         }
-        notifyUrlChanged(isTabChanging);
+        if (isTabChanging || isUrlChanging) {
+            broadcastUrlChanged(isTabChanging);
+        }
         notifyPrimaryColorChanged();
         notifySecurityStateChanged();
     }
@@ -353,7 +357,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      * @return whether the URL value has changed.
      */
     @VisibleForTesting
-    boolean updateVisibleGurl() {
+    public boolean updateVisibleGurl() {
+        if (mIsInSameDocNav && mAlreadyUpdatedUrlBarForSameDocNav) return false;
         try (TraceEvent te = TraceEvent.scoped("LocationBarModel.updateVisibleGurl")) {
             GURL gurl = getUrlOfVisibleNavigationEntry();
             if (!gurl.equals(mVisibleGurl)) {
@@ -372,12 +377,13 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     public void notifyUrlChanged(boolean isTabChanging) {
-        if (((mIsInSameDocNav && mAlreadyUpdatedUrlBarForSameDocNav) || !updateVisibleGurl())
-                && !isTabChanging) {
-            return;
+        if (updateVisibleGurl() || isTabChanging) {
+            broadcastUrlChanged(isTabChanging);
         }
+    }
 
-        // Url or tab has changed, propagate it.
+    /** Unconditionally broadcast url change event. */
+    private void broadcastUrlChanged(boolean isTabChanging) {
         for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
             observer.onUrlChanged(isTabChanging);
         }
