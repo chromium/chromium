@@ -76,9 +76,9 @@ bool ResizeObservation::ObservationSizeOutOfSync() {
   // This is used by contain-intrinsic-size delegate to implement the following
   // resolution:
   // https://github.com/w3c/csswg-drafts/issues/7606#issuecomment-1240015961
-  if (observer_->SkipNonAtomicInlineObservations() &&
-      target_->GetLayoutObject() && target_->GetLayoutObject()->IsInline() &&
-      !target_->GetLayoutObject()->IsAtomicInlineLevel()) {
+  const LayoutObject* layout_object = target_->GetLayoutObject();
+  if (observer_->SkipNonAtomicInlineObservations() && layout_object &&
+      layout_object->IsNonAtomicInline()) {
     return false;
   }
 
