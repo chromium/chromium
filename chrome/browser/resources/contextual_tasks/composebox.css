@@ -16,6 +16,7 @@
   --cancel-button-top: 12px;
   --composebox-collapsed-height: 90px;
   --composebox-margin-bottom: 30px;
+  --composebox-start-indent: 15px;
   --context-carousel-inline-end-spacing: 24px;
   --context-carousel-inline-start-spacing: 24px;
   --composebox-container-height:
@@ -97,6 +98,7 @@
   box-shadow: none;
   display: block;
   inset-inline-start: var(--inset-start-indent_);
+  max-width: var(--composebox-max-width);
   position: relative;
   /* 100% - (right indent + left indent), up to max width. */
   width: calc(100% - (15px + var(--inset-start-indent_)));
@@ -104,40 +106,41 @@
   box-sizing: border-box;
 }
 
-:host(:not([is-zero-state])) #composebox::before {
-  background: var(--search-background-color);
-  border-radius: 24px;
-  content: '';
-  display: block;
-  /* Expand past the bottom of the composebox.
-   * Requires parent to have overflow hidden.
-   */
-  height: 40vh;
-  position: absolute;
-  width: 100%;
+:host([is-side-panel]) #composebox {
+  inset-inline-start: var(--composebox-start-indent);
+  max-width: var(--composebox-max-width);
+  min-width: 200px;
+  /* 15px on each side -> 30px. */
+  width: calc(100% - 30px);
 }
 
-/* TODO(crbug.com/466201452): Check this logic
+/* TODO(crbug.com/466201452): Check this relayout logic
  * once Google.com AIM is RTL that this matches AIM.
  */
 
-/* Make room for the side AIM menu panel. */
+@media (min-width: 789px) {
+  :host(:not([is-zero-state])[is-side-panel]) #composeboxContainer {
+    /* 96px gutter + 5px for text indentation in thread. */
+    --composebox-start-indent: 101px;
+  }
+}
+
 @media (min-width: 480px) {
-  #composeboxContainer {
+  :host(:not([is-zero-state]):not([is-side-panel])) #composeboxContainer {
     /* Google.com uses 96px for indent column, and 5px left padding.
      * Aligns the input text of the composebox with the AIM thread.
      */
     --composebox-start-indent: 101px;
   }
-
   #composebox {
     --inset-start-indent_: var(--composebox-start-indent);
   }
 }
 
-/* W/more space, indent further to match AIM. */
+/* W/more space, indent further to match AIM for both side panel and full tab.*/
 @media (min-width: 1420px) {
-  #composeboxContainer {
+  :host(:not([is-zero-state]):not([is-side-panel])) #composeboxContainer,
+  :host([is-side-panel]:not([is-zero-state])) #composeboxContainer {
     /* At this width, indent column should be 280px + 5px left padding.
      * Google.com AIM has 20 other 36px columns as "inset end space",
      * with 20px gaps, which = 720px of cols, 21 * 20px = 420px of gaps.
@@ -157,10 +160,17 @@
   }
 }
 
-@media (min-width: 800px) {
-  #composebox {
-    max-width: var(--composebox-max-width);
-  }
+:host(:not([is-zero-state])) #composebox::before {
+  background: var(--search-background-color);
+  border-radius: 24px;
+  content: '';
+  display: block;
+  /* Expand past the bottom of the composebox.
+   * Requires parent to have overflow hidden.
+   */
+  height: 40vh;
+  position: absolute;
+  width: 100%;
 }
 
 #composebox::part(thumbnail) {
@@ -173,28 +183,12 @@
 :host([is-zero-state]) #composebox {
   --inset-start-indent_: 0px;
   bottom: auto;
-  width: 100%;
 }
 
 :host([is-zero-state]) #composeboxContainer {
   background: transparent;
   display: block;
   position: relative;
-}
-
-:host([is-side-panel]) #composebox {
-  --inset-start-indent_: 0;
-  inset-inline-start: 15px;
-  max-width: var(--composebox-max-width);
-  min-width: 200px;
-  /* 15px on each side -> 30px. */
-  width: calc(100% - 30px);
-}
-
-@media (min-width: 1236px) {
-  :host([is-side-panel]:not([is-zero-state])) #composebox {
-    inset-inline-start: 96px;
-  }
 }
 
 #composebox::part(error-scrim) {
