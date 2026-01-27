@@ -45,6 +45,7 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
 
   // AshTestBase:
   void TearDown() override {
+    widget_ = nullptr;
     app_stream_launcher_view_.reset();
     generator_.reset();
     views::ViewsTestBase::TearDown();
@@ -98,7 +99,7 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
   AshColorProvider color_provider_;
   std::unique_ptr<AppStreamLauncherView> app_stream_launcher_view_;
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
-  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 };
 
