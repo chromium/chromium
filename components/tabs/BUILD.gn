@@ -72,10 +72,9 @@ source_set("tabs") {
     "impl/unpinned_tab_collection.cc",
   ]
 
-  deps = [
-    ":public",
-    ":split_tabs",
-  ]
+  deps = [ ":split_tabs" ]
+
+  public_deps = [ ":public" ]
 }
 
 source_set("test_support") {

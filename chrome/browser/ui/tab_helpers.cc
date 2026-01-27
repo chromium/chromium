@@ -506,15 +506,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           performance_manager::PerformanceManagerRegistry::GetInstance()) {
     pm_registry->SetPageType(web_contents, performance_manager::PageType::kTab);
   }
-  // The tab interface is only needed on Desktop to support Split View.
-  tabs::TabInterface* desktop_tab_interface =
-#if BUILDFLAG(IS_ANDROID)
-      nullptr;
-#else
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-#endif  // BUILDFLAG(IS_ANDROID)
-  permissions::PermissionRequestManager::CreateForWebContents(
-      web_contents, desktop_tab_interface);
+  permissions::PermissionRequestManager::CreateForWebContents(web_contents);
   permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
       web_contents);
   // The PopupBlockerTabHelper has an implicit dependency on

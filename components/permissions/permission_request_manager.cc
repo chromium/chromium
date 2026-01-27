@@ -949,8 +949,7 @@ PermissionRequestManager::GetPromptBubbleViewBoundsInScreen() const {
 }
 
 PermissionRequestManager::PermissionRequestManager(
-    content::WebContents* web_contents,
-    tabs::TabInterface* tab_interface)
+    content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PermissionRequestManager>(*web_contents),
       view_factory_(base::BindRepeating(&PermissionPrompt::Create)),
@@ -958,6 +957,13 @@ PermissionRequestManager::PermissionRequestManager(
       permission_ui_selectors_(
           PermissionsClient::Get()->CreatePermissionUiSelectors(
               web_contents->GetBrowserContext())) {
+  // Only register TabInterface observers on desktop to support Split View.
+  tabs::TabInterface* tab_interface =
+#if BUILDFLAG(IS_ANDROID)
+      nullptr;
+#else
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+#endif  // BUILDFLAG(IS_ANDROID)
   if (tab_interface) {
     tab_is_active_ = tab_interface->IsActivated();
     // Tab helpers are attached before a tab is attached to the tab strip.
@@ -969,12 +975,6 @@ PermissionRequestManager::PermissionRequestManager(
     tab_is_active_ =
         web_contents->GetVisibility() != content::Visibility::HIDDEN;
   }
-}
-
-PermissionRequestManager::PermissionRequestManager(
-    content::WebContents* web_contents)
-    : PermissionRequestManager(web_contents, nullptr) {
-  ;
 }
 
 void PermissionRequestManager::DequeueRequestIfNeeded() {

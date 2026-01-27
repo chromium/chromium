@@ -326,10 +326,6 @@ class PermissionRequestManager
   FRIEND_TEST_ALL_PREFIXES(PermissionRequestManagerTest,
                            WeakDuplicateRequestsAccept);
 
-  // TODO(crbug.com/443780638): Remove this once the TabInterface can be fetched
-  // from WebContents.
-  PermissionRequestManager(content::WebContents* web_contents,
-                           tabs::TabInterface* tab_interface);
   explicit PermissionRequestManager(content::WebContents* web_contents);
 
   // Defines how to handle the current request, when new requests arrive

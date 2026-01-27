@@ -149,7 +149,7 @@ source_set("permissions") {
     "//components/safety_check",
     "//components/strings:components_branded_strings_grit",
     "//components/strings:components_strings_grit",
-    "//components/tabs:public",
+    "//components/tabs",
     "//components/ukm/content",
     "//components/unified_consent",
     "//components/url_formatter",
