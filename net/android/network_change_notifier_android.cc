@@ -60,6 +60,7 @@
 #include "net/android/network_change_notifier_android.h"
 
 #include <string>
+#include <unordered_set>
 
 #include "base/android/android_info.h"
 #include "base/functional/bind.h"
@@ -70,7 +71,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "net/base/address_tracker_linux.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -96,7 +96,7 @@ class NetworkChangeNotifierAndroid::BlockingThreadObjects {
             base::DoNothing(),
             // We're only interested in tunnel interface changes.
             base::BindRepeating(NotifyNetworkChangeNotifierObservers),
-            absl::flat_hash_set<std::string>()) {}
+            std::unordered_set<std::string>()) {}
   BlockingThreadObjects(const BlockingThreadObjects&) = delete;
   BlockingThreadObjects& operator=(const BlockingThreadObjects&) = delete;
 

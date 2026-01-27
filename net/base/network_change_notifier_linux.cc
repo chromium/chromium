@@ -15,7 +15,6 @@
 #include "base/threading/thread.h"
 #include "net/base/address_tracker_linux.h"
 #include "net/dns/dns_config_service_posix.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -23,7 +22,7 @@ namespace net {
 class NetworkChangeNotifierLinux::BlockingThreadObjects {
  public:
   explicit BlockingThreadObjects(
-      const absl::flat_hash_set<std::string>& ignored_interfaces,
+      const std::unordered_set<std::string>& ignored_interfaces,
       scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner);
   BlockingThreadObjects(const BlockingThreadObjects&) = delete;
   BlockingThreadObjects& operator=(const BlockingThreadObjects&) = delete;
@@ -51,7 +50,7 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
 };
 
 NetworkChangeNotifierLinux::BlockingThreadObjects::BlockingThreadObjects(
-    const absl::flat_hash_set<std::string>& ignored_interfaces,
+    const std::unordered_set<std::string>& ignored_interfaces,
     scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner)
     : address_tracker_(
           base::BindRepeating(&NetworkChangeNotifierLinux::
@@ -98,7 +97,7 @@ void NetworkChangeNotifierLinux::BlockingThreadObjects::OnLinkChanged() {
 // static
 std::unique_ptr<NetworkChangeNotifierLinux>
 NetworkChangeNotifierLinux::CreateWithSocketForTesting(
-    const absl::flat_hash_set<std::string>& ignored_interfaces,
+    const std::unordered_set<std::string>& ignored_interfaces,
     base::ScopedFD netlink_fd) {
   auto ncn_linux = std::make_unique<NetworkChangeNotifierLinux>(
       ignored_interfaces, /*initialize_blocking_thread_objects=*/false,
@@ -109,13 +108,13 @@ NetworkChangeNotifierLinux::CreateWithSocketForTesting(
 }
 
 NetworkChangeNotifierLinux::NetworkChangeNotifierLinux(
-    const absl::flat_hash_set<std::string>& ignored_interfaces)
+    const std::unordered_set<std::string>& ignored_interfaces)
     : NetworkChangeNotifierLinux(ignored_interfaces,
                                  /*initialize_blocking_thread_objects*/ true,
                                  base::PassKey<NetworkChangeNotifierLinux>()) {}
 
 NetworkChangeNotifierLinux::NetworkChangeNotifierLinux(
-    const absl::flat_hash_set<std::string>& ignored_interfaces,
+    const std::unordered_set<std::string>& ignored_interfaces,
     bool initialize_blocking_thread_objects,
     base::PassKey<NetworkChangeNotifierLinux>)
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsLinux()),
