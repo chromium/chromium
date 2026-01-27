@@ -266,6 +266,35 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
+    public void testTitleEndIcon() {
+        // Verify that the end icon set from builder is displayed.
+        PropertyModel model =
+                createModel(
+                        mModelBuilder.with(
+                                ModalDialogProperties.TITLE_END_ICON,
+                                sActivity,
+                                R.drawable.ic_domain));
+        onView(allOf(withId(R.id.title), withParent(withId(R.id.title_container))))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.title_end_icon), withParent(withId(R.id.title_container))))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.title_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
+
+        // Set icon to null and verify that icon is not shown.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.TITLE_END_ICON, null));
+        onView(allOf(withId(R.id.title), withParent(withId(R.id.title_container))))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.title_end_icon), withParent(withId(R.id.title_container))))
+                .check(matches(not(isDisplayed())));
+        onView(withId(R.id.title_container)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.scrollable_title_container)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
     public void testTitleButtons_Visibility() {
         PropertyModel model =
                 createModel(

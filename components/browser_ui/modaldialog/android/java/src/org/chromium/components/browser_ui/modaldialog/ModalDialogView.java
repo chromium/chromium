@@ -62,6 +62,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private ViewGroup mTitleContainer;
     private TextView mTitleView;
     private ImageView mTitleIcon;
+    private ImageView mTitleEndIcon;
     private int mTitleDefaultHorizontalPadding;
     private ImageButton mTitleBackButton;
     private ListMenuButton mTitleMoreButton;
@@ -144,6 +145,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleContainer = findViewById(R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
+        mTitleEndIcon = mTitleContainer.findViewById(R.id.title_end_icon);
         mTitleDefaultHorizontalPadding = mTitleContainer.getPaddingLeft();
         mTitleBackButton = mTitleContainer.findViewById(R.id.title_back);
         mTitleMoreButton = mTitleContainer.findViewById(R.id.title_more_button);
@@ -274,13 +276,24 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         updateContentVisibility();
     }
 
-    /** @param titleScrollable Whether the title is scrollable with the message. */
+    /**
+     * @param drawable The icon drawable on the title at the end.
+     */
+    public void setTitleEndIcon(Drawable drawable) {
+        mTitleEndIcon.setImageDrawable(drawable);
+        updateContentVisibility();
+    }
+
+    /**
+     * @param titleScrollable Whether the title is scrollable with the message.
+     */
     void setTitleScrollable(boolean titleScrollable) {
         if (mTitleScrollable == titleScrollable) return;
 
         mTitleScrollable = titleScrollable;
         CharSequence title = mTitleView.getText();
         Drawable icon = mTitleIcon.getDrawable();
+        Drawable endIcon = mTitleEndIcon.getDrawable();
 
         // Hide the previous title container since the scrollable and non-scrollable title container
         // should not be shown at the same time.
@@ -291,8 +304,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                         titleScrollable ? R.id.scrollable_title_container : R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
+        mTitleEndIcon = mTitleContainer.findViewById(R.id.title_end_icon);
         setTitle(title);
         setTitleIcon(icon);
+        setTitleEndIcon(endIcon);
 
         LayoutParams layoutParams = (LayoutParams) mCustomViewContainer.getLayoutParams();
         if (titleScrollable) {
@@ -682,7 +697,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private void updateContentVisibility() {
         boolean titleVisible = !TextUtils.isEmpty(mTitleView.getText());
         boolean titleIconVisible = mTitleIcon.getDrawable() != null;
-        boolean titleContainerVisible = titleVisible || titleIconVisible;
+        boolean titleEndIconVisible = mTitleEndIcon.getDrawable() != null;
+        boolean titleContainerVisible = titleVisible || titleIconVisible || titleEndIconVisible;
         boolean messageParagraphsVisible = mMessageParagraphsContainer.getChildCount() > 0;
         boolean menuItemsVisible = mMenuItemsContainer.getChildCount() > 0;
         boolean multipleParagraphsVisible = mMessageParagraphsContainer.getChildCount() > 1;
@@ -713,6 +729,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                 mTitleContainer.getPaddingBottom());
         mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
+        mTitleEndIcon.setVisibility(titleEndIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
         mMessageParagraphsContainer.setVisibility(
                 messageParagraphsVisible ? View.VISIBLE : View.GONE);

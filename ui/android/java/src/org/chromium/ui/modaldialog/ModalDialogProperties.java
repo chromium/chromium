@@ -199,6 +199,10 @@ public class ModalDialogProperties {
     public static final WritableObjectPropertyKey<Drawable> TITLE_ICON =
             new WritableObjectPropertyKey<>();
 
+    /** The dialog icon displayed at the end of the title. */
+    public static final WritableObjectPropertyKey<Drawable> TITLE_END_ICON =
+            new WritableObjectPropertyKey<>();
+
     /** Deprecated for MESSAGE_PARAGRAPHS. The only paragraph of the dialog. */
     public static final WritableObjectPropertyKey<CharSequence> MESSAGE_PARAGRAPH_1 =
             new WritableObjectPropertyKey<>();
@@ -381,6 +385,7 @@ public class ModalDialogProperties {
                 TITLE,
                 TITLE_MAX_LINES,
                 TITLE_ICON,
+                TITLE_END_ICON,
                 MESSAGE_PARAGRAPH_1,
                 MESSAGE_PARAGRAPHS,
                 MENU_ITEMS,
