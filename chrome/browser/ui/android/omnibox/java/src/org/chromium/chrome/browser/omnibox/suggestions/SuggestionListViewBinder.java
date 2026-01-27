@@ -67,6 +67,9 @@ class SuggestionListViewBinder {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
                 view.dropdown.emitWindowContentChangedAnnouncement();
             }
+        } else if (SuggestionListProperties.ROUND_TOP_CORNERS.equals(propertyKey)) {
+            view.container.setShouldRoundTopCorners(
+                    model.get(SuggestionListProperties.ROUND_TOP_CORNERS));
         } else if (SuggestionListProperties.SUGGESTION_MODELS.equals(propertyKey)) {
             ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
             listItems.addObserver(

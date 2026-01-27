@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -147,6 +148,7 @@ public class AutocompleteMediatorUnitTest {
     private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
     private SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
+    private SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private Context mContext;
 
     @Before
@@ -163,6 +165,7 @@ public class AutocompleteMediatorUnitTest {
         mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
         mAutocompleteRequestTypeSupplier =
                 ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
+        mFuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
 
         lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
 
@@ -184,6 +187,11 @@ public class AutocompleteMediatorUnitTest {
                 .doReturn(mAutocompleteRequestTypeSupplier)
                 .when(mFuseboxCoordinator)
                 .getAutocompleteRequestTypeSupplier();
+
+        lenient()
+                .doReturn(mFuseboxStateSupplier)
+                .when(mFuseboxCoordinator)
+                .getFuseboxStateSupplier();
 
         lenient().doReturn(0).when(mFuseboxCoordinator).getAttachmentsCount();
 
@@ -1784,6 +1792,20 @@ public class AutocompleteMediatorUnitTest {
 
         // Histogram record count should not be increased.
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void fuseboxStateChanges() {
+        doReturn(true).when(mEmbedder).isTablet();
+        mMediator.setAutocompleteProfile(mProfile);
+        mMediator.onNativeInitialized();
+        mMediator.beginInput(new AutocompleteInput());
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(mListModel.get(SuggestionListProperties.ROUND_TOP_CORNERS));
+        assertFalse(mListModel.get(SuggestionListProperties.DRAW_OVER_ANCHOR));
     }
 
     @Test

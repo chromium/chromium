@@ -8,8 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -43,7 +45,7 @@ public class LocationBarTabletUnitTest {
     public void doBeforeEachTest() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        FrameLayout contentView = new FrameLayout(mActivity);
+        LinearLayout contentView = new LinearLayout(mActivity);
         mLocationBarTablet = new LocationBarTablet(mActivity, null);
         LayoutParams params =
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -62,13 +64,36 @@ public class LocationBarTabletUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testFuseboxStateChange() {
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
-        assertEquals(LayoutParams.WRAP_CONTENT, mLocationBarTablet.getLayoutParams().height);
+        int expansionPx =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
+        LinearLayout.LayoutParams layoutParams =
+                (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
+        assertEquals(LayoutParams.WRAP_CONTENT, layoutParams.height);
+        assertEquals(-expansionPx, layoutParams.leftMargin);
+        assertEquals(-expansionPx, layoutParams.rightMargin);
+        assertEquals(-expansionPx, layoutParams.topMargin);
+        assertEquals(Gravity.TOP, layoutParams.gravity);
+        assertEquals(expansionPx, mLocationBarTablet.getPaddingLeft());
+        assertEquals(expansionPx, mLocationBarTablet.getPaddingRight());
+        assertEquals(expansionPx, mLocationBarTablet.getPaddingTop());
+        assertEquals(1.0f, mLocationBarTablet.getTranslationZ(), MathUtils.EPSILON);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.DISABLED);
+        layoutParams = (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
         assertEquals(
                 mLocationBarTablet
                         .getResources()
                         .getDimensionPixelSize(R.dimen.modern_toolbar_tablet_background_size),
-                mLocationBarTablet.getLayoutParams().height);
+                layoutParams.height);
+        assertEquals(0, layoutParams.leftMargin);
+        assertEquals(0, layoutParams.rightMargin);
+        assertEquals(0, layoutParams.topMargin);
+        assertEquals(Gravity.CENTER_VERTICAL, layoutParams.gravity);
+        assertEquals(0, mLocationBarTablet.getPaddingLeft());
+        assertEquals(0, mLocationBarTablet.getPaddingRight());
+        assertEquals(0, mLocationBarTablet.getPaddingTop());
+        assertEquals(0.0f, mLocationBarTablet.getTranslationZ(), MathUtils.EPSILON);
     }
 
     private void longClickAndVerifyToast(int viewId, int stringId) {

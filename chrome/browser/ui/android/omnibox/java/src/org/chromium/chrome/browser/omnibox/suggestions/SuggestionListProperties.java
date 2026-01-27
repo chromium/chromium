@@ -8,7 +8,6 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -61,7 +60,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new WritableObjectPropertyKey<>();
 
     /** Whether the dropdown should draw over top of the anchor view. */
-    ReadableBooleanPropertyKey DRAW_OVER_ANCHOR = new ReadableBooleanPropertyKey();
+    WritableBooleanPropertyKey DRAW_OVER_ANCHOR = new WritableBooleanPropertyKey();
 
     /** On-screen placement of the Toolbar. */
     WritableIntPropertyKey TOOLBAR_POSITION = new WritableIntPropertyKey();
@@ -80,6 +79,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     /** Whether the suggestions are being rendered on a large screen. */
     WritableBooleanPropertyKey IS_LARGE_SCREEN = new WritableBooleanPropertyKey();
 
+    WritableBooleanPropertyKey ROUND_TOP_CORNERS = new WritableBooleanPropertyKey();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ACTIVITY_WINDOW_FOCUSED,
@@ -96,6 +97,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 IS_LARGE_SCREEN,
                 LIST_IS_FINAL,
                 OMNIBOX_SESSION_ACTIVE,
+                ROUND_TOP_CORNERS,
                 SUGGESTION_MODELS,
                 TOOLBAR_POSITION,
             };

@@ -49,6 +49,7 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
     private int mListViewMaxHeight;
     private int mLastBroadcastedListViewMaxHeight;
     private int mTopPaddingForEdgeToEdge;
+    private boolean mShouldRoundTopCorners = true;
     private final Callback<OmniboxAlignment> mOmniboxAlignmentObserver =
             this::onOmniboxAlignmentChanged;
 
@@ -82,10 +83,7 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
                             isTablet ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             if (isTablet) {
-                setRoundBottomCorners(
-                        getMeasuredHeight() < availableViewportHeight
-                                || !KeyboardVisibilityDelegate.getInstance()
-                                        .isKeyboardShowing(this));
+                setRoundingCorners(mShouldRoundTopCorners, shouldRoundBottomCorners());
             }
         }
     }
@@ -136,6 +134,16 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
         }
     }
 
+    public void setShouldRoundTopCorners(boolean shouldRoundTopCorners) {
+        mShouldRoundTopCorners = shouldRoundTopCorners;
+        setRoundingCorners(mShouldRoundTopCorners, shouldRoundBottomCorners());
+    }
+
+    private boolean shouldRoundBottomCorners() {
+        return getMeasuredHeight() < mOmniboxAlignment.height
+                || !KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(this);
+    }
+
     private void maybeUpdateLayoutParams(int topMargin) {
         // Update the layout params to ensure the parent correctly positions the suggestions
         // under the anchor view.
@@ -175,10 +183,11 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
         setTranslationX(mOmniboxAlignment.left);
     }
 
-    private void setRoundBottomCorners(boolean roundBottomCorners) {
+    private void setRoundingCorners(boolean roundTopCorners, boolean roundBottomCorners) {
         ViewOutlineProvider outlineProvider = getOutlineProvider();
         if (outlineProvider instanceof RoundedCornerOutlineProvider roundedCornerOutlineProvider) {
-            roundedCornerOutlineProvider.setRoundingEdges(true, true, true, roundBottomCorners);
+            roundedCornerOutlineProvider.setRoundingEdges(
+                    true, roundTopCorners, true, roundBottomCorners);
         }
     }
 

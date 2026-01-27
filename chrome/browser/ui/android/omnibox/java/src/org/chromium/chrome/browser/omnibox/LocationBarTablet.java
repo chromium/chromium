@@ -9,16 +9,19 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.Toast;
 
 /** Location bar for tablet form factors. */
@@ -26,6 +29,8 @@ import org.chromium.ui.widget.Toast;
 class LocationBarTablet extends LocationBarLayout implements OnLongClickListener {
     // The number of toolbar buttons that can be hidden at small widths (reload, back, forward).
     private static final int HIDEABLE_BUTTON_COUNT = 3;
+    private static final float OVERLAY_Z_TRANSLATION = 1.0f;
+    private static final float NEUTRAL_Z_TRANSLATION = 0.0f;
 
     private View mLocationBarIcon;
     private View mBookmarkButton;
@@ -327,13 +332,36 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     @Override
     public void onFuseboxStateChanged(@FuseboxState int state) {
         super.onFuseboxStateChanged(state);
-        MarginLayoutParams layoutParams = (MarginLayoutParams) getLayoutParams();
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
         if (state == FuseboxState.COMPACT || state == FuseboxState.EXPANDED) {
             layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            int expansionPx =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
+            layoutParams.leftMargin = -expansionPx;
+            layoutParams.rightMargin = -expansionPx;
+            layoutParams.topMargin = -expansionPx;
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            layoutParams.gravity = Gravity.TOP;
+            setPadding(expansionPx, expansionPx, expansionPx, getPaddingBottom());
+            setTranslationZ(OVERLAY_Z_TRANSLATION);
+            ViewUtils.setAncestorsShouldClipToPadding(this, false, View.NO_ID);
+            ViewUtils.setAncestorsShouldClipChildren(this, false, View.NO_ID);
+            setBackgroundResource(
+                    R.drawable.modern_toolbar_tablet_text_box_background_focused_popup);
         } else {
+            layoutParams.leftMargin = 0;
+            layoutParams.rightMargin = 0;
+            layoutParams.topMargin = 0;
             layoutParams.height =
                     getResources()
                             .getDimensionPixelSize(R.dimen.modern_toolbar_tablet_background_size);
+            layoutParams.gravity = Gravity.CENTER_VERTICAL;
+            setPadding(0, 0, 0, getPaddingBottom());
+            setTranslationZ(NEUTRAL_Z_TRANSLATION);
+            ViewUtils.setAncestorsShouldClipToPadding(this, true, View.NO_ID);
+            ViewUtils.setAncestorsShouldClipChildren(this, true, View.NO_ID);
+            setBackgroundResource(R.drawable.modern_toolbar_tablet_text_box_background);
         }
         setLayoutParams(layoutParams);
     }

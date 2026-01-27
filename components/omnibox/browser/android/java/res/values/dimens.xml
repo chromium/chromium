@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+<!-- Amount of expansion for when the tablet fusebox "pops up" over adjacent views -->
+<dimen name="location_bar_tablet_fusebox_popup_inset">12dp</dimen>
+  <dimen name="omnibox_suggestion_dropdown_round_corner_radius">0dp</dimen>
+</resources>

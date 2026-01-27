@@ -18,7 +18,6 @@ found in the LICENSE file.
     Additional space on the left and right side of the suggestions dropdown.
     -->
     <dimen name="omnibox_suggestion_dropdown_side_spacing">4dp</dimen>
-    <dimen name="omnibox_suggestion_dropdown_round_corner_radius">28dp</dimen>
     <dimen name="location_bar_icon_width">48dp</dimen>
     <dimen name="location_bar_height">48dp</dimen>
     <dimen name="location_bar_icon_margin_end">0dp</dimen>

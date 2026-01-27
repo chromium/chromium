@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCall
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,6 +61,8 @@ public class AutocompleteCoordinatorUnitTest {
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier =
                     ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
+    private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
+            ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
 
     @Mock private AutocompleteDelegate mAutocompleteDelegate;
     @Mock private OmniboxSuggestionsDropdownEmbedder mDropdownEmbedder;
@@ -96,6 +99,11 @@ public class AutocompleteCoordinatorUnitTest {
                 .doReturn(mAutocompleteRequestTypeSupplier)
                 .when(mFuseboxCoordinator)
                 .getAutocompleteRequestTypeSupplier();
+
+        lenient()
+                .doReturn(mFuseboxStateSupplier)
+                .when(mFuseboxCoordinator)
+                .getFuseboxStateSupplier();
 
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(

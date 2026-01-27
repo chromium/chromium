@@ -536,6 +536,10 @@ if (is_android) {
 
   android_resources("java_resources") {
     sources = [
+      "android/java/res/color-night/omnibox_suggestion_dropdown_bg.xml",
+      "android/java/res/color-night/search_suggestion_bg_color.xml",
+      "android/java/res/color/omnibox_suggestion_dropdown_bg.xml",
+      "android/java/res/color/search_suggestion_bg_color.xml",
       "android/java/res/drawable-hdpi/omnibox_https_valid_lock.png",
       "android/java/res/drawable-mdpi/omnibox_https_valid_lock.png",
       "android/java/res/drawable-xhdpi/omnibox_https_valid_lock.png",
@@ -548,7 +552,9 @@ if (is_android) {
       "android/java/res/drawable/ic_settings_tune_24dp.xml",
       "android/java/res/drawable/omnibox_dangerous.xml",
       "android/java/res/drawable/omnibox_not_secure_warning.xml",
+      "android/java/res/values-sw600dp/dimens.xml",
       "android/java/res/values/colors.xml",
+      "android/java/res/values/dimens.xml",
       "android/java/res/values/drawables.xml",
     ]
     deps = [
