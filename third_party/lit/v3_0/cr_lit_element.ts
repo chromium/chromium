@@ -154,7 +154,7 @@ export class CrLitElement extends LitElement {
     super.focus(options);
   }
 
-  fire(eventName: string, detail?: any) {
+  fire<T=any>(eventName: string, detail?: T) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
