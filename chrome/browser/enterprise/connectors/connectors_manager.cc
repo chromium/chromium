@@ -18,8 +18,9 @@
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
@@ -45,11 +46,12 @@ ConnectorsManager::ConnectorsManager(PrefService* pref_service,
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Start observing tab strip models for all browsers.
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this](BrowserWindowInterface* browser_window_interface) {
-        OnBrowserAdded(browser_window_interface->GetBrowserForMigrationOnly());
+      [this](BrowserWindowInterface* browser) {
+        OnBrowserCreated(browser);
         return true;
       });
-  BrowserList::GetInstance()->AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
   if (observe_prefs) {
@@ -60,19 +62,7 @@ ConnectorsManager::ConnectorsManager(PrefService* pref_service,
   }
 }
 
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-ConnectorsManager::~ConnectorsManager() {
-  BrowserList::GetInstance()->RemoveObserver(this);
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this](BrowserWindowInterface* browser_window_interface) {
-        OnBrowserRemoved(
-            browser_window_interface->GetBrowserForMigrationOnly());
-        return true;
-      });
-}
-#else
 ConnectorsManager::~ConnectorsManager() = default;
-#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 bool ConnectorsManager::IsConnectorEnabledForLocalAgent(
@@ -113,12 +103,9 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-void ConnectorsManager::OnBrowserAdded(Browser* browser) {
-  browser->tab_strip_model()->AddObserver(this);
-}
-
-void ConnectorsManager::OnBrowserRemoved(Browser* browser) {
-  browser->tab_strip_model()->RemoveObserver(this);
+void ConnectorsManager::OnBrowserCreated(BrowserWindowInterface* browser) {
+  // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+  browser->GetTabStripModel()->AddObserver(this);
 }
 
 void ConnectorsManager::OnTabStripModelChanged(

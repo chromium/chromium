@@ -164,8 +164,6 @@ CollaborationControllerDelegateDesktop::CollaborationControllerDelegateDesktop(
       collaboration_service_(
           collaboration::CollaborationServiceFactory::GetForProfile(
               browser_->GetProfile())) {
-  browser_list_observer_.Observe(BrowserList::GetInstance());
-
   // Register for browser closed callback.
   if (browser_) {
     browser_close_subscription_ =
