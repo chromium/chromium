@@ -43,13 +43,17 @@ SkVector CornerToRadiusVector(const CustomCornersBackground::Corner& corner,
 
 }  // namespace
 
-CustomCornersBackground::CustomCornersBackground(views::View& view,
-                                                 BrowserView& browser_view,
-                                                 ColorChoice primary_color,
-                                                 ColorChoice corner_color)
+CustomCornersBackground::CustomCornersBackground(
+    views::View& view,
+    BrowserView& browser_view,
+    ColorChoice primary_color,
+    ColorChoice corner_color,
+    std::optional<int> default_radius)
     : CustomCorners(browser_view),
       primary_color_(primary_color),
       corner_color_(corner_color),
+      default_radius_(default_radius.value_or(
+          GetLayoutConstant(LayoutConstant::kToolbarCornerRadius))),
       view_(view) {}
 
 CustomCornersBackground::~CustomCornersBackground() = default;
@@ -129,27 +133,25 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
   }
 
   const gfx::Rect rect(view->GetLocalBounds());
-  const int default_corner_radius =
-      GetLayoutConstant(LayoutConstant::kToolbarCornerRadius);
 
   // Draw corners behind where necessary using the background color.
   if (corners_.upper_leading.type == CornerType::kRoundedWithBackground) {
     const int corner_radius =
-        corners_.upper_leading.radius.value_or(default_corner_radius);
+        corners_.upper_leading.radius.value_or(default_radius_);
     const SkPath corner_path =
         SkPath::Rect(SkRect::MakeXYWH(0, 0, corner_radius, corner_radius));
     PaintPath(canvas, corner_path, corner_color_, /*anti_alias=*/false);
   }
   if (corners_.upper_trailing.type == CornerType::kRoundedWithBackground) {
     const int corner_radius =
-        corners_.upper_trailing.radius.value_or(default_corner_radius);
+        corners_.upper_trailing.radius.value_or(default_radius_);
     const SkPath corner_path = SkPath::Rect(SkRect::MakeXYWH(
         rect.width() - corner_radius, 0, corner_radius, corner_radius));
     PaintPath(canvas, corner_path, corner_color_, /*anti_alias=*/false);
   }
   if (corners_.lower_trailing.type == CornerType::kRoundedWithBackground) {
     const int corner_radius =
-        corners_.lower_trailing.radius.value_or(default_corner_radius);
+        corners_.lower_trailing.radius.value_or(default_radius_);
     const SkPath corner_path = SkPath::Rect(SkRect::MakeXYWH(
         rect.width() - corner_radius, rect.height() - corner_radius,
         corner_radius, corner_radius));
@@ -157,7 +159,7 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
   }
   if (corners_.lower_leading.type == CornerType::kRoundedWithBackground) {
     const int corner_radius =
-        corners_.lower_leading.radius.value_or(default_corner_radius);
+        corners_.lower_leading.radius.value_or(default_radius_);
     const SkPath corner_path = SkPath::Rect(SkRect::MakeXYWH(
         0, rect.height() - corner_radius, corner_radius, corner_radius));
     PaintPath(canvas, corner_path, corner_color_, /*anti_alias=*/false);
@@ -165,10 +167,10 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
 
   // Draw solid rect/rrect background:
   const SkVector radii[4] = {
-      CornerToRadiusVector(corners_.upper_leading, default_corner_radius),
-      CornerToRadiusVector(corners_.upper_trailing, default_corner_radius),
-      CornerToRadiusVector(corners_.lower_trailing, default_corner_radius),
-      CornerToRadiusVector(corners_.lower_leading, default_corner_radius)};
+      CornerToRadiusVector(corners_.upper_leading, default_radius_),
+      CornerToRadiusVector(corners_.upper_trailing, default_radius_),
+      CornerToRadiusVector(corners_.lower_trailing, default_radius_),
+      CornerToRadiusVector(corners_.lower_leading, default_radius_)};
   const SkPath path =
       SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
   PaintPath(canvas, path, primary_color_, /*anti_alias=*/true);
@@ -177,13 +179,11 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
 std::optional<gfx::RoundedCornersF>
 CustomCornersBackground::GetRoundedCornerRadii() const {
   // Provided for completeness; this is not used anywhere.
-  const int default_corner_radius =
-      GetLayoutConstant(LayoutConstant::kToolbarCornerRadius);
   return gfx::RoundedCornersF(
-      CornerToRadius(corners_.upper_leading, default_corner_radius),
-      CornerToRadius(corners_.upper_trailing, default_corner_radius),
-      CornerToRadius(corners_.lower_trailing, default_corner_radius),
-      CornerToRadius(corners_.lower_leading, default_corner_radius));
+      CornerToRadius(corners_.upper_leading, default_radius_),
+      CornerToRadius(corners_.upper_trailing, default_radius_),
+      CornerToRadius(corners_.lower_trailing, default_radius_),
+      CornerToRadius(corners_.lower_leading, default_radius_));
 }
 
 const views::View& CustomCornersBackground::GetView() const {

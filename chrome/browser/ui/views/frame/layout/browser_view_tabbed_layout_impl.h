@@ -91,6 +91,18 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   };
   HorizontalLayout CalculateHorizontalLayout(BrowserLayoutParams& params) const;
 
+  // Describes how to render the top of the vertical tab strip.
+  struct VerticalTabStripAnimation {
+    // The y-value of the top of the tab strip.
+    int top_offset = 0;
+    // The relative size of the top outside corner.
+    double top_outside_corner_percent = 1.0;
+    // The relative size of the top inside corner.
+    double top_inside_corner_percent = 0.0;
+  };
+  VerticalTabStripAnimation CalculateVerticalTabStripAnimation(
+      const BrowserLayoutParams& params) const;
+
   // Returns the type of tabstrip present.
   enum class TabStripType { kNone, kWebUi, kVertical, kHorizontal };
   TabStripType GetTabStripType() const;

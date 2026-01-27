@@ -222,9 +222,16 @@ gfx::Size VerticalTabStripRegionView::GetMinimumSize() const {
 gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   auto size = TabStripRegionView::CalculatePreferredSize(available_size);
-  size.set_width(target_collapse_state_.collapsed
-                     ? kCollapsedWidth
-                     : target_collapse_state_.uncollapsed_width);
+  if (resize_animation_.is_animating()) {
+    size.set_width(kCollapsedWidth +
+                   base::ClampRound((target_collapse_state_.uncollapsed_width -
+                                     kCollapsedWidth) *
+                                    resize_animation_.GetCurrentValue()));
+  } else {
+    size.set_width(target_collapse_state_.collapsed
+                       ? kCollapsedWidth
+                       : target_collapse_state_.uncollapsed_width);
+  }
   return size;
 }
 
