@@ -69,14 +69,12 @@ source_set("common") {
     "color_parser.cc",
     "common_param_traits.cc",
     "common_param_traits.h",
-    "common_param_traits_macros.h",
     "content_constants_internal.h",
     "content_export.h",
     "content_navigation_policy.cc",
     "content_navigation_policy.h",
     "content_param_traits.cc",
     "content_param_traits.h",
-    "content_param_traits_macros.h",
     "content_paths.cc",
     "content_switches_internal.cc",
     "content_switches_internal.h",
@@ -143,7 +141,6 @@ source_set("common") {
     "input/synthetic_touchscreen_pinch_gesture.cc",
     "input/synthetic_touchscreen_pinch_gesture.h",
     "media/cdm_info.cc",
-    "navigation_gesture.h",
     "navigation_params_utils.h",
     "origin_util.cc",
     "process_priority_tracker.cc",
@@ -480,10 +477,6 @@ mojom("mojo_bindings") {
           cpp = "::blink::FrameOwnerElementType"
         },
         {
-          mojom = "content.mojom.NavigationGesture"
-          cpp = "::content::NavigationGesture"
-        },
-        {
           mojom = "content.mojom.NetworkConnectionType"
           cpp = "::net::NetworkChangeNotifier::ConnectionType"
         },
@@ -517,7 +510,6 @@ mojom("mojo_bindings") {
         "//content/common/input/synthetic_smooth_drag_gesture_params.h",
         "//content/common/input/synthetic_smooth_scroll_gesture_params.h",
         "//content/common/input/synthetic_tap_gesture_params.h",
-        "//content/common/navigation_gesture.h",
         "//net/base/network_change_notifier.h",
         "//third_party/blink/public/common/navigation/impression.h",
         "//third_party/blink/public/common/widget/visual_properties.h",
@@ -526,7 +518,6 @@ mojom("mojo_bindings") {
       ]
 
       traits_private_headers = [
-        "//content/common/content_param_traits_macros.h",
         "//content/public/common/common_param_traits.h",
         "//services/network/public/cpp/p2p_param_traits.h",
       ]

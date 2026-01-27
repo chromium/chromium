@@ -68,7 +68,6 @@
 #include "content/common/frame_messages.mojom.h"
 #include "content/common/main_frame_counter.h"
 #include "content/common/navigation_client.mojom.h"
-#include "content/common/navigation_gesture.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/common/web_package/signed_exchange_utils.h"

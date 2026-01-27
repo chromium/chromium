@@ -14,8 +14,9 @@
 #ifndef CONTENT_COMMON_CONTENT_PARAM_TRAITS_H_
 #define CONTENT_COMMON_CONTENT_PARAM_TRAITS_H_
 
+#include "base/pickle.h"
 #include "content/common/content_export.h"
-#include "content/common/content_param_traits_macros.h"
+#include "ipc/param_traits.h"
 
 namespace blink {
 class MessagePortChannel;

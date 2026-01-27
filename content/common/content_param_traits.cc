@@ -270,17 +270,3 @@ bool ParamTraits<viz::SurfaceInfo>::Read(const base::Pickle* m,
 }
 
 }  // namespace IPC
-
-// Generate param traits write methods.
-#include "ipc/param_traits_write_macros.h"
-namespace IPC {
-#undef CONTENT_COMMON_CONTENT_PARAM_TRAITS_MACROS_H_
-#include "content/common/content_param_traits_macros.h"
-}  // namespace IPC
-
-// Generate param traits read methods.
-#include "ipc/param_traits_read_macros.h"
-namespace IPC {
-#undef CONTENT_COMMON_CONTENT_PARAM_TRAITS_MACROS_H_
-#include "content/common/content_param_traits_macros.h"
-}  // namespace IPC

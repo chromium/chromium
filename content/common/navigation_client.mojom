@@ -35,9 +35,6 @@ import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 [Native]
-enum NavigationGesture;
-
-[Native]
 enum PageTransition;
 
 [Native]
