@@ -60,6 +60,7 @@ optimization_guide::proto::MediaData CreateMediaData() {
   media_data.set_media_data_type(
       optimization_guide::proto::MediaDataType::MEDIA_DATA_TYPE_AUDIO);
   media_data.set_duration_milliseconds(10000);
+  media_data.add_transcripts()->set_text("transcript");
   return media_data;
 }
 
@@ -545,6 +546,17 @@ TEST_F(PageContentProtoUtilTest, MediaDataSet) {
   EXPECT_TRUE(
       ConvertAIPageContentToProto(root_content, page_content).has_value());
   EXPECT_TRUE(page_content.proto.main_frame_data().has_media_data());
+
+  EXPECT_EQ(page_content.metadata->frame_metadata.size(), 1u);
+  bool found_meta_tag = false;
+  for (const auto& meta_tag :
+       page_content.metadata->frame_metadata[0]->meta_tags) {
+    if (meta_tag->name == "has_media_transcripts") {
+      EXPECT_EQ(meta_tag->content, "true");
+      found_meta_tag = true;
+    }
+  }
+  EXPECT_TRUE(found_meta_tag);
 }
 
 TEST_F(PageContentProtoUtilTest, ConvertTableData) {
