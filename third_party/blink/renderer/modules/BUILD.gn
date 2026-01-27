@@ -605,6 +605,7 @@ source_set("unit_tests") {
     "service_worker/thread_safe_script_container_test.cc",
     "service_worker/web_embedded_worker_impl_test.cc",
     "service_worker/web_service_worker_fetch_context_impl_test.cc",
+    "shared_storage/shared_storage_worklet_test.cc",
     "shared_storage/shared_storage_worklet_unittest.cc",
     "speech/speech_recognition_controller_unittest.cc",
     "video_rvfc/video_frame_callback_requester_impl_test.cc",

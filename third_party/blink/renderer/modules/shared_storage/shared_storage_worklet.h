@@ -5,14 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_WORKLET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_SHARED_STORAGE_WORKLET_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fencedframeconfig_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
@@ -23,13 +26,15 @@ class SharedStorageRunOperationMethodOptions;
 class WorkletOptions;
 
 // Implement the worklet attribute under window.sharedStorage.
-class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
+class MODULES_EXPORT SharedStorageWorklet final
+    : public ScriptWrappable,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static SharedStorageWorklet* Create(ScriptState*);
 
-  SharedStorageWorklet() = default;
+  explicit SharedStorageWorklet(ExecutionContext* context);
 
   ~SharedStorageWorklet() override = default;
 
@@ -70,7 +75,17 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
                        SharedStorageDataOrigin data_origin_type,
                        scoped_refptr<SecurityOrigin> custom_data_origin);
 
+  // ExecutionContextLifecycleObserver:
+  void ContextDestroyed() override;
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(SharedStorageWorkletDocumentTest,
+                           ContextDestroyedDetachesPendingResolvers);
+  FRIEND_TEST_ALL_PREFIXES(SharedStorageWorkletDocumentTest,
+                           FinishOperationRemovesResolver);
+  FRIEND_TEST_ALL_PREFIXES(SharedStorageWorkletDocumentTest,
+                           MultipleResolversCleanedUp);
+
   // These internal methods wrap logic that requires IPCs. Since the
   // corresponding IPCs are not valid during prerendering, they have to be
   // deferred until prerendering pages being activated.
@@ -98,17 +113,22 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
                    base::TimeTicks start_time,
                    ScriptPromiseResolver<IDLAny>* resolver);
 
+  void FinishOperation(ScriptPromiseResolverBase* resolver);
+
   // On non-prerendering pages, set when addModule() was called and passed
   // early renderer checks. When it comes to prerendering pages, it also needs
   // to wait for the page to be activated before setting the Mojo connection.
   HeapMojoAssociatedRemote<mojom::blink::SharedStorageWorkletHost>
-      worklet_host_{nullptr};
+      worklet_host_;
 
   // Set to the script origin when addModule() was called and passed early
   // renderer checks (i.e. initialized along with `worklet_host_`).
   url::Origin shared_storage_origin_;
 
   bool keep_alive_after_operation_ = true;
+
+  // Resolvers waiting for mojo callbacks. Detached in ContextDestroyed().
+  HeapHashSet<Member<ScriptPromiseResolverBase>> pending_resolvers_;
 };
 
 }  // namespace blink
