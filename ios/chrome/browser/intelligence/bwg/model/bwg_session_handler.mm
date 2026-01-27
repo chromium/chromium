@@ -207,12 +207,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 }
 
 - (void)responseReceivedWithClientID:(NSString*)clientID
-                            serverID:(NSString*)serverID {
-  // TODO(crbug.com/478230514): Remove once migrated to new implementation.
-  // no-op
-}
-
-- (void)responseReceivedWithClientID:(NSString*)clientID
                             serverID:(NSString*)serverID
             isNanoBananaToolSelected:(BOOL)isNanoBananaToolSelected
                     isImageGenerated:(BOOL)isImageGenerated {
@@ -238,12 +232,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 
 - (void)didTapGeminiSettingsButton {
   [self.settingsHandler showBWGSettings];
-}
-
-- (void)didSendQueryWithInputType:(BWGInputType)inputType
-              pageContextAttached:(BOOL)pageContextAttached {
-  // TODO(crbug.com/478230514): Remove once migrated to new implementation.
-  // no-op
 }
 
 - (void)didSendQueryWithInputType:(BWGInputType)inputType

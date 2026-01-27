@@ -109,11 +109,6 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
                           serverID:(NSString*)serverID;
 
-// TODO(crbug.com/478230514): Remove once migrated to new implementation.
-// Called when a response is received.
-- (void)responseReceivedWithClientID:(NSString*)clientID
-                            serverID:(NSString*)serverID;
-
 // Called when a response is received from Gemini, including metadata about the
 // response.
 - (void)responseReceivedWithClientID:(NSString*)clientID
@@ -124,12 +119,6 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 // Called when the user taps the Gemini settings button from within the Gemini
 // UI.
 - (void)didTapGeminiSettingsButton;
-
-// TODO(crbug.com/478230514): Remove once migrated to new implementation.
-// Called when a query is sent with the specified input type and context info
-// and whether the page context was attached
-- (void)didSendQueryWithInputType:(BWGInputType)inputType
-              pageContextAttached:(BOOL)pageContextAttached;
 
 // Called when a query is sent to Gemini, including metadata about the query.
 - (void)didSendQueryWithInputType:(BWGInputType)inputType
