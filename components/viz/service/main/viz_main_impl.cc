@@ -43,7 +43,7 @@ std::unique_ptr<base::Thread> CreateAndStartIOThread() {
   base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
   // TODO(reveman): Remove this in favor of setting it explicitly for each
   // type of process.
-  thread_options.thread_type = base::ThreadType::kDisplayCritical;
+  thread_options.thread_type = base::ThreadType::kPresentation;
   auto io_thread = std::make_unique<base::Thread>("GpuIOThread");
   CHECK(io_thread->StartWithOptions(std::move(thread_options)));
 

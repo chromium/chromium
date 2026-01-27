@@ -27,7 +27,7 @@ DisplayLinkMacMojo::DisplayLinkMacMojo(
   base::Thread::Options thread_options;
   // CoreAnimation CADisplayLink only works with MessagePumpType::NS_RUNLOOP.
   thread_options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;
-  thread_options.thread_type = base::ThreadType::kDisplayCritical;
+  thread_options.thread_type = base::ThreadType::kPresentation;
   StartWithOptions(base::Thread::Options(std::move(thread_options)));
 
   // To ensure VSyncThread task_runner() is valid, StartWithOptions() must be

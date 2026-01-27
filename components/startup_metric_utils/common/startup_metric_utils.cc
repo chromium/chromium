@@ -99,7 +99,7 @@ base::TimeTicks CommonStartupMetricRecorder::StartupTimeToTimeTicks(
   static bool statics_initialized = false;
   if (!statics_initialized) {
     statics_initialized = true;
-    scoped_boost_priority.emplace(base::ThreadType::kDisplayCritical);
+    scoped_boost_priority.emplace(base::ThreadType::kPresentation);
   }
 #endif  // !BUILDFLAG(IS_APPLE)
 

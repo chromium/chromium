@@ -167,7 +167,7 @@ static bool ShouldBoostDisplayCriticalThreadPriority() {
 //   value. Contrary to the matching Java APi in Android <13, this does not
 //   restrict the thread to (subset of) little cores.
 const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
-    {ThreadType::kRealtimeAudio, -16}, {ThreadType::kDisplayCritical, -4},
+    {ThreadType::kRealtimeAudio, -16}, {ThreadType::kPresentation, -4},
     {ThreadType::kDefault, 0},         {ThreadType::kUtility, 1},
     {ThreadType::kBackground, 10},
 };
@@ -188,7 +188,7 @@ int ThreadTypeToNiceValue(const ThreadType thread_type) {
       return 1;
     case ThreadType::kDefault:
       return 0;
-    case ThreadType::kDisplayCritical:
+    case ThreadType::kPresentation:
     case ThreadType::kInteractive:
       if (ShouldBoostDisplayCriticalThreadPriority()) {
         return -12;
@@ -217,10 +217,10 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_ThreadUtils_setThreadPriorityAudio(env,
                                             PlatformThread::CurrentId().raw());
-  } else if (thread_type == ThreadType::kDisplayCritical &&
+  } else if (thread_type == ThreadType::kPresentation &&
              pump_type_hint == MessagePumpType::UI &&
              GetCurrentThreadNiceValue() <=
-                 ThreadTypeToNiceValue(ThreadType::kDisplayCritical)) {
+                 ThreadTypeToNiceValue(ThreadType::kPresentation)) {
     // Recent versions of Android (O+) up the priority of the UI thread
     // automatically.
   } else {
@@ -230,7 +230,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   if (may_change_affinity && IsEligibleForBigCoreAffinityChange() &&
       base::FeatureList::IsEnabled(kRestrictBigCoreThreadAffinity)) {
     SetCanRunOnBigCore(PlatformThread::CurrentId(),
-                       thread_type >= ThreadType::kDisplayCritical);
+                       thread_type >= ThreadType::kPresentation);
   }
 }
 

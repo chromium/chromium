@@ -74,7 +74,7 @@ class VizCompositorThread : public base::Thread {
 
 std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread(
     base::TaskObserver* task_observer) {
-  const base::ThreadType thread_type = base::ThreadType::kDisplayCritical;
+  const base::ThreadType thread_type = base::ThreadType::kPresentation;
 #if BUILDFLAG(IS_ANDROID)
   auto thread = std::make_unique<VizCompositorThread>(thread_type);
   thread->Start();

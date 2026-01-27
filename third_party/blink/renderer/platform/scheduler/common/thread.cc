@@ -77,7 +77,7 @@ void Thread::CreateAndSetCompositorThread() {
   DCHECK(!GetCompositorThread());
 
   ThreadCreationParams params(ThreadType::kCompositorThread);
-  params.base_thread_type = base::ThreadType::kDisplayCritical;
+  params.base_thread_type = base::ThreadType::kPresentation;
 
   auto compositor_thread =
       std::make_unique<scheduler::CompositorThread>(params);
@@ -103,7 +103,7 @@ void Thread::CreateAndSetCompositorThread() {
         // changes. This is not possible inside the sandbox, so ask the
         // browser to do it.
         Platform::Current()->SetThreadType(compositor_thread_id,
-                                           base::ThreadType::kDisplayCritical);
+                                           base::ThreadType::kPresentation);
       }));
 #endif
 
