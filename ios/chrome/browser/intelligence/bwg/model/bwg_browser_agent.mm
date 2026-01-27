@@ -87,6 +87,12 @@ double kViewTransitionTime = 1.5;
 BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
   if (IsGeminiCopresenceEnabled()) {
     StartObserving(browser_, TabsDependencyInstaller::Policy::kOnlyRealized);
+
+    pref_change_registrar_.Init(browser_->GetProfile()->GetPrefs());
+    pref_change_registrar_.Add(
+        prefs::kIOSBWGPageContentSetting,
+        base::BindRepeating(&BwgBrowserAgent::OnPageContentPrefChanged,
+                            base::Unretained(this)));
   }
 
   bwg_gateway_ = ios::provider::CreateBWGGateway();
@@ -165,6 +171,7 @@ BwgBrowserAgent::~BwgBrowserAgent() {
     fullscreen_controller_->RemoveObserver(this);
     fullscreen_controller_ = nullptr;
   }
+
   StopObserving();
 }
 
@@ -744,6 +751,24 @@ void BwgBrowserAgent::SetSessionCommandHandlers() {
 
   bwg_session_handler_.settingsHandler = settings_handler;
   bwg_session_handler_.BWGHandler = bwg_handler;
+}
+
+void BwgBrowserAgent::OnPageContentPrefChanged() {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  BwgTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  if (!tab_helper) {
+    return;
+  }
+
+  GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
+  ApplyUserPrefsToPageContext(gemini_page_context);
+
+  ios::provider::UpdatePageContext(gemini_page_context);
+
+  // Trigger UI update for the attachment chip.
+  ios::provider::RequestUIChange(
+      ios::provider::GeminiUIElementType::kContextAttachment);
 }
 
 BwgTabHelper* BwgBrowserAgent::GetActiveTabHelper(web::WebState* web_state) {

@@ -12,6 +12,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
 #import "base/types/expected.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
@@ -244,6 +245,12 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // `HideFloatyIfInvoked()` call during parent/child view
   // transitions.
   base::TimeTicks floaty_hidden_timestamp_;
+
+  // Registrar for pref changes.
+  PrefChangeRegistrar pref_change_registrar_;
+
+  // Called when the page content sharing preference changes.
+  void OnPageContentPrefChanged();
 
   // Weak pointer factory.
   base::WeakPtrFactory<BwgBrowserAgent> weak_factory_{this};

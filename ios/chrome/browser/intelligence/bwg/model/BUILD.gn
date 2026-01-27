@@ -56,6 +56,7 @@ source_set("browser_agent") {
     "//base",
     "//components/favicon/ios",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/intelligence/bwg/metrics",
