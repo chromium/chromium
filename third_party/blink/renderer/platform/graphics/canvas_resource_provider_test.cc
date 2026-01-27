@@ -40,6 +40,13 @@ using testing::Test;
 namespace blink {
 namespace {
 
+SkImageInfo GetSkImageInfo(CanvasResourceProvider* provider) {
+  return SkImageInfo::Make(
+      provider->Size().width(), provider->Size().height(),
+      viz::ToClosestSkColorType(provider->GetSharedImageFormat()),
+      provider->GetAlphaType(), provider->GetColorSpace().ToSkColorSpace());
+}
+
 constexpr int kMaxTextureSize = 1024;
 
 }  // namespace
@@ -208,13 +215,13 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   // will internally force it to RGBA8 on MacOS, or otherwise RGBA8 if not on
   // Windows
 #if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
 #elif !BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
 #else
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 #endif
 }
 
@@ -236,7 +243,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
   EXPECT_FALSE(provider->IsSingleBuffered());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to kRGBA8
-  EXPECT_EQ(provider->GetSkImageInfo(),
+  EXPECT_EQ(GetSkImageInfo(provider.get()),
             kInfo.makeColorType(kRGBA_8888_SkColorType));
 
   EXPECT_FALSE(provider->IsSingleBuffered());
@@ -264,7 +271,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   // We do not support single buffering for unaccelerated low latency canvas.
   EXPECT_FALSE(provider->IsSingleBuffered());
 
-  EXPECT_EQ(provider->GetSkImageInfo(), kInfo);
+  EXPECT_EQ(GetSkImageInfo(provider.get()), kInfo);
 
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
@@ -360,10 +367,10 @@ TEST_F(CanvasResourceProviderTest,
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
 #if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
 #else
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
 #endif
 
@@ -542,7 +549,7 @@ TEST_F(CanvasResourceProviderTest, Canvas2DResourceProviderBitmap) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
   EXPECT_FALSE(provider->IsAccelerated());
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 }
 
 TEST_F(CanvasResourceProviderTest,
@@ -583,7 +590,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
   EXPECT_FALSE(provider->IsAccelerated());
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
@@ -613,13 +620,13 @@ TEST_F(CanvasResourceProviderTest,
   // will internally force it to RGBA8 on MacOS, or otherwise RGBA8 if not on
   // Windows
 #if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
 #elif !BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
 #else
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 #endif
 }
 
