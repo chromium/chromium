@@ -1129,14 +1129,14 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       ToggleImmersiveUI_OpensImmersiveUI) {
+                       ToggleUI_OpensImmersive) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
   ASSERT_TRUE(controller);
 
-  // Toggle Immersive UI (open)
-  controller->ToggleImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  // Toggle UI (open)
+  controller->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EmitWebUIShowEvent();
 
   // Verify Immersive UI is open
@@ -1146,7 +1146,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       ToggleImmersiveUI_ClosesImmersiveUI) {
+                       ToggleUI_ClosesImmersive) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
@@ -1155,8 +1155,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   // Show Immersive UI
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
 
-  // Toggle Immersive UI (close)
-  controller->ToggleImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  // Toggle UI (close)
+  controller->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
 
   // Verify Immersive UI is closed
   AssertOverlayVisibility(/*visible=*/false);
@@ -1165,7 +1165,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       ToggleImmersiveUI_ClosesSidePanel) {
+                       ToggleUI_ClosesSidePanel) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
@@ -1180,19 +1180,16 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
 
-  // Toggle Immersive UI (open)
-  controller->ToggleImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  // Toggle UI (with side panel open)
+  controller->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
 
   // Verify Side Panel is closed
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
-
-  // Verify Immersive UI is open
-  AssertOverlayVisibility(/*visible=*/true);
   EXPECT_EQ(controller->GetPresentationState(),
-            ReadAnythingController::PresentationState::kInImmersiveOverlay);
+            ReadAnythingController::PresentationState::kInactive);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,

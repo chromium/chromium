@@ -121,7 +121,7 @@ void ReadAnythingEntryPointController::ToggleUI(
     if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
       auto* controller = ReadAnythingController::From(tab);
       CHECK(controller);
-      controller->ToggleImmersiveUI(open_trigger);
+      controller->ToggleUI(open_trigger);
     }
   } else {
     SidePanelOpenTrigger side_panel_open_trigger =

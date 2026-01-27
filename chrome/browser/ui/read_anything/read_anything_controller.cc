@@ -385,13 +385,19 @@ void ReadAnythingController::CloseImmersiveUI(bool closed_by_tab_switch) {
   }
 }
 
-void ReadAnythingController::ToggleImmersiveUI(
-    ReadAnythingOpenTrigger trigger) {
-  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+void ReadAnythingController::ToggleUI(ReadAnythingOpenTrigger trigger) {
+  PresentationState state = GetPresentationState();
+  if (state == PresentationState::kInImmersiveOverlay) {
     CloseImmersiveUI();
-  } else {
-    ShowImmersiveUI(trigger);
+    return;
   }
+
+  if (state == PresentationState::kInSidePanel) {
+    ToggleReadAnythingSidePanel(SidePanelOpenTrigger::kAppMenu);
+    return;
+  }
+
+  ShowImmersiveUI(trigger);
 }
 
 void ReadAnythingController::TogglePresentation() {
