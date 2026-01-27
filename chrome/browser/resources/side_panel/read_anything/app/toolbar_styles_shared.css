@@ -11,7 +11,7 @@
 cr-icon-button {
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
-  --cr-icon-button-fill-color: var(--foreground-color);
+  --cr-icon-button-fill-color: var(--cr-icon-button-fill-color-default);
   margin: 4px;
 }
 

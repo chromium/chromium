@@ -14,7 +14,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: var(--background-color);
 }
 
 :host #appFlexParent {
@@ -64,6 +63,10 @@
   height: 100%;
   overflow-x: var(--app-overflow-x);
   width: 100%;
+}
+
+#appFlexParent.immersive {
+  background-color: var(--background-color);
 }
 
 #appFlexParent #containerParent {

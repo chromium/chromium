@@ -94,6 +94,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   private isReadAloudEnabled_: boolean;
   protected isDocsLoadMoreButtonVisible_: boolean = false;
+  protected isImmersiveEnabled_: boolean = false;
 
   // If the speech engine is considered "loaded." If it is, we should display
   // the play / pause buttons normally. Otherwise, we should disable the
@@ -161,6 +162,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (chrome.readingMode.isReadabilityEnabled) {
       this.contentController_.configureTrustedTypes();
     }
+    this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
   }
 
   override disconnectedCallback() {

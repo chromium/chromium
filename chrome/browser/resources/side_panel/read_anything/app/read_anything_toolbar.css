@@ -13,7 +13,7 @@
 
 #play-pause {
   --cr-icon-button-icon-size: 20px;
-  --cr-icon-button-fill-color: var(--audio-player-icon-color);
+  --cr-icon-button-fill-color: var(--play-pause-icon-color);
   --cr-icon-button-size: 28px;
   color: var(--color-side-panel-entry-icon);
 }
@@ -102,6 +102,9 @@
 }
 
 .toolbar-container {
+  --cr-icon-button-fill-color-default: var(--color-sys-on-surface-subtle);
+  --play-pause-icon-color: var(--color-sys-primary);
+  --rate-button-text-color: var(--color-sys-on-surface-subtle);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -111,6 +114,9 @@
 }
 
 .immersive-toolbar-container {
+  --cr-icon-button-fill-color-default: var(--foreground-color);
+  --play-pause-icon-color: var(--audio-player-icon-color);
+  --rate-button-text-color: var(--foreground-color);
   background-color: var(--background-color);
   display: flex;
   flex-direction: row;
@@ -137,7 +143,7 @@
   background-color: transparent;
   border: none;
   border-radius: 50%;
-  --cr-button-text-color: var(--foreground-color);
+  --cr-button-text-color: var(--rate-button-text-color);
   display: flex;
   align-items: center;
   justify-content: center;
