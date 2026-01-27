@@ -1676,13 +1676,6 @@ class AutofillExternalDelegatePlusAddressTest
     return static_cast<MockAutofillPlusAddressDelegate&>(
         *autofill_client().GetPlusAddressDelegate());
   }
-
-  const std::vector<Suggestion>& suggestions() const { return suggestions_; }
-
- private:
-  // The currently shown suggestions. Kept as a member since
-  // `GetAutofillSuggestions` returns a span.
-  std::vector<Suggestion> suggestions_;
 };
 
 // Mock out an existing plus address autofill suggestion, and ensure that
