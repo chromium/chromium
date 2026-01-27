@@ -390,11 +390,6 @@ BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
 // and Settings.
 BASE_FEATURE(kCellularUseSecondEuicc, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Multiple scraped passwords should be checked against password in
-// cryptohome.
-BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
 // select a clipboard history item to replace the initially pasted content.
@@ -2428,10 +2423,6 @@ bool IsCaptureModeEducationBypassLimitsEnabled() {
 bool IsCaptureModeOnDeviceOcrEnabled() {
   return (IsScannerEnabled() || IsSunfishFeatureEnabled()) &&
          base::FeatureList::IsEnabled(kCaptureModeOnDeviceOcr);
-}
-
-bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
-  return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
 }
 
 bool IsContinuousOverviewScrollAnimationEnabled() {
