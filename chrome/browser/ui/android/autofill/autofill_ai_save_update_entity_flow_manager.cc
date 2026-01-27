@@ -90,11 +90,11 @@ AutofillAiSaveUpdateEntityFlowManager::
 void AutofillAiSaveUpdateEntityFlowManager::OfferSave(
     EntityInstance entity,
     std::optional<EntityInstance> old_entity,
-    AutofillClient::EntityImportPromptResultCallback prompt_closed_callback) {
-  if (prompt_closed_callback_) {
+    AutofillClient::EntityImportPromptResultCallback prompt_result_callback) {
+  if (prompt_result_callback_) {
     return;
   }
-  prompt_closed_callback_ = std::move(prompt_closed_callback);
+  prompt_result_callback_ = std::move(prompt_result_callback);
   autofill_message_controller_->Show(
       CreateMessageModel(std::move(entity), std::move(old_entity)));
 }
@@ -139,7 +139,7 @@ void AutofillAiSaveUpdateEntityFlowManager::OnMessagePrimaryAction(
       std::make_unique<AutofillAiSaveUpdateEntityPromptController>(
           web_contents_, std::move(prompt_view_android), std::move(entity),
           std::move(old_entity), app_locale_,
-          std::move(prompt_closed_callback_));
+          std::move(prompt_result_callback_));
   save_update_entity_prompt_controller_->DisplayPrompt();
 }
 
@@ -152,21 +152,20 @@ void AutofillAiSaveUpdateEntityFlowManager::OnMessageDismissed(
       break;
     case messages::DismissReason::GESTURE:
       // User explicitly dismissed the message.
-      RunPromptClosedCallback(
-          AutofillClient::AutofillAiBubbleClosedReason::kClosed);
+      RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult::kClosed);
       break;
     default:
       // Dismissal for any other reason like timeout, tab switch, etc.
       RunPromptClosedCallback(
-          AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted);
+          AutofillClient::AutofillAiBubbleResult::kNotInteracted);
       break;
   }
 }
 
 void AutofillAiSaveUpdateEntityFlowManager::RunPromptClosedCallback(
-    AutofillClient::AutofillAiBubbleClosedReason decision) {
-  if (prompt_closed_callback_) {
-    std::move(prompt_closed_callback_).Run(decision);
+    AutofillClient::AutofillAiBubbleResult result) {
+  if (prompt_result_callback_) {
+    std::move(prompt_result_callback_).Run(result);
   }
 }
 

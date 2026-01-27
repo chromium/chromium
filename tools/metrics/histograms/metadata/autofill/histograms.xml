@@ -1701,7 +1701,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Ai.{PromptType}.AllEntities"
-    enum="AutofillAiBubbleClosedReason" expires_after="2026-06-28">
+    enum="AutofillAiBubbleResult" expires_after="2026-06-28">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1713,7 +1713,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Ai.{PromptType}{EntityType}{RecordType}"
-    enum="AutofillAiBubbleClosedReason" expires_after="2026-06-28">
+    enum="AutofillAiBubbleResult" expires_after="2026-06-28">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

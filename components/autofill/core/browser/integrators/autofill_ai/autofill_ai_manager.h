@@ -100,7 +100,7 @@ class AutofillAiManager {
   // Strike database related methods:
   void AddOrClearImportPromptStrikes(
       AutofillClient::AutofillAiImportPromptType prompt_type,
-      AutofillClient::AutofillAiBubbleClosedReason close_reason,
+      AutofillClient::AutofillAiBubbleResult result,
       const GURL& url,
       const EntityInstance& entity);
   void AddStrikeForSaveAttempt(const GURL& url, const EntityInstance& entity);
@@ -190,7 +190,7 @@ class AutofillAiManager {
       EntityInstance entity,
       ukm::SourceId ukm_source_id,
       AutofillClient::AutofillAiImportPromptType prompt_type,
-      AutofillClient::AutofillAiBubbleClosedReason close_reason);
+      AutofillClient::AutofillAiBubbleResult result);
 
   LogManager* GetCurrentLogManager();
 

@@ -184,8 +184,8 @@ class AutofillClient {
   // prompt related to AutofillAi saving, updating, or migrating.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class AutofillAiBubbleClosedReason {
-    // Bubble closed reason not specified.
+  enum class AutofillAiBubbleResult {
+    // Bubble result not specified.
     kUnknown = 0,
     // The user explicitly accepted the bubble.
     kAccepted = 1,
@@ -233,7 +233,7 @@ class AutofillClient {
   };
 
   using EntityImportPromptResultCallback =
-      base::OnceCallback<void(AutofillAiBubbleClosedReason close_reason)>;
+      base::OnceCallback<void(AutofillAiBubbleResult result)>;
 
   // The types of prompts that AutofillAi can show to the user after a form
   // submission. The values are ordered by decreasing priority of being shown
@@ -683,7 +683,7 @@ class AutofillClient {
   virtual void ShowEntityImportBubble(
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
-      EntityImportPromptResultCallback prompt_closed_callback);
+      EntityImportPromptResultCallback prompt_result_callback);
 
   virtual void ShowEmailVerifiedToast();
 

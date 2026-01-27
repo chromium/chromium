@@ -1399,18 +1399,18 @@ ChromeAutofillClient::GetMqlsUploadService() {
 void ChromeAutofillClient::ShowEntityImportBubble(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
-    EntityImportPromptResultCallback prompt_closed_callback) {
+    EntityImportPromptResultCallback prompt_result_callback) {
 #if BUILDFLAG(IS_ANDROID)
   autofill_ai_save_update_entity_flow_manager_->OfferSave(
-      new_entity, std::move(old_entity), std::move(prompt_closed_callback));
+      new_entity, std::move(old_entity), std::move(prompt_result_callback));
 #else
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
           &*web_contents(), GetAppLocale())) {
     controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
-                           std::move(prompt_closed_callback));
+                           std::move(prompt_result_callback));
   } else {
-    std::move(prompt_closed_callback)
-        .Run(AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
+    std::move(prompt_result_callback)
+        .Run(AutofillClient::AutofillAiBubbleResult::kUnknown);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

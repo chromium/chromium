@@ -75,11 +75,10 @@ using ::testing::Truly;
 using ::testing::VariantWith;
 
 constexpr auto kAcceptBubble =
-    AutofillClient::AutofillAiBubbleClosedReason::kAccepted;
-constexpr auto kDeclineBubble =
-    AutofillClient::AutofillAiBubbleClosedReason::kClosed;
+    AutofillClient::AutofillAiBubbleResult::kAccepted;
+constexpr auto kDeclineBubble = AutofillClient::AutofillAiBubbleResult::kClosed;
 constexpr auto kIgnoreBubble =
-    AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted;
+    AutofillClient::AutofillAiBubbleResult::kNotInteracted;
 
 auto FirstElementIs(auto&& matcher) {
   return ResultOf(
@@ -132,7 +131,7 @@ class MockAutofillClient : public TestAutofillClient {
               ShowEntityImportBubble,
               (EntityInstance entity,
                std::optional<EntityInstance> old_entity,
-               EntityImportPromptResultCallback prompt_acceptance_callback),
+               EntityImportPromptResultCallback prompt_result_callback),
               (override));
   MOCK_METHOD(void,
               TriggerAutofillAiSavePromptSurvey,

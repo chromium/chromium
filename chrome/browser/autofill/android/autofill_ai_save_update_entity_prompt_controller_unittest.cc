@@ -104,7 +104,7 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
   prompt_controller().DisplayPrompt();
 
   EXPECT_CALL(prompt_closed_callback(),
-              Run(AutofillClient::AutofillAiBubbleClosedReason::kAccepted));
+              Run(AutofillClient::AutofillAiBubbleResult::kAccepted));
   // Both `OnUserAccepted` and `OnPromptDismissed` are called when the user
   // clicks the positive button.
   prompt_controller().OnUserAccepted(env());
@@ -118,7 +118,7 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
   prompt_controller().DisplayPrompt();
 
   EXPECT_CALL(prompt_closed_callback(),
-              Run(AutofillClient::AutofillAiBubbleClosedReason::kCancelled));
+              Run(AutofillClient::AutofillAiBubbleResult::kCancelled));
   // Both `OnUserDeclined` and `OnPromptDismissed` are called when the user
   // clicks the negative button.
   prompt_controller().OnUserDeclined(env());
@@ -131,9 +131,8 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
   EXPECT_CALL(prompt_view(), Show(&prompt_controller()));
   prompt_controller().DisplayPrompt();
 
-  EXPECT_CALL(
-      prompt_closed_callback(),
-      Run(AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted));
+  EXPECT_CALL(prompt_closed_callback(),
+              Run(AutofillClient::AutofillAiBubbleResult::kNotInteracted));
   prompt_controller().OnPromptDismissed(env());
 }
 

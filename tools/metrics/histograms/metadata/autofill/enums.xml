@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Import with section union"/>
 </enum>
 
-<enum name="AutofillAiBubbleClosedReason">
+<enum name="AutofillAiBubbleResult">
   <int value="0" label="The prompt was for closed due to an unknown reason"/>
   <int value="1" label="The prompt was accepted"/>
   <int value="2" label="The user clicked the cancel button"/>

@@ -42,7 +42,7 @@ class MockAutofillAiImportDataController
   MOCK_METHOD((int), GetTitleImagesResourceId, (), (const override));
   MOCK_METHOD(void,
               OnBubbleClosed,
-              (AutofillClient::AutofillAiBubbleClosedReason),
+              (AutofillClient::AutofillAiBubbleResult),
               (override));
   base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

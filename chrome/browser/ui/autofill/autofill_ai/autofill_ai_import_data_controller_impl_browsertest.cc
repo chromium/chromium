@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
             EntityAttributeUpdateType::kNewEntityAttributeAdded);
   EXPECT_EQ(update_details[1].attribute_value(), u"Sweden");
   controller()->OnBubbleClosed(
-      AutofillClient::AutofillAiBubbleClosedReason::kAccepted);
+      AutofillClient::AutofillAiBubbleResult::kAccepted);
 }
 
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
               EntityAttributeUpdateType::kNewEntityAttributeAdded);
   }
   controller()->OnBubbleClosed(
-      AutofillClient::AutofillAiBubbleClosedReason::kAccepted);
+      AutofillClient::AutofillAiBubbleResult::kAccepted);
 }
 
 // When clicking a link in the bubble the user is navigated to a new tab, which
@@ -190,12 +190,12 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
   ShowUi("SaveNewEntity");
   ASSERT_TRUE(controller()->IsShowingBubble());
 
-  base::test::TestFuture<AutofillClient::AutofillAiBubbleClosedReason>
-      prompt_closed_future;
+  base::test::TestFuture<AutofillClient::AutofillAiBubbleResult>
+      prompt_result_future;
   controller()->ShowPrompt(test::GetPassportEntityInstance(), std::nullopt,
-                           prompt_closed_future.GetCallback());
-  EXPECT_EQ(prompt_closed_future.Get(),
-            AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
+                           prompt_result_future.GetCallback());
+  EXPECT_EQ(prompt_result_future.Get(),
+            AutofillClient::AutofillAiBubbleResult::kUnknown);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AutofillAiImportDataControllerImplTest);

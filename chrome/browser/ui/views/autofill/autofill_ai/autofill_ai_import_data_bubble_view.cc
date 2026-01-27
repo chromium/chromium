@@ -50,25 +50,25 @@ namespace autofill {
 
 namespace {
 
-AutofillClient::AutofillAiBubbleClosedReason
-GetAutofillAiBubbleClosedReasonFromWidget(const views::Widget* widget) {
+AutofillClient::AutofillAiBubbleResult GetAutofillAiBubbleResultFromWidget(
+    const views::Widget* widget) {
   DCHECK(widget);
   if (!widget->IsClosed()) {
-    return AutofillClient::AutofillAiBubbleClosedReason::kUnknown;
+    return AutofillClient::AutofillAiBubbleResult::kUnknown;
   }
 
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kUnspecified:
-      return AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted;
+      return AutofillClient::AutofillAiBubbleResult::kNotInteracted;
     case views::Widget::ClosedReason::kEscKeyPressed:
     case views::Widget::ClosedReason::kCloseButtonClicked:
-      return AutofillClient::AutofillAiBubbleClosedReason::kClosed;
+      return AutofillClient::AutofillAiBubbleResult::kClosed;
     case views::Widget::ClosedReason::kLostFocus:
-      return AutofillClient::AutofillAiBubbleClosedReason::kLostFocus;
+      return AutofillClient::AutofillAiBubbleResult::kLostFocus;
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      return AutofillClient::AutofillAiBubbleClosedReason::kAccepted;
+      return AutofillClient::AutofillAiBubbleResult::kAccepted;
     case views::Widget::ClosedReason::kCancelButtonClicked:
-      return AutofillClient::AutofillAiBubbleClosedReason::kCancelled;
+      return AutofillClient::AutofillAiBubbleResult::kCancelled;
   }
 }
 
@@ -206,7 +206,7 @@ void AutofillAiImportDataBubbleView::Hide() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetAutofillAiBubbleClosedReasonFromWidget(GetWidget()));
+        GetAutofillAiBubbleResultFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }
@@ -233,7 +233,7 @@ void AutofillAiImportDataBubbleView::WindowClosing() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetAutofillAiBubbleClosedReasonFromWidget(GetWidget()));
+        GetAutofillAiBubbleResultFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }

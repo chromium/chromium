@@ -51,7 +51,7 @@ class AutofillAiLogger {
       AutofillClient::AutofillAiImportPromptType prompt_type,
       EntityType entity_type,
       EntityInstance::RecordType record_type,
-      AutofillClient::AutofillAiBubbleClosedReason close_reason,
+      AutofillClient::AutofillAiBubbleResult result,
       ukm::SourceId ukm_source_id);
 
   // Function that records the contents of `form_states` for `form` into

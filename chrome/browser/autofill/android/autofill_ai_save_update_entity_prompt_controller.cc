@@ -44,13 +44,13 @@ AutofillAiSaveUpdateEntityPromptController::
         EntityInstance entity_instance,
         std::optional<EntityInstance> old_entity_instance,
         std::string app_locale,
-        AutofillClient::EntityImportPromptResultCallback prompt_closed_callback)
+        AutofillClient::EntityImportPromptResultCallback prompt_result_callback)
     : web_contents_(web_contents),
       prompt_view_(std::move(prompt_view)),
       entity_instance_(std::move(entity_instance)),
       old_entity_instance_(std::move(old_entity_instance)),
       app_locale_(std::move(app_locale)),
-      prompt_closed_callback_(std::move(prompt_closed_callback)),
+      prompt_result_callback_(std::move(prompt_result_callback)),
       java_object_(Java_AutofillAiSaveUpdateEntityPromptController_create(
           base::android::AttachCurrentThread(),
           reinterpret_cast<intptr_t>(this))) {
@@ -127,26 +127,24 @@ void AutofillAiSaveUpdateEntityPromptController::OpenManagePasses(JNIEnv* env) {
 
 void AutofillAiSaveUpdateEntityPromptController::OnUserAccepted(JNIEnv* env) {
   had_user_interaction_ = true;
-  RunPromptClosedCallback(
-      AutofillClient::AutofillAiBubbleClosedReason::kAccepted);
+  RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult::kAccepted);
 }
 
 void AutofillAiSaveUpdateEntityPromptController::OnUserDeclined(JNIEnv* env) {
   had_user_interaction_ = true;
-  RunPromptClosedCallback(
-      AutofillClient::AutofillAiBubbleClosedReason::kCancelled);
+  RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult::kCancelled);
 }
 
 void AutofillAiSaveUpdateEntityPromptController::OnPromptDismissed(
     JNIEnv* env) {
   RunPromptClosedCallback(
-      AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted);
+      AutofillClient::AutofillAiBubbleResult::kNotInteracted);
 }
 
 void AutofillAiSaveUpdateEntityPromptController::RunPromptClosedCallback(
-    AutofillClient::AutofillAiBubbleClosedReason decision) {
-  if (prompt_closed_callback_) {
-    std::move(prompt_closed_callback_).Run(decision);
+    AutofillClient::AutofillAiBubbleResult result) {
+  if (prompt_result_callback_) {
+    std::move(prompt_result_callback_).Run(result);
   }
 }
 

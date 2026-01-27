@@ -124,18 +124,18 @@ optimization_guide::proto::AutofillAiFieldEventType GetFieldEventType(
 }
 
 optimization_guide::proto::AutofillAiPromptUserDecision GetUserDecision(
-    AutofillClient::AutofillAiBubbleClosedReason close_reason) {
-  switch (close_reason) {
-    case AutofillClient::AutofillAiBubbleClosedReason::kAccepted:
+    AutofillClient::AutofillAiBubbleResult result) {
+  switch (result) {
+    case AutofillClient::AutofillAiBubbleResult::kAccepted:
       return optimization_guide::proto::
           AUTOFILL_AI_PROMPT_USER_DECISION_ACCEPTED;
-    case AutofillClient::AutofillAiBubbleClosedReason::kCancelled:
-    case AutofillClient::AutofillAiBubbleClosedReason::kClosed:
+    case AutofillClient::AutofillAiBubbleResult::kCancelled:
+    case AutofillClient::AutofillAiBubbleResult::kClosed:
       return optimization_guide::proto::
           AUTOFILL_AI_PROMPT_USER_DECISION_DECLINED;
-    case AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted:
-    case AutofillClient::AutofillAiBubbleClosedReason::kLostFocus:
-    case AutofillClient::AutofillAiBubbleClosedReason::kUnknown:
+    case AutofillClient::AutofillAiBubbleResult::kNotInteracted:
+    case AutofillClient::AutofillAiBubbleResult::kLostFocus:
+    case AutofillClient::AutofillAiBubbleResult::kUnknown:
       return optimization_guide::proto::
           AUTOFILL_AI_PROMPT_USER_DECISION_IGNORED;
   }
@@ -272,7 +272,7 @@ void AutofillAiUkmLogger::LogImportPromptResult(
     AutofillClient::AutofillAiImportPromptType prompt_type,
     EntityType entity_type,
     EntityInstance::RecordType record_type,
-    AutofillClient::AutofillAiBubbleClosedReason close_reason,
+    AutofillClient::AutofillAiBubbleResult result,
     ukm::SourceId ukm_source_id) {
   uint64_t form_session_id =
       autofill_metrics::FormGlobalIdToHash64Bit(form.global_id());
@@ -304,7 +304,7 @@ void AutofillAiUkmLogger::LogImportPromptResult(
     mqls_user_prompt_event->set_storage_type(GetStorageType(record_type));
     mqls_user_prompt_event->set_prompt_type(GetPromptType(prompt_type));
     mqls_user_prompt_event->set_entity_type(GetEntityType(entity_type));
-    mqls_user_prompt_event->set_result(GetUserDecision(close_reason));
+    mqls_user_prompt_event->set_result(GetUserDecision(result));
   }
 
   if (!CanLogUkm(ukm_source_id)) {
@@ -316,7 +316,7 @@ void AutofillAiUkmLogger::LogImportPromptResult(
       .SetEntityType(std::to_underlying(entity_type.name()))
       .SetStorageType(GetStorageType(record_type))
       .SetPromptType(GetPromptType(prompt_type))
-      .SetResult(GetUserDecision(close_reason))
+      .SetResult(GetUserDecision(result))
       .Record(client_->GetUkmRecorder());
 }
 

@@ -40,7 +40,7 @@ class AutofillAiImportDataController {
   virtual void ShowPrompt(EntityInstance new_entity,
                           std::optional<EntityInstance> old_entity,
                           AutofillClient::EntityImportPromptResultCallback
-                              prompt_acceptance_callback) = 0;
+                              prompt_result_callback) = 0;
 
   // Called when the user accepts to save or update Autofill AI data.
   virtual void OnSaveButtonClicked() = 0;
@@ -79,7 +79,7 @@ class AutofillAiImportDataController {
 
   // Called when the Autofill AI data bubble is closed.
   virtual void OnBubbleClosed(
-      AutofillClient::AutofillAiBubbleClosedReason closed_reason) = 0;
+      AutofillClient::AutofillAiBubbleResult result) = 0;
 
   virtual base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() = 0;
 };

@@ -50,7 +50,7 @@ class AutofillAiSaveUpdateEntityFlowManager {
   void OfferSave(
       EntityInstance entity,
       std::optional<EntityInstance> old_entity,
-      AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
+      AutofillClient::EntityImportPromptResultCallback prompt_result_callback);
 
  private:
   void OnMessagePrimaryAction(EntityInstance entity,
@@ -62,8 +62,7 @@ class AutofillAiSaveUpdateEntityFlowManager {
       EntityInstance entity,
       std::optional<EntityInstance> old_entity);
 
-  void RunPromptClosedCallback(
-      AutofillClient::AutofillAiBubbleClosedReason decision);
+  void RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult result);
 
   raw_ptr<content::WebContents> web_contents_;
   raw_ref<AutofillMessageController> autofill_message_controller_;
@@ -72,7 +71,7 @@ class AutofillAiSaveUpdateEntityFlowManager {
 
   // Callback to notify the data provider about the user decision for the save
   // or update prompt.
-  AutofillClient::EntityImportPromptResultCallback prompt_closed_callback_;
+  AutofillClient::EntityImportPromptResultCallback prompt_result_callback_;
 
   const std::string app_locale_;
 

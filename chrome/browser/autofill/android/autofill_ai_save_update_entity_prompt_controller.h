@@ -36,7 +36,7 @@ class AutofillAiSaveUpdateEntityPromptController {
       EntityInstance entity_instance,
       std::optional<EntityInstance> old_entity_instance,
       std::string app_locale,
-      AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
+      AutofillClient::EntityImportPromptResultCallback prompt_result_callback);
   AutofillAiSaveUpdateEntityPromptController(
       const AutofillAiSaveUpdateEntityPromptController&) = delete;
   AutofillAiSaveUpdateEntityPromptController& operator=(
@@ -67,8 +67,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   void OnPromptDismissed(JNIEnv* env);
 
  private:
-  void RunPromptClosedCallback(
-      AutofillClient::AutofillAiBubbleClosedReason decision);
+  void RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult result);
 
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view_;
@@ -78,7 +77,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   // If the user explicitly accepted/dismissed/edited the entity.
   bool had_user_interaction_ = false;
   // The callback to run when the user takes action on the prompt.
-  AutofillClient::EntityImportPromptResultCallback prompt_closed_callback_;
+  AutofillClient::EntityImportPromptResultCallback prompt_result_callback_;
   // The corresponding Java SaveUpdateAddressProfilePromptController.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
