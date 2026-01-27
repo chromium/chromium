@@ -5,13 +5,15 @@
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 
 namespace ash::fjord_util {
 
 namespace {
-const std::set<std::string>& kFjordOobeAllowedLanguages = {
-    "en", "en-GB", "de", "fr", "ja", "fr-CA", "es"};
+static constexpr base::fixed_flat_set<std::string_view, 7>
+    kFjordOobeAllowedLanguages = base::MakeFixedFlatSet<std::string_view>(
+        {"en", "en-GB", "de", "fr", "ja", "fr-CA", "es"});
 }
 
 bool ShouldShowFjordOobe() {
@@ -24,7 +26,8 @@ bool IsAllowlistedLanguage(std::string_view language_code) {
   return kFjordOobeAllowedLanguages.contains(language_code.data());
 }
 
-const std::set<std::string>& GetAllowlistedLanguagesForTesting() {
+const base::fixed_flat_set<std::string_view, 7>&
+GetAllowlistedLanguagesForTesting() {
   return kFjordOobeAllowedLanguages;
 }
 

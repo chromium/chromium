@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <set>
 #include <string>
 #include <utility>
 
@@ -203,7 +202,7 @@ class L10nUtilTestWithFjordOobe : public L10nUtilTest {
   }
 
   void VerifyAllowlistedLanguages(const base::ListValue& list) {
-    const std::set<std::string> allowlisted_languages =
+    const auto& allowlisted_languages =
         fjord_util::GetAllowlistedLanguagesForTesting();
     ASSERT_EQ(allowlisted_languages.size(), list.size());
 

@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_FJORD_OOBE_FJORD_OOBE_UTIL_H_
 #define CHROME_BROWSER_ASH_LOGIN_FJORD_OOBE_FJORD_OOBE_UTIL_H_
 
-#include <set>
 #include <string>
 #include <string_view>
+
+#include "base/containers/fixed_flat_set.h"
 
 namespace ash::fjord_util {
 
@@ -17,7 +18,8 @@ bool ShouldShowFjordOobe();
 // Returns if the language code is allowlisted for Fjord OOBE.
 bool IsAllowlistedLanguage(std::string_view language_code);
 
-const std::set<std::string>& GetAllowlistedLanguagesForTesting();
+const base::fixed_flat_set<std::string_view, 7>&
+GetAllowlistedLanguagesForTesting();
 
 }  // namespace ash::fjord_util
 
