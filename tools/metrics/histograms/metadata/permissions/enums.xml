@@ -232,6 +232,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:DismissalType) -->
 
+<!-- LINT.IfChange(PermissionRequestIgnoredReason) -->
+
 <enum name="PermissionRequestIgnoredReason">
   <summary>
     Breaks down reasons for permission requests being categorized as ignored.
@@ -244,6 +246,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Navigation"/>
   <int value="3" label="Other"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionIgnoredReason) -->
 
 <!-- LINT.IfChange(PermissionRequestLikelihood) -->
 

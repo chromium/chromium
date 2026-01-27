@@ -519,6 +519,10 @@ enum class ElementAnchoredBubbleAction {
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ElementAnchoredBubbleAction)
 
 // The reason the permission action `PermissionAction::IGNORED` was triggered.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PermissionIgnoredReason)
 enum class PermissionIgnoredReason {
   // Ignore was triggered due to closure of the browser window
   WINDOW_CLOSED = 0,
@@ -535,6 +539,7 @@ enum class PermissionIgnoredReason {
   // Always keep at the end
   NUM,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionRequestIgnoredReason)
 
 // This enum backs up the
 // 'Permissions.PageInfo.Changed.{PermissionType}.Reallowed.Outcome' histograms
