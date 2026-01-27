@@ -83,6 +83,14 @@ chromium-metrics-reviews@google.com.
   <variant name=".Tab" summary="A port opened to a tab context."/>
 </variants>
 
+<variants name="ExtensionsBackgroundCompileScriptState">
+  <variant name="Success"
+      summary="Script was successfully compiled in the background."/>
+  <variant name="TimedOut"
+      summary="Main thread timed out while waiting for background compilation
+               to finish."/>
+</variants>
+
 <variants name="ExtensionState">
   <variant name=".Disabled" summary="disabled"/>
   <variant name=".Enabled" summary="enabled"/>
@@ -317,6 +325,70 @@ This is emitted for two scenarios when a worker may be unregistered:
     The number of apps loaded on profile open time grouped by
     Extension::Location.
   </summary>
+</histogram>
+
+<histogram
+    name="Extensions.BackgroundCompileInjectedScripts.EligibleScriptsCount"
+    units="count" expires_after="2026-11-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <owner>emromero@microsoft.com</owner>
+  <summary>
+    Number of scripts to be injected at document start that were eligible for
+    background compilation.
+
+    Emitted when `extensions_features::kExtensionsBackgroundCompilation` is
+    enabled, the navigation is ready to commit, and the scripts have started
+    streaming to v8 for compilation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.BackgroundCompileInjectedScripts.EligibleScriptsPercentage"
+    units="%" expires_after="2026-11-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <owner>emromero@microsoft.com</owner>
+  <summary>
+    Number of scripts injected at document start that were eligible for
+    background compilation, as a percentage of all scripts injected at document
+    start.
+
+    Emitted at the same time as
+    Extensions.BackgroundCompileInjectedScripts.EligibleScriptsCount.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.BackgroundCompileInjectedScripts.ScriptCompilationTime{State}"
+    units="ms" expires_after="2026-11-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <owner>emromero@microsoft.com</owner>
+  <summary>
+    Time taken to compile an extension JS script injected at document start that
+    was compiled in a background thread.
+
+    Emitted asynchronously on the main thread immediately after the background
+    thread completes script compilation. The background worker calls Run(), then
+    posts EmitCompilationHistograms() back to the main thread via
+    PostNonNestableTask().
+  </summary>
+  <token key="State" variants="ExtensionsBackgroundCompileScriptState"/>
+</histogram>
+
+<histogram name="Extensions.BackgroundCompileInjectedScripts.ScriptSize{State}"
+    units="count" expires_after="2026-11-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <owner>emromero@microsoft.com</owner>
+  <summary>
+    Number of characters of an extension JS script injected at document start
+    that was compiled in a background thread.
+
+    Emitted simultaneously with ScriptCompilationTime{State}.
+  </summary>
+  <token key="State" variants="ExtensionsBackgroundCompileScriptState"/>
 </histogram>
 
 <histogram name="Extensions.BackgroundHostCreatedForExtension"

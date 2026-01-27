@@ -66,7 +66,8 @@ class UserScriptInjector : public ScriptInjector,
   std::vector<blink::WebScriptSource> GetJsSources(
       mojom::RunLocation run_location,
       std::set<std::string>* executing_scripts,
-      size_t* num_injected_js_scripts) const override;
+      size_t* num_injected_js_scripts,
+      ExtensionFrameHelper* frame_helper) const override;
   std::vector<CSSSource> GetCssSources(
       mojom::RunLocation run_location,
       std::set<std::string>* injected_stylesheets,

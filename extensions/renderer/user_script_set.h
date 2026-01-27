@@ -17,6 +17,7 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/extension_script_streamer.h"
 
 class GURL;
 
@@ -62,6 +63,17 @@ class UserScriptSet {
                      int tab_id,
                      mojom::RunLocation run_location,
                      bool log_activity);
+
+  // Creates `ExtensionScriptStreamer`s and insert them into `script_streamers`
+  // for any scripts that should be injected at document start and qualify for
+  // being compiled in the background.
+  void InsertStreamersForInjectionsAtDocumentStart(
+      const GURL& document_url,
+      blink::WebLocalFrame* web_frame,
+      std::map<GURL, std::optional<blink::ExtensionScriptStreamer>>&
+          script_streamers,
+      uint64_t& streamed_scripts_count,
+      uint64_t& injected_scripts_count) const;
 
   std::unique_ptr<ScriptInjection> GetDeclarativeScriptInjection(
       const std::string& script_id,

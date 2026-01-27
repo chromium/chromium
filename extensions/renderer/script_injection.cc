@@ -29,6 +29,7 @@
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/trace_util.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
+#include "third_party/blink/public/web/extension_script_streamer.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
@@ -235,8 +236,12 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   TRACE_RENDERER_EXTENSION_EVENT("ScriptInjection::InjectJs", host_id().id);
 
   DCHECK(!did_inject_js_);
+
+  ExtensionFrameHelper* frame_helper = ExtensionFrameHelper::Get(render_frame_);
+  CHECK(frame_helper);
+
   std::vector<blink::WebScriptSource> sources = injector_->GetJsSources(
-      run_location_, executing_scripts, num_injected_js_scripts);
+      run_location_, executing_scripts, num_injected_js_scripts, frame_helper);
   DCHECK(!sources.empty());
 
   base::ElapsedTimer exec_timer;
@@ -256,9 +261,6 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       should_execute_asynchronously
           ? blink::mojom::EvaluationTiming::kAsynchronous
           : blink::mojom::EvaluationTiming::kSynchronous;
-
-  ExtensionFrameHelper* frame_helper = ExtensionFrameHelper::Get(render_frame_);
-  CHECK(frame_helper);
 
   std::optional<std::string> world_id = injector_->GetExecutionWorldId();
   const std::string& host_string_id = injection_host_->id().id;

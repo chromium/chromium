@@ -126,7 +126,8 @@ PermissionsData::PageAccess ProgrammaticScriptInjector::CanExecuteOnFrame(
 std::vector<blink::WebScriptSource> ProgrammaticScriptInjector::GetJsSources(
     mojom::RunLocation run_location,
     std::set<std::string>* executing_scripts,
-    size_t* num_injected_js_scripts) const {
+    size_t* num_injected_js_scripts,
+    ExtensionFrameHelper* frame_helper) const {
   DCHECK_EQ(params_->run_at, run_location);
   DCHECK(params_->injection->is_js());
 

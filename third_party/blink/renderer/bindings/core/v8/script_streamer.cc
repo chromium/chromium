@@ -1016,7 +1016,9 @@ class InlineSourceStream final
 BackgroundInlineScriptStreamer::BackgroundInlineScriptStreamer(
     v8::Isolate* isolate,
     const String& text,
-    v8::ScriptCompiler::CompileOptions compile_options) {
+    v8::ScriptCompiler::CompileOptions compile_options,
+    base::TimeDelta wait_timeout)
+    : script_length_(text.length()), wait_timeout_(wait_timeout) {
   auto stream = std::make_unique<InlineSourceStream>(text);
   source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
       std::move(stream), text.Is8Bit()
@@ -1060,16 +1062,12 @@ v8::ScriptCompiler::StreamedSource* BackgroundInlineScriptStreamer::Source(
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("WebCore.Scripts.InlineStreamerWaitTime");
   DCHECK(IsMainThread());
   DCHECK_EQ(expected_type, v8::ScriptType::kClassic);
-  static const base::FeatureParam<base::TimeDelta> kWaitTimeoutParam{
-      &features::kPrecompileInlineScripts, "inline-script-timeout",
-      base::Milliseconds(0)};
   // Make sure the script has finished compiling in the background. See comment
   // above in Run().
-  bool signaled = event_.TimedWait(kWaitTimeoutParam.Get());
-  base::UmaHistogramBoolean("WebCore.Scripts.InlineStreamerTimedOut",
-                            !signaled);
-  if (!signaled)
+  timed_out_ = !event_.TimedWait(wait_timeout_);
+  if (timed_out_) {
     return nullptr;
+  }
   return source_.get();
 }
 

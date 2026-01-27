@@ -106,6 +106,13 @@ BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
 BASE_DECLARE_FEATURE(kEnableExtensionsForCorpDesktopAndroid);
 #endif
 
+// If enabled, JS content scripts injected at document start will be compiled
+// in a background thread.
+BASE_DECLARE_FEATURE(kExtensionsBackgroundCompilation);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBackgroundCompilationTimeout);
+BASE_DECLARE_FEATURE_PARAM(size_t, kMinScriptSizeForBackgroundCompilation);
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxScriptSizeForBackgroundCompilation);
+
 // If enabled, disables unpacked extensions if developer mode is off.
 BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
 

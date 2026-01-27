@@ -664,10 +664,14 @@ TEST_P(InlineScriptStreamingTest, InlineScript) {
   Init(scope.GetIsolate());
 
   String source = "function foo() {return 5;} foo();";
-  if (GetParam().first)
+  if (GetParam().first) {
     source.Ensure16Bit();
+  }
+  static const base::FeatureParam<base::TimeDelta> kWaitTimeoutParam{
+      &features::kPrecompileInlineScripts, "inline-script-timeout",
+      base::Milliseconds(0)};
   auto streamer = base::MakeRefCounted<BackgroundInlineScriptStreamer>(
-      scope.GetIsolate(), source, GetParam().second);
+      scope.GetIsolate(), source, GetParam().second, kWaitTimeoutParam.Get());
   worker_pool::PostTask(
       FROM_HERE, {},
       CrossThreadBindOnce(&BackgroundInlineScriptStreamer::Run, streamer));

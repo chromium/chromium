@@ -58,6 +58,25 @@ void UserScriptSetManager::GetAllInjections(
   }
 }
 
+void UserScriptSetManager::InsertStreamersForInjectionsAtDocumentStart(
+    const GURL& document_url,
+    blink::WebLocalFrame* web_frame,
+    std::map<GURL, std::optional<blink::ExtensionScriptStreamer>>&
+        script_streamers,
+    uint64_t& streamed_scripts_count,
+    uint64_t& injected_scripts_count) {
+  for (auto& script : scripts_) {
+    const UserScriptSet* user_script_set = script.second.get();
+    if (!user_script_set) {
+      continue;
+    }
+
+    user_script_set->InsertStreamersForInjectionsAtDocumentStart(
+        document_url, web_frame, script_streamers, streamed_scripts_count,
+        injected_scripts_count);
+  }
+}
+
 void UserScriptSetManager::GetAllActiveExtensionIds(
     std::set<ExtensionId>* ids) const {
   DCHECK(ids);

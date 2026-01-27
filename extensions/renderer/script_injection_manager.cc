@@ -13,7 +13,9 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -30,6 +32,7 @@
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/web_ui_injection_host.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -509,6 +512,37 @@ void ScriptInjectionManager::OnPermitScriptInjectionHandled(
     running_injections_.push_back(std::move(script_injection));
   }
   scripts_run_info.LogRun(activity_logging_enabled_);
+}
+
+void ScriptInjectionManager::StartStreamingJSSources(
+    blink::WebLocalFrame* web_frame,
+    const GURL& document_url,
+    ExtensionFrameHelper* frame_helper) {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsBackgroundCompilation));
+  // TODO(https://crbug.com/436274244): filter out frames that will not have any
+  // script injections.
+
+  std::map<GURL, std::optional<blink::ExtensionScriptStreamer>>&
+      script_streamers = frame_helper->GetScriptStreamersMap();
+
+  uint64_t streamed_scripts_count = 0;
+  uint64_t injected_scripts_count = 0;
+  user_script_set_manager_->InsertStreamersForInjectionsAtDocumentStart(
+      document_url, web_frame, script_streamers, streamed_scripts_count,
+      injected_scripts_count);
+
+  if (injected_scripts_count == 0) {
+    return;
+  }
+
+  UMA_HISTOGRAM_EXACT_LINEAR(
+      "Extensions.BackgroundCompileInjectedScripts.EligibleScriptsCount",
+      streamed_scripts_count, 101);
+
+  UMA_HISTOGRAM_PERCENTAGE(
+      "Extensions.BackgroundCompileInjectedScripts.EligibleScriptsPercentage",
+      (streamed_scripts_count * 100) / injected_scripts_count);
 }
 
 }  // namespace extensions

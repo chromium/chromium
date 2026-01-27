@@ -26,6 +26,12 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "v8/include/v8-forward.h"
 
+class GURL;
+
+namespace blink {
+class ExtensionScriptStreamer;
+}
+
 namespace extensions {
 
 class Dispatcher;
@@ -177,6 +183,9 @@ class ExtensionFrameHelper
   mojom::EventRouter* GetEventRouter();
   mojom::RendererAutomationRegistry* GetRendererAutomationRegistry();
 
+  std::map<GURL, std::optional<blink::ExtensionScriptStreamer>>&
+  GetScriptStreamersMap();
+
  private:
   void BindLocalFrame(
       mojo::PendingAssociatedReceiver<mojom::LocalFrame> receiver);
@@ -245,6 +254,9 @@ class ExtensionFrameHelper
       renderer_automation_registry_remote_;
 
   mojo::AssociatedReceiver<mojom::LocalFrame> local_frame_receiver_{this};
+
+  std::map<GURL, std::optional<blink::ExtensionScriptStreamer>>
+      extension_script_streamers_;
 
   base::WeakPtrFactory<ExtensionFrameHelper> weak_ptr_factory_{this};
 };

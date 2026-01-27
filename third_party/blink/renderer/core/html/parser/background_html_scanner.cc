@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/background_html_scanner.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
@@ -39,6 +40,11 @@ enum class CompileStrategy {
   // All scripts are compiled eagerly.
   kEager,
 };
+
+void EmitHTMLInlineCompilationHistograms(bool script_streamer_timed_out) {
+  UMA_HISTOGRAM_BOOLEAN("WebCore.Scripts.InlineStreamerTimedOut",
+                        script_streamer_timed_out);
+}
 
 CompileOptions GetCompileOptions(bool first_script_in_scan) {
   static const base::FeatureParam<CompileStrategy>::Option
@@ -187,25 +193,31 @@ void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
         if (script_text.length() < min_script_size_) {
           return;
         }
-
+        static const base::FeatureParam<base::TimeDelta> kWaitTimeoutParam{
+            &features::kPrecompileInlineScripts, "inline-script-timeout",
+            base::Milliseconds(0)};
         auto streamer = base::MakeRefCounted<BackgroundInlineScriptStreamer>(
-            isolate_, script_text, GetCompileOptions(first_script_in_scan_));
+            isolate_, script_text, GetCompileOptions(first_script_in_scan_),
+            kWaitTimeoutParam.Get());
         first_script_in_scan_ = false;
         auto parser_lock = parser_.Lock();
         if (!parser_lock || !streamer->CanStream())
           return;
 
         parser_lock->AddInlineScriptStreamer(script_text, streamer);
+
+        auto run_streamer_task = CrossThreadBindOnce(
+            [](scoped_refptr<BackgroundInlineScriptStreamer> streamer) {
+              streamer->Run();
+              EmitHTMLInlineCompilationHistograms(streamer->TimedOut());
+            },
+            streamer);
         if (task_runner_) {
-          PostCrossThreadTask(
-              *task_runner_, FROM_HERE,
-              CrossThreadBindOnce(&BackgroundInlineScriptStreamer::Run,
-                                  std::move(streamer)));
+          PostCrossThreadTask(*task_runner_, FROM_HERE,
+                              std::move(run_streamer_task));
         } else {
-          worker_pool::PostTask(
-              FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-              CrossThreadBindOnce(&BackgroundInlineScriptStreamer::Run,
-                                  std::move(streamer)));
+          worker_pool::PostTask(FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+                                std::move(run_streamer_task));
         }
       }
       return;

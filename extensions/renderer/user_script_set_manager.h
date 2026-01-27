@@ -19,6 +19,7 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/user_script_set.h"
+#include "third_party/blink/public/platform/web_string.h"
 
 namespace content {
 class RenderFrame;
@@ -72,6 +73,14 @@ class UserScriptSetManager {
       content::RenderFrame* render_frame,
       int tab_id,
       mojom::RunLocation run_location);
+
+  void InsertStreamersForInjectionsAtDocumentStart(
+      const GURL& document_url,
+      blink::WebLocalFrame* web_frame,
+      std::map<GURL, std::optional<blink::ExtensionScriptStreamer>>&
+          script_streamers,
+      uint64_t& streamed_scripts_count,
+      uint64_t& injected_scripts_count);
 
   // Get active extension IDs from `static_scripts_`.
   void GetAllActiveExtensionIds(std::set<ExtensionId>* ids) const;

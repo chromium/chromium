@@ -27,6 +27,7 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+#include "extensions/renderer/script_injection_manager.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "url/gurl.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-isolate.h"
@@ -382,10 +384,19 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
     document_loader->BlockParser();
   }
 
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsBackgroundCompilation)) {
+    // There might be old script streamers still pending from a previous load.
+    extension_script_streamers_.clear();
+    extension_dispatcher_->script_injection_manager()->StartStreamingJSSources(
+        web_frame, document_loader->GetUrl(), this);
+  }
+
   has_started_first_navigation_ = true;
 
-  if (!delayed_main_world_script_initialization_)
+  if (!delayed_main_world_script_initialization_) {
     return;
+  }
 
   base::AutoReset<bool> auto_reset(&is_initializing_main_world_script_context_,
                                    true);
@@ -610,6 +621,11 @@ content::RenderFrame* ExtensionFrameHelper::FindFrameFromFrameTokenString(
   auto* web_frame = blink::WebLocalFrame::FromFrameToken(
       blink::LocalFrameToken(unguessable_token.value()));
   return content::RenderFrame::FromWebFrame(web_frame);
+}
+
+std::map<GURL, std::optional<blink::ExtensionScriptStreamer>>&
+ExtensionFrameHelper::GetScriptStreamersMap() {
+  return extension_script_streamers_;
 }
 
 }  // namespace extensions

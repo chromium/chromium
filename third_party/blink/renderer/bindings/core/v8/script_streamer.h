@@ -291,7 +291,8 @@ class CORE_EXPORT BackgroundInlineScriptStreamer final
   BackgroundInlineScriptStreamer(
       v8::Isolate* isolate,
       const String& text,
-      v8::ScriptCompiler::CompileOptions compile_options);
+      v8::ScriptCompiler::CompileOptions compile_options,
+      base::TimeDelta wait_timeout);
 
   void Run();
   bool IsStarted() const { return started_.IsSet(); }
@@ -299,18 +300,33 @@ class CORE_EXPORT BackgroundInlineScriptStreamer final
 
   // This may return false if V8 failed to create a background streaming task.
   bool CanStream() const { return task_.get(); }
+  bool TimedOut() const { return timed_out_; }
 
   v8::ScriptCompiler::StreamedSource* Source(v8::ScriptType expected_type);
+
+  base::TimeDelta ElapsedTime() const {
+    CHECK(source_);
+    // This should only be accessed from the main thread after Run() has
+    // completed.
+    return base::Microseconds(
+        source_->compilation_details().background_time_in_microseconds);
+  }
+
+  uint64_t script_length() const { return script_length_; }
 
  private:
   friend class ThreadSafeRefCounted<BackgroundInlineScriptStreamer>;
   ~BackgroundInlineScriptStreamer() = default;
 
+  const uint64_t script_length_;
+  const base::TimeDelta wait_timeout_;
+  const std::string timeout_histogram_name_;
   std::unique_ptr<v8::ScriptCompiler::StreamedSource> source_;
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask> task_;
   base::WaitableEvent event_;
   base::AtomicFlag started_;
   base::AtomicFlag cancelled_;
+  bool timed_out_ = false;
 };
 
 // ScriptStreamer is garbage collected so must be created on the main thread.

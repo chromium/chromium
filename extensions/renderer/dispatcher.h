@@ -211,6 +211,10 @@ class Dispatcher : public content::RenderThreadObserver,
     return bindings_system_.get();
   }
 
+  ScriptInjectionManager* script_injection_manager() {
+    return script_injection_manager_.get();
+  }
+
  private:
   // The RendererPermissionsPolicyDelegateTest.CannotScriptWebstore test needs
   // to call the ActivateExtension IPCs.
