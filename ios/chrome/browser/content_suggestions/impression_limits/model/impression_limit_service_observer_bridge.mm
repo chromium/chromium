@@ -7,7 +7,7 @@
 ImpressionLimitServiceObserverBridge::ImpressionLimitServiceObserverBridge(
     id<ImpressionLimitServiceObserverBridgeDelegate> delegate,
     ImpressionLimitService* service)
-    : delegate_(delegate) {
+    : delegate_(delegate), service_(service) {
   if (service) {
     scoped_observation_.Observe(service);
   }
@@ -17,7 +17,5 @@ ImpressionLimitServiceObserverBridge::~ImpressionLimitServiceObserverBridge() =
     default;
 
 void ImpressionLimitServiceObserverBridge::OnUntracked(const GURL& url) {
-  if (delegate_) {
-    [delegate_ onUrlUntracked:url];
-  }
+  [delegate_ impressionLimitService:service_ didUntrackURL:url];
 }
