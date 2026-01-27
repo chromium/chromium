@@ -855,17 +855,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl_unittest\.cc',
             r'chrome/browser/nearby_sharing/contacts/nearby_share_contacts_sorter_unittest\.cc',
             r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
-            r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
-            r'chrome/browser/win/conflicts/module_blocklist_cache_util_unittest\.cc',
             r'chromeos/ash/components/memory/userspace_swap/swap_storage_unittest\.cc',
             r'chromeos/ash/components/memory/userspace_swap/userspace_swap\.cc',
-            r'components/metrics/metrics_state_manager\.cc',
             r'components/omnibox/browser/history_quick_provider_performance_unittest\.cc',
             r'components/zucchini/disassembler_elf_unittest\.cc',
-            r'content/browser/webid/federated_auth_request_impl\.cc',
-            r'content/browser/webid/federated_auth_request_impl\.cc',
-            r'media/cast/test/utility/udp_proxy\.h',
-            r'sql/recover_module/module_unittest\.cc',
             r'components/regional_capabilities/regional_capabilities_utils.cc',
             # Do not add new entries to this list. If you have a use case which is
             # not satisfied by the current APIs (i.e. you need an explicitly-seeded
@@ -1804,10 +1797,8 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     ),
     BanRule(
         r'/\bTRACE_EVENT_SCOPE_',
-        (
-            'Please use perfetto Track API instead of '
-            'TRACE_EVENT_SCOPE_GLOBAL/PROCESS/THREAD (crbug.com/432427382).',
-        ),
+        ('Please use perfetto Track API instead of '
+         'TRACE_EVENT_SCOPE_GLOBAL/PROCESS/THREAD (crbug.com/432427382).', ),
         False,
         (
             r'^base/trace_event/.*',
