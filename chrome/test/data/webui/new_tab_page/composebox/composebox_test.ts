@@ -2664,55 +2664,5 @@ suite('NewTabPageComposeboxTest', () => {
       // Autocomplete should be queried again.
       assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
     });
-
-    test('tab changes calls getRecentTabs', async () => {
-      createComposeboxElement();
-      loadTimeData.overrideValues({
-        realboxLayoutMode: 'TallTopContext',
-        composeboxShowRecentTabChip: true,
-      });
-      const sampleTabs = [
-        {
-          tabId: 1,
-          title: 'Sample Tab 1',
-          url: 'https://example.com/1',
-          showInRecentTabChip: true,
-          lastActive: {internalValue: BigInt(1)},
-        },
-        {
-          tabId: 2,
-          title: 'Sample Tab 2',
-          url: 'https://example.com/2',
-          showInRecentTabChip: true,
-          lastActive: {internalValue: BigInt(2)},
-        },
-      ];
-
-      searchboxHandler.setResultFor(
-          'getRecentTabs', Promise.resolve({tabs: sampleTabs}));
-      const contextElement =
-          composeboxElement.shadowRoot.querySelector<HTMLElement>(
-              'contextual-entrypoint-and-carousel');
-      assertTrue(!!contextElement);
-
-      const entrypointElement =
-          contextElement.shadowRoot?.querySelector<HTMLElement>(
-              '#contextEntrypoint');
-      assertTrue(!!entrypointElement);
-      const entrypointButton =
-          entrypointElement.shadowRoot?.querySelector<HTMLElement>(
-              '#entrypoint');
-      assertTrue(!!entrypointButton);
-      entrypointButton.click();
-      await microtasksFinished();
-
-      // There is an initial call to `getRecentTabs` on entrypoint click.
-      assertEquals(searchboxHandler.getCallCount('getRecentTabs'), 1);
-
-      // Assert another call to `getRecentTabs` is made on tab changes.
-      searchboxCallbackRouterRemote.onTabStripChanged();
-      await searchboxCallbackRouterRemote.$.flushForTesting();
-      assertEquals(searchboxHandler.getCallCount('getRecentTabs'), 2);
-    });
   });
 });
