@@ -613,9 +613,10 @@ void URLLoader::OpenFilesForUpload(const ResourceRequest& request) {
     return;
   }
   url_request_->LogBlockedBy("Opening Files");
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   file_opener_for_upload_ = std::make_unique<FileOpenerForUpload>(
-      std::move(paths), url_request_->url(), factory_params_->process_id,
-      network_context_client_,
+      std::move(paths), url_request_->url(),
+      factory_params_->process_id.GetUnsafeValue(), network_context_client_,
       base::BindOnce(&URLLoader::SetUpUpload, base::Unretained(this), request));
   file_opener_for_upload_->Start();
 }
@@ -1829,7 +1830,8 @@ net::UploadProgress URLLoader::GetUploadProgress() const {
 }
 
 int32_t URLLoader::GetProcessId() const {
-  return factory_params_->process_id;
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+  return factory_params_->process_id.GetUnsafeValue();
 }
 
 uint32_t URLLoader::GetResourceType() const {

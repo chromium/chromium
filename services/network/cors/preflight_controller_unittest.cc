@@ -474,7 +474,7 @@ class PreflightControllerTest : public testing::Test {
 
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
-    params->process_id = mojom::kBrowserProcessId;
+    params->process_id = OriginatingProcess::browser();
     // We use network::CorsURLLoaderFactory for "internal" URLLoaderFactory
     // used by the PreflightController. Hence here we disable CORS as otherwise
     // the URLLoader would create a CORS-preflight for the preflight request.

@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// The originating process was the browser process.
+struct BrowserProcess {};
+
+// The originating process was a specific renderer.
+struct RendererProcess {
+  int32 process_id;
+};
+
+// Describes which process the request originally came from.  This is useful
+// to provide security context to the response data from the network.
+union OriginatingProcess {
+  BrowserProcess browser_process;
+  RendererProcess renderer_process;
+};

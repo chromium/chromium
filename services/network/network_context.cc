@@ -565,7 +565,7 @@ bool GetFullDataFilePath(
 // processes.
 mojom::URLLoaderFactoryParamsPtr CreateURLLoaderFactoryParamsForPrefetch() {
   auto params = mojom::URLLoaderFactoryParams::New();
-  params->process_id = mojom::kBrowserProcessId;
+  params->process_id = OriginatingProcess::browser();
   // We want to be able to use TrustedParams to set the IsolationInfo for each
   // prefetch separately, so make it trusted.
   // TODO(crbug.com/342445996): Maybe stop using TrustedParams and lock this
@@ -999,7 +999,7 @@ void NetworkContext::CreateURLLoaderFactoryForCertNetFetcher(
   // TODO(crbug.com/40695068): investigate changing these params.
   auto url_loader_factory_params = mojom::URLLoaderFactoryParams::New();
   url_loader_factory_params->is_trusted = true;
-  url_loader_factory_params->process_id = mojom::kBrowserProcessId;
+  url_loader_factory_params->process_id = OriginatingProcess::browser();
   url_loader_factory_params->automatically_assign_isolation_info = true;
   url_loader_factory_params->is_orb_enabled = false;
   if (url_request_context()->bound_network() !=
@@ -1035,7 +1035,7 @@ void NetworkContext::CreateURLLoaderFactory(
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client =
       base::MakeRefCounted<ResourceSchedulerClient>(
           ResourceScheduler::ClientId::Create(),
-          IsBrowserInitiated(params->process_id == mojom::kBrowserProcessId),
+          IsBrowserInitiated(params->process_id.is_browser()),
           resource_scheduler_.get(),
           url_request_context_->network_quality_estimator());
   CreateURLLoaderFactory(std::move(receiver), std::move(params),
@@ -1261,11 +1261,11 @@ void NetworkContext::Remove(WebTransport* transport) {
   }
 }
 
-void NetworkContext::LoaderCreated(uint32_t process_id) {
+void NetworkContext::LoaderCreated(const OriginatingProcess& process_id) {
   loader_count_per_process_[process_id] += 1;
 }
 
-void NetworkContext::LoaderDestroyed(uint32_t process_id) {
+void NetworkContext::LoaderDestroyed(const OriginatingProcess& process_id) {
   auto it = loader_count_per_process_.find(process_id);
   CHECK(it != loader_count_per_process_.end());
   it->second -= 1;
@@ -1274,7 +1274,7 @@ void NetworkContext::LoaderDestroyed(uint32_t process_id) {
   }
 }
 
-bool NetworkContext::CanCreateLoader(uint32_t process_id) {
+bool NetworkContext::CanCreateLoader(const OriginatingProcess& process_id) {
   auto it = loader_count_per_process_.find(process_id);
   uint32_t count = (it == loader_count_per_process_.end() ? 0 : it->second);
   return count < max_loaders_per_process_;
@@ -3356,7 +3356,7 @@ void NetworkContext::CreateTrustedUrlLoaderFactoryForNetworkService(
         url_loader_factory_pending_receiver) {
   auto url_loader_factory_params = mojom::URLLoaderFactoryParams::New();
   url_loader_factory_params->is_trusted = true;
-  url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
+  url_loader_factory_params->process_id = OriginatingProcess::browser();
   CreateURLLoaderFactory(std::move(url_loader_factory_pending_receiver),
                          std::move(url_loader_factory_params));
 }

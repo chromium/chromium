@@ -168,7 +168,8 @@ ApplicationContext::GetSharedURLLoaderFactory() {
   if (!url_loader_factory_) {
     auto url_loader_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
-    url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
+    url_loader_factory_params->process_id =
+        network::OriginatingProcess::browser();
     url_loader_factory_params->is_orb_enabled = false;
     GetSystemNetworkContext()->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(),

@@ -445,7 +445,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
   CreateURLLoaderFactory() {
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
-    params->process_id = network::mojom::kBrowserProcessId;
+    params->process_id = network::OriginatingProcess::browser();
     params->automatically_assign_isolation_info = true;
     params->is_orb_enabled = false;
     mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
@@ -2858,7 +2858,7 @@ IN_PROC_BROWSER_TEST_F(
       nullptr));
   temp_web_contents.reset();
   auto params = network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = 0;
+  params->process_id = network::OriginatingProcess::browser();
   mojo::Remote<network::mojom::URLLoaderFactory> factory(
       std::move(factory_builder)
           .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(

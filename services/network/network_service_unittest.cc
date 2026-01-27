@@ -1279,12 +1279,12 @@ class NetworkServiceTestWithService : public testing::Test {
     request.url = url;
     request.method = "GET";
     request.request_initiator = url::Origin();
-    StartLoadingURL(request, 0 /* process_id */, options);
+    StartLoadingURL(request, OriginatingProcess::browser(), options);
     client_->RunUntilComplete();
   }
 
   void StartLoadingURL(const ResourceRequest& request,
-                       uint32_t process_id,
+                       OriginatingProcess process_id,
                        int options = mojom::kURLLoadOptionNone) {
     client_ = std::make_unique<TestURLLoaderClient>();
     mojo::Remote<mojom::URLLoaderFactory> loader_factory;
@@ -1428,7 +1428,7 @@ TEST_F(NetworkServiceTestWithService, RawRequestHeadersAbsent) {
   request.url = test_server()->GetURL("/server-redirect?/echo");
   request.method = "GET";
   request.request_initiator = url::Origin();
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilRedirectReceived();
   EXPECT_TRUE(client()->has_received_redirect());
   loader()->FollowRedirect({}, {}, {}, std::nullopt);
@@ -1497,12 +1497,12 @@ TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
       url::Origin::Create(GURL("https://initiator.example.com"));
   request.method = "GET";
 
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 
   request.throttling_profile_id = profile_id;
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED,
             client()->completion_status().error_code);
@@ -1514,7 +1514,7 @@ TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
     network_conditions.back()->conditions->offline = false;
     context()->SetNetworkConditions(profile_id, std::move(network_conditions));
   }
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 
@@ -1527,12 +1527,12 @@ TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
   }
 
   request.throttling_profile_id = profile_id;
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED,
             client()->completion_status().error_code);
   context()->SetNetworkConditions(profile_id, {});
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 }
@@ -1781,14 +1781,14 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
     request.url = url;
     request.method = "GET";
     request.request_initiator = url::Origin();
-    StartLoadingURL(request, 0 /* process_id */, options,
+    StartLoadingURL(request, OriginatingProcess::browser(), options,
                     std::move(url_loader_network_observer));
     client_->RunUntilComplete();
   }
 
   void StartLoadingURL(
       const ResourceRequest& request,
-      uint32_t process_id,
+      OriginatingProcess process_id,
       int options = mojom::kURLLoadOptionNone,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer = mojo::NullRemote()) {

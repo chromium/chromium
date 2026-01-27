@@ -40,7 +40,7 @@ namespace network::cors {
 
 namespace {
 
-constexpr int kProcessId = 123;
+const auto kProcessId = OriginatingProcess::renderer(RendererProcess(123));
 constexpr int kRequestId = 456;
 
 }  // namespace

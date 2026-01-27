@@ -224,7 +224,7 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
 
   bool bypass_redirect_checks = false;
   auto factory_params = network::mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = network::mojom::kBrowserProcessId;
+  factory_params->process_id = network::OriginatingProcess::browser();
   factory_params->is_trusted = true;
   factory_params->is_orb_enabled = false;
   return url_loader_factory::Create(

@@ -3810,15 +3810,16 @@ StoragePartitionImpl::CreateURLLoaderFactoryParams() {
       network::mojom::URLLoaderFactoryParams::New();
   // This method is used for browser-process initiated requests for which there
   // is no corresponding RenderProcessHost.
-  params->process_id = network::mojom::kBrowserProcessId;
+  params->process_id = network::OriginatingProcess::browser();
   params->automatically_assign_isolation_info = true;
   params->is_orb_enabled = false;
   params->is_trusted = true;
   // For browser-process initiated requests there is no corresponding service
   // worker origin, so just pass an opaque origin.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   params->url_loader_network_observer =
-      CreateURLLoaderNetworkObserverForServiceOrSharedWorker(params->process_id,
-                                                             url::Origin());
+      CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
+          params->process_id.GetUnsafeValue(), url::Origin());
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);

@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserSimpleCacheTest,
 
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::mojom::kBrowserProcessId;
+  params->process_id = network::OriginatingProcess::browser();
   params->automatically_assign_isolation_info = true;
   params->is_orb_enabled = false;
   params->is_trusted = true;
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
   auto loader = network::SimpleURLLoader::Create(std::move(request),
                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   auto params = network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = 0;
+  params->process_id = network::OriginatingProcess::browser();
   params->factory_override = network::mojom::URLLoaderFactoryOverride::New();
   params->factory_override->overriding_factory =
       test_loader_factory_receiver.BindNewPipeAndPassRemote();
@@ -704,7 +704,7 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
 
     network::mojom::URLLoaderFactoryParamsPtr url_loader_params =
         network::mojom::URLLoaderFactoryParams::New();
-    url_loader_params->process_id = network::mojom::kBrowserProcessId;
+    url_loader_params->process_id = network::OriginatingProcess::browser();
     url_loader_params->is_trusted = true;
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
     network_context->CreateURLLoaderFactory(

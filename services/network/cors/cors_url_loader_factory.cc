@@ -253,7 +253,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
               perfetto::Flow::FromPointer(this));
   DCHECK(context_);
   DCHECK(origin_access_list_);
-  DCHECK_NE(mojom::kInvalidProcessId, process_id_);
+  DCHECK(process_id_);
   DCHECK_EQ(net::IsolationInfo::RequestType::kOther,
             params->isolation_info.request_type());
   if (context_->url_request_context()->bound_network() !=
@@ -275,7 +275,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
     DCHECK(params->isolation_info.IsEmpty());
     // Only the browser process is currently permitted to use automatically
     // assigned IsolationInfo, to prevent cross-site information leaks.
-    DCHECK_EQ(mojom::kBrowserProcessId, process_id_);
+    DCHECK(process_id_.is_browser());
   }
 
   if (context_->GetSharedDictionaryManager() && client_security_state_ &&
@@ -400,10 +400,12 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
       network::mojom::RequestDestination::kWebBundle) {
     DCHECK(resource_request.web_bundle_token_params.has_value());
 
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
         context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
             resource_request.url, *resource_request.web_bundle_token_params,
-            process_id_, cross_origin_embedder_policy_, coep_reporter());
+            process_id_.GetUnsafeValue(), cross_origin_embedder_policy_,
+            coep_reporter());
     client = web_bundle_url_loader_factory->MaybeWrapURLLoaderClient(
         std::move(client));
     if (!client) {
@@ -720,7 +722,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   std::optional<url::Origin> origin_to_validate = request.request_initiator;
 
   // Ensure that renderer requests are covered either by CORS or ORB.
-  if (process_id_ != mojom::kBrowserProcessId) {
+  if (!process_id_.is_browser()) {
     switch (request.mode) {
       case mojom::RequestMode::kNavigate:
         // A navigation request from a renderer can legally occur when a service
@@ -832,7 +834,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   // Depending on the type of request, compare either `request_initiator` or
   // `request.url` to `request_initiator_origin_lock_`.
   InitiatorLockCompatibility initiator_lock_compatibility;
-  if (process_id_ == mojom::kBrowserProcessId) {
+  if (process_id_.is_browser()) {
     initiator_lock_compatibility = InitiatorLockCompatibility::kBrowserProcess;
   } else {
     initiator_lock_compatibility = VerifyRequestInitiatorLock(

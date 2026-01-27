@@ -100,7 +100,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   void DeleteIfNeeded();
 
   // Exposed for use by PrefetchMatchingURLLoaderFactory.
-  int32_t process_id() const { return process_id_; }
+  int32_t process_id() const {
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    return process_id_.GetUnsafeValue();
+  }
   const std::optional<url::Origin>& request_initiator_origin_lock() const {
     return request_initiator_origin_lock_;
   }
@@ -190,7 +193,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   // Retained from URLLoaderFactoryParams:
   const bool disable_web_security_;
-  const int32_t process_id_ = mojom::kInvalidProcessId;
+  const OriginatingProcess process_id_;
   const std::optional<url::Origin> request_initiator_origin_lock_;
   const bool ignore_isolated_world_origin_;
   const mojom::TrustTokenOperationPolicyVerdict trust_token_issuance_policy_;

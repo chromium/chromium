@@ -761,7 +761,8 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   auto url_loader_factory_params =
       network::mojom::URLLoaderFactoryParams::New();
-  url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
+  url_loader_factory_params->process_id =
+      network::OriginatingProcess::browser();
   url_loader_factory_params->is_orb_enabled = false;
   network_context()->CreateURLLoaderFactory(
       url_loader_factory.BindNewPipeAndPassReceiver(),

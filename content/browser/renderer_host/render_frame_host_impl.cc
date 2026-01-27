@@ -217,6 +217,7 @@
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -13865,7 +13866,8 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
     StoragePartition* storage_partition = GetStoragePartition();
     network::mojom::URLLoaderFactoryParamsPtr monitoring_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
-    monitoring_factory_params->process_id = GetProcess()->GetDeprecatedID();
+    monitoring_factory_params->process_id =
+        ToOriginatingProcess(GetProcess()->GetID());
     monitoring_factory_params->debug_tag = "RFHI - monitoring_factory_params";
 
     // This factory should never be used to issue actual requests (i.e. it

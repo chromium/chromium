@@ -25,6 +25,7 @@ import "services/network/public/mojom/cookie_setting_overrides.mojom";
 import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/ct_policy.mojom";
+import "services/network/public/mojom/originating_process.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
@@ -765,16 +766,16 @@ struct URLLoaderFactoryParams {
   // since only the Browser process should be able to call
   // NetworkContext::CreateURLLoaderFactory.)
   //
-  // Set to kBrowserProcessId to indicate the browser process.
-  // SECURITY NOTE: Factories with kBrowserProcessId should not be sent
-  // to untrustworthy processes.
+  // Set to `network.mojom.BrowserProcess` to indicate the browser process.
+  // SECURITY NOTE: Factories with `network.mojom.BrowserProcess` should not be
+  // sent to untrustworthy processes.
   //
-  // Set to RenderProcessHost::GetDeprecatedID() to indicate a renderer
-  // process.
+  // Set to `network.mojom.RendererProcess` with `process_id` set to
+  // RenderProcessHost::GetID() to indicate a renderer process.
   // SECURITY NOTE: Factories should not be shared among multiple renderer
   // processes (e.g. |request_initiator_origin_lock| is specific to a single
   // renderer process).
-  int32 process_id = kInvalidProcessId;
+  network.mojom.OriginatingProcess process_id;
 
   // If specified, then |request_initiator_origin_lock| locks
   // |ResourceRequest::request_initiator| to the specified origin.

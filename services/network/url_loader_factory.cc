@@ -103,7 +103,7 @@ URLLoaderFactory::URLLoaderFactory(
                         std::move(params_->device_bound_session_observer)))
               : nullptr) {
   DCHECK(context);
-  DCHECK_NE(mojom::kInvalidProcessId, params_->process_id);
+  DCHECK(params_->process_id);
   DCHECK(!params_->factory_override);
   // Only non-navigation IsolationInfos should be bound to URLLoaderFactories.
   DCHECK_EQ(net::IsolationInfo::RequestType::kOther,
@@ -221,9 +221,10 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
     }
 
     // Load a subresource from a WebBundle.
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     context_->GetWebBundleManager().StartSubresourceRequest(
         std::move(receiver), resource_request, std::move(client),
-        params_->process_id, std::move(trusted_header_client));
+        params_->process_id.GetUnsafeValue(), std::move(trusted_header_client));
     return;
   }
 

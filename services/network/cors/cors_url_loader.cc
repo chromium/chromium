@@ -279,7 +279,7 @@ constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 
 CorsURLLoader::CorsURLLoader(
     mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
-    int32_t process_id,
+    OriginatingProcess process_id,
     int32_t request_id,
     uint32_t options,
     DeleteCallback delete_callback,
@@ -413,7 +413,7 @@ void CorsURLLoader::FollowRedirect(
   // If this is a navigation from a renderer, then its a service worker
   // passthrough of a navigation request.  Since this case uses manual
   // redirect mode FollowRedirect() should never be called.
-  if (process_id_ != mojom::kBrowserProcessId &&
+  if (!process_id_.is_browser() &&
       request_.mode == mojom::RequestMode::kNavigate) {
     mojo::ReportBadMessage(
         "CorsURLLoader: navigate from non-browser-process should not call "

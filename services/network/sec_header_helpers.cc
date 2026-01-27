@@ -114,7 +114,7 @@ std::optional<net::OriginRelation> GetInitiatorRelation(
   if (!request.initiator().has_value()) {
     // CorsURLLoaderFactory::IsValidRequest verifies that only the browser
     // process may initiate requests with no request initiator.
-    DCHECK_EQ(factory_params.process_id, mojom::kBrowserProcessId);
+    DCHECK(factory_params.process_id.is_browser());
 
     return std::nullopt;
   }

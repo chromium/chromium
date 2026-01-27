@@ -169,7 +169,7 @@ void TranslationDispatcher::GetTranslation(absl::string_view result,
 void TranslationDispatcher::ResetURLLoaderFactory() {
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::mojom::kBrowserProcessId;
+  params->process_id = network::OriginatingProcess::browser();
   params->is_trusted = false;
   params->automatically_assign_isolation_info = true;
   network::mojom::NetworkContext* network_context =

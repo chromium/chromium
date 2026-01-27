@@ -44,6 +44,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -978,7 +979,7 @@ void DedicatedWorkerHost::BindPressureService(
 void DedicatedWorkerHost::ObserveNetworkServiceCrash(
     StoragePartitionImpl* storage_partition_impl) {
   auto params = network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = worker_process_host_->GetDeprecatedID();
+  params->process_id = ToOriginatingProcess(worker_process_host_->GetID());
   params->debug_tag = "DedicatedWorkerHost::ObserveNetworkServiceCrash";
   network_service_connection_error_handler_holder_.reset();
   storage_partition_impl->GetNetworkContext()->CreateURLLoaderFactory(
