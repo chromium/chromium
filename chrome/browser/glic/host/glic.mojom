@@ -438,8 +438,6 @@ struct WebClientInitialState {
   bool onboarding_completed;
   // Whether the skills feature is enabled.
   bool enable_skills;
-  // The initial list of skill previews.
-  array<SkillPreview> skill_previews;
 };
 
 // Options for getting tab context.
