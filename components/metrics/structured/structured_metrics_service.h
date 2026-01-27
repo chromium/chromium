@@ -87,10 +87,6 @@ class StructuredMetricsService final : public StorageManager::StorageDelegate {
 
   metrics::LogStore* log_store() { return reporting_service_->log_store(); }
 
-  reporting::StructuredMetricsReportingService* reporting_service() {
-    return reporting_service_.get();
-  }
-
  private:
   friend class StructuredMetricsServiceTest;
   friend class StructuredMetricsMixin;

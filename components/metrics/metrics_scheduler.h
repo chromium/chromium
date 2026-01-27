@@ -31,16 +31,8 @@ class MetricsScheduler {
   // Stops scheduling uploads.
   void Stop();
 
-  // Sets `done_callback_`, a callback to run when the current task has finished
-  // running. The task must currently be running to call this.
-  void SetDoneCallback(base::OnceClosure done_callback);
-
   // Whether the scheduler is running.
   bool IsRunning() { return running_; }
-
-  // Whether a callback is currently pending (i.e. TriggerTask() was run, but
-  // not its matching TaskDone()).
-  bool IsCallbackPending() { return callback_pending_; }
 
   // Returns the initial delay before the task is run for the first time.
   static int GetInitialIntervalSeconds();
@@ -54,6 +46,10 @@ class MetricsScheduler {
   // Called by the Timer when it's time to run the task.
   virtual void TriggerTask();
 
+  // Whether a callback is currently pending (i.e. TriggerTask() was run, but
+  // not its matching TaskDone()).
+  bool IsCallbackPending() { return callback_pending_; }
+
   // Sets `interval_`.
   void SetInterval(base::TimeDelta interval) { interval_ = interval; }
 
@@ -63,9 +59,6 @@ class MetricsScheduler {
 
   // The method to call when task should happen.
   const base::RepeatingClosure task_callback_;
-
-  // The method to call when the task has finished running.
-  base::OnceClosure done_callback_;
 
   // Uses a one-shot timer rather than a repeating one because the task may be
   // async, and the length of the interval may change.

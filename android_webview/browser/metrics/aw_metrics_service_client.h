@@ -180,7 +180,6 @@ class AwMetricsServiceClient
       metrics::MetricsLogUploader::MetricServiceType service_type,
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;
-  bool IsJobSchedulerSupported() const override;
   base::TimeDelta GetStandardUploadInterval() override;
   bool ShouldStartUpFast() const override;
 

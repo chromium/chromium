@@ -10,14 +10,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/thread_checker.h"
-#include "components/metrics/metrics_log_uploader.h"
 #include "components/variations/synthetic_trial_registry.h"
 
 namespace metrics {
 class MetricsService;
 class MetricsServiceClient;
 class ClonedInstallDetector;
-class ReportingService;
 }  // namespace metrics
 
 namespace metrics::structured {
@@ -93,10 +91,6 @@ class MetricsServicesManager {
   // Returns the StructuredMetricsService associated with the
   // |metrics_service_client_|.
   metrics::structured::StructuredMetricsService* GetStructuredMetricsService();
-
-  // Returns the ReportingService associated with the given service type.
-  metrics::ReportingService* GetReportingService(
-      metrics::MetricsLogUploader::MetricServiceType service_type);
 
   // Returns the VariationsService, creating it if it hasn't been created yet.
   variations::VariationsService* GetVariationsService();

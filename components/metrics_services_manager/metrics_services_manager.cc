@@ -11,7 +11,6 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/enabled_state_provider.h"
@@ -20,7 +19,6 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/private_metrics/puma_service.h"
-#include "components/metrics/reporting_service.h"
 #include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 #include "components/ukm/ukm_service.h"
@@ -77,37 +75,6 @@ metrics::private_metrics::PumaService*
 MetricsServicesManager::GetPumaService() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return GetMetricsServiceClient()->GetPumaService();
-}
-
-metrics::ReportingService* MetricsServicesManager::GetReportingService(
-    metrics::MetricsLogUploader::MetricServiceType service_type) {
-  switch (service_type) {
-    case metrics::MetricsLogUploader::MetricServiceType::UMA: {
-      auto* service = GetMetricsService();
-      CHECK(service);
-      return service->reporting_service();
-    }
-    case metrics::MetricsLogUploader::MetricServiceType::UKM: {
-      auto* service = GetUkmService();
-      CHECK(service);
-      return service->reporting_service();
-    }
-    case metrics::MetricsLogUploader::MetricServiceType::DWA: {
-      auto* service = GetDwaService();
-      CHECK(service);
-      return service->reporting_service();
-    }
-    case metrics::MetricsLogUploader::MetricServiceType::PRIVATE_METRICS: {
-      auto* service = GetPumaService();
-      CHECK(service);
-      return service->reporting_service();
-    }
-    case metrics::MetricsLogUploader::MetricServiceType::STRUCTURED_METRICS: {
-      auto* service = GetStructuredMetricsService();
-      CHECK(service);
-      return service->reporting_service();
-    }
-  }
 }
 
 variations::VariationsService* MetricsServicesManager::GetVariationsService() {

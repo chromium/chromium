@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "components/background_task_scheduler/task_ids.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/server_urls.h"
@@ -77,8 +76,7 @@ UkmReportingService::UkmReportingService(metrics::MetricsServiceClient* client,
     : ReportingService(client,
                        local_state,
                        kMaxLogRetransmitSize,
-                       /*logs_event_manager=*/nullptr,
-                       background_task::TaskIds::UKM_UPLOAD_JOB_ID),
+                       /*logs_event_manager=*/nullptr),
       unsent_log_store_(std::make_unique<ukm::UnsentLogStoreMetricsImpl>(),
                         local_state,
                         prefs::kUkmUnsentLogStore,

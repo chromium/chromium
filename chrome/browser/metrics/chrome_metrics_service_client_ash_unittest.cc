@@ -308,7 +308,7 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
 
   ukm::Report GetUkmReport() {
     metrics::UnsentLogStore* log_store =
-        GetUkmService()->reporting_service()->ukm_log_store();
+        GetUkmService()->reporting_service_for_testing().ukm_log_store();
     EXPECT_GE(log_store->size(), 1ul);
     log_store->StageNextLog();
 

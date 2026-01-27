@@ -308,8 +308,6 @@ class MetricsService {
     return logs_event_observer_.get();
   }
 
-  MetricsReportingService* reporting_service() { return &reporting_service_; }
-
   // Creates a new MetricsLog instance with the given |log_type|.
   std::unique_ptr<MetricsLog> CreateLogForTesting(
       MetricsLog::LogType log_type) {

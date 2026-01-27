@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/background_task_scheduler",
   "+components/crx_file/id_util.h",
   "+components/metrics",
   "+components/prefs",

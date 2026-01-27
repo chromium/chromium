@@ -283,7 +283,6 @@ if (!is_cronet_build || is_ios) {
       "//base:build_time",
       "//base:i18n",
       "//build:branding_buildflags",
-      "//components/background_task_scheduler",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings",
       "//components/network_time",

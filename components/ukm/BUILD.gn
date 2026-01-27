@@ -71,7 +71,6 @@ static_library("ukm") {
 
   deps = [
     "//base",
-    "//components/background_task_scheduler",
     "//components/crx_file",
     "//components/metrics",
     "//components/prefs",

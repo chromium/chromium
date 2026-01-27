@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_METRICS_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "build/build_config.h"
 
 namespace metrics::features {
 
@@ -28,12 +27,6 @@ BASE_DECLARE_FEATURE(kReportingServiceAlwaysFlush);
 // components/metrics/metrics_service_client.cc and
 // components/metrics/unsent_log_store.cc.
 BASE_DECLARE_FEATURE(kMetricsLogTrimming);
-
-#if BUILDFLAG(IS_ANDROID)
-// Controls whether various metrics services (UMA, UKM, etc.) should upload logs
-// through a JobScheduler on Android.
-BASE_DECLARE_FEATURE(kMetricsLogJobSchedulerUpload);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace metrics::features
 

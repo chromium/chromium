@@ -126,7 +126,9 @@ class UkmService : public UkmRecorderImpl {
 
   int32_t report_count() const { return report_count_; }
 
-  ukm::UkmReportingService* reporting_service() { return &reporting_service_; }
+  ukm::UkmReportingService& reporting_service_for_testing() {
+    return reporting_service_;
+  }
 
   // Makes sure that the serialized UKM report can be parsed.
   static bool LogCanBeParsed(const std::string& serialized_data);
