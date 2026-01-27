@@ -8702,6 +8702,8 @@ from previous Chrome versions.
   <int value="-1941852572" label="floating-virtual-keyboard"/>
   <int value="-1940928631" label="UseMLKEM:disabled"/>
   <int value="-1940806558" label="enable-syncfs-directory-operation"/>
+  <int value="-1940492279"
+      label="SupervisedUserUseUrlFilteringService:disabled"/>
   <int value="-1940377152" label="MacRTL:enabled"/>
   <int value="-1940291343" label="SpeculativeResourcePrefetching:enabled"/>
   <int value="-1940251540"
@@ -11114,6 +11116,8 @@ from previous Chrome versions.
   <int value="-1117104514" label="smbfs-file-shares"/>
   <int value="-1116278039" label="ShelfAppScaling:disabled"/>
   <int value="-1115681358" label="FeedBackToTop:enabled"/>
+  <int value="-1115657348"
+      label="SupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs:disabled"/>
   <int value="-1114996018" label="PermissionElement:disabled"/>
   <int value="-1114715252" label="WebAuthenticationNewPasskeyUI:disabled"/>
   <int value="-1114080030" label="ResourceLoadingHints:enabled"/>
@@ -14159,6 +14163,7 @@ from previous Chrome versions.
   <int value="-54796636" label="kids-management-url-classification:disabled"/>
   <int value="-53885679"
       label="NotificationOneTapUnsubscribeOnDesktop:disabled"/>
+  <int value="-52937758" label="SupervisedUserUseUrlFilteringService:enabled"/>
   <int value="-52737423" label="EnableMixedContentDownloadDialog:disabled"/>
   <int value="-52483823" label="disable-new-video-renderer"/>
   <int value="-52241456" label="enable-single-click-autofill"/>
@@ -17890,6 +17895,8 @@ from previous Chrome versions.
   <int value="1235800887" label="V8Ignition:enabled"/>
   <int value="1235940786" label="ChromeHomePersistentIph:enabled"/>
   <int value="1236772382" label="BiometricAuthenticationInSettings:disabled"/>
+  <int value="1236821372"
+      label="SupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs:enabled"/>
   <int value="1237297772" label="no-pings"/>
   <int value="1237420037" label="SeedAccountsRevamp:disabled"/>
   <int value="1237514437" label="ShareCustomActionsInCCT:enabled"/>

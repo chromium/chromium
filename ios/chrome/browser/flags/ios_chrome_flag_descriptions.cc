@@ -1469,6 +1469,19 @@ const char kSupervisedUserBlockInterstitialV3Name[] =
 const char kSupervisedUserBlockInterstitialV3Description[] =
     "Enables URL filter interstitial V3 for Family Link users.";
 
+const char kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsName[] =
+    "Merge device parental controls and Family Link prefs";
+const char
+    kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsDescription[] =
+        "Merges non-web filtering device parental controls settings with "
+        "Family Link settings in the SupervisedUserPrefStore.";
+
+const char kSupervisedUserUseUrlFilteringServiceName[] =
+    "Use URL filtering service";
+const char kSupervisedUserUseUrlFilteringServiceDescription[] =
+    "Use the SupervisedUserUrlFilteringService to get URL filtering settings "
+    "directly from supervision services instead of using PrefService.";
+
 const char kSyncAutofillWalletCredentialDataName[] =
     "Sync Autofill Wallet Credential Data";
 const char kSyncAutofillWalletCredentialDataDescription[] =

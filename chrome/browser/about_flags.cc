@@ -11865,6 +11865,23 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupervisedUserBlockInterstitialV3Description, kOsAll,
      FEATURE_VALUE_TYPE(supervised_user::kSupervisedUserBlockInterstitialV3)},
 
+    {"supervised-user-merge-device-parental-controls-and-family-link-prefs",
+     flag_descriptions::
+         kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsName,
+     flag_descriptions::
+         kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         supervised_user::
+             kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs)},
+
+    {"supervised-user-use-url-filtering-service",
+     flag_descriptions::kSupervisedUserUseUrlFilteringServiceName,
+     flag_descriptions::kSupervisedUserUseUrlFilteringServiceDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         supervised_user::kSupervisedUserUseUrlFilteringService)},
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     {"autofill-enable-amount-extraction-testing",

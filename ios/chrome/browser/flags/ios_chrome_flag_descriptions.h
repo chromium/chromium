@@ -886,6 +886,14 @@ extern const char kStrokesAPIEnabledDescription[];
 extern const char kSupervisedUserBlockInterstitialV3Name[];
 extern const char kSupervisedUserBlockInterstitialV3Description[];
 
+extern const char
+    kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsName[];
+extern const char
+    kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsDescription[];
+
+extern const char kSupervisedUserUseUrlFilteringServiceName[];
+extern const char kSupervisedUserUseUrlFilteringServiceDescription[];
+
 extern const char kSyncAutofillWalletCredentialDataName[];
 extern const char kSyncAutofillWalletCredentialDataDescription[];
 

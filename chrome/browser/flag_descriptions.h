@@ -8300,6 +8300,20 @@ inline constexpr char kSupervisedUserBlockInterstitialV3Name[] =
 inline constexpr char kSupervisedUserBlockInterstitialV3Description[] =
     "Enables URL filter interstitial V3 for Family Link users.";
 
+inline constexpr char
+    kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsName[] =
+        "Merge device parental controls and Family Link prefs";
+inline constexpr char
+    kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefsDescription[] =
+        "Merges non-web filtering device parental controls settings with "
+        "Family Link settings in the SupervisedUserPrefStore.";
+
+inline constexpr char kSupervisedUserUseUrlFilteringServiceName[] =
+    "Use URL filtering service";
+inline constexpr char kSupervisedUserUseUrlFilteringServiceDescription[] =
+    "Use the SupervisedUserUrlFilteringService to get URL filtering settings "
+    "directly from supervision services instead of using PrefService.";
+
 inline constexpr char kAllowUserInstalledChromeAppsName[] =
     "Allow user installed Chrome Apps";
 inline constexpr char kAllowUserInstalledChromeAppsDescription[] =
