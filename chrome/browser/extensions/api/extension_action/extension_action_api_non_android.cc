@@ -6,18 +6,23 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/common/extension.h"
+#include "ui/base/base_window.h"
+
+using extensions::browser_window_util::GetLastActiveBrowserWithProfile;
 
 namespace extensions {
 namespace {
@@ -35,41 +40,23 @@ constexpr char kOpenPopupInactiveWindow[] =
     "window, first call `chrome.windows.update` with `focused` set to "
     "true.";
 
-// Returns the browser that was last active in the given `profile`, optionally
+// Returns the browser that is active in the given `profile`, optionally
 // also checking the incognito profile.
-Browser* FindLastActiveBrowserWindow(Profile* profile,
-                                     bool check_incognito_profile) {
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
-
-  if (browser && browser->window()->IsActive()) {
-    return browser;  // Found an active browser.
-  }
-
-  // It's possible that the last active browser actually corresponds to the
-  // associated incognito profile, and this won't be returned by
-  // FindLastActiveWithProfile(). If the extension can operate incognito, then
-  // check the last active incognito, too.
-  if (check_incognito_profile && profile->HasPrimaryOTRProfile()) {
-    Profile* incognito_profile =
-        profile->GetPrimaryOTRProfile(/*create_if_needed=*/false);
-    DCHECK(incognito_profile);
-    Browser* incognito_browser =
-        chrome::FindLastActiveWithProfile(incognito_profile);
-    if (incognito_browser->window()->IsActive()) {
-      return incognito_browser;
-    }
-  }
-
-  return nullptr;
+BrowserWindowInterface* FindActiveBrowserWindow(Profile& profile,
+                                                bool check_incognito_profile) {
+  BrowserWindowInterface* browser = GetLastActiveBrowserWithProfile(
+      profile,
+      /*include_incognito_or_parent=*/check_incognito_profile);
+  return browser && browser->GetWindow()->IsActive() ? browser : nullptr;
 }
 
 // Returns true if the given `extension` has an active popup on the active tab
 // of `browser`.
-bool HasPopupOnActiveTab(Browser* browser,
+bool HasPopupOnActiveTab(BrowserWindowInterface& browser,
                          content::BrowserContext* browser_context,
                          const Extension& extension) {
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      TabListInterface::From(&browser)->GetActiveTab()->GetContents();
   ExtensionAction* extension_action =
       ExtensionActionManager::Get(browser_context)
           ->GetExtensionAction(extension);
@@ -82,21 +69,27 @@ bool HasPopupOnActiveTab(Browser* browser,
 
 // Attempts to open `extension`'s popup in the given `browser`. Returns true on
 // success; otherwise, populates `error` and returns false.
-bool OpenPopupInBrowser(Browser& browser,
+bool OpenPopupInBrowser(BrowserWindowInterface& browser,
                         const Extension& extension,
                         std::string* error,
                         ShowPopupCallback callback) {
-  if (!browser.SupportsWindowFeature(Browser::WindowFeature::kFeatureToolbar) ||
-      !browser.window()->IsToolbarVisible()) {
+#if !BUILDFLAG(IS_ANDROID)
+  // On Android, the extension toolbar exists if and only if ExtensionsContainer
+  // exists, so the check below is sufficient.
+  // On other platforms, ExtensionsContainer is always constructed except for
+  // guest sessions, so we need more detailed checks.
+  Browser& browser_legacy = *browser.GetBrowserForMigrationOnly();
+  if (!browser_legacy.SupportsWindowFeature(
+          Browser::WindowFeature::kFeatureToolbar) ||
+      !browser_legacy.window()->IsToolbarVisible()) {
     *error = "Browser window has no toolbar.";
     return false;
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   ExtensionsContainer* extensions_container =
       ExtensionsContainer::From(browser);
-  // The ExtensionsContainer could be null if, e.g., this is a popup window with
-  // no toolbar.
-  // TODO(devlin): Is that still possible, given the checks above?
+  // The ExtensionsContainer could be null if, e.g., this is a guest session.
   if (!extensions_container ||
       !extensions_container->ShowToolbarActionPopupForAPICall(
           extension.id(), std::move(callback))) {
@@ -133,12 +126,12 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
     }
   }
 
-  Browser* browser = nullptr;
+  BrowserWindowInterface* browser = nullptr;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   std::string error;
   if (window_id == extension_misc::kCurrentWindowId) {
     browser =
-        FindLastActiveBrowserWindow(profile, include_incognito_information());
+        FindActiveBrowserWindow(*profile, include_incognito_information());
     if (!browser) {
       error = kNoActiveWindowFound;
     }
@@ -146,7 +139,7 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
     if (WindowController* controller =
             ExtensionTabUtil::GetControllerInProfileWithId(
                 profile, window_id, include_incognito_information(), &error)) {
-      browser = controller->GetBrowser();
+      browser = controller->GetBrowserWindowInterface();
     }
   }
 
@@ -155,11 +148,11 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  if (!browser->window()->IsActive()) {
+  if (!browser->GetWindow()->IsActive()) {
     return RespondNow(Error(kOpenPopupInactiveWindow));
   }
 
-  if (!HasPopupOnActiveTab(browser, browser_context(), *extension())) {
+  if (!HasPopupOnActiveTab(*browser, browser_context(), *extension())) {
     return RespondNow(Error(kNoActivePopup));
   }
 
@@ -200,14 +193,14 @@ BrowserActionOpenPopupFunction::~BrowserActionOpenPopupFunction() = default;
 ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   // We only allow the popup in the active window.
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  Browser* browser =
-      FindLastActiveBrowserWindow(profile, include_incognito_information());
+  BrowserWindowInterface* browser =
+      FindActiveBrowserWindow(*profile, include_incognito_information());
 
   if (!browser) {
     return RespondNow(Error(kNoActiveWindowFound));
   }
 
-  if (!HasPopupOnActiveTab(browser, browser_context(), *extension())) {
+  if (!HasPopupOnActiveTab(*browser, browser_context(), *extension())) {
     return RespondNow(Error(kNoActivePopup));
   }
 
