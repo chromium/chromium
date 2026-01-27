@@ -2737,4 +2737,115 @@ INSTANTIATE_TEST_SUITE_P(Accuracies,
                          testing::Values(GeolocationAccuracy::kPrecise,
                                          GeolocationAccuracy::kApproximate));
 
+struct GestureGatedTestcase {
+  std::string test_name;
+  RequestType request_type;
+  PermissionRequestGestureType gesture_type;
+  std::optional<QuietUiReason> quiet_ui_reason;
+  bool is_quiet_ui;
+  bool mute_notifications;
+  bool mute_geolocation;
+};
+
+class PermissionRequestManagerEnforceGestureTest
+    : public PermissionRequestManagerTest,
+      public testing::WithParamInterface<GestureGatedTestcase> {
+ public:
+  PermissionRequestManagerEnforceGestureTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPermissionsGestureGatedPrompts,
+        {{"mute_notifications",
+          GetParam().mute_notifications ? "true" : "false"},
+         {"mute_geolocation", GetParam().mute_geolocation ? "true" : "false"}});
+  }
+
+  void SetUp() override {
+    PermissionRequestManagerTest::SetUp();
+    manager_->clear_permission_ui_selector_for_testing();
+    manager_->add_permission_ui_selector_for_testing(
+        std::make_unique<MockNotificationGeolocationPermissionUiSelector>(
+            Decision::UseNormalUiAndShowNoWarning(),
+            /*prediction_likelihood=*/std::nullopt,
+            /*async_delay=*/std::nullopt));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(PermissionRequestManagerEnforceGestureTest,
+       GesturelessNotificationRequestUsesQuietUi) {
+  MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request = std::make_unique<MockPermissionRequest>(
+      GetParam().request_type, GetParam().gesture_type,
+      request_state.GetWeakPtr());
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(manager_->ShouldCurrentRequestUseQuietUI(), GetParam().is_quiet_ui);
+  EXPECT_EQ(manager_->ReasonForUsingQuietUi(), GetParam().quiet_ui_reason);
+
+  Accept();
+  EXPECT_TRUE(request_state.granted);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    GestureGatedPermissions,
+    PermissionRequestManagerEnforceGestureTest,
+    testing::Values(
+        GestureGatedTestcase{
+            /*test_name=*/"GesturelessNotificationsRequestUsesQuietUi",
+            /*request_type=*/RequestType::kNotifications,
+            /*gesture_type=*/PermissionRequestGestureType::NO_GESTURE,
+            /*quiet_ui_reason=*/
+            QuietUiReason::kTriggeredDueToLackOfGesture,
+            /*is_quiet_ui=*/true,
+            /*mute_notifications=*/true,
+            /*mute_geolocation=*/false,
+        },
+        GestureGatedTestcase{
+            /*test_name=*/"GesturelessNotificationsRequestUsesNormalUi",
+            /*request_type=*/RequestType::kNotifications,
+            /*gesture_type=*/PermissionRequestGestureType::NO_GESTURE,
+            /*quiet_ui_reason=*/std::nullopt,
+            /*is_quiet_ui=*/false,
+            /*mute_notifications=*/false,
+            /*mute_geolocation=*/false,
+        },
+        GestureGatedTestcase{
+            /*test_name=*/"GesturelessGeolocationRequestUsesQuietUi",
+            /*request_type=*/RequestType::kGeolocation,
+            /*gesture_type=*/PermissionRequestGestureType::NO_GESTURE,
+            /*quiet_ui_reason=*/
+            QuietUiReason::kTriggeredDueToLackOfGesture,
+            /*is_quiet_ui=*/true,
+            /*mute_notifications=*/false,
+            /*mute_geolocation=*/true,
+        },
+        GestureGatedTestcase{
+            /*test_name=*/"GesturelessGeolocationRequestUsesNormalUi",
+            /*request_type=*/RequestType::kGeolocation,
+            /*gesture_type=*/PermissionRequestGestureType::NO_GESTURE,
+            /*quiet_ui_reason=*/std::nullopt,
+            /*is_quiet_ui=*/false,
+            /*mute_notifications=*/true,
+            /*mute_geolocation=*/false,
+        },
+        GestureGatedTestcase{
+            /*test_name=*/"GesturedNotificationsRequestUsesNormalUi",
+            /*request_type=*/RequestType::kNotifications,
+            /*gesture_type=*/PermissionRequestGestureType::GESTURE,
+            /*quiet_ui_reason=*/std::nullopt,
+            /*is_quiet_ui=*/false,
+            /*mute_notifications=*/true,
+            /*mute_geolocation=*/true,
+        }),
+    /*name_generator=*/
+    [](const testing::TestParamInfo<
+        PermissionRequestManagerEnforceGestureTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 }  // namespace permissions

@@ -1019,6 +1019,37 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
     }
   }
 
+  // If the "PermissionsGestureGatedPrompts" feature is enabled, we ensure that
+  // specific permission requests (currently Notifications and Geolocation) are
+  // accompanied by a valid user gesture. If the user gesture is lacking we mute
+  // the request.
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionsGestureGatedPrompts)) {
+    if (auto request = requests_.front().get()) {
+      // We explicitly don't mute requests initiated by an embedded permission
+      // element (e.g., the <permission> HTML tag). This is because interaction
+      // with such an element constitutes a specific, high-intent user signal
+      // that justifies showing the prompt.
+      if (!requests_.front()->IsEmbeddedPermissionElementInitiated() &&
+          request->GetGestureType() ==
+              PermissionRequestGestureType::NO_GESTURE) {
+        if ((request->request_type() == RequestType::kNotifications &&
+             permissions::feature_params::
+                 kPermissionsGestureGatedPromptsMuteNotifications.Get()) ||
+            (request->request_type() == RequestType::kGeolocation &&
+             permissions::feature_params::
+                 kPermissionsGestureGatedPromptsMuteGeolocation.Get())) {
+          current_request_ui_to_use_ =
+              PermissionUiSelector::Decision::UseQuietUi(
+                  QuietUiReason::kTriggeredDueToLackOfGesture,
+                  PermissionUiSelector::Decision::ShowNoWarning());
+          ShowPrompt();
+          return;
+        }
+      }
+    }
+  }
+
   if (permission_ui_selectors_.empty()) {
     current_request_ui_to_use_ = UiDecision::UseNormalUiAndShowNoWarning();
     ShowPrompt();
