@@ -3203,11 +3203,6 @@ suite('NewTabPageRealboxTest', () => {
       // Re-create realbox to pick up new loadTimeData.
       realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
 
-      let errorMessage: string|null = null;
-      realbox.$.errorScrim.setErrorMessage = (message: string) => {
-        errorMessage = message;
-      };
-
       const pngFile1 = new File([''], 'pasted1.png', {type: 'image/png'});
       const pngFile2 = new File([''], 'pasted2.png', {type: 'image/png'});
 
@@ -3226,20 +3221,14 @@ suite('NewTabPageRealboxTest', () => {
 
       assertTrue(pasteEvent.defaultPrevented);
       assertEquals(
-      loadTimeData.getString('maxFilesReachedError'),
-      errorMessage,
-      );
+          loadTimeData.getString('maxFilesReachedError'),
+          realbox.$.errorScrim.errorMessage);
       assertFalse((realbox.$.context as any).showFileCarousel_);
       assertFalse((realbox as any).pastedInInput_);
     });
 
     test('pasting unsupported files shows error', async () => {
       realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
-
-      let errorMessage: string|null = null;
-      realbox.$.errorScrim.setErrorMessage = (message: string) => {
-        errorMessage = message;
-      };
 
       const txtFile = new File([''], 'pasted.txt', {type: 'text/plain'});
       const dataTransfer = new DataTransfer();
@@ -3255,7 +3244,7 @@ suite('NewTabPageRealboxTest', () => {
       await microtasksFinished();
 
       assertTrue(pasteEvent.defaultPrevented);
-      assertNotEquals(null, errorMessage);
+      assertTrue(!!realbox.$.errorScrim.errorMessage);
       assertFalse((realbox as any).pastedInInput_);
     });
 

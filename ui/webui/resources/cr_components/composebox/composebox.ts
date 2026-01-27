@@ -179,7 +179,7 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      errorScrimVisible_: {type: Boolean},
+      errorMessage_: {type: String},
       contextFilesSize_: {
         type: Number,
         reflect: true,
@@ -259,7 +259,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
   protected accessor inCanvasMode_: boolean = false;
-  protected accessor errorScrimVisible_: boolean = false;
+  protected accessor errorMessage_: string = '';
   protected accessor contextFilesSize_: number = 0;
   protected accessor transcript_: string = '';
   protected accessor receivedSpeech_: boolean = false;
@@ -420,7 +420,7 @@ export class ComposeboxElement extends I18nMixinLit
     if (changedPrivateProperties.has('input_') ||
         changedPrivateProperties.has('result_') ||
         changedPrivateProperties.has('contextFilesSize_') ||
-        changedPrivateProperties.has('errorScrimVisible_')) {
+        changedPrivateProperties.has('errorMessage_')) {
       this.showDropdown_ = this.computeShowDropdown_();
     }
     if (changedPrivateProperties.has('submitEnabled_') ||
@@ -576,7 +576,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     // Do not show dropdown if there's an error scrim.
-    if (this.errorScrimVisible_) {
+    if (this.errorMessage_ !== '') {
       return false;
     }
 
@@ -627,7 +627,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onFileValidationError_(e: CustomEvent<{errorMessage: string}>) {
-    this.$.errorScrim.setErrorMessage(e.detail.errorMessage);
+    this.errorMessage_ = e.detail.errorMessage;
   }
 
   protected onTranscriptUpdate_(e: CustomEvent<string>) {
@@ -953,9 +953,8 @@ export class ComposeboxElement extends I18nMixinLit
     this.searchboxHandler_.setActiveModelMode(e.detail.model);
   }
 
-  protected onErrorScrimVisibilityChanged_(
-      e: CustomEvent<{showErrorScrim: boolean}>) {
-    this.errorScrimVisible_ = e.detail.showErrorScrim;
+  protected onErrorScrimDismissed_() {
+    this.errorMessage_ = '';
   }
 
   // Sets the input property to compute the cancel button title without using
@@ -1311,9 +1310,7 @@ export class ComposeboxElement extends I18nMixinLit
     const {file, errorMessage} =
         this.$.context.updateFileStatus(token, status, errorType);
     if (errorMessage) {
-      if (!this.$.errorScrim.isErrorScrimShowing()) {
-        this.$.errorScrim.setErrorMessage(errorMessage);
-      }
+      this.errorMessage_ = errorMessage;
     } else if (file) {
       if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
           this.showZps && !file.type.includes('image')) {

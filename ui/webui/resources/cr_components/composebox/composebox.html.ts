@@ -41,7 +41,8 @@ export function getHtml(this: ComposeboxElement) {
   <ntp-error-scrim id="errorScrim" part="error-scrim"
     ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
                      this.contextFilesSize_ === 0}"
-    @error-scrim-visibility-changed="${this.onErrorScrimVisibilityChanged_}">
+    .errorMessage="${this.errorMessage_}"
+    @dismiss-error-scrim="${this.onErrorScrimDismissed_}">
   </ntp-error-scrim>
   <div id="composebox" @keydown="${this.onKeydown_}"
       @focusin="${this.handleComposeboxFocusIn_}"

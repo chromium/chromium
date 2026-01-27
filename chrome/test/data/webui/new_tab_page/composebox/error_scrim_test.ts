@@ -24,7 +24,7 @@ suite('NewTabPageErrorScrimTest', () => {
 
     // Act.
     const emptyFileErrorMessage = 'Can\'t upload. File appears to be empty.';
-    errorScrimElement.setErrorMessage(emptyFileErrorMessage);
+    errorScrimElement.errorMessage = emptyFileErrorMessage;
     await microtasksFinished();
 
     // Assert.
@@ -45,12 +45,12 @@ suite('NewTabPageErrorScrimTest', () => {
   });
 
   test(
-      'Error scrim should disappear after clicking dismiss button',
-      async () => {
+      'Error scrim should fire dismiss error scrim event', async () => {
         // Initial act: display error scrim.
         const emptyFileErrorMessage =
             'Can\'t upload. File appears to be empty.';
-        errorScrimElement.setErrorMessage(emptyFileErrorMessage);
+
+        errorScrimElement.errorMessage = emptyFileErrorMessage;
         await microtasksFinished();
 
         // Assert Initial state.
@@ -59,23 +59,16 @@ suite('NewTabPageErrorScrimTest', () => {
         assertTrue(!!initialScrim);
 
         // Act.
+        let dismissEventFired = false;
+        errorScrimElement.addEventListener(
+            'dismiss-error-scrim', () => dismissEventFired = true);
+
         const dismissButton =
             initialScrim.querySelector<CrButtonElement>('#dismissErrorButton')!;
         dismissButton.click();
         await microtasksFinished();
 
-        // Assert final state.
-        const finalScrim =
-            errorScrimElement.shadowRoot.querySelector('#errorScrim');
-        assertEquals(finalScrim, null);
-        await microtasksFinished();
-
-        // Assert: Component internal state should be reset.
-        const anyParagraphs =
-            errorScrimElement.shadowRoot.querySelectorAll('#errorMessage');
-        assertEquals(anyParagraphs.length, 0);
-        const anyButtons =
-            errorScrimElement.shadowRoot.querySelector('#dismissErrorButton')!;
-        assertEquals(anyButtons, null);
+        // Event should be fired.
+        assertTrue(dismissEventFired);
       });
 });

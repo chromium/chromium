@@ -413,6 +413,7 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
         type: String,
       },
+      errorMessage_: {type: String},
       showCanvas: {
         type: Boolean,
       },
@@ -450,6 +451,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor placeholderText: string = '';
   accessor isDraggingFile: boolean = false;
   accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
+  protected accessor errorMessage_: string = '';
   protected accessor inputAriaLive_: string = '';
   protected accessor inputFocused_: boolean = false;
   private accessor isLensSearchbox_: boolean =
@@ -1196,7 +1198,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected onFileValidationError_(e: CustomEvent<{errorMessage: string}>) {
-    this.$.errorScrim.setErrorMessage(e.detail.errorMessage);
+    this.errorMessage_ = e.detail.errorMessage;
+    this.dropdownIsVisible = false;
   }
 
   protected async getTabPreview_(e: CustomEvent<{
@@ -1206,6 +1209,10 @@ export class SearchboxElement extends SearchboxElementBase implements
     const {previewDataUrl} =
         await this.pageHandler_.getTabPreview(e.detail.tabId);
     e.detail.onPreviewFetched(previewDataUrl || '');
+  }
+
+  protected onErrorScrimDismissed_() {
+    this.errorMessage_ = '';
   }
 
   protected onContextMenuContainerClick_() {
