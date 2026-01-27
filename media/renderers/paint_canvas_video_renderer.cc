@@ -11,19 +11,17 @@
 
 #include <GLES3/gl3.h>
 
-#include <algorithm>
 #include <array>
 #include <limits>
 #include <numeric>
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
-#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -113,26 +111,6 @@ void BindAndTexImage2D(gpu::gles2::GLES2Interface* gl,
   gl->BindTexture(target, texture);
   gl->TexImage2D(target, level, internal_format, size.width(), size.height(), 0,
                  format, type, nullptr);
-}
-
-template <typename T>
-base::span<T> CastSpan(base::span<uint8_t> span) {
-  CHECK_EQ(span.size() % sizeof(T), 0u);
-  CHECK(base::IsAligned(span.data(), alignof(T)));
-  // SAFETY: Spanification documentation strongly discourages
-  // `reinterpret_cast`, but this code is a "hot path", it might be worth it in
-  // this case.
-  return UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<T*>(span.data()), span.size() / sizeof(T)));
-}
-
-template <typename T>
-base::span<const T> CastConstSpan(base::span<const uint8_t> span) {
-  CHECK_EQ(span.size() % sizeof(T), 0u);
-  CHECK(base::IsAligned(span.data(), alignof(T)));
-  // SAFETY: See `CastSpan()` comment.
-  return UNSAFE_BUFFERS(base::span(reinterpret_cast<const T*>(span.data()),
-                                   span.size() / sizeof(T)));
 }
 
 gpu::SyncToken CopySharedImageToTexture(
@@ -677,7 +655,7 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
  public:
   VideoImageGenerator() = delete;
 
-  explicit VideoImageGenerator(scoped_refptr<VideoFrame> frame)
+  VideoImageGenerator(scoped_refptr<VideoFrame> frame)
       : cc::PaintImageGenerator(GetVideoImageGeneratorSkImageInfo(frame)),
         frame_(std::move(frame)) {
     DCHECK(!frame_->HasSharedImage());
@@ -698,8 +676,8 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
     // If skia couldn't do the YUV conversion on GPU, we will on CPU.
     PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-        frame_.get(), UNSAFE_SKPIXMAP_TO_BYTES_SPAN(dst_pixmap),
-        dst_pixmap.rowBytes(), dst_pixmap.colorType());
+        frame_.get(), dst_pixmap.writable_addr(), dst_pixmap.rowBytes(),
+        dst_pixmap.colorType());
 
     if (!SkColorSpace::Equals(GetSkImageInfo().colorSpace(),
                               dst_pixmap.colorSpace())) {
@@ -1015,8 +993,7 @@ void PaintCanvasVideoRenderer::Paint(
   SkImageInfo info;
   size_t row_bytes;
   SkIPoint origin;
-  base::span<uint8_t> pixels = UNSAFE_PAINTCANVAS_TOP_LAYER_TO_BYTES_SPAN(
-      canvas, &info, &row_bytes, &origin);
+  void* pixels = nullptr;
   // This if is a special handling of video for SkiaPaintcanvas backend, where
   // the video does not need any transform and it is enough to draw the frame
   // directly into the skia canvas
@@ -1024,10 +1001,12 @@ void PaintCanvasVideoRenderer::Paint(
       video_frame->IsMappable() && flags.isOpaque() &&
       flags.getBlendMode() == SkBlendMode::kSrc &&
       flags.getFilterQuality() == cc::PaintFlags::FilterQuality::kLow &&
-      !pixels.empty() && info.colorType() == kBGRA_8888_SkColorType) {
+      (pixels = canvas->accessTopLayerPixels(&info, &row_bytes, &origin)) &&
+      info.colorType() == kBGRA_8888_SkColorType) {
     const size_t offset = info.computeOffset(origin.x(), origin.y(), row_bytes);
-    ConvertVideoFrameToRGBPixels(video_frame.get(), pixels.subspan(offset),
-                                 row_bytes, kBGRA_8888_SkColorType);
+    void* const pixels_offset = reinterpret_cast<char*>(pixels) + offset;
+    ConvertVideoFrameToRGBPixels(video_frame.get(), pixels_offset, row_bytes,
+                                 kBGRA_8888_SkColorType);
   } else if (video_frame->HasSharedImage()) {
     DCHECK_EQ(video_frame->coded_size(),
               gfx::Size(image.width(), image.height()));
@@ -1109,15 +1088,15 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
                                   video_frame->visible_rect().height());
     const uint16_t* src =
         reinterpret_cast<const uint16_t*>(video_frame->visible_data(plane));
-    base::span<uint8_t> dst = ret->GetWritableVisiblePlaneData(plane);
+    uint8_t* dst = ret->GetWritableVisibleData(plane);
     if (!src) {
       // An AV1 monochrome (grayscale) frame has no U and V planes. Set all U
       // and V samples to the neutral value (128).
       DCHECK_NE(plane, VideoFrame::Plane::kY);
-      std::ranges::fill(dst.first(height * ret->stride(plane)), 128);
+      memset(dst, 128, height * ret->stride(plane));
       continue;
     }
-    libyuv::Convert16To8Plane(src, video_frame->stride(plane) / 2, dst.data(),
+    libyuv::Convert16To8Plane(src, video_frame->stride(plane) / 2, dst,
                               ret->stride(plane), scale, width, height);
   }
   return ret;
@@ -1126,37 +1105,34 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
 // Converts 16-bit data to |out| buffer of specified GL |type|.
 // When the |format| is RGBA, the converted value is fed as luminance.
 void FlipAndConvertY16(const VideoFrame* video_frame,
-                       base::span<uint8_t> out,
+                       uint8_t* out,
                        unsigned format,
                        unsigned type,
                        bool flip_y,
                        size_t output_row_bytes) {
-  base::span<const uint8_t> row_head = video_frame->GetVisiblePlaneData(0);
+  const uint8_t* row_head = video_frame->visible_data(0);
   const size_t stride = video_frame->stride(0);
   const int height = video_frame->visible_rect().height();
-  for (int i = 0; i < height; ++i) {
-    base::span<uint8_t> out_row = out.subspan(
-        flip_y ? output_row_bytes * (height - i - 1) : output_row_bytes * i,
-        output_row_bytes);
-    auto row = CastConstSpan<uint16_t>(row_head.subspan(
-        stride * i, video_frame->visible_rect().width() * sizeof(uint16_t)));
+  for (int i = 0; i < height; ++i, row_head += stride) {
+    uint8_t* out_row_head = flip_y ? out + output_row_bytes * (height - i - 1)
+                                   : out + output_row_bytes * i;
+    const uint16_t* row = reinterpret_cast<const uint16_t*>(row_head);
+    const uint16_t* row_end = row + video_frame->visible_rect().width();
     if (type == GL_FLOAT) {
-      auto out_row_float = CastSpan<float>(out_row);
+      float* out_row = reinterpret_cast<float*>(out_row_head);
       if (format == GL_RGBA) {
-        std::array<float, 4> temp_buffer = {};
-        temp_buffer[3] = 1.0f;
-        for (uint16_t value : row) {
-          const float gray_value = value / 65535.f;
-          temp_buffer[0] = gray_value;
-          temp_buffer[1] = gray_value;
-          temp_buffer[2] = gray_value;
-
-          out_row_float.take_first<4u>().copy_from_nonoverlapping(temp_buffer);
+        while (row < row_end) {
+          float gray_value = *row++ / 65535.f;
+          *out_row++ = gray_value;
+          *out_row++ = gray_value;
+          *out_row++ = gray_value;
+          *out_row++ = 1.0f;
         }
         continue;
       } else if (format == GL_RED) {
-        std::ranges::transform(row, out_row_float.begin(),
-                               [](uint16_t value) { return value / 65535.f; });
+        while (row < row_end) {
+          *out_row++ = *row++ / 65535.f;
+        }
         continue;
       }
       // For other formats, hit NOTREACHED below.
@@ -1166,11 +1142,11 @@ void FlipAndConvertY16(const VideoFrame* video_frame,
       // Y16 as RG_88.  To get the full precision use float textures with WebGL1
       // and e.g. R16UI or R32F textures with WebGL2.
       DCHECK_EQ(static_cast<unsigned>(GL_RGBA), format);
-      auto out_row_uint32 = CastSpan<uint32_t>(out_row);
-      std::ranges::transform(row, out_row_uint32.begin(), [](uint16_t value) {
-        const uint32_t gray_value = value >> 8;
-        return SkColorSetRGB(gray_value, gray_value, gray_value);
-      });
+      uint32_t* rgba = reinterpret_cast<uint32_t*>(out_row_head);
+      while (row < row_end) {
+        uint32_t gray_value = *row++ >> 8;
+        *rgba++ = SkColorSetRGB(gray_value, gray_value, gray_value);
+      }
       continue;
     }
     NOTREACHED() << "Unsupported Y16 conversion for format: 0x" << std::hex
@@ -1220,7 +1196,7 @@ bool TexImageHelper(VideoFrame* frame,
       frame->visible_rect().width() * output_bytes_per_pixel;
   *temp_buffer = base::MakeRefCounted<DataBuffer>(
       output_row_bytes * frame->visible_rect().height());
-  FlipAndConvertY16(frame, (*temp_buffer)->writable_data(), format, type,
+  FlipAndConvertY16(frame, (*temp_buffer)->writable_data().data(), format, type,
                     flip_y, output_row_bytes);
   return true;
 }
@@ -1272,7 +1248,7 @@ void TextureSubImageUsingIntermediate(unsigned target,
 // static
 void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     const VideoFrame* video_frame,
-    base::span<uint8_t> rgb_pixels,
+    void* rgb_pixels,
     size_t row_bytes,
     SkColorType dst_color_type,
     bool premultiply_alpha,
@@ -1281,6 +1257,13 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
   if (!video_frame->IsMappable()) {
     NOTREACHED() << "Cannot extract pixels from non-CPU frame formats.";
   }
+
+  SkPixmap dst_pixmap(
+      SkImageInfo::Make(
+          gfx::SizeToSkISize(video_frame->visible_rect().size()),
+          dst_color_type,
+          premultiply_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType),
+      rgb_pixels, row_bytes);
 
   scoped_refptr<VideoFrame> temporary_frame;
   // TODO(thomasanderson): Parallelize converting these formats.
@@ -1305,8 +1288,9 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     case PIXEL_FORMAT_Y16:
       // Since it is grayscale conversion, we disregard
       // SK_PMCOLOR_BYTE_ORDER and always use GL_RGBA.
-      FlipAndConvertY16(video_frame, rgb_pixels, GL_RGBA, GL_UNSIGNED_BYTE,
-                        false /*flip_y*/, row_bytes);
+      FlipAndConvertY16(
+          video_frame, reinterpret_cast<uint8_t*>(dst_pixmap.writable_addr()),
+          GL_RGBA, GL_UNSIGNED_BYTE, false /*flip_y*/, dst_pixmap.rowBytes());
       return;
     default:
       break;
@@ -1318,13 +1302,6 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
   base::RepeatingClosure barrier = base::BarrierClosure(
       n_tasks,
       base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&event)));
-
-  SkPixmap dst_pixmap(
-      SkImageInfo::Make(
-          gfx::SizeToSkISize(video_frame->visible_rect().size()),
-          dst_color_type,
-          premultiply_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType),
-      rgb_pixels.data(), row_bytes);
 
   const libyuv::FilterMode libyuv_filter = ToLibyuvFilterMode(filter);
   for (size_t i = 1; i < n_tasks; ++i) {
