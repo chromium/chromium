@@ -31,8 +31,6 @@
 namespace domain_reliability {
 namespace {
 
-using base::Value;
-
 typedef std::vector<const DomainReliabilityBeacon*> BeaconVector;
 
 const char kBeaconOutcomeHistogram[] = "Net.DomainReliability.BeaconOutcome";
@@ -88,10 +86,10 @@ std::string StatusFromInt(int i) {
 
 template <typename ValueTypeFindResult,
           typename ValueType,
-          ValueTypeFindResult (Value::Dict::*FindValueType)(std::string_view)
-              const>
+          ValueTypeFindResult (base::DictValue::*FindValueType)(
+              std::string_view) const>
 struct HasValue {
-  bool operator()(const Value::Dict& dict,
+  bool operator()(const base::DictValue& dict,
                   const std::string& key,
                   ValueType expected_value) {
     ValueTypeFindResult actual_value = (dict.*FindValueType)(key);
@@ -101,21 +99,26 @@ struct HasValue {
   }
 };
 
-HasValue<std::optional<bool>, bool, &Value::Dict::FindBoolByDottedPath>
+HasValue<std::optional<bool>, bool, &base::DictValue::FindBoolByDottedPath>
     HasBooleanValue;
-HasValue<std::optional<double>, double, &Value::Dict::FindDoubleByDottedPath>
+HasValue<std::optional<double>,
+         double,
+         &base::DictValue::FindDoubleByDottedPath>
     HasDoubleValue;
-HasValue<std::optional<int>, int, &Value::Dict::FindIntByDottedPath>
+HasValue<std::optional<int>, int, &base::DictValue::FindIntByDottedPath>
     HasIntegerValue;
-HasValue<const std::string*, std::string, &Value::Dict::FindStringByDottedPath>
+HasValue<const std::string*,
+         std::string,
+         &base::DictValue::FindStringByDottedPath>
     HasStringValue;
 
-const Value::Dict* GetEntryFromReport(const Value::Dict& report, size_t index) {
-  const Value::List* entries = report.FindList("entries");
+const base::DictValue* GetEntryFromReport(const base::DictValue& report,
+                                          size_t index) {
+  const base::ListValue* entries = report.FindList("entries");
   if (!entries || index >= entries->size()) {
     return nullptr;
   }
-  const Value& entry = (*entries)[index];
+  const base::Value& entry = (*entries)[index];
   if (!entry.is_dict()) {
     return nullptr;
   }
@@ -365,7 +368,7 @@ TEST_F(DomainReliabilityContextTest, ReportUpload) {
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
   base::DictValue value = base::test::ParseJsonDict(upload_report());
-  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  const base::DictValue* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(HasStringValue(*entry, "failure_data.custom_error",
                              "net::ERR_CONNECTION_RESET"));
@@ -690,7 +693,7 @@ TEST_F(DomainReliabilityContextTest, NetworkChanged) {
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
   base::DictValue value = base::test::ParseJsonDict(upload_report());
-  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  const base::DictValue* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(HasBooleanValue(*entry, "network_changed", true));
 
@@ -720,7 +723,7 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
   base::DictValue value = base::test::ParseJsonDict(upload_report());
-  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  const base::DictValue* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
 
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_broken", true));
@@ -753,7 +756,7 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
   base::DictValue value = base::test::ParseJsonDict(upload_report());
-  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  const base::DictValue* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
 
   EXPECT_TRUE(HasStringValue(*entry, "status", "tcp.connection_reset"));
@@ -787,7 +790,7 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
   base::DictValue value = base::test::ParseJsonDict(upload_report());
-  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  const base::DictValue* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_broken", true));
   EXPECT_TRUE(HasStringValue(*entry, "status", "tcp.connection_reset"));
@@ -832,7 +835,7 @@ TEST_F(DomainReliabilityContextTest, FractionalSampleRate) {
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
 
   base::DictValue value = base::test::ParseJsonDict(upload_report());
-  const Value::Dict* entry = GetEntryFromReport(value, 0);
+  const base::DictValue* entry = GetEntryFromReport(value, 0);
   ASSERT_TRUE(entry);
   EXPECT_TRUE(HasDoubleValue(*entry, "sample_rate", 0.5));
 

@@ -166,7 +166,8 @@ bool ReadValue(const base::Pickle* pickle,
                int recursion,
                base::Value* value);
 
-// Helper for ReadValue that reads a Value::Dict into a pre-allocated object.
+// Helper for ReadValue that reads a base::DictValue into a pre-allocated
+// object.
 bool ReadDictValue(const base::Pickle* pickle,
                    base::PickleIterator* iter,
                    int recursion,
@@ -189,7 +190,8 @@ bool ReadDictValue(const base::Pickle* pickle,
   return true;
 }
 
-// Helper for ReadValue that reads a Value::List into a pre-allocated object.
+// Helper for ReadValue that reads a base::ListValue into a pre-allocated
+// object.
 bool ReadListValue(const base::Pickle* pickle,
                    base::PickleIterator* iter,
                    int recursion,

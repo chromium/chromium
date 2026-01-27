@@ -528,7 +528,7 @@ bool AXTreeFormatterWin::AddIA2Properties(
 
   if (ia2->get_attributes(bstr.Receive()) == S_OK) {
     // get_attributes() returns a semicolon delimited string. Turn it into a
-    // Value::List
+    // base::ListValue
 
     std::vector<std::u16string> ia2_attributes =
         base::SplitString(base::WideToUTF16(bstr.Get()), std::u16string(1, ';'),

@@ -359,8 +359,8 @@ void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
                      GetApplicationContext()->GetLocalState());
 }
 
-// Helper function migrating the `Value::Dict` preference from LocalState prefs
-// to Profile prefs.
+// Helper function migrating the `base::DictValue` preference from LocalState
+// prefs to Profile prefs.
 void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
     PrefService* profile_pref_service) {

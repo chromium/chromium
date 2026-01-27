@@ -54,8 +54,8 @@ const char kPreviousLogFileKey[] = "previous_logfile";
 const char kBackgroundAppsKey[] = "background_apps";
 const char kServerUrl[] = "server_url";
 
-// Convenience wrapper around Value::Dict::FindString(), for easier use in if
-// statements. If `key` is a string in `dict`, writes it to `out` and returns
+// Convenience wrapper around base::DictValue::FindString(), for easier use in
+// if statements. If `key` is a string in `dict`, writes it to `out` and returns
 // true. Leaves `out` alone and returns false otherwise.
 bool FindString(const base::DictValue& dict,
                 std::string_view key,

@@ -13,8 +13,6 @@
 #include "base/json/json_reader.h"
 #include "build/build_config.h"
 
-using base::Value;
-
 namespace signin {
 
 #if BUILDFLAG(IS_WIN)
@@ -42,7 +40,7 @@ bool TestAccountsConfig::Init(const base::FilePath& config_path) {
   int error_code = 0;
   std::string error_str;
   JSONFileValueDeserializer deserializer(config_path);
-  std::unique_ptr<Value> content_json =
+  std::unique_ptr<base::Value> content_json =
       deserializer.Deserialize(&error_code, &error_str);
   CHECK(error_code == 0) << "Error reading json file at " << config_path
                          << ". Error code: " << error_code << " " << error_str;
@@ -51,8 +49,8 @@ bool TestAccountsConfig::Init(const base::FilePath& config_path) {
   // Only store platform specific users. If an account does not have
   // platform specific user, try to use all_platform user.
   for (auto [account_name, content] : content_json->GetDict()) {
-    const Value::Dict& content_dict = content.GetDict();
-    const Value::Dict* platform_account = content_dict.FindDict(kPlatform);
+    const base::DictValue& content_dict = content.GetDict();
+    const base::DictValue* platform_account = content_dict.FindDict(kPlatform);
     if (!platform_account) {
       platform_account = content_dict.FindDict("all_platform");
       if (!platform_account) {

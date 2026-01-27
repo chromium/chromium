@@ -102,7 +102,7 @@ class WebViewFindHelper {
                           int active_match_ordinal,
                           bool final_update);
 
-    // Stores find results and other event info into a Value::Dict.
+    // Stores find results and other event info into a base::DictValue.
     void PrepareResults(base::DictValue& dict);
 
    private:

@@ -102,7 +102,8 @@ bool IsDefaultValue(const FeatureEntry& entry,
   NOTREACHED();
 }
 
-// Returns the Value::List representing the choice data in the specified entry.
+// Returns the base::ListValue representing the choice data in the specified
+// entry.
 base::ListValue CreateOptionsData(
     const FeatureEntry& entry,
     const std::set<std::string>& enabled_entries) {

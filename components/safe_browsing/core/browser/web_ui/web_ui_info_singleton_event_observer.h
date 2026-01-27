@@ -44,7 +44,7 @@ class WebUIInfoSingletonEventObserver {
     virtual void SendEventToHandler(std::string_view event_name,
                                     base::ListValue& list) = 0;
     virtual void SendEventToHandler(std::string_view event_name,
-                                    base::Value ::Dict dict) = 0;
+                                    base::DictValue dict) = 0;
   };
 
   virtual ~WebUIInfoSingletonEventObserver() = default;

@@ -22,7 +22,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::Value;
 using testing::_;
 using testing::NiceMock;
 using testing::WithArg;
@@ -36,30 +35,30 @@ constexpr char kSessionId[] = "sessionId123";
 constexpr int kMediaSessionId = 12345678;
 
 // Verifies that the session ID is |kSessionId|.
-void VerifySessionId(const Value::Dict& v2_message_body) {
-  const Value* sessionId = v2_message_body.Find("sessionId");
+void VerifySessionId(const base::DictValue& v2_message_body) {
+  const base::Value* sessionId = v2_message_body.Find("sessionId");
   ASSERT_TRUE(sessionId);
   ASSERT_TRUE(sessionId->is_string());
   EXPECT_EQ(kSessionId, sessionId->GetString());
 }
 
 // Verifies that the media session ID is |kMediaSessionId|.
-void VerifySessionAndMediaSessionIds(const Value::Dict& v2_message_body) {
+void VerifySessionAndMediaSessionIds(const base::DictValue& v2_message_body) {
   VerifySessionId(v2_message_body);
-  const Value* mediaSessionId = v2_message_body.Find("mediaSessionId");
+  const base::Value* mediaSessionId = v2_message_body.Find("mediaSessionId");
   ASSERT_TRUE(mediaSessionId);
   ASSERT_TRUE(mediaSessionId->is_int());
   EXPECT_EQ(kMediaSessionId, mediaSessionId->GetInt());
 }
 
-Value GetPlayerStateValue(const mojom::MediaStatus& status) {
+base::Value GetPlayerStateValue(const mojom::MediaStatus& status) {
   switch (status.play_state) {
     case mojom::MediaStatus::PlayState::PLAYING:
-      return Value("PLAYING");
+      return base::Value("PLAYING");
     case mojom::MediaStatus::PlayState::PAUSED:
-      return Value("PAUSED");
+      return base::Value("PAUSED");
     case mojom::MediaStatus::PlayState::BUFFERING:
-      return Value("BUFFERING");
+      return base::Value("BUFFERING");
   }
 }
 
@@ -83,10 +82,11 @@ base::ListValue GetSupportedMediaCommandsValue(
   return commands;
 }
 
-Value::List CreateImagesValue(const std::vector<mojom::MediaImagePtr>& images) {
-  Value::List image_list;
+base::ListValue CreateImagesValue(
+    const std::vector<mojom::MediaImagePtr>& images) {
+  base::ListValue image_list;
   for (const mojom::MediaImagePtr& image : images) {
-    Value::Dict image_value;
+    base::DictValue image_value;
     image_value.Set("url", image->url.spec());
     // CastMediaController should be able to handle images that are missing the
     // width or the height.
@@ -99,23 +99,25 @@ Value::List CreateImagesValue(const std::vector<mojom::MediaImagePtr>& images) {
   return image_list;
 }
 
-Value::Dict CreateMediaStatus(const mojom::MediaStatus& status) {
-  Value::Dict status_value;
-  status_value.Set("mediaSessionId", Value(kMediaSessionId));
-  status_value.Set("media", Value::Dict());
-  status_value.SetByDottedPath("media.metadata", Value::Dict());
-  status_value.SetByDottedPath("media.metadata.title", Value(status.title));
+base::DictValue CreateMediaStatus(const mojom::MediaStatus& status) {
+  base::DictValue status_value;
+  status_value.Set("mediaSessionId", base::Value(kMediaSessionId));
+  status_value.Set("media", base::DictValue());
+  status_value.SetByDottedPath("media.metadata", base::DictValue());
+  status_value.SetByDottedPath("media.metadata.title",
+                               base::Value(status.title));
   status_value.SetByDottedPath("media.metadata.images",
                                CreateImagesValue(status.images));
   status_value.SetByDottedPath("media.duration",
-                               Value(status.duration.InSecondsF()));
-  status_value.Set("currentTime", Value(status.current_time.InSecondsF()));
+                               base::Value(status.duration.InSecondsF()));
+  status_value.Set("currentTime",
+                   base::Value(status.current_time.InSecondsF()));
   status_value.Set("playerState", GetPlayerStateValue(status));
   status_value.Set("supportedMediaCommands",
                    GetSupportedMediaCommandsValue(status));
-  status_value.Set("volume", Value::Dict());
-  status_value.SetByDottedPath("volume.level", Value(status.volume));
-  status_value.SetByDottedPath("volume.muted", Value(status.is_muted));
+  status_value.Set("volume", base::DictValue());
+  status_value.SetByDottedPath("volume.level", base::Value(status.volume));
+  status_value.SetByDottedPath("volume.muted", base::Value(status.is_muted));
 
   return status_value;
 }
@@ -197,9 +199,9 @@ class CastMediaControllerTest : public testing::Test {
     SetMediaStatus(CreateMediaStatus(status));
   }
 
-  void SetMediaStatus(Value::Dict status_value) {
-    Value::Dict status_list;
-    status_list.Set("status", Value(Value::List()));
+  void SetMediaStatus(base::DictValue status_value) {
+    base::DictValue status_list;
+    status_list.Set("status", base::Value(base::ListValue()));
     status_list.FindList("status")->Append(std::move(status_value));
 
     controller_->SetMediaStatus(status_list);
@@ -350,7 +352,8 @@ TEST_F(CastMediaControllerTest, UpdateMediaStatusWithDoubleDurations) {
 }
 
 TEST_F(CastMediaControllerTest, IgnoreInvalidUpdate) {
-  Value::Dict invalid_status = CreateMediaStatus(*CreateSampleMediaStatus());
+  base::DictValue invalid_status =
+      CreateMediaStatus(*CreateSampleMediaStatus());
   invalid_status.SetByDottedPath("media.duration", -100);
   invalid_status.SetByDottedPath("currentTime", -100);
 
@@ -395,7 +398,7 @@ TEST_F(CastMediaControllerTest, IgnoreInvalidImage) {
   expected_status->images.emplace_back(
       std::in_place, GURL("https://example.com/1.png"), gfx::Size(123, 456));
   const mojom::MediaImage& valid_image = *expected_status->images.at(0);
-  Value::Dict status_value = CreateMediaStatus(*expected_status);
+  base::DictValue status_value = CreateMediaStatus(*expected_status);
   status_value.FindListByDottedPath("media.metadata.images")
       ->Append("invalid image");
 

@@ -72,9 +72,9 @@ namespace user_data_importer {
 namespace {
 
 // Turns a list representing a path to a bookmark/folder from a JSON-source
-// Value::Dict into a vector of strings. Moves path components out of `value`
-// (i.e., `value` is no longer valid after this operation). Returns nullopt if
-// the list is malformed or nullptr.
+// base::DictValue into a vector of strings. Moves path components out of
+// `value` (i.e., `value` is no longer valid after this operation). Returns
+// nullopt if the list is malformed or nullptr.
 std::optional<std::vector<std::u16string>> PathListFromValue(
     base::ListValue* value) {
   if (!value) {
@@ -96,8 +96,8 @@ std::optional<ImportedBookmarkEntry> NullEntry() {
   return std::nullopt;
 }
 
-// Transforms a JSON-source Value::Dict representing a single bookmark into an
-// ImportedBookmarkEntry. Returns nullopt if the Value::Dict is invalid.
+// Transforms a JSON-source base::DictValue representing a single bookmark into
+// an ImportedBookmarkEntry. Returns nullopt if the base::DictValue is invalid.
 std::optional<ImportedBookmarkEntry> BookmarkEntryFromValue(
     base::DictValue dict) {
   ImportedBookmarkEntry entry;

@@ -28,7 +28,7 @@
 namespace policy {
 
 namespace {
-// Keys for 'Value::Dict' objects
+// Keys for 'base::DictValue' objects
 const char kUrlKey[] = "url";
 const char kHashKey[] = "hash";
 }  // namespace

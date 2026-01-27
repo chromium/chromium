@@ -26,7 +26,7 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder);
 // Adds non-string constants for loadTimeData consumption.
 void AddNonStringLoadTimeData(content::WebUIDataSource* html_source);
 
-// Same as AddNonStringLoadTimeData() but for a Value::Dict.
+// Same as AddNonStringLoadTimeData() but for a base::DictValue.
 void AddNonStringLoadTimeDataToDict(base::DictValue* dict);
 
 }  // namespace ash::cellular_setup

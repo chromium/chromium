@@ -28,7 +28,7 @@ namespace {
 // Key used in dictionaries for the url.
 const char kURL[] = "url";
 
-// Returns a Value::Dict representing the supplied StartupTab.
+// Returns a base::DictValue representing the supplied StartupTab.
 base::DictValue EncodeTab(const GURL& url) {
   base::DictValue dict;
   dict.Set(kURL, url.spec());

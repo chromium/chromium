@@ -465,8 +465,8 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   };
 
   // Sends notification of a changed preference. This needs to be called by
-  // a ScopedDictPrefUpdate or ScopedListPrefUpdate if a Value::Dict or
-  // Value::List is changed.
+  // a ScopedDictPrefUpdate or ScopedListPrefUpdate if a base::DictValue or
+  // base::ListValue is changed.
   void ReportUserPrefChanged(const std::string& key);
   void ReportUserPrefChanged(
       const std::string& key,

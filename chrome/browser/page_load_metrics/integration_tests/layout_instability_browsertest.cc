@@ -15,7 +15,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 using base::Bucket;
-using base::Value;
 using std::optional;
 using ShiftFrame = page_load_metrics::PageLoadMetricsTestWaiter::ShiftFrame;
 using trace_analyzer::Query;
@@ -33,11 +32,11 @@ class LayoutInstabilityTest : public MetricIntegrationTest {
               ShiftFrame frame = ShiftFrame::LayoutShiftOnlyInMainFrame,
               uint64_t num_layout_shifts = 1,
               bool check_UKM_UMA_metrics = false);
-  double CheckTraceData(Value::List& expectations, TraceAnalyzer&);
-  void CheckSources(const Value::List& expected_sources,
-                    const Value::List& trace_sources);
+  double CheckTraceData(base::ListValue& expectations, TraceAnalyzer&);
+  void CheckSources(const base::ListValue& expected_sources,
+                    const base::ListValue& trace_sources);
   void CheckUKMAndUMAMetrics(double expect_score);
-  std::pair<double, double> GetCLSFromList(Value::List& entry_records_list);
+  std::pair<double, double> GetCLSFromList(base::ListValue& entry_records_list);
   void CheckUKMAndUMAMetricsWithValues(double totalCls, double normalizedCls);
 
   // Perform hit test and frame waiter to ensure the frame is ready.
@@ -95,7 +94,7 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
   }
 }
 
-double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
+double LayoutInstabilityTest::CheckTraceData(base::ListValue& expectations,
                                              TraceAnalyzer& analyzer) {
   double final_score = 0.0;
 
@@ -103,8 +102,8 @@ double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
   analyzer.FindEvents(Query::EventNameIs("LayoutShift"), &events);
 
   size_t i = 0;
-  for (const Value& expectation_value : expectations) {
-    const Value::Dict& expectation = expectation_value.GetDict();
+  for (const base::Value& expectation_value : expectations) {
+    const base::DictValue& expectation = expectation_value.GetDict();
 
     optional<double> score = expectation.FindDouble("score");
     if (score && *score == 0.0) {
@@ -113,7 +112,7 @@ double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
     }
 
     EXPECT_LT(i, events.size());
-    Value::Dict data = events[i]->GetKnownArgAsDict("data");
+    base::DictValue data = events[i]->GetKnownArgAsDict("data");
     ++i;
 
     if (score) {
@@ -121,7 +120,7 @@ double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
       final_score += traced_score.has_value() ? traced_score.value() : 0;
       EXPECT_EQ(*score, final_score);
     }
-    const Value::List* sources = expectation.FindList("sources");
+    const base::ListValue* sources = expectation.FindList("sources");
     if (sources) {
       CheckSources(*sources, *data.FindList("impacted_nodes"));
     }
@@ -131,15 +130,16 @@ double LayoutInstabilityTest::CheckTraceData(Value::List& expectations,
   return final_score;
 }
 
-void LayoutInstabilityTest::CheckSources(const Value::List& expected_sources,
-                                         const Value::List& trace_sources) {
+void LayoutInstabilityTest::CheckSources(
+    const base::ListValue& expected_sources,
+    const base::ListValue& trace_sources) {
   EXPECT_EQ(expected_sources.size(), trace_sources.size());
   size_t i = 0;
-  for (const Value& expected_source : expected_sources) {
-    const Value::Dict& expected_source_dict = expected_source.GetDict();
-    const Value::Dict& trace_source_dict = trace_sources[i++].GetDict();
+  for (const base::Value& expected_source : expected_sources) {
+    const base::DictValue& expected_source_dict = expected_source.GetDict();
+    const base::DictValue& trace_source_dict = trace_sources[i++].GetDict();
     int node_id = *trace_source_dict.FindInt("node_id");
-    if (expected_source_dict.Find("node")->type() == Value::Type::NONE) {
+    if (expected_source_dict.Find("node")->type() == base::Value::Type::NONE) {
       EXPECT_EQ(node_id, 0);
     } else {
       EXPECT_NE(node_id, 0);
@@ -167,7 +167,7 @@ void LayoutInstabilityTest::CheckUKMAndUMAMetrics(double expect_score) {
 }
 
 std::pair<double, double> LayoutInstabilityTest::GetCLSFromList(
-    Value::List& entry_records_list) {
+    base::ListValue& entry_records_list) {
   // cls is the normalized cls value.
   double cls = 0;
 

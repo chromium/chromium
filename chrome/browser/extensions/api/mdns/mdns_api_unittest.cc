@@ -130,7 +130,7 @@ class EventServiceListSizeMatcher
     }
     const base::ListValue* services = e.event_args[0].GetIfList();
     if (!services) {
-      *listener << "event's service list argument is not a Value::List";
+      *listener << "event's service list argument is not a base::ListValue";
       return false;
     }
     *listener << "number of services is " << services->size();

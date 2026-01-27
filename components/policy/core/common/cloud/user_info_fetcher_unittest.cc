@@ -38,7 +38,7 @@ class MockUserInfoFetcherDelegate : public UserInfoFetcher::Delegate {
   MOCK_METHOD1(OnGetUserInfoSuccess, void(const base::DictValue& result));
 };
 
-MATCHER_P(MatchDict, expected, "matches Value::Dict") {
+MATCHER_P(MatchDict, expected, "matches base::DictValue") {
   return arg == *expected;
 }
 

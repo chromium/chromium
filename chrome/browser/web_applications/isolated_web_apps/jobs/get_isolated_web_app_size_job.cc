@@ -188,7 +188,7 @@ void GetIsolatedWebAppSizeJob::OnGetIconStorageUsage(uint64_t icon_size) {
 
 void GetIsolatedWebAppSizeJob::StoragePartitionSizeFetched(int64_t size) {
   browsing_data_size_ += size;
-  // Store the size as a double because Value::Dict doesn't support 64-bit
+  // Store the size as a double because base::DictValue doesn't support 64-bit
   // integers. This should only lead to data loss when size is >2^54.
   debug_value_->EnsureDict(kDebugOriginKey)
       ->Set(iwa_origin_.Serialize(), base::ToString(size));

@@ -18,8 +18,6 @@
 namespace quick_answers {
 namespace {
 
-using base::Value;
-
 constexpr char kLengthCategory[] = "Length";
 constexpr char kFakeUnitName[] = "FakeUnit";
 
@@ -42,8 +40,8 @@ class UnitConverterTest : public testing::Test {
     return converter_.get();
   }
 
-  void AddConversion(const std::string& category, Value units) {
-    Value::Dict conversion;
+  void AddConversion(const std::string& category, base::Value units) {
+    base::DictValue conversion;
     conversion.Set(kCategoryPath, category);
     conversion.Set(kUnitsPath, std::move(units));
 
@@ -51,7 +49,7 @@ class UnitConverterTest : public testing::Test {
   }
 
  private:
-  Value::List rule_set_;
+  base::ListValue rule_set_;
   std::unique_ptr<UnitConverter> converter_;
 };
 
@@ -62,7 +60,7 @@ TEST_F(UnitConverterTest, GetConversionWithEmptyRulesetShouldReturnNullptr) {
 }
 
 TEST_F(UnitConverterTest, GetConversionWithUnkownCategoryShouldReturnNullptr) {
-  AddConversion(kMassCategory, Value());
+  AddConversion(kMassCategory, base::Value());
   auto* converter = CreateUnitConverter();
 
   auto* conversion = converter->GetConversionForCategory(kLengthCategory);
@@ -70,7 +68,7 @@ TEST_F(UnitConverterTest, GetConversionWithUnkownCategoryShouldReturnNullptr) {
 }
 
 TEST_F(UnitConverterTest, GetConversionWithKnownCategoryShouldSucceed) {
-  AddConversion(kMassCategory, Value());
+  AddConversion(kMassCategory, base::Value());
   auto* converter = CreateUnitConverter();
 
   auto* conversion = converter->GetConversionForCategory(kMassCategory);
@@ -86,10 +84,10 @@ TEST_F(UnitConverterTest, GetPossibleUnitsWithEmptyRulesetShouldReturnNullptr) {
 }
 
 TEST_F(UnitConverterTest, GetPossibleUnitsWithKnownCategoryShouldSuccess) {
-  Value::List input_units;
+  base::ListValue input_units;
   input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
 
-  AddConversion(kMassCategory, Value(std::move(input_units)));
+  AddConversion(kMassCategory, base::Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   auto* units = converter->GetPossibleUnitsForCategory(kMassCategory);
@@ -112,10 +110,10 @@ TEST_F(UnitConverterTest,
 
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitForSameUnitShouldReturnNullptr) {
-  Value::List input_units;
+  base::ListValue input_units;
   input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
 
-  AddConversion(kMassCategory, Value(std::move(input_units)));
+  AddConversion(kMassCategory, base::Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   // Should ignore the source unit itself in the ruleset.
@@ -128,11 +126,11 @@ TEST_F(UnitConverterTest,
 
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitWithProperUnitsShouldSuccess) {
-  Value::List input_units;
+  base::ListValue input_units;
   input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
   input_units.Append(CreateUnit(kPoundName, kPoundRateA));
 
-  AddConversion(kMassCategory, Value(std::move(input_units)));
+  AddConversion(kMassCategory, base::Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   auto* unit = converter->FindProperDestinationUnit(
@@ -145,26 +143,26 @@ TEST_F(UnitConverterTest,
 
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitForEmptySourceUnitShouldReturnNullptr) {
-  Value::List input_units;
+  base::ListValue input_units;
   input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
   input_units.Append(CreateUnit(kPoundName, kPoundRateA));
 
-  AddConversion(kMassCategory, Value(std::move(input_units)));
+  AddConversion(kMassCategory, base::Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   // Should find nothing for empty source unit.
-  auto* unit = converter->FindProperDestinationUnit(Value::Dict(),
+  auto* unit = converter->FindProperDestinationUnit(base::DictValue(),
                                                     kSamplePreferredRange);
   EXPECT_EQ(unit, nullptr);
 }
 
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitForStrictRangeShouldReturnNullptr) {
-  Value::List input_units;
+  base::ListValue input_units;
   input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
   input_units.Append(CreateUnit(kPoundName, kPoundRateA));
 
-  AddConversion(kMassCategory, Value(std::move(input_units)));
+  AddConversion(kMassCategory, base::Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   // No unit within the preferred conversion rate found.
@@ -177,12 +175,12 @@ TEST_F(UnitConverterTest,
 
 TEST_F(UnitConverterTest,
        FindProperDestinationUnitBetweenMultipleUnitsShouldReturnClosestRate) {
-  Value::List input_units;
+  base::ListValue input_units;
   input_units.Append(CreateUnit(kKilogramName, kKilogramRateA));
   input_units.Append(CreateUnit(kPoundName, kPoundRateA));
   input_units.Append(CreateUnit(kOunceName, kOunceRateA));
 
-  AddConversion(kMassCategory, Value(std::move(input_units)));
+  AddConversion(kMassCategory, base::Value(std::move(input_units)));
   auto* converter = CreateUnitConverter();
 
   // Should return the unit with closest conversion rate, which is Pound.

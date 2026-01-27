@@ -25,8 +25,9 @@ namespace {
 const char kPath[] = "Path";
 const char kLastBundledVersion[] = "LastBundledVersion";
 
-// Returns the hint file contents as a Value::Dict. Returned result may be an
-// empty dictionary if the hint file does not exist or is formatted incorrectly.
+// Returns the hint file contents as a base::DictValue. Returned result may be
+// an empty dictionary if the hint file does not exist or is formatted
+// incorrectly.
 base::DictValue GetHintFileContents() {
   base::FilePath hint_file_path;
   CHECK(base::PathService::Get(chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT,

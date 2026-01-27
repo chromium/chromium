@@ -332,7 +332,7 @@ class _Generator(object):
           .Cblock(self._GenerateFields(properties)))
         if type_.additional_properties is not None:
           # Most additionalProperties actually have type "any", which is better
-          # modelled as a Value::Dict rather than a map of string -> Value.
+          # modelled as a base::DictValue rather than a map of string -> Value.
           if type_.additional_properties.property_type == PropertyType.ANY:
             c.Append('base::DictValue additional_properties;')
           else:

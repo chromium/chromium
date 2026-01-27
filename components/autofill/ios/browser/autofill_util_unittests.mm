@@ -35,12 +35,12 @@ TEST_F(AutofillUtilTest, ExtractFormData_FullUrl) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kAutofillExtractFullUrlOnIOs);
 
-  base::Value::Dict form_dict;
+  base::DictValue form_dict;
   form_dict.Set("name", "form_name");
   form_dict.Set("origin", "https://example.com");
   form_dict.Set("host_frame", "11111111111111111111111111111111");
-  base::Value::List fields;
-  base::Value::Dict field;
+  base::ListValue fields;
+  base::DictValue field;
   field.Set("name", "field_name");
   field.Set("form_control_type", "text");
   fields.Append(std::move(field));
@@ -65,12 +65,12 @@ TEST_F(AutofillUtilTest, ExtractFormData_NoFullUrlWhenDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kAutofillExtractFullUrlOnIOs);
 
-  base::Value::Dict form_dict;
+  base::DictValue form_dict;
   form_dict.Set("name", "form_name");
   form_dict.Set("origin", "https://example.com");
   form_dict.Set("host_frame", "11111111111111111111111111111111");
-  base::Value::List fields;
-  base::Value::Dict field;
+  base::ListValue fields;
+  base::DictValue field;
   field.Set("name", "field_name");
   field.Set("form_control_type", "text");
   fields.Append(std::move(field));

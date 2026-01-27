@@ -262,7 +262,7 @@ TEST_F(SeaPenMetadataUtilsTest,
   base::DictValue template_query_dict = GetTestTemplateQueryDict();
   auto* options = template_query_dict.FindDict("options");
   ASSERT_TRUE(options);
-  // Update `options` Value::Dict with an invalid chip id.
+  // Update `options` base::DictValue with an invalid chip id.
   options->Set("10000", base::NumberToString(static_cast<int32_t>(
                             ash::personalization_app::mojom::
                                 SeaPenTemplateOption::kFlowerColorYellow)));
@@ -278,7 +278,7 @@ TEST_F(SeaPenMetadataUtilsTest,
   base::DictValue template_query_dict = GetTestTemplateQueryDict();
   auto* options = template_query_dict.FindDict("options");
   ASSERT_TRUE(options);
-  // Update `options` Value::Dict with an invalid option id.
+  // Update `options` base::DictValue with an invalid option id.
   options->Set(base::NumberToString(static_cast<int32_t>(
                    ash::personalization_app::mojom::SeaPenTemplateChip::
                        kCharactersColor)),

@@ -27,7 +27,6 @@
 namespace quick_answers {
 namespace {
 
-using base::Value;
 using Type = base::Value::Type;
 
 inline constexpr char kTemperatureCategory[] = "Temperature";
@@ -61,10 +60,10 @@ inline constexpr char kSourceRawTextLiterPer100Kilometers[] =
 inline constexpr char kDestRawTextKilometerPerLiter[] =
     "100 kilometers per liter";
 
-Value BuildMassRuleSet() {
-  Value::List rule_set;
-  Value::Dict conversion;
-  Value::List units;
+base::Value BuildMassRuleSet() {
+  base::ListValue rule_set;
+  base::DictValue conversion;
+  base::ListValue units;
 
   conversion.Set(kCategoryPath, kMassCategory);
   units.Append(CreateUnit(kKilogramName, kKilogramRateA));
@@ -74,13 +73,13 @@ Value BuildMassRuleSet() {
   conversion.Set(kUnitsPath, std::move(units));
   rule_set.Append(std::move(conversion));
 
-  return Value(std::move(rule_set));
+  return base::Value(std::move(rule_set));
 }
 
-Value BuildTemperatureRuleSet() {
-  Value::List rule_set;
-  Value::Dict conversion;
-  Value::List units;
+base::Value BuildTemperatureRuleSet() {
+  base::ListValue rule_set;
+  base::DictValue conversion;
+  base::ListValue units;
 
   conversion.Set(kCategoryPath, kTemperatureCategory);
   units.Append(CreateUnit(kCelciusName, kCelciusRateA, kCelciusRateB));
@@ -89,13 +88,13 @@ Value BuildTemperatureRuleSet() {
   conversion.Set(kUnitsPath, std::move(units));
   rule_set.Append(std::move(conversion));
 
-  return Value(std::move(rule_set));
+  return base::Value(std::move(rule_set));
 }
 
-Value BuildFuelEconomyRuleSet() {
-  Value::List rule_set;
-  Value::Dict conversion;
-  Value::List units;
+base::Value BuildFuelEconomyRuleSet() {
+  base::ListValue rule_set;
+  base::DictValue conversion;
+  base::ListValue units;
 
   conversion.Set(kCategoryPath, kFuelEconomyCategory);
   units.Append(
@@ -106,7 +105,7 @@ Value BuildFuelEconomyRuleSet() {
   conversion.Set(kUnitsPath, std::move(units));
   rule_set.Append(std::move(conversion));
 
-  return Value(std::move(rule_set));
+  return base::Value(std::move(rule_set));
 }
 
 }  // namespace
@@ -140,15 +139,15 @@ class UnitConversionResultParserTest : public testing::Test {
     result_.SetByDottedPath(kDestAmountPath, value);
   }
 
-  void AddSourceUnit(Value::Dict src_unit) {
+  void AddSourceUnit(base::DictValue src_unit) {
     result_.SetByDottedPath(kSourceUnitPath, std::move(src_unit));
   }
 
-  void AddDestUnit(Value::Dict dest_unit) {
+  void AddDestUnit(base::DictValue dest_unit) {
     result_.SetByDottedPath(kDestUnitPath, std::move(dest_unit));
   }
 
-  void AddRuleSet(Value rule_set) {
+  void AddRuleSet(base::Value rule_set) {
     result_.SetByDottedPath(kRuleSetPath, std::move(rule_set));
   }
 
@@ -165,7 +164,7 @@ class UnitConversionResultParserTest : public testing::Test {
   }
 
  protected:
-  Value::Dict result_;
+  base::DictValue result_;
 
   UnitConversionResultParser parser_;
 };

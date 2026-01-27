@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   static bool IntervalsOverlap(const WeeklyTimeIntervalChecked& a,
                                const WeeklyTimeIntervalChecked& b);
 
-  // Constructs from a Value::Dict:
+  // Constructs from a base::DictValue:
   // {
   //   "start": WeeklyTimeChecked,
   //   "end": WeeklyTimeChecked

@@ -965,10 +965,10 @@ Status ExecuteGetElementRect(Session* session,
   // do type conversions
   base::DictValue* size_dict = size->GetIfDict();
   if (!size_dict)
-    return Status(kUnknownError, "could not convert to Value::Dict");
+    return Status(kUnknownError, "could not convert to base::DictValue");
   base::DictValue* location_dict = location->GetIfDict();
   if (!location_dict)
-    return Status(kUnknownError, "could not convert to Value::Dict");
+    return Status(kUnknownError, "could not convert to base::DictValue");
 
   // grab values
   std::optional<double> maybe_x = location_dict->FindDouble("x");

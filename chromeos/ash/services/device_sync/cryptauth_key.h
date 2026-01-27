@@ -69,7 +69,7 @@ class CryptAuthKey {
 
   void set_status(Status status) { status_ = status; }
 
-  // Converts CryptAuthKey to a Value::Dict of the form
+  // Converts CryptAuthKey to a base::DictValue of the form
   //   {
   //     "handle": <handle_>
   //     "status": <status_ as int>
@@ -78,7 +78,7 @@ class CryptAuthKey {
   //   }
   base::DictValue AsSymmetricKeyDictionary() const;
 
-  // Converts CryptAuthKey to a Value::Dict of the form
+  // Converts CryptAuthKey to a base::DictValue of the form
   //   {
   //     "handle": <handle_>
   //     "private_key" : <private_key_>

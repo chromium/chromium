@@ -16,8 +16,6 @@
 
 namespace policy {
 
-using base::Value;
-
 namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -106,8 +104,8 @@ DefaultPolicyConversions::DefaultPolicyConversions(
     : PolicyConversions::Delegate(client) {}
 DefaultPolicyConversions::~DefaultPolicyConversions() = default;
 
-Value::Dict DefaultPolicyConversions::ToValueDict() {
-  Value::Dict all_policies;
+base::DictValue DefaultPolicyConversions::ToValueDict() {
+  base::DictValue all_policies;
 
   if (client()->HasUserPolicies()) {
     all_policies.Set("chromePolicies", client()->GetChromePolicies());
@@ -120,7 +118,7 @@ Value::Dict DefaultPolicyConversions::ToValueDict() {
 #if BUILDFLAG(IS_CHROMEOS)
   all_policies.Set(kDeviceLocalAccountPoliciesId,
                    GetDeviceLocalAccountPolicies());
-  Value::Dict identity_fields = client()->GetIdentityFields();
+  base::DictValue identity_fields = client()->GetIdentityFields();
   if (!identity_fields.empty())
     all_policies.Merge(std::move(identity_fields));
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -128,12 +126,12 @@ Value::Dict DefaultPolicyConversions::ToValueDict() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-Value::Dict DefaultPolicyConversions::GetDeviceLocalAccountPolicies() {
-  Value::List policies = client()->GetDeviceLocalAccountPolicies();
-  Value::Dict device_values;
+base::DictValue DefaultPolicyConversions::GetDeviceLocalAccountPolicies() {
+  base::ListValue policies = client()->GetDeviceLocalAccountPolicies();
+  base::DictValue device_values;
   for (auto&& policy : policies) {
     const std::string* id = policy.GetDict().FindString(kIdKey);
-    Value* policies_value = policy.GetDict().Find(kPoliciesKey);
+    base::Value* policies_value = policy.GetDict().Find(kPoliciesKey);
     DCHECK(id);
     DCHECK(policies_value);
     device_values.Set(*id, std::move(*policies_value));
@@ -156,13 +154,13 @@ base::DictValue DefaultPolicyConversions::GetExtensionPolicies() {
   return extension_policies;
 }
 
-Value::Dict DefaultPolicyConversions::GetExtensionPolicies(
+base::DictValue DefaultPolicyConversions::GetExtensionPolicies(
     PolicyDomain policy_domain) {
-  Value::List policies = client()->GetExtensionPolicies(policy_domain);
-  Value::Dict extension_values;
+  base::ListValue policies = client()->GetExtensionPolicies(policy_domain);
+  base::DictValue extension_values;
   for (auto&& policy : policies) {
     const std::string* id = policy.GetDict().FindString(kIdKey);
-    Value* policies_value = policy.GetDict().Find(kPoliciesKey);
+    base::Value* policies_value = policy.GetDict().Find(kPoliciesKey);
     DCHECK(id);
     DCHECK(policies_value);
     extension_values.Set(*id, std::move(*policies_value));
@@ -180,13 +178,12 @@ ChromePolicyConversions::ChromePolicyConversions(
     : PolicyConversions::Delegate(client) {}
 ChromePolicyConversions::~ChromePolicyConversions() = default;
 
-
-Value::Dict ChromePolicyConversions::ToValueDict() {
+base::DictValue ChromePolicyConversions::ToValueDict() {
   CHECK(!client()->GetDeviceLocalAccountPoliciesEnabled())
       << "Chrome policies doesn't include device local account policies.";
   CHECK(!client()->GetDeviceInfoEnabled())
       << "Chrome policies doesn't include device info.";
-  Value::Dict all_policies;
+  base::DictValue all_policies;
 
   if (client()->HasUserPolicies()) {
     all_policies.Set(kChromePoliciesId, GetChromePolicies());
@@ -201,17 +198,17 @@ Value::Dict ChromePolicyConversions::ToValueDict() {
   return all_policies;
 }
 
-Value::Dict ChromePolicyConversions::GetChromePolicies() {
-  Value::Dict chrome_policies_data;
+base::DictValue ChromePolicyConversions::GetChromePolicies() {
+  base::DictValue chrome_policies_data;
   chrome_policies_data.Set(kNameKey, kChromePoliciesName);
-  Value::Dict chrome_policies = client()->GetChromePolicies();
+  base::DictValue chrome_policies = client()->GetChromePolicies();
   chrome_policies_data.Set(kPoliciesKey, std::move(chrome_policies));
   return chrome_policies_data;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-Value::Dict ChromePolicyConversions::GetPrecedencePolicies() {
-  Value::Dict precedence_policies_data;
+base::DictValue ChromePolicyConversions::GetPrecedencePolicies() {
+  base::DictValue precedence_policies_data;
   precedence_policies_data.Set(kNameKey, kPrecedencePoliciesName);
   precedence_policies_data.Set(kPoliciesKey, client()->GetPrecedencePolicies());
   precedence_policies_data.Set(kPrecedenceOrderKey,

@@ -561,7 +561,7 @@ bool ValidateExtensionLocales(const base::FilePath& extension_path,
 bool ShouldSkipValidation(const base::FilePath& locales_path,
                           const base::FilePath& locale_path,
                           const std::set<std::string>& all_locales) {
-  // Since we use this string as a key in a Value::Dict, be paranoid about
+  // Since we use this string as a key in a base::DictValue, be paranoid about
   // skipping any strings with '.'. This happens sometimes, for example with
   // '.svn' directories.
   base::FilePath relative_path;

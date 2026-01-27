@@ -2506,11 +2506,11 @@ void StorageHandler::OnDebugReportSent(const AttributionDebugReport& report,
     net_error_name = net::ErrorToShortString(status);
   }
 
-  auto body = std::make_unique<Array<Value::Dict>>();
+  auto body = std::make_unique<Array<base::DictValue>>();
   for (const auto& item : report.ReportBody()) {
     const auto* as_dict = item.GetIfDict();
     CHECK(as_dict);
-    body->push_back(std::make_unique<Value::Dict>(as_dict->Clone()));
+    body->push_back(std::make_unique<base::DictValue>(as_dict->Clone()));
   }
 
   frontend_->AttributionReportingVerboseDebugReportSent(

@@ -68,7 +68,7 @@ void AddSavedFileEntry(ExtensionPrefs* prefs,
   DCHECK(
       !file_entries->GetDictionaryWithoutPathExpansion(file_entry.id, nullptr));
 
-  base::Value::Dict file_entry_dict;
+  base::DictValue file_entry_dict;
   file_entry_dict.Set(kFileEntryPath, base::FilePathToValue(file_entry.path));
   file_entry_dict.Set(kFileEntryIsDirectory, file_entry.is_directory);
   file_entry_dict.Set(kFileEntrySequenceNumber, file_entry.sequence_number);

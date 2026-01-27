@@ -115,7 +115,7 @@ class ProtocolHandlersHandler
   custom_handlers::ProtocolHandler ParseAppHandlerFromArgs(
       const base::ListValue& args) const;
 
-  // Returns a Value::Dict describing the set of app protocol handlers for
+  // Returns a base::DictValue describing the set of app protocol handlers for
   // the given |protocol| in the given |handlers| list.
   base::DictValue GetAppHandlersForProtocol(
       const std::string& protocol,

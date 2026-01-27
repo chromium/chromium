@@ -16,8 +16,6 @@
 namespace quick_answers {
 namespace {
 
-using base::Value;
-
 constexpr char kHttpsPrefix[] = "https:";
 
 // DictionaryResult
@@ -84,13 +82,13 @@ std::string GetSampleSentence(const base::DictValue& sense_result) {
       ResultParser::GetFirstDictElementFromList(sense_result,
                                                 kExampleGroupsKey);
   if (example_groups) {
-    const Value::List* examples = example_groups->FindList(kExamplesKey);
+    const base::ListValue* examples = example_groups->FindList(kExamplesKey);
     if (examples && !examples->empty()) {
       sample_sentence = examples->front().GetString();
     }
   }
   if (sample_sentence.empty()) {
-    const Value::List* additional_examples =
+    const base::ListValue* additional_examples =
         sense_result.FindList(kAdditionalExamplesKey);
     if (additional_examples && !additional_examples->empty()) {
       sample_sentence = additional_examples->front().GetString();
@@ -117,7 +115,7 @@ std::vector<std::string> GetSynonymsList(const base::DictValue& sense_result) {
     return synonyms_list;
   }
 
-  const Value::List* nyms_entries = synonym_entries->FindList(kNymsKey);
+  const base::ListValue* nyms_entries = synonym_entries->FindList(kNymsKey);
   if (!nyms_entries) {
     return synonyms_list;
   }
@@ -176,7 +174,8 @@ std::unique_ptr<Sense> ParseSense(const base::DictValue& sense_result) {
 std::vector<Sense> ParseSubSenses(const base::DictValue& sense_result) {
   std::vector<Sense> subsenses_list;
 
-  const Value::List* subsense_entries = sense_result.FindList(kSubSensesKey);
+  const base::ListValue* subsense_entries =
+      sense_result.FindList(kSubSensesKey);
   if (!subsense_entries) {
     return subsenses_list;
   }
@@ -207,27 +206,31 @@ std::vector<Sense> ParseSubSenses(const base::DictValue& sense_result) {
 
 std::unique_ptr<StructuredResult>
 DefinitionResultParser::ParseInStructuredResult(const base::DictValue& result) {
-  const Value::Dict* dictionary_result = result.FindDict(kDictionaryResultKey);
+  const base::DictValue* dictionary_result =
+      result.FindDict(kDictionaryResultKey);
   if (!dictionary_result) {
     DLOG(ERROR) << "Unable to find the dictionary result entry.";
     return nullptr;
   }
 
-  const Value::Dict* first_entry = ResultParser::GetFirstDictElementFromList(
-      *dictionary_result, kEntriesKey);
+  const base::DictValue* first_entry =
+      ResultParser::GetFirstDictElementFromList(*dictionary_result,
+                                                kEntriesKey);
   if (!first_entry) {
     DLOG(ERROR) << "Unable to find a first entry.";
     return nullptr;
   }
 
-  const Value::Dict* first_sense_family = ExtractFirstSenseFamily(*first_entry);
+  const base::DictValue* first_sense_family =
+      ExtractFirstSenseFamily(*first_entry);
   if (!first_sense_family) {
     DLOG(ERROR) << "Unable to find a first sense familiy.";
     return nullptr;
   }
 
-  const Value::Dict* first_sense = ResultParser::GetFirstDictElementFromList(
-      *first_sense_family, kSensesKey);
+  const base::DictValue* first_sense =
+      ResultParser::GetFirstDictElementFromList(*first_sense_family,
+                                                kSensesKey);
   if (!first_sense) {
     DLOG(ERROR) << "Unable to find a first sense.";
     return nullptr;
@@ -248,8 +251,9 @@ DefinitionResultParser::ParseInStructuredResult(const base::DictValue& result) {
     definition_result->subsenses_list = std::move(subsenses_list);
   }
 
-  const Value::Dict* part_of_speech = ResultParser::GetFirstDictElementFromList(
-      *first_sense_family, kPartsOfSpeechKey);
+  const base::DictValue* part_of_speech =
+      ResultParser::GetFirstDictElementFromList(*first_sense_family,
+                                                kPartsOfSpeechKey);
   if (!part_of_speech) {
     // For Spanish dictionary results, the |partsOfSpeech| field is found in
     // the individual sense information rather than in the sense family.
@@ -346,9 +350,9 @@ bool DefinitionResultParser::Parse(const base::DictValue& result,
   return PopulateQuickAnswer(*structured_result, quick_answer);
 }
 
-const Value::Dict* DefinitionResultParser::ExtractFirstSenseFamily(
+const base::DictValue* DefinitionResultParser::ExtractFirstSenseFamily(
     const base::DictValue& definition_entry) {
-  const Value::Dict* first_sense_family =
+  const base::DictValue* first_sense_family =
       ResultParser::GetFirstDictElementFromList(definition_entry,
                                                 kSenseFamiliesKey);
   if (!first_sense_family) {
@@ -359,9 +363,9 @@ const Value::Dict* DefinitionResultParser::ExtractFirstSenseFamily(
   return first_sense_family;
 }
 
-const Value::Dict* DefinitionResultParser::ExtractFirstPhonetics(
+const base::DictValue* DefinitionResultParser::ExtractFirstPhonetics(
     const base::DictValue& definition_entry) {
-  const Value::Dict* first_phonetics =
+  const base::DictValue* first_phonetics =
       ResultParser::GetFirstDictElementFromList(definition_entry,
                                                 kPhoneticsKey);
   if (first_phonetics)
@@ -369,7 +373,8 @@ const Value::Dict* DefinitionResultParser::ExtractFirstPhonetics(
 
   // It is is possible to have phonetics per sense family in case of heteronyms
   // such as "arithmetic".
-  const Value::Dict* sense_family = ExtractFirstSenseFamily(definition_entry);
+  const base::DictValue* sense_family =
+      ExtractFirstSenseFamily(definition_entry);
   if (sense_family)
     return ResultParser::GetFirstDictElementFromList(*sense_family,
                                                      kPhoneticsKey);
@@ -380,7 +385,7 @@ const Value::Dict* DefinitionResultParser::ExtractFirstPhonetics(
 
 std::unique_ptr<PhoneticsInfo> DefinitionResultParser::ParsePhoneticsInfo(
     const base::DictValue& entry_result) {
-  const Value::Dict* first_phonetics = ExtractFirstPhonetics(entry_result);
+  const base::DictValue* first_phonetics = ExtractFirstPhonetics(entry_result);
   if (!first_phonetics) {
     DLOG(ERROR) << "Unable to find a first phonetics.";
     return nullptr;

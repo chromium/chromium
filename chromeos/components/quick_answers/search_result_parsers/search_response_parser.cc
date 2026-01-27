@@ -15,8 +15,6 @@
 namespace quick_answers {
 namespace {
 
-using base::Value;
-
 // String to prepend to JSON responses to prevent XSSI. See http://go/xssi.
 constexpr char kJsonSafetyPrefix[] = ")]}'\n";
 
@@ -56,7 +54,7 @@ void SearchResponseParser::OnJsonParsed(
   }
 
   // Get the first result.
-  const Value::List* entries =
+  const base::ListValue* entries =
       result->GetDict().FindListByDottedPath("results");
   if (!entries) {
     std::move(complete_callback_).Run(nullptr);
@@ -76,7 +74,7 @@ void SearchResponseParser::OnJsonParsed(
 }
 
 std::unique_ptr<QuickAnswersSession> SearchResponseParser::ProcessResult(
-    const Value* result) {
+    const base::Value* result) {
   const base::DictValue& dict = result->GetDict();
   auto one_namespace_type = dict.FindInt("oneNamespaceType");
   if (!one_namespace_type.has_value()) {

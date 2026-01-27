@@ -46,7 +46,6 @@ namespace {
 
 using ::base::Time;
 using ::base::TimeDelta;
-using ::base::Value;
 
 std::unique_ptr<KeyedService> CreateTestSyncService(
     content::BrowserContext* context) {
@@ -522,7 +521,7 @@ class NewTabPageUtilStalenessUpdateBrowserTest
     GetProfile()->GetPrefs()->SetTime(ntp_prefs::kNtpLastModuleStalenessUpdate,
                                       Time::Now());
     GetProfile()->GetPrefs()->SetDict(ntp_prefs::kNtpModuleStalenessCountDict,
-                                      Value::Dict());
+                                      base::DictValue());
   }
 
   void InitMockShortcutsPrefs() {
@@ -590,7 +589,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
     EXPECT_EQ(updated_time, expected_time);
   }
 
-  const Value::Dict& updated_dict = GetProfile()->GetPrefs()->GetDict(
+  const base::DictValue& updated_dict = GetProfile()->GetPrefs()->GetDict(
       ntp_prefs::kNtpModuleStalenessCountDict);
   EXPECT_EQ(updated_dict.size(), expected_dict_size);
   for (const auto& module_id : GetModules()) {
@@ -630,7 +629,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
       ntp_prefs::kNtpLastModuleStalenessUpdate);
   EXPECT_EQ(updated_time, expected_time);
 
-  const Value::Dict& updated_dict = GetProfile()->GetPrefs()->GetDict(
+  const base::DictValue& updated_dict = GetProfile()->GetPrefs()->GetDict(
       ntp_prefs::kNtpModuleStalenessCountDict);
   EXPECT_EQ(updated_dict.size(), expected_dict_size);
   for (const auto& module_id : GetModules()) {
@@ -673,7 +672,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
       ntp_prefs::kNtpLastModuleStalenessUpdate);
   EXPECT_EQ(updated_time, expected_time);
 
-  const Value::Dict& updated_dict = GetProfile()->GetPrefs()->GetDict(
+  const base::DictValue& updated_dict = GetProfile()->GetPrefs()->GetDict(
       ntp_prefs::kNtpModuleStalenessCountDict);
   EXPECT_EQ(updated_dict.size(), expected_dict_size);
   for (const auto& module_id : GetModules()) {
@@ -716,7 +715,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
       ntp_prefs::kNtpLastModuleStalenessUpdate);
   EXPECT_EQ(updated_time, expected_time);
 
-  const Value::Dict& updated_dict = GetProfile()->GetPrefs()->GetDict(
+  const base::DictValue& updated_dict = GetProfile()->GetPrefs()->GetDict(
       ntp_prefs::kNtpModuleStalenessCountDict);
   EXPECT_EQ(updated_dict.size(), expected_dict_size);
 

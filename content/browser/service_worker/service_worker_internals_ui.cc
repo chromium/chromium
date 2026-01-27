@@ -44,7 +44,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 
-using base::Value;
 using base::WeakPtr;
 
 namespace content {
@@ -483,7 +482,8 @@ void ServiceWorkerInternalsHandler::OnOperationComplete(
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(status));
 }
 
-void ServiceWorkerInternalsHandler::HandleGetOptions(const Value::List& args) {
+void ServiceWorkerInternalsHandler::HandleGetOptions(
+    const base::ListValue& args) {
   CHECK(args.size() != 0);
   CHECK(args[0].is_string());
   std::string callback_id = args[0].GetString();
@@ -495,7 +495,7 @@ void ServiceWorkerInternalsHandler::HandleGetOptions(const Value::List& args) {
 }
 
 void ServiceWorkerInternalsHandler::HandleSetOption(
-    const Value::List& args_list) {
+    const base::ListValue& args_list) {
   if (args_list.size() < 2) {
     return;
   }
@@ -515,7 +515,7 @@ void ServiceWorkerInternalsHandler::HandleSetOption(
 }
 
 void ServiceWorkerInternalsHandler::HandleGetAllRegistrations(
-    const Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Allow Javascript here too, because these messages are sent back to back.
   AllowJavascript();
@@ -587,7 +587,8 @@ bool ServiceWorkerInternalsHandler::GetServiceWorkerContext(
   return true;
 }
 
-void ServiceWorkerInternalsHandler::HandleStopWorker(const Value::List& args) {
+void ServiceWorkerInternalsHandler::HandleStopWorker(
+    const base::ListValue& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (args.size() < 2 || !args[0].is_string())
     return;
@@ -614,7 +615,7 @@ void ServiceWorkerInternalsHandler::HandleStopWorker(const Value::List& args) {
 }
 
 void ServiceWorkerInternalsHandler::HandleInspectWorker(
-    const Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (args.size() < 2 || !args[0].is_string())
     return;
@@ -645,7 +646,8 @@ void ServiceWorkerInternalsHandler::HandleInspectWorker(
   std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk);
 }
 
-void ServiceWorkerInternalsHandler::HandleUnregister(const Value::List& args) {
+void ServiceWorkerInternalsHandler::HandleUnregister(
+    const base::ListValue& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (args.size() < 2 || !args[0].is_string())
     return;
@@ -677,7 +679,8 @@ void ServiceWorkerInternalsHandler::HandleUnregister(const Value::List& args) {
                       std::move(callback));
 }
 
-void ServiceWorkerInternalsHandler::HandleStartWorker(const Value::List& args) {
+void ServiceWorkerInternalsHandler::HandleStartWorker(
+    const base::ListValue& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (args.size() < 2 || !args[0].is_string())
     return;

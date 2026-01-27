@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeInterval {
       const enterprise_management::WeeklyTimeIntervalProto& container,
       std::optional<int> timezone_offset);
 
-  // Return time interval made from Value::Dict in format:
+  // Return time interval made from base::DictValue in format:
   // { "start" : WeeklyTime,
   //   "end" : WeeklyTime }
   // WeeklyTime dictionary format:

@@ -117,7 +117,7 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
   // Check the contents of `detected_pii_items` list.
   for (const auto& detected_pii_item : detected_pii_items) {
     const base::DictValue* pii_item = detected_pii_item.GetIfDict();
-    // PIIItem must be a Value::Dict.
+    // PIIItem must be a base::DictValue.
     EXPECT_TRUE(pii_item);
     const redaction::PIIType pii_type = static_cast<redaction::PIIType>(
         pii_item->FindInt(support_tool_ui::kPiiItemPIITypeKey).value());

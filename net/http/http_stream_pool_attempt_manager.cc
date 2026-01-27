@@ -85,7 +85,8 @@ base::DictValue GetServiceEndpointRequestAsValue(
 }
 
 // Converts a NextProtoSet containing allowed ALPNs to a value usable in NetLog
-// events - currently a std::string, though could make it a Value::List instead.
+// events - currently a std::string, though could make it a base::ListValue
+// instead.
 std::string AllowedAlpnsToValue(const NextProtoSet& allowed_alpns) {
   std::string list;
   for (const auto proto : allowed_alpns) {

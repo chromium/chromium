@@ -29,7 +29,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) DeviceId {
 
   DeviceId(uint16_t vid, uint16_t pid);
 
-  // Constructs from a Value::Dict:
+  // Constructs from a base::DictValue:
   // {
   //   "vendor_id": 39612,
   //   "product_id": 57072
@@ -47,7 +47,8 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) DeviceId {
   // Constructs from given Disk* (disk->vendor_id() and disk->product_id()).
   static std::optional<DeviceId> FromDisk(const ash::disks::Disk* disk);
 
-  // Creates a Value::Dict from the current DeviceId. Opposite of `FromDict`.
+  // Creates a base::DictValue from the current DeviceId. Opposite of
+  // `FromDict`.
   base::DictValue ToDict() const;
 
   friend bool operator==(const DeviceId&, const DeviceId&) = default;

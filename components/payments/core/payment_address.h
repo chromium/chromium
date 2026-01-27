@@ -14,7 +14,7 @@
 
 namespace payments {
 
-// Returns a Value::Dict with the properties of this PaymentAddress.
+// Returns a base::DictValue with the properties of this PaymentAddress.
 base::DictValue PaymentAddressToValueDict(const mojom::PaymentAddress& address);
 
 }  // namespace payments

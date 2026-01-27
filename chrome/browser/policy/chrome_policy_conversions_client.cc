@@ -49,16 +49,14 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
-using base::Value;
-
 namespace policy {
 
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
-Value::Dict GetIdentityFieldsFromPolicy(
+base::DictValue GetIdentityFieldsFromPolicy(
     const enterprise_management::PolicyData* policy) {
-  Value::Dict identity_fields;
+  base::DictValue identity_fields;
   if (!policy) {
     return identity_fields;
   }
@@ -115,9 +113,9 @@ bool ChromePolicyConversionsClient::HasUserPolicies() const {
   return profile_ != nullptr;
 }
 
-Value::List ChromePolicyConversionsClient::GetExtensionPolicies(
+base::ListValue ChromePolicyConversionsClient::GetExtensionPolicies(
     PolicyDomain policy_domain) {
-  Value::List policies;
+  base::ListValue policies;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -159,13 +157,13 @@ Value::List ChromePolicyConversionsClient::GetExtensionPolicies(
     PolicyNamespace policy_namespace =
         PolicyNamespace(policy_domain, extension->id());
     PolicyErrorMap empty_error_map;
-    Value::Dict extension_policies =
+    base::DictValue extension_policies =
         GetPolicyValues(extension_profile->GetProfilePolicyConnector()
                             ->policy_service()
                             ->GetPolicies(policy_namespace),
                         &empty_error_map, PoliciesSet(), PoliciesSet(),
                         GetKnownPolicies(schema_map, policy_namespace));
-    Value::Dict extension_policies_data;
+    base::DictValue extension_policies_data;
     extension_policies_data.Set(policy::kNameKey, extension->name());
     extension_policies_data.Set(policy::kIdKey, extension->id());
     extension_policies_data.Set("forSigninScreen", for_signin_screen);
@@ -179,8 +177,8 @@ Value::List ChromePolicyConversionsClient::GetExtensionPolicies(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-Value::List ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
-  Value::List policies;
+base::ListValue ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
+  base::ListValue policies;
   // DeviceLocalAccount policies are only available for affiliated users and for
   // system logs.
   if (!GetDeviceLocalAccountPoliciesEnabled() &&
@@ -243,10 +241,10 @@ Value::List ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
     // Convert dictionary values to strings for display.
     handler_list->PrepareForDisplaying(&map);
 
-    Value::Dict current_account_policies =
+    base::DictValue current_account_policies =
         GetPolicyValues(map, &errors, deprecated_policies, future_policies,
                         GetKnownPolicies(schema_map, policy_namespace));
-    Value::Dict current_account_policies_data;
+    base::DictValue current_account_policies_data;
     current_account_policies_data.Set(policy::kIdKey, user_id);
     current_account_policies_data.Set("user_id", user_id);
     current_account_policies_data.Set(policy::kNameKey, user_id);
@@ -261,23 +259,23 @@ Value::List ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
   return policies;
 }
 
-Value::Dict ChromePolicyConversionsClient::GetIdentityFields() {
-  Value::Dict identity_fields;
+base::DictValue ChromePolicyConversionsClient::GetIdentityFields() {
+  base::DictValue identity_fields;
   if (!GetDeviceInfoEnabled())
-    return Value::Dict();
+    return base::DictValue();
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector) {
     LOG_POLICY(ERROR, POLICY_PROCESSING)
         << "Cannot dump identity fields, no policy connector";
-    return Value::Dict();
+    return base::DictValue();
   }
   if (connector->IsDeviceEnterpriseManaged()) {
     identity_fields.Set("enrollment_domain",
                         connector->GetEnterpriseEnrollmentDomain());
 
     if (connector->IsCloudManaged()) {
-      Value::Dict cloud_info = GetIdentityFieldsFromPolicy(
+      base::DictValue cloud_info = GetIdentityFieldsFromPolicy(
           connector->GetDeviceCloudPolicyManager()->device_store()->policy());
       identity_fields.Merge(std::move(cloud_info));
     }

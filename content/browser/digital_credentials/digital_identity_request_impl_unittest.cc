@@ -33,7 +33,6 @@ constexpr char kOpenid4vpProtocol[] = "openid4vp";
 constexpr char kOpenid4vpSignedProtocol[] = "openid4vp-v1-signed";
 constexpr char kOpenid4vpUnsignedProtocol[] = "openid4vp-v1-unsigned";
 
-using base::Value;
 using base::ValueView;
 using testing::_;
 using testing::DoAll;
@@ -285,7 +284,8 @@ bool IsNonEmptyList(const base::Value* value) {
   return !HasNoListElements(value);
 }
 
-// Removes `find_key` if present from `dict`. Ignores nested base::Value::Dicts.
+// Removes `find_key` if present from `dict`. Ignores nested
+// base::base::DictValues.
 void RemoveDictKey(base::DictValue& dict, const std::string& find_key) {
   for (auto it = dict.begin(); it != dict.end(); ++it) {
     if (it->first == find_key) {
@@ -922,23 +922,24 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetWithProperFormatting) {
   // Intercept the `Get()` call and verify that the request is formatted
   // properly.
   EXPECT_CALL(*mock_digital_identity_provider(), Get)
-      .WillOnce(DoAll(WithArg<2>([](ValueView request) {
-                        Value::Dict dict = request.ToValue().GetDict().Clone();
-                        EXPECT_TRUE(dict.contains("requests"));
-                        for (const Value& req : *dict.FindList("requests")) {
-                          EXPECT_TRUE(req.GetDict().contains("protocol"));
-                          EXPECT_TRUE(req.GetDict().contains("data"));
-                          EXPECT_TRUE(req.GetDict().Find("data")->is_dict());
-                        }
-                      }),
-                      base::test::RunOnceClosure(run_loop.QuitClosure())));
+      .WillOnce(
+          DoAll(WithArg<2>([](ValueView request) {
+                  base::DictValue dict = request.ToValue().GetDict().Clone();
+                  EXPECT_TRUE(dict.contains("requests"));
+                  for (const base::Value& req : *dict.FindList("requests")) {
+                    EXPECT_TRUE(req.GetDict().contains("protocol"));
+                    EXPECT_TRUE(req.GetDict().contains("data"));
+                    EXPECT_TRUE(req.GetDict().Find("data")->is_dict());
+                  }
+                }),
+                base::test::RunOnceClosure(run_loop.QuitClosure())));
   digital_identity_request_impl()->Get(std::move(requests), base::DoNothing());
   run_loop.Run();
 }
 
 TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInRequest) {
   const std::string kProtocol = "protocol";
-  const Value kResponseData(Value::Dict().Set("token", "token data"));
+  const base::Value kResponseData(base::DictValue().Set("token", "token data"));
 
   DigitalCredentialGetRequestPtr digital_credential_request =
       DigitalCredentialGetRequest::New();
@@ -980,7 +981,7 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInRequest) {
 TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
   const std::string kProtocolInRequest = "protocol_in_request";
   const std::string kProtocolInResponse = "protocol_in_response";
-  const Value kResponseData(Value::Dict().Set("token", "token data"));
+  const base::Value kResponseData(base::DictValue().Set("token", "token data"));
 
   DigitalCredentialGetRequestPtr digital_credential_request =
       DigitalCredentialGetRequest::New();
@@ -1020,7 +1021,7 @@ TEST_F(DigitalIdentityRequestImplTest, ShouldGetAndReturnProtocolInResponse) {
 
 TEST_F(DigitalIdentityRequestImplTest,
        ShouldGetWhenMultipleRequestsAndReturnProtocolInResponse) {
-  const Value kResponseData(Value::Dict().Set("token", "token data"));
+  const base::Value kResponseData(base::DictValue().Set("token", "token data"));
   const std::string kProtocolInResponse = "protocol1";
   std::vector<DigitalCredentialGetRequestPtr> requests;
 
@@ -1067,7 +1068,7 @@ TEST_F(DigitalIdentityRequestImplTest,
 
 TEST_F(DigitalIdentityRequestImplTest,
        ShouldErrorWhenMultipleRequestsAndNoProtocolInResponse) {
-  const Value kResponseData(Value::Dict().Set("token", "token data"));
+  const base::Value kResponseData(base::DictValue().Set("token", "token data"));
 
   std::vector<DigitalCredentialGetRequestPtr> requests;
 

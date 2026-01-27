@@ -125,10 +125,10 @@ class POLICY_EXPORT Schema {
   static base::expected<Schema, std::string> Parse(const std::string& content);
 
   // Verifies if |schema| is a valid JSON v3 schema. When this validation passes
-  // then |schema| is valid JSON that can be parsed into a Value::Dict which can
-  // be used to build a |Schema|. Returns the parsed Value::Dict when |schema|
-  // validated, otherwise returns an error description. For performance reasons,
-  // currently IsValidSchema() won't check the correctness of regular
+  // then |schema| is valid JSON that can be parsed into a base::DictValue which
+  // can be used to build a |Schema|. Returns the parsed base::DictValue when
+  // |schema| validated, otherwise returns an error description. For performance
+  // reasons, currently IsValidSchema() won't check the correctness of regular
   // expressions used in "pattern" and "patternProperties" and in Validate()
   // invalid regular expression don't accept any strings. |options| is a
   // bitwise-OR combination of the options above (see |kSchemaOptions*| above).

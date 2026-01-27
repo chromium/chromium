@@ -33,7 +33,6 @@ namespace {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 using base::JSONWriter;
-using base::Value;
 
 // Request Response Pair for the API server
 using RequestResponsePair =
@@ -194,7 +193,7 @@ bool WriteJSON(const base::FilePath& file_path,
       return false;
     }
 
-    Value::Dict request_response_node;
+    base::DictValue request_response_node;
     request_response_node.Set("SerializedRequest",
                               std::move(serialized_request));
     request_response_node.Set(
@@ -216,7 +215,7 @@ bool WriteJSON(const base::FilePath& file_path,
   root_dict.Set("Requests", std::move(domains_dict));
 
   // Write content to JSON file.
-  return WriteJSONNode(file_path, Value(std::move(root_dict)));
+  return WriteJSONNode(file_path, base::Value(std::move(root_dict)));
 }
 
 // TODO(crbug.com/40768066): The test flakily times out.
@@ -292,7 +291,7 @@ TEST_P(
   // Make JSON content.
 
   // Make json list node that contains the problematic query request.
-  Value::Dict request_response_node;
+  base::DictValue request_response_node;
   // Put some textual content for HTTP request. Content does not matter because
   // the Query content will be parsed from the URL that corresponds to the
   // dictionary key.
@@ -318,7 +317,7 @@ TEST_P(
   base::DictValue root_dict;
   root_dict.Set("Requests", std::move(domains_dict));
   // Write content to JSON file.
-  ASSERT_TRUE(WriteJSONNode(file_path, Value(std::move(root_dict))));
+  ASSERT_TRUE(WriteJSONNode(file_path, base::Value(std::move(root_dict))));
 
   // Make death assertion.
 

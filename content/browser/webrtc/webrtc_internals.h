@@ -206,7 +206,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // saving.
   void UpdateWakeLock();
 
-  // Convenient method to access `peer_connection_data_` as a Value::List.
+  // Convenient method to access `peer_connection_data_` as a base::ListValue.
   base::ListValue& peer_connection_data() {
     return peer_connection_data_.GetList();
   }

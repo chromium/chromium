@@ -177,7 +177,7 @@ class NET_EXPORT ProxyConfig {
 
       bool operator==(const DnsProbeCondition& other) const;
 
-      // Creates a Value::Dict dump of this condition.
+      // Creates a base::DictValue dump of this condition.
       base::DictValue ToDict() const;
 
       // Insecure schemes will be stripped to prevent resolution failure if an
@@ -198,7 +198,7 @@ class NET_EXPORT ProxyConfig {
     // Returns true if `this` has the same serialized list of rules as `other`.
     bool operator==(const ProxyOverrideRule& other) const;
 
-    // Creates a Value::Dict dump of this override rule.
+    // Creates a base::DictValue dump of this override rule.
     base::DictValue ToDict() const;
 
     // Returns true if `url` matches `destination_matchers` without matching
