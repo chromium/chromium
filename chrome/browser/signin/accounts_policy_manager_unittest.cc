@@ -103,19 +103,16 @@ class AccountsPolicyManagerTest : public testing::Test {
       identity_test_env_adaptor_;
 };
 
-TEST_F(AccountsPolicyManagerTest, ClearPrimarySyncAccountWhenSigninNotAllowed) {
+TEST_F(AccountsPolicyManagerTest, ClearPrimaryAccountWhenSigninNotAllowed) {
   GetIdentityTestEnv()->MakePrimaryAccountAvailable(
       "test@foo.com", signin::ConsentLevel::kSignin);
   GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
 
   EXPECT_FALSE(GetIdentityTestEnv()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSync));
-  EXPECT_FALSE(GetIdentityTestEnv()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 }
 
-TEST_F(AccountsPolicyManagerTest,
-       ClearPrimarySyncAccountWhenPatternNotAllowed) {
+TEST_F(AccountsPolicyManagerTest, ClearPrimaryAccountWhenPatternNotAllowed) {
   GetIdentityTestEnv()->MakePrimaryAccountAvailable(
       "test@foo.com", signin::ConsentLevel::kSignin);
   GetLocalState()->SetString(prefs::kGoogleServicesUsernamePattern,
