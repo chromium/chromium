@@ -82,17 +82,6 @@ CoreAccountId SystemIdentityToAccountID(
 }  // namespace
 
 AuthenticationService::AuthenticationService(
-    PrefService* pref_service,
-    ChromeAccountManagerService* account_manager_service,
-    signin::IdentityManager* identity_manager,
-    syncer::SyncService* sync_service)
-    : AuthenticationService(nullptr,
-                            pref_service,
-                            account_manager_service,
-                            identity_manager,
-                            sync_service) {}
-
-AuthenticationService::AuthenticationService(
     ProfileIOS* profile,
     PrefService* pref_service,
     ChromeAccountManagerService* account_manager_service,
@@ -104,6 +93,7 @@ AuthenticationService::AuthenticationService(
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       weak_pointer_factory_(this) {
+  DCHECK(profile_);
   DCHECK(pref_service_);
   DCHECK(identity_manager_);
   DCHECK(sync_service_);

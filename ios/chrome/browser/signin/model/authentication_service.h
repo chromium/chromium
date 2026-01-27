@@ -54,11 +54,6 @@ class AuthenticationService : public KeyedService,
   };
 
   // All passed-in services must not be null, and must outlive this service.
-  // Profile can be null until its callers in ios_internal are fixed.
-  AuthenticationService(PrefService* pref_service,
-                        ChromeAccountManagerService* account_manager_service,
-                        signin::IdentityManager* identity_manager,
-                        syncer::SyncService* sync_service);
   AuthenticationService(ProfileIOS* profile,
                         PrefService* pref_service,
                         ChromeAccountManagerService* account_manager_service,
@@ -282,8 +277,7 @@ class AuthenticationService : public KeyedService,
   // is null.
   std::unique_ptr<AuthenticationServiceDelegate> delegate_;
 
-  // The profile associated to this service. May be null during migration of the
-  // constructor in ios-internal.
+  // The profile associated to this service.
   raw_ptr<ProfileIOS> profile_;
   // Pointer to the KeyedServices used by AuthenticationService.
   raw_ptr<PrefService> pref_service_ = nullptr;
