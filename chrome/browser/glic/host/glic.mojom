@@ -368,6 +368,7 @@ enum Platform {
   kWindows = 2,
   kLinux = 3,
   kChromeOS = 4,
+  kAndroid = 5,
 };
 
 // The result of `WebClientCreated()`. Contains information that needs to be

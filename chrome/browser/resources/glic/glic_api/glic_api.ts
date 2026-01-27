@@ -2440,6 +2440,7 @@ export enum Platform {
   WINDOWS = 2,
   LINUX = 3,
   CHROME_OS = 4,
+  ANDROID = 5,
 }
 
 ///////////////////////////////////////////////

@@ -155,6 +155,8 @@ constexpr mojom::Platform kPlatform = mojom::Platform::kWindows;
 constexpr mojom::Platform kPlatform = mojom::Platform::kLinux;
 #elif BUILDFLAG(IS_CHROMEOS)
 constexpr mojom::Platform kPlatform = mojom::Platform::kChromeOS;
+#elif BUILDFLAG(IS_ANDROID)
+constexpr mojom::Platform kPlatform = mojom::Platform::kAndroid;
 #else
 constexpr mojom::Platform kPlatform = mojom::Platform::kUnknown;
 #endif
