@@ -1781,7 +1781,14 @@ NavigationRequest::NavigationRequest(
     // - Occur on the outermost main frame
     // - Have not navigated before, or is navigating away from the initial
     // WebUI in the cases mentioned above.
-    CHECK(!IsRendererInitiated());
+    // TODO(crbug.com/474228715): `browser_initiated` will be used to set the
+    // `is_browser_initiated` field in `commit_params_`, but it might be
+    // overridden by the NTP checks (`OverrideNavigationParams()`). NTP override
+    // should not affect initial WebUI page so it should be acceptable to ignore
+    // that, but we may consider moving the override logic to a earlier place so
+    // that we have as many final values as possible before we perform all the
+    // CHECKs.
+    CHECK(browser_initiated);
     CHECK(!frame_tree_node_->GetParentOrOuterDocumentOrEmbedder());
     bool is_navigating_from_initial_empty_document =
         frame_tree_node_->is_on_initial_empty_document() &&
