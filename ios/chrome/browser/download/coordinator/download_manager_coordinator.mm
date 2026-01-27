@@ -410,7 +410,10 @@
   base::RecordAction(base::UserMetricsAction("IOSDownloadOpenInDriveApp"));
   std::optional<GURL> openFileInDriveURL =
       uploadTask->GetResponseLink(/* add_user_identifier= */ true);
-  CHECK(openFileInDriveURL);
+  if (!openFileInDriveURL) {
+    // TODO(crbug.com/324897399): investigate and remove early return.
+    return;
+  }
   [UIApplication.sharedApplication
                 openURL:net::NSURLWithGURL(*openFileInDriveURL)
                 options:@{UIApplicationOpenURLOptionUniversalLinksOnly : @YES}

@@ -6199,6 +6199,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SaveToDrive.UploadTask.GetResponseLinkFailure"
+    enum="IOSSaveToDriveGetResponseLinkFailure" expires_after="2027-01-15">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logged when a request for the response link identifies that the link is not
+    available. This histogram records the failure reason.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SaveToDrive.UploadTask.MimeType.{FinalState}"
     enum="DownloadMimeTypeResult" expires_after="2026-06-21">
   <owner>qpubert@google.com</owner>
