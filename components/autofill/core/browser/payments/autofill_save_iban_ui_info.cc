@@ -63,11 +63,7 @@ AutofillSaveIbanUiInfo AutofillSaveIbanUiInfo::CreateForUploadSave(
     const std::u16string& iban_value,
     const LegalMessageLines& legal_message_lines) {
   return CreateAutofillSaveIbanUiInfo(
-      /*is_server_save=*/true,
-      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-          ? IDR_AUTOFILL_GOOGLE_WALLET
-          : IDR_AUTOFILL_GOOGLE_PAY,
-      iban_value,
+      /*is_server_save=*/true, IDR_AUTOFILL_GOOGLE_PAY, iban_value,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER),
       l10n_util::GetStringUTF16(
           base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
