@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -28,6 +29,7 @@ import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -38,6 +40,7 @@ import java.util.concurrent.TimeoutException;
     // Prevent crawling the web for real payment apps.
     "disable-features=" + PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS
 })
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestServiceWorkerPaymentAppTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
