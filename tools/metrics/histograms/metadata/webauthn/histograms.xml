@@ -187,6 +187,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.CredentialExchange.PasskeyConflictsCount"
+    units="passkeys" expires_after="2026-07-01">
+  <owner>rgod@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records number of passkeys found on the import list that were conflicting
+    with the passkeys already existing in Google Password Manager, i.e. had the
+    same user ID and RP ID.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebAuthentication.CredentialExchange.PasskeyConflictsResolvedCount"
+    units="passkeys" expires_after="2026-07-01">
+  <owner>rgod@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records number of passkeys found on the import list, that were conflicting
+    with the passkeys already existing in Google Password Manager and were
+    chosen by the user to be imported in a conflict resolution screen.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CredentialExchange.PasskeyDuplicatesCount"
+    units="passkeys" expires_after="2026-07-01">
+  <owner>rgod@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records number of passkeys found on the import list that already existed in
+    Google Password Manager, i.e. had the same credential ID.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CredentialExchange.PasskeyImportStatus"
+    enum="ImportedPasskeyStatus" expires_after="2026-06-21">
+  <owner>rgod@google.com</owner>
+  <owner>chrome-webauthns@google.com</owner>
+  <summary>
+    Tracks the individual status of a single passkey entry during import.
+    Recorded when it has been checked for errors or missing fields.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.CredentialExchange.PasskeysImportedCount"
+    units="passkeys" expires_after="2026-07-01">
+  <owner>rgod@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the number of passkeys successfully imported by the user.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CredentialFetchDuration.GmsCore.{Source}"
     units="ms" expires_after="2026-06-07">
   <owner>derinel@google.com</owner>
