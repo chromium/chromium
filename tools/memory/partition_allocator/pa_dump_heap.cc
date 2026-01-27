@@ -127,7 +127,7 @@ class HeapDumper {
     // There is no list of super page, only a list of extents. Walk the extent
     // list to get all superpages.
     uintptr_t extent_address =
-        reinterpret_cast<uintptr_t>(root_.get()->first_extent);
+        reinterpret_cast<uintptr_t>(root_.get()->first_extent_);
     while (extent_address) {
       auto extent =
           RawBuffer<PartitionSuperPageExtentEntry>::ReadFromProcessMemory(
@@ -291,7 +291,7 @@ class HeapDumper {
 #if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
   base::ListValue DumpAllocatedSizes() {
     // Note: Here and below, it is safe to follow pointers into the super page,
-    // or to the root or buckets, since they share the same address in the this
+    // or to the root or buckets_, since they share the same address in the this
     // process as in the Chromium process.
 
     // Since there is no tracking of full slot spans, the way to enumerate all
@@ -376,10 +376,10 @@ class HeapDumper {
   }
 #endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
-  base::ListValue DumpBuckets() {
-    base::ListValue ret;
-    for (const auto& bucket : root_.get()->buckets) {
-      base::DictValue bucket_value;
+  base::Value::List DumpBuckets() {
+    base::Value::List ret;
+    for (const auto& bucket : root_.get()->buckets_) {
+      base::Value::Dict bucket_value;
       bucket_value.Set("slot_size", static_cast<int>(bucket.slot_size));
       ret.Append(std::move(bucket_value));
     }

@@ -438,8 +438,9 @@ class PartitionAllocTest
       if (root) {
         // Cleanup the thread cache, especially `g_thread_cache_roots`, to
         // prevent one PartitionRoot per index failure in `ThreadCache::Init()`.
-        ThreadCache::SwapForTesting(nullptr, root->settings.thread_cache_index);
-        root->settings.with_thread_cache = false;
+        ThreadCache::SwapForTesting(nullptr,
+                                    root->settings_.thread_cache_index);
+        root->settings_.with_thread_cache = false;
       }
     }
   };
@@ -489,10 +490,10 @@ class PartitionAllocTest
 
     PartitionOptions pkey_opts = GetCommonPartitionOptions();
     pkey_opts.thread_isolation = ThreadIsolationOption(pkey_);
-    // We always want to have a pkey allocator initialized to make sure that the
-    // other pools still work. As part of the initializition, we tag some memory
-    // with the new pkey, effectively making it read-only. So there's some
-    // potential for breakage that this should catch.
+    // We always want to have a pkey allocator initialized_ to make sure that
+    // the other pools still work. As part of the initializition, we tag some
+    // memory with the new pkey, effectively making it read-only. So there's
+    // some potential for breakage that this should catch.
     InitializeTestRoot(pkey_allocator.root(), pkey_opts,
                        PartitionTestOptions{.use_memory_reclaimer = true});
 
@@ -564,7 +565,7 @@ class PartitionAllocTest
 
   size_t SizeToBucketSize(size_t size) const {
     const auto index = SizeToIndex(size);
-    return allocator.root()->buckets[index].slot_size;
+    return allocator.root()->buckets_[index].slot_size;
   }
 
   static size_t ExtraAllocSize(const PartitionAllocator& allocator) {
@@ -581,7 +582,7 @@ class PartitionAllocTest
   size_t GetNumPagesPerSlotSpan(size_t size) {
     size_t real_size = size + ExtraAllocSize(allocator);
     size_t bucket_index = SizeToIndex(real_size);
-    PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
+    PartitionRoot::Bucket* bucket = &allocator.root()->buckets_[bucket_index];
     // TODO(tasak): make get_pages_per_slot_span() available at
     // partition_alloc_unittest.cc. Is it allowable to make the code from
     // partition_bucet.cc to partition_bucket.h?
@@ -593,7 +594,7 @@ class PartitionAllocTest
   const SlotSpan* GetFullSlotSpan(size_t size) {
     size_t real_size = size + ExtraAllocSize(allocator);
     size_t bucket_index = SizeToIndex(real_size);
-    PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
+    PartitionRoot::Bucket* bucket = &allocator.root()->buckets_[bucket_index];
     size_t num_slots =
         (bucket->num_system_pages_per_slot_span * SystemPageSize()) /
         bucket->slot_size;
@@ -833,7 +834,7 @@ class MockPartitionStatsDumper : public PartitionStatsDumper {
 // size. But we should also check who allocates the memory.
 bool IsNormalBucketsAllocatedByRoot(uintptr_t address, PartitionRoot* root) {
   partition_alloc::internal::PartitionSuperPageExtentEntry* extent =
-      root->first_extent;
+      root->first_extent_;
   while (extent != nullptr) {
     uintptr_t super_page =
         partition_alloc::internal::SuperPagesBeginFromExtent(extent);
@@ -852,7 +853,7 @@ bool IsDirectMapAllocatedByRoot(uintptr_t address, PartitionRoot* root) {
       partition_alloc::internal::PartitionRootLock(root)};
 
   partition_alloc::internal::PartitionDirectMapExtent* extent =
-      root->direct_map_list;
+      root->direct_map_list_;
   while (extent != nullptr) {
     uintptr_t super_page = PartitionMetadataPageToSuperPage(
         reinterpret_cast<uintptr_t>(extent) & SystemPageBaseMask(),
@@ -924,7 +925,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Check that the most basic of allocate / free pairs work.
 TEST_P(PartitionAllocWithSizedFreeTest, Basic) {
   PartitionRoot::Bucket* bucket =
-      &allocator.root()->buckets[test_bucket_index_];
+      &allocator.root()->buckets_[test_bucket_index_];
   auto* sent_slot_span = SlotSpan::get_sentinel_slot_span();
 
   EXPECT_FALSE(bucket->empty_slot_spans_head);
@@ -980,7 +981,7 @@ TEST_P(PartitionAllocTest, MultiAlloc) {
 // Test a bucket with multiple slot spans.
 TEST_P(PartitionAllocTest, MultiSlotSpans) {
   PartitionRoot::Bucket* bucket =
-      &allocator.root()->buckets[test_bucket_index_];
+      &allocator.root()->buckets_[test_bucket_index_];
 
   auto* slot_span = GetFullSlotSpan(kTestAllocSize);
   FreeFullSlotSpan(allocator.root(), slot_span);
@@ -1022,7 +1023,7 @@ TEST_P(PartitionAllocTest, MultiSlotSpans) {
 // Test some finer aspects of internal slot span transitions.
 TEST_P(PartitionAllocTest, SlotSpanTransitions) {
   PartitionRoot::Bucket* bucket =
-      &allocator.root()->buckets[test_bucket_index_];
+      &allocator.root()->buckets_[test_bucket_index_];
 
   auto* slot_span1 = GetFullSlotSpan(kTestAllocSize);
   EXPECT_EQ(slot_span1, bucket->active_slot_spans_head);
@@ -1092,7 +1093,7 @@ TEST_P(PartitionAllocTest, ExtraAllocSize) {
   size_t slot_size = 64;
   size_t bucket_index =
       PartitionRoot::SizeToBucketIndex(slot_size, GetBucketDistribution());
-  PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
+  PartitionRoot::Bucket* bucket = &allocator.root()->buckets_[bucket_index];
   ASSERT_EQ(bucket->slot_size, slot_size);
 
   // The first allocation is expected to span exactly the capacity of the slot.
@@ -1118,7 +1119,7 @@ TEST_P(PartitionAllocTest, PreferSlotSpansWithProvisionedEntries) {
   size_t real_size = size + ExtraAllocSize(allocator);
   size_t bucket_index =
       PartitionRoot::SizeToBucketIndex(real_size, GetBucketDistribution());
-  PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
+  PartitionRoot::Bucket* bucket = &allocator.root()->buckets_[bucket_index];
   ASSERT_EQ(bucket->slot_size, real_size);
   size_t slots_per_span = bucket->num_system_pages_per_slot_span;
 
@@ -1193,7 +1194,7 @@ TEST_P(PartitionAllocTest, PreferSlotSpansWithProvisionedEntries) {
 // free slot span list metadata bucket.
 TEST_P(PartitionAllocTest, FreeSlotSpanListSlotSpanTransitions) {
   PartitionRoot::Bucket* bucket =
-      &allocator.root()->buckets[test_bucket_index_];
+      &allocator.root()->buckets_[test_bucket_index_];
 
   size_t num_to_fill_free_list_slot_span =
       PartitionPageSize() / (sizeof(SlotSpan) + ExtraAllocSize(allocator));
@@ -1311,7 +1312,7 @@ TEST_P(PartitionAllocTest, Alloc) {
       ptr, base_size + BucketIndexLookup::kMinBucketSize, type_name);
   PA_EXPECT_PTR_EQ(ptr, new_ptr);
 
-  // Change the size of the realloc, switching buckets.
+  // Change the size of the realloc, switching buckets_.
   new_ptr = allocator.root()->Realloc(
       ptr, base_size + BucketIndexLookup::kMinBucketSize + 1, type_name);
   PA_EXPECT_PTR_NE(new_ptr, ptr);
@@ -1832,8 +1833,8 @@ TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
   // (2) The bucket is large enough that our requested size (see below) will be
   // non-zero.
   size_t real_size = 0;
-  for (const auto& bucket : root->buckets) {
-    if ((root->buckets + SizeToIndex(bucket.slot_size))->slot_size !=
+  for (const auto& bucket : root->buckets_) {
+    if ((root->buckets_ + SizeToIndex(bucket.slot_size))->slot_size !=
         bucket.slot_size) {
       continue;
     }
@@ -1854,7 +1855,7 @@ TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
   // Double check we don't end up with 0 or negative size.
   EXPECT_GT(requested_size, 0u);
   EXPECT_LE(requested_size, real_size);
-  const auto* bucket = allocator.root()->buckets + SizeToIndex(real_size);
+  const auto* bucket = allocator.root()->buckets_ + SizeToIndex(real_size);
   EXPECT_EQ(bucket->slot_size, real_size);
   // Make sure the test is testing multiple partition pages case.
   EXPECT_GT(bucket->num_system_pages_per_slot_span,
@@ -2099,7 +2100,7 @@ TEST_P(PartitionAllocTest, ReallocDirectMapAlignedRelocate) {
 TEST_P(PartitionAllocTest, PartialPageFreelists) {
   size_t big_size = SystemPageSize() - ExtraAllocSize(allocator);
   size_t bucket_index = SizeToIndex(big_size + ExtraAllocSize(allocator));
-  PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
+  PartitionRoot::Bucket* bucket = &allocator.root()->buckets_[bucket_index];
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
 
   void* ptr = allocator.root()->Alloc(big_size, type_name);
@@ -2163,7 +2164,7 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
   size_t non_dividing_size =
       SystemPageSize() / 2 + 1 - ExtraAllocSize(allocator);
   bucket_index = SizeToIndex(non_dividing_size + ExtraAllocSize(allocator));
-  bucket = &allocator.root()->buckets[bucket_index];
+  bucket = &allocator.root()->buckets_[bucket_index];
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
 
   ptr = allocator.root()->Alloc(non_dividing_size, type_name);
@@ -2205,7 +2206,7 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
   // single allocation.
   size_t medium_size = (SystemPageSize() / 2) - ExtraAllocSize(allocator);
   bucket_index = SizeToIndex(medium_size + ExtraAllocSize(allocator));
-  bucket = &allocator.root()->buckets[bucket_index];
+  bucket = &allocator.root()->buckets_[bucket_index];
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
 
   ptr = allocator.root()->Alloc(medium_size, type_name);
@@ -2226,7 +2227,7 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
 
   size_t small_size = (SystemPageSize() / 4) - ExtraAllocSize(allocator);
   bucket_index = SizeToIndex(small_size + ExtraAllocSize(allocator));
-  bucket = &allocator.root()->buckets[bucket_index];
+  bucket = &allocator.root()->buckets_[bucket_index];
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
 
   ptr = allocator.root()->Alloc(small_size, type_name);
@@ -2254,7 +2255,7 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
       allocator.root()->AdjustSize0IfNeeded(very_small_size);
   bucket_index =
       SizeToIndex(very_small_adjusted_size + ExtraAllocSize(allocator));
-  bucket = &allocator.root()->buckets[bucket_index];
+  bucket = &allocator.root()->buckets_[bucket_index];
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
 
   ptr = allocator.root()->Alloc(very_small_size, type_name);
@@ -2320,7 +2321,7 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
 // Test some of the fragmentation-resistant properties of the allocator.
 TEST_P(PartitionAllocTest, SlotSpanRefilling) {
   PartitionRoot::Bucket* bucket =
-      &allocator.root()->buckets[test_bucket_index_];
+      &allocator.root()->buckets_[test_bucket_index_];
 
   // Grab two full slot spans and a non-full slot span.
   auto* slot_span1 = GetFullSlotSpan(kTestAllocSize);
@@ -2357,7 +2358,7 @@ TEST_P(PartitionAllocTest, SlotSpanRefilling) {
   allocator.root()->Free(ptr);
 }
 
-// Basic tests to ensure that allocations work for partial page buckets.
+// Basic tests to ensure that allocations work for partial page buckets_.
 TEST_P(PartitionAllocTest, PartialPages) {
   // Find a size that is backed by a partial partition page.
   size_t size = sizeof(void*);
@@ -2367,7 +2368,7 @@ TEST_P(PartitionAllocTest, PartialPages) {
   constexpr size_t kMaxSize = 4000u;
   while (size < kMaxSize) {
     bucket_index = SizeToIndex(size + ExtraAllocSize(allocator));
-    bucket = &allocator.root()->buckets[bucket_index];
+    bucket = &allocator.root()->buckets_[bucket_index];
     if (bucket->num_system_pages_per_slot_span %
         NumSystemPagesPerPartitionPage()) {
       break;
@@ -2498,7 +2499,7 @@ TEST_P(PartitionAllocTest, FreeCache) {
 
   size_t big_size = 1000 - ExtraAllocSize(allocator);
   size_t bucket_index = SizeToIndex(big_size + ExtraAllocSize(allocator));
-  PartitionBucket* bucket = &allocator.root()->buckets[bucket_index];
+  PartitionBucket* bucket = &allocator.root()->buckets_[bucket_index];
 
   void* ptr = allocator.root()->Alloc(big_size, type_name);
   EXPECT_TRUE(ptr);
@@ -2832,7 +2833,7 @@ TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree) {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       allocator.root()->brp_enabled() ||
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      allocator.root()->settings.use_cookie) {
+      allocator.root()->settings_.use_cookie) {
     EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(ptr), "");
   }
 }
@@ -2849,7 +2850,7 @@ TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree2ndSlot) {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       allocator.root()->brp_enabled() ||
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-      allocator.root()->settings.use_cookie) {
+      allocator.root()->settings_.use_cookie) {
     EXPECT_DEATH(allocator.root()->CheckMetadataIntegrity(ptr), "");
   }
   allocator.root()->Free(ptr0);
@@ -3879,7 +3880,7 @@ TEST_P(PartitionAllocTest, ActiveListMaintenance) {
   size_t real_size = size + ExtraAllocSize(allocator);
   size_t bucket_index =
       PartitionRoot::SizeToBucketIndex(real_size, GetBucketDistribution());
-  PartitionRoot::Bucket* bucket = &allocator.root()->buckets[bucket_index];
+  PartitionRoot::Bucket* bucket = &allocator.root()->buckets_[bucket_index];
   ASSERT_EQ(bucket->slot_size, real_size);
   size_t slots_per_span = bucket->num_system_pages_per_slot_span;
 
@@ -4074,16 +4075,16 @@ TEST_P(PartitionAllocTest, InaccessibleRegionAfterSlotSpans) {
 
   auto* root = allocator.root();
   // Look for an allocation size that matches a bucket which doesn't fill its
-  // last PartitionPage.  Scan through allocation sizes rather than buckets, as
-  // depending on the bucket distribution, some buckets may not be active.
+  // last PartitionPage.  Scan through allocation sizes rather than buckets_, as
+  // depending on the bucket distribution, some buckets_ may not be active.
   PartitionBucket* incomplete_bucket = nullptr;
-  // Only regular buckets, give up if we can't find one (and GTEST_SKIP()
+  // Only regular buckets_, give up if we can't find one (and GTEST_SKIP()
   // below).
   for (size_t alloc_size = 0;
        alloc_size < MaxRegularSlotSpanSize() - ExtraAllocSize(allocator);
        alloc_size++) {
     size_t index = SizeToIndex(alloc_size + ExtraAllocSize(allocator));
-    auto& bucket = root->buckets[index];
+    auto& bucket = root->buckets_[index];
     if (bucket.get_bytes_per_span() != bucket.get_pages_per_slot_span()
                                            << PartitionPageShift()) {
       incomplete_bucket = &bucket;
@@ -4129,16 +4130,16 @@ TEST_P(PartitionAllocTest, FewerMemoryRegions) {
   auto* root = allocator.root();
 
   // Look for an allocation size that matches a bucket which doesn't fill its
-  // last PartitionPage.  Scan through allocation sizes rather than buckets, as
-  // depending on the bucket distribution, some buckets may not be active.
+  // last PartitionPage.  Scan through allocation sizes rather than buckets_, as
+  // depending on the bucket distribution, some buckets_ may not be active.
   PartitionBucket* incomplete_bucket = nullptr;
-  // Only regular buckets, give up if we can't find one (and GTEST_SKIP()
+  // Only regular buckets_, give up if we can't find one (and GTEST_SKIP()
   // below).
   for (size_t alloc_size = 0;
        alloc_size < MaxRegularSlotSpanSize() - ExtraAllocSize(allocator);
        alloc_size++) {
     size_t index = SizeToIndex(alloc_size + ExtraAllocSize(allocator));
-    auto& bucket = root->buckets[index];
+    auto& bucket = root->buckets_[index];
     if (bucket.get_bytes_per_span() != bucket.get_pages_per_slot_span()
                                            << PartitionPageShift()) {
       incomplete_bucket = &bucket;
@@ -4200,7 +4201,7 @@ TEST_P(PartitionAllocTest, FewerMemoryRegions) {
 
 TEST_P(PartitionAllocTest, ZeroFreedMemory) {
   auto* root = allocator.root();
-  ASSERT_TRUE(root->settings.eventually_zero_freed_memory);
+  ASSERT_TRUE(root->settings_.eventually_zero_freed_memory);
 
   constexpr int kByte = 'A';
   auto alloc_and_return_freed_pointer = [&](size_t size) {
@@ -4419,7 +4420,7 @@ TEST_P(PartitionAllocWithFreeWithSizeAndAlignmentTest, AlignedAlloc) {
 // results.
 TEST_P(PartitionAllocTest, OptimizedGetSlotNumber) {
   for (size_t i = 0; i < BucketIndexLookup::kNumBuckets; ++i) {
-    auto& bucket = allocator.root()->buckets[i];
+    auto& bucket = allocator.root()->buckets_[i];
     if (SizeToIndex(bucket.slot_size) != i) {
       continue;
     }
@@ -4452,11 +4453,11 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
 TEST_P(PartitionAllocTest, Bookkeeping) {
   auto& root = *allocator.root();
 
-  EXPECT_EQ(0U, root.total_size_of_committed_pages);
-  EXPECT_EQ(0U, root.max_size_of_committed_pages);
+  EXPECT_EQ(0U, root.total_size_of_committed_pages_);
+  EXPECT_EQ(0U, root.max_size_of_committed_pages_);
   EXPECT_EQ(0U, root.get_total_size_of_allocated_bytes());
   EXPECT_EQ(0U, root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(0U, root.total_size_of_super_pages);
+  EXPECT_EQ(0U, root.total_size_of_super_pages_);
   size_t small_size = 1000;
 
   // A full slot span of size 1 partition page is committed.
@@ -4467,44 +4468,44 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
   size_t expected_super_pages_size = kSuperPageSize;
   size_t expected_max_committed_size = expected_committed_size;
   size_t bucket_index = SizeToIndex(small_size - ExtraAllocSize(allocator));
-  PartitionBucket* bucket = &root.buckets[bucket_index];
+  PartitionBucket* bucket = &root.buckets_[bucket_index];
   size_t expected_total_allocated_size = bucket->slot_size;
   size_t expected_max_allocated_size = expected_total_allocated_size;
 
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_total_allocated_size,
             root.get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // Freeing memory doesn't result in decommitting pages right away.
   root.Free(ptr);
   expected_total_allocated_size = 0U;
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_total_allocated_size,
             root.get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // Allocating the same size lands it in the same slot span.
   ptr = root.Alloc(small_size - ExtraAllocSize(allocator), type_name);
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // Freeing memory doesn't result in decommitting pages right away.
   root.Free(ptr);
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // Allocating another size commits another slot span.
   ptr = root.Alloc(2 * small_size - ExtraAllocSize(allocator), type_name);
@@ -4514,19 +4515,19 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
       std::max(expected_max_committed_size, expected_committed_size);
   expected_max_allocated_size =
       std::max(expected_max_allocated_size, static_cast<size_t>(2048));
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // Freeing memory doesn't result in decommitting pages right away.
   root.Free(ptr);
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // Single-slot slot spans...
   //
@@ -4541,7 +4542,7 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
   ASSERT_GT(big_size, MaxRegularSlotSpanSize());
   ASSERT_LE(big_size, BucketIndexLookup::kMaxBucketSize);
   bucket_index = SizeToIndex(big_size - ExtraAllocSize(allocator));
-  bucket = &root.buckets[bucket_index];
+  bucket = &root.buckets_[bucket_index];
   // Assert the allocation doesn't fill the entire span nor entire partition
   // page, to make the test more interesting.
   ASSERT_LT(big_size, bucket->get_bytes_per_span());
@@ -4553,13 +4554,13 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
   expected_total_allocated_size += bucket->get_bytes_per_span();
   expected_max_allocated_size =
       std::max(expected_max_allocated_size, expected_total_allocated_size);
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_total_allocated_size,
             root.get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // Allocating 2nd time doesn't overflow the super page...
   void* ptr2 = root.Alloc(big_size - ExtraAllocSize(allocator), type_name);
@@ -4569,13 +4570,13 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
   expected_total_allocated_size += bucket->get_bytes_per_span();
   expected_max_allocated_size =
       std::max(expected_max_allocated_size, expected_total_allocated_size);
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_total_allocated_size,
             root.get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // ... but 3rd time does.
   void* ptr3 = root.Alloc(big_size - ExtraAllocSize(allocator), type_name);
@@ -4586,13 +4587,13 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
   expected_max_allocated_size =
       std::max(expected_max_allocated_size, expected_total_allocated_size);
   expected_super_pages_size += kSuperPageSize;
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_total_allocated_size,
             root.get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // Freeing memory doesn't result in decommitting pages right away.
   root.Free(ptr);
@@ -4601,28 +4602,28 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
   expected_total_allocated_size -= 3 * bucket->get_bytes_per_span();
   expected_max_allocated_size =
       std::max(expected_max_allocated_size, expected_total_allocated_size);
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_total_allocated_size,
             root.get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // Now everything should be decommitted. The reserved space for super pages
   // stays the same and will never go away (by design).
   root.PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
   expected_committed_size = 0;
-  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+  EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
   EXPECT_EQ(expected_total_allocated_size,
             root.get_total_size_of_allocated_bytes());
   EXPECT_EQ(expected_max_allocated_size,
             root.get_max_size_of_allocated_bytes());
-  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+  EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
 
   // None of the above should affect the direct map space.
-  EXPECT_EQ(0U, root.total_size_of_direct_mapped_pages);
+  EXPECT_EQ(0U, root.total_size_of_direct_mapped_pages_);
 
   size_t huge_sizes[] = {
       BucketIndexLookup::kMaxBucketSize + SystemPageSize(),
@@ -4668,15 +4669,15 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
           partition_alloc::internal::base::bits::AlignUp(
               aligned_size + surrounding_pages_size,
               DirectMapAllocationGranularity());
-      EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-      EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+      EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+      EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
       EXPECT_EQ(expected_total_allocated_size,
                 root.get_total_size_of_allocated_bytes());
       EXPECT_EQ(expected_max_allocated_size,
                 root.get_max_size_of_allocated_bytes());
-      EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+      EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
       EXPECT_EQ(expected_direct_map_size,
-                root.total_size_of_direct_mapped_pages);
+                root.total_size_of_direct_mapped_pages_);
 
       // Freeing memory in the diret map decommits pages right away. The address
       // space is released for reuse too.
@@ -4688,15 +4689,15 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
       expected_total_allocated_size -= aligned_size;
       expected_max_allocated_size =
           std::max(expected_max_allocated_size, expected_total_allocated_size);
-      EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
-      EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages);
+      EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages_);
+      EXPECT_EQ(expected_max_committed_size, root.max_size_of_committed_pages_);
       EXPECT_EQ(expected_total_allocated_size,
                 root.get_total_size_of_allocated_bytes());
       EXPECT_EQ(expected_max_allocated_size,
                 root.get_max_size_of_allocated_bytes());
-      EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
+      EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages_);
       EXPECT_EQ(expected_direct_map_size,
-                root.total_size_of_direct_mapped_pages);
+                root.total_size_of_direct_mapped_pages_);
     }
   }
 }
@@ -5435,7 +5436,7 @@ TEST_P(PartitionAllocTest, ReservationOffset) {
 
   ReservationOffsetTable table = allocator.root()->GetReservationOffsetTable();
 
-  // For normal buckets, offset should be kOffsetTagNormalBuckets.
+  // For normal buckets_, offset should be kOffsetTagNormalBuckets.
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   uintptr_t address = UntagPtr(ptr);
@@ -5808,7 +5809,7 @@ TEST_P(PartitionAllocTest, GetIndex) {
                                              distribution),
             BucketIndexLookup::kNumBuckets);
 
-  // Make sure that power-of-two have exactly matching buckets.
+  // Make sure that power-of-two have exactly matching buckets_.
   for (size_t size = BucketIndexLookup::kMinBucketSize;
        size <= BucketIndexLookup::kMaxBucketSize; size <<= 1) {
     uint16_t index = PartitionRoot::SizeToBucketIndex(size, distribution);
@@ -5899,8 +5900,9 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
     void* ptr = root->Alloc(size);
     allocated_memory.push_back(ptr);
   }
-  ASSERT_GE(root->total_size_of_committed_pages.load(std::memory_order_relaxed),
-            size * count);
+  ASSERT_GE(
+      root->total_size_of_committed_pages_.load(std::memory_order_relaxed),
+      size * count);
 
   // To create empty slot spans, allocate from single-slot slot spans, 128kiB at
   // a time.
@@ -5910,7 +5912,7 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // Make sure that even with allocation size rounding up, a single allocation
   // is still below the threshold.
   ASSERT_LT(MaxRegularSlotSpanSize() * 2,
-            ((count * size) >> root->max_empty_slot_spans_dirty_bytes_shift));
+            ((count * size) >> root->max_empty_slot_spans_dirty_bytes_shift_));
   for (size_t i = 0; i < single_slot_count; i++) {
     void* ptr = root->Alloc(single_slot_size);
     single_slot_allocated_memory.push_back(ptr);
@@ -5925,14 +5927,14 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // Still have some committed empty slot spans.
   // PA_TS_UNCHECKED_READ() is not an issue here, since everything is
   // single-threaded.
-  EXPECT_GT(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes), 0u);
+  EXPECT_GT(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes_), 0u);
   // But not all, as the cap triggered.
-  EXPECT_LT(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes),
+  EXPECT_LT(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes_),
             single_slot_count * single_slot_size);
 
   // Nothing left after explicit purge.
   root->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
-  EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes), 0u);
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes_), 0u);
 
   for (void* ptr : allocated_memory) {
     root->Free(ptr);
@@ -5949,7 +5951,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   constexpr size_t single_slot_count = kDefaultEmptySlotSpanRingSize + 10;
   const size_t single_slot_size = MaxRegularSlotSpanSize() + 1;
   const size_t bucket_size =
-      root->buckets[SizeToIndex(single_slot_size)].slot_size;
+      root->buckets_[SizeToIndex(single_slot_size)].slot_size;
 
   for (size_t i = 0; i < single_slot_count; i++) {
     void* ptr = root->Alloc(single_slot_size);
@@ -5964,7 +5966,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   single_slot_allocated_memory.clear();
 
   // Some of the free()-s above overflowed the slot span ring.
-  EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes),
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes_),
             kDefaultEmptySlotSpanRingSize * bucket_size);
 
   // Now can cache more slot spans.
@@ -5976,11 +5978,11 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   // The assertion following the alloc/free checks that the ring contains the
   // slots spans for the allocations done here. Slot spans that have not yet
   // been added to the ring are added at
-  // `PartitionRoot::global_empty_slot_span_ring_index`. By iterating twice,
+  // `PartitionRoot::global_empty_slot_span_ring_index_`. By iterating twice,
   // we ensure the ring contains the allocations here. This is because the
   // first time through the empty slot span may decommit one of the allocations
   // done here, the second time through that won't happen (because
-  // `global_empty_slot_span_ring_index` will have incremented past
+  // `global_empty_slot_span_ring_index_` will have incremented past
   // `kDefaultEmptySlotSpanRingSize`, and the frees in the second iteration
   // won't decommit one of the allocations here).
   for (int x = 0; x < 2; ++x) {
@@ -5995,7 +5997,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
     single_slot_allocated_memory.clear();
   }
 
-  EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes),
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes_),
             single_slot_large_count * bucket_size);
 
   // Constants used here don't work with USE_LARGE_EMPTY_SLOT_SPAN_RING.
@@ -6012,7 +6014,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   single_slot_allocated_memory.clear();
 
   // Overflow still works.
-  EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes),
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes_),
             kMaxEmptySlotSpanRingSize * bucket_size);
 #endif
 }
@@ -6055,7 +6057,7 @@ TEST_P(PartitionAllocTest, SortFreelist) {
 
   size_t bucket_index =
       SizeToIndex(allocation_size + ExtraAllocSize(allocator));
-  auto& bucket = allocator.root()->buckets[bucket_index];
+  auto& bucket = allocator.root()->buckets_[bucket_index];
   EXPECT_TRUE(bucket.active_slot_spans_head->freelist_is_sorted());
 
   // Can sort again.
@@ -6193,7 +6195,7 @@ TEST_P(PartitionAllocTest, OpenCL) {
         // PA_BUILDFLAG(IS_MAC)
 
 TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
-  for (PartitionRoot::Bucket& bucket : allocator.root()->buckets) {
+  for (PartitionRoot::Bucket& bucket : allocator.root()->buckets_) {
     const size_t slot_size = bucket.slot_size;
 
     size_t small_system_page_count =
@@ -6280,7 +6282,7 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
 #if PA_BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
 TEST_P(PartitionAllocTest, GlobalEmptySlotSpanRingIndexResets) {
   // Switch to the larger slot span size, and set the
-  // global_empty_slot_span_ring_index to one less than max.
+  // global_empty_slot_span_ring_index_ to one less than max.
   constexpr int16_t kLargeRingSize = SlotSpanRingMaxSize::kLarge;
   constexpr int kLargeDirtyBytesShift = 2;
   allocator.root()->AdjustSlotSpanRing(kLargeRingSize, kLargeDirtyBytesShift);
@@ -6297,15 +6299,15 @@ TEST_P(PartitionAllocTest, GlobalEmptySlotSpanRingIndexResets) {
 
   // This should result in 0 empty_slot_span_dirty_bytes, and more importantly,
   // not crash.
-  EXPECT_EQ(
-      0u, PA_TS_UNCHECKED_READ(allocator.root()->empty_slot_spans_dirty_bytes));
+  EXPECT_EQ(0u, PA_TS_UNCHECKED_READ(
+                    allocator.root()->empty_slot_spans_dirty_bytes_));
 }
 #endif
 
 TEST_P(PartitionAllocTest, FastReclaim) {
   static base::TimeTicks now = base::TimeTicks();
   // Advances times by the same amount every time.
-  allocator.root()->now_maybe_overridden_for_testing = [] {
+  allocator.root()->now_maybe_overridden_for_testing_ = [] {
     now += PartitionRoot::kMaxPurgeDuration / 10;
     return now;
   };
@@ -6319,7 +6321,7 @@ TEST_P(PartitionAllocTest, FastReclaim) {
   // Here and below, using PA_TS_UNCHECKED_READ since the root is not used
   // conccurently.
   //
-  // Went around all buckets.
+  // Went around all buckets_.
   EXPECT_EQ(purge_state.next_bucket_index, 0u);
 
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
@@ -6329,7 +6331,7 @@ TEST_P(PartitionAllocTest, FastReclaim) {
   EXPECT_NE(next_bucket, 0u);
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
                                 purge_state);
-  // Make some progress, but not through all buckets yet.
+  // Make some progress, but not through all buckets_ yet.
   EXPECT_GT(purge_state.next_bucket_index, next_bucket);
 
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
@@ -6337,20 +6339,20 @@ TEST_P(PartitionAllocTest, FastReclaim) {
   // Ran out of time.
   EXPECT_NE(purge_state.next_bucket_index, 0u);
 
-  // But eventually we make it through all buckets.
+  // But eventually we make it through all buckets_.
   while (purge_state.next_bucket_index != 0) {
     allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
                                   purge_state);
   }
   // No expectation, test will time out if it's incorrect.
 
-  allocator.root()->now_maybe_overridden_for_testing = base::TimeTicks::Now;
+  allocator.root()->now_maybe_overridden_for_testing_ = base::TimeTicks::Now;
 }
 
 TEST_P(PartitionAllocTest, FastReclaimEventuallyLooksAtAllBuckets) {
   static base::TimeTicks now = base::TimeTicks();
   // Advances times by the same amount every time.
-  allocator.root()->now_maybe_overridden_for_testing = [] {
+  allocator.root()->now_maybe_overridden_for_testing_ = [] {
     now += PartitionRoot::kMaxPurgeDuration / 10;
     return now;
   };
@@ -6361,7 +6363,7 @@ TEST_P(PartitionAllocTest, FastReclaimEventuallyLooksAtAllBuckets) {
                          PurgeFlags::kDiscardUnusedSystemPages;
   allocator.root()->PurgeMemory(kFlags, purge_state);
   ASSERT_GT(now, base::TimeTicks());
-  // Went around all buckets, generation is incremented.
+  // Went around all buckets_, generation is incremented.
   EXPECT_EQ(purge_state.next_bucket_index, 0u);
   EXPECT_EQ(purge_state.generation, 1u);
 
@@ -6372,7 +6374,7 @@ TEST_P(PartitionAllocTest, FastReclaimEventuallyLooksAtAllBuckets) {
   EXPECT_NE(next_bucket, 0u);
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration,
                                 purge_state);
-  // Make some progress, but not through all buckets yet.
+  // Make some progress, but not through all buckets_ yet.
   EXPECT_GT(purge_state.next_bucket_index, next_bucket);
   EXPECT_EQ(purge_state.generation, 1u);
 
@@ -6388,7 +6390,7 @@ TEST_P(PartitionAllocTest, FastReclaimEventuallyLooksAtAllBuckets) {
   }
   EXPECT_EQ(purge_state.next_bucket_index, 0u);
 
-  allocator.root()->now_maybe_overridden_for_testing = base::TimeTicks::Now;
+  allocator.root()->now_maybe_overridden_for_testing_ = base::TimeTicks::Now;
 }
 
 // This test makes sure it's safe to switch to the denser bucket distribution

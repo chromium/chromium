@@ -290,12 +290,12 @@ bool PartitionRootInspector::GatherStatistics() {
   Update();
   bucket_stats_.clear();
 
-  for (auto& bucket : root_.get()->buckets) {
+  for (auto& bucket : root_.get()->buckets_) {
     BucketStats stats;
     stats.slot_size = bucket.slot_size;
     stats.bucket = bucket;
 
-    // Only look at the small buckets.
+    // Only look at the small buckets_.
     if (bucket.slot_size > 4096)
       return true;
 
@@ -455,35 +455,36 @@ void DisplayRootData(PartitionRootInspector& root_inspector,
 
   const auto& bucket_stats =
       root_inspector.bucket_stats()[detailed_bucket_index];
-  std::cout << "\nFreelist size for active buckets of size = "
+  std::cout << "\nFreelist size for active buckets_ of size = "
             << bucket_stats.slot_size << "\n";
   for (size_t freelist_size : bucket_stats.freelist_sizes)
     std::cout << freelist_size << " ";
   std::cout << "\n";
 
   auto* root = root_inspector.root();
-  uint64_t syscall_count = root->syscall_count.load(std::memory_order_relaxed);
+  uint64_t syscall_count_ =
+      root->syscall_count_.load(std::memory_order_relaxed);
   uint64_t total_duration_ms =
-      root->syscall_total_time_ns.load(std::memory_order_relaxed) / 1e6;
+      root->syscall_total_time_ns_.load(std::memory_order_relaxed) / 1e6;
 
   uint64_t virtual_size =
-      root->total_size_of_super_pages.load(std::memory_order_relaxed) +
-      root->total_size_of_direct_mapped_pages.load(std::memory_order_relaxed);
+      root->total_size_of_super_pages_.load(std::memory_order_relaxed) +
+      root->total_size_of_direct_mapped_pages_.load(std::memory_order_relaxed);
 
   std::cout
-      << "\n\nSyscall count = " << syscall_count
+      << "\n\nSyscall count = " << syscall_count_
       << "\tTotal duration = " << total_duration_ms << "ms\n"
       << "Max committed size = "
-      << root->max_size_of_committed_pages.load(std::memory_order_relaxed) /
+      << root->max_size_of_committed_pages_.load(std::memory_order_relaxed) /
              1024
       << "kiB\n"
       << "Allocated/Committed/Virtual = "
       << root->get_total_size_of_allocated_bytes() / 1024 << " / "
-      << root->total_size_of_committed_pages.load(std::memory_order_relaxed) /
+      << root->total_size_of_committed_pages_.load(std::memory_order_relaxed) /
              1024
       << " / " << virtual_size / 1024 << " kiB\n";
   std::cout << "\nEmpty Slot Spans Dirty Size = "
-            << TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes) / 1024
+            << TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes_) / 1024
             << "kiB";
 }
 

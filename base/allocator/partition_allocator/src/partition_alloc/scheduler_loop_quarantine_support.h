@@ -21,7 +21,7 @@
 
 namespace partition_alloc {
 
-struct PartitionRoot;
+class PartitionRoot;
 
 // When this class is alive, Scheduler-Loop Quarantine for this thread is
 // paused and freed allocations will be freed immediately.
