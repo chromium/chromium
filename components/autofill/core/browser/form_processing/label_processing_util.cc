@@ -39,10 +39,7 @@ std::vector<std::u16string_view> SplitBySeparators(std::u16string_view label) {
           base::SplitStringPieceUsingSubstr(component, separator,
                                             base::TRIM_WHITESPACE,
                                             base::SPLIT_WANT_NONEMPTY);
-      // TODO(crbug.com/40100455): Use `std::vector::append_range()` when
-      // C++23 is available.
-      new_components.insert(new_components.end(), subcomponents.begin(),
-                            subcomponents.end());
+      new_components.append_range(subcomponents);
     }
     components = std::move(new_components);
   }
