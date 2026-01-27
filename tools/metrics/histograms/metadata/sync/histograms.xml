@@ -1239,6 +1239,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness"
+    enum="SyncDeviceStatisticsMultiDeviceReadiness" expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the multi-device readiness of the primary
+    account, i.e. whether there are other signed-in-to-Chrome devices. Recorded
+    at most once per day (30 seconds after profile initialization).
+  </summary>
+</histogram>
+
+<histogram
     name="Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients"
     units="clients" expires_after="2026-06-30">
   <owner>treib@chromium.org</owner>

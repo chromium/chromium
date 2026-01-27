@@ -1059,6 +1059,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsHistoryOptInSummary) -->
 
+<!-- LINT.IfChange(SyncDeviceStatisticsMultiDeviceReadiness) -->
+
+<enum name="SyncDeviceStatisticsMultiDeviceReadiness">
+  <int value="0" label="Signed out (no primary account)"/>
+  <int value="1"
+      label="Single-device (primary account does not have other devices)"/>
+  <int value="2"
+      label="Multi-device without history (primary account has other devices,
+             but is missing history opt-in across this and other devices)"/>
+  <int value="3"
+      label="Multi-device with history (primary account has other devices,
+             and both the current device and at least one other device have
+             history opt-in)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsMultiDeviceReadiness) -->
+
 <!-- LINT.IfChange(SyncDeviceStatisticsOutcome) -->
 
 <enum name="SyncDeviceStatisticsOutcome">

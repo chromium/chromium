@@ -154,6 +154,8 @@ void DeviceStatisticsTracker::Start(base::OnceClosure callback) {
   // If there are no accounts, there's not much to do.
   if (accounts.empty()) {
     RecordOverallOutcome();
+    RecordPrimaryAccountMultiDeviceReadiness(
+        /*other_devices=*/0, /*other_devices_with_history_opt_in=*/0);
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback_));
@@ -265,6 +267,9 @@ void DeviceStatisticsTracker::AllRequestsDone() {
           other_devices_with_history_opt_in);
 
       if (is_primary) {
+        RecordPrimaryAccountMultiDeviceReadiness(
+            other_devices->size(), other_devices_with_history_opt_in);
+
         base::UmaHistogramEnumeration(
             "Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptIn",
             GetHistoryOptInSummary(other_devices->size(),
@@ -288,6 +293,15 @@ void DeviceStatisticsTracker::AllRequestsDone() {
 void DeviceStatisticsTracker::RecordOverallOutcome() const {
   base::UmaHistogramEnumeration("Sync.DeviceStatistics.Outcome.Overall",
                                 GetOverallOutcome());
+}
+
+void DeviceStatisticsTracker::RecordPrimaryAccountMultiDeviceReadiness(
+    size_t other_devices,
+    size_t other_devices_with_history_opt_in) const {
+  base::UmaHistogramEnumeration(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness",
+      GetPrimaryAccountMultiDeviceReadiness(other_devices,
+                                            other_devices_with_history_opt_in));
 }
 
 DeviceStatisticsTracker::RequestsCompletedSuccess
@@ -371,6 +385,23 @@ DeviceStatisticsTracker::GetOverallOutcome() const {
       return AccountsHaveOtherDevicesSummary::kPrimaryNANonPrimaryNo;
     }
   }
+}
+
+DeviceStatisticsTracker::MultiDeviceReadiness
+DeviceStatisticsTracker::GetPrimaryAccountMultiDeviceReadiness(
+    size_t other_devices,
+    size_t other_devices_with_history_opt_in) const {
+  if (primary_account_.IsEmpty()) {
+    return MultiDeviceReadiness::kSignedOut;
+  }
+  if (other_devices == 0) {
+    return MultiDeviceReadiness::kSingleDevice;
+  }
+  if (!primary_account_history_opt_in_ ||
+      other_devices_with_history_opt_in == 0) {
+    return MultiDeviceReadiness::kMultiDeviceWithoutHistory;
+  }
+  return MultiDeviceReadiness::kMultiDeviceWithHistory;
 }
 
 DeviceStatisticsTracker::HistoryOptInSummary

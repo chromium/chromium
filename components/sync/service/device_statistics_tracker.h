@@ -95,6 +95,25 @@ class DeviceStatisticsTracker {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsOutcome)
 
+  // LINT.IfChange(SyncDeviceStatisticsMultiDeviceReadiness)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class MultiDeviceReadiness {
+    // There is no primary account on the current device.
+    kSignedOut = 0,
+    // There is a primary account on the current device, but no other devices.
+    kSingleDevice = 1,
+    // There are other devices, but there is no history opt-in across this
+    // device and others (i.e. this device doesn't have history, and/or no
+    // other devices do).
+    kMultiDeviceWithoutHistory = 2,
+    // There are other devices, and both this device plus at least one other
+    // device have history opt-in.
+    kMultiDeviceWithHistory = 3,
+    kMaxValue = kMultiDeviceWithHistory
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsMultiDeviceReadiness)
+
   // LINT.IfChange(SyncDeviceStatisticsPlatform)
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -137,9 +156,17 @@ class DeviceStatisticsTracker {
   void AllRequestsDone();
 
   void RecordOverallOutcome() const;
+  // Records `MultiDeviceReadiness` for the primary account (including for the
+  // case when there is no primary account).
+  void RecordPrimaryAccountMultiDeviceReadiness(
+      size_t other_devices,
+      size_t other_devices_with_history_opt_in) const;
 
   RequestsCompletedSuccess GetOverallSuccess() const;
   AccountsHaveOtherDevicesSummary GetOverallOutcome() const;
+  MultiDeviceReadiness GetPrimaryAccountMultiDeviceReadiness(
+      size_t other_devices,
+      size_t other_devices_with_history_opt_in) const;
   HistoryOptInSummary GetHistoryOptInSummary(
       size_t other_devices,
       size_t other_devices_with_history_opt_in) const;
