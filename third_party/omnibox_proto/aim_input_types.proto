@@ -12,7 +12,7 @@ package omnibox;
 
 // Input type
 // Assume text inputs are always allowed.
-// Next ID: 3
+// Next ID: 4
 enum InputType {
   // Unspecified input type.
   INPUT_TYPE_UNSPECIFIED = 0;
@@ -20,4 +20,6 @@ enum InputType {
   INPUT_TYPE_LENS_IMAGE = 1;
   // Lens file
   INPUT_TYPE_LENS_FILE = 2;
+  // Browser tab
+  INPUT_TYPE_BROWSER_TAB = 3;
 }

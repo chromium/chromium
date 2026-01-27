@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "third_party/omnibox_proto/searchbox_config_constraints.pb.h"
+#include "url/gurl.h"
 
 namespace contextual_search {
 
@@ -77,6 +78,8 @@ class InputStateModelCompatibilityTest : public InputStateModelTest {
         omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
     model_pro_rule->add_allowed_input_types(
         omnibox::InputType::INPUT_TYPE_LENS_FILE);
+    model_pro_rule->add_allowed_input_types(
+        omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
 
     auto* tool_ds_rule = rule_set->add_tool_rules();
     tool_ds_rule->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
@@ -94,7 +97,8 @@ class InputStateModelCompatibilityTest : public InputStateModelTest {
                             omnibox::ToolMode::TOOL_MODE_CANVAS,
                             omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
     state_.allowed_input_types = {omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
-                                  omnibox::InputType::INPUT_TYPE_LENS_FILE};
+                                  omnibox::InputType::INPUT_TYPE_LENS_FILE,
+                                  omnibox::InputType::INPUT_TYPE_BROWSER_TAB};
     state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
     state_.active_model = omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
     state_.disabled_tools = {};
@@ -126,7 +130,8 @@ TEST_F(InputStateModelCompatibilityTest, SelectTool) {
   // All inputs disabled.
   EXPECT_THAT(new_state.disabled_input_types,
               UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
-                                   omnibox::InputType::INPUT_TYPE_LENS_FILE));
+                                   omnibox::InputType::INPUT_TYPE_LENS_FILE,
+                                   omnibox::InputType::INPUT_TYPE_BROWSER_TAB));
 }
 
 TEST_F(InputStateModelCompatibilityTest, SelectModel) {
@@ -145,9 +150,10 @@ TEST_F(InputStateModelCompatibilityTest, SelectModel) {
                                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
                                    omnibox::ToolMode::TOOL_MODE_CANVAS));
 
-  // Only images can be uploaded with Gemini so file is disabled.
+  // Only images can be uploaded with Gemini so file and tab are disabled.
   EXPECT_THAT(new_state.disabled_input_types,
-              UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_FILE));
+              UnorderedElementsAre(omnibox::InputType::INPUT_TYPE_LENS_FILE,
+                                   omnibox::InputType::INPUT_TYPE_BROWSER_TAB));
 }
 
 TEST_F(InputStateModelCompatibilityTest, SelectImageInput) {
@@ -173,6 +179,24 @@ TEST_F(InputStateModelCompatibilityTest, SelectImageInput) {
 
   // No input types are disabled based on other inputs.
   EXPECT_TRUE(new_state.disabled_input_types.empty());
+}
+
+TEST_F(InputStateModelCompatibilityTest, SelectTabInput) {
+  // Simulate adding a tab.
+  std::vector<FileInfo> file_infos;
+  file_infos.emplace_back();
+  file_infos.back().tab_url = GURL("https://www.google.com");
+  ON_CALL(session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(testing::Return(file_infos));
+
+  // Pro supports tabs, but regular Gemini does not.
+  input_state_model_->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  const auto& new_state = input_state_model_->get_state_for_testing();
+
+  // Gemini regular should be disabled.
+  EXPECT_THAT(
+      new_state.disabled_models,
+      UnorderedElementsAre(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR));
 }
 
 }  // namespace contextual_search
