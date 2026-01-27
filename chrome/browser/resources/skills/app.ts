@@ -11,6 +11,7 @@ import './user_skills_page.js';
 import './discover_skills_page.js';
 import './sidebar.js';
 
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrToolbarElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrRouter} from '//resources/js/cr_router.js';
@@ -60,6 +61,7 @@ export class SkillsAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    ColorChangeUpdater.forDocument().start();
     const router = CrRouter.getInstance();
     // Initial load.
     this.onPathChanged_(router.getPath());

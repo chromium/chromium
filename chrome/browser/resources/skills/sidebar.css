@@ -11,7 +11,6 @@
 
 .cr-nav-menu-item {
   display: flex;
-  --cr-icon-color: var(--iron-icon-fill-color);
   padding-bottom: 14px;
   padding-inline-end: 16px;
   padding-inline-start: 24px;

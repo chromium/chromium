@@ -31,14 +31,14 @@
   font-size: 18px;
   line-height: 24px;
   margin: 0;
-  color: var(--headline-color);
+  color: var(--color-sys-on-surface);
 }
 
 #notice-message {
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
-  color: var(--subheadline-color);
+  color: var(--color-sys-on-surface-subtle);
   margin: 8px;
 }
 
@@ -47,7 +47,7 @@
   font-size: 14px;
   line-height: 20px;
   margin: 0;
-  color: var(--subheadline-color);
+  color: var(--color-sys-on-surface-subtle);
 }
 
 #subtitle {
@@ -55,7 +55,7 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 24px;
-  color: var(--google-grey-700-rgb);
+  color: var(--color-sys-on-surface-variant);
 }
 
 cr-button {

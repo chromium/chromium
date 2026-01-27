@@ -4,7 +4,6 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=./shared_vars.css.js
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #scheme=relative
  * #include=cr-shared-style-lit
@@ -47,7 +46,7 @@ cr-page-selector {
   flex-direction: column;
 
   /* max-width to align with the searchbar */
-  max-width: var(--main-content-max-width);
+  max-width: 960px;
   margin: 0 auto;
   padding-top: 16px;
 }
