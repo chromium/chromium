@@ -472,18 +472,18 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                    completion:nil];
 }
 
-/// Whether `view` is visible in `self.view` hierarchy.
-- (BOOL)isVisibleInHierarchy:(UIView*)view {
+/// Whether `view` is hidden in `self.view` hierarchy either intrinsically or
+/// indirectly by one of its superviews.
+- (BOOL)isHiddenInHierarchy:(UIView*)view {
   UIView* controllingVisibility = view;
   do {
     if (controllingVisibility.hidden) {
-      return NO;
-    }
-    if (controllingVisibility == self.view) {
       return YES;
     }
+
     controllingVisibility = controllingVisibility.superview;
-  } while (controllingVisibility);
+  } while (controllingVisibility && controllingVisibility != self.view);
+
   return NO;
 }
 
@@ -496,7 +496,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     return;
   }
   // If hidden indirectly by a superview, early return without animation.
-  if (![self isVisibleInHierarchy:button]) {
+  if ([self isHiddenInHierarchy:button]) {
     return;
   }
   button.alpha = 0;
