@@ -497,6 +497,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Customize Chrome Dialog"/>
   <int value="11" label="Wallpaper Search Button"/>
   <int value="12" label="Action Chips"/>
+  <int value="13" label="Threads Rail"/>
 </enum>
 
 <enum name="NTPImageType">
@@ -561,6 +562,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="NTP Colors Rose"/>
   <int value="8" label="NTP Colors Fuchsia"/>
   <int value="9" label="NTP Colors Violet"/>
+</enum>
+
+<enum name="NTPThreadsRailAction">
+  <summary>User actions on the threads rail.</summary>
+  <int value="0" label="Show history clicked"/>
 </enum>
 
 <enum name="NTPTileTitleSource">

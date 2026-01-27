@@ -94,7 +94,8 @@ export enum NtpElement {
   CUSTOMIZE_DIALOG = 10,  // Obsolete
   WALLPAPER_SEARCH_BUTTON = 11,
   ACTION_CHIPS = 12,
-  MAX_VALUE = ACTION_CHIPS,
+  THREADS_RAIL = 13,
+  MAX_VALUE = THREADS_RAIL,
 }
 
 /**
@@ -777,6 +778,11 @@ export class AppElement extends AppElementBase {
         changedPrivateProperties.has('showComposebox_')) {
       this.updateOneGoogleBarAppearance_();
     }
+
+    if (changedPrivateProperties.has('showComposebox_') &&
+        this.showComposebox_ && this.enableThreadsRail_) {
+      recordBoolean('NewTabPage.ThreadsRail.Shown', true);
+    }
   }
 
   // Called to update the OGB of relevant NTP state changes.
@@ -1373,6 +1379,9 @@ export class AppElement extends AppElementBase {
           return;
         case $$(this, '#modules'):
           recordClick(NtpElement.MODULE);
+          return;
+        case $$(this, '#threadsRail'):
+          recordClick(NtpElement.THREADS_RAIL);
           return;
         default:
           break;
