@@ -224,22 +224,36 @@ void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
 }
 
 bool BrowserAccessibilityManager::CanFireEvents() const {
-  if (!AXTreeManager::CanFireEvents())
+  if (!AXTreeManager::CanFireEvents()) {
     return false;
+  }
 
-  BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
-  // If the check below is changed to a DCHECK, it will fail when running
-  // http/tests/devtools/resource-tree/resource-tree-frame-in-crafted-frame.js
-  // on linux. The parent `RenderFrameHostImpl` might not have an AXTreeID
-  // that isn't `AXTreeIDUnknown()`.
-  if (!root_manager)
+  // The delegate may be null in unit tests.
+  if (!delegate_) {
     return false;
+  }
 
-  // Do not fire events when the page is frozen inside the back/forward cache.
-  // Rationale for the back/forward cache behavior:
+  if (delegate_->AccessibilityIsWebContentSource()) {
+    BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
+    // If the check below is changed to a DCHECK, it will fail when running
+    // http/tests/devtools/resource-tree/resource-tree-frame-in-crafted-frame.js
+    // on linux. The parent `RenderFrameHostImpl` might not have an AXTreeID
+    // that isn't `AXTreeIDUnknown()`.
+    if (!root_manager) {
+      return false;
+    }
+  } else {
+    // TODO(crbug.com/40672441): Confirm that events aren't fired from views
+    // that aren't part of a window. This is especially important on macOS,
+    // where a blocking call from AppKit will attempt to ascend the hierarchy to
+    // find a window (more info in https://crrev.com/c/3595084).
+  }
+
+  // The delegate can decide to prevent events, too. For example, for web
+  // content, we do not fire events when the page is frozen inside the
+  // back/forward cache. Rationale for the back/forward cache behavior:
   // https://docs.google.com/document/d/1_jaEAXurfcvriwcNU-5u0h8GGioh0LelagUIIGFfiuU/
-  return !delegate_ ||  // Can be null in unit tests.
-         delegate_->CanFireAccessibilityEvents();
+  return delegate_->CanFireAccessibilityEvents();
 }
 
 void BrowserAccessibilityManager::FireGeneratedEvent(

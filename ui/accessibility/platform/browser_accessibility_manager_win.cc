@@ -861,9 +861,16 @@ void BrowserAccessibilityManagerWin::FireUiaActiveTextPositionChangedEvent(
 }
 
 bool BrowserAccessibilityManagerWin::CanFireEvents() const {
-  return BrowserAccessibilityManager::CanFireEvents() &&
-         GetDelegateFromRootManager() &&
-         GetDelegateFromRootManager()->AccessibilityGetAcceleratedWidget();
+  if (!BrowserAccessibilityManager::CanFireEvents()) {
+    return false;
+  }
+
+  if (delegate()->AccessibilityIsWebContentSource()) {
+    return GetDelegateFromRootManager() &&
+           GetDelegateFromRootManager()->AccessibilityGetAcceleratedWidget();
+  }
+
+  return delegate()->AccessibilityGetAcceleratedWidget();
 }
 
 void BrowserAccessibilityManagerWin::OnSubtreeWillBeDeleted(AXTree* tree,
