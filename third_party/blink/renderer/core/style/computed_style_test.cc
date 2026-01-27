@@ -2418,4 +2418,32 @@ TEST_F(ComputedStyleTest, HasGapRule) {
   EXPECT_FALSE(no_rule.HasColumnRule());
   EXPECT_FALSE(no_rule.HasRowRule());
 }
+
+TEST_F(ComputedStyleTest, SingleAxisScrollContainers) {
+  ScopedSingleAxisScrollContainersForTest enabled(true);
+  EXPECT_FALSE(ComputedStyle::IsOverflowValueScrollable(EOverflow::kVisible));
+  EXPECT_FALSE(ComputedStyle::IsOverflowValueScrollable(EOverflow::kClip));
+  EXPECT_TRUE(ComputedStyle::IsOverflowValueScrollable(EOverflow::kScroll));
+
+  // Horizontal writing mode.
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetOverflowX(EOverflow::kClip);
+  builder.SetOverflowY(EOverflow::kScroll);
+  const auto* horizontal = builder.TakeStyle();
+
+  EXPECT_TRUE(horizontal->IsScrollContainer());
+  EXPECT_FALSE(horizontal->IsOverflowValueScrollableInline());
+  EXPECT_TRUE(horizontal->IsOverflowValueScrollableBlock());
+
+  // Vertical writing mode.
+  builder = CreateComputedStyleBuilder();
+  builder.SetWritingMode(WritingMode::kVerticalRl);
+  builder.SetOverflowX(EOverflow::kClip);
+  builder.SetOverflowY(EOverflow::kScroll);
+  const auto* vertical = builder.TakeStyle();
+
+  EXPECT_TRUE(vertical->IsOverflowValueScrollableInline());
+  EXPECT_FALSE(vertical->IsOverflowValueScrollableBlock());
+}
+
 }  // namespace blink

@@ -1956,6 +1956,12 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Returns true if 'overflow' is 'visible' or 'clip' along both axes.
   bool IsOverflowVisibleOrClip() const {
+    // With this feature enabled, a scrollable overflow vale on one axis does
+    // not force the other axis to a scrollable overflow value - so both axes
+    // need to be checked.
+    if (RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled()) {
+      return IsOverflowValueScrollableX() && IsOverflowValueScrollableY();
+    }
     bool overflow_x =
         OverflowX() == EOverflow::kVisible || OverflowX() == EOverflow::kClip;
     DCHECK(!overflow_x || OverflowY() == EOverflow::kVisible ||
@@ -1964,13 +1970,41 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // An overflow value of visible or clip is not a scroll container, all other
-  // values result in a scroll container. Also note that if visible or clip is
-  // set on one axis, then the other axis must also be visible or clip. For
-  // example, "overflow-x: clip; overflow-y: visible" is allowed, but
-  // "overflow-x: clip; overflow-y: hidden" is not.
+  // values result in a scroll container.
+  static bool IsOverflowValueScrollable(EOverflow overflow) {
+    return overflow != EOverflow::kVisible && overflow != EOverflow::kClip;
+  }
+
+  // An overflow value of visible or clip is not a scroll container, all other
+  // values result in a scroll container. Returns true if either axis has a
+  // scrollable overflow value.
   bool IsScrollContainer() const {
-    return OverflowX() != EOverflow::kVisible &&
-           OverflowX() != EOverflow::kClip;
+    return IsOverflowValueScrollable(OverflowX()) ||
+           IsOverflowValueScrollable(OverflowY());
+  }
+
+  // Returns true if the element has a scrollable overflow value in the logical
+  // inline direction.
+  bool IsOverflowValueScrollableInline() const {
+    return IsOverflowValueScrollable(OverflowInlineDirection());
+  }
+
+  // Returns true if the element has a scrollable overflow value in the logical
+  // block direction.
+  bool IsOverflowValueScrollableBlock() const {
+    return IsOverflowValueScrollable(OverflowBlockDirection());
+  }
+
+  // Returns true if the element has a scrollable overflow value in the physical
+  // horizontal direction.
+  bool IsOverflowValueScrollableX() const {
+    return IsOverflowValueScrollable(OverflowX());
+  }
+
+  // Returns true if the element has a scrollable overflow value in the physical
+  // vertical direction.
+  bool IsOverflowValueScrollableY() const {
+    return IsOverflowValueScrollable(OverflowY());
   }
 
   // Returns true if object-fit, object-position and object-view-box would avoid
