@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(SelectedKeywordViewTest,
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(current_browser);
   SelectedKeywordView* selected_keyword_view =
-      browser_view->toolbar()->location_bar()->selected_keyword_view();
+      browser_view->toolbar()->location_bar_view()->selected_keyword_view();
   ASSERT_NE(selected_keyword_view, nullptr);
 
   views::test::RunScheduledLayout(browser_view);

@@ -56,7 +56,7 @@ bool TopContainerView::IsPositionInWindowCaption(
       if (child == toolbar) {
         const auto in_toolbar =
             views::View::ConvertPointToTarget(this, toolbar, test_point);
-        if (in_toolbar.y() < toolbar->location_bar()->y()) {
+        if (in_toolbar.y() < toolbar->location_bar()->Bounds().y()) {
           return true;
         }
       }

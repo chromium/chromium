@@ -176,7 +176,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
   LocationBarView* GetLocationBarView(Browser* browser) {
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->toolbar()
-        ->location_bar();
+        ->location_bar_view();
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }

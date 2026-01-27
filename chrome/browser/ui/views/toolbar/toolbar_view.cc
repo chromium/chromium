@@ -603,14 +603,14 @@ void ToolbarView::ShowIntentPickerBubble(
   // shown/highlighted.
   if (highlighted_button || IsMigratedClickToCallBubble(bubble_type)) {
     IntentPickerBubbleView::ShowBubble(
-        location_bar(), highlighted_button, bubble_type, GetWebContents(),
+        location_bar_view(), highlighted_button, bubble_type, GetWebContents(),
         std::move(app_info), show_stay_in_chrome, show_remember_selection,
         initiating_origin, std::move(callback));
   }
 }
 
 void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
-  views::View* const anchor_view = location_bar();
+  views::View* const anchor_view = location_bar_view();
   views::Button* const bookmark_star_icon =
       GetPageActionView(kActionBookmarkThisTab);
   CHECK(bookmark_star_icon);
@@ -1001,7 +1001,7 @@ views::View* ToolbarView::GetDefaultExtensionDialogAnchorView() {
 
 PageActionIconView* ToolbarView::GetPageActionIconView(
     PageActionIconType type) {
-  return location_bar()->page_action_icon_controller()->GetIconView(type);
+  return location_bar_view()->page_action_icon_controller()->GetIconView(type);
 }
 
 IconLabelBubbleView* ToolbarView::GetPageActionView(
@@ -1012,7 +1012,7 @@ IconLabelBubbleView* ToolbarView::GetPageActionView(
   }
   const auto& properties = provider.GetProperties(action_id);
   if (IsPageActionMigrated(properties.type)) {
-    return location_bar()->page_action_container()->GetPageActionView(
+    return location_bar_view()->page_action_container()->GetPageActionView(
         action_id);
   }
   return GetPageActionIconView(properties.type);
@@ -1105,7 +1105,7 @@ ReloadControl* ToolbarView::GetReloadButton() {
 }
 
 IntentChipButton* ToolbarView::GetIntentChipButton() {
-  return location_bar()->intent_chip();
+  return location_bar_view()->intent_chip();
 }
 
 ToolbarButton* ToolbarView::GetDownloadButton() {

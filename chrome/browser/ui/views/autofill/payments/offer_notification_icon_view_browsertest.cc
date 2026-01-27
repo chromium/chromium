@@ -145,7 +145,7 @@ class OfferNotificationIconViewBrowserTest
   }
 
   LocationBarView* GetLocationBarView() {
-    return GetBrowserView()->toolbar()->location_bar();
+    return GetBrowserView()->toolbar()->location_bar_view();
   }
 
   base::test::ScopedFeatureList feature_list_;

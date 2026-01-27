@@ -54,7 +54,7 @@ class ProductSpecificationsIconViewBrowserTest : public UiBrowserTest {
   }
 
   LocationBarView* GetLocationBarView() {
-    return GetBrowserView()->toolbar()->location_bar();
+    return GetBrowserView()->toolbar()->location_bar_view();
   }
 
   ProductSpecificationsIconView* GetChip() {

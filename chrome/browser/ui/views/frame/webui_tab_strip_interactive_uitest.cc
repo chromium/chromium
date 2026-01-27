@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest,
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
   OmniboxViewViews* const omnibox =
-      browser_view->toolbar()->location_bar()->omnibox_view();
+      browser_view->toolbar()->location_bar_view()->omnibox_view();
   omnibox->SetUserText(u"");
 
   container->SetVisibleForTesting(true);

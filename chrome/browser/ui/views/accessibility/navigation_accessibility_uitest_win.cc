@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(NavigationAccessibilityTest,
   OmniboxViewViews* omnibox_view =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
-          ->location_bar()
+          ->location_bar_view()
           ->omnibox_view();
   omnibox_view->SetUserText(base::UTF8ToUTF16(main_url.spec()), false);
 

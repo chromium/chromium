@@ -96,7 +96,7 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
   LocationBarView* GetLocationBarView() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
-        ->location_bar();
+        ->location_bar_view();
   }
 
   void OverrideVisibleUrlInLocationBar(const std::u16string& text) {

@@ -216,10 +216,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // The permission may be shown using a chip UI instead of a popped-up bubble.
   // If so, click on the chip to open the bubble.
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  LocationBarView* lbv = browser_view->toolbar()->location_bar();
-  if (lbv->GetChipController()->IsPermissionPromptChipVisible() &&
-      !lbv->GetChipController()->IsBubbleShowing()) {
-    views::test::ButtonTestApi(lbv->GetChipController()->chip())
+  LocationBar* lb = browser_view->toolbar()->location_bar();
+  if (lb->GetChipController()->IsPermissionPromptChipVisible() &&
+      !lb->GetChipController()->IsBubbleShowing()) {
+    views::test::ButtonTestApi(lb->GetChipController()->chip())
         .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(),
                                     ui::EF_LEFT_MOUSE_BUTTON, 0));

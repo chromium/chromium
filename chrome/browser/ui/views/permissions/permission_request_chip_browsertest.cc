@@ -47,10 +47,8 @@ void RequestPermission(Browser* browser) {
   observer.Wait();
 }
 
-LocationBarView* GetLocationBarView(Browser* browser) {
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar()
-      ->location_bar();
+LocationBar* GetLocationBar(Browser* browser) {
+  return BrowserView::GetBrowserViewForBrowser(browser)->GetLocationBar();
 }
 
 }  // namespace
@@ -61,8 +59,8 @@ class PermissionRequestChipGestureSensitiveBrowserTest
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
                        ChipFinalizedWhenInteractingWithOmnibox) {
   RequestPermission(browser());
-  LocationBarView* lbv = GetLocationBarView(browser());
-  auto* animation = lbv->GetChipController()->chip()->animation_for_testing();
+  LocationBar* lb = GetLocationBar(browser());
+  auto* animation = lb->GetChipController()->chip()->animation_for_testing();
 
   // Animate the chip expand.
   gfx::AnimationTestApi animation_api(animation);
@@ -72,51 +70,49 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
 
   // After animation ended, the chip is expanded and the bubble is shown because
   // the gesture sensitive request feature is enabled.
-  EXPECT_TRUE(lbv->GetChipController()->IsPermissionPromptChipVisible());
-  EXPECT_TRUE(lbv->GetChipController()->IsBubbleShowing());
+  EXPECT_TRUE(lb->GetChipController()->IsPermissionPromptChipVisible());
+  EXPECT_TRUE(lb->GetChipController()->IsBubbleShowing());
 
   // Because the bubble is shown, callback timers should be abandoned
   EXPECT_FALSE(
-      lbv->GetChipController()->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(
-      lbv->GetChipController()->is_dismiss_timer_running_for_testing());
+      lb->GetChipController()->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(lb->GetChipController()->is_dismiss_timer_running_for_testing());
 
   // Type something in the omnibox.
-  auto* omnibox_view = lbv->GetOmniboxView();
+  auto* omnibox_view = lb->GetOmniboxView();
   omnibox_view->SetUserText(u"search query");
-  lbv->GetOmniboxController()->edit_model()->SetInputInProgress(true);
+  lb->GetOmniboxController()->edit_model()->SetInputInProgress(true);
 
   base::RunLoop().RunUntilIdle();
 
   // While the user is interacting with the omnibox, the chip is hidden, the
   // location icon isn't offset by the chip and the bubble is hidden.
-  EXPECT_FALSE(lbv->GetChipController()->IsPermissionPromptChipVisible());
-  EXPECT_FALSE(lbv->GetChipController()->IsBubbleShowing());
+  EXPECT_FALSE(lb->GetChipController()->IsPermissionPromptChipVisible());
+  EXPECT_FALSE(lb->GetChipController()->IsBubbleShowing());
 
   // Ensure no callbacks are pending.
   EXPECT_FALSE(
-      lbv->GetChipController()->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(
-      lbv->GetChipController()->is_dismiss_timer_running_for_testing());
+      lb->GetChipController()->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(lb->GetChipController()->is_dismiss_timer_running_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
                        ChipIsNotShownWhenInteractingWithOmnibox) {
-  LocationBarView* lbv = GetLocationBarView(browser());
+  LocationBar* lb = GetLocationBar(browser());
 
   // The chip is not shown because there is no active permission request.
-  EXPECT_FALSE(lbv->GetChipController()->IsPermissionPromptChipVisible());
+  EXPECT_FALSE(lb->GetChipController()->IsPermissionPromptChipVisible());
 
   // Type something in the omnibox.
-  auto* omnibox_view = lbv->GetOmniboxView();
+  auto* omnibox_view = lb->GetOmniboxView();
   omnibox_view->SetUserText(u"search query");
-  lbv->GetOmniboxController()->edit_model()->SetInputInProgress(true);
+  lb->GetOmniboxController()->edit_model()->SetInputInProgress(true);
 
   RequestPermission(browser());
 
   // While the user is interacting with the omnibox, an incoming permission
   // request will be automatically ignored. The chip is not shown.
-  EXPECT_FALSE(lbv->GetChipController()->IsPermissionPromptChipVisible());
+  EXPECT_FALSE(lb->GetChipController()->IsPermissionPromptChipVisible());
 }
 
 // This is an end-to-end test that verifies that a permission prompt bubble will
@@ -164,10 +160,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckMicrophone,
                                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
 
-  LocationBarView* location_bar =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
-          ->location_bar();
+  LocationBar* location_bar =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBar();
 
   // Type something in the omnibox.
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
@@ -249,8 +243,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // to the location bar view instance. Since the location bar view instance is
   // reused across multiple tabs, this in turn also means that the chip
   // controller instance is the same across multiple tabs.
-  LocationBarView* location_bar =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  LocationBar* location_bar =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBar();
   ASSERT_TRUE(location_bar);
   ChipController* chip_controller = location_bar->GetChipController();
 
@@ -297,8 +291,8 @@ class PermissionRequestChipGestureInsensitiveBrowserTest
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
                        CallbacksResetWhenInteractingWithOmnibox) {
   RequestPermission(browser());
-  LocationBarView* lbv = GetLocationBarView(browser());
-  auto* animation = lbv->GetChipController()->chip()->animation_for_testing();
+  LocationBar* lb = GetLocationBar(browser());
+  auto* animation = lb->GetChipController()->chip()->animation_for_testing();
 
   // Animate the chip expand.
   gfx::AnimationTestApi animation_api(animation);
@@ -307,29 +301,27 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
   animation_api.Step(now + animation->GetSlideDuration());
 
   // After animation ended, the chip is expanded and a bubble is shown.
-  EXPECT_TRUE(lbv->GetChipController()->IsPermissionPromptChipVisible());
-  EXPECT_TRUE(lbv->GetChipController()->IsBubbleShowing());
+  EXPECT_TRUE(lb->GetChipController()->IsPermissionPromptChipVisible());
+  EXPECT_TRUE(lb->GetChipController()->IsBubbleShowing());
 
   // Because a bubble is shown, the collapse callback timer should not be
   // running.
   EXPECT_FALSE(
-      lbv->GetChipController()->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(
-      lbv->GetChipController()->is_dismiss_timer_running_for_testing());
+      lb->GetChipController()->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(lb->GetChipController()->is_dismiss_timer_running_for_testing());
 
   // Type something in the omnibox.
-  auto* omnibox_view = lbv->GetOmniboxView();
+  auto* omnibox_view = lb->GetOmniboxView();
   omnibox_view->SetUserText(u"search query");
-  lbv->GetOmniboxController()->edit_model()->SetInputInProgress(true);
+  lb->GetOmniboxController()->edit_model()->SetInputInProgress(true);
 
   base::RunLoop().RunUntilIdle();
 
   // Ensure chip is no longer visible and callbacks are no longer running.
-  EXPECT_FALSE(lbv->GetChipController()->IsPermissionPromptChipVisible());
+  EXPECT_FALSE(lb->GetChipController()->IsPermissionPromptChipVisible());
   EXPECT_FALSE(
-      lbv->GetChipController()->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(
-      lbv->GetChipController()->is_dismiss_timer_running_for_testing());
+      lb->GetChipController()->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(lb->GetChipController()->is_dismiss_timer_running_for_testing());
 }
 
 class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
@@ -340,7 +332,8 @@ class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
   }
 
   bool VerifyUi() override {
-    LocationBarView* const location_bar = GetLocationBarView(browser());
+    LocationBarView* const location_bar =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
     PermissionChipView* const chip = location_bar->GetChipController()->chip();
     if (!chip || !chip->GetVisible() || chip->is_fully_collapsed()) {
       return false;
@@ -377,32 +370,31 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
                        TestDisabledAnimation) {
   RequestPermission(browser());
-  LocationBarView* lbv = GetLocationBarView(browser());
+  LocationBar* lb = GetLocationBar(browser());
 
   // The chip is expanded and a bubble is shown.
-  EXPECT_TRUE(lbv->GetChipController()->IsPermissionPromptChipVisible());
-  EXPECT_TRUE(lbv->GetChipController()->IsBubbleShowing());
+  EXPECT_TRUE(lb->GetChipController()->IsPermissionPromptChipVisible());
+  EXPECT_TRUE(lb->GetChipController()->IsBubbleShowing());
 
-  lbv->GetChipController()->active_permission_request_manager().value()->Deny(
+  lb->GetChipController()->active_permission_request_manager().value()->Deny(
       /*prompt_options=*/std::monostate());
 
   base::RunLoop().RunUntilIdle();
 
   // The chip is visible as we show the confirmation.
-  EXPECT_TRUE(lbv->GetChipController()->IsPermissionPromptChipVisible());
-  EXPECT_FALSE(lbv->GetChipController()->IsBubbleShowing());
-  EXPECT_TRUE(lbv->GetChipController()->is_confirmation_showing());
-  EXPECT_TRUE(
-      lbv->GetChipController()->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(lbv->GetChipController()
+  EXPECT_TRUE(lb->GetChipController()->IsPermissionPromptChipVisible());
+  EXPECT_FALSE(lb->GetChipController()->IsBubbleShowing());
+  EXPECT_TRUE(lb->GetChipController()->is_confirmation_showing());
+  EXPECT_TRUE(lb->GetChipController()->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(lb->GetChipController()
                    ->is_waiting_for_confirmation_collapse_for_testing());
 
-  lbv->GetChipController()->fire_collapse_timer_for_testing();
+  lb->GetChipController()->fire_collapse_timer_for_testing();
 
-  EXPECT_FALSE(lbv->GetChipController()->IsPermissionPromptChipVisible());
-  EXPECT_FALSE(lbv->GetChipController()->is_confirmation_showing());
+  EXPECT_FALSE(lb->GetChipController()->IsPermissionPromptChipVisible());
+  EXPECT_FALSE(lb->GetChipController()->is_confirmation_showing());
   EXPECT_FALSE(
-      lbv->GetChipController()->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(lbv->GetChipController()
+      lb->GetChipController()->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(lb->GetChipController()
                    ->is_waiting_for_confirmation_collapse_for_testing());
 }

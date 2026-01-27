@@ -1008,7 +1008,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     OmniboxViewViews* omnibox_view =
-        browser_view->toolbar()->location_bar()->omnibox_view();
+        browser_view->toolbar()->location_bar_view()->omnibox_view();
 
     gfx::Point point;
     views::View::ConvertPointToScreen(omnibox_view, &point);
@@ -1021,7 +1021,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     OmniboxViewViews* omnibox_view =
-        browser_view->toolbar()->location_bar()->omnibox_view();
+        browser_view->toolbar()->location_bar_view()->omnibox_view();
 
     gfx::Point point;
     views::View::ConvertPointToScreen(omnibox_view, &point);
@@ -1340,7 +1340,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   OmniboxViewViews* omnibox_view =
-      browser_view->toolbar()->location_bar()->omnibox_view();
+      browser_view->toolbar()->location_bar_view()->omnibox_view();
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 
   // Click into Omnibox, so the text will be unselected.
@@ -2576,7 +2576,7 @@ class DragAndDropBrowserTestNoParam : public InProcessBrowserTest {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     OmniboxViewViews* omnibox_view =
-        browser_view->toolbar()->location_bar()->omnibox_view();
+        browser_view->toolbar()->location_bar_view()->omnibox_view();
 
     // Simulate mouse move to omnibox.
     gfx::Point point;

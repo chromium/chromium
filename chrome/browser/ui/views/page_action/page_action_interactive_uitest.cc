@@ -150,7 +150,7 @@ class PageActionUiTestBase {
   LocationBarView* location_bar() const {
     return BrowserView::GetBrowserViewForBrowser(GetBrowser())
         ->toolbar()
-        ->location_bar();
+        ->location_bar_view();
   }
 
   OmniboxViewViews* omnibox_view() const {

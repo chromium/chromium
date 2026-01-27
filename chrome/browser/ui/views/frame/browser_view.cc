@@ -2252,7 +2252,7 @@ void BrowserView::ExecutePageActionIconForTesting(PageActionIconType type) {
 }
 
 LocationBar* BrowserView::GetLocationBar() const {
-  return GetLocationBarView();
+  return toolbar_ ? toolbar_->location_bar() : nullptr;
 }
 
 void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
@@ -3582,7 +3582,7 @@ BookmarkBarView* BrowserView::GetBookmarkBarView() const {
 }
 
 LocationBarView* BrowserView::GetLocationBarView() const {
-  return toolbar_ ? toolbar_->location_bar() : nullptr;
+  return toolbar_ ? toolbar_->location_bar_view() : nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4769,12 +4769,12 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   // for keyboard users.
   if (base::FeatureList::IsEnabled(
           content_settings::features::kLeftHandSideActivityIndicators)) {
-    if (toolbar_ && toolbar_->location_bar() &&
-        toolbar_->location_bar()
+    if (toolbar_ && toolbar_->location_bar_view() &&
+        toolbar_->location_bar_view()
             ->permission_dashboard_controller()
             ->permission_dashboard_view()
             ->GetVisible()) {
-      panes->push_back(toolbar_->location_bar()
+      panes->push_back(toolbar_->location_bar_view()
                            ->permission_dashboard_controller()
                            ->permission_dashboard_view());
     }
@@ -5105,7 +5105,7 @@ void BrowserView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
   // TODO(jamescook): Why was this in the middle of layout code?
-  toolbar_->location_bar()->omnibox_view()->SetFocusBehavior(
+  toolbar_->location_bar_view()->omnibox_view()->SetFocusBehavior(
       IsToolbarVisible() ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
   GetFrameView()->UpdateMinimumSize();
 

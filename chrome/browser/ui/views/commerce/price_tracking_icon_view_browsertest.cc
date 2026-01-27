@@ -81,7 +81,7 @@ class PriceTrackingIconViewBrowserTest : public UiBrowserTest {
   }
 
   LocationBarView* GetLocationBarView() {
-    return GetBrowserView()->toolbar()->location_bar();
+    return GetBrowserView()->toolbar()->location_bar_view();
   }
 
   void SimulateServerPriceTrackState(bool is_price_tracked) {

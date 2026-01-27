@@ -91,7 +91,7 @@ class OmniboxWebUiInteractiveTest : public OmniboxWebUiInteractiveTestBase {
       auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
           BrowserView::GetBrowserViewForBrowser(browser())
               ->toolbar()
-              ->location_bar()
+              ->location_bar_view()
               ->GetOmniboxPopupViewForTesting());
       return popup_view->presenter_->GetWebUIContent();
     });
@@ -207,7 +207,7 @@ class OmniboxAimWebUiInteractiveTest
       auto* aim_presenter = static_cast<OmniboxPopupAimPresenter*>(
           BrowserView::GetBrowserViewForBrowser(browser())
               ->toolbar()
-              ->location_bar()
+              ->location_bar_view()
               ->GetOmniboxPopupAimPresenter());
       return aim_presenter->GetWebUIContent();
     });

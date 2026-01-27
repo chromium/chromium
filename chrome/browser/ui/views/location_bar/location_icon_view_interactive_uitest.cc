@@ -96,7 +96,7 @@ class LocationIconViewTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(LocationIconViewTest, HideOnSecondClick) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::View* location_icon_view =
-      browser_view->toolbar()->location_bar()->location_icon_view();
+      browser_view->toolbar()->location_bar_view()->location_icon_view();
   ASSERT_TRUE(location_icon_view);
 
   // Verify that clicking once shows the location icon bubble.
