@@ -11,6 +11,7 @@ import '//resources/cr_elements/icons.html.js';
 import './favicon_group.js';
 import './sources_menu.js';
 
+import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -116,7 +117,10 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected onMoreClick_(e: Event) {
-    this.$.menu.get().showAt(e.target as HTMLElement);
+    this.$.menu.get().showAt(e.target as HTMLElement, {
+      noOffset: true,
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+    });
   }
 
   protected onSourcesClick_(e: Event) {
