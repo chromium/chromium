@@ -153,7 +153,7 @@ void AddZeroStateStrings(content::WebUIDataSource* source, Profile* profile) {
         IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE_WITHOUT_NAME);
   } else {
     full_string = l10n_util::GetStringFUTF16(
-        IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE, gaia_name, u"<br>");
+        IDS_AI_MODE_FRIENDLY_ZERO_STATE_TITLE, gaia_name);
   }
   std::vector<std::u16string> parts = base::SplitStringUsingSubstr(
       full_string, u"<br>", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
