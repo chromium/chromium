@@ -48,7 +48,7 @@ std::u16string NormalizeAttributeValue(
 }
 
 // If `kAutofillAiWalletPrivatePasses` is enabled and either `a1` or `a2` is
-// masked, returns the minimum of the lengths of the non-empty, normalized
+// masked, returns the maximum of the lengths of the non-empty, normalized
 // values of the masked attribute instances. Otherwise, returns `std::nullopt`.
 //
 // The product implication of a non-zero suffix length is that equality checks
