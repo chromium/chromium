@@ -6,7 +6,7 @@
 
 #include <ShellHandwriting.h>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/event_utils.h"
@@ -23,10 +23,10 @@ constexpr char kPropertyHandwritingStrokeId[] = "handwriting_stroke_id";
 GetHandwritingStrokeIdForPointerFunc
 GetHandwritingStrokeIdForPointerFuncFromModule() {
   HMODULE module = nullptr;
-  if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, L"msctf.dll",
-                         &module)) {
+  if (::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, L"msctf.dll",
+                           &module)) {
     return reinterpret_cast<GetHandwritingStrokeIdForPointerFunc>(
-        GetProcAddress(module, "GetHandwritingStrokeIdForPointer"));
+        ::GetProcAddress(module, "GetHandwritingStrokeIdForPointer"));
   }
 
   return nullptr;
@@ -71,8 +71,8 @@ std::optional<StylusHandwritingPropertiesWin> GetStylusHandwritingProperties(
     if (it != event_properties->end()) {
       CHECK_EQ(it->second.size(), sizeof(uint32_t));
       uint32_t handwriting_pointer_id = 0;
-      UNSAFE_TODO(std::memcpy(&handwriting_pointer_id, it->second.data(),
-                              it->second.size()));
+      base::byte_span_from_ref(handwriting_pointer_id)
+          .copy_from(base::span(it->second));
       handwriting_properties =
           std::make_optional<StylusHandwritingPropertiesWin>();
       handwriting_properties->handwriting_pointer_id = handwriting_pointer_id;
@@ -82,8 +82,8 @@ std::optional<StylusHandwritingPropertiesWin> GetStylusHandwritingProperties(
     if (it != event_properties->end()) {
       CHECK_EQ(it->second.size(), sizeof(uint64_t));
       uint64_t handwriting_stroke_id = 0;
-      UNSAFE_TODO(std::memcpy(&handwriting_stroke_id, it->second.data(),
-                              it->second.size()));
+      base::byte_span_from_ref(handwriting_stroke_id)
+          .copy_from(base::span(it->second));
       if (!handwriting_properties.has_value()) [[unlikely]] {
         handwriting_properties =
             std::make_optional<StylusHandwritingPropertiesWin>();
