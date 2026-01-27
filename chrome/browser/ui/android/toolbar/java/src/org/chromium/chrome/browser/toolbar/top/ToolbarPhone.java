@@ -49,7 +49,6 @@ import android.view.ViewStub;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -2535,7 +2534,7 @@ public class ToolbarPhone extends ToolbarLayout
         @Nullable
         @Override
         public Animator createAnimator(
-                @NonNull ViewGroup sceneRoot,
+                ViewGroup sceneRoot,
                 @Nullable TransitionValues startValues,
                 @Nullable TransitionValues endValues) {
             if (startValues == null || endValues == null) return null;
