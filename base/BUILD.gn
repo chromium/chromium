@@ -4538,11 +4538,7 @@ if (enable_nocompile_tests) {
       "unsafe_buffers_nocompile.nc",
       "values_nocompile.nc",
     ]
-    if (use_cxx23) {
-      sources += [ "containers/adapters_nocompile_cpp23.nc" ]
-    } else {
-      sources += [ "containers/adapters_nocompile.nc" ]
-    }
+    sources += [ "containers/adapters_nocompile.nc" ]
     deps = [ ":base" ]
   }
 }
