@@ -90,7 +90,13 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxMatchTest) {
   RunTest("cr_components/searchbox/searchbox_match_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxTest) {
+// TODO(crbug.com/453570027): Test is flaky.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RealboxTest DISABLED_RealboxTest
+#else
+#define MAYBE_RealboxTest RealboxTest
+#endif
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, MAYBE_RealboxTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/searchbox/searchbox_test.js", "mocha.run()");
 }
