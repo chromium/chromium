@@ -999,6 +999,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         mInstanceId = instanceId;
         MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
         MultiInstancePersistentStore.writeProfileType(instanceId, profileType);
+        MultiInstancePersistentStore.writeMarkedForDeletion(
+                instanceId, /* markedForDeletion= */ false);
         installTabModelObserver();
         recordInstanceCountHistogram();
         recordActivityCountHistogram();
