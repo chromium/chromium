@@ -40,8 +40,15 @@ mojom("test_mojom") {
       ]
       traits_headers = [
         "//device/vr/public/mojom/test/browser_test_interfaces_mojom_traits.h",
+        "//device/vr/public/mojom/test/controller_frame_data.h",
+        "//device/vr/public/mojom/test/device_config.h",
+        "//device/vr/public/mojom/test/view_data.h",
+        "//device/vr/public/mojom/test/visibility_mask.h",
       ]
-      traits_public_deps = [ ":vr_public_test_typemaps" ]
+      traits_public_deps = [
+        ":vr_public_test_typemaps",
+        "//device/vr/public/mojom:vr_service",
+      ]
     },
   ]
 }
@@ -66,8 +73,5 @@ component("vr_public_test_typemaps") {
     "//ui/gfx/mojom",
   ]
 
-  public_deps = [
-    ":test_mojom_shared",
-    "//device/vr/public/mojom:vr_service_shared",
-  ]
+  public_deps = [ "//device/vr/public/mojom:vr_service" ]
 }
