@@ -304,6 +304,9 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsSmoothScroll);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(
     kBrowserControlsHeightChangeCancelAnimations);
 
+// When enabled uses derived state machine for Headless mode.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHeadlessSchedulerStateMachine);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

@@ -395,6 +395,15 @@ bool SchedulerStateMachine::ShouldBeginLayerTreeFrameSinkCreation() const {
   return layer_tree_frame_sink_state_ == LayerTreeFrameSinkState::NONE;
 }
 
+bool SchedulerStateMachine::CheckShouldDraw() const {
+  // Wait for ready to draw in full-pipeline mode or the browser compositor's
+  // commit-to-active-tree mode.
+  // When
+  return ((settings_.wait_for_all_pipeline_stages_before_draw ||
+           settings_.commit_to_active_tree) &&
+          !active_tree_is_ready_to_draw_);
+}
+
 bool SchedulerStateMachine::ShouldDraw() const {
   // If we need to abort draws, we should do so ASAP since the draw could
   // be blocking other important actions (like output surface initialization),
@@ -426,11 +435,7 @@ bool SchedulerStateMachine::ShouldDraw() const {
   if (begin_impl_frame_state_ != BeginImplFrameState::INSIDE_DEADLINE)
     return false;
 
-  // Wait for ready to draw in full-pipeline mode or the browser compositor's
-  // commit-to-active-tree mode.
-  if ((settings_.wait_for_all_pipeline_stages_before_draw ||
-       settings_.commit_to_active_tree) &&
-      !active_tree_is_ready_to_draw_) {
+  if (CheckShouldDraw()) {
     return false;
   }
 
@@ -992,6 +997,11 @@ void SchedulerStateMachine::WillNotifyBeginMainFrameNotExpectedSoon() {
   did_notify_begin_main_frame_not_expected_soon_ = true;
 }
 
+bool SchedulerStateMachine::CheckWillCommit() const {
+  return (!active_tree_needs_first_draw_ ||
+          !settings_.wait_for_all_pipeline_stages_before_draw);
+}
+
 void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
   bool can_have_pending_tree =
       commit_has_no_updates &&
@@ -1033,11 +1043,9 @@ void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
     has_pending_tree_ = true;
     pending_tree_needs_first_draw_on_activation_ = true;
     pending_tree_is_ready_for_activation_ = false;
-    if (!active_tree_needs_first_draw_ ||
-        !settings_.wait_for_all_pipeline_stages_before_draw) {
+    if (CheckWillCommit()) {
       // Wait for the new pending tree to become ready to draw, which may happen
-      // before or after activation (unless we're in full-pipeline mode and
-      // need first draw to come through).
+      // before or after activation.
       active_tree_is_ready_to_draw_ = false;
     }
   }
@@ -1518,9 +1526,13 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
   return false;
 }
 
+bool SchedulerStateMachine::CheckShouldBlockDeadlineIndefinitely() const {
+  return (!settings_.wait_for_all_pipeline_stages_before_draw &&
+          !settings_.commit_to_active_tree);
+}
+
 bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
-  if (!settings_.wait_for_all_pipeline_stages_before_draw &&
-      !settings_.commit_to_active_tree) {
+  if (CheckShouldBlockDeadlineIndefinitely()) {
     return false;
   }
 

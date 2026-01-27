@@ -126,7 +126,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   const SchedulerSettings& settings() const { return settings_; }
 
   void SetVisible(bool visible);
-  bool visible() { return state_machine_.visible(); }
+  bool visible() { return state_machine_->visible(); }
   void SetShouldWarmUp();
   void SetCanDraw(bool can_draw);
 
@@ -186,7 +186,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation);
 
   bool pending_tree_is_ready_for_activation() const {
-    return state_machine_.pending_tree_is_ready_for_activation();
+    return state_machine_->pending_tree_is_ready_for_activation();
   }
 
   // Drawing should result in submitting a CompositorFrame to the
@@ -223,17 +223,17 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // Tests do not want to shut down until all possible BeginMainFrames have
   // occured to prevent flakiness.
   bool MainFrameForTestingWillHappen() const {
-    return state_machine_.CommitPending() ||
-           state_machine_.CouldSendBeginMainFrame();
+    return state_machine_->CommitPending() ||
+           state_machine_->CouldSendBeginMainFrame();
   }
 
-  bool CommitPending() const { return state_machine_.CommitPending(); }
-  bool RedrawPending() const { return state_machine_.RedrawPending(); }
+  bool CommitPending() const { return state_machine_->CommitPending(); }
+  bool RedrawPending() const { return state_machine_->RedrawPending(); }
   bool PrepareTilesPending() const {
-    return state_machine_.PrepareTilesPending();
+    return state_machine_->PrepareTilesPending();
   }
   bool ImplLatencyTakesPriority() const {
-    return state_machine_.ImplLatencyTakesPriority();
+    return state_machine_->ImplLatencyTakesPriority();
   }
 
   // Pass in a main_thread_start_time of base::TimeTicks() if it is not
@@ -351,7 +351,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   viz::BeginFrameArgs pending_begin_frame_args_;
   base::CancelableOnceClosure pending_begin_frame_task_;
 
-  SchedulerStateMachine state_machine_;
+  std::unique_ptr<SchedulerStateMachine> state_machine_;
   bool inside_process_scheduled_actions_ = false;
   bool inside_scheduled_action_ = false;
   SchedulerStateMachine::Action inside_action_ =
