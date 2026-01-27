@@ -1028,8 +1028,8 @@ class AutofillPopupControllerImplTestAccessibility
 
  protected:
   content::ScopedAccessibilityModeOverride accessibility_mode_override_;
-  MockAxPlatformNodeDelegate mock_ax_platform_node_delegate_;
-  MockAxPlatformNode mock_ax_platform_node_;
+  NiceMock<MockAxPlatformNodeDelegate> mock_ax_platform_node_delegate_;
+  NiceMock<MockAxPlatformNode> mock_ax_platform_node_;
   ui::AXTreeID test_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
 };
 
