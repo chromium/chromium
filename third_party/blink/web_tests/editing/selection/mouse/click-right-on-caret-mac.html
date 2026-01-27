@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<div id="t" contenteditable="true" style="padding: 10px; font-family: monospace; font-size: 20px;">
+  The quick brown fox jumps over the lazy dog.
+</div>
+
+<script>
+  promise_test(async () => {
+      const element = document.getElementById('t');
+      const rect = element.getBoundingClientRect();
+      const y = rect.top + rect.height / 2;
+      const targetX = rect.left + 7;   // Adjust this to hit roughly index 7
+
+      // We simulate a click to set the initial position
+      await new Promise((resolve) => {
+          chrome.gpuBenchmarking.pointerActionSequence([
+              {
+                  source: 'mouse',
+                  actions: [
+                      { name: 'pointerMove', x: targetX, y: y },
+                      { name: 'pointerDown', x: targetX, y: y, button: 0 },
+                      { name: 'pointerUp', button: 0 },
+                      { name: 'pointerDown', x: targetX, y: y, button: 2 },
+                      { name: 'pointerUp', button: 2 }
+                  ]
+              }
+          ], resolve);
+      });
+
+      // We want isCollapsed to be TRUE (it's a caret, not a highlight)
+      const sel = window.getSelection();
+      assert_true(sel.isCollapsed, "Should be a caret (isCollapsed: true)");
+  }, "Right-clicking the caret should stay collapsed.");
+</script>
