@@ -97,12 +97,10 @@ std::u16string GetDriversLicenseName(const EntityInstance& entity) {
 
 class AutofillAiSuggestionGeneratorTest : public testing::Test {
  public:
-  AutofillAiSuggestionGeneratorTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillAiServerModel,
-                              features::kAutofillAiWalletFlightReservation},
-        /*disabled_features=*/{});
+  explicit AutofillAiSuggestionGeneratorTest(
+      std::vector<base::test::FeatureRef> enabled_features,
+      std::vector<base::test::FeatureRef> disabled_features) {
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     autofill_client_.set_entity_data_manager(
         std::make_unique<EntityDataManager>(
             autofill_client_.GetPrefs(), autofill_client_.GetIdentityManager(),
@@ -114,6 +112,10 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
     autofill_client_.SetUpPrefsAndIdentityForAutofillAi();
     generator_ = std::make_unique<AutofillAiSuggestionGenerator>();
   }
+
+  AutofillAiSuggestionGeneratorTest()
+      : AutofillAiSuggestionGeneratorTest(GetDefaultEnabledFeatures(),
+                                          /*disabled_features=*/{}) {}
 
   // Sets the form to one whose `i`th field has type `field_types[i]`.
   void SetForm(const std::vector<FieldType>& field_types) {
@@ -187,6 +189,13 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
   FormFieldData& field_data() { return *form_structure_->fields()[0]; }
   FormStructure& form_structure() { return *form_structure_; }
   AutofillField& field(size_t i = 0) { return *form_structure_->fields()[i]; }
+
+ protected:
+  std::vector<base::test::FeatureRef> GetDefaultEnabledFeatures() {
+    return {features::kAutofillAiWithDataSchema,
+            features::kAutofillAiServerModel,
+            features::kAutofillAiWalletFlightReservation};
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -895,6 +904,47 @@ TEST_F(AutofillAiSuggestionGeneratorTest, WalletSuggestionsShowIPH) {
   raw_ptr<const base::Feature> kIphFeature =
       &feature_engagement::kIPHAutofillAiValuablesFeature;
   EXPECT_THAT(suggestions, SuggestionsAre(HasIphFeature(kIphFeature)));
+}
+
+class AutofillAiSuggestionGeneratorSplitManageSuggestionTest
+    : public AutofillAiSuggestionGeneratorTest {
+ public:
+  AutofillAiSuggestionGeneratorSplitManageSuggestionTest()
+      : AutofillAiSuggestionGeneratorTest(GetEnabledFeatures(),
+                                          /*disabled_features=*/{}) {}
+
+ private:
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() {
+    auto features = GetDefaultEnabledFeatures();
+    features.push_back(
+        autofill::features::kSuggestionManageButtonSplitForEnhancedAutofill);
+    return features;
+  }
+};
+
+TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
+       SuggestionsFooterContainsManageAutofillAiIdentityDocsSuggestion) {
+  SetEntities({test::GetPassportEntityInstanceWithRandomGuid()});
+  SetForm({PASSPORT_NUMBER});
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(HasType(SuggestionType::kFillAutofillAi),
+                  HasType(SuggestionType::kSeparator),
+                  HasType(SuggestionType::kManageAutofillAiIdentityDocs)));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
+       SuggestionsFooterContainsManageAutofillAiTravelSuggestion) {
+  SetEntities({test::GetVehicleEntityInstanceWithRandomGuid()});
+  SetForm({VEHICLE_LICENSE_PLATE});
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  EXPECT_THAT(suggestions,
+              ElementsAre(HasType(SuggestionType::kFillAutofillAi),
+                          HasType(SuggestionType::kSeparator),
+                          HasType(SuggestionType::kManageAutofillAiTravel)));
 }
 
 }  // namespace

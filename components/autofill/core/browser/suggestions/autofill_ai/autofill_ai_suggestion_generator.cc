@@ -116,11 +116,30 @@ DenseSet<AttributeType> FindAttributesForField(
   return attributes;
 }
 
-// Returns a suggestion to manage AutofillAi data.
-Suggestion CreateManageSuggestion() {
+// Returns a suggestion to manage all AutofillAi data.
+Suggestion CreateManageAutofillAiSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT),
       SuggestionType::kManageAutofillAi);
+  suggestion.icon = Suggestion::Icon::kSettings;
+  return suggestion;
+}
+
+// Returns a suggestion to manage AutofillAi identity dosc data.
+Suggestion CreateManageIdentityDocsSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_MANAGE_IDENTITY_DOCS_SUGGESTION_MAIN_TEXT),
+      SuggestionType::kManageAutofillAiIdentityDocs);
+  suggestion.icon = Suggestion::Icon::kSettings;
+  return suggestion;
+}
+
+// Returns a suggestion to manage AutofillAi travel data.
+Suggestion CreateManageTravelSuggestion() {
+  Suggestion suggestion(l10n_util::GetStringUTF16(
+                            IDS_AUTOFILL_AI_MANAGE_TRAVEL_SUGGESTION_MAIN_TEXT),
+                        SuggestionType::kManageAutofillAiTravel);
   suggestion.icon = Suggestion::Icon::kSettings;
   return suggestion;
 }
@@ -136,7 +155,9 @@ Suggestion CreateUndoSuggestion() {
 }
 
 std::vector<Suggestion> GetFooterSuggestions(
-    const FormFieldData& trigger_field) {
+    const FormFieldData& trigger_field,
+    bool suggestions_contain_travel_entity,
+    bool suggestions_contain_identity_docs_entity) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(3);
 
@@ -144,7 +165,25 @@ std::vector<Suggestion> GetFooterSuggestions(
   if (trigger_field.is_autofilled()) {
     suggestions.emplace_back(CreateUndoSuggestion());
   }
-  suggestions.emplace_back(CreateManageSuggestion());
+  if (base::FeatureList::IsEnabled(
+          autofill::features::
+              kSuggestionManageButtonSplitForEnhancedAutofill)) {
+    CHECK(suggestions_contain_travel_entity ||
+          suggestions_contain_identity_docs_entity);
+
+    if (suggestions_contain_travel_entity &&
+        suggestions_contain_identity_docs_entity) {
+      suggestions.emplace_back(CreateManageAutofillAiSuggestion());
+    } else if (suggestions_contain_travel_entity) {
+      suggestions.emplace_back(CreateManageTravelSuggestion());
+    } else if (suggestions_contain_identity_docs_entity) {
+      suggestions.emplace_back(CreateManageIdentityDocsSuggestion());
+    } else {
+      NOTREACHED();
+    }
+  } else {
+    suggestions.emplace_back(CreateManageAutofillAiSuggestion());
+  }
   return suggestions;
 }
 
@@ -291,6 +330,36 @@ Suggestion::Icon GetSuggestionIcon(EntityType trigger_entity_type) {
       return Suggestion::Icon::kPersonCheck;
     case EntityTypeName::kVehicle:
       return Suggestion::Icon::kVehicle;
+  }
+  NOTREACHED();
+}
+
+bool IsTravelType(EntityType trigger_entity_type) {
+  switch (trigger_entity_type.name()) {
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+    case EntityTypeName::kVehicle:
+      return true;
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kPassport:
+      return false;
+  }
+  NOTREACHED();
+}
+
+bool IsIdentityDocsType(EntityType trigger_entity_type) {
+  switch (trigger_entity_type.name()) {
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kPassport:
+      return true;
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+    case EntityTypeName::kVehicle:
+      return false;
   }
   NOTREACHED();
 }
@@ -472,6 +541,8 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   std::vector<Suggestion> suggestions;
   suggestions.reserve(entities_to_suggest.size());
   CHECK_EQ(entities_to_suggest.size(), labels.size());
+  bool contains_travel_entity = false;
+  bool contains_identity_docs_entity = false;
   for (auto [entity, label] : base::zip(entities_to_suggest, labels)) {
     base::span<const AutofillFieldWithAttributeType> fields_with_types =
         assignment.Find(entity.type());
@@ -481,9 +552,13 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     suggestions.push_back(GetSuggestionForEntity(entity, fields_with_types,
                                                  *trigger_field_with_type,
                                                  std::move(label), app_locale));
+    contains_travel_entity |= IsTravelType(entity.type());
+    contains_identity_docs_entity |= IsIdentityDocsType(entity.type());
   }
 
-  base::Extend(suggestions, GetFooterSuggestions(trigger_field_data));
+  base::Extend(suggestions,
+               GetFooterSuggestions(trigger_field_data, contains_travel_entity,
+                                    contains_identity_docs_entity));
   return suggestions;
 }
 

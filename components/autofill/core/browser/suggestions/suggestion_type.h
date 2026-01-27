@@ -43,6 +43,8 @@ enum class SuggestionType {
 
   kManageAddress = 10,
   kManageAutofillAi = 64,
+  kManageAutofillAiIdentityDocs = 75,
+  kManageAutofillAiTravel = 76,
   kManageCreditCard = 11,
   kManageIban = 12,
   kManagePlusAddress = 13,
@@ -171,8 +173,8 @@ enum class SuggestionType {
   // state. On click the user will be directed to sign in.
   kPendingStateSignin = 65,
 
-  // Next ID: 75
-  kMaxValue = kOneTimePasswordEntry
+  // Next ID: 77
+  kMaxValue = kManageAutofillAiTravel
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 
