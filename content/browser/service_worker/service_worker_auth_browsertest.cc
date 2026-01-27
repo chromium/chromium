@@ -230,7 +230,10 @@ class ServiceWorkerBasicAuthTest : public ContentBrowserTest {
     EXPECT_FALSE(
         NavigateToURL(shell(), ssl_server_.GetURL(kWorkerHttpBasicAuthPath)));
     EXPECT_EQ(LoginRequested::kMainFrame, login_requested_);
-    EXPECT_TRUE(is_for_navigation_);
+    // Requests under service worker control are not treated as navigation
+    // requests for the purpose of authentication. See comments in
+    // `StoragePartitionImpl::OnAuthRequired`.
+    EXPECT_NE(under_service_worker_control, is_for_navigation_);
   }
 
   void TestSubframeNavigation(bool under_service_worker_control) {
@@ -242,7 +245,7 @@ class ServiceWorkerBasicAuthTest : public ContentBrowserTest {
         shell(), ssl_server_.GetURL("/workers/iframe_basic_auth.html")));
     // Login request callback should be called for a iframe's main resource.
     EXPECT_EQ(LoginRequested::kNotMainFrame, login_requested_);
-    EXPECT_TRUE(is_for_navigation_);
+    EXPECT_NE(under_service_worker_control, is_for_navigation_);
   }
 
   void TestSubresource(bool under_service_worker_control) {

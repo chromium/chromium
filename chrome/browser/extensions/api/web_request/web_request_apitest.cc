@@ -7726,8 +7726,11 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    RegisterAdditionalHandlers();
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
+
+  virtual void RegisterAdditionalHandlers() {}
 
   // Returns a URL which requires username/password
   GURL MakeAuthUrl() {
@@ -7738,8 +7741,11 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
   }
 
   // Loads an extension that implements onAuthRequired. `additional_js` will be
-  // concatenated to the background.js.
-  void LoadExtensionWithAdditionalJs(const std::string& additional_js) {
+  // concatenated to the background.js. If provided, `expected_request_type`
+  // will be used to verify the request type.
+  void LoadExtensionWithAdditionalJs(
+      const std::string& additional_js,
+      const std::optional<std::string>& expected_request_type = std::nullopt) {
     static constexpr char kManifest[] =
         R"({
              "name": "MV3 WebRequest",
@@ -7749,7 +7755,15 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
              "host_permissions": [ "http://127.0.0.1/*", "https://a.test/*" ],
              "background": {"service_worker": "background.js"}
            })";
-    static constexpr char kBackgroundJs[] =
+
+    std::string type_check;
+    if (expected_request_type) {
+      type_check =
+          base::StringPrintf("chrome.test.assertEq('%s', details.type);\n",
+                             *expected_request_type);
+    }
+
+    std::string background_js = base::StringPrintf(
         R"(
             let didInterceptAuth = false;
             chrome.webRequest.onAuthRequired.addListener(
@@ -7757,13 +7771,14 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
                  didInterceptAuth = true;
                  chrome.test.assertEq('mv3authprovider', details.realm);
                  chrome.test.assertEq(401, details.statusCode);
+                 %s
                  const authCredentials = {username: 'foo', password: 'secret'};
                  callback({authCredentials});
                },
                {urls: ['<all_urls>']},
                ['asyncBlocking']);
-          )";
-    std::string background_js(kBackgroundJs);
+          )",
+        type_check);
     background_js += additional_js;
 
     test_extension_dir_.WriteManifest(kManifest);
@@ -7840,6 +7855,78 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
           .ExtractString();
   EXPECT_THAT(fetch_response, testing::HasSubstr("<title>"));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class ServiceWorkerAuthTest : public OnAuthRequiredApiTest {
+ public:
+  void RegisterAdditionalHandlers() override {
+    // Register a custom request handler to simulate an HTTP "401 Unauthorized"
+    // response with a "WWW-Authenticate" header. This forces the browser to
+    // issue an auth challenge, which should be intercepted by the extension.
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url != "/service_worker/auth") {
+            return nullptr;
+          }
+
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          // If request doesn't have the "Authorization" header, return 401.
+          if (request.headers.find("Authorization") == request.headers.end()) {
+            response->set_code(net::HTTP_UNAUTHORIZED);
+            response->AddCustomHeader("WWW-Authenticate",
+                                      "Basic realm=\"mv3authprovider\"");
+          } else {
+            // If "Authorization" header is present (supplied by extension),
+            // return 200 OK.
+            response->set_code(net::HTTP_OK);
+            response->set_content("Auth success");
+          }
+          return response;
+        }));
+  }
+};
+
+// Tests authentication flow when a service worker intercepts a navigation
+// and issues a network request that requires authentication.
+// This ensures that the `OnAuthRequired` event is correctly fired and handled
+// even when the request originates from a service worker.
+// Regression test for b/457210267.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAuthTest,
+                       ServiceWorkerInterceptedNavigationAuth) {
+  // Load an extension that listens for "onAuthRequired" events and provides
+  // credentials when the realm matches "mv3authprovider". Also check that
+  // the request type for the proxied request is "xmlhttprequest", which
+  // indicates it's not a navigation request. This is expected because,
+  // technically speaking, the proxied request is a `fetch()` from a service
+  // worker.
+  LoadExtensionWithAdditionalJs("", "xmlhttprequest");
+
+  // Navigate to a setup page and register a service worker that intercepts
+  // fetch events. "fetch_event_respond_with_fetch.js" responds to fetch events
+  // by issuing a new `fetch()` to the network, effectively acting as a proxy.
+  GURL sw_setup_url = embedded_test_server()->GetURL(
+      kTestDomain, "/service_worker/create_service_worker.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), sw_setup_url));
+  // Register service worker which uses `respondWith(fetch(event.request))`.
+  EXPECT_EQ("DONE",
+            EvalJs(GetActiveWebContents(),
+                   "register('fetch_event_respond_with_fetch.js', './');"));
+
+  // This navigation is intercepted by the service worker registered above.
+  // The service worker issues a `fetch()` for "/service_worker/auth".
+  // The server returns 401, triggering `OnAuthRequired`.
+  // The extension provides credentials, and the request is retried with
+  // "Authorization".
+  GURL auth_url =
+      embedded_test_server()->GetURL(kTestDomain, "/service_worker/auth");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), auth_url));
+
+  EXPECT_EQ("Auth success",
+            EvalJs(GetActiveWebContents(), "document.body.textContent"));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests the behavior of an extension that registers an event listener
 // asynchronously.
