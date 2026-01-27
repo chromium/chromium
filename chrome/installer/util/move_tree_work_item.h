@@ -6,8 +6,7 @@
 #define CHROME_INSTALLER_UTIL_MOVE_TREE_WORK_ITEM_H_
 
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/gtest_prod_util.h"
+#include "chrome/installer/util/file_conductor.h"
 #include "chrome/installer/util/work_item.h"
 
 // A WorkItem subclass that recursively move a file system hierarchy from
@@ -24,10 +23,6 @@ class MoveTreeWorkItem : public WorkItem {
 
  private:
   friend class WorkItem;
-  FRIEND_TEST_ALL_PREFIXES(MoveTreeWorkItemTest,
-                           MoveDirectoryDestExistsCheckForDuplicatesFull);
-  FRIEND_TEST_ALL_PREFIXES(MoveTreeWorkItemTest,
-                           MoveDirectoryDestExistsCheckForDuplicatesPartial);
 
   // |source_path| specifies file or directory that will be moved to location
   // specified by |dest_path|. To facilitate rollback, the caller needs to
@@ -53,23 +48,7 @@ class MoveTreeWorkItem : public WorkItem {
   // Destination path to move files to.
   base::FilePath dest_path_;
 
-  // Temporary directory to backup dest_path_ (if it already exists).
-  base::FilePath temp_path_;
-
-  // The temporary directory into which the original dest_path_ has been moved.
-  base::ScopedTempDir backup_path_;
-
-  // Whether the source was moved to dest_path_
-  bool moved_to_dest_path_;
-
-  // Whether the original files have been moved to backup path under
-  // temporary directory. If true, moving back is needed during rollback.
-  bool moved_to_backup_;
-
-  // Whether we moved the source files to the backup path instead just to
-  // preserve the behaviour of a Move. This can only become true if
-  // duplicate_option_ is CHECK_DUPLICATES.
-  bool source_moved_to_backup_;
+  installer::FileConductor file_conductor_;
 
   // Whether to check for duplicates before moving.
   MoveTreeOption duplicate_option_;
