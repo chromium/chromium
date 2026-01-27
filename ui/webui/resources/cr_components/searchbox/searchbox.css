@@ -32,7 +32,7 @@
 }
 
 :host([searchbox-chrome-refresh-theming][dropdown-is-visible]) {
-  --cr-searchbox-shadow: 0 0 12px 4px var(--color-searchbox-shadow)
+  --cr-searchbox-shadow: 0 0 12px 4px var(--color-searchbox-shadow);
 }
 
 :host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) {
@@ -169,7 +169,7 @@
 
 :host([searchbox-chrome-refresh-theming]) :is(input, textarea)::selection {
   background-color: var(--color-searchbox-selection-background);
-  color: var(--color-searchbox-selection-foreground)
+  color: var(--color-searchbox-selection-foreground);
 }
 
 input::-webkit-search-decoration,

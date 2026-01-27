@@ -89,7 +89,7 @@
 
 :host([animation-state='expanding']) .gradient.gradient-outer-glow {
   /* Standard-curve can be defined by parent; otherwise use default. */
-  animation: blur-expand var(--expand-timing_)
+  animation: blur-expand var(--expand-timing_);
 }
 
 @keyframes blur-expand {
@@ -364,7 +364,7 @@
 
 :host([animation-state='listening']) .background::before {
   animation:
-      plate-background-blur-on-listen var(--expand-timing_)
+      plate-background-blur-on-listen var(--expand-timing_);
 }
 
 @keyframes plate-background-blur-on-expand {

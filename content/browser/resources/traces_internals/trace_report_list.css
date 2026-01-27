@@ -59,7 +59,7 @@
 .notification-message {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px
+  margin-bottom: 12px;
 }
 
 .notification-type {

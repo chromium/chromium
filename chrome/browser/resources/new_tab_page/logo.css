@@ -110,7 +110,7 @@
   margin: 7px;
   vertical-align: bottom;
   mask-image: url(chrome://new-tab-page/icons/share_unfilled.svg);
-  background-color: var(--color-new-tab-page-doodle-share-button-icon, none)
+  background-color: var(--color-new-tab-page-doodle-share-button-icon, none);
 }
 
 #iframe {

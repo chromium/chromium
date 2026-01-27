@@ -9,7 +9,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  color: var(--cr-primary-text-color)
+  color: var(--cr-primary-text-color);
 }
 
 .header-bar {

@@ -13,7 +13,7 @@
   box-sizing: border-box;
   height: var(--oobe-adaptive-dialog-height);
   user-select: none;
-  width: var(--oobe-adaptive-dialog-width)
+  width: var(--oobe-adaptive-dialog-width);
 }
 
 .step.hidden {

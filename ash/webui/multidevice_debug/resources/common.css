@@ -52,7 +52,7 @@ header {
   margin-bottom: 60px;
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2),
               0 3px 10px 0 rgba(0, 0, 0, 0.2),
-              4px 4px 6px 0 rgba(0, 0, 0, 0.5)
+              4px 4px 6px 0 rgba(0, 0, 0, 0.5);
 }
 
 .control-title {

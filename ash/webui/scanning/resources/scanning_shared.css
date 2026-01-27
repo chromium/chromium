@@ -19,7 +19,7 @@
       var(--cros-second-tone-opacity));
   --scanning-scrollbar-rgb: var(--google-grey-600-rgb);
   --scanning-scrollbar: rgba(var(--scanning-scrollbar-rgb), 0.38);
-  --scanning-scrollbar-thumb: rgb(var(--scanning-scrollbar-rgb))
+  --scanning-scrollbar-thumb: rgb(var(--scanning-scrollbar-rgb));
 }
 
 :host-context(body.jelly-enabled) {

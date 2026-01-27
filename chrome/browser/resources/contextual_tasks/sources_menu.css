@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   padding: 5px var(--mwb-list-item-horizontal-margin);
-  width: 320px
+  width: 320px;
 }
 
 cr-action-menu {

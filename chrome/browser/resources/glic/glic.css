@@ -16,7 +16,7 @@
 
 html, body {
   margin: 0;
-  height: 100%
+  height: 100%;
 }
 
 body {
@@ -67,7 +67,7 @@ webview:not([hidden]) {
   display: flex;
   flex-direction: column;
   background: var(--color--surface);
-  height: 100%
+  height: 100%;
 }
 
 #loadingPanel {
@@ -391,7 +391,7 @@ cr-progress {
 
 .overlay.hidden .message {
   opacity: 0;
-  transition-delay: 0s
+  transition-delay: 0s;
 }
 
 .overlay cr-icon {

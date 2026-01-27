@@ -14,7 +14,7 @@
   height: 100%;
   margin: 0;
   background-color: #f8f9fa;
-  color: var(--cr-primary-text-color)
+  color: var(--cr-primary-text-color);
 }
 
 button,
