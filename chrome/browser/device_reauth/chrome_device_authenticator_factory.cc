@@ -101,5 +101,11 @@ ChromeDeviceAuthenticatorFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<AuthenticatorWin>().get());
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Asynchronously check for PIN availability and cache the result in a local
+  // state preference.
+  DeviceAuthenticatorChromeOS::CacheIfPinIsAvailable(
+      std::make_unique<AuthenticatorChromeOS>().get());
+#endif
   return std::make_unique<DeviceAuthenticatorProxy>();
 }

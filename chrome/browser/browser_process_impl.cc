@@ -176,6 +176,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #else
 #include "ui/message_center/message_center.h"
@@ -1239,6 +1240,8 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterStringPref(prefs::kOwnerLocale, std::string());
   registry->RegisterStringPref(prefs::kHardwareKeyboardLayout, std::string());
+  registry->RegisterBooleanPref(
+      password_manager::prefs::kPinAuthenticationAvailableOnChromeOS, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
