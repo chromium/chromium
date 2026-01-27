@@ -49,12 +49,12 @@
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
 #include "chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
-#include "chrome/browser/ui/webui/user_actions/user_actions_ui.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/connection_help_ui.h"
 #include "components/security_interstitials/content/known_interception_disclosure_ui.h"
+#include "components/webui/user_actions/user_actions_ui.h"
 #include "content/public/browser/webui_config_map.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -286,7 +286,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<SyncInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<TranslateInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<UsbInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<UserActionsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<user_actions_ui::UserActionsUIConfig>());
   map.AddWebUIConfig(std::make_unique<VersionUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebRtcLogsUIConfig>());
   map.AddWebUIConfig(

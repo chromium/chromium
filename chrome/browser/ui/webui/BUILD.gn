@@ -55,6 +55,7 @@ source_set("configs") {
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
+    "//components/webui/user_actions",
     "//content/public/browser",
     "//extensions/buildflags",
     "//printing/buildflags",

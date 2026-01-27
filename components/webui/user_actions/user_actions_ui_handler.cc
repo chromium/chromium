@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/user_actions/user_actions_ui_handler.h"
+#include "components/webui/user_actions/user_actions_ui_handler.h"
 
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 
+namespace user_actions_ui {
 UserActionsUIHandler::UserActionsUIHandler()
     : action_callback_(base::BindRepeating(&UserActionsUIHandler::OnUserAction,
                                            base::Unretained(this))) {}
@@ -45,3 +46,4 @@ void UserActionsUIHandler::OnUserAction(const std::string& action,
 
   FireWebUIListener("user-action", user_action_name);
 }
+}  // namespace user_actions_ui

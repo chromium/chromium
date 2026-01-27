@@ -1,6 +1,7 @@
 include_rules = [
   "+components/browser_ui/share/android",
   "+components/webapps/isolated_web_apps",
+  "+components/webui/user_actions",
   "+extensions/strings/grit/extensions_strings.h",
   "+third_party/boringssl/src/include/openssl",
 ]

@@ -1,0 +1,5 @@
+include_rules = [
+  "+content/public/browser",
+  "+components/grit/user_actions_ui_resources.h",
+  "+components/grit/user_actions_ui_resources_map.h",
+]
