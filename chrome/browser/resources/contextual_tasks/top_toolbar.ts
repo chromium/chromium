@@ -15,7 +15,7 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Tab, UploadedFile} from './contextual_tasks.mojom-webui.js';
+import type {Image, Tab, UploadedFile} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import type {SourcesMenuElement} from './sources_menu.js';
@@ -47,6 +47,7 @@ export class TopToolbarElement extends CrLitElement {
     return {
       attachedTabs: {type: Array},
       attachedFiles: {type: Array},
+      attachedImages: {type: Array},
       darkMode: {
         type: Boolean,
         reflect: true,
@@ -65,6 +66,7 @@ export class TopToolbarElement extends CrLitElement {
   override accessor title: string = '';
   accessor attachedTabs: Tab[] = [];
   accessor attachedFiles: UploadedFile[] = [];
+  accessor attachedImages: Image[] = [];
   accessor darkMode: boolean = false;
   accessor isAiPage: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -74,9 +76,10 @@ export class TopToolbarElement extends CrLitElement {
     super.connectedCallback();
     const callbackRouter = this.browserProxy_.callbackRouter;
     this.listenerIds_ = [callbackRouter.onContextUpdated.addListener(
-        (tabs: Tab[], files: UploadedFile[]) => {
+        (tabs: Tab[], files: UploadedFile[], images: Image[]) => {
           this.attachedTabs = tabs;
           this.attachedFiles = files;
+          this.attachedImages = images;
         })];
   }
 
@@ -88,7 +91,8 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected shouldShowSourcesMenuButton_(): boolean {
-    return this.attachedTabs.length > 0 || this.attachedFiles.length > 0;
+    return this.attachedTabs.length > 0 || this.attachedFiles.length > 0 ||
+        this.attachedImages.length > 0;
   }
 
   protected onCloseButtonClick_() {

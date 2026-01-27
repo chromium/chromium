@@ -125,6 +125,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'moveTaskUiToNewTab',
       'onboardingTooltipDismissed',
       'onFileClickedFromSourcesMenu',
+      'onImageClickedFromSourcesMenu',
       'onTabClickedFromSourcesMenu',
       'onWebviewMessage',
       'openHelpUi',
@@ -229,6 +230,10 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   onFileClickedFromSourcesMenu(url: Url) {
     this.methodCalled('onFileClickedFromSourcesMenu', url);
+  }
+
+  onImageClickedFromSourcesMenu(url: Url) {
+    this.methodCalled('onImageClickedFromSourcesMenu', url);
   }
 
   getSearchUrl(query: string) {

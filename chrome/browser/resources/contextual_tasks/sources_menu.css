@@ -83,6 +83,30 @@ cr-action-menu > .header:first-child {
   font-weight: 500;
 }
 
+.image-container {
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  height: 40px;
+  width: 40px;
+  justify-content: center;
+  overflow: hidden;
+  margin-inline-end: 16px;
+}
+
+.image-thumbnail {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.image-title {
+  color: var(--cr-primary-text-color);
+  font-size: var(--mwb-primary-text-font-size);
+  font-weight: 500;
+}
+
 .divider {
   height: 1.6px;
   background-color: var(--cr-fallback-color-primary-container);

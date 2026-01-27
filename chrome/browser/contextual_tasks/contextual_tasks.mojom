@@ -31,6 +31,16 @@ struct UploadedFile {
   url.mojom.Url url;
 };
 
+// Represents the visual information needed to display an image
+// in the sources menu.
+struct Image {
+  // URL of the image.
+  url.mojom.Url url;
+
+  // The title shown for the image.
+  string title;
+};
+
 // Browser-side handler for requests from the WebUI page.
 // The WebUI page calls these methods to interact with the browser process.
 // (TypeScript -> C++)
@@ -90,6 +100,10 @@ interface PageHandler {
   // the `url` will be opened in a new tab in the current browser window.
   OnFileClickedFromSourcesMenu(url.mojom.Url url);
 
+  // Called when an image in the sources menu is clicked. The image will be
+  // opened in a new tab in the current browser window.
+  OnImageClickedFromSourcesMenu(url.mojom.Url url);
+
   // Called by the WebUI when a 'message' event is received from
   // the <webview> guest. The 'message' is expected to be a serialized
   // `lens.AimToClientMessage` protobuf containing a `lens.HandshakeResponse`.
@@ -142,8 +156,9 @@ interface Page {
   // Called by the browser process (C++) when the context associated with the
   // task is updated (e.g. tabs added/removed). This is used for updating the
   // icon shown on the sources menu entry point.
-  OnContextUpdated(
-      array<Tab> context_tabs, array<UploadedFile> context_files);
+  OnContextUpdated(array<Tab> context_tabs,
+                   array<UploadedFile> context_files,
+                   array<Image> context_images);
 
   // Called by the browser process (C++) when the AIM server sends a HideInput
   // command to hide the compose box.
