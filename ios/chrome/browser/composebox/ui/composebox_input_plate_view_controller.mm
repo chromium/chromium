@@ -1028,11 +1028,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [button setImage:image forState:UIControlStateNormal];
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [button.widthAnchor constraintEqualToConstant:kGenericButtonWidth].active =
-      YES;
-  [button.heightAnchor
-      constraintGreaterThanOrEqualToConstant:kGenericButtonHeight]
-      .active = YES;
+  NSLayoutConstraint* widthConstraint =
+      [button.widthAnchor constraintEqualToConstant:kGenericButtonWidth];
+  widthConstraint.active = YES;
+  widthConstraint.priority = UILayoutPriorityRequired - 1;
+  NSLayoutConstraint* heightConstraint = [button.heightAnchor
+      constraintGreaterThanOrEqualToConstant:kGenericButtonHeight];
+  heightConstraint.active = YES;
+  heightConstraint.priority = UILayoutPriorityRequired - 1;
+
   button.tintColor = [UIColor colorNamed:kTextPrimaryColor];
   return button;
 }
