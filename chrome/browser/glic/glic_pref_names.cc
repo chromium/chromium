@@ -68,6 +68,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kGlicActuationOnWebBlockedForURLs);
 
   registry->RegisterBooleanPref(prefs::kGlicUserEnabledActuationOnWeb, false);
+
+  registry->RegisterStringPref(prefs::kGlicGuestUrlPresetAutopush, "");
+  registry->RegisterStringPref(prefs::kGlicGuestUrlPresetPreprod, "");
+  registry->RegisterStringPref(prefs::kGlicGuestUrlPresetProd, "");
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

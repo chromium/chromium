@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -16,6 +17,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/language/core/common/language_util.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -64,9 +66,11 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
     content::RenderFrameHost* frame = handle->GetRenderFrameHost();
     mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
     frame->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-    client->AddAutoplayFlags(GetGuestOrigin(),
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    client->AddAutoplayFlags(GetGuestOrigin(profile),
                              blink::mojom::kAutoplayFlagForceAllow);
-    VLOG(1) << "Granted Glic AutoPlay for origin=\"" << GetGuestOrigin()
+    VLOG(1) << "Granted Glic AutoPlay for origin=\"" << GetGuestOrigin(profile)
             << "\" at " << (handle->IsInPrimaryMainFrame() ? "main " : "")
             << "RFH with url=\"" << handle->GetURL() << "\"";
     base::UmaHistogramEnumeration(
@@ -79,13 +83,17 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
 
 }  // namespace
 
-GURL GetGuestURL() {
+GURL GetGuestURL(Profile* profile) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   bool has_glic_guest_url = command_line->HasSwitch(::switches::kGlicGuestURL);
   GURL url =
       GURL(has_glic_guest_url
                ? command_line->GetSwitchValueASCII(::switches::kGlicGuestURL)
                : features::kGlicGuestURL.Get());
+
+  // If a preset url is enabled, use it instead.
+  MaybeApplyPresetGuestUrl(&url, profile);
+
   if (url.is_empty()) {
     LOG(ERROR) << "No glic guest url";
     return GURL();
@@ -96,8 +104,29 @@ GURL GetGuestURL() {
   return GetLocalizedGuestURL(url);
 }
 
-url::Origin GetGuestOrigin() {
-  return url::Origin::Create(GetGuestURL());
+url::Origin GetGuestOrigin(Profile* profile) {
+  return url::Origin::Create(GetGuestURL(profile));
+}
+
+void MaybeApplyPresetGuestUrl(GURL* guest_url, Profile* profile) {
+  if (base::FeatureList::IsEnabled(features::kGlicGuestUrlPresets)) {
+    switch (features::kGlicGuestUrlPresetType.Get()) {
+      case 0:
+        *guest_url = GURL(
+            profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetAutopush));
+        break;
+      case 1:
+        *guest_url = GURL(
+            profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetPreprod));
+        break;
+      case 2:
+        *guest_url = GURL(
+            profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetProd));
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 GURL GetLocalizedGuestURL(const GURL& guest_url) {

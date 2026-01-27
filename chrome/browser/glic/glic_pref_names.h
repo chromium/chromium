@@ -130,6 +130,12 @@ inline constexpr char kGlicActuationOnWebBlockedForURLs[] =
 inline constexpr char kGlicUserEnabledActuationOnWeb[] =
     "glic.user_enabled_actuation_on_web";
 
+inline constexpr char kGlicGuestUrlPresetAutopush[] =
+    "glic.guest_url_preset_autopush";
+inline constexpr char kGlicGuestUrlPresetPreprod[] =
+    "glic.guest_url_preset_preprod";
+inline constexpr char kGlicGuestUrlPresetProd[] = "glic.guest_url_preset_prod";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

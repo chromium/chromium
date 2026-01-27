@@ -145,6 +145,26 @@ std::unique_ptr<GlicSharingManager> CreateSharingManager(
       static_cast<GlicInstanceCoordinatorImpl*>(window_controller));
 }
 
+void SetupGuestUrlPresetPrefs(Profile* profile) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kGlicGuestUrlPresetAutopush)) {
+    profile->GetPrefs()->SetString(
+        prefs::kGlicGuestUrlPresetAutopush,
+        command_line->GetSwitchValueASCII(
+            ::switches::kGlicGuestUrlPresetAutopush));
+  }
+  if (command_line->HasSwitch(::switches::kGlicGuestUrlPresetPreprod)) {
+    profile->GetPrefs()->SetString(prefs::kGlicGuestUrlPresetPreprod,
+                                   command_line->GetSwitchValueASCII(
+                                       ::switches::kGlicGuestUrlPresetPreprod));
+  }
+  if (command_line->HasSwitch(::switches::kGlicGuestUrlPresetProd)) {
+    profile->GetPrefs()->SetString(
+        prefs::kGlicGuestUrlPresetProd,
+        command_line->GetSwitchValueASCII(::switches::kGlicGuestUrlPresetProd));
+  }
+}
+
 }  // namespace
 
 GlicKeyedService::GlicKeyedService(
@@ -231,6 +251,10 @@ GlicKeyedService::GlicKeyedService(
         prefs::kGlicCompletedFre,
         static_cast<int>(prefs::FreStatus::kCompleted));
   }
+
+  // Sets up prefs storing manually configured glic guest URLs. Intended for
+  // manual testing only.
+  SetupGuestUrlPresetPrefs(profile_);
 
   // This is only used by automation for tests.
   glic_profile_manager->MaybeAutoOpenGlicPanel();

@@ -174,8 +174,10 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean("loggingEnabled",
                      command_line->HasSwitch(::switches::kGlicHostLogging));
 
+  auto* profile = Profile::FromBrowserContext(browser_context);
+
   // Set up guest URL via cli flag or default to finch param value.
-  const GURL guest_url = GetGuestURL();
+  const GURL guest_url = GetGuestURL(profile);
   source->AddString("glicGuestURL", guest_url.spec());
   net_log::LogDummyNetworkRequestForTrafficAnnotation(guest_url,
                                                       net_log::GlicPage::kGlic);
@@ -196,8 +198,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   if (allowed_origins.empty()) {
     allowed_origins = features::kGlicAllowedOriginsOverride.Get();
   }
-
-  auto* profile = Profile::FromBrowserContext(browser_context);
 
   // Allow corp origins for @google accounts.
   signin::IdentityManager* identity_manager =

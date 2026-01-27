@@ -2477,9 +2477,9 @@ void GlicPageHandler::GetInternalsDataPayload(
   payload->enablement = BuildProfileEnablement(browser_context_);
 
   mojom::ConfigInfoPtr config = mojom::ConfigInfo::New();
-  config->guest_url = GetGuestURL();
-  config->fre_guest_url =
-      GetFreURL(Profile::FromBrowserContext(browser_context_));
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  config->guest_url = GetGuestURL(profile);
+  config->fre_guest_url = GetFreURL(profile);
   payload->config = std::move(config);
 
   std::move(callback).Run(std::move(payload));
