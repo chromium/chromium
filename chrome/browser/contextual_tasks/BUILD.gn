@@ -8,14 +8,14 @@ import("//third_party/protobuf/proto_library.gni")
 # This target is only for public headers for classes used outside this directory (i.e. services and factories).
 source_set("contextual_tasks") {
   sources = [
+    "active_task_context_provider.h",
+    "active_task_context_provider_impl.h",
     "ai_mode_context_library_converter.h",
     "contextual_tasks_service_factory.h",
   ]
 
   if (!is_android) {
     sources += [
-      "active_task_context_provider.h",
-      "active_task_context_provider_impl.h",
       "contextual_tasks_context_service.h",
       "contextual_tasks_context_service_factory.h",
       "contextual_tasks_tab_visit_tracker.cc",
