@@ -255,6 +255,8 @@ class MEDIA_EXPORT AudioBuffer
   // If there's no data in this buffer, it represents end of stream.
   bool end_of_stream() const { return end_of_stream_; }
 
+  // Use `channels()` instead for spanified buffer access.
+  //
   // Access to the raw buffer for ffmpeg and Android MediaCodec decoders to
   // write directly to. For planar formats the vector elements correspond to
   // the channels. For interleaved formats the resulting vector has exactly
@@ -262,6 +264,16 @@ class MEDIA_EXPORT AudioBuffer
   const std::vector<uint8_t*>& channel_data() const {
     CHECK_EQ(channel_spans_.size(), channel_data_.size());
     return channel_data_;
+  }
+
+  // Provides spanified access to the channels buffer for ffmpeg and Android
+  // MediaCodec decoders to write directly to.
+  // For planar formats the returned vector elements correspond to the channels.
+  // For interleaved formats the returned vector will contain exactly one
+  // element which is the interleaved data buffer.
+  const std::vector<base::raw_span<uint8_t>>& channels() const {
+    CHECK_EQ(channel_spans_.size(), channel_data_.size());
+    return channel_spans_;
   }
 
   // The size of allocated data memory block. For planar formats channels go
