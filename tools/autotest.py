@@ -17,13 +17,13 @@ def main():
   # Invoke the actual autotest tool as a separate process. This way
   # vpython can use the custom vpython spec instead of using that from
   # src.
-
-  cmd = ["vpython3", main_py] + sys.argv[1:]
+  exe = "vpython3.bat" if sys.platform == "win32" else "vpython3"
+  cmd = [exe, main_py] + sys.argv[1:]
 
   if sys.platform == "win32":
-    sys.exit(subprocess.call(cmd))
-  else:
-    os.execvp("vpython3", cmd)
+    result = subprocess.run(cmd)
+    return result.returncode
+  os.execvp("vpython3", cmd)
 
 
 if __name__ == "__main__":
