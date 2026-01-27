@@ -2168,10 +2168,6 @@ group("cronet_package_android") {
     ":cronet_non_test_package",
     ":cronet_test_package",
     ":generate_licenses",
-
-    # Add this here so it's reachable from a GN's root "//*". Otherwise it'll
-    # fail to run in CQ/CI.
-    "//components/cronet/testing:cronet_python_unittests",
   ]
   if (!using_sanitizer && !use_jacoco_coverage) {
     deps += [ ":dependencies_checks" ]

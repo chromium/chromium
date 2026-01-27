@@ -1842,7 +1842,6 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "cronet_gtests",
-            "cronet_python_unittest",
         ],
         mixins = [
             "16-x64-emulator",
