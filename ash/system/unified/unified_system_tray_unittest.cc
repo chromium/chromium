@@ -20,6 +20,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/brightness/brightness_controller_chromeos.h"
 #include "ash/system/channel_indicator/channel_indicator.h"
 #include "ash/system/hotspot/hotspot_tray_view.h"
 #include "ash/system/media/quick_settings_media_view_controller.h"
@@ -58,6 +59,7 @@
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -865,14 +867,35 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithBigMainPage) {
   tray->CloseBubble();
 }
 
-TEST_P(UnifiedSystemTrayTest, BrightnessSliderDisabledInDockedMode) {
+TEST_P(UnifiedSystemTrayTest, BrightnessSliderDisabledInDockedModeLidClosed) {
+  // Scenario 1: Only external display -> slider disabled.
+  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
+
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+
+  EXPECT_FALSE(tray->bubble()
+                   ->unified_system_tray_controller()
+                   ->GetBrightnessSliderEnabledForTesting());
+
+  tray->CloseBubble();
+
+  // Scenario 2: Internal display only -> slider enabled.
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
   const auto internal_info =
       display_manager()->GetDisplayInfo(internal_display_id);
-  constexpr int64_t external_id = 210000010;
 
+  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
+  tray->ShowBubble();
+
+  EXPECT_TRUE(tray->bubble()
+                  ->unified_system_tray_controller()
+                  ->GetBrightnessSliderEnabledForTesting());
+
+  // Scenario 3: Internal + External + lid open -> slider enabled.
+  constexpr int64_t external_id = 210000010;
   const auto external_info =
       display::ManagedDisplayInfo::CreateFromSpecWithID("400x300", external_id);
 
@@ -882,17 +905,27 @@ TEST_P(UnifiedSystemTrayTest, BrightnessSliderDisabledInDockedMode) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
 
-  auto* tray = GetPrimaryUnifiedSystemTray();
-  tray->ShowBubble();
-
   EXPECT_TRUE(tray->bubble()
                   ->unified_system_tray_controller()
                   ->GetBrightnessSliderEnabledForTesting());
 
+  // Scenario 4: Docked mode, external only, lid opened -> slider enabled.
+  power_manager::SetBacklightBrightnessRequest request;
+  request.set_percent(0);
+  chromeos::FakePowerManagerClient::Get()->SetScreenBrightness(request);
   display_info_list.clear();
   display_info_list.push_back(external_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
+
+  EXPECT_EQ(1u, display_manager()->GetNumDisplays());
+  EXPECT_TRUE(tray->bubble()
+                  ->unified_system_tray_controller()
+                  ->GetBrightnessSliderEnabledForTesting());
+
+  // Scenario 5: Docked mode, external only, lid closed -> slider disabled.
+  // close the lid.
+  tray->bubble()->unified_system_tray_controller()->LidEventReceived(
+      chromeos::PowerManagerClient::LidState::CLOSED, base::TimeTicks::Now());
 
   EXPECT_FALSE(tray->bubble()
                    ->unified_system_tray_controller()
