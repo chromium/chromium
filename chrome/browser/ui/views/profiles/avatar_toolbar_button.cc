@@ -257,11 +257,8 @@ void AvatarToolbarButton::AnimateTextChange(
   const std::u16string new_text = state_provider->GetText();
   const std::u16string_view current_text = GetText();
 
-  if (new_text == current_text) {
-    return;
-  }
-
-  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (new_text == current_text ||
+      gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     SetHighlight(new_text, state_provider->GetHighlightColor(*color_provider));
     return;
   }
