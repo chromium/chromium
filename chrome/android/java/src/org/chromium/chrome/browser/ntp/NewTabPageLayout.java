@@ -332,6 +332,9 @@ public class NewTabPageLayout extends LinearLayout
         onCustomizedBackgroundChanged(
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
 
+        // This should called after flags of composeplate view are initialized.
+        setSearchBoxHeightBoundsVerticalInset();
+
         updateActionButtonVisibility();
         initializeLayoutChangeListener();
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
