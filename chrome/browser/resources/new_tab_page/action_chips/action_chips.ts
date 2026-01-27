@@ -268,10 +268,7 @@ export class ActionChipsElement extends CrLitElement {
 
   protected getChipSubtitle_(chip: ActionChip): string {
     const prefix = this.showDashSimplifiedUI_(chip) ? ' - ' : '';
-    const subtitle = (this.isDeepDiveChip_(chip) && chip.subtitle === '') ?
-        chip.title :
-        chip.subtitle;
-    return `${prefix}${subtitle}`;
+    return `${prefix}${chip.subtitle}`;
   }
 
   protected getChipTitle_(chip: ActionChip) {
