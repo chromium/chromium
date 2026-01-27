@@ -75,20 +75,21 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateWin::GetParent() const {
     ancestor_window = GetWindowParentIncludingTransient(ancestor_window);
   }
 
-  // If that fails, return the NativeViewAccessible for our owning HWND.
+  // Return the IAccessible for this RootView's HWND.
   HWND hwnd = HWNDForView(view());
   if (!hwnd) {
     return nullptr;
   }
 
-  IAccessible* parent;
-  if (SUCCEEDED(
-          ::AccessibleObjectFromWindow(hwnd, OBJID_WINDOW, IID_IAccessible,
-                                       reinterpret_cast<void**>(&parent)))) {
-    return parent;
+  // Hold a reference to the parent in this instance to ensure that it lives
+  // long enough for the caller to take its own reference, if needed. Always
+  // fetch fresh to avoid needing to handle reparenting.
+  if (FAILED(::AccessibleObjectFromWindow(hwnd, OBJID_WINDOW,
+                                          IID_PPV_ARGS(&parent_)))) {
+    parent_.Reset();
   }
 
-  return nullptr;
+  return parent_.Get();
 }
 
 gfx::AcceleratedWidget

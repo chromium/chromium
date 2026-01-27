@@ -95,13 +95,12 @@ gfx::NativeViewAccessible AXSystemCaretWin::GetParent() const {
   if (!event_target_)
     return nullptr;
 
-  gfx::NativeViewAccessible parent;
-  HRESULT hr =
-      ::AccessibleObjectFromWindow(event_target_, OBJID_WINDOW, IID_IAccessible,
-                                   reinterpret_cast<void**>(&parent));
-  if (SUCCEEDED(hr))
-    return parent;
-  return nullptr;
+  if (!parent_ && FAILED(::AccessibleObjectFromWindow(
+                      event_target_, OBJID_WINDOW, IID_PPV_ARGS(&parent_)))) {
+    parent_.Reset();
+  }
+
+  return parent_.Get();
 }
 
 gfx::Rect AXSystemCaretWin::GetBoundsRect(

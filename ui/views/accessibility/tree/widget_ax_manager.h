@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -21,6 +22,14 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/views/accessibility/tree/view_accessibility_ax_tree_source.h"
 #include "ui/views/views_export.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <wrl/client.h>
+#endif
+
+#if BUILDFLAG(IS_WIN)
+struct IAccessible;
+#endif
 
 namespace ui {
 class BrowserAccessibilityManager;
@@ -161,6 +170,11 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   // dispatched to the tree manager.
   base::RepeatingCallback<void(const std::optional<ui::AXUpdatesAndEvents>&)>
       updates_and_events_callback_for_testing_;
+
+#if BUILDFLAG(IS_WIN)
+  // The IAccessible of the Widget's parent HWND.
+  Microsoft::WRL::ComPtr<IAccessible> parent_accessible_;
+#endif
 
   // Ensure posted tasks don’t run after we’re destroyed.
   base::WeakPtrFactory<WidgetAXManager> weak_factory_{this};

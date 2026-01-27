@@ -4,10 +4,6 @@
 
 #include "ui/views/accessibility/tree/widget_ax_manager.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <oleacc.h>
-#endif  // BUILDFLAG(IS_WIN)
-
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
@@ -19,6 +15,8 @@
 #include "ui/views/accessibility/view_accessibility.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <oleacc.h>
+
 #include "ui/views/win/hwnd_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -185,19 +183,17 @@ WidgetAXManager::AccessibilityGetNativeViewAccessible() {
     return native_widget->GetNativeViewAccessibleForNSView();
   }
 #elif BUILDFLAG(IS_WIN)
-  // On Windows, we get the IAccessible for the HWND of the widget through an
-  // OS API call.
-  // TODO(accessibility): Consider caching the IAccessible object.
-  HWND hwnd = HWNDForView(widget_->GetRootView());
-  if (!hwnd) {
-    return nullptr;
-  }
-
-  IAccessible* parent;
-  if (SUCCEEDED(
-          ::AccessibleObjectFromWindow(hwnd, OBJID_WINDOW, IID_IAccessible,
-                                       reinterpret_cast<void**>(&parent)))) {
-    return parent;
+  // Hold a reference to the parent in this instance to ensure that it lives
+  // long enough for the caller to take its own reference, if needed.
+  if (!parent_accessible_) {
+    HWND hwnd = HWNDForView(widget_->GetRootView());
+    if (!hwnd) {
+      return nullptr;
+    }
+    if (SUCCEEDED(::AccessibleObjectFromWindow(
+            hwnd, OBJID_WINDOW, IID_PPV_ARGS(&parent_accessible_)))) {
+      return parent_accessible_.Get();
+    }
   }
 #endif
   return gfx::NativeViewAccessible();
