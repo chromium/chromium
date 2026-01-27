@@ -8,10 +8,6 @@
 #include "base/component_export.h"
 #include "components/viz/common/resources/shared_image_format.h"
 
-namespace gfx {
-enum class BufferFormat : uint8_t;
-}
-
 enum SkColorType : int;
 
 namespace viz {
@@ -95,10 +91,6 @@ bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
 // Checks if there is an equivalent BufferFormat.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 bool HasEquivalentBufferFormat(SharedImageFormat format);
-
-// Returns the SharedImageFormat corresponding to `buffer_format`.
-COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
-SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format);
 
 // Returns the shared memory offset for `plane_index` for a `format` of `size`.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)

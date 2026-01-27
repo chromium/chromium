@@ -1797,10 +1797,8 @@ _CONFIG = [
         ],
         # This class needs access to various GPU-related functionality.
         'allowed': [
-            'gfx::BufferFormat',
             'gpu::ENABLE_WEBGL_TIMER_QUERY_EXTENSIONS',
             'gpu::IsFormatSupportedForSIWithNativeBuffer',
-            'viz::SinglePlaneSharedImageFormatToBufferFormat',
         ],
     },
     {

@@ -31,7 +31,7 @@ interface WaylandBufferManagerHost {
   // used to ask Wayland to create a wl_buffer based on the |dmabuf_fd|
   // descriptor. The |size| is the size of the buffer, the |strides|,
   // |offsets| and |modifiers| are the descriptions of the drm buffer object.
-  // The |format| describes the buffer format (check gfx::BufferFormat) in
+  // The |format| describes the buffer format (check viz::SharedImageFormat) in
   // fourcc form. The |planes_count| says how many planes the buffer, backed
   // by the |file| descriptor has. And the |buffer_id| is a unique id for the
   // buffer, which is used to identify imported wl_buffers on the browser

@@ -339,18 +339,6 @@ TEST_F(StructTraitsTest, NullGpuMemoryBufferHandle) {
   EXPECT_TRUE(output.is_null());
 }
 
-TEST_F(StructTraitsTest, BufferFormat) {
-  using BufferFormatTraits =
-      mojo::EnumTraits<gfx::mojom::BufferFormat, gfx::BufferFormat>;
-  BufferFormat output;
-  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
-  for (int i = 0; i <= static_cast<int>(BufferFormat::LAST); ++i) {
-    BufferFormat input = static_cast<BufferFormat>(i);
-    BufferFormatTraits::FromMojom(BufferFormatTraits::ToMojom(input), &output);
-    EXPECT_EQ(output, input);
-  }
-}
-
 TEST_F(StructTraitsTest, BufferUsage) {
   using BufferUsageTraits =
       mojo::EnumTraits<gfx::mojom::BufferUsage, gfx::BufferUsage>;

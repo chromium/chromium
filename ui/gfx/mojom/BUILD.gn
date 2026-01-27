@@ -60,15 +60,10 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "gfx.mojom.BufferFormat"
-          cpp = "::gfx::BufferFormat"
-        },
-        {
           mojom = "gfx.mojom.BufferUsage"
           cpp = "::gfx::BufferUsage"
         },
       ]
-
       traits_headers = [ "buffer_types_mojom_traits.h" ]
       traits_public_deps = [ ":shared_mojom_traits" ]
     },
