@@ -10979,6 +10979,21 @@
             ]
         }
     ],
+    "FlingSchedulingImprovements": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260126",
+                    "enable_features": [
+                        "FlingSchedulingImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "Floss": [
         {
             "platforms": [
