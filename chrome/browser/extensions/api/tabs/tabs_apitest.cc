@@ -184,14 +184,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_Tabs2) {
       << message_;
 }
 
-// TODO(https://crbug.com/371432155): Enable these tests.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Duplicate) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/duplicate")) << message_;
 }
-
-#endif
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Size) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/tab_size")) << message_;
@@ -222,13 +217,20 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Events) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/events")) << message_;
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, RelativeURLs) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/relative_urls")) << message_;
 }
 
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/query")) << message_;
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/40254426): Move to tabs_interactive_test.cc
 // TODO(crbug.com/40890826): Re-enable once flakiness is fixed.
@@ -243,6 +245,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, LastAccessed) {
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, CrashBrowser) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crash")) << message_;
 }
+
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Opener) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/opener")) << message_;
