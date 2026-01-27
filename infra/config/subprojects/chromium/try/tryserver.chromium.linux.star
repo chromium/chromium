@@ -1179,7 +1179,7 @@ try_.builder(
     contact_team_email = "chops-security-core@google.com",
     tryjob = try_.job(
         location_filters = [
-            cq.location_filter(path_regexp = r".*/README\.chromium"),
+            cq.location_filter(path_regexp = r".*/README\.(chromium|angle|pdfium|crashpad|skia|swarming|v8|webrtc|google|libaom)"),
         ],
     ),
 )
