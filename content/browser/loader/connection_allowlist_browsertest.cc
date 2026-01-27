@@ -7,7 +7,7 @@
 #include <set>
 #include <string>
 
-#include "base/test/bind.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -34,6 +35,11 @@ namespace content {
 namespace {
 constexpr char kSameOriginAllowlistedPage[] = "/response_origin.html";
 }
+
+struct ResponseEntry {
+  std::string content;
+  absl::flat_hash_map<std::string, std::string> headers;
+};
 
 class ConnectionAllowlistTest : public ContentBrowserTest {
  public:
@@ -46,27 +52,41 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
 
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
-    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
-        [&](const net::test_server::HttpRequest& request)
-            -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (request.relative_url == kSameOriginAllowlistedPage) {
-            auto http_response =
-                std::make_unique<net::test_server::BasicHttpResponse>();
-            http_response->set_content("<html><body>Hello</body></html>");
-            http_response->AddCustomHeader("Connection-Allowlist",
-                                           "(response-origin)");
-            return http_response;
-          }
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &ConnectionAllowlistTest::ServeResponses, base::Unretained(this)));
+  }
 
-          return nullptr;
-        }));
+  void RegisterResponse(const std::string& relative_url,
+                        ResponseEntry&& entry) {
+    response_map_[relative_url] = std::move(entry);
   }
 
  private:
+  std::unique_ptr<net::test_server::HttpResponse> ServeResponses(
+      const net::test_server::HttpRequest& request) {
+    if (auto it = response_map_.find(request.relative_url);
+        it != response_map_.end()) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_content(it->second.content);
+      for (const auto& [key, value] : it->second.headers) {
+        response->AddCustomHeader(key, value);
+      }
+
+      return response;
+    }
+
+    return nullptr;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
+  absl::flat_hash_map<std::string, ResponseEntry> response_map_;
 };
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPrefetch) {
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL main_url =
@@ -104,6 +124,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPrefetch) {
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPreload) {
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL main_url =
@@ -143,6 +167,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPreload) {
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkModulePreload) {
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist", "(response-origin)"}}));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL main_url =
