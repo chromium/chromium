@@ -2144,11 +2144,6 @@
       status: "stable",
     },
     {
-      // See https://crbug.com/447446858
-      name: "EditContextConvertLocalFrameBoundsToRootFrame",
-      status: "stable",
-    },
-    {
       // See https://crbug.com/379170477
       name: "EditContextHandleTextOrSelectionUpdateDuringComposition",
       status: "test",

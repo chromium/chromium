@@ -440,22 +440,11 @@ const HeapVector<Member<DOMRect>> EditContext::characterBounds() {
 void EditContext::GetLayoutBounds(gfx::Rect* control_bounds,
                                   gfx::Rect* selection_bounds) {
   // EditContext's coordinates are in CSS pixels, which need to be converted to
-  // physical pixels before returning.
-  LocalFrame* frame = DomWindow()->GetFrame();
-  *control_bounds =
-      gfx::ScaleToEnclosingRect(control_bounds_, frame->DevicePixelRatio());
-  *selection_bounds =
-      gfx::ScaleToEnclosingRect(selection_bounds_, frame->DevicePixelRatio());
-
-  if (RuntimeEnabledFeatures::
-          EditContextConvertLocalFrameBoundsToRootFrameEnabled() &&
-      !frame->IsLocalRoot()) {
-    // The browser side only translates remote frame coordinates into main frame
-    // coordinates. For local frames, convert the coordinates into root frame
-    // coordinates.
-    *control_bounds = frame->View()->ConvertToRootFrame(*control_bounds);
-    *selection_bounds = frame->View()->ConvertToRootFrame(*selection_bounds);
-  }
+  // physical pixels before return.
+  *control_bounds = gfx::ScaleToEnclosingRect(
+      control_bounds_, DomWindow()->GetFrame()->DevicePixelRatio());
+  *selection_bounds = gfx::ScaleToEnclosingRect(
+      selection_bounds_, DomWindow()->GetFrame()->DevicePixelRatio());
 
   TRACE_EVENT2("ime", "EditContext::GetLayoutBounds", "control",
                control_bounds->ToString(), "selection",
@@ -1011,6 +1000,7 @@ bool EditContext::FirstRectForCharacterRange(uint32_t location,
     rect_in_viewport = gfx::ScaleToEnclosingRect(
         rect_in_css_pixels, DomWindow()->GetFrame()->DevicePixelRatio());
   }
+
   return found_rect;
 }
 
