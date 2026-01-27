@@ -670,6 +670,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       horizontal_layout.has_toolbar_height_side_panel()
           ? views().toolbar_height_side_panel->GetAnimationValue()
           : 0.0;
+  const bool pad_toolbar_height_side_panel_top =
+      tab_strip_type != TabStripType::kVertical ||
+      delegate().GetImmersiveModeController()->IsEnabled();
   if (horizontal_layout.has_toolbar_height_side_panel()) {
     const SidePanel* const toolbar_height_side_panel =
         views().toolbar_height_side_panel;
@@ -686,9 +689,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     // top of the top content separator and some units of the toolbar by
     // default, which is not needed for the toolbar height side panel.
     const int top = params.visual_client_area.y() +
-                    (tab_strip_type == TabStripType::kVertical
-                         ? 0
-                         : horizontal_layout.side_panel_padding);
+                    (pad_toolbar_height_side_panel_top
+                         ? horizontal_layout.side_panel_padding
+                         : 0);
     gfx::Rect toolbar_height_bounds(
         toolbar_height_side_panel_leading
             ? params.visual_client_area.x() - (target_width - visible_width)
@@ -724,8 +727,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         base::ClampRound(toolbar_height_side_panel_reveal_amount *
                          horizontal_layout.side_panel_padding);
     params.Inset(gfx::Insets::TLBR(
-        tab_strip_type == TabStripType::kVertical ? 0
-                                                  : scaled_main_area_padding,
+        pad_toolbar_height_side_panel_top ? scaled_main_area_padding : 0,
         toolbar_height_side_panel_leading ? 0 : scaled_main_area_padding,
         scaled_main_area_padding,
         toolbar_height_side_panel_leading ? scaled_main_area_padding : 0));
