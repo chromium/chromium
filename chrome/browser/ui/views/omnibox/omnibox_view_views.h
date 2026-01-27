@@ -356,11 +356,6 @@ class OmniboxViewViews
   // instead of the DSE placeholder text.
   bool ShouldInstallContextualTasksPlaceholderText() const;
 
-  // Returns true if the AIM placeholder text should be visible. This differs
-  // from ShouldInstallAimPlaceholderText() because there are certain scenarios
-  // where the AIM placeholder text is installed but not visible.
-  bool ShouldShowAimPlaceholderText() const;
-
   // Records an impression of the AIM hint text.
   void RecordAimHintImpression();
 
