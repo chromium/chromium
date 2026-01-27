@@ -192,6 +192,7 @@ class TabAndroid : public tabs::TabInterface,
       const base::android::JavaRef<jobject>& jcontext_menu_populator_factory);
   void SendDidActivateUpdate(JNIEnv* env);
   void SendWillDeactivateUpdate(JNIEnv* env);
+  void SendWillDetachUpdate(JNIEnv* env, jint detach_reason);
   void SendDidInsertUpdate(JNIEnv* env);
   void DestroyWebContents();
   void ReleaseWebContents();
@@ -209,8 +210,10 @@ class TabAndroid : public tabs::TabInterface,
   void NotifyTabGroupChanged(std::optional<base::Token> tab_group_id);
   bool IsDragging() const;
   void OnDraggingStateChanged(bool is_dragging);
+  using DraggingChangedCallback =
+      base::RepeatingCallback<void(TabInterface*, bool)>;
   base::CallbackListSubscription RegisterDraggingChanged(
-      base::RepeatingCallback<void(TabInterface*, bool)> callback);
+      DraggingChangedCallback callback);
 
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
@@ -305,17 +308,21 @@ class TabAndroid : public tabs::TabInterface,
 
   base::RepeatingCallbackList<void(TabInterface*, bool)>
       pinned_state_changed_callback_list_;
-
   base::RepeatingCallbackList<void(TabInterface*,
                                    std::optional<tab_groups::TabGroupId>)>
       group_changed_callback_list_;
-
   base::RepeatingCallbackList<void(TabInterface*, bool)>
       dragging_changed_callback_list_;
-
   base::RepeatingCallbackList<void(TabInterface*)> did_activate_callback_list_;
   base::RepeatingCallbackList<void(TabInterface*)>
       will_deactivate_callback_list_;
+  base::RepeatingCallbackList<void(TabInterface*)>
+      did_become_visible_callback_list_;
+  base::RepeatingCallbackList<void(TabInterface*)>
+      will_become_hidden_callback_list_;
+  base::RepeatingCallbackList<void(TabInterface*,
+                                   tabs::TabInterface::DetachReason)>
+      will_detach_callback_list_;
   base::RepeatingCallbackList<void(TabInterface*)> did_insert_callback_list_;
 
   const base::WeakPtr<Profile> profile_;

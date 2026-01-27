@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabC
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
@@ -789,7 +790,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                     /* recommendedNextTab= */ null,
                     TabSelectionType.FROM_CLOSE,
                     /* isUndoable= */ false,
-                    TabCloseType.SINGLE);
+                    TabCloseType.SINGLE,
+                    DetachReason.INSERT_INTO_OTHER_WINDOW);
         }
 
         for (TabModelObserver obs : mTabModelObservers) obs.tabRemoved(tab);
@@ -1770,7 +1772,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 params.recommendedNextTab,
                 selectionType,
                 allowUndo,
-                params.tabCloseType);
+                params.tabCloseType,
+                DetachReason.DELETE);
 
         for (Tab tab : tabsToClose) {
             for (TabModelObserver obs : mTabModelObservers) {
@@ -1944,7 +1947,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             @Nullable Tab recommendedNextTab,
             @TabSelectionType int selectionType,
             boolean isUndoable,
-            @TabCloseType int closeType) {
+            @TabCloseType int closeType,
+            @DetachReason int detachReason) {
         assert selectionType == TabSelectionType.FROM_CLOSE
                 || selectionType == TabSelectionType.FROM_EXIT;
 
@@ -2000,7 +2004,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             // collection in a single pass.
             TabCollectionTabModelImplJni.get()
                     .removeTabRecursive(mNativeTabCollectionTabModelImplPtr, tab);
-            tab.onRemovedFromTabModel(mCurrentTabSupplier);
+            tab.onRemovedFromTabModel(mCurrentTabSupplier, detachReason);
             mTabIdToTabs.remove(tab.getId());
         }
         mTabCountSupplier.set(getCount());

@@ -442,15 +442,24 @@ void TabAndroid::UpdateDelegates(
 }
 
 void TabAndroid::SendDidActivateUpdate(JNIEnv* env) {
+  // On Android, visibility and activation are currently synonymous.
+  did_become_visible_callback_list_.Notify(this);
   did_activate_callback_list_.Notify(this);
 }
 
 void TabAndroid::SendWillDeactivateUpdate(JNIEnv* env) {
+  // On Android, visibility and activation are currently synonymous.
+  will_become_hidden_callback_list_.Notify(this);
   will_deactivate_callback_list_.Notify(this);
 }
 
 void TabAndroid::SendDidInsertUpdate(JNIEnv* env) {
   did_insert_callback_list_.Notify(this);
+}
+
+void TabAndroid::SendWillDetachUpdate(JNIEnv* env, jint detach_reason) {
+  will_detach_callback_list_.Notify(
+      this, static_cast<tabs::TabInterface::DetachReason>(detach_reason));
 }
 
 namespace {
@@ -627,9 +636,7 @@ void TabAndroid::Close() {
 
 base::CallbackListSubscription TabAndroid::RegisterWillDiscardContents(
     WillDiscardContentsCallback callback) {
-  // Tab discarding is currently an OS level operation and we don't necessarily
-  // get signals when this occurs.
-  NOTIMPLEMENTED();
+  // Discarding does not replace WebContents instances on Android.
   return base::CallbackListSubscription();
 }
 
@@ -657,25 +664,19 @@ bool TabAndroid::IsSelected() const {
   return Java_TabImpl_isMultiSelected(env, weak_java_tab_.get(env));
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterDidBecomeVisible(
     DidBecomeVisibleCallback callback) {
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
+  return did_become_visible_callback_list_.Add(std::move(callback));
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterWillBecomeHidden(
     WillBecomeHiddenCallback callback) {
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
+  return will_become_hidden_callback_list_.Add(std::move(callback));
 }
 
-// TODO(crbug.com/409366905): Finish TabInterface implementation.
 base::CallbackListSubscription TabAndroid::RegisterWillDetach(
     WillDetach callback) {
-  NOTIMPLEMENTED();
-  return base::CallbackListSubscription();
+  return will_detach_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription TabAndroid::RegisterDidInsert(
@@ -739,6 +740,7 @@ bool TabAndroid::IsPinned() const {
   return Java_TabImpl_getIsPinned(env, weak_java_tab_.get(env));
 }
 
+// TODO(crbug.com/465427156): Investigate what is needed to implement this.
 bool TabAndroid::IsBlocked() const {
   NOTIMPLEMENTED();
   return false;

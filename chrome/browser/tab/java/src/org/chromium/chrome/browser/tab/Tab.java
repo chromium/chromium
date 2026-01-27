@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.tabs.DetachReason;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -516,7 +517,8 @@ public interface Tab extends TabLifecycle {
             SelectionStateSupplier selectionStateSupplier);
 
     /** Called when the tab is removed from a tab model. */
-    void onRemovedFromTabModel(LookAheadObservableSupplier<Tab> currentTabSupplier);
+    void onRemovedFromTabModel(
+            LookAheadObservableSupplier<Tab> currentTabSupplier, @DetachReason int detachReason);
 
     /** Returns whether the tab is multi-selected. */
     boolean isMultiSelected();

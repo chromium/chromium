@@ -182,6 +182,7 @@ class TabInterface : public SupportsTabHandles {
 
   // Register for this callback to detect when a tab will be detached from a
   // window.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.tabs
   enum class DetachReason {
     // The tab is about to be deleted.
     kDelete,
