@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ai/ai_utils.h"
+#include "components/on_device_ai/ai_utils.h"
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

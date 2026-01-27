@@ -6,7 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
-#include "chrome/browser/ai/ai_utils.h"
+#include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/proofreader_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"

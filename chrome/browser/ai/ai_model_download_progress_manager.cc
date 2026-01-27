@@ -5,7 +5,7 @@
 #include "chrome/browser/ai/ai_model_download_progress_manager.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ai/ai_utils.h"
+#include "components/on_device_ai/ai_utils.h"
 
 namespace on_device_ai {
 

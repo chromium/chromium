@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AI_AI_UTILS_H_
-#define CHROME_BROWSER_AI_AI_UTILS_H_
+#ifndef COMPONENTS_ON_DEVICE_AI_AI_UTILS_H_
+#define COMPONENTS_ON_DEVICE_AI_AI_UTILS_H_
 
 #include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
@@ -61,4 +61,4 @@ class AIUtils {
       const base::FeatureParam<std::string>& feature_param);
 };
 
-#endif  // CHROME_BROWSER_AI_AI_UTILS_H_
+#endif  // COMPONENTS_ON_DEVICE_AI_AI_UTILS_H_

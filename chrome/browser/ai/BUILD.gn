@@ -32,29 +32,17 @@ source_set("ai") {
   ]
   public_deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/actor",
     "//chrome/browser/ai:ai_model_download_progress_manager",
-    "//chrome/browser/ai:ai_utils",
-    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//components/component_updater",
+    "//components/on_device_ai",
     "//components/optimization_guide/core",
-    "//components/update_client",
     "//content/public/browser",
   ]
   if (enable_glic) {
     public_deps += [ "//chrome/browser/glic" ]
   }
-}
-
-source_set("ai_utils") {
-  sources = [ "ai_utils.h" ]
-
-  deps = [
-    "//components/optimization_guide/core",
-    "//content/public/browser",
-  ]
 }
 
 source_set("impl") {
@@ -69,7 +57,6 @@ source_set("impl") {
     "ai_proofreader.cc",
     "ai_rewriter.cc",
     "ai_summarizer.cc",
-    "ai_utils.cc",
     "ai_writer.cc",
   ]
 
@@ -90,6 +77,7 @@ source_set("impl") {
     "//components/autofill/core/browser",
     "//components/history_embeddings",
     "//components/language/core/common",
+    "//components/on_device_ai",
     "//components/optimization_guide/content/browser",
     "//components/site_engagement/content",
     "//pdf:buildflags",
@@ -122,11 +110,12 @@ source_set("ai_model_download_progress_manager") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ai:ai_utils",
     "//components/component_updater",
+    "//components/on_device_ai",
     "//components/update_client",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//services/on_device_model/public/mojom",
   ]
 }
 
@@ -165,6 +154,7 @@ source_set("unit_tests") {
     ":ai_model_download_progress_manager",
     ":test_support",
     "//chrome/browser/optimization_guide:test_support",
+    "//components/on_device_ai",
     "//components/optimization_guide/core:test_support",
   ]
 }
