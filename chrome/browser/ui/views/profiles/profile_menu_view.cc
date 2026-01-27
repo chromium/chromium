@@ -957,17 +957,8 @@ void ProfileMenuView::MaybeBuildBatchUploadButton() {
 void ProfileMenuView::BuildAutofillSettingsButton() {
   CHECK(!profile().IsGuestSession());
 
-  bool use_your_saved_info_branding =
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoSettingsPage) ||
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoBrandingInSettings);
-  int message_id = use_your_saved_info_branding
-                       ? IDS_SETTINGS_YOUR_SAVED_INFO
-                       : IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON;
-  const gfx::VectorIcon& icon = use_your_saved_info_branding
-                                    ? vector_icons::kPersonTextIcon
-                                    : vector_icons::kPasswordManagerIcon;
+  int message_id = IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON;
+  const gfx::VectorIcon& icon = vector_icons::kPasswordManagerIcon;
   auto action = base::FeatureList::IsEnabled(
                     autofill::features::kYourSavedInfoSettingsPage)
                     ? &ProfileMenuView::OnYourSavedInfoSettingsButtonClicked

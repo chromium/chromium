@@ -76,23 +76,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
           return loadTimeData.getBoolean('enableYourSavedInfoSettingsPage');
         },
       },
-
-      /**
-       * Icon name to be used for the autofill section.
-       */
-      autofillIcon_: {
-        type: String,
-        value: () => loadTimeData.getBoolean('enableYourSavedInfoBranding') ?
-            'settings20:person-text' :
-            'settings:assignment',
-      },
     };
   }
 
   declare private pageVisibility_?: PageVisibility;
   declare private showAiPage_: boolean;
   declare private enableYourSavedInfoSettingsPage_: boolean;
-  declare private autofillIcon_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

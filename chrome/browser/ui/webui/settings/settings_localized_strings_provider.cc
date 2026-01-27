@@ -1375,6 +1375,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                         Profile* profile,
                         content::WebContents* web_contents) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"autofillPageTitle", IDS_SETTINGS_AUTOFILL_AND_PASSWORDS},
       {"yourSavedInfoPageTitle", IDS_SETTINGS_YOUR_SAVED_INFO},
       {"yourSavedInfoPageDescription",
        IDS_SETTINGS_YOUR_SAVED_INFO_DESCRIPTION},
@@ -1767,15 +1768,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                   .spec())));
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddLocalizedString(
-      "autofillPageTitle",
-      base::FeatureList::IsEnabled(
-          autofill::features::kYourSavedInfoSettingsPage) ||
-              base::FeatureList::IsEnabled(
-                  autofill::features::kYourSavedInfoBrandingInSettings)
-          ? IDS_SETTINGS_YOUR_SAVED_INFO
-          : IDS_SETTINGS_AUTOFILL_AND_PASSWORDS);
 
   html_source->AddString(
       "addressesSublabel",
