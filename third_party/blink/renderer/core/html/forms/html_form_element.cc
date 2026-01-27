@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/form_data_event.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/radio_node_list.h"
@@ -148,9 +149,21 @@ bool HTMLFormElement::IsValidWebMCPForm() const {
   return active_webmcp_tool_ && active_webmcp_tool_->IsValidTool();
 }
 
+bool HTMLFormElement::IsActiveToolSubmitButton(
+    const HTMLFormControlElement* element) const {
+  if (!MatchesToolFormActivePseudoClass()) {
+    return false;
+  }
+  return active_webmcp_tool_->ActiveToolSubmitButton() == element;
+}
+
+bool HTMLFormElement::MatchesToolFormActivePseudoClass() const {
+  return IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
+}
+
 void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
     String input_arguments,
-    McpToolCallback done_callback) {
+    base::OnceCallback<void(McpToolCallbackResult)> done_callback) {
   HTMLFormControlElement* submit_button = nullptr;
   if (!FillFormControls(input_arguments, &submit_button)) {
     return std::move(done_callback)
@@ -162,7 +175,12 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
   // TODO(masonf): This should key off of the `autosubmit` attribute, and only
   // submit here if the attribute is present. Else it should just focus the
   // submit button and then signal the agent to allow user input again.
-  form_->was_agent_filled_ = true;
+  is_currently_running_ = true;
+  active_submit_button_ = submit_button;
+  form_->PseudoStateChanged(CSSSelector::kPseudoToolFormActive);
+  if (submit_button) {
+    submit_button->PseudoStateChanged(CSSSelector::kPseudoToolSubmitActive);
+  }
   done_callback_ = std::move(done_callback);
   form_->PrepareForSubmission(/*event*/ nullptr, submit_button);
 }
@@ -220,6 +238,21 @@ bool HTMLFormElement::HTMLFormMcpTool::FillFormControls(
   return true;
 }
 
+void HTMLFormElement::HTMLFormMcpTool::CallDoneCallback(
+    McpToolCallbackResult result) {
+  if (done_callback_.is_null()) {
+    return;
+  }
+  std::move(done_callback_).Run(result);
+  is_currently_running_ = false;
+  auto old_submit_button = active_submit_button_;
+  active_submit_button_ = nullptr;
+  form_->PseudoStateChanged(CSSSelector::kPseudoToolFormActive);
+  if (old_submit_button) {
+    old_submit_button->PseudoStateChanged(CSSSelector::kPseudoToolSubmitActive);
+  }
+}
+
 String HTMLFormElement::HTMLFormMcpTool::ComputeInputSchema() {
   // Hard-coded schema for now - this is temporary.
   return R"json({
@@ -253,14 +286,11 @@ String HTMLFormElement::HTMLFormMcpTool::ComputeInputSchema() {
 
 void HTMLFormElement::HTMLFormMcpTool::Trace(Visitor* visitor) const {
   visitor->Trace(form_);
+  visitor->Trace(active_submit_button_);
 }
 
 void HTMLFormElement::RespondWithHandler::React(ScriptState* script_state,
                                                 ScriptValue value) {
-  auto callback = tool_->TakeDoneCallback();
-  if (callback.is_null()) {
-    return;
-  }
   if (resolved_) {
     String result;
     if (value.IsObject()) {
@@ -275,12 +305,12 @@ void HTMLFormElement::RespondWithHandler::React(ScriptState* script_state,
     if (result.IsNull()) {
       value.ToString(result);
     }
-    std::move(callback).Run(result);
+    tool_->CallDoneCallback(result);
   } else {
     // Promise rejected - error.
     V8ScriptRunner::ReportException(script_state->GetIsolate(),
                                     value.V8Value());
-    std::move(callback).Run(
+    tool_->CallDoneCallback(
         base::unexpected(WebDocument::ScriptToolError::kToolInvocationFailed));
   }
 }
@@ -331,7 +361,7 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
 
   if (is_valid_mcp_form) {
     active_webmcp_tool_ =
-        MakeGarbageCollected<HTMLFormMcpTool>(this, name, description);
+        MakeGarbageCollected<HTMLFormMcpTool>(*this, name, description);
     model_context->RegisterDeclarativeTool(name, description,
                                            active_webmcp_tool_);
   }
@@ -575,7 +605,8 @@ void HTMLFormElement::PrepareForSubmission(
       submit_event_init->setCancelable(true);
       submit_event_init->setSubmitter(
           submit_button ? &submit_button->ToHTMLElement() : nullptr);
-      bool declarative_webmcp_call = IsValidWebMCPForm() && was_agent_filled_;
+      bool declarative_webmcp_call =
+          IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
       if (declarative_webmcp_call) {
         CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
         submit_event_init->setAgentInvoked(true);
@@ -623,14 +654,11 @@ void HTMLFormElement::PrepareForSubmission(
     // TODO(khushal). This sends back "success" to the agent, but it should
     // wait for the new page to load, and send back the response then, based on
     // page content.
-    if (IsValidWebMCPForm() && was_agent_filled_) {
+    if (IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning()) {
       CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
-      if (auto callback = active_webmcp_tool_->TakeDoneCallback();
-          !callback.is_null()) {
-        // Return a null string to indicate that a navigation has been
-        // triggered.
-        std::move(callback).Run(base::ok(String()));
-      }
+      // Return a null string to indicate that a navigation has been
+      // triggered.
+      active_webmcp_tool_->CallDoneCallback(base::ok(String()));
     }
   }
 }

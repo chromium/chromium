@@ -206,6 +206,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
       <script>
         document.querySelector('form').addEventListener('submit', e => {
           window.submit_event_fired = true;
+          window.input_value = document.querySelector('input').value;
           e.preventDefault();
           e.respondWith(Promise.resolve("result value"));
         });
@@ -236,6 +237,12 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
                       WebScriptSource("window.submit_event_fired"))
                   .As<v8::Boolean>()
                   ->Value());
+  EXPECT_EQ(ToCoreString(Window().GetIsolate(),
+                         MainFrame()
+                             .ExecuteScriptAndReturnValue(
+                                 WebScriptSource("window.input_value"))
+                             .As<v8::String>()),
+            "testing");
 }
 
 TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_Reject) {
@@ -431,6 +438,106 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_LateRespondWithThrows) {
       )"));
   EXPECT_EQ(ToCoreString(Window().GetIsolate(), error_name.As<v8::String>()),
             "InvalidStateError");
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PseudoClasses) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <body>
+      <style>
+        form:tool-form-active { background-color: rgb(0, 255, 0); }
+        button:tool-submit-active { color: rgb(255, 0, 0); }
+      </style>
+      <form toolname="search_tool" tooldescription="Search the web" action="/search">
+        <input type=text name=query>
+        <button type=submit>Submit</button>
+      </form>
+      <script>
+        document.querySelector('form').addEventListener('submit', e => {
+          const form = document.querySelector('form');
+          const button = document.querySelector('button');
+          const input = document.querySelector('input');
+          window.form_active = form.matches(':tool-form-active');
+          window.form_submit_active = form.matches(':tool-submit-active');
+          window.button_active = button.matches(':tool-submit-active');
+          window.input_form_active = input.matches(':tool-form-active');
+          window.input_submit_active = input.matches(':tool-submit-active');
+          window.form_bg = getComputedStyle(form).backgroundColor;
+          window.button_color = getComputedStyle(button).color;
+          e.preventDefault();
+          e.respondWith(Promise.resolve("result"));
+        });
+      </script>
+    </body>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(
+      MainFrame()
+          .ExecuteScriptAndReturnValue(WebScriptSource("window.form_active"))
+          .As<v8::Boolean>()
+          ->Value());
+  EXPECT_FALSE(MainFrame()
+                   .ExecuteScriptAndReturnValue(
+                       WebScriptSource("window.form_submit_active"))
+                   .As<v8::Boolean>()
+                   ->Value());
+  EXPECT_TRUE(
+      MainFrame()
+          .ExecuteScriptAndReturnValue(WebScriptSource("window.button_active"))
+          .As<v8::Boolean>()
+          ->Value());
+  EXPECT_FALSE(MainFrame()
+                   .ExecuteScriptAndReturnValue(
+                       WebScriptSource("window.input_form_active"))
+                   .As<v8::Boolean>()
+                   ->Value());
+  EXPECT_FALSE(MainFrame()
+                   .ExecuteScriptAndReturnValue(
+                       WebScriptSource("window.input_submit_active"))
+                   .As<v8::Boolean>()
+                   ->Value());
+  EXPECT_EQ(ToCoreString(Window().GetIsolate(),
+                         MainFrame()
+                             .ExecuteScriptAndReturnValue(
+                                 WebScriptSource("window.form_bg"))
+                             .As<v8::String>()),
+            "rgb(0, 255, 0)");
+  EXPECT_EQ(ToCoreString(Window().GetIsolate(),
+                         MainFrame()
+                             .ExecuteScriptAndReturnValue(
+                                 WebScriptSource("window.button_color"))
+                             .As<v8::String>()),
+            "rgb(255, 0, 0)");
+
+  EXPECT_FALSE(
+      MainFrame()
+          .ExecuteScriptAndReturnValue(WebScriptSource(
+              "document.querySelector('form').matches(':tool-form-active')"))
+          .As<v8::Boolean>()
+          ->Value());
+  EXPECT_FALSE(MainFrame()
+                   .ExecuteScriptAndReturnValue(
+                       WebScriptSource("document.querySelector('button')."
+                                       "matches(':tool-submit-active')"))
+                   .As<v8::Boolean>()
+                   ->Value());
 }
 
 }  // namespace blink

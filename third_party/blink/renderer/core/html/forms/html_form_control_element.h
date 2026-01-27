@@ -131,16 +131,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   }
   void SetAutofillState(WebAutofillState = WebAutofillState::kAutofilled);
 
-  bool MatchesToolSubmitActivePseudoClass() {
-    // TODO(crbug.com/475992364): Implement correct matching state.
-    //
-    // Additionally:
-    //
-    //   PseudoStateChanged(CSSSelector::kPseudoToolSubmitActive);
-    //
-    // must be invoked appropriately when the state changes.
-    return false;
-  }
+  bool MatchesToolSubmitActivePseudoClass() const;
 
   bool IsAutocompleteEmailUrlOrPassword() const;
 

@@ -160,16 +160,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void UseCountPropertyAccess(v8::Local<v8::Name>&,
                               const v8::PropertyCallbackInfo<v8::Value>&);
 
-  bool MatchesToolFormActivePseudoClass() {
-    // TODO(crbug.com/475992364): Implement correct matching state.
-    //
-    // Additionally:
-    //
-    //   PseudoStateChanged(CSSSelector::kPseudoToolFormActive);
-    //
-    // must be invoked appropriately when the state changes.
-    return false;
-  }
+  bool IsActiveToolSubmitButton(const HTMLFormControlElement* element) const;
+  bool MatchesToolFormActivePseudoClass() const;
 
  private:
   friend class HTMLFormMcpToolTest;
@@ -252,8 +244,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   base::OnceClosure cancel_last_submission_;
 
-  using McpToolCallback = base::OnceCallback<void(
-      base::expected<blink::String, blink::WebDocument::ScriptToolError>)>;
+  using McpToolCallbackResult =
+      base::expected<blink::String, blink::WebDocument::ScriptToolError>;
   class CORE_EXPORT HTMLFormMcpTool final
       : public GarbageCollected<HTMLFormMcpTool>,
         public DeclarativeWebMCPTool {
@@ -261,7 +253,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     HTMLFormMcpTool() = delete;
     HTMLFormMcpTool(const HTMLFormMcpTool&) = delete;
     HTMLFormMcpTool& operator=(const HTMLFormMcpTool&) = delete;
-    HTMLFormMcpTool(HTMLFormElement* form,
+    HTMLFormMcpTool(HTMLFormElement& form,
                     String tool_name,
                     String tool_description)
         : tool_name_(tool_name),
@@ -270,10 +262,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
       CHECK(!tool_name.IsNull() && !tool_description.IsNull());
     }
     String ComputeInputSchema() override;
-    void ExecuteTool(String input_arguments,
-                     base::OnceCallback<void(
-                         base::expected<String, WebDocument::ScriptToolError>)>
-                         done_callback) override;
+    void ExecuteTool(
+        String input_arguments,
+        base::OnceCallback<void(McpToolCallbackResult)> done_callback) override;
     // Fill form controls with data as provided by `input_arguments`.
     //
     // If 'true' is returned, then all specified tool parameters (form controls)
@@ -284,14 +275,23 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     String ToolName() const { return tool_name_; }
     String ToolDescription() const { return tool_description_; }
     bool IsValidTool() const { return !tool_name_.IsNull(); }
-    McpToolCallback TakeDoneCallback() { return std::move(done_callback_); }
+    bool CurrentlyRunning() const {
+      return IsValidTool() && is_currently_running_;
+    }
+    HTMLFormControlElement* ActiveToolSubmitButton() const {
+      CHECK(is_currently_running_);
+      return active_submit_button_;
+    }
+    void CallDoneCallback(McpToolCallbackResult result);
     void Trace(Visitor* visitor) const;
 
    private:
+    bool is_currently_running_ = false;
     String tool_name_;
     String tool_description_;
     Member<HTMLFormElement> form_;
-    McpToolCallback done_callback_;
+    Member<HTMLFormControlElement> active_submit_button_;
+    base::OnceCallback<void(McpToolCallbackResult)> done_callback_;
   };
 
   class RespondWithHandler : public ThenCallable<IDLAny, RespondWithHandler> {
@@ -312,7 +312,6 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool is_submitting_ = false;
   bool in_user_js_submit_event_ = false;
   bool is_constructing_entry_list_ = false;
-  bool was_agent_filled_ = false;
 
   bool listed_elements_are_dirty_ : 1;
   bool listed_elements_for_autofill_are_dirty_ : 1;
