@@ -4322,6 +4322,22 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     }
   }
 
+  // Clean up the unnecessary explicitly set custom element registry
+  // in element rare data set in RemovedFrom.
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    if (ElementRareDataVector* rare_data = RareData()) {
+      if (rare_data->HasCustomElementRegistrySet() &&
+          insertion_point.IsInTreeScope()) {
+        auto* registry = rare_data->GetCustomElementRegistry();
+        if (registry && registry->IsGlobalRegistry() &&
+            registry ==
+                insertion_point.GetTreeScope().customElementRegistry()) {
+          rare_data->ClearCustomElementRegistry();
+        }
+      }
+    }
+  }
+
   return kInsertionDone;
 }
 
@@ -4472,6 +4488,18 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
     DCHECK(!data->HasPseudoElements() ||
            GetDocument().StatePreservingAtomicMoveInProgress());
+  }
+
+  // Make sure the element's custom element registry is explicitly set
+  // before moved.
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    EnsureRareData();
+    ElementRareDataVector* data = RareData();
+    if (!data->HasCustomElementRegistrySet() &&
+        insertion_point.IsInTreeScope()) {
+      data_ = data->SetCustomElementRegistry(
+          insertion_point.GetTreeScope().customElementRegistry());
+    }
   }
 
   if (auto* const frame = document.GetFrame()) {
