@@ -2900,7 +2900,7 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       return;
     }
     if ((IsA<HTMLTableElement>(node) || IsA<HTMLSelectElement>(node) ||
-         node->GetLayoutObject()->IsAtomicInlineLevel()) &&
+         node->GetLayoutObject()->IsAtomicInline()) &&
         !node->IsFinishedParsingChildren() &&
         !node_to_parse_before_more_tree_updates_) {
       // * Tables must be fully parsed before building, because many of the
