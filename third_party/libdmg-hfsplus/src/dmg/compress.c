@@ -16,14 +16,6 @@
 #include "third_party/lzma_sdk/C/XzEnc.h"
 #include "third_party/lzma_sdk/google/seven_zip_c_buf_stream.h"
 
-// LZMA_FAIL_FAST was introduced in 5.3.3, attempting to use it in earlier versions
-// yields an error.
-#ifdef LZMA_FAIL_FAST
-  #define LZMA_DECODE_OPTS LZMA_FAIL_FAST
-#else
-  #define LZMA_DECODE_OPTS 0
-#endif
-
 // Calls once-only initialization functions for `lzma_sdk`. Not threadsafe.
 static void reallyInitLzmaCrc()
 {

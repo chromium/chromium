@@ -73,3 +73,14 @@ Local modifications:
       * Formatting tweaks to some comments in hfsplus.h
       * Rename `compress` (compress.h, compress.c, io.c) to `compressFn` to
         resolve a conflict with `#define`s transitive from Chromium's zlib.h
+  * patches/2026-01-26-lzma-sdk.patch
+    * Uses `lzma_sdk` instead of `xz` for LZMA compression, since Chromium
+      already has `lzma_sdk` in `third_party`.
+    * Relies on an adapter that, in Chromium, made more sense to stash near
+      the other Google-specific `lzma_sdk` stuff rather than `libdmg-hfsplus`;
+      that's `third_party/lzma_sdk/google/seven_zip_c_buf_stream.[h|c]`.
+    * See https://chromium-review.googlesource.com/c/chromium/src/+/7467001
+      for the diff that includes the general-purpose "use a C buffer as an
+      `lzma_sdk` stream" component.
+    * `lzma_sdk`'s compression presets are not identical to `xz's`, so the
+      exact interpretation of the `--level` flag will be different.
