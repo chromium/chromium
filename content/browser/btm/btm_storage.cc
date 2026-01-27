@@ -187,9 +187,7 @@ std::set<std::string> BtmStorage::FilterSitesWithoutProtectiveEvent(
       db_->FilterSites(sites, BtmDatabase::BounceFilterType::kProtectiveEvent);
 
   for (const auto& site : interacted_sites) {
-    if (sites.count(site)) {
-      sites.erase(site);
-    }
+    sites.erase(site);
   }
 
   return sites;
