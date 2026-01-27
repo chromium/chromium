@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
-import 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 
 import type {PrivacySandboxCombinedDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
@@ -13,7 +12,6 @@ import type {PrivacySandboxDialogConsentStepElement} from 'chrome://privacy-sand
 import {PrivacySandboxDialogMixin} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_mixin.js';
 import type {PrivacySandboxDialogNoticeStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_notice_step.js';
 import type {PrivacySandboxNoticeDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
-import type {PrivacySandboxNoticeRestrictedDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -1012,115 +1010,6 @@ suite('NoticeROWAdsApiUxEnhancement', function() {
     assertEquals(
         getComputedStyle(privacyPolicyBackButtonContainer).display, 'none',
         `privacy policy back button should be hidden when the back button is clicked`);
-  });
-});
-
-suite('NoticeRestricted', function() {
-  let page: PrivacySandboxNoticeRestrictedDialogAppElement;
-  let browserProxy: TestPrivacySandboxDialogBrowserProxy;
-
-  setup(async function() {
-    browserProxy = new TestPrivacySandboxDialogBrowserProxy();
-    PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page =
-        document.createElement('privacy-sandbox-notice-restricted-dialog-app');
-    document.body.appendChild(page);
-    await browserProxy.whenCalled('resizeDialog');
-    await browserProxy.whenCalled('showDialog');
-  });
-
-  test('validDialog', async function() {
-    await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
-    assertTrue(!!page.shadowRoot!.querySelector('div'));
-  });
-
-  test('settingsClicked', async function() {
-    await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
-    testClickButton('#settingsButton', page);
-    await verifyActionOccured(
-        browserProxy,
-        PrivacySandboxPromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS);
-  });
-
-  test('acknowledgeClicked', async function() {
-    await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
-    testClickButton('#ackButton', page);
-    await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
-  });
-
-  // TODO(b/277180533): determine whether some of the more button test logic can
-  // be shared.
-  // TODO(crbug.com/40903181): various more button test issues. Re-enable once
-  // resolved.
-  test('moreButton', async function() {
-    await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_SHOWN);
-    await page.moreButtonInitializedForTest();
-    await flushTasks();
-
-    const scrollable: HTMLElement =
-        page.shadowRoot!.querySelector('[scrollable]')!;
-    // Turn-off scroll animations.
-    scrollable.style.scrollBehavior = 'auto';
-    const allContentVisible = isAllContentVisible(scrollable);
-    assertEquals(
-        isChildVisible(page, '#moreButton'), !allContentVisible,
-        `more button should only be visible when some of the dialog content
-        wasn't visible`);
-
-    assertEquals(
-        isChildVisible(page, '#ackButton'), true,
-        `ack button should never be hidden`);
-    assertEquals(
-        isChildInParentBounds(page, '#ackButton'), allContentVisible,
-        allContentVisible ?
-            'ack button should visible if all content dialog is visible' :
-            `ack button should not be visible if some of the dialog content \
-            isn't visible from the start`);
-
-    assertEquals(
-        isChildVisible(page, '#settingsButton'), true,
-        `settings button should never be hidden`);
-    assertEquals(
-        isChildInParentBounds(page, '#settingsButton'), allContentVisible,
-        allContentVisible ?
-            'settings button should visible if all content dialog is visible' :
-            `settings button should not be visible if some of the dialog \
-            content isn't visible from the start`);
-
-    if (allContentVisible) {
-      return;
-    }
-    const moreButton: HTMLElement =
-        page.shadowRoot!.querySelector('#moreButton')!;
-    // Click until reaching the bottom.
-    while (isChildVisible(page, '#moreButton')) {
-      moreButton.click();
-      await waitForScrollToFinish(scrollable);
-    }
-
-    await verifyActionOccured(
-        browserProxy,
-        PrivacySandboxPromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED);
-    await page.whenWasScrolledToBottomForTest();
-
-    // After scrolling down, the "More" button is hidden and dialog button are
-    // visible in the parent bounds.
-    assertEquals(
-        isChildVisible(page, '#moreButton'), false,
-        'more button should not be visible anymore');
-    assertEquals(
-        isChildInParentBounds(page, '#ackButton'), true,
-        'ack button should be visible after scrolling to the bottom');
-    assertEquals(
-        isChildInParentBounds(page, '#settingsButton'), true,
-        'settings button should be visible after scrolling to the bottom');
   });
 });
 

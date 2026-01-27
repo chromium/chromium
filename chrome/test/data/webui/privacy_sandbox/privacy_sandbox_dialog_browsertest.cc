@@ -63,10 +63,6 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeROW) {
   RunTestSuite("NoticeROW");
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeRestricted) {
-  RunTestSuite("NoticeRestricted");
-}
-
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Mixin) {
   RunTestSuite("Mixin");
 }

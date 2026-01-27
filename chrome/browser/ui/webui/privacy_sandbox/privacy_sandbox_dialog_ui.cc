@@ -79,9 +79,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
   source->AddResourcePath(
       chrome::kChromeUIPrivacySandboxDialogNoticePath,
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_DIALOG_HTML);
-  source->AddResourcePath(
-      chrome::kChromeUIPrivacySandboxDialogNoticeRestrictedPath,
-      IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_RESTRICTED_DIALOG_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"adPrivacyPageTitle", IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE},
