@@ -10,6 +10,7 @@ import {VoiceSearchAction} from 'chrome://resources/cr_components/composebox/com
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
+import type {AudioWaveElement} from 'chrome://resources/cr_components/search/audio_wave.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -56,6 +57,13 @@ class MockSpeechRecognition {
     this.onend!();
   }
 }
+
+// Exposing private/protected vars as public in these components:
+type MockComposebox =
+    Omit<ComposeboxElement, 'transcript_'|'inVoiceSearchMode_'>&{
+      inVoiceSearchMode_: boolean,
+      transcript_: string,
+    };
 
 let mockSpeechRecognition: MockSpeechRecognition;
 
@@ -399,4 +407,39 @@ suite('Composebox voice search', () => {
     assertEquals(composeboxElement.animationState, GlowAnimationState.NONE);
   });
 
+  test('audio wave is rendered when listening', async () => {
+    const mockComposeboxElement =
+        composeboxElement as unknown as MockComposebox;
+    mockComposeboxElement.inVoiceSearchMode_ = true;
+    await microtasksFinished();
+
+    // SearchAnimatedGlow unconditionally exists
+    const searchAnimatedGlow =
+        composeboxElement.shadowRoot.querySelector('search-animated-glow');
+    await searchAnimatedGlow!.updateComplete;
+    const audioWave: AudioWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
+    assertTrue(!!audioWave);
+    mockComposeboxElement.transcript_ = 'foo';
+    await composeboxElement.updateComplete;
+    await searchAnimatedGlow!.updateComplete;
+    await microtasksFinished();
+
+    assertEquals('foo', audioWave.transcript);
+  });
+
+  test('audio wave is hidden when not listening', async () => {
+    const mockComposeboxElement =
+        composeboxElement as unknown as MockComposebox;
+    mockComposeboxElement.inVoiceSearchMode_ = false;
+    await microtasksFinished();
+
+    // SearchAnimatedGlow unconditionally exists
+    const searchAnimatedGlow =
+        composeboxElement.shadowRoot.querySelector('search-animated-glow');
+    await searchAnimatedGlow!.updateComplete;
+    const audioWave: AudioWaveElement|null =
+        searchAnimatedGlow!.shadowRoot.querySelector('audio-wave');
+    assertTrue(!!audioWave);
+  });
 });

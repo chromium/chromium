@@ -303,3 +303,9 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxDragAndDrop) {
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxFileCarousel) {
   RunTest("cr_components/composebox/file_carousel_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest,
+                       ComposeboxAudioWaveAnimation) {
+  RunTest("cr_components/composebox/composebox_audio_animation_test.js",
+          "mocha.run()");
+}

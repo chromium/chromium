@@ -11,27 +11,33 @@ import {getHtml} from './audio_wave.html.js';
 export const blurredRectUrl =
     '//resources/cr_components/search/images/eclipse_wave_blurred_rect.png';
 
-// Controls the curvature tightness (0.0 = straight line, 0.5 = full circle)
+// Controls the curvature tightness (0.0 = straight line, 0.5 = full circle).
 const BEZIER_TENSION_RATIO: number = 0.38;
 
-// Wave height
+// Wave height.
 const MAX_AMPLITUDE: number = -25;
 const MIN_AMPLITUDE: number = -0;
 
-// Vertical offset
+// Vertical offset.
 const MAX_VERTICAL_SHIFT: number = -10;
 const MIN_VERTICAL_SHIFT: number = -0;
 
-// Idle wave: large margin (less width); peak wave: small margin (more width)
+// Idle wave: large margin (less width); peak wave: small margin (more width).
 const WAVE_SIDE_MARGIN_IDLE: number = 56;
 const WAVE_SIDE_MARGIN_PEAK: number = 10;
 
 const STROKE_WIDTH: number = 3;
 
-// At 60 fps
+// At 60 fps:
 const MS_PER_FRAME: number = 16.67;
 
 const CIRCLE_RAD: number = Math.PI * 2;
+
+const VOWEL_GROUP_EXCEPTIONS = [
+  /iu/,  // Like in chromium.
+  /eo/,  // Like in stereo.
+  /ia/,  // Like in dial, media.
+];
 
 /* Fastest speakers speak 10-12 syllables/sec. Average is 4-5;
  * accounting for latency, make it 7.5 -> 8 frames per syllable.
@@ -40,14 +46,14 @@ const CIRCLE_RAD: number = Math.PI * 2;
 const MIN_FRAMES_PER_SYLLABLE: number = 6;
 const MAX_FRAMES_PER_SYLLABLE: number = 8;
 
-// -12 frames = ~200ms compensation due to speech webkit latency
+// -12 frames = ~200ms compensation due to speech webkit latency.
 const FRAME_LATENCY: number = -12;
 
 const SMOOTHING_WINDOW_SIZE: number = 3;
 
 const SMOOTHING_BUFFER_SIZE: number = 5;
 
-interface Bump {
+export interface Bump {
   startTime: number;
   duration: number;
   maxVol: number;
@@ -57,9 +63,9 @@ function clamp(value: number, minVal: number, maxVal: number): number {
   return Math.min(Math.max(value, minVal), maxVal);
 }
 /*
- * Linear Interpolation that maps one unit to another unit, like volume to px
+ * Linear Interpolation that maps one unit to another unit, like volume to px.
  */
-function mapToRange(
+export function mapToRange(
     value: number,
     inputMin: number,
     inputMax: number,
@@ -71,14 +77,15 @@ function mapToRange(
     value = clamp(value, inputMin, inputMax);
   }
 
-  // Is: (val - input_offset) * ratio + output_offset
+  // Is: (val - input_offset) * ratio + output_offset.
   return (value - inputMin) *
       ((outputMax - outputMin) / (inputMax - inputMin)) +
       outputMin;
 }
 
 // Heuristic based on number of vowel groups, minus edge cases.
-function countSyllablesHeuristic(word: string): number {
+export function countSyllablesHeuristic(word: string): number {
+  let count = 0;
   word = word.toLocaleLowerCase();
   if (word.length === 0) {
     return 0;
@@ -88,8 +95,9 @@ function countSyllablesHeuristic(word: string): number {
     return 1;
   }
 
-  // Remove silent 'e', 'es', 'ed' at end, as long as it's not '-ted' or '-ded'
-  // Don't take non-t/non-d in '-[x]ed'
+  /* Remove silent 'e', 'es', 'ed' at end, as long as it's not '-ted' or '-ded'.
+   * Don't take non-t/non-d in '-[x]ed'.
+   */
   word = word.replace(/(?:[^laeiouy]es|(?<=[^td])ed|[^laeiouy]e)$/, '');
 
   // Remove leading 'y'; it's never a "vowel" like middle y's are.
@@ -101,10 +109,18 @@ function countSyllablesHeuristic(word: string): number {
    */
   const vowelGroups = word.match(/[aeiouy]{1,2}/g);
 
-  return vowelGroups ? vowelGroups.length : 1;
+  // Count diphthong exceptions.
+  VOWEL_GROUP_EXCEPTIONS.forEach((pattern) => {
+    if (pattern.test(word)) {
+      count++;
+    }
+  });
+
+  return vowelGroups ? vowelGroups.length + count : 1 + count;
 }
 
-function weightedAverage(numArray: number[], amountToAverage: number): number {
+export function weightedAverage(
+    numArray: number[], amountToAverage: number): number {
   let weightedSum = 0;
   let sumOfWeights = 0;
   for (let i = 0; i < amountToAverage; i++) {
@@ -116,7 +132,7 @@ function weightedAverage(numArray: number[], amountToAverage: number): number {
   return sumOfWeights === 0 ? 0 : weightedSum / sumOfWeights;
 }
 
-function bezierEasing(
+export function bezierEasing(
     controlX1: number, controlX2: number, timeProgress: number): number {
   /*
    * Solve a Cubic Bezier curve for a specific time "t":
@@ -196,6 +212,9 @@ export class AudioWaveElement extends CrLitElement {
 
   accessor isListening: boolean = false;
   accessor transcript: string = '';
+  /* ReceivedSpeech is always set to true before or at
+   * same time transcript is populated.
+   */
   accessor receivedSpeech: boolean = false;
   protected accessor isExpanding_: boolean = true;
 
@@ -210,8 +229,13 @@ export class AudioWaveElement extends CrLitElement {
   private volumeHistory_: number[] = [];
   private activeSimulatedBumps_: Bump[] = [];
 
-  /* Tracks if first syllable ever heard (so that way do not have duplicate
-   * bump, as there is firstSpeech bump; do not double count that.)
+  /* True means first syllable has already been heard. False means
+   * have not heard syllable yet, even if receivedSpeech is true
+   * (can be noise, not speech first heard). Default is true since default case
+   * is that first word is spoken, and receivedSpeech creates the bump instead
+   * of transcript. This needs to be true to avoid double counting the first
+   * bump in transcript and receivedSpeech. The remaining bumps are processed
+   * via transcript.
    */
   private firstSyllable_: boolean = true;
 
@@ -232,11 +256,8 @@ export class AudioWaveElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('isListening')) {
-      this.isListening ? this.onStartListen() : this.onStopListen();
+      this.isListening ? this.onStartListen_() : this.onStopListen_();
       this.receivedSpeech = false;
-    }
-    if (changedProperties.has('transcript')) {
-      this.handleNewWords();
     }
     if (changedProperties.has('receivedSpeech')) {
       /* Speech recognition's speech state is changed before it outputs a
@@ -244,9 +265,8 @@ export class AudioWaveElement extends CrLitElement {
        * add a bump so do not have to wait for transcript to come in
        * from speech webkit. This avoids a delay. If the transcript is
        * still blank, even after it is updated, set firstSyllable_ to false
-       * so it is not ignored to avoid double counting syllables here and
-       * in the function where syllables are registered and added as audio
-       * simulation bumps in the wave.
+       * since no word has been received yet and we do not want the default
+       * of skipping the first syllable due to receivedSpeech beceoming true.
        */
 
       if (this.receivedSpeech) {
@@ -254,22 +274,25 @@ export class AudioWaveElement extends CrLitElement {
         for (let i = 0; i < this.volumeHistory_.length; i++) {
           this.volumeHistory_[i] = Math.max(this.volumeHistory_[i] ?? 0, 0.3);
         }
-        this.makeSimulatedAudioBump(15, 25, this.frame_, 0.14, 0.05);
+        this.makeSimulatedAudioBump_(15, 25, this.frame_, 0.14, 0.05);
         if (this.transcript === '') {
-          // Do use measure to avoid double counting
+          // Do measure since was not a word.
           this.firstSyllable_ = false;
         }
       }
+    }
+    if (changedProperties.has('transcript')) {
+      this.handleNewWords_();
     }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.onStopListen();
+    this.onStopListen_();
     this.resizeObserver.disconnect();
   }
 
-  protected onStartListen() {
+  protected onStartListen_() {
     this.isExpanding_ = true;
 
     this.volumeHistory_ = new Array(SMOOTHING_BUFFER_SIZE).fill(0.001);
@@ -281,7 +304,7 @@ export class AudioWaveElement extends CrLitElement {
     }
   }
 
-  protected onStopListen() {
+  protected onStopListen_() {
     this.frame_ = 0;
     this.decayingAmplitude_ = 0;
 
@@ -305,12 +328,12 @@ export class AudioWaveElement extends CrLitElement {
     const now = performance.now();
     const elapsed = now - this.lastUpdateTime_;
 
-    // Throttle to ensure 60 fps
+    // Throttle to ensure 60 fps.
     if (elapsed > MS_PER_FRAME) {
-      this.updateVolume();
+      this.updateVolume_();
 
       let level = this.volumeHistory_[0];
-      // Smoothing to prevent jitter
+      // Smoothing to prevent jitter.
       if (SMOOTHING_WINDOW_SIZE > 0) {
         level = weightedAverage(this.volumeHistory_, SMOOTHING_WINDOW_SIZE);
       }
@@ -319,7 +342,7 @@ export class AudioWaveElement extends CrLitElement {
        * noises and slightly emphasize louder sounds.
        */
       level = bezierEasing(0.4, 0.6, level ?? 0);
-      this.drawEclipseWavePath(level);
+      this.drawEclipseWavePath_(level);
 
       this.lastUpdateTime_ = now - (elapsed % MS_PER_FRAME);
     }
@@ -329,7 +352,7 @@ export class AudioWaveElement extends CrLitElement {
     }
   };
 
-  protected drawEclipseWavePath(rawInputLevel: number) {
+  protected drawEclipseWavePath_(rawInputLevel: number) {
     this.frame_++;
 
     // Snap up immediately if new volume is louder.
@@ -347,16 +370,17 @@ export class AudioWaveElement extends CrLitElement {
         WAVE_SIDE_MARGIN_PEAK,
     );
 
-    // Drawing anchors sitting on left/right ends of wave
+    // Drawing anchors sitting on left/right ends of wave.
     const anchorLeftX = currentSidePadding;
     const anchorRightX = this.containerWidth_ - currentSidePadding;
 
-    // Center position and width of hypothetical parabola
+    // Center position and width of hypothetical parabola.
     const waveCenterX = (anchorLeftX + anchorRightX) / 2;
     const waveHalfWidth = (anchorRightX - anchorLeftX) / 2;
 
-    // Calculates how high control points need to be in order to create perfect
-    // parabolic arch shape
+    /* Calculates how high control points need to be in order to create perfect
+     * parabolic arch shape.
+     */
     const getParabolicDepth = (xPosition: number): number => {
       if (waveHalfWidth === 0) {
         return 0;
@@ -371,19 +395,19 @@ export class AudioWaveElement extends CrLitElement {
           this.decayingAmplitude_, 0, 1, MIN_VERTICAL_SHIFT,
           MAX_VERTICAL_SHIFT);
 
-      // Formula: Displacement * (1 - x^2) + Offset
+      // Formula: Displacement * (1 - x^2) + Offset.
       return audioDisplacement * (1 - Math.pow(normalizedX, 2)) + baseOffset;
     };
 
-    // Bezier Control (left and right points) positioning
+    // Bezier Control (left and right points) positioning.
     const controlPointXLeft = this.containerWidth_ * BEZIER_TENSION_RATIO;
     const controlPointXRight =
         this.containerWidth_ * (1 - BEZIER_TENSION_RATIO);
 
-    // Y-offset for control points (determines "pull")
+    // Y-offset for control points (determines "pull").
     const controlPointY = getParabolicDepth(controlPointXLeft);
 
-    // Allow it to float up too, not just stretch up
+    // Allow it to float up too, not just stretch up.
     const maskTranslateY = mapToRange(
         this.decayingAmplitude_,
         0,
@@ -394,8 +418,9 @@ export class AudioWaveElement extends CrLitElement {
 
     const buildBezierPath =
         (thickness: number, isSolidLine: boolean): string => {
-          // If solid line, the bottom curve mirrors the top.
-          // Else, is glow, so inverts
+          /* If solid line, the bottom curve mirrors the top.
+           * Else, is glow, so inverts.
+           */
           const topY = thickness * -0.5 + controlPointY;
           const bottomY =
               thickness * 0.5 + (isSolidLine ? controlPointY : -controlPointY);
@@ -422,8 +447,9 @@ export class AudioWaveElement extends CrLitElement {
     const bottomClipY = 1000;
     const topControlY = STROKE_WIDTH * -0.5 + controlPointY;
 
-    // Clip the glow so it does not show above the wave (emanates downwards
-    // only).
+    /* Clip the glow so it does not show above the wave (emanates downwards
+     * only).
+     */
     const clipPathString = `M ${0},${- maskTranslateY * 0.25}
     L ${anchorLeftX},${0}
     C ${controlPointXLeft},${topControlY} ${controlPointXRight},${
@@ -436,7 +462,7 @@ export class AudioWaveElement extends CrLitElement {
     this.$.clipPathShape.setAttribute('d', clipPathString);
   }
 
-  protected updateVolume() {
+  protected updateVolume_() {
     /* 0 to 1 represents how much decimal % of volume can be
      * added in current frame due to mapping in mapToRange.
      */
@@ -455,7 +481,7 @@ export class AudioWaveElement extends CrLitElement {
 
     // Combine historical value + audio bump simulation:
     this.volumeHistory_.unshift(
-        ambientSimulatedMotion + this.getSimulatedAudioBumpsSum());
+        ambientSimulatedMotion + this.getSimulatedAudioBumpsSum_());
 
     // Trim volume history if too long:
     if (this.volumeHistory_.length > SMOOTHING_BUFFER_SIZE) {
@@ -463,7 +489,7 @@ export class AudioWaveElement extends CrLitElement {
     }
   }
 
-  protected handleNewWords() {
+  protected handleNewWords_() {
     const trimmedTranscript = this.transcript.trim();
     if (trimmedTranscript === '') {
       // In case if input gets cleared, reset animation.
@@ -484,10 +510,10 @@ export class AudioWaveElement extends CrLitElement {
     const newWords = words.slice(-newWordCount);  // Get last nth new words.
     this.lastWordCount_ = currentWordCount;
 
-    this.triggerSyllableBumps(newWords);
+    this.triggerSyllableBumps_(newWords);
   }
 
-  protected triggerSyllableBumps(words: string[]) {
+  protected triggerSyllableBumps_(words: string[]) {
     /* Keeps every start time after this time (maintains order of time
      * in activeSimulatedBumps_). Start in "future" to account for latency in
      * speech recognition webkit.
@@ -502,7 +528,7 @@ export class AudioWaveElement extends CrLitElement {
          * to avoid double counting
          */
         if (!this.firstSyllable_) {
-          this.makeSimulatedAudioBump(
+          this.makeSimulatedAudioBump_(
               25, 15, this.frame_ + frameOffset, 0.12, 0.08);
           /* At least min frames, up to slower end of
            * average frames per syllable:
@@ -520,18 +546,18 @@ export class AudioWaveElement extends CrLitElement {
     });
   }
 
-  protected makeSimulatedAudioBump(
+  protected makeSimulatedAudioBump_(
       durationMultiplier: number, durationOffset: number, startTime: number,
       maxVolMultiplier: number, maxVolOffset: number) {
     this.activeSimulatedBumps_.push({
       duration: Math.random() * durationMultiplier +
-          durationOffset,    // in frames @60fps
-      startTime: startTime,  // can be in future
+          durationOffset,    // In frames @60fps.
+      startTime: startTime,  // Can be in future.
       maxVol: maxVolOffset + Math.random() * maxVolMultiplier,
     });
   }
 
-  protected getSimulatedAudioBumpsSum(): number {
+  protected getSimulatedAudioBumpsSum_(): number {
     let simulatedVolumeSum = 0;
     /* Let activeSimulatedBumps_ be a queue ordered by start time.
      * Because of varying duration, it is not strictly ordered by
