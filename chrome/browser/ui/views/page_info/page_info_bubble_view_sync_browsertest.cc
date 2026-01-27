@@ -126,7 +126,6 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSyncBrowserTest,
   // to see if the account is syncing.
   SetupSyncForAccount();
 
-  ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(safe_browsing::kSyncPasswordPageInfoHistogram, 0);
 

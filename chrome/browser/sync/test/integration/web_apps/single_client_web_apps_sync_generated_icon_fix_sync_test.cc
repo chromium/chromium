@@ -96,8 +96,6 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
   }
 
   void SetUpOnMainThread() override {
-    SyncTest::SetUpOnMainThread();
-    ASSERT_TRUE(SetupSync());
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
         [this](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -110,8 +108,9 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
           }
           return nullptr;
         }));
-    embedded_test_server_handle_ =
-        embedded_test_server()->StartAndReturnHandle();
+
+    SyncTest::SetUpOnMainThread();
+    ASSERT_TRUE(SetupSync());
 
     // Since this is a single client test and there is only one provider to work
     // with, set the clock just once.
@@ -162,7 +161,6 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
 
  private:
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
-  net::test_server::EmbeddedTestServerHandle embedded_test_server_handle_;
   std::unique_ptr<base::SimpleTestClock> clock_;
   base::test::ScopedFeatureList feature_list_;
 };

@@ -102,13 +102,13 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
 
  protected:
   void SetUpOnMainThread() override {
-    EnclaveAuthenticatorTestBase::SetUpOnMainThread();
     // Make the browser's network stack route requests to the
     // embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&HandleEncryptionUnlockPageRequest));
-    ASSERT_TRUE(embedded_test_server()->Start());
+
+    EnclaveAuthenticatorTestBase::SetUpOnMainThread();
 
     base::test::TestFuture<void> load_future;
     EnclaveManager* enclave_manager =

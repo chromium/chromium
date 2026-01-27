@@ -30,6 +30,7 @@
 #include "components/sync/test/fake_server.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -282,6 +283,7 @@ class SyncTest : public PlatformBrowserTest,
 
  protected:
   // BrowserTestBase implementation:
+  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // ProfileObserver implementation.
@@ -309,6 +311,8 @@ class SyncTest : public PlatformBrowserTest,
 
   // The FakeServer used in tests with server type IN_PROCESS_FAKE_SERVER.
   std::unique_ptr<fake_server::FakeServer> fake_server_;
+
+  net::test_server::EmbeddedTestServerHandle embedded_test_server_handle_;
 
   // The factory used to mock out GAIA signin.
   network::TestURLLoaderFactory test_url_loader_factory_;

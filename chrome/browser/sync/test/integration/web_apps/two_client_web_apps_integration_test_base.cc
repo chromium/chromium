@@ -207,10 +207,4 @@ void TwoClientWebAppsIntegrationTestBase::TearDownOnMainThread() {
   WebAppsSyncTestBase::TearDownOnMainThread();
 }
 
-void TwoClientWebAppsIntegrationTestBase::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  WebAppsSyncTestBase::SetUpCommandLine(command_line);
-  ASSERT_TRUE(embedded_test_server()->Start());
-}
-
 }  // namespace web_app::integration_tests

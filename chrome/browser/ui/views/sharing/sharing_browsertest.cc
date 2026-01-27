@@ -71,7 +71,6 @@ void SharingBrowserTest::Init(
     sync_pb::SharingSpecificFields_EnabledFeatures second_device_feature) {
   ASSERT_TRUE(SetupSync());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("mock.http", GetTestPageURL());
   ASSERT_TRUE(sessions_helper::OpenTab(0, url));
 

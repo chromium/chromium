@@ -219,8 +219,6 @@ class PasswordManagerSyncTest : public SyncTest {
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();
 
-    ASSERT_TRUE(embedded_test_server()->Start());
-
     host_resolver()->AddRule("*", "127.0.0.1");
 
     // Allowlist all certs for the HTTPS server.

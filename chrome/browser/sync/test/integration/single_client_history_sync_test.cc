@@ -180,8 +180,6 @@ class SingleClientHistorySyncTest
           response->AddCustomHeader("Location", kRedirectToPath);
           return response;
         }));
-
-    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   bool SetupClients() override {
@@ -1192,7 +1190,6 @@ class SingleClientHistorySync404Test : public SingleClientHistorySyncTest {
           }
           return nullptr;
         }));
-    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
  private:

@@ -153,13 +153,11 @@ class IbanBubbleViewFullFormBrowserTest
 
   // SyncTest::SetUpOnMainThread:
   void SetUpOnMainThread() override {
-    SyncTest::SetUpOnMainThread();
-
     // Set up the HTTPS server (uses the embedded_test_server).
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data/autofill");
-    embedded_test_server()->StartAcceptingConnections();
+
+    SyncTest::SetUpOnMainThread();
 
     ASSERT_TRUE(SetupClients());
 

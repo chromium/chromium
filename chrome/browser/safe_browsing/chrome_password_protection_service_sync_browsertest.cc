@@ -66,12 +66,6 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
   ChromePasswordProtectionServiceSyncBrowserTest& operator=(
       const ChromePasswordProtectionServiceSyncBrowserTest&) = delete;
 
-  void SetUpOnMainThread() override {
-    SyncTest::SetUpOnMainThread();
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
   safe_browsing::ChromePasswordProtectionService* GetService(
       bool is_incognito) {
     return ChromePasswordProtectionService::GetPasswordProtectionService(

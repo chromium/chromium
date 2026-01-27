@@ -206,14 +206,21 @@ SyncTest::SyncTest(TestType test_type)
 SyncTest::~SyncTest() = default;
 
 void SyncTest::SetUp() {
-#if BUILDFLAG(IS_ANDROID)
-  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    sync_test_utils_android::SetUpFakeAuthForTesting();
-  }
-#endif
-
   // Mock the Mac Keychain service.  The real Keychain can block on user input.
   OSCryptMocker::SetUp();
+
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER: {
+      break;
+    }
+    case IN_PROCESS_FAKE_SERVER: {
+      ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+#if BUILDFLAG(IS_ANDROID)
+      sync_test_utils_android::SetUpFakeAuthForTesting();
+#endif
+      break;
+    }
+  }
 
   // Yield control back to the PlatformBrowserTest framework.
   PlatformBrowserTest::SetUp();
@@ -787,6 +794,17 @@ bool SyncTest::SetupSyncWithMode(SetupSyncMode setup_mode,
 
   DLOG(INFO) << "SyncTest::SetupSync() completed.";
   return true;
+}
+
+void SyncTest::SetUpOnMainThread() {
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER:
+      break;
+    case IN_PROCESS_FAKE_SERVER:
+      embedded_test_server_handle_ =
+          embedded_test_server()->StartAcceptingConnectionsAndReturnHandle();
+      break;
+  }
 }
 
 void SyncTest::TearDownOnMainThread() {
