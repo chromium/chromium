@@ -64,6 +64,9 @@ config("skia_config") {
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
     "SK_WIN_FONTMGR_NO_SIMULATIONS",
 
+    # Staging
+    "SK_ENABLE_LEGACY_SHADERCONTEXT",
+
     # Let Skia and Skia clients know whether to use `libpng`-based or
     # Rust-based PNG decoder and encoder.  This mimics what is done in
     # `third_party/skia/BUILD.gn`'s `png_decode_rust` and `png_encode_rust`
