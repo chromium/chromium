@@ -25,15 +25,16 @@ class ReadAnythingEntryPointController {
   static void InvokePageAction(BrowserWindowInterface* bwi,
                                const actions::ActionInvocationContext& context);
 
+  // Returns whether Reading Mode is currently showing. This handles both
+  // Immersive and Side Panel reading mode.
+  static bool IsUIShowing(BrowserWindowInterface* bwi);
+
   // Shows Reading Mode.
   static void ShowUI(BrowserWindowInterface* bwi,
                      ReadAnythingOpenTrigger open_trigger);
 
   // Shows or hides the omnibox entry point and the IPH for it.
   // show_promo_callback is called with the result of whether the IPH was shown.
-  // TODO(crbug.com/447418049): Ensure immersive reading mode shows and hides
-  // the omnibox entry point too, and use the callback here, or refactor such
-  // that immersive and side panel share the same logic.
   static void UpdatePageActionVisibility(
       bool should_show_page_action,
       BrowserWindowInterface* bwi,

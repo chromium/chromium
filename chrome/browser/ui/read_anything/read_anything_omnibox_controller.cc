@@ -95,6 +95,12 @@ void ReadAnythingOmniboxController::OnDestroyed() {
     iph_response_timer_->Stop();
     RecordOpenedAfterPromo();
   }
+
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    auto* read_anything_controller = ReadAnythingController::From(tab_);
+    CHECK(read_anything_controller);
+    read_anything_controller->RemoveObserver(this);
+  }
 }
 
 void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
@@ -184,5 +190,6 @@ void ReadAnythingOmniboxController::OnShowPromoResult(
 void ReadAnythingOmniboxController::RecordOpenedAfterPromo() {
   base::UmaHistogramBoolean(
       "Accessibility.ReadAnything.OpenedAfterOmniboxIPH",
-      IsReadAnythingEntryShowing(tab_->GetBrowserWindowInterface()));
+      read_anything::ReadAnythingEntryPointController::IsUIShowing(
+          tab_->GetBrowserWindowInterface()));
 }

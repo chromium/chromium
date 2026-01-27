@@ -9,10 +9,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_overlay_view.h"
+#include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
@@ -108,6 +110,11 @@ ReadAnythingController::ReadAnythingController(
                           base::Unretained(this)),
       /*renderer_crashed_callback=*/base::DoNothing(),
       /*visibility_changed_callback=*/base::DoNothing());
+
+  if (features::IsReadAnythingOmniboxChipEnabled() &&
+      base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    omnibox_controller_ = std::make_unique<ReadAnythingOmniboxController>(tab_);
+  }
 }
 
 ReadAnythingController::~ReadAnythingController() {
@@ -519,4 +526,8 @@ void ReadAnythingController::OnDistillationStateChanged(
 
 void ReadAnythingController::LockDistillationStateForTesting() {
   distillation_state_locked_for_testing_ = true;
+}
+
+void ReadAnythingController::SetDwellTimeForTesting(base::TimeTicks test_time) {
+  omnibox_controller_->SetDwellTimeForTesting(test_time);
 }

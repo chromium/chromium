@@ -134,6 +134,22 @@ void ReadAnythingEntryPointController::ToggleUI(
 }
 
 // static
+bool ReadAnythingEntryPointController::IsUIShowing(
+    BrowserWindowInterface* bwi) {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    auto* controller =
+        ReadAnythingController::From(bwi->GetActiveTabInterface());
+    CHECK(controller);
+    auto state = controller->GetPresentationState();
+    return state ==
+               ReadAnythingController::PresentationState::kInImmersiveOverlay ||
+           state == ReadAnythingController::PresentationState::kInSidePanel;
+  } else {
+    return IsReadAnythingEntryShowing(bwi);
+  }
+}
+
+// static
 void ReadAnythingEntryPointController::UpdatePageActionVisibility(
     bool should_show_page_action,
     BrowserWindowInterface* bwi,
@@ -148,8 +164,7 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
       bwi->GetActiveTabInterface()->GetTabFeatures()->page_action_controller();
   auto* const user_ed = BrowserUserEducationInterface::From(bwi);
   // No need to show the button if reading mode is already open.
-  // TODO(crbug.com/447418049): Check for immersive reading mode here too.
-  if (should_show_page_action && !IsReadAnythingEntryShowing(bwi)) {
+  if (should_show_page_action && !IsUIShowing(bwi)) {
     page_action_controller->Show(kActionSidePanelShowReadAnything);
     if (ShouldShowOmniboxChip(bwi)) {
       page_action_controller->ShowSuggestionChip(
