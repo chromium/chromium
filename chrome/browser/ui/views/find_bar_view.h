@@ -102,6 +102,8 @@ class FindBarView : public views::BoxLayoutView,
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
+  bool HandleMouseEvent(views::Textfield* sender,
+                        const ui::MouseEvent& key_event) override;
   void OnAfterUserAction(views::Textfield* sender) override;
   void OnAfterPaste() override;
 

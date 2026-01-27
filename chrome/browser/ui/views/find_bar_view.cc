@@ -474,6 +474,21 @@ bool FindBarView::HandleKeyEvent(views::Textfield* sender,
   return false;
 }
 
+bool FindBarView::HandleMouseEvent(views::Textfield* sender,
+                                   const ui::MouseEvent& key_event) {
+#if BUILDFLAG(IS_MAC)
+  if (key_event.type() == ui::EventType::kMousePressed) {
+    // On macOS, clicking on the find text field should also activate the owner
+    // widget (if it isn't already), so that the user can interact with the text
+    // field.
+    DCHECK(find_bar_host_);
+    find_bar_host_->ActivateOwnerWidgetIfNecessary();
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+  return false;
+}
+
 void FindBarView::OnAfterUserAction(views::Textfield* sender) {
   // The composition text wouldn't be what the user is really looking for.
   // We delay the search until the user commits the composition text.

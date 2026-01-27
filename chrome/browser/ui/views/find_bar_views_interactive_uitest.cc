@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/find_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -26,6 +28,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -43,6 +47,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_modifiers.h"
@@ -53,6 +58,7 @@
 #include "ui/views/interaction/view_focus_observer.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -299,13 +305,16 @@ class FindBarViewsUiTest : public InteractiveBrowserTest,
     return result;
   }
 
- private:
+ protected:
   FindBarHost* GetFindBarHost() {
     FindBar* find_bar =
         browser()->GetFeatures().GetFindBarController()->find_bar();
     return static_cast<FindBarHost*>(find_bar);
   }
 
+  bool IsFindBarVisible() { return GetFindBarHost()->IsFindBarVisible(); }
+
+ private:
   base::AutoReset<bool> enable_animation_for_test_ =
       FindBarHost::SetEnableAnimationsForTesting(false);
 };
@@ -1088,4 +1097,165 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, SelectionDuringFindPolicy) {
       WithView(FindBarView::kTextField, [text](views::Textfield* textfield) {
         EXPECT_EQ(textfield->GetText(), text);
       }));
+}
+
+// Verifies that the find bar widget is not activatable.
+//
+// The original fix for crbug.com/40616214 added Activatable::kYes to the
+// find bar widget(on macOS). However, this caused multiple other issues. We now
+// remove Activatable::kYes and instead use ActivateOwnerWidgetIfNecessary to
+// activate the browser window when clicking on the find bar textfield.
+//
+// Removing Activatable::kYes fixes the following bugs:
+// - crbug.com/40205173
+// - crbug.com/40147557
+// - crbug.com/40694525
+// - crbug.com/442293378
+// - crbug.com/422444253
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, FindBarWidgetIsNotActivatable) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  // Navigate to a simple page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSimplePage)));
+
+  // Show the find bar.
+  browser()->GetFeatures().GetFindBarController()->Show();
+  ASSERT_TRUE(IsFindBarVisible());
+
+  // Get the find bar widget.
+  views::Widget* find_bar_widget = GetFindBarHost()->GetHostWidget();
+  ASSERT_NE(nullptr, find_bar_widget);
+
+  // Verify that the find bar widget is not activatable.
+  // This is the key assertion - we intentionally do not set
+  // Activatable::kYes because doing so causes other bugs.
+  EXPECT_FALSE(find_bar_widget->CanActivate());
+}
+
+// Verifies that crbug.com/40616214 is not affected by removing
+// Activatable::kYes.
+//
+// After removing Activatable::kYes, we use ActivateOwnerWidgetIfNecessary
+// to activate the browser window when clicking on the find bar textfield (on
+// macOS). This test verifies that clicking on the find bar textfield in an
+// inactive browser window properly activates that window and allows text input.
+//
+// Disabled on Linux Wayland: Linux Wayland doesn't support window activation.
+// See crbug.com/40863331.
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND)
+#define MAYBE_FindBarTextfieldActivatesBrowserOnClick \
+  DISABLED_FindBarTextfieldActivatesBrowserOnClick
+#else
+#define MAYBE_FindBarTextfieldActivatesBrowserOnClick \
+  FindBarTextfieldActivatesBrowserOnClick
+#endif
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
+                       MAYBE_FindBarTextfieldActivatesBrowserOnClick) {
+  // Browser A: The browser window that comes with the test fixture.
+  Browser* browser_a = browser();
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser_a));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser_a, embedded_test_server()->GetURL(kSimplePage)));
+
+  // Show the find bar in browser A.
+  browser_a->GetFeatures().GetFindBarController()->Show();
+  ASSERT_TRUE(GetFindBarHost()->IsFindBarVisible());
+
+  // Clear any existing text in the find bar.
+  FindBarView* find_bar_view = GetFindBarHost()->GetFindBarViewForTesting();
+  views::Textfield* textfield = static_cast<views::Textfield*>(
+      find_bar_view->GetViewByID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+  textfield->SetText(std::u16string());
+  ASSERT_TRUE(textfield->GetText().empty());
+
+  // Create browser B and make it active with focus in the omnibox.
+  Browser* browser_b = CreateBrowser(browser_a->profile());
+  ASSERT_NE(nullptr, browser_b);
+
+  views::Widget* browser_a_widget =
+      BrowserView::GetBrowserViewForBrowser(browser_a)->GetWidget();
+  views::Widget* browser_b_widget =
+      BrowserView::GetBrowserViewForBrowser(browser_b)->GetWidget();
+
+  // Position browser windows so they don't overlap. Browser A stays at its
+  // current position, browser B is moved to a small size at a different
+  // location. This ensures clicks on browser A's find bar actually reach it.
+  gfx::Rect browser_a_bounds = browser_a_widget->GetWindowBoundsInScreen();
+  browser_b_widget->SetBounds(
+      gfx::Rect(browser_a_bounds.right(), browser_a_bounds.y(), 200, 200));
+
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser_b));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser_b, embedded_test_server()->GetURL(kSimplePage)));
+
+  // Focus browser B's omnibox to simulate user having focus there.
+  chrome::FocusLocationBar(browser_b);
+
+  // Verify browser B is now active and browser A is not.
+  EXPECT_FALSE(browser_a_widget->IsActive());
+  EXPECT_TRUE(browser_b_widget->IsActive());
+
+  // Click on browser A's find bar textfield.
+  ui_test_utils::ClickOnView(textfield);
+
+  // After clicking, browser A should be active.
+  views::test::WaitForWidgetActive(browser_a_widget, true);
+
+  // Record the text length before sending keyboard input.
+  const size_t text_length_before = textfield->GetText().length();
+
+  // Now send keyboard input - it should go to browser A's find bar textfield.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser_a, ui::VKEY_A,
+                                              /*control=*/false,
+                                              /*shift=*/false,
+                                              /*alt=*/false,
+                                              /*command=*/false));
+
+  // Verify the text was entered into browser A's find bar textfield,
+  // not browser B's omnibox. The key assertion is that the textfield
+  // received the input (text length increased), confirming focus is correct.
+  EXPECT_GT(textfield->GetText().length(), text_length_before);
+}
+
+// When the find bar has focus, Cmd+D (bookmark shortcut) should work and show
+// the bookmark bubble.
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, BookmarkShortcutWithFindBarFocus) {
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+
+  RunTestSequence(
+      Init(page_a), ShowFindBar(), EnterText(FindBarView::kTextField, u"test"),
+      CheckHasFocus(FindBarView::kTextField),
+
+      // Verify the page is not bookmarked initially.
+      Check([&]() { return !bookmark_model->IsBookmarked(page_a); }),
+
+      // Cmd+D is a main menu command (Bookmark This Tab). It should be routed
+      // to the main menu and show the bookmark bubble.
+      Check([this]() {
+        return ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_D,
+#if BUILDFLAG(IS_MAC)
+                                               /*control=*/false,
+                                               /*shift=*/false,
+                                               /*alt=*/false,
+                                               /*command=*/true
+#else
+                                               /*control=*/true,
+                                               /*shift=*/false,
+                                               /*alt=*/false,
+                                               /*command=*/false
+#endif
+        );
+      }),
+
+      // Verify the bookmark bubble is shown. This is the core of the bug fix:
+      // without the fix, Cmd+D would be consumed by the text field and the
+      // bubble would never appear.
+      WaitForShow(kBookmarkNameFieldId));
 }
