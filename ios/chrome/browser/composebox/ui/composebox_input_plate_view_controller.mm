@@ -53,7 +53,7 @@ NSString* const kItemCellReuseIdentifier = @"ComposeboxInputItemCell";
 NSString* const kMainSectionIdentifier = @"MainSection";
 
 /// The corner radius for the input plate container.
-const CGFloat kInputPlateCornerRadius = 30.0f;
+const CGFloat kInputPlateCornerRadius = 24.0f;
 /// The shadow opacity for the input plate container.
 const float kInputPlateShadowOpacity = 0.2f;
 /// The shadow radius for the input plate container.
