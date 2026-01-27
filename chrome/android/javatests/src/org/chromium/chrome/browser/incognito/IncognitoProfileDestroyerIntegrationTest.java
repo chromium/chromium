@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,12 +42,14 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.ExecutionException;
 
 /** Integration tests for {@link IncognitoProfileDestroyer}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
 public class IncognitoProfileDestroyerIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

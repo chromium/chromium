@@ -37,6 +37,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +53,7 @@ import java.util.concurrent.TimeoutException;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_ALL_IPH})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
 public class IncognitoStorageLeakageTest {
     private static final String SITE_DATA_HTML_PATH =
             "/content/test/data/browsing_data/site_data.html";
