@@ -155,10 +155,10 @@ class ExtensionActionListMediator implements Destroyable {
                                 ExtensionActionButtonProperties.ON_CLICK_LISTENER,
                                 (view) -> onPrimaryClick(actionId))
                         .with(
-                                ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER,
+                                ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER,
                                 (view) -> {
-                                    onContextClick((ListMenuButton) view, actionId);
-                                    return false;
+                                    onContextClick(actionId);
+                                    return true;
                                 })
                         .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
                         .build());
@@ -254,8 +254,8 @@ class ExtensionActionListMediator implements Destroyable {
         mCurrentPopupActionId = actionId;
     }
 
-    @Nullable
-    private View getButtonViewForId(String actionId) {
+    @VisibleForTesting
+    @Nullable View getButtonViewForId(String actionId) {
         for (int i = 0; i < mModels.size(); i++) {
             PropertyModel model = mModels.get(i).model;
             if (actionId.equals(model.get(ExtensionActionButtonProperties.ID))) {
@@ -273,7 +273,7 @@ class ExtensionActionListMediator implements Destroyable {
         return null;
     }
 
-    private void onContextClick(ListMenuButton buttonView, String actionId) {
+    private void onContextClick(String actionId) {
         Tab currentTab = mCurrentTabSupplier.get();
         if (currentTab == null) {
             return;
@@ -287,6 +287,11 @@ class ExtensionActionListMediator implements Destroyable {
         ExtensionActionContextMenuBridge bridge =
                 new ExtensionActionContextMenuBridge(
                         mTask, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
+
+        ListMenuButton buttonView = (ListMenuButton) getButtonViewForId(actionId);
+        if (buttonView == null) {
+            return;
+        }
 
         ExtensionActionContextMenuUtils.showContextMenu(
                 mContext, buttonView, bridge, MenuBuilderHelper.getRectProvider(buttonView), null);

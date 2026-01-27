@@ -251,6 +251,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonProperties.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonViewBinder.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionContextMenuUtils.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionDragHelper.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionIconUtil.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListCoordinator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediator.java",
@@ -475,6 +476,7 @@ robolectric_library("junit") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/util/android:test_support_java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
@@ -498,6 +500,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_fragment_fragment_testing_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -515,6 +518,7 @@ robolectric_library("junit") {
 
   if (enable_extensions_core) {
     sources += [
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionDragHelperTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediatorTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsUpdateHelperTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuCoordinatorTest.java",

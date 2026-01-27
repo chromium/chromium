@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 
 import org.chromium.build.annotations.NullMarked;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @NullMarked
 public class ExtensionActionButtonViewBinder {
+    @SuppressLint("ClickableViewAccessibility")
     public static void bind(PropertyModel model, ListMenuButton button, PropertyKey key) {
         if (key == ExtensionActionButtonProperties.TITLE) {
             String title = model.get(ExtensionActionButtonProperties.TITLE);
@@ -25,11 +27,13 @@ public class ExtensionActionButtonViewBinder {
         } else if (key == ExtensionActionButtonProperties.ICON) {
             Bitmap bitmap = model.get(ExtensionActionButtonProperties.ICON);
             button.setImageBitmap(bitmap);
+        } else if (key == ExtensionActionButtonProperties.TOUCH_LISTENER) {
+            button.setOnTouchListener(model.get(ExtensionActionButtonProperties.TOUCH_LISTENER));
         } else if (key == ExtensionActionButtonProperties.ON_CLICK_LISTENER) {
             button.setOnClickListener(model.get(ExtensionActionButtonProperties.ON_CLICK_LISTENER));
-        } else if (key == ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER) {
-            button.setOnContextClickListener(
-                    model.get(ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER));
+        } else if (key == ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER) {
+            button.setOnLongClickListener(
+                    model.get(ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER));
         }
     }
 }

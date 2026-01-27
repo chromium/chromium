@@ -5,14 +5,13 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -23,7 +22,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Looper;
-import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -42,7 +40,6 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,8 +51,6 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridg
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
-import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -209,6 +204,14 @@ public class ExtensionActionListMediatorTest {
         assertEquals(2, mModels.size());
         assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
         assertItemAt(1, ACTION2_ID, "title of action 2", ICON_BLUE);
+
+        ListItem item = mModels.get(0);
+        assertNotNull(
+                "Click listener should be set",
+                item.model.get(ExtensionActionButtonProperties.ON_CLICK_LISTENER));
+        assertNotNull(
+                "Long click listener should be set",
+                item.model.get(ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER));
     }
 
     @Test
@@ -332,45 +335,6 @@ public class ExtensionActionListMediatorTest {
         // The same models should be used for existing actions.
         assertSame("The item object should be reused", itemForAction1, mModels.get(0));
         assertSame("The item object should be reused", itemForAction2, mModels.get(1));
-    }
-
-    @Test
-    public void testContextClick_showMenu() {
-        mMediator.reconcileActionItems();
-
-        ListItem item = mModels.get(0);
-        View.OnContextClickListener listener =
-                item.model.get(ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER);
-
-        // Stub helper calls on the mock button.
-        ListMenuHost mockListMenuHost = mock(ListMenuHost.class);
-        when(mockListMenuHost.getHierarchicalMenuController())
-                .thenReturn(mock(HierarchicalMenuController.class));
-
-        ListMenuButton mockButton = mock(ListMenuButton.class);
-        when(mockButton.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
-        when(mockButton.getHost()).thenReturn(mockListMenuHost);
-        when(mockButton.getRootView())
-                .thenReturn(new View(ApplicationProvider.getApplicationContext()));
-        when(mockButton.getResources())
-                .thenReturn(ApplicationProvider.getApplicationContext().getResources());
-
-        listener.onContextClick(mockButton);
-
-        verify(mActionContextMenuBridgeJniMock)
-                .init(
-                        eq(BROWSER_WINDOW_POINTER),
-                        eq(ACTION1_ID),
-                        eq(mWebContents),
-                        eq(ContextMenuSource.TOOLBAR_ACTION));
-
-        verify(mockButton).showMenu();
-
-        // Manually capture and fire the dismiss listener. This is required to
-        // trigger bridge.destroy() and pass the test framework's leak check.
-        verify(mockButton).addPopupListener(mPopupListenerCaptor.capture());
-        mPopupListenerCaptor.getValue().onPopupMenuDismissed();
-        verify(mActionContextMenuBridgeJniMock).destroy(eq(ACTION_CONTEXT_MENU_BRIDGE_POINTER));
     }
 
     private static Bitmap createSimpleIcon(int color) {

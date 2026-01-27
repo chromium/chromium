@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.content.Context;
 import android.view.LayoutInflater;
 
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @NullMarked
 public class ExtensionActionListCoordinator implements Destroyable {
+    private final Context mContext;
     private final ExtensionActionListRecyclerView mContainer;
     private final ModelList mModels;
     private final ExtensionActionListMediator mMediator;
@@ -47,6 +49,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
             ChromeAndroidTask task,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionsToolbarBridge extensionsToolbarBridge) {
+        mContext = context;
         mContainer = container;
 
         mModels = new ModelList();
@@ -64,9 +67,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
                 new ExtensionsToolbarDragTouchHandler(context, mModels);
         mAdapter = new DragReorderableRecyclerViewAdapter(context, mModels, dragTouchHandler);
 
-        // TODO(crbug.com/459079173): Set this to `false` and implement custom drag behavior so that
-        // user doesn't have to longpress to start drag.
-        dragTouchHandler.setDefaultLongPressDragEnabled(true);
+        dragTouchHandler.setDefaultLongPressDragEnabled(false);
 
         mAdapter.registerDraggableType(
                 ListItemType.EXTENSION_ACTION,
@@ -78,13 +79,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
                                                 parent,
                                                 /* attachToRoot= */ false),
                 ExtensionActionButtonViewBinder::bind,
-                (viewHolder, itemTouchHelper) -> {
-                    viewHolder.itemView.setOnLongClickListener(
-                            (view) -> {
-                                itemTouchHelper.startDrag(viewHolder);
-                                return true;
-                            });
-                },
+                this::bindDragProperties,
                 new DraggabilityProvider() {
                     @Override
                     public boolean isActivelyDraggable(PropertyModel propertyModel) {
@@ -139,5 +134,19 @@ public class ExtensionActionListCoordinator implements Destroyable {
                 return;
             }
         }
+    }
+
+    private void bindDragProperties(
+            RecyclerView.ViewHolder viewHolder, ItemTouchHelper itemTouchHelper) {
+        int position = viewHolder.getBindingAdapterPosition();
+        if (position == RecyclerView.NO_POSITION) return;
+
+        PropertyModel model = mModels.get(position).model;
+
+        ExtensionActionDragHelper dragHelper =
+                new ExtensionActionDragHelper(mContext, itemTouchHelper, viewHolder);
+
+        model.set(ExtensionActionButtonProperties.DRAG_HELPER, dragHelper);
+        model.set(ExtensionActionButtonProperties.TOUCH_LISTENER, dragHelper::onTouch);
     }
 }
