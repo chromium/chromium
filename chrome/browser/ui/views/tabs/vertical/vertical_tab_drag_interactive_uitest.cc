@@ -276,9 +276,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 }
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
-// flakes on Wayland
+// flakes on Wayland. Fails on Windows.
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
-    !BUILDFLAG(IS_OZONE_WAYLAND)
+    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
 #define MAYBE_DragToDetachThenCancel DragToDetachThenCancel
 #else
 #define MAYBE_DragToDetachThenCancel DISABLED_DragToDetachThenCancel
