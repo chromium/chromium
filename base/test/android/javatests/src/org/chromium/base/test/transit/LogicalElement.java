@@ -155,6 +155,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
     }
 
     private class EnterCondition extends ConditionWithResult<Void> {
+        @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1455
         private EnterCondition(boolean isRunOnUiThread) {
             super(isRunOnUiThread);
             if (mParamSupplier != null) {
@@ -174,6 +175,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
     }
 
     private class ExitCondition extends Condition {
+        @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1455
         private ExitCondition(boolean isRunOnUiThread) {
             super(isRunOnUiThread);
             if (mParamSupplier != null) {

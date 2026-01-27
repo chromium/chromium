@@ -5,6 +5,7 @@
 package org.chromium.build;
 
 import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -25,9 +26,8 @@ public class NullUtil {
      *
      * <p>Expressions are supported. E.g.: assertNonNull(foo.getBar());
      */
-    @SuppressWarnings("NullAway") // Since it does not actually check.
     @Contract("null -> fail") // Means you do not need to use the return value.
-    public static <T> T assertNonNull(@Nullable T object) {
+    public static <T> @NonNull T assertNonNull(@Nullable T object) {
         assert object != null;
         return object;
     }
@@ -45,7 +45,8 @@ public class NullUtil {
      */
     @SuppressWarnings("NullAway") // Since it does not actually check.
     @Contract("null -> fail") // Means you do not need to use the return value.
-    public static <T> T assumeNonNull(@Nullable T object) {
+    // @NonNull should not be necessary: https://github.com/uber/NullAway/issues/1453
+    public static <T> @NonNull T assumeNonNull(@Nullable T object) {
         return object;
     }
 }
