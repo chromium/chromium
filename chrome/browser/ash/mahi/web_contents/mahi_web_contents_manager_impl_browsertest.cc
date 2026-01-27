@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/mahi/web_contents/mahi_web_contents_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -24,15 +25,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -117,10 +116,9 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
   void ExpectOnContextMenuClicked(ButtonType button_type) {
     base::RunLoop run_loop;
     EXPECT_CALL(mock_mahi_manager_, OnContextMenuClicked)
-        .WillOnce(
-            [&run_loop](crosapi::mojom::MahiContextMenuRequestPtr request) {
-              run_loop.Quit();
-            });
+        .WillOnce([&run_loop](chromeos::MahiContextMenuRequest request) {
+          run_loop.Quit();
+        });
     fake_mahi_web_contents_manager_->OnContextMenuClicked(
         kDisplayID, button_type,
         /*question=*/kQuestion, /*mahi_menu_bounds=*/gfx::Rect());
@@ -141,11 +139,11 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
   base::RunLoop run_loop;
   // Expects that `MahiManager` should receive the context menu click action.
   EXPECT_CALL(mock_mahi_manager_, OnContextMenuClicked)
-      .WillOnce([&run_loop](crosapi::mojom::MahiContextMenuRequestPtr request) {
-        EXPECT_EQ(kDisplayID, request->display_id);
+      .WillOnce([&run_loop](chromeos::MahiContextMenuRequest request) {
+        EXPECT_EQ(kDisplayID, request.display_id);
         EXPECT_EQ(MatchButtonTypeToActionType(kButtonType),
-                  request->action_type);
-        EXPECT_EQ(kQuestion, request->question);
+                  request.action_type);
+        EXPECT_EQ(kQuestion, request.question);
         run_loop.Quit();
       });
 
@@ -168,16 +166,15 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
   EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
       // When browser opens with `chrome://newtab`, we should be notified to
       // clear the previous focus info.
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {
-        EXPECT_EQ(GURL(), page_info->url);
-        EXPECT_FALSE(page_info->IsDistillable.has_value());
+      .WillOnce([](chromeos::MahiPageInfo page_info) {
+        EXPECT_EQ(GURL(), page_info.url);
+        EXPECT_FALSE(page_info.is_distillable.has_value());
       })
       // When a PDF is opened, the `MahiManager` should be notified without the
       // distillability check.
-      .WillOnce([&run_loop,
-                 &histogram](crosapi::mojom::MahiPageInfoPtr page_info) {
-        EXPECT_TRUE(page_info->IsDistillable.has_value());
-        EXPECT_EQ(page_info->url.ExtractFileName(), kPDFFilename);
+      .WillOnce([&run_loop, &histogram](chromeos::MahiPageInfo page_info) {
+        EXPECT_TRUE(page_info.is_distillable.has_value());
+        EXPECT_EQ(page_info.url.ExtractFileName(), kPDFFilename);
         run_loop.Quit();
         // Since there is no distillability check for PDFs, triggering metric is
         // not logged.
@@ -202,28 +199,27 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
   EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
       // When browser opens with `chrome://newtab`, we should be notified to
       // clear the previous focus info.
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {
-        EXPECT_EQ(GURL(), page_info->url);
-        EXPECT_FALSE(page_info->IsDistillable.has_value());
+      .WillOnce([](chromeos::MahiPageInfo page_info) {
+        EXPECT_EQ(GURL(), page_info.url);
+        EXPECT_FALSE(page_info.is_distillable.has_value());
       })
       // When a new page gets focus, the `MahiManager` should be notified
       // without the distillability check.
-      .WillOnce([&histogram](crosapi::mojom::MahiPageInfoPtr page_info) {
-        EXPECT_EQ(GURL(kUrl), page_info->url);
-        EXPECT_FALSE(page_info->IsDistillable.has_value());
+      .WillOnce([&histogram](chromeos::MahiPageInfo page_info) {
+        EXPECT_EQ(GURL(kUrl), page_info.url);
+        EXPECT_FALSE(page_info.is_distillable.has_value());
         // Before distillability check finishes, triggering metric is not
         // logged.
         histogram.ExpectTotalCount(kMahiContentExtractionTriggeringLatency, 0);
       })
       // When the focused page finishes loading, the `MahiManager` should be
       // notified with the distillability check.
-      .WillOnce([&run_loop,
-                 &histogram](crosapi::mojom::MahiPageInfoPtr page_info) {
-        EXPECT_EQ(GURL(kUrl), page_info->url);
-        EXPECT_TRUE(page_info->IsDistillable.has_value());
-        EXPECT_FALSE(page_info->IsDistillable.value());
+      .WillOnce([&run_loop, &histogram](chromeos::MahiPageInfo page_info) {
+        EXPECT_EQ(GURL(kUrl), page_info.url);
+        EXPECT_TRUE(page_info.is_distillable.has_value());
+        EXPECT_FALSE(page_info.is_distillable.value());
         // The favicon is not empty.
-        EXPECT_FALSE(page_info->favicon_image.isNull());
+        EXPECT_FALSE(page_info.favicon_image.isNull());
 
         run_loop.Quit();
 
@@ -243,21 +239,21 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
   // First create a web page so there is a place to extract the contents from.
   base::RunLoop run_loop;
   EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {})
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {})
+      .WillOnce([](chromeos::MahiPageInfo page_info) {})
+      .WillOnce([](chromeos::MahiPageInfo page_info) {})
       .WillOnce([&run_loop, &focused_page_id,
-                 this](crosapi::mojom::MahiPageInfoPtr page_info) {
-        EXPECT_TRUE(page_info->IsDistillable.has_value());
-        EXPECT_FALSE(page_info->IsDistillable.value());
+                 this](chromeos::MahiPageInfo page_info) {
+        EXPECT_TRUE(page_info.is_distillable.has_value());
+        EXPECT_FALSE(page_info.is_distillable.value());
 
         // Gets the page id of the newly opened page.
-        focused_page_id = page_info->page_id;
+        focused_page_id = page_info.page_id;
         // When distillability check is returned, simulates the content request
         // from the mahi manager.
         fake_mahi_web_contents_manager_->RequestContent(
             focused_page_id,
             base::BindLambdaForTesting(
-                [&](crosapi::mojom::MahiPageContentPtr page_content) {
+                [&](std::optional<chromeos::MahiPageContent> page_content) {
                   run_loop.Quit();
                 }));
       });
@@ -281,19 +277,19 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPDFContents) {
   // First create a web page so there is a place to extract the contents from.
   base::RunLoop run_loop;
   EXPECT_CALL(mock_mahi_manager_, SetCurrentFocusedPageInfo)
-      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info) {})
+      .WillOnce([](chromeos::MahiPageInfo page_info) {})
       .WillOnce([&run_loop, &focused_page_id,
-                 this](crosapi::mojom::MahiPageInfoPtr page_info) {
-        EXPECT_TRUE(page_info->IsDistillable.has_value());
-        EXPECT_TRUE(page_info->IsDistillable.value());
-        EXPECT_EQ(page_info->url.ExtractFileName(), kPDFFilename);
+                 this](chromeos::MahiPageInfo page_info) {
+        EXPECT_TRUE(page_info.is_distillable.has_value());
+        EXPECT_TRUE(page_info.is_distillable.value());
+        EXPECT_EQ(page_info.url.ExtractFileName(), kPDFFilename);
 
-        focused_page_id = page_info->page_id;
+        focused_page_id = page_info.page_id;
         // Simulate a request to extract content from client.
         fake_mahi_web_contents_manager_->RequestContent(
             focused_page_id,
             base::BindLambdaForTesting(
-                [&](crosapi::mojom::MahiPageContentPtr page_content) {
+                [&](std::optional<chromeos::MahiPageContent> page_content) {
                   run_loop.Quit();
                 }));
       });

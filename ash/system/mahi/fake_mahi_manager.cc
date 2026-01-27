@@ -61,7 +61,7 @@ constexpr char kMahiSettingsUrl[] =
 
 }  // namespace
 
-using crosapi::mojom::MahiContextMenuActionType;
+using chromeos::MahiActionType;
 
 FakeMahiManager::FakeMahiManager() = default;
 
@@ -145,28 +145,28 @@ void FakeMahiManager::AnswerQuestion(const std::u16string& question,
 }
 
 void FakeMahiManager::OnContextMenuClicked(
-    crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
-  switch (context_menu_request->action_type) {
+    chromeos::MahiContextMenuRequest context_menu_request) {
+  switch (context_menu_request.action_type) {
     // TODO(b:372741602): deal with kElucidation properly
-    case MahiContextMenuActionType::kElucidation:
-    case MahiContextMenuActionType::kSummaryOfSelection:
+    case MahiActionType::kElucidation:
+    case MahiActionType::kSummaryOfSelection:
       return;
-    case MahiContextMenuActionType::kSummary:
-    case MahiContextMenuActionType::kOutline:
+    case MahiActionType::kSummary:
+    case MahiActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
       OpenMahiPanel(
-          context_menu_request->display_id,
-          context_menu_request->mahi_menu_bounds.value_or(gfx::Rect()));
+          context_menu_request.display_id,
+          context_menu_request.mahi_menu_bounds.value_or(gfx::Rect()));
 
       return;
-    case MahiContextMenuActionType::kQA:
-      OpenMahiPanel(context_menu_request->display_id,
-                    context_menu_request->mahi_menu_bounds.has_value()
-                        ? context_menu_request->mahi_menu_bounds.value()
+    case MahiActionType::kQA:
+      OpenMahiPanel(context_menu_request.display_id,
+                    context_menu_request.mahi_menu_bounds.has_value()
+                        ? context_menu_request.mahi_menu_bounds.value()
                         : gfx::Rect());
 
       // Ask question.
-      if (!context_menu_request->question) {
+      if (!context_menu_request.question) {
         return;
       }
 
@@ -177,18 +177,18 @@ void FakeMahiManager::OnContextMenuClicked(
       // that user gets summary when navigating back to the summary UI
       // (b/345621992).
       ui_controller_.SendQuestion(
-          context_menu_request->question.value(),
+          context_menu_request.question.value(),
           /*current_panel_content=*/true,
           MahiUiController::QuestionSource::kMenuView,
           /*update_summary_after_answer_question=*/true);
       return;
-    case MahiContextMenuActionType::kSettings:
+    case MahiActionType::kSettings:
       NewWindowDelegate::GetInstance()->OpenUrl(
           GURL(kMahiSettingsUrl),
           NewWindowDelegate::OpenUrlFrom::kUserInteraction,
           NewWindowDelegate::Disposition::kNewForegroundTab);
       return;
-    case MahiContextMenuActionType::kNone:
+    case MahiActionType::kNone:
       return;
   }
 }

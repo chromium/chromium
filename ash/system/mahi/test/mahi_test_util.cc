@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 
 namespace ash::mahi_test_util {

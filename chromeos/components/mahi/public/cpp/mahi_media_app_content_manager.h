@@ -12,8 +12,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
 
 namespace ash {
 class MahiMediaAppClient;
@@ -22,9 +22,8 @@ class MahiMediaAppClient;
 namespace aura {
 class Window;
 }
+
 namespace chromeos {
-using GetMediaAppContentCallback =
-    base::OnceCallback<void(crosapi::mojom::MahiPageContentPtr)>;
 
 // Interface that defines the central class that serves as media app PDF content
 // provider for mahi feature.
@@ -46,7 +45,7 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiMediaAppContentManager {
   virtual std::optional<std::string> GetFileName(
       const base::UnguessableToken client_id) = 0;
   virtual void GetContent(const base::UnguessableToken client_id,
-                          GetMediaAppContentCallback callback) = 0;
+                          MahiGetContentCallback callback) = 0;
 
   // Forwards click of mahi context menu shown on the media app surface to mahi
   // manager, to show the pop up UI and request manta service accordingly.

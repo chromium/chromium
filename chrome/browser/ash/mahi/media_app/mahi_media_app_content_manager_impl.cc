@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_content_manager_impl.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -11,7 +12,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 
 namespace ash {
 
@@ -61,11 +62,11 @@ std::optional<std::string> MahiMediaAppContentManagerImpl::GetFileName(
 
 void MahiMediaAppContentManagerImpl::GetContent(
     const base::UnguessableToken client_id,
-    chromeos::GetMediaAppContentCallback callback) {
+    chromeos::MahiGetContentCallback callback) {
   auto it = client_id_to_client_.find(client_id);
   if (it == client_id_to_client_.end()) {
     LOG(ERROR) << "Request content from a removed client";
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -90,13 +91,13 @@ void MahiMediaAppContentManagerImpl::OnMahiContextMenuClicked(
   it->second->HideMediaAppContextMenu();
 
   // Generates the context menu request.
-  crosapi::mojom::MahiContextMenuRequestPtr context_menu_request =
-      crosapi::mojom::MahiContextMenuRequest::New(
-          /*display_id=*/display_id,
-          /*action_type=*/MatchButtonTypeToActionType(button_type),
-          /*question=*/std::nullopt, mahi_menu_bounds);
+  chromeos::MahiContextMenuRequest context_menu_request;
+  context_menu_request.display_id = display_id;
+  context_menu_request.action_type =
+      chromeos::mahi::MatchButtonTypeToActionType(button_type);
+  context_menu_request.mahi_menu_bounds = mahi_menu_bounds;
   if (button_type == chromeos::mahi::ButtonType::kQA) {
-    context_menu_request->question = std::u16string(question);
+    context_menu_request.question = std::u16string(question);
   }
 
   auto* manager = chromeos::MahiManager::Get();

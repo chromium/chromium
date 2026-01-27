@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_client.h"
 
 #include <cstdint>
+#include <memory>
+#include <optional>
 
 #include "ash/shell.h"
 #include "ash/system/mahi/test/mock_mahi_media_app_content_manager.h"
@@ -110,9 +112,9 @@ TEST_F(MahiMediaAppClientTest, GetPdfContent) {
           std::move(callback).Run("abc");
         });
 
-    mahi_media_app_client_->GetPdfContent(
-        base::BindOnce([](crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
-          EXPECT_TRUE(mahi_content_ptr.is_null());
+    mahi_media_app_client_->GetPdfContent(base::BindOnce(
+        [](std::optional<chromeos::MahiPageContent> mahi_content) {
+          EXPECT_FALSE(mahi_content.has_value());
         }));
     base::RunLoop().RunUntilIdle();
   }
@@ -127,10 +129,10 @@ TEST_F(MahiMediaAppClientTest, GetPdfContent) {
           std::move(callback).Run(base::JoinString(parts, " "));
         });
 
-    mahi_media_app_client_->GetPdfContent(
-        base::BindOnce([](crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
-          EXPECT_FALSE(mahi_content_ptr.is_null());
-          EXPECT_EQ(mahi_content_ptr->page_content,
+    mahi_media_app_client_->GetPdfContent(base::BindOnce(
+        [](std::optional<chromeos::MahiPageContent> mahi_content) {
+          ASSERT_TRUE(mahi_content.has_value());
+          EXPECT_EQ(mahi_content->page_content,
                     base::UTF8ToUTF16(base::JoinString(
                         std::vector<std::string>(100, "abc"), " ")));
         }));

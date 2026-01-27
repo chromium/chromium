@@ -29,9 +29,9 @@
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
-#include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/constants.h"
@@ -56,7 +56,6 @@ namespace mahi {
 namespace {
 
 using chromeos::mahi::ButtonType;
-using chromeos::mahi::GetContentCallback;
 
 // The character count threshold for a distillable page.
 static constexpr int kCharCountThreshold = 300;
@@ -71,20 +70,17 @@ bool IsMediaAppWindow(const aura::Window* window) {
   return false;
 }
 
-crosapi::mojom::MahiPageInfoPtr ConvertWebContentStateToPageInfo(
+chromeos::MahiPageInfo ConvertWebContentStateToPageInfo(
     const WebContentState& web_content_state) {
   // Generates `page_info` from `web_content_state`.
-  crosapi::mojom::MahiPageInfoPtr page_info = crosapi::mojom::MahiPageInfo::New(
-      /*client_id, deprecated*/ base::UnguessableToken::Create(),
-      /*page_id=*/web_content_state.page_id,
-      /*url=*/web_content_state.url, /*title=*/web_content_state.title,
-      /*favicon_image=*/web_content_state.favicon.DeepCopy(),
-      /*is_distillable=*/std::nullopt,
-      /*is_incognito=*/web_content_state.is_incognito);
-  if (web_content_state.is_distillable.has_value()) {
-    page_info->IsDistillable = web_content_state.is_distillable.value();
-  }
-
+  chromeos::MahiPageInfo page_info;
+  page_info.client_id = base::UnguessableToken::Create();
+  page_info.page_id = web_content_state.page_id;
+  page_info.url = web_content_state.url;
+  page_info.title = web_content_state.title;
+  page_info.favicon_image = web_content_state.favicon.DeepCopy();
+  page_info.is_distillable = web_content_state.is_distillable;
+  page_info.is_incognito = web_content_state.is_incognito;
   return page_info;
 }
 
@@ -220,14 +216,14 @@ void MahiWebContentsManagerImpl::OnFocusedPageLoadComplete(
   focused_web_content_state_.is_incognito =
       IsFromIncognito(focused_web_contents_);
 
-  crosapi::mojom::MahiPageInfoPtr page_info =
+  chromeos::MahiPageInfo page_info =
       ConvertWebContentStateToPageInfo(focused_web_content_state_);
 
   // Skip the distillable check for PDF content.
   if (IsPDFWebContents(web_contents)) {
     is_pdf_focused_web_contents_ = true;
     focused_web_content_state_.is_distillable.emplace(true);
-    page_info->IsDistillable = true;
+    page_info.is_distillable = true;
     mahi_manager->SetCurrentFocusedPageInfo(std::move(page_info));
     return;
   }
@@ -288,16 +284,15 @@ void MahiWebContentsManagerImpl::OnContextMenuClicked(
   }
 
   // Generates the context menu request.
-  crosapi::mojom::MahiContextMenuRequestPtr context_menu_request =
-      crosapi::mojom::MahiContextMenuRequest::New(
-          /*display_id=*/display_id,
-          /*action_type=*/
-          chromeos::mahi::MatchButtonTypeToActionType(button_type),
-          /*question=*/std::nullopt,
-          /*mahi_menu_bounds=*/mahi_menu_bounds);
+  chromeos::MahiContextMenuRequest context_menu_request;
+  context_menu_request.display_id = display_id;
+  context_menu_request.action_type =
+      chromeos::mahi::MatchButtonTypeToActionType(button_type);
+  context_menu_request.mahi_menu_bounds = mahi_menu_bounds;
   if (button_type == chromeos::mahi::ButtonType::kQA) {
-    context_menu_request->question = std::u16string(question);
+    context_menu_request.question = std::u16string(question);
   }
+
   if (button_type == chromeos::mahi::ButtonType::kElucidation ||
       button_type == chromeos::mahi::ButtonType::kSummaryOfSelection) {
     CHECK(!selected_text_.empty());
@@ -345,11 +340,11 @@ void MahiWebContentsManagerImpl::OnGetSnapshot(
     const base::UnguessableToken& page_id,
     content::WebContents* web_contents,
     const base::Time& start_time,
-    GetContentCallback callback,
+    chromeos::MahiGetContentCallback callback,
     ui::AXTreeUpdate& snapshot) {
   if (focused_web_content_state_.page_id != page_id) {
     // TODO(b:336438243): Add UMA to track this.
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   focused_web_content_state_.snapshot = snapshot;
@@ -361,10 +356,10 @@ void MahiWebContentsManagerImpl::OnGetSnapshot(
 
 void MahiWebContentsManagerImpl::RequestContent(
     const base::UnguessableToken& page_id,
-    GetContentCallback callback) {
+    chromeos::MahiGetContentCallback callback) {
   if (focused_web_content_state_.page_id != page_id || !focused_web_contents_) {
     // TODO(b:336438243): Add UMA to track this.
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -391,7 +386,7 @@ std::u16string MahiWebContentsManagerImpl::GetSelectedText() const {
 
 void MahiWebContentsManagerImpl::RequestWebContent(
     const base::UnguessableToken& page_id,
-    GetContentCallback callback) {
+    chromeos::MahiGetContentCallback callback) {
   base::Time start_time = base::Time::Now();
   focused_web_contents_->RequestAXTreeSnapshot(
       base::BindOnce(&MahiWebContentsManagerImpl::OnGetSnapshot,
@@ -405,12 +400,12 @@ void MahiWebContentsManagerImpl::RequestWebContent(
 
 void MahiWebContentsManagerImpl::RequestPDFContent(
     const base::UnguessableToken& page_id,
-    GetContentCallback callback) {
+    chromeos::MahiGetContentCallback callback) {
   content::RenderFrameHost* rfh_pdf =
       GetPDFRenderFrameHost(focused_web_contents_);
   if (!rfh_pdf) {
     LOG(ERROR) << "Couldn't find RenderFrameHost contains PDF.";
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -424,7 +419,7 @@ void MahiWebContentsManagerImpl::RequestPDFContent(
 
     if (inner_contents.size() != 1u) {
       LOG(ERROR) << "Couldn't find inner WebContents contains PDF.";
-      std::move(callback).Run(nullptr);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -439,10 +434,10 @@ void MahiWebContentsManagerImpl::RequestPDFContent(
 }
 
 void MahiWebContentsManagerImpl::OnGetAXTreeUpdatesForPDF(
-    GetContentCallback callback,
+    chromeos::MahiGetContentCallback callback,
     const std::vector<ui::AXTreeUpdate>& updates) {
   content_extraction_delegate_->ExtractContent(
-      focused_web_content_state_, std::move(updates),
+      focused_web_content_state_, updates,
       /*client_id, deprecated*/ base::UnguessableToken::Create(),
       std::move(callback));
 

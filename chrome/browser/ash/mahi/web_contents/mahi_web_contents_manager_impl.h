@@ -87,7 +87,7 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
                             const gfx::Rect& mahi_menu_bounds) override;
   bool IsFocusedPageDistillable() override;
   void RequestContent(const base::UnguessableToken& page_id,
-                      chromeos::mahi::GetContentCallback callback) override;
+                      chromeos::MahiGetContentCallback callback) override;
   void SetSelectedText(const std::u16string& selected_text) override;
   std::u16string GetSelectedText() const override;
 
@@ -104,7 +104,7 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
   void OnGetSnapshot(const base::UnguessableToken& page_id,
                      content::WebContents* web_contents,
                      const base::Time& start_time,
-                     chromeos::mahi::GetContentCallback callback,
+                     chromeos::MahiGetContentCallback callback,
                      ui::AXTreeUpdate& snapshot);
 
   void OnFinishDistillableCheck(const base::UnguessableToken& page_id,
@@ -112,14 +112,14 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
 
   // Get the page content of normal web pages.
   void RequestWebContent(const base::UnguessableToken& page_id,
-                         chromeos::mahi::GetContentCallback callback);
+                         chromeos::MahiGetContentCallback callback);
 
   // Get the content of PDFs.
   void RequestPDFContent(const base::UnguessableToken& page_id,
-                         chromeos::mahi::GetContentCallback callback);
+                         chromeos::MahiGetContentCallback callback);
 
   // Process the AXTreeUpdates received for PDF contents.
-  void OnGetAXTreeUpdatesForPDF(chromeos::mahi::GetContentCallback callback,
+  void OnGetAXTreeUpdatesForPDF(chromeos::MahiGetContentCallback callback,
                                 const std::vector<ui::AXTreeUpdate>& updates);
 
   // Gets the favicon from the given web contents. Returns an empty imageskia if

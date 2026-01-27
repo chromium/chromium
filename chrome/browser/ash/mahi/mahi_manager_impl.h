@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_MAHI_MAHI_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/system/mahi/mahi_ui_controller.h"
@@ -14,8 +15,8 @@
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/manta/mahi_provider.h"
@@ -59,9 +60,9 @@ class MahiManagerImpl : public chromeos::MahiManager,
       bool current_panel_content,
       MahiAnswerQuestionCallbackRepeating callback) override;
   void GetSuggestedQuestion(MahiGetSuggestedQuestionCallback callback) override;
-  void SetCurrentFocusedPageInfo(crosapi::mojom::MahiPageInfoPtr info) override;
+  void SetCurrentFocusedPageInfo(chromeos::MahiPageInfo info) override;
   void OnContextMenuClicked(
-      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
+      chromeos::MahiContextMenuRequest context_menu_request) override;
   void OpenFeedbackDialog() override;
   void OpenMahiPanel(int64_t display_id,
                      const gfx::Rect& mahi_menu_bounds) override;
@@ -94,8 +95,8 @@ class MahiManagerImpl : public chromeos::MahiManager,
   // disclaimer view. The original flow will be resumed if the consent status
   // becomes approved. NOTE: This function should be called only if the magic
   // boost feature is enabled.
-  void InterrputRequestHandlingWithDisclaimerView(
-      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request);
+  void InterruptRequestHandlingWithDisclaimerView(
+      chromeos::MahiContextMenuRequest context_menu_request);
 
   // Initialize required provider if it is not initialized yet, and discard
   // pending requests to avoid racing condition.
@@ -107,49 +108,48 @@ class MahiManagerImpl : public chromeos::MahiManager,
   void OpenMahiPanelForElucidation(int64_t display_id,
                                    const gfx::Rect& mahi_menu_bounds);
 
-  void OnGetPageContent(crosapi::mojom::MahiPageInfoPtr request_page_info,
+  void OnGetPageContent(chromeos::MahiPageInfo request_page_info,
                         MahiContentCallback callback,
-                        crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
+                        std::optional<chromeos::MahiPageContent> mahi_content);
 
   void OnGetPageContentForSummary(
-      crosapi::mojom::MahiPageInfoPtr request_page_info,
+      chromeos::MahiPageInfo request_page_info,
       MahiSummaryCallback callback,
-      crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
+      std::optional<chromeos::MahiPageContent> mahi_content);
 
   void OnGetPageContentForElucidation(
       const std::u16string& selected_text,
-      crosapi::mojom::MahiPageInfoPtr request_page_info,
+      chromeos::MahiPageInfo request_page_info,
       MahiElucidationCallback callback,
-      crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
+      std::optional<chromeos::MahiPageContent> mahi_content);
 
   void OnGetPageContentForQA(
-      crosapi::mojom::MahiPageInfoPtr request_page_info,
+      chromeos::MahiPageInfo request_page_info,
       const std::u16string& question,
       MahiAnswerQuestionCallback callback,
-      crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
+      std::optional<chromeos::MahiPageContent> mahi_content);
 
   void OnMahiProviderSummaryResponse(
-      crosapi::mojom::MahiPageInfoPtr request_page_info,
+      const chromeos::MahiPageInfo& request_page_info,
       MahiSummaryCallback summary_callback,
       base::DictValue dict,
       manta::MantaStatus status);
 
   void OnMahiProviderElucidationResponse(
-      crosapi::mojom::MahiPageInfoPtr request_page_info,
+      const chromeos::MahiPageInfo& request_page_info,
       const std::u16string& selected_text,
       MahiElucidationCallback elucidation_callback,
       base::DictValue dict,
       manta::MantaStatus status);
 
-  void OnMahiProviderQAResponse(
-      crosapi::mojom::MahiPageInfoPtr request_page_info,
-      const std::u16string& question,
-      MahiAnswerQuestionCallback callback,
-      base::DictValue dict,
-      manta::MantaStatus status);
+  void OnMahiProviderQAResponse(const chromeos::MahiPageInfo& request_page_info,
+                                const std::u16string& question,
+                                MahiAnswerQuestionCallback callback,
+                                base::DictValue dict,
+                                manta::MantaStatus status);
 
-  void CacheCurrentPanelContent(crosapi::mojom::MahiPageInfo request_page_info,
-                                crosapi::mojom::MahiPageContent mahi_content);
+  void CacheCurrentPanelContent(const chromeos::MahiPageInfo& request_page_info,
+                                const chromeos::MahiPageContent& mahi_content);
 
   // Updates `current_selected_text_` from web contents manager or media app
   // content manager.
@@ -159,17 +159,12 @@ class MahiManagerImpl : public chromeos::MahiManager,
                           chromeos::MagicBoostState::Observer>
       magic_boost_state_observation_{this};
 
-  // These `Ptr`s should never be null. To invalidate them, assign them a
-  // `New()` instead of calling `reset()`.
-  crosapi::mojom::MahiPageInfoPtr current_page_info_ =
-      crosapi::mojom::MahiPageInfo::New();
+  chromeos::MahiPageInfo current_page_info_;
 
-  crosapi::mojom::MahiPageContentPtr current_panel_content_ =
-      crosapi::mojom::MahiPageContent::New();
+  chromeos::MahiPageContent current_panel_content_;
 
   // Stores metadata of the current content in the panel.
-  crosapi::mojom::MahiPageInfoPtr current_panel_info_ =
-      crosapi::mojom::MahiPageInfo::New();
+  chromeos::MahiPageInfo current_panel_info_;
 
   // Stores current selected text when the user triggers feature that works for
   // selected text, e.g. Elucidation, or Summary for selection.

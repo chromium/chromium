@@ -7,15 +7,16 @@
 
 #include "chrome/browser/ash/mahi/web_contents/mahi_web_contents_manager_impl.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace mahi {
 
 // Fake class for testing `MahiWebContentsManager`. It allows overriding the
-// mojom connections to the utility process and ash chrome. It also provide
-// access to the local variables, such as the web content states, so that we can
-// easily check them in the test.
+// mojom connections to the utility process. It also provides access to the
+// local variables, such as the web content states, so that we can easily check
+// them in the test.
 class FakeMahiWebContentsManager : public MahiWebContentsManagerImpl {
  public:
   FakeMahiWebContentsManager();
@@ -37,7 +38,7 @@ class FakeMahiWebContentsManager : public MahiWebContentsManagerImpl {
   }
 
   void RequestContent(const base::UnguessableToken& page_id,
-                      chromeos::mahi::GetContentCallback callback) override;
+                      chromeos::MahiGetContentCallback callback) override;
 
   int GetNumberOfRequestContentCalls();
 

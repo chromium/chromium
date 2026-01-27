@@ -5,6 +5,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 
 #include "base/check_is_test.h"
+#include "base/notreached.h"
 
 namespace chromeos {
 
