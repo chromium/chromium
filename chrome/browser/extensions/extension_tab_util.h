@@ -15,9 +15,9 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_color.h"  // nogncheck
 #include "components/tab_groups/tab_group_id.h"     // nogncheck
-#include "components/tabs/public/split_tab_id.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
