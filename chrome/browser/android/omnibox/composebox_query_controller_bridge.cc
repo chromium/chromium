@@ -121,11 +121,11 @@ ComposeboxQueryControllerBridge::AsWeakPtr() {
 }
 
 void ComposeboxQueryControllerBridge::NotifySessionStarted(JNIEnv* env) {
-  query_controller()->InitializeIfNeeded();
+  session_handle_->NotifySessionStarted();
 }
 
 void ComposeboxQueryControllerBridge::NotifySessionAbandoned(JNIEnv* env) {
-  // No-op.
+  session_handle_->NotifySessionAbandoned();
 }
 
 base::android::ScopedJavaLocalRef<jobject>
