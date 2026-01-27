@@ -153,14 +153,17 @@ class GraphImplTflite::ComputeResources {
     }
 
     OpResolver op_resolver;
-    if (!self->weights_mapped_file_.Initialize(
-            std::move(build_graph_result.weights_file))) {
-      return base::unexpected(mojom::Error::New(
-          mojom::Error::Code::kUnknownError, "Failed to map weights file."));
+    if (build_graph_result.weights_file.IsValid()) {
+      if (!self->weights_mapped_file_.Initialize(
+              std::move(build_graph_result.weights_file))) {
+        return base::unexpected(mojom::Error::New(
+            mojom::Error::Code::kUnknownError, "Failed to map weights file."));
+      }
+      self->allocation_ = std::make_unique<::tflite::MemoryAllocation>(
+          self->weights_mapped_file_.data(),
+          self->weights_mapped_file_.length(),
+          ::tflite::DefaultErrorReporter());
     }
-    self->allocation_ = std::make_unique<::tflite::MemoryAllocation>(
-        self->weights_mapped_file_.data(), self->weights_mapped_file_.length(),
-        ::tflite::DefaultErrorReporter());
 
     ::tflite::InterpreterBuilder builder(
         self->model_->GetModel(), op_resolver, ::tflite::DefaultErrorReporter(),

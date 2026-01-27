@@ -127,8 +127,10 @@ WebNNTestEnvironment::WebNNTestEnvironment(
 }
 
 void WebNNTestEnvironment::BindWebNNContextProvider(
-    mojo::PendingReceiver<mojom::WebNNContextProvider> pending_receiver) {
-  context_provider_->BindWebNNContextProvider(std::move(pending_receiver));
+    mojo::PendingReceiver<mojom::WebNNContextProvider> pending_receiver,
+    bool is_incognito) {
+  context_provider_->BindWebNNContextProvider(std::move(pending_receiver),
+                                              is_incognito);
 }
 
 WebNNTestEnvironment::~WebNNTestEnvironment() = default;

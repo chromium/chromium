@@ -149,9 +149,10 @@ std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
 }
 
 void WebNNContextProviderImpl::BindWebNNContextProvider(
-    mojo::PendingReceiver<mojom::WebNNContextProvider> receiver) {
+    mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
+    bool is_incognito) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  provider_receivers_.Add(this, std::move(receiver));
+  provider_receivers_.Add(this, std::move(receiver), is_incognito);
 }
 
 void WebNNContextProviderImpl::RemoveWebNNContextImpl(
@@ -407,7 +408,8 @@ void WebNNContextProviderImpl::CreateTFLiteContext(
                        std::move(read_tensor_producer), std::move(gpu_sequence),
                        memory_tracker_, task_runner,
                        base::Unretained(shared_image_manager_.get()),
-                       main_thread_task_runner_, std::move(scoped_trace)),
+                       main_thread_task_runner_, std::move(scoped_trace),
+                       provider_receivers_.current_context()),
         base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
                        AsWeakPtr(), std::move(callback), std::move(remote),
                        std::move(write_tensor_producer),

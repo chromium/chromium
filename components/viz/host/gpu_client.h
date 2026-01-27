@@ -54,7 +54,8 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
 
   base::WeakPtr<GpuClient> GetWeakPtr();
   void BindWebNNContextProvider(
-      mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver);
+      mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver,
+      bool is_incognito);
 
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override;
 

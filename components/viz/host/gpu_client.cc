@@ -102,10 +102,11 @@ base::WeakPtr<GpuClient> GpuClient::GetWeakPtr() {
 }
 
 void GpuClient::BindWebNNContextProvider(
-    mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
+    mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver,
+    bool is_incognito) {
   if (auto* gpu_host = delegate_->EnsureGpuHost()) {
     gpu_host->gpu_service()->BindWebNNContextProvider(std::move(receiver),
-                                                      client_id_);
+                                                      client_id_, is_incognito);
   }
 }
 

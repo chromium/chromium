@@ -80,7 +80,8 @@ class WebNNTestEnvironment {
   void RunUntilIdle() { task_environment_->RunUntilIdle(); }
 
   void BindWebNNContextProvider(
-      mojo::PendingReceiver<mojom::WebNNContextProvider> pending_receiver);
+      mojo::PendingReceiver<mojom::WebNNContextProvider> pending_receiver,
+      bool is_incognito = false);
 
  private:
   FakeGpuHostForTesting fake_gpu_host_;

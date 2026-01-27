@@ -283,12 +283,15 @@ void BindWebNNContextProviderForRenderFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
   auto* process_host = static_cast<RenderProcessHostImpl*>(host->GetProcess());
+  const bool is_incognito = host->GetBrowserContext()->IsOffTheRecord();
 #if BUILDFLAG(IS_MAC)
-  webnn::InitializeCacheDirAndRun(base::BindOnce(
-      &viz::GpuClient::BindWebNNContextProvider,
-      process_host->GetGpuClient()->GetWeakPtr(), std::move(receiver)));
+  webnn::InitializeCacheDirAndRun(
+      base::BindOnce(&viz::GpuClient::BindWebNNContextProvider,
+                     process_host->GetGpuClient()->GetWeakPtr(),
+                     std::move(receiver), is_incognito));
 #else
-  process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
+  process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver),
+                                                         is_incognito);
 #endif
 }
 
@@ -298,12 +301,15 @@ void BindWebNNContextProviderForWorker(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
   auto* process_host =
       static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
+  const bool is_incognito = process_host->GetBrowserContext()->IsOffTheRecord();
 #if BUILDFLAG(IS_MAC)
-  webnn::InitializeCacheDirAndRun(base::BindOnce(
-      &viz::GpuClient::BindWebNNContextProvider,
-      process_host->GetGpuClient()->GetWeakPtr(), std::move(receiver)));
+  webnn::InitializeCacheDirAndRun(
+      base::BindOnce(&viz::GpuClient::BindWebNNContextProvider,
+                     process_host->GetGpuClient()->GetWeakPtr(),
+                     std::move(receiver), is_incognito));
 #else
-  process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver));
+  process_host->GetGpuClient()->BindWebNNContextProvider(std::move(receiver),
+                                                         is_incognito);
 #endif
 }
 

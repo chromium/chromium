@@ -73,7 +73,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // Called to add a another WebNNContextProvider receiver to this
   // existing `WebNNContextProviderImpl` instance.
   void BindWebNNContextProvider(
-      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver);
+      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
+      bool is_incognito);
 
   enum class WebNNStatus {
     kWebNNGpuDisabled = 0,
@@ -213,7 +214,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // destroy all contexts.
   LoseAllContextsCallback lose_all_contexts_callback_;
 
-  mojo::ReceiverSet<mojom::WebNNContextProvider> provider_receivers_
+  // Receivers for the WebNNContextProvider interface.
+  // The context value (a boolean) indicates whether the provider is operating
+  // in incognito mode.
+  mojo::ReceiverSet<mojom::WebNNContextProvider, bool> provider_receivers_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // Lifetime of the scheduler is managed by the GPU service. The GPU service

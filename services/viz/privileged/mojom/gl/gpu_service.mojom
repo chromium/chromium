@@ -126,7 +126,8 @@ interface GpuService {
   [RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
   BindWebNNContextProvider(
       pending_receiver<webnn.mojom.WebNNContextProvider>? receiver,
-      int32 client_id);
+      int32 client_id,
+      bool is_incognito);
 
   // Returns current video memory usage.
   GetVideoMemoryUsageStats() => (gpu.mojom.VideoMemoryUsageStats stats);
