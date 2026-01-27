@@ -10,10 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,13 +43,20 @@ IdentityDialogController::IdentityDialogController(
     : rp_web_contents_(rp_web_contents),
       segmentation_platform_service_(service),
       optimization_guide_decider_(decider) {
+  Profile* profile = Profile::FromBrowserContext(
+      rp_web_contents_->GetPrimaryMainFrame()->GetBrowserContext());
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile);
+  if (actor_service) {
+    actor_task_state_subscription_ = actor_service->AddTaskStateChangedCallback(
+        base::BindRepeating(&IdentityDialogController::OnActorTaskStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   if (!base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformFedCmUser)) {
     return;
   }
-
-  Profile* profile = Profile::FromBrowserContext(
-      rp_web_contents_->GetPrimaryMainFrame()->GetBrowserContext());
   if (profile->IsOffTheRecord()) {
     return;
   }
@@ -69,21 +74,10 @@ IdentityDialogController::IdentityDialogController(
     optimization_guide_decider_->RegisterOptimizationTypes(
         {optimization_guide::proto::OptimizationType::FEDCM_CLICKTHROUGH_RATE});
   }
-
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(profile);
-  if (actor_service) {
-    actor_task_state_subscription_ = actor_service->AddTaskStateChangedCallback(
-        base::BindRepeating(&IdentityDialogController::OnActorTaskStateChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 }
 
 IdentityDialogController::~IdentityDialogController() = default;
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 void IdentityDialogController::OnActorTaskStateChanged(
     actor::TaskId task_id,
     actor::ActorTask::State state) {
@@ -120,7 +114,6 @@ void IdentityDialogController::UpdateTaskId(actor::TaskId task_id) {
     }
   }
 }
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 
 int IdentityDialogController::GetBrandIconMinimumSize(
     blink::mojom::RpMode rp_mode) {
@@ -162,7 +155,6 @@ bool IdentityDialogController::ShowAccountsDialog(
   on_accounts_displayed_ = std::move(accounts_displayed_callback);
   rp_mode_ = rp_mode;
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   // If there is an actor login request, we will not show the accounts
   // dialog. Pretend that we did for the caller and automatically select the
   // account.
@@ -199,7 +191,6 @@ bool IdentityDialogController::ShowAccountsDialog(
         .Run(/*token_received=*/false);
     return false;
   }
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 
   if (!TrySetAccountView()) {
     return false;
@@ -342,13 +333,11 @@ void IdentityDialogController::OnAccountsDisplayed() {
 }
 
 void IdentityDialogController::OnFlowCompleted(bool success) {
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   auto* actor_login_request = GetActorLoginRequest();
   if (actor_login_request) {
     std::move(actor_login_request->on_federated_token_received_callback())
         .Run(success);
   }
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 }
 
 void IdentityDialogController::OnAccountSelected(
@@ -668,11 +657,7 @@ IdentityDialogController::GetActorLoginRequest() const {
 }
 
 bool IdentityDialogController::ShouldShowFedCmUi() {
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   return acting_task_id_.is_null();
-#else
-  return true;
-#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 }
 
 void IdentityDialogController::DidInvokeShowUi() {
