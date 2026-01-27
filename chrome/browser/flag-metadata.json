@@ -7394,7 +7394,7 @@
   {
     "name": "password-form-grouped-affiliations",
     "owners": ["atsvirchkova@google.com", "vsemeniuk@google.com", "chrome-password-manager-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 150
   },
   {
       "name": "password-removal-from-delete-browsing-data",
