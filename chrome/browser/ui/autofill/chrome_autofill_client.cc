@@ -1208,7 +1208,6 @@ void ChromeAutofillClient::NotifyIphFeatureUsed(
 
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     : ContentAutofillClient(web_contents),
-      content::WebContentsObserver(web_contents),
       ablation_study_(g_browser_process->local_state()),
       identity_credential_delegate_(web_contents),
       otp_field_detector_(std::make_unique<OtpFieldDetector>(this)),
