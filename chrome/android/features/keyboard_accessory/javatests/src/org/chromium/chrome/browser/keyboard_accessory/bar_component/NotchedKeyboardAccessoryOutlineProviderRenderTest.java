@@ -44,6 +44,7 @@ public class NotchedKeyboardAccessoryOutlineProviderRenderTest {
 
     private FrameLayout mContentView;
     private View mView;
+    private int mNotchOffsetX;
 
     private static final int VIEW_WIDTH = 300;
     private static final int VIEW_HEIGHT = 100;
@@ -77,7 +78,8 @@ public class NotchedKeyboardAccessoryOutlineProviderRenderTest {
                                                                 getResources(),
                                                                 position,
                                                                 getWidth(),
-                                                                getHeight());
+                                                                getHeight(),
+                                                                mNotchOffsetX);
 
                                         canvas.clipPath(clipPath);
                                     }
@@ -98,6 +100,23 @@ public class NotchedKeyboardAccessoryOutlineProviderRenderTest {
 
                     mActivityTestRule.getActivity().setContentView(mContentView);
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderWithTopNotchAndOffset() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mNotchOffsetX = 50;
+                    mView.setTag(NotchPosition.TOP);
+                    NotchedKeyboardAccessoryOutlineProvider provider =
+                            new NotchedKeyboardAccessoryOutlineProvider(NotchPosition.TOP);
+                    provider.setNotchOffsetX(mNotchOffsetX);
+                    mView.setOutlineProvider(provider);
+                });
+        CriteriaHelper.pollUiThread(() -> mView.getHeight() > 0 && mView.getWidth() > 0);
+        mRenderTestRule.render(mView, "top_notch_offset");
     }
 
     @Test

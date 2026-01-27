@@ -1033,13 +1033,14 @@ public class KeyboardAccessoryViewTest {
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) view.getLayoutParams();
         assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
-        assertEquals(horizontalOffset, params.leftMargin);
         assertEquals(verticalOffset, params.topMargin);
         assertEquals(0, view.getPaddingTop());
         assertEquals(
                 view.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height),
                 view.getPaddingBottom());
         assertTrue(view.getClipToOutline());
+
+        CriteriaHelper.pollUiThread(() -> view.getTranslationX() == horizontalOffset);
     }
 
     @Test
@@ -1065,13 +1066,14 @@ public class KeyboardAccessoryViewTest {
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) view.getLayoutParams();
         assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
-        assertEquals(horizontalOffset, params.leftMargin);
         assertEquals(verticalOffset, params.topMargin);
         assertEquals(0, view.getPaddingBottom());
         assertEquals(
                 view.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height),
                 view.getPaddingTop());
         assertTrue(view.getClipToOutline());
+
+        CriteriaHelper.pollUiThread(() -> view.getTranslationX() == horizontalOffset);
     }
 
     /**

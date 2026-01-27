@@ -64,6 +64,7 @@ class KeyboardAccessoryView extends LinearLayout {
     private boolean mAllowClicksWhileObscured;
     private boolean mHasStickyLastItem;
     private int mMaxWidth;
+    private int mHorizontalOffset;
     private boolean mAnimateSuggestionsFromTop;
 
     protected RecyclerView mBarItemsView;
@@ -321,6 +322,7 @@ class KeyboardAccessoryView extends LinearLayout {
 
     void setStyle(KeyboardAccessoryStyle style) {
         mMaxWidth = style.getMaxWidth();
+        mHorizontalOffset = style.getHorizontalOffset();
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) getLayoutParams();
         if (style.isDocked()) {
             applyDockedStyle(params, style);
@@ -344,11 +346,11 @@ class KeyboardAccessoryView extends LinearLayout {
         mDisableAnimations = isDynamicPositioningEnabled;
         if (isDynamicPositioningEnabled) {
             // For dynamically positioned keyboard accessory, the keyboard accessory is positioned
-            // by setting the gravity to LEFT|TOP and applying horizontal and vertical margins to
-            // place the bar near the focused field.
-            // Gravity.LEFT is used even for RTL layout.
+            // by setting the gravity to LEFT|TOP. The horizontal positioning is handled in
+            // onMeasure/onLayout to allow for width adjustment, while setMargins applies only
+            // the vertical offset. Gravity.LEFT is used even for RTL layout.
             params.gravity = Gravity.LEFT | Gravity.TOP;
-            params.setMargins(style.getHorizontalOffset(), style.getVerticalOffset(), 0, 0);
+            params.setMargins(0, style.getVerticalOffset(), 0, 0);
         } else {
             // For statically positioned keyboard accessory, the gravity is centered horizontally
             // and at the top of the parent. Only a vertical offset is used.
@@ -406,6 +408,7 @@ class KeyboardAccessoryView extends LinearLayout {
         params.gravity = Gravity.BOTTOM;
         params.setMargins(0, 0, 0, style.getVerticalOffset());
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        setTranslationX(0);
 
         findViewById(R.id.accessory_shadow).setVisibility(View.VISIBLE);
         findViewById(R.id.accessory_bar_contents)
@@ -416,12 +419,39 @@ class KeyboardAccessoryView extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
-        if (mMaxWidth > 0 && mMaxWidth < measuredWidth) {
+        // If a maximum width is defined, ensure the MeasureSpec does not exceed it.
+        int availableWidth = MeasureSpec.getSize(widthMeasureSpec);
+        if (mMaxWidth > 0 && mMaxWidth < availableWidth) {
             int measureMode = MeasureSpec.getMode(widthMeasureSpec);
             widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, measureMode);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        // This shifts the keyboard accessory horizontally to the left when can't grow to the right
+        // because of the viewport border.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+            int translationX = mHorizontalOffset;
+            // If the preferred offset plus the view's width exceeds the viewport width, the view is
+            // bleeding off the right edge.
+            if (mHorizontalOffset + getMeasuredWidth() > availableWidth) {
+                // Clamp the translation so the right edge of the view aligns with the right edge
+                // of the screen (availableWidth - getMeasuredWidth). Max() ensures that the left
+                // edge of the vierpowrt is not pushed in the process.
+                translationX = Math.max(0, availableWidth - getMeasuredWidth());
+            }
+            setTranslationX(translationX);
+
+            // The notch needs to be moved to point to the focused field when the accessory is
+            // shifted left.
+            if (getOutlineProvider() instanceof NotchedKeyboardAccessoryOutlineProvider) {
+                NotchedKeyboardAccessoryOutlineProvider provider =
+                        (NotchedKeyboardAccessoryOutlineProvider) getOutlineProvider();
+                provider.setNotchOffsetX(mHorizontalOffset - translationX);
+                // Invalidating triggers regenerating the notch in the correct place.
+                invalidateOutline();
+            }
+        }
     }
 
     void setObfuscatedLastChildAt(Callback<Integer> obfuscatedLastChildAt) {
