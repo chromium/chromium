@@ -189,7 +189,8 @@ template("sysroot_modulemap") {
     } else if (current_cpu == "arm64") {
       win_toolchain_data = win_toolchain_data_arm64
     } else {
-      error("Unsuppported windows CPU, add it to win_toolchain_data.gni")
+      assert(false,
+             "Unsuppported windows CPU, add it to win_toolchain_data.gni")
     }
 
     # This must be relative to the directory the modulemap is contained within.
