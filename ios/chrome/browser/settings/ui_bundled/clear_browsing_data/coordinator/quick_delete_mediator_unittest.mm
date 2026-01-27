@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/counters/autofill_counter.h"
 #import "components/browsing_data/core/counters/history_counter.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/coordinator/quick_delete_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model/fake_browsing_data_counter_wrapper_producer.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui/quick_delete_consumer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -73,9 +75,15 @@ class QuickDeleteMediatorTest : public PlatformTest {
     OCMStub([consumer_ setTabsSelection:NO]);
     OCMStub([consumer_ setSiteDataSelection:NO]);
     OCMStub([consumer_ setCacheSelection:NO]);
-    OCMStub([consumer_ setPasswordsSelection:NO]);
+    if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+      OCMStub([consumer_ setPasswordsSelection:NO]);
+    }
     OCMStub([consumer_ setAutofillSelection:NO]);
 
+    CreateMediator();
+  }
+
+  void CreateMediator() {
     fake_browsing_data_counter_wrapper_producer_ =
         [[FakeBrowsingDataCounterWrapperProducer alloc]
             initWithProfile:profile_.get()];
@@ -340,6 +348,9 @@ TEST_F(QuickDeleteMediatorTest, TestTabsSummary) {
 
 // Tests the construction of the passwords summary with different inputs.
 TEST_F(QuickDeleteMediatorTest, TestPasswordsSummary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPasswordRemovalFromDeleteBrowsingData);
+
   // Select passwords for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, true);
   OCMExpect([consumer_ setPasswordsSelection:YES]);
@@ -466,7 +477,9 @@ TEST_F(QuickDeleteMediatorTest, TestCardsSummary) {
   // dispatches if all counters have returned.
   triggerUpdateUICallbackForTabsResults(0);
   triggerUpdateUICallbackForHistoryResults(0);
-  triggerUpdateUICallbackForPasswordsResults(0);
+  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+    triggerUpdateUICallbackForPasswordsResults(0);
+  }
 
   // clang-format off
   const struct TestCase {
@@ -521,7 +534,9 @@ TEST_F(QuickDeleteMediatorTest, TestSuggestionsSummary) {
   // dispatches if all counters have returned.
   triggerUpdateUICallbackForTabsResults(0);
   triggerUpdateUICallbackForHistoryResults(0);
-  triggerUpdateUICallbackForPasswordsResults(0);
+  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+    triggerUpdateUICallbackForPasswordsResults(0);
+  }
 
   // clang-format off
   const struct TestCase {
@@ -593,26 +608,29 @@ TEST_F(QuickDeleteMediatorTest,
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
+// Tests that the correct summary is displayed with several types of data.
 TEST_F(QuickDeleteMediatorTest, TestSummaryWithSeveralTypes) {
-  // Select both browsing history and passowrds for deletion.
+  // Select both browsing history and tabs for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, true);
-  prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, true);
+  prefs()->SetBoolean(browsing_data::prefs::kCloseTabs, true);
 
   OCMExpect([consumer_ setHistorySelection:YES]);
-  OCMExpect([consumer_ setPasswordsSelection:YES]);
+  OCMExpect([consumer_ setTabsSelection:YES]);
 
   // Trigger creating the counters for browsing data types.
   mediator_.consumer = consumer_;
 
   // Trigger the callback for data types not in test. The summary is only
-  // dispatches if all counters have returned.
-  triggerUpdateUICallbackForTabsResults(0);
+  // dispatched if all counters have returned.
   triggerUpdateUICallbackForAutofillResults(0, 0, 0);
+  if (!IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+    triggerUpdateUICallbackForPasswordsResults(0);
+  }
 
   int num_unique_domains = 2;
-  int num_passwords = 1;
+  int num_tabs = 1;
 
-  // Both browsing history and passwords are selected for deletion and as such
+  // Both browsing history and tabs are selected for deletion and as such
   // should show up in the summary.
   NSString* expectedSummary = [NSString
       stringWithFormat:@"%@%@%@",
@@ -622,10 +640,85 @@ TEST_F(QuickDeleteMediatorTest, TestSummaryWithSeveralTypes) {
                        l10n_util::GetNSString(
                            IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SEPARATOR),
                        l10n_util::GetPluralNSStringF(
-                           IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
-                           num_passwords)];
+                           IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS,
+                           num_tabs)];
   OCMExpect([consumer_ setBrowsingDataSummary:expectedSummary]);
   triggerUpdateUICallbackForHistoryResults(num_unique_domains);
-  triggerUpdateUICallbackForPasswordsResults(num_passwords);
+  triggerUpdateUICallbackForTabsResults(num_tabs);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that `setPasswordsSelection` is not called when the feature
+// `kPasswordRemovalFromDeleteBrowsingData` is enabled.
+TEST_F(QuickDeleteMediatorTest,
+       SetPasswordsSelectionNotCalledWithThePasswordRemovalFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      kPasswordRemovalFromDeleteBrowsingData);
+
+  CreateMediator();
+
+  // Regardless of the pref value, `setPasswordsSelection` will not be called by
+  // the consumer. The initial value `NO` will not change when the feature flag
+  // is on.
+  prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, true);
+  prefs()->SetBoolean(browsing_data::prefs::kDeleteCache, true);
+
+  OCMReject([consumer_ setPasswordsSelection:[OCMArg any]]);
+  OCMExpect([consumer_ setCacheSelection:YES]);
+
+  mediator_.consumer = consumer_;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the password counter is not created when the feature
+// `kPasswordRemovalFromDeleteBrowsingData` is enabled.
+TEST_F(QuickDeleteMediatorTest,
+       NoPasswordCounterWithThePasswordRemovalFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      kPasswordRemovalFromDeleteBrowsingData);
+
+  CreateMediator();
+
+  // Setting the consumers calls the `createCounters` method.
+  mediator_.consumer = consumer_;
+
+  const std::set<std::string>& registered_prefs =
+      [fake_browsing_data_counter_wrapper_producer_ registeredPrefNames];
+
+  // Expect counters for history, tabs, cache and autofill.
+  EXPECT_THAT(
+      registered_prefs,
+      testing::UnorderedElementsAre(
+          browsing_data::prefs::kDeleteBrowsingHistory,
+          browsing_data::prefs::kCloseTabs, browsing_data::prefs::kDeleteCache,
+          browsing_data::prefs::kDeleteFormData));
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the password counter is created when the feature
+// `kPasswordRemovalFromDeleteBrowsingData` is disabled.
+TEST_F(QuickDeleteMediatorTest,
+       PasswordCounterCreatedWithThePasswordRemovalFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPasswordRemovalFromDeleteBrowsingData);
+
+  CreateMediator();
+
+  // Setting the consumers calls the `createCounters` method.
+  mediator_.consumer = consumer_;
+
+  const std::set<std::string>& registered_prefs =
+      [fake_browsing_data_counter_wrapper_producer_ registeredPrefNames];
+
+  // Expect counters for history, tabs, cache, autofill and passwords.
+  EXPECT_THAT(
+      registered_prefs,
+      testing::UnorderedElementsAre(
+          browsing_data::prefs::kDeleteBrowsingHistory,
+          browsing_data::prefs::kCloseTabs, browsing_data::prefs::kDeleteCache,
+          browsing_data::prefs::kDeleteFormData,
+          browsing_data::prefs::kDeletePasswords));
+
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

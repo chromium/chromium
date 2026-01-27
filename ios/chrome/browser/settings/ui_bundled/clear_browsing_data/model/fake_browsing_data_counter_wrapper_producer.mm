@@ -32,6 +32,14 @@
   return nullptr;
 }
 
+- (std::set<std::string>)registeredPrefNames {
+  std::set<std::string> registeredPrefNames;
+  for (const auto& [name, callback] : _prefsCallback) {
+    registeredPrefNames.insert(name);
+  }
+  return registeredPrefNames;
+}
+
 - (void)triggerUpdateUICallbackForResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
   auto callback =
