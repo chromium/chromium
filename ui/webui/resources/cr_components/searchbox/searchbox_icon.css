@@ -90,18 +90,16 @@
   background-color: var(--color-searchbox-search-icon-background);
 }
 
+@media (forced-colors: active) {
+  #icon {
+    --color-searchbox-search-icon-background: ButtonText;
+  }
+}
+
 :host([in-searchbox][is-lens-searchbox_]) #icon {
   background-color: var(--color-searchbox-google-g-background);
   height: var(--cr-searchbox-icon-size-in-searchbox);
   width: var(--cr-searchbox-icon-size-in-searchbox);
-}
-
-/* Set styles for high contrast mode in Windows. */
-@media (forced-colors: active) {
-  :host([in-searchbox][is-lens-searchbox_]) #icon {
-    /* Set the icon color to hcm (high contrast mode) value. */
-    background-color: ButtonText;
-  }
 }
 
 :host([in-searchbox][favicon-image_*='//resources/cr_components/omnibox/icons/google_g.svg']) #faviconImage {

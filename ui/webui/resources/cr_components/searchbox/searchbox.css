@@ -225,7 +225,6 @@ cr-searchbox-icon {
 
 @media (forced-colors: active) {
   cr-searchbox-icon {
-    background-color: Highlight;
     border-radius: 4px;
   }
 }
@@ -491,8 +490,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
 }
 
 @media (forced-colors: active) {
-  :host([searchbox-layout-mode^='Tall']) .dropdownContainer,
-  :host([searchbox-layout-mode^='Tall']) .contextualEntrypointContainer {
+  :host([searchbox-layout-mode^='Tall']) .dropdownContainer {
     border: 1px solid ActiveBorder;
   }
 }
