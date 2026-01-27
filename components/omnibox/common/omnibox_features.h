@@ -139,6 +139,12 @@ BASE_DECLARE_FEATURE(kComposeboxUsesChromeComposeClient);
 // Controls whether or not contextual composebox should display suggestions.
 BASE_DECLARE_FEATURE(kComposeboxAttachmentsTypedState);
 
+// A flag that allows params from experiment configs to be passed through to
+// the AIM eligibility service to control aspects of URL interception.
+BASE_DECLARE_FEATURE(kAimUrlInterceptPassthrough);
+inline constexpr base::FeatureParam<std::string> kAimUrlInterceptionParams{
+    &kAimUrlInterceptPassthrough, "aim_url_interception_params", ""};
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDiagnostics);
 BASE_DECLARE_FEATURE(kJumpStartOmnibox);

@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
@@ -582,6 +583,12 @@ GURL AimEligibilityService::GetRequestUrl(
   replacements.SetPathStr(kRequestPath);
   replacements.SetQueryStr(kRequestQuery);
   GURL url = base_gurl.ReplaceComponents(replacements);
+
+  if (base::FeatureList::IsEnabled(omnibox::kAimUrlInterceptPassthrough) &&
+      !omnibox::kAimUrlInterceptionParams.Get().empty()) {
+    url = net::AppendQueryParameter(url, "url_intercept_params",
+                                    omnibox::kAimUrlInterceptionParams.Get());
+  }
 
   // Get the index of the primary account in the cookie jar.
   std::optional<size_t> session_index =
