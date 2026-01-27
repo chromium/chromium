@@ -4597,6 +4597,8 @@ class InProgressDownloadTest : public DownloadTest {
             base::NullCallback());
   }
 
+  void TearDownOnMainThread() override { set_in_progress_manager(nullptr); }
+
   download::InProgressDownloadManager* in_progress_manager() {
     return in_progress_manager_;
   }
@@ -4608,8 +4610,7 @@ class InProgressDownloadTest : public DownloadTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<download::InProgressDownloadManager, DanglingUntriaged>
-      in_progress_manager_ = nullptr;
+  raw_ptr<download::InProgressDownloadManager> in_progress_manager_ = nullptr;
 };
 
 // Check that if a download exists in both in-progress and history DB,
