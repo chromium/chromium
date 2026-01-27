@@ -679,15 +679,14 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 #pragma mark - SideSwipeToolbarInteracting
 
 - (BOOL)isInsideToolbar:(CGPoint)point {
+  if (IsChromeNextIaEnabled()) {
+    return
+        [self isPoint:point insideViewController:_topToolbarViewController] ||
+        [self isPoint:point insideViewController:_bottomToolbarViewController];
+  }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
-    // The toolbar frame is inset by -1 because CGRectContainsPoint does
-    // include points on the max X and Y edges, which will happen frequently
-    // with edge swipes from the right side.
-    CGRect toolbarFrame =
-        CGRectInset([coordinator viewController].view.bounds, -1, -1);
-    CGPoint pointInToolbarCoordinates =
-        [[coordinator viewController].view convertPoint:point fromView:nil];
-    if (CGRectContainsPoint(toolbarFrame, pointInToolbarCoordinates)) {
+    if ([self isPoint:point
+            insideViewController:[coordinator viewController]]) {
       return YES;
     }
   }
@@ -698,11 +697,40 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (UIImage*)toolbarSideSwipeSnapshotForWebState:(web::WebState*)webState
                                 withToolbarType:(ToolbarType)toolbarType {
+  if (IsChromeNextIaEnabled()) {
+    ToolbarViewController* toolbar;
+    ToolbarMediator* mediator;
+    switch (toolbarType) {
+      case ToolbarType::kPrimary:
+        toolbar = _topToolbarViewController;
+        mediator = _topToolbarMediator;
+        break;
+      case ToolbarType::kSecondary:
+        toolbar = _bottomToolbarViewController;
+        mediator = _bottomToolbarMediator;
+        break;
+    }
+
+    [mediator updateConsumerWithWebState:webState];
+
+    UIView* toolbarView = toolbar.view;
+    // The toolbar must be in the view hierarchy to be snapshotted.
+    if (!toolbarView.window) {
+      return nil;
+    }
+    UIImage* toolbarSnapshot = CaptureViewWithOption(
+        toolbarView, toolbarView.window.screen.scale, kClientSideRendering);
+
+    [mediator updateConsumerWithWebState:self.browser->GetWebStateList()
+                                             ->GetActiveWebState()];
+
+    return toolbarSnapshot;
+  }
+
   AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
       [self coordinatorWithToolbarType:toolbarType];
 
   [adaptiveToolbarCoordinator updateToolbarForSideSwipeSnapshot:webState];
-  [self updateLocationBarForSideSwipeSnapshot:webState];
 
   UIView* toolbarView = adaptiveToolbarCoordinator.viewController.view;
   // The toolbar must be in the view hierarchy to be snapshotted.
@@ -713,7 +741,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
       toolbarView, [[UIScreen mainScreen] scale], kClientSideRendering);
 
   [adaptiveToolbarCoordinator resetToolbarAfterSideSwipeSnapshot];
-  [self resetLocationBarAfterSideSwipeSnapshot];
 
   return toolbarSnapshot;
 }
@@ -723,6 +750,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 /// Returns the coordinator coresponding to `toolbarType`.
 - (AdaptiveToolbarCoordinator*)coordinatorWithToolbarType:
     (ToolbarType)toolbarType {
+  CHECK(!IsChromeNextIaEnabled());
   switch (toolbarType) {
     case ToolbarType::kPrimary:
       return self.primaryToolbarCoordinator;
@@ -733,6 +761,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 /// Prepares location bar for a side swipe snapshot with`webState`.
 - (void)updateLocationBarForSideSwipeSnapshot:(web::WebState*)webState {
+  CHECK(!IsChromeNextIaEnabled());
   // Hide LocationBarView when taking a snapshot on a web state that is not the
   // active one, as the URL is not updated.
   if (webState != self.browser->GetWebStateList()->GetActiveWebState()) {
@@ -742,6 +771,7 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 /// Resets location bar after a side swipe snapshot.
 - (void)resetLocationBarAfterSideSwipeSnapshot {
+  CHECK(!IsChromeNextIaEnabled());
   [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
 }
 
@@ -1049,6 +1079,10 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 - (void)setEntrypointViewHidden:(BOOL)hidden {
+  if (IsChromeNextIaEnabled()) {
+    return;
+  }
+
   AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
       [self coordinatorWithToolbarType:_omniboxPosition];
   adaptiveToolbarCoordinator.viewController.locationBarContainer.hidden =
@@ -1162,6 +1196,19 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   return IsBottomOmniboxAvailable() &&
          GetApplicationContext()->GetLocalState()->GetBoolean(
              omnibox::kIsOmniboxInBottomPosition);
+}
+
+// Returns whether `point` in window coordinates is inside the frame of
+// `viewController`'s view.
+- (BOOL)isPoint:(CGPoint)point
+    insideViewController:(UIViewController*)viewController {
+  // The toolbar bounds are inset by 1 because CGRectContainsPoint does
+  // include points on the max X and Y edges, which will happen frequently
+  // with edge swipes from the right side.
+  CGRect toolbarBounds = CGRectInset(viewController.view.bounds, -1, -1);
+  CGPoint pointInToolbarCoordinates = [viewController.view convertPoint:point
+                                                               fromView:nil];
+  return CGRectContainsPoint(toolbarBounds, pointInToolbarCoordinates);
 }
 
 @end

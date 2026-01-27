@@ -15,6 +15,10 @@ class FullscreenController;
 class WebNavigationBrowserAgent;
 class WebStateList;
 
+namespace web {
+class WebState;
+}
+
 // Mediator for the toolbar.
 @interface ToolbarMediator : NSObject <ToolbarMutator>
 
@@ -34,6 +38,9 @@ class WebStateList;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Updates the consumer with the current state of the web state.
+- (void)updateConsumerWithWebState:(web::WebState*)webState;
 
 // Disconnects observations.
 - (void)disconnect;

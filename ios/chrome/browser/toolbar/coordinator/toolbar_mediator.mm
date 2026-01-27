@@ -84,6 +84,20 @@
   return self;
 }
 
+- (void)updateConsumerWithWebState:(web::WebState*)webState {
+  if (!webState) {
+    return;
+  }
+  [_consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
+  [_consumer
+      setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)];
+  [_consumer setIsLoading:webState->IsLoading()];
+
+  GURL visibleURL = webState->GetVisibleURL();
+
+  [_consumer setShareEnabled:!visibleURL.is_empty()];
+}
+
 - (void)disconnect {
   _activeWebStateObservationForwarder = nullptr;
   _activeWebStateObserver = nullptr;
@@ -149,21 +163,6 @@
 }
 
 #pragma mark - Private
-
-// Updates the consumer with the current state of the web state.
-- (void)updateConsumerWithWebState:(web::WebState*)webState {
-  if (!webState) {
-    return;
-  }
-  [_consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
-  [_consumer
-      setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)];
-  [_consumer setIsLoading:webState->IsLoading()];
-
-  GURL visibleURL = webState->GetVisibleURL();
-
-  [_consumer setShareEnabled:!visibleURL.is_empty()];
-}
 
 // Updates the position of the toolbar by updating its visibility.
 - (void)updateToolbarPosition {
