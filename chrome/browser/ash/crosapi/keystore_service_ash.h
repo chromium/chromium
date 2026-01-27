@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,11 +43,11 @@ namespace crosapi {
 class KeystoreServiceAsh : public KeyedService {
  public:
   using KeystoreType = mojom::KeystoreType;
-  using SigningScheme = mojom::KeystoreSigningScheme;
-  using KeystoreKeyAttributeType = mojom::KeystoreKeyAttributeType;
+  using SigningScheme = chromeos::KeystoreSigningScheme;
+  using KeystoreKeyAttributeType = chromeos::KeystoreKeyAttributeType;
 
   using ChallengeAttestationOnlyKeystoreCallback = base::OnceCallback<void(
-      crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr)>;
+      chromeos::ChallengeAttestationOnlyKeystoreResult)>;
   using GetKeyStoresCallback =
       base::OnceCallback<void(crosapi::mojom::GetKeyStoresResultPtr)>;
   using SelectClientCertificatesCallback = base::OnceCallback<void(
@@ -89,7 +90,7 @@ class KeystoreServiceAsh : public KeyedService {
       mojom::KeystoreType type,
       const std::vector<uint8_t>& challenge,
       bool migrate,
-      mojom::KeystoreAlgorithmName algorithm,
+      chromeos::KeystoreAlgorithmName algorithm,
       ChallengeAttestationOnlyKeystoreCallback callback);
   void GetKeyStores(GetKeyStoresCallback callback);
   void SelectClientCertificates(
@@ -104,7 +105,7 @@ class KeystoreServiceAsh : public KeyedService {
                          const std::vector<uint8_t>& certificate,
                          RemoveCertificateCallback callback);
   void GetPublicKey(const std::vector<uint8_t>& certificate,
-                    mojom::KeystoreAlgorithmName algorithm_name,
+                    chromeos::KeystoreAlgorithmName algorithm_name,
                     GetPublicKeyCallback callback);
   void GenerateKey(mojom::KeystoreType keystore,
                    mojom::KeystoreAlgorithmPtr algorithm,

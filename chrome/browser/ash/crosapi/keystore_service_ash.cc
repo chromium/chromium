@@ -39,9 +39,9 @@ namespace crosapi {
 
 namespace {
 
-using mojom::KeystoreAlgorithmName;
-using mojom::KeystoreKeyAttributeType;
-using SigningScheme = mojom::KeystoreSigningScheme;
+using chromeos::KeystoreAlgorithmName;
+using chromeos::KeystoreKeyAttributeType;
+using SigningScheme = chromeos::KeystoreSigningScheme;
 using ::ash::platform_keys::KeyPermissionsService;
 using ::ash::platform_keys::PlatformKeysService;
 using ::chromeos::ExtensionPlatformKeysService;
@@ -218,9 +218,8 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!crosapi::mojom::IsKnownEnumValue(type)) {
     std::move(callback).Run(
-        mojom::ChallengeAttestationOnlyKeystoreResult::NewErrorMessage(
-            chromeos::platform_keys::KeystoreErrorToString(
-                mojom::KeystoreError::kUnsupportedKeystoreType)));
+        base::unexpected(chromeos::platform_keys::KeystoreErrorToString(
+            mojom::KeystoreError::kUnsupportedKeystoreType)));
     return;
   }
 
@@ -236,9 +235,8 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
       break;
     case KeystoreAlgorithmName::kRsaOaep:
       std::move(callback).Run(
-          mojom::ChallengeAttestationOnlyKeystoreResult::NewErrorMessage(
-              chromeos::platform_keys::KeystoreErrorToString(
-                  mojom::KeystoreError::kUnsupportedKeyType)));
+          base::unexpected(chromeos::platform_keys::KeystoreErrorToString(
+              mojom::KeystoreError::kUnsupportedKeyType)));
       return;
   }
 
@@ -280,17 +278,14 @@ void KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore(
     void* challenge_key_ptr,
     const ash::attestation::TpmChallengeKeyResult& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result_ptr;
+  chromeos::ChallengeAttestationOnlyKeystoreResult result_to_return;
   if (result.IsSuccess()) {
-    result_ptr =
-        mojom::ChallengeAttestationOnlyKeystoreResult::NewChallengeResponse(
-            std::vector<uint8_t>(result.challenge_response.begin(),
-                                 result.challenge_response.end()));
+    result_to_return = std::vector<uint8_t>(result.challenge_response.begin(),
+                                            result.challenge_response.end());
   } else {
-    result_ptr = mojom::ChallengeAttestationOnlyKeystoreResult::NewErrorMessage(
-        result.GetErrorMessage());
+    result_to_return = base::unexpected(result.GetErrorMessage());
   }
-  std::move(callback).Run(std::move(result_ptr));
+  std::move(callback).Run(std::move(result_to_return));
 
   // Remove the outstanding challenge_key object.
   bool found = false;

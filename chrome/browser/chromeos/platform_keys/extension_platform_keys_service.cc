@@ -25,6 +25,7 @@
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
@@ -42,6 +43,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/x509_certificate.h"
 
+using chromeos::KeystoreKeyAttributeType;
+using chromeos::KeystoreSigningScheme;
 using content::BrowserThread;
 using crosapi::keystore_service_util::MakeEcdsaKeystoreAlgorithm;
 using crosapi::keystore_service_util::MakeRsaOaepKeystoreAlgorithm;
@@ -50,10 +53,8 @@ using crosapi::mojom::KeystoreAlgorithmPtr;
 using crosapi::mojom::KeystoreBinaryResult;
 using crosapi::mojom::KeystoreBinaryResultPtr;
 using crosapi::mojom::KeystoreError;
-using crosapi::mojom::KeystoreKeyAttributeType;
 using crosapi::mojom::KeystoreSelectClientCertificatesResult;
 using crosapi::mojom::KeystoreSelectClientCertificatesResultPtr;
-using crosapi::mojom::KeystoreSigningScheme;
 using crosapi::mojom::KeystoreType;
 
 namespace chromeos {

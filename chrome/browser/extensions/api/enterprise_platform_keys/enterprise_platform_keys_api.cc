@@ -308,26 +308,24 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
       ->ChallengeAttestationOnlyKeystore(
           crosapi::mojom::KeystoreType::kDevice, params->challenge,
           /*migrate=*/params->register_key ? *params->register_key : false,
-          crosapi::mojom::KeystoreAlgorithmName::kRsassaPkcs115, std::move(c));
+          chromeos::KeystoreAlgorithmName::kRsassaPkcs115, std::move(c));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysChallengeMachineKeyFunction::
     OnChallengeAttestationOnlyKeystore(
-        crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result) {
+        chromeos::ChallengeAttestationOnlyKeystoreResult result) {
   // It's possible the browser context was destroyed during the async work.
   // If that happens, bail.
   if (!browser_context()) {
     return;
   }
-  if (result->is_error_message()) {
-    Respond(Error(result->get_error_message()));
+  if (!result.has_value()) {
+    Respond(Error(result.error()));
     return;
   }
-  DCHECK(result->is_challenge_response());
 
-  Respond(ArgumentList(api_epk::ChallengeMachineKey::Results::Create(
-      result->get_challenge_response())));
+  Respond(ArgumentList(api_epk::ChallengeMachineKey::Results::Create(*result)));
 }
 
 //------------------------------------------------------------------------------
@@ -350,25 +348,23 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
       ->ChallengeAttestationOnlyKeystore(
           crosapi::mojom::KeystoreType::kUser, params->challenge,
           /*migrate=*/params->register_key,
-          crosapi::mojom::KeystoreAlgorithmName::kRsassaPkcs115, std::move(c));
+          chromeos::KeystoreAlgorithmName::kRsassaPkcs115, std::move(c));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysChallengeUserKeyFunction::
     OnChallengeAttestationOnlyKeystore(
-        crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result) {
+        chromeos::ChallengeAttestationOnlyKeystoreResult result) {
   // It's possible the browser context was destroyed during the async work.
   // If that happens, bail.
   if (!browser_context()) {
     return;
   }
-  if (result->is_error_message()) {
-    Respond(Error(result->get_error_message()));
+  if (!result.has_value()) {
+    Respond(Error(result.error()));
     return;
   }
-  DCHECK(result->is_challenge_response());
-  Respond(ArgumentList(api_epk::ChallengeUserKey::Results::Create(
-      result->get_challenge_response())));
+  Respond(ArgumentList(api_epk::ChallengeUserKey::Results::Create(*result)));
 }
 
 //------------------------------------------------------------------------------
@@ -400,18 +396,18 @@ EnterprisePlatformKeysChallengeKeyFunction::Run() {
   }
 
   // Default to RSA when not registering a key.
-  crosapi::mojom::KeystoreAlgorithmName algorithm =
-      crosapi::mojom::KeystoreAlgorithmName::kRsassaPkcs115;
+  chromeos::KeystoreAlgorithmName algorithm =
+      chromeos::KeystoreAlgorithmName::kRsassaPkcs115;
   if (params->options.register_key.has_value()) {
     EXTENSION_FUNCTION_VALIDATE(
         params->options.register_key->algorithm !=
         api::enterprise_platform_keys::Algorithm::kNone);
     switch (params->options.register_key->algorithm) {
       case api::enterprise_platform_keys::Algorithm::kRsa:
-        algorithm = crosapi::mojom::KeystoreAlgorithmName::kRsassaPkcs115;
+        algorithm = chromeos::KeystoreAlgorithmName::kRsassaPkcs115;
         break;
       case api::enterprise_platform_keys::Algorithm::kEcdsa: {
-        algorithm = crosapi::mojom::KeystoreAlgorithmName::kEcdsa;
+        algorithm = chromeos::KeystoreAlgorithmName::kEcdsa;
         break;
       }
       case api::enterprise_platform_keys::Algorithm::kNone:
@@ -433,19 +429,17 @@ EnterprisePlatformKeysChallengeKeyFunction::Run() {
 
 void EnterprisePlatformKeysChallengeKeyFunction::
     OnChallengeAttestationOnlyKeystore(
-        crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result) {
+        chromeos::ChallengeAttestationOnlyKeystoreResult result) {
   // It's possible the browser context was destroyed during the async work.
   // If that happens, bail.
   if (!browser_context()) {
     return;
   }
-  if (result->is_error_message()) {
-    Respond(Error(result->get_error_message()));
+  if (!result.has_value()) {
+    Respond(Error(result.error()));
     return;
   }
-  DCHECK(result->is_challenge_response());
-  Respond(ArgumentList(api_epk::ChallengeKey::Results::Create(
-      result->get_challenge_response())));
+  Respond(ArgumentList(api_epk::ChallengeKey::Results::Create(*result)));
 }
 
 }  // namespace extensions

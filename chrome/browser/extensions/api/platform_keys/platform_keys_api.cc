@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
@@ -37,9 +38,9 @@ namespace {
 
 namespace api_pk = api::platform_keys;
 namespace api_pki = api::platform_keys_internal;
+using chromeos::KeystoreAlgorithmName;
 using crosapi::keystore_service_util::kWebCryptoEcdsa;
 using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
-using crosapi::mojom::KeystoreAlgorithmName;
 
 const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
 const char kErrorInteractiveCallFromBackground[] =
