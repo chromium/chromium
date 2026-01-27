@@ -134,12 +134,9 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
   // inclusiveDescendant's custom element registry to document's effective
   // global custom element registry.
   auto* shadow_root_registry = shadow_root.customElementRegistry();
-  // TODO(crbug.com/399124619) Checking null registry with declarative shadow
-  // root is not accurate. The code should implement the shadow root variable
-  // when shadowrootcustomelementregistry attribute is used as outlined in the
-  // spec.
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      ((!shadow_root_registry && !shadow_root.IsDeclarativeShadowRoot()) ||
+      ((!shadow_root_registry &&
+        !shadow_root.ShouldKeepCustomElementRegistryNull()) ||
        (shadow_root_registry && shadow_root_registry->IsGlobalRegistry()))) {
     shadow_root_registry = new_document.EffectiveGlobalCustomElementRegistry();
     shadow_root.SetCustomElementRegistry(shadow_root_registry);

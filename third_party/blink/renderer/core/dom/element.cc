@@ -1143,6 +1143,11 @@ Node* Element::Clone(Document& factory,
       cloned_shadow_root.SetAvailableToElementInternals(
           shadow_root->IsAvailableToElementInternals());
 
+      // 6.6 Set copy's shadow root's keep custom element registry null to
+      // node's shadow root's keep custom element registry null.
+      cloned_shadow_root.SetKeepCustomElementRegistryNull(
+          shadow_root->ShouldKeepCustomElementRegistryNull());
+
       // 6.6 If the clone children flag is set, then for each child child of
       // node’s shadow root, in tree order: append the result of cloning child
       // with document and the clone children flag set, to copy’s shadow root.
@@ -7473,6 +7478,12 @@ bool Element::AttachDeclarativeShadowRoot(
   // 10.8.7. Set declarative shadow host element's shadow host's "available
   // to element internals" to true.
   shadow_root.SetAvailableToElementInternals(true);
+  // 10.8.8. If templateStartTag has a shadowrootcustomelementregistry
+  // attribute, then set shadow's keep custom element registry null to true.
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      waiting_for_scoped_registry) {
+    shadow_root.SetKeepCustomElementRegistryNull(true);
+  }
   // 10.8.NEW. Process shadowrootadoptedstylesheets attribute.
   if (RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled()) {
     shadow_root.ProcessAdoptedStylesheetAttribute(adopted_stylesheets);

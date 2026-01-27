@@ -183,6 +183,20 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     return has_focusgroup_attribute_on_descendant_;
   }
 
+  // https://dom.spec.whatwg.org/#shadowroot-keep-custom-element-registry-null
+  // Keep custom element registry null variable ensures that the null registry
+  // shadowroot does not get a custom element registry during adoption, but
+  // only when it's explicitly initialized with a registry.
+  void SetKeepCustomElementRegistryNull(bool flag) {
+    // When this is set to true, the custom element registry should be null.
+    DCHECK(!flag || !customElementRegistry());
+    keep_custom_element_registry_null_ = flag;
+  }
+
+  bool ShouldKeepCustomElementRegistryNull() const {
+    return keep_custom_element_registry_null_;
+  }
+
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   void Trace(Visitor*) const override;
@@ -217,6 +231,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   unsigned has_focusgroup_attribute_on_descendant_ : 1;
   unsigned serializable_ : 1;
   unsigned clonable_ : 1;
+  unsigned keep_custom_element_registry_null_ : 1;
 };
 
 inline bool Node::IsInUserAgentShadowRoot() const {
