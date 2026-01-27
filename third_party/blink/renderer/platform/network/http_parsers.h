@@ -118,11 +118,11 @@ PLATFORM_EXPORT AtomicString MinimizedMIMEType(const AtomicString&);
 PLATFORM_EXPORT CacheControlHeader
 ParseCacheControlDirectives(const AtomicString& cache_control_header,
                             const AtomicString& pragma_header);
-PLATFORM_EXPORT void ParseCommaDelimitedHeader(const String& header_value,
+PLATFORM_EXPORT void ParseCommaDelimitedHeader(const StringView& header_value,
                                                CommaDelimitedHeaderSet&);
 
 PLATFORM_EXPORT ContentTypeOptionsDisposition
-ParseContentTypeOptionsHeader(const String& header);
+ParseContentTypeOptionsHeader(const StringView& header);
 
 // Returns true and stores the position of the end of the headers to |*end|
 // if the headers part ends in |bytes[0..size]|. Returns false otherwise.

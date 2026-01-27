@@ -110,7 +110,7 @@ class ActivityLoggerTest : public testing::Test {
 
   bool VerifyActivities(const String& activities) {
     Vector<String> activity_vector;
-    activities.Split("\n", activity_vector);
+    activities.Split('\n', activity_vector);
     return activity_logger_->VerifyActivities(activity_vector);
   }
 

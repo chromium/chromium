@@ -435,9 +435,6 @@ class WTF_EXPORT String {
   void Split(const StringView& separator,
              bool allow_empty_entries,
              Vector<String>& result) const;
-  void Split(const StringView& separator, Vector<String>& result) const {
-    Split(separator, false, result);
-  }
   void Split(UChar separator,
              bool allow_empty_entries,
              Vector<String>& result) const;

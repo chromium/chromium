@@ -650,7 +650,7 @@ AtomicString MinimizedMIMEType(const AtomicString& mime_type) {
 }
 
 ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
-    const String& value) {
+    const StringView& value) {
   // The spec prescribes how to split the header value, and wants to include
   // empty entries and to strip only particular type of whitespace.
   // Spec: https://fetch.spec.whatwg.org/#x-content-type-options-header
@@ -659,19 +659,17 @@ ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
   if (value.empty())
     return kContentTypeOptionsNone;
 
-  String decoded_and_split_header_value;
+  StringView decoded_and_split_header_value;
   if (base::FeatureList::IsEnabled(
           features::kLegacyParsingOfXContentTypeOptions)) {
     // Header parsing, as used until M120.
-    Vector<String> results;
-    value.Split(",", results);
+    Vector<StringView> results = value.SplitSkippingEmpty(',');
     if (results.size()) {
       decoded_and_split_header_value = results[0].StripWhiteSpace();
     }
   } else {
     // Header parsing, as demanded by the spec.
-    Vector<String> results;
-    value.Split(",", /* allow_empty_entries */ true, results);
+    Vector<StringView> results = value.Split(',');
     CHECK(results.size());  // allow_empty_entries guarantees >= 1 results.
     decoded_and_split_header_value =
         results[0].StripWhiteSpace(IsHTTPTabOrSpace);
@@ -924,12 +922,12 @@ CacheControlHeader ParseCacheControlDirectives(
   return cache_control_header;
 }
 
-void ParseCommaDelimitedHeader(const String& header_value,
+void ParseCommaDelimitedHeader(const StringView& header_value,
                                CommaDelimitedHeaderSet& header_set) {
-  Vector<String> results;
-  header_value.Split(",", results);
-  for (auto& value : results)
-    header_set.insert(value.StripWhiteSpace(IsWhitespace));
+  Vector<StringView> results = header_value.SplitSkippingEmpty(',');
+  for (const auto& value : results) {
+    header_set.insert(value.StripWhiteSpace(IsWhitespace).ToString());
+  }
 }
 
 bool ParseMultipartHeadersFromBody(base::span<const uint8_t> bytes,
