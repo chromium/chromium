@@ -34,8 +34,8 @@ namespace {
 const int kNumberOfMonthsInYear = 12;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Height of the Google pay logo.
-CGFloat const kGooglePayLogoHeight = 26;
+// Height of the Google Wallet logo.
+CGFloat const kGoogleWalletLogoHeight = 26;
 #endif
 
 }  // namespace
@@ -507,8 +507,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UIImage*)logoIconImage {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayLogoHeight));
+  return MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWalletBranding)
+          ? kGoogleWalletSymbol
+          : kGooglePaySymbol,
+      kGoogleWalletLogoHeight));
 #else
   return self.logoIcon;
 #endif
