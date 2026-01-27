@@ -175,6 +175,19 @@ constexpr CGFloat kLocationBarHeight = 40;
   NOTREACHED();
 }
 
+- (void)setLocationBarHidden:(BOOL)hidden {
+  _locationBarContainer.hidden = hidden;
+}
+
+- (UIView*)locationBarContainerCopy {
+  UIView* locationBarContainerCopy = [self createLocationBarContainer];
+  locationBarContainerCopy.translatesAutoresizingMaskIntoConstraints = YES;
+  locationBarContainerCopy.frame =
+      [_locationBarContainer convertRect:_locationBarContainer.bounds
+                                  toView:nil];
+  return locationBarContainerCopy;
+}
+
 #pragma mark - Private
 
 // Returns whether the a accessory view position should be used.
@@ -224,7 +237,7 @@ constexpr CGFloat kLocationBarHeight = 40;
   [locationBarContainer.heightAnchor
       constraintEqualToConstant:kLocationBarHeight]
       .active = YES;
-  locationBarContainer.backgroundColor = UIColor.whiteColor;
+  locationBarContainer.backgroundColor = UIColor.redColor;
 
   return locationBarContainer;
 }

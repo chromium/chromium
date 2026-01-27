@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_view_controller.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
@@ -789,6 +790,72 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   }
 }
 
+#pragma mark - ComposeboxAnimationBase
+
+- (void)setEntrypointViewHidden:(BOOL)hidden {
+  if (IsChromeNextIaEnabled()) {
+    [_topToolbarViewController setLocationBarHidden:hidden];
+    [_bottomToolbarViewController setLocationBarHidden:hidden];
+    return;
+  }
+  AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
+      [self coordinatorWithToolbarType:_omniboxPosition];
+  adaptiveToolbarCoordinator.viewController.locationBarContainer.hidden =
+      hidden;
+}
+
+- (UIView*)entrypointViewVisualCopy {
+  if (IsChromeNextIaEnabled()) {
+    if ([self isOmniboxInBottomPosition] || [self isNTP]) {
+      return nil;
+    }
+
+    UIView* entrypointCopy =
+        [_topToolbarViewController locationBarContainerCopy];
+    UIView* locationBarSteadyViewVisualCopy =
+        _topLocationBarCoordinator.locationBarSteadyViewVisualCopy;
+    [entrypointCopy addSubview:locationBarSteadyViewVisualCopy];
+    locationBarSteadyViewVisualCopy.translatesAutoresizingMaskIntoConstraints =
+        NO;
+
+    AddSameConstraints(entrypointCopy, locationBarSteadyViewVisualCopy);
+    return entrypointCopy;
+  }
+
+  if (_omniboxPosition == ToolbarType::kSecondary || [self isNTP]) {
+    return nil;
+  }
+
+  AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
+      [self coordinatorWithToolbarType:_omniboxPosition];
+  UIView* locationBarContainer =
+      adaptiveToolbarCoordinator.viewController.locationBarContainer;
+
+  UIView* entrypointCopy = [[UIView alloc] init];
+  entrypointCopy.frame =
+      [locationBarContainer convertRect:locationBarContainer.bounds toView:nil];
+  entrypointCopy.layer.cornerRadius = locationBarContainer.layer.cornerRadius;
+  entrypointCopy.backgroundColor = locationBarContainer.backgroundColor;
+  UIView* locationBarSteadyViewVisualCopy =
+      self.locationBarCoordinator.locationBarSteadyViewVisualCopy;
+  [entrypointCopy addSubview:locationBarSteadyViewVisualCopy];
+  locationBarSteadyViewVisualCopy.translatesAutoresizingMaskIntoConstraints =
+      NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [locationBarSteadyViewVisualCopy.centerXAnchor
+        constraintEqualToAnchor:entrypointCopy.centerXAnchor],
+    [locationBarSteadyViewVisualCopy.centerYAnchor
+        constraintEqualToAnchor:entrypointCopy.centerYAnchor],
+    [locationBarSteadyViewVisualCopy.widthAnchor
+        constraintEqualToAnchor:entrypointCopy.widthAnchor],
+    [locationBarSteadyViewVisualCopy.heightAnchor
+        constraintEqualToAnchor:entrypointCopy.heightAnchor],
+  ]];
+
+  return entrypointCopy;
+}
+
 #pragma mark - LocationBarBadgeCommands
 
 - (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {
@@ -1076,56 +1143,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
       [self.locationBarCoordinator locationBarAnimatee];
   self.orchestrator.editViewAnimatee =
       [self.locationBarCoordinator editViewAnimatee];
-}
-
-- (void)setEntrypointViewHidden:(BOOL)hidden {
-  if (IsChromeNextIaEnabled()) {
-    return;
-  }
-
-  AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
-      [self coordinatorWithToolbarType:_omniboxPosition];
-  adaptiveToolbarCoordinator.viewController.locationBarContainer.hidden =
-      hidden;
-}
-
-- (UIView*)entrypointViewVisualCopy {
-  if (_omniboxPosition == ToolbarType::kSecondary || [self isNTP]) {
-    return nil;
-  }
-
-  if (IsChromeNextIaEnabled()) {
-    return nil;
-  }
-
-  AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
-      [self coordinatorWithToolbarType:_omniboxPosition];
-  UIView* locationBarContainer =
-      adaptiveToolbarCoordinator.viewController.locationBarContainer;
-
-  UIView* entrypointCopy = [[UIView alloc] init];
-  entrypointCopy.frame =
-      [locationBarContainer convertRect:locationBarContainer.bounds toView:nil];
-  entrypointCopy.layer.cornerRadius = locationBarContainer.layer.cornerRadius;
-  entrypointCopy.backgroundColor = locationBarContainer.backgroundColor;
-  UIView* locationBarSteadyViewVisualCopy =
-      self.locationBarCoordinator.locationBarSteadyViewVisualCopy;
-  [entrypointCopy addSubview:locationBarSteadyViewVisualCopy];
-  locationBarSteadyViewVisualCopy.translatesAutoresizingMaskIntoConstraints =
-      NO;
-
-  [NSLayoutConstraint activateConstraints:@[
-    [locationBarSteadyViewVisualCopy.centerXAnchor
-        constraintEqualToAnchor:entrypointCopy.centerXAnchor],
-    [locationBarSteadyViewVisualCopy.centerYAnchor
-        constraintEqualToAnchor:entrypointCopy.centerYAnchor],
-    [locationBarSteadyViewVisualCopy.widthAnchor
-        constraintEqualToAnchor:entrypointCopy.widthAnchor],
-    [locationBarSteadyViewVisualCopy.heightAnchor
-        constraintEqualToAnchor:entrypointCopy.heightAnchor],
-  ]];
-
-  return entrypointCopy;
 }
 
 - (BOOL)isNTP {

@@ -58,6 +58,13 @@
 // Triggers the animation for the slide in of the toolbar.
 - (void)triggerToolbarSlideInAnimation;
 
+// Shows/Hides the location bar.
+- (void)setLocationBarHidden:(BOOL)hidden;
+
+// Returns a copy of the location bar container, with its frame in the same
+// coordinates as the real in window coordinates.
+- (UIView*)locationBarContainerCopy;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_VIEW_CONTROLLER_H_
