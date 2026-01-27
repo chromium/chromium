@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -23,6 +24,9 @@ namespace {
 
 using PasswordStoreBackendErrorType =
     password_manager::PasswordStoreBackendErrorType;
+
+// Increase the timeout for the unlock message to 45s from the default 10s.
+constexpr base::TimeDelta kDurationForKeyUnlockMessage = base::Seconds(45);
 
 std::string GetErrorMessageName(PasswordStoreBackendErrorType error_type) {
   switch (error_type) {
@@ -73,6 +77,38 @@ void SetVerifyItIsYouMessageContent(
       IDR_ANDORID_MESSAGE_PASSWORD_MANAGER_ERROR));
 
   message->DisableIconTint();
+}
+
+bool ShouldSaveMessageTimeStamp(PasswordStoreBackendErrorType error_type,
+                                messages::DismissReason dismiss_reason) {
+  if (error_type != PasswordStoreBackendErrorType::kKeyRetrievalRequired) {
+    // For all other errors, the time has already been saved.
+    return false;
+  }
+  // Always check the feature after the error type to enroll only Trusted Vault
+  // users into the experiment.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncTrustedVaultErrorMessageDuration)) {
+    // If the feature is not active, the time has already been saved.
+    return false;
+  }
+  switch (dismiss_reason) {
+    case messages::DismissReason::PRIMARY_ACTION:
+    case messages::DismissReason::SECONDARY_ACTION:
+    case messages::DismissReason::GESTURE:
+    case messages::DismissReason::CLOSE_BUTTON:
+      // The user dismissed the message, save the stamp to not show it again.
+      return true;
+    case messages::DismissReason::TIMER:
+    case messages::DismissReason::DISMISSED_BY_FEATURE:
+    case messages::DismissReason::TAB_SWITCHED:
+    case messages::DismissReason::TAB_DESTROYED:
+    case messages::DismissReason::ACTIVITY_DESTROYED:
+    case messages::DismissReason::SCOPE_DESTROYED:
+    case messages::DismissReason::UNKNOWN:
+    case messages::DismissReason::COUNT:
+      return false;
+  }
 }
 
 }  // namespace
@@ -130,7 +166,11 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kUrgent);
-  helper_bridge_->SaveErrorUIShownTimestamp(web_contents);
+  if (error_type != PasswordStoreBackendErrorType::kKeyRetrievalRequired ||
+      !base::FeatureList::IsEnabled(
+          syncer::kSyncTrustedVaultErrorMessageDuration)) {
+    helper_bridge_->SaveErrorUIShownTimestamp(web_contents);
+  }
 }
 
 bool PasswordManagerErrorMessageDelegate::ShouldShowErrorUI(
@@ -165,18 +205,29 @@ PasswordManagerErrorMessageDelegate::CreateMessage(
   messages::MessageWrapper::DismissCallback post_dismissal_callback =
       base::BindOnce(
           &PasswordManagerErrorMessageDelegate::HandleMessageDismissed,
-          weak_ptr_factory_.GetWeakPtr())
+          weak_ptr_factory_.GetWeakPtr(), web_contents, error_type)
           .Then(std::move(dismissal_callback));
 
   RecordErrorTypeMetrics(error_type);
 
-  return std::make_unique<messages::MessageWrapper>(
+  auto message = std::make_unique<messages::MessageWrapper>(
       message_id, std::move(action_callback),
       std::move(post_dismissal_callback));
+  if (error_type == PasswordStoreBackendErrorType::kKeyRetrievalRequired &&
+      base::FeatureList::IsEnabled(
+          syncer::kSyncTrustedVaultErrorMessageDuration)) {
+    message->SetDuration(kDurationForKeyUnlockMessage.InMilliseconds());
+  }
+  return message;
 }
 
 void PasswordManagerErrorMessageDelegate::HandleMessageDismissed(
+    content::WebContents* web_contents,
+    PasswordStoreBackendErrorType error_type,
     messages::DismissReason dismiss_reason) {
+  if (ShouldSaveMessageTimeStamp(error_type, dismiss_reason)) {
+    helper_bridge_->SaveErrorUIShownTimestamp(web_contents);
+  }
   RecordDismissalReasonMetrics(error_type_, dismiss_reason);
   message_.reset();
 }
