@@ -42,7 +42,7 @@ struct ParsedFaviconPath {
   // Whether we should show a fallback monogram in place of the default favicon.
   bool show_fallback_monogram = false;
 
-  // Whether we should ignore the theme when themeing the default favicon and
+  // Whether we should ignore the theme when theming the default favicon and
   // just return the light mode version.
   bool force_light_mode = false;
 
