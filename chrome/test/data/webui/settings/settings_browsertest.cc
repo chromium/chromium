@@ -628,8 +628,12 @@ class SettingsGlicSubPageWebActuationToggleTest
     : public SettingsGlicSubPageWebActuationToggleTestBase {
  public:
   SettingsGlicSubPageWebActuationToggleTest() {
-    scoped_feature_list_.InitWithFeatures({features::kGlicWebActuationSetting},
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicActor,
+          {{features::kGlicActorPolicyControlExemption.name, "true"},
+           {features::kGlicActorEligibleTiers.name, "100,200"}}}},
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {

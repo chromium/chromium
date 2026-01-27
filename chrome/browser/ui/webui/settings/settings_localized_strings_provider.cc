@@ -784,11 +784,10 @@ bool ShouldShowWebActuationToggle(Profile* profile) {
     }
   }
 
-  // If no specific tiers are populated, show the toggle only if the user
-  // has explicitly modified the preference before.
+  // Show the toggle if the user has explicitly modified the preference before.
   const PrefService::Preference* pref = profile->GetPrefs()->FindPreference(
       glic::prefs::kGlicUserEnabledActuationOnWeb);
-  if (allowed_tiers.empty() && pref && !pref->IsDefaultValue()) {
+  if (pref && !pref->IsDefaultValue()) {
     return true;
   }
 
