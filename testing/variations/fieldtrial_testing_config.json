@@ -6462,30 +6462,6 @@
             ]
         }
     ],
-    "ClientSideDetectionShowScamVerdictWarningAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithWarning",
-                    "enable_features": [
-                        "ClientSideDetectionSendIntelligentScanInfoAndroid",
-                        "ClientSideDetectionShowScamVerdictWarningAndroid",
-                        "OptimizationGuideOnDeviceModel"
-                    ]
-                },
-                {
-                    "name": "EnabledMetricsCollection",
-                    "enable_features": [
-                        "ClientSideDetectionSendIntelligentScanInfoAndroid",
-                        "OptimizationGuideOnDeviceModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionSkipErrorPage": [
         {
             "platforms": [
