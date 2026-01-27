@@ -8335,6 +8335,7 @@ data/prerender/doc-with-display-none-iframe.html
 data/prerender/duplicate_prerenders.html
 data/prerender/empty.html
 data/prerender/external_sync_script.html
+data/prerender/form_submission_origin_trial_initiator.html
 data/prerender/image_loading_lazy.html
 data/prerender/inline_script.html
 data/prerender/multiple_prerender_with_tags.html

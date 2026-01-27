@@ -636,6 +636,8 @@ bool PrerenderHost::StartPrerendering() {
       web_contents_->GetDelegate()->ShouldOverrideUserAgentForPreloading(
           attributes_.prerendering_url);
 
+  load_url_params.is_form_submission = attributes_.form_submission;
+
   // TODO(https://crbug.com/1406149, https://crbug.com/1378921): Set
   // `override_user_agent` for Android. This field is determined on the Java
   // side based on the URL and we should mimic Java code and set it to the
@@ -1150,8 +1152,6 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kMixedContentContextType;
   }
 
-  // Initial prerender navigation cannot be a form submission.
-  CHECK(!begin_params_->is_form_submission);
   if (potential_activation.is_form_submission !=
       begin_params_->is_form_submission) {
     return ActivationNavigationParamsMatch::kIsFormSubmission;
@@ -1183,6 +1183,7 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
   switch (potential_activation.request_context_type) {
     case blink::mojom::RequestContextType::HYPERLINK:
     case blink::mojom::RequestContextType::LOCATION:
+    case blink::mojom::RequestContextType::FORM:
       break;
     default:
       return ActivationNavigationParamsMatch::kRequestContextType;

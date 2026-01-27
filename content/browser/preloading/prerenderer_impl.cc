@@ -413,7 +413,9 @@ bool PrerendererImpl::MaybePrerender(
                              candidate->eagerness,
                              SpeculationRulesTags(candidate->tags)),
       Referrer{*candidate->referrer}, no_vary_search_hint, &rfhi,
-      web_contents->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
+      web_contents->GetWeakPtr(),
+      candidate->form_submission ? ui::PAGE_TRANSITION_FORM_SUBMIT
+                                 : ui::PAGE_TRANSITION_LINK,
       should_warm_up_compositor,
       /*should_prepare_paint_tree=*/false, candidate->action,
       /*url_match_predicate=*/{},
