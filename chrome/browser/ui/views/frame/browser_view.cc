@@ -4959,22 +4959,24 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
     }
   }
 
+  // See if the mouse pointer is within the bounds of the
+  // ProjectsPanelView.
+  if (projects_panel_container_ && projects_panel_container_->GetVisible()) {
+    gfx::Point test_point(point);
+    if (ConvertedHitTest(parent(), projects_panel_container_, &test_point)) {
+      if (projects_panel_container_->IsPositionInWindowCaption(test_point)) {
+        return HTCAPTION;
+      }
+      return HTCLIENT;
+    }
+  }
+
   // Determine if the TabStrip exists and is capable of being clicked on. We
   // might be a popup window without a TabStrip. Use `GetTabStripVisible` as the
   // tabstrip might have been hidden in immersive mode.
   if (GetTabStripVisible()) {
-    if (projects_panel_container_ && projects_panel_container_->GetVisible()) {
-      // See if the mouse pointer is within the bounds of the
-      // ProjectsPanelView.
-      gfx::Point test_point(point);
-      if (ConvertedHitTest(parent(), projects_panel_container_, &test_point)) {
-        if (projects_panel_container_->IsPositionInWindowCaption(test_point)) {
-          return HTCAPTION;
-        }
-        return HTCLIENT;
-      }
-    } else if (vertical_tab_strip_region_view_ &&
-               vertical_tab_strip_region_view_->GetVisible()) {
+    if (vertical_tab_strip_region_view_ &&
+        vertical_tab_strip_region_view_->GetVisible()) {
       // See if the mouse pointer is within the bounds of the
       // VerticalTabStripRegionView.
       gfx::Point test_point(point);
