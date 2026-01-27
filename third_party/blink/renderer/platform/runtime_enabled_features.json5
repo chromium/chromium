@@ -5163,6 +5163,10 @@
       status: "stable",
     },
     {
+      name: "SvgTextPathPathAttribute",
+      status: "experimental"
+    },
+    {
       name: "SvgTransformOnNestedSvgElement",
       status: "stable",
     },

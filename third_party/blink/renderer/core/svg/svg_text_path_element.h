@@ -26,6 +26,8 @@
 
 namespace blink {
 
+class SVGAnimatedPath;
+
 enum SVGTextPathMethodType {
   kSVGTextPathMethodUnknown = 0,
   kSVGTextPathMethodAlign,
@@ -65,6 +67,7 @@ class SVGTextPathElement final : public SVGTextContentElement,
   SVGAnimatedEnumeration<SVGTextPathSpacingType>* spacing() {
     return spacing_.Get();
   }
+  SVGAnimatedPath* path() const { return path_.Get(); }
 
   void Trace(Visitor*) const override;
 
@@ -89,6 +92,7 @@ class SVGTextPathElement final : public SVGTextContentElement,
   Member<SVGAnimatedLength> start_offset_;
   Member<SVGAnimatedEnumeration<SVGTextPathMethodType>> method_;
   Member<SVGAnimatedEnumeration<SVGTextPathSpacingType>> spacing_;
+  Member<SVGAnimatedPath> path_;
   Member<IdTargetObserver> target_id_observer_;
 };
 

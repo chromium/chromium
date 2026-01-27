@@ -21,10 +21,10 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_path.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
 #include "third_party/blink/renderer/core/svg/svg_text_path_element.h"
-#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 
 namespace blink {
@@ -65,33 +65,56 @@ bool LayoutSVGTextPath::IsChildAllowed(LayoutObject* child,
 std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
   NOT_DESTROYED();
   const auto& text_path_element = To<SVGTextPathElement>(*GetNode());
-  Element* target_element = SVGURIReference::TargetElementFromIRIString(
-      text_path_element.HrefString(), text_path_element.OriginatingTreeScope());
 
-  const auto* path_element = DynamicTo<SVGPathElement>(target_element);
-  if (!path_element)
+  Path path;
+  if (RuntimeEnabledFeatures::SvgTextPathPathAttributeEnabled()) {
+    // Check if 'path' attribute is valid and its value is non-empty
+    path = text_path_element.path()->CurrentValue()->GetStylePath()->GetPath();
+    // The 'path' attribute defines path data inline, not in a separate
+    // element, so there's no element with a 'pathLength' attribute to
+    // provide an author path length. We use only the computed path length.
+  }
+
+  float author_path_length = std::numeric_limits<float>::quiet_NaN();
+  // If path attribute was not present or produced an empty/invalid path,
+  // fall back to href
+  if (path.IsEmpty()) {
+    // Use href to reference a path element
+    Element* target_element = SVGURIReference::TargetElementFromIRIString(
+        text_path_element.HrefString(),
+        text_path_element.OriginatingTreeScope());
+
+    const auto* path_element = DynamicTo<SVGPathElement>(target_element);
+    if (!path_element) {
+      return nullptr;
+    }
+
+    PathBuilder path_data = path_element->AsMutablePath();
+    if (path_data.IsEmpty()) {
+      return nullptr;
+    }
+
+    // Spec: The 'transform' attribute on the referenced 'path' ...
+    // element represents a supplemental transformation relative to the current
+    // user coordinate system for the current 'text' element, including any
+    // adjustments to the current user coordinate system due to a possible
+    // 'transform' property on the current 'text' element.
+    // https://svgwg.org/svg2-draft/text.html#TextPathElement
+    path_data.Transform(
+        path_element->CalculateTransform(SVGElement::kIncludeMotionTransform));
+
+    path = path_data.Finalize();
+    author_path_length = path_element->AuthorPathLength();
+  }
+
+  if (path.IsEmpty()) {
     return nullptr;
-
-  PathBuilder path_data = path_element->AsMutablePath();
-  if (path_data.IsEmpty())
-    return nullptr;
-
-  // Spec: The 'transform' attribute on the referenced 'path' ...
-  // element represents a supplemental transformation relative to the current
-  // user coordinate system for the current 'text' element, including any
-  // adjustments to the current user coordinate system due to a possible
-  // 'transform' property on the current 'text' element.
-  // https://svgwg.org/svg2-draft/text.html#TextPathElement
-  path_data.Transform(
-      path_element->CalculateTransform(SVGElement::kIncludeMotionTransform));
-
-  const Path path = path_data.Finalize();
+  }
 
   // Determine the length to resolve any percentage 'startOffset'
   // against - either 'pathLength' (author path length) or the
   // computed length of the path.
   float computed_path_length = path.length();
-  float author_path_length = path_element->AuthorPathLength();
   float offset_scale = 1;
   if (!std::isnan(author_path_length)) {
     offset_scale = SVGGeometryElement::PathLengthScaleFactor(
