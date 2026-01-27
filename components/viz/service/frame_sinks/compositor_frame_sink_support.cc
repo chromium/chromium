@@ -1444,7 +1444,7 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   }
 
   // We should throttle OnBeginFrame() if it has been less than
-  // |begin_frame_interval_| since the last one was sent because clients have
+  // begin_frame_interval() since the last one was sent if clients have
   // requested to update at such rate.
   const bool should_throttle_as_requested =
       ShouldThrottleBeginFrameAsRequested(frame_time, vsync_interval);

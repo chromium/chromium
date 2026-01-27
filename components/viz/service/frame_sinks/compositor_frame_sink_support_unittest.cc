@@ -1888,8 +1888,8 @@ TEST_P(CompositorFrameSinkSupportTest, ThrottleUnresponsiveClient) {
   support->SetNeedsBeginFrame(false);
 }
 
-// Verifies that when CompositorFrameSinkSupport has its
-// |begin_frame_interval_| set, any BeginFrame would be sent only after this
+// Verifies that when CompositorFrameSinkSupport has set the throttler's
+// begin_frame_interval(), any BeginFrame would be sent only after this
 // interval has passed from the time when the last BeginFrame was sent.
 TEST_P(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   FakeExternalBeginFrameSource begin_frame_source(0.f, false);
