@@ -7,7 +7,6 @@
     "is_component_build": true,
     "is_debug": false,
     "optimize_for_fuzzing": true,
-    "sanitizer_coverage_skip_stdlib_and_absl": true,
     "target_cpu": "x64",
     "target_os": "linux",
     "use_centipede": true,
