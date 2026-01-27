@@ -9,6 +9,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -86,6 +87,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   SetProperty(views::kMarginsKey, kTabGroupsItemMargins);
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelTabGroupsItemViewElementId);
+  GetViewAccessibility().SetName(group.title());
 }
 
 ProjectsPanelTabGroupsItemView::~ProjectsPanelTabGroupsItemView() = default;
