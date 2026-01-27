@@ -592,7 +592,15 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
-IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, VisibleTabVideo) {
+// Disabled on Linux ASAN/LSAN due to test failures; see crbug.com/476415209.
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER))
+#define MAYBE_VisibleTabVideo DISABLED_VisibleTabVideo
+#else
+#define MAYBE_VisibleTabVideo VisibleTabVideo
+#endif
+IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
+                       MAYBE_VisibleTabVideo) {
   // Play video in a tab, ensure that things are tracked properly.
   auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   MediaWaiter waiter(contents);
