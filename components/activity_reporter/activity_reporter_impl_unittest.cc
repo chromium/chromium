@@ -71,16 +71,10 @@ class ActivityReporterImplTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingPrefServiceSimple pref_service_;
   scoped_refptr<MockUpdateClient> mock_update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
   std::unique_ptr<ActivityReporter> activity_reporter_ =
-      CreateActivityReporterForTesting(
-          base::BindRepeating(
-              [](PrefService* pref_service) { return pref_service; },
-              &pref_service_),
-          /*network_fetcher_factory=*/nullptr,
-          mock_update_client_);
+      CreateActivityReporterForTesting(mock_update_client_, base::DoNothing());
 };
 
 TEST_F(ActivityReporterImplTest, ReportActive_Throttling) {

@@ -14,4 +14,7 @@ UpdaterScope GetBrowserUpdaterScope() {
   return UpdaterScope::kUser;
 }
 
+// Does nothing.
+void SetActive() {}
+
 }  // namespace updater

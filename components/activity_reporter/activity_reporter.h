@@ -39,11 +39,13 @@ class ActivityReporter {
   ActivityReporter() = default;
 };
 
-// Must be called on a SequencedTaskRunner.
+// Must be called on a SequencedTaskRunner. When `ReportActive` is called, the
+// ActivityReporter will also run `updater_active_callback` if
+// USE_LEGACY_ACTIVE_DEFINITION is false.
 std::unique_ptr<ActivityReporter> CreateActivityReporter(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
-    scoped_refptr<update_client::NetworkFetcherFactory>
-        network_fetcher_factory);
+    scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory,
+    base::RepeatingClosure updater_active_callback);
 
 // Must be called on a SequencedTaskRunner. Creates an ActivityReporter that
 // does nothing.

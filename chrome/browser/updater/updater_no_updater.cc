@@ -90,4 +90,6 @@ void GetUserUpdaterAppStates(
       base::BindOnce(std::move(callback), std::vector<mojom::AppState>{}));
 }
 
+void SetActive() {}
+
 }  // namespace updater
