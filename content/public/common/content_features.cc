@@ -508,6 +508,15 @@ BASE_FEATURE_PARAM(std::string,
 // additionally gated by this flag.
 BASE_FEATURE(kInitialWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the initial WebUI will not share processes with other WebUIs,
+// including non-initial topchrome WebUIs. Process sharing will still happen
+// between initial WebUIs.
+BASE_FEATURE_PARAM(bool,
+                   kInitialWebUIUseSeparateProcess,
+                   &features::kInitialWebUI,
+                   "use_separate_process",
+                   false);
+
 // Whether initial WebUI navigations should synchronously go from navigation
 // start to commit, by doing e.g. in-renderer body loading.
 BASE_FEATURE(kInitialWebUISyncNavStartToCommit,

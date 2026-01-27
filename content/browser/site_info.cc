@@ -58,6 +58,15 @@ bool IsWebUIAndUsesTLDForProcessLockURL(const GURL& url) {
     return false;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  if (features::kInitialWebUIUseSeparateProcess.Get() &&
+      GetContentClient()->browser()->IsInitialWebUIURL(url)) {
+    // If initial WebUIs need to use a different process separate from other
+    // WebUIs, use the full URL for process lock instead of just the TLD.
+    return false;
+  }
+#endif
+
   WebUIDomains domains = GetWebUIDomains(url);
   // This only applies to WebUI urls with two or more non-empty domains.
   return domains.size() >= 2 &&
