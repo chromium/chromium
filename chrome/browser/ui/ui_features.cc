@@ -13,6 +13,7 @@
 #include "components/search/ntp_features.h"
 #include "components/variations/service/variations_service.h"
 #include "components/webui/flags/feature_entry.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/ui_base_features.h"
 
 namespace features {

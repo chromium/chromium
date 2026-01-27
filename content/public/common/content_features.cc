@@ -503,6 +503,11 @@ BASE_FEATURE_PARAM(std::string,
                    "ignore_duplicate_navs_origins",
                    "");
 
+// Enables rendering the top chrome in WebUI. This is a central flag to enable
+// the WebUI implementation of top chrome. Individual features will be
+// additionally gated by this flag.
+BASE_FEATURE(kInitialWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether initial WebUI navigations should synchronously go from navigation
 // start to commit, by doing e.g. in-renderer body loading.
 BASE_FEATURE(kInitialWebUISyncNavStartToCommit,

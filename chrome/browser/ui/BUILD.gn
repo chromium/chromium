@@ -5620,6 +5620,7 @@ source_set("ui_features") {
     "//chrome/common:chrome_features",
     "//components/search",
     "//components/webui/flags",
+    "//content/public/common",
     "//ui/base:features",
   ]
 }

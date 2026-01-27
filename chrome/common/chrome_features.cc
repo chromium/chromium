@@ -1844,10 +1844,6 @@ BASE_FEATURE(kWebAppMigratePreinstalledChat, base::FEATURE_DISABLED_BY_DEFAULT);
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWebium, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables rendering the top chrome in WebUI. This is a central flag to enable
-// the WebUI implementation of top chrome. Individual features will be
-// additionally gated by this flag.
-BASE_FEATURE(kInitialWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables logging InitialWebUI-related metrics. The metrics are not necessary
 // comes from WebUI but can also come from the C++ version of them.
 // Defaults to enabled to also collect metrics for the C++ group.
