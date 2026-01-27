@@ -1879,7 +1879,7 @@ TEST_F(AutofillExternalDelegateTest,
                         Field(&AutofillClient::PopupOpenArgs::anchor_type,
                               PopupAnchorType::kCaret)),
                   _));
-  MockAutofillComposeDelegate compose_delegate;
+  NiceMock<MockAutofillComposeDelegate> compose_delegate;
   ON_CALL(autofill_client(), GetComposeDelegate)
       .WillByDefault(Return(&compose_delegate));
   ON_CALL(compose_delegate, ShouldAnchorNudgeOnCaret)
@@ -1919,7 +1919,7 @@ TEST_F(
       ShowAutofillSuggestions(
           Field(&AutofillClient::PopupOpenArgs::element_bounds, field_bounds),
           _));
-  MockAutofillComposeDelegate compose_delegate;
+  NiceMock<MockAutofillComposeDelegate> compose_delegate;
   ON_CALL(autofill_client(), GetComposeDelegate)
       .WillByDefault(Return(&compose_delegate));
   ON_CALL(compose_delegate, ShouldAnchorNudgeOnCaret)
@@ -1958,7 +1958,7 @@ TEST_F(
       ShowAutofillSuggestions(
           Field(&AutofillClient::PopupOpenArgs::element_bounds, field_bounds),
           _));
-  MockAutofillComposeDelegate compose_delegate;
+  NiceMock<MockAutofillComposeDelegate> compose_delegate;
   ON_CALL(autofill_client(), GetComposeDelegate)
       .WillByDefault(Return(&compose_delegate));
   ON_CALL(compose_delegate, ShouldAnchorNudgeOnCaret)
@@ -1987,7 +1987,7 @@ TEST_F(
                         Field(&AutofillClient::PopupOpenArgs::anchor_type,
                               default_anchor_type)),
                   _));
-  MockAutofillComposeDelegate compose_delegate;
+  NiceMock<MockAutofillComposeDelegate> compose_delegate;
   ON_CALL(autofill_client(), GetComposeDelegate)
       .WillByDefault(Return(&compose_delegate));
   ON_CALL(compose_delegate, ShouldAnchorNudgeOnCaret)
@@ -2001,7 +2001,7 @@ TEST_F(
 // Tests that accepting a Compose suggestion returns a callback that, when run,
 // fills the trigger field.
 TEST_F(AutofillExternalDelegateTest, ExternalDelegateOpensComposeAndFills) {
-  MockAutofillComposeDelegate compose_delegate;
+  NiceMock<MockAutofillComposeDelegate> compose_delegate;
   ON_CALL(autofill_client(), GetComposeDelegate)
       .WillByDefault(Return(&compose_delegate));
 
@@ -2030,7 +2030,7 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateOpensComposeAndFills) {
 
 TEST_F(AutofillExternalDelegateTest,
        Compose_AcceptDisable_CallsComposeDelegate) {
-  MockAutofillComposeDelegate compose_delegate;
+  NiceMock<MockAutofillComposeDelegate> compose_delegate;
   ON_CALL(autofill_client(), GetComposeDelegate)
       .WillByDefault(Return(&compose_delegate));
 
@@ -2046,7 +2046,7 @@ TEST_F(AutofillExternalDelegateTest,
 
 TEST_F(AutofillExternalDelegateTest,
        Compose_AcceptGoToSettings_CallsComposeDelegate) {
-  MockAutofillComposeDelegate compose_delegate;
+  NiceMock<MockAutofillComposeDelegate> compose_delegate;
   ON_CALL(autofill_client(), GetComposeDelegate)
       .WillByDefault(Return(&compose_delegate));
 
@@ -2108,7 +2108,7 @@ TEST_F(AutofillExternalDelegateTest, SaveAndFillMetrics_SuggestionAccepted) {
 
 TEST_F(AutofillExternalDelegateTest,
        Compose_AcceptNeverShowOnThisWebsiteAgain_CallsComposeDelegate) {
-  MockAutofillComposeDelegate compose_delegate;
+  NiceMock<MockAutofillComposeDelegate> compose_delegate;
   ON_CALL(autofill_client(), GetComposeDelegate)
       .WillByDefault(Return(&compose_delegate));
 
