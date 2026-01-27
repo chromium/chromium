@@ -31,7 +31,7 @@ static_library("demo_mode_app_ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "demo_mode_app_untrusted_ui_unittests.cc",
+    "demo_mode_app_untrusted_ui_unittest.cc",
     "demo_mode_untrusted_page_handler_unittest.cc",
   ]
   deps = [

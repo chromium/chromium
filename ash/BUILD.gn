@@ -3654,7 +3654,7 @@ action("dbus_service_files") {
 
 static_library("run_ash_unittests") {
   testonly = true
-  sources = [ "test/ash_unittests.cc" ]
+  sources = [ "test/ash_unittest.cc" ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -3786,16 +3786,16 @@ test("ash_unittests") {
     "bubble/bubble_utils_unittest.cc",
     "capture_mode/action_button_container_view_unittest.cc",
     "capture_mode/action_button_view_unittest.cc",
-    "capture_mode/capture_audio_mixing_unittests.cc",
-    "capture_mode/capture_mode_camera_unittests.cc",
-    "capture_mode/capture_mode_demo_tools_unittests.cc",
+    "capture_mode/capture_audio_mixing_unittest.cc",
+    "capture_mode/capture_mode_camera_unittest.cc",
+    "capture_mode/capture_mode_demo_tools_unittest.cc",
     "capture_mode/capture_mode_education_controller_unittest.cc",
     "capture_mode/capture_mode_feature_pod_controller_unittest.cc",
-    "capture_mode/capture_mode_game_dashboard_unittests.cc",
-    "capture_mode/capture_mode_unittests.cc",
+    "capture_mode/capture_mode_game_dashboard_unittest.cc",
+    "capture_mode/capture_mode_unittest.cc",
     "capture_mode/capture_region_overlay_controller_unittest.cc",
     "capture_mode/disclaimer_view_unittest.cc",
-    "capture_mode/gif_recording_unittests.cc",
+    "capture_mode/gif_recording_unittest.cc",
     "capture_mode/sunfish_unittest.cc",
     "child_accounts/parent_access_controller_impl_unittest.cc",
     "clipboard/clipboard_history_controller_unittest.cc",
@@ -4072,9 +4072,9 @@ test("ash_unittests") {
     "style/color_palette_controller_unittest.cc",
     "style/color_util_unittest.cc",
     "style/combobox_unittest.cc",
-    "style/dark_light_mode_controller_unittests.cc",
+    "style/dark_light_mode_controller_unittest.cc",
     "style/rounded_rect_cutout_path_builder_unittest.cc",
-    "style/system_components_unittests.cc",
+    "style/system_components_unittest.cc",
     "style/system_shadow_unittest.cc",
     "system/accessibility/accessibility_detailed_view_unittest.cc",
     "system/accessibility/accessibility_feature_pod_controller_unittest.cc",
@@ -4443,9 +4443,9 @@ test("ash_unittests") {
     "wm/coral/coral_controller_unittest.cc",
     "wm/cursor_manager_chromeos_unittest.cc",
     "wm/default_window_resizer_unittest.cc",
-    "wm/desks/autotest_desks_api_unittests.cc",
+    "wm/desks/autotest_desks_api_unittest.cc",
     "wm/desks/desk_animation_impl_unittest.cc",
-    "wm/desks/desks_unittests.cc",
+    "wm/desks/desks_unittest.cc",
     "wm/desks/root_window_desk_switch_animator_unittest.cc",
     "wm/desks/templates/admin_template_unittest.cc",
     "wm/desks/templates/saved_desk_unittest.cc",
@@ -4482,7 +4482,7 @@ test("ash_unittests") {
     "wm/overview/overview_test_base.h",
     "wm/overview/overview_ui_task_pool_unittest.cc",
     "wm/overview/overview_window_drag_controller_unittest.cc",
-    "wm/overview/overview_window_drag_histogram_unittests.cc",
+    "wm/overview/overview_window_drag_histogram_unittest.cc",
     "wm/overview/scoped_overview_transform_window_unittest.cc",
     "wm/pip/pip_controller_unittest.cc",
     "wm/pip/pip_positioner_unittest.cc",
@@ -4545,7 +4545,7 @@ test("ash_unittests") {
     "wm/workspace/workspace_layout_manager_unittest.cc",
     "wm/workspace/workspace_window_resizer_unittest.cc",
     "wm/workspace_controller_unittest.cc",
-    "wm_mode/wm_mode_unittests.cc",
+    "wm_mode/wm_mode_unittest.cc",
   ]
   configs += [ "//build/config:precompiled_headers" ]
 

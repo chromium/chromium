@@ -59,7 +59,7 @@ source_set("tests") {
     "proxy_resolver_impl_unittest.cc",
     "proxy_resolver_v8_tracing_unittest.cc",
     "proxy_resolver_v8_unittest.cc",
-    "public/cpp/proxy_resolver_mojom_traits_unittests.cc",
+    "public/cpp/proxy_resolver_mojom_traits_unittest.cc",
   ]
 
   deps = [

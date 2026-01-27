@@ -38,7 +38,7 @@ source_set("unit_tests") {
 
   sources = [
     "allocation_recorder_holder_unittest.cc",
-    "payload_unittests.cc",
+    "payload_unittest.cc",
     "stream_data_source_factory_unittest.cc",
     "user_stream_data_source_unittest.cc",
   ]

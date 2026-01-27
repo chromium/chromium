@@ -209,7 +209,7 @@ source_set("unit_tests") {
       "in_memory_download_unittest.cc",
       "init_aware_background_download_service_unittest.cc",
       "model_impl_unittest.cc",
-      "navigation_monitor_impl_unittests.cc",
+      "navigation_monitor_impl_unittest.cc",
       "proto_conversions_unittest.cc",
       "scheduler/device_status_listener_unittest.cc",
       "scheduler/scheduler_impl_unittest.cc",

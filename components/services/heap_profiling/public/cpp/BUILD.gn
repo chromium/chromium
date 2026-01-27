@@ -47,6 +47,6 @@ source_set("unit_tests") {
   ]
 
   if (!is_ios || use_allocator_shim) {
-    sources += [ "merge_samples_unittests.cc" ]
+    sources += [ "merge_samples_unittest.cc" ]
   }
 }

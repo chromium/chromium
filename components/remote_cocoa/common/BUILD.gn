@@ -67,7 +67,7 @@ mojom("mojo") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "font_mojom_traits_unittests.cc" ]
+  sources = [ "font_mojom_traits_unittest.cc" ]
   deps = [
     ":mojo",
     "//mojo/public/cpp/test_support:test_utils",

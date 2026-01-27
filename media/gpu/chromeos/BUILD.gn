@@ -258,7 +258,7 @@ source_set("unit_tests") {
     "//ui/gfx/geometry",
   ]
   sources = [
-    "fourcc_unittests.cc",
+    "fourcc_unittest.cc",
     "frame_registry_unittest.cc",
     "mailbox_video_frame_converter_unittest.cc",
     "mock_native_pixmap_dmabuf.cc",

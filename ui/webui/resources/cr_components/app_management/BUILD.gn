@@ -98,7 +98,7 @@ build_webui("build") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "app_management_mojom_traits_unittests.cc" ]
+  sources = [ "app_management_mojom_traits_unittest.cc" ]
 
   deps = [
     ":mojo_bindings",

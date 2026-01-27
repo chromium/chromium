@@ -432,7 +432,7 @@ source_set("browser_tests") {
 
   sources = [
     "editor_system_actuator_browsertest.cc",
-    "input_method_engine_browsertests.cc",
+    "input_method_engine_browsertest.cc",
     "native_input_method_engine_with_ime_service_browsertest.cc",
     "native_input_method_engine_without_ime_service_browsertest.cc",
     "textinput_browsertest.cc",

@@ -11,7 +11,7 @@ specific_include_rules = {
   "saved_desk_unittest.cc": [
     "+cc/test/pixel_comparator.h",
   ],
-  "desks_unittests.cc": [
+  "desks_unittest.cc": [
     "+components/user_manager/fake_user_manager.h",
     "+components/user_manager/scoped_user_manager.h",
     "+chromeos/components/kiosk/kiosk_test_utils.h",

@@ -62,7 +62,7 @@ test("cast_media_unittests") {
     "audio/cast_audio_manager_unittest.cc",
     "audio/cast_audio_mixer_unittest.cc",
     "audio/cast_audio_output_stream_unittest.cc",
-    "base/slew_volume_unittests.cc",
+    "base/slew_volume_unittest.cc",
     "base/supported_codec_profile_levels_memo_unittest.cc",
     "common/audio_decoder_software_wrapper_unittest.cc",
     "common/media_resource_tracker_unittest.cc",

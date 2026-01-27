@@ -303,7 +303,7 @@ source_set("tests") {
 
   if (is_serial_enabled_platform) {
     sources += [
-      "serial/bluetooth_serial_device_enumerator_unittests.cc",
+      "serial/bluetooth_serial_device_enumerator_unittest.cc",
       "serial/bluetooth_serial_port_impl_unittest.cc",
       "serial/serial_device_enumerator_unittest.cc",
       "serial/serial_port_impl_unittest.cc",
@@ -403,7 +403,7 @@ source_set("tests") {
   if (is_win) {
     sources += [
       "generic_sensor/platform_sensor_provider_winrt_unittest.cc",
-      "generic_sensor/platform_sensor_reader_winrt_unittests.cc",
+      "generic_sensor/platform_sensor_reader_winrt_unittest.cc",
       "geolocation/win/fake_geocoordinate_winrt.cc",
       "geolocation/win/fake_geocoordinate_winrt.h",
       "geolocation/win/fake_geolocator_winrt.cc",

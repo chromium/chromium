@@ -440,7 +440,7 @@ source_set("unit_tests") {
   # in the desktop-android build when the related extensions APIs are enabled.
   if (enable_extensions) {
     sources += [
-      "api/automation/automation_internal_custom_bindings_unittests.cc",
+      "api/automation/automation_internal_custom_bindings_unittest.cc",
       "api/feedback_private_hooks_delegate_unittest.cc",
     ]
   }

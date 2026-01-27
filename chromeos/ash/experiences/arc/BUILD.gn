@@ -499,7 +499,7 @@ source_set("unit_tests") {
     "net/always_on_vpn_manager_unittest.cc",
     "net/arc_net_host_impl_unittest.cc",
     "net/arc_net_utils_unittest.cc",
-    "net/arc_wifi_host_impl_unittests.cc",
+    "net/arc_wifi_host_impl_unittest.cc",
     "net/passpoint_dialog_view_unittest.cc",
     "overlay/arc_overlay_controller_impl_unittest.cc",
     "overlay/arc_overlay_manager_unittest.cc",

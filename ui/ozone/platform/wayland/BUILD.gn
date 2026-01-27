@@ -545,7 +545,7 @@ source_set("wayland_unittests") {
     "host/wayland_syncobj_timeline_unittest.cc",
     "host/wayland_touch_unittest.cc",
     "host/wayland_window_drag_controller_unittest.cc",
-    "host/wayland_window_manager_unittests.cc",
+    "host/wayland_window_manager_unittest.cc",
     "host/wayland_window_unittest.cc",
     "host/wayland_zwp_pointer_gestures_unittest.cc",
     "host/xdg_activation_unittest.cc",

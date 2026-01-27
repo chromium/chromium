@@ -16,7 +16,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "capture_mode_camera_unittests\.cc": [
+  "capture_mode_camera_unittest\.cc": [
     "+components/viz/test/test_in_process_context_provider.h",
   ],
   "sunfish_unittest\.cc": [

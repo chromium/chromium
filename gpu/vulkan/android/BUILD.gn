@@ -46,6 +46,6 @@ test("vk_tests") {
   ]
   sources = [
     "run_all_unittests.cc",
-    "vulkan_android_unittests.cc",
+    "vulkan_android_unittest.cc",
   ]
 }

@@ -12,7 +12,7 @@ executable("test_cpp_including_rust") {
 }
 
 test("test_cpp_including_rust_unittests") {
-  sources = [ "static_unittests.cc" ]
+  sources = [ "static_unittest.cc" ]
   deps = [
     "//base",
     "//base/allocator:buildflags",
@@ -30,7 +30,7 @@ test("test_cpp_including_rust_unittests") {
 
 if (is_component_build) {
   test("test_cpp_including_rust_dylib_unittests") {
-    sources = [ "shared_unittests.cc" ]
+    sources = [ "shared_unittest.cc" ]
     deps = [
       "//base",
       "//base/allocator:buildflags",

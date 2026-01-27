@@ -101,7 +101,7 @@ static_library("embedded_component_loader") {
 
 source_set("embedded_component_loader_unittests") {
   testonly = true
-  sources = [ "component_loader_policy_unittests.cc" ]
+  sources = [ "component_loader_policy_unittest.cc" ]
   deps = [
     ":embedded_component_loader",
     "//base",

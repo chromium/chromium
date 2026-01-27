@@ -31,7 +31,7 @@ source_set("unit_tests") {
 
   sources = [
     "clipboard_restriction_service_unittest.cc",
-    "copy_prevention_settings_policy_handler_unittests.cc",
+    "copy_prevention_settings_policy_handler_unittest.cc",
   ]
 
   deps = [

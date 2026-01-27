@@ -8,7 +8,7 @@ import("//testing/test.gni")
 
 source_set("test_cxx_cfg") {
   testonly = true
-  sources = [ "cxx_cfg_unittests.cc" ]
+  sources = [ "cxx_cfg_unittest.cc" ]
   deps = [
     ":custom_buildflags",
     ":rust_lib",
