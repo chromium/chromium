@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ਨੂੰ Chrome ਵਿੱਚ ਖੋਲ੍ਹਿਆ ਜਾਵੇਗਾ। ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK1" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Google Chrome ਅਤੇ ChromeOS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK2" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ।</translation>
 <translation id="1154555449933432029">ਤੁਹਾਡੇ Google Password Manager ਵਿੱਚ ਕੋਈ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> ਪਾਸਵਰਡ ਵਰਤੋ</translation>
+<translation id="1161065531352634524">ਟੈਬਾਂ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="1165109137568919258">ਖੋਜਣ ਲਈ ਕੋਈ ਫ਼ੋਟੋ ਖਿੱਚੋ ਜਾਂ ਆਪਣੀ ਫ਼ੋਟੋ ਗੈਲਰੀ ਤੋਂ ਕੋਈ ਚਿੱਤਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1173894706177603556">ਮੁੜ-ਨਾਮਕਰਨ ਕਰੋ</translation>
 <translation id="1174479719160874822">ਸਕ੍ਰੀਨ ਛੋਟੀ ਹੋਣ 'ਤੇ Chrome ਮੋਬਾਈਲ ਸਾਈਟ ਲਈ ਬੇਨਤੀ ਕਰੇਗਾ</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">ਪਿੱਛਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="5210365745912300556">ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="5212800876504289412">ਇਸ ਤਬਦੀਲੀ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ। ਜਦੋਂ ਤੁਸੀਂ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋਗੇ, ਤਾਂ ਟੈਬਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮੁੜ-ਖੁੱਲ੍ਹ ਜਾਣਗੀਆਂ।</translation>
+<translation id="5213114823401215820">ਬੰਦ ਕੀਤਾ ਗਰੁੱਪ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="5215957675041756913">ਆਪਣਾ ਡਾਟਾ ਅਤੇ ਖਾਤਾ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="5218324087477576825">ਕਾਰਡ ਨੰਬਰ, ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ ਹੋਰ <ph name="SEPARATOR" /> Chrome ਵੱਲੋਂ ਇਨ੍ਹਾਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਇਨ੍ਹਾਂ 'ਤੇ ਨਹੀਂ ਗਏ</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="7029809446516969842">ਪਾਸਵਰਡ</translation>
+<translation id="7037994709569287156">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬਣਾਓ</translation>
 <translation id="7053256416619638731">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਮਜ਼ਬੂਤ ਬਣਾਓ</translation>
 <translation id="7053983685419859001">ਬਲਾਕ ਕਰੋ</translation>
 <translation id="7054588988317389591">ਕੀ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨੇ ਹਨ?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">ਜੋ ਸਾਈਟਾਂ ਤੁਸੀਂ ਦੇਖੀਆਂ ਹਨ ਉਨ੍ਹਾਂ 'ਤੇ ਤੇਜ਼ੀ ਨਾਲ ਵਾਪਸ ਜਾਣ ਲਈ, ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="84594714173170813">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="8460448946170646641">ਪ੍ਰਮੁੱਖ ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਕੰਟਰੋਲਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
+<translation id="8460932807646981183">ਖੋਜ ਇੰਜਣਾਂ ਅਤੇ ਸਾਈਟ ਖੋਜ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8473863474539038330">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
 <translation id="847433688444405067">ਡੀਵਾਈਸਾਂ ਵਿਚਾਲੇ ਬ੍ਰਾਊਜ਼ ਕਰੋ</translation>
 <translation id="8477178913400731244">ਡਾਟਾ ਮਿਟਾਓ</translation>

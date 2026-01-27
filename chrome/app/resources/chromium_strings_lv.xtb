@@ -34,7 +34,6 @@
 <translation id="1356661055722410047">Jaunums! Varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1397530502368084401">&amp;Pārvaldīt Chromium profilus</translation>
-<translation id="1414495520565016063">Esat pierakstījies operētājsistēmā Chromium!</translation>
 <translation id="141901961143729572">Dalieties domās!</translation>
 <translation id="1465192221147974788">Lai kopīgotu logu, sistēmas iestatījumos atļaujiet ekrāna ierakstīšanu pārlūkā Chromium.</translation>
 <translation id="1478370723027452770">Saņemt palīdzību saistībā ar Chrome for Testing</translation>
@@ -324,10 +323,8 @@
 <translation id="4510853178268397146">Nav norādīta konfidencialitātes prakse šim paplašinājumam, piemēram, kā tas vāc un izmanto datus. Chromium iesaka to noņemt.</translation>
 <translation id="452711251841752011">Laipni lūdzam pārlūkā Chromium (tika atvērts jauns pārlūka logs)!</translation>
 <translation id="4531137820806573936">Pārlūkam Chromium ir nepieciešama atļauja jūsu apkārtnes kartēšanai un roku kustību izsekošanai</translation>
-<translation id="4534145890176164066">Chromium labāk izprot veidlapas un var ātrāk tās automātiski aizpildīt.</translation>
 <translation id="4536805923587466102">Ar kontu <ph name="USER_EMAIL_ADDRESS" /> jau esat pierakstījies citā Chromium profilā</translation>
 <translation id="4548534452171747496">Pārlūkā Chromium tiek iepriekš ielādētas lapas, tādējādi paātrinot pārlūkošanu un meklēšanu. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par lapu iepriekšēju ielādi<ph name="END_LINK" />.</translation>
-<translation id="4567424176335768812">Jūs esat pierakstījies kā <ph name="USER_EMAIL_ADDRESS" />. Tagad varat piekļūt savām grāmatzīmēm, vēsturei un citiem iestatījumiem visās ierīcēs, kurās esat pierakstījies.</translation>
 <translation id="4570813286784708942">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo jūs izslēdzāt drošu pārlūkošanu un failu nevar verificēt.</translation>
 <translation id="4583692638088316420">Izmēģiniet Google Lens pārlūkā Chromium savā tālrunī</translation>
 <translation id="4594305310729380060">Tā tiks saglabāta Paroļu pārvaldniekā šajā ierīcē</translation>

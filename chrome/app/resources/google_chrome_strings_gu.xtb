@@ -175,7 +175,6 @@
 <translation id="2857540653560290388">Chrome લૉન્ચ કરી રહ્યાં છીએ…</translation>
 <translation id="286025080868315611">Chrome શા માટે અમુક ડાઉનલોડ કરેલી ફાઇલને બ્લૉક કરે છે તે જાણો</translation>
 <translation id="2861074815332034794">Chrome અપડેટ કરી રહ્યાં છીએ (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">તમે હમણાં Chrome માં સાઇન ઇન છો!</translation>
 <translation id="2875053229394024379">જ્યારે તમે તમારા Google એકાઉન્ટ વડે Chromeમાં સાઇન ઇન કરો, ત્યારે તમે Gemini સાથે તમારી Chrome પ્રોફાઇલનો ઉપયોગ કરી શકો છો. <ph name="BEGIN_LINK" />Chromeમાં સાઇન ઇન કરવાની રીત જાણો<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
@@ -330,7 +329,6 @@
 <translation id="4459234553906210702">Ad measurement તમે જેની મુલાકાત લો છો તે સાઇટને Chrome પાસેથી માહિતીની વિનંતી કરવાની મંજૂરી આપે છે, જે સાઇટને તેની જાહેરાતોનું કાર્યપ્રદર્શન માપવામાં સહાય કરે છે. Ad measurement સાઇટ વચ્ચે શક્ય તેટલી ઓછી માહિતી ટ્રાન્સફર કરીને, સાઇટ દ્વારા પરસ્પરના ટ્રૅકિંગને પ્રતિબંધિત કરે છે.</translation>
 <translation id="4493028449971051158">સ્ટાર્ટઅપ દરમિયાન ભૂલ: કૃપા કરીને ઇન્સ્ટૉલરને ઍડમિનિસ્ટ્રેટર તરીકે ચલાવો.</translation>
 <translation id="4501471624619070934">ઇન્સ્ટૉલેશન નિષ્ફળ ગયું કારણ કે આ દેશમાં ઍક્સેસ પ્રતિબંધિત છે.</translation>
-<translation id="4567424176335768812">તમે <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન છો. હવે તમે તમારા બધા સાઇન ઇન કરેલા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને અન્ય સેટિંગને ઍક્સેસ કરી શકો છો.</translation>
 <translation id="4571503333518166079">Chromeની નોટિફિકેશનની સેટિંગ પર જાઓ</translation>
 <translation id="4592634244097223647">આ છબી વિશે Googleને પૂછો</translation>
 <translation id="459622048091363950">એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.</translation>
@@ -755,7 +753,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8821043148920470810">Google Chromeની ભાવિ અપડેટ મેળવવા માટે, તમારે Windows 10 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યુટર Windows 7નો ઉપયોગ કરે છે.</translation>
 <translation id="8823341990149967727">Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="8834965163890861871">Google Chrome પાસવર્ડમાં ફેરફાર કરવાનો પ્રયાસ કરે છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
-<translation id="8843516219908676469">Chrome ફોર્મને વધુ સારી રીતે સમજે છે અને તમારા માટે ઑટોમૅટિક રીતે ભરવાની સુવિધા ઉપયોગ કરીને તેમને ઝડપથી ભરી શકે છે</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે}one{Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે}other{Chrome તેમને કાઢી નાખવાનો સુઝાવ તમને આપે છે}}</translation>
 <translation id="8862326446509486874">તમારી પાસે સિસ્ટમ-સ્તરનાં ઇન્સ્ટોલ માટે ઉચિત અધિકારો નથી. એડમિન તરીકે ઇન્સ્ટૉલરને ફરીથી ચલાવવનો પ્રયાસ કરો.</translation>
 <translation id="8865415417596392024">તમારા એકાઉન્ટમાંનો Chrome ડેટા</translation>

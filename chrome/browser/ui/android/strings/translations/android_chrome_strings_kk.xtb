@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> қолданбасы Chrome браузерінде ашылады. Жалғастыру арқылы <ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарына<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome және ChromeOS Қосымша қызмет көрсету шарттарына<ph name="END_LINK2" /> келісесіз.</translation>
 <translation id="1154555449933432029">Google Password Manager-де сақталған құпия сөздеріңіз жоқ.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> құпия сөзін пайдалану</translation>
+<translation id="1161065531352634524">Қойындылар мен тарихты синхрондаңыз</translation>
 <translation id="1165109137568919258">Іздеу үшін суретке түсіріңіз немесе фотосуреттер галереясынан сурет қосыңыз.</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1174479719160874822">Экран тар болған кезде, Chrome мобильдік сайтты сұрайды</translation>
@@ -981,6 +982,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5210286577605176222">Алдыңғы қойындыға өту</translation>
 <translation id="5210365745912300556">Қойындыны жабу</translation>
 <translation id="5212800876504289412">Бұл өзгерісті аяқтау үшін Chrome-ды өшіріп қосыңыз. Өшіріп қосқан кезде, қойындылар автоматты түрде қайта ашылады.</translation>
+<translation id="5213114823401215820">Жабылған топты қайта ашу</translation>
 <translation id="5215957675041756913">Деректеріңіз бен аккаунтыңызды басқарыңыз</translation>
 <translation id="5218324087477576825">Карта нөмірін көрсету қажет</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және т.б. <ph name="SEPARATOR" /> Chrome бұл рұқсаттарды өшірді, себебі сіз соңғы уақытта бұл сайтқа кірмегенсіз.</translation>
@@ -1436,6 +1438,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7020741890149022655">Оқу тізіміне қосу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Браузерден ашу</translation>
 <translation id="7029809446516969842">Құпия сөздер</translation>
+<translation id="7037994709569287156">Chrome-ды әдепкі браузер қылу</translation>
 <translation id="7053256416619638731">Осы құрылғыдағы құпия сөздерді күшейтіңіз</translation>
 <translation id="7053983685419859001">Блоктау</translation>
 <translation id="7054588988317389591">Сурет сипаттамаларын аласыз ба?</translation>
@@ -1801,6 +1804,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8458413889418591446">Өзіңіз кірген сайттарға жылдам оралу үшін тарих пен қойындыларды синхрондаңыз</translation>
 <translation id="84594714173170813">Google аккаунтыңызда Chrome деректерін пайдалануды жалғастыру</translation>
 <translation id="8460448946170646641">Құпиялық пен қауіпсіздікті басқарудың маңызды құралдарын қарап шығыңыз.</translation>
+<translation id="8460932807646981183">Іздеу жүйелерін және сайттан іздеуді басқару</translation>
 <translation id="8473863474539038330">Мекенжайлар және басқа ақпарат</translation>
 <translation id="847433688444405067">Құрылғылар бойынша шолу</translation>
 <translation id="8477178913400731244">Деректерді жою</translation>

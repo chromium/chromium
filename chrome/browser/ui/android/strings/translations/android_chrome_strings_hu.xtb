@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">A(z) <ph name="APP_NAME" /> a Chrome-ban fog megnyílni. A továbblépéssel Ön elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a ChromeOS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Nincsenek mentett jelszavai a Google Jelszókezelőben.</translation>
 <translation id="115483310321669804">A következő jelszó használata: <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Lapok és előzmények szinkronizálása</translation>
 <translation id="1165109137568919258">Készítsen fotót, vagy adjon hozzá képet a fotógalériából a kereséshez.</translation>
 <translation id="1173894706177603556">Átnevezés</translation>
 <translation id="1174479719160874822">A Chrome a mobilwebhelyet kéri le, ha keskeny a képernyő</translation>
@@ -981,6 +982,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5210286577605176222">Ugrás az előző lapra</translation>
 <translation id="5210365745912300556">Lap bezárása</translation>
 <translation id="5212800876504289412">A módosítás befejezéséhez indítsa újra a Chrome-ot. A lapok automatikusan újra megnyílnak az újraindításkor.</translation>
+<translation id="5213114823401215820">Bezárt csoport ismételt megnyitása</translation>
 <translation id="5215957675041756913">Az adatok és a fiók kezelése</translation>
 <translation id="5218324087477576825">Meg kell adni a kártya számát</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és továbbiak <ph name="SEPARATOR" /> A Chrome eltávolította ezeket az engedélyeket, mert Ön az utóbbi időben nem kereste fel ezt a webhelyet</translation>
@@ -1436,6 +1438,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7020741890149022655">Felvétel olvasólistára <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Megnyitás böngészőben</translation>
 <translation id="7029809446516969842">Jelszavak</translation>
+<translation id="7037994709569287156">A Chrome beállítása alapértelmezettként</translation>
 <translation id="7053256416619638731">Erősítse meg jelszavait ezen az eszközön</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7054588988317389591">Lekéri a képleírásokat?</translation>
@@ -1801,6 +1804,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8458413889418591446">Ha szeretne gyorsan visszatérni a felkeresett webhelyekre, szinkronizálja az előzményeit és a lapjait.</translation>
 <translation id="84594714173170813">Továbbra is használhatja a Google-fiókjában lévő Chrome-adatokat</translation>
 <translation id="8460448946170646641">A legfontosabb adatvédelmi és biztonsági beállítások áttekintése</translation>
+<translation id="8460932807646981183">Keresőmotorok és webhelyeken történő keresés kezelése</translation>
 <translation id="8473863474539038330">Címek és egyebek</translation>
 <translation id="847433688444405067">Böngészés több eszközön</translation>
 <translation id="8477178913400731244">Adatok törlése</translation>

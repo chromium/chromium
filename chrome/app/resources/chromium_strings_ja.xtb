@@ -34,7 +34,6 @@
 <translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1397530502368084401">Chromium プロフィールを管理(&amp;M)</translation>
-<translation id="1414495520565016063">Chromium にログインしました</translation>
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
 <translation id="1465192221147974788">ウィンドウを共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="1478370723027452770">Chrome for Testing のヘルプを見る</translation>
@@ -320,10 +319,8 @@
 <translation id="4510853178268397146">この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません。削除することをおすすめします。</translation>
 <translation id="452711251841752011">Chromium へようこそ。新しいブラウザ ウィンドウが開いています</translation>
 <translation id="4531137820806573936">Chromium にシーン認識とハンド トラッキングを許可する必要があります</translation>
-<translation id="4534145890176164066">Chromium でフォームの内容を正確に把握して、すばやく自動入力できます</translation>
 <translation id="4536805923587466102">別の Chromium プロフィールに <ph name="USER_EMAIL_ADDRESS" /> としてすでにログインしています</translation>
 <translation id="4548534452171747496">ページがプリロードされ、閲覧と検索をすばやく行えるようになります。<ph name="BEGIN_LINK" />ページのプリロードの詳細<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています。ログインしているすべてのデバイスで、ブックマーク、履歴、その他の設定にアクセスできます。</translation>
 <translation id="4570813286784708942">このダウンロードは Chromium でブロックされました。セーフ ブラウジングがオフになっており、ファイルを確認できません</translation>
 <translation id="4583692638088316420">スマートフォンの Chromium で Google レンズを試す</translation>
 <translation id="4594305310729380060">このデバイスのパスワード マネージャーに保存</translation>
@@ -555,7 +552,7 @@
 <translation id="7274695763216404502">固定しました。ツールバーから画像検索を使用できます</translation>
 <translation id="7288567540154601580">タブと拡張機能</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{削除することをおすすめします}other{削除することをおすすめします}}</translation>
-<translation id="7296334833518879294">システム音声を共有するには、[システム設定] を開き、Chromium に [システム音声の録音のみ] を許可してください。その後、Chromium を再起動する必要があります。</translation>
+<translation id="7296334833518879294">システム音声を共有するには、[システム設定] を開き、Chromium に [システムオーディオ録音のみ] を許可してください。その後、Chromium を再起動する必要があります。</translation>
 <translation id="7309928523159922338">広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chromium の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。</translation>
 <translation id="731795002583552498">Chromium を更新しています</translation>
 <translation id="7318036098707714271">ユーザー設定ファイルが壊れているか無効です。

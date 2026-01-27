@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> akan dibuka dalam Chrome. Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Anda tiada kata laluan yang disimpan dalam Google Password Manager.</translation>
 <translation id="115483310321669804">Gunakan kata laluan <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Segerakkan tab dan sejarah</translation>
 <translation id="1165109137568919258">Ambil foto atau tambahkan imej daripada galeri foto anda untuk membuat carian</translation>
 <translation id="1173894706177603556">Namakan semula</translation>
 <translation id="1174479719160874822">Chrome akan meminta laman mudah alih apabila skrin sempit</translation>
@@ -981,6 +982,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5210286577605176222">Lompat ke halaman sebelumnya</translation>
 <translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5212800876504289412">Mulakan semula Chrome untuk menamatkan perubahan ini. Tab akan dibuka semula secara automatik apabila anda memulakan semula.</translation>
+<translation id="5213114823401215820">Buka semula kumpulan yang ditutup</translation>
 <translation id="5215957675041756913">Kawal data &amp; akaun anda</translation>
 <translation id="5218324087477576825">Nombor kad, diperlukan</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan pelbagai lagi <ph name="SEPARATOR" /> Chrome telah mengalih keluar kebenaran ini kerana anda belum melawati laman web ini baru-baru ini</translation>
@@ -1436,6 +1438,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7020741890149022655">Tambah pd senarai bacaan <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Buka dalam penyemak imbas</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
+<translation id="7037994709569287156">Jadikan Chrome sebagai lalai</translation>
 <translation id="7053256416619638731">Kukuhkan kata laluan anda pada peranti ini</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7054588988317389591">Dapatkan perihalan imej?</translation>
@@ -1801,6 +1804,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8458413889418591446">Untuk segera kembali kepada laman yang telah anda lawati, segerakkan sejarah dan tab anda</translation>
 <translation id="84594714173170813">Kekal menggunakan data Chrome dalam Google Account anda</translation>
 <translation id="8460448946170646641">Semak privasi dan kawalan keselamatan utama</translation>
+<translation id="8460932807646981183">Urus enjin carian dan carian laman</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
 <translation id="847433688444405067">Semak imbas merentas peranti</translation>
 <translation id="8477178913400731244">Padamkan data</translation>

@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და ChromeOS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Google პაროლების მმართველში არ გაქვთ შენახული პაროლები.</translation>
 <translation id="115483310321669804">პაროლის <ph name="PASSWORD" /> გამოყენება</translation>
+<translation id="1161065531352634524">ჩანართებისა და ისტორიის სინქრონიზაცია</translation>
 <translation id="1165109137568919258">მოსაძიებლად გადაიღეთ ფოტო ან დაამატეთ სურათი თქვენი ფოტოგალერეიდან</translation>
 <translation id="1173894706177603556">სახელის შეცვლა</translation>
 <translation id="1174479719160874822">Chrome მოითხოვს მობილურ საიტს, როცა ეკრანი ვიწროა</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">წინა ჩანართზე გადასვლა</translation>
 <translation id="5210365745912300556">ჩანართის დახურვა</translation>
 <translation id="5212800876504289412">გადატვირთეთ Chrome, რომ დაასრულოთ ეს ცვლილება. გადატვირთვისას ჩანართები ავტომატურად იხსნება.</translation>
+<translation id="5213114823401215820">დახურული ჯგუფის ხელახლა გახსნა</translation>
 <translation id="5215957675041756913">თქვენი მონაცემებისა და ანგარიშის მართვა</translation>
 <translation id="5218324087477576825">ბარათის ნომერი (სავალდებულოა)</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და კიდევ <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები, რადგან თქვენ ბოლო დროს ეს საიტი არ მოგინახულებიათ</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">საკითხავ სიაში დამატება <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ბრაუზერში გახსნა</translation>
 <translation id="7029809446516969842">პაროლები</translation>
+<translation id="7037994709569287156">Chrome-ის ნაგულისხმევად დაყენება</translation>
 <translation id="7053256416619638731">გააძლიერეთ თქვენი პაროლები ამ მოწყობილობაში</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7054588988317389591">გსურთ სურათების აღწერილობების მიღება?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">მონახულებულ საიტებს სწრაფად რომ დაუბრუნდეთ, დაასინქრონეთ ისტორია და ჩანართები</translation>
 <translation id="84594714173170813">გააგრძელეთ Chrome-ის მონაცემების გამოყენება თქვენს Google ანგარიშში</translation>
 <translation id="8460448946170646641">გადახედეთ კონფიდენციალურობისა და უსაფრთხოების მართვის საკვანძო საშუალებებს</translation>
+<translation id="8460932807646981183">საძიებო სისტემებისა და Site Search-ის მართვა</translation>
 <translation id="8473863474539038330">მისამართები და სხვა</translation>
 <translation id="847433688444405067">დაათვალიერეთ ყველა მოწყობილობაზე</translation>
 <translation id="8477178913400731244">მონაცემების წაშლა</translation>

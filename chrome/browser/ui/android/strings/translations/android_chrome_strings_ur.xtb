@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔</translation>
 <translation id="1154555449933432029">‏آپ کے پاس Google پاس ورڈ مینیجر میں پاس ورڈز محفوظ نہیں ہیں۔</translation>
 <translation id="115483310321669804">پاس ورڈ <ph name="PASSWORD" /> استعمال کریں</translation>
+<translation id="1161065531352634524">ٹیبز اور سرگزشت کو مطابقت پذیر بنائیں</translation>
 <translation id="1165109137568919258">تلاش کرنے کے لیے ایک تصویر لیں یا اپنی تصویری گیلری سے ایک تصویر شامل کریں</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
 <translation id="1174479719160874822">‏اسکرین تنگ ہونے پر Chrome موبائل سائٹ سے درخواست کرے گا۔</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">پچھلے ٹیب پر جائیں</translation>
 <translation id="5210365745912300556">ٹیب بند کریں</translation>
 <translation id="5212800876504289412">اس تبدیلی کو مکمل کرنے کے لیے کروم کو دوبارہ شروع کریں۔ جب آپ دوبارہ شروع کرتے ہیں تو ٹیبز خودکار طور پر دوبارہ کھل جاتے ہیں۔</translation>
+<translation id="5213114823401215820">بند گروپ دوبارہ کھولیں</translation>
 <translation id="5215957675041756913">اپنے ڈیٹا اور اکاؤنٹ کو کنٹرول کریں</translation>
 <translation id="5218324087477576825">کارڈ نمبر درکار</translation>
 <translation id="5221437554987713282">‏<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور مزید <ph name="SEPARATOR" />، Chrome نے یہ اجازتیں ہٹا دی ہیں کیوں کہ آپ حال ہی میں ان کا ملاحظہ نہیں کیا ہے</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">پڑھنے کی فہرست میں شامل کریں<ph name="BEGIN_NEW" />نئی<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">براؤزر میں کھولیں</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
+<translation id="7037994709569287156">‏‫Chrome کو ڈیفالٹ بنائیں</translation>
 <translation id="7053256416619638731">اس آلہ پر اپنے پاس ورڈز کو مضبوط بنائیں</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7054588988317389591">تصویری تفصیلات حاصل کریں؟</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">تیزی سے اپنی ملاحظہ کردہ سائٹس پر واپس جانے کے لیے، اپنی سرگزشت اور ٹیبز کو مطابقت پذیر بنائیں</translation>
 <translation id="84594714173170813">‏اپنے Google اکاؤنٹ میں Chrome ڈیٹا استعمال کرتے رہیں</translation>
 <translation id="8460448946170646641">کلیدی رازداری اور سیکیورٹی کنٹرولز کا جائزہ لیں</translation>
+<translation id="8460932807646981183">سرچ انجنز اور سائٹ کی تلاش کا نظم کریں</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
 <translation id="847433688444405067">آلات پر براؤز کریں</translation>
 <translation id="8477178913400731244">ڈیٹا حذف کریں</translation>

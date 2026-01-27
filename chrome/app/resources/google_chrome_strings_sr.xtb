@@ -176,7 +176,6 @@
 <translation id="2857540653560290388">Покреће се Chrome...</translation>
 <translation id="286025080868315611">Сазнајте зашто Chrome блокира нека преузимања</translation>
 <translation id="2861074815332034794">Ажурирамо Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Пријављени сте у Chrome!</translation>
 <translation id="2875053229394024379">Када се пријавите у Chrome помоћу Google налога, можете да користите Chrome профил са Gemini-јем. <ph name="BEGIN_LINK" />Сазнајте како да се пријавите у Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Сазнајте више о томе <ph name="BEGIN_LINK" />како Chrome штити приватност података<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Менаџер задатака</translation>
@@ -331,7 +330,6 @@
 <translation id="4459234553906210702">Мерење огласа омогућава сајтовима које посећујете да од Chrome-а затраже информације које сајту помажу да мери учинак огласа. Мерење огласа ограничава праћење на више сајтова тако што преноси што мање информација између сајтова.</translation>
 <translation id="4493028449971051158">Грешка при покретању: покрените програм за инсталацију као администратор.</translation>
 <translation id="4501471624619070934">Инсталација није успела јер је приступ у овој земљи ограничен.</translation>
-<translation id="4567424176335768812">Пријављени сте као <ph name="USER_EMAIL_ADDRESS" />. Сада можете да приступате обележивачима, историји и другим подешавањима на свим уређајима на којима сте пријављени.</translation>
 <translation id="4571503333518166079">Иди на подешавања обавештења за Chrome</translation>
 <translation id="4592634244097223647">Поставите питање Google-у о овој слици</translation>
 <translation id="459622048091363950">Када Chrome добије приступ, веб-сајтови ће моћи да затраже приступ.</translation>
@@ -756,7 +754,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8821043148920470810">Да бисте добијали будућа Google Chrome ажурирања, треба вам Windows 10 или новија верзија. Овај рачунар користи Windows 7.</translation>
 <translation id="8823341990149967727">Chrome је застарео</translation>
 <translation id="8834965163890861871">Google Chrome покушава да измени лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
-<translation id="8843516219908676469">Chrome боље разуме обрасце и може брже аутоматски да их попуњава за вас</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome препоручује да ово уклоните}one{Chrome препоручује да их уклоните}few{Chrome препоручује да их уклоните}other{Chrome препоручује да их уклоните}}</translation>
 <translation id="8862326446509486874">Немате одговарајућа права за инсталацију на нивоу система. Пробајте поново да покренете програм за инсталацију, овога пута као администратор.</translation>
 <translation id="8865415417596392024">Chrome подаци на налогу</translation>

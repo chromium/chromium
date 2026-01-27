@@ -3,6 +3,7 @@
 <translationbundle lang="my">
 <translation id="1006017844123154345">အွန်လိုင်းတွင် ဖွင့်ရန်</translation>
 <translation id="1036348656032585052">ပိတ်ရန်</translation>
+<translation id="1046742265332833834">အပြာရောင် အပြင်အဆင်</translation>
 <translation id="1070329623210597193">ဤဝဘ်ဆိုက်က ကြည့်နိုင် (သို့) တည်းဖြတ်နိုင်သည့် ဖိုင်များ</translation>
 <translation id="1073417869336441572">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ဘာကြောင့် သင်ခွင့်ပြုထားကြောင်း ပြောပြခြင်းဖြင့် Chrome ပိုကောင်းအောင် ကူညီပါ။ <ph name="BEGIN_LINK" />အကြံပြုချက် ပို့ရန်<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">ဝဘ်ဆိုက်များ၏ ဒက်စ်တော့ ဗားရှင်းကိုကြည့်ရန် တောင်းဆိုနိုင်သည်</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" /> က သိမ်းထားသည့် ဒေတာနှင့် ကွတ်ကီးအားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
+<translation id="1199963004393929848">အစိမ်းရောင် အပြင်အဆင်</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1240190568154816272">Chrome အကြံပြုချက်များ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> တွင် မြှုပ်သွင်းထားသည်</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">ကြည့်ရှုစရာ ဖိဒ်</translation>
 <translation id="3198916472715691905">သိမ်းထားသော ဒေတာ <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">ယခု ခွင့်ပြုထားသည် • ခန့်မှန်းခြေ</translation>
+<translation id="3208584281581115441">ယခု စစ်ကြည့်ရန်</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> က အကြောင်းကြားချက်များ ပေးပို့နိုင်ရန် <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း အကြောင်းကြားချက်များ ဖွင့်ပါ။</translation>
 <translation id="3223425961342298674">တည်နေရာ ခွင့်ပြုမထားပါ</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">ပယ်ပြီး နောက်လာမည့် ရနိုင်သော လုပ်ဆောင်ချက်ကို ပြပါ</translation>
 <translation id="3744111561329211289">နောက်ခံတွင် စင့်ခ်လုပ်ခြင်း</translation>
 <translation id="3746834924069123416">မကြာသေးမီက တဘ်များကို ပိုကြည့်ရန်</translation>
+<translation id="3753618528540214374">စိမ်းပြာရင့်ရောင် အပြင်အဆင်</translation>
 <translation id="3763247130972274048">၁၀ စက္ကန့်ကျော်ရန် ဗီဒီယိုဘယ်ဘက် သို့မဟုတ် ညာဘက်တွင် နှစ်ချက်တို့ပါ</translation>
 <translation id="3776508619697147021">ဝဘ်ဆိုက်များက ဖိုင်အများအပြားကို အလိုအလျောက်ဒေါင်းလုဒ်လုပ်လိုပါက ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="3779154269823594982">စကားဝှက်များ ပြောင်းရန်</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">ဖုန်းနံပါတ်များ</translation>
 <translation id="3823453485268218808">မိုနိုဖောင့်</translation>
 <translation id="3826050100957962900">ပြင်ပအဖွဲ့အစည်းသို့ လက်မှတ်ထိုးဝင်ခြင်း</translation>
+<translation id="3831065134033923230">သိမ်းထားသော စကားဝှက်များကို စစ်ဆေးပါ</translation>
 <translation id="3835233591525155343">သင်၏ ကိရိယာအသုံးပြုမှု</translation>
 <translation id="3843916486309149084">Chrome သည် ကွတ်ကီးများကို ယနေ့ ထပ်ပိတ်ထားပါမည်</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Discover ဖိဒ် ဖွင့်ရန်</translation>
 <translation id="6012967556075291653">ပင်ထိုးထားသော ဖြတ်လမ်း</translation>
 <translation id="6015775454662021376">ဤဝဘ်ဆိုက်သုံးခွင့်ကို သင့်စက်တွင် ထိန်းချုပ်ပါ</translation>
+<translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6042308850641462728">နောက်ထပ်</translation>
 <translation id="6064125863973209585">ပြီးသွားသည့် ဒေါင်းလုဒ်များ</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">ပြင်ပကုမ္ပဏီကွတ်ကီးများကို ပိတ်ဆို့မည်</translation>
 <translation id="6205314730813004066">ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှု</translation>
 <translation id="6207207788774442484">ဒေတာကိုဖျက်ပြီး ခွင့်ပြုချက်များ ပြင်ဆင်သတ်မှတ်ရန်</translation>
+<translation id="6218508144653756827">ပန်းခရမ်းရောင် အပြင်အဆင်</translation>
 <translation id="6231752747840485235">‘<ph name="APP_NAME" />’ ဖယ်ရှားမလား။</translation>
 <translation id="6234351944623978659">ဘရောင်ဇာအက်ပ် &gt; Chrome ကို တို့ပါ</translation>
 <translation id="6260830281887654268">တဘ်စာမျက်နှာအသစ် အသွင်အပြင်ဆိုင်ရာ အပြင်အဆင်စုစည်းမှုများ အောက်ခြေအပိုဆောင်း စာမျက်နှာကို မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်</translation>
 <translation id="6262191102408817757">သင့်နောက်ဆုံးတဘ်ကို အခြေခံသည်</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> နှင့် <ph name="PERMISSION_2" /> ပိတ်ထားသည်</translation>
 <translation id="6270391203985052864">ဝဘ်ဆိုက်များက အကြောင်းကြားချက်များပို့ရန် တောင်းဆိုနိုင်သည်</translation>
-<translation id="6278428485366576908">အပြင်အဆင်</translation>
 <translation id="6295158916970320988">ဆိုဒ်များအားလုံး</translation>
 <translation id="6320088164292336938">တုန်ခါခြင်း</translation>
 <translation id="6367753977865761591">သတ်မှတ်ဝဘ်ဆိုက်အတွက် ပြင်ပအဖွဲ့အစည်းသို့ လက်မှတ်ထိုးဝင်ခြင်းကို ပိတ်နိုင်သည်။</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> ဝဘ်ဆိုက် <ph name="RWS_MEMBERS_COUNT" /> ခုအတွက် ကွတ်ကီးများ ခွင့်ပြုသည်}other{<ph name="RWS_OWNER" /> ဝဘ်ဆိုက် <ph name="RWS_MEMBERS_COUNT" /> ခုအတွက် ကွတ်ကီးများ ခွင့်ပြုသည်}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ကာကွယ်ထားသည့် အကြောင်းအရာ</translation>
+<translation id="6619015782482868078">အဏ္ဏဝါ အပြင်အဆင်</translation>
 <translation id="662080504995468778">နေပါ</translation>
 <translation id="6630443592285535486">ဤနေရာတွင် Hex ကို ရိုက်ထည့်ပါ</translation>
 <translation id="6635327442719709864">ဖွင့်ထားသောအခါ ဝဘ်ဆိုက်များက အစဉ်လိုက်ပို့တ်များသုံးရန် တောင်းဆိုနိုင်သည်။ ပိတ်ထားသောအခါ ဝဘ်ဆိုက်များက အစဉ်လိုက်ပို့တ်များကို မသုံးနိုင်ပါ။</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6950072572526089586">သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်တွင် မျှော်မှန်းထားသည့်အတိုင်း လုပ်ဆောင်နိုင်ရန်အတွက် သင်လုပ်ဆောင်နေသည့် အချက်အလက်ကို သိမ်းနိုင်သည် — ဥပမာ ဝဘ်ဆိုက်တစ်ခုတွင် လက်မှတ်ထိုးဝင်ထားစေရန် (သို့) ဈေးခြင်းတောင်းထဲရှိ ပစ္စည်းများကို မှတ်ထားရန်။ အများအားဖြင့် ဝဘ်ဆိုက်များသည် ဤအချက်အလက်ကို သင့်စက်တွင် ယာယီသိမ်းသည်။</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">နှင်းဆီရောင် အပြင်အဆင်</translation>
 <translation id="6980861169612950611">ဝဘ်ဆိုက် ဒေတာကို ဖျက်မလား။ <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
 <translation id="6991142177939282156">ခွင့်ပြုထားသည် • ခန့်မှန်းခြေတည်နေရာ သုံးနေသည်</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ခု ရွေးထားသည်</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> နှင့် <ph name="PERMISSION_2" /> ခွင့်ပြုထားသည်</translation>
 <translation id="7276071417425470385">ဖွင့်ထားသောအခါ ဝဘ်ဆိုက်များက ပကတိအသွင်စက်များသုံးရန် တောင်းဆိုနိုင်သည်။ ပိတ်ထားသောအခါ ဝဘ်ဆိုက်များက ပကတိအသွင်စက်များကို မသုံးနိုင်ပါ။</translation>
+<translation id="7282197670900591579">စိမ်းဝါရောင် အပြင်အဆင်</translation>
 <translation id="728412880473384942">ဝဘ်ဆိုက်များ ပိုမြန်သော်လည်း သိပ်မလုံခြုံပါ</translation>
 <translation id="7366415735885268578">ဝဘ်ဆိုက်တစ်ခု ထည့်ရန်</translation>
 <translation id="7368695150573390554">အော့ဖ်လိုင်းဒေတာများကို ဖျက်ပါမည်</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome အကြံပြုချက်များကတ် ဖျောက်ထားရန်</translation>
 <translation id="7719367874908701697">စာမျက်နှာဇူးမ်</translation>
 <translation id="775043444390799886">ခွင့်ပြုချက်ကို ရုပ်သိမ်းရန်</translation>
+<translation id="7758789811447313947">ခရမ်းပြာရောင် အပြင်အဆင်</translation>
 <translation id="7759147511335618829">MIDI စက်စီမံခြင်း၊ ပရိုဂရမ်ပြန်လုပ်ခြင်း</translation>
 <translation id="7781829728241885113">မနေ့က</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">သတိပေးရန်</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="7952708427581814389">သင့်ကလစ်ဘုတ်ရှိ စာသားနှင့် ရုပ်ပုံများကြည့်ရန် ဝဘ်ဆိုက်များက ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="798299424881500862">လိမ္မော်ရောင် အပြင်အဆင်</translation>
 <translation id="7986741934819883144">အဆက်အသွယ်တစ်ခုကို ရွေးပါ</translation>
 <translation id="7990211076305263060">ဖွင့်ထားသောအခါ ဝဘ်ဆိုက်များက သင့်မိုက်ခရိုဖုန်းသုံးရန် တောင်းဆိုနိုင်သည်။ ပိတ်ထားသောအခါ ဝဘ်ဆိုက်များက သင့်မိုက်ခရိုဖုန်းကို မသုံးနိုင်ပါ။</translation>
 <translation id="8007176423574883786">ဤစက်ပစ္စည်းအတွက် ပိတ်ထားသည်</translation>

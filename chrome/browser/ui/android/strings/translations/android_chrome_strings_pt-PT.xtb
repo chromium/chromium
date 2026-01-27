@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">A app <ph name="APP_NAME" /> vai abrir no Chrome. Ao continuar, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Não tem palavras-passe guardadas no Gestor de Palavras-passe da Google.</translation>
 <translation id="115483310321669804">Usar palavra-passe <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sincronize separadores e histórico</translation>
 <translation id="1165109137568919258">Tire uma foto ou adicione uma imagem da sua galeria de fotos para pesquisar</translation>
 <translation id="1173894706177603556">Mudar nome</translation>
 <translation id="1174479719160874822">O Chrome vai pedir o site para dispositivos móveis quando o ecrã estiver estreito</translation>
@@ -981,6 +982,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5210286577605176222">Ir para o separador anterior</translation>
 <translation id="5210365745912300556">Fechar separador</translation>
 <translation id="5212800876504289412">Reinicie o Chrome para concluir esta alteração. Os separadores são reabertos automaticamente quando reiniciar.</translation>
+<translation id="5213114823401215820">Voltar a abrir grupo fechado</translation>
 <translation id="5215957675041756913">Controle os seus dados e conta</translation>
 <translation id="5218324087477576825">Número do cartão, obrigatório</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="SEPARATOR" /> O Chrome removeu estas autorizações porque não visitou recentemente o site</translation>
@@ -1436,6 +1438,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7020741890149022655">Adic. à Lista de leitura <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
+<translation id="7037994709569287156">Defina o Chrome como navegador predefinido</translation>
 <translation id="7053256416619638731">Reforce as suas palavras-passe neste dispositivo</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054588988317389591">Quer obter descrições de imagens?</translation>
@@ -1801,6 +1804,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8458413889418591446">Para voltar rapidamente aos sites que visitou, sincronize o histórico e os separadores</translation>
 <translation id="84594714173170813">Continue a usar os dados do Chrome na sua Conta Google</translation>
 <translation id="8460448946170646641">Reveja os principais controlos de privacidade e segurança</translation>
+<translation id="8460932807646981183">Gerir motores de pesquisa e a pesquisa de sites</translation>
 <translation id="8473863474539038330">Moradas e mais</translation>
 <translation id="847433688444405067">Navegue entre dispositivos</translation>
 <translation id="8477178913400731244">Eliminar dados</translation>

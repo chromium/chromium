@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeত খুলিব। অব্যাহত ৰাখি আপুনি <ph name="BEGIN_LINK1" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু ChromeOSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে।</translation>
 <translation id="1154555449933432029">Google Password Managerত আপোনাৰ কোনো পাছৱৰ্ড ছেভ কৰা নাই।</translation>
 <translation id="115483310321669804">পাছৱৰ্ড <ph name="PASSWORD" /> ব্যৱহাৰ কৰক</translation>
+<translation id="1161065531352634524">টেব আৰু ইতিহাস ছিংক কৰক</translation>
 <translation id="1165109137568919258">সন্ধান কৰিবলৈ এখন ফট’ তোলক বা আপোনাৰ ফট’ গেলাৰীৰ পৰা এখন প্ৰতিচ্ছবি যোগ দিয়ক</translation>
 <translation id="1173894706177603556">নতুন নাম দিয়ক</translation>
 <translation id="1174479719160874822">Chromeএ স্ক্ৰীনখনৰ আকাৰ সৰু হ’লে ম’বাইল ছাইটৰ বাবে অনুৰোধ কৰিব</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">পূর্বৱর্তী টেবলৈ যাওক</translation>
 <translation id="5210365745912300556">টেব বন্ধ কৰক</translation>
 <translation id="5212800876504289412">এই সালসলনিটো সম্পূৰ্ণ কৰিবলৈ Chrome ৰিষ্টাৰ্ট কৰক। আপুনি ৰিষ্টাৰ্ট কৰিলে টেবসমূহ স্বয়ংক্ৰিয়ভাৱে খোল খায়।</translation>
+<translation id="5213114823401215820">বন্ধ কৰা গোট পুনৰ খোলক</translation>
 <translation id="5215957675041756913">আপোনাৰ ডেটা আৰু একাউণ্ট নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="5218324087477576825">কাৰ্ডৰ নম্বৰ, আৱশ্যকীয়</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, আৰু <ph name="SEPARATOR" /> আপুনি শেহতীয়াকৈ চোৱা নাই বাবে Chromeএ এই অনুমতিসমূহ আঁতৰাইছে</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">পঢ়াৰ সূচীত <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> যোগ দিয়ক</translation>
 <translation id="7022756207310403729">ব্ৰাউজাৰত খোলক</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
+<translation id="7037994709569287156">Chromeক ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
 <translation id="7053256416619638731">এই ডিভাইচটোত আপোনাৰ পাছৱৰ্ডসমূহ অধিক শক্তিশালী কৰক</translation>
 <translation id="7053983685419859001">অৱৰোধ কৰক</translation>
 <translation id="7054588988317389591">প্ৰতিচ্ছবিৰ বিৱৰণ লাভ কৰিবনে?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">আপুনি চোৱা ছাইটসমূহলৈ ক্ষিপ্ৰতাৰে পুনৰ যাবলৈ আপোনাৰ ইতিহাস আৰু টেব ছিংক কৰক</translation>
 <translation id="84594714173170813">আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ কৰি থাকক</translation>
 <translation id="8460448946170646641">গোপনীয়তা আৰু সুৰক্ষা সম্পৰ্কীয় মুখ্য নিয়ন্ত্ৰণসমূহ পৰ্যালোচনা কৰক</translation>
+<translation id="8460932807646981183">সন্ধান ইঞ্জিন আৰু Site Search পৰিচালনা কৰক</translation>
 <translation id="8473863474539038330">ঠিকনা আৰু অধিক</translation>
 <translation id="847433688444405067">বিভিন্ন ডিভাইচত ব্ৰাউজ কৰক</translation>
 <translation id="8477178913400731244">ডেটা মচক</translation>

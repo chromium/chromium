@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व ChromeOS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
 <translation id="1154555449933432029">तुमच्याकडे Google Password Manager मध्ये सेव्ह केलेले पासवर्ड नाहीत.</translation>
 <translation id="115483310321669804">पासवर्ड वापरा <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">टॅब आणि इतिहास सिंक करा</translation>
 <translation id="1165109137568919258">शोधण्यासाठी फोटो घ्या किंवा तुमच्या फोटो गॅलरीमधून इमेज जोडा</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
 <translation id="1174479719160874822">स्क्रीन अरुंद असल्यास, Chrome मोबाइल साइटला विनंती करेल</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">मागील टॅबवर जा</translation>
 <translation id="5210365745912300556">टॅब बंद करा</translation>
 <translation id="5212800876504289412">हा बदल पूर्ण करण्यासाठी Chrome रीस्टार्ट करा. तुम्ही रीस्टार्ट केल्यावर टॅब आपोआप पुन्हा उघडतात.</translation>
+<translation id="5213114823401215820">बंद केलेला गट पुन्हा उघडा</translation>
 <translation id="5215957675041756913">तुमचा डेटा आणि खाते नियंत्रित करा</translation>
 <translation id="5218324087477576825">कार्ड नंबर आवश्यक आहे</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी बऱ्याच परवानग्या <ph name="SEPARATOR" /> तुम्ही अलीकडे भेट न दिल्यामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">वाचन सूचीमध्ये जोडा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउझरमध्ये उघडा</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
+<translation id="7037994709569287156">Chrome ला डीफॉल्ट बनवा</translation>
 <translation id="7053256416619638731">या डिव्हाइसवरील तुमचे पासवर्ड क्लिष्ट करा</translation>
 <translation id="7053983685419859001">ब्लॉक करा</translation>
 <translation id="7054588988317389591">इमेजची वर्णने मिळवायची का?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">तुम्ही भेट दिलेल्या साइटवर झटपट परत जाण्यासाठी तुमचा इतिहास आणि टॅब सिंक करा</translation>
 <translation id="84594714173170813">तुमच्या Google खाते मधील Chrome डेटा वापरणे सुरू ठेवा</translation>
 <translation id="8460448946170646641">महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
+<translation id="8460932807646981183">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
 <translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
 <translation id="847433688444405067">सर्व डिव्हाइसवर ब्राउझ करा</translation>
 <translation id="8477178913400731244">डेटा हटवा</translation>

@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatečnými smluvními podmínkami prohlížeče Chrome a systému ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Ve Správci hesel Google nemáte uložená hesla.</translation>
 <translation id="115483310321669804">Použít heslo <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Synchronizujte karty a historii</translation>
 <translation id="1165109137568919258">Vyfoťte něco nebo přidejte obrázek z galerie, který chcete vyhledat</translation>
 <translation id="1173894706177603556">Přejmenovat</translation>
 <translation id="1174479719160874822">Když je obrazovka úzká, vyžádá si Chrome mobilní web</translation>
@@ -981,6 +982,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5210286577605176222">Přejít na předchozí kartu</translation>
 <translation id="5210365745912300556">Zavřít kartu</translation>
 <translation id="5212800876504289412">K dokončení této změny restartujte Chrome. Karty se po restartu automaticky znovu otevřou.</translation>
+<translation id="5213114823401215820">Znovu otevřít zavřenou skupinu</translation>
 <translation id="5215957675041756913">Ovládání dat a účtu</translation>
 <translation id="5218324087477576825">Číslo karty, povinné</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další <ph name="SEPARATOR" /> Chrome tato oprávnění odebral, protože jste tento web v poslední době nenavštívili</translation>
@@ -1436,6 +1438,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7020741890149022655">Přidat do seznamu četby <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Otevřít v prohlížeči</translation>
 <translation id="7029809446516969842">Hesla</translation>
+<translation id="7037994709569287156">Nastavit Chrome jako výchozí</translation>
 <translation id="7053256416619638731">Zesilte svá hesla na tomto zařízení</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7054588988317389591">Zobrazovat popisy obrázků?</translation>
@@ -1801,6 +1804,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8458413889418591446">Pokud chcete mít možnost rychle se vrátit na navštívené weby, synchronizujte svou historii a karty.</translation>
 <translation id="84594714173170813">Pokračujte v používání dat prohlížeče Chrome ve svém účtu Google</translation>
 <translation id="8460448946170646641">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení</translation>
+<translation id="8460932807646981183">Spravovat vyhledávače a vyhledávání na webu</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
 <translation id="847433688444405067">Synchronizujte své procházení</translation>
 <translation id="8477178913400731244">Vymazat data</translation>

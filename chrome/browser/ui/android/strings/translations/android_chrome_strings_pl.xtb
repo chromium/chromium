@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Aplikacja <ph name="APP_NAME" /> zostanie otwarta w Chrome. Przechodząc dalej, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Nie masz haseł zapisanych w Menedżerze haseł Google.</translation>
 <translation id="115483310321669804">Użyj hasła <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Synchronizuj karty i historię</translation>
 <translation id="1165109137568919258">Aby wyszukać, zrób zdjęcie lub dodaj obraz z galerii zdjęć</translation>
 <translation id="1173894706177603556">Zmień nazwę</translation>
 <translation id="1174479719160874822">Gdy ekran będzie wąski, Chrome wyśle żądanie strony mobilnej</translation>
@@ -981,6 +982,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5210286577605176222">Przejdź do poprzedniej karty</translation>
 <translation id="5210365745912300556">Zamknij kartę</translation>
 <translation id="5212800876504289412">Aby dokończyć tę zmianę, uruchom ponownie Chrome. Po ponownym uruchomieniu karty otworzą się automatycznie.</translation>
+<translation id="5213114823401215820">Otwórz ponownie zamkniętą grupę</translation>
 <translation id="5215957675041756913">Zarządzaj swoimi danymi i kontem</translation>
 <translation id="5218324087477576825">Numer karty, wymagany</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="SEPARATOR" /> Przeglądarka Chrome usunęła te uprawnienia, ponieważ od jakiegoś czasu nie odwiedzasz tej witryny</translation>
@@ -1436,6 +1438,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7020741890149022655">Dodaj do listy Do przeczytania <ph name="BEGIN_NEW" />Nowe<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Otwórz w przeglądarce</translation>
 <translation id="7029809446516969842">Hasła</translation>
+<translation id="7037994709569287156">Ustaw Chrome jako domyślną przeglądarkę</translation>
 <translation id="7053256416619638731">Wzmocnij swoje hasła na tym urządzeniu</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7054588988317389591">Czy chcesz pobierać opisy obrazów?</translation>
@@ -1801,6 +1804,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8458413889418591446">Aby szybko wracać do odwiedzonych stron, włącz synchronizację historii i kart</translation>
 <translation id="84594714173170813">Nadal korzystaj z danych Chrome na koncie Google</translation>
 <translation id="8460448946170646641">Informacje o najważniejszych funkcjach prywatności i bezpieczeństwa</translation>
+<translation id="8460932807646981183">Zarządzanie wyszukiwarkami i wyszukiwaniem w witrynach</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="847433688444405067">Przeglądaj na różnych urządzeniach</translation>
 <translation id="8477178913400731244">Usuń dane</translation>

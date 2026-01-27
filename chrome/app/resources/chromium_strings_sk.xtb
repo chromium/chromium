@@ -36,7 +36,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1356661055722410047">Novinka! Môžete prekladať text aj obrázky na obrazovke.</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1397530502368084401">&amp;Spravovať profily prehliadača Chromium</translation>
-<translation id="1414495520565016063">Ste prihlásený/-á do prehliadača Chromium.</translation>
 <translation id="141901961143729572">Zdieľajte svoje názory</translation>
 <translation id="1465192221147974788">Ak chcete zdieľať okno, povoľte prehliadaču Chromium nahrávať obrazovku v nastaveniach systému.</translation>
 <translation id="1478370723027452770">Získať pomoc s verziou Chrome for Testing</translation>
@@ -326,10 +325,8 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4510853178268397146">Toto rozšírenie nemá zverejnené spôsoby ochrany súkromia, napríklad to, ako zhromažďuje a používa údaje. Chromium odporúča, aby ste ho odstránili.</translation>
 <translation id="452711251841752011">Vitajte v prehliadači Chromium, otvorilo sa nové okno prehliadača</translation>
 <translation id="4531137820806573936">Chromium potrebuje povolenie mapovať vaše okolie a sledovať vaše ruky</translation>
-<translation id="4534145890176164066">Chromium lepšie rozumie formulárom a môže ich automaticky dopĺňať rýchlejšie za vás</translation>
 <translation id="4536805923587466102">Ako <ph name="USER_EMAIL_ADDRESS" /> ste sa už prihlásili v inom profile prehliadača Chromium</translation>
 <translation id="4548534452171747496">Chromium prednačítava stránky, takže prehliadanie a vyhľadávanie sú rýchlejšie. <ph name="BEGIN_LINK" />Ďalšie informácie o prednačítavaní stránok<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Ste prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Teraz môžete na všetkých zariadeniach, kde ste prihlásený/-á, pristupovať k svojim záložkám, histórii a ďalším nastaveniam.</translation>
 <translation id="4570813286784708942">Prehliadač Chromium toto sťahovanie zablokoval, pretože ste vypli Bezpečné prehliadanie a súbor sa nedá overiť</translation>
 <translation id="4583692638088316420">Vyskúšajte Google Lens s prehliadačom Chromium v telefóne</translation>
 <translation id="4594305310729380060">Do Správcu hesiel v tomto zariadení</translation>

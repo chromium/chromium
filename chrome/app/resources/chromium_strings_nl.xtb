@@ -36,7 +36,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1356661055722410047">Nieuw! Je kunt zowel tekst als afbeeldingen op je scherm vertalen</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1397530502368084401">&amp;Chromium-profielen beheren</translation>
-<translation id="1414495520565016063">Je bent ingelogd bij Chromium.</translation>
 <translation id="141901961143729572">Geef je mening</translation>
 <translation id="1465192221147974788">Als je je venster wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen.</translation>
 <translation id="1478370723027452770">Hulp bij Chrome for Testing</translation>
@@ -326,10 +325,8 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="4510853178268397146">Deze extensie heeft geen privacyprocedures gepubliceerd, zoals de manier waarop gegevens worden verzameld en gebruikt. Chromium raadt je aan deze te verwijderen.</translation>
 <translation id="452711251841752011">Welkom bij Chromium, nieuw browservenster geopend</translation>
 <translation id="4531137820806573936">Chromium heeft rechten nodig om je omgeving in kaart te brengen en je handen te volgen</translation>
-<translation id="4534145890176164066">Chromium begrijpt formulieren beter en kan ze sneller automatisch voor je invullen</translation>
 <translation id="4536805923587466102">Je bent al ingelogd als <ph name="USER_EMAIL_ADDRESS" /> bij een ander Chromium-profiel</translation>
 <translation id="4548534452171747496">Chromium laadt pagina's vooraf, zodat je sneller kunt browsen en zoeken. <ph name="BEGIN_LINK" />Meer informatie over hoe je pagina's vooraf laadt<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Je bent ingelogd als <ph name="USER_EMAIL_ADDRESS" />. Je hebt nu toegang tot je bookmarks, geschiedenis en andere instellingen op al je apparaten waarop je bent ingelogd.</translation>
 <translation id="4570813286784708942">Chromium heeft deze download geblokkeerd, omdat je Safe Browsing hebt uitgezet en het bestand niet kan worden geverifieerd</translation>
 <translation id="4583692638088316420">Probeer Google Lens met Chromium op je telefoon</translation>
 <translation id="4594305310729380060">Naar Wachtwoordmanager op dit apparaat</translation>

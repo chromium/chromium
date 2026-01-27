@@ -3,6 +3,7 @@
 <translationbundle lang="ml">
 <translation id="1006017844123154345">ഓൺലൈനായി തുറക്കുക</translation>
 <translation id="1036348656032585052">ഓഫാക്കുക</translation>
+<translation id="1046742265332833834">നീല തീം</translation>
 <translation id="1070329623210597193">ഈ സൈറ്റിന് കാണാനോ എഡിറ്റ് ചെയ്യാനോ കഴിയുന്ന ഫയലുകൾ</translation>
 <translation id="1073417869336441572">നിങ്ങൾ മൂന്നാം കക്ഷി കുക്കികൾ അനുവദിക്കാനുള്ള കാരണം പങ്കിട്ട് Chrome മെച്ചപ്പെടുത്താൻ ഞങ്ങളെ സഹായിക്കൂ. <ph name="BEGIN_LINK" />ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">സൈറ്റുകളുടെ ഡെസ്ക്ടോപ്പ് പതിപ്പ് കാണാൻ നിങ്ങൾക്ക് ആവശ്യപ്പെടാം</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1192844206376121885">ഇത് <ph name="ORIGIN" /> സംഭരിച്ച എല്ലാ ഡാറ്റയും കുക്കികളും ഇല്ലാതാക്കും.</translation>
+<translation id="1199963004393929848">പച്ച തീം</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
 <translation id="1240190568154816272">Chrome നുറുങ്ങുകൾ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-ൽ ഉൾച്ചേർത്തത്</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Discover ഫീഡ്</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> സംഭരിച്ച വിവരം</translation>
 <translation id="3199078925536734975">ഇപ്പോൾ അനുവദിച്ചിരിക്കുന്നു • ഏകദേശം</translation>
+<translation id="3208584281581115441">ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="321187648315454507">അറിയിപ്പുകൾ അയയ്ക്കാൻ <ph name="APP_NAME" /> ആപ്പിനെ അനുവദിക്കുന്നതിന്, <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> അറിയിപ്പുകൾ ഓണാക്കുക.</translation>
 <translation id="3223425961342298674">ലൊക്കേഷൻ ആക്സസ് അനുവദിച്ചില്ല</translation>
 <translation id="3227137524299004712">മൈക്രോഫോൺ</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">ഡിസ്മിസ് ചെയ്ത ശേഷം, ലഭ്യമായ അടുത്ത പ്രവർത്തനം കാണിക്കുക</translation>
 <translation id="3744111561329211289">പശ്ചാത്തല സമന്വയിപ്പിക്കൽ</translation>
 <translation id="3746834924069123416">അടുത്തിടെ തുറന്ന കൂടുതൽ ടാബുകൾ കാണുക</translation>
+<translation id="3753618528540214374">വിരിഡിയൻ തീം</translation>
 <translation id="3763247130972274048">10 സെക്കൻഡ് ഒഴിവാക്കാൻ വീഡിയോയിൽ ഇടത്തോ വലത്തോ ഡബിൾ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="3776508619697147021">ഒന്നിലധികം ഫയലുകൾ സ്വയമേവ ഡൗൺലോഡ് ചെയ്യാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കാം</translation>
 <translation id="3779154269823594982">പാസ്‌വേഡുകൾ മാറ്റുക</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">ഫോൺ നമ്പറുകൾ</translation>
 <translation id="3823453485268218808">ഫോണ്ട് Mono</translation>
 <translation id="3826050100957962900">മൂന്നാം കക്ഷി സൈൻ ഇൻ</translation>
+<translation id="3831065134033923230">നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‍വേഡുകൾ പരിശോധിക്കുക</translation>
 <translation id="3835233591525155343">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉപയോഗം</translation>
 <translation id="3843916486309149084">Chrome ഇന്ന് വീണ്ടും കുക്കികൾ ബ്ലോക്ക് ചെയ്യും</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Discover ഫീഡ് ഓണാക്കുക</translation>
 <translation id="6012967556075291653">പിൻ ചെയ്ത കുറുക്കുവഴി</translation>
 <translation id="6015775454662021376">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് ഈ സൈറ്റിനുള്ള ആക്‌സസ് നിയന്ത്രിക്കുക</translation>
+<translation id="6022659036123304283">Chrome-നെ നിങ്ങളുടേതാക്കുക</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6042308850641462728">കൂടുതൽ</translation>
 <translation id="6064125863973209585">പൂർത്തിയാക്കിയ ഡൗൺലോഡുകൾ</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">മൂന്നാം കക്ഷി കുക്കികള്‍ ബ്ലോക്കുചെയ്യുക</translation>
 <translation id="6205314730813004066">പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത</translation>
 <translation id="6207207788774442484">ഡാറ്റ ഇല്ലാതാക്കുക, അനുമതികൾ റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="6218508144653756827">ഫ്യൂഷാ തീം</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' അൺഇൻസ്റ്റാൾ ചെയ്യണോ?</translation>
 <translation id="6234351944623978659">ബ്രൗസർ ആപ്പ് &gt; Chrome എന്നിങ്ങനെ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="6260830281887654268">പുതിയ ടാബ് പേജിന്റെ രൂപം ഇഷ്ടാനുസൃതമാക്കുന്നതിനുള്ള തീം ശേഖരങ്ങളുടെ ബോട്ടം ഷീറ്റ് സ്ക്രീനിന്റെ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="6262191102408817757">നിങ്ങളുടെ അവസാന ടാബിനെ അടിസ്ഥാനമാക്കി</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />,<ph name="PERMISSION_2" /> എന്നിവ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="6270391203985052864">അറിയിപ്പുകൾ അയയ്ക്കാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കേണ്ടി വരും</translation>
-<translation id="6278428485366576908">തീം</translation>
 <translation id="6295158916970320988">എല്ലാ സൈറ്റുകളും</translation>
 <translation id="6320088164292336938">വൈബ്രേറ്റുചെയ്യുക</translation>
 <translation id="6367753977865761591">നിർദ്ദിഷ്ട സൈറ്റിനായി മൂന്നാം കക്ഷി സൈൻ ഇൻ ബ്ലോക്ക് ചെയ്യുക.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> സൈറ്റിന് കുക്കികൾ അനുവദനീയമാണ്}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> സൈറ്റുകൾക്ക് കുക്കികൾ അനുവദനീയമാണ്}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">പരിരക്ഷിത ഉള്ളടക്കം</translation>
+<translation id="6619015782482868078">അക്വാ തീം</translation>
 <translation id="662080504995468778">തുടരുക</translation>
 <translation id="6630443592285535486">ഇവിടെ ഹെക്സ് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="6635327442719709864">ഓണായിരിക്കുമ്പോൾ, സീരിയൽ പോർട്ടുകൾ ഉപയോഗിക്കാൻ സൈറ്റുകൾക്ക് അനുമതി നേടാം. ഓഫായിരിക്കുമ്പോൾ, സൈറ്റുകൾക്ക് സീരിയൽ പോർട്ടുകൾ ഉപയോഗിക്കാനാകില്ല.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6950072572526089586">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിന് നിങ്ങൾ ചെയ്യുന്ന കാര്യങ്ങളെ കുറിച്ചുള്ള വിവരങ്ങൾ സംരക്ഷിക്കാൻ കഴിയും, അതുവഴി നിങ്ങൾ പ്രതീക്ഷിക്കുന്നത് പോലെ അത് പ്രവർത്തിക്കും — ഉദാഹരണത്തിന്, ഒരു സൈറ്റിൽ നിങ്ങളെ സൈൻ ഇൻ ചെയ്ത നിലയിൽ തുടരാൻ അനുവദിക്കുന്നതിനോ നിങ്ങളുടെ ഷോപ്പിംഗ് കാർട്ടിൽ ഇനങ്ങൾ സംരക്ഷിക്കുന്നതിനോ വേണ്ടി വിവരങ്ങൾ സംരക്ഷിക്കാൻ കഴിയും. മിക്കപ്പോഴും സൈറ്റുകൾ ഈ വിവരങ്ങൾ നിങ്ങളുടെ ഉപകരണത്തിൽ താൽക്കാലികമായി സംരക്ഷിക്കുന്നു.</translation>
 <translation id="6965382102122355670">ശരി</translation>
+<translation id="6980507581230208647">റോസ് തീം</translation>
 <translation id="6980861169612950611">സൈറ്റ് ഡാറ്റ ഇല്ലാതാക്കണോ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="6991142177939282156">അനുവദിച്ചിരിക്കുന്നു • ഏകദേശം ഉപയോഗിക്കുന്നു</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> എണ്ണം തിരഞ്ഞെടുത്തു</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവ അനുവദിച്ചു</translation>
 <translation id="7276071417425470385">ഓണായിരിക്കുമ്പോൾ, വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങൾ ഉപയോഗിക്കാൻ സൈറ്റുകൾക്ക് അനുമതി തേടാം. ഓഫായിരിക്കുമ്പോൾ, സൈറ്റുകൾക്ക് വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങൾ ഉപയോഗിക്കാനാകില്ല.</translation>
+<translation id="7282197670900591579">സിട്രൺ തീം</translation>
 <translation id="728412880473384942">സൈറ്റുകൾ വേഗതയേറിയതാണ്, എന്നാൽ സുരക്ഷ കുറവാണ്</translation>
 <translation id="7366415735885268578">ഒരു സൈറ്റ് ചേർക്കുക</translation>
 <translation id="7368695150573390554">എല്ലാ ഓഫ്‌ലൈൻ ഡാറ്റയും ഇല്ലാതാക്കും</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome നുറുങ്ങുകളുടെ കാർഡ് മറയ്ക്കുക</translation>
 <translation id="7719367874908701697">പേജ് സൂം ചെയ്യുക</translation>
 <translation id="775043444390799886">അനുമതി റദ്ദാക്കുക</translation>
+<translation id="7758789811447313947">വയലറ്റ് തീം</translation>
 <translation id="7759147511335618829">MIDI ഉപകരണ കൺട്രോൾ &amp; റീപ്രോഗ്രാം</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">എന്നെ ഓർമ്മിപ്പിക്കുക</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> എന്നതിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="7952708427581814389">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡിലെ ടെക്‌സ്റ്റും ചിത്രങ്ങളും കാണാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കാം</translation>
+<translation id="798299424881500862">ഓറഞ്ച് തീം</translation>
 <translation id="7986741934819883144">ഒരു കോൺടാക്റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7990211076305263060">ഓണായിരിക്കുമ്പോൾ, നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ സൈറ്റുകൾക്ക് അനുമതി തേടാം. ഓഫായിരിക്കുമ്പോൾ, സൈറ്റുകൾക്ക് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാനാകില്ല.</translation>
 <translation id="8007176423574883786">ഈ ഉപകരണത്തിനായി ഓഫാക്കി</translation>

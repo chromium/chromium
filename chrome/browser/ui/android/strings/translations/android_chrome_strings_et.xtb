@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> avaneb Chrome'is. Jätkates nõustute <ph name="BEGIN_LINK1" />Google'i teenusetingimustega<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Teil pole Google'i paroolihaldurisse paroole salvestatud.</translation>
 <translation id="115483310321669804">Kasutage parooli <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Vahelehtede ja ajaloo sünkroonimine</translation>
 <translation id="1165109137568919258">Otsimiseks tehke foto või lisage pilt oma fotogaleriist.</translation>
 <translation id="1173894706177603556">Muuda nime</translation>
 <translation id="1174479719160874822">Chrome taotleb mobiilisaiti, kui ekraan on kitsas</translation>
@@ -981,6 +982,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5210286577605176222">Eelmisele vahelehele liikumine</translation>
 <translation id="5210365745912300556">Sule vaheleht</translation>
 <translation id="5212800876504289412">Selle muudatuse lõpuleviimiseks taaskäivitage Chrome. Vahelehed avatakse taaskäivitamise korral automaatselt uuesti.</translation>
+<translation id="5213114823401215820">Suletud grupi uuesti avamine</translation>
 <translation id="5215957675041756913">Andmete ja konto haldamine</translation>
 <translation id="5218324087477576825">Kaardinumber on nõutav</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ja veel <ph name="SEPARATOR" /> – Chrome eemaldas need load, kuna te pole hiljuti külastanud</translation>
@@ -1436,6 +1438,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7020741890149022655">Lisa lugemisloendisse <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Avamine brauseris</translation>
 <translation id="7029809446516969842">Paroolid</translation>
+<translation id="7037994709569287156">Määra Chrome vaikebrauseriks</translation>
 <translation id="7053256416619638731">Selles seadmes paroolide tugevdamine</translation>
 <translation id="7053983685419859001">Blokeeri</translation>
 <translation id="7054588988317389591">Kas saada piltide kirjeldusi?</translation>
@@ -1801,6 +1804,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8458413889418591446">Külastatud saitidele kiiresti naasmiseks sünkroonige ajalugu ja vahelehed</translation>
 <translation id="84594714173170813">Jätkake Chrome'i andmete kasutamist Google'i kontol</translation>
 <translation id="8460448946170646641">Vaadake üle peamised privaatsus- ja turvaseaded</translation>
+<translation id="8460932807646981183">Otsingumootorite ja saidiotsingu haldamine</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
 <translation id="847433688444405067">Sirvige mitmes seadmes</translation>
 <translation id="8477178913400731244">Kustuta andmed</translation>

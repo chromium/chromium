@@ -278,6 +278,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="142559998533702194">Subida no completada</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1427192966110103169">Piscinas, saunas y spas domésticos</translation>
+<translation id="142740183218637661">El navegador Chrome está intentando mostrar información sensible</translation>
 <translation id="1428146450423315676">Apilador 7</translation>
 <translation id="142858679511221695">Usuario de la nube</translation>
 <translation id="1429080515485835353">Película autoadhesiva</translation>
@@ -371,6 +372,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Se ha producido un error al mostrar esta página web.</translation>
 <translation id="1584492003828271317">Mientras navegas, verás anuncios personalizados o no en función de esta opción, de los anuncios sugeridos por sitios, de la configuración de las cookies y de si el sitio que estás viendo personaliza los anuncios.</translation>
+<translation id="1585306568496579337">La extensión <ph name="EXTENSION_NAME" /> quiere abrir enlaces de <ph name="PROTOCOL" /> a través de <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="1586541204584340881">Qué extensiones tienes instaladas</translation>
 <translation id="1588438908519853928">Modo normal</translation>
 <translation id="159103247796286390">Cambiar nombre de tabla</translation>
@@ -428,6 +430,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1663943134801823270">Las tarjetas y las direcciones proceden de Chrome. Puedes gestionarlas en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolímero flexográfico</translation>
 <translation id="166624440456221306">Eliminar tabla comparativa</translation>
+<translation id="1667730174533834274">verificar que eres tú antes de que cambies la configuración</translation>
 <translation id="1668071460721346172">Recibir correo</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Borde corto primero</translation>
@@ -1643,6 +1646,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3615309852743236517">Manicura y pedicura</translation>
 <translation id="3620034424637552643">Suele usarse para indicaciones, entregas y otros datos</translation>
 <translation id="3620239073311576716">Uniformes y ropa de trabajo</translation>
+<translation id="3620865353340165509">No se ha podido guardar este IBAN en Google Wallet. Se ha guardado en Chrome en este dispositivo. Chrome te volverá a preguntar la próxima vez que uses este IBAN.</translation>
 <translation id="3621401353678567613">Para recibir alertas si los productos que sigues bajan de precio, activa las notificaciones en los ajustes.</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
 <translation id="3623041590998910684">Para usar la cámara, concede acceso a Chrome en la <ph name="LINK" />.</translation>
@@ -1728,6 +1732,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3727309136762649052">Espacio de nombres</translation>
 <translation id="3727850735097852673">Para usar el Gestor de contraseñas de Google con el llavero de macOS, reinicia Chrome y permite el acceso al llavero. Las pestañas que tuvieras abiertas se reabrirán después de reiniciar.</translation>
 <translation id="3728173127485570463">El navegador Chrome ya no necesitará tu huella digital para autocompletar contraseñas</translation>
+<translation id="3736564442532774454">El navegador Chrome está intentando rellenar tu información sensible en <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Tu administrador gestiona el navegador.</translation>
 <translation id="3739842843727261045">Me gusta permite indicar que te han gustado estos resultados</translation>
 <translation id="3740447166056383374">Los archivos deben revisarse antes de copiarse</translation>
@@ -1924,6 +1929,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4061573458783426621">No se puede guardar el documento escaneado en OneDrive</translation>
 <translation id="4063063121357725926">Permite que Google te ayude a encontrar descuentos para tus carritos</translation>
 <translation id="406358100705415968">Equipo de protección individual</translation>
+<translation id="4065429683324339709">Google Chrome quiere verificar que eres tú antes de que cambies la configuración</translation>
 <translation id="4065659219963895623">Restaurantes</translation>
 <translation id="4067774859633143413">Para salir de la pantalla completa y ver la descarga, mantén pulsado |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Añade una dirección válida</translation>
@@ -2235,6 +2241,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4528888973346221791">Información del perfil de trabajo (como tu nombre de usuario)</translation>
 <translation id="4530347922939905757">Mensaje de texto</translation>
 <translation id="4531477351494678589">Número de tarjeta virtual:</translation>
+<translation id="4534145890176164066">Chromium entiende mejor los formularios y puede autocompletarlos más rápido</translation>
 <translation id="4535523368173457420">Estos buscadores son populares en tu zona y se muestran en orden aleatorio</translation>
 <translation id="4535602490975885745">No se puede guardar la foto en OneDrive</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{Creado hace 1 año}other{Creado hace {NUM_YEARS} años}}</translation>
@@ -2446,6 +2453,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4882314601499260499">No se han aplicado políticas de usuarios. Para añadir políticas de usuarios, tu organización debe <ph name="LINK_BEGIN" />verificar tu dominio<ph name="LINK_END" />.</translation>
 <translation id="4885030148564729407">Lunas de miel y escapadas románticas</translation>
 <translation id="4885256590493466218">Paga con <ph name="CARD_DETAIL" /> al tramitar la compra.</translation>
+<translation id="4886565443854420066">El navegador Chrome quiere verificar que eres tú antes de que cambies la configuración</translation>
 <translation id="4887406273302438710">Protege tus contraseñas con Windows Hello</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, a continuación, Intro para eliminar tu historial de navegación, las cookies, la caché y más desde la configuración de Chrome</translation>
 <translation id="4892518386797173871">Parte trasera</translation>
@@ -2790,6 +2798,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
             <ph name="LIST_ITEM" />Cookies y datos de sitios
             <ph name="LIST_ITEM" />Información introducida en formularios
           <ph name="END_LIST" /></translation>
+<translation id="5434803328547504573">Para tramitar las compras más rápido, guarda este CVC en Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Aplicaciones en el dispositivo</translation>
 <translation id="5443468954631487277">Orden inverso boca arriba</translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use la información que ha guardado sobre ti</translation>
@@ -2888,6 +2897,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5578606540385219379">Proveedores de servicios</translation>
 <translation id="5580958916614886209">Consulta el mes de vencimiento y vuelve a intentarlo</translation>
 <translation id="5583442610070676234">Más acciones para la tabla comparativa <ph name="COMPARE_SET_NAME" /></translation>
+<translation id="55841966151154662">No se ha podido guardar este IBAN en Google Wallet. Se ha guardado en Chrome en este dispositivo.</translation>
 <translation id="558420943003240152">Gestionar contraseñas y claves de acceso…</translation>
 <translation id="5586446728396275693">Ninguna dirección guardada</translation>
 <translation id="5586831831248371458">Buscar en <ph name="KEYWORD_SUFFIX" /></translation>
@@ -2920,6 +2930,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="563324245173044180">Contenido engañoso bloqueado.</translation>
 <translation id="563371367637259496">Móvil</translation>
 <translation id="5635478143789726479">Términos y condiciones del vendedor</translation>
+<translation id="5640474731385449758">La extensión <ph name="EXTENSION_NAME" /> quiere abrir enlaces de <ph name="PROTOCOL" /> en <ph name="ORIGIN" /> a través de <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Equipos y componentes de sonido</translation>
 <translation id="5644090287519800334">Cara 1 del desplazamiento de la imagen en el eje X</translation>
@@ -3062,6 +3073,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5890248301649767931">¿Guardar número Redress?</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido el</translation>
+<translation id="5895694128043506580">Google Chrome está intentando mostrar información sensible</translation>
 <translation id="5898767305816764989">Botón Me gusta. Pulsa Intro para indicar que te gusta <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5903264686717710770">Título:</translation>
@@ -3503,6 +3515,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6569060085658103619">Estas viendo la página de una extensión</translation>
 <translation id="6571992525120410251">Pregunta lo que quieras a <ph name="ENGINE_NAME" /></translation>
 <translation id="6573200754375280815">Perforado doble en la parte derecha</translation>
+<translation id="6573973523249076555">Google Chrome está intentando rellenar tu información sensible en <ph name="APP_NAME" />.</translation>
 <translation id="6575408526598156416">Guardar en la cuenta</translation>
 <translation id="6577792494180292262">Capital de riesgo</translation>
 <translation id="6578434528542148658">El ID de la extensión no es válido.</translation>
@@ -3626,6 +3639,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6779290995699117286">Tu administrador puede acceder a información del perfil, el navegador y el dispositivo. Puede ver lo siguiente:</translation>
 <translation id="6779348349813025131">El Gestor de contraseñas de Google necesita acceder al llavero de macOS</translation>
 <translation id="6780449997190414928">Sueles conectarte a este sitio de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="LEARN_MORE" /></translation>
+<translation id="6783857615096909676">Permitir siempre que <ph name="HANDLER_HOSTNAME" /> abra enlaces de <ph name="PROTOCOL" /></translation>
 <translation id="6785990323398321538">Puedes cambiar tu buscador cuando quieras en la configuración de Chrome.</translation>
 <translation id="6786145470008421571">Sobre de 6x9 pulgadas</translation>
 <translation id="6786747875388722282">Extensiones</translation>
@@ -4076,6 +4090,7 @@ Más información:
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="7481603210197454575">Sobre italiano</translation>
+<translation id="7482823403440483089">Función Autocompletar mejorada</translation>
 <translation id="7483482939016730822">Suministros para escuelas y equipamiento para aulas</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, pulsa Tabulador y, después, Intro para cerrar el consejo de Chrome.</translation>
 <translation id="7485085230273446323">Comercio e industria</translation>
@@ -4325,6 +4340,7 @@ Más información:
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">Introduce la nueva fecha de vencimiento y el nuevo CVC que aparecen en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">¿Quieres salir del sitio web?</translation>
+<translation id="7862306158978555061">mostrar información sensible</translation>
 <translation id="7865448901209910068">Mejor velocidad</translation>
 <translation id="7865482168955081228">La pantalla de error de pago aplazado está cerrada.</translation>
 <translation id="7870281855125116701">Descuento encontrado</translation>
@@ -4710,6 +4726,7 @@ Más información:
 <translation id="8488350697529856933">Aplicable a</translation>
 <translation id="8490137692873530638">Apilador 10</translation>
 <translation id="8493948351860045254">Liberar espacio</translation>
+<translation id="8498870489552322848">rellenar tu información sensible en <ph name="APP_NAME" /></translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ha tardado demasiado tiempo en responder.</translation>
 <translation id="8502023382441452707">Cumpleaños y santos</translation>
 <translation id="8503559462189395349">Contraseñas de Chrome</translation>
@@ -4913,6 +4930,7 @@ Más información:
 <translation id="883848425547221593">Otros marcadores</translation>
 <translation id="8842351563145134519">Los métodos de pago que puedes rellenar con un toque están abiertos a media altura.</translation>
 <translation id="884264119367021077">Dirección de envío</translation>
+<translation id="8843516219908676469">Chrome entiende mejor los formularios y puede autocompletarlos más rápido</translation>
 <translation id="8849032795302265570">Gestiona fácilmente cómo navegan tus empleados por la Web</translation>
 <translation id="8849231003559822746">130x180 mm</translation>
 <translation id="884923133447025588">No se ha encontrado ningún mecanismo de revocación.</translation>

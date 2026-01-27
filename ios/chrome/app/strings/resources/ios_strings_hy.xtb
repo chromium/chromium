@@ -55,7 +55,7 @@
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1190609913194133056">Ծանուցումների կենտրոն</translation>
 <translation id="1199963004393929848">Կանաչ թեմա</translation>
-<translation id="1201402288615127009">Հաջորդը</translation>
+<translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1204075260022434100">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}other{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Տրոհված էկրան</translation>
@@ -333,6 +333,7 @@
 <translation id="2184272387334793084">Մուտք գործեք՝ ձեր գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="2186206192313702726">Google Տեսապակի</translation>
 <translation id="2188993354115194873">Հպեք <ph name="BEGIN_BOLD" />Պահել ներբեռնումներում<ph name="END_BOLD" /></translation>
+<translation id="2191406283620379491">Սխալ է առաջացել։ Թարմացրեք ձեր iOS-ի տարբերակը։</translation>
 <translation id="219283042927675668">Ներդիրներ՝ խմբում</translation>
 <translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
 <translation id="2196428379625389579">Որոնեք համացանցում</translation>
@@ -1899,6 +1900,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7958575506592576831">Տեղեկություններ էջի անվտանգության մասին</translation>
 <translation id="7961015016161918242">Երբեք</translation>
 <translation id="7971136598759319605">Ակտիվ է եղել 1 օր առաջ</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Փորձել</translation>
 <translation id="797588153137233716">Ընտրացանկ → Պատմություն → Ջնջել այցելությունների պատմությունը</translation>
 <translation id="7977451675950311423">Զգուշացնում է ձեզ, երբ տվյալների արտահոսքի հետևանքով կոտրված գաղտնաբառ եք օգտագործում։</translation>

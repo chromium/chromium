@@ -3,6 +3,7 @@
 <translationbundle lang="iw">
 <translation id="1006017844123154345">פתיחת גרסה אונליין</translation>
 <translation id="1036348656032585052">כיבוי</translation>
+<translation id="1046742265332833834">עיצוב כחול</translation>
 <translation id="1070329623210597193">קבצים שהאתר יכול לראות או לערוך</translation>
 <translation id="1073417869336441572">‏רוצה לעזור לנו לשפר את Chrome? אפשר לשתף אותנו בסיבה לשימוש בקובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">אפשר לבקש לראות את הגרסה למחשב של אתרים</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1192844206376121885">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שאוחסנו על ידי <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">עיצוב ירוק</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1240190568154816272">‏טיפים של Chrome</translation>
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">‏פיד Discover</translation>
 <translation id="3198916472715691905">נתונים מאוחסנים בנפח <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">יש אישור לשימוש חד-פעמי • מיקום משוער</translation>
+<translation id="3208584281581115441">לבדיקה</translation>
 <translation id="321187648315454507">‏כדי לאפשר ל-<ph name="APP_NAME" /> לשלוח לך התראות, צריך להפעיל אותן גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">אין הרשאת גישה למיקום</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">סגירה והצגת הפעולה הזמינה הבאה</translation>
 <translation id="3744111561329211289">סנכרון ברקע</translation>
 <translation id="3746834924069123416">צפייה בכרטיסיות נוספות מהזמן האחרון</translation>
+<translation id="3753618528540214374">עיצוב ירוק כהה</translation>
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
 <translation id="3776508619697147021">אתרים יכולים לבקש הרשאה להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="3779154269823594982">החלפת סיסמאות</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">מספרי טלפון</translation>
 <translation id="3823453485268218808">‏גופן Mono</translation>
 <translation id="3826050100957962900">כניסה של צד שלישי</translation>
+<translation id="3831065134033923230">בדיקת הסיסמאות השמורות</translation>
 <translation id="3835233591525155343">השימוש שלך במכשיר</translation>
 <translation id="3843916486309149084">‏קובצי cookie יחסמו היום שוב ב-Chrome</translation>
 <translation id="385051799172605136">חזרה</translation>
@@ -476,6 +481,7 @@
 <translation id="5998071268779572583">‏הפעלת הפיד של Discover</translation>
 <translation id="6012967556075291653">מקש קיצור מוצמד</translation>
 <translation id="6015775454662021376">שליטה על הגישה של האתר הזה למכשיר שלך</translation>
+<translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6042308850641462728">עוד</translation>
 <translation id="6064125863973209585">הורדות שהושלמו</translation>
@@ -493,13 +499,13 @@
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6207207788774442484">מחיקת הנתונים ואיפוס ההרשאות</translation>
+<translation id="6218508144653756827">עיצוב פוקסיה</translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">‏לוחצים על אפליקציית הדפדפן &gt; Chrome</translation>
 <translation id="6260830281887654268">הגיליון התחתון של אוספי העיצובים בדף הכרטיסייה החדשה נפתח בחצי מגובה המסך</translation>
 <translation id="6262191102408817757">על סמך הכרטיסייה האחרונה שלך</translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
-<translation id="6278428485366576908">עיצוב</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6320088164292336938">רטט</translation>
 <translation id="6367753977865761591">חסימת הכניסה של צד שלישי לאתר ספציפי.</translation>
@@ -526,6 +532,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{‏קובצי cookie מותרים לאתר אחד (<ph name="RWS_MEMBERS_COUNT" />) של <ph name="RWS_OWNER" />}one{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}two{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}other{‏קובצי cookie מותרים ל-<ph name="RWS_MEMBERS_COUNT" /> אתרים של <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>
+<translation id="6619015782482868078">עיצוב טורקיז</translation>
 <translation id="662080504995468778">להמשיך במצב אנונימי</translation>
 <translation id="6630443592285535486">כאן מכניסים את הקוד ההקסדצימאלי</translation>
 <translation id="6635327442719709864">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש ביציאות טוריות. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש ביציאות טוריות.</translation>
@@ -554,6 +561,7 @@
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6950072572526089586">אתר שמבקרים בו יכול לשמור מידע על הפעולות שמבצעים בו כדי לפעול כצפוי. למשל, כדי להשאיר את החשבון מחובר לאתר או לשמור פריטים בעגלת הקניות. לרוב, אתרים שומרים את המידע הזה במכשיר באופן זמני.</translation>
 <translation id="6965382102122355670">אישור</translation>
+<translation id="6980507581230208647">עיצוב ורוד</translation>
 <translation id="6980861169612950611">למחוק את הנתונים מהאתר? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">נגישות</translation>
 <translation id="6991142177939282156">יש הרשאה • נעשה שימוש במיקום משוער</translation>
@@ -582,6 +590,7 @@
 <translation id="7250468141469952378">נבחרו <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">פועלות: <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במכשירי מציאות מדומה. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במכשירי מציאות מדומה.</translation>
+<translation id="7282197670900591579">עיצוב צהוב</translation>
 <translation id="728412880473384942">האתרים מהירים יותר אבל פחות מאובטחים</translation>
 <translation id="7366415735885268578">הוספת אתר</translation>
 <translation id="7368695150573390554">המערכת תמחק את כל הנתונים ששמורים אופליין.</translation>
@@ -620,6 +629,7 @@
 <translation id="7688240020069572972">‏הסתרת כרטיס הטיפים של Chrome</translation>
 <translation id="7719367874908701697">מרחק מתצוגה בדף</translation>
 <translation id="775043444390799886">ביטול ההרשאה</translation>
+<translation id="7758789811447313947">עיצוב סגול</translation>
 <translation id="7759147511335618829">‏שליטה במכשירי MIDI ותכנות מחדש</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7791543448312431591">הוספה</translation>
@@ -638,6 +648,7 @@
 <translation id="7940722705963108451">קבלת תזכורת</translation>
 <translation id="7948081750384205628">מידע נוסף על <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">אתרים יכולים לבקש הרשאה לראות טקסט ותמונות בלוח העריכה</translation>
+<translation id="798299424881500862">עיצוב כתום</translation>
 <translation id="7986741934819883144">בחירת איש קשר</translation>
 <translation id="7990211076305263060">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במיקרופון. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במיקרופון.</translation>
 <translation id="8007176423574883786">כבוי בשביל המכשיר הזה</translation>

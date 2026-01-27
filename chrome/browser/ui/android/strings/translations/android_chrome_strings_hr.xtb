@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Aplikacija <ph name="APP_NAME" /> otvorit će se u Chromeu. Nastavljanjem prihvaćate <ph name="BEGIN_LINK1" />Googleove uvjete pružanja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uvjete pružanja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Nemate zaporki u Google upravitelju zaporki.</translation>
 <translation id="115483310321669804">Upotrijebi zaporku <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sinkronizirajte kartice i povijest</translation>
 <translation id="1165109137568919258">Snimite fotografiju ili dodajte sliku iz galerije fotografija za pretraživanje</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174479719160874822">Chrome će zahtijevati web-lokaciju za mobilne uređaje kad je zaslon uzak</translation>
@@ -981,6 +982,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5210286577605176222">Preskakanje na prethodnu karticu</translation>
 <translation id="5210365745912300556">Zatvori karticu</translation>
 <translation id="5212800876504289412">Ponovo pokrenite Chrome da biste dovršili tu promjenu. Kartice se automatski ponovo otvaraju prilikom ponovnog pokretanja.</translation>
+<translation id="5213114823401215820">Ponovo otvori zatvorenu grupu</translation>
 <translation id="5215957675041756913">Upravljanje podacima i računom</translation>
 <translation id="5218324087477576825">Broj kartice, obavezno</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="SEPARATOR" /> Chrome je uklonio ta dopuštenja jer niste posjetili u posljednje vrijeme</translation>
@@ -1436,6 +1438,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7020741890149022655">Dodaj na popis za čitanje <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Otvori u pregledniku</translation>
 <translation id="7029809446516969842">Zaporke</translation>
+<translation id="7037994709569287156">Postavite Chrome kao zadani preglednik</translation>
 <translation id="7053256416619638731">Upotrijebite snažnije zaporke na ovom uređaju</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7054588988317389591">Primati opise slike?</translation>
@@ -1801,6 +1804,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8458413889418591446">Da biste se brzo vratili na web-lokacije koje ste posjetili, sinkronizirajte povijest i kartice</translation>
 <translation id="84594714173170813">Nastavite upotrebljavati podatke iz Chromea na svom Google računu</translation>
 <translation id="8460448946170646641">Pregledajte ključne kontrole privatnosti i sigurnosti</translation>
+<translation id="8460932807646981183">Upravljanje tražilicama i pretraživanje web-lokacija</translation>
 <translation id="8473863474539038330">Adrese i više</translation>
 <translation id="847433688444405067">Pregledajte na različitim uređajima</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>

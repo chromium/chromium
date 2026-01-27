@@ -278,6 +278,7 @@
 <translation id="142559998533702194">アップロードに失敗しました</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1427192966110103169">家庭用スイミング プール、サウナ、スパ</translation>
+<translation id="142740183218637661">Chrome ブラウザが機密情報を表示しようとしています</translation>
 <translation id="1428146450423315676">スタッカー 7</translation>
 <translation id="142858679511221695">クラウド ユーザー</translation>
 <translation id="1429080515485835353">粘着フィルム</translation>
@@ -371,6 +372,7 @@
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
 <translation id="1584492003828271317">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、ウェブサイトが提案する広告、Cookie の設定状況、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
+<translation id="1585306568496579337">拡張機能「<ph name="EXTENSION_NAME" />」が <ph name="HANDLER_HOSTNAME" /> 経由で <ph name="PROTOCOL" /> リンクを開くことを求めています</translation>
 <translation id="1586541204584340881">インストールした拡張機能</translation>
 <translation id="1588438908519853928">ノーマル</translation>
 <translation id="159103247796286390">表の名前を変更</translation>
@@ -428,6 +430,7 @@
 <translation id="1663943134801823270">Chrome に保存されているクレジット カードと住所です。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
 <translation id="1664389769577564606">フレキソ フォトポリマー</translation>
 <translation id="166624440456221306">比較表を削除</translation>
+<translation id="1667730174533834274">設定を変更する前に本人確認を行う</translation>
 <translation id="1668071460721346172">メールを送信する</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />から<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">短辺から</translation>
@@ -1643,6 +1646,7 @@
 <translation id="3615309852743236517">マニキュア、ペディキュア</translation>
 <translation id="3620034424637552643">ルート案内や配達などによく使用されます</translation>
 <translation id="3620239073311576716">ユニフォーム、制服</translation>
+<translation id="3620865353340165509">この IBAN を Google ウォレットに保存できませんでした。代わりにこのデバイスの Chrome に保存されました。次回この IBAN を使用するときに再度確認が行われます。</translation>
 <translation id="3621401353678567613">追跡している商品の値下げアラートを受け取るには、設定で通知をオンにしてください。</translation>
 <translation id="362276910939193118">全履歴を表示</translation>
 <translation id="3623041590998910684">カメラを使用するには、<ph name="LINK" /> で Chrome にアクセスを許可してください。</translation>
@@ -1728,6 +1732,7 @@
 <translation id="3727309136762649052">名前空間</translation>
 <translation id="3727850735097852673">macOS キーチェーンで Google パスワード マネージャーを使用するには、Chrome を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="3728173127485570463">Chrome ブラウザでパスワードを自動入力する際に指紋認証が不要になります</translation>
+<translation id="3736564442532774454">Chrome ブラウザが <ph name="APP_NAME" /> に機密情報を入力しようとしています。</translation>
 <translation id="3738166223076830879">お使いのブラウザは管理者によって管理されています。</translation>
 <translation id="3739842843727261045">高く評価すると、この結果が気に入ったというフィードバックが送信されます</translation>
 <translation id="3740447166056383374">コピーする前に確認が必要です</translation>
@@ -1924,6 +1929,7 @@
 <translation id="4061573458783426621">スキャン内容を OneDrive に保存できません</translation>
 <translation id="4063063121357725926">Google でカートの割引情報を検索</translation>
 <translation id="406358100705415968">作業用安全保護具</translation>
+<translation id="4065429683324339709">Google Chrome が、設定を変更する前に本人確認を行うことを求めています</translation>
 <translation id="4065659219963895623">レストラン</translation>
 <translation id="4067774859633143413">全画面表示を終了してダウンロードを表示するには、|<ph name="ACCELERATOR" />| を長押しします</translation>
 <translation id="4067947977115446013">有効なアドレスの追加</translation>
@@ -2235,6 +2241,7 @@
 <translation id="4528888973346221791">仕事用プロフィールの情報（ユーザー名など）</translation>
 <translation id="4530347922939905757">テキスト メッセージ</translation>
 <translation id="4531477351494678589">仮想カード番号:</translation>
+<translation id="4534145890176164066">Chromium でフォームの内容を正確に把握して、すばやく自動入力できます</translation>
 <translation id="4535523368173457420">あなたの地域で一般的な検索エンジンが順不同で表示されています</translation>
 <translation id="4535602490975885745">写真を OneDrive に保存できません</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 年前に作成}other{{NUM_YEARS} 年前に作成}}</translation>
@@ -2446,6 +2453,7 @@
 <translation id="4882314601499260499">ユーザー ポリシーが適用されていません。ユーザー ポリシーを追加するには、組織で<ph name="LINK_BEGIN" />ドメインの所有権を確認する<ph name="LINK_END" />必要があります。</translation>
 <translation id="4885030148564729407">ハネムーン、カップル向け旅行</translation>
 <translation id="4885256590493466218">ご購入手続きの際に <ph name="CARD_DETAIL" /> で支払います</translation>
+<translation id="4886565443854420066">Chrome ブラウザが、設定を変更する前に本人確認を行うことを求めています</translation>
 <translation id="4887406273302438710">Windows Hello でパスワードを保護</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除できます</translation>
 <translation id="4892518386797173871">背面</translation>
@@ -2790,6 +2798,7 @@
             <ph name="LIST_ITEM" />Cookie とサイトデータ
             <ph name="LIST_ITEM" />フォームに入力した情報
           <ph name="END_LIST" /></translation>
+<translation id="5434803328547504573">購入手続きをすばやく行うには、この CVC を Google ウォレット（<ph name="ACCOUNT_EMAIL" />）に保存してください</translation>
 <translation id="5436307623797390637">デバイス上のアプリ</translation>
 <translation id="5443468954631487277">逆の順序（上向き）</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> があなたに関する保存済みの情報を使用することを許可する</translation>
@@ -2888,6 +2897,7 @@
 <translation id="5578606540385219379">サービス プロバイダ</translation>
 <translation id="5580958916614886209">有効期限の「月」を確認してもう一度お試しください</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> の比較表のその他の操作</translation>
+<translation id="55841966151154662">この IBAN を Google ウォレットに保存できませんでした。代わりにこのデバイスの Chrome に保存されました。</translation>
 <translation id="558420943003240152">パスワードとパスキーを管理...</translation>
 <translation id="5586446728396275693">保存されている住所がありません</translation>
 <translation id="5586831831248371458"><ph name="KEYWORD_SUFFIX" /> を検索</translation>
@@ -2920,6 +2930,7 @@
 <translation id="563324245173044180">不正の可能性があるコンテンツがブロックされました。</translation>
 <translation id="563371367637259496">モバイル</translation>
 <translation id="5635478143789726479">販売者の利用規約</translation>
+<translation id="5640474731385449758">拡張機能「<ph name="EXTENSION_NAME" />」が <ph name="HANDLER_HOSTNAME" /> 経由で <ph name="ORIGIN" /> の <ph name="PROTOCOL" /> リンクを開くことを求めています</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />。<ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">ステレオ システム、コンポーネント</translation>
 <translation id="5644090287519800334">1 面の画像の X 軸移動</translation>
@@ -3062,6 +3073,7 @@
 <translation id="5890248301649767931">Redress 番号を保存しますか？</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5895187275912066135">発行日</translation>
+<translation id="5895694128043506580">Google Chrome が機密情報を表示しようとしています</translation>
 <translation id="5898767305816764989">高評価ボタンです。Enter キーを押すとフィードバック フォームが開き、<ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> をどのように気に入ったかを記入して送信できます</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5903264686717710770">タイトル:</translation>
@@ -3503,6 +3515,7 @@
 <translation id="6569060085658103619">拡張機能のページを表示しています</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> に質問する</translation>
 <translation id="6573200754375280815">2 穴パンチ（右）</translation>
+<translation id="6573973523249076555">Google Chrome が <ph name="APP_NAME" /> に機密情報を入力しようとしています。</translation>
 <translation id="6575408526598156416">アカウントに保存</translation>
 <translation id="6577792494180292262">ベンチャー キャピタル</translation>
 <translation id="6578434528542148658">拡張機能 ID が無効です。</translation>
@@ -3626,6 +3639,7 @@
 <translation id="6779290995699117286">管理者は、プロファイル、ブラウザ、デバイス情報にアクセスできます。管理者が確認できる情報は次のとおりです。</translation>
 <translation id="6779348349813025131">Google パスワード マネージャーに MacOS キーチェーンへのアクセスを許可する必要があります</translation>
 <translation id="6780449997190414928">通常はこのサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="LEARN_MORE" /></translation>
+<translation id="6783857615096909676"><ph name="HANDLER_HOSTNAME" /> で <ph name="PROTOCOL" /> リンクを開くことを常に許可する</translation>
 <translation id="6785990323398321538">デフォルトの検索サービスは Chrome の設定でいつでも変更できます。</translation>
 <translation id="6786145470008421571">6x9 インチ封筒</translation>
 <translation id="6786747875388722282">拡張機能</translation>
@@ -4076,6 +4090,7 @@
 <translation id="7473891865547856676">スキップ</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481603210197454575">イタリア封筒</translation>
+<translation id="7482823403440483089">高精度の自動入力</translation>
 <translation id="7483482939016730822">学校用品</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />。Chrome のヒントを閉じるには、Tab キー、Enter キーの順に押します。</translation>
 <translation id="7485085230273446323">ビジネス、産業</translation>
@@ -4326,6 +4341,7 @@
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7860345425589240791">新しい有効期限と <ph name="SIDE_OF_CARD" /> に記載されている CVC を入力してください</translation>
 <translation id="7862185352068345852">このサイトを離れますか？</translation>
+<translation id="7862306158978555061">機密情報を表示</translation>
 <translation id="7865448901209910068">最高速度</translation>
 <translation id="7865482168955081228">後払い決済のエラー画面が閉じられました。</translation>
 <translation id="7870281855125116701">割引が見つかりました</translation>
@@ -4711,6 +4727,7 @@
 <translation id="8488350697529856933">適用先</translation>
 <translation id="8490137692873530638">スタッカー 10</translation>
 <translation id="8493948351860045254">容量を空ける</translation>
+<translation id="8498870489552322848"><ph name="APP_NAME" /> に機密情報を入力</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> からの応答時間が長すぎます。</translation>
 <translation id="8502023382441452707">誕生日</translation>
 <translation id="8503559462189395349">Chrome パスワード</translation>
@@ -4915,6 +4932,7 @@
 <translation id="883848425547221593">その他のブックマーク</translation>
 <translation id="8842351563145134519">タップ操作で入力できるお支払い方法が画面の下半分に表示されています。</translation>
 <translation id="884264119367021077">配送先住所</translation>
+<translation id="8843516219908676469">Chrome でフォームの内容を正確に把握して、すばやく自動入力できます</translation>
 <translation id="8849032795302265570">従業員のウェブ ブラウジングを簡単に管理</translation>
 <translation id="8849231003559822746">130x180 mm</translation>
 <translation id="884923133447025588">取り消し機構が見つかりません。</translation>

@@ -176,7 +176,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2857540653560290388">Ræsir Chrome...</translation>
 <translation id="286025080868315611">Kynntu þér hvers vegna Chrome lokar á sumt niðurhal</translation>
 <translation id="2861074815332034794">Uppfærir Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Þú ert skráð(ur) inn á Chrome!</translation>
 <translation id="2875053229394024379">Þegar þú skráir þig inn í Chrome með Google-reikningnum þínum geturðu notað Chrome-prófílinn þinn með Gemini. <ph name="BEGIN_LINK" />Kynntu þér hvernig þú skráir þig inn í Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Nánar um <ph name="BEGIN_LINK" />hvernig Chrome heldur gögnunum þínum leyndum<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Verkstjórn</translation>
@@ -331,7 +330,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4459234553906210702">Auglýsingamælingar gera vefsvæðum sem þú opnar kleift að biðja Chrome um upplýsingar sem hjálpa vefsvæðinu að mæla afköst auglýsinga þess. Auglýsingamælingar takmarka rakningu á milli vefsvæða með því að flytja eins lítið magn upplýsinga á milli vefsvæða og mögulegt er.</translation>
 <translation id="4493028449971051158">Villa í ræsingu: keyrðu uppsetningarforritið sem kerfisstjóri.</translation>
 <translation id="4501471624619070934">Uppsetning mistókst vegna þess að aðgangur er takmarkaður í landinu.</translation>
-<translation id="4567424176335768812">Þú ert skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" />. Nú hefur þú aðgang að bókamerkjunum þínum, vefferlinum þínum og öðrum stillingum í öllum tækjum sem þú ert skráð(ur) inn á.</translation>
 <translation id="4571503333518166079">Opna tilkynningastillingar Chrome</translation>
 <translation id="4592634244097223647">Spyrja Google um þessa mynd</translation>
 <translation id="459622048091363950">Þegar Chrome hefur aðgang munu vefsvæði geta beðið þig um aðgang.</translation>
@@ -756,7 +754,6 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="8821043148920470810">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 7.</translation>
 <translation id="8823341990149967727">Chrome er úrelt</translation>
 <translation id="8834965163890861871">Google Chrome er að reyna að breyta aðgangsorðum. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
-<translation id="8843516219908676469">Chromium skilur eyðublöð betur og er fljótari að fylla þau út sjálfkrafa fyrir þig</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome mælir með að þú fjarlægir hana}one{Chrome mælir með að þú fjarlægir þær}other{Chrome mælir með að þú fjarlægir þær}}</translation>
 <translation id="8862326446509486874">Þú hefur ekki tilskilin réttindi til uppsetningar fyrir kerfið allt. Prófaðu að keyra uppsetningarforritið aftur sem stjórnandi.</translation>
 <translation id="8865415417596392024">Chrome-gögn á reikningnum þínum</translation>

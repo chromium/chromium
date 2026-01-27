@@ -37,7 +37,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1356661055722410047">Nyhet! Du kan översätta både text och bilder på skärmen</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1397530502368084401">&amp;Hantera Chromium-profiler</translation>
-<translation id="1414495520565016063">Du är inloggad i Chromium.</translation>
 <translation id="141901961143729572">Dela dina tankar</translation>
 <translation id="1465192221147974788">För att dela fönstret tillåter du skärminspelning för Chromium i systeminställningarna.</translation>
 <translation id="1478370723027452770">Få hjälp med Chrome for Testing</translation>
@@ -327,10 +326,8 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4510853178268397146">Tillägget har ingen publicerad integritetspraxis, till exempel hur det samlar in och använder data. Vi rekommenderar att du tar bort det.</translation>
 <translation id="452711251841752011">Välkommen till Chromium, ett nytt webbläsarfönster har öppnats</translation>
 <translation id="4531137820806573936">Chromium behöver behörighet för att kartlägga din omgivning och spåra dina händer</translation>
-<translation id="4534145890176164066">Chromium förstår formulär bättre och kan autofylla dem snabbare</translation>
 <translation id="4536805923587466102">Du är redan inloggad som <ph name="USER_EMAIL_ADDRESS" /> i en annan Chromium-profil</translation>
 <translation id="4548534452171747496">Sidor läses in i förväg i Chromium, vilket gör det snabbare att surfa och söka. <ph name="BEGIN_LINK" />Läs mer om att läsa in sidor i förväg<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Du är inloggad som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du komma åt dina bokmärken, historik och andra inställningar på alla enheter som du är inloggad på.</translation>
 <translation id="4570813286784708942">Den här nedladdningen blockerades av Chromium eftersom du har inaktiverat Säker webbsökning och filen inte kan verifieras</translation>
 <translation id="4583692638088316420">Testa Google Lens med Chromium på telefonen</translation>
 <translation id="4594305310729380060">I Lösenordshantering på den här enheten</translation>
@@ -564,7 +561,7 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="7274695763216404502">Fäst! Använd Bildsökning igen från verktygsfältet</translation>
 <translation id="7288567540154601580">Flikar och tillägg</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Vi rekommenderar att du tar bort detta}other{Vi rekommenderar att du tar bort dessa}}</translation>
-<translation id="7296334833518879294">Om du vill dela systemljud öppnar du systeminställningarna och tillåter endast systemljud spelas in för Chromium. Du måste sedan starta om Chromium.</translation>
+<translation id="7296334833518879294">Om du vill dela systemljud öppnar du systeminställningarna och tillåter att endast systemljud spelas in för Chromium. Du måste sedan starta om Chromium.</translation>
 <translation id="7309928523159922338">Genom annonsmätning kan webbplatser du besöker begära information från Chromium som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>
 <translation id="731795002583552498">Chromium uppdateras</translation>
 <translation id="7318036098707714271">Inställningsfilen är skadad eller ogiltig.

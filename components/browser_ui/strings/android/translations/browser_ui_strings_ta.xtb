@@ -3,6 +3,7 @@
 <translationbundle lang="ta">
 <translation id="1006017844123154345">ஆன்லைனில் திற</translation>
 <translation id="1036348656032585052">ஆஃப் செய்</translation>
+<translation id="1046742265332833834">நீலத் தீம்</translation>
 <translation id="1070329623210597193">இந்தத் தளம் பார்க்கக்கூடிய அல்லது திருத்தக்கூடிய ஃபைல்கள்</translation>
 <translation id="1073417869336441572">மூன்றாம் தரப்புக் குக்கீகளை ஏன் அனுமதித்தீர்கள் என்பதை எங்களுக்குச் சொல்வதன் மூலம் Chrome உலாவியை மேம்படுத்த உதவுங்கள். <ph name="BEGIN_LINK" />கருத்தை அனுப்புக<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">தளங்களின் டெஸ்க்டாப் பதிப்பைப் காட்டும்படி நீங்கள் கேட்கலாம்</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">இடைநிறுத்து</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1192844206376121885">இதைச் செய்தால் <ph name="ORIGIN" /> சேமித்துள்ள அனைத்து தரவும் குக்கீகளும் நீக்கப்படும்.</translation>
+<translation id="1199963004393929848">பச்சை தீம்</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1240190568154816272">Chrome உதவிக்குறிப்புகள்</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> இல் உட்பொதியப்பட்டது</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Discover ஊட்டம்</translation>
 <translation id="3198916472715691905">சேமிக்கப்பட்ட தரவு: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">இந்த முறை அனுமதிக்கப்பட்டது • தோராயம்</translation>
+<translation id="3208584281581115441">இப்போது சரிபார்</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ஆப்ஸ் உங்களுக்கு அறிவிப்புகளை அனுப்ப அனுமதிப்பதற்கு <ph name="BEGIN_LINK" />Android அமைப்புகளிலும்<ph name="END_LINK" /> அறிவிப்புகளுக்கான அனுமதியை இயக்கவும்.</translation>
 <translation id="3223425961342298674">இருப்பிட அனுமதி வழங்கப்படவில்லை</translation>
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">நிராகரித்துவிட்டு அடுத்ததாக உள்ள செயலைப் பார்க்கலாம்</translation>
 <translation id="3744111561329211289">பின்புல ஒத்திசைவு</translation>
 <translation id="3746834924069123416">சமீபத்திய பக்கங்களை மேலும் காட்டும்</translation>
+<translation id="3753618528540214374">விரிடியன் தீம்</translation>
 <translation id="3763247130972274048">10வி தவிர்க்க, வீடியோவில் இடப்புறம்/வலப்புறம் இருமுறை தட்டுக</translation>
 <translation id="3776508619697147021">பல ஃபைல்களைத் தானாகப் பதிவிறக்க முயலும்போது தளங்கள் அனுமதி கேட்க வேண்டும்</translation>
 <translation id="3779154269823594982">கடவுச்சொற்களை மாற்று</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">ஃபோன் எண்கள்</translation>
 <translation id="3823453485268218808">Mono எழுத்து வடிவம்</translation>
 <translation id="3826050100957962900">மூன்றாம் தரப்பு உள்நுழைவு</translation>
+<translation id="3831065134033923230">சேமித்துள்ள கடவுச்சொற்களைச் சரிபாருங்கள்</translation>
 <translation id="3835233591525155343">உங்கள் சாதன உபயோகம்</translation>
 <translation id="3843916486309149084">Chrome இன்று குக்கீகளை மீண்டும் தடுக்கும்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Discover ஊட்டத்தை ஆன் செய்யும்</translation>
 <translation id="6012967556075291653">பின் செய்யப்பட்ட ஷார்ட்கட்</translation>
 <translation id="6015775454662021376">உங்கள் சாதனத்தில் இந்தத் தளத்திற்கான அணுகலைக் கட்டுப்படுத்தலாம்</translation>
+<translation id="6022659036123304283">Chromeமை உங்களுடையதாக்குங்கள்</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6042308850641462728">மேலும்</translation>
 <translation id="6064125863973209585">நிறைவடைந்த பதிவிறக்கங்கள்</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">மூன்றாம் தரப்புக் குக்கீகளைத் தடு</translation>
 <translation id="6205314730813004066">விளம்பரத் தனியுரிமை</translation>
 <translation id="6207207788774442484">தரவை நீக்கி, அனுமதிகளை மீட்டமை</translation>
+<translation id="6218508144653756827">ஃப்யூஷியா தீம்</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' ஆப்ஸை நிறுவல் நீக்கவா?</translation>
 <translation id="6234351944623978659">பிரவுசர் ஆப்ஸ் &gt; Chrome என்பதைத் தட்டவும்</translation>
 <translation id="6260830281887654268">புதிய பிரவுசர் பக்கத் தோற்றத்திற்கான தீம் தொகுப்புகளைக் காட்டும் கீழ்ப்புறச் சீட்டு பாதி உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="6262191102408817757">உங்கள் கடைசிப் பக்கத்தின் அடிப்படையில்</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ஆகியவற்றுக்கான அனுமதிகள் தடுக்கப்பட்டன</translation>
 <translation id="6270391203985052864">அறிவிப்புகளை அனுப்புவதற்கான அனுமதியைத் தளங்களால் கோர முடியும்</translation>
-<translation id="6278428485366576908">தீம்</translation>
 <translation id="6295158916970320988">எல்லா தளங்களும்</translation>
 <translation id="6320088164292336938">அதிர்வுறு</translation>
 <translation id="6367753977865761591">குறிப்பிட்ட தளத்திற்கு மூன்றாம் தரப்பு உள்நுழைவைத் தடுக்கும்.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> குழுவில் உள்ள <ph name="RWS_MEMBERS_COUNT" /> தளத்திற்குக் குக்கீகள் அனுமதிக்கப்பட்டுள்ளன}other{<ph name="RWS_OWNER" /> குழுவில் உள்ள <ph name="RWS_MEMBERS_COUNT" /> தளங்களுக்குக் குக்கீகள் அனுமதிக்கப்பட்டுள்ளன}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ஜி.பை.</translation>
 <translation id="6612358246767739896">பாதுகாக்கப்பட்ட உள்ளடக்கம்</translation>
+<translation id="6619015782482868078">அக்வா தீம்</translation>
 <translation id="662080504995468778">வேண்டாம்</translation>
 <translation id="6630443592285535486">ஹெக்ஸை இங்கே டைப் செய்யுங்கள்</translation>
 <translation id="6635327442719709864">ஆன் செய்யப்பட்டிருக்கும்போது, சீரியல் போர்ட்டுகளைப் பயன்படுத்த தளங்கள் அனுமதி கேட்கும். ஆஃப் செய்யப்பட்டிருக்கும்போது, சீரியல் போர்ட்டுகளைத் தளங்கள் பயன்படுத்த முடியாது.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
 <translation id="6950072572526089586">உங்கள் எதிர்பார்ப்புகளுக்கு ஏற்ப செயல்பட, நீங்கள் பார்வையிடும் தளம் நீங்கள் தளத்தில் செய்பவற்றைச் சேமிக்கலாம். உதாரணமாக, தளத்தில் உங்களை உள்நுழைந்த நிலையில் வைத்திருத்தல், உங்கள் ஷாப்பிங் கார்ட்டில் உள்ளவற்றைச் சேமித்தல். தளங்கள் பெரும்பாலும் இந்தத் தகவல்களை உங்கள் சாதனத்தில் தற்காலிகமாகச் சேமிக்கின்றன.</translation>
 <translation id="6965382102122355670">சரி</translation>
+<translation id="6980507581230208647">ரோஸ் தீம்</translation>
 <translation id="6980861169612950611">தளத் தரவை நீக்கவா? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
 <translation id="6991142177939282156">அனுமதிக்கப்பட்டது • தோராயமான இருப்பிடத்தைப் பயன்படுத்துகிறது</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ஆகியவற்றுக்கான அனுமதிகள் வழங்கப்பட்டன</translation>
 <translation id="7276071417425470385">இயக்கப்பட்டிருக்கும்போது, விர்ச்சுவல் ரியாலிட்டி சாதனங்களைப் பயன்படுத்த தளங்கள் அனுமதி கேட்கலாம். முடக்கப்பட்டிருக்கும்போது, விர்ச்சுவல் ரியாலிட்டி சாதனங்களைத் தளங்களால் பயன்படுத்த முடியாது.</translation>
+<translation id="7282197670900591579">சிட்ரான் தீம்</translation>
 <translation id="728412880473384942">தளங்கள் செயல்படும் வேகம் அதிகமாகவும் பாதுகாப்பு குறைவாகவும் இருக்கும்</translation>
 <translation id="7366415735885268578">தளத்தைச் சேர்</translation>
 <translation id="7368695150573390554">ஆஃப்லைன் தரவு அனைத்தும் நீக்கப்படும்</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome உதவிக்குறிப்புகள் கார்டை மறை</translation>
 <translation id="7719367874908701697">பக்கத்தின் அளவு</translation>
 <translation id="775043444390799886">அனுமதியை ரத்துசெய்</translation>
+<translation id="7758789811447313947">ஊதா தீம்</translation>
 <translation id="7759147511335618829">MIDI சாதனக் கட்டுப்பாடு &amp; ரீ-புரோகிராம்</translation>
 <translation id="7781829728241885113">நேற்று</translation>
 <translation id="7791543448312431591">சேர்</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">எனக்கு நினைவூட்டு</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> குறித்து மேலும் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="7952708427581814389">கிளிப்போர்டில் உள்ள உரையையும் படங்களையும் தளங்கள் பார்க்க முயலும்போது அனுமதி கேள்</translation>
+<translation id="798299424881500862">ஆரஞ்சு தீம்</translation>
 <translation id="7986741934819883144">தொடர்பைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="7990211076305263060">இயக்கப்பட்டிருக்கும்போது, உங்கள் மைக்ரோஃபோனைப் பயன்படுத்த தளங்கள் அனுமதி கேட்கலாம். முடக்கப்பட்டிருக்கும்போது, உங்கள் மைக்ரோஃபோனைத் தளங்களால் பயன்படுத்த முடியாது.</translation>
 <translation id="8007176423574883786">இந்தச் சாதனத்திற்கு முடக்கப்பட்டுள்ளது</translation>

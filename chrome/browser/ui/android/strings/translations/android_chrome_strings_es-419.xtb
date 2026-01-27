@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Se abrirá <ph name="APP_NAME" /> en Chrome. Si continúas, aceptas las <ph name="BEGIN_LINK1" />Condiciones del Servicio de Google<ph name="END_LINK1" /> y las <ph name="BEGIN_LINK2" />Condiciones del Servicio Adicionales de Google Chrome y ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">No tienes contraseñas guardadas en el Administrador de contraseñas de Google.</translation>
 <translation id="115483310321669804">Usar la contraseña <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sincroniza pestañas y el historial</translation>
 <translation id="1165109137568919258">Toma una foto o agrega una imagen de tu galería para realizar una búsqueda</translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1174479719160874822">Si la pantalla es angosta, Chrome solicitará el sitio móvil</translation>
@@ -287,7 +288,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2247789808226901522">Se venció la tarjeta</translation>
 <translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
 <translation id="2251809247798634662">Nueva ventana de Incógnito</translation>
-<translation id="2253927598983295051">Elegir qué compartir con <ph name="APP_NAME" /></translation>
+<translation id="2253927598983295051">Elege qué quieres compartir con <ph name="APP_NAME" /></translation>
 <translation id="2261570557291037252">Más información de la app</translation>
 <translation id="2276696007612801991">Para verificar las contraseñas, accede a tu Cuenta de Google</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, pestaña de incógnito seleccionada</translation>
@@ -981,6 +982,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5210286577605176222">Ir a la pestaña anterior</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5212800876504289412">Reinicia Chrome para completar este cambio. Las pestañas se vuelven a abrir automáticamente cuando reinicias el navegador.</translation>
+<translation id="5213114823401215820">Volver a abrir el grupo cerrado</translation>
 <translation id="5215957675041756913">Controla tus datos y tu cuenta</translation>
 <translation id="5218324087477576825">El número de tarjeta es obligatorio</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y más <ph name="SEPARATOR" /> Chrome quitó estos permisos porque no visitaste el sitio recientemente</translation>
@@ -1436,6 +1438,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7020741890149022655">Agregar a lista de lect. <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir en el navegador</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
+<translation id="7037994709569287156">Establecer Chrome como predeterminado</translation>
 <translation id="7053256416619638731">Fortalece tus contraseñas en este dispositivo</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054588988317389591">¿Deseas obtener la descripción de las imágenes?</translation>
@@ -1801,6 +1804,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8458413889418591446">Para volver rápidamente a los sitios que visitaste, sincroniza el historial y las pestañas</translation>
 <translation id="84594714173170813">Sigue usando los datos de Chrome en tu Cuenta de Google</translation>
 <translation id="8460448946170646641">Revisa los controles de seguridad y privacidad más importantes</translation>
+<translation id="8460932807646981183">Administrar la búsqueda en sitios y los motores de búsqueda</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="847433688444405067">Navega en distintos dispositivos</translation>
 <translation id="8477178913400731244">Borrar datos</translation>

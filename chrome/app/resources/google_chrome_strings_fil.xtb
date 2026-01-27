@@ -176,7 +176,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2857540653560290388">Inilulunsad ang Chrome...</translation>
 <translation id="286025080868315611">Alamin kung bakit bina-block ng Chrome ang ilang pag-download</translation>
 <translation id="2861074815332034794">Ina-update ang Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Naka-sign in ka sa Chrome!</translation>
 <translation id="2875053229394024379">Kapag nag-sign in ka sa Chrome gamit ang iyong Google Account, puwede mong gamitin sa Gemini ang iyong profile sa Chrome. <ph name="BEGIN_LINK" />Matuto kung paano mag-sign in sa Chrome.<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chrome ang iyong data<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task Manager</translation>
@@ -331,7 +330,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4459234553906210702">Nagbibigay-daan ang pagsukat ng ad sa mga site na binibisita mo na humiling ng impormasyon mula sa Chrome na tumutulong sa site na sukatin ang performance ng mga ad ng mga ito. Pinaghihigpitan ng pagsukat ng ad ang cross-site na pagsubaybay sa pamamagitan ng paglilipat ng kaunting impormasyon hangga't posible sa pagitan ng mga site.</translation>
 <translation id="4493028449971051158">Nagkaroon ng error sa startup: patakbuhin ang installer bilang administrator.</translation>
 <translation id="4501471624619070934">Hindi na-install dahil pinaghihigpitan ang access sa bansang ito.</translation>
-<translation id="4567424176335768812">Naka-sign in ka bilang <ph name="USER_EMAIL_ADDRESS" />. Maaari mo na ngayong i-access ang iyong mga bookmark, kasaysayan, at iba pang setting sa lahat ng iyong device na naka-sign in.</translation>
 <translation id="4571503333518166079">Pumunta sa mga setting ng notification ng Chrome</translation>
 <translation id="4592634244097223647">Magtanong sa Google tungkol sa larawang ito</translation>
 <translation id="459622048091363950">Kapag mayroon nang access ang Chrome, makakahingi na ang mga website ng access sa iyo.</translation>
@@ -756,7 +754,6 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="8821043148920470810">Para makatanggap ng mga update sa Google Chrome sa hinaharap, mangangailangan ka ng Windows 10 o mas bago. Ang computer na ito ay gumagamit ng Windows 7.</translation>
 <translation id="8823341990149967727">Luma na ang Chrome</translation>
 <translation id="8834965163890861871">Sinusubukan ng Google Chrome na i-edit ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
-<translation id="8843516219908676469">Mas naiintindihan ng Chrome ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Inirerekomenda ng Chrome na alisin mo ito}one{Inirerekomenda ng Chrome na alisin mo ang mga ito}other{Inirerekomenda ng Chrome na alisin mo ang mga ito}}</translation>
 <translation id="8862326446509486874">Wala kang naaangkop na mga karapatan para sa pag-install sa antas ng system. Subukan muling patakbuhin ang installer bilang Administrator.</translation>
 <translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>

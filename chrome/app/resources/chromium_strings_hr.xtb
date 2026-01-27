@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">Novo! Možete prevesti tekst i slike na zaslonu</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1397530502368084401">&amp;Upravljajte profilima na Chromiumu</translation>
-<translation id="1414495520565016063">Prijavljeni ste na Chromium!</translation>
 <translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1465192221147974788">Da biste dijelili prozor, u postavkama sustava dopustite snimanje zaslona za Chromium.</translation>
 <translation id="1478370723027452770">Zatražite pomoć za Chrome for Testing</translation>
@@ -325,10 +324,8 @@
 <translation id="4510853178268397146">Ovo proširenje nije objavilo prakse u vezi s privatnošću, na primjer način na koji prikuplja i upotrebljava podatke. Chromium preporučuje da ga uklonite.</translation>
 <translation id="452711251841752011">Dobro došli u Chromium; otvorio se novi prozor preglednika</translation>
 <translation id="4531137820806573936">Chromium treba dopuštenje za mapiranje vaše okoline i praćenje vaših ruku</translation>
-<translation id="4534145890176164066">Chromium bolje razumije obrasce i može ih brže automatski popuniti</translation>
 <translation id="4536805923587466102">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom profilu u Chromiumu</translation>
 <translation id="4548534452171747496">Chromium predučitava stranice, što ubrzava pregledavanje i pretraživanje. <ph name="BEGIN_LINK" />Saznajte više o predučitavanju stranica<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete pristupiti svojim oznakama, povijesti i drugim postavkama na svim uređajima na kojima se prijavljujete.</translation>
 <translation id="4570813286784708942">Chromium je blokirao ovo preuzimanje jer ste isključili sigurno pregledavanje i datoteka se ne može potvrditi</translation>
 <translation id="4583692638088316420">Isprobajte Google objektiv uz Chromium na telefonu</translation>
 <translation id="4594305310729380060">U Upravitelj zaporki na ovom uređaju</translation>

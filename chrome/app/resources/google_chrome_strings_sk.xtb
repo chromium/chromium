@@ -174,7 +174,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2857540653560290388">Spúšťa sa Chrome…</translation>
 <translation id="286025080868315611">Prečo Chrome blokuje niektoré stiahnuté súbory</translation>
 <translation id="2861074815332034794">Aktualizuje sa Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Ste prihlásený/-á do prehliadača Chrome.</translation>
 <translation id="2875053229394024379">Keď sa do Chromu prihlásite svojím účtom Google, môžete používať svoj profil v Chrome s Gemini. <ph name="BEGIN_LINK" />Ako sa prihlásiť do Chromu<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Ako Chrome uchováva vaše údaje v súkromí<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Správca úloh</translation>
@@ -328,7 +327,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4459234553906210702">Meranie reklám umožňuje webom, ktoré navštívite, požadovať od Chromu údaje, ktoré im pomáhajú merať výkonnosť reklám. Meranie reklám obmedzuje sledovanie na rôznych weboch presúvaním minimálneho množstva údajov medzi webmi.</translation>
 <translation id="4493028449971051158">Chyba pri spustení: spustite inštalátor ako správca.</translation>
 <translation id="4501471624619070934">Nepodarilo sa nainštalovať, pretože v tejto krajine je obmedzený prístup.</translation>
-<translation id="4567424176335768812">Ste prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Teraz môžete na všetkých zariadeniach, kde ste prihlásený/-á, pristupovať k svojim záložkám, histórii a ďalším nastaveniam.</translation>
 <translation id="4571503333518166079">Prejsť do nastavení upozornení Chromu</translation>
 <translation id="4592634244097223647">Spýtať sa Googlu otázku o tomto obrázku</translation>
 <translation id="459622048091363950">Keď Chrome získa prístup, weby vás budú môcť žiadať o prístup.</translation>
@@ -753,7 +751,6 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="8821043148920470810">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 7.</translation>
 <translation id="8823341990149967727">Prehliadač Chrome je zastaraný</translation>
 <translation id="8834965163890861871">Google Chrome sa pokúša upraviť heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
-<translation id="8843516219908676469">Chrome lepšie rozumie formulárom a môže ich automaticky dopĺňať rýchlejšie za vás</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome odporúča, aby ste ho odstránili}few{Chrome odporúča, aby ste ich odstránili}many{Chrome recommends that you remove them}other{Chrome odporúča, aby ste ich odstránili}}</translation>
 <translation id="8862326446509486874">Nemáte potrebné práva na inštaláciu na úrovni systému. Skúste inštalátor spustiť znova ako správca.</translation>
 <translation id="8865415417596392024">Údaje Chromu vo vašom účte</translation>

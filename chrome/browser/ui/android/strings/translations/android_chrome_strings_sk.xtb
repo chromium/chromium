@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Aplikácia <ph name="APP_NAME" /> sa otvorí v Chrome. Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_LINK1" />zmluvnými podmienkami spoločnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatočnými zmluvnými podmienkami prehliadača Google Chrome a systému Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">V Správcovi hesiel Google nemáte uložené žiadne heslá.</translation>
 <translation id="115483310321669804">Použiť heslo <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Synchronizujte karty a históriu</translation>
 <translation id="1165109137568919258">Ak chcete vyhľadávať, nasnímajte fotku alebo pridajte obrázok z fotogalérie</translation>
 <translation id="1173894706177603556">Premenovať</translation>
 <translation id="1174479719160874822">Keď bude obrazovka úzka, Chrome bude žiadať o mobilný web</translation>
@@ -981,6 +982,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5210286577605176222">Prechod na predchádzajúcu kartu</translation>
 <translation id="5210365745912300556">Zatvoriť kartu</translation>
 <translation id="5212800876504289412">Ak chcete dokončiť túto zmenu, reštartujte Chrome. Karty sa po reštarte automaticky znova otvoria.</translation>
+<translation id="5213114823401215820">Znova otvoriť zatvorenú skupinu</translation>
 <translation id="5215957675041756913">Ovládajte svoje údaje a účet</translation>
 <translation id="5218324087477576825">Číslo karty je povinné</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ďalšie <ph name="SEPARATOR" /> Chrome odstránil tieto povolenia, pretože ste daný web v poslednom čase nenavštívili</translation>
@@ -1436,6 +1438,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7020741890149022655">Pridať do čit. zoznamu <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Otvoriť v prehliadači</translation>
 <translation id="7029809446516969842">Heslá</translation>
+<translation id="7037994709569287156">Nastaviť Chrome ako predvolený</translation>
 <translation id="7053256416619638731">Vytvorte si silnejšie heslá v tomto zariadení</translation>
 <translation id="7053983685419859001">Blokovať</translation>
 <translation id="7054588988317389591">Chcete získať popisy obrázkov?</translation>
@@ -1801,6 +1804,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8458413889418591446">Ak sa chcete rýchlo vrátiť na weby, ktoré ste navštívili, synchronizujte si históriu a karty</translation>
 <translation id="84594714173170813">Naďalej používajte údaje Chromu vo svojom účte Google</translation>
 <translation id="8460448946170646641">Skontrolujte hlavné ovládacie prvky ochrany súkromia a zabezpečenia</translation>
+<translation id="8460932807646981183">Spravovať vyhľadávače a vyhľadávanie na webe</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
 <translation id="847433688444405067">Prehliadajte rôzne zariadenia</translation>
 <translation id="8477178913400731244">Odstrániť dáta</translation>

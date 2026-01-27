@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="1006017844123154345">オンライン版を開く</translation>
 <translation id="1036348656032585052">オフにする</translation>
+<translation id="1046742265332833834">ブルーのテーマ</translation>
 <translation id="1070329623210597193">このサイトが表示または編集できるファイル</translation>
 <translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">サイトの PC 版を表示するようリクエストできます</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" /> により保存されたデータと Cookie がすべて削除されます。</translation>
+<translation id="1199963004393929848">グリーンのテーマ</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1240190568154816272">Chrome を使いこなすヒント</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> に埋め込まれたページ</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Discover フィード</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> の保存データ</translation>
 <translation id="3199078925536734975">一時的に許可 • おおよそ</translation>
+<translation id="3208584281581115441">今すぐ確認</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> に通知の送信を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも通知をオンにしてください。</translation>
 <translation id="3223425961342298674">位置情報は許可されていません</translation>
 <translation id="3227137524299004712">マイク</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">非表示にして、次に実行可能なアクションを表示</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3746834924069123416">最近使ったタブをもっと見る</translation>
+<translation id="3753618528540214374">ビリジアンのテーマ</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
 <translation id="3776508619697147021">サイトが複数のファイルの自動ダウンロードを要求できるようにする</translation>
 <translation id="3779154269823594982">パスワードを変更</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">電話番号</translation>
 <translation id="3823453485268218808">フォント Mono</translation>
 <translation id="3826050100957962900">サードパーティのログイン</translation>
+<translation id="3831065134033923230">保存したパスワードを確認する</translation>
 <translation id="3835233591525155343">デバイスのアクティブ状態</translation>
 <translation id="3843916486309149084">今日、Chrome で Cookie を再びブロックします</translation>
 <translation id="385051799172605136">戻る</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Discover フィードをオンにする</translation>
 <translation id="6012967556075291653">固定されたショートカット</translation>
 <translation id="6015775454662021376">このサイトによるデバイスへのアクセスを管理します</translation>
+<translation id="6022659036123304283">Chrome を自分用にカスタマイズ</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6064125863973209585">完了したダウンロード</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6205314730813004066">広告プライバシー</translation>
 <translation id="6207207788774442484">データを削除して権限をリセット</translation>
+<translation id="6218508144653756827">フューシャピンクのテーマ</translation>
 <translation id="6231752747840485235">「<ph name="APP_NAME" />」をアンインストールしますか？</translation>
 <translation id="6234351944623978659">[ブラウザアプリ] &gt; [Chrome] をタップします</translation>
 <translation id="6260830281887654268">新しいタブページの外観テーマ コレクションのボトムシートが画面の下半分に表示されています</translation>
 <translation id="6262191102408817757">最後のタブに基づく</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />をブロック</translation>
 <translation id="6270391203985052864">通知を送信するかどうかの確認をサイトに許可する</translation>
-<translation id="6278428485366576908">モード</translation>
 <translation id="6295158916970320988">すべてのサイト</translation>
 <translation id="6320088164292336938">バイブレーション</translation>
 <translation id="6367753977865761591">特定のサイトのサードパーティのログインをブロックします。</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> の <ph name="RWS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}other{<ph name="RWS_OWNER" /> の <ph name="RWS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">保護されたコンテンツ</translation>
+<translation id="6619015782482868078">アクアのテーマ</translation>
 <translation id="662080504995468778">とどまる</translation>
 <translation id="6630443592285535486">ここに 16 進数を入力</translation>
 <translation id="6635327442719709864">オンにすると、サイトはシリアルポートの使用を要求できます。オフにすると、サイトはシリアルポートを使用できません。</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">選択</translation>
 <translation id="6950072572526089586">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">ローズのテーマ</translation>
 <translation id="6980861169612950611">次のサイトデータを削除しますか？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="6991142177939282156">許可 • おおよその位置情報を使用</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> 件選択されています</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を許可</translation>
 <translation id="7276071417425470385">オンにすると、サイトはバーチャル リアリティ デバイスの使用を要求できます。オフにすると、サイトはバーチャル リアリティ デバイスを使用できません。</translation>
+<translation id="7282197670900591579">シトロンのテーマ</translation>
 <translation id="728412880473384942">サイトは速くなりますが、安全性は低下します</translation>
 <translation id="7366415735885268578">サイトの追加</translation>
 <translation id="7368695150573390554">オフライン データがすべて削除されます</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome のヒントカードを非表示にする</translation>
 <translation id="7719367874908701697">ページのズーム</translation>
 <translation id="775043444390799886">権限を取り消す</translation>
+<translation id="7758789811447313947">バイオレットのテーマ</translation>
 <translation id="7759147511335618829">MIDI デバイスの操作と再プログラム</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">リマインダーの設定</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> の詳細</translation>
 <translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
+<translation id="798299424881500862">オレンジのテーマ</translation>
 <translation id="7986741934819883144">連絡先の選択</translation>
 <translation id="7990211076305263060">オンにすると、サイトはマイクの使用を要求できます。オフにすると、サイトはマイクを使用できません。</translation>
 <translation id="8007176423574883786">このデバイスに対して無効</translation>

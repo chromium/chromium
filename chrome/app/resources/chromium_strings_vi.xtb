@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">Mới! Bạn có thể dịch cả văn bản và hình ảnh trên màn hình</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1397530502368084401">&amp;Quản lý hồ sơ trên Chromium</translation>
-<translation id="1414495520565016063">Bạn đã đăng nhập vào Chromium!</translation>
 <translation id="141901961143729572">Chia sẻ suy nghĩ của bạn</translation>
 <translation id="1465192221147974788">Để chia sẻ cửa sổ, hãy cho phép Chromium ghi màn hình trong phần Cài đặt hệ thống.</translation>
 <translation id="1478370723027452770">Nhận trợ giúp về Chrome for Testing</translation>
@@ -325,10 +324,8 @@
 <translation id="4510853178268397146">Tiện ích này chưa công bố các phương thức bảo vệ quyền riêng tư, chẳng hạn như cách tiện ích thu thập và sử dụng dữ liệu. Chromium khuyên bạn nên xoá tiện ích này.</translation>
 <translation id="452711251841752011">Chào mừng bạn đến với Chromium. Cửa sổ trình duyệt mới đã mở ra</translation>
 <translation id="4531137820806573936">Chromium cần có quyền tạo bản đồ về các khu vực xung quanh và theo dõi tay bạn</translation>
-<translation id="4534145890176164066">Chromium nắm rõ hơn các biểu mẫu và có thể tự động điền vào biểu mẫu nhanh hơn</translation>
 <translation id="4536805923587466102">Bạn đã đăng nhập bằng <ph name="USER_EMAIL_ADDRESS" /> trong một hồ sơ Chromium khác</translation>
 <translation id="4548534452171747496">Chromium tải trước các trang để giúp bạn duyệt web và tìm kiếm nhanh hơn. <ph name="BEGIN_LINK" />Tìm hiểu thêm về tính năng tải trước trang<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Bạn đã đăng nhập với tên <ph name="USER_EMAIL_ADDRESS" />. Bây giờ, bạn có thể truy cập dấu trang, lịch sử và các cài đặt khác trên tất cả những thiết bị đã đăng nhập của bạn.</translation>
 <translation id="4570813286784708942">Chromium đã chặn tệp tải xuống này do không thể xác minh tệp (vì bạn đã tắt tính năng Duyệt web an toàn)</translation>
 <translation id="4583692638088316420">Dùng thử Google Ống kính với Chromium trên điện thoại</translation>
 <translation id="4594305310729380060">Vào Trình quản lý mật khẩu trên thiết bị này</translation>

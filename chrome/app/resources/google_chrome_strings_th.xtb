@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">กำลังเปิด Chrome...</translation>
 <translation id="286025080868315611">ดูสาเหตุที่ Chrome บล็อกการดาวน์โหลดบางรายการ</translation>
 <translation id="2861074815332034794">กำลังอัปเดต Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">คุณได้ลงชื่อเข้าใช้ Chrome แล้ว!</translation>
 <translation id="2875053229394024379">เมื่อลงชื่อเข้าใช้ Chrome ด้วยบัญชี Google คุณจะใช้โปรไฟล์ Chrome กับ Gemini ได้ <ph name="BEGIN_LINK" />ดูวิธีลงชื่อเข้าใช้ Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />วิธีที่ Chrome ช่วยรักษาข้อมูลของคุณให้เป็นส่วนตัว<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">ตัวจัดการงาน</translation>
@@ -326,7 +325,6 @@
 <translation id="4459234553906210702">การวัดผลโฆษณาจะให้เว็บไซต์ที่คุณเข้าชมสามารถขอข้อมูลจาก Chrome เพื่อช่วยในการวัดประสิทธิภาพโฆษณาเว็บไซต์ดังกล่าวได้ การวัดผลโฆษณาจะจำกัดการติดตามข้ามเว็บไซต์โดยโอนข้อมูลระหว่างเว็บไซต์ให้น้อยที่สุด</translation>
 <translation id="4493028449971051158">ข้อผิดพลาดในการเริ่มต้น: โปรดเรียกใช้โปรแกรมติดตั้งในฐานะผู้ดูแลระบบ</translation>
 <translation id="4501471624619070934">การติดตั้งล้มเหลวเนื่องจากมีการควบคุมการเข้าใช้งานในประเทศนี้</translation>
-<translation id="4567424176335768812">คุณกำลังลงชื่อเข้าใช้เป็น <ph name="USER_EMAIL_ADDRESS" /> ตอนนี้คุณสามารถเข้าถึงบุ๊กมาร์ก ประวัติการเข้าชม และการตั้งค่าอื่นๆ บนอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้</translation>
 <translation id="4571503333518166079">ไปที่การตั้งค่าการแจ้งเตือน Chrome</translation>
 <translation id="4592634244097223647">ถาม Google เกี่ยวกับรูปภาพนี้</translation>
 <translation id="459622048091363950">เมื่อ Chrome มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้</translation>
@@ -747,7 +745,6 @@
 <translation id="8821043148920470810">คุณจะต้องใช้ Windows 10 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ Windows 7</translation>
 <translation id="8823341990149967727">Chrome ไม่ใช่เวอร์ชันล่าสุด</translation>
 <translation id="8834965163890861871">Google Chrome กำลังพยายามแก้ไขรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
-<translation id="8843516219908676469">Chrome เข้าใจแบบฟอร์มได้ดีขึ้นและสามารถป้อนข้อมูลอัตโนมัติให้คุณได้เร็วขึ้น</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome แนะนำให้คุณนำออก}other{Chrome แนะนําให้คุณนําออก}}</translation>
 <translation id="8862326446509486874">คุณไม่มีสิทธิ์ในการติดตั้งระดับระบบ ทดลองใช้งานโปรแกรมติดตั้งอีกครั้งโดยกำหนดให้เป็นผู้ดูแลระบบ</translation>
 <translation id="8865415417596392024">ข้อมูล Chrome ในบัญชี</translation>

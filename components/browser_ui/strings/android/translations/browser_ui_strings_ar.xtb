@@ -3,6 +3,7 @@
 <translationbundle lang="ar">
 <translation id="1006017844123154345">فتح على الإنترنت</translation>
 <translation id="1036348656032585052">إيقاف</translation>
+<translation id="1046742265332833834">مظهر باللون الأزرق</translation>
 <translation id="1070329623210597193">الملفات التي يمكن لهذا الموقع الإلكتروني عرضها أو تعديلها</translation>
 <translation id="1073417869336441572">‏ساعِدنا في تحسين متصفِّح Chrome من خلال إخبارنا بأسباب سماحك باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية. <ph name="BEGIN_LINK" />إرسال ملاحظات<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">يمكنك طلب عرض المواقع الإلكترونية بنسختها المخصّصة لأجهزة الكمبيوتر</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1192844206376121885">سيؤدي هذا الإجراء إلى حذف جميع البيانات وملفات تعريف الارتباط المُخزَّنة من خلال <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">مظهر باللون الأخضر</translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1240190568154816272">‏نصائح قيّمة من Chrome</translation>
 <translation id="1242008676835033345">مضمّن في <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">خلاصة ميزة "اقتراحات"</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> من البيانات المخزّنة</translation>
 <translation id="3199078925536734975">تم منح الإذن هذه المرّة • تقريبي</translation>
+<translation id="3208584281581115441">التحقّق الآن</translation>
 <translation id="321187648315454507">‏للسماح لتطبيق <ph name="APP_NAME" /> بإرسال الإشعارات إليك، يُرجى أيضًا تفعيل الإشعارات في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">تم رفض طلب الوصول إلى الموقع الجغرافي.</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">إغلاق الرسالة وعرض الإجراء المتاح التالي</translation>
 <translation id="3744111561329211289">المزامنة في الخلفية</translation>
 <translation id="3746834924069123416">الاطّلاع على المزيد من علامات التبويب الأخيرة</translation>
+<translation id="3753618528540214374">مظهر باللون الأخضر الزبرجدي</translation>
 <translation id="3763247130972274048">يُرجى النقر بشكل مزدوج على الفيديو يمينًا أو يسارًا لتخطّي 10 ثوانٍ.</translation>
 <translation id="3776508619697147021">السماح للمواقع الإلكترونية بطلب تنزيل عدّة ملفات تلقائيًا</translation>
 <translation id="3779154269823594982">تغيير كلمات المرور</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">أرقام الهواتف</translation>
 <translation id="3823453485268218808">‏خط Mono</translation>
 <translation id="3826050100957962900">طلبات تسجيل الدخول من خدمات الجهات الخارجية</translation>
+<translation id="3831065134033923230">التحقّق من كلمات المرور المحفوظة</translation>
 <translation id="3835233591525155343">استخدامك للجهاز</translation>
 <translation id="3843916486309149084">‏سيُعيد متصفِّح Chrome حظر ملفات تعريف الارتباط اليوم.</translation>
 <translation id="385051799172605136">رجوع</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">تفعيل خلاصة "الاقتراحات"</translation>
 <translation id="6012967556075291653">الاختصار المثبَّت</translation>
 <translation id="6015775454662021376">يمكنك التحكّم بإمكانية وصول هذا الموقع إلى جهازك.</translation>
+<translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
 <translation id="6064125863973209585">عمليات التنزيل المكتمِلة</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="6205314730813004066">الخصوصية في عرض الإعلانات</translation>
 <translation id="6207207788774442484">حذف البيانات وإعادة ضبط الأذونات</translation>
+<translation id="6218508144653756827">مظهر باللون الفوشيا</translation>
 <translation id="6231752747840485235">هل تريد إلغاء تثبيت "<ph name="APP_NAME" />"؟</translation>
 <translation id="6234351944623978659">‏انقر على تطبيق المتصفِّح &gt; Chrome</translation>
 <translation id="6260830281887654268">تم فتح البطاقة السفلية لمجموعات مظاهر صفحة "علامة تبويب جديدة" في نصف الشاشة</translation>
 <translation id="6262191102408817757">استنادًا إلى علامة التبويب الأخيرة</translation>
 <translation id="6262279340360821358">تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="6270391203985052864">السماح للمواقع الإلكترونية بطلب إرسال إشعارات</translation>
-<translation id="6278428485366576908">المظهر</translation>
 <translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="6320088164292336938">اهتزاز</translation>
 <translation id="6367753977865761591">يمكنك حظر تسجيل الدخول في الخدمات التابعة لجهات خارجية في موقع إلكتروني محدَّد.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{تم السماح باستخدام ملفات تعريف الارتباط لموقع إلكتروني واحد (<ph name="RWS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="RWS_OWNER" />"}zero{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="RWS_OWNER" />"}two{تم السماح باستخدام ملفات تعريف الارتباط لموقعَين إلكترونيَّين (<ph name="RWS_MEMBERS_COUNT" />) ضمن مجموعة "<ph name="RWS_OWNER" />"}few{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> مواقع إلكترونية ضمن مجموعة "<ph name="RWS_OWNER" />"}many{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقعًا إلكترونيًّا ضمن مجموعة "<ph name="RWS_OWNER" />"}other{تم السماح باستخدام ملفات تعريف الارتباط لـ <ph name="RWS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة "<ph name="RWS_OWNER" />"}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> غيغابايت</translation>
 <translation id="6612358246767739896">المحتوى المحمي</translation>
+<translation id="6619015782482868078">مظهر باللون الأزرق الفيروزي</translation>
 <translation id="662080504995468778">البقاء</translation>
 <translation id="6630443592285535486">يُرجى كتابة لون ست عشري هنا</translation>
 <translation id="6635327442719709864">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب استخدام المنافذ التسلسلية. أمّا في حال إيقافه، فلن تتمكّن من استخدام المنافذ التسلسلية.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">تحديد</translation>
 <translation id="6950072572526089586">يمكن للموقع الإلكتروني الذي تنتقل إليه حفظ معلومات عن أنشطتك التي تجريها عليه، وذلك حتى تعمل ميزاته على النحو المتوقّع، مثل إبقائك مسجَّلاً الدخول إلى الموقع الإلكتروني أو حفظ السلع في سلّة التسوّق. وغالبًا ما تحفظ المواقع الإلكترونية هذه المعلومات مؤقتًا على جهازك.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
+<translation id="6980507581230208647">مظهر باللون الوردي</translation>
 <translation id="6980861169612950611">هل تريد حذف بيانات الموقع الإلكتروني <ph name="SITE_NAME" />؟</translation>
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="6991142177939282156">تم السماح • يتم استخدام الموقع الجغرافي التقريبي</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378">تم اختيار <ph name="ITEM_COUNT" /> عنصراً</translation>
 <translation id="7260727271532453612">تم السماح بالوصول إلى <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="7276071417425470385">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب استخدام أجهزة الواقع الافتراضي. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام تلك الأجهزة.</translation>
+<translation id="7282197670900591579">مظهر باللون الليموني</translation>
 <translation id="728412880473384942">المواقع الإلكترونية أسرع ولكن أقل أمانًا</translation>
 <translation id="7366415735885268578">إضافة موقع إلكتروني</translation>
 <translation id="7368695150573390554">سيتم حذف أي بيانات متوفّرة بلا إنترنت.</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">‏إخفاء بطاقة "نصائح قيّمة من Chrome"</translation>
 <translation id="7719367874908701697">تكبير/تصغير الصفحة</translation>
 <translation id="775043444390799886">إبطال الإذن</translation>
+<translation id="7758789811447313947">مظهر باللون البنفسجي</translation>
 <translation id="7759147511335618829">‏التحكّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7791543448312431591">إضافة</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">تذكير</translation>
 <translation id="7948081750384205628">مزيد من المعلومات حول "<ph name="SETTING_TITLE" />"</translation>
 <translation id="7952708427581814389">السماح للمواقع الإلكترونية بطلب الاطّلاع على النصوص والصور التي تم نسخها إلى الحافظة</translation>
+<translation id="798299424881500862">مظهر باللون البرتقالي</translation>
 <translation id="7986741934819883144">اختيار جهة اتصال</translation>
 <translation id="7990211076305263060">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب استخدام الميكروفون. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام الميكروفون.</translation>
 <translation id="8007176423574883786">تم إيقافه لهذا الجهاز</translation>

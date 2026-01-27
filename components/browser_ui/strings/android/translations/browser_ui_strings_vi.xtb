@@ -3,6 +3,7 @@
 <translationbundle lang="vi">
 <translation id="1006017844123154345">Mở trực tuyến</translation>
 <translation id="1036348656032585052">Tắt</translation>
+<translation id="1046742265332833834">Giao diện màu xanh dương</translation>
 <translation id="1070329623210597193">Các tệp mà trang web này có thể xem hoặc chỉnh sửa</translation>
 <translation id="1073417869336441572">Hãy chia sẻ lý do bạn cho phép cookie của bên thứ ba để giúp chúng tôi cải thiện Chrome. <ph name="BEGIN_LINK" />Gửi phản hồi<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Bạn có thể yêu cầu xem phiên bản trang web dành cho máy tính</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Tạm dừng</translation>
 <translation id="1181037720776840403">Xoá</translation>
 <translation id="1192844206376121885">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do <ph name="ORIGIN" /> lưu trữ.</translation>
+<translation id="1199963004393929848">Giao diện màu xanh lục</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1240190568154816272">Mẹo dùng Chrome</translation>
 <translation id="1242008676835033345">Được nhúng trên <ph name="WEBSITE_URL" /></translation>
@@ -214,6 +216,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3167868116600277716">Nguồn cấp dữ liệu khám phá</translation>
 <translation id="3198916472715691905">Dữ liệu đã lưu trữ: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Được cho phép lần này • Vị trí ước chừng</translation>
+<translation id="3208584281581115441">Kiểm tra ngay</translation>
 <translation id="321187648315454507">Để cho phép <ph name="APP_NAME" /> gửi thông báo cho bạn, hãy bật cả thông báo trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Không cho phép truy cập thông tin vị trí</translation>
 <translation id="3227137524299004712">Micrô</translation>
@@ -263,6 +266,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3721953990244350188">Đóng và hiện thao tác có sẵn tiếp theo</translation>
 <translation id="3744111561329211289">Đồng bộ hoá trong nền</translation>
 <translation id="3746834924069123416">Xem các thẻ gần đây khác</translation>
+<translation id="3753618528540214374">Giao diện màu xanh lục ánh lam</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
 <translation id="3776508619697147021">Các trang web có thể yêu cầu tự động tải nhiều tệp xuống</translation>
 <translation id="3779154269823594982">Đổi mật khẩu</translation>
@@ -272,6 +276,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="381841723434055211">Số điện thoại</translation>
 <translation id="3823453485268218808">Phông chữ đơn cách</translation>
 <translation id="3826050100957962900">Đăng nhập qua bên thứ ba</translation>
+<translation id="3831065134033923230">Kiểm tra mật khẩu bạn đã lưu</translation>
 <translation id="3835233591525155343">Hoạt động dùng thiết bị</translation>
 <translation id="3843916486309149084">Hôm nay, Chrome sẽ chặn cookie trở lại</translation>
 <translation id="385051799172605136">Quay lại</translation>
@@ -474,6 +479,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="5998071268779572583">Bật nguồn cấp dữ liệu khám phá</translation>
 <translation id="6012967556075291653">Lối tắt đã ghim</translation>
 <translation id="6015775454662021376">Kiểm soát quyền truy cập của trang web này vào thiết bị của bạn</translation>
+<translation id="6022659036123304283">Tuỳ chỉnh Chrome theo cách của bạn</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
 <translation id="6064125863973209585">Đã hoàn tất quá trình tải xuống</translation>
@@ -491,13 +497,13 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="6196640612572343990">Chặn cookie của bên thứ ba</translation>
 <translation id="6205314730813004066">Quyền riêng tư trong quảng cáo</translation>
 <translation id="6207207788774442484">Xoá dữ liệu và đặt lại quyền</translation>
+<translation id="6218508144653756827">Giao diện màu hồng hoa vân anh</translation>
 <translation id="6231752747840485235">Gỡ cài đặt "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Nhấn vào Ứng dụng trình duyệt &gt; Chrome</translation>
 <translation id="6260830281887654268">Bảng bộ sưu tập giao diện trang thẻ mới ở dưới cùng đã mở trên một nửa màn hình</translation>
 <translation id="6262191102408817757">Dựa trên thẻ gần đây nhất của bạn</translation>
 <translation id="6262279340360821358">Đã chặn: <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Các trang web có thể yêu cầu gửi thông báo</translation>
-<translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6320088164292336938">Rung</translation>
 <translation id="6367753977865761591">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
@@ -524,6 +530,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="659938948789980540">{COUNT,plural, =1{Đã cho phép <ph name="RWS_MEMBERS_COUNT" /> trang web của <ph name="RWS_OWNER" /> sử dụng cookie}other{Đã cho phép <ph name="RWS_MEMBERS_COUNT" /> trang web của <ph name="RWS_OWNER" /> sử dụng cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Nội dung được bảo vệ</translation>
+<translation id="6619015782482868078">Giao diện màu xanh lơ</translation>
 <translation id="662080504995468778">Ở lại</translation>
 <translation id="6630443592285535486">Nhập mã màu hex tại đây</translation>
 <translation id="6635327442719709864">Khi bạn bật nút này, các trang web có thể yêu cầu sử dụng cổng nối tiếp. Khi bạn tắt nút này, các trang web không thể sử dụng cổng nối tiếp.</translation>
@@ -552,6 +559,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6950072572526089586">Trang web bạn truy cập có thể lưu thông tin về những việc bạn đang làm để có thể vận hành như dự kiến, ví dụ: để duy trì trạng thái đăng nhập vào một trang web hoặc lưu các mặt hàng vào giỏ hàng. Thông thường, các trang web lưu thông tin này tạm thời trên thiết bị của bạn.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Giao diện màu hoa hồng</translation>
 <translation id="6980861169612950611">Xoá dữ liệu trang web? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="6991142177939282156">Được cho phép • Sử dụng vị trí ước chừng</translation>
@@ -580,6 +588,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7250468141469952378">Đã chọn <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Đã cho phép: <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị thực tế ảo. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị thực tế ảo.</translation>
+<translation id="7282197670900591579">Giao diện màu vàng vỏ chanh</translation>
 <translation id="728412880473384942">Các trang web này nhanh hơn nhưng kém an toàn hơn</translation>
 <translation id="7366415735885268578">Thêm trang web</translation>
 <translation id="7368695150573390554">Mọi dữ liệu ngoại tuyến sẽ bị xoá</translation>
@@ -618,6 +627,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7688240020069572972">Ẩn thẻ mẹo dùng Chrome</translation>
 <translation id="7719367874908701697">Thu phóng trang</translation>
 <translation id="775043444390799886">Thu hồi quyền</translation>
+<translation id="7758789811447313947">Giao diện màu tím</translation>
 <translation id="7759147511335618829">Lập trình lại và điều khiển thiết bị MIDI</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7791543448312431591">Thêm</translation>
@@ -636,6 +646,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7940722705963108451">Nhắc tôi</translation>
 <translation id="7948081750384205628">Tìm hiểu thêm về <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Các trang web có thể yêu cầu xem văn bản và hình ảnh trên bảng nhớ tạm</translation>
+<translation id="798299424881500862">Giao diện màu cam</translation>
 <translation id="7986741934819883144">Chọn một người liên hệ</translation>
 <translation id="7990211076305263060">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng micrô của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng micrô của bạn.</translation>
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>

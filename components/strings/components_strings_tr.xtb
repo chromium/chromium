@@ -278,6 +278,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="142559998533702194">Yükleme başarısız</translation>
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1427192966110103169">Özel Yüzme Havuzları, Saunalar ve Spalar</translation>
+<translation id="142740183218637661">Chrome tarayıcı, hassas bilgileri göstermeye çalışıyor</translation>
 <translation id="1428146450423315676">Yığınlayıcı 7</translation>
 <translation id="142858679511221695">Bulut kullanıcısı</translation>
 <translation id="1429080515485835353">Kendinden Yapışkanlı Film</translation>
@@ -371,6 +372,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Bu web sayfasını görüntülerken bir hata oluştu.</translation>
 <translation id="1584492003828271317">İnternette gezinirken gördüğünüz bir reklamın kişiselleştirilmiş olup olmaması bu ayara, site tarafından önerilen reklamlara, çerez ayarlarınıza ve görüntülediğiniz sitenin reklamları kişiselleştirip kişiselleştirmediğine bağlıdır</translation>
+<translation id="1585306568496579337">"<ph name="EXTENSION_NAME" />" uzantısı, <ph name="PROTOCOL" /> bağlantılarını <ph name="HANDLER_HOSTNAME" /> üzerinden açmak istiyor</translation>
 <translation id="1586541204584340881">Hangi uzantıları yüklediğiniz</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="159103247796286390">Tabloyu yeniden adlandır</translation>
@@ -428,6 +430,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1663943134801823270">Kartlar ve adresler Chrome'dan alınmaktadır. Bu bilgileri <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'dan yönetebilirsiniz.</translation>
 <translation id="1664389769577564606">Flekso Fotopolimer</translation>
 <translation id="166624440456221306">Karşılaştırma tablosunu sil</translation>
+<translation id="1667730174533834274">ayarları değiştirmeden önce kimliğinizi doğrulamaya</translation>
 <translation id="1668071460721346172">E-postayla</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilinden <ph name="TARGET_LANGUAGE" /> diline</translation>
 <translation id="1682696192498422849">Önce kısa kenar</translation>
@@ -1593,6 +1596,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3549904448933807997">Tarayıcılar ve profillerle ilgili bilgiler (kişisel ve iş profilleri dahil)</translation>
 <translation id="3552155506104542239">Uyarı: Bu politika <ph name="POLICY_NAME" /> ile çakıştığından Android uygulamalarını etkilemeyecektir. Bunun dışında politika beklendiği şekilde çalışmaktadır.</translation>
 <translation id="3552297013052089404">Sans-Serif Yazı Tipi</translation>
+<translation id="3558335486599406178">IBAN, Google Cüzdan'a kaydedildi</translation>
 <translation id="3558573058928565255">Gündüz</translation>
 <translation id="3559897352860026926">Yöneticinizden <ph name="CLOUD_PROVIDER" /> yapılandırma ayarlarını doğrulamasını isteyin.</translation>
 <translation id="3560824484345057728">İlgili siteleri göster</translation>
@@ -1642,6 +1646,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3615309852743236517">Manikür ve Pedikür</translation>
 <translation id="3620034424637552643">Genellikle yol tarifleri, teslimatlar ve daha fazlası için kullanılır</translation>
 <translation id="3620239073311576716">Üniformalar ve İş Kıyafetleri</translation>
+<translation id="3620865353340165509">Bu IBAN, Google Cüzdan'a kaydedilemedi. Bunun yerine bu cihazdaki Chrome'a kaydedildi. Chrome, bir dahaki sefer bu IBAN'ı kullandığınızda tekrar soracak.</translation>
 <translation id="3621401353678567613">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarıları almak için ayarlardan bildirimleri etkinleştirin.</translation>
 <translation id="362276910939193118">Tam Geçmişi Göster</translation>
 <translation id="3623041590998910684">Kameranızı kullanması için Chrome'a <ph name="LINK" /> üzerinden erişim izni verin.</translation>
@@ -1727,6 +1732,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3727309136762649052">Ad alanı</translation>
 <translation id="3727850735097852673">Google Şifre Yöneticisi'ni macOS Anahtar Zinciri ile kullanmak için Chrome'u yeniden başlatıp Anahtar Zinciri'ne erişim izni verin. Chrome yeniden başlatıldıktan sonra sekmeleriniz tekrar açılır.</translation>
 <translation id="3728173127485570463">Chrome tarayıcının şifreleri otomatik olarak doldurması için artık parmak iziniz gerekmeyecek</translation>
+<translation id="3736564442532774454">Chrome tarayıcı, <ph name="APP_NAME" /> adresinde hassas bilgilerinizi doldurmaya çalışıyor.</translation>
 <translation id="3738166223076830879">Tarayıcınız, kuruluşunuz tarafından yönetilmektedir.</translation>
 <translation id="3739842843727261045">Beğenme düğmesini tıkladığınızda bu sonuçların hoşunuza gittiğine dair geri bildirim gönderilir.</translation>
 <translation id="3740447166056383374">Kopyalamadan önce dosyaların incelenmesi gerekir</translation>
@@ -1923,6 +1929,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4061573458783426621">Tarama, OneDrive'a kaydedilemiyor</translation>
 <translation id="4063063121357725926">Google'ın alışveriş sepetleriniz için indirimler bulmasına izin verin</translation>
 <translation id="406358100705415968">İş Güvenliği İçin Koruyucu Donanımlar</translation>
+<translation id="4065429683324339709">Google Chrome, ayarları değiştirmeden önce kimliğinizi doğrulamak istiyor</translation>
 <translation id="4065659219963895623">Restoranlar</translation>
 <translation id="4067774859633143413">Tam ekrandan çıkıp indirme işlemini görmek için |<ph name="ACCELERATOR" />| tuşunu basılı tutun</translation>
 <translation id="4067947977115446013">Geçerli Adres Ekleyin</translation>
@@ -2234,6 +2241,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4528888973346221791">İş profili bilgileri (ör. kullanıcı adınız)</translation>
 <translation id="4530347922939905757">Kısa mesaj</translation>
 <translation id="4531477351494678589">Sanal kart numarası:</translation>
+<translation id="4534145890176164066">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir.</translation>
 <translation id="4535523368173457420">Bölgenizde popüler olan bu arama motorları rastgele sırayla gösterilmiştir</translation>
 <translation id="4535602490975885745">Fotoğraf, OneDrive'a kaydedilemiyor</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{1 yıl önce oluşturuldu}other{{NUM_YEARS} yıl önce oluşturuldu}}</translation>
@@ -2445,6 +2453,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4882314601499260499">Hiçbir kullanıcı politikası uygulanmadı. Kullanıcı politikaları eklemek için kuruluşunuzun <ph name="LINK_BEGIN" />alanınızı doğrulaması<ph name="LINK_END" /> gerekir.</translation>
 <translation id="4885030148564729407">Balayı ve Romantik Kaçamaklar</translation>
 <translation id="4885256590493466218">Ödeme sırasında <ph name="CARD_DETAIL" /> ile ödeyin</translation>
+<translation id="4886565443854420066">Chrome tarayıcı, ayarları değiştirmeden önce kimliğinizi doğrulamak istiyor</translation>
 <translation id="4887406273302438710">Windows Hello ile şifreleri koruma</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında tarama geçmişinizi, çerezleri, önbelleği ve başka öğeleri silmek için Sekme'ye, sonra Enter'a basın</translation>
 <translation id="4892518386797173871">Arka</translation>
@@ -2789,6 +2798,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
             <ph name="LIST_ITEM" />Çerezler ve site verileri
             <ph name="LIST_ITEM" />Formlara girilen bilgiler
           <ph name="END_LIST" /></translation>
+<translation id="5434803328547504573">Daha hızlı ödeme yapmak için bu CVC'yi Google Cüzdan'a (<ph name="ACCOUNT_EMAIL" />) kaydedin</translation>
 <translation id="5436307623797390637">Cihazdaki uygulamalar</translation>
 <translation id="5443468954631487277">Ters sırada ön yüz yukarı bakacak şekilde</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> sitesinin sizinle ilgili kaydettiği bilgileri kullanmasına izin verin</translation>
@@ -2887,6 +2897,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5578606540385219379">Servis Sağlayıcılar</translation>
 <translation id="5580958916614886209">Son kullanma tarihinin ayını kontrol edip tekrar deneyin</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> karşılaştırma tablosuyla ilgili diğer işlemler</translation>
+<translation id="55841966151154662">Bu IBAN, Google Cüzdan'a kaydedilemedi. Bunun yerine bu cihazdaki Chrome'a kaydedildi.</translation>
 <translation id="558420943003240152">Şifreleri ve şifre anahtarlarını yönetin…</translation>
 <translation id="5586446728396275693">Kaydedilmiş adres yok</translation>
 <translation id="5586831831248371458">Ara: <ph name="KEYWORD_SUFFIX" /></translation>
@@ -2919,6 +2930,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="563324245173044180">Yanıltıcı içerik engellendi.</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5635478143789726479">Satıcıya ait Hükümler ve Koşullar</translation>
+<translation id="5640474731385449758">"<ph name="EXTENSION_NAME" />" uzantısı, <ph name="ORIGIN" /> adresindeki <ph name="PROTOCOL" /> bağlantılarını <ph name="HANDLER_HOSTNAME" /> üzerinden açmak istiyor</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereo Sistemler ve Parçaları</translation>
 <translation id="5644090287519800334">Taraf 1 resim X kayması</translation>
@@ -3061,6 +3073,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5890248301649767931">Redress numarası kaydedilsin mi?</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5895187275912066135">Verildiği Tarih</translation>
+<translation id="5895694128043506580">Google Chrome, hassas bilgileri göstermeye çalışıyor</translation>
 <translation id="5898767305816764989">Beğenme düğmesi, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> önerisini beğendiğinize dair geri bildirim göndermek için Enter tuşuna basın</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5903264686717710770">Başlık:</translation>
@@ -3502,6 +3515,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6569060085658103619">Bir uzantı sayfası görüntülüyorsunuz</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> arama motoruna istediğinizi sorun</translation>
 <translation id="6573200754375280815">Sağda ikili delik</translation>
+<translation id="6573973523249076555">Google Chrome, <ph name="APP_NAME" /> adresinde hassas bilgilerinizi doldurmaya çalışıyor.</translation>
 <translation id="6575408526598156416">Hesaba kaydet</translation>
 <translation id="6577792494180292262">Risk Sermayesi</translation>
 <translation id="6578434528542148658">Geçersiz uzantı kimliği.</translation>
@@ -3625,6 +3639,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6779290995699117286">Yöneticiniz; profil, tarayıcı ve cihaz bilgilerine erişebilir. Şu bilgileri görebilir:</translation>
 <translation id="6779348349813025131">Google Şifre Yöneticisi'nin MacOS Anahtar Zinciri'ne erişmesi gerekiyor</translation>
 <translation id="6780449997190414928">Bu siteye genelde güvenli bir şekilde bağlanıyorsunuz, ancak Chrome bu kez güvenli bir bağlantı kuramadı. Bir saldırgan, ağ bağlantınızı gizlice izlemeye veya değiştirmeye çalışıyor olabilir. <ph name="LEARN_MORE" /></translation>
+<translation id="6783857615096909676"><ph name="HANDLER_HOSTNAME" /> sitesinin <ph name="PROTOCOL" /> bağlantılarını açmasına her zaman izin ver</translation>
 <translation id="6785990323398321538">Arama motorunuzu istediğiniz zaman Chrome ayarlarından değiştirebilirsiniz.</translation>
 <translation id="6786145470008421571">Zarf 6 x 9 inç</translation>
 <translation id="6786747875388722282">Uzantılar</translation>
@@ -4075,6 +4090,7 @@ Ek ayrıntılar:
 <translation id="7473891865547856676">Hayır, teşekkürler</translation>
 <translation id="7481312909269577407">İleri</translation>
 <translation id="7481603210197454575">Zarf Italian</translation>
+<translation id="7482823403440483089">Gelişmiş otomatik doldurma</translation>
 <translation id="7483482939016730822">Okul Malzemeleri ve Sınıf Gereçleri</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome ipucunu kapatmak için Sekme tuşuna, ardından Enter'a basın.</translation>
 <translation id="7485085230273446323">Ticari ve Endüstriyel Hizmetler</translation>
@@ -4324,6 +4340,7 @@ Ek ayrıntılar:
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> yer alan yeni son kullanma tarihini ve CVC'yi girin</translation>
 <translation id="7862185352068345852">Siteden çıkılsın mı?</translation>
+<translation id="7862306158978555061">hassas bilgileri göstermeye</translation>
 <translation id="7865448901209910068">En iyi hız</translation>
 <translation id="7865482168955081228">"Şimdi al sonra öde" hata ekranı kapatıldı.</translation>
 <translation id="7870281855125116701">İndirim Bulundu</translation>
@@ -4709,6 +4726,7 @@ Ek ayrıntılar:
 <translation id="8488350697529856933">Uygulandığı yer</translation>
 <translation id="8490137692873530638">Yığınlayıcı 10</translation>
 <translation id="8493948351860045254">Yer aç</translation>
+<translation id="8498870489552322848"><ph name="APP_NAME" /> adresinde hassas bilgilerinizi doldurmaya</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ana makinesinin yanıt vermesi çok uzun sürdü.</translation>
 <translation id="8502023382441452707">Doğum Günleri ve İsim Günleri</translation>
 <translation id="8503559462189395349">Chrome Şifreleri</translation>
@@ -4913,6 +4931,7 @@ Ek ayrıntılar:
 <translation id="883848425547221593">Diğer Yer İşaretleri</translation>
 <translation id="8842351563145134519">Dokunarak doldurulabilen ödeme yöntemleri ekranın yarısına kadar açıldı.</translation>
 <translation id="884264119367021077">Gönderim adresi</translation>
+<translation id="8843516219908676469">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir.</translation>
 <translation id="8849032795302265570">Çalışanlarınızın web'de gezinme şeklini kolayca yönetin</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">İptal mekanizması bulunamadı.</translation>

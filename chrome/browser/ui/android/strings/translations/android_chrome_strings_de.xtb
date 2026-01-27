@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> wird in Chrome geöffnet. Wenn du fortfährst, stimmst du den <ph name="BEGIN_LINK1" />Google-Nutzungsbedingungen<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />Zusatzbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu.</translation>
 <translation id="1154555449933432029">Im Google Passwortmanager sind keine Passwörter gespeichert.</translation>
 <translation id="115483310321669804">Passwort <ph name="PASSWORD" /> verwenden</translation>
+<translation id="1161065531352634524">Tabs und Verlauf synchronisieren</translation>
 <translation id="1165109137568919258">Nimm ein Foto auf oder füge ein Bild aus deiner Fotogalerie hinzu, um zu suchen</translation>
 <translation id="1173894706177603556">Umbenennen</translation>
 <translation id="1174479719160874822">Chrome fordert bei schmalem Display die mobile Website an</translation>
@@ -981,6 +982,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5210286577605176222">Zum vorherigen Tab wechseln</translation>
 <translation id="5210365745912300556">Schließen</translation>
 <translation id="5212800876504289412">Starte Chrome neu, um diese Änderung abzuschließen. Tabs werden beim Neustart automatisch wieder geöffnet.</translation>
+<translation id="5213114823401215820">Geschlossene Gruppe wieder öffnen</translation>
 <translation id="5215957675041756913">Daten und Konto verwalten</translation>
 <translation id="5218324087477576825">Kartennummer, erforderlich</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und weitere <ph name="SEPARATOR" /> Chrome hat diese Berechtigungen entfernt, weil du die Website in letzter Zeit nicht besucht hast</translation>
@@ -1436,6 +1438,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7020741890149022655">Zur Leseliste hinzufügen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Im Browser öffnen</translation>
 <translation id="7029809446516969842">Passwörter</translation>
+<translation id="7037994709569287156">Chrome als Standardbrowser festlegen</translation>
 <translation id="7053256416619638731">Passwörter auf diesem Gerät sicherer machen</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7054588988317389591">Bildbeschreibungen abrufen?</translation>
@@ -1801,6 +1804,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8458413889418591446">Wenn du deinen Verlauf und deine Tabs synchronisierst, kannst du bereits besuchte Websites schnell wieder aufrufen</translation>
 <translation id="84594714173170813">Chrome-Daten in deinem Google-Konto weiterhin verwenden</translation>
 <translation id="8460448946170646641">Die wichtigsten Datenschutz- und Sicherheitseinstellungen überprüfen</translation>
+<translation id="8460932807646981183">Suchmaschinen und die Websitesuche verwalten</translation>
 <translation id="8473863474539038330">Adressen und andere Daten</translation>
 <translation id="847433688444405067">Geräteübergreifend surfen</translation>
 <translation id="8477178913400731244">Daten löschen</translation>

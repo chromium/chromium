@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">Nyhed! Du kan oversætte både tekst og billeder på din skærm</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1397530502368084401">&amp;Administrer Chromium-profiler</translation>
-<translation id="1414495520565016063">Du er logget ind på Chromium.</translation>
 <translation id="141901961143729572">Del dine tanker</translation>
 <translation id="1465192221147974788">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele dit vindue.</translation>
 <translation id="1478370723027452770">Få hjælp til Chrome for Testing</translation>
@@ -325,10 +324,8 @@
 <translation id="4510853178268397146">Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data. Chromium anbefaler, at du fjerner den.</translation>
 <translation id="452711251841752011">Velkommen til Chromium – Et nyt browservindue er åbnet</translation>
 <translation id="4531137820806573936">Chromium skal have tilladelse til at registrere dine omgivelser og håndbevægelser</translation>
-<translation id="4534145890176164066">Chromium er bedre til at forstå formularer og kan udfylde dem automatisk for dig</translation>
 <translation id="4536805923587466102">Du er allerede logget ind som <ph name="USER_EMAIL_ADDRESS" /> på en anden Chromium-profil</translation>
 <translation id="4548534452171747496">Chromium forudindlæser sider, hvilket gør det hurtigere at browse og søge. <ph name="BEGIN_LINK" />Få flere oplysninger om forudindlæsning af sider<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Du er logget ind som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du få adgang til dine bogmærker, din historik og andre indstillinger på alle de enheder, hvor du er logget ind.</translation>
 <translation id="4570813286784708942">Chromium har blokeret denne download, fordi du har deaktiveret Beskyttet browsing, og filen ikke kan verificeres</translation>
 <translation id="4583692638088316420">Prøv Google Lens med Chromium på din telefon</translation>
 <translation id="4594305310729380060">I Adgangs­kode­admin­istrator på denne enhed</translation>

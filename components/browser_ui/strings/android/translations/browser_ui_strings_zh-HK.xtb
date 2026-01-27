@@ -3,6 +3,7 @@
 <translationbundle lang="zh-HK">
 <translation id="1006017844123154345">在線上開啟</translation>
 <translation id="1036348656032585052">停用</translation>
+<translation id="1046742265332833834">藍色主題</translation>
 <translation id="1070329623210597193">此網站可以查看或編輯的檔案</translation>
 <translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">你可要求查看桌面版網站</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1192844206376121885">這會刪除 <ph name="ORIGIN" /> 儲存的所有資料和 Cookie。</translation>
+<translation id="1199963004393929848">綠色主題</translation>
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1240190568154816272">Chrome 提示</translation>
 <translation id="1242008676835033345">嵌入至 <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">探索動態消息</translation>
 <translation id="3198916472715691905">已使用 <ph name="STORAGE_AMOUNT" /> 儲存空間</translation>
 <translation id="3199078925536734975">這次允許 • 概略位置</translation>
+<translation id="3208584281581115441">立即檢查</translation>
 <translation id="321187648315454507">如要讓 <ph name="APP_NAME" /> 傳送通知，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟通知功能。</translation>
 <translation id="3223425961342298674">唔批准存取位置資料</translation>
 <translation id="3227137524299004712">麥克風</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">閂同顯示下一個可以執行嘅操作</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3746834924069123416">睇多啲最近打開嘅分頁</translation>
+<translation id="3753618528540214374">鉻綠色主題</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
 <translation id="3776508619697147021">網站可要求自動下載多個檔案</translation>
 <translation id="3779154269823594982">變更密碼</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">電話號碼</translation>
 <translation id="3823453485268218808">字型等寬</translation>
 <translation id="3826050100957962900">第三方登入</translation>
+<translation id="3831065134033923230">檢查您已儲存的密碼</translation>
 <translation id="3835233591525155343">您的裝置使用狀態</translation>
 <translation id="3843916486309149084">Chrome 將於今天再次封鎖 Cookie</translation>
 <translation id="385051799172605136">返回</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">打開「探索」動態消息</translation>
 <translation id="6012967556075291653">置頂的捷徑</translation>
 <translation id="6015775454662021376">控制此網站對裝置的存取權</translation>
+<translation id="6022659036123304283">自訂屬於您的 Chrome</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6042308850641462728">更多選項</translation>
 <translation id="6064125863973209585">下載完成</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6205314730813004066">廣告私隱權</translation>
 <translation id="6207207788774442484">刪除資料並重設權限</translation>
+<translation id="6218508144653756827">紫紅色主題</translation>
 <translation id="6231752747840485235">要解除安裝「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="6234351944623978659">輕按 [瀏覽器應用程式] &gt; [Chrome]</translation>
 <translation id="6260830281887654268">新分頁外觀主題集頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="6262191102408817757">根據您最近的分頁</translation>
 <translation id="6262279340360821358">已封鎖「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
-<translation id="6278428485366576908">主題背景</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6320088164292336938">震動</translation>
 <translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{已允許 <ph name="RWS_MEMBERS_COUNT" /> 個 <ph name="RWS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="RWS_MEMBERS_COUNT" /> 個 <ph name="RWS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>
+<translation id="6619015782482868078">水藍色主題</translation>
 <translation id="662080504995468778">不離開</translation>
 <translation id="6630443592285535486">在此輸入十六進制值</translation>
 <translation id="6635327442719709864">開咗之後，網站可以要求用序列連接埠。閂咗之後，網站就用唔到序列連接埠。</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">選取</translation>
 <translation id="6950072572526089586">你瀏覽的網站可儲存你在網站上的活動資料，以便正常運作，例如在網站上保持登入狀態或儲存購物車內的商品。網站通常會暫時在裝置上儲存這些資料。</translation>
 <translation id="6965382102122355670">確定</translation>
+<translation id="6980507581230208647">玫瑰色主題</translation>
 <translation id="6980861169612950611">要刪除網站資料嗎？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">協助工具</translation>
 <translation id="6991142177939282156">已允許 • 正在使用概略位置</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378">揀咗 <ph name="ITEM_COUNT" /> 個</translation>
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="7276071417425470385">開咗之後，網站可以要求使用虛擬實境裝置。閂咗之後，網站唔可以使用虛擬實境裝置。</translation>
+<translation id="7282197670900591579">青檸色主題</translation>
 <translation id="728412880473384942">網站更快，但安全性較低</translation>
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7368695150573390554">系統將刪除所有離線資料</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">隱藏 Chrome 提示卡</translation>
 <translation id="7719367874908701697">頁面縮放</translation>
 <translation id="775043444390799886">撤回權限</translation>
+<translation id="7758789811447313947">紫色主題</translation>
 <translation id="7759147511335618829">MIDI 裝置控制和重新編程</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">新增</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7948081750384205628">進一步瞭解<ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">網站可要求查看剪貼簿上的文字和圖片</translation>
+<translation id="798299424881500862">橙色主題</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7990211076305263060">開咗之後，網站可以要求使用麥克風。閂咗之後，網站唔可以使用麥克風。</translation>
 <translation id="8007176423574883786">已為這部裝置關閉</translation>

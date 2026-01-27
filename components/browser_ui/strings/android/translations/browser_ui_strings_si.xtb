@@ -3,6 +3,7 @@
 <translationbundle lang="si">
 <translation id="1006017844123154345">සබැඳිව විවෘත කරන්න</translation>
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
+<translation id="1046742265332833834">නිල් තේමාව</translation>
 <translation id="1070329623210597193">මෙම අඩවියේ ගොනු බැලීමට හෝ සංස්කරණය කිරීමට හැක</translation>
 <translation id="1073417869336441572">ඔබ තෙවන පාර්ශ්ව කුකීවලට ඉඩ දුන් හේතුව අපට පවසා Chrome දියුණු කිරීමට අපට උදවු කරන්න. <ph name="BEGIN_LINK" />ප්‍රතිපෝෂණය යවන්න<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">ඔබට වෙබ් අඩවි වල ඩෙස්ක්ටොප් අනුවාදය බැලීමට ඉල්ලා සිටිය හැක</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1192844206376121885">මෙය <ph name="ORIGIN" /> මගින් ගබඩා කර ඇති සියලු දත්ත සහ කුකීස් මකනු ඇත.</translation>
+<translation id="1199963004393929848">කොළ තේමාව</translation>
 <translation id="1201402288615127009">ඊළඟ</translation>
 <translation id="1240190568154816272">Chrome ඉඟි</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> මත කාවද්දන්න</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">සංග්‍රහය සොයා ගන්න</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ගබඩා කළ දත්ත</translation>
 <translation id="3199078925536734975">මෙවර ඉඩ දී ඇත • ආසන්න වශයෙන්</translation>
+<translation id="3208584281581115441">දැන් පරීක්‍ෂා කරන්න</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> හට ඔබට දැනුම්දීම් එවීමට ඉඩ දීමට <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ දැනුම්දීම්ද ක්‍රියාත්මක කරන්න.</translation>
 <translation id="3223425961342298674">ස්ථානයට ඉඩ දී නැත</translation>
 <translation id="3227137524299004712">මයික්‍රෆෝනය:</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">අස් කර මීළඟ පවතින ක්‍රියාව පෙන්වන්න</translation>
 <translation id="3744111561329211289">පසුබිමෙහි සමමුහුර්තකරණය</translation>
 <translation id="3746834924069123416">තවත් මෑත පටිති බලන්න</translation>
+<translation id="3753618528540214374">විරිඩියානු තේමාව</translation>
 <translation id="3763247130972274048">ත. 10 ක් මඟ හැරීමට වීඩියෝවේ වමට හෝ දකුණට දෙවරක් තට්ටු කරන්න</translation>
 <translation id="3776508619697147021">අඩවි ස්වයංක්‍රියව ගොනු කිහිපයක් බාගැනීමට ඉල්ලිය හැකිය</translation>
 <translation id="3779154269823594982">මුරපද වෙනස් කරන්න</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">දුරකථන අංක</translation>
 <translation id="3823453485268218808">මොනෝ අකුරු</translation>
 <translation id="3826050100957962900">තුන්වන පාර්ශ්ව පිරීම</translation>
+<translation id="3831065134033923230">ඔබගේ සුරැකි මුරපද පරීක්ෂා කරන්න</translation>
 <translation id="3835233591525155343">ඔබගේ උපාංග භාවිතය</translation>
 <translation id="3843916486309149084">Chrome අද නැවතත් කුකී අවහිර කරයි</translation>
 <translation id="385051799172605136">ආපසු</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">සංග්‍රහය සොයා ගැනීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="6012967556075291653">ඇමිණූ කෙටිමඟ</translation>
 <translation id="6015775454662021376">ඔබගේ උපාංගයට මෙම අඩවියෙහි ප්‍රවේශය පාලනය කරන්න</translation>
+<translation id="6022659036123304283">Chrome ඔබේම කර ගන්න</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6042308850641462728">වැඩිදුර</translation>
 <translation id="6064125863973209585">සම්පූර්ණ කළ බාගැනීම්</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">තෙවන-පාර්ශ්ව කුකී අවහිර කරන්න</translation>
 <translation id="6205314730813004066">දැන්වීම් පෞද්ගලිකත්වය</translation>
 <translation id="6207207788774442484">දත්ත මකන්න සහ අවසර යළි සකසන්න</translation>
+<translation id="6218508144653756827">ෆුචියා තේමාව</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' අස්ථාපන කරන්නද?</translation>
 <translation id="6234351944623978659">බ්‍රව්සර් යෙදුම &gt; Chrome තට්ටු කරන්න</translation>
 <translation id="6260830281887654268">නව පටිති පිටු පෙනුම තේමා එක් පහළ පත්‍රය අර්ධ උසින් විවෘත කර ඇත</translation>
 <translation id="6262191102408817757">ඔබේ අවසන් පටිත්ත මත පදනම්ව</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> සහ <ph name="PERMISSION_2" /> අවහිර කරන ලදි</translation>
 <translation id="6270391203985052864">වෙබ් අඩවිවලට දැනුම්දීම් යැවීමට ඉල්ලිය හැක</translation>
-<translation id="6278428485366576908">තේමාව</translation>
 <translation id="6295158916970320988">සියලු අඩවි</translation>
 <translation id="6320088164292336938">කම්පනය</translation>
 <translation id="6367753977865761591">නිශ්චිත අඩවියක් සඳහා තෙවන පාර්ශ්ව පිරීම අවහිර කරන්න.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> අඩවියක් සඳහා කුකීවලට ඉඩ දී ඇත}one{අඩවි <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />කට කුකීවලට ඉඩ දී ඇත}other{අඩවි <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />කට කුකීවලට ඉඩ දී ඇත}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ආරක්ෂිත අන්තර්ගතය</translation>
+<translation id="6619015782482868078">ජලජ තේමාව</translation>
 <translation id="662080504995468778">සිටින්න</translation>
 <translation id="6630443592285535486">මෙහි හෙක්ස් ටයිප් කරන්න</translation>
 <translation id="6635327442719709864">ක්‍රියාත්මක විට, අඩවි වලට අනුක්‍රමික පෝටයන් භාවිතා කිරීමට විමසිය හැක. ක්‍රියාවිරහිත විට, අඩවිවලට අනුක්‍රමික පෝටයන් භාවිතා කළ නොහැක.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">තෝරන්න</translation>
 <translation id="6950072572526089586">ඔබ පිවිසෙන අඩවියකට ඔබ කරන දේ පිළිබඳ තතු සුරැකිය හැකි අතර, එවිට එය අපේක්ෂා කරන පරිදි ක්‍රියා කරයි — උදාහරණයක් ලෙස, ඔබව අඩවියකට පුරනය වී තබා ගැනීමට හෝ ඔබේ සාප්පු කරත්තයේ අයිතම සුරැකීමට. බොහෝ විට අඩවි මෙම තතු ඔබේ උපාංගයෙහි තාවකාලිකව සුරකියි.</translation>
 <translation id="6965382102122355670">හරි</translation>
+<translation id="6980507581230208647">රෝස තේමාව</translation>
 <translation id="6980861169612950611">අඩවි දත්ත මකන්නද? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ප්‍රවේශ්‍යතාව</translation>
 <translation id="6991142177939282156">ඉඩ දී ඇත • ආසන්න වශයෙන් භාවිතා කිරීම</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ක් තෝරන ලදී</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> සහ <ph name="PERMISSION_2" /> ඉඩ දෙන ලදි</translation>
 <translation id="7276071417425470385">සක්‍රීය වූ විට, අඩවිවලට අතථ්‍ය යථාර්ථ උපාංග භාවිත කිරීමට ඉල්ලිය හැක. අක්‍රිය වූ විට, අඩවිවලට අතථ්‍ය යථාර්ථ උපාංග භාවිත කළ නොහැක.</translation>
+<translation id="7282197670900591579">සිට්‍රොන් තේමාව</translation>
 <translation id="728412880473384942">අඩවි වේගවත් නමුත් ආරක්ෂිත බව අඩුයි</translation>
 <translation id="7366415735885268578">අඩවියක් එක් කරන්න</translation>
 <translation id="7368695150573390554">නොබැඳි දත්ත කිසිවක් මකනු ලැබේ</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome ඉඟි කාඩ්පත සඟවන්න</translation>
 <translation id="7719367874908701697">පිටු විශාලනය:</translation>
 <translation id="775043444390799886">අවසරය අහෝසි කරන්න</translation>
+<translation id="7758789811447313947">වයලට් තේමාව</translation>
 <translation id="7759147511335618829">MIDI උපාංග පාලනය සහ නැවත වැඩසටහන්කරණය</translation>
 <translation id="7781829728241885113">ඊයේ</translation>
 <translation id="7791543448312431591">එක් කරන්න</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">මට සිහිකැඳවන්න</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> ගැන තව දැන ගන්න</translation>
 <translation id="7952708427581814389">අඩවි ඔබේ පසුරු පුවරුවේ පෙළ සහ රූප බැලීමට ඉල්ලිය හැකිය</translation>
+<translation id="798299424881500862">තැඹිලි තේමාව</translation>
 <translation id="7986741934819883144">සම්බන්ධතාවක් තෝරාගන්න</translation>
 <translation id="7990211076305263060">සක්‍රීය වූ විට, අඩවිවලට ඔබේ මයික්‍රොෆෝනය භාවිත කිරීමට ඉල්ලිය හැක. අක්‍රිය වූ විට, අඩවිවලට ඔබේ මයික්‍රොෆෝනය භාවිත කළ නොහැක.</translation>
 <translation id="8007176423574883786">මෙම උපාංගය සඳහා ක්‍රියාවිරහිත කරන ලදී.</translation>

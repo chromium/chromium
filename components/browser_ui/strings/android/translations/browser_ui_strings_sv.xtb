@@ -3,6 +3,7 @@
 <translationbundle lang="sv">
 <translation id="1006017844123154345">Öppna onlineversionen</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
+<translation id="1046742265332833834">Blått tema</translation>
 <translation id="1070329623210597193">Filer som webbplatsen kan visa eller redigera</translation>
 <translation id="1073417869336441572">Hjälp oss att förbättra Chrome genom att berätta varför du har tillåtit cookies från tredje part. <ph name="BEGIN_LINK" />Skicka feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan begära att se webbplatsernas datorversion</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1192844206376121885">All data och alla cookies som har sparats av <ph name="ORIGIN" /> raderas.</translation>
+<translation id="1199963004393929848">Grönt tema</translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="1242008676835033345">Inbäddad på <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3167868116600277716">Förslagsflödet</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sparad data</translation>
 <translation id="3199078925536734975">Tillåts den här gången • Ungefärlig</translation>
+<translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="321187648315454507">Om du vill få aviseringar från <ph name="APP_NAME" /> måste du även aktivera aviseringar i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Plats tillåts inte</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -264,6 +267,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="3721953990244350188">Ignorera och visa nästa tillgängliga åtgärd</translation>
 <translation id="3744111561329211289">Synkronisering i bakgrunden</translation>
 <translation id="3746834924069123416">Se fler av de senaste flikarna</translation>
+<translation id="3753618528540214374">Smaragdgrönt tema</translation>
 <translation id="3763247130972274048">Hoppa över 10 s genom att dubbeltrycka till vänster/höger på videon</translation>
 <translation id="3776508619697147021">Webbplatser får begära tillstånd att ladda ned flera filer automatiskt</translation>
 <translation id="3779154269823594982">Byt lösenord</translation>
@@ -273,6 +277,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="381841723434055211">Telefonnummer</translation>
 <translation id="3823453485268218808">Font med fast bredd</translation>
 <translation id="3826050100957962900">Tredjepartsinloggning</translation>
+<translation id="3831065134033923230">Kontrollera sparade lösenord</translation>
 <translation id="3835233591525155343">Enhetsanvändning</translation>
 <translation id="3843916486309149084">Cookies blockeras i Chrome igen i dag</translation>
 <translation id="385051799172605136">Föregående</translation>
@@ -475,6 +480,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5998071268779572583">Aktivera Förslag-flödet</translation>
 <translation id="6012967556075291653">Fäst genväg</translation>
 <translation id="6015775454662021376">Styr webbplatsens åtkomst till enheten</translation>
+<translation id="6022659036123304283">Anpassa Chrome</translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6042308850641462728">Mer</translation>
 <translation id="6064125863973209585">Slutförda nedladdningar</translation>
@@ -492,13 +498,13 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6196640612572343990">Blockera tredjepartscookies</translation>
 <translation id="6205314730813004066">Annonsintegritet</translation>
 <translation id="6207207788774442484">Radera data och återställ behörigheter</translation>
+<translation id="6218508144653756827">Rosalila tema</translation>
 <translation id="6231752747840485235">Vill du avinstallera <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Tryck på Webbläsarapp &gt; Chrome</translation>
 <translation id="6260830281887654268">Arket på nedre delen av skärmen för temasamlingar för utseende på sidan Ny flik har öppnats över halva skärmen</translation>
 <translation id="6262191102408817757">Utifrån din senaste flik</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> blockeras</translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
-<translation id="6278428485366576908">Tema</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6320088164292336938">Vibration</translation>
 <translation id="6367753977865761591">Blockera tredjepartsinloggning på en viss webbplats.</translation>
@@ -525,6 +531,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies tillåts för <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-webbplats}other{Cookies tillåts för <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-webbplatser}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Skyddat innehåll</translation>
+<translation id="6619015782482868078">Turkost tema</translation>
 <translation id="662080504995468778">Stanna kvar</translation>
 <translation id="6630443592285535486">Skriv hexadecimalt värde här</translation>
 <translation id="6635327442719709864">När detta är aktiverat kan webbplatser be om att få använda serieportar. När detta är inaktiverat kan inte webbplatser använda serieportar.</translation>
@@ -553,6 +560,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6950072572526089586">En webbplats som du besöker kan spara information om vad du gör så att den fungerar som förväntat. Det kan till exempel vara att hålla dig inloggad på en webbplats eller spara varor i kundvagnen. Webbplatser sparar ofta den här informationen tillfälligt på enheten.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Rosa tema</translation>
 <translation id="6980861169612950611">Vill du radera webbplatsdata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="6991142177939282156">Tillåts • Använder ungefärlig</translation>
@@ -581,6 +589,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> har valts</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> tillåts</translation>
 <translation id="7276071417425470385">När detta är aktiverat kan webbplatser be om att få använda VR-enheter. När detta är inaktiverat får webbplatser inte använda VR-enheter.</translation>
+<translation id="7282197670900591579">Citrongult tema</translation>
 <translation id="728412880473384942">Webbplatserna är snabbare men mindre säkra</translation>
 <translation id="7366415735885268578">Lägg till en webbplats</translation>
 <translation id="7368695150573390554">All offlinedata raderas</translation>
@@ -619,6 +628,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7688240020069572972">Dölj kortet med tips om Chrome</translation>
 <translation id="7719367874908701697">Sidzoom</translation>
 <translation id="775043444390799886">Återkalla behörighet</translation>
+<translation id="7758789811447313947">Lila tema</translation>
 <translation id="7759147511335618829">Styra/omprogrammera MIDI-enheter</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7791543448312431591">Lägg till</translation>
@@ -637,6 +647,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="7940722705963108451">Påminn mig</translation>
 <translation id="7948081750384205628">Läs mer om <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Webbplatser får begära tillstånd att läsa text och bilder i Urklipp</translation>
+<translation id="798299424881500862">Orange tema</translation>
 <translation id="7986741934819883144">Välj en kontakt</translation>
 <translation id="7990211076305263060">När detta är aktiverat kan webbplatser be om att få använda mikrofonen. När detta är inaktiverat får webbplatser inte använda mikrofonen.</translation>
 <translation id="8007176423574883786">Inaktiverad för den här enheten</translation>

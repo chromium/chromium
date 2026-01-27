@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> sal in Chrome oopmaak. Deur voort te gaan, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Jy het nie wagwoorde wat in Google Wagwoordbestuurder gestoor is nie.</translation>
 <translation id="115483310321669804">Gebruik wagwoord <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sinkroniseer oortjies en geskiedenis</translation>
 <translation id="1165109137568919258">Neem ’n foto of voeg ’n prent uit jou fotogalery by om te soek</translation>
 <translation id="1173894706177603556">Hernoem</translation>
 <translation id="1174479719160874822">Chrome sal die mobiele werf versoek wanneer die skerm smal is</translation>
@@ -981,6 +982,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5210286577605176222">Spring na die vorige oortjie</translation>
 <translation id="5210365745912300556">Maak oortjie toe</translation>
 <translation id="5212800876504289412">Herbegin Chrome om hierdie verandering te voltooi. Oortjies maak outomaties weer oop wanneer jy herbegin.</translation>
+<translation id="5213114823401215820">Heropen groep wat toegemaak is</translation>
 <translation id="5215957675041756913">Beheer jou data en rekening</translation>
 <translation id="5218324087477576825">Kaartnommer word vereis</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en meer <ph name="SEPARATOR" /> Chrome het hierdie toestemmings verwyder want jy het nie onlangs die werf besoek nie</translation>
@@ -1436,6 +1438,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7020741890149022655">Voeg by leeslys <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Maak in blaaier oop</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
+<translation id="7037994709569287156">Maak Chrome die verstekblaaier</translation>
 <translation id="7053256416619638731">Versterk jou wagwoorde op hierdie toestel</translation>
 <translation id="7053983685419859001">Blokkeer</translation>
 <translation id="7054588988317389591">Kry prentbeskrywings?</translation>
@@ -1801,6 +1804,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8458413889418591446">Sinkroniseer jou geskiedenis en oortjies om vinnig terug te gaan na werwe wat jy besoek het</translation>
 <translation id="84594714173170813">Hou aan om die Chrome-data in jou Google-rekening te gebruik</translation>
 <translation id="8460448946170646641">Gaan belangrike privaatheid- en sekuriteitkontroles na</translation>
+<translation id="8460932807646981183">Bestuur soekenjins en werfsoektog</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
 <translation id="847433688444405067">Blaai op verskillende toestelle</translation>
 <translation id="8477178913400731244">Vee data uit</translation>

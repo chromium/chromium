@@ -3,6 +3,7 @@
 <translationbundle lang="et">
 <translation id="1006017844123154345">Ava veebis</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
+<translation id="1046742265332833834">Sinine teema</translation>
 <translation id="1070329623210597193">Failid, mida see sait saab vaadata või muuta</translation>
 <translation id="1073417869336441572">Aidake meil Chrome’i täiustada, andes teada, miks lubasite kolmanda osapoole küpsisefailid. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Saate paluda saitide lauaarvuti versiooni nägemist</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1192844206376121885">See kustutab kõik saidi <ph name="ORIGIN" /> salvestatud andmed ja küpsisefailid.</translation>
+<translation id="1199963004393929848">Roheline teema</translation>
 <translation id="1201402288615127009">Järgmine</translation>
 <translation id="1240190568154816272">Chrome’i nõuanded</translation>
 <translation id="1242008676835033345">Manustatud aadressil <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="3167868116600277716">Discoveri voog</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> salvestatud andmeid</translation>
 <translation id="3199078925536734975">Lubatud sel korral • Ligikaudne</translation>
+<translation id="3208584281581115441">Kontrolli kohe</translation>
 <translation id="321187648315454507">Selleks et lubada rakendusel <ph name="APP_NAME" /> teile märguandeid saata, lülitage märguanded sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Asukoht ei ole lubatud</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -264,6 +267,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="3721953990244350188">Loobu ja kuva järgmine saadaolev toiming</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3746834924069123416">Vaadake rohkem hiljutisi vahelehti</translation>
+<translation id="3753618528540214374">Viridiaani teema</translation>
 <translation id="3763247130972274048">10 sekundi võrra kerimiseks topeltpuudutage videos vasakul või paremal</translation>
 <translation id="3776508619697147021">Saidid saavad küsida luba automaatselt mitu faili alla laadida</translation>
 <translation id="3779154269823594982">Muuda paroole</translation>
@@ -273,6 +277,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="381841723434055211">Telefoninumbrid</translation>
 <translation id="3823453485268218808">Monofont</translation>
 <translation id="3826050100957962900">Kolmanda osapoole sisselogimisviibad</translation>
+<translation id="3831065134033923230">Salvestatud paroolide kontrollimine</translation>
 <translation id="3835233591525155343">Teie seadmekasutus</translation>
 <translation id="3843916486309149084">Chrome blokeerib täna küpsisefailid uuesti</translation>
 <translation id="385051799172605136">Tagasi</translation>
@@ -475,6 +480,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="5998071268779572583">Lülitage Discoveri voog sisse</translation>
 <translation id="6012967556075291653">Kinnitatud otsetee</translation>
 <translation id="6015775454662021376">Selle saidi juurdepääsu muutmine teie seadmele</translation>
+<translation id="6022659036123304283">Isikupärastage Chrome'i</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6042308850641462728">Rohkem</translation>
 <translation id="6064125863973209585">Lõpetatud allalaadimised</translation>
@@ -492,13 +498,13 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6205314730813004066">Reklaamide privaatsus</translation>
 <translation id="6207207788774442484">Kustuta andmed ja õigused</translation>
+<translation id="6218508144653756827">Fuksiaroosa teema</translation>
 <translation id="6231752747840485235">Kas desinstallida rakendus <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Puudutage valikuid Brauserirakendus &gt; Chrome</translation>
 <translation id="6260830281887654268">Uue vahelehe välimuse teemakogude alumine leht on avatud poolel kõrgusel</translation>
 <translation id="6262191102408817757">Teie viimase vahelehe põhjal</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on keelatud</translation>
 <translation id="6270391203985052864">Saidid saavad küsida luba märguannete saatmiseks</translation>
-<translation id="6278428485366576908">Teema</translation>
 <translation id="6295158916970320988">Kõik saidid</translation>
 <translation id="6320088164292336938">Vibreerimine</translation>
 <translation id="6367753977865761591">Konkreetse saidi jaoks kolmanda osapoole sisselogimise blokeerimine.</translation>
@@ -525,6 +531,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="659938948789980540">{COUNT,plural, =1{Küpsisefailid on lubatud domeeni <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> saidi puhul}other{Küpsisefailid on lubatud domeeni <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> saidi puhul}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Kaitstud sisu</translation>
+<translation id="6619015782482868078">Rohekassinine teema</translation>
 <translation id="662080504995468778">Jää siia</translation>
 <translation id="6630443592285535486">Sisestage kuueteistkümnendkood siia</translation>
 <translation id="6635327442719709864">Kui see on sisse lülitatud, saavad saidid küsida jadaportide kasutamist. Kui see on välja lülitatud, ei saa saidid jadaporte kasutada.</translation>
@@ -553,6 +560,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6950072572526089586">Külastatav sait saab salvestada teavet teie tegevuste kohta, et sait toimiks ootuspäraselt – näiteks selleks, et hoida teid saidile sisselogituna või salvestada teie ostukorvis olevad üksused. Saidid salvestavad selle teabe teie seadmesse sageli ajutiselt.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Roosiroosa teema</translation>
 <translation id="6980861169612950611">Kas kustutada saidi andmed? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="6991142177939282156">Lubatud • Kasutab ligikaudset asukohta</translation>
@@ -581,6 +589,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> on valitud</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on lubatud</translation>
 <translation id="7276071417425470385">Kui see on sisse lülitatud, võivad saidid küsida luba VR-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid VR-seadmeid kasutada.</translation>
+<translation id="7282197670900591579">Sidrunikollane teema</translation>
 <translation id="728412880473384942">Saidid on kiiremad, aga ebaturvalisemad</translation>
 <translation id="7366415735885268578">Saidi lisamine</translation>
 <translation id="7368695150573390554">Kõik võrguvälised andmed kustutatakse</translation>
@@ -619,6 +628,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="7688240020069572972">Chrome'i nõuannete kaardi peitmine</translation>
 <translation id="7719367874908701697">Lehe suum</translation>
 <translation id="775043444390799886">Tühista luba</translation>
+<translation id="7758789811447313947">Kannikeselilla teema</translation>
 <translation id="7759147511335618829">MIDI-seadme juhtimine ja ümberprogrammeerimine</translation>
 <translation id="7781829728241885113">Eile</translation>
 <translation id="7791543448312431591">Lisa</translation>
@@ -637,6 +647,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="7940722705963108451">Tuleta mulle meelde</translation>
 <translation id="7948081750384205628">Lisateave: <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Saidid saavad küsida luba lõikelaual oleva teksti ja piltide nägemiseks</translation>
+<translation id="798299424881500862">Oranž teema</translation>
 <translation id="7986741934819883144">Kontakti valimine</translation>
 <translation id="7990211076305263060">Kui see on sisse lülitatud, võivad saidid küsida luba teie mikrofoni kasutamiseks. Kui see on välja lülitatud, ei saa saidid teie mikrofoni kasutada.</translation>
 <translation id="8007176423574883786">Selle seadme puhul on välja lülitatud</translation>

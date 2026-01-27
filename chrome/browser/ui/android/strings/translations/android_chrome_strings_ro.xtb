@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Nu ai parole salvate în Managerul de parole Google.</translation>
 <translation id="115483310321669804">Folosește parola <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sincronizează filele și istoricul</translation>
 <translation id="1165109137568919258">Fă o fotografie sau adaugă o imagine din galeria foto pentru a căuta</translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1174479719160874822">Chrome va solicita site-ul mobil când ecranul este îngust</translation>
@@ -981,6 +982,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5210286577605176222">Accesează fila anterioară</translation>
 <translation id="5210365745912300556">Închide fila</translation>
 <translation id="5212800876504289412">Repornește Chrome pentru a finaliza modificarea. Filele se redeschid automat când repornești.</translation>
+<translation id="5213114823401215820">Redeschide grupul închis</translation>
 <translation id="5215957675041756913">Gestionează-ți datele și contul</translation>
 <translation id="5218324087477576825">Numărul cardului, obligatoriu</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și altele <ph name="SEPARATOR" /> Chrome a eliminat aceste permisiuni deoarece nu ai accesat recent site-ul</translation>
@@ -1436,6 +1438,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7020741890149022655">Adaugă la lista de lecturi <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Deschide în browser</translation>
 <translation id="7029809446516969842">Parole</translation>
+<translation id="7037994709569287156">Setează Chrome ca prestabilit</translation>
 <translation id="7053256416619638731">Creează parole mai puternice pe acest dispozitiv</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7054588988317389591">Vrei să generezi descrieri ale imaginilor?</translation>
@@ -1801,6 +1804,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8458413889418591446">Pentru a reveni rapid la site-urile pe care le-ai accesat, sincronizează istoricul și filele</translation>
 <translation id="84594714173170813">Folosește în continuare datele Chrome din Contul Google</translation>
 <translation id="8460448946170646641">Examinează cele mai importante opțiuni de confidențialitate și de securitate</translation>
+<translation id="8460932807646981183">Gestionează motoarele de căutare și căutarea pe site</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
 <translation id="847433688444405067">Navighează pe mai multe dispozitive</translation>
 <translation id="8477178913400731244">Șterge datele</translation>

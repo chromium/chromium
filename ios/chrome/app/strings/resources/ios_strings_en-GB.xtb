@@ -333,6 +333,7 @@
 <translation id="2184272387334793084">Sign in to get your passwords and more on all your devices</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Tap <ph name="BEGIN_BOLD" />Save to Downloads<ph name="END_BOLD" /></translation>
+<translation id="2191406283620379491">Something went really wrong. Please update your iOS version.</translation>
 <translation id="219283042927675668">Tabs in group</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="2196428379625389579">Search on web</translation>
@@ -1899,6 +1900,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7958575506592576831">Page security info</translation>
 <translation id="7961015016161918242">Never</translation>
 <translation id="7971136598759319605">Active 1 day ago</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Try</translation>
 <translation id="797588153137233716">Menu → History → Delete browsing data</translation>
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>

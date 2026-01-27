@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> s'obrirà a Chrome. En continuar, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">No tens cap contrasenya desada al gestor de contrasenyes de Google.</translation>
 <translation id="115483310321669804">Utilitza la contrasenya <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sincronitza les pestanyes i l'historial</translation>
 <translation id="1165109137568919258">Fes una foto o afegeix una imatge de la galeria de fotos per cercar-la</translation>
 <translation id="1173894706177603556">Canvia el nom</translation>
 <translation id="1174479719160874822">Chrome sol·licitarà el lloc web per a mòbils quan la pantalla sigui estreta</translation>
@@ -981,6 +982,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5210286577605176222">Ves a la pestanya anterior</translation>
 <translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5212800876504289412">Reinicia Chrome per finalitzar aquest canvi. Després de reiniciar-lo, les pestanyes es tornen a obrir automàticament.</translation>
+<translation id="5213114823401215820">Torna a obrir el grup tancat</translation>
 <translation id="5215957675041756913">Controla les teves dades i el teu compte</translation>
 <translation id="5218324087477576825">Número de targeta, obligatori</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i més <ph name="SEPARATOR" /> Chrome ha suprimit aquests permisos perquè no has visitat aquest lloc web recentment</translation>
@@ -1436,6 +1438,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7020741890149022655">Inclou a llista de lectura <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Obre al navegador</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
+<translation id="7037994709569287156">Estableix Chrome com a predeterminat</translation>
 <translation id="7053256416619638731">Reforça les contrasenyes en aquest dispositiu</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7054588988317389591">Vols obtenir descripcions de les imatges?</translation>
@@ -1801,6 +1804,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8458413889418591446">Per tornar ràpidament als llocs web que has visitat, sincronitza l'historial i les pestanyes</translation>
 <translation id="84594714173170813">Continua utilitzant les dades de Chrome al teu Compte de Google</translation>
 <translation id="8460448946170646641">Revisa els controls principals de privadesa i seguretat</translation>
+<translation id="8460932807646981183">Gestiona els motors de cerca i la cerca al lloc</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
 <translation id="847433688444405067">Navega per tots els dispositius</translation>
 <translation id="8477178913400731244">Suprimeix les dades</translation>

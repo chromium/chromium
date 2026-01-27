@@ -3,6 +3,7 @@
 <translationbundle lang="ka">
 <translation id="1006017844123154345">ონლაინ-ვერსიის გახსნა</translation>
 <translation id="1036348656032585052">გამორთვა</translation>
+<translation id="1046742265332833834">ლურჯი თემა</translation>
 <translation id="1070329623210597193">ფაილები, რომელთა ნახვა და რედაქტირება ამ საიტს შეუძლია</translation>
 <translation id="1073417869336441572">დაგვეხმარეთ, გავაუმჯობესოთ Chrome — გვითხარით, რატომ დაუშვით მესამე მხარის ქუქი-ჩანაწერები. <ph name="BEGIN_LINK" />გამოხმაურება<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">თქვენ შეგიძლიათ მოითხოვოთ საიტების დესკტოპ-ვერსიების ნახვა</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">პაუზა</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1192844206376121885">ეს მოქმედება წაშლის <ph name="ORIGIN" />-ის მიერ შენახულ ყველა მონაცემსა და ქუქი-ჩანაწერს.</translation>
+<translation id="1199963004393929848">მწვანე თემა</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
 <translation id="1240190568154816272">Chrome-ის მინიშნებები</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-ში ჩაშენებული</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">არხის დათვალიერება</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> შენახული მონაცემები</translation>
 <translation id="3199078925536734975">ამჯერად დაშვება • მიახლოებითი</translation>
+<translation id="3208584281581115441">ახლავე შემოწმება</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />-მა შეტყობინებები რომ გამოგიგზავნოთ, გაააქტიურეთ შეტყობინებებზე წვდომის ნებართვაც <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">მდებარეობაზე წვდომა დაშვებულია</translation>
 <translation id="3227137524299004712">მიკროფონი</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">გაუქმება და შემდეგი ხელმისაწვდომი მოქმედების ჩვენება</translation>
 <translation id="3744111561329211289">ფონური სინქრონიზაცია</translation>
 <translation id="3746834924069123416">უფრო ახალი ჩანართების ნახვა</translation>
+<translation id="3753618528540214374">ლაჟვარდისფერი თემა</translation>
 <translation id="3763247130972274048">10 წამის გამოსატოვებლად ორმაგად შეეხეთ ვიდეოს მარცხნივ ან მარჯვნივ</translation>
 <translation id="3776508619697147021">საიტებს შეუძლია რამდენიმე ფაილის ავტომატურად ჩამოტვირთვის თხოვნა</translation>
 <translation id="3779154269823594982">პაროლების შეცვლა</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">ტელეფონის ნომრები</translation>
 <translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">სისტემაში შესვლა მესამე მხარის მეშვეობით</translation>
+<translation id="3831065134033923230">შეამოწმეთ შენახული პაროლები</translation>
 <translation id="3835233591525155343">თქვენი მოწყობილობის გამოყენება</translation>
 <translation id="3843916486309149084">Chrome დღეს კლავ დაბლოკავს ქუქი-ჩანაწერებს</translation>
 <translation id="385051799172605136">უკან</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Discover არხის ჩართვა</translation>
 <translation id="6012967556075291653">ჩამაგრებული მალსახმობი</translation>
 <translation id="6015775454662021376">გაანკონტროლეთ ამ საიტის თქვენს მოწყობილობაზე წვდომა</translation>
+<translation id="6022659036123304283">მოირგეთ Chrome</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6042308850641462728">სხვა</translation>
 <translation id="6064125863973209585">დასრულებული ჩამოტვირთვები</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
 <translation id="6205314730813004066">სარეკლამო კონფიდენციალურობა</translation>
 <translation id="6207207788774442484">წაიშალოს მონაცემები და გადაყენდეს ნებართვები</translation>
+<translation id="6218508144653756827">ფუქსიისფერი თემა</translation>
 <translation id="6231752747840485235">გსურთ <ph name="APP_NAME" />-ის დეინსტალაცია?</translation>
 <translation id="6234351944623978659">შეეხეთ: ბრაუზერის აპი &gt; Chrome</translation>
 <translation id="6260830281887654268">ახალი ჩანართის გარეგანი იერი, თემა, კოლექციები, ქვედა ფურცელი გაიხსნა ნახევარ სიმაღლეზე</translation>
 <translation id="6262191102408817757">თქვენი ბოლო ჩანართის საფუძველზე</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /> დაბლოკილია</translation>
 <translation id="6270391203985052864">საიტებს შეუძლიათ შეტყობინებების გამოგზავნის თხოვნა</translation>
-<translation id="6278428485366576908">თემა</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
 <translation id="6320088164292336938">ვიბრაცია</translation>
 <translation id="6367753977865761591">მესამე მხარის მეშვეობით სისტემაში შესვლის დაბლოკვა კონკრეტული საიტისთვის.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{ქუქი-ჩანაწერები დაშვებულია <ph name="RWS_OWNER" />-ის <ph name="RWS_MEMBERS_COUNT" /> საიტისთვის}other{ქუქი-ჩანაწერები დაშვებულია <ph name="RWS_OWNER" />-ის <ph name="RWS_MEMBERS_COUNT" /> საიტისთვის}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> გბაიტი</translation>
 <translation id="6612358246767739896">დაცული შიგთავსი</translation>
+<translation id="6619015782482868078">წყლისფერი თემა</translation>
 <translation id="662080504995468778">დარჩენა</translation>
 <translation id="6630443592285535486">აკრიფეთ კოდი აქ</translation>
 <translation id="6635327442719709864">როცა ჩართულია, საიტებმა შეიძლება მოითხოვოს სერიული პორტების გამოყენება. როცა ჩართულია, საიტები ვერ გამოიყენებს სერიულ პორტებს.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6950072572526089586">თქვენ მიერ მონახულებულ საიტს შეუძლია ინფორმაციის შენახვა იმის შესახებ, თუ რას აკეთებდით. ამგვარად, ის თქვენი მოლოდინისამებრ იმუშავებს. მაგალითად, ის დაგტოვებთ სისტემაში შესულ მდგომარეობაში ან შეინახავს თქვენს საყიდლების კალათაში არსებულ ერთეულებს. ხშირ შემთხვევაში, საიტები ამ ინფორმაციას დროებით ინახავს.</translation>
 <translation id="6965382102122355670">კარგი</translation>
+<translation id="6980507581230208647">ვარდისფერი თემა</translation>
 <translation id="6980861169612950611">გსურთ, წაშალოთ საიტის მონაცემები? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
 <translation id="6991142177939282156">დაშვებულია • გამოიყენება მიახლოებითი</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378">არჩეულია <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /> დაშვებულია</translation>
 <translation id="7276071417425470385">ჩართვის შემთხვევაში საიტს შეეძლება ვირტუალური რეალობის მოწყობილობების გამოყენების თხოვნა. გამორთვის შემთხვევაში საიტებს არ შეეძლება ვირტუალური რეალობის მოწყობილობების გამოყენება.</translation>
+<translation id="7282197670900591579">ციტრუსისფერი თემა</translation>
 <translation id="728412880473384942">საიტების მუშაობა დაჩქარებულია, მაგრამ ისინი ნაკლებად დაცულია</translation>
 <translation id="7366415735885268578">საიტის დამატება</translation>
 <translation id="7368695150573390554">ხაზგარეშე მონაცემები (ასეთის არსებობის შემთხვევაში) წაიშლება</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome-ის მინიშნებების ბარათის დამალვა</translation>
 <translation id="7719367874908701697">გვერდის მასშტაბი</translation>
 <translation id="775043444390799886">ნებართვის გაუქმება</translation>
+<translation id="7758789811447313947">იისფერი თემა</translation>
 <translation id="7759147511335618829">MIDI-მოწყ. მართვა / გადაპროგრ.</translation>
 <translation id="7781829728241885113">გუშინ</translation>
 <translation id="7791543448312431591">დამატება</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">შემახსენეთ</translation>
 <translation id="7948081750384205628">შეიტყვეთ მეტი თემაზე — <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">საიტებს შეუძლია თქვენს გაცვლის ბუფერში არსებული ტექსტისა და სურათების ნახვის თხოვნა</translation>
+<translation id="798299424881500862">ნარინჯისფერი თემა</translation>
 <translation id="7986741934819883144">აირჩიეთ კონტაქტი</translation>
 <translation id="7990211076305263060">ჩართვის შემთხვევაში საიტებს შეეძლება თქვენი მიკროფონის გამოყენების თხოვნა. გამორთვის შემთხვევაში საიტებს არ შეეძლება თქვენი მიკროფონის გამოყენება.</translation>
 <translation id="8007176423574883786">გამორთულია ამ მოწყობილობისთვის</translation>

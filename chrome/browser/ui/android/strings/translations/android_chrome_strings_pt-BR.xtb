@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">O app <ph name="APP_NAME" /> será aberto no Chrome. Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Você não tem senhas salvas no Gerenciador de senhas do Google.</translation>
 <translation id="115483310321669804">Use a senha <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sincronizar guias e histórico</translation>
 <translation id="1165109137568919258">Tire uma foto ou adicione uma imagem da sua galeria para pesquisar</translation>
 <translation id="1173894706177603556">Renomear</translation>
 <translation id="1174479719160874822">O Chrome solicita o site para dispositivos móveis quando a tela é estreita</translation>
@@ -982,6 +983,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5210286577605176222">Ir para a guia anterior</translation>
 <translation id="5210365745912300556">Fechar guia</translation>
 <translation id="5212800876504289412">Reinicie o Chrome para concluir essa mudança. As guias são reabertas automaticamente quando você reinicia.</translation>
+<translation id="5213114823401215820">Reabrir grupo fechado</translation>
 <translation id="5215957675041756913">Controlar seus dados e sua conta</translation>
 <translation id="5218324087477576825">O número do cartão é obrigatório</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e outras <ph name="SEPARATOR" /> O Chrome removeu essas permissões porque você não visitou o site recentemente</translation>
@@ -1437,6 +1439,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7020741890149022655">Adicionar à lista de leitura <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
 <translation id="7029809446516969842">Senhas</translation>
+<translation id="7037994709569287156">Definir o Chrome como padrão</translation>
 <translation id="7053256416619638731">Fortaleça suas senhas neste dispositivo</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054588988317389591">Ver descrições de imagens?</translation>
@@ -1802,6 +1805,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8458413889418591446">Sincronize o histórico e as guias para acessar rapidamente os sites visitados</translation>
 <translation id="84594714173170813">Continue usando os dados do Chrome na sua Conta do Google</translation>
 <translation id="8460448946170646641">Revise os principais controles de privacidade e segurança</translation>
+<translation id="8460932807646981183">Gerenciar mecanismos de pesquisa e pesquisas em sites</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="847433688444405067">Navegue em vários dispositivos</translation>
 <translation id="8477178913400731244">Excluir dados</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="sq">
 <translation id="1006017844123154345">Hap versionin online</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
+<translation id="1046742265332833834">Tema blu</translation>
 <translation id="1070329623210597193">Skedarët që mund të shikojë ose modifikojë ky sajt</translation>
 <translation id="1073417869336441572">Na ndihmo të përmirësojmë Chrome duke na treguar se pse ke lejuar kukit e palëve të treta. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Mund të kërkosh për të parë versionin e desktopit të sajteve</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1192844206376121885">Kjo do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Tema e gjelbër</translation>
 <translation id="1201402288615127009">Para</translation>
 <translation id="1240190568154816272">Këshilla për Chrome</translation>
 <translation id="1242008676835033345">Integruar në <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Furnizimi i "Zbulo"</translation>
 <translation id="3198916472715691905">Të dhënat e ruajtura <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Lejohet këtë herë • E përafërt</translation>
+<translation id="3208584281581115441">Kontrollo tani</translation>
 <translation id="321187648315454507">Për të lejuar që <ph name="APP_NAME" /> të të dërgojë njoftime, aktivizo gjithashtu njoftimet në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Vendndodhja nuk lejohet</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">Hiq dhe shfaq veprimin tjetër të disponueshëm</translation>
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
 <translation id="3746834924069123416">Shiko më shumë skeda të fundit</translation>
+<translation id="3753618528540214374">Tema e gjelbër në blu</translation>
 <translation id="3763247130972274048">Trokit dy herë videon majtas ose djathtas për të kapërcyer 10 sek.</translation>
 <translation id="3776508619697147021">Sajtet mund të kërkojnë të shkarkojnë automatikisht shumë skedarë</translation>
 <translation id="3779154269823594982">Ndrysho fjalëkalimet</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">Numrat e telefonit</translation>
 <translation id="3823453485268218808">Fonti mono</translation>
 <translation id="3826050100957962900">Identifikimi i palëve të treta</translation>
+<translation id="3831065134033923230">Kontrollo fjalëkalimet e tua të ruajtura</translation>
 <translation id="3835233591525155343">Përdorimi i pajisjes sate</translation>
 <translation id="3843916486309149084">Chrome do t'i bllokojë kukit përsëri sot</translation>
 <translation id="385051799172605136">Prapa</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Aktivizo furnizimin e "Zbulo"</translation>
 <translation id="6012967556075291653">Shkurtore e gozhduar</translation>
 <translation id="6015775454662021376">Kontrollo qasjen e këtij sajti te pajisja jote</translation>
+<translation id="6022659036123304283">Bëje Chrome shfletuesin tënd</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6042308850641462728">Më shumë</translation>
 <translation id="6064125863973209585">Shkarkimet e përfunduara</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6205314730813004066">Privatësia e reklamave</translation>
 <translation id="6207207788774442484">Fshi të dhënat dhe rivendos lejet</translation>
+<translation id="6218508144653756827">Tema vjollcë e ndezur</translation>
 <translation id="6231752747840485235">Të çinstalohet "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Trokit tek Aplikacioni i shfletuesit &gt; Chrome</translation>
 <translation id="6260830281887654268">Fleta e poshtme e koleksioneve të temave për pamjen e faqeve të skedave të reja u hap në gjysmë lartësi</translation>
 <translation id="6262191102408817757">Bazuar në skedën tënde të fundit</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> dhe <ph name="PERMISSION_2" /> të bllokuara</translation>
 <translation id="6270391203985052864">Sajtet mund të kërkojnë të dërgojnë njoftime</translation>
-<translation id="6278428485366576908">Tema</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
 <translation id="6320088164292336938">Dridhja</translation>
 <translation id="6367753977865761591">Blloko identifikimin e palëve të treta për një sajt specifik.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{Kukit lejohen për <ph name="RWS_MEMBERS_COUNT" /> sajt të <ph name="RWS_OWNER" />}other{Kukit lejohen për <ph name="RWS_MEMBERS_COUNT" /> sajte të <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Përmbajtje e mbrojtur</translation>
+<translation id="6619015782482868078">Tema Akuamarinë</translation>
 <translation id="662080504995468778">Qëndro</translation>
 <translation id="6630443592285535486">Shkruaj kodin hekzadecimal këtu</translation>
 <translation id="6635327442719709864">Kur cilësimi është aktiv, sajtet mund të kërkojnë të përdorin portat seriale. Kur cilësimi është joaktiv, sajtet nuk mund t'i përdorin portat seriale.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6950072572526089586">Një sajt që viziton mund të ruajë informacione për gjërat që ti po bën që ai të mund të funksionojë siç pritet, p.sh. për të të mbajtur të identifikuar në një sajt ose për të ruajtur artikuj në karrocën e blerjeve. Shpesh sajtet i ruajnë këto informacione përkohësisht në pajisjen tënde.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
+<translation id="6980507581230208647">Tema ngjyrë trëndafili</translation>
 <translation id="6980861169612950611">Të fshihen të dhënat e sajtit? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="6991142177939282156">Lejohet • Po përdoret vendndodhja e përafërt</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> të zgjedhura</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dhe <ph name="PERMISSION_2" /> janë lejuar</translation>
 <translation id="7276071417425470385">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet e realitetit virtual. Kur cilësimi është joaktiv, sajtet mund të përdorin pajisjet e realitetit virtual.</translation>
+<translation id="7282197670900591579">Tema ngjyrë limoni</translation>
 <translation id="728412880473384942">Sajtet janë më të shpejta, por më pak të sigurta</translation>
 <translation id="7366415735885268578">Shto një sajt</translation>
 <translation id="7368695150573390554">Çdo e dhënë offline do të fshihet</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Fshih kartën e këshillave për Chrome</translation>
 <translation id="7719367874908701697">Zmadhimi i faqes</translation>
 <translation id="775043444390799886">Revoko lejen</translation>
+<translation id="7758789811447313947">Tema vjollcë</translation>
 <translation id="7759147511335618829">Kontrolli dhe riprogramimi i pajisjes MIDI</translation>
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7791543448312431591">Shtoje</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">Më kujto</translation>
 <translation id="7948081750384205628">Mëso më shumë për <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Sajtet mund të kërkojnë të shikojnë tekstin dhe imazhet në kujtesën e fragmenteve</translation>
+<translation id="798299424881500862">Tema portokalli</translation>
 <translation id="7986741934819883144">Zgjidh një kontakt</translation>
 <translation id="7990211076305263060">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin mikrofonin. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin mikrofonin.</translation>
 <translation id="8007176423574883786">E çaktivizuar për këtë pajisje</translation>

@@ -176,7 +176,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2857540653560290388">Lancement de Chrome en cours…</translation>
 <translation id="286025080868315611">Découvrir pourquoi Chromium bloque certains téléchargements</translation>
 <translation id="2861074815332034794">Mise à jour de Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Vous êtes connecté à Google Chrome!</translation>
 <translation id="2875053229394024379">Lorsque vous vous connectez à Chrome avec votre compte Google, vous pouvez utiliser votre profil Chrome avec Gemini. <ph name="BEGIN_LINK" />Découvrir comment se connecter à Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">En savoir plus sur la <ph name="BEGIN_LINK" />manière dont Chrome préserve la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Moniteur d'activité</translation>
@@ -330,7 +329,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4459234553906210702">La mesure des annonces permet aux sites que vous visitez de demander des informations à Chrome afin de leur permettre de mesurer la performance de leurs annonces. La mesure des annonces limite les suivis intersites en transférant le moins d'informations possible entre les sites.</translation>
 <translation id="4493028449971051158">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'administrateur.</translation>
 <translation id="4501471624619070934">L'installation a échoué, car l'accès est restreint dans ce pays.</translation>
-<translation id="4567424176335768812">Vous êtes connecté avec l'adresse de courriel <ph name="USER_EMAIL_ADDRESS" />. Vous pouvez maintenant accéder à vos favoris, à votre historique et à vos paramètres sur tous les appareils sur lesquels vous êtes connecté.</translation>
 <translation id="4571503333518166079">Accéder aux paramètres de notification Chrome</translation>
 <translation id="4592634244097223647">Poser des questions à Google à propos de cette image</translation>
 <translation id="459622048091363950">Lorsque Chrome y aura accès, les sites Web pourront vous demander l'accès.</translation>
@@ -754,7 +752,6 @@ Vous ne pouvez pas enregistrer de nouveaux favoris dans votre compte tant que vo
 <translation id="8821043148920470810">Pour recevoir les futures mises à jour de Google Chrome, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 7.</translation>
 <translation id="8823341990149967727">Google Chrome n'est plus à jour</translation>
 <translation id="8834965163890861871">Google Chrome essaie de modifier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
-<translation id="8843516219908676469">Chrome comprend mieux les formulaires et peut les remplir automatiquement plus rapidement pour vous</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome vous recommande de la retirer}one{Chrome vous recommande de la retirer}other{Chrome vous recommande de les retirer}}</translation>
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour faire une installation sur le système. Relancez l'installation une fois que vous serez connecté comme administrateur.</translation>
 <translation id="8865415417596392024">Données relatives à Chrome dans votre compte</translation>

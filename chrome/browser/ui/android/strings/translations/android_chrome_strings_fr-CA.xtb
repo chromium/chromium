@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Vous n'avez aucun mot de passe enregistré dans le gestionnaire de mots de passe Google.</translation>
 <translation id="115483310321669804">Utiliser le mot de passe <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Synchroniser les onglets et l'historique</translation>
 <translation id="1165109137568919258">Prenez une photo ou ajoutez une image de votre galerie de photos pour effectuer une recherche.</translation>
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1174479719160874822">Chrome demandera le site pour appareils mobiles lorsque l'écran est étroit</translation>
@@ -981,6 +982,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5210286577605176222">Accéder à l'onglet précédent</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5212800876504289412">Redémarrez Chrome pour terminer cette modification. Les onglets se rouvrent automatiquement au redémarrage.</translation>
+<translation id="5213114823401215820">Rouvrir le groupe fermé</translation>
 <translation id="5215957675041756913">Gérer vos données et votre compte</translation>
 <translation id="5218324087477576825">Numéro de carte, requis</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et plus <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
@@ -1436,6 +1438,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7020741890149022655">Ajout. à liste lect. <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Ouvrir dans le navigateur</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
+<translation id="7037994709569287156">Faire de Chrome le navigateur par défaut</translation>
 <translation id="7053256416619638731">Renforcez vos mots de passe sur cet appareil</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images?</translation>
@@ -1801,6 +1804,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8458413889418591446">Pour retrouver rapidement les sites que vous avez visités, synchronisez votre historique et vos onglets</translation>
 <translation id="84594714173170813">Continuer à utiliser les données Chrome dans votre compte Google</translation>
 <translation id="8460448946170646641">Passer en revue les principaux paramètres de confidentialité et de sécurité</translation>
+<translation id="8460932807646981183">Gérer les moteurs de recherche et la recherche de sites</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="847433688444405067">Passez d'un appareil à l'autre</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>

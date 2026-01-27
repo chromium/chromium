@@ -3,6 +3,7 @@
 <translationbundle lang="mr">
 <translation id="1006017844123154345">ऑनलाइन उघडा</translation>
 <translation id="1036348656032585052">बंद करा</translation>
+<translation id="1046742265332833834">ब्ल्यू थीम</translation>
 <translation id="1070329623210597193">या साइटवरील फाइल पाहता येऊ शकतात किंवा संपादित केल्या जाऊ शकतात</translation>
 <translation id="1073417869336441572">तुम्ही तृतीय पक्ष कुकीना अनुमती का दिली हे सांगून Chrome मध्ये सुधारणा करण्यात आम्हाला मदत करा. <ph name="BEGIN_LINK" />फीडबॅक पाठवणे<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">तुम्ही साइटची डेस्कटॉप आवृत्ती पाहण्याची विनंती करू शकता</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1192844206376121885">यामुळे <ph name="ORIGIN" /> ने स्टोअर केलेला सर्व डेटा आणि कुकी हटवल्या जातील.</translation>
+<translation id="1199963004393929848">ग्रीन थीम</translation>
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1240190568154816272">Chrome शी संबंधित टिपा</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> वर एम्बेड केले</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Discover फीड</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> संचयित केलेला डेटा</translation>
 <translation id="3199078925536734975">या वेळी अनुमती दिलेले • अंदाजे</translation>
+<translation id="3208584281581115441">आता तपासा</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ने तुम्हाला सूचना पाठवण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील सूचना सुरू करा.</translation>
 <translation id="3223425961342298674">स्थानाला अनुमती नाही</translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">डिसमिस करा आणि पुढील उपलब्ध कृती दाखवा</translation>
 <translation id="3744111561329211289">पार्श्वभूमी सिंक</translation>
 <translation id="3746834924069123416">अलीकडील आणखी टॅब पहा</translation>
+<translation id="3753618528540214374">विरिडियन थीम</translation>
 <translation id="3763247130972274048">१० सेकंद पुढे जाण्यासाठी व्हिडिओवर डावीकडे किंवा उजवीकडे दोनदा टॅप करा</translation>
 <translation id="3776508619697147021">साइट एकाहून अधिक फाइल आपोआप डाउनलोड करण्यासाठी विचारू शकतात</translation>
 <translation id="3779154269823594982">पासवर्ड बदला</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">फोन नंबर</translation>
 <translation id="3823453485268218808">फाँट मोनो</translation>
 <translation id="3826050100957962900">तृतीय पक्ष साइन इन</translation>
+<translation id="3831065134033923230">तुमचे सेव्ह केलेले पासवर्ड तपासा</translation>
 <translation id="3835233591525155343">तुमच्या डिव्हाइसचा वापर</translation>
 <translation id="3843916486309149084">Chrome आज पुन्हा कुकी ब्लॉक करेल</translation>
 <translation id="385051799172605136">मागील</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Discover फीड सुरू करा</translation>
 <translation id="6012967556075291653">पिन केलेला शॉर्टकट</translation>
 <translation id="6015775454662021376">या साइटला तुमच्‍या डिव्हाइसचा असलेला अ‍ॅक्सेस नियंत्रित करा</translation>
+<translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6042308850641462728">अधिक</translation>
 <translation id="6064125863973209585">डाउनलोड पूर्ण झाले</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>
 <translation id="6207207788774442484">डेटा हटवा आणि परवानग्या रीसेट करा</translation>
+<translation id="6218508144653756827">फुशिया थीम</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइंस्टॉल करायचे आहे का?</translation>
 <translation id="6234351944623978659">ब्राउझर अ‍ॅप &gt; Chrome वर टॅप करा</translation>
 <translation id="6260830281887654268">नवीन टॅब पेज स्वरूपाच्या थीम संग्रहांच्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="6262191102408817757">तुमच्या शेवटच्या टॅबवर आधारित</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला ब्लॉक केले</translation>
 <translation id="6270391203985052864">साइट सूचना पाठवण्यास सांगू शकतात</translation>
-<translation id="6278428485366576908">थीम</translation>
 <translation id="6295158916970320988">सर्व साइट</translation>
 <translation id="6320088164292336938">कंपन</translation>
 <translation id="6367753977865761591">विशिष्ट साइटसाठी तृतीय पक्ष साइन-इन ब्लॉक करा.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> साइटसाठी कुकीना अनुमती दिली आहे}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> साइटसाठी कुकीना अनुमती दिली आहे}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">संरक्षित आशय</translation>
+<translation id="6619015782482868078">अ‍ॅक्वा थीम</translation>
 <translation id="662080504995468778">यावर रहा</translation>
 <translation id="6630443592285535486">इथे हेक्स टाइप करा</translation>
 <translation id="6635327442719709864">सुरू असताना, साइट सिरीअल पोर्ट वापरण्यास सांगू शकतात. बंद असताना, साइट सिरीअल पोर्ट वापरू शकत नाहीत.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6950072572526089586">तुम्ही भेट दिलेली साइट ही तुम्ही काय करत आहात याबद्दलची माहिती सेव्ह करू शकते, जेणेकरून ती अपेक्षेप्रमाणे काम करेल — उदाहरणार्थ, तुम्हाला साइटवर साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम सेव्ह करण्यासाठी. साइट या बरेचदा तुमच्या डिव्हाइसवर ही माहिती तात्पुरती सेव्ह करतात.</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
+<translation id="6980507581230208647">रोझ थीम</translation>
 <translation id="6980861169612950611">साइट डेटा हटवायचा आहे का? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="6991142177939282156">अनुमती दिली आहे • अंदाजे वापरत आहे</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> निवडले</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला अनुमती दिली</translation>
 <translation id="7276071417425470385">सुरू असताना, साइट व्हर्च्युअल रीअ‍ॅलिटी डिव्हाइस वापरण्याची विनंती करू शकतात. बंद असताना, साइट व्हर्च्युअल रीअ‍ॅलिटी डिव्हाइस वापरू शकत नाहीत.</translation>
+<translation id="7282197670900591579">सिट्रोन थीम</translation>
 <translation id="728412880473384942">साइट अधिक जलद, पण कमी सुरक्षित आहेत</translation>
 <translation id="7366415735885268578">एक साइट जोडा</translation>
 <translation id="7368695150573390554">कोणताही ऑफलाइन डेटा हटवला जाईल</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome संबंधित टिपांचे कार्ड लपवा</translation>
 <translation id="7719367874908701697">पेज झूम करा</translation>
 <translation id="775043444390799886">परवानगी मागे घ्या</translation>
+<translation id="7758789811447313947">व्हायलेट थीम</translation>
 <translation id="7759147511335618829">MIDI डिव्हाइस नियंत्रण व रीप्रोग्राम</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7791543448312431591">जोडा</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">मला आठवण करून द्या</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> याबद्दल अधिक जाणून घ्या</translation>
 <translation id="7952708427581814389">साइट तुमच्या क्लिपबोर्डवरील मजकूर आणि इमेज पाहण्यासाठी विचारू शकतात</translation>
+<translation id="798299424881500862">ऑरेंज थीम</translation>
 <translation id="7986741934819883144">संपर्क निवडा</translation>
 <translation id="7990211076305263060">सुरू असताना, साइट तुमचा मायक्रोफोन वापरण्याची विनंती करू शकतात. बंद असताना, साइट तुमचा मायक्रोफोन वापरू शकत नाहीत.</translation>
 <translation id="8007176423574883786">या डिव्हाइससाठी बंद करा</translation>

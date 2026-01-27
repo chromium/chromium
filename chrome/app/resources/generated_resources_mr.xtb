@@ -491,7 +491,6 @@
 <translation id="1313405956111467313">ऑटोमॅटिक प्रॉक्सी कॉन्फिगरेशन</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">तुम्हाला उघड्या असलेल्या टॅबसह सर्व साइटमधून साइन आउट केले जाईल</translation>
-<translation id="1313705515580255288">तुमचे बुकमार्क, इतिहास आणि इतर सेटिंग्ज आपल्या Google खात्यामध्ये संकालित केल्या जातील.</translation>
 <translation id="1316136264406804862">शोधत आहे...</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> शी कनेक्ट करता आले नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="1316495628809031177">सिंक थांबवले आहे</translation>
@@ -628,6 +627,7 @@
 <translation id="1418882096915998312">Enterprise नोंदणी प्रगतीपथावर आहे</translation>
 <translation id="1418954524306642206">तुमची प्रिंटर PPD नमूद करण्यासाठी ब्राउझ करा</translation>
 <translation id="1419086691207546433">संगतवार राहण्यासाठी, टास्क सोप्या करण्यासाठी आणि तुमचे ब्राउझिंग वर्धित करण्यासाठी एक्स्टेंशन जोडा</translation>
+<translation id="1419274664315195766">अपडेटसाठीची शेवटची तपासणी या वेळेला केली:</translation>
 <translation id="1421334842435688311">मोबाइल स्थान माहिती</translation>
 <translation id="1421514190500081936">कृपया हा डेटा डाउनलोड करण्यासाठीचे कारण एंटर करा:</translation>
 <translation id="1422159345171879700">असुरक्षित स्क्रिप्ट लोड करा</translation>
@@ -1254,6 +1254,7 @@
 <translation id="1828901632669367785">सिस्टीम डायलॉग वापरून प्रिंट करा…</translation>
 <translation id="1829129547161959350">पेंग्विन</translation>
 <translation id="1829192082282182671">झूम &amp;कमी करा</translation>
+<translation id="1829702127910586663">इनॅक्टिव्ह आवृत्त्या:</translation>
 <translation id="1830550083491357902">साइन इन केलेले नाही</translation>
 <translation id="1831848493690504725">आम्ही कनेक्ट केलेल्या नेटवर्कद्वारे Google शी कनेक्ट करू शकत नाही. दुसरे नेटवर्क निवडण्याचा प्रयत्न करा किंवा तुमची नेटवर्क सेटिंग्ज अथवा प्रॉक्सी सेटिंग्ज तपासा (तुम्ही प्रॉक्सी वापरत असल्यास).</translation>
 <translation id="1832414451155700364">इतिहास आणि टॅब सिंक करायचे आहेत की नाही हे निवडा</translation>
@@ -1726,6 +1727,7 @@
 <translation id="2147218225094845757">साइड पॅनल लपवा</translation>
 <translation id="2147282432401652483">कमांड</translation>
 <translation id="2147402320887035428">ही फाइल कदाचित मालवेअर असेल.<ph name="LINE_BREAK" />ही फाइल असुरक्षित आहे का हे Google सुरक्षित ब्राउझिंग तपासत आहे — स्कॅनसाठी सहसा काही सेकंद लागतात.</translation>
+<translation id="2147584561902725329">शेवटची आवर्ती टास्क रन:</translation>
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">शेअर माउंट करताना एरर आली. नेटवर्कमध्ये नमूद केलेला शेअर आढळला नाही.</translation>
 <translation id="2148248734299717598">डावीकडील दृश्य बंद करा</translation>
@@ -2359,6 +2361,7 @@
 <translation id="2565214867520763227">स्क्रीन रीडर सुरू करा</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUM_OTHER_MEMBERS" /> लोकांसोबत टॅब गटामध्ये सामील व्हा</translation>
 <translation id="256726287944589768">नवीन टॅब पेजवर फूटर दाखवा</translation>
+<translation id="2567313753132089780">पासवर्ड किमान १२ वर्णांचा असणे आवश्यक आहे आणि त्यामध्ये अप्परकेस व लोअरकेस अक्षरे, संख्या आणि चिन्हे यांचा समावेश असणे आवश्यक आहे</translation>
 <translation id="2568774940984945469">इंफोबार कंटेनर</translation>
 <translation id="2569972178052279830">रिटेल विक्रेत्याचे नाव</translation>
 <translation id="257088987046510401">थीम</translation>
@@ -3214,6 +3217,7 @@
 <translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
 <translation id="3157931365184549694">पुनर्संचयित करा</translation>
 <translation id="3158033540161634471">तुमचे फिंगरप्रिंट सेट करा</translation>
+<translation id="3158732900546890991">पासवर्ड किमान ८ वर्णांचा असणे आणि त्यामध्ये पुढीलपैकी किमान दोन गोष्टी वापरलेल्या असणे आवश्यक आहे: अप्पर केस अक्षरे, लोअर केस अक्षरे, अंक किंवा चिन्हे</translation>
 <translation id="3158770568048368350">यामुळे तुमचे मोबाइल नेटवर्क काही वेळासाठी डिस्कनेक्ट होऊ शकते</translation>
 <translation id="3159335509547415276">ब्लॉक केलेल्या खात्यांविषयी जाणून घ्या</translation>
 <translation id="3159493096109238499">फिकट तपकिरी</translation>
@@ -4577,6 +4581,7 @@
 <translation id="4050534976465737778">दोन्‍ही डिव्‍हाइस अनलॉक असल्‍याची, एकमेकांच्‍या जवळ धरल्‍याची आणि त्‍यांचे ब्लूटूथ सुरू असल्‍याची खात्री करा. तुम्ही तुमच्या संपर्कामध्ये नसलेल्या Chromebook सह शेअर करत असल्यास, Nearby दृश्यमानता सुरू केली असल्याची खात्री करा (स्थिती क्षेत्र उघडा, त्यानंतर Nearby दृश्यमानता सुरू करा). <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">यापूर्वी वापरलेल्या इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="KEY_CODES" /> प्रेस करा</translation>
 <translation id="4051177682900543628">शोधा + राइट अ‍ॅरो</translation>
+<translation id="4051505866566398331">इंस्टॉल करण्याचा पाथ:</translation>
 <translation id="405181879009056822">ChromeOS सेटिंग्ज</translation>
 <translation id="4052120076834320548"> लघु</translation>
 <translation id="4052913941260326985">QR कोड तयार करा</translation>
@@ -4769,6 +4774,7 @@
 <translation id="4203065553461038553">फाइलचे नाव किंवा स्थान खूप मोठे आहे</translation>
 <translation id="4203769790323223880">कॅमेराला अनुमती नाही</translation>
 <translation id="4204415812590935863">सध्या थीम तयार करू शकत नाही.</translation>
+<translation id="4205119019752232845">पासवर्ड किमान ६ वर्णांचा असणे आवश्यक आहे आणि त्यामध्ये किमान एक अक्षर किंवा चिन्ह असणे आवश्यक आहे</translation>
 <translation id="4206144641569145248">एलियन</translation>
 <translation id="4206323443866416204">फीडबॅक अहवाल</translation>
 <translation id="4206585797409671301">विनंत्या दाखवण्याची अनुमती दिली आहे</translation>
@@ -5387,6 +5393,7 @@
 <translation id="4628762811416793313">Linux कंटेनर सेटअप पूर्ण झाला नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> प्रोफाइल उघडा</translation>
 <translation id="4629803160911640220">विश्वसनीय</translation>
+<translation id="4631572301265416783">अलीकडील चॅट</translation>
 <translation id="4631637535315947773">तुम्ही अलीकडे तुमच्या सर्वाधिक भेट दिलेल्या साइटसाठी शॉर्टकट वापरले नसल्यामुळे ते काढून टाकण्यात आले आहेत</translation>
 <translation id="4631955550884380853">फोकस केलेला आवाज</translation>
 <translation id="4632655012900268062">कार्ड कस्टमाइझ करा</translation>
@@ -6074,6 +6081,7 @@
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> काढून टाका</translation>
 <translation id="5111326646107464148">नवीन विंडोमध्ये गट उघडा</translation>
 <translation id="511147239888121455">तुमच्या आशयाचा बॅकअप घ्यायचा आहे का?</translation>
+<translation id="5111474831474629851">तुमची संस्था तुम्हाला हे खाते वापरून साइन इन करण्याची अनुमती देत नाही</translation>
 <translation id="5111646998522066203">गुप्‍त मोडमधून बाहेर पडा</translation>
 <translation id="5111692334209731439">&amp;बुकमार्क व्यवस्थापक</translation>
 <translation id="5111794652433847656">या डिव्हाइसवर <ph name="APP_NAME" /> साठी कोणत्याही पासकी नाहीत</translation>
@@ -6326,6 +6334,7 @@
 <translation id="528208740344463258">Android अ‍ॅप्स डाउनलोड करण्यासाठी आणि वापरण्यासाठी, अगोदर तुम्ही हा आवश्यक अपडेट इंस्टॉल करणे गरजेचे आहे. तुमचे <ph name="DEVICE_TYPE" /> अपडेट होत असताना, तुम्ही त्याचा वापर करू शकत नाही. इंस्टॉल झाल्यानंतर तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट होईल.</translation>
 <translation id="5283677936944177147">अरेरे! सिस्टीमला डिव्हाइस मॉडेल किंवा सिरीअल नंबर निर्धारित करता आला नाही.</translation>
 <translation id="5284445933715251131">डाउनलोड करायला सुरुवात करा</translation>
+<translation id="5284883268399745283">पासवर्ड किमान १ वर्णाचा असणे आवश्यक आहे</translation>
 <translation id="5285484405698525101">या क्षणी न वापरलेले टॅब नाहीत</translation>
 <translation id="5285635972691565180">डिस्‍प्‍ले <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">स्‍कॅन करीत आहे</translation>
@@ -6430,7 +6439,6 @@
 <translation id="5365881113273618889">तुम्ही निवडलेल्या फोल्डरमध्ये संवेदनशील फाइल आहेत. तुम्हाला नक्की "<ph name="APP_NAME" />" ला या फोल्डरचा कायमचा राइट अ‍ॅक्सेस द्यायचा आहे का?</translation>
 <translation id="536638840841140142">काहीही नाही</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> वरील '<ph name="NETWORK_NAME" />' सेव्ह केले</translation>
-<translation id="5368441245151140827">हे एक्स्टेंशन साइट माहिती वाचू आणि बदलू शकत नाही किंवा बॅकग्राउंडमध्ये रन करू शकत नाही</translation>
 <translation id="5368720394188453070">तुमचा फोन लॉक केला आहे. प्रविष्‍ट करण्‍यासाठी तो अनलॉक करा.</translation>
 <translation id="536882527576164740">{0,plural, =1{गुप्त}other{गुप्त (#)}}</translation>
 <translation id="5369694795837229225">Linux डेव्हलपमेंट पद्धत सेट करा</translation>
@@ -6942,7 +6950,6 @@
 <translation id="5725112283692663422">AI वापरून थीम तयार करा यासाठीचा फीडबॅक पाठवा</translation>
 <translation id="5727728807527375859">एक्स्टेंशन, ॲप्लिकेशन आणि थीम तुमच्या कॉंप्युटरला हानी पोहोचवू शकतात. तुमची खात्री आहे की तुम्ही सुरू ठेवू इच्छिता?</translation>
 <translation id="5728072125198221967">लिंक केलेल्या Google सेवा</translation>
-<translation id="5728290366864286776">हे एक्स्टेंशन साइट माहिती वाचू आणि बदलू शकते किंवा बॅकग्राउंडमध्ये रन करू शकते</translation>
 <translation id="5728450728039149624">Smart Lock चे स्क्रीन लॉक करण्याचे पर्याय</translation>
 <translation id="572914206753951782">तुमचे Chromebook नवीनतम आवृत्तीवर असल्याची खात्री करा. त्यानंतर, तुमचे Chromebook रीस्टार्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5729712731028706266">&amp;दृश्य</translation>
@@ -7950,6 +7957,7 @@ I feel - विटांची इमारत</translation>
 <translation id="641899100123938294">नवीन डिव्हाइससाठी स्कॅन करा</translation>
 <translation id="6419524191360800346">Debian 11 (Bullseye) चे अपग्रेड उपलब्ध आहे</translation>
 <translation id="6419546358665792306">अनपॅक केलेले लोड करा</translation>
+<translation id="6422467884169339421">अलीकडील चॅट</translation>
 <translation id="6423685703035190381">तुमच्या फोनवर किमतीचा माग ठेवण्याशी संबंधित अलर्ट मिळवा</translation>
 <translation id="642469772702851743">हे डिव्हाइस (SN: <ph name="SERIAL_NUMBER" />) मालकाने लॉक केले होते.</translation>
 <translation id="6425556984042222041">टेक्‍स्‍ट टू स्‍पीच रेट</translation>
@@ -8876,6 +8884,7 @@ I feel - विटांची इमारत</translation>
 <translation id="70577934383983846">हा पासवर्ड तुमच्या सर्व डिव्हाइसवर वापरा</translation>
 <translation id="7058024590501568315">लपवलेले नेटवर्क</translation>
 <translation id="7059858479264779982">स्वयं-लाँच करा वर सेट करा</translation>
+<translation id="7060004353663489242"><ph name="FIELD_LIST" /> आवश्यक आहे</translation>
 <translation id="7063129466199351735">प्रक्रिया करण्‍याचे शॉर्टकट...</translation>
 <translation id="7063311912041006059">क्वेरीच्या जागेवर <ph name="SPECIAL_SYMBOL" /> सह URL</translation>
 <translation id="70641621694466590">पासवर्ड पेजवर जा</translation>
@@ -9148,6 +9157,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7261217796641151584">गट शेअर करा</translation>
 <translation id="7261612856573623172">सिस्टीम टेक्‍स्‍ट-टू-स्‍पीच व्हॉइस</translation>
 <translation id="7262004276116528033">ही साइन-इन सेवा <ph name="SAML_DOMAIN" /> द्वारे होस्ट केली जाते</translation>
+<translation id="7262564444061174264">नेव्हिगेशन शॉर्टकटबद्दल अधिक जाणून घ्या</translation>
 <translation id="7262919421769447042">तुमची प्रोफाइल <ph name="PROFILE_MANAGER" /> द्वारे व्यवस्थापित केलेली आहे, जी या गोष्टींच्या समावेशासह काही माहिती पाहू शकते</translation>
 <translation id="7264695323040866038">सपोर्ट असलेल्या वेब लिंक उघडण्यासाठी नेहमी <ph name="APP" /> अ‍ॅप वापरायचे का?</translation>
 <translation id="7267044199012331848">व्हर्च्युअल मशीन इंस्टॉल करता आले नाही. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
@@ -9481,7 +9491,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7481312909269577407">पुढील</translation>
 <translation id="7481358317100446445">तयार</translation>
 <translation id="748138892655239008">सर्टिफिकेट मूळ प्रतिबंध</translation>
-<translation id="7482823403440483089">वर्धित केलेले ऑटोफिल</translation>
 <translation id="7483732342458943943">ही लिंक काम करत नाही</translation>
 <translation id="7484645889979462775">या साइटसाठी कधीही नाही</translation>
 <translation id="7484943269191249363">तुम्ही या डिव्हाइसवर Google Password Manager मध्ये सेव्ह केलेल्या तुमच्या सर्व पासकी वापरू शकता. तुम्हाला हे एकदाच करावे लागेल.</translation>
@@ -9929,6 +9938,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7781335840981796660">सर्व वापरकर्ता खाती आणि स्थानिक डेटा काढला जाईल.</translation>
 <translation id="7782102568078991263">Google कडून कोणत्याही आणखी सूचना नाहीत</translation>
 <translation id="7782717250816686129">लॉगिन स्क्रीनवर सतत वापरात असलेला डेटा स्टोअर करा आणि सेशनमध्ये क्रेडेंशियल घाला.</translation>
+<translation id="7784020347632229094">कीबोर्ड शॉर्टकटबद्दल अधिक जाणून घ्या</translation>
 <translation id="7784067724422331729">तुमच्या कॉंप्युटरवरील सुरक्षितता सेटिंग्जने ही फाइल ब्लॉक केली.</translation>
 <translation id="7784796923038949829">साइटचा डेटा रीड करू किंवा बदलू शकत नाही</translation>
 <translation id="778480864305029524">इंस्टंट टेदरिंग वापरण्यासाठी, Google Play सेवा च्या सूचना सुरू करा.</translation>
@@ -11465,7 +11475,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8808686172382650546">मांजर</translation>
 <translation id="8809147117840417135">फिकट टील</translation>
 <translation id="8811862054141704416">Crostini मायक्रोफोन अ‍ॅक्सेस</translation>
-<translation id="8811923271770626905">हे एक्स्टेंशन बॅकग्राउंडमध्ये सुरू करू शकतो</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{१ पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तो इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये तो सेव्ह करा. हे कोणतेही डुप्लिकेट असल्यास त्यांचेही क्लीन अप करेल.}other{{PASSWORD_COUNT} पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये ते सेव्ह करा. हे कोणतेही डुप्लिकेट असल्यास त्यांचेही क्लीन अप करेल.}}</translation>
 <translation id="8813199641941291474">MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करणे ब्लॉक केले आहे</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> मध्ये साइन इन करू शकत नाही</translation>

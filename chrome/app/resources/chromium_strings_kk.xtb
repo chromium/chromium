@@ -36,7 +36,6 @@
 <translation id="1356661055722410047">Жаңалық! Енді экрандағы мәтін мен суреттерді де аудара аласыз.</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1397530502368084401">&amp;Chromium профильдерін басқару</translation>
-<translation id="1414495520565016063">Chromium жүйесіне кірдіңіз!</translation>
 <translation id="141901961143729572">Ойыңызды бөлісіңіз.</translation>
 <translation id="1465192221147974788">Терезені бөлісу үшін жүйе параметрлерінде Chromium-ге экран жазуға рұқсат беріңіз.</translation>
 <translation id="1478370723027452770">Chrome for Testing бойынша анықтама алу</translation>
@@ -326,10 +325,8 @@
 <translation id="4510853178268397146">Бұл кеңейтім пайдаланушы деректерін қалай жинап, қолданатыны сияқты құпиялық шараларын жарияламаған. Chromium оны өшіруге кеңес береді.</translation>
 <translation id="452711251841752011">Chromium браузеріне қош келдіңіз! Жаңа браузер терезесі ашылды.</translation>
 <translation id="4531137820806573936">Chromium-ге айналаңызды картаға түсіруге және қолыңызды бақылауға рұқсат қажет.</translation>
-<translation id="4534145890176164066">Chromium үлгілерді жақсы түсінеді және сізден де жылдам толтыра алады.</translation>
 <translation id="4536805923587466102">Басқа Chromium профилінде әлдеқашан <ph name="USER_EMAIL_ADDRESS" /> ретінде кіргенсіз.</translation>
 <translation id="4548534452171747496">Chromium беттерді алдын ала жүктейді, осылайша браузерді пайдалану және іздеу әрекеті тез жүреді. <ph name="BEGIN_LINK" />Беттерді алдын ала жүктеу туралы толық ақпарат<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> ретінде кіргенсіз. Енді барлық кірген құрылғыларда бетбелгілеріңізді, журналыңызды және басқа параметрлерді көре аласыз.</translation>
 <translation id="4570813286784708942">Chromium жүктеп алуды блоктады, себебі Safe Browsing функциясы өшірілді және файлды растау мүмкін емес.</translation>
 <translation id="4583692638088316420">Телефоныңыздағы Chromium-мен Google Lens-ді пайдаланып көріңіз</translation>
 <translation id="4594305310729380060">Осы құрылғыдағы Құпия сөз менеджеріне</translation>

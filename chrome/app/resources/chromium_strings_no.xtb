@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">Nyhet! Du kan oversette både tekst og bilder på skjermen</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1397530502368084401">&amp;Administrer Chromium-profiler</translation>
-<translation id="1414495520565016063">Du er logget på Chromium.</translation>
 <translation id="141901961143729572">Del det du har på hjertet</translation>
 <translation id="1465192221147974788">For å dele vinduet, tillat skjermopptak for Chromium i Systeminnstillinger.</translation>
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
@@ -325,10 +324,8 @@
 <translation id="4510853178268397146">Denne utvidelsen har ikke publisert retningslinjer for personvern, for eksempel hvordan den samler inn og bruker data. Chromium anbefaler at du fjerner den.</translation>
 <translation id="452711251841752011">Velkommen til Chromium – et nytt nettleservindu er åpnet</translation>
 <translation id="4531137820806573936">Chromium trenger tillatelse til å kartlegge omgivelsene dine og spore hendene dine</translation>
-<translation id="4534145890176164066">Chromium forstår skjemaer bedre og kan autofylle dem raskere for deg</translation>
 <translation id="4536805923587466102">Du er allerede logget på som <ph name="USER_EMAIL_ADDRESS" /> i en annen Chromium-profil</translation>
 <translation id="4548534452171747496">Chromium forhåndslaster sider, slik at det går raskere å surfe og søke. <ph name="BEGIN_LINK" />Finn ut mer om forhåndslasting av sider<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Du er logget på som <ph name="USER_EMAIL_ADDRESS" />. Nå kan du bruke bokmerkene, loggen og andre innstillinger på alle enhetene du er logget på.</translation>
 <translation id="4570813286784708942">Chromium har blokkert denne nedlastingen fordi du har slått av Safe Browsing, så filen kan ikke bekreftes</translation>
 <translation id="4583692638088316420">Prøv Google Lens med Chromium på telefonen</translation>
 <translation id="4594305310729380060">I Passordlagring på denne enheten</translation>

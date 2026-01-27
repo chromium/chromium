@@ -176,7 +176,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2857540653560290388">Iniciando Chrome...</translation>
 <translation id="286025080868315611">Averigua por qué bloquea Chrome algunas descargas</translation>
 <translation id="2861074815332034794">Actualizando Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Has iniciado sesión en Chrome</translation>
 <translation id="2875053229394024379">Si inicias sesión en Chrome con tu cuenta de Google, podrás usar tu perfil de Chrome con Gemini. <ph name="BEGIN_LINK" />Consulta cómo iniciar sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chrome la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
@@ -331,7 +330,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4459234553906210702">La medición de anuncios permite a los sitios que visitas pedir a Chrome información que les ayude a medir el rendimiento de sus anuncios. La medición de anuncios restringe el seguimiento entre sitios al transferir la menor cantidad de información posible entre ellos.</translation>
 <translation id="4493028449971051158">Error de arranque: ejecuta el instalador como administrador.</translation>
 <translation id="4501471624619070934">Se ha producido un error en la instalación debido a una restricción de acceso en este país.</translation>
-<translation id="4567424176335768812">Has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" />. Ahora puedes acceder a tus marcadores, a tu historial y a otras opciones en todos los dispositivos en los que hayas iniciado sesión.</translation>
 <translation id="4571503333518166079">Ir a los ajustes de notificaciones de Chrome</translation>
 <translation id="4592634244097223647">Pregunta a Google sobre esta imagen</translation>
 <translation id="459622048091363950">Una vez que Chrome tenga acceso, los sitios web podrán solicitarlo también.</translation>
@@ -756,7 +754,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8821043148920470810">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 7.</translation>
 <translation id="8823341990149967727">Chrome no está actualizado</translation>
 <translation id="8834965163890861871">Google Chrome está intentando cambiar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
-<translation id="8843516219908676469">Chrome entiende mejor los formularios y puede autocompletarlos más rápido</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome te recomienda que la elimines}other{Chrome te recomienda que las elimines}}</translation>
 <translation id="8862326446509486874">No dispones de los derechos necesarios para la instalación en el sistema. Intenta ejecutar de nuevo el programa de instalación como administrador.</translation>
 <translation id="8865415417596392024">Datos de Chrome en tu cuenta</translation>

@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">‏הפעלת Chrome...</translation>
 <translation id="286025080868315611">‏למה הורדות מסוימות נחסמות ב-Chrome</translation>
 <translation id="2861074815332034794">‏מתבצע עדכון של Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">‏נכנסת ל-Chrome!</translation>
 <translation id="2875053229394024379">‏כשנכנסים ל-Chrome באמצעות חשבון Google, אפשר להשתמש בפרופיל Chrome עם Gemini. <ph name="BEGIN_LINK" />איך להיכנס לחשבון ב-Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">‏<ph name="BEGIN_LINK" />מידע נוסף לגבי השמירה על פרטיות הנתונים ב-Chrome<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">מנהל המשימות</translation>
@@ -327,7 +326,6 @@
 <translation id="4459234553906210702">‏מדידת המודעות מאפשרת לאתרים שביקרת בהם לבקש מ-Chrome מידע שיעזור לבעלי האתרים למדוד את הביצועים של המודעות שלהם. מדידת המודעות מגבילה את המעקב באתרים שונים על ידי העברת כמות קטנה ככל האפשר של מידע בין אתרים.</translation>
 <translation id="4493028449971051158">שגיאת הפעלה: יש להפעיל את מנהל ההתקנה כאדמין.</translation>
 <translation id="4501471624619070934">ההתקנה נכשלה כי הגישה מוגבלת במדינה הזו.</translation>
-<translation id="4567424176335768812">נכנסת למערכת בתור <ph name="USER_EMAIL_ADDRESS" />. כעת יש לך אפשרות לגשת אל הסימניות, ההיסטוריה והגדרות אחרות שלך בכל המכשירים שבהם התחברת לחשבון.</translation>
 <translation id="4571503333518166079">‏מעבר אל הגדרות של הודעות ב-Chrome</translation>
 <translation id="4592634244097223647">‏אפשר לשאול את Google על התמונה הזו</translation>
 <translation id="459622048091363950">‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.</translation>
@@ -748,7 +746,6 @@
 <translation id="8821043148920470810">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 7.</translation>
 <translation id="8823341990149967727">‏Chrome אינו מעודכן</translation>
 <translation id="8834965163890861871">‏Google Chrome מנסה לערוך את הסיסמאות. כדי לאפשר את הפעולה הזו, יש להקליד את הסיסמה שלך ל-Windows.</translation>
-<translation id="8843516219908676469">‏‫Chrome מבין את הטפסים טוב יותר ויכול למלא אותם באופן אוטומטי מהר יותר</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{‏ההמלצה של Chrome היא להסיר אותו}one{‏ההמלצה של Chrome היא להסיר אותם}two{‏ההמלצה של Chrome היא להסיר אותם}other{‏ההמלצה של Chrome היא להסיר אותם}}</translation>
 <translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. יש לנסות להפעיל שוב את המתקין כמנהל מערכת.</translation>
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>

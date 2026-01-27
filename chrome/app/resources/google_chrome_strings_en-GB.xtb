@@ -176,7 +176,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2857540653560290388">Launching Chrome...</translation>
 <translation id="286025080868315611">Learn why Chrome blocks some downloads</translation>
 <translation id="2861074815332034794">Updating Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">You're signed in to Chrome!</translation>
 <translation id="2875053229394024379">When you sign in to Chrome with your Google Account, you can use your Chrome profile with Gemini. <ph name="BEGIN_LINK" />Learn how to sign in to Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task Manager</translation>
@@ -331,7 +330,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4459234553906210702">Ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
 <translation id="4493028449971051158">Startup error: Please run the installer as administrator.</translation>
 <translation id="4501471624619070934">Installation failed because access is restricted in this country.</translation>
-<translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
 <translation id="4592634244097223647">Ask Google about this image</translation>
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
@@ -474,7 +472,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6025087594896450715">Google Chrome will restart in <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="604424701295382420">Pinned! You can access Google Lens again from the new button on the toolbar</translation>
-<translation id="6046028983725193307">To share system audio, open System Settings and allow 'System audio recording only' for Chrome. You'll then need to restart Chrome.</translation>
+<translation id="6046028983725193307">To share system audio, open system settings and allow 'System audio recording only' for Chrome. You'll then need to restart Chrome.</translation>
 <translation id="6069027071882229820">Copy as image</translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
 <translation id="6075300983329039771">Your organisation, <ph name="MANAGER" />, requires you to sign in to Chrome</translation>
@@ -756,7 +754,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8821043148920470810">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 7.</translation>
 <translation id="8823341990149967727">Chrome is Out of Date</translation>
 <translation id="8834965163890861871">Google Chrome is trying to edit passwords. Type your Windows password to allow this.</translation>
-<translation id="8843516219908676469">Chrome understands forms better and can autofill them faster for you</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it}other{Chrome recommends that you remove them}}</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>

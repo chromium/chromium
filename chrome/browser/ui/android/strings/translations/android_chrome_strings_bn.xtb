@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome-এ খুলবে। চালিয়ে যাওয়ার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google-এর পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও ChromeOS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন।</translation>
 <translation id="1154555449933432029">Google Password Manager-এ আপনার সেভ করা পাসওয়ার্ড নেই।</translation>
 <translation id="115483310321669804">পাসওয়ার্ড <ph name="PASSWORD" /> ব্যবহার করুন</translation>
+<translation id="1161065531352634524">ট্যাব ও ইতিহাস সিঙ্ক করুন</translation>
 <translation id="1165109137568919258">সার্চ করতে ফটো তুলুন অথবা আপনার ফটো গ্যালারি থেকে ছবি যোগ করুন</translation>
 <translation id="1173894706177603556">পুনঃনামকরণ</translation>
 <translation id="1174479719160874822">সরু ও লম্বা স্ক্রিন শনাক্ত করলে Chrome মোবাইল সাইট দেখানোর অনুরোধ পাঠাবে</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">পূর্ববর্তী ট্যাবে চলে যান</translation>
 <translation id="5210365745912300556">ট্যাব বন্ধ করুন</translation>
 <translation id="5212800876504289412">এই পরিবর্তন সম্পূর্ণ করতে Chrome রিস্টার্ট করুন। আপনি রিস্টার্ট করলে ট্যাব অটোমেটিক আবার খুলে যাবে।</translation>
+<translation id="5213114823401215820">বন্ধ হওয়া গ্রুপ আবার খুলুন</translation>
 <translation id="5215957675041756913">আপনার ডেটা ও অ্যাকাউন্ট কন্ট্রোল করুন</translation>
 <translation id="5218324087477576825">কার্ডের নম্বর, প্রয়োজন</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ আপনি সম্প্রতি দেখেননি</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">পড়ার তালিকায় যোগ করুন <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ব্রাউজারে খুলুন</translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
+<translation id="7037994709569287156">Chrome-কে ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="7053256416619638731">এই ডিভাইসে আপনার পাসওয়ার্ড শক্তিশালী করুন</translation>
 <translation id="7053983685419859001">ব্লক করুন</translation>
 <translation id="7054588988317389591">ছবির বিবরণ পেতে চান?</translation>
@@ -1468,6 +1471,7 @@
 এই সেটিং পরিবর্তন করতে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
 <translation id="7165972437814027679">Chrome কিছু ফাইল কেন ব্লক করে, সেই সম্পর্কে জানুন</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> হিসেবে সাইন-ইন করেছেন। সেটিংস খোলে।</translation>
+<translation id="7170930892977483182">আপনার ডিভাইস ও Google Wallet-এ সেভ করা সব নিরাপত্তা কোড মুছে যাবে</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7173338713290252554">ওয়েব জুড়ে দাম সম্পর্কিত ইতিহাস</translation>
 <translation id="7177466738963138057">আপনি পরে সেটিংসে এই পরিবর্তন করতে পারবেন</translation>
@@ -1800,6 +1804,7 @@
 <translation id="8458413889418591446">আপনার দেখা সাইটে দ্রুত ফিরে যেতে, ইতিহাস ও ট্যাব সিঙ্ক করুন</translation>
 <translation id="84594714173170813">আপনার Google অ্যাকাউন্টে Chrome ডেটা ব্যবহার করা চালিয়ে যান</translation>
 <translation id="8460448946170646641">মূল গোপনীয়তা এবং নিরাপত্তা নিয়ন্ত্রণ পর্যালোচনা করুন</translation>
+<translation id="8460932807646981183">সার্চ ইঞ্জিন এবং সাইট সার্চ করা ম্যানেজ করুন</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
 <translation id="847433688444405067">ডিভাইস জুড়ে ব্রাউজ করা</translation>
 <translation id="8477178913400731244">ডেটা মুছুন</translation>

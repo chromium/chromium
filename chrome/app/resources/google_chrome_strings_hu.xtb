@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">A Chrome indítása…</translation>
 <translation id="286025080868315611">További információ arról, hogy miért tilt le bizonyos letöltéseket a Chrome</translation>
 <translation id="2861074815332034794">A Chrome frissítése… (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Bejelentkezett a Chrome-ba.</translation>
 <translation id="2875053229394024379">Ha bejelentkezik a Chrome-ba Google-fiókjával, használhatja Chrome-profilját a Geminivel. <ph name="BEGIN_LINK" />További információ a Chrome-ba való bejelentkezésről<ph name="END_LINK" />.</translation>
 <translation id="2876628302275096482">További információ arról, <ph name="BEGIN_LINK" />hogyan gondoskodik az Ön adatainak védelméről a Chrome<ph name="END_LINK" />.</translation>
 <translation id="2885378588091291677">Feladatkezelő</translation>
@@ -327,7 +326,6 @@
 <translation id="4459234553906210702">A hirdetésmérés segítségével az Ön által felkeresett webhelyek olyan adatokat kérhetnek a Chrome-tól, amelyek segítségével a webhely mérheti hirdetéseinek teljesítményét. A hirdetésmérés azáltal korlátozza a webhelyeken átnyúló nyomon követést, hogy a lehető legkevesebb adatot továbbítja a webhelyek között.</translation>
 <translation id="4493028449971051158">Indítási hiba: rendszergazdaként futtassa a telepítőt.</translation>
 <translation id="4501471624619070934">A telepítés sikertelen volt, mivel a hozzáférés korlátozott ebben az országban.</translation>
-<translation id="4567424176335768812">A(z) <ph name="USER_EMAIL_ADDRESS" /> címmel van bejelentkezve. Elérheti könyvjelzőit, előzményeit és más beállításait minden olyan eszközön, amelyen bejelentkezett.</translation>
 <translation id="4571503333518166079">A Chrome értesítési beállításainak megnyitása</translation>
 <translation id="4592634244097223647">Kérdés feltevése a Google-nak erről a képről</translation>
 <translation id="459622048091363950">Miután hozzáférést biztosított a Chrome-nak, a webhelyek is hozzáférést kérhetnek.</translation>
@@ -748,7 +746,6 @@
 <translation id="8821043148920470810">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 7 operációs rendszer fut.</translation>
 <translation id="8823341990149967727">A Chrome elavult</translation>
 <translation id="8834965163890861871">A Google Chrome szerkeszteni próbálja a jelszavakat. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
-<translation id="8843516219908676469">A funkció segítségével a Chrome pontosabban megérti az űrlapokat, és gyorsabban tudja kitölteni őket.</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{A Chrome az eltávolítását javasolja}other{A Chrome az eltávolításukat javasolja}}</translation>
 <translation id="8862326446509486874">Nincsenek meg a megfelelő jogai a rendszerszintű telepítéshez. Indítsa újra a telepítőt rendszergazdaként.</translation>
 <translation id="8865415417596392024">A fiókjában található Chrome-adatok</translation>

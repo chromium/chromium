@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">У вас немає збережених паролів у цьому сервісі.</translation>
 <translation id="115483310321669804">Використати пароль <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Синхронізуйте вкладки й історію</translation>
 <translation id="1165109137568919258">Зробіть фотографію або додайте зображення з галереї, щоб виконати пошук</translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1174479719160874822">Якщо екран вузький, Chrome надсилатиме запит на мобільний сайт</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">Перейти до попередньої вкладки</translation>
 <translation id="5210365745912300556">Закрити вкладку</translation>
 <translation id="5212800876504289412">Щоб застосувати цю зміну, перезапустіть Chrome. Коли ви це зробите, вкладки автоматично відкриються знову.</translation>
+<translation id="5213114823401215820">Знову відкрити закриту групу</translation>
 <translation id="5215957675041756913">Керуйте даними й обліковим записом</translation>
 <translation id="5218324087477576825">Номер картки, обов’язкове поле</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і інші <ph name="SEPARATOR" /> Chrome скасував ці дозволи, оскільки останнім часом ви не відвідували сайт</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">Додати в список читання <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Відкрити у вебпереглядачі</translation>
 <translation id="7029809446516969842">Паролі</translation>
+<translation id="7037994709569287156">Зробити Chrome вебпереглядачем за умовчанням</translation>
 <translation id="7053256416619638731">Зробіть паролі на цьому пристрої надійнішими</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7054588988317389591">Отримувати описи зображень?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">Щоб швидко відкривати відвідані сайти, увімкніть синхронізацію історії і вкладок</translation>
 <translation id="84594714173170813">Продовжуйте використовувати дані Chrome в обліковому записі Google</translation>
 <translation id="8460448946170646641">Перегляньте основні елементи керування конфіденційністю та безпекою</translation>
+<translation id="8460932807646981183">Керувати пошуковими системами й пошуком на сайтах</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="847433688444405067">Переглядайте на різних пристроях</translation>
 <translation id="8477178913400731244">Видалити дані</translation>

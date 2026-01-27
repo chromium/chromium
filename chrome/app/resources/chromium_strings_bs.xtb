@@ -37,7 +37,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1356661055722410047">Novo! Možete prevesti i tekst i slike s ekrana</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1397530502368084401">&amp;Upravljajte profilima u Chromiumu</translation>
-<translation id="1414495520565016063">Prijavili ste se u Chromium!</translation>
 <translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1465192221147974788">Da podijelite prozor, dozvolite snimanje ekrana za Chromium u Postavkama sistema.</translation>
 <translation id="1478370723027452770">Potražite pomoć za Chrome for Testing</translation>
@@ -327,10 +326,8 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4510853178268397146">Ekstenzija nije objavila prakse u vezi s privatnošću, kao što je način na koji prikuplja i koristi podatke. Chromium preporučuje da je uklonite.</translation>
 <translation id="452711251841752011">Dobro došli u Chromium. Otvoren je novi prozor preglednika</translation>
 <translation id="4531137820806573936">Chromiumu je potrebno odobrenje da mapira okruženje i prati pokrete ruku</translation>
-<translation id="4534145890176164066">Chromium bolje razumije obrasce i može ih brže automatski popuniti za vas</translation>
 <translation id="4536805923587466102">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom Chromium profilu</translation>
 <translation id="4548534452171747496">Chromium predučitava stranice, što ubrzava pregledanje i pretraživanje. <ph name="BEGIN_LINK" />Saznajte više o predučitanim stranicama<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete pristupiti svojim oznakama, historiji i drugim postavkama na svim uređajima na kojima ste prijavljeni.</translation>
 <translation id="4570813286784708942">Chromium je blokirao ovo preuzimanje jer ste isključili Sigurno pregledanje i fajl se ne može potvrditi</translation>
 <translation id="4583692638088316420">Isprobajte Google Objektiv putem Chromiuma na telefonu</translation>
 <translation id="4594305310729380060">U Upravitelju lozinki na ovom uređaju</translation>

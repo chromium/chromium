@@ -3,6 +3,7 @@
 <translationbundle lang="te">
 <translation id="1006017844123154345">ఆన్‌లైన్‌లో తెరువు</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
+<translation id="1046742265332833834">నీలం రంగు థీమ్</translation>
 <translation id="1070329623210597193">ఈ సైట్ చూడగల లేదా ఎడిట్ చేయగల ఫైల్స్</translation>
 <translation id="1073417869336441572">మీరు థర్డ్-పార్టీ కుక్కీలను ఎందుకు అనుమతించారో చెప్పడం ద్వారా Chromeను మెరుగుపరచడంలో మాకు సహాయపడండి. <ph name="BEGIN_LINK" />ఫీడ్‌బ్యాక్‌ను పంపండి<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">మీరు సైట్‌లకు సంబంధించిన డెస్క్‌టాప్ వెర్షన్‌ను చూడమని అడగవచ్చు</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1192844206376121885">దీని వలన <ph name="ORIGIN" /> స్టోర్ చేసిన మొత్తం డేటాతో పాటు కుక్కీలన్నీ కూడా తొలగిపోతాయి.</translation>
+<translation id="1199963004393929848">ఆకుపచ్చ రంగు థీమ్</translation>
 <translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1240190568154816272">Chrome చిట్కాలు</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />లో పొందుపరచబడింది</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">ఫీడ్‌ను డిస్కవర్ చేయండి</translation>
 <translation id="3198916472715691905">స్టోరేజ్‌ చేసిన డేటా <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">ఈసారి అనుమతి ఉంది • సుమారు</translation>
+<translation id="3208584281581115441">ఇప్పుడే చెక్ చేయండి</translation>
 <translation id="321187648315454507">మీకు నోటిఫికేషన్‌లను పంపడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా నోటిఫికేషన్‌లను ఆన్ చేయండి.</translation>
 <translation id="3223425961342298674">లొకేషన్ అనుమతించబడలేదు</translation>
 <translation id="3227137524299004712">మైక్రోఫోన్</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">తీసివేసి, తర్వాత అందుబాటులో ఉన్న చర్యను చూపండి</translation>
 <translation id="3744111561329211289">బ్యాక్‌గ్రౌండ్ సింక్</translation>
 <translation id="3746834924069123416">ఇటీవలి ట్యాబ్‌లను మరిన్నింటిని చూడండి</translation>
+<translation id="3753618528540214374">ఆకుపచ్చ నలుపు రంగు థీమ్</translation>
 <translation id="3763247130972274048">10సె దాటవేయడానికి వీడియోపై రెండుసార్లు ఎడమ లేదా కుడివైపు ట్యాప్ చేయండి</translation>
 <translation id="3776508619697147021">అనేక ఫైళ్లను ఆటోమేటిక్‌గా డౌన్‌లోడ్ చేయడానికి సైట్‌లు అడగవచ్చు</translation>
 <translation id="3779154269823594982">పాస్‌వర్డ్‌లను మార్చు</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">ఫోన్ నంబర్‌లు</translation>
 <translation id="3823453485268218808">ఫాంట్ మోనో</translation>
 <translation id="3826050100957962900">థర్డ్-పార్టీ సైన్ ఇన్</translation>
+<translation id="3831065134033923230">మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="3835233591525155343">మీ పరికర వినియోగం</translation>
 <translation id="3843916486309149084">మళ్లీ ఇవాళ Chrome, కుక్కీలను బ్లాక్ చేస్తుంది</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">డిస్కవర్ ఫీడ్‌ను ఆన్ చేయండి</translation>
 <translation id="6012967556075291653">పిన్ చేసిన షార్ట్‌కట్</translation>
 <translation id="6015775454662021376">మీ పరికరానికి ఈ సైట్ యాక్సెస్‌ని నియంత్రించండి</translation>
+<translation id="6022659036123304283">Chromeని మీకు నచ్చినట్లు తయారు చేసుకోండి</translation>
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
 <translation id="6064125863973209585">పూర్తయిన డౌన్‌లోడ్‌లు</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6205314730813004066">యాడ్‌ల విషయంలో గోప్యత</translation>
 <translation id="6207207788774442484">డేటాను తొలగించండి, అనుమతులను రీసెట్ చేయండి</translation>
+<translation id="6218508144653756827">గులాబి ఎరుపు రంగు థీమ్</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />'ను అన్‌ఇన్‌స్టాల్ చేయాలా?</translation>
 <translation id="6234351944623978659">బ్రౌజర్ యాప్‌ను &gt; Chromeను ట్యాప్ చేయండి</translation>
 <translation id="6260830281887654268">సగం స్క్రీన్‌లో తెరిచిన, కొత్త ట్యాబ్ పేజీలో కనిపించే థీమ్ కలెక్షన్‌లను చూపే దిగువున ఉన్న షీట్</translation>
 <translation id="6262191102408817757">మీ చివరి ట్యాబ్ ఆధారంగా</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
-<translation id="6278428485366576908">థీమ్</translation>
 <translation id="6295158916970320988">అన్ని సైట్‌లు</translation>
 <translation id="6320088164292336938">వైబ్రేట్ చేయి</translation>
 <translation id="6367753977865761591">నిర్దిష్ట సైట్ కోసం థర్డ్-పార్టీ సైన్-ఇన్‌ను బ్లాక్ చేస్తుంది.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> సైట్‌కు కుక్కీలు అనుమతించబడ్డాయి}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> సైట్‌లకు కుక్కీలు అనుమతించబడ్డాయి}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">రక్షిత కంటెంట్</translation>
+<translation id="6619015782482868078">ఆక్వా థీమ్</translation>
 <translation id="662080504995468778">ఇందులోనే ఉంచు</translation>
 <translation id="6630443592285535486">ఇక్కడ హెక్స్ అని టైప్ చేయండి</translation>
 <translation id="6635327442719709864">ఆన్‌లో ఉంటే, సీరియల్ పోర్ట్‌లను ఉపయోగించడానికి సైట్‌లు అనుమతి అడుగుతాయి. ఆఫ్‌లో ఉంటే, సైట్‌లు సీరియల్ పోర్ట్‌లను ఉపయోగించడం సాధ్యం కాదు.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6950072572526089586">మీరు ఏం చేస్తున్నారు అనే దానికి సంబంధించిన సమాచారాన్ని మీరు చూసిన సైట్ సేవ్ చేయగలదు, తద్వారా అది మీరు ఊహించిన విధంగా పని చేయగలదు — ఉదాహరణకు, సైట్‌లో మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడానికి లేదా మీ షాపింగ్ కార్ట్‌లో ఐటెమ్‌లను సేవ్ చేయడానికి. తరచుగా సైట్‌లు ఈ సమాచారాన్ని మీ పరికరంలో తాత్కాలికంగా సేవ్ చేస్తాయి.</translation>
 <translation id="6965382102122355670">సరే</translation>
+<translation id="6980507581230208647">గులాబీ రంగు థీమ్</translation>
 <translation id="6980861169612950611">సైట్ డేటాను తొలగించాలా? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="6991142177939282156">అనుమతించబడింది • సుమారుగా ఉన్న లొకేషన్‌ను ఉపయోగిస్తోంది</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ఎంచుకోబడ్డాయి</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> అనుమతించబడ్డాయి</translation>
 <translation id="7276071417425470385">ఆన్‌లో ఉన్నప్పుడు, సైట్‌లు వర్చువల్ రియాలిటీ పరికరాలను ఉపయోగించమని అడగవచ్చు. ఆఫ్‌లో ఉన్నప్పుడు, సైట్‌లు వర్చువల్ రియాలిటీ పరికరాలను ఉపయోగించడం సాధ్యం కాదు.</translation>
+<translation id="7282197670900591579">సిట్రాన్ థీమ్</translation>
 <translation id="728412880473384942">సైట్‌లు వేగంగా ఉంటాయి కానీ తక్కువ సురక్షితంగా ఉంటాయి</translation>
 <translation id="7366415735885268578">సైట్‌ను జోడించండి</translation>
 <translation id="7368695150573390554">ఆఫ్‌లైన్ డేటా ఏదైనా ఉంటే, అది తొలగించబడుతుంది</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome చిట్కాల కార్డ్‌ను దాచండి</translation>
 <translation id="7719367874908701697">పేజీ జూమ్</translation>
 <translation id="775043444390799886">అనుమతిని ఉపసంహరించుకోండి</translation>
+<translation id="7758789811447313947">నీలి ఊదా రంగు థీమ్</translation>
 <translation id="7759147511335618829">MIDI పరికర కంట్రోల్, రీప్రోగ్రాం</translation>
 <translation id="7781829728241885113">నిన్న</translation>
 <translation id="7791543448312431591">జోడించండి</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">నాకు గుర్తు చేయి</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> గురించి మరింత తెలుసుకోండి</translation>
 <translation id="7952708427581814389">మీ క్లిప్‌బోర్డ్‌లోని టెక్స్ట్, ఇమేజ్‌లను చూడటానికి సైట్‌లు అడగగలవు</translation>
+<translation id="798299424881500862">నారింజ రంగు థీమ్</translation>
 <translation id="7986741934819883144">పరిచయాన్ని ఎంచుకోండి</translation>
 <translation id="7990211076305263060">ఆన్‌లో ఉన్నప్పుడు, సైట్‌లు మీ మైక్రోఫోన్‌ను ఉపయోగించమని అడగవచ్చు. ఆఫ్‌లో ఉన్నప్పుడు, సైట్‌లు మీ మైక్రోఫోన్‌ను ఉపయోగించడం సాధ్యం కాదు.</translation>
 <translation id="8007176423574883786">ఈ పరికరం కోసం ఆఫ్ చేయబడింది</translation>

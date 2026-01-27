@@ -36,7 +36,6 @@
 <translation id="1356661055722410047">Навінка! Вы можаце перакладаць тэкст і відарысы на экране</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1397530502368084401">&amp;Кіраваць профілямі Chromium</translation>
-<translation id="1414495520565016063">Вы ўвайшлі ў Chromium!</translation>
 <translation id="141901961143729572">Што вы думаеце</translation>
 <translation id="1465192221147974788">Каб абагуліць акно, у сістэмных наладах дазвольце браўзеру Chromium запіс экрана.</translation>
 <translation id="1478370723027452770">Атрымаць даведку па Chrome for Testing</translation>
@@ -326,10 +325,8 @@
 <translation id="4510853178268397146">Для гэтага пашырэння не апублікаваны меры забеспячэння прыватнасці, напрыклад звесткі пра тое, як яно збірае і выкарыстоўвае даныя. Chromium рэкамендуе выдаліць яго.</translation>
 <translation id="452711251841752011">Вітаем у Chromium! Адкрыта новае акно браўзера</translation>
 <translation id="4531137820806573936">Браўзеру Chromium патрабуецца дазвол на стварэнне карты вашага асяроддзя і адсочванне рук.</translation>
-<translation id="4534145890176164066">Chromium лепш працуе з формамі, таму іх аўтаматычнае запаўненне можна выканаць хутчэй</translation>
 <translation id="4536805923587466102">Вы ўжо ўвайшлі ў іншы профіль Chromium як <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4548534452171747496">Chromium перадзагружае старонкі, што паскарае работу браўзера і пошук. <ph name="BEGIN_LINK" />Даведацца больш пра перадзагрузку старонак<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Вы ўвайшлі як <ph name="USER_EMAIL_ADDRESS" /> і цяпер маеце доступ да закладак, гісторыі і іншых налад на ўсіх прыладах, дзе выкананы ўваход.</translation>
 <translation id="4570813286784708942">Браўзер Chromium заблакіраваў спампоўку, бо вы выключылі Бяспечны прагляд і гэты файл нельга праверыць</translation>
 <translation id="4583692638088316420">Паспрабуйце Google Аб’ектыў у Chromium на тэлефоне</translation>
 <translation id="4594305310729380060">У Менеджар пароляў на гэтай прыладзе</translation>

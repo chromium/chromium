@@ -3,6 +3,7 @@
 <translationbundle lang="fi">
 <translation id="1006017844123154345">Avaa verkkoversio</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
+<translation id="1046742265332833834">Sininen teema</translation>
 <translation id="1070329623210597193">Tiedostot, jotka sivusto voi katsella tai muokata</translation>
 <translation id="1073417869336441572">Auta meitä parantamaan Chromea kertomalla, miksi sallit kolmannen osapuolen evästeet. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Voit pyytää sivustojen tietokoneversiota</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1192844206376121885">Tämä poistaa kaiken datan ja kaikki evästeet, jotka <ph name="ORIGIN" /> on tallentanut.</translation>
+<translation id="1199963004393929848">Vihreä teema</translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1240190568154816272">Vinkkejä Chromen käyttöön</translation>
 <translation id="1242008676835033345">Upotettu sivustolle <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3167868116600277716">Discover-fiidi</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tallennettua tietoa</translation>
 <translation id="3199078925536734975">Sallittu tällä kertaa • Likimääräinen</translation>
+<translation id="3208584281581115441">Tarkista nyt</translation>
 <translation id="321187648315454507">Ota ilmoitukset käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi lähettää sinulle ilmoituksia.</translation>
 <translation id="3223425961342298674">Pääsyä sijaintiin ei sallittu</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
@@ -264,6 +267,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3721953990244350188">Hylkää ja näytä seuraava saatavilla oleva toiminto</translation>
 <translation id="3744111561329211289">Taustasynkronointi</translation>
 <translation id="3746834924069123416">Katso lisää viimeaikaisia välilehtiä</translation>
+<translation id="3753618528540214374">Kromivihreä teema</translation>
 <translation id="3763247130972274048">Ohita 10 sekuntia kaksoisnapauttamalla videota vasemmalle tai oikealle</translation>
 <translation id="3776508619697147021">Sivustot saavat pyytää lupaa ladata useita tiedostoja automaattisesti</translation>
 <translation id="3779154269823594982">Vaihda salasanoja</translation>
@@ -273,6 +277,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="381841723434055211">Puhelinnumerot</translation>
 <translation id="3823453485268218808">Mono-fontti</translation>
 <translation id="3826050100957962900">Kolmannen osapuolen sisäänkirjautuminen</translation>
+<translation id="3831065134033923230">Tarkista tallennetut salasanat</translation>
 <translation id="3835233591525155343">Laitteesi käyttö</translation>
 <translation id="3843916486309149084">Chrome estää evästeet uudelleen tänään</translation>
 <translation id="385051799172605136">Takaisin</translation>
@@ -475,6 +480,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5998071268779572583">Laita Discover-fiidi päälle</translation>
 <translation id="6012967556075291653">Kiinnitetty pikakuvake</translation>
 <translation id="6015775454662021376">Valitse, mitä tämä sivusto saa tehdä laitteellasi</translation>
+<translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6042308850641462728">Lisää</translation>
 <translation id="6064125863973209585">Valmiit lataukset</translation>
@@ -492,13 +498,13 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
 <translation id="6205314730813004066">Mainosyksityisyys</translation>
 <translation id="6207207788774442484">Poista data ja nollaa luvat</translation>
+<translation id="6218508144653756827">Fuksia teema</translation>
 <translation id="6231752747840485235">Poistetaanko <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Valitse Selainsovellus &gt; Chrome</translation>
 <translation id="6260830281887654268">Uusi välilehti ‐sivun ulkoasun teemakokoelmien alapaneeli avattu puoliksi</translation>
 <translation id="6262191102408817757">Perustuu viimeisimpään välilehteen</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> estetty</translation>
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>
-<translation id="6278428485366576908">Teema</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6320088164292336938">Värinä</translation>
 <translation id="6367753977865761591">Estä kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
@@ -525,6 +531,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="659938948789980540">{COUNT,plural, =1{Evästeet sallittu <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-sivustolla}other{Evästeet sallittu <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-sivustolla}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Gt</translation>
 <translation id="6612358246767739896">Suojattu sisältö</translation>
+<translation id="6619015782482868078">Sinivihreä teema</translation>
 <translation id="662080504995468778">Jää</translation>
 <translation id="6630443592285535486">Kirjoita heksadesimaali tähän</translation>
 <translation id="6635327442719709864">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää sarjaportteja. Kun tämä on pois päältä, sivustot eivät voi käyttää sarjaportteja.</translation>
@@ -553,6 +560,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="6950072572526089586">Avaamasi sivusto voi tallentaa tietoja toiminnastasi, jotta se toimii odotetulla tavalla – esimerkiksi pitääksesi sinut kirjautuneena sivustolle tai tallentaaksesi tuotteita ostoskoriin. Sivustot tallentavat usein nämä tiedot väliaikaisesti laitteellesi.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Ruusunpunainen teema</translation>
 <translation id="6980861169612950611">Poistetaanko sivustodata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Saavutettavuus</translation>
 <translation id="6991142177939282156">Sallittu • Käytetään likimääräistä sijaintia</translation>
@@ -581,6 +589,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valittu</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> sallittu</translation>
 <translation id="7276071417425470385">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää virtuaalitodellisuuslaitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää virtuaalitodellisuuslaitteita.</translation>
+<translation id="7282197670900591579">Sitruunankeltainen teema</translation>
 <translation id="728412880473384942">Sivustot ovat nopeampia mutta vähemmän turvallisia</translation>
 <translation id="7366415735885268578">Lisää sivusto</translation>
 <translation id="7368695150573390554">Kaikki offline-data poistetaan</translation>
@@ -619,6 +628,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7688240020069572972">Piilota Chromen vinkkikortti</translation>
 <translation id="7719367874908701697">Sivun zoomaus</translation>
 <translation id="775043444390799886">Peru lupa</translation>
+<translation id="7758789811447313947">Violetti teema</translation>
 <translation id="7759147511335618829">Ohjaus ja uudelleenohjelmointi</translation>
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="7791543448312431591">Lisää</translation>
@@ -637,6 +647,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7940722705963108451">Muistuta minua</translation>
 <translation id="7948081750384205628">Lue lisää: <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Sivustot saavat pyytää leikepöydällä olevan tekstin ja kuvien näkemistä</translation>
+<translation id="798299424881500862">Oranssi teema</translation>
 <translation id="7986741934819883144">Valitse yhteystieto</translation>
 <translation id="7990211076305263060">Kun tämä on päällä, sivustot voivat pyytää lupaa mikrofonin käyttöön. Kun tämä on pois päältä, sivustot eivät voi käyttää mikrofonia.</translation>
 <translation id="8007176423574883786">Ei käytössä tällä laitteella</translation>

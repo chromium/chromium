@@ -37,7 +37,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1356661055722410047">¡Novedad! Puedes traducir tanto texto como imágenes en tu pantalla.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1397530502368084401">&amp;Gestionar perfiles de Chromium</translation>
-<translation id="1414495520565016063">Has iniciado sesión en Chromium</translation>
 <translation id="141901961143729572">Comparte tus ideas</translation>
 <translation id="1465192221147974788">Para compartir tu ventana, permite la grabación de pantalla de Chromium en Ajustes del sistema</translation>
 <translation id="1478370723027452770">Obtener ayuda con Chrome for Testing</translation>
@@ -327,10 +326,8 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4510853178268397146">Esta extensión no ha publicado sus prácticas de privacidad, como la forma en la que recoge y usa los datos. Chromium te recomienda que la elimines.</translation>
 <translation id="452711251841752011">Te damos la bienvenida a Chromium. Se ha abierto una nueva ventana del navegador.</translation>
 <translation id="4531137820806573936">Chromium necesita permiso para mapear tu entorno y hacer un seguimiento de tus manos</translation>
-<translation id="4534145890176164066">Chromium entiende mejor los formularios y puede autocompletarlos más rápido</translation>
 <translation id="4536805923587466102">Ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /> en otro perfil de Chromium</translation>
 <translation id="4548534452171747496">Chromium precarga las páginas, lo que te permite navegar y hacer búsquedas más rápido. <ph name="BEGIN_LINK" />Más información sobre la precarga de páginas<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" />. Ahora puedes acceder a tus marcadores, a tu historial y a otras opciones en todos los dispositivos en los que hayas iniciado sesión.</translation>
 <translation id="4570813286784708942">Chromium ha bloqueado esta descarga porque has desactivado Navegación segura y el archivo no se puede verificar</translation>
 <translation id="4583692638088316420">Prueba Google Lens con Chromium en tu teléfono</translation>
 <translation id="4594305310729380060">En el gestor de contraseñas de este dispositivo</translation>

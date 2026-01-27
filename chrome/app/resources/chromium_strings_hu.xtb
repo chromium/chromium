@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">Új! A képernyőn megjelenő szöveget és képeket is lefordíthatja.</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1397530502368084401">&amp;Chromium-profilok kezelése</translation>
-<translation id="1414495520565016063">Bejelentkezett a Chromiumba.</translation>
 <translation id="141901961143729572">Ossza meg gondolatait</translation>
 <translation id="1465192221147974788">Az ablak megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="1478370723027452770">Segítség kérése a Chrome for Testing verzióval kapcsolatban</translation>
@@ -325,10 +324,8 @@
 <translation id="4510853178268397146">Ez a bővítmény nem tett közzé adatvédelmi gyakorlatokat például arra vonatkozóan, hogy hogyan gyűjti és használja fel az adatokat. A Chromium az eltávolítását javasolja.</translation>
 <translation id="452711251841752011">Üdvözöljük a Chromiumban; új böngészőablak megnyitva</translation>
 <translation id="4531137820806573936">A Chromiumnak engedélyre van szüksége ahhoz, hogy feltérképezhesse az Ön környezetét, és nyomon követhesse a kezét</translation>
-<translation id="4534145890176164066">A funkció segítségével a Chromium pontosabban megérti az űrlapokat, és gyorsabban tudja kitölteni őket.</translation>
 <translation id="4536805923587466102">Már be van jelentkezve a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókkal egy másik Chromium-profilban.</translation>
 <translation id="4548534452171747496">A Chromium előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést. <ph name="BEGIN_LINK" />További információ az oldalak előtöltéséről<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">A(z) <ph name="USER_EMAIL_ADDRESS" /> címmel van bejelentkezve. Elérheti könyvjelzőit, előzményeit és más beállításait minden olyan eszközön, amelyen bejelentkezett.</translation>
 <translation id="4570813286784708942">A Chromium letiltotta ezt a letöltést, mert Ön kikapcsolta a Biztonságos Böngészést, és a fájl nem ellenőrizhető</translation>
 <translation id="4583692638088316420">A Google Lens kipróbálása a Chromiummal telefonon</translation>
 <translation id="4594305310729380060">Az eszközön található Jelszókezelőbe</translation>

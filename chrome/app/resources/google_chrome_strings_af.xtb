@@ -176,7 +176,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2857540653560290388">Begin tans Chrome …</translation>
 <translation id="286025080868315611">Vind uit hoekom Chrome sommige aflaaie blokkeer</translation>
 <translation id="2861074815332034794">Dateer tans Chrome op (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Jy is by Chrome aangemeld!</translation>
 <translation id="2875053229394024379">Wanneer jy met jou Google-rekening by Chrome aanmeld, kan jy jou Chrome-profiel met Gemini gebruik. <ph name="BEGIN_LINK" />Vind uit hoe om by Chrome aan te meld<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Kom meer te wete oor <ph name="BEGIN_LINK" />hoe Chrome jou data privaat hou<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Taakbestuurder</translation>
@@ -331,7 +330,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4459234553906210702">Advertensiemeting stel werwe wat jy besoek in staat om inligting van Chrome af te versoek wat die werf help om die werkverrigting van hul advertensies te meet. Advertensiemeting beperk oorkruiswerfnasporing deur so min inligting moontlik tussen werwe oor te dra.</translation>
 <translation id="4493028449971051158">Aanskakelingfout: laat loop die installeerder as administrateur.</translation>
 <translation id="4501471624619070934">Installasie het misluk omdat toegang in hierdie land beperk is.</translation>
-<translation id="4567424176335768812">Jy is as <ph name="USER_EMAIL_ADDRESS" /> aangemeld. Nou kan jy op al jou aangemelde toestelle by jou boekmerke, geskiedenis en ander instellings ingaan.</translation>
 <translation id="4571503333518166079">Gaan na Chrome-kennisgewinginstellings</translation>
 <translation id="4592634244097223647">Vra Google oor hierdie prent</translation>
 <translation id="459622048091363950">Sodra Chrome toegang het, sal webwerwe jou kan vra vir toegang.</translation>
@@ -756,7 +754,6 @@ Nuwe boekmerke kan nie in jou rekening gestoor word totdat jy sommige uitvee nie
 <translation id="8821043148920470810">Jy het Windows 10 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik Windows 7.</translation>
 <translation id="8823341990149967727">Chrome is verouderd</translation>
 <translation id="8834965163890861871">Google Chrome probeer tans om wagwoorde te wysig. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
-<translation id="8843516219908676469">Chrome verstaan vorms beter en kan hulle vir jou vinniger outovul</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome beveel aan dat jy dit verwyder}other{Chrome beveel aan dat jy hulle verwyder.}}</translation>
 <translation id="8862326446509486874">Jy het nie die gepaste regte vir stelselvlak-installering nie. Probeer om die installeerder weer te laat loop as Administrateur.</translation>
 <translation id="8865415417596392024">Chrome-data in jou rekening</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="hu">
 <translation id="1006017844123154345">Online megnyitás</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
+<translation id="1046742265332833834">Kék téma</translation>
 <translation id="1070329623210597193">A webhely által megtekinthető vagy szerkeszthető fájlok</translation>
 <translation id="1073417869336441572">Segítsen a Chrome fejlesztésében. Mondja el, miért engedélyezte a harmadik féltől származó cookie-kat. <ph name="BEGIN_LINK" />Visszajelzés küldése<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Kérheti a webhelyek asztali verziójának megjelenítését.</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1192844206376121885">Ezzel törli a(z) <ph name="ORIGIN" /> által tárolt összes adatot és cookie-t.</translation>
+<translation id="1199963004393929848">Zöld téma</translation>
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1240190568154816272">Chrome-tippek</translation>
 <translation id="1242008676835033345">Beágyazva itt: <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tárolt adat</translation>
 <translation id="3199078925536734975">Erre az alkalomra engedélyezve van • Hozzávetőleges</translation>
+<translation id="3208584281581115441">Ellenőrzés most</translation>
 <translation id="321187648315454507">Ahhoz, hogy a(z) <ph name="APP_NAME" /> értesítéseket küldhessen, az értesítéseket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="3223425961342298674">Helyadatok nem engedélyezettek</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -264,6 +267,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3721953990244350188">Elvetés és a következő rendelkezésre álló művelet megjelenítése</translation>
 <translation id="3744111561329211289">Szinkronizálás a háttérben</translation>
 <translation id="3746834924069123416">További közelmúltbeli lapok megtekintése</translation>
+<translation id="3753618528540214374">Viridiánzöld téma</translation>
 <translation id="3763247130972274048">A videó jobb vagy bal oldalán duplán koppintva ugorhat előre vagy vissza 10 másodpercet</translation>
 <translation id="3776508619697147021">A webhelyek engedélyt kérhetnek arra, hogy automatikus töltsenek le több fájlt</translation>
 <translation id="3779154269823594982">Jelszavak módosítása</translation>
@@ -273,6 +277,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="381841723434055211">Telefonszámok</translation>
 <translation id="3823453485268218808">Mono betűtípus</translation>
 <translation id="3826050100957962900">Harmadik fél bejelentkezése</translation>
+<translation id="3831065134033923230">Ellenőrizze mentett jelszavait</translation>
 <translation id="3835233591525155343">Aktív eszközhasználat</translation>
 <translation id="3843916486309149084">A Chrome ma ismét letiltja a cookie-kat</translation>
 <translation id="385051799172605136">Vissza</translation>
@@ -475,6 +480,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="5998071268779572583">Discover-hírcsatorna bekapcsolása</translation>
 <translation id="6012967556075291653">Kitűzött gyorsparancs</translation>
 <translation id="6015775454662021376">A webhelynek az eszközhöz való hozzáférésének vezérlése</translation>
+<translation id="6022659036123304283">Tegye személyessé a Chrome-ot</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6042308850641462728">Továbbiak</translation>
 <translation id="6064125863973209585">Befejezett letöltések</translation>
@@ -492,13 +498,13 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="6205314730813004066">Hirdetésekhez kapcsolódó adatvédelem</translation>
 <translation id="6207207788774442484">Adatok törlése és engedélyek alaphelyzetbe állítása</translation>
+<translation id="6218508144653756827">Fukszia téma</translation>
 <translation id="6231752747840485235">Eltávolítja ezt az alkalmazást: <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Koppintson a Böngésző &gt; Chrome lehetőségre</translation>
 <translation id="6260830281887654268">Az Új lap oldal megjelenéséhez tartozó témagyűjtemények alsó lapja félmagasságban van megnyitva</translation>
 <translation id="6262191102408817757">A legutóbbi lap alapján</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> letiltva</translation>
 <translation id="6270391203985052864">A webhelyek rákérdezhetnek, hogy küldjenek-e Önnek értesítéseket</translation>
-<translation id="6278428485366576908">Téma</translation>
 <translation id="6295158916970320988">Az összes webhely</translation>
 <translation id="6320088164292336938">Rezgés</translation>
 <translation id="6367753977865761591">Letilthatja a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
@@ -525,6 +531,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="659938948789980540">{COUNT,plural, =1{Cookie-k engedélyezve a(z) <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> webhelyén}other{Cookie-k engedélyezve a(z) <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> webhelyén}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Védett tartalom</translation>
+<translation id="6619015782482868078">Víz téma</translation>
 <translation id="662080504995468778">Mégse</translation>
 <translation id="6630443592285535486">Írja be ide a hexadecimális kódot</translation>
 <translation id="6635327442719709864">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a soros portok használatára. Ha ki van kapcsolva, a webhelyek nem használhatják a soros portokat.</translation>
@@ -553,6 +560,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6950072572526089586">A felkeresett webhelyek információkat menthetnek az Ön által végzett műveletekről annak érdekében, hogy a várt módon működjenek (például hogy bejelentkezve maradhasson az adott webhelyen, illetve a bevásárlókosárban lévő tételek mentéséhez). A webhelyek gyakran ideiglenesen mentik ezeket az adatokat az eszközére.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Rózsaszín téma</translation>
 <translation id="6980861169612950611">Törli a webhelyadatokat? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="6991142177939282156">Engedélyezve • A hozzávetőleges hely van használatban</translation>
@@ -581,6 +589,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elem kiválasztva</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> engedélyezve</translation>
 <translation id="7276071417425470385">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a virtuálisvalóság-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak virtuálisvalóság-eszközöket.</translation>
+<translation id="7282197670900591579">Citromsárga téma</translation>
 <translation id="728412880473384942">A webhelyek gyorsabbak, de kevésbé biztonságosak</translation>
 <translation id="7366415735885268578">Webhely hozzáadása</translation>
 <translation id="7368695150573390554">Minden offline adat törlődik</translation>
@@ -619,6 +628,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7688240020069572972">Chrome-tippek kártyájának elrejtése</translation>
 <translation id="7719367874908701697">Oldal nagyítása/kicsinyítése</translation>
 <translation id="775043444390799886">Engedély visszavonása</translation>
+<translation id="7758789811447313947">Ibolya téma</translation>
 <translation id="7759147511335618829">MIDI-eszköz vezérlése/átprogramozása</translation>
 <translation id="7781829728241885113">Tegnap</translation>
 <translation id="7791543448312431591">Hozzáadás</translation>
@@ -637,6 +647,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7940722705963108451">Emlékeztessen</translation>
 <translation id="7948081750384205628">További információ a következőről: <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">A webhelyek engedélyt kérhetnek arra, hogy lássák a vágólapon szereplő szöveget és képeket</translation>
+<translation id="798299424881500862">Narancssárga téma</translation>
 <translation id="7986741934819883144">Válasszon ki egy névjegyet</translation>
 <translation id="7990211076305263060">Ha be van kapcsolva, a webhelyek hozzáférést kérhetnek az Ön mikrofonjához. Ha ki van kapcsolva, a webhelyek nem használhatják a mikrofont.</translation>
 <translation id="8007176423574883786">Kikapcsolva ezen az eszközön</translation>

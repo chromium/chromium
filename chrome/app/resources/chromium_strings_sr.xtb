@@ -37,7 +37,6 @@
 <translation id="1356661055722410047">Ново. Можете да преводите и текст и слике на екрану</translation>
 <translation id="1383876407941801731">Претражи</translation>
 <translation id="1397530502368084401">&amp;Управљајте Chromium профилима</translation>
-<translation id="1414495520565016063">Пријављени сте на Chromium!</translation>
 <translation id="141901961143729572">Делите размишљања</translation>
 <translation id="1465192221147974788">Да бисте делили прозор, дозволите снимање екрана за Chromium у подешавањима система.</translation>
 <translation id="1478370723027452770">Потражите помоћ за верзију Chrome for Testing</translation>
@@ -327,10 +326,8 @@
 <translation id="4510853178268397146">Овај додатак није објавио праксе приватности, на пример, како прикупља и користи податке. Chromium препоручује да га уклоните.</translation>
 <translation id="452711251841752011">Добро дошли у Chromium; отворен је нови прозор прегледача</translation>
 <translation id="4531137820806573936">Chromium-у треба дозвола за мапирање окружења и праћење руку</translation>
-<translation id="4534145890176164066">Chromium боље разуме обрасце и може брже аутоматски да их попуњава за вас</translation>
 <translation id="4536805923587466102">Већ сте пријављени као <ph name="USER_EMAIL_ADDRESS" /> на другом Chromium профилу</translation>
 <translation id="4548534452171747496">Chromium предучитава странице, што убрзава прегледање и претраживање. <ph name="BEGIN_LINK" />Сазнајте више о предучитавању страница<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Пријављени сте као <ph name="USER_EMAIL_ADDRESS" />. Сада можете да приступате обележивачима, историји и другим подешавањима на свим уређајима на којима сте пријављени.</translation>
 <translation id="4570813286784708942">Chromium је блокирао ово преузимање јер сте искључили Безбедно прегледање, па фајл не може да се верификује</translation>
 <translation id="4583692638088316420">Испробајте Google објектив уз Chromium на телефону</translation>
 <translation id="4594305310729380060">У Менаџер лозинки на овом уређају</translation>

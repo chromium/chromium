@@ -37,7 +37,6 @@
 <translation id="1356661055722410047">Novidade! Podes traducir texto e imaxes na túa pantalla</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1397530502368084401">&amp;Xestionar perfís de Chromium</translation>
-<translation id="1414495520565016063">Iniciaches sesión en Chromium.</translation>
 <translation id="141901961143729572">Comparte o que pensas</translation>
 <translation id="1465192221147974788">Para compartir a ventá, vai á configuración do sistema e activa a función de gravación de pantalla para Chromium.</translation>
 <translation id="1478370723027452770">Recibir axuda con Chrome for Testing</translation>
@@ -327,10 +326,8 @@
 <translation id="4510853178268397146">Esta extensión non ten publicada ningunha práctica de privacidade (como, por exemplo, o modo en que recompila e usa os datos). Chromium recomenda que a quites.</translation>
 <translation id="452711251841752011">Dámosche a benvida a Chromium. Abriuse unha nova ventá do navegador</translation>
 <translation id="4531137820806573936">Chromium necesita permiso para analizar o que te rodea e facer un seguimento das mans</translation>
-<translation id="4534145890176164066">Chromium entenderá mellor o contido dos formularios e poderá completalos automaticamente máis rápido</translation>
 <translation id="4536805923587466102">Xa tes a sesión iniciada como <ph name="USER_EMAIL_ADDRESS" /> noutro perfil de Chromium</translation>
 <translation id="4548534452171747496">Chromium precarga as páxinas para que navegar e facer buscas sexa máis rápido. <ph name="BEGIN_LINK" />Máis información sobre como precargar páxinas<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Iniciaches sesión como <ph name="USER_EMAIL_ADDRESS" />. Agora podes acceder aos teus marcadores, historial e outras configuracións en todos os dispositivos en que iniciaches sesión.</translation>
 <translation id="4570813286784708942">Chromium bloqueou esta descarga porque, como desactivaches Navegación segura, non se puido verificar o ficheiro</translation>
 <translation id="4583692638088316420">Proba Google Lens con Chromium no teléfono</translation>
 <translation id="4594305310729380060">No xestor de contrasinais neste dispositivo</translation>

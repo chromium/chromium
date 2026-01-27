@@ -35,7 +35,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1356661055722410047">Новинка! Тепер ви можете перекладати текст і зображення на екрані.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1397530502368084401">&amp;Керувати профілями Chromium</translation>
-<translation id="1414495520565016063">Ви ввійшли в Chromium.</translation>
 <translation id="141901961143729572">Поділіться своєю думкою</translation>
 <translation id="1465192221147974788">Щоб показувати своє вікно, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
 <translation id="1478370723027452770">Отримати довідку щодо Chrome for Testing</translation>
@@ -325,10 +324,8 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4510853178268397146">Немає відомостей про конфіденційність цього розширення, зокрема про те, як воно збирає і використовує дані. Chromium радить вилучити його.</translation>
 <translation id="452711251841752011">Вітаємо в Chromium! Відкрито нове вікно веб-переглядача</translation>
 <translation id="4531137820806573936">Вебпереглядачу Chromium потрібен дозвіл, щоб створити карту оточення й відстежувати ваші руки</translation>
-<translation id="4534145890176164066">Chromium краще визначає форми й швидше заповнює їх</translation>
 <translation id="4536805923587466102">Ви вже ввійшли як <ph name="USER_EMAIL_ADDRESS" /> в іншому профілі Chromium</translation>
 <translation id="4548534452171747496">Chromium попередньо завантажує сторінки, щоб ви могли швидше переглядати й шукати контент. <ph name="BEGIN_LINK" />Докладніше про попереднє завантаження сторінок.<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Ви ввійшли як <ph name="USER_EMAIL_ADDRESS" />. Ваші закладки, історія й інші налаштування будуть доступні на всіх пристроях, на яких ви ввійдете в цей обліковий запис.</translation>
 <translation id="4570813286784708942">Веб-переглядач Chromium заблокував завантаження, оскільки ви вимкнули Безпечний перегляд і файл не вдалося підтвердити</translation>
 <translation id="4583692638088316420">Спробуйте Google Об’єктив у Chromium на телефоні</translation>
 <translation id="4594305310729380060">У Менеджер паролів на цьому пристрої</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="be">
 <translation id="1006017844123154345">Адкрыць у інтэрнэце</translation>
 <translation id="1036348656032585052">Выключыць</translation>
+<translation id="1046742265332833834">Сіняя тэма</translation>
 <translation id="1070329623210597193">Файлы, якія гэты сайт можа праглядаць або змяняць</translation>
 <translation id="1073417869336441572">Дапамажыце нам палепшыць Chrome – раскажыце, чаму вы дазволілі староннія файлы cookie. <ph name="BEGIN_LINK" />Адправіць водгук<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Вы можаце запытаць паказ версій сайтаў для камп’ютараў</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1192844206376121885">Будуць выдалены ўсе даныя і файлы cookie, захаваныя сайтам <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Зялёная тэма</translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1240190568154816272">Парады адносна Chrome</translation>
 <translation id="1242008676835033345">Убудавана на сайце <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Стужка рэкамендацый</translation>
 <translation id="3198916472715691905">Аб’ём захаваных даных: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Дазволена гэтым разам • Прыблізнае</translation>
+<translation id="3208584281581115441">Праверыць</translation>
 <translation id="321187648315454507">Каб праграма "<ph name="APP_NAME" />" магла адпраўляць вам апавяшчэнні, таксама ўключыце іх у <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Выкарыстанне геаданых забаронена</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">Закрыць і паказаць наступнае даступнае дзеянне</translation>
 <translation id="3744111561329211289">Фонавая сінхранізацыя</translation>
 <translation id="3746834924069123416">Паказаць больш нядаўніх укладак</translation>
+<translation id="3753618528540214374">Тэма колеру вірыдыян</translation>
 <translation id="3763247130972274048">Каб пераматаць відэа на 10 с назад або наперад, двойчы націсніце на яго з правага або левага боку</translation>
 <translation id="3776508619697147021">Сайты могуць запытваць дазвол на аўтаматычнае спампоўванне некалькіх файлаў</translation>
 <translation id="3779154269823594982">Змяніць паролі</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">Нумары тэлефонаў</translation>
 <translation id="3823453485268218808">Шрыфт: Mono</translation>
 <translation id="3826050100957962900">Уваход праз староннія сэрвісы</translation>
+<translation id="3831065134033923230">Праверце захаваныя паролі</translation>
 <translation id="3835233591525155343">Выкарыстанне вамі прылады</translation>
 <translation id="3843916486309149084">Сёння Chrome зноў заблакіруе файлы cookie</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Уключыць стужку рэкамендацый</translation>
 <translation id="6012967556075291653">Замацаваны ярлык</translation>
 <translation id="6015775454662021376">Кіруйце доступам гэтага сайта да вашай прылады</translation>
+<translation id="6022659036123304283">Наладзьце Chrome пад сябе</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6042308850641462728">Яшчэ</translation>
 <translation id="6064125863973209585">Завершаныя спампоўкі</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
 <translation id="6205314730813004066">Прыватнасць у рэкламе</translation>
 <translation id="6207207788774442484">Выдаліць даныя і скінуць дазволы</translation>
+<translation id="6218508144653756827">Тэма колеру фуксія</translation>
 <translation id="6231752747840485235">Выдаліць "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Націсніце "Браўзер &gt; Chrome"</translation>
 <translation id="6260830281887654268">Ніжні аркуш калекцый тэм "Выгляд старонкі новай укладкі" адкрыты на палову экрана</translation>
 <translation id="6262191102408817757">На падставе даных вашай апошняй укладкі</translation>
 <translation id="6262279340360821358">Заблакіравана: <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Сайтам дазволена запытваць дазвол на паказ апавяшчэнняў</translation>
-<translation id="6278428485366576908">Тэма</translation>
 <translation id="6295158916970320988">Усе сайты</translation>
 <translation id="6320088164292336938">Вібрацыя</translation>
 <translation id="6367753977865761591">Блакіраваць уваход праз староннія сэрвісы для канкрэтнага сайта.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайта ў дамене <ph name="RWS_OWNER" />}one{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайта ў дамене <ph name="RWS_OWNER" />}few{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="RWS_OWNER" />}many{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="RWS_OWNER" />}other{Выкарыстанне файлаў cookie дазволена для <ph name="RWS_MEMBERS_COUNT" /> сайта ў дамене <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Абароненае змесціва</translation>
+<translation id="6619015782482868078">Аквамарынавая тэма</translation>
 <translation id="662080504995468778">Застацца</translation>
 <translation id="6630443592285535486">Увядзіце шаснаццатковы код</translation>
 <translation id="6635327442719709864">Калі гэты параметр уключаны, сайты могуць запытваць дазвол на выкарыстанне паслядоўных партоў. Калі ён выключаны, сайты не могуць выкарыстоўваць паслядоўныя парты.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="6950072572526089586">Каб працаваць належным чынам, сайты, якія вы наведваеце, могуць захоўваць даныя пра вашы дзеянні, напрыклад інфармацыю пра дададзеныя ў кошык тавары або пра тое, што вы ўвайшлі ва ўліковы запіс. Часцей за ўсё гэта інфармацыя часова захоўваецца на прыладзе.</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6980507581230208647">Ружовая тэма</translation>
 <translation id="6980861169612950611">Выдаліць даныя сайтаў? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
 <translation id="6991142177939282156">Дазволена • Выкарыстоўваецца прыблізнае месцазнаходжанне</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378">Выбрана: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Дазволены <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Калі гэты параметр уключаны, сайты могуць запытваць дазвол на выкарыстанне прылад віртуальнай рэальнасці. Калі параметр выключаны, сайты не могуць выкарыстоўваць такія прылады.</translation>
+<translation id="7282197670900591579">Тэма колеру лімоннай цэдры</translation>
 <translation id="728412880473384942">Праца сайтаў паскараецца, але іх бяспека зніжаецца</translation>
 <translation id="7366415735885268578">Дадаванне сайта</translation>
 <translation id="7368695150573390554">Усе пазасеткавыя даныя будуць выдалены</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Схаваць картку парад ад Chrome</translation>
 <translation id="7719367874908701697">Маштаб старонкі</translation>
 <translation id="775043444390799886">Адклікаць дазвол</translation>
+<translation id="7758789811447313947">Фіялетавая тэма</translation>
 <translation id="7759147511335618829">Кіраванне/перапраграмаванне MIDI</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Дадаць</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">Нагадаць</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" />: даведацца больш</translation>
 <translation id="7952708427581814389">Сайты могуць запытваць дазвол на прагляд тэксту і відарысаў у буферы абмену</translation>
+<translation id="798299424881500862">Аранжавая тэма</translation>
 <translation id="7986741934819883144">Выберыце кантакт</translation>
 <translation id="7990211076305263060">Калі гэты параметр уключаны, сайты могуць запытваць дазвол на выкарыстанне мікрафона. Калі параметр выключаны, сайты не могуць выкарыстоўваць мікрафон.</translation>
 <translation id="8007176423574883786">Выключана для гэтай прылады</translation>

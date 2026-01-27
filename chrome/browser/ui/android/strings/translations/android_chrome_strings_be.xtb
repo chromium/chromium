@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Праграма "<ph name="APP_NAME" />" адкрыецца ў Chrome. Працягваючы, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">У Менеджары пароляў Google няма захаваных пароляў.</translation>
 <translation id="115483310321669804">Выкарыстаць пароль <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Сінхранізуйце ўкладкі і гісторыю</translation>
 <translation id="1165109137568919258">Пачніце пошук: зрабіце фота або дадайце відарыс з фотагалерэі.</translation>
 <translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1174479719160874822">Пры наяўнасці вузкага экрана Chrome будзе кожны раз запытваць мабільны сайт</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">Перайсці на папярэднюю ўкладку</translation>
 <translation id="5210365745912300556">Закрыць укладку</translation>
 <translation id="5212800876504289412">Перазапусціце Chrome, каб прымяніць гэта змяненне. Пасля перазапуску ўкладкі адкрыюцца зноў аўтаматычна.</translation>
+<translation id="5213114823401215820">Зноў адкрыць закрытую групу</translation>
 <translation id="5215957675041756913">Кіраванне данымі і ўліковым запісам</translation>
 <translation id="5218324087477576825">Трэба ўказаць нумар карткі</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і іншыя <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо вы не наведвалі гэты сайт у апошні час</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">Дадаць у спіс на прагляд <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Адкрыць у браўзеры</translation>
 <translation id="7029809446516969842">Паролі</translation>
+<translation id="7037994709569287156">Зрабіць Chrome стандартным браўзерам</translation>
 <translation id="7053256416619638731">Зрабіце больш надзейныя паролі на гэтай прыладзе</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7054588988317389591">Атрымліваць апісанні відарысаў?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">Каб хутка вяртацца на сайты, якія вы наведвалі, сінхранізуйце сваю гісторыю і ўкладкі</translation>
 <translation id="84594714173170813">Працягвайце выкарыстоўваць даныя Chrome ва Уліковым запісе Google</translation>
 <translation id="8460448946170646641">Праверка ключавых налад бяспекі і прыватнасці</translation>
+<translation id="8460932807646981183">Кіраваць пошукавымі сістэмамі і пошукам на сайтах</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="847433688444405067">Праглядайце на розных прыладах</translation>
 <translation id="8477178913400731244">Выдаліць даныя</translation>

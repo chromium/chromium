@@ -981,6 +981,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5210286577605176222">Gå til den forrige fanen</translation>
 <translation id="5210365745912300556">Lukk fanen</translation>
 <translation id="5212800876504289412">Start Chrome på nytt for å fullføre denne endringen. Faner åpnes automatisk på nytt når du starter på nytt.</translation>
+<translation id="5213114823401215820">Åpne den lukkede gruppen igjen</translation>
 <translation id="5215957675041756913">Kontroller dataene dine og kontoen din</translation>
 <translation id="5218324087477576825">Kortnummer er obligatorisk</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> med flere <ph name="SEPARATOR" />  Chrome har fjernet disse tillatelsene fordi du ikke har besøkt nettstedet i det siste</translation>
@@ -1801,6 +1802,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8458413889418591446">For å komme raskt tilbake til nettsteder du har besøkt, synkroniser loggen og fanene dine</translation>
 <translation id="84594714173170813">Fortsett å bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="8460448946170646641">Gjennomgå viktige personvern- og sikkerhetskontroller</translation>
+<translation id="8460932807646981183">Administrer søkemotorer og nettstedsøk</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
 <translation id="847433688444405067">Bla gjennom enheter</translation>
 <translation id="8477178913400731244">Slett data</translation>

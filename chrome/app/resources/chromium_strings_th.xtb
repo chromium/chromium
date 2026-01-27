@@ -34,7 +34,6 @@
 <translation id="1356661055722410047">ใหม่! คุณแปลได้ทั้งข้อความและรูปภาพบนหน้าจอ</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1397530502368084401">&amp;จัดการโปรไฟล์ Chromium</translation>
-<translation id="1414495520565016063">คุณลงชื่อเข้าใช้ Chromium แล้ว!</translation>
 <translation id="141901961143729572">แชร์ความคิดเห็นของคุณ</translation>
 <translation id="1465192221147974788">หากต้องการแชร์หน้าต่าง ให้อนุญาตการบันทึกหน้าจอสำหรับ Chromium ใน "การตั้งค่าระบบ"</translation>
 <translation id="1478370723027452770">รับความช่วยเหลือเกี่ยวกับ Chrome สำหรับการทดสอบ</translation>
@@ -324,10 +323,8 @@
 <translation id="4510853178268397146">ส่วนขยายนี้ไม่ได้เผยแพร่หลักปฏิบัติเกี่ยวกับนโยบายความเป็นส่วนตัว เช่น วิธีเก็บรวบรวมและใช้ข้อมูล Chromium แนะนำให้คุณนำออก</translation>
 <translation id="452711251841752011">ยินดีต้อนรับสู่ Chromium เปิดหน้าต่างเบราวเซอร์ใหม่แล้ว</translation>
 <translation id="4531137820806573936">Chromium ต้องการสิทธิ์ในการแมปสิ่งต่างๆ รอบตัวคุณและติดตามการเคลื่อนไหวของมือ</translation>
-<translation id="4534145890176164066">Chromium เข้าใจแบบฟอร์มได้ดีขึ้นและสามารถป้อนข้อมูลอัตโนมัติให้คุณได้เร็วขึ้น</translation>
 <translation id="4536805923587466102">คุณลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL_ADDRESS" /> ในโปรไฟล์ Chromium อื่นอยู่แล้ว</translation>
 <translation id="4548534452171747496">Chromium จะโหลดหน้าเว็บล่วงหน้าซึ่งทำให้ท่องเว็บและค้นหาได้เร็วขึ้น <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการโหลดหน้าเว็บล่วงหน้า<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">คุณกำลังลงชื่อเข้าใช้เป็น <ph name="USER_EMAIL_ADDRESS" /> ตอนนี้คุณสามารถเข้าถึงบุ๊กมาร์ก ประวัติการเข้าชม และการตั้งค่าอื่นๆ บนอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้</translation>
 <translation id="4570813286784708942">Chromium บล็อกการดาวน์โหลดนี้เนื่องจากคุณปิด Google Safe Browsing จึงยืนยันไฟล์ไม่ได้</translation>
 <translation id="4583692638088316420">ลองใช้ Google Lens กับ Chromium ในโทรศัพท์</translation>
 <translation id="4594305310729380060">ไปยังเครื่องมือจัดการรหัสผ่านบนอุปกรณ์นี้</translation>

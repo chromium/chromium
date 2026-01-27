@@ -3,6 +3,7 @@
 <translationbundle lang="gl">
 <translation id="1006017844123154345">Abrir en liña</translation>
 <translation id="1036348656032585052">Desactivar</translation>
+<translation id="1046742265332833834">Tema azul</translation>
 <translation id="1070329623210597193">Ficheiros que pode ver ou editar este sitio</translation>
 <translation id="1073417869336441572">Para axudarnos a mellorar Chrome, cóntanos por que permitiches as cookies de terceiros. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Podes solicitar que se mostre a versión para ordenadores dos sitios</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1192844206376121885">Ao realizar esta acción, eliminaranse todos os datos e as cookies que almacenase <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1240190568154816272">Consellos de Chrome</translation>
 <translation id="1242008676835033345">Cookie inserida en <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de datos almacenados</translation>
 <translation id="3199078925536734975">Permitida esta vez • Aproximada</translation>
+<translation id="3208584281581115441">Comprobar agora</translation>
 <translation id="321187648315454507">Para permitir que <ph name="APP_NAME" /> che envíe notificacións, actívaas tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">O acceso á localización non está permitido</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -264,6 +267,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3721953990244350188">Pecha o cadro e mostra a seguinte acción dispoñible</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3746834924069123416">Ver máis pestanas recentes</translation>
+<translation id="3753618528540214374">Tema verde esmeralda</translation>
 <translation id="3763247130972274048">Toca dúas veces cara á esquerda ou á dereita no vídeo para saltar 10 s</translation>
 <translation id="3776508619697147021">Os sitios poden pedirche permiso para descargar automaticamente varios ficheiros</translation>
 <translation id="3779154269823594982">Cambiar contrasinais</translation>
@@ -273,6 +277,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="381841723434055211">Números de teléfono</translation>
 <translation id="3823453485268218808">Tipo de letra monoespazado</translation>
 <translation id="3826050100957962900">Inicio de sesión de terceiros</translation>
+<translation id="3831065134033923230">Comproba os contrasinais gardados</translation>
 <translation id="3835233591525155343">Uso do dispositivo</translation>
 <translation id="3843916486309149084">Chrome volverá bloquear as cookies hoxe</translation>
 <translation id="385051799172605136">Atrás</translation>
@@ -475,6 +480,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5998071268779572583">Activar o feed de Discover</translation>
 <translation id="6012967556075291653">Atallo fixado</translation>
 <translation id="6015775454662021376">Controla o acceso deste sitio ao dispositivo</translation>
+<translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6042308850641462728">Máis</translation>
 <translation id="6064125863973209585">Descargas completadas</translation>
@@ -492,13 +498,13 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6205314730813004066">Privacidade nos anuncios</translation>
 <translation id="6207207788774442484">Eliminar datos e restablecer permisos</translation>
+<translation id="6218508144653756827">Tema fucsia</translation>
 <translation id="6231752747840485235">Queres desinstalar <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Toca a opción de aplicación de navegación &gt; Chrome</translation>
 <translation id="6260830281887654268">Panel inferior de coleccións de temas de aparencia da páxina Nova pestana aberto a altura media</translation>
 <translation id="6262191102408817757">Segundo a túa última pestana</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (bloqueados)</translation>
 <translation id="6270391203985052864">Os sitios poden pedir permiso para enviar notificacións</translation>
-<translation id="6278428485366576908">Tema</translation>
 <translation id="6295158916970320988">Todos os sitios</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6367753977865761591">Bloquea o inicio de sesión de terceiros para un sitio específico.</translation>
@@ -525,6 +531,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitio de <ph name="RWS_OWNER" />}other{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitios de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contido protexido</translation>
+<translation id="6619015782482868078">Tema augamariña</translation>
 <translation id="662080504995468778">Quedar</translation>
 <translation id="6630443592285535486">Escribe o valor hexadecimal da cor aquí</translation>
 <translation id="6635327442719709864">Cando esta opción está activada, os sitios poden pedir permiso para utilizar portos de serie. Cando está desactivada, os sitios non poden usar eses portos.</translation>
@@ -553,6 +560,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6950072572526089586">Os sitios que visitas poden gardar información sobre o que fas para poder funcionar segundo o esperado (por exemplo, para manter a túa sesión iniciada ou gardar artigos que teñas no carro da compra). Os sitios adoitan almacenar esta información no teu dispositivo de forma temporal.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6980507581230208647">Tema rosa</translation>
 <translation id="6980861169612950611">Queres eliminar datos do sitio? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="6991142177939282156">Permitida • Usando localización aproximada</translation>
@@ -581,6 +589,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (permitidos)</translation>
 <translation id="7276071417425470385">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos de realidade virtual. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos de realidade virtual.</translation>
+<translation id="7282197670900591579">Tema cidra</translation>
 <translation id="728412880473384942">Os sitios son máis rápidos, pero menos seguros</translation>
 <translation id="7366415735885268578">Engade un sitio</translation>
 <translation id="7368695150573390554">Eliminaranse todos os datos sen conexión</translation>
@@ -619,6 +628,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7688240020069572972">Ocultar tarxeta de consellos de Chrome</translation>
 <translation id="7719367874908701697">Zoom na páxina</translation>
 <translation id="775043444390799886">Revogar permiso</translation>
+<translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759147511335618829">Controlar/Reprogramar disp. MIDI</translation>
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7791543448312431591">Engadir</translation>
@@ -637,6 +647,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7940722705963108451">Lembrarmo</translation>
 <translation id="7948081750384205628">Máis información sobre <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Os sitios poden pedirche permiso para acceder ao texto e ás imaxes do portapapeis</translation>
+<translation id="798299424881500862">Tema laranxa</translation>
 <translation id="7986741934819883144">Seleccionar contacto</translation>
 <translation id="7990211076305263060">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar o micrófono. Cando esta opción está desactivada, os sitios non poden utilizar o micrófono.</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>

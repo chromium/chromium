@@ -176,7 +176,6 @@
 <translation id="2857540653560290388">Chrome 실행 중...</translation>
 <translation id="286025080868315611">Chrome에서 일부 다운로드를 차단하는 이유 알아보기</translation>
 <translation id="2861074815332034794">Chrome 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Chrome에 로그인되어 있습니다.</translation>
 <translation id="2875053229394024379">Google 계정으로 Chrome에 로그인하면 Gemini에서 Chrome 프로필을 사용할 수 있습니다. <ph name="BEGIN_LINK" />Chrome에 로그인하는 방법 알아보기<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="2885378588091291677">작업 관리자</translation>
@@ -330,7 +329,6 @@
 <translation id="4459234553906210702">방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
 <translation id="4493028449971051158">시작 오류: 관리자로 설치 프로그램을 실행하세요.</translation>
 <translation id="4501471624619070934">이 국가에서는 액세스가 제한되므로 설치할 수 없습니다.</translation>
-<translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되어 있습니다. 이제 로그인한 모든 기기에서 북마크, 방문 기록 및 기타 설정에 액세스할 수 있습니다.</translation>
 <translation id="4571503333518166079">Chrome 알림 설정으로 이동</translation>
 <translation id="4592634244097223647">Google에 이 이미지에 관해 질문하기</translation>
 <translation id="459622048091363950">Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
@@ -755,7 +753,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8821043148920470810">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 7을 사용 중입니다.</translation>
 <translation id="8823341990149967727">Chrome이 이전 버전임</translation>
 <translation id="8834965163890861871">Chrome에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
-<translation id="8843516219908676469">Chrome이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다.</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome에서 삭제할 것을 권장합니다.}other{Chrome에서 삭제할 것을 권장합니다.}}</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>
 <translation id="8865415417596392024">계정의 Chrome 데이터</translation>

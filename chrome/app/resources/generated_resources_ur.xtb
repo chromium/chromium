@@ -491,7 +491,6 @@
 <translation id="1313405956111467313">خود کار پراکسی کنفیگریشن</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">کسی بھی اوپن ٹیبز سمیت، آپ تمام سائٹس سے سائن آوٹ ہو جائیں گے</translation>
-<translation id="1313705515580255288">‏آپ کے بُک مارکس، سرگزشت اور دیگر ترتیبات کی آپ کے Google اکاؤنٹ سے مطابقت پذیری کی جائے گی۔</translation>
 <translation id="1316136264406804862">تلاش ہو رہی ہے…</translation>
 <translation id="1316248800168909509"><ph name="DEVICE" /> سے منسلک نہیں کیا جا سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="1316495628809031177">مطابقت پذیری موقوف ہے</translation>
@@ -628,6 +627,7 @@
 <translation id="1418882096915998312">انٹرپرائز کے اندراج کا عمل جاری ہے</translation>
 <translation id="1418954524306642206">‏اپنے پرنٹر PPD کا تعین کرنے کے لیے براؤز کریں</translation>
 <translation id="1419086691207546433">منظم رہنے، ٹاسکس کو آسان بنانے اور اپنی براؤزنگ کو بہتر بنانے کے لیے ایکسٹینشنز شامل کریں</translation>
+<translation id="1419274664315195766">آخری اپ ڈیٹ چیک:</translation>
 <translation id="1421334842435688311">سیلولر مقام کی معلومات</translation>
 <translation id="1421514190500081936">براہ کرم اس ڈیٹا کو ڈاؤن لوڈ کرنے کی وجہ درج کریں:</translation>
 <translation id="1422159345171879700">غیر محفوظ اسکرپٹس کو لوڈ کریں</translation>
@@ -1245,6 +1245,7 @@
 <translation id="1828901632669367785">سسٹم ڈائیلاگ کا استعمال کرکے پرنٹ کریں…</translation>
 <translation id="1829129547161959350">پینگوئن</translation>
 <translation id="1829192082282182671">زوم &amp;آؤٹ کریں</translation>
+<translation id="1829702127910586663">غیر فعال ورژنز:</translation>
 <translation id="1830550083491357902">سائن ان نہیں</translation>
 <translation id="1831848493690504725">‏ہم منسلک نیٹ ورک کے ذریعے Google تک نہیں پہنچ سکتے۔ کسی مختلف نیٹ ورک کا انتخاب کرنے یا اپنے نیٹ ورک کی ترتیبات یا پراکسی ترتیبات (اگر آپ پراکسی استعمال کر رہے ہیں) کو چیک کرنے کی کوشش کریں۔</translation>
 <translation id="1832414451155700364">منتخب کریں کہ آیا سرگزشت اور ٹیبز کو مطابقت پذیر کیا جائے</translation>
@@ -1717,6 +1718,7 @@
 <translation id="2147218225094845757">سائیڈ پینل چھپائیں</translation>
 <translation id="2147282432401652483">command</translation>
 <translation id="2147402320887035428">‏یہ فائل میلویئر ہو سکتی ہے۔<ph name="LINE_BREAK" />Google محفوظ براؤزنگ چیک کر رہی ہے کہ آیا یہ فائل غیر محفوظ ہے — اسکین کرنے میں عام طور پر چند سیکنڈ لگتے ہیں۔</translation>
+<translation id="2147584561902725329">آخری پیریوڈک ٹاسک رن:</translation>
 <translation id="2148212683005708350">‎<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" />‎</translation>
 <translation id="2148219725039824548">اشتراک کو ماؤنٹ کرنے میں خرابی آگئی۔ نیٹ ورک پر متعین کردہ اشتراک نہیں ملا۔</translation>
 <translation id="2148248734299717598">بائیں منظر کو بند کریں</translation>
@@ -2348,6 +2350,7 @@
 <translation id="2565214867520763227">سکرین قاری کو آن کریں</translation>
 <translation id="2566146433999774844">‫<ph name="OWNER_FIRST_NAME" /> اور <ph name="NUM_OTHER_MEMBERS" /> دیگر کے ساتھ ٹیب گروپ میں شامل ہوں</translation>
 <translation id="256726287944589768">نئے ٹیب صفحہ پر فوٹر دکھائیں</translation>
+<translation id="2567313753132089780">پاس ورڈ کم از کم 12 حروف کا ہونا چاہیے اور اس میں بڑے اور چھوٹے حروف، نمبرز اور علامات شامل ہونی چاہئیں</translation>
 <translation id="2568774940984945469">معلومات بار کنٹینر</translation>
 <translation id="2569972178052279830">ریٹیلر کا نام</translation>
 <translation id="257088987046510401">تھیمز</translation>
@@ -3203,6 +3206,7 @@
 <translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="3157931365184549694">بحال کریں</translation>
 <translation id="3158033540161634471">اپنے فنگر پرنٹ کو ترتیب دیں</translation>
+<translation id="3158732900546890991">پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے اور اس میں درج ذیل میں سے کم از کم دو شامل ہونے چاہئیں: بڑے حروف، چھوٹے حروف، نمبرز یا علامات</translation>
 <translation id="3158770568048368350">یہ آپ کے موبائل نیٹ ورک کو مختصر طور پر غیر منسلک کرنے کا سبب بن سکتا ہے</translation>
 <translation id="3159335509547415276">مسدود کردہ اکاؤنٹس کے بارے میں جانیں</translation>
 <translation id="3159493096109238499">زردی مائل بھورا</translation>
@@ -4564,6 +4568,7 @@
 <translation id="4050534976465737778">‏یہ یقینی بنائیں کہ دونوں آلات غیر مقفل ہیں، وہ ایک دوسرے کے قریب ہیں اور ان کے بلوٹوتھ آن ہیں۔ اگر آپ کسی ایسے Chromebook کے ساتھ اشتراک کر رہے ہیں جو آپ کے رابطوں میں نہیں ہے تو یہ یقینی بنائیں کہ اس میں قریبی آلات کی مرئیت آن ہے (اسٹیٹس ایریا کھولیں، پھر قریبی آلات کی مرئیت کا انتخاب کریں)۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4050931325744810690">آخری بار استعمال کردہ اندراج کے طریقے پر سوئچ کرنے کیلئے <ph name="KEY_CODES" /> دبائیں</translation>
 <translation id="4051177682900543628">‏search + دائیں تیر کا نشان</translation>
+<translation id="4051505866566398331">پاتھ انسٹال کریں:</translation>
 <translation id="405181879009056822">‏ChromeOS کی ترتیبات</translation>
 <translation id="4052120076834320548">چھوٹا</translation>
 <translation id="4052913941260326985">‏QR کوڈ بنائیں</translation>
@@ -4758,6 +4763,7 @@
 <translation id="4203065553461038553">فائل کا نام یا مقام کافی بڑا ہے</translation>
 <translation id="4203769790323223880">کیمرے کی اجازت نہیں ہے</translation>
 <translation id="4204415812590935863">ابھی تھیم نہیں بنا سکتے۔</translation>
+<translation id="4205119019752232845">پاس ورڈ کم از کم 6 حروف کا ہونا چاہیے اور اس میں کم از کم ایک حرف یا علامت شامل ہونی چاہیے</translation>
 <translation id="4206144641569145248">ایلیئن</translation>
 <translation id="4206323443866416204">تاثرات کی رپورٹ</translation>
 <translation id="4206585797409671301">درخواستیں دکھانے کی اجازت ہے</translation>
@@ -5376,6 +5382,7 @@
 <translation id="4628762811416793313">‏Linux کنٹینر کا سیٹ اپ مکمل نہیں ہوا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> پروفائل کھولیں</translation>
 <translation id="4629803160911640220">ٹرسٹ شدہ</translation>
+<translation id="4631572301265416783">حالیہ چیٹس</translation>
 <translation id="4631637535315947773">آپ کی سب سے زیادہ ملاحظہ کردہ سائٹس کے شارٹ کٹس کو ہٹا دیا گیا کیونکہ آپ نے انہیں حال ہی میں استعمال نہیں کیا ہے</translation>
 <translation id="4631955550884380853">فوکس کردہ آواز</translation>
 <translation id="4632655012900268062">کارڈز کو حسب ضرورت بنائیں</translation>
@@ -6062,6 +6069,7 @@
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> ہٹائیں</translation>
 <translation id="5111326646107464148">نئی ونڈو میں گروپ کھولیں</translation>
 <translation id="511147239888121455">اپنے مواد کا بیک اپ لیں؟</translation>
+<translation id="5111474831474629851">آپ کی تنظیم آپ کو اس اکاؤنٹ سے سائن ان کرنے کی اجازت نہیں دیتی ہے</translation>
 <translation id="5111646998522066203">پوشیدگی وضع سے باہر نکلیں</translation>
 <translation id="5111692334209731439">&amp;بک مارک مینیجر</translation>
 <translation id="5111794652433847656">اس آلے پر <ph name="APP_NAME" /> کے لیے کوئی پاس کی نہیں ہے۔</translation>
@@ -6314,6 +6322,7 @@
 <translation id="528208740344463258">‏Android ایپس ڈاؤن لوڈ اور استعمال کرنے کیلئے، پہلے آپ کو یہ مطلوبہ اپ ڈیٹ انسٹال کرنا ہوگا۔ آپ کا <ph name="DEVICE_TYPE" /> آلہ اپ ڈیٹ ہونے کے دوران، آپ اس کا استعمال نہیں کر سکتے۔ انسٹالیشن مکمل ہونے کے بعد، آپ کا <ph name="DEVICE_TYPE" /> ری اسٹارٹ ہوگا۔</translation>
 <translation id="5283677936944177147">افوہ! سسٹم آلہ کے ماڈل یا نمبر شمار کا تعین کرنے میں ناکام ہوگیا۔</translation>
 <translation id="5284445933715251131">ڈاؤن لوڈ کرنا جاری رکھیں</translation>
+<translation id="5284883268399745283">پاس ورڈ کم از کم 1 حرف کا ہونا چاہیے</translation>
 <translation id="5285484405698525101">ابھی کوئی غیر استعمال شدہ ٹیب نہیں ہے</translation>
 <translation id="5285635972691565180">ڈسپلے <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">اسکین کی جا رہی ہیں</translation>
@@ -6417,7 +6426,6 @@
 <translation id="5365881113273618889">آپ کے منتخب کردہ فولڈر میں حساس فائلز شامل ہیں۔ کیا آپ واقعی "<ph name="APP_NAME" />" کو اس فولڈر میں لکھنے کی مستقل رسائی دینا چاہتے ہیں؟</translation>
 <translation id="536638840841140142">کوئی نہیں</translation>
 <translation id="5368246151595623328">'<ph name="NETWORK_NAME" />' کو <ph name="DEVICE_NAME" /> سے محفوظ کیا گیا</translation>
-<translation id="5368441245151140827">یہ ایکسٹینشن سائٹ کی معلومات پڑھ اور تبدیل کر سکتی ہے یا یہ پس منظر میں نہیں چل سکتی ہے</translation>
 <translation id="5368720394188453070">آپ کا فون مقفل ہے۔ داخل ہونے کیلئے اسے غیر مقفل کریں۔</translation>
 <translation id="536882527576164740">{0,plural, =1{پوشیدگی}other{پوشیدگی (#)}}</translation>
 <translation id="5369694795837229225">‏Linux ڈیولپمنٹ ماحول سیٹ اپ کریں</translation>
@@ -6928,7 +6936,6 @@
 <translation id="5725112283692663422">‏AI کے ذریعے تھیم تخلیق کریں کے لیے تاثرات بھیجیں</translation>
 <translation id="5727728807527375859">ایکسٹینشز، ایپس اور تھیمز آپ کے کمپیوٹر کو نقصان پہنچا سکتی ہیں۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>
 <translation id="5728072125198221967">‏لنک کردہ Google سروسز</translation>
-<translation id="5728290366864286776">یہ ایکسٹینشن سائٹ کی معلومات پڑھ اور تبدیل کر سکتی ہے یا یہ پس منظر میں چل سکتی ہے</translation>
 <translation id="5728450728039149624">اسمارٹ لاک اسکرین لاک کے اختیارات</translation>
 <translation id="572914206753951782">‏یقینی بنائیں کہ آپ کا Chromebook تازہ ترین ورژن پر ہے۔ پھر، اپنا Chromebook دوبارہ شروع کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="5729712731028706266">&amp;منظر</translation>
@@ -7933,6 +7940,7 @@
 <translation id="641899100123938294">نئے آلات کیلئے اسکین کریں</translation>
 <translation id="6419524191360800346">‏Debian 11 (بلز آئی) کے لیے ایک اپ گریڈ دستیاب ہے</translation>
 <translation id="6419546358665792306">پیک سے نکالی گئی ایکسٹینشن کو لوڈ کریں</translation>
+<translation id="6422467884169339421">حالیہ چیٹس</translation>
 <translation id="6423685703035190381">اپنے فون پر قیمت کی ٹریکنگ کے الرٹس حاصل کریں</translation>
 <translation id="642469772702851743">‏اس آلہ (SN: <ph name="SERIAL_NUMBER" />‎) کو مالک نے مقفل کیا تھا۔</translation>
 <translation id="6425556984042222041">ٹیکسٹ ٹو اسپیچ کی شرح</translation>
@@ -8858,6 +8866,7 @@
 <translation id="70577934383983846">اپنے سبھی آلات پر اس پاس ورڈ کا استعمال کریں</translation>
 <translation id="7058024590501568315">پوشیدہ نیٹ ورک</translation>
 <translation id="7059858479264779982">خود کار طور پر شروع کریں پر سیٹ کریں</translation>
+<translation id="7060004353663489242">‫<ph name="FIELD_LIST" /> درکار ہے</translation>
 <translation id="7063129466199351735">شارٹ کٹس پر کارروائی کی جا رہی ہے…</translation>
 <translation id="7063311912041006059">‏استفسار کی جگہ <ph name="SPECIAL_SYMBOL" /> کے ساتھ URL</translation>
 <translation id="70641621694466590">پاس ورڈز کے صفحے پر جائیں</translation>
@@ -9130,6 +9139,7 @@
 <translation id="7261217796641151584">گروپ کا اشتراک کریں</translation>
 <translation id="7261612856573623172">ٹیکسٹ ٹو اسپیچ کی سسٹم کی آواز</translation>
 <translation id="7262004276116528033">اس سائن ان سروس کی میزبانی <ph name="SAML_DOMAIN" />  کرتا ہے</translation>
+<translation id="7262564444061174264">نیویگیشن شارٹ کٹ کے بارے میں مزید جانیں</translation>
 <translation id="7262919421769447042">آپ کی پروفائل <ph name="PROFILE_MANAGER" /> کے زیر انتظام ہے، جو کچھ معلومات دیکھ سکتا ہے، بشمول</translation>
 <translation id="7264695323040866038">تعاون یافتہ ویب لنکس کھولنے کے لیے ہمیشہ <ph name="APP" /> استعمال کریں؟</translation>
 <translation id="7267044199012331848">ورچوئل مشین کو انسٹال نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں، یا اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
@@ -9463,7 +9473,6 @@
 <translation id="7481312909269577407">فارورڈ کریں</translation>
 <translation id="7481358317100446445">تیار ہے</translation>
 <translation id="748138892655239008">سرٹیفکیٹ کی بنیادی پابندیاں</translation>
-<translation id="7482823403440483089">بہتر کردہ آٹو فل خصوصیت</translation>
 <translation id="7483732342458943943">یہ لنک کام نہیں کرتا</translation>
 <translation id="7484645889979462775">اس سائٹ کیلئے کبھی نہیں</translation>
 <translation id="7484943269191249363">‏آپ اس آلے پر Google پاس ورڈ مینیجر میں محفوظ کردہ اپنی سبھی پاس کیز کا استعمال کر سکتے ہیں۔ آپ کو بس ایک بار ایسا کرنا ہوگا۔</translation>
@@ -9911,6 +9920,7 @@
 <translation id="7781335840981796660">سبھی صارف اکاؤنٹس اور مقامی ڈیٹا کو ہٹا دیا جائے گا۔</translation>
 <translation id="7782102568078991263">‏Google کی جانب سے مزید کوئی مشورے نہیں ہیں</translation>
 <translation id="7782717250816686129">لاگ ان اسکرین پر مستقل ڈیٹا اسٹور کریں اور سیشن میں اسناد داخل کریں۔</translation>
+<translation id="7784020347632229094">کی بورڈ شارٹ کٹ کے بارے میں مزید جانیں</translation>
 <translation id="7784067724422331729">آپ کے کمپیوٹر پر موجود سیکیورٹی ترتیبات نے اس فائل کو مسدود کر دیا ہے۔</translation>
 <translation id="7784796923038949829">سائٹ کا ڈیٹا پڑھا یا تبدیل نہیں کیا جا سکتا</translation>
 <translation id="778480864305029524">‏فوری ٹیدرنگ استعمال کرنے کے لیے، اطلاعات برائے Google Play سروسز کو آن کریں۔</translation>
@@ -11446,7 +11456,6 @@
 <translation id="8808686172382650546">بلی</translation>
 <translation id="8809147117840417135">ہلکا نیلگوں سبز</translation>
 <translation id="8811862054141704416">‏Crostini کے مائیکرون کی رسائی</translation>
-<translation id="8811923271770626905">یہ ایکسٹینشن پس منظر میں چل سکتی ہے</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{‏‫1 پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔ اس سے تمام ڈپلیکیٹس بھی صاف ہو جائیں گے۔}other{‏‫{PASSWORD_COUNT} پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔ اس سے تمام ڈپلیکیٹس بھی صاف ہو جائیں گے۔}}</translation>
 <translation id="8813199641941291474">‏MIDI آلات کو کنٹرول اور دوبارہ پروگرام کرنے کو مسدود کر دیا گیا</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> میں سائن ان نہیں کیا جا سکتا ہے</translation>

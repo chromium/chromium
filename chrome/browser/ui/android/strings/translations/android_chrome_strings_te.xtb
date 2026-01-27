@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలకు<ph name="END_LINK2" /> అంగీకరిస్తున్నారు.</translation>
 <translation id="1154555449933432029">మీరు Google Password Managerలో పాస్‌వర్డ్‌లను సేవ్ చేయలేదు.</translation>
 <translation id="115483310321669804">పాస్‌వర్డ్ <ph name="PASSWORD" />‌ను ఉపయోగించండి</translation>
+<translation id="1161065531352634524">ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="1165109137568919258">సెర్చ్ చేయడానికి, ఫోటోను తీయండి లేదా మీ ఫోటో గ్యాలరీ నుండి ఇమేజ్‌ను జోడించండి</translation>
 <translation id="1173894706177603556">పేరుమార్చు</translation>
 <translation id="1174479719160874822">స్క్రీన్ చిన్నదైనప్పుడు Chrome మొబైల్ సైట్‌ను రిక్వెస్ట్ చేస్తుంది</translation>
@@ -228,7 +229,7 @@
 <translation id="1969037871259811890">మీ బ్రౌజింగ్ డేటాను తొలగిస్తే మీరు Google ఖాతా నుండి సైన్ అవుట్ కారు. ఇలా చేయడం కోసం, <ph name="BEGIN_LINK1" />Chrome నుండి సైన్ అవుట్ అవ్వండి<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">ఉంచండి</translation>
 <translation id="1973912524893600642">డేటాను అలాగే ఉంచు</translation>
-<translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
+<translation id="1974060860693918893">అడ్వాన్స్‌డ్ సెట్టింగ్స్</translation>
 <translation id="1982274314082047220">ప్రాధాన్యతల కోసం రీడింగ్ మోడ్ పైకి స్వైప్ చేయండి</translation>
 <translation id="1984087999855033707">ఫోన్ నంబర్</translation>
 <translation id="1984417487208496350">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">మునుపటి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="5212800876504289412">ఈ మార్పును పూర్తి చేయడానికి Chromeను రీస్టార్ట్ చేయండి. మీరు రీస్టార్ట్ చేసినప్పుడు ట్యాబ్‌లు ఆటోమేటిక్‌గా తిరిగి తెరవబడతాయి.</translation>
+<translation id="5213114823401215820">మూసిన గ్రూప్‌ను మళ్లీ తెరువు</translation>
 <translation id="5215957675041756913">మీ డేటా &amp; ఖాతాను కంట్రోల్ చేయండి</translation>
 <translation id="5218324087477576825">కార్డ్ నంబర్, అవసరం</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, అలాగే మరిన్ని <ph name="SEPARATOR" /> మీరు ఇటీవల వెబ్‌సైట్‌ను చూసిన కారణంగా Chrome ఈ అనుమతులను తీసివేసింది</translation>
@@ -1434,6 +1436,7 @@
 <translation id="7020741890149022655"><ph name="BEGIN_NEW" />న్యూ<ph name="END_NEW" /> రీడింగ్ లిస్టుకు చేర్చండి</translation>
 <translation id="7022756207310403729">బ్రౌజర్‌లో తెరువు</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
+<translation id="7037994709569287156">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="7053256416619638731">ఈ పరికరంలో మీ పాస్‌వర్డ్‌లను బలోపేతం చేయండి</translation>
 <translation id="7053983685419859001">నిరోధించు</translation>
 <translation id="7054588988317389591">ఇమేజ్ వివరణలను పొందాలనుకుంటున్నారా?</translation>
@@ -1799,6 +1802,7 @@
 <translation id="8458413889418591446">తిరిగి మీరు బ్రౌజ్ చేసిన సైట్‌లకు క్విక్‌గా వెళ్లడానికి, మీ హిస్టరీని, ట్యాబ్‌లను సింక్ చేయండి</translation>
 <translation id="84594714173170813">మీ Google ఖాతాలోని Chrome డేటాను ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="8460448946170646641">ముఖ్య గోప్యతా, సెక్యూరిటీ కంట్రోల్స్ రివ్యూ</translation>
+<translation id="8460932807646981183">సెర్చ్ ఇంజిన్‌లను, సైట్ సెర్చ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
 <translation id="847433688444405067">పరికరాలన్నింటిలో బ్రౌజ్ చేయండి</translation>
 <translation id="8477178913400731244">డేటాను తొలగించండి</translation>

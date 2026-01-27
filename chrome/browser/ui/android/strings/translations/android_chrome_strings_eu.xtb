@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Chrome-n irekiko da <ph name="APP_NAME" />. Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Ez duzu pasahitzik gordeta Google-ren Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="115483310321669804">Erabili <ph name="PASSWORD" /> pasahitza</translation>
+<translation id="1161065531352634524">Sinkronizatu fitxak eta historia</translation>
 <translation id="1165109137568919258">Bilatzeko, atera argazki bat edo gehitu argazki-galeriako irudi bat</translation>
 <translation id="1173894706177603556">Aldatu izena</translation>
 <translation id="1174479719160874822">Chrome-k mugikorretarako webgunea erabiltzeko eskaera egingo du pantaila estua denean</translation>
@@ -981,6 +982,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5210286577605176222">Saltatu aurreko fitxara</translation>
 <translation id="5210365745912300556">Itxi fitxa</translation>
 <translation id="5212800876504289412">Aldaketa egiten amaitzeko, berrabiarazi Chrome. Berrabiaraztean, fitxak automatikoki irekitzen dira berriro.</translation>
+<translation id="5213114823401215820">Ireki berriro itxitako taldea</translation>
 <translation id="5215957675041756913">Kontrolatu zure datuak eta kontua</translation>
 <translation id="5218324087477576825">Txartel-zenbakia, nahitaezkoa</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste batzuk <ph name="SEPARATOR" /> Chrome-k baimen horiek kendu ditu, azkenaldian ez duzulako bisitatu webgune hori</translation>
@@ -1436,6 +1438,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7020741890149022655">Gehitu irakurketa-zerrendan <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Ireki arakatzailean</translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
+<translation id="7037994709569287156">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="7053256416619638731">Indartu gailu honetako pasahitzak</translation>
 <translation id="7053983685419859001">Blokeatu</translation>
 <translation id="7054588988317389591">Irudi-deskribapenak lortu nahi dituzu?</translation>
@@ -1801,6 +1804,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8458413889418591446">Bisitatu dituzun webguneetara bizkor itzultzeko, sinkronizatu historia eta fitxak</translation>
 <translation id="84594714173170813">Jarraitu Google-ko kontuko Chrome-ren datuak erabiltzen</translation>
 <translation id="8460448946170646641">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak</translation>
+<translation id="8460932807646981183">Kudeatu bilatzaileak eta webgune-bilaketa</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
 <translation id="847433688444405067">Arakatu gailu guztietan</translation>
 <translation id="8477178913400731244">Ezabatu datuak</translation>

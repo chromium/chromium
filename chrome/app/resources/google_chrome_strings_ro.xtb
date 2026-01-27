@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">Se lansează Chrome...</translation>
 <translation id="286025080868315611">Află de ce Chrome blochează unele descărcări</translation>
 <translation id="2861074815332034794">Se actualizează Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">V-ați conectat la Chrome!</translation>
 <translation id="2875053229394024379">Când te conectezi la Chrome cu Contul Google, poți folosi profilul Chrome cu Gemini. <ph name="BEGIN_LINK" />Află cum să te conectezi la Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Află mai multe despre <ph name="BEGIN_LINK" />cum îți păstrează Chrome datele private<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Manager de activități</translation>
@@ -327,7 +326,6 @@
 <translation id="4459234553906210702">Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
 <translation id="4493028449971051158">Eroare la pornire: rulează programul de instalare ca administrator.</translation>
 <translation id="4501471624619070934">Instalarea nu a reușit deoarece accesul este restricționat în această țară.</translation>
-<translation id="4567424176335768812">Te-ai conectat ca <ph name="USER_EMAIL_ADDRESS" />. Acum îți poți accesa marcajele, istoricul și alte setări de pe toate dispozitivele pe care te-ai conectat.</translation>
 <translation id="4571503333518166079">Accesează setările pentru notificări Chrome</translation>
 <translation id="4592634244097223647">Întreabă Google despre această imagine</translation>
 <translation id="459622048091363950">Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.</translation>
@@ -748,7 +746,6 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8821043148920470810">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 7.</translation>
 <translation id="8823341990149967727">Chrome nu este actualizat</translation>
 <translation id="8834965163890861871">Google Chrome încearcă să modifice parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
-<translation id="8843516219908676469">Chrome înțelege mai bine formularele și le poate completa automat mai rapid</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome recomandă să o elimini}few{Chrome recomandă să le elimini}other{Chrome recomandă să le elimini}}</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
 <translation id="8865415417596392024">Datele Chrome din cont</translation>

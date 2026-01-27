@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> akan dibuka di Chrome. Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Anda tidak memiliki sandi tersimpan di Pengelola Sandi Google.</translation>
 <translation id="115483310321669804">Gunakan sandi <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sinkronkan tab dan histori</translation>
 <translation id="1165109137568919258">Ambil foto atau tambahkan gambar dari galeri foto Anda untuk menelusuri</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1174479719160874822">Chrome akan meminta situs seluler jika layarnya sempit</translation>
@@ -981,6 +982,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5210286577605176222">Beralih ke tab sebelumnya</translation>
 <translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5212800876504289412">Mulai ulang Chrome untuk menyelesaikan perubahan ini. Tab akan otomatis dibuka kembali saat Anda memulai ulang.</translation>
+<translation id="5213114823401215820">Buka kembali grup yang tertutup</translation>
 <translation id="5215957675041756913">Kontrol data &amp; akun Anda</translation>
 <translation id="5218324087477576825">Nomor kartu, wajib diisi</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan lainnya <ph name="SEPARATOR" /> Chrome menghapus izin ini karena Anda tidak mengunjungi situs tersebut baru-baru ini</translation>
@@ -1436,6 +1438,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7020741890149022655">Tambah ke daftar bacaan <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Buka di browser</translation>
 <translation id="7029809446516969842">Sandi</translation>
+<translation id="7037994709569287156">Jadikan Chrome sebagai default</translation>
 <translation id="7053256416619638731">Perkuat sandi Anda di perangkat ini</translation>
 <translation id="7053983685419859001">Blokir</translation>
 <translation id="7054588988317389591">Dapatkan deskripsi gambar?</translation>
@@ -1801,6 +1804,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8458413889418591446">Untuk segera kembali ke situs yang Anda buka, sinkronkan histori dan tab Anda</translation>
 <translation id="84594714173170813">Tetap gunakan data Chrome di Akun Google Anda</translation>
 <translation id="8460448946170646641">Tinjau kontrol privasi dan keamanan utama</translation>
+<translation id="8460932807646981183">Kelola mesin telusur dan penelusuran situs</translation>
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
 <translation id="847433688444405067">Menjelajah di berbagai perangkat</translation>
 <translation id="8477178913400731244">Hapus data</translation>

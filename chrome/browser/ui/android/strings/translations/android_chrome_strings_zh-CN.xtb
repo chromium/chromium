@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
 <translation id="1154555449933432029">您未在 Google 密码管理工具中保存任何密码。</translation>
 <translation id="115483310321669804">使用密码 <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">同步标签页和历史记录</translation>
 <translation id="1165109137568919258">拍张照片，或从图库中选择图片进行搜索</translation>
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1174479719160874822">当屏幕较窄时，Chrome 会请求改用移动网站</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">跳转到上一个标签页</translation>
 <translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5212800876504289412">重启 Chrome 即可完成此更改。重启后，标签页会自动重新打开。</translation>
+<translation id="5213114823401215820">重新打开已关闭的群组</translation>
 <translation id="5215957675041756913">控制您的数据和账号</translation>
 <translation id="5218324087477576825">卡号（必填）</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />等 <ph name="SEPARATOR" /> 由于您近期未访问过此网站，Chrome 已移除这些权限</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">添加到阅读清单<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">在浏览器中打开</translation>
 <translation id="7029809446516969842">密码</translation>
+<translation id="7037994709569287156">将 Chrome 设为默认浏览器</translation>
 <translation id="7053256416619638731">强化此设备上的密码</translation>
 <translation id="7053983685419859001">屏蔽</translation>
 <translation id="7054588988317389591">获取图片说明？</translation>
@@ -1799,6 +1802,7 @@
 <translation id="8458413889418591446">如果想快速重新访问浏览过的网站，请同步您的历史记录和标签页</translation>
 <translation id="84594714173170813">请继续使用您的 Google 账号中的 Chrome 数据</translation>
 <translation id="8460448946170646641">检查重要的隐私控制设置和安全控件</translation>
+<translation id="8460932807646981183">管理搜索引擎和网站搜索</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="847433688444405067">跨设备浏览</translation>
 <translation id="8477178913400731244">删除数据</translation>

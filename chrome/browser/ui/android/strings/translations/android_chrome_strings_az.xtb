@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'da açılacaq. Davam etməklə, <ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google Chrome və ChromeOS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> ilə razılaşırsınız.</translation>
 <translation id="1154555449933432029">Google Parol Menecerində saxlanılan parollarınız yoxdur.</translation>
 <translation id="115483310321669804">Parol istifadə edin: <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Tab və tarixçəni sinxronlaşdırın</translation>
 <translation id="1165109137568919258">Axtarış etmək üçün foto çəkin və ya foto qalereyanızdan şəkil əlavə edin</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
 <translation id="1174479719160874822">Ekran dar olduqda Chrome mobil sayt tələb edəcək</translation>
@@ -981,6 +982,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5210286577605176222">Əvvəlki panelə keçin</translation>
 <translation id="5210365745912300556">Paneli qapadın</translation>
 <translation id="5212800876504289412">Bu dəyişikliyi başa çatdırmaq üçün Chrome-u yenidən başladın. Yenidən başlatdığınız zaman tablar avtomatik olaraq yenidən açılır.</translation>
+<translation id="5213114823401215820">Qapalı qrupu yenidən açın</translation>
 <translation id="5215957675041756913">Data və hesabı idarə edin</translation>
 <translation id="5218324087477576825">Kart nömrəsi, tələb olunur</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və s. <ph name="SEPARATOR" /> Bu yaxınlarda daxil olmadığınız üçün Chrome bu icazələri sildi</translation>
@@ -1434,6 +1436,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7020741890149022655">Oxu siyahısına əlavə edin <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Brauzerdə açın</translation>
 <translation id="7029809446516969842">Parollar</translation>
+<translation id="7037994709569287156">Chrome-u defolt edin</translation>
 <translation id="7053256416619638731">Bu cihazda parollarınızı gücləndirin</translation>
 <translation id="7053983685419859001">Bloklayın</translation>
 <translation id="7054588988317389591">Şəkil təsvirləri əldə edilsin?</translation>
@@ -1799,6 +1802,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8458413889418591446">Daxil olduğunuz saytlara tez qayıtmaq üçün tarixçə və tablarınızı sinxronlaşdırın</translation>
 <translation id="84594714173170813">Google Hesabında Chrome datasından istifadəyə davam edin</translation>
 <translation id="8460448946170646641">Əsas məxfilik və təhlükəsizlik nəzarətlərini nəzərdən keçirin</translation>
+<translation id="8460932807646981183">Axtarış sistemlərini və sayt axtarışını idarə edin</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
 <translation id="847433688444405067">Cihazlarda axtarın</translation>
 <translation id="8477178913400731244">Datanı silin</translation>

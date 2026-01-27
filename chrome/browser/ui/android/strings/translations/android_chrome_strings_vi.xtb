@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> sẽ mở trong Chrome. Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Bạn chưa lưu mật khẩu nào vào Trình quản lý mật khẩu của Google.</translation>
 <translation id="115483310321669804">Sử dụng mật khẩu <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Đồng bộ hoá các thẻ và nhật ký</translation>
 <translation id="1165109137568919258">Chụp ảnh hoặc thêm hình ảnh từ thư viện ảnh để tìm kiếm</translation>
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1174479719160874822">Chrome sẽ yêu cầu trang web dành cho thiết bị di động khi màn hình bị thu hẹp</translation>
@@ -981,6 +982,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5210286577605176222">Quay về thẻ trước</translation>
 <translation id="5210365745912300556">Đóng thẻ</translation>
 <translation id="5212800876504289412">Hãy khởi động lại Chrome để hoàn tất thay đổi này. Các thẻ sẽ tự động mở lại khi bạn khởi động lại.</translation>
+<translation id="5213114823401215820">Mở lại nhóm đã đóng</translation>
 <translation id="5215957675041756913">Kiểm soát dữ liệu và tài khoản của bạn</translation>
 <translation id="5218324087477576825">Bạn cần điền số thẻ</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và các quyền khác <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì gần đây bạn không truy cập</translation>
@@ -1436,6 +1438,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7020741890149022655">Thêm vào danh sách đọc <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Mở trong trình duyệt</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
+<translation id="7037994709569287156">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="7053256416619638731">Tăng độ mạnh của mật khẩu trên thiết bị này</translation>
 <translation id="7053983685419859001">Chặn</translation>
 <translation id="7054588988317389591">Tải nội dung mô tả hình ảnh?</translation>
@@ -1801,6 +1804,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8458413889418591446">Để nhanh chóng quay lại các trang web bạn đã truy cập, hãy đồng bộ hoá nhật ký và các thẻ</translation>
 <translation id="84594714173170813">Tiếp tục sử dụng dữ liệu Chrome trong Tài khoản Google</translation>
 <translation id="8460448946170646641">Xem xét các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật</translation>
+<translation id="8460932807646981183">Quản lý các công cụ tìm kiếm và tính năng tìm kiếm trong trang web</translation>
 <translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
 <translation id="847433688444405067">Duyệt xem trên các thiết bị</translation>
 <translation id="8477178913400731244">Xoá dữ liệu</translation>

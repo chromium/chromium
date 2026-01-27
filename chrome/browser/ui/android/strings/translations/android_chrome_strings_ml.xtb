@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="1154555449933432029">Google Password Manager-ൽ നിങ്ങൾ പാസ്‌വേഡുകൾ സംരക്ഷിച്ചിട്ടില്ല.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> എന്ന പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
+<translation id="1161065531352634524">ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കുക</translation>
 <translation id="1165109137568919258">തിരയാൻ ഒരു ഫോട്ടോ എടുക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ ഫോട്ടോ ഗാലറിയിൽ നിന്ന് ഒരു ചിത്രം ചേർക്കുക</translation>
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
 <translation id="1174479719160874822">സ്‌ക്രീൻ ഇടുങ്ങിയിരിക്കുമ്പോൾ Chrome മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കും</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">മുമ്പത്തെ ടാബിലേക്ക് പോകുക</translation>
 <translation id="5210365745912300556">ടാബ് അടയ്ക്കൂക</translation>
 <translation id="5212800876504289412">ഈ മാറ്റം പൂർത്തിയാക്കാൻ, Chrome റീസ്റ്റാർട്ട് ചെയ്യുക. നിങ്ങൾ റീസ്റ്റാർട്ട് ചെയ്യുമ്പോൾ ടാബുകൾ സ്വയമേവ വീണ്ടും തുറക്കും.</translation>
+<translation id="5213114823401215820">അടച്ച ഗ്രൂപ്പ് വീണ്ടും തുറക്കുക</translation>
 <translation id="5215957675041756913">നിങ്ങളുടെ ഡാറ്റയും അക്കൗണ്ടും നിയന്ത്രിക്കുക</translation>
 <translation id="5218324087477576825">കാർഡ് നമ്പർ, ആവശ്യമാണ്</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റും <ph name="SEPARATOR" /> നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്തതിനാൽ Chrome ഈ അനുമതികൾ നീക്കം ചെയ്തു</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">വായനാ ലിസ്റ്റിൽ ചേർക്കൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ബ്രൗസറിൽ തുറക്കുക</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
+<translation id="7037994709569287156">Chrome ഡിഫോൾട്ടാക്കുക</translation>
 <translation id="7053256416619638731">ഈ ഉപകരണത്തിലെ നിങ്ങളുടെ പാസ്‌വേഡുകൾ ശക്തിപ്പെടുത്തുക</translation>
 <translation id="7053983685419859001">തടയുക</translation>
 <translation id="7054588988317389591">ചിത്ര വിവരണങ്ങൾ നേടണോ?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകളിലേക്ക് വേഗത്തിൽ മടങ്ങാൻ, ചരിത്രവും ടാബുകളും സമന്വയിപ്പിക്കുക</translation>
 <translation id="84594714173170813">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ Chrome ഡാറ്റ ഉപയോഗിക്കുന്നത് തുടരുക</translation>
 <translation id="8460448946170646641">പ്രധാന സ്വകാര്യതാ, സുരക്ഷാ നിയന്ത്രണങ്ങൾ അവലോകനം ചെയ്യുക</translation>
+<translation id="8460932807646981183">തിരയൽ യന്ത്രങ്ങളും സൈറ്റ് തിരയലും മാനേജ് ചെയ്യുക</translation>
 <translation id="8473863474539038330">വിലാസങ്ങളും മറ്റും</translation>
 <translation id="847433688444405067">ഉപകരണങ്ങളിലുടനീളം ബ്രൗസ് ചെയ്യൂ</translation>
 <translation id="8477178913400731244">ഡാറ്റ ഇല്ലാതാക്കുക</translation>

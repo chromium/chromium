@@ -3,6 +3,7 @@
 <translationbundle lang="mn">
 <translation id="1006017844123154345">Онлайнаар нээх</translation>
 <translation id="1036348656032585052">Унтраа</translation>
+<translation id="1046742265332833834">Хөх загвар</translation>
 <translation id="1070329623210597193">Энэ сайтын харах, засах боломжтой файлууд</translation>
 <translation id="1073417869336441572">Та гуравдагч талын күүкинүүдийг яагаад зөвшөөрсөн талаараа бидэнд хэлснээр Chrome-г сайжруулахад туслаарай. <ph name="BEGIN_LINK" />Санал хүсэлт илгээх<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Та сайтын компьютерын хувилбарыг харах хүсэлт гаргах боломжтой</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1192844206376121885">Энэ нь <ph name="ORIGIN" />-н хадгалсан бүх өгөгдөл болон күүкиг устгана.</translation>
+<translation id="1199963004393929848">Ногоон загвар</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
 <translation id="1240190568154816272">Chrome-н зөвлөгөөнүүд</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-д оруулсан</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Discover-н хангамж</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> хадгалсан өгөгдөл</translation>
 <translation id="3199078925536734975">Энэ удаад зөвшөөрсөн • Барагцаалсан</translation>
+<translation id="3208584281581115441">Одоо шалгах</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />-д танд мэдэгдэл илгээхийг зөвшөөрөхийн тулд мэдэгдлийг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="3223425961342298674">Байршлыг зөвшөөрөөгүй</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">Хаагаад, дараагийн боломжтой үйлдлийг харуулах</translation>
 <translation id="3744111561329211289">Дэвсгэрт синк хийх</translation>
 <translation id="3746834924069123416">Сүүлийн үеийн бусад табыг харах</translation>
+<translation id="3753618528540214374">Хар ногоон загвар</translation>
 <translation id="3763247130972274048">10 секунд алгасахын тулд видеоны зүүн эсвэл баруун талд хоёр товшино уу</translation>
 <translation id="3776508619697147021">Сайтууд олон файлыг автоматаар татахыг хүсэх боломжтой</translation>
 <translation id="3779154269823594982">Нууц үгсээ өөрчлөх</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">Утасны дугаар</translation>
 <translation id="3823453485268218808">Моно фонт</translation>
 <translation id="3826050100957962900">Гуравдагч талын нэвтрэлт</translation>
+<translation id="3831065134033923230">Хадгалсан нууц үгнүүдээ шалгана уу</translation>
 <translation id="3835233591525155343">Таны төхөөрөмжийн ашиглалт</translation>
 <translation id="3843916486309149084">Chrome күүкинүүдийг өнөөдөр дахин блоклоно</translation>
 <translation id="385051799172605136">Буцах</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Discover-н хангамжийг асаах</translation>
 <translation id="6012967556075291653">Бэхэлсэн товчлол</translation>
 <translation id="6015775454662021376">Таны төхөөрөмж рүү хандах энэ сайтын хандалтыг удирдах</translation>
+<translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6042308850641462728">Илүү их</translation>
 <translation id="6064125863973209585">Татаж дууссан файл</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">Гуравдагч талын күүкиг блоклох</translation>
 <translation id="6205314730813004066">Зарын нууцлал</translation>
 <translation id="6207207788774442484">Өгөгдлийг устгаж, зөвшөөрлүүдийг шинэчлэх</translation>
+<translation id="6218508144653756827">Нил ягаан загвар</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" />-г устгах уу?</translation>
 <translation id="6234351944623978659">Хөтчийн апп &gt; Chrome дээр товшино уу</translation>
 <translation id="6260830281887654268">Шинэ таб хуудасны харагдах байдлын загварын цуглуулгын доод хүснэгтийг тал өндрөөр нээсэн</translation>
 <translation id="6262191102408817757">Таны сүүлийн табд тулгуурласан</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> болон <ph name="PERMISSION_2" />-г блоклосон</translation>
 <translation id="6270391203985052864">Сайтууд нь танд мэдэгдэл илгээх зөвшөөрөл асуух боломжтой</translation>
-<translation id="6278428485366576908">Загвар</translation>
 <translation id="6295158916970320988">Бүх сайт</translation>
 <translation id="6320088164292336938">Чичиргэх</translation>
 <translation id="6367753977865761591">Тодорхой сайтын гуравдагч талын нэвтрэлтийг блоклоно уу.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{Күүкиг <ph name="RWS_OWNER" />-н <ph name="RWS_MEMBERS_COUNT" /> сайтад зөвшөөрсөн}other{Күүкиг <ph name="RWS_OWNER" />-н <ph name="RWS_MEMBERS_COUNT" /> сайтад зөвшөөрсөн}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Хамгаалагдсан агуулга</translation>
+<translation id="6619015782482868078">Усан хөх загвар</translation>
 <translation id="662080504995468778">Үлдэх</translation>
 <translation id="6630443592285535486">Арванзургаатын форматтай кодыг энд бичнэ үү</translation>
 <translation id="6635327442719709864">Асаалттай үед сайт цуврал порт ашиглахыг хүсэж болно. Унтраалттай үед сайт цуврал порт ашиглах боломжгүй.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6950072572526089586">Таны зочилсон сайт таны юу хийж байгаа талаарх мэдээллийг хадгалах боломжтой бөгөөд ингэснээр энэ нь таны бодож байсны дагуу ажиллана. Үүнд таныг сайтад нэвтэрсэн хэвээр байлгах эсвэл таны худалдан авалтын сагсан дахь зүйлсийг хадгалах зэрэг багтана. Сайтууд ихэвчлэн энэ мэдээллийг таны төхөөрөмжид түр зуур хадгалдаг.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Сарнайн ягаан загвар</translation>
 <translation id="6980861169612950611">Энэ сайтын өгөгдлийг устгах уу? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Хандалт</translation>
 <translation id="6991142177939282156">Зөвшөөрсөн • Барагцаалсан байршлыг ашиглаж байна</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />-г сонгосон</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> болон <ph name="PERMISSION_2" />-г зөвшөөрсөн</translation>
 <translation id="7276071417425470385">Асаалттай үед сайтууд виртуал бодит байдлын төхөөрөмжүүдийг ашиглахыг хүсэх боломжтой. Унтраалттай үед сайтууд виртуал бодит байдлын төхөөрөмжүүдийг ашиглах боломжгүй.</translation>
+<translation id="7282197670900591579">Шар загвар</translation>
 <translation id="728412880473384942">Сайт хурдан болох ч хамгаалалт арай суларна</translation>
 <translation id="7366415735885268578">Сайт нэмэх</translation>
 <translation id="7368695150573390554">Аливаа офлайн өгөгдлийг устгана</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome-н зөвлөгөөний картыг нуух</translation>
 <translation id="7719367874908701697">Хуудсыг томруулах</translation>
 <translation id="775043444390799886">Зөвшөөрлийг цуцлах</translation>
+<translation id="7758789811447313947">Хөх ягаан загвар</translation>
 <translation id="7759147511335618829">MIDI төхөөрөмжийн хяналт, дахин программчлах</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">Надад сануул</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" />-н талаар нэмэлт мэдээлэл авах</translation>
 <translation id="7952708427581814389">Сайтууд таны түр санах ойн текст болон зургийг харахыг хүсэх боломжтой</translation>
+<translation id="798299424881500862">Улбар шар загвар</translation>
 <translation id="7986741934819883144">Харилцагч сонгох</translation>
 <translation id="7990211076305263060">Асаалттай үед сайтууд таны микрофоныг ашиглахыг хүсэх боломжтой. Унтраалттай үед сайтууд таны микрофоныг ашиглах боломжгүй.</translation>
 <translation id="8007176423574883786">Энэ төхөөрөмж дээр унтраастай байна</translation>

@@ -1508,6 +1508,15 @@ Diese Geräterichtlinie entspricht der vorhandenen Nutzerrichtlinie „<ph name=
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Definition über die Funktion „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist die Definition über „Schnellinfo“ deaktiviert.</translation>
+<translation id="2095778788783569758">Liste von Dateitypen, die nach dem Download automatisch geöffnet werden sollen. Das vorangestellte Trennzeichen sollte beim Aufführen der Dateitypen nicht mit angegeben werden. Gib also beispielsweise „txt“ und nicht „.txt“ an.
+
+Dateitypen, die automatisch geöffnet werden sollen, unterliegen dennoch den aktivierten Safe Browsing-Überprüfungen und werden nicht geöffnet, falls sie diese nicht bestehen.
+
+Wenn diese Richtlinie nicht konfiguriert ist, werden nach dem Download nur die Dateitypen automatisch geöffnet, die der Nutzer bereits angegeben hat.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="209586405398070749">Stabiler Kanal</translation>
 <translation id="2096932573113293941">Nutzer um Erlaubnis zum Ausführen von Plug-ins bitten, die eine Autorisierung erfordern</translation>
 <translation id="2098658257603918882">Berichte mit Nutzungs- und Absturzdaten erstellen</translation>
@@ -3532,19 +3541,7 @@ Wenn die Richtlinie „<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />“ auf
       Die Verfügbarkeit dieser Funktion hängt außerdem von den entsprechenden Nutzerrichtlinien ab.</translation>
 <translation id="3495602011142234826">Wird die Richtlinie auf „true“ gesetzt, kann die Erweiterung alle Schlüssel nutzen, die für die geschäftliche Nutzung bestimmt sind, um beliebige Daten zu signieren. Ist sie auf „false“ gesetzt, können solche Schlüssel nicht verwendet werden, und Nutzer können auch keine entsprechende Berechtigung gewähren. Die einzige Ausnahme ist, dass eine Erweiterung genau einmal auf einen solchen Schlüssel zugreifen kann, sofern die Erweiterung selbst diesen Schlüssel erzeugt hat.</translation>
 <translation id="3496296378755072552">Passwortmanager</translation>
-<translation id="3496519114741602716">Hiermit wird festgelegt, ob Nutzer den Entwicklermodus unter chrome://extensions aktivieren können.
-
-Wenn die Richtlinie nicht konfiguriert ist, können Nutzer den Entwicklermodus auf der Seite „Erweiterungen“ aktivieren, es sei denn, die <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />-Richtlinie ist auf <ph name="DEVELOPER_TOOLS_DISALLOWED" /> (2) festgelegt.
-Wenn die Richtlinie auf „<ph name="ALLOW" />“ (0) gesetzt ist, können Nutzer den Entwicklermodus auf der Seite „Erweiterungen“ aktivieren.
-Wenn die Richtlinie auf „<ph name="DISALLOW" />“ (1) gesetzt ist, können Nutzer den Entwicklermodus auf der Seite „Erweiterungen“ nicht aktivieren.
-
-Wenn diese Richtlinie konfiguriert ist, kann <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> den Entwicklermodus nicht mehr über die Seite „Erweiterungen“ steuern.</translation>
 <translation id="3496761649331792755">Lesezeichenleiste aktivieren</translation>
-<translation id="3498109920669229084">Wenn die Richtlinie konfiguriert ist, wird festgelegt, welche Erweiterungen nicht von der Sperrliste betroffen sind.
-
-       Der Wert "<ph name="ALL_EXTENSIONS" />" in der Sperrliste gibt an, dass alle Erweiterungen gesperrt sind und Nutzer nur die in der Zulassungsliste angegebenen Erweiterungen installieren können.
-
-       Standardmäßig können alle Erweiterungen installiert werden. Wurden jedoch alle Erweiterungen durch eine Richtlinie auf die Sperrliste gesetzt, kann diese Richtlinie mithilfe der Zulassungsliste außer Kraft gesetzt werden.</translation>
 <translation id="3501606938635483637">Internationale Tastenkürzel werden dem Symbol der Tasten statt der Lage der Taste auf der Tastatur zugeordnet.</translation>
 <translation id="3501850499442915474">Der Anbieter der <ph name="UIA_NAME" /> wird über das Varianten-Framework aktiviert oder deaktiviert.</translation>
 <translation id="3502438748205582075">Kerberos deaktivieren</translation>
@@ -5131,13 +5128,6 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
       Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> die Standardgröße. Nutzer können diese Einstellung mit dem Flag „--disk-cache-size“ ändern.
 
       Hinweis: Der in dieser Richtlinie angegebene Wert wird als Hinweis für verschiedene Cache-Subsysteme des Browsers verwendet. Daher ist der tatsächliche Speicherplatzverbrauch aller Caches insgesamt größer, der angegebene Wert trifft aber in etwa zu.</translation>
-<translation id="4584427961967778141">Mit dieser Richtlinie werden Einstellungen zur Erweiterungsverwaltung für <ph name="PRODUCT_NAME" /> festgelegt, darunter Einstellungen, die von anderen auf Erweiterungen bezogenen Richtlinien geregelt werden. Durch diese Richtlinie werden alle älteren Richtlinien überschrieben.
-
-Mit dieser Richtlinie wird eine Erweiterungs-ID oder eine Update-URL nur ihrer bestimmten Einstellung zugeordnet. Eine Standardkonfiguration kann für die Spezial-ID „<ph name="DEFAULT_SCOPE" />“ festgelegt werden, die auf alle Erweiterungen angewendet wird, für die keine benutzerdefinierte Konfiguration in dieser Richtlinie konfiguriert ist. Bei einer Update-URL wird die Konfiguration auf alle Erweiterungen mit genau der im Manifest dieser Erweiterung angegebenen Update-URL angewendet (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Wenn für „override_update_url“ die Option „True“ festgelegt ist, wird die Erweiterung über die in der Richtlinie „<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />“ oder im Feld „update_url“ dieser Richtlinie angegebene Update-URL installiert und aktualisiert. Das Flag „override_update_url“ wird ignoriert, wenn „update_url“ eine URL für den Chrome Web Store ist.
-
-Bei <ph name="MS_WIN_NAME" />-Instanzen kann die Installation von Apps und Erweiterungen, die nicht aus dem Chrome Web Store stammen, nur auf solchen Instanzen erzwungen werden, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Bei <ph name="MAC_OS_NAME" />-Instanzen kann die Installation von Apps und Erweiterungen, die nicht aus dem Chrome Web Store stammen, nur auf solchen Instanzen erzwungen werden, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="4591366717022345234">Nutzern einen Quick-Fix-Build bereitstellen</translation>
 <translation id="4593391169954484940">SHA-256-Hash der Datei.</translation>
 <translation id="4594027034164195984">Zulassen, dass in Bildern von Drittanbietern eine Authentifizierungsaufforderung angezeigt wird</translation>
@@ -6975,11 +6965,6 @@ Die Richtlinie wirkt sich sowohl auf die Authentifizierung bei der Anmeldung als
 <translation id="5708969689202733975">Zulässige Modi für das schnelle Entsperren konfigurieren</translation>
 <translation id="5714563837055244378">Freigabe zwischen Android-Apps und Webanwendungen aktivieren.</translation>
 <translation id="5715739768416614900">Kiosk-Tools zur Fehlerbehebung aktivieren.</translation>
-<translation id="5716156630400143265">Ist die Richtlinie „<ph name="RESTORE_ON_STARTUP_POLICY_NAME" />“ auf „RestoreOnStartupIsURLs“ gesetzt, wird durch das Festlegen von „<ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />“ auf eine Liste von URLs angegeben, welche URLs geöffnet werden.
-
-Ist die Richtlinie nicht konfiguriert, öffnet sich die „Neuer Tab“-Seite beim Start.
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="5717973246079053225">Cloud-Berichterstellung über verwaltete Profile deaktivieren</translation>
 <translation id="572155275267014074">Android-Einstellungen</translation>
 <translation id="5722577409367087850">Erweiterung laden</translation>
@@ -7150,11 +7135,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
           Beachte, dass die Muster, die du hier einträgst, als Domains und nicht als URLs behandelt werden. Gib deshalb kein Schema und keinen Port an.</translation>
 <translation id="5851248808417680865">Dunkles Design verwenden</translation>
 <translation id="585270638818921943">Nutzer daran hindern, Android-Apps aus nicht vertrauenswürdigen Quellen zu verwenden</translation>
-<translation id="5859344336338527083">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, über welche URLs Erweiterungen, Apps und Designs installiert werden dürfen. Vor <ph name="PRODUCT_NAME" />-Version 21 konnten Nutzer auf den Link zu einer CRX-Datei klicken und die Datei nach einigen Hinweisen in <ph name="PRODUCT_NAME" /> installieren. In allen nachfolgenden Versionen müssen solche Dateien zuerst heruntergeladen und dann auf die Seite "Einstellungen" in <ph name="PRODUCT_NAME" /> gezogen werden. Anhand dieser Einstellung kann bei bestimmten URLs der alte, einfachere Installationsvorgang angewendet werden.
-
-      Bei den Einträgen in dieser Liste handelt es sich um auf die Erweiterung angepasste Übereinstimmungsmuster (siehe https://developer.chrome.com/extensions/match_patterns). Wenn eine URL mit einem Eintrag in dieser Liste übereinstimmt, können Nutzer eine Datei ganz einfach über diese URL installieren. Sowohl der Speicherort der CRX-Datei als auch die Seite, über die der Download gestartet wird, also die Referrer-URL, müssen durch diese Muster zugelassen sein.
-
-      "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />" hat Vorrang vor dieser Richtlinie. Eine Erweiterung auf der Sperrliste wird folglich nicht installiert, auch wenn sie von einer Website auf dieser Liste stammt.</translation>
 <translation id="5860010874344790473">Wenn die Richtlinie aktiviert ist, werden Systemprotokolle an den Verwaltungsserver gesendet, damit Administratoren die Protokolle beobachten können.
 
       Ist sie deaktiviert oder nicht konfiguriert, werden keine Systemprotokolle gemeldet.</translation>
@@ -7290,6 +7270,23 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Lädt den Akku basierend auf der Akkunutzung intelligent auf.</translation>
+<translation id="5913506885872855604">Damit können bestimmte interne Adressbereiche als „öffentlich“ behandelt und somit nicht <ph name="LOCAL_NETWORK_ACCES" />-Prüfungen unterzogen werden. Umgekehrt kann dies verwendet werden, um bestimmte öffentliche Adressbereiche, die möglicherweise intern verwendet werden, als „lokal“ zu behandeln, sodass sie durch <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen geschützt sind.
+
+Überschreibungen des IP-Adressbereichs haben zwei Formen:
+
+[cidr]=[public|local|loopback]
+
+Dabei ist [cidr] ein IP-Adressbereich in CIDR-Notation (siehe Abschnitt 3.1 von https://tools.ietf.org/html/rfc4632 für IPv4 und Abschnitt 2.3 von https://tools.ietf.org/html/rfc4291 für IPv6). IPv6-Adressen müssen im URL-sicheren Format (in Klammern) angegeben werden. CIDR-Überschreibungen gelten für alle Ports.
+
+oder
+
+[ip-address]:[port]=[public|local|loopback]
+
+Weitere Informationen zu <ph name="LOCAL_NETWORK_ACCESS" /> findest du unter https://wicg.github.io/local-network-access/ und https://developer.chrome.com/blog/local-network-access.
+
+Diese Richtlinie unterstützt die dynamische Aktualisierung nicht.
+
+Überschreibungen über die Befehlszeilenoption „--ip-address-space-overrides“ haben Vorrang vor Überschreibungen, die durch diese Richtlinie festgelegt werden.</translation>
 <translation id="5915023683182228340">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ermöglicht sie die Nutzung des QUIC-Protokolls in <ph name="PRODUCT_NAME" />.
 
       Wenn die Richtlinie deaktiviert ist, ist die Nutzung des QUIC-Protokolls nicht möglich.</translation>
@@ -7662,13 +7659,6 @@ Das Festlegen dieser Richtlinie ist für die Sicherheit nicht erforderlich. Die 
 Wenn du diese Richtlinie festlegst, wird <ph name="PRODUCT_NAME" /> beim Zugriff auf Websites langsamer.
 
 Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht auf frühere Versionen von TLS.</translation>
-<translation id="6215023506958127056">Hiermit kann die Installation externer Erweiterungen verwaltet werden.
-
-Wenn diese Richtlinie aktiviert ist, können externe Erweiterungen nicht installiert werden.
-
-Ist sie deaktiviert oder nicht konfiguriert, können externe Erweiterungen installiert werden.
-
-Informationen zu externen Erweiterungen und ihrer Installation sind unter https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions verfügbar.</translation>
 <translation id="6219841576688651072">Fenstergruppierung für „Generative AI – Übersicht“ nicht zulassen.</translation>
 <translation id="6220835555850906733">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist jede unterstützte Audioausgabe auf den Geräten der Nutzer zulässig.
 
@@ -8560,32 +8550,10 @@ Wenn die Richtlinie aktiviert ist, werden Daten erhoben und in die <ph name="GOO
 Sie wird für <ph name="PRODUCT_NAME" /> nur angewendet, wenn das Gerät mit „<ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />“ registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="6720330829631914048">Zahl der seit Beginn des Tages verstrichenen Stunden (im 24-Stunden-Format).</translation>
+<translation id="6720862827454058309">Zuordnungen von IP-Adressbereichen überschreiben</translation>
 <translation id="6721252203593581486">WebSQL ist im Zusammenhang mit Drittanbietern (z. B. websiteübergreifende iFrames) ab M97 standardmäßig deaktiviert und wird in M101 vollständig entfernt.
           Wenn diese Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, bleibt WebSQL im Zusammenhang mit Drittanbietern deaktiviert.
 Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Drittanbietern wieder aktiviert.</translation>
-<translation id="6723472666969849951">Mit dieser Richtlinie wird gesteuert, welche Apps und Erweiterungen in <ph name="PRODUCT_NAME" /> installiert werden dürfen, mit welchen Hosts sie interagieren können und welche Einschränkungen für den Laufzeitzugriff gelten.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gelten für die zulässigen Erweiterungs- und App-Typen keine Einschränkungen.
-
-      Erweiterungen und Apps, deren Typ nicht auf der Liste steht, werden nicht installiert. Jeder Wert sollte mit einem der folgenden Strings angegeben werden:
-
-      * "extension"
-
-      * "theme"
-
-      * "user_script"
-
-      * "hosted_app"
-
-      * "legacy_packaged_app"
-
-      * "platform_app"
-
-      Weitere Informationen zu diesen Typen kannst du der Dokumentation zu den <ph name="PRODUCT_NAME" />-Erweiterungen entnehmen.
-
-      Vor Version 75 wird die Angabe mehrerer durch Kommas getrennter Erweiterungs-IDs nicht unterstützt und wird deswegen übersprungen. Der verbleibende Teil der Richtlinie wird trotzdem angewendet.
-
-      Hinweis: Diese Richtlinie betrifft auch solche Erweiterungen und Apps, die über die Richtlinie "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" zwangsweise installiert werden.</translation>
 <translation id="6733851879899284032">Legt fest, ob „SharedArrayBuffers“ in einem nicht ursprungsübergreifend isolierten Kontext verwendet werden kann. <ph name="PRODUCT_NAME" /> setzt bei der Verwendung von „SharedArrayBuffers“ aus Gründen der Webkompatibilität ab <ph name="PRODUCT_NAME" /> 91 (25.05.2021) die ursprungsübergreifende Isolierung voraus. Weitere Informationen findest du hier: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
 
       Bei Auswahl von „Enabled“ können Websites „SharedArrayBuffers“ ohne Einschränkungen verwenden.
@@ -8620,13 +8588,6 @@ Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, wird das Sta
 <translation id="6766216162565713893">Websites dürfen den Nutzer um Zugriff auf ein Bluetooth-Gerät in der Nähe bitten</translation>
 <translation id="6770454900105963262">Informationen zu aktiven Kiosksitzungen senden</translation>
 <translation id="6774132787348495175">Nicht zulassen, dass Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
-<translation id="678121785914414680">Liste von Dateitypen, die nach dem Download automatisch geöffnet werden sollen. Das vorangestellte Trennzeichen sollte beim Aufführen der Dateitypen nicht mit angegeben werden. Gib also beispielsweise „txt“ und nicht „.txt“ an.
-
-Dateitypen, die automatisch geöffnet werden sollen, unterliegen dennoch den aktivierten Safe Browsing-Prüfungen und werden nicht geöffnet, falls sie diese nicht bestehen.
-
-Wenn diese Richtlinie nicht konfiguriert ist, werden nach dem Download nur die Dateitypen automatisch geöffnet, die der Nutzer bereits angegeben hat.
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="6782331708811245959">Melden des Bootmodus auf Geräten aktivieren</translation>
 <translation id="6783578496154221347">Verwende „WeeklyTimeIntervalChecked“ in neuem Code.</translation>
 <translation id="6785201942412171878">Tastenkombination zum Auslösen der Tasten „Bild-auf“ und „Bild-ab“ im Sechserblock verwalten</translation>
@@ -8676,6 +8637,17 @@ Diese Richtlinie ersetzt die nicht mehr unterstützte Richtlinie „<ph name="WI
 <translation id="6813263547126514821">Energiesparmodus und Herunterfahren</translation>
 <translation id="681446116407619279">Unterstützte Authentifizierungsschemas</translation>
 <translation id="6815628711329903153">Moderne Zwischenspeicherzuweisung für Graphics3D-APIs im PPAPI-Plug-in zulassen.</translation>
+<translation id="6819031008957510729">Ist diese Richtlinie aktiviert, solltest du auch anonyme Berichte aktivieren. Nutzungs- und Absturzdaten für <ph name="PRODUCT_NAME" /> werden dann standardmäßig an Google gesendet. Nutzer können diese Einstellung weiterhin ändern.
+
+Ist diese Richtlinie deaktiviert, sind auch anonyme Berichte deaktiviert. Es werden keine Nutzungs- und Absturzdaten an Google gesendet. Nutzer können diese Einstellung nicht ändern.
+
+Wird diese Richtlinie nicht konfiguriert, können Nutzer die anonymen Berichte bei der Installation oder beim ersten Ausführen auswählen und diese Einstellung später ändern.
+
+(Für <ph name="PRODUCT_OS_NAME" /> siehe <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="6819838337315703072">Wenn der Support für die <ph name="LINUX_OS_NAME" />-App und die Richtlinie aktiviert sind, werden Informationen zur Nutzung von <ph name="LINUX_OS_NAME" />-Apps an den Server zurückgesendet.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden keine Informationen zur App-Nutzung gesendet.</translation>
@@ -8739,7 +8711,6 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 Wenn die Richtlinie aktiviert ist, wird der Nutzer bei erfolgreicher Anmeldung auf einem neuen <ph name="PRODUCT_OS_NAME" />-Gerät von seiner vorherigen Sitzung abgemeldet.
 
 Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird der Nutzer nur dann von seiner vorherigen Sitzung abgemeldet, wenn die Richtlinie „<ph name="FLOATING_SSO_ENABLED_POLICY_NAME" />“ oder „<ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" />“ aktiviert ist.</translation>
-<translation id="6854694645176150141">Zugelassene lokale Authentifizierungsfaktoren konfigurieren</translation>
 <translation id="6854767649023671426">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird beim Zugriff für Videoaufnahmen beim Nutzer nachgefragt. Ausgenommen sind URLs in der Liste "VideoCaptureAllowedUrls".
 
       Ist diese Richtlinie deaktiviert, wird nie beim Nutzer nachgefragt und die Möglichkeit für Videoaufnahmen steht nur URLs in der Liste "VideoCaptureAllowedUrls" zur Verfügung.
@@ -10825,23 +10796,6 @@ Ist die Richtlinie deaktiviert, wird die Seite blockiert.</translation>
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="8267520984570984190">Das Standardverhalten der Bildschirmtastatur wird nicht geändert</translation>
 <translation id="8269238942896230153">Ein verwaltetes Konto muss ein primäres Konto sein; das Importieren bestehender Browserdaten ist bei der Profilerstellung möglich</translation>
-<translation id="827020625039819798">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Apps und Erweiterungen festgelegt, die automatisch installiert werden, also ohne Interaktion des Nutzers, und die vom Nutzer über die <ph name="PRODUCT_NAME" />-Benutzeroberfläche weder deinstalliert noch deaktiviert werden können. Berechtigungen, auch für die Erweiterungs-APIs „enterprise.deviceAttributes“ und „enterprise.platformKeys“, werden automatisch im Hintergrund gewährt. Diese beiden APIs stehen bei Apps oder Erweiterungen ohne erzwungene Installation nicht zur Verfügung.
-
-<ph name="PRODUCT_NAME" /> versucht zwar zu verhindern, dass Nutzer diese Erweiterungen deinstallieren, aber bei einigen Betriebssystemen kann <ph name="PRODUCT_NAME" /> nicht verhindern, dass Erweiterungen extern geändert werden. Diese Schutzmaßnahme funktioniert also nicht immer.
-
-Wenn die Richtlinie nicht konfiguriert ist, werden Apps und Erweiterungen nicht automatisch installiert und Nutzer können jede App oder Erweiterung in <ph name="PRODUCT_NAME" /> deinstallieren.
-
-Diese Richtlinie hat Vorrang vor der Richtlinie „<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />“. Wenn eine App oder Erweiterung mit erzwungener Installation aus dieser Liste entfernt wird, wird sie von <ph name="PRODUCT_NAME" /> automatisch deinstalliert.
-
-Nutzer können den Quellcode jeder Erweiterung mithilfe von Entwicklertools ändern. Danach funktioniert die entsprechende Erweiterung eventuell nicht mehr. Wenn du das verhindern möchtest, kannst du die Richtlinie „<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />“ festlegen.
-
-Jedes Listenelement der Richtlinie ist ein String mit einer Erweiterungs-ID und einer optionalen Update-URL, die durch ein Semikolon (;) getrennt sind. Die Erweiterungs-ID ist der String mit 32 Buchstaben, den du beispielsweise im Entwicklermodus unter chrome://extensions siehst. Die Update-URL sollte, sofern festgelegt, auf ein XML-Dokument mit einem Update-Manifest verweisen (https://developer.chrome.com/extensions/autoupdate). Außerdem sollte sie einem der folgenden Schemas entsprechen: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> oder <ph name="FILE_SCHEME" />. Standardmäßig kommt die Update-URL des Chrome Web Store zum Einsatz. Die in dieser Richtlinie festgelegte Update-URL wird nur für die Erstinstallation verwendet. In nachfolgenden Updates der Erweiterung kommt die Update-URL zum Einsatz, die im Manifest der Erweiterung angegeben wurde. Die Update-URL für nachfolgende Updates kann mit der Richtlinie „<ph name="EXTENSION_SETTINGS_POLICY_NAME" />“ überschrieben werden (siehe http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy).
-
-Bei <ph name="MS_WIN_NAME" />-Instanzen kann die Installation von Apps und Erweiterungen, die nicht aus dem Chrome Web Store stammen, nur auf solchen Instanzen erzwungen werden, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Bei <ph name="MAC_OS_NAME" />-Instanzen kann die Installation von Apps und Erweiterungen, die nicht aus dem Chrome Web Store stammen, nur auf solchen Instanzen erzwungen werden, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Hinweis: Diese Richtlinie gilt nicht für den Inkognitomodus. Informationen zum Hosting von Erweiterungen findest du unter https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="8270320981823560179">Google Drive</translation>
 <translation id="827054846390793641">Benutzeroberflächen im Zusammenhang mit der Verbindung auf dem Host-Computer während einer aktiven Verbindung aktivieren</translation>
 <translation id="8272422063636310696">Legt fest, ob eine Seite, für die Legacy-Technologien verwendet werden, basierend auf ihrer URL gemeldet wird.
@@ -11098,11 +11052,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird für alle Websites der global
 
       Hinweis für <ph name="MS_WIN_NAME" />-Administratoren: Diese Einstellung funktioniert nur auf Computern mit Windows 7. Bei neueren Versionen musst du eine Datei mit "Standardanwendungszuordnungen" angeben, die <ph name="PRODUCT_NAME" /> zum Handler für die <ph name="HTTPS_PROTOCOL" />- und <ph name="HTTP_PROTOCOL" />-Protokolle sowie optional für das <ph name="FTP_PROTOCOL" />-Protokoll und weitere Dateiformate macht. Weitere Informationen findest du in der Chrome-Hilfe (https://support.google.com/chrome?p=make_chrome_default_win).</translation>
 <translation id="8437147918598002525">Nur-HTTPS-Modus im strikten Modus aktivieren</translation>
-<translation id="8437836857126992452">Mit dieser Richtlinie kannst du festlegen, welche Erweiterungen Nutzer NICHT installieren dürfen. Bereits installierte Erweiterungen, die gesperrt sind, werden deaktiviert und Nutzer haben keine Möglichkeit, sie zu aktivieren. Sollte eine aufgrund der Sperrliste deaktivierte Erweiterung aus der Liste entfernt werden, wird sie automatisch wieder aktiviert.
-
-          Der Wert „*“ in der Sperrliste gibt an, dass alle Erweiterungen standardmäßig blockiert sind. Erweiterungen, die ausdrücklich in der Zulassungsliste aufgeführt sind, sind zulässig, wenn sie signiert (verpackt) sind. Alle entpackten Erweiterungen sind blockiert.
-
-          Wenn diese Richtlinie nicht konfiguriert ist, kann der Nutzer jede Erweiterung in <ph name="PRODUCT_NAME" /> installieren.</translation>
 <translation id="8441105784056442638">Funktion zur vollständigen Wiederherstellung aktivieren</translation>
 <translation id="844322176712318428">Translator API zulassen</translation>
 <translation id="8444157920689124099">Anwendungsgebundene Verschlüsselung aktivieren</translation>
@@ -11221,6 +11170,7 @@ Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Drittanbieter-So
 <translation id="8511192250554640451">Zulassen, dass die Drosselung von JavaScript-Timern im Hintergrund über die Chrome-Logik gesteuert und von Nutzern konfiguriert werden kann</translation>
 <translation id="8511708772548158302">Führe für das Gerät ein Rollback auf die Zielversion durch, wenn die aktuelle Betriebssystemversion neuer als die der Zielversion ist. Das Gerät wird auf die Werkseinstellungen zurückgesetzt, aber die geräteübergreifenden Netzwerkkonfigurationen ohne Zertifikate bleiben erhalten und das Gerät wird automatisch neu registriert.
 Rollback auf <ph name="PRODUCT_OS_NAME" /> Version 106 oder niedriger wird nicht unterstützt.</translation>
+<translation id="8518816549668729151">Zugelassene lokale Authentifizierungsfaktoren konfigurieren</translation>
 <translation id="8519264904050090490">Manuell festgelegte Ausnahme-URLs für verwalteten Nutzer</translation>
 <translation id="8519516251436131647">Mit dieser Richtlinie aktivierst du die Tastenkombinationen für Bedienungshilfen.
 
@@ -12084,7 +12034,6 @@ Hinweis: Durch einen Neustart des Geräts wird der Cache geleert. Auch für Nutz
       Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Wenn sie auf „true“ gesetzt wird, werden die Anmelde-/Abmeldeereignisse auf den Geräten gemeldet.</translation>
 <translation id="9087652369391570821">Konfigurationsrichtlinie für den Chrome Enterprise Connector „OnFileTransfer”</translation>
-<translation id="9088191250434406767">Wenn diese Richtlinie nicht konfiguriert oder auf „Enabled“ gesetzt wird, können Nutzer mit <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ihre Kamera für die Suche verwenden. Ist die Richtlinie auf „Disabled“ gesetzt, wird Nutzern die Schaltfläche „<ph name="GOOGLE_LENS_PRODUCT_NAME" />“ im Suchfeld nicht angezeigt, wenn die kameragestützte Suche mit <ph name="GOOGLE_LENS_PRODUCT_NAME" /> verfügbar ist.</translation>
 <translation id="9088433379343318874">Contentanbieter für betreute Nutzer aktivieren</translation>
 <translation id="9088444059179765143">Methode für die automatische Erkennung der Zeitzone konfigurieren</translation>
 <translation id="9095599826504830315">Tab Compare nicht zulassen.</translation>
@@ -12256,6 +12205,13 @@ Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verw
       Bei der Standardeinstellung übernimmt der Host-Browser das Rendering. Du kannst dies jedoch wahlweise überschreiben und festlegen, dass HTML-Seiten standardmäßig mithilfe von <ph name="PRODUCT_FRAME_NAME" /> gerendert werden sollen.</translation>
 <translation id="944817693306670849">Datenträger-Cache-Größe festlegen</translation>
 <translation id="949192525372487705">Wechsel zu einem Drittanbieter-Passwortmanager blockieren</translation>
+<translation id="950536431142353155">Eingestellt: Die Funktion zum Festlegen des Hostnamens wurde in M145 entfernt. Der Administrator kann den Hostnamen weiterhin über die Richtlinie „<ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />“ steuern.
+
+Mit dieser Richtlinie wird festgelegt, ob ein Nutzer den Gerätehostnamen konfigurieren darf.
+
+      Wenn „<ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />“ konfiguriert ist, legt der Administrator den Hostnamen fest und der Nutzer kann ihn nicht konfigurieren, unabhängig davon, worauf diese Richtlinie festgelegt ist.
+      Ist die Richtlinie auf „true“ gesetzt und „<ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />“ nicht konfiguriert, legt der Administrator den Hostnamen nicht fest. Der Nutzer kann das dann selbst tun.
+      Wenn sie auf „false“ festgelegt und „<ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />“ nicht konfiguriert ist, legt der Administrator den Hostnamen nicht fest und der Nutzer kann das auch nicht tun. In diesem Fall wird der Standardname verwendet.</translation>
 <translation id="956107219808875608">Legt die Einstellungen für die Tools zur Kursverwaltung fest.</translation>
 <translation id="957322141096206402">Die DNS-Auflösung des Systems kann je nach Systemkonfiguration und Funktions-Flags innerhalb oder außerhalb des Netzwerkprozesses ausgeführt werden.</translation>
 <translation id="957778406002650056">URL, über die das <ph name="PLUGIN_VM_NAME" />-Image heruntergeladen werden kann.</translation>
@@ -12309,5 +12265,12 @@ Wenn <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> aktiviert ist, wir
 <translation id="989197274317162189">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="990830704772547092">Installationsprogramm für Bruschetta-VMs auf <ph name="PRODUCT_OS_NAME" />-Geräten konfigurieren</translation>
 <translation id="991560005425213776">Nutzer- und Dateiname an native Drucker senden</translation>
+<translation id="992338580870256858">Ist die Richtlinie „<ph name="RESTORE_ON_STARTUP_POLICY_NAME" />“ auf „RestoreOnStartupIsURLs“ gesetzt, wird durch das Festlegen von „<ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />“ auf eine Liste von URLs angegeben, welche URLs geöffnet werden.
+
+Ist die Richtlinie nicht konfiguriert, öffnet sich die „Neuer Tab“-Seite beim Start.
+
+Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="999340611001666174">Farbkorrektur deaktivieren</translation>
 </translationbundle>

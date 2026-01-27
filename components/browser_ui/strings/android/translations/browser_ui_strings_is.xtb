@@ -3,6 +3,7 @@
 <translationbundle lang="is">
 <translation id="1006017844123154345">Opna á netinu</translation>
 <translation id="1036348656032585052">Slökkva</translation>
+<translation id="1046742265332833834">Blátt þema</translation>
 <translation id="1070329623210597193">Skrár sem þetta svæði getur skoðað eða breytt</translation>
 <translation id="1073417869336441572">Hjálpaðu okkur að bæta Chrome með því að segja okkur hvers vegna þú leyfðir fótspor þriðju aðila. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Þú getur beðið um að sjá borðtölvuútgáfu vefsvæða</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1192844206376121885">Þetta eyðir öllum gögnum og fótsporum sem <ph name="ORIGIN" /> hefur vistað.</translation>
+<translation id="1199963004393929848">Grænt þema</translation>
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1240190568154816272">Ábendingar fyrir Chrome</translation>
 <translation id="1242008676835033345">Fellt inn á <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Tillögustraumur</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> af vistuðum gögnum</translation>
 <translation id="3199078925536734975">Leyft í þetta sinn • Áætluð</translation>
+<translation id="3208584281581115441">Athuga núna</translation>
 <translation id="321187648315454507">Til að leyfa <ph name="APP_NAME" /> að senda þér tilkynningar þarftu einnig að kveikja á þeim í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Staðsetning ekki leyfð</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">Hunsa og sýna næstu tiltæku aðgerð</translation>
 <translation id="3744111561329211289">Samstilling í bakgrunni</translation>
 <translation id="3746834924069123416">Sjá fleiri nýlega flipa</translation>
+<translation id="3753618528540214374">Viridian-þema</translation>
 <translation id="3763247130972274048">Ýttu tvisvar vinstra eða hægra megin á myndskeið til að fara fram um 10 sekúndur</translation>
 <translation id="3776508619697147021">Vefsvæði geta beðið um að fá að hlaða sjálfkrafa niður mörgum skrám</translation>
 <translation id="3779154269823594982">Breyta aðgangsorðum</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">Símanúmer</translation>
 <translation id="3823453485268218808">Leturgerð Mono</translation>
 <translation id="3826050100957962900">Innskráning þriðja aðila</translation>
+<translation id="3831065134033923230">Athuga vistuð aðgangsorð</translation>
 <translation id="3835233591525155343">Tækjanotkun þín</translation>
 <translation id="3843916486309149084">Chrome mun aftur loka fyrir fótspor í dag</translation>
 <translation id="385051799172605136">Til baka</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Kveikja á tillögustraumi</translation>
 <translation id="6012967556075291653">Fest flýtileið</translation>
 <translation id="6015775454662021376">Stjórnaðu aðgangi þessa vefsvæðis að tækinu þínu</translation>
+<translation id="6022659036123304283">Gerðu Chrome að þínu</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6042308850641462728">Meira</translation>
 <translation id="6064125863973209585">Niðurhali lokið</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
 <translation id="6205314730813004066">Persónuvernd auglýsinga</translation>
 <translation id="6207207788774442484">Eyða gögnum og endurstilla heimildir</translation>
+<translation id="6218508144653756827">Fúksíuþema</translation>
 <translation id="6231752747840485235">Fjarlægja „<ph name="APP_NAME" />“?</translation>
 <translation id="6234351944623978659">Ýttu á Vafraforrit &gt; Chrome</translation>
 <translation id="6260830281887654268">Blað neðst með útlitsþemasöfnum fyrir síðu nýrra flipa, opnað í hálfri hæð</translation>
 <translation id="6262191102408817757">Byggt á síðasta flipa hjá þér</translation>
 <translation id="6262279340360821358">Lokað er fyrir <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vefsvæði geta óskað eftir því að senda tilkynningar</translation>
-<translation id="6278428485366576908">Þema</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
 <translation id="6320088164292336938">Titringur</translation>
 <translation id="6367753977865761591">Loka á innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{Fótspor leyfð fyrir <ph name="RWS_MEMBERS_COUNT" /> vefsvæði í eigu <ph name="RWS_OWNER" />}one{Fótspor leyfð fyrir <ph name="RWS_MEMBERS_COUNT" /> vefsvæði í eigu <ph name="RWS_OWNER" />}other{Fótspor leyfð fyrir <ph name="RWS_MEMBERS_COUNT" /> vefsvæði í eigu <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Varið efni</translation>
+<translation id="6619015782482868078">Sægrænt þema</translation>
 <translation id="662080504995468778">Vera áfram</translation>
 <translation id="6630443592285535486">Sláðu inn sextándakerfislit</translation>
 <translation id="6635327442719709864">Ef kveikt er á þessu geta vefsvæði beðið um að fá að nota raðtengi. Ef slökkt er á þessu geta vefsvæði ekki notað raðtengi.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">Velja</translation>
 <translation id="6950072572526089586">Vefsvæði sem þú skoðar getur vistað upplýsingar um það sem þú ert að gera svo það virki sem skyldi — svo sem til að viðhalda innskráningu þinni á vefsvæði eða til að vista vörur í innkaupakörfunni þinni. Oft vista vefsvæði þessar upplýsingar í tækinu tímabundið.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
+<translation id="6980507581230208647">Rósaþema</translation>
 <translation id="6980861169612950611">Eyða vefsvæðagögnum? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Aðgengi</translation>
 <translation id="6991142177939282156">Leyft • Notar áætlaða</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valin</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> leyft</translation>
 <translation id="7276071417425470385">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota sýndarveruleikatæki. Þegar slökkt er á þessu geta vefsvæði ekki notað sýndarveruleikatæki.</translation>
+<translation id="7282197670900591579">Sítrónugult þema</translation>
 <translation id="728412880473384942">Vefsvæði eru hraðari en eru síður örugg</translation>
 <translation id="7366415735885268578">Bæta vefsvæði við</translation>
 <translation id="7368695150573390554">Öllum gögnum utan nets verður eytt</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Fela ábendingarspjald Chrome</translation>
 <translation id="7719367874908701697">Síðuaðdráttur</translation>
 <translation id="775043444390799886">Afturkalla heimild</translation>
+<translation id="7758789811447313947">Fjólublátt þema</translation>
 <translation id="7759147511335618829">Stjórn og endurforritun MIDI-tækja</translation>
 <translation id="7781829728241885113">Í gær</translation>
 <translation id="7791543448312431591">Bæta við</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">Minna mig á</translation>
 <translation id="7948081750384205628">Nánar um <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Vefsvæði geta beðið um að sjá texta og myndir á klippiborðinu</translation>
+<translation id="798299424881500862">Appelsínugult þema</translation>
 <translation id="7986741934819883144">Velja tengilið</translation>
 <translation id="7990211076305263060">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota hljóðnemann þinn. Þegar slökkt er á þessu geta vefsvæði ekki notað hljóðnemann þinn.</translation>
 <translation id="8007176423574883786">Slökkt fyrir þetta tæki</translation>

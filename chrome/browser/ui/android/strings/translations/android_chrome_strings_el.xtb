@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Δεν έχετε αποθηκεύσει κωδικούς πρόσβασης στη Διαχείριση κωδικών πρόσβασης Google.</translation>
 <translation id="115483310321669804">Χρήση κωδικού πρόσβασης <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Συγχρονισμός καρτελών και ιστορικού</translation>
 <translation id="1165109137568919258">Τραβήξτε μια φωτογραφία ή προσθέστε μια εικόνα από το gallery φωτογραφιών για αναζήτηση</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1174479719160874822">Εάν η οθόνη είναι στενή, το Chrome θα ζητήσει τον ιστότοπο για κινητά</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">Μετάβαση στην προηγούμενη καρτέλα</translation>
 <translation id="5210365745912300556">Κλείσιμο καρτέλας</translation>
 <translation id="5212800876504289412">Επανεκκινήστε το Chrome για να ολοκληρώσετε αυτή την αλλαγή. Οι καρτέλες ανοίγουν ξανά αυτόματα κατά την επανεκκίνηση.</translation>
+<translation id="5213114823401215820">Εκ νέου άνοιγμα κλεισμένης ομάδας</translation>
 <translation id="5215957675041756913">Ελέγξτε τα δεδομένα και τον λογαριασμό σας</translation>
 <translation id="5218324087477576825">Απαιτείται αριθμός κάρτας</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και άλλα <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες, επειδή δεν έχετε επισκεφτεί τον ιστότοπο πρόσφατα</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">Προσθήκη στη λίστα ανάγν. <ph name="BEGIN_NEW" />Νέα<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Άνοιγμα σε πρόγρ. περιήγησης</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
+<translation id="7037994709569287156">Ορισμός του Chrome ως προεπιλογή</translation>
 <translation id="7053256416619638731">Ενίσχυση των κωδικών πρόσβασης σε αυτή τη συσκευή</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7054588988317389591">Λήψη περιγραφών εικόνων;</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">Για γρήγορη επιστροφή σε ιστοτόπους που έχετε επισκεφτεί, συγχρονίστε το ιστορικό και τις καρτέλες</translation>
 <translation id="84594714173170813">Συνεχίστε να χρησιμοποιείτε τα δεδομένα του Chrome στον Λογαριασμό σας Google</translation>
 <translation id="8460448946170646641">Έλεγχος σημαντικών στοιχείων ελέγχου για το απόρρητο και την ασφάλεια</translation>
+<translation id="8460932807646981183">Διαχείριση μηχανών αναζήτησης και αναζήτησης ιστοτόπου</translation>
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>
 <translation id="847433688444405067">Περιηγηθείτε σε διάφορες συσκευές</translation>
 <translation id="8477178913400731244">Διαγραφή δεδομένων</translation>

@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">Iniciando o Chrome…</translation>
 <translation id="286025080868315611">Saiba por que o Chrome bloqueia alguns downloads</translation>
 <translation id="2861074815332034794">Atualizando o Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Você fez login no Google Chrome.</translation>
 <translation id="2875053229394024379">Ao fazer login no Chrome com sua Conta do Google, você pode usar o Gemini no perfil do navegador. <ph name="BEGIN_LINK" />Saiba como fazer login no Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Saiba mais sobre <ph name="BEGIN_LINK" />como o Chrome mantém a privacidade dos seus dados<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Gerenciador de tarefas</translation>
@@ -327,7 +326,6 @@
 <translation id="4459234553906210702">A medição de anúncios permite que os sites que você visita solicitem informações do Chrome, ajudando a medir o desempenho dos anúncios. Ela também restringe o rastreamento entre sites transferindo o mínimo de informações possível entre eles.</translation>
 <translation id="4493028449971051158">Erro de inicialização: execute o instalador como admin.</translation>
 <translation id="4501471624619070934">A instalação falhou porque o acesso está restrito neste país.</translation>
-<translation id="4567424176335768812">Você fez login como <ph name="USER_EMAIL_ADDRESS" />. Agora você pode acessar seus favoritos, histórico e outras configurações em todos os seus dispositivos conectados.</translation>
 <translation id="4571503333518166079">Acessar as configurações de notificação do Chrome</translation>
 <translation id="4592634244097223647">Pergunte ao Google sobre esta imagem</translation>
 <translation id="459622048091363950">Assim que o Chrome tiver acesso, os sites poderão solicitar acesso.</translation>
@@ -466,7 +464,7 @@
 <translation id="6025087594896450715">O Google Chrome será reiniciado em <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604424701295382420">Fixado. Você pode acessar o Google Lens de novo usando o novo botão na barra de ferramentas</translation>
-<translation id="6046028983725193307">Para compartilhar o áudio do sistema, abra os Ajustes do Sistema e permita a opção "Somente gravação do áudio do sistema" para o Chrome. Depois, é necessário reiniciar o Chrome.</translation>
+<translation id="6046028983725193307">Para compartilhar o áudio, abra os Ajustes do Sistema e permita a opção "Somente gravação do áudio do sistema" para o Chrome. Depois, é necessário reiniciar o Chrome.</translation>
 <translation id="6069027071882229820">Copiar como imagem</translation>
 <translation id="6070348360322141662">Para aumentar a segurança, seus dados serão criptografados pelo Google Chrome</translation>
 <translation id="6075300983329039771">Sua organização, <ph name="MANAGER" />, exige o login no Chrome</translation>
@@ -748,7 +746,6 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8821043148920470810">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 7.</translation>
 <translation id="8823341990149967727">O Google Chrome está desatualizado</translation>
 <translation id="8834965163890861871">O Google Chrome está tentando editar senhas. Digite a senha do Windows para permitir essa ação.</translation>
-<translation id="8843516219908676469">O Chrome entende melhor os formulários e pode preenchê-los automaticamente com mais rapidez</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{O Chrome recomenda a remoção dela.}one{O Chrome recomenda a remoção dela.}other{O Chrome recomenda a remoção delas.}}</translation>
 <translation id="8862326446509486874">Você não tem os direitos adequados para instalação no nível do sistema. Tente executar o instalador novamente como administrador.</translation>
 <translation id="8865415417596392024">Dados do Chrome na sua conta</translation>

@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">Käynnistetään Chromea…</translation>
 <translation id="286025080868315611">Miksi Chrome estää joitakin latauksia</translation>
 <translation id="2861074815332034794">Päivitetään Chromea (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Olet kirjautunut Chromeen!</translation>
 <translation id="2875053229394024379">Kun kirjaudut Chromeen Google-tililläsi, voit käyttää Chrome-profiiliasi Geminin kanssa. <ph name="BEGIN_LINK" />Lue lisää Chromeen kirjautumisesta<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Lue lisää siitä, <ph name="BEGIN_LINK" />miten Chrome pitää datasi yksityisenä<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Tehtävänhallinta</translation>
@@ -327,7 +326,6 @@
 <translation id="4459234553906210702">Mainosten mittaamisen avulla käyttämäsi sivustot voivat pyytää Chromelta tietoja, jotka auttavat mittaamaan sivustoilla näkyvien mainosten suoriutumista. Mainosten mittaaminen rajoittaa sivustojen välistä seurantaa siirtämällä mahdollisimman vähän tietoja sivustojen välillä.</translation>
 <translation id="4493028449971051158">Käynnistysvirhe: Suorita asennusohjelma järjestelmänvalvojana.</translation>
 <translation id="4501471624619070934">Asentaminen epäonnistui, koska pääsyä on rajoitettu tässä maassa.</translation>
-<translation id="4567424176335768812">Olet kirjautunut Chromeen tilillä <ph name="USER_EMAIL_ADDRESS" />. Nyt voit käyttää kirjanmerkkejäsi, historiaa ja muita asetuksia kaikilla laitteilla, joihin olet kirjautunut.</translation>
 <translation id="4571503333518166079">Siirry Chromen ilmoitusasetuksiin</translation>
 <translation id="4592634244097223647">Kysy Googlelta tästä kuvasta</translation>
 <translation id="459622048091363950">Kun Chromella on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
@@ -748,7 +746,6 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="8821043148920470810">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 7.</translation>
 <translation id="8823341990149967727">Chrome on vanhentunut</translation>
 <translation id="8834965163890861871">Google Chrome yrittää muuttaa salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
-<translation id="8843516219908676469">Chrome tulkitsee lomakkeita paremmin ja voi täyttää ne automaattisesti nopeammin</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome suosittelee poistamaan sen}other{Chrome suosittelee poistamaan ne}}</translation>
 <translation id="8862326446509486874">Sinulla ei ole käyttöoikeuksia järjestelmätason asennukseen. Kokeile asennusohjelman suorittamista uudelleen järjestelmänvalvojana.</translation>
 <translation id="8865415417596392024">Tilisi Chrome-data</translation>

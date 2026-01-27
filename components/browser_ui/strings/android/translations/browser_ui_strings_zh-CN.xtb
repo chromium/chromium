@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1006017844123154345">在线打开</translation>
 <translation id="1036348656032585052">关闭</translation>
+<translation id="1046742265332833834">蓝色主题</translation>
 <translation id="1070329623210597193">此网站可以查看或修改的文件</translation>
 <translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">您可以查看桌面版网站</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1192844206376121885">此操作会删除 <ph name="ORIGIN" /> 存储的全部数据和 Cookie。</translation>
+<translation id="1199963004393929848">绿色主题</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1240190568154816272">Chrome 提示</translation>
 <translation id="1242008676835033345">嵌入来源：<ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">探索信息流</translation>
 <translation id="3198916472715691905">已存储 <ph name="STORAGE_AMOUNT" /> 数据</translation>
 <translation id="3199078925536734975">这次允许使用 • 大致位置</translation>
+<translation id="3208584281581115441">立即检查</translation>
 <translation id="321187648315454507">若要允许 <ph name="APP_NAME" /> 向您发送通知，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启通知。</translation>
 <translation id="3223425961342298674">已拒绝授予位置信息使用权限</translation>
 <translation id="3227137524299004712">麦克风</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">关闭此操作并显示下一项可查看的操作</translation>
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3746834924069123416">查看更多近期标签页</translation>
+<translation id="3753618528540214374">深绿色主题</translation>
 <translation id="3763247130972274048">在视频左侧或右侧点按两次即可跳过 10 秒</translation>
 <translation id="3776508619697147021">网站可以请求自动下载多个文件</translation>
 <translation id="3779154269823594982">更改密码</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">电话号码</translation>
 <translation id="3823453485268218808">字体：Mono</translation>
 <translation id="3826050100957962900">第三方登录</translation>
+<translation id="3831065134033923230">检查已保存的所有密码</translation>
 <translation id="3835233591525155343">您的设备使用情况</translation>
 <translation id="3843916486309149084">Chrome 将于今天再次屏蔽 Cookie</translation>
 <translation id="385051799172605136">返回</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">开启探索信息流</translation>
 <translation id="6012967556075291653">固定的快捷方式</translation>
 <translation id="6015775454662021376">控制此网站对您的设备的访问权限</translation>
+<translation id="6022659036123304283">定制您的专属 Chrome</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6042308850641462728">更多</translation>
 <translation id="6064125863973209585">下载已完成</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6207207788774442484">删除数据并重置权限</translation>
+<translation id="6218508144653756827">紫红色主题</translation>
 <translation id="6231752747840485235">卸载“<ph name="APP_NAME" />”？</translation>
 <translation id="6234351944623978659">依次点按“浏览器应用”&gt;“Chrome”</translation>
 <translation id="6260830281887654268">“新标签页”页面外观主题集合底部动作条已按一半高度显示</translation>
 <translation id="6262191102408817757">基于您的上一个标签页</translation>
 <translation id="6262279340360821358">已禁用“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
-<translation id="6278428485366576908">主题</translation>
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6320088164292336938">振动</translation>
 <translation id="6367753977865761591">禁止使用第三方账号登录特定网站。</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{允许 <ph name="RWS_MEMBERS_COUNT" /> 个 <ph name="RWS_OWNER" /> 网站使用 Cookie}other{允许 <ph name="RWS_MEMBERS_COUNT" /> 个 <ph name="RWS_OWNER" /> 网站使用 Cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保护的内容</translation>
+<translation id="6619015782482868078">湖水绿色主题</translation>
 <translation id="662080504995468778">留下</translation>
 <translation id="6630443592285535486">在此处输入十六进制代码</translation>
 <translation id="6635327442719709864">开启此设置后，网站可以请求使用串行端口。关闭此设置后，网站无法使用串行端口。</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">选择</translation>
 <translation id="6950072572526089586">您访问的网站可以保存与您正在进行的浏览活动有关的信息，以便网站能按预期运行 - 例如，以便保持您在网站上的登录状态或者保存您的购物车内的商品。网站通常会将这类信息暂时保存在您的设备上。</translation>
 <translation id="6965382102122355670">确定</translation>
+<translation id="6980507581230208647">玫瑰色主题</translation>
 <translation id="6980861169612950611">要删除网站数据吗？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="6991142177939282156">允许 • 使用大致位置</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378">已选择 <ph name="ITEM_COUNT" /> 项</translation>
 <translation id="7260727271532453612">已授予“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="7276071417425470385">开启此设置后，网站可以请求使用虚拟现实设备。关闭此设置后，网站无法使用虚拟现实设备。</translation>
+<translation id="7282197670900591579">香橼黄色主题</translation>
 <translation id="728412880473384942">网站速度更快，但安全性更低</translation>
 <translation id="7366415735885268578">添加网站</translation>
 <translation id="7368695150573390554">所有离线数据都将被删除</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">隐藏 Chrome 提示卡片</translation>
 <translation id="7719367874908701697">网页缩放</translation>
 <translation id="775043444390799886">撤消权限</translation>
+<translation id="7758789811447313947">紫罗兰色主题</translation>
 <translation id="7759147511335618829">MIDI 设备控制和重新编程</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">添加</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">提醒我</translation>
 <translation id="7948081750384205628">详细了解“<ph name="SETTING_TITLE" />”</translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
+<translation id="798299424881500862">橙色主题</translation>
 <translation id="7986741934819883144">选择联系人</translation>
 <translation id="7990211076305263060">开启此设置后，网站可以请求使用您的麦克风。关闭此设置后，网站无法使用您的麦克风。</translation>
 <translation id="8007176423574883786">已对此设备停用</translation>

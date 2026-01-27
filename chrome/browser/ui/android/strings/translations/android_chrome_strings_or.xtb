@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeରେ ଖୋଲିବ। ଜାରି ରଖି, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
 <translation id="1154555449933432029">Google Password Managerରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ ସେଭ କରାଯାଇନାହିଁ।</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="1161065531352634524">ଟାବ ଏବଂ ଇତିହାସକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="1165109137568919258">ସର୍ଚ୍ଚ କରିବାକୁ ଏକ ଫଟୋ ଉଠାନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ଫଟୋ ଗେଲେରୀରୁ ଏକ ଇମେଜ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="1174479719160874822">ସ୍କ୍ରିନ ଛୋଟ ଥିଲେ Chrome ମୋବାଇଲ ସାଇଟ ପାଇଁ ଅନୁରୋଧ କରିବ</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">ପୂର୍ବବର୍ତ୍ତୀ ଟାବ୍‍କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5210365745912300556">ଟାବ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5212800876504289412">ଏହି ପରିବର୍ତ୍ତନ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ Chrome ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ। ଆପଣ ରିଷ୍ଟାର୍ଟ କଲେ ଟାବଗୁଡ଼ିକ ସ୍ୱତଃ ପୁଣି ଖୋଲିବ।</translation>
+<translation id="5213114823401215820">ବନ୍ଦ କରାଯାଇଥିବା ଗୋଷ୍ଠୀକୁ ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="5215957675041756913">ଆପଣଙ୍କ ଡାଟା ଓ ଆକାଉଣ୍ଟ ନିୟନ୍ତ୍ରଣ କରିବା</translation>
 <translation id="5218324087477576825">କାର୍ଡ ନମ୍ବର, ଆବଶ୍ୟକ</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଏବଂ ଆହୁରି ଅନେକ କିଛି <ph name="SEPARATOR" /> ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">ପଢ଼ିବା ତାଲିକାରେ ଯୋଗ କରନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ବ୍ରାଉଜର୍‌ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="7029809446516969842">ପାସୱାର୍ଡଗୁଡିକ</translation>
+<translation id="7037994709569287156">Chromeକୁ ଡିଫଲ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7053256416619638731">ଏହି ଡିଭାଇସରେ ଆପଣଙ୍କର ପାସୱାର୍ଡକୁ ସୁଦୃଢ଼ କରନ୍ତୁ</translation>
 <translation id="7053983685419859001">ଅବରୋଧ କରନ୍ତୁ</translation>
 <translation id="7054588988317389591">ଛବିର ବର୍ଣ୍ଣନା ପାଇବାକୁ ଚାହାଁନ୍ତି କି?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">ଆପଣ ଭିଜିଟ କରିଥିବା ସାଇଟଗୁଡ଼ିକୁ ଶୀଘ୍ର ଫେରିବା ପାଇଁ ଆପଣଙ୍କ ଇତିହାସ ଏବଂ ଟାବଗୁଡ଼ିକୁ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="84594714173170813">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="8460448946170646641">ମୁଖ୍ୟ ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="8460932807646981183">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଏବଂ ସାଇଟ ସର୍ଚ୍ଚକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8473863474539038330">ଠିକଣାଗୁଡ଼ିକ ଏବଂ ଅଧିକ</translation>
 <translation id="847433688444405067">ସମଗ୍ର ଡିଭାଇସରେ ବ୍ରାଉଜ କରନ୍ତୁ</translation>
 <translation id="8477178913400731244">ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ</translation>

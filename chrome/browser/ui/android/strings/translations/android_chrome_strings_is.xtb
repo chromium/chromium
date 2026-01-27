@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> opnast í Chrome. Með því að halda áfram samþykkirðu <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarþjónustuskilmála Google Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Þú ert ekki með nein aðgangsorð vistuð í Google-aðgangsorðastjórnun.</translation>
 <translation id="115483310321669804">Nota aðgangsorð <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Samstilla flipa og feril</translation>
 <translation id="1165109137568919258">Taktu mynd eða bættu mynd úr myndasafninu við til að leita</translation>
 <translation id="1173894706177603556">Endurnefna</translation>
 <translation id="1174479719160874822">Chrome biður um snjallvefinn þegar skjárinn er þröngur</translation>
@@ -981,6 +982,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5210286577605176222">Stökkva í fyrri flipa</translation>
 <translation id="5210365745912300556">Loka flipa</translation>
 <translation id="5212800876504289412">Endurræstu Chrome til að ljúka breytingunni. Flipar opnast sjálfkrafa þegar þú endurræsir.</translation>
+<translation id="5213114823401215820">Enduropna lokaðan hóp</translation>
 <translation id="5215957675041756913">Stjórnaðu gögnunum og reikningnum þínum</translation>
 <translation id="5218324087477576825">Kortanúmer, áskilið</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og fleiri <ph name="SEPARATOR" /> Chrome fjarlægði þessar heimildir því þú hefur ekki heimsótt nýlega</translation>
@@ -1436,6 +1438,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7020741890149022655">Bæta við leslista <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Opna í vafra</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
+<translation id="7037994709569287156">Gera Chrome að sjálfgefnum vafra</translation>
 <translation id="7053256416619638731">Gerðu aðgangsorðin þín í þessu tæki öflugri</translation>
 <translation id="7053983685419859001">Setja á bannlista</translation>
 <translation id="7054588988317389591">Fá myndlýsingar?</translation>
@@ -1801,6 +1804,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8458413889418591446">Samstilltu ferilinn þinn og flipa til að hafa greiðan aðgang að vefsvæðum sem þú hefur heimsótt</translation>
 <translation id="84594714173170813">Haltu áfram að nota Chrome-gögnin á Google-reikningnum þínum</translation>
 <translation id="8460448946170646641">Fara yfir helstu öryggis- og persónuverndarstýringar</translation>
+<translation id="8460932807646981183">Umsjón með leitarvélum og leit á vefsvæðum</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
 <translation id="847433688444405067">Skoðaðu á milli tækja</translation>
 <translation id="8477178913400731244">Eyða gögnum</translation>

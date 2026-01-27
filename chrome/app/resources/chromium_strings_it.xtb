@@ -34,7 +34,6 @@
 <translation id="1356661055722410047">Novità. Puoi tradurre sia testo che immagini sullo schermo</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1397530502368084401">&amp;Gestisci i profili Chromium</translation>
-<translation id="1414495520565016063">Hai eseguito l'accesso a Chromium.</translation>
 <translation id="141901961143729572">Condividi le tue opinioni</translation>
 <translation id="1465192221147974788">Per condividere la finestra, consenti la Registrazione dello schermo per Chromium nelle Impostazioni di sistema.</translation>
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
@@ -324,10 +323,8 @@
 <translation id="4510853178268397146">Per questa estensione non sono state pubblicate Norme di tutela della privacy, ad esempio la modalità di raccolta e utilizzo dei dati. Chromium consiglia di rimuoverla.</translation>
 <translation id="452711251841752011">Ti diamo il benvenuto in Chromium; nuova finestra del browser aperta</translation>
 <translation id="4531137820806573936">Chromium deve avere l'autorizzazione per mappare l'ambiente circostante e monitorare le tue mani</translation>
-<translation id="4534145890176164066">Chromium comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido</translation>
 <translation id="4536805923587466102">Hai già eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" /> in un altro profilo Chromium</translation>
 <translation id="4548534452171747496">Chromium precarica le pagine per velocizzare la navigazione e la ricerca. <ph name="BEGIN_LINK" />Scopri di più sul precaricamento delle pagine<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Hai eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" />. Ora puoi accedere ai tuoi Preferiti, alla tua cronologia e ad altre impostazioni su tutti i tuoi dispositivi su cui esegui l'accesso.</translation>
 <translation id="4570813286784708942">Chromium ha bloccato questo download perché hai disattivato Navigazione sicura e non è possibile verificare il file</translation>
 <translation id="4583692638088316420">Prova Google Lens con Chromium sul tuo smartphone</translation>
 <translation id="4594305310729380060">In Gestore delle password su questo dispositivo</translation>

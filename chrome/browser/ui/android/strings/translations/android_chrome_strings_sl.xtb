@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Aplikacija <ph name="APP_NAME" /> se bo odprla v Chromu. Če nadaljujete, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">V Googlovem upravitelju gesel nimate shranjenih gesel.</translation>
 <translation id="115483310321669804">Uporaba gesla <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sinhronizacija zavihkov in zgodovine</translation>
 <translation id="1165109137568919258">Posnemite fotografijo ali dodajte sliko iz fotogalerije, če želite iskati</translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1174479719160874822">Chrome bo zahteval spletno mesto za mobilne naprave, ko je zaslon ozek</translation>
@@ -981,6 +982,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5210286577605176222">Premik na prejšnji zavihek</translation>
 <translation id="5210365745912300556">Zapri zavihek</translation>
 <translation id="5212800876504289412">Znova zaženite Chrome, če želite dokončati to spremembo. Zavihki se ob vnovičnem zagonu samodejno znova odprejo.</translation>
+<translation id="5213114823401215820">Vnovično odpiranje zaprte skupine</translation>
 <translation id="5215957675041756913">Nadziranje podatkov in računa</translation>
 <translation id="5218324087477576825">Številka kartice, obvezna</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in drugo <ph name="SEPARATOR" /> Chrome je odstranil ta dovoljenja, ker nedavno niste obiskali</translation>
@@ -1436,6 +1438,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7020741890149022655">Dodaj na bralni seznam <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Odpiranje v brskalniku</translation>
 <translation id="7029809446516969842">Gesla</translation>
+<translation id="7037994709569287156">Nastavite Chrome kot privzeti brskalnik</translation>
 <translation id="7053256416619638731">Okrepite gesla v tej napravi</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7054588988317389591">Želite pridobiti opise slik?</translation>
@@ -1801,6 +1804,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8458413889418591446">Če se želite hitro vrniti na že obiskana spletna mesta, sinhronizirajte zgodovino in zavihke</translation>
 <translation id="84594714173170813">Še naprej uporabljajte podatke v Chromu v računu Google</translation>
 <translation id="8460448946170646641">Pregled ključnih kontrolnikov varnosti in zasebnosti</translation>
+<translation id="8460932807646981183">Upravljanje iskalnikov in iskanja po spletnih mestih</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="847433688444405067">Brskanje po vseh napravah</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>

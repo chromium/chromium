@@ -3,6 +3,7 @@
 <translationbundle lang="lo">
 <translation id="1006017844123154345">ເປີດອອນລາຍ</translation>
 <translation id="1036348656032585052">ປິດ</translation>
+<translation id="1046742265332833834">ຮູບແບບສີສັນສີຟ້າ</translation>
 <translation id="1070329623210597193">ໄຟລ໌ທີ່ເວັບໄຊນີ້ສາມາດເບິ່ງ ຫຼື ແກ້ໄຂໄດ້</translation>
 <translation id="1073417869336441572">ຊ່ວຍພວກເຮົາປັບປຸງ Chrome ໂດຍແຈ້ງໃຫ້ພວກເຮົາຮູ້ເຫດຜົນທີ່ທ່ານໄດ້ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມ. <ph name="BEGIN_LINK" />ສົ່ງຄຳຕິຊົມ<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">ທ່ານສາມາດຂໍເບິ່ງເວັບໄຊເວີຊັນເດັສທັອບໄດ້</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="1192844206376121885">ການດຳເນີນການນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ <ph name="ORIGIN" /> ຈັດເກັບໄວ້.</translation>
+<translation id="1199963004393929848">ຮູບແບບສີສັນສີຂຽວ</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
 <translation id="1240190568154816272">ເຄັດລັບ Chrome</translation>
 <translation id="1242008676835033345">ຝັງຕິດໃນ <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">ຟີດ Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ຂໍ້​ມູນ​ເກັບ​ຮັກ​ສາ​ໄວ້</translation>
 <translation id="3199078925536734975">ອະນຸຍາດໃນເທື່ອນີ້ • ໂດຍປະມານ</translation>
+<translation id="3208584281581115441">ກວດເບິ່ງດຽວນີ້</translation>
 <translation id="321187648315454507">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ, ກະລຸນາເປີດການແຈ້ງເຕືອນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
 <translation id="3223425961342298674">ບໍ່ອະນຸຍາດໃຫ້ເຂົ້າເຖິງສະຖານທີ່</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">ປິດ ແລະ ສະແດງຄຳສັ່ງຕໍ່ໄປທີ່ພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="3744111561329211289">ການຊິ້ງຂໍ້ມູນໃນພື້ນຫຼັງ</translation>
 <translation id="3746834924069123416">ເບິ່ງແຖບຫຼ້າສຸດເພີ່ມເຕີມ</translation>
+<translation id="3753618528540214374">ຮູບແບບສີສັນສີຂຽວອົມຟ້າ</translation>
 <translation id="3763247130972274048">ແຕະວິດີໂອຊ້າຍ ຫຼື ຂວາສອງເທື່ອເພື່ອຂ້າມ 10 ວິ</translation>
 <translation id="3776508619697147021">ເວັບໄຊສາມາດຂໍດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດໄດ້</translation>
 <translation id="3779154269823594982">ປ່ຽນລະຫັດຜ່ານ</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">ເບີໂທລະສັບ</translation>
 <translation id="3823453485268218808">ຟອນ Mono</translation>
 <translation id="3826050100957962900">ການເຂົ້າສູ່ລະບົບຂອງພາກສ່ວນທີສາມ</translation>
+<translation id="3831065134033923230">ກວດເບິ່ງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານ</translation>
 <translation id="3835233591525155343">ການນຳໃຊ້ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3843916486309149084">Chrome ຈະບລັອກຄຸກກີ້ອີກເທື່ອໜຶ່ງໃນມື້ນີ້</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">ເປີດຟີດການຄົ້ນພົບ</translation>
 <translation id="6012967556075291653">ທາງລັດທີ່ປັກໝຸດໄວ້</translation>
 <translation id="6015775454662021376">ຄວບຄຸມສິດເຂົ້າເຖິງອຸປະກອນຂອງທ່ານຂອງເວັບໄຊນີ້</translation>
+<translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>
 <translation id="6064125863973209585">ການດາວໂຫຼດສຳເລັດແລ້ວ</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="6205314730813004066">ຄວາມເປັນສ່ວນຕົວກ່ຽວກັບໂຄສະນາ</translation>
 <translation id="6207207788774442484">ລຶບຂໍ້ມູນ ແລະ ຣີເຊັດການອະນຸຍາດ</translation>
+<translation id="6218508144653756827">ຮູບແບບສີສັນສີມ່ວງອົມແດງ</translation>
 <translation id="6231752747840485235">ຖອນການຕິດຕັ້ງ '<ph name="APP_NAME" />' ບໍ?</translation>
 <translation id="6234351944623978659">ແຕະແອັບໂປຣແກຣມທ່ອງເວັບ &gt; Chrome</translation>
 <translation id="6260830281887654268">ຊີດລຸ່ມສຸດຄໍເລັກຊັນຮູບແບບສີສັນລັກສະນະທີ່ປາກົດຂອງໜ້າແຖບໃໝ່ເປີດຢູ່ລະດັບຄວາມສູງເຄິ່ງໜຶ່ງຂອງໜ້າຈໍ</translation>
 <translation id="6262191102408817757">ໂດຍອ້າງອີງຈາກແຖບຫຼ້າສຸດຂອງທ່ານ</translation>
 <translation id="6262279340360821358">ບລັອກ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ໄວ້ແລ້ວ</translation>
 <translation id="6270391203985052864">ເວັບໄຊສາມາດຂໍໃຫ້ສົ່ງການແຈ້ງເຕືອນໄດ້</translation>
-<translation id="6278428485366576908">ສີສັນໜ້າຕາ</translation>
 <translation id="6295158916970320988">ທຸກ​ເວັບ​ໄຊ​ທ໌</translation>
 <translation id="6320088164292336938">ສັ່ນ</translation>
 <translation id="6367753977865761591">ບລັອກການເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="RWS_MEMBERS_COUNT" /> ເວັບໄຊຂອງ <ph name="RWS_OWNER" /> ແລ້ວ}other{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="RWS_MEMBERS_COUNT" /> ເວັບໄຊຂອງ <ph name="RWS_OWNER" /> ແລ້ວ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ເນື້ອ​ໃນ​ທີ່ຖືກ​ປົກ​ປ້ອງ</translation>
+<translation id="6619015782482868078">ຮູບແບບສີສັນສີຟ້າທະເລ</translation>
 <translation id="662080504995468778">ຢູ່ຕໍ່</translation>
 <translation id="6630443592285535486">ພິມແບບເລກຖານ 16 ບ່ອນນີ້</translation>
 <translation id="6635327442719709864">ເມື່ອເປີດ, ເວັບໄຊຕ່າງໆຈະຂໍໃຊ້ຜອດຊີຣຽວໄດ້. ເມື່ອປິດ, ເວັບໄຊຕ່າງໆຈະບໍ່ສາມາດໃຊ້ຜອດຊີຣຽວໄດ້.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="6950072572526089586">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດບັນທຶກຂໍ້ມູນກ່ຽວກັບສິ່ງທີ່ທ່ານເຮັດຢູ່ເພື່ອໃຫ້ມັນເຮັດວຽກໄດ້ຕາມທີ່ຕ້ອງການ — ຕົວຢ່າງ: ເພື່ອໃຫ້ທ່ານເຂົ້າສູ່ລະບົບເວັບໄຊຄ້າງໄວ້ ຫຼື ບັນທຶກສິນຄ້າໄວ້ໃນກະຕ່າຊື້ເຄື່ອງຂອງທ່ານ. ເວັບໄຊຕ່າງໆມັກຈະບັນທຶກຂໍ້ມູນນີ້ໄວ້ຊົ່ວຄາວຢູ່ໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
+<translation id="6980507581230208647">ຮູບແບບສີສັນສີບົວກຸຫຼາບ</translation>
 <translation id="6980861169612950611">ລຶບຂໍ້ມູນເວັບໄຊບໍ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
 <translation id="6991142177939282156">ອະນຸຍາດ • ໃຊ້ສະຖານທີ່ໂດຍປະມານ</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378">ເລືອກ <ph name="ITEM_COUNT" /> ລາຍການແລ້ວ</translation>
 <translation id="7260727271532453612">ອະນຸຍາດ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ແລ້ວ</translation>
 <translation id="7276071417425470385">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍໃຫ້ໃຊ້ອຸປະກອນເວີຊົວ ຣິອາລິຕີໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ອຸປະກອນເວີຊົວ ຣິອາລິຕີໄດ້.</translation>
+<translation id="7282197670900591579">ຮູບແບບສີສັນສີເຫຼືອງອົມຂຽວໝາກນາວ</translation>
 <translation id="728412880473384942">ເວັບໄຊໄວຂຶ້ນແຕ່ປອດໄພໜ້ອຍລົງ</translation>
 <translation id="7366415735885268578">ເພີ່ມເວັບໄຊ</translation>
 <translation id="7368695150573390554">ຂໍ້ມູນອອບລາຍໃດກໍຕາມຈະຖືກລຶບອອກ</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">ເຊື່ອງບັດເຄັດລັບຂອງ Chrome</translation>
 <translation id="7719367874908701697">ຊູມໜ້າ</translation>
 <translation id="775043444390799886">ຖອດຖອນການອະນຸຍາດ</translation>
+<translation id="7758789811447313947">ຮູບແບບສີສັນສີມ່ວງ</translation>
 <translation id="7759147511335618829">ການຄວບຄຸມອຸປະກອນ MIDI ແລະ ການຕັ້ງໂປຣແກຣມໃໝ່</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">ແຈ້ງເຕືອນຂ້ອຍ</translation>
 <translation id="7948081750384205628">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">ເວັບໄຊສາມາດຂໍເບິ່ງຂໍ້ຄວາມ ແລະ ຮູບພາບໃນຄລິບບອດຂອງທ່ານໄດ້</translation>
+<translation id="798299424881500862">ຮູບແບບສີສັນສີສົ້ມ</translation>
 <translation id="7986741934819883144">ເລືອກລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="7990211076305263060">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານໄດ້.</translation>
 <translation id="8007176423574883786">ປິດ​ສຳ​ລັບ​ອຸ​ປະ​ກອນ​ນີ້</translation>

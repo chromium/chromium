@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">Chrome başlatılıyor...</translation>
 <translation id="286025080868315611">Chrome'un bazı indirme işlemlerini neden engellediğini öğrenin</translation>
 <translation id="2861074815332034794">Chrome güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Chrome'da oturum açtınız!</translation>
 <translation id="2875053229394024379">Chrome'da Google Hesabınızla oturum açtığınızda Chrome profilinizi Gemini ile kullanabilirsiniz. <ph name="BEGIN_LINK" />Chrome'da nasıl oturum açacağınızı öğrenin<ph name="END_LINK" />.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome'un verilerinizi nasıl gizli tuttuğu<ph name="END_LINK" /> hakkında daha fazla bilgi edinin</translation>
 <translation id="2885378588091291677">Görev Yöneticisi</translation>
@@ -326,7 +325,6 @@
 <translation id="4459234553906210702">Reklam ölçümü, ziyaret ettiğiniz sitelerin Chrome'dan bilgi istemesine olanak tanır. Bu bilgiler de sitenin, reklamlarının performansını ölçmesine yardımcı olur. Reklam ölçümü, siteler arasında mümkün olduğunca az bilgi aktararak siteler arası izlemeyi kısıtlar.</translation>
 <translation id="4493028449971051158">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak çalıştırın.</translation>
 <translation id="4501471624619070934">Bu ülkede erişim kısıtlandığı için yükleme başarısız oldu.</translation>
-<translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Şimdi oturum açtığınız tüm cihazlarda yer işaretlerinize, geçmişinize ve diğer ayarlarınıza erişebilirsiniz.</translation>
 <translation id="4571503333518166079">Chrome bildirim ayarlarına git</translation>
 <translation id="4592634244097223647">Google'a bu görsel hakkında soru sorun</translation>
 <translation id="459622048091363950">Chrome erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
@@ -749,7 +747,6 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="8821043148920470810">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 7 kullanıyor.</translation>
 <translation id="8823341990149967727">Chrome Sürümü Eski</translation>
 <translation id="8834965163890861871">Google Chrome şifreleri düzenlemeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
-<translation id="8843516219908676469">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir.</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome, bu uzantıyı kaldırmanızı önerir}other{Chrome, bu uzantıları kaldırmanızı önerir}}</translation>
 <translation id="8862326446509486874">Sistem düzeyinde yükleme için gerekli haklara sahip değilsiniz. Yükleyiciyi Yönetici olarak tekrar çalıştırmayı deneyin.</translation>
 <translation id="8865415417596392024">Hesabınızdaki Chrome verileri</translation>

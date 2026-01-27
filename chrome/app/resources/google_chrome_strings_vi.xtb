@@ -174,7 +174,6 @@
 <translation id="2857540653560290388">Đang khởi động Chrome...</translation>
 <translation id="286025080868315611">Tìm hiểu lý do Chrome chặn một số nội dung tải xuống</translation>
 <translation id="2861074815332034794">Đang cập nhật Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Bạn đã đăng nhập vào Chrome!</translation>
 <translation id="2875053229394024379">Khi đăng nhập vào Chrome bằng Tài khoản Google, bạn có thể dùng hồ sơ Chrome của mình với Gemini. <ph name="BEGIN_LINK" />Tìm hiểu cách đăng nhập vào Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Tìm hiểu thêm về <ph name="BEGIN_LINK" />cách Chrome bảo mật dữ liệu của bạn<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
@@ -329,7 +328,6 @@
 <translation id="4459234553906210702">Tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập yêu cầu Chrome cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.</translation>
 <translation id="4493028449971051158">Lỗi khi khởi động: vui lòng chạy trình cài đặt với tư cách quản trị viên.</translation>
 <translation id="4501471624619070934">Không cài đặt được do quyền truy cập bị giới hạn tại quốc gia này.</translation>
-<translation id="4567424176335768812">Bạn đã đăng nhập với tên <ph name="USER_EMAIL_ADDRESS" />. Bây giờ, bạn có thể truy cập dấu trang, lịch sử và các cài đặt khác trên tất cả những thiết bị đã đăng nhập của bạn.</translation>
 <translation id="4571503333518166079">Chuyển đến cài đặt thông báo của Chrome</translation>
 <translation id="4592634244097223647">Hỏi Google về hình ảnh này</translation>
 <translation id="459622048091363950">Sau khi Chrome có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.</translation>
@@ -752,7 +750,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8821043148920470810">Để nhận các bản cập nhật Google Chrome sau này, máy tính của bạn cần sử dụng hệ điều hành Windows 10 trở lên. Hệ điều hành hiện tại là Windows 7.</translation>
 <translation id="8823341990149967727">Chrome đã lỗi thời</translation>
 <translation id="8834965163890861871">Google Chrome đang cố gắng chỉnh sửa mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
-<translation id="8843516219908676469">Chrome nắm rõ hơn các biểu mẫu và có thể tự động điền vào biểu mẫu nhanh hơn</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome khuyên bạn nên xoá tiện ích đó}other{Chrome khuyên bạn nên xoá các tiện ích đó}}</translation>
 <translation id="8862326446509486874">Bạn không có quyền thích hợp để cài đặt cấp hệ thống. Thử chạy lại trình cài đặt với vai trò Quản trị viên.</translation>
 <translation id="8865415417596392024">Dữ liệu trên Chrome trong tài khoản của bạn</translation>

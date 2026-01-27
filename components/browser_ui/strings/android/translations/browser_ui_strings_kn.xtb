@@ -3,6 +3,7 @@
 <translationbundle lang="kn">
 <translation id="1006017844123154345">ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
+<translation id="1046742265332833834">ನೀಲಿ ಥೀಮ್</translation>
 <translation id="1070329623210597193">ಈ ಸೈಟ್ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು ಅಥವಾ ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="1073417869336441572">ನೀವು ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಏಕೆ ಅನುಮತಿಸುತ್ತೀರಿ ಎಂದು ಹೇಳುವ ಮೂಲಕ Chrome ಅನ್ನು ಸುಧಾರಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡಿ. <ph name="BEGIN_LINK" />ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">ಸೈಟ್‌ಗಳ ಡೆಸ್ಕ್‌ಟಾಪ್ ಆವೃತ್ತಿಯನ್ನು ನೋಡಲು ನಿಮಗೆ ಹೇಳಬಹುದು</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">ವಿರಾಮ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1192844206376121885">ಇದು <ph name="ORIGIN" /> ಮೂಲಕ ಸಂಗ್ರಹಣೆ ಮಾಡಲಾದ ಎಲ್ಲಾ ಡೇಟಾ ಮತ್ತು ಕುಕೀಗಳನ್ನು ಅಳಿಸುತ್ತದೆ.</translation>
+<translation id="1199963004393929848">ಹಸಿರು ಥೀಮ್</translation>
 <translation id="1201402288615127009">ಮುಂದೆ</translation>
 <translation id="1240190568154816272">Chrome ಸಲಹೆಗಳು</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> ನಲ್ಲಿ ಎಂಬೆಡ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">ಫೀಡ್ ಅನ್ನು ಡಿಸ್ಕವರ್‌ ಮಾಡಿ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ಸಂಗ್ರಹಿಸಿದ ಡೇಟಾ</translation>
 <translation id="3199078925536734975">ಈ ಬಾರಿ ಅನುಮತಿಸಲಾಗಿದೆ • ಅಂದಾಜು</translation>
+<translation id="3208584281581115441">ಈಗಲೇ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸುವುದಕ್ಕೆ ಅನುಮತಿಸಲು, <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಅಧಿಸೂಚನೆಗಳನ್ನು ಸಹ ಆನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="3223425961342298674">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="3227137524299004712">ಮೈಕ್ರೋಫೋನ್</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">ವಜಾಗೊಳಿಸಿ ಹಾಗೂ ಲಭ್ಯವಿರುವ ಮುಂದಿನ ಕ್ರಿಯೆಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3744111561329211289">ಹಿನ್ನೆಲೆ ಸಿಂಕ್</translation>
 <translation id="3746834924069123416">ಇನ್ನಷ್ಟು ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಿ</translation>
+<translation id="3753618528540214374">ವಿರಿಡಿಯನ್ ಥೀಮ್</translation>
 <translation id="3763247130972274048">10 ಸೆಕೆಂಡ್‌ಗಳಷ್ಟು ಸ್ಕಿಪ್ ಮಾಡಲು ವೀಡಿಯೊದ ಎಡ ಅಥವಾ ಬಲಭಾಗದಲ್ಲಿ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="3776508619697147021">ಸೈಟ್‌ಗಳು ಹಲವಾರು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="3779154269823594982">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">ಫೋನ್ ಸಂಖ್ಯೆಗಳು</translation>
 <translation id="3823453485268218808">ಫಾಂಟ್ ಮೊನೊ</translation>
 <translation id="3826050100957962900">ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್ ಇನ್</translation>
+<translation id="3831065134033923230">ಉಳಿಸಲಾದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3835233591525155343">ನಿಮ್ಮ ಸಾಧನದ ಬಳಕೆ</translation>
 <translation id="3843916486309149084">Chrome ಇಂದು ಮತ್ತೆ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Discover ಫೀಡ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6012967556075291653">ಪಿನ್ ಮಾಡಲಾದ ಶಾರ್ಟ್‌ಕಟ್</translation>
 <translation id="6015775454662021376">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಈ ಸೈಟ್‌ನ ಪ್ರವೇಶವನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
+<translation id="6022659036123304283">Chrome ಅನ್ನು ನಿಮ್ಮದಾಗಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6042308850641462728">ಇನ್ನಷ್ಟು</translation>
 <translation id="6064125863973209585">ಪೂರ್ಣಗೊಳಿಸಿದ ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6205314730813004066">ಜಾಹೀರಾತು ಗೌಪ್ಯತೆ</translation>
 <translation id="6207207788774442484">ಡೇಟಾವನ್ನು ಅಳಿಸಿ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
+<translation id="6218508144653756827">ಫ್ಯೂಷಿಯಾ ಥೀಮ್</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6234351944623978659">ಬ್ರೌಸರ್ ಆ್ಯಪ್ &gt; Chrome ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="6260830281887654268">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟದ ಗೋಚರತೆ ಥೀಮ್ ಸಂಗ್ರಹಣೆಗಳ ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="6262191102408817757">ನಿಮ್ಮ ಕೊನೆಯ ಟ್ಯಾಬ್ ಅನ್ನು ಆಧರಿಸಿದೆ</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ಮತ್ತು <ph name="PERMISSION_2" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6270391203985052864">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಬಹುದೇ ಎಂದು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
-<translation id="6278428485366576908">ಥೀಮ್</translation>
 <translation id="6295158916970320988">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6320088164292336938">ವೈಬ್ರೇಟ್‌</translation>
 <translation id="6367753977865761591">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗಾಗಿ ಥರ್ಡ್-ಪಾರ್ಟಿ ಸೈನ್ ಇನ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ಸೈಟ್‌ಗಾಗಿ ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ}one{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕೀಗಳನ್ನು ಮತಿಸಲಾಗಿದೆ}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕೀಗಳನ್ನು ಮತಿಸಲಾಗಿದೆ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ಸಂರಕ್ಷಿಸಿದ ಕಂಟೆಂಟ್‍</translation>
+<translation id="6619015782482868078">ಆಕ್ವಾ ಥೀಮ್</translation>
 <translation id="662080504995468778">ಉಳಿಯಿರಿ</translation>
 <translation id="6630443592285535486">ಇಲ್ಲಿ hex ಎಂದು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="6635327442719709864">ಆನ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳು ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗಳನ್ನು ಬಳಸಲು ಕೇಳಬಹುದು. ಆಫ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳು ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗಳನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6950072572526089586">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್, ಸೈಟ್‌ನಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಸೇವ್ ಮಾಡಬಹುದು, ಇದರಿಂದ ಅದು ನಿರೀಕ್ಷಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ — ಉದಾಹರಣೆಗೆ, ಸೈಟ್‌ಗೆ ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಆಗಿರಿಸಲು ಅಥವಾ ನಿಮ್ಮ ಶಾಪಿಂಗ್ ಕಾರ್ಟ್‌ನಲ್ಲಿರುವ ಐಟಂಗಳನ್ನು ಸೇವ್ ಮಾಡಲು. ಸಾಮಾನ್ಯವಾಗಿ ಈ ಮಾಹಿತಿಯನ್ನು ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ತಾತ್ಕಾಲಿಕವಾಗಿ ಉಳಿಸುತ್ತವೆ.</translation>
 <translation id="6965382102122355670">ಸರಿ</translation>
+<translation id="6980507581230208647">ಗುಲಾಬಿ ಥೀಮ್</translation>
 <translation id="6980861169612950611">ಸೈಟ್ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೆ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
 <translation id="6991142177939282156">ಅನುಮತಿಸಲಾಗಿದೆ • ಅಂದಾಜು ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ಮತ್ತು <ph name="PERMISSION_2" /> ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="7276071417425470385">ಆನ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳು ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳನ್ನು ಬಳಸಲು ಕೇಳಬಹುದು. ಆಫ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳಿಗೆ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="7282197670900591579">ಸಿಟ್ರಾನ್ ಥೀಮ್</translation>
 <translation id="728412880473384942">ಸೈಟ್‌ಗಳು ವೇಗವಾಗಿರುತ್ತವೆ ಆದರೆ ಕಡಿಮೆ ಸುರಕ್ಷಿತವಾಗಿವೆ</translation>
 <translation id="7366415735885268578">ಸೈಟ್ ಸೇರಿಸಿ</translation>
 <translation id="7368695150573390554">ಯಾವುದೇ ಆಫ್‌ಲೈನ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome ಸಲಹೆಗಳ ಕಾರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="7719367874908701697">ಪುಟ ಝೂಮ್</translation>
 <translation id="775043444390799886">ಅನುಮತಿಯನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ</translation>
+<translation id="7758789811447313947">ನೇರಳೆ ಥೀಮ್</translation>
 <translation id="7759147511335618829">MIDI ಸಾಧನ ನಿಯಂತ್ರಣ &amp; ರಿಪ್ರೋಗ್ರಾಂ</translation>
 <translation id="7781829728241885113">ನಿನ್ನೆ</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">ನನಗೆ ರಿಮೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="7952708427581814389">ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿನ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ನೋಡಲು ಕೇಳಬಹುದು</translation>
+<translation id="798299424881500862">ಕಿತ್ತಳೆ ಥೀಮ್</translation>
 <translation id="7986741934819883144">ಸಂಪರ್ಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7990211076305263060">ಆನ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸಲು ಕೇಳಬಹುದು. ಆಫ್ ಆಗಿರುವಾಗ, ಸೈಟ್‌ಗಳಿಗೆ ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="8007176423574883786">ಈ ಸಾಧನಕ್ಕೆ ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>

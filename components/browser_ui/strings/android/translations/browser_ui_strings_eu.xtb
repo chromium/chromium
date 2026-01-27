@@ -3,6 +3,7 @@
 <translationbundle lang="eu">
 <translation id="1006017844123154345">Ireki sarean</translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
+<translation id="1046742265332833834">Gai urdina</translation>
 <translation id="1070329623210597193">Webgune honek ikusi edo edita ditzakeen fitxategiak</translation>
 <translation id="1073417869336441572">Lagun iezaguzu Chrome hobetzen: esan iezaguzu zergatik eman duzun hirugarrenen cookieak erabiltzeko baimena. <ph name="BEGIN_LINK" />Bidali oharrak<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Webguneen ordenagailuetarako bertsioa ikusteko eska dezakezu</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Pausatu</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" /> webguneak gordetako datu eta cookie guztiak ezabatuko dira.</translation>
+<translation id="1199963004393929848">Gai berdea</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1240190568154816272">Chrome-ri buruzko aholkuak</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> helbidean kapsulatua</translation>
@@ -215,6 +217,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="3167868116600277716">Discover-en jarioa</translation>
 <translation id="3198916472715691905">Gordetako datuak: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Erabil daiteke une honetan • Gutxi gorabeherakoa</translation>
+<translation id="3208584281581115441">Egiaztatu</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> aplikazioari jakinarazpenak bidaltzeko baimena emateko, jakinarazpenak bidaltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Ukatu da kokapena erabiltzeko baimena</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
@@ -264,6 +267,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="3721953990244350188">Baztertu eta erakutsi erabilgarri dagoen hurrengo ekintza</translation>
 <translation id="3744111561329211289">Atzeko planoko sinkronizazioa</translation>
 <translation id="3746834924069123416">Ikusi azkenaldiko fitxa gehiago</translation>
+<translation id="3753618528540214374">Biridiano-koloreko gaia</translation>
 <translation id="3763247130972274048">Sakatu birritan bideoaren ezkerreko edo eskuineko aldea 10 s saltatzeko</translation>
 <translation id="3776508619697147021">Webguneek fitxategi bat baino gehiago automatikoki deskargatzea eska dezakete</translation>
 <translation id="3779154269823594982">Aldatu pasahitzak</translation>
@@ -273,6 +277,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="381841723434055211">Telefono-zenbakiak</translation>
 <translation id="3823453485268218808">Letra: Mono</translation>
 <translation id="3826050100957962900">Hirugarrenen bidez saioa hastea</translation>
+<translation id="3831065134033923230">Egiaztatu gordeta dauzkazun pasahitzak seguruak direla</translation>
 <translation id="3835233591525155343">Gailuaren erabilera</translation>
 <translation id="3843916486309149084">Gaur blokeatuko ditu cookieak berriro Chrome-k</translation>
 <translation id="385051799172605136">Atzera</translation>
@@ -475,6 +480,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="5998071268779572583">Aktibatu Discover jarioa</translation>
 <translation id="6012967556075291653">Ainguratutako lasterbidea</translation>
 <translation id="6015775454662021376">Kontrolatu webgune honek gailurako duen sarbidea</translation>
+<translation id="6022659036123304283">Zeureganatu Chrome</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6042308850641462728">Gehiago</translation>
 <translation id="6064125863973209585">Osatutako deskargak</translation>
@@ -492,13 +498,13 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
 <translation id="6207207788774442484">Ezabatu datuak eta berrezarri baimenak</translation>
+<translation id="6218508144653756827">Fuksia-koloreko gaia</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" desinstalatu nahi duzu?</translation>
 <translation id="6234351944623978659">Sakatu Arakatzailea &gt; Chrome.</translation>
 <translation id="6260830281887654268">Pantailaren behealdean ainguratutako orria, fitxa berriaren itxura aldatzeko gaien bildumak dituena, altuera erdian irekita dago</translation>
 <translation id="6262191102408817757">Azken fitxaren arabera</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> blokeatu egin dira</translation>
 <translation id="6270391203985052864">Webguneek jakinarazpenak bidaltzea eska dezakete</translation>
-<translation id="6278428485366576908">Gaia</translation>
 <translation id="6295158916970320988">Webgune guztiak</translation>
 <translation id="6320088164292336938">Dardara</translation>
 <translation id="6367753977865761591">Blokeatu webgune jakin batean saioa hasteko aukera hirugarrenei.</translation>
@@ -525,6 +531,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> domeinuko <ph name="RWS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena du}other{<ph name="RWS_OWNER" /> domeinuko <ph name="RWS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena dute}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Eduki babestua</translation>
+<translation id="6619015782482868078">Akuamarina-koloreko gaia</translation>
 <translation id="662080504995468778">Jarraitu bertan</translation>
 <translation id="6630443592285535486">Idatzi kolore hamaseitarra hemen</translation>
 <translation id="6635327442719709864">Aktibatuta dagoenean, webguneek serieko atakak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dituzte erabili serieko atakak.</translation>
@@ -553,6 +560,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6950072572526089586">Bisitatzen dituzun webguneek egiten ari zarenari buruzko informazioa gordetzen dute batzuetan, espero duzun moduan funtzionatu ahal izateko; adibidez, zure saioa hasita mantentzeko edo erosketa-saskian produktuak gordetzeko. Askotan, webguneek gailuan gordetzen dute informazio hori aldi baterako.</translation>
 <translation id="6965382102122355670">Ados</translation>
+<translation id="6980507581230208647">Gai arrosa</translation>
 <translation id="6980861169612950611">Webguneko datuak ezabatu nahi dituzu? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="6991142177939282156">Baimenduta • Gutxi gorabeherakoa erabiltzen</translation>
@@ -581,6 +589,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> hautatu dira</translation>
 <translation id="7260727271532453612">Baimena eman zaie hauei: <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Aktibatuta dagoenean, webguneek errealitate birtualeko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili errealitate birtualeko gailurik.</translation>
+<translation id="7282197670900591579">Limoi-koloreko gaia</translation>
 <translation id="728412880473384942">Webguneek bizkorrago funtzionatzen dute, baina ez dira hain seguruak</translation>
 <translation id="7366415735885268578">Gehitu webgune bat</translation>
 <translation id="7368695150573390554">Konexiorik gabeko datuak ezabatuko dira</translation>
@@ -619,6 +628,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="7688240020069572972">Ezkutatu Chrome-ri buruzko aholkuen txartela</translation>
 <translation id="7719367874908701697">Orriaren zooma</translation>
 <translation id="775043444390799886">Kendu baimena</translation>
+<translation id="7758789811447313947">Bioleta-koloreko gaia</translation>
 <translation id="7759147511335618829">MIDI gailuak kontrolatzea eta berriro programatzea</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7791543448312431591">Gehitu</translation>
@@ -637,6 +647,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="7940722705963108451">Gogorarazi</translation>
 <translation id="7948081750384205628">Lortu informazio gehiago <ph name="SETTING_TITLE" /> ezarpenari buruz</translation>
 <translation id="7952708427581814389">Webguneek arbeleko testua eta irudiak ikustea eska dezakete</translation>
+<translation id="798299424881500862">Gai laranja</translation>
 <translation id="7986741934819883144">Hautatu kontaktu bat</translation>
 <translation id="7990211076305263060">Aktibatuta dagoenean, webguneek mikrofonoa erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili mikrofonoa.</translation>
 <translation id="8007176423574883786">Desaktibatu egin da gailu honetan</translation>

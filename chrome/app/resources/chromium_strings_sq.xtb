@@ -36,7 +36,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1356661055722410047">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1397530502368084401">&amp;Menaxho profilet e Chromium</translation>
-<translation id="1414495520565016063">Je i identifikuar në Chromium!</translation>
 <translation id="141901961143729572">Ndaj mendimet e tua</translation>
 <translation id="1465192221147974788">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit".</translation>
 <translation id="1478370723027452770">Merr ndihmë për Chrome for Testing</translation>
@@ -326,10 +325,8 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4510853178268397146">Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat. Chromium rekomandon që ta heqësh atë.</translation>
 <translation id="452711251841752011">Mirë se erdhe në Chromium. U hap një dritare e re e shfletuesit</translation>
 <translation id="4531137820806573936">Chromium ka nevojë për leje për të krijuar një hartë të ambientit rrethues dhe për të ndjekur duart e tua</translation>
-<translation id="4534145890176164066">Chromium i kupton më mirë formularët dhe mund t'i plotësojë automatikisht më shpejt për ty</translation>
 <translation id="4536805923587466102">Je identifikuar tashmë si <ph name="USER_EMAIL_ADDRESS" /> në një profil tjetër të Chromium</translation>
 <translation id="4548534452171747496">Chromium i ngarkon paraprakisht faqet, gjë që e bën më të shpejtë shfletimin dhe kërkimin. <ph name="BEGIN_LINK" />Mëso më shumë për ngarkimin paraprak të faqeve<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Je identifikuar si <ph name="USER_EMAIL_ADDRESS" />. Tani mund të qasesh te faqeshënuesit, historiku dhe cilësime të tjera në të gjitha pajisjet ku je identifikuar.</translation>
 <translation id="4570813286784708942">Chromium e bllokoi këtë shkarkim sepse ke çaktivizuar "Shfletimin e sigurt" dhe skedari nuk mund të verifikohet</translation>
 <translation id="4583692638088316420">Provo "Lenten e Google" me Chromium në telefonin tënd</translation>
 <translation id="4594305310729380060">Te "Menaxheri i Fjalëkalimeve" në këtë pajisje</translation>

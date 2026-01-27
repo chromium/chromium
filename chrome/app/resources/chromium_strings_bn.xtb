@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">নতুন! আপনি স্ক্রিনে টেক্সট ও ছবি দুটিই অনুবাদ করতে পারবেন</translation>
 <translation id="1383876407941801731">খুঁজুন</translation>
 <translation id="1397530502368084401">Chromium প্রোফাইল ম্যানেজ করুন</translation>
-<translation id="1414495520565016063">আপনি Chromium এ প্রবেশ করেছেন!</translation>
 <translation id="141901961143729572">আপনার মতামত শেয়ার করুন</translation>
 <translation id="1465192221147974788">আপনার উইন্ডো শেয়ার করতে, সিস্টেম সেটিংস থেকে Chromium-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন।</translation>
 <translation id="1478370723027452770">Chrome for Testing ব্যবহার করে সহায়তা পান</translation>
@@ -69,6 +68,7 @@
 <translation id="183031085822326697">পরেরবার আপনার <ph name="DEVICE_TYPE" />-এ Chromium খোলার সময়, Google Password Manager ব্যবহার করার জন্য আপনাকে প্রম্পট দেখানো হবে।</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
 <translation id="18552579716432081">শুধুমাত্র এই ডিভাইস থেকে ব্রাউজ করা ডেটা মুছে দিতে, তা নিজের Google অ্যাকাউন্টে রেখে দেওয়ার সময়, <ph name="BEGIN_LINK" />Chromium থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
+<translation id="1857749206890802997">যেকোনও জায়গা থেকে নতুন ট্যাব গ্রুপ খুলতে বা তৈরি করতে আপনার ফোনে Chromium ডাউনলোড করুন।</translation>
 <translation id="185970820835152459">আপনার সাইন-ইন করা Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন। Chromium ব্রাউজার, Play Store, Gmail সহ আরও অনেক কিছুর জন্য আপনার Google অ্যাকাউন্ট ব্যবহার করা হয়। পরিবারের সদস্যের মতো অন্য কারও অ্যাকাউন্ট যোগ করতে চাইলে, তার পরিবর্তে আপনার <ph name="DEVICE_TYPE" />-এ নতুন ব্যক্তিকে যোগ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">'ছবি সার্চ করা' ফিচারের মাধ্যমে সার্চ করুন</translation>
 <translation id="1880677175115548835">টেক্সট বেছে নিন</translation>
@@ -159,6 +159,7 @@
 <translation id="2738871930057338499">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। HTTP 403 নিষিদ্ধ। আপনার প্রক্সি কনফিগারেশন চেক করুন।</translation>
 <translation id="2753623023919742414">সার্চ করার জন্য ক্লিক করুন</translation>
 <translation id="2768103863314748511">আপনার ডিফল্ট PDF ভিউয়ার হিসেবে Chromium সেট করুন</translation>
+<translation id="277828055419948999">Chromium কঠিন ফিল্ড অটোফিল করতে পারে যা সাধারণ অটোফিল মিস করতে পারে</translation>
 <translation id="2785438272836277133">এই এক্সটেনশনে ম্যালওয়্যার রয়েছে এবং এটি নিরাপদ নাও হতে পারে। Chromium থেকে এটি সরান যাতে আপনার ভিজিট করা সাইটের ডেটা এটি আর দেখতে না পায় এবং তা পরিবর্তন না করতে পারে, এর মধ্যে আপনার ব্যক্তিগত তথ্যও রয়েছে।</translation>
 <translation id="2799223571221894425">পুনঃশুরু</translation>
 <translation id="2803971713792056305">আপনার Chromium</translation>
@@ -323,10 +324,8 @@
 <translation id="4510853178268397146">এই এক্সটেনশন গোপনীয়তা অনুশীলন প্রকাশ করেনি, যেমন কীভাবে এটি ডেটা সংগ্রহ ও ব্যবহার করে। Chromium আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়।</translation>
 <translation id="452711251841752011">Chromium-এ স্বাগতম; নতুন ব্রাউজার উইন্ডো খোলা হয়েছে</translation>
 <translation id="4531137820806573936">আপনার আশপাশ সম্পর্কে জানতে ও হাত ট্র্যাক করতে Chromium-এর অনুমতি প্রয়োজন</translation>
-<translation id="4534145890176164066">Chromium ফর্ম আরও ভালো বুঝতে পারে এবং আপনার জন্য আরও দ্রুত তা অটোফিল করতে পারে</translation>
 <translation id="4536805923587466102">আপনি আগে থেকেই অন্য Chromium প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="4548534452171747496">Chromium পৃষ্ঠা প্রিলোড করে যার ফলে আরও ঝটপট ব্রাউজ ও সার্চ করা যায়। <ph name="BEGIN_LINK" />পৃষ্ঠা প্রিলোড করা সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">আপনি <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন৷ এখন আপনি আপনার সমস্ত সাইন-ইন করা ডিভাইসে আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য সেটিংস অ্যাক্সেস করতে পারেন৷</translation>
 <translation id="4570813286784708942">আপনি Safe Browsing ফিচারটি বন্ধ করে দেওয়ার ফলে ফাইলটি যাচাই করা যাচ্ছে না, তাই Chromium এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="4583692638088316420">আপনার ফোনে Chromium-এর সাথে Google Lens ব্যবহার করে দেখুন</translation>
 <translation id="4594305310729380060">এই ডিভাইসের Password Manager-এর জন্য</translation>
@@ -482,6 +481,7 @@
 <translation id="6436260184216827876">'ছবি সার্চ করা' ফিচার উপলভ্য নেই। পরে আবার চেষ্টা করুন।</translation>
 <translation id="6442900851116057561">ChromiumOS রিস্টার্ট করুন</translation>
 <translation id="6443470774889161065">আপনি ভিজিট করতে পারেন এমন আরও বেশি সংখ্যক পৃষ্ঠা Chromium প্রিলোড করে, যাতে ভিজিট করার সময় সেই পৃষ্ঠাগুলি আরও দ্রুত লোড হয়</translation>
+<translation id="6450948450282634257">আপনার ফোনে Chromium ডাউনলোড করুন যাতে দাম ট্র্যাক করতে পারেন এবং কোনও সাইটে দাম কমে গেলে সেই সম্পর্কিত সতর্কতা পান</translation>
 <translation id="645458117210240797">বন্ধ রয়েছে • Chromium এই এক্সটেনশনের সোর্স যাচাই করতে পারে না</translation>
 <translation id="6455857529632101747">Chromium প্রোফাইল-এ স্বাগতম</translation>
 <translation id="6466344609055215035">Chromium থেকে অ্যাকাউন্ট সরান</translation>

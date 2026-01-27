@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">Starter Chrome ...</translation>
 <translation id="286025080868315611">Finn ut hvorfor Chrome blokkerer enkelte nedlastinger</translation>
 <translation id="2861074815332034794">Oppdaterer Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Du er nå logget på Chrome.</translation>
 <translation id="2875053229394024379">Når du logger på Chrome med Google-kontoen din, kan du bruke Chrome-profilen din med Gemini. <ph name="BEGIN_LINK" />Finn ut hvordan du logger på Chrome<ph name="END_LINK" />.</translation>
 <translation id="2876628302275096482">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chrome holder dataene dine private<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Oppgavebehandling</translation>
@@ -327,7 +326,6 @@
 <translation id="4459234553906210702">Med annonsemålinger kan nettsteder du besøker, spørre Chrome om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>
 <translation id="4493028449971051158">Oppstartsfeil: Kjør installasjonsprogrammet som administrator.</translation>
 <translation id="4501471624619070934">Installasjonen mislyktes fordi tilgangen er begrenset i dette landet.</translation>
-<translation id="4567424176335768812">Du er logget på som <ph name="USER_EMAIL_ADDRESS" />. Nå kan du bruke bokmerkene, loggen og andre innstillinger på alle enhetene du er logget på.</translation>
 <translation id="4571503333518166079">Gå til innstillingene for Chrome-varsler</translation>
 <translation id="4592634244097223647">Spør Google om dette bildet</translation>
 <translation id="459622048091363950">Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
@@ -748,7 +746,6 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="8821043148920470810">For å få fremtidige Google Chrome-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 7.</translation>
 <translation id="8823341990149967727">Chrome er utdatert</translation>
 <translation id="8834965163890861871">Google Chrome prøver å redigere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
-<translation id="8843516219908676469">Chrome forstår skjemaer bedre og kan autofylle dem raskere for deg</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome anbefaler at du fjerner den}other{Chrome anbefaler at du fjerner dem}}</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettighetene for å installere på systemnivå. Prøv å kjøre installasjonsprogrammet som administrator.</translation>
 <translation id="8865415417596392024">Chrome-data i kontoen din</translation>

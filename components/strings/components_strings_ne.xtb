@@ -278,6 +278,7 @@
 <translation id="142559998533702194">अपलोड गर्न सकिएन</translation>
 <translation id="1426410128494586442">हो</translation>
 <translation id="1427192966110103169">घरमा भएका स्विमिङ पुल, सौना तथा स्पा</translation>
+<translation id="142740183218637661">Chrome ब्राउजरले संवेदनशील जानकारी देखाउन खोज्दै छ</translation>
 <translation id="1428146450423315676">स्ट्याकर ७</translation>
 <translation id="142858679511221695">क्लाउडका प्रयोगकर्ता</translation>
 <translation id="1429080515485835353">सेल्फ-एधेसिभ फिल्म</translation>
@@ -371,6 +372,7 @@
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">यो वेबपृष्ठ प्रदर्शन गर्दा कुनै त्रुटी भयो।</translation>
 <translation id="1584492003828271317">तपाईंले ब्राउज गर्दै गर्दा तपाईंलाई देखाइने कुनै विज्ञापन पर्सनलाइज गरिन्छ कि गरिँदैन भन्ने कुरा यो सेटिङ, साइटले सिफारिस गरेका विज्ञापनहरू, तपाईंले तय गर्नुभएको कुकीसम्बन्धी सेटिङ र तपाईंले हेरिरहनुभएको साइटले विज्ञापन पर्सनलाइज गर्छ कि गर्दैन भन्ने कुरामा भर पर्छ</translation>
+<translation id="1585306568496579337">"<ph name="EXTENSION_NAME" />" एक्स्टेन्सनले <ph name="HANDLER_HOSTNAME" /> मार्फत <ph name="PROTOCOL" /> लिंकहरू खोल्न चाहन्छ</translation>
 <translation id="1586541204584340881">तपाईंले स्थापना गर्नुभएका एक्स्टेन्सनहरू</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="159103247796286390">तालिकाको नाम बदल्नुहोस्</translation>
@@ -428,6 +430,7 @@
 <translation id="1663943134801823270">कार्ड र ठेगानाहरू Chrome बाट प्राप्त भएका हुन्। तपाईं <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" />मा गई तिनीहरूलाई व्यवस्थित गर्न सक्नुहुन्छ।</translation>
 <translation id="1664389769577564606">फ्लेक्सो फोटोपोलिमर</translation>
 <translation id="166624440456221306">तुलनात्मक जानकारी भएको तालिका मेटाउनुहोस्</translation>
+<translation id="1667730174533834274">तपाईंले सेटिङ परिवर्तन गर्नुअघि तपाईंको पहिचान पुष्टि गर्न</translation>
 <translation id="1668071460721346172">इमेल प्राप्त गर्नुहोस्</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> बाट <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">पहिले छोटो किनारा</translation>
@@ -1640,6 +1643,7 @@
 <translation id="3615309852743236517">म्यानिक्योर तथा पेडिक्योर</translation>
 <translation id="3620034424637552643">प्रायः कतै जाने बाटोसम्बन्धी जानकारी, डेलिभरी र अन्य कुराका लागि प्रयोग गरिन्छ</translation>
 <translation id="3620239073311576716">युनिफर्म र काम गर्दा लगाउने पोशाक</translation>
+<translation id="3620865353340165509">यो IBAN Google Wallet मा सेभ गर्न सकिएन। यसलाई बरु यो डिभाइसको Chrome मा सेभ गरिएको छ। तपाईंले अर्को पटक यो IBAN प्रयोग गर्दा Chrome ले तपाईंलाई सेभ गर्ने हो भनेर फेरि सोध्ने छ।</translation>
 <translation id="3621401353678567613">आफूले ट्र्याक गरेका उत्पादनहरूको मूल्य घट्दा अलर्ट प्राप्त गर्न सेटिङमा गई नोटिफिकेसन अन गर्नुहोस्।</translation>
 <translation id="362276910939193118">पूर्ण इतिहास देखाउनुहोस्</translation>
 <translation id="3623041590998910684">क्यामेरा प्रयोग गर्न <ph name="LINK" /> मा गई Chrome लाई क्यामेरा एक्सेस गर्ने अनुमति दिनुहोस्।</translation>
@@ -1725,6 +1729,7 @@
 <translation id="3727309136762649052">namespace</translation>
 <translation id="3727850735097852673">macOS Keychain का सहायताले Google पासवर्ड म्यानेजर प्रयोग गर्न Chrome रिलन्च गर्नुहोस् र Keychain प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
 <translation id="3728173127485570463">अबदेखि Chrome ब्राउजरलाई पासवर्डहरू अटोफिल गर्न तपाईंको फिंगरप्रिन्ट चाहिँदैन</translation>
+<translation id="3736564442532774454">Chrome ब्राउजरले <ph name="APP_NAME" /> मा तपाईंको संवेदनशील जानकारी हाल्न खोज्दै छ।</translation>
 <translation id="3738166223076830879">तपाईंका एड्मिन तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ।</translation>
 <translation id="3739842843727261045">थम्ज अपले तपाईंलाई यी परिणामहरू मन पर्छ भन्ने प्रतिक्रिया पेस गर्छ</translation>
 <translation id="3740447166056383374">कपी गर्नुअघि समीक्षा गर्नु पर्ने हुन्छ</translation>
@@ -1922,6 +1927,7 @@
 <translation id="4061573458783426621">स्क्यान गरिएको फाइल OneDrive मा सेभ गर्न सकिएन</translation>
 <translation id="4063063121357725926">Google लाई तपाईंका कार्टहरूका हकमा छुट खोज्ने अनुमति दिनुहोस्</translation>
 <translation id="406358100705415968">काम गर्दा सुरक्षाका लागि प्रोटेक्टिभ गियर</translation>
+<translation id="4065429683324339709">Google Chrome ले तपाईंको पहिचान पुष्टि गरेपछि मात्र तपाईं सेटिङ परिवर्तन गर्न सक्नुहुन्छ</translation>
 <translation id="4065659219963895623">रेस्टुरेन्टहरू</translation>
 <translation id="4067774859633143413">फुल स्क्रिनबाट बाहिरिन र डाउनलोड गरिएका सामग्री हेर्न |<ph name="ACCELERATOR" />| थिचिराख्नुहोस्</translation>
 <translation id="4067947977115446013">मान्य ठेगाना थप्नुहोस्</translation>
@@ -2233,6 +2239,7 @@
 <translation id="4528888973346221791">कार्य प्रोफाइलको जानकारी (जस्तै: तपाईंको युजरनेम)</translation>
 <translation id="4530347922939905757">टेक्स्ट म्यासेज</translation>
 <translation id="4531477351494678589">भर्चुअल कार्ड नम्बर:</translation>
+<translation id="4534145890176164066">Chromium ले फारामहरूका बारेमा अझ राम्रोसँग बुझेकाले यसले फारामहरू छिटोछरितो रूपमा अटोफिल गरिदिन सक्छ</translation>
 <translation id="4535523368173457420">यी सर्च इन्जिनहरू तपाईंको क्षेत्रमा लोकप्रिय छन् र अनियमित क्रममा देखाइएका छन्</translation>
 <translation id="4535602490975885745">OneDrive मा फोटो सेभ गर्न सकिएन</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{१ वर्षअघि बनाइएको}other{{NUM_YEARS} वर्षअघि बनाइएको}}</translation>
@@ -2444,6 +2451,7 @@
 <translation id="4882314601499260499">प्रयोगकर्तासम्बन्धी कुनै पनि नीति लागू गरिएको छैन। प्रयोगकर्तासम्बन्धी नीतिहरू लागू गर्न तपाईंको सङ्गठनले अनिवार्य रूपमा <ph name="LINK_BEGIN" />तपाईंको डोमेन पुष्टि गर्नु पर्छ<ph name="LINK_END" />।</translation>
 <translation id="4885030148564729407">हनिमुन तथा रोमान्टिक यात्राहरू</translation>
 <translation id="4885256590493466218">चेकआउटका बेला <ph name="CARD_DETAIL" /> प्रयोग गरी भुक्तानी गर्नुहोस्</translation>
+<translation id="4886565443854420066">Chrome ब्राउजरले तपाईंको पहिचान पुष्टि गरेपछि मात्र तपाईं सेटिङ परिवर्तन गर्न सक्नुहुन्छ</translation>
 <translation id="4887406273302438710">Windows Hello मार्फत पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई आफ्नो ब्राउजिङ हिस्ट्री, कुकी, क्यास तथा अन्य कुरा मेटाउन "ट्याब" थिच्नुहोस् अनि "इन्टर" थिच्नुहोस्</translation>
 <translation id="4892518386797173871">पछाडिको भाग</translation>
@@ -2788,6 +2796,7 @@
             <ph name="LIST_ITEM" />कुकी तथा साइट डेटा
             <ph name="LIST_ITEM" />फारमहरूमा भरिएको जानकारी
           <ph name="END_LIST" /></translation>
+<translation id="5434803328547504573">अझ छिटो चेकआउट गर्न यो CVC Google Wallet (<ph name="ACCOUNT_EMAIL" />) मा सेभ गर्नुहोस्</translation>
 <translation id="5436307623797390637">यो डिभाइसमा इन्स्टल गरिएका एपहरू</translation>
 <translation id="5443468954631487277">विपरीत क्रम तर माथितिर फर्काएर</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> लाई उक्त साइटले तपाईंका बारेमा सेभ गरेको जानकारी प्रयोग गर्ने अनुमति दिनुहोस्</translation>
@@ -2886,6 +2895,7 @@
 <translation id="5578606540385219379">सेवा प्रदायक</translation>
 <translation id="5580958916614886209">आफ्नो म्याद सकिने महिनाको जाँच गरी फेरि प्रयास गर्नुहोस्</translation>
 <translation id="5583442610070676234">तुलनात्मक जानकारी भएको तालिकाका सम्बन्धमा गर्न सकिने थप कारबाहीहरू <ph name="COMPARE_SET_NAME" /></translation>
+<translation id="55841966151154662">यो IBAN तपाईंको Google Wallet मा सेभ गर्न सकिएन। यसलाई बरु यो डिभाइसको Chrome मा सेभ गरिएको छ।</translation>
 <translation id="558420943003240152">पासवर्ड तथा पासकीहरू व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="5586446728396275693">सुरक्षित गरिएको कुनै ठेगाना छैन</translation>
 <translation id="5586831831248371458"><ph name="KEYWORD_SUFFIX" /> खोज्नुहोस्</translation>
@@ -2918,6 +2928,7 @@
 <translation id="563324245173044180">भ्रामक सामग्रीमाथि रोक लगाइयो।</translation>
 <translation id="563371367637259496">मोबाइल</translation>
 <translation id="5635478143789726479">विक्रेताका सर्तहरू</translation>
+<translation id="5640474731385449758">"<ph name="EXTENSION_NAME" />" एक्स्टेन्सनले <ph name="HANDLER_HOSTNAME" /> मार्फत <ph name="ORIGIN" /> मा <ph name="PROTOCOL" /> लिंकहरू खोल्न चाहन्छ</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />। <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">स्टेरियो सिस्टम तथा कम्पोनेन्ट</translation>
 <translation id="5644090287519800334">सतह १ मा रहेको छविको X सिफ्ट</translation>
@@ -3060,6 +3071,7 @@
 <translation id="5890248301649767931">रिड्रेस नम्बर सेभ गर्ने हो?</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5895187275912066135">मा प्रकाशित</translation>
+<translation id="5895694128043506580">Google Chrome ले संवेदनशील जानकारी देखाउन खोज्दै छ</translation>
 <translation id="5898767305816764989">थम्ज अप बटन, तपाईंलाई यो कुरा मन परेको जनाउने प्रतिक्रिया पेस गर्नका निम्ति फाराम खोल्न इन्टर थिच्नुहोस्, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5903264686717710770">शीर्षक:</translation>
@@ -3501,6 +3513,7 @@
 <translation id="6569060085658103619">तपाईं एउटा विस्तार सम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="6571992525120410251"><ph name="ENGINE_NAME" /> लाई जुनसुकै कुरा सोध्नुहोस्</translation>
 <translation id="6573200754375280815">दायाँपट्टि दुई प्वाल</translation>
+<translation id="6573973523249076555">Google Chrome ले <ph name="APP_NAME" /> मा तपाईंको संवेदनशील जानकारी हाल्न खोज्दै छ।</translation>
 <translation id="6575408526598156416">खातामा सेभ गर्नुहोस्</translation>
 <translation id="6577792494180292262">भेन्चर क्यापिटल</translation>
 <translation id="6578434528542148658">एक्स्टेन्सनको अवैध ID।</translation>
@@ -3624,6 +3637,7 @@
 <translation id="6779290995699117286">तपाईंका एड्मिन प्रोफाइल, ब्राउजर र डिभाइससम्बन्धी जानकारी एक्सेस गर्न सक्नुहुन्छ। उहाँ निम्न कुरा हेर्न सक्नुहुन्छ:</translation>
 <translation id="6779348349813025131">Google पासवर्ड म्यानेजरलाई MacOS Keychain प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="6780449997190414928">तपाईं प्रायः जसो यो साइटमा सुरक्षित रूपमा कनेक्ट गर्नुहुन्छ तर Chrome ले अहिले सुरक्षित कनेक्सन प्रयोग गर्न सकेन। ह्याकरले तपाईंको नेटवर्क कनेक्सन निगरानी गर्न वा परिमार्जन गर्न खोजिरहेको हुन सक्छ। <ph name="LEARN_MORE" /></translation>
+<translation id="6783857615096909676"><ph name="HANDLER_HOSTNAME" /> लाई सधैँ <ph name="PROTOCOL" /> लिंकहरू खोल्ने अनुमति दिनुहोस्</translation>
 <translation id="6785990323398321538">तपाईं जुनसुकै बेला Chrome का सेटिङमा गई आफ्नो सर्च इन्जिन परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
 <translation id="6786747875388722282">विस्तारहरू</translation>
@@ -4073,6 +4087,7 @@
 <translation id="7473891865547856676">पर्दैन, धन्यवाद</translation>
 <translation id="7481312909269577407">अगाडि</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
+<translation id="7482823403440483089">अटोफिल गर्ने परिष्कृत सुविधा</translation>
 <translation id="7483482939016730822">बिद्यालय तथा कक्षाकोठाका उपकरण</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, Chrome सम्बन्धी सुझाव हटाउन ट्याब की थिच्नुहोस् अनि इन्टर की थिच्नुहोस्।</translation>
 <translation id="7485085230273446323">व्यापार तथा उद्योगधन्दा</translation>
@@ -4322,6 +4337,7 @@
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> रहेको म्याद सकिने नयाँ मिति र CVC हाल्नुहोस्</translation>
 <translation id="7862185352068345852">साइट छाड्ने हो?</translation>
+<translation id="7862306158978555061">संवेदनशील जानकारी देखाउन</translation>
 <translation id="7865448901209910068">उत्कृष्ट गति</translation>
 <translation id="7865482168955081228">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" मा त्रुटि देखिएको कुरा जानकारी दिने स्क्रिन बन्द गरिएको छ।</translation>
 <translation id="7870281855125116701">छुट पाइयो</translation>
@@ -4707,6 +4723,7 @@
 <translation id="8488350697529856933">मा लागू हुन्छ</translation>
 <translation id="8490137692873530638">स्ट्याकर १०</translation>
 <translation id="8493948351860045254">ठाउँ खाली गर्नुहोस्</translation>
+<translation id="8498870489552322848"><ph name="APP_NAME" /> मा तपाईंको संवेदनशील जानकारी हाल्न</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ले प्रतिक्रिया दिन निकै लामो समय लियो।</translation>
 <translation id="8502023382441452707">जन्मदिन तथा न्वाराम</translation>
 <translation id="8503559462189395349">Chrome का पासवर्डहरू</translation>
@@ -4910,6 +4927,7 @@
 <translation id="883848425547221593">अन्य बुकमार्कहरू</translation>
 <translation id="8842351563145134519">एक पटक टच गरेकै भरमा विवरण भर्न मिल्ने भुक्तानी विधिहरूको सूची आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="884264119367021077">सिपिङ ठेगाना</translation>
+<translation id="8843516219908676469">Chrome ले फारामहरूका बारेमा अझ राम्रोसँग बुझेकाले यसले फारामहरू छिटोछरितो रूपमा अटोफिल गरिदिन सक्छ</translation>
 <translation id="8849032795302265570">तपाईंका कर्मचारीहरूले वेब ब्राउज गर्ने तरिका सजिलै व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8849231003559822746">१३० x १८० मिलिमिटर</translation>
 <translation id="884923133447025588">कुनैपनि खण्डन संयन्त्र फेला परेन।</translation>

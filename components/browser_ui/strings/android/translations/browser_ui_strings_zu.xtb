@@ -3,6 +3,7 @@
 <translationbundle lang="zu">
 <translation id="1006017844123154345">Vula ku-inthanethi</translation>
 <translation id="1036348656032585052">Vala</translation>
+<translation id="1046742265332833834">Itimu eluhlaza okwesibhakabhaka</translation>
 <translation id="1070329623210597193">Amafayela leli sayithi elingawabuka noma liwahlele</translation>
 <translation id="1073417869336441572">Sisize sithuthukise i-Chrome ngokusitshela ukuthi kungani uvumele amakhukhi ezinkampani ezingahlangene ngqo. <ph name="BEGIN_LINK" />Thumela impendulo<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Ungabuza ukuze ubone uhlelo lwedeskithophu lwamasayithi</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Misa isikhashana</translation>
 <translation id="1181037720776840403">Susa</translation>
 <translation id="1192844206376121885">Lokhu kuzosusa yonke idatha namakhukhi agcinwe ngu <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Itimu eluhlaza okotshani</translation>
 <translation id="1201402288615127009">Okulandelayo</translation>
 <translation id="1240190568154816272">Amathiphu we-Chrome</translation>
 <translation id="1242008676835033345">Ishumekwe ku-<ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="3167868116600277716">Okuphakelayo kwesivumbululi</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> idatha egciniwe</translation>
 <translation id="3199078925536734975">Kuvunyelwe ngalesi sikhathi • Ukulinganisela</translation>
+<translation id="3208584281581115441">Hlola manje</translation>
 <translation id="321187648315454507">Ukuze uvumele i-<ph name="APP_NAME" /> ukuthi ikuthumele izaziso, vula nezaziso <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Indawo ayivunyelwe</translation>
 <translation id="3227137524299004712">Imakrofoni</translation>
@@ -264,6 +267,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="3721953990244350188">Chitha futhi ubonise isenzo esilandelayo esitholakalayo</translation>
 <translation id="3744111561329211289">Ukuvumelanisa ngemuva</translation>
 <translation id="3746834924069123416">Bheka amathebhu engeziwe amuva</translation>
+<translation id="3753618528540214374">Itimu yeViridian</translation>
 <translation id="3763247130972274048">Thepha kabili ividiyo ngakwesokunxele noma ngakwesokudla ukuze weqe nge-10s</translation>
 <translation id="3776508619697147021">Amasayithi angacela ukulanda ngokuzenzakalela amafayela amaningi</translation>
 <translation id="3779154269823594982">Shintsha amaphasiwedi</translation>
@@ -273,6 +277,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="381841723434055211">Izinombolo zefoni</translation>
 <translation id="3823453485268218808">Ifonti yeMono</translation>
 <translation id="3826050100957962900">Ukungena ngemvume kwenkampani yangaphandle</translation>
+<translation id="3831065134033923230">Hlola amaphasiwedi akho alondoloziwe</translation>
 <translation id="3835233591525155343">Umsebenzi wedivayisi yakho</translation>
 <translation id="3843916486309149084">I-Chrome izophinde ivimbele amakhukhi namuhla</translation>
 <translation id="385051799172605136">Emuva</translation>
@@ -475,6 +480,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="5998071268779572583">Vula okuphakelayo kokuthola</translation>
 <translation id="6012967556075291653">Isinqamuleli esiphiniwe</translation>
 <translation id="6015775454662021376">Lawula ukufinyelela leli sayithi kudivayisi yakho</translation>
+<translation id="6022659036123304283">Yenza i-Chrome kube eyakho</translation>
 <translation id="6040143037577758943">Vala</translation>
 <translation id="6042308850641462728">Okuningi</translation>
 <translation id="6064125863973209585">Ukulandwa okuqediwe</translation>
@@ -492,13 +498,13 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="6196640612572343990">Vimba amakhukhi enkampani yangaphandle</translation>
 <translation id="6205314730813004066">Ubumfihlo besikhangiso</translation>
 <translation id="6207207788774442484">Sula idatha futhi usethe kabusha izimvume</translation>
+<translation id="6218508144653756827">Itimu yeFuchsia</translation>
 <translation id="6231752747840485235">Khipha i-'<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">Thepha i-app Yebhrawuza &gt; iChrome</translation>
 <translation id="6260830281887654268">Ishidi eliphansi lamaqoqo etimu yokubukeka kwekhasi lethebhu entsha livulwe ngobude obuphakathi nendawo</translation>
 <translation id="6262191102408817757">Ngokusekelwe kuthebhu yakho yokugcina</translation>
 <translation id="6262279340360821358">I-<ph name="PERMISSION_1" /> ne-<ph name="PERMISSION_2" /> kuvinjelwe</translation>
 <translation id="6270391203985052864">Amasayithi angacela ukuthumela izaziso</translation>
-<translation id="6278428485366576908">Itimu</translation>
 <translation id="6295158916970320988">Wonke amasayithi</translation>
 <translation id="6320088164292336938">Dlidliza</translation>
 <translation id="6367753977865761591">Vimba ukungena ngemvume kwenkampani engahlangene ngqo kusayithi elithile.</translation>
@@ -525,6 +531,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="659938948789980540">{COUNT,plural, =1{Amakhukhi avunyelwe angu-<ph name="RWS_MEMBERS_COUNT" /> kusayithi ka-<ph name="RWS_OWNER" />}one{Amakhukhi avunyelwe angu-<ph name="RWS_MEMBERS_COUNT" /> kumasayithi ka-<ph name="RWS_OWNER" />}other{Amakhukhi avunyelwe angu-<ph name="RWS_MEMBERS_COUNT" /> kumasayithi ka-<ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Okuqukethwe okuvikelekile</translation>
+<translation id="6619015782482868078">Itimu ye-Aqua</translation>
 <translation id="662080504995468778">Hlala</translation>
 <translation id="6630443592285535486">Thayipha i-hex lapha</translation>
 <translation id="6635327442719709864">Lapho evuliwe, amasayithi angacela ukusebenzisa izibulo lochunge lokuxhumana. Lapho evaliwe, amasayithi ngeke akwazi ukusebenzisa izibulo lochunge lokuxhumana.</translation>
@@ -553,6 +560,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="6945221475159498467">Khetha</translation>
 <translation id="6950072572526089586">Isayithi oyivakashelayo ikwazi ukulondoloza ulwazi olumayelana nokwenzayo ukuze isebenze ngendlela oyilindele — ngokwesibonelo, ukukugcina ungene ngemvume kusayithi noma ukulondoloza izinto kubhasikidi wakho wokuthenga. Ngokuvamile amasayithi alondoloza lolu lwazi okwesikhashana kudivayisi yakho.</translation>
 <translation id="6965382102122355670">KULUNGILE</translation>
+<translation id="6980507581230208647">Itimu yeRose</translation>
 <translation id="6980861169612950611">Sula idatha yesayithi? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Ukufinyeleleka</translation>
 <translation id="6991142177939282156">Kuvunyelwe • Kusetshenziswa okulinganiselwe</translation>
@@ -581,6 +589,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> kukhethiwe</translation>
 <translation id="7260727271532453612">I-<ph name="PERMISSION_1" /> ne-<ph name="PERMISSION_2" /> kuvunyelwe</translation>
 <translation id="7276071417425470385">Lapho ivuliwe, amasayithi angacela ukusebenzisa amadivayisi ento engekho ngokoqobo. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa amadivayisi ento engekho ngokoqobo.</translation>
+<translation id="7282197670900591579">Itimu yeCitron</translation>
 <translation id="728412880473384942">Amasayithi ayashesha kodwa avikeleke kancane</translation>
 <translation id="7366415735885268578">Engeza isayithi</translation>
 <translation id="7368695150573390554">Noma iyiphi idatha engekho ku-inthanethi izosulwa</translation>
@@ -619,6 +628,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="7688240020069572972">Fihla ikhadi lamacebiso leChrome</translation>
 <translation id="7719367874908701697">Ukusondezwa kwekhasi</translation>
 <translation id="775043444390799886">Hoxisa imvume</translation>
+<translation id="7758789811447313947">Itimu yevayolethi</translation>
 <translation id="7759147511335618829">Izilawuli zezinsiza ze-MIDI nokuhlela kabusha</translation>
 <translation id="7781829728241885113">Izolo</translation>
 <translation id="7791543448312431591">Engeza</translation>
@@ -637,6 +647,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="7940722705963108451">Ngikhumbuze</translation>
 <translation id="7948081750384205628">Funda kabanzi nge-<ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Amasayithi angacela ukubona umbhalo nezithombe kubhodi lakho lokunamathisela</translation>
+<translation id="798299424881500862">Itimu ewolintshi</translation>
 <translation id="7986741934819883144">Khetha oxhumana naye</translation>
 <translation id="7990211076305263060">Lapho ivuliwe, amasayithi angacela ukusebenzisa imakrofoni yakho. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa imakrofoni yakho.</translation>
 <translation id="8007176423574883786">Kuvaliwe kule divayisi</translation>

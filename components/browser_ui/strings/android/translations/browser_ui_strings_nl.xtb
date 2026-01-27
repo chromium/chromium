@@ -3,6 +3,7 @@
 <translationbundle lang="nl">
 <translation id="1006017844123154345">Online openen</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
+<translation id="1046742265332833834">Blauw thema</translation>
 <translation id="1070329623210597193">Bestanden die deze site mag bekijken of bewerken</translation>
 <translation id="1073417869336441572">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Je kunt vragen om de desktopversie van sites te bekijken</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1192844206376121885">Hiermee verwijder je alle gegevens en cookies die zijn opgeslagen door <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Groen thema</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1240190568154816272">Chrome-tips</translation>
 <translation id="1242008676835033345">Ingesloten in <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> opgeslagen gegevens</translation>
 <translation id="3199078925536734975">Deze keer toegestaan • Geschat</translation>
+<translation id="3208584281581115441">Nu checken</translation>
 <translation id="321187648315454507">Als je wilt dat <ph name="APP_NAME" /> je meldingen stuurt, moet je meldingen ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Locatie niet toegestaan</translation>
 <translation id="3227137524299004712">Microfoon</translation>
@@ -264,6 +267,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3721953990244350188">Sluiten en volgende beschikbare actie tonen</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3746834924069123416">Meer recente tabbladen bekijken</translation>
+<translation id="3753618528540214374">Viridiaan thema</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
 <translation id="3776508619697147021">Sites kunnen vragen of ze automatisch meerdere bestanden mogen downloaden</translation>
 <translation id="3779154269823594982">Wachtwoorden wijzigen</translation>
@@ -273,6 +277,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="381841723434055211">Telefoonnummers</translation>
 <translation id="3823453485268218808">Lettertype Mono</translation>
 <translation id="3826050100957962900">Externe login</translation>
+<translation id="3831065134033923230">Je opgeslagen wachtwoorden checken</translation>
 <translation id="3835233591525155343">Je apparaatgebruik</translation>
 <translation id="3843916486309149084">Chrome blokkeert vandaag weer cookies</translation>
 <translation id="385051799172605136">Terug</translation>
@@ -475,6 +480,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="5998071268779572583">Discover-feed aanzetten</translation>
 <translation id="6012967556075291653">Vastgezette snelkoppeling</translation>
 <translation id="6015775454662021376">De toegang van deze site tot je apparaat beheren</translation>
+<translation id="6022659036123304283">Personaliseer Chrome voor jou</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6042308850641462728">Meer</translation>
 <translation id="6064125863973209585">Voltooide downloads</translation>
@@ -492,13 +498,13 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6205314730813004066">Advertentieprivacy</translation>
 <translation id="6207207788774442484">Gegevens verwijderen en rechten resetten</translation>
+<translation id="6218508144653756827">Fuchsiakleurig thema</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" /> verwijderen?</translation>
 <translation id="6234351944623978659">Tik op Browser-app &gt; Chrome</translation>
 <translation id="6260830281887654268">Blad onderaan voor themacollecties voor het uiterlijk van de pagina Nieuw tabblad is op halve hoogte geopend</translation>
 <translation id="6262191102408817757">Op basis van je laatste tabblad</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> geblokkeerd</translation>
 <translation id="6270391203985052864">Sites kunnen vragen of ze je meldingen mogen sturen</translation>
-<translation id="6278428485366576908">Thema</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6320088164292336938">Trillen</translation>
 <translation id="6367753977865761591">Externe login blokkeren voor een specifieke site.</translation>
@@ -525,6 +531,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies toegestaan voor <ph name="RWS_MEMBERS_COUNT" /> site van <ph name="RWS_OWNER" />}other{Cookies toegestaan voor <ph name="RWS_MEMBERS_COUNT" /> sites van <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beschermde content</translation>
+<translation id="6619015782482868078">Aquablauw thema</translation>
 <translation id="662080504995468778">Blijven</translation>
 <translation id="6630443592285535486">Typ hier de hexadecimale code</translation>
 <translation id="6635327442719709864">Als deze optie aanstaat, kunnen sites vragen of ze seriële poorten mogen gebruiken. Staat de optie uit, dan kunnen sites geen seriële poorten gebruiken.</translation>
@@ -553,6 +560,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6950072572526089586">Een site die je bezoekt, kan informatie over je activiteiten opslaan zodat deze werkt zoals verwacht, bijvoorbeeld om je ingelogd te houden op een site of artikelen in je winkelwagen op te slaan. Sites slaan deze informatie vaak tijdelijk op je apparaat op.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Rooskleurig thema</translation>
 <translation id="6980861169612950611">Sitegegevens verwijderen? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="6991142177939282156">Toegestaan • Geschatte locatie gebruiken</translation>
@@ -581,6 +589,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> geselecteerd</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> toegestaan</translation>
 <translation id="7276071417425470385">Als deze optie aanstaat, kunnen sites vragen of ze virtualreality-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen virtualreality-apparaten gebruiken.</translation>
+<translation id="7282197670900591579">Citroenkleurig thema</translation>
 <translation id="728412880473384942">Sites zijn sneller, maar minder goed beveiligd</translation>
 <translation id="7366415735885268578">Een site toevoegen</translation>
 <translation id="7368695150573390554">Alle offline gegevens worden verwijderd</translation>
@@ -619,6 +628,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7688240020069572972">Kaart met Chrome-tips verbergen</translation>
 <translation id="7719367874908701697">Zoomen op pagina</translation>
 <translation id="775043444390799886">Recht intrekken</translation>
+<translation id="7758789811447313947">Paars thema</translation>
 <translation id="7759147511335618829">MIDI-apparaatbediening en -herprogrammering</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
@@ -637,6 +647,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="7940722705963108451">Herinner me eraan</translation>
 <translation id="7948081750384205628">Meer informatie over <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Sites kunnen vragen of ze tekst en afbeeldingen op je klembord mogen bekijken</translation>
+<translation id="798299424881500862">Oranje thema</translation>
 <translation id="7986741934819883144">Een contact selecteren</translation>
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>

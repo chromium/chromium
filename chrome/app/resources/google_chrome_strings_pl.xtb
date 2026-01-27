@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">Uruchamiam Chrome…</translation>
 <translation id="286025080868315611">Dlaczego Chrome blokuje pobieranie niektórych plików</translation>
 <translation id="2861074815332034794">Aktualizuję Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Jesteś zalogowany w Chrome.</translation>
 <translation id="2875053229394024379">Gdy zalogujesz się w Chrome na swoje konto Google, możesz używać swojego profilu Chrome z Gemini. <ph name="BEGIN_LINK" />Jak zalogować się w Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Dowiedz się więcej o tym, <ph name="BEGIN_LINK" />jak Chrome dba o prywatność Twoich danych<ph name="END_LINK" />.</translation>
 <translation id="2885378588091291677">Menedżer zadań</translation>
@@ -326,7 +325,6 @@
 <translation id="4459234553906210702">W ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chrome o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>
 <translation id="4493028449971051158">Błąd uruchamiania: uruchom instalator z uprawnieniami administratora.</translation>
 <translation id="4501471624619070934">Ze względu na ograniczenie dostępu w tym kraju instalacja się nie udała.</translation>
-<translation id="4567424176335768812">Jesteś zalogowany jako <ph name="USER_EMAIL_ADDRESS" />. Teraz możesz korzystać ze swoich zakładek, historii i innych ustawień na wszystkich zalogowanych urządzeniach.</translation>
 <translation id="4571503333518166079">Otwórz ustawienia powiadomień Chrome</translation>
 <translation id="4592634244097223647">Zapytaj Google o ten obraz</translation>
 <translation id="459622048091363950">Gdy Chrome będzie mieć dostęp, strony będą mogły prosić Cię o dostęp.</translation>
@@ -747,7 +745,6 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="8821043148920470810">Aby w przyszłości otrzymywać aktualizacje Google Chrome, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 7.</translation>
 <translation id="8823341990149967727">Chrome jest nieaktualny</translation>
 <translation id="8834965163890861871">Google Chrome próbuje edytować hasła. Aby na to zezwolić, podaj swoje hasło do systemu Windows.</translation>
-<translation id="8843516219908676469">Chrome lepiej rozumie formularze i szybciej je uzupełnia</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome zaleca jego usunięcie}few{Chrome zaleca ich usunięcie}many{Chrome zaleca ich usunięcie}other{Chrome zaleca ich usunięcie}}</translation>
 <translation id="8862326446509486874">Nie masz odpowiednich uprawnień do przeprowadzenia instalacji na poziomie systemowym. Uruchom ponownie program instalacyjny jako administrator.</translation>
 <translation id="8865415417596392024">Dane z Chrome na Twoim koncie</translation>

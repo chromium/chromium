@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> do të hapet në Chrome. Duke vazhduar, ti pranon <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Nuk ke fjalëkalime të ruajtura te "Menaxheri i fjalëkalimeve i Google".</translation>
 <translation id="115483310321669804">Përdor fjalëkalimin <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sinkronizo skedat dhe historikun</translation>
 <translation id="1165109137568919258">Nxirr një fotografi ose shto një imazh nga galeria jote e fotografive për të kërkuar</translation>
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1174479719160874822">Chrome do të kërkojë sajtin për celular kur ekrani është i ngushtë</translation>
@@ -981,6 +982,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5210286577605176222">Kalo te skeda e mëparshme</translation>
 <translation id="5210365745912300556">Mbyll skedën</translation>
 <translation id="5212800876504289412">Rinis Chrome për të përfunduar këtë ndryshim. Skedat rihapen automatikisht kur e rinis.</translation>
+<translation id="5213114823401215820">Rihap grupin e mbyllur</translation>
 <translation id="5215957675041756913">Kontrollo të dhënat dhe llogarinë tënde</translation>
 <translation id="5218324087477576825">Kërkohet numri i kartës</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> etj. <ph name="SEPARATOR" /> Chrome i hoqi këto leje sepse nuk e ke vizituar së fundi</translation>
@@ -1436,6 +1438,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7020741890149022655">Shto te lista e leximit <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Hape në shfletues</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
+<translation id="7037994709569287156">Bëje Chrome shfletuesin e parazgjedhur</translation>
 <translation id="7053256416619638731">Forco fjalëkalimet e tua në këtë pajisje</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7054588988317389591">Të merren përshkrimet e imazheve?</translation>
@@ -1801,6 +1804,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8458413889418591446">Për t'u kthyer me shpejtësi te sajtet që ke vizituar, sinkronizo historikun dhe skedat</translation>
 <translation id="84594714173170813">Vazhdo të përdorësh të dhënat e Chrome në "Llogarinë tënde të Google"</translation>
 <translation id="8460448946170646641">Shqyrto kontrollet kryesore të privatësisë dhe sigurisë</translation>
+<translation id="8460932807646981183">Menaxho motorët e kërkimit dhe kërkimin në sajte</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
 <translation id="847433688444405067">Shfleto nëpër pajisje</translation>
 <translation id="8477178913400731244">Fshi të dhënat</translation>

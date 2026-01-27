@@ -34,7 +34,6 @@
 <translation id="1356661055722410047">Yangi! Ekrandagi matn va rasmlarni tarjima qilish mumkin</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1397530502368084401">Chromium profillarini boshqarish</translation>
-<translation id="1414495520565016063">Chromium‘ga xush kelibsiz!</translation>
 <translation id="141901961143729572">Fikr-mulohaza qoldiring</translation>
 <translation id="1465192221147974788">Oynani ulashish uchun tizim sozlamalarida Chromium brauzeriga ekranni yozib olish uchun ruxsat bering.</translation>
 <translation id="1478370723027452770">Chrome for Testing yuzasidan yordam olish</translation>
@@ -322,10 +321,8 @@
 <translation id="4510853178268397146">Bu kengaytma axborot jamlashi va ishlatishi kabi maxfiylikka oid ochiqlama joylamagan. Chromium uni olib tashlashni tavsiya qiladi.</translation>
 <translation id="452711251841752011">Chromium brauzeriga xush kelibsiz, yangi oyna ochildi</translation>
 <translation id="4531137820806573936">Chromium atrofingiz xaritasini yaratish va qoʻllaringiz holatini kuzatishga ruxsat olmoqchi</translation>
-<translation id="4534145890176164066">Chromium shakllarni yaxshiroq tushunadi va ularni tezroq toʻldirishi mumkin</translation>
 <translation id="4536805923587466102">Siz allaqachon boshqa Chromium profilidan (<ph name="USER_EMAIL_ADDRESS" />) kirgansiz</translation>
 <translation id="4548534452171747496">Chromium kezish va qidiruvni tezlashtirish uchun sahifalarni oldindan yuklaydi. <ph name="BEGIN_LINK" />Sahifalarni oldindan yuklash haqida batafsil<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Siz <ph name="USER_EMAIL_ADDRESS" /> hisobidan kirtingiz. Barcha xatcho‘plar, brauzer tarixi va boshqa sozlamalaringiz endi bu hisobdan foydalanadigan barcha qurilmalaringizda mavjud.</translation>
 <translation id="4570813286784708942">Chromium bu yuklamani blokladi, chunki Saytlarni xavfsiz kezish funksiyasini faolsizlantirgansiz, shuning uchun bu fayl tekshirilmaydi</translation>
 <translation id="4583692638088316420">Telefonda Chromium orqali Google Lens sinang</translation>
 <translation id="4594305310729380060">Bu qurilmada Parollar menejeriga</translation>

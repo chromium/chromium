@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Bydd <ph name="APP_NAME" /> yn agor yn Chrome. Drwy barhau, rydych yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Google Chrome a ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Nid oes gennych gyfrineiriau sydd wedi'u cadw yn Rheolwr Cyfrineiriau Google.</translation>
 <translation id="115483310321669804">Defnyddio'r cyfrinair <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Cysoni tabiau a hanes</translation>
 <translation id="1165109137568919258">Tynnwch lun neu ychwanegwch lun o'ch oriel luniau i chwilio</translation>
 <translation id="1173894706177603556">Ailenwi</translation>
 <translation id="1174479719160874822">Bydd Chrome yn gofyn am y wefan symudol pan fydd y sgrîn yn gul</translation>
@@ -982,6 +983,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5210286577605176222">Neidio i'r tab blaenorol</translation>
 <translation id="5210365745912300556">Cau'r tab</translation>
 <translation id="5212800876504289412">Ailgychwynwch Chrome i orffen y newid hwn. Mae tabiau'n ailagor yn awtomatig pan fyddwch yn ailgychwyn.</translation>
+<translation id="5213114823401215820">Ailagor grŵp sydd wedi'i gau</translation>
 <translation id="5215957675041756913">Rheoli'ch data a'ch cyfrif</translation>
 <translation id="5218324087477576825">Rhif y cerdyn, gofynnol</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a rhagor <ph name="SEPARATOR" /> Tynnodd Chrome y caniatadau hyn oherwydd nad ydych chi wedi ymweld â nhw yn ddiweddar</translation>
@@ -1437,6 +1439,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7020741890149022655">Ychwanegu at restr <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Agor mewn porwr</translation>
 <translation id="7029809446516969842">Cyfrineiriau</translation>
+<translation id="7037994709569287156">Gwneud Chrome yn ddiofyn</translation>
 <translation id="7053256416619638731">Cryfhau eich cyfrineiriau ar y ddyfais hon</translation>
 <translation id="7053983685419859001">Rhwystro</translation>
 <translation id="7054588988317389591">Cael disgrifiadau lluniau?</translation>
@@ -1802,6 +1805,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8458413889418591446">I fynd yn ôl yn gyflym i wefannau rydych wedi ymweld â nhw, cysonwch eich hanes a'ch tabiau</translation>
 <translation id="84594714173170813">Parhewch i ddefnyddio'r data Chrome yn eich Cyfrif Google</translation>
 <translation id="8460448946170646641">Adolygu rheolyddion diogelwch a phreifatrwydd allweddol</translation>
+<translation id="8460932807646981183">Rheoli peiriannau chwilio a chwilio gwefan</translation>
 <translation id="8473863474539038330">Cyfeiriadau a rhagor</translation>
 <translation id="847433688444405067">Pori ar draws dyfeisiau</translation>
 <translation id="8477178913400731244">Dileu data</translation>

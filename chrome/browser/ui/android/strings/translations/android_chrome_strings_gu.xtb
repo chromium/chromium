@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="1154555449933432029">તમે Google Password Managerમાં પાસવર્ડ સાચવેલા નથી.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> પાસવર્ડનો ઉપયોગ કરો</translation>
+<translation id="1161065531352634524">ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="1165109137568919258">શોધવા માટે તમારી ફોટો ગૅલરીમાંથી કોઈ ફોટો લો અથવા છબી ઉમેરો</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1174479719160874822">સ્ક્રીન નાની થાય ત્યારે દરેક વખતે Chrome, મોબાઇલ સાઇટની વિનંતી કરશે</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">પાછલી ટૅબ પર જાઓ</translation>
 <translation id="5210365745912300556">ટૅબ બંધ કરો</translation>
 <translation id="5212800876504289412">આ ફેરફાર પૂર્ણ કરવા માટે Chrome ફરી શરૂ કરો. જ્યારે તમે ફરી શરૂ કરો છો ત્યારે ટૅબ ઑટોમૅટિક રીતે ફરી ખુલે છે.</translation>
+<translation id="5213114823401215820">બંધ કરેલું ગ્રૂપ ફરીથી ખોલો</translation>
 <translation id="5215957675041756913">તમારા ડેટા અને એકાઉન્ટનું નિયંત્રણ કરો</translation>
 <translation id="5218324087477576825">કાર્ડ નંબર (આવશ્યક છે)</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને અન્ય <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે તમે તાજેતરમાં મુલાકાત લીધી ન હતી</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">વાંચન સૂચિમાં ઉમેરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">બ્રાઉઝરમાં ખોલો</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
+<translation id="7037994709569287156">Chromeને ડિફૉલ્ટ બનાવો</translation>
 <translation id="7053256416619638731">આ ડિવાઇસ પર તમારા પાસવર્ડને સશક્ત બનાવો</translation>
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
 <translation id="7054588988317389591">છબીના વર્ણનો મેળવીએ?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">તમે મુલાકાત લીધેલી સાઇટ પર ઝડપથી પાછા જવા માટે, તમારા ઇતિહાસ અને ટૅબને સિંક કરો</translation>
 <translation id="84594714173170813">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="8460448946170646641">પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોનો રિવ્યૂ કરો</translation>
+<translation id="8460932807646981183">શોધ એન્જિન અને સાઇટમાં શોધવાની સુવિધા મેનેજ કરો</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="847433688444405067">સમગ્ર ડિવાઇસ પર બ્રાઉઝ કરો</translation>
 <translation id="8477178913400731244">ડેટા ડિલીટ કરો</translation>

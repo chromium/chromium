@@ -3,6 +3,7 @@
 <translationbundle lang="da">
 <translation id="1006017844123154345">Åbn på nettet</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
+<translation id="1046742265332833834">Blåt tema</translation>
 <translation id="1070329623210597193">Filer, som dette website kan se eller redigere</translation>
 <translation id="1073417869336441572">Hjælp os med at forbedre Chrome ved at fortælle os, hvorfor du har tilladt tredjepartscookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Du kan anmode om at se computerversionen af websites</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1192844206376121885">Denne handling sletter alle data og cookies, der er gemt af <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Grønt tema</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1240190568154816272">Tips til Chrome</translation>
 <translation id="1242008676835033345">Indlejret på <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gemte data</translation>
 <translation id="3199078925536734975">Tilladt denne gang • Omtrentlig</translation>
+<translation id="3208584281581115441">Tjek nu</translation>
 <translation id="321187648315454507">Aktivér også notifikationer i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at sende dig notifikationer.</translation>
 <translation id="3223425961342298674">Adgang til lokation er ikke tilladt</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -264,6 +267,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3721953990244350188">Afvis, og vis næste tilgængelige handling</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3746834924069123416">Se flere seneste faner</translation>
+<translation id="3753618528540214374">Grågrønt tema</translation>
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
 <translation id="3776508619697147021">Websites kan anmode om tilladelse til automatisk at downloade flere filer</translation>
 <translation id="3779154269823594982">Skift adgangskoder</translation>
@@ -273,6 +277,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="381841723434055211">Telefonnumre</translation>
 <translation id="3823453485268218808">Mono-skrifttype</translation>
 <translation id="3826050100957962900">Tredjepartslogin</translation>
+<translation id="3831065134033923230">Tjek dine gemte adgangskoder</translation>
 <translation id="3835233591525155343">Din enhedsbrug</translation>
 <translation id="3843916486309149084">I dag blokerer Chrome cookies igen</translation>
 <translation id="385051799172605136">Tilbage</translation>
@@ -475,6 +480,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="5998071268779572583">Aktivér Discover-feed</translation>
 <translation id="6012967556075291653">Fastgjort genvej</translation>
 <translation id="6015775454662021376">Styr dette websites adgang til din enhed</translation>
+<translation id="6022659036123304283">Gør Chrome til din egen</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6042308850641462728">Mere</translation>
 <translation id="6064125863973209585">Gennemførte downloads</translation>
@@ -492,13 +498,13 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6205314730813004066">Privatliv vedrørende annoncering</translation>
 <translation id="6207207788774442484">Slet data, og nulstil tilladelser</translation>
+<translation id="6218508144653756827">Pink tema</translation>
 <translation id="6231752747840485235">Vil du afinstallere "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Tryk på Browserapp &gt; Chrome</translation>
 <translation id="6260830281887654268">Feltet i bunden, der viser temasamlinger til udseendet af siden Ny fane, er åbnet i halv højde</translation>
 <translation id="6262191102408817757">Baseret på din seneste fane</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev blokeret</translation>
 <translation id="6270391203985052864">Websites kan spørge dig, om de må sende dig notifikationer</translation>
-<translation id="6278428485366576908">Tema</translation>
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6320088164292336938">Vibrer</translation>
 <translation id="6367753977865761591">Bloker tredjepartslogin for et bestemt website.</translation>
@@ -525,6 +531,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}one{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}other{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> websites tilhørende <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet indhold</translation>
+<translation id="6619015782482868078">Turkis tema</translation>
 <translation id="662080504995468778">Bliv her</translation>
 <translation id="6630443592285535486">Angiv hex-kode her</translation>
 <translation id="6635327442719709864">Når denne indstilling er aktiveret, kan websites anmode om at anvende serieporte. Når denne indstilling er deaktiveret, kan websites ikke anvende serieporte.</translation>
@@ -553,6 +560,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6950072572526089586">Et website, du besøger, kan gemme oplysninger om, hvad du foretager dig, så det kan fungere optimalt – f.eks. så du kan forblive logget ind på et website eller gemme varer i din indkøbskurv. Websites gemmer ofte disse oplysninger midlertidigt på din enhed.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Rosa tema</translation>
 <translation id="6980861169612950611">Vil du slette websitedata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="6991142177939282156">Tilladt • Bruger omtrentlig</translation>
@@ -581,6 +589,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er markeret</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>
 <translation id="7276071417425470385">Når dette er slået til, kan websites anmode om tilladelse til at bruge virtual reality-enheder. Når dette er slået fra, kan websites ikke bruge virtual reality-enheder.</translation>
+<translation id="7282197670900591579">Citrongult tema</translation>
 <translation id="728412880473384942">Websites er hurtigere, men mindre sikre</translation>
 <translation id="7366415735885268578">Tilføj et website</translation>
 <translation id="7368695150573390554">Alle offlinedata slettes</translation>
@@ -619,6 +628,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7688240020069572972">Skjul kort med Chrome-tips</translation>
 <translation id="7719367874908701697">Sidezoom</translation>
 <translation id="775043444390799886">Tilbagekald tilladelse</translation>
+<translation id="7758789811447313947">Violet tema</translation>
 <translation id="7759147511335618829">Styring/omprogrammering af MIDI</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Tilføj</translation>
@@ -637,6 +647,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7940722705963108451">Påmind mig</translation>
 <translation id="7948081750384205628">Få flere oplysninger om <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Websites kan anmode om tilladelse til at se tekst og billeder i din udklipsholder</translation>
+<translation id="798299424881500862">Orange tema</translation>
 <translation id="7986741934819883144">Vælg en kontakt</translation>
 <translation id="7990211076305263060">Når dette er slået til, kan websites anmode om at anvende din mikrofon. Når dette er slået fra, kan websites ikke anvende din mikrofon.</translation>
 <translation id="8007176423574883786">Deaktiveret på denne enhed</translation>

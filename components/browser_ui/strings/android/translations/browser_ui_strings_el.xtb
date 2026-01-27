@@ -3,6 +3,7 @@
 <translationbundle lang="el">
 <translation id="1006017844123154345">Άνοιγμα στο διαδίκτυο</translation>
 <translation id="1036348656032585052">Απενεργοποίηση</translation>
+<translation id="1046742265332833834">Μπλε θέμα</translation>
 <translation id="1070329623210597193">Αρχεία που μπορεί να δει ή να επεξεργαστεί αυτός ο ιστότοπος</translation>
 <translation id="1073417869336441572">Βοηθήστε μας να βελτιώσουμε το Chrome εξηγώντας μας τους λόγους για τους οποίους επιτρέψατε τα cookie τρίτου μέρους. <ph name="BEGIN_LINK" />Αποστολή σχολίων<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Μπορείτε να ζητήσετε να βλέπετε την έκδοση για υπολογιστές των ιστοτόπων</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Παύση</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1192844206376121885">Με αυτόν τον τρόπο θα διαγραφούν όλα τα δεδομένα και τα cookie που αποθηκεύτηκαν από το <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Πράσινο θέμα</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1240190568154816272">Συμβουλές για το Chrome</translation>
 <translation id="1242008676835033345">Ενσωματωμένο σε <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Ροή Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> αποθηκευμένα δεδομένα</translation>
 <translation id="3199078925536734975">Επιτράπηκε για αυτή τη φορά • Κατά προσέγγιση</translation>
+<translation id="3208584281581115441">Έλεγχος τώρα</translation>
 <translation id="321187648315454507">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να σας στέλνει ειδοποιήσεις, ενεργοποιήστε επίσης τις ειδοποιήσεις στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Η πρόσβαση στην τοποθεσία δεν επιτράπηκε</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">Παράβλεψη και εμφάνιση επόμενης διαθέσιμης ενέργειας</translation>
 <translation id="3744111561329211289">Συγχρονισμός παρασκηνίου</translation>
 <translation id="3746834924069123416">Εμφάνιση περισσότερων πρόσφατων καρτελών</translation>
+<translation id="3753618528540214374">Γαλαζοπράσινο θέμα</translation>
 <translation id="3763247130972274048">Πατήστε δύο φορές στην αριστερή ή τη δεξιά πλευρά του βίντεο για παράβλεψη 10 δ.</translation>
 <translation id="3776508619697147021">Οι ιστότοποι μπορούν να ζητούν την αυτόματη λήψη πολλών αρχείων</translation>
 <translation id="3779154269823594982">Αλλαγή κωδικών πρόσβασης</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">Αριθμοί τηλεφώνου</translation>
 <translation id="3823453485268218808">Γραμματοσειρά Mono</translation>
 <translation id="3826050100957962900">Σύνδεση τρίτων μερών</translation>
+<translation id="3831065134033923230">Ελέγξτε τους αποθηκευμένους κωδικούς πρόσβασης</translation>
 <translation id="3835233591525155343">Χρήση της συσκευής σας</translation>
 <translation id="3843916486309149084">Το Chrome θα αποκλείσει ξανά τα cookie σήμερα</translation>
 <translation id="385051799172605136">Πίσω</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Ενεργοποίηση ροής Discover</translation>
 <translation id="6012967556075291653">Καρφιτσωμένη συντόμευση</translation>
 <translation id="6015775454662021376">Έλεγχος της πρόσβασης αυτού του ιστοτόπου στη συσκευή σας</translation>
+<translation id="6022659036123304283">Προσαρμόστε το Chrome για εσάς</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6042308850641462728">Περισσότερα</translation>
 <translation id="6064125863973209585">Ολοκληρωμένες λήψεις</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6205314730813004066">Απόρρητο διαφημίσεων</translation>
 <translation id="6207207788774442484">Διαγραφή δεδομένων και επαναφορά αδειών</translation>
+<translation id="6218508144653756827">Φούξια θέμα</translation>
 <translation id="6231752747840485235">Απεγκατάσταση <ph name="APP_NAME" />;</translation>
 <translation id="6234351944623978659">Πατήστε Εφαρμογή προγράμματος περιήγησης &gt; Chrome</translation>
 <translation id="6260830281887654268">Το φύλλο κάτω μέρους με τις συλλογές θεμάτων για την εμφάνιση της σελίδας Νέα καρτέλα άνοιξε σε μισό ύψος</translation>
 <translation id="6262191102408817757">Με βάση την τελευταία σας καρτέλα</translation>
 <translation id="6262279340360821358">Οι άδειες <ph name="PERMISSION_1" /> και <ph name="PERMISSION_2" /> αποκλείστηκαν.</translation>
 <translation id="6270391203985052864">Οι ιστότοποι μπορούν να ζητούν να στέλνουν ειδοποιήσεις.</translation>
-<translation id="6278428485366576908">Θέμα</translation>
 <translation id="6295158916970320988">Όλοι οι ιστότοποι</translation>
 <translation id="6320088164292336938">Δόνηση</translation>
 <translation id="6367753977865761591">Αποκλεισμός σύνδεσης τρίτου μέρους για έναν συγκεκριμένο ιστότοπο.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{Επιτρέπονται τα cookie για <ph name="RWS_MEMBERS_COUNT" /> ιστότοπο <ph name="RWS_OWNER" />}other{Επιτρέπονται τα cookie για <ph name="RWS_MEMBERS_COUNT" /> ιστοτόπους <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Προστατ. περιεχ.</translation>
+<translation id="6619015782482868078">Θέμα άκουα</translation>
 <translation id="662080504995468778">Παραμονή</translation>
 <translation id="6630443592285535486">Πληκτρολογήστε το hex εδώ</translation>
 <translation id="6635327442719709864">Όταν είναι ενεργοποιημένη αυτή η επιλογή, οι ιστότοποι μπορούν να ζητήσουν να χρησιμοποιήσουν σειριακές θύρες. Όταν είναι απενεργοποιημένη αυτή η επιλογή, οι ιστότοποι δεν μπορούν να χρησιμοποιήσουν σειριακές θύρες.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6950072572526089586">Ένας ιστότοπος που επισκέπτεστε μπορεί να αποθηκεύει πληροφορίες σχετικά με τις ενέργειές σας έτσι ώστε να λειτουργεί με τον αναμενόμενο τρόπο, για παράδειγμα, για τη διατήρηση της σύνδεσής σας σε έναν ιστότοπο ή για την αποθήκευση στοιχείων στο καλάθι αγορών σας. Συχνά οι ιστότοποι αποθηκεύουν προσωρινά αυτές τις πληροφορίες στη συσκευή σας.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Μπεζ ροζ θέμα</translation>
 <translation id="6980861169612950611">Διαγραφή δεδομένων ιστοτόπου; <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Προσβασιμότητα</translation>
 <translation id="6991142177939282156">Επιτρέπεται • Χρήση κατά προσέγγιση</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378">Επιλέχθηκαν <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Οι άδειες <ph name="PERMISSION_1" /> και <ph name="PERMISSION_2" /> επιτράπηκαν.</translation>
 <translation id="7276071417425470385">Όταν είναι ενεργοποιημένη αυτή η επιλογή, οι ιστότοποι μπορούν να ζητήσουν να χρησιμοποιήσουν συσκευές εικονικής πραγματικότητας. Όταν είναι απενεργοποιημένη αυτή η επιλογή, οι ιστότοποι δεν μπορούν να χρησιμοποιήσουν συσκευές εικονικής πραγματικότητας.</translation>
+<translation id="7282197670900591579">Θέμα κίτρο</translation>
 <translation id="728412880473384942">Οι ιστότοποι είναι πιο γρήγοροι αλλά λιγότερο ασφαλείς</translation>
 <translation id="7366415735885268578">Προσθήκη ιστοτόπου</translation>
 <translation id="7368695150573390554">Τυχόν δεδομένα εκτός σύνδεσης θα διαγραφούν</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Απόκρυψη κάρτας συμβουλών Chrome</translation>
 <translation id="7719367874908701697">Εστίαση σελίδας</translation>
 <translation id="775043444390799886">Ανάκληση άδειας</translation>
+<translation id="7758789811447313947">Βιολετί θέμα</translation>
 <translation id="7759147511335618829">Έλεγχος και επαναπρ. συσκ. MIDI</translation>
 <translation id="7781829728241885113">Χθες</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">Υπενθύμιση</translation>
 <translation id="7948081750384205628">Μάθετε περισσότερα σχετικά με τη ρύθμιση <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Οι ιστότοποι μπορούν να ζητούν να βλέπουν το κείμενο και τις εικόνες στο πρόχειρο</translation>
+<translation id="798299424881500862">Πορτοκαλί θέμα</translation>
 <translation id="7986741934819883144">Επιλογή επαφής</translation>
 <translation id="7990211076305263060">Όταν είναι ενεργοποιημένη αυτή η επιλογή, οι ιστότοποι μπορούν να ζητήσουν να χρησιμοποιήσουν το μικρόφωνό σας. Όταν είναι απενεργοποιημένη αυτή η επιλογή, οι ιστότοποι δεν μπορούν να χρησιμοποιήσουν το μικρόφωνό σας.</translation>
 <translation id="8007176423574883786">Έχει απενεργοποιηθεί για αυτήν τη συσκευή</translation>

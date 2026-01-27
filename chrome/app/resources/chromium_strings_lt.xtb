@@ -37,7 +37,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1356661055722410047">Naujiena! Galite versti ir tekstą, ir vaizdus ekrane</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="1397530502368084401">&amp;Tvarkyti „Chromium“ profilius</translation>
-<translation id="1414495520565016063">Esate prisijungę prie „Chromium“.</translation>
 <translation id="141901961143729572">Pasidalykite mintimis</translation>
 <translation id="1465192221147974788">Jei norite bendrinti langą, sistemos nustatymuose leiskite įrašyti „Chromium“ ekrano vaizdą.</translation>
 <translation id="1478370723027452770">Gauti pagalbos dėl „Chrome for Testing“</translation>
@@ -327,10 +326,8 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4510853178268397146">Šis plėtinys nepaskelbė privatumo praktikos, pvz., kaip renka ir naudoja duomenis. „Chromium“ rekomenduoja jį pašalinti.</translation>
 <translation id="452711251841752011">Sveiki, tai – „Chromium“; atidarytas naujas naršyklės langas</translation>
 <translation id="4531137820806573936">„Chromium“ reikia leidimo susieti jūsų aplinką ir stebėti jūsų rankas</translation>
-<translation id="4534145890176164066">„Chromium“ geriau supranta formas ir gali greičiau jas automatiškai užpildyti</translation>
 <translation id="4536805923587466102">Jau esate prisijungę kaip <ph name="USER_EMAIL_ADDRESS" /> kitame „Chromium“ profilyje</translation>
 <translation id="4548534452171747496">„Chromium“ iš anksto įkelia puslapius, kad būtų galima sparčiau naršyti ir ieškoti. <ph name="BEGIN_LINK" />Sužinokite daugiau apie išankstinį puslapių įkėlimą<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Esate prisijungę kaip <ph name="USER_EMAIL_ADDRESS" />. Dabar galite pasiekti savo žymes, istoriją ir kitus nustatymus visuose įrenginiuose, kuriuose esate prisijungę.</translation>
 <translation id="4570813286784708942">„Chromium“ užblokavo šį atsisiuntimą, nes išjungėte Saugaus naršymo funkciją ir failo nepavyko patvirtinti</translation>
 <translation id="4583692638088316420">Galimybė išbandyti „Google Lens“ naudojant „Chromium“ telefone</translation>
 <translation id="4594305310729380060">Slaptažodžių tvarkyklei šiame įrenginyje</translation>

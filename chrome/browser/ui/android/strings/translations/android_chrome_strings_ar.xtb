@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">‏ليس لديك كلمات مرور محفوظة في "مدير كلمات المرور في Google".</translation>
 <translation id="115483310321669804">استخدام كلمة المرور "<ph name="PASSWORD" />"</translation>
+<translation id="1161065531352634524">مزامنة علامات التبويب والسجلّ</translation>
 <translation id="1165109137568919258">التقِط صورة أو أضِف صورة من معرض الصور للبحث</translation>
 <translation id="1173894706177603556">إعادة تسمية</translation>
 <translation id="1174479719160874822">‏سيطلب Chrome الوصول إلى الموقع الإلكتروني المخصّص للأجهزة الجوالة إذا كان حجم الشاشة صغيرًا</translation>
@@ -982,6 +983,7 @@
 <translation id="5210286577605176222">الانتقال السريع إلى علامة التبويب السابقة</translation>
 <translation id="5210365745912300556">إغلاق علامة التبويب</translation>
 <translation id="5212800876504289412">‏يجب إعادة تشغيل Chrome لإكمال هذا التغيير. وتتم إعادة فتح علامات التبويب تلقائيًا عند إعادة التشغيل.</translation>
+<translation id="5213114823401215820">إعادة فتح مجموعة تم إغلاقها</translation>
 <translation id="5215957675041756913">التحكّم في بياناتك وحسابك</translation>
 <translation id="5218324087477576825">رقم البطاقة، مطلوب إدخاله</translation>
 <translation id="5221437554987713282">‏<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وأذونات أخرى <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنك لم تزُر هذا الموقع الإلكتروني مؤخرًا</translation>
@@ -1437,6 +1439,7 @@
 <translation id="7020741890149022655">الإضافة إلى قائمة القراءة <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">فتح في المتصفح</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
+<translation id="7037994709569287156">‏ضبط Chrome كمتصفِّح تلقائي</translation>
 <translation id="7053256416619638731">تعزيز أمان كلمات المرور على هذا الجهاز</translation>
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7054588988317389591">هل تريد عرض أوصاف الصور؟</translation>
@@ -1804,6 +1807,7 @@
 <translation id="8458413889418591446">للانتقال بسرعة إلى المواقع الإلكترونية التي زرتها، ما عليك سوى مزامنة علامات التبويب والسجلّ</translation>
 <translation id="84594714173170813">‏يمكنك مواصلة استخدام بيانات Chrome في حسابك على Google</translation>
 <translation id="8460448946170646641">مراجعة العناصر الرئيسية للتحكّم في الخصوصية والأمان</translation>
+<translation id="8460932807646981183">إدارة محركات البحث وعمليات البحث في المواقع الإلكترونية</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="847433688444405067">التصفّح على جميع الأجهزة</translation>
 <translation id="8477178913400731244">حذف البيانات</translation>

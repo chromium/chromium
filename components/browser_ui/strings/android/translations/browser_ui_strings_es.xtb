@@ -3,6 +3,7 @@
 <translationbundle lang="es">
 <translation id="1006017844123154345">Abrir versión online</translation>
 <translation id="1036348656032585052">Desactivar</translation>
+<translation id="1046742265332833834">Tema azul</translation>
 <translation id="1070329623210597193">Archivos que este sitio puede ver o editar</translation>
 <translation id="1073417869336441572">Ayúdanos a mejorar Chrome indicándonos por qué has permitido el uso de cookies de terceros. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puedes pedir ver la versión para ordenadores de los sitios</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1192844206376121885">Esta acción eliminará todos los datos y las cookies almacenados por <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1240190568154816272">Consejos de Chrome</translation>
 <translation id="1242008676835033345">Insertada en <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de datos almacenados</translation>
 <translation id="3199078925536734975">Permitido esta vez • Aproximada</translation>
+<translation id="3208584281581115441">Comprobar ahora</translation>
 <translation id="321187648315454507">Para que <ph name="APP_NAME" /> pueda enviarte notificaciones, actívalas también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Ubicación no permitida</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -264,6 +267,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="3721953990244350188">Cerrar y mostrar la siguiente acción disponible</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3746834924069123416">Ver más pestañas recientes</translation>
+<translation id="3753618528540214374">Tema viridián</translation>
 <translation id="3763247130972274048">Toca dos veces a la derecha o a la izquierda del vídeo para saltar 10 s</translation>
 <translation id="3776508619697147021">Los sitios pueden solicitar permiso para descargar varios archivos automáticamente</translation>
 <translation id="3779154269823594982">Cambiar contraseñas</translation>
@@ -273,6 +277,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="381841723434055211">Números de teléfono</translation>
 <translation id="3823453485268218808">Fuente Mono</translation>
 <translation id="3826050100957962900">Inicio de sesión de terceros</translation>
+<translation id="3831065134033923230">Comprobar las contraseñas guardadas</translation>
 <translation id="3835233591525155343">Uso de tu dispositivo</translation>
 <translation id="3843916486309149084">Chrome volverá a bloquear las cookies hoy</translation>
 <translation id="385051799172605136">Volver</translation>
@@ -475,6 +480,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="5998071268779572583">Activar feed de Discover</translation>
 <translation id="6012967556075291653">Combinación de teclas fijada</translation>
 <translation id="6015775454662021376">Controla el acceso de este sitio web a tu dispositivo</translation>
+<translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
 <translation id="6064125863973209585">Descargas completadas</translation>
@@ -492,13 +498,13 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6205314730813004066">Privacidad en la publicidad</translation>
 <translation id="6207207788774442484">Eliminar datos y restablecer permisos</translation>
+<translation id="6218508144653756827">Tema fucsia</translation>
 <translation id="6231752747840485235">¿Desinstalar <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Toca Aplicación de navegador &gt; Chrome</translation>
 <translation id="6260830281887654268">Hoja inferior de colecciones de temas del aspecto de la página Nueva pestaña abierta a media altura</translation>
 <translation id="6262191102408817757">Basadas en tu última pestaña</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> bloqueados</translation>
 <translation id="6270391203985052864">Los sitios pueden preguntarte si quieres que te envíen notificaciones</translation>
-<translation id="6278428485366576908">Tema</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6367753977865761591">Bloquea el inicio de sesión de terceros en un sitio específico.</translation>
@@ -525,6 +531,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidas en <ph name="RWS_MEMBERS_COUNT" /> sitio de <ph name="RWS_OWNER" />}other{Cookies permitidas en <ph name="RWS_MEMBERS_COUNT" /> sitios de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenido protegido</translation>
+<translation id="6619015782482868078">Tema aguamarina</translation>
 <translation id="662080504995468778">Seguir aquí</translation>
 <translation id="6630443592285535486">Escribe el hexadecimal aquí</translation>
 <translation id="6635327442719709864">Si se activa, los sitios pueden solicitar permiso para usar puertos serie. Si se desactiva, los sitios no pueden usar los puertos serie.</translation>
@@ -553,6 +560,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6950072572526089586">Un sitio que visites puede guardar información sobre lo que estés haciendo para funcionar como cabría esperar; por ejemplo, para mantener tu sesión iniciada en un sitio o para guardar artículos en tu carrito de la compra. Los sitios suelen guardar esta información en tu dispositivo de forma temporal.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6980507581230208647">Tema rosa</translation>
 <translation id="6980861169612950611">¿Eliminar datos del sitio <ph name="SITE_NAME" />?</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="6991142177939282156">Permitida • Usando aproximada</translation>
@@ -581,6 +589,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> permitidos</translation>
 <translation id="7276071417425470385">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos de realidad virtual. Si está desactivada, los sitios no pueden usar dispositivos de realidad virtual.</translation>
+<translation id="7282197670900591579">Tema mostaza</translation>
 <translation id="728412880473384942">Los sitios son más rápidos, pero menos seguros</translation>
 <translation id="7366415735885268578">Añadir un sitio</translation>
 <translation id="7368695150573390554">Se eliminarán todos los datos offline</translation>
@@ -619,6 +628,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="7688240020069572972">Ocultar tarjeta de consejos de Chrome</translation>
 <translation id="7719367874908701697">Zoom de la página</translation>
 <translation id="775043444390799886">Revocar permiso</translation>
+<translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759147511335618829">Controlar y reprogramar MIDI</translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7791543448312431591">Añadir</translation>
@@ -637,6 +647,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="7940722705963108451">Recuérdamelo</translation>
 <translation id="7948081750384205628">Más información sobre <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Los sitios pueden solicitar permiso para ver texto e imágenes del portapapeles</translation>
+<translation id="798299424881500862">Tema naranja</translation>
 <translation id="7986741934819883144">Selecciona un contacto</translation>
 <translation id="7990211076305263060">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar tu micrófono. Si está desactivada, los sitios no pueden usar tu micrófono.</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>

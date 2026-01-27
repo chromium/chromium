@@ -34,7 +34,6 @@
 <translation id="1356661055722410047">Yeni! Ekranınızdaki metinleri ve resimleri çevirebilirsiniz</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1397530502368084401">&amp;Chromium Profillerini Yönetin</translation>
-<translation id="1414495520565016063">Chromium'da oturum açtınız!</translation>
 <translation id="141901961143729572">Düşüncelerinizi paylaşın</translation>
 <translation id="1465192221147974788">Pencerenizi paylaşmak için Sistem Ayarları'nda Chromium'un ekranı kaydetmesine izin verin.</translation>
 <translation id="1478370723027452770">Chrome for Testing ile ilgili yardım alın</translation>
@@ -322,10 +321,8 @@
 <translation id="4510853178268397146">Bu uzantı, verileri nasıl topladığı ve kullandığı gibi gizlilik uygulamalarını yayınlamadı. Chromium bunu kaldırmanızı öneriyor.</translation>
 <translation id="452711251841752011">Chromium'a hoş geldiniz; yeni tarayıcı penceresi açıldı</translation>
 <translation id="4531137820806573936">Çevrenizin haritasını çıkarması ve ellerinizi takip etmesi için Chromium'a izin vermeniz gerekir.</translation>
-<translation id="4534145890176164066">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir.</translation>
 <translation id="4536805923587466102">Başka bir Chromium profilinde <ph name="USER_EMAIL_ADDRESS" /> olarak zaten oturum açmış durumdasınız.</translation>
 <translation id="4548534452171747496">Chromium, sayfaları önceden yükleyerek internette gezinme ve arama işlemlerini hızlandırır. <ph name="BEGIN_LINK" />Önceden yükleme sayfaları hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
-<translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Şimdi oturum açtığınız tüm cihazlarda yer işaretlerinize, geçmişinize ve diğer ayarlarınıza erişebilirsiniz.</translation>
 <translation id="4570813286784708942">Güvenli Tarama'yı devre dışı bıraktığınız ve dosya doğrulanamadığı için Chromium bu indirme işlemini engelledi</translation>
 <translation id="4583692638088316420">Telefonunuzda Chromium ile Google Lens'i deneyin</translation>
 <translation id="4594305310729380060">Bu cihazdaki Şifre Yöneticisi'ne</translation>

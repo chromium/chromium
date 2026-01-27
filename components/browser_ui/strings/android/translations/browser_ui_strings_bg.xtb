@@ -3,6 +3,7 @@
 <translationbundle lang="bg">
 <translation id="1006017844123154345">Отваряне онлайн</translation>
 <translation id="1036348656032585052">Изключване</translation>
+<translation id="1046742265332833834">Синя тема</translation>
 <translation id="1070329623210597193">Файлове, които този сайт може да преглежда или редактира</translation>
 <translation id="1073417869336441572">Помогнете ни да подобрим Chrome, като ни кажете защо разрешихте „бисквитките“ на трети страни. <ph name="BEGIN_LINK" />Изпращане на отзиви<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Можете да поискате да видите настолната версия на сайтовете</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1192844206376121885">Всички данни и „бисквитки“, съхранявани от <ph name="ORIGIN" />, ще бъдат изтрити.</translation>
+<translation id="1199963004393929848">Зелена тема</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1240190568154816272">Съвети за Chrome</translation>
 <translation id="1242008676835033345">Вграден в <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Емисия Discover</translation>
 <translation id="3198916472715691905">Съхранявани данни: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">Разрешено този път • Приблизително</translation>
+<translation id="3208584281581115441">Проверка сега</translation>
 <translation id="321187648315454507">За да разрешите на <ph name="APP_NAME" /> да ви изпраща известия, те трябва да бъдат включени и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Достъпът до местоположението не е разрешен</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">Отхвърляне и показване на следващото налично действие</translation>
 <translation id="3744111561329211289">Синхронизиране на заден план</translation>
 <translation id="3746834924069123416">Преглед на още скорошни раздели</translation>
+<translation id="3753618528540214374">Изумруденозелена тема</translation>
 <translation id="3763247130972274048">Докоснете два пъти левия или десния край на прозореца с видеоклипа, за да пропуснете 10 сек</translation>
 <translation id="3776508619697147021">Сайтовете могат да извеждат запитвания за автоматично изтегляне на няколко файла</translation>
 <translation id="3779154269823594982">Промяна на паролите</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">Телефонни номера</translation>
 <translation id="3823453485268218808">Непропорционален шрифт</translation>
 <translation id="3826050100957962900">Подкани за вход от трети страни</translation>
+<translation id="3831065134033923230">Проверка на запазените ви пароли</translation>
 <translation id="3835233591525155343">Използването на устройството ви</translation>
 <translation id="3843916486309149084">Chrome ще блокира „бисквитките“ отново днес</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Включване на емисията в Discover</translation>
 <translation id="6012967556075291653">Фиксиран пряк път</translation>
 <translation id="6015775454662021376">Контролирайте достъпа на този сайт до устройството ви</translation>
+<translation id="6022659036123304283">Персонализирайте Chrome според вкуса си</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6042308850641462728">Още</translation>
 <translation id="6064125863973209585">Завършени изтегляния</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="6205314730813004066">Поверителност при рекламите</translation>
 <translation id="6207207788774442484">Изтриване на данните и нулиране на разрешенията</translation>
+<translation id="6218508144653756827">Яркорозова тема</translation>
 <translation id="6231752747840485235">Да се деинсталира ли <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Докоснете „Приложение за браузър &gt; Chrome“.</translation>
 <translation id="6260830281887654268">Долният лист с колекциите с теми за облика на новия раздел в браузъра е отворен на половината височина</translation>
 <translation id="6262191102408817757">Въз основа на последния ви раздел</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> са блокирани</translation>
 <translation id="6270391203985052864">Сайтовете могат да извеждат подкани за изпращане на известия</translation>
-<translation id="6278428485366576908">Тема</translation>
 <translation id="6295158916970320988">Всички сайтове</translation>
 <translation id="6320088164292336938">Вибриране</translation>
 <translation id="6367753977865761591">Блокиране на влизането с профили от трети страни за конкретен сайт.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{„Бисквитките“ са разрешени за <ph name="RWS_MEMBERS_COUNT" /> сайт на <ph name="RWS_OWNER" />}other{„Бисквитките“ са разрешени за <ph name="RWS_MEMBERS_COUNT" /> сайта на <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Защитено съдържание</translation>
+<translation id="6619015782482868078">Тема „Вода“</translation>
 <translation id="662080504995468778">Оставане</translation>
 <translation id="6630443592285535486">Въведете шестнадесетична стойност тук</translation>
 <translation id="6635327442719709864">Когато настройката е включена, сайтовете могат да извеждат запитвания за използване на серийни портове. Когато е изключена, сайтовете не могат да използват серийни портове.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6950072572526089586">Сайтовете, които посещавате, могат да запазват информация за нещата, които правите, така че да работят по очаквания начин – например за да не излизате от профила си в даден сайт или за запазване на артикулите в пазарската ви кошница. Сайтовете често запазват тази информация временно на устройството ви.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Розова тема</translation>
 <translation id="6980861169612950611">Да се изтрият ли данните за сайта? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="6991142177939282156">Разрешено • Използва се приблизителното местоположение</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378">Избрани: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Достъпът до <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> е разрешен</translation>
 <translation id="7276071417425470385">Когато настройката е включена, сайтовете могат да извеждат запитвания за използване на устройства за виртуална реалност. Когато е изключена, сайтовете не могат да използват такива устройства.</translation>
+<translation id="7282197670900591579">Лимоненожълта тема</translation>
 <translation id="728412880473384942">Сайтовете са по-бързи, но не толкова сигурни</translation>
 <translation id="7366415735885268578">Добавяне на сайт</translation>
 <translation id="7368695150573390554">Всички офлайн данни ще бъдат изтрити</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Скриване на картата със съвети за Chrome</translation>
 <translation id="7719367874908701697">Промяна на мащаба на страницата</translation>
 <translation id="775043444390799886">Отмяна на разрешението</translation>
+<translation id="7758789811447313947">Виолетова тема</translation>
 <translation id="7759147511335618829">MIDI у-ва: Контрол. и препрогр.</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавяне</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">Напомняне</translation>
 <translation id="7948081750384205628">Научете повече за <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Сайтовете могат да извеждат запитвания за преглед на текста и изображенията в буферната памет</translation>
+<translation id="798299424881500862">Оранжева тема</translation>
 <translation id="7986741934819883144">Изберете контакт</translation>
 <translation id="7990211076305263060">Когато настройката е включена, сайтовете могат да извеждат запитвания за достъп до микрофона ви. Когато е изключена, сайтовете не могат да използват микрофона ви.</translation>
 <translation id="8007176423574883786">Изключено за това устройство</translation>

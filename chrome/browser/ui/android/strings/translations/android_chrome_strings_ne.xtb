@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="1154555449933432029">तपाईंले Google पासवर्ड म्यानेजरमा कुनै पनि पासवर्ड सेभ गर्नुभएको छैन।</translation>
 <translation id="115483310321669804">पासवर्ड <ph name="PASSWORD" /> प्रयोग गर्नुहोस्</translation>
+<translation id="1161065531352634524">ट्याब र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="1165109137568919258">खोज्नका निम्ति फोटो खिच्नुहोस् वा आफ्नो फोटो ग्यालेरीमा भएको फोटो हाल्नुहोस्</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1174479719160874822">स्क्रिन सानो भएका खण्डमा Chrome ले मोबाइल साइट प्रयोग गर्न अनुरोध गर्ने छ</translation>
@@ -980,6 +981,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5210286577605176222">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="5210365745912300556">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="5212800876504289412">यो परिवर्तन लागू गर्न Chrome रिस्टार्ट गर्नुहोस्। तपाईंले रिस्टार्ट गर्दा ट्याबहरू स्वतः खुल्ने छन्।</translation>
+<translation id="5213114823401215820">बन्द गरिएको समूह फेरि खोल्नुहोस्</translation>
 <translation id="5215957675041756913">आफ्नो जानकारी र खाता नियन्त्रण गर्नुहोस्</translation>
 <translation id="5218324087477576825">कार्ड नम्बर, अनिवार्य</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र अन्य <ph name="SEPARATOR" /> तपाईंले हालसालै यो साइट नखोल्नुभएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
@@ -1435,6 +1437,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7020741890149022655">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्नुहोस् <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउजरमा खाेल्नुहाेस्</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
+<translation id="7037994709569287156">Chrome लाई डिफल्ट ब्राउजरका रूपमा सेट गर्नुहोस्</translation>
 <translation id="7053256416619638731">यो डिभाइसमा सेभ गरिएका आफ्ना पासवर्ड अझ सुरक्षित बनाउनुहोस्</translation>
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
 <translation id="7054588988317389591">फोटोका विवरणहरू प्राप्त गर्न चाहनुहुन्छ?</translation>
@@ -1800,6 +1803,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8458413889418591446">आफूले खोलेका साइटहरू छिटोछरितो रूपमा फेरि खोल्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="84594714173170813">आफ्नो Google खातामा भएको Chrome सम्बन्धी जानकारी प्रयोग गरिराख्नुहोस्</translation>
 <translation id="8460448946170646641">गोपनीयता तथा सुरक्षासम्बन्धी मुख्य नियन्त्रण सुविधाहरूको समीक्षा गर्नुहोस्</translation>
+<translation id="8460932807646981183">साइटमा भएको कुरा खोज्ने सुविधा र सर्च इन्जिन व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8473863474539038330">ठेगाना र थप कुराहरू</translation>
 <translation id="847433688444405067">सबै डिभाइसहरूमा ब्राउज गर्नुहोस्</translation>
 <translation id="8477178913400731244">डेटा मेटाउनुहोस्</translation>

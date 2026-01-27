@@ -3,6 +3,7 @@
 <translationbundle lang="ko">
 <translation id="1006017844123154345">온라인 열기</translation>
 <translation id="1036348656032585052">사용 중지</translation>
+<translation id="1046742265332833834">파란색 테마</translation>
 <translation id="1070329623210597193">이 사이트에서 볼 수 있거나 수정할 수 있는 파일</translation>
 <translation id="1073417869336441572">서드 파티 쿠키를 허용한 이유를 알려주시면 Chrome을 개선하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">사이트의 데스크톱 버전을 표시하도록 요청할 수 있습니다.</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" />에서 저장한 모든 데이터와 쿠키가 삭제됩니다.</translation>
+<translation id="1199963004393929848">초록색 테마</translation>
 <translation id="1201402288615127009">다음</translation>
 <translation id="1240190568154816272">Chrome 도움말</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />에 삽입됨</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">디스커버 피드</translation>
 <translation id="3198916472715691905">저장 데이터 <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">이번에는 허용됨 • 대략적인 위치</translation>
+<translation id="3208584281581115441">지금 확인</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />에서 알림을 전송하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 알림을 사용 설정하세요.</translation>
 <translation id="3223425961342298674">위치가 허용되지 않음</translation>
 <translation id="3227137524299004712">마이크</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">닫기 후 가능한 다음 작업 표시</translation>
 <translation id="3744111561329211289">백그라운드 동기화</translation>
 <translation id="3746834924069123416">최근 탭 더보기</translation>
+<translation id="3753618528540214374">비리디언 테마</translation>
 <translation id="3763247130972274048">10초를 건너뛰려면 동영상 왼쪽이나 오른쪽을 두 번 탭하세요.</translation>
 <translation id="3776508619697147021">사이트에서 여러 파일의 자동 다운로드를 요청할 수 있음</translation>
 <translation id="3779154269823594982">비밀번호 변경</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">전화번호</translation>
 <translation id="3823453485268218808">Mono 글꼴</translation>
 <translation id="3826050100957962900">서드 파티 로그인</translation>
+<translation id="3831065134033923230">저장된 비밀번호 확인하기</translation>
 <translation id="3835233591525155343">기기 사용 여부</translation>
 <translation id="3843916486309149084">오늘 Chrome에서 쿠키를 다시 차단합니다</translation>
 <translation id="385051799172605136">뒤로</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">디스커버 피드 사용 설정</translation>
 <translation id="6012967556075291653">고정된 바로가기</translation>
 <translation id="6015775454662021376">기기에 대한 이 사이트의 액세스를 제어합니다.</translation>
+<translation id="6022659036123304283">나만의 Chrome 만들기</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6042308850641462728">더보기</translation>
 <translation id="6064125863973209585">다운로드 완료</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6207207788774442484">데이터 삭제 및 권한 재설정</translation>
+<translation id="6218508144653756827">푸시아 테마</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' 앱을 제거하시겠습니까?</translation>
 <translation id="6234351944623978659">브라우저 앱 &gt; Chrome을 탭합니다.</translation>
 <translation id="6260830281887654268">새 탭 페이지 모양 테마 모음 하단 시트가 절반 높이로 열림</translation>
 <translation id="6262191102408817757">마지막 탭 기준</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
-<translation id="6278428485366576908">테마</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6320088164292336938">진동</translation>
 <translation id="6367753977865761591">특정 사이트에 대해 서드 파티 로그인을 차단합니다.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 사이트 <ph name="RWS_MEMBERS_COUNT" />개에 쿠키가 허용됨}other{<ph name="RWS_OWNER" /> 사이트 <ph name="RWS_MEMBERS_COUNT" />개에 쿠키가 허용됨}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">보호된 콘텐츠</translation>
+<translation id="6619015782482868078">아쿠아 테마</translation>
 <translation id="662080504995468778">머무르기</translation>
 <translation id="6630443592285535486">여기에 16진수 입력</translation>
 <translation id="6635327442719709864">사용 설정하면 사이트에서 직렬 포트 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 직렬 포트를 사용할 수 없습니다.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">선택</translation>
 <translation id="6950072572526089586">내가 방문하는 사이트에서 로그인 상태를 유지하거나 장바구니에 상품을 저장하는 등 사이트의 정상적인 작동을 위하여 내 활동 정보를 저장할 수 있습니다. 사이트에서는 이 정보를 주로 기기에 임시 저장합니다.</translation>
 <translation id="6965382102122355670">확인</translation>
+<translation id="6980507581230208647">장미 테마</translation>
 <translation id="6980861169612950611"><ph name="SITE_NAME" /> 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="6991142177939282156">허용됨 • 대략적인 위치 사용 중</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />개 선택됨</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 허용됨</translation>
 <translation id="7276071417425470385">사용 설정하면 사이트에서 가상 현실 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 가상 현실 기기를 사용할 수 없습니다.</translation>
+<translation id="7282197670900591579">시트론 테마</translation>
 <translation id="728412880473384942">사이트 속도가 빨라지지만 보안 수준이 낮아집니다.</translation>
 <translation id="7366415735885268578">사이트 추가</translation>
 <translation id="7368695150573390554">오프라인 데이터가 모두 삭제됩니다.</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">Chrome 도움말 카드 숨기기</translation>
 <translation id="7719367874908701697">페이지 확대/축소</translation>
 <translation id="775043444390799886">권한 취소</translation>
+<translation id="7758789811447313947">보라색 테마</translation>
 <translation id="7759147511335618829">MIDI 기기 제어 및 다시 프로그래밍</translation>
 <translation id="7781829728241885113">어제</translation>
 <translation id="7791543448312431591">추가</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">알림</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" />에 관해 자세히 알아보기</translation>
 <translation id="7952708427581814389">사이트에서 클립보드의 텍스트와 이미지를 확인하도록 요청할 수 있음</translation>
+<translation id="798299424881500862">주황색 테마</translation>
 <translation id="7986741934819883144">연락처 선택</translation>
 <translation id="7990211076305263060">사용 설정하면 사이트에서 마이크 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 마이크를 사용할 수 없습니다.</translation>
 <translation id="8007176423574883786">기기에 대해 사용 중지됨</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="en-GB">
 <translation id="1006017844123154345">Open Online</translation>
 <translation id="1036348656032585052">Turn off</translation>
+<translation id="1046742265332833834">Blue theme</translation>
 <translation id="1070329623210597193">Files this site can view or edit</translation>
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">You can ask to see the desktop version of sites</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1192844206376121885">This will delete all data and cookies stored by <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Green theme</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1240190568154816272">Chrome tips</translation>
 <translation id="1242008676835033345">Embedded on <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3167868116600277716">Discover feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
 <translation id="3199078925536734975">Allowed this time • Approximate</translation>
+<translation id="3208584281581115441">Check now</translation>
 <translation id="321187648315454507">To let <ph name="APP_NAME" /> send you notifications, also turn on notifications in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Location not allowed</translation>
 <translation id="3227137524299004712">Microphone</translation>
@@ -264,6 +267,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3721953990244350188">Dismiss and show next available action</translation>
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3746834924069123416">See more recent tabs</translation>
+<translation id="3753618528540214374">Viridian theme</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
 <translation id="3776508619697147021">Sites can ask to automatically download multiple files</translation>
 <translation id="3779154269823594982">Change passwords</translation>
@@ -273,6 +277,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="381841723434055211">Phone numbers</translation>
 <translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
+<translation id="3831065134033923230">Check your saved passwords</translation>
 <translation id="3835233591525155343">Your device use</translation>
 <translation id="3843916486309149084">Chrome will block cookies again today</translation>
 <translation id="385051799172605136">Back</translation>
@@ -475,6 +480,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5998071268779572583">Turn on Discover feed</translation>
 <translation id="6012967556075291653">Pinned shortcut</translation>
 <translation id="6015775454662021376">Control this site's access to your device</translation>
+<translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6042308850641462728">More</translation>
 <translation id="6064125863973209585">Completed downloads</translation>
@@ -492,13 +498,13 @@ Advanced Protection controls these Chrome settings:
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
 <translation id="6207207788774442484">Delete data and reset permissions</translation>
+<translation id="6218508144653756827">Fuchsia theme</translation>
 <translation id="6231752747840485235">Uninstall '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">Tap Browser app &gt; Chrome</translation>
 <translation id="6260830281887654268">New tab page appearance theme collections bottom sheet opened at half height</translation>
 <translation id="6262191102408817757">Based on your last tab</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> blocked</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
-<translation id="6278428485366576908">Theme</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6320088164292336938">Vibrate</translation>
 <translation id="6367753977865761591">Block third-party sign-in for a specific site.</translation>
@@ -525,6 +531,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> site}other{Cookies allowed for <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> sites}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Protected content</translation>
+<translation id="6619015782482868078">Aqua theme</translation>
 <translation id="662080504995468778">Stay</translation>
 <translation id="6630443592285535486">Type hex here</translation>
 <translation id="6635327442719709864">When on, sites can ask to use serial ports. When off, sites can't use serial ports.</translation>
@@ -553,6 +560,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="6945221475159498467">Select</translation>
 <translation id="6950072572526089586">A site you visit can save info about what you’re doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping basket. Often sites save this info temporarily on your device.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Rose theme</translation>
 <translation id="6980861169612950611">Delete site data? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6991142177939282156">Allowed • Using approximate</translation>
@@ -581,6 +589,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selected</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> allowed</translation>
 <translation id="7276071417425470385">When on, sites can ask to use virtual reality devices. When off, sites can't use virtual reality devices.</translation>
+<translation id="7282197670900591579">Citron theme</translation>
 <translation id="728412880473384942">Sites are faster but less secure</translation>
 <translation id="7366415735885268578">Add a site</translation>
 <translation id="7368695150573390554">Any offline data will be deleted</translation>
@@ -619,6 +628,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7688240020069572972">Hide Chrome tips card</translation>
 <translation id="7719367874908701697">Page zoom</translation>
 <translation id="775043444390799886">Revoke permission</translation>
+<translation id="7758789811447313947">Violet theme</translation>
 <translation id="7759147511335618829">MIDI device control and reprogramming</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7791543448312431591">Add</translation>
@@ -637,6 +647,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7940722705963108451">Remind me</translation>
 <translation id="7948081750384205628">Learn more about <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Sites can ask to see text and images on your clipboard</translation>
+<translation id="798299424881500862">Orange theme</translation>
 <translation id="7986741934819883144">Select a contact</translation>
 <translation id="7990211076305263060">When on, sites can ask to use your microphone. When off, sites can't use your microphone.</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>

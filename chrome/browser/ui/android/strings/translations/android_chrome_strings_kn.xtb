@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
 <translation id="1154555449933432029">ನೀವು Google Password Manager ನಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್‌ ಮಾಡಲಾಗಿಲ್ಲ.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
+<translation id="1161065531352634524">ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="1165109137568919258">ಹುಡುಕಲು ಫೋಟೋ ತೆಗೆದುಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ ಫೋಟೋ ಗ್ಯಾಲರಿಯಿಂದ ಚಿತ್ರವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
 <translation id="1174479719160874822">ಸ್ಕ್ರೀನ್ ಕಿರಿದಾಗಿರುವಾಗ ಮೊಬೈಲ್ ಸೈಟ್‌ಗೆ ಬದಲಿಸುವಂತೆ Chrome ವಿನಂತಿಸುತ್ತದೆ</translation>
@@ -980,6 +981,7 @@
 <translation id="5210286577605176222">ಹಿಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="5210365745912300556">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="5212800876504289412">ಈ ಬದಲಾವಣೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು Chrome ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ. ನೀವು ಮರುಪ್ರಾರಂಭಿಸಿದಾಗ ಟ್ಯಾಬ್‌ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮತ್ತೆ ತೆರೆಯುತ್ತವೆ.</translation>
+<translation id="5213114823401215820">ಮುಚ್ಚಿದ ಗುಂಪನ್ನು ಮರುತೆರೆಯಿರಿ</translation>
 <translation id="5215957675041756913">ನಿಮ್ಮ ಡೇಟಾ ಮತ್ತು ಖಾತೆಯನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="5218324087477576825">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನಷ್ಟು <ph name="SEPARATOR" /> ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ ಕಾರಣ Chrome ಈ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ</translation>
@@ -1435,6 +1437,7 @@
 <translation id="7020741890149022655"><ph name="BEGIN_NEW" />ಹೊಸ<ph name="END_NEW" /> ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="7022756207310403729">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
+<translation id="7037994709569287156">Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="7053256416619638731">ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಲಪಡಿಸಿ</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="7054588988317389591">ಚಿತ್ರದ ವಿವರಣೆ ಪಡೆಯಬೇಕೇ?</translation>
@@ -1800,6 +1803,7 @@
 <translation id="8458413889418591446">ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳಿಗೆ ತ್ವರಿತವಾಗಿ ಹಿಂತಿರುಗಲು, ನಿಮ್ಮ ಇತಿಹಾಸ ಮತ್ತು ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="84594714173170813">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾ ಬಳಕೆಯನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="8460448946170646641">ಪ್ರಮುಖ ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತಾ ನಿಯಂತ್ರಣಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="8460932807646981183">ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳು ಮತ್ತು ಸೈಟ್ ಹುಡುಕಾಟವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8473863474539038330">ವಿಳಾಸಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="847433688444405067">ಸಾಧನಗಳಾದ್ಯಂತ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="8477178913400731244">ಡೇಟಾ ಅಳಿಸಿ</translation>

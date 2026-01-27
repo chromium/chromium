@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз.</translation>
 <translation id="1154555449933432029">Сырсөздөрдү башкаргычта сакталган сырсөздөр жок.</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> сырсөзүн колдонуу</translation>
+<translation id="1161065531352634524">Өтмөктөрдү жана таржымалды шайкештирүү</translation>
 <translation id="1165109137568919258">Издөө үчүн сүрөткө тартыңыз же сүрөт галереяңыздан сүрөт кошуңуз</translation>
 <translation id="1173894706177603556">Атын өзгөртүү</translation>
 <translation id="1174479719160874822">Экран тар болгондо Chrome мобилдик түзмөктөгү сайтты колдонууну сурайт</translation>
@@ -981,6 +982,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5210286577605176222">Мурунку өтмөккө секирүү</translation>
 <translation id="5210365745912300556">Өтмөктү жабуу</translation>
 <translation id="5212800876504289412">Өзгөртүүнү бүтүрүү үчүн Chrome'ду өчүрүп күйгүзүңүз Өчүрүп күйгүзгөнүңүздө өтмөктөр автоматтык түрдө кайра ачылат</translation>
+<translation id="5213114823401215820">Жабылган топту кайра ачуу</translation>
 <translation id="5215957675041756913">Маалыматыңыз менен аккаунтуңузду башкарыңыз</translation>
 <translation id="5218324087477576825">Картанын номери, талап кылынат</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана башка <ph name="SEPARATOR" /> Акыркы убакта сайтка кирбегениңизден улам, Chrome бул уруксаттарды өчүрдү</translation>
@@ -1436,6 +1438,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7020741890149022655">Окуу тизмесине кошуу <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Серепчиден ачуу</translation>
 <translation id="7029809446516969842">Сырсөздөр</translation>
+<translation id="7037994709569287156">Chrome'ду демейки серепчи кылуу</translation>
 <translation id="7053256416619638731">Бул түзмөктөгү сырсөздөрдү бекемдеңиз</translation>
 <translation id="7053983685419859001">Бөгөттөө</translation>
 <translation id="7054588988317389591">Сүрөттүн сүрөттөмөлөрүн аласызбы?</translation>
@@ -1801,6 +1804,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8458413889418591446">Баш баккан сайттарга тез кайтуу үчүн таржымал менен өтмөктөрдү шайкештириңиз</translation>
 <translation id="84594714173170813">Google аккаунтуңуздагы Chrome маалыматын колдоно бериңиз</translation>
 <translation id="8460448946170646641">Негизги купуялык жана коопсуздукту көзөмөлдөө каражаттарын карап көрүңүз</translation>
+<translation id="8460932807646981183">Издөө каражаттарын жана сайттан издөөнү башкаруу</translation>
 <translation id="8473863474539038330">Даректер жана башкалар</translation>
 <translation id="847433688444405067">Түзмөктөрдү карап чыгуу</translation>
 <translation id="8477178913400731244">Колдонмодогу нерселер өчүрүлөт</translation>

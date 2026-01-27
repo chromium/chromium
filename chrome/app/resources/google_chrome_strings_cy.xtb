@@ -176,7 +176,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2857540653560290388">Wrthi'n lansio Chrome...</translation>
 <translation id="286025080868315611">Dysgu pam fod Chrome yn rhwystro rhai lawrlwythiadau</translation>
 <translation id="2861074815332034794">Wrthi'n diweddaru Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Rydych wedi mewngofnodi i Chrome!</translation>
 <translation id="2875053229394024379">Pan fyddwch yn mewngofnodi i Chrome gyda'ch Cyfrif Google, gallwch ddefnyddio'ch proffil Chrome gyda Gemini. <ph name="BEGIN_LINK" />Dysgu sut i fewngofnodi i Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Dysgu rhagor am <ph name="BEGIN_LINK" />sut mae Chrome yn cadw eich data yn breifat<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Rheolwr Tasgau</translation>
@@ -331,7 +330,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4459234553906210702">Mae Mesur hysbysebion yn caniatáu i wefannau rydych yn ymweld â nhw ofyn am wybodaeth gan Chrome sy'n helpu'r wefan i fesur perfformiad eu hysbysebion. Mae Mesur hysbysebion yn cyfyngu ar olrhain traws-wefan drwy drosglwyddo cyn lleied o wybodaeth â phosib rhwng gwefannau.</translation>
 <translation id="4493028449971051158">Gwall cychwyn: rhedwch y gosodwr fel gweinyddwr.</translation>
 <translation id="4501471624619070934">Methodd y gosodiad oherwydd bod mynediad wedi'i gyfyngu yn y wlad hon.</translation>
-<translation id="4567424176335768812">Rydych wedi'ch mewngofnodi ar hyn o bryd fel <ph name="USER_EMAIL_ADDRESS" />. Gallwch bellach gael mynediad at eich nodau tudalen, eich hanes, a'ch gosodiadau eraill ar eich holl ddyfeisiau sydd wedi'u mewngofnodi.</translation>
 <translation id="4571503333518166079">Ewch i osodiadau hysbysu Chrome</translation>
 <translation id="4592634244097223647">Gofyn Google am y llun hwn</translation>
 <translation id="459622048091363950">Ar ôl rhoi mynediad i Chrome, bydd modd i wefannau ofyn i chi am fynediad.</translation>
@@ -756,7 +754,6 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="8821043148920470810">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 7.</translation>
 <translation id="8823341990149967727">Mae Chrome yn hen</translation>
 <translation id="8834965163890861871">Mae Google Chrome yn ceisio golygu cyfrineiriau. Rhowch eich cyfrinair Windows i ganiatáu hyn.</translation>
-<translation id="8843516219908676469">Mae Chrome yn deall ffurflenni'n well a gall eu llenwi'n awtomatig yn gyflymach i chi</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Mae Chrome yn argymell eich bod yn ei dynnu}zero{Mae Chrome yn argymell eich bod yn eu tynnu}two{Mae Chrome yn argymell eich bod yn eu tynnu}few{Mae Chrome yn argymell eich bod yn eu tynnu}many{Mae Chrome yn argymell eich bod yn eu tynnu}other{Mae Chrome yn argymell eich bod yn eu tynnu}}</translation>
 <translation id="8862326446509486874">Nid oes gennych yr hawliau priodol ar gyfer gosod ar lefel system. Rhowch gynnig arall ar redeg y gosodwr fel Gweinyddwr.</translation>
 <translation id="8865415417596392024">Data Chrome yn eich cyfrif</translation>

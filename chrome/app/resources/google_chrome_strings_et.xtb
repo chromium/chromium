@@ -174,7 +174,6 @@
 <translation id="2857540653560290388">Chrome'i käivitamine …</translation>
 <translation id="286025080868315611">Vaadake, miks Chrome mõned allalaadimised blokeerib</translation>
 <translation id="2861074815332034794">Chrome’i värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Olete Chrome'i sisse logitud.</translation>
 <translation id="2875053229394024379">Kui logite Chrome'i oma Google'i kontoga sisse, saate Geminiga oma Chrome'i profiili kasutada. <ph name="BEGIN_LINK" />Vaadake, kuidas Chrome'i sisse logida<ph name="END_LINK" />.</translation>
 <translation id="2876628302275096482">Vaadake lisateavet, <ph name="BEGIN_LINK" />kuidas Chrome teie andmeid privaatsena hoiab<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Tegumihaldur</translation>
@@ -329,7 +328,6 @@
 <translation id="4459234553906210702">Reklaamide mõõtmine võimaldab külastatavatel saitidel paluda Chrome'ilt teavet, mis aitab saidil oma reklaamide toimivust mõõta. Reklaamide mõõtmine piirab saitidevahelist jälgimist, edastades saitide vahel võimalikult vähe teavet.</translation>
 <translation id="4493028449971051158">Käivitamisel ilmnes viga: käitage installiprogrammi administraatorina.</translation>
 <translation id="4501471624619070934">Installimine nurjus selle riigi juurdepääsupiirangute tõttu.</translation>
-<translation id="4567424176335768812">Olete sisse logitud aadressiga <ph name="USER_EMAIL_ADDRESS" />. Nüüd on teil juurdepääs oma järjehoidjatele, ajaloole ja muudele seadetele kõigis seadmetes, kuhu olete sisse logitud.</translation>
 <translation id="4571503333518166079">Ava Chrome'i märguandeseaded</translation>
 <translation id="4592634244097223647">Küsige Google'ilt selle pildi kohta</translation>
 <translation id="459622048091363950">Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.</translation>
@@ -752,7 +750,6 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="8821043148920470810">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 7.</translation>
 <translation id="8823341990149967727">Chrome on aegunud</translation>
 <translation id="8834965163890861871">Google Chrome proovib muuta paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
-<translation id="8843516219908676469">Chrome mõistab vorme paremini ja saab need teie eest automaatselt täita</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome soovitab selle eemaldada}other{Chrome soovitab need eemaldada}}</translation>
 <translation id="8862326446509486874">Teil ei ole süsteemi tasemel installimiseks sobivaid õigusi. Proovige installijat administraatorina uuesti käivitada.</translation>
 <translation id="8865415417596392024">Chrome'i andmed teie kontol</translation>

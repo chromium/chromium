@@ -176,7 +176,6 @@
 <translation id="2857540653560290388">正在啟動 Chrome…</translation>
 <translation id="286025080868315611">瞭解 Chrome 封鎖部分下載內容的原因</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">您已登入 Chrome！</translation>
 <translation id="2875053229394024379">以 Google 帳戶登入 Chrome 後，你便可配合 Gemini 使用 Chrome 設定檔。<ph name="BEGIN_LINK" />瞭解如何登入 Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何確保你的資料保密<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">工作管理員</translation>
@@ -330,7 +329,6 @@
 <translation id="4459234553906210702">「廣告評估」允許您瀏覽的網站向 Chrome 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
 <translation id="4493028449971051158">啟動錯誤：請以管理員身分執行安裝程式。</translation>
 <translation id="4501471624619070934">由於此國家/地區有存取限制，因此無法安裝。</translation>
-<translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用您的書籤、記錄和其他設定。</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
 <translation id="4592634244097223647">問　Google 關於此圖片的問題</translation>
 <translation id="459622048091363950">Chrome 獲得存取權後，網站便可向您要求存取權。</translation>
@@ -755,7 +753,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8821043148920470810">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome 版本過舊</translation>
 <translation id="8834965163890861871">Google Chrome 正在嘗試編輯密碼。如果您同意，請輸入 Windows 密碼。</translation>
-<translation id="8843516219908676469">Chrome 可以更準確識別表格內容，更快自動填入相關資料</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome 建議你移除此擴充程式}other{Chrome 建議你移除這些擴充程式}}</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>
 <translation id="8865415417596392024">帳戶中的 Chrome 資料</translation>

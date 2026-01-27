@@ -37,7 +37,6 @@
 <translation id="1356661055722410047">Ново! Може да ги преведувате и текстот и сликите на екранот</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1397530502368084401">&amp;Управувајте со профилите на Chromium</translation>
-<translation id="1414495520565016063">Најавени сте на Chromium!</translation>
 <translation id="141901961143729572">Споделете го вашето мислење</translation>
 <translation id="1465192221147974788">За да го споделите прозорецот, дозволете снимање на екранот за Chromium во System Settings.</translation>
 <translation id="1478370723027452770">Добијте помош со „Chrome за тестирање“</translation>
@@ -327,10 +326,8 @@
 <translation id="4510853178268397146">Екстензијава нема објавено практики за приватност, како на пример, како прибира и користи податоци. Chromium препорачува да ја отстраните.</translation>
 <translation id="452711251841752011">Добре дојдовте на Chromium; отворен е нов прозорец во прелистувачот</translation>
 <translation id="4531137820806573936">Chromium бара дозвола да ја мапира вашата околина и да ги следи вашите раце</translation>
-<translation id="4534145890176164066">Chromium подобро ги разбира формуларите и може да ги пополнува автоматски побрзо за вас</translation>
 <translation id="4536805923587466102">Веќе сте најавени како <ph name="USER_EMAIL_ADDRESS" /> во друг профил на Chromium</translation>
 <translation id="4548534452171747496">Chromium ги вчитува страниците однапред, што овозможува побрзо прелистување и пребарување. <ph name="BEGIN_LINK" />Дознајте повеќе за страниците вчитани однапред<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Најавени сте како: <ph name="USER_EMAIL_ADDRESS" />. Сега може да пристапувате кон вашите обележувачи, историја и други поставки на сите најавени уреди.</translation>
 <translation id="4570813286784708942">Chromium го блокираше преземањево затоа што исклучивте „Безбедно прелистување', па датотеката не може да се потврди</translation>
 <translation id="4583692638088316420">Испробајте ја Google Lens со Chromium на вашиот телефон</translation>
 <translation id="4594305310729380060">На Password Manager на уредов</translation>

@@ -491,7 +491,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1313405956111467313">Automatisk konfigurasjon av proxy-tjener</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Du blir logget av alle nettsteder, inkludert i åpne faner</translation>
-<translation id="1313705515580255288">Bokmerkene, loggen og andre innstillinger synkroniseres til Google-kontoen din.</translation>
 <translation id="1316136264406804862">Søker …</translation>
 <translation id="1316248800168909509">Kunne ikke koble til <ph name="DEVICE" />. Prøv på nytt.</translation>
 <translation id="1316495628809031177">Synkroniseringen er satt på pause</translation>
@@ -6422,7 +6421,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5365881113273618889">Mappen du valgte, inneholder sensitive filer. Er du sikker på at du vil gi «<ph name="APP_NAME" />» permanent skrivetilgang til denne mappen?</translation>
 <translation id="536638840841140142">Ingen</translation>
 <translation id="5368246151595623328">«<ph name="NETWORK_NAME" />» ble lagret fra <ph name="DEVICE_NAME" /></translation>
-<translation id="5368441245151140827">Denne utvidelsen kan ikke lese eller endre nettstedinformasjon eller kjøre i bakgrunnen</translation>
 <translation id="5368720394188453070">Telefonen er låst. Lås den opp for å få tilgang.</translation>
 <translation id="536882527576164740">{0,plural, =1{Inkognito}other{Inkognito (#)}}</translation>
 <translation id="5369694795837229225">Konfigurer Linux-utviklingsmiljø</translation>
@@ -6933,7 +6931,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5725112283692663422">Send tilbakemelding om Lag tema med AI</translation>
 <translation id="5727728807527375859">Utvidelser, programtillegg og temaer kan skade datamaskinen. Er du sikker på at du vil fortsette?</translation>
 <translation id="5728072125198221967">Sammenknyttede Google-tjenester</translation>
-<translation id="5728290366864286776">Denne utvidelsen kan lese og endre nettstedinformasjon eller kjøre i bakgrunnen</translation>
 <translation id="5728450728039149624">Alternativer for Smart Lock-skjermlåsen</translation>
 <translation id="572914206753951782">Sørg for at Chromebooken er oppdatert til nyeste versjon. Start deretter Chromebooken på nytt, og prøv igjen.</translation>
 <translation id="5729712731028706266">&amp;Vis</translation>
@@ -9469,7 +9466,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481358317100446445">Klar</translation>
 <translation id="748138892655239008">Hovedbegrensninger for sertifikat</translation>
-<translation id="7482823403440483089">Forbedret autofyll</translation>
 <translation id="7483732342458943943">Denne linken fungerer ikke</translation>
 <translation id="7484645889979462775">Aldri for dette nettstedet</translation>
 <translation id="7484943269191249363">Du kan bruke alle passnøklene som er lagret i Google Passordlagring, på denne enheten. Du trenger bare å gjøre dette én gang.</translation>
@@ -11453,7 +11449,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8808686172382650546">Katt</translation>
 <translation id="8809147117840417135">Lys blågrønn</translation>
 <translation id="8811862054141704416">Mikrofontilgang for Crostini</translation>
-<translation id="8811923271770626905">Denne utvidelsen kan kjøre i bakgrunnen</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din. Eventuelle duplikater fjernes også.}other{{PASSWORD_COUNT} passord er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din. Eventuelle duplikater fjernes også.}}</translation>
 <translation id="8813199641941291474">Kontroll og omprogrammering av MIDI-enheter er blokkert</translation>
 <translation id="8813698869395535039">Kan ikke logge på <ph name="USERNAME" /></translation>

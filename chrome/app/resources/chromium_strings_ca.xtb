@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">Novetat! Pots traduir tant el text com les imatges en pantalla</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1397530502368084401">&amp;Gestiona els perfils de Chromium</translation>
-<translation id="1414495520565016063">Teniu la sessió iniciada a Chromium.</translation>
 <translation id="141901961143729572">Comparteix què penses</translation>
 <translation id="1465192221147974788">Per compartir la finestra, permet que Chromium gravi la pantalla a Configuració del sistema.</translation>
 <translation id="1478370723027452770">Obtén ajuda amb Chrome for Testing</translation>
@@ -325,10 +324,8 @@
 <translation id="4510853178268397146">Aquesta extensió no ha publicat les seves pràctiques de privadesa, per exemple, la manera com recull i utilitza les dades. Chromium et recomana que la suprimeixis.</translation>
 <translation id="452711251841752011">Et donem la benvinguda a Chromium; s'ha obert una altra finestra del navegador</translation>
 <translation id="4531137820806573936">Chromium necessita permís per mapar el teu entorn i fer un seguiment de les teves mans</translation>
-<translation id="4534145890176164066">Chromium entén millor els formularis i pot emplenar-los automàticament més ràpid</translation>
 <translation id="4536805923587466102">Ja has iniciat la sessió amb <ph name="USER_EMAIL_ADDRESS" /> en un altre perfil de Chromium</translation>
 <translation id="4548534452171747496">Chromium precarrega les pàgines perquè la navegació i la cerca siguin més ràpides. <ph name="BEGIN_LINK" />Obtén més informació sobre la precàrrega de pàgines<ph name="END_LINK" />.</translation>
-<translation id="4567424176335768812">Has iniciat la sessió com a <ph name="USER_EMAIL_ADDRESS" />. Ja pots accedir a les teves adreces d'interès, al teu historial i a altres paràmetres en tots els dispositius en què tens la sessió iniciada.</translation>
 <translation id="4570813286784708942">Chromium ha bloquejat aquesta baixada perquè has desactivat Navegació segura i el fitxer no es pot verificar</translation>
 <translation id="4583692638088316420">Prova Google Lens amb Chromium al telèfon</translation>
 <translation id="4594305310729380060">Al gestor de contrasenyes en aquest dispositiu</translation>

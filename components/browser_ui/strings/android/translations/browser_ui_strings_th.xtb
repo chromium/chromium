@@ -3,6 +3,7 @@
 <translationbundle lang="th">
 <translation id="1006017844123154345">เปิดแบบออนไลน์</translation>
 <translation id="1036348656032585052">ปิด</translation>
+<translation id="1046742265332833834">ธีมสีน้ำเงิน</translation>
 <translation id="1070329623210597193">ไฟล์ที่เว็บไซต์นี้ดูหรือแก้ไขได้</translation>
 <translation id="1073417869336441572">ช่วยปรับปรุง Chrome โดยแจ้งให้เราทราบถึงเหตุผลที่คุณอนุญาตคุกกี้ของบุคคลที่สาม <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">คุณสามารถขอดูเว็บไซต์เวอร์ชันเดสก์ท็อปได้</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1192844206376121885">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN" /> จัดเก็บไว้</translation>
+<translation id="1199963004393929848">ธีมสีเขียว</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1240190568154816272">เคล็ดลับในการใช้ Chrome</translation>
 <translation id="1242008676835033345">ฝังอยู่ใน <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">ฟีดสำรวจ</translation>
 <translation id="3198916472715691905">ข้อมูลที่จัดเก็บ <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3199078925536734975">อนุญาตในครั้งนี้ • โดยประมาณ</translation>
+<translation id="3208584281581115441">ตรวจสอบเลย</translation>
 <translation id="321187648315454507">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ส่งการแจ้งเตือนให้คุณ ให้เปิดใช้การแจ้งเตือนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="3223425961342298674">ไม่อนุญาตให้เข้าถึงตําแหน่ง</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">ปิดและแสดงการดำเนินการถัดไปที่พร้อมใช้งาน</translation>
 <translation id="3744111561329211289">ซิงค์ในแบ็กกราวด์</translation>
 <translation id="3746834924069123416">ดูแท็บล่าสุดเพิ่มเติม</translation>
+<translation id="3753618528540214374">ธีมสีวอรีเดียน</translation>
 <translation id="3763247130972274048">แตะสองครั้งที่ด้านซ้ายหรือขวาของวิดีโอเพื่อข้ามทีละ 10 วินาที</translation>
 <translation id="3776508619697147021">เว็บไซต์ขอดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติได้</translation>
 <translation id="3779154269823594982">เปลี่ยนรหัสผ่าน</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">หมายเลขโทรศัพท์</translation>
 <translation id="3823453485268218808">แบบอักษร Mono</translation>
 <translation id="3826050100957962900">การลงชื่อเข้าใช้ของบุคคลที่สาม</translation>
+<translation id="3831065134033923230">ตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
 <translation id="3835233591525155343">การใช้งานอุปกรณ์ของคุณ</translation>
 <translation id="3843916486309149084">Chrome จะบล็อกคุกกี้อีกครั้งในวันนี้</translation>
 <translation id="385051799172605136">กลับ</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">เปิดฟีดสำรวจ</translation>
 <translation id="6012967556075291653">ทางลัดที่ปักหมุดไว้</translation>
 <translation id="6015775454662021376">ควบคุมสิทธิ์ของเว็บไซต์นี้ในการเข้าถึงอุปกรณ์ของคุณ</translation>
+<translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6064125863973209585">การดาวน์โหลดที่เสร็จสมบูรณ์แล้ว</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6205314730813004066">ความเป็นส่วนตัวเกี่ยวกับโฆษณา</translation>
 <translation id="6207207788774442484">ลบข้อมูลและรีเซ็ตสิทธิ์</translation>
+<translation id="6218508144653756827">ธีมสีบานเย็น</translation>
 <translation id="6231752747840485235">ถอนการติดตั้ง "<ph name="APP_NAME" />" ไหม</translation>
 <translation id="6234351944623978659">แตะแอปเบราว์เซอร์ &gt; Chrome</translation>
 <translation id="6260830281887654268">Bottom Sheet คอลเล็กชันธีมลักษณะที่ปรากฏของหน้าแท็บใหม่เปิดอยู่ครึ่งหน้าจอ</translation>
 <translation id="6262191102408817757">อิงจากแท็บล่าสุด</translation>
 <translation id="6262279340360821358">บล็อก<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">เว็บไซต์ขอส่งการแจ้งเตือนได้</translation>
-<translation id="6278428485366576908">ธีม</translation>
 <translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>
 <translation id="6320088164292336938">สั่น</translation>
 <translation id="6367753977865761591">บล็อกการลงชื่อเข้าใช้ของบุคคลที่สามสำหรับบางเว็บไซต์</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="RWS_OWNER" /> แล้ว <ph name="RWS_MEMBERS_COUNT" /> รายการ}other{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="RWS_OWNER" /> แล้ว <ph name="RWS_MEMBERS_COUNT" /> รายการ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>
+<translation id="6619015782482868078">ธีมสีเขียวอควา</translation>
 <translation id="662080504995468778">อยู่ต่อ</translation>
 <translation id="6630443592285535486">พิมพ์เลขฐานสิบหกที่นี่</translation>
 <translation id="6635327442719709864">เมื่อเปิด เว็บไซต์จะขอใช้พอร์ตอนุกรมได้ เมื่อปิด เว็บไซต์จะใช้พอร์ตอนุกรมไม่ได้</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6950072572526089586">เว็บไซต์ที่คุณเข้าชมสามารถบันทึกข้อมูลเกี่ยวกับสิ่งที่คุณทำอยู่เพื่อให้ใช้งานได้ตามที่ต้องการ เช่น ให้คุณลงชื่อเข้าใช้เว็บไซต์ค้างไว้หรือบันทึกสินค้าไว้ในรถเข็นช็อปปิ้ง เว็บไซต์ต่างๆ มักจะบั⁠น⁠ทึ⁠กข้อมูลนี้ไว้ชั่วคราวในอุปกรณ์</translation>
 <translation id="6965382102122355670">ตกลง</translation>
+<translation id="6980507581230208647">ธีมสีชมพูโรส</translation>
 <translation id="6980861169612950611">ลบข้อมูลเว็บไซต์ใช่ไหม <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
 <translation id="6991142177939282156">อนุญาต • ใช้ตำแหน่งโดยประมาณ</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378">เลือกไว้ <ph name="ITEM_COUNT" /> รายการ</translation>
 <translation id="7260727271532453612">อนุญาตให้เข้าถึง<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์เทคโนโลยีความจริงเสมือน (VR) ได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์เทคโนโลยีความจริงเสมือน (VR) ไม่ได้</translation>
+<translation id="7282197670900591579">ธีมสีเหลืองมะนาว</translation>
 <translation id="728412880473384942">เว็บไซต์เร็วขึ้นแต่ปลอดภัยน้อยลง</translation>
 <translation id="7366415735885268578">เพิ่มเว็บไซต์</translation>
 <translation id="7368695150573390554">ระบบจะลบข้อมูลออฟไลน์ทั้งหมด</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">ซ่อนการ์ดเคล็ดลับในการใช้ Chrome</translation>
 <translation id="7719367874908701697">การซูมหน้า</translation>
 <translation id="775043444390799886">เพิกถอนสิทธิ์</translation>
+<translation id="7758789811447313947">ธีมสีม่วง</translation>
 <translation id="7759147511335618829">ระบบควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">เตือนฉัน</translation>
 <translation id="7948081750384205628">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">เว็บไซต์ขอดูข้อความและรูปภาพในคลิปบอร์ดของคุณได้</translation>
+<translation id="798299424881500862">ธีมสีส้ม</translation>
 <translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
 <translation id="7990211076305263060">เมื่อเปิด เว็บไซต์จะขอใช้ไมโครโฟนของคุณได้ เมื่อปิด เว็บไซต์จะใช้ไมโครโฟนไม่ได้</translation>
 <translation id="8007176423574883786">ปิดสำหรับอุปกรณ์นี้</translation>

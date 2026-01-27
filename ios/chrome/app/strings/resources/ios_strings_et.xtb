@@ -333,6 +333,7 @@
 <translation id="2184272387334793084">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma paroolidele ja muule sisule.</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Puudutage valikut <ph name="BEGIN_BOLD" />Salvesta offlainitud videote hulka<ph name="END_BOLD" /></translation>
+<translation id="2191406283620379491">Midagi läks väga valesti. Värskendage oma iOS-i versiooni.</translation>
 <translation id="219283042927675668">Grupi vahelehed</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2196428379625389579">Otsi veebist</translation>
@@ -1899,6 +1900,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7958575506592576831">Lehe turvateave</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>
 <translation id="7971136598759319605">Aktiivne 1 päev tagasi</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Proovi</translation>
 <translation id="797588153137233716">Menüü → Ajalugu → Sirvimisandmete kustutamine</translation>
 <translation id="7977451675950311423">Hoiatab teid, kui kasutate parooli, mis on andmetega seotud rikkumise tõttu ohtu sattunud.</translation>

@@ -36,7 +36,6 @@
 <translation id="1356661055722410047">New! 화면의 텍스트와 이미지를 모두 번역할 수 있습니다.</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1397530502368084401">Chromium 프로필 관리(&amp;M)</translation>
-<translation id="1414495520565016063">Chromium에 로그인했습니다.</translation>
 <translation id="141901961143729572">의견 공유</translation>
 <translation id="1465192221147974788">창을 공유하려면 시스템 설정에서 Chromium의 화면 녹화를 허용하세요.</translation>
 <translation id="1478370723027452770">Chrome for Testing 관련 지원받기</translation>
@@ -326,10 +325,8 @@
 <translation id="4510853178268397146">이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다. Chromium에서 삭제할 것을 권장합니다.</translation>
 <translation id="452711251841752011">Chromium에 오신 것을 환영합니다. 새 브라우저 창이 열렸습니다</translation>
 <translation id="4531137820806573936">Chromium에서 주변 환경을 매핑하고 손을 추적하려면 권한이 필요합니다</translation>
-<translation id="4534145890176164066">Chromium이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다.</translation>
 <translation id="4536805923587466102">이미 다른 Chromium 프로필에 <ph name="USER_EMAIL_ADDRESS" /> 계정으로 로그인되어 있습니다</translation>
 <translation id="4548534452171747496">Chromium에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다. <ph name="BEGIN_LINK" />페이지 미리 로드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되어 있습니다. 이제 로그인한 모든 기기에서 북마크, 방문 기록 및 기타 설정에 액세스할 수 있습니다.</translation>
 <translation id="4570813286784708942">사용자가 세이프 브라우징을 사용 중지했으며 파일을 확인할 수 없기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="4583692638088316420">휴대전화에서 Chromium으로 Google 렌즈를 사용해 보세요</translation>
 <translation id="4594305310729380060">기기의 비밀번호 관리자에 저장합니다.</translation>

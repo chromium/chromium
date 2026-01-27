@@ -37,7 +37,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1356661055722410047">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1397530502368084401">&amp;Pamahalaan ang Mga Profile sa Chromium</translation>
-<translation id="1414495520565016063">Naka-sign in ka sa Chromium!</translation>
 <translation id="141901961143729572">I-share ang iyong mga naiisip</translation>
 <translation id="1465192221147974788">Para i-share ang iyong window, payagan ang pag-record ng screen para sa Chromium sa System Settings.</translation>
 <translation id="1478370723027452770">Humingi ng tulong para sa Chrome na Pang-test</translation>
@@ -327,10 +326,8 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4510853178268397146">Hindi nag-publish ang extension na ito ng mga kagawian sa privacy, gaya ng kung paano ito nangongolekta at gumagamit ng data. Inirerekomenda ng Chromium na alisin mo ito.</translation>
 <translation id="452711251841752011">Welcome sa Chromium; binuksan ang bagong window ng browser</translation>
 <translation id="4531137820806573936">Kailangan ng Chromium ng pahintulot na imapa ang paligid mo at i-track ang iyong mga kamay</translation>
-<translation id="4534145890176164066">Mas naiintindihan ng Chromium ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo</translation>
 <translation id="4536805923587466102">Naka-sign in ka na bilang <ph name="USER_EMAIL_ADDRESS" /> sa ibang profile sa Chromium</translation>
 <translation id="4548534452171747496">Nagpe-preload ang Chromium ng mga page na mas nagpapabilis sa pag-browse at paghahanap. <ph name="BEGIN_LINK" />Matuto pa tungkol sa pag-preload ng mga page<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Naka-sign in ka bilang <ph name="USER_EMAIL_ADDRESS" />. Maaari mo na ngayong i-access ang iyong mga bookmark, kasaysayan, at iba pang setting sa lahat ng iyong device na naka-sign in.</translation>
 <translation id="4570813286784708942">Na-block ng Chromium ang pag-download na ito dahil in-off mo ang Ligtas na Pag-browse at hindi ma-verify ang file</translation>
 <translation id="4583692638088316420">Subukan ang Google Lens sa Chromium sa iyong telepono</translation>
 <translation id="4594305310729380060">Sa Password Manager sa device na ito</translation>

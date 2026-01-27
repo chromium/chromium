@@ -36,7 +36,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1356661055722410047">Berria! Pantailan bertan itzuli ditzakezu testuak zein irudiak</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1397530502368084401">&amp;Kudeatu Chromium-eko profilak</translation>
-<translation id="1414495520565016063">Chromium-en saioa hasi duzu.</translation>
 <translation id="141901961143729572">Partekatu burutazioak</translation>
 <translation id="1465192221147974788">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren ezarpenetan.</translation>
 <translation id="1478370723027452770">Lortu Chrome for Testing-en inguruko laguntza</translation>
@@ -326,10 +325,8 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4510853178268397146">Luzapen honek ez du argitaratu pribatutasun-jardunbiderik (adibidez, datuak biltzeko eta erabiltzeko duen moduari buruz). Kentzea gomendatzen dizu Chromium-ek.</translation>
 <translation id="452711251841752011">Ongi etorri Chromium-era; beste leiho bat ireki da arakatzailean</translation>
 <translation id="4531137820806573936">Chromium-ek zure inguruaren mapa bat sortzeko eta zure eskuen jarraipena egiteko baimenak behar ditu</translation>
-<translation id="4534145890176164066">Chromium-ek hobeto ulertzen ditu inprimakiak, eta bizkorrago bete ditzake automatikoki</translation>
 <translation id="4536805923587466102">Jadanik hasita daukazu saioa <ph name="USER_EMAIL_ADDRESS" /> gisa Chromium-eko beste profil batean</translation>
 <translation id="4548534452171747496">Chromium-ek orriak aurrez kargatzen ditu, bizkorrago arakatu eta bila dezazun. <ph name="BEGIN_LINK" />Lortu aurrez kargatutako orriei buruzko informazio gehiago<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Laster-markak, historia eta bestelako ezarpenak atzi ditzakezu saioa hasita daukaten gailu guztien bidez.</translation>
 <translation id="4570813286784708942">Chromium-ek deskarga hau blokeatu du, Arakatze segurua desaktibatu duzulako eta fitxategia egiaztatu ezin delako</translation>
 <translation id="4583692638088316420">Probatu Google Lens telefonoan Chromium-ekin</translation>
 <translation id="4594305310729380060">Gailuko Pasahitz-kudeatzailea zerbitzuan</translation>

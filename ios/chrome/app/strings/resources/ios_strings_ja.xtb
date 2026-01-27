@@ -333,6 +333,7 @@
 <translation id="2184272387334793084">ログインすると、保存済みのパスワードなどをすべてのデバイスで使用できるようになります</translation>
 <translation id="2186206192313702726">Google レンズ</translation>
 <translation id="2188993354115194873">[<ph name="BEGIN_BOLD" />"ダウンロード” に保存<ph name="END_BOLD" />] をタップします</translation>
+<translation id="2191406283620379491">エラーが発生しました。iOS のバージョンを更新してください。</translation>
 <translation id="219283042927675668">グループ内のタブ</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2196428379625389579">ウェブで検索</translation>
@@ -1899,6 +1900,7 @@
 <translation id="7958575506592576831">ページのセキュリティ情報</translation>
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7971136598759319605">最終同期: 1 日前</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">試す</translation>
 <translation id="797588153137233716">[メニュー] → [履歴] → [閲覧履歴データを削除]</translation>
 <translation id="7977451675950311423">データ侵害で流出したパスワードを使用すると警告します。</translation>

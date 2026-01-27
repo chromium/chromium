@@ -3,6 +3,7 @@
 <translationbundle lang="hy">
 <translation id="1006017844123154345">Բացել առցանց</translation>
 <translation id="1036348656032585052">Անջատել</translation>
+<translation id="1046742265332833834">Կապույտ թեմա</translation>
 <translation id="1070329623210597193">Ֆայլեր, որոնք այս կայքը կարող է դիտել կամ փոփոխել</translation>
 <translation id="1073417869336441572">Օգնեք մեզ բարելավել Chrome-ը։ Պատմեք մեզ, թե ինչու եք թույլատրել երրորդ կողմի քուքիները։ <ph name="BEGIN_LINK" />Կարծիք հայտնել<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Դուք կարող եք խնդրել տեսնել կայքերի աշխատասեղանային տարբերակը</translation>
@@ -12,7 +13,8 @@
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1192844206376121885">Կջնջվեն <ph name="ORIGIN" /> կայքի պահած բոլոր տվյալներն ու քուքիները։</translation>
-<translation id="1201402288615127009">Հաջորդը</translation>
+<translation id="1199963004393929848">Կանաչ թեմա</translation>
+<translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1240190568154816272">Chrome-ին վերաբերող խորհուրդներ</translation>
 <translation id="1242008676835033345">Զետեղված է <ph name="WEBSITE_URL" /> կայքում</translation>
 <translation id="1263609676484797429">Հպեք «Հավելվածներ»  &gt; «Կանխադրված հավելվածներ»</translation>
@@ -184,7 +186,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="2822354292072154809">Վերակայե՞լ բոլոր կայքերի թույլտվությունները <ph name="CHOSEN_OBJECT_NAME" />-ի համար:</translation>
 <translation id="2850913818900871965">Հայցել բջջային տարբերակը</translation>
 <translation id="2870560284913253234">Կայք</translation>
-<translation id="2874939134665556319">Նախորդը</translation>
+<translation id="2874939134665556319">Նախորդ</translation>
 <translation id="2891975107962658722">Արգելեք կայքին տվյալներ պահել ձեր սարքում</translation>
 <translation id="2903493209154104877">Հասցեներ</translation>
 <translation id="2910701580606108292">Պաշտպանված բովանդակություն նվագարկելու թույլտվություն հարցել</translation>
@@ -215,6 +217,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="3167868116600277716">Discover ֆիդ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> պահված տվյալներ</translation>
 <translation id="3199078925536734975">Թույլատրված է այս անգամ • Մոտավոր</translation>
+<translation id="3208584281581115441">Ստուգել հիմա</translation>
 <translation id="321187648315454507">Որպեսզի <ph name="APP_NAME" />-ին թույլատրեք ձեզ ծանուցումներ ուղարկել, միացրեք նաև ծանուցումները <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="3223425961342298674">Տեղադրության տվյալների օգտագործումն արգելված է</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
@@ -264,6 +267,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="3721953990244350188">Փակել և ցույց տալ հաջորդ հասանելի գործողությունը</translation>
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
 <translation id="3746834924069123416">Տեսնել վերջերս բացված այլ ներդիրներ</translation>
+<translation id="3753618528540214374">Զմրուխտագույն թեմա</translation>
 <translation id="3763247130972274048">10 վ առաջ/հետ անցնելու համար կրկնակի հպեք տեսանյութի աջ/ձախ մասում</translation>
 <translation id="3776508619697147021">Կայքերը կարող են ավտոմատ մի քանի ֆայլ ներբեռնելու թույլտվություն հայցել</translation>
 <translation id="3779154269823594982">Փոխել գաղտնաբառերը</translation>
@@ -273,6 +277,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="381841723434055211">Հեռախոսահամարներ</translation>
 <translation id="3823453485268218808">Տառատեսակ՝ Mono</translation>
 <translation id="3826050100957962900">Մուտք երրորդ կողմի ծառայությունների միջոցով</translation>
+<translation id="3831065134033923230">Ստուգեք ձեր պահված գաղտնաբառերը</translation>
 <translation id="3835233591525155343">Սարքի օգտագործում</translation>
 <translation id="3843916486309149084">Այսօր Chrome-ը կրկին կարգելափակի քուքիները</translation>
 <translation id="385051799172605136">Հետ</translation>
@@ -297,7 +302,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4042597221652780603">Մոտավոր</translation>
-<translation id="4046123991198612571">Հաջորդը</translation>
+<translation id="4046123991198612571">Հաջորդ</translation>
 <translation id="4077310749977440510">Կայքերը սովորաբար կարդում են ձեր սեղմատախտակը այնպիսի գործառույթների համար, ինչպիսին է ձեր պատճենած տեքստի ձևաչափի պահպանումը</translation>
 <translation id="4082080074595021446">Որոշակի կայքերի համար բացառություններն արգելված են, քանի որ Android սարքը բավականաչափ հիշողություն (RAM) չունի։</translation>
 <translation id="4149890623864272035">Իսկապե՞ս ուզում եք ջնջել բոլոր լոկալ տվյալները՝ ներառյալ քուքիները, և զրոյացնել բոլոր թույլտվություններն այս կայքի համար</translation>
@@ -475,6 +480,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="5998071268779572583">Միացնել Discover ֆիդը</translation>
 <translation id="6012967556075291653">Ամրացված դյուրանցում</translation>
 <translation id="6015775454662021376">Կառավարեք այս կայքի՝ ձեր սարքն օգտագործելու թույլտվությունները</translation>
+<translation id="6022659036123304283">Անհատականացրեք Chrome դիտարկիչը</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6042308850641462728">Ավելին</translation>
 <translation id="6064125863973209585">Կատարված ներբեռնումներ</translation>
@@ -492,13 +498,13 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6205314730813004066">Գովազդի գաղտնիություն</translation>
 <translation id="6207207788774442484">Ջնջել տվյալները և զրոյացնել թույլտվությունները</translation>
+<translation id="6218508144653756827">Ֆուքսիա գույնի թեմա</translation>
 <translation id="6231752747840485235">Ապատեղադրե՞լ <ph name="APP_NAME" /> հավելվածը</translation>
 <translation id="6234351944623978659">Հպեք «Դիտարկիչի հավելված» &gt; Chrome</translation>
 <translation id="6260830281887654268">Նոր ներդիրի էջի համար թեմաների հավաքածուներով ներքևի էկրանը բացված է կիսով չափ</translation>
 <translation id="6262191102408817757">Ձեր վերջին ներդիրի հիման վրա</translation>
 <translation id="6262279340360821358">Արգելափակված են՝ «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />»</translation>
 <translation id="6270391203985052864">Կայքերը կարող են խնդրել ծանուցումներ ուղարկել</translation>
-<translation id="6278428485366576908">Թեմա</translation>
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
 <translation id="6320088164292336938">Թրթռոց</translation>
 <translation id="6367753977865761591">Նշեք այն կայքերը, որոնց համար երրորդ կողմի ծառայությունների միջոցով մուտքը պետք է արգելափակվի։</translation>
@@ -525,6 +531,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="659938948789980540">{COUNT,plural, =1{Քուքիները թույլատրված են <ph name="RWS_OWNER" /> տիրույթի <ph name="RWS_MEMBERS_COUNT" /> կայքի համար}one{Քուքիները թույլատրված են <ph name="RWS_OWNER" /> տիրույթի <ph name="RWS_MEMBERS_COUNT" /> կայքի համար}other{Քուքիները թույլատրված են <ph name="RWS_OWNER" /> տիրույթի <ph name="RWS_MEMBERS_COUNT" /> կայքի համար}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ԳԲ</translation>
 <translation id="6612358246767739896">Պաշտպանված բովանդակություն</translation>
+<translation id="6619015782482868078">Ծովակնագույն թեմա</translation>
 <translation id="662080504995468778">Մնալ կայքում</translation>
 <translation id="6630443592285535486">Մուտքագրեք տասնվեցերորդական կոդ</translation>
 <translation id="6635327442719709864">Երբ միացված է, կայքերը կարող են խնդրել օգտագործել սերիական միացք։ Երբ անջատված է, կայքերը չեն կարող օգտագործել սերիական միացք։</translation>
@@ -553,6 +560,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6950072572526089586">Կայքը, որը դուք այցելում եք, կարող է պահել տեղեկություններ ձեր գործողությունների մասին, որպեսզի կարողանա անհատականացնել իր աշխատանքը ձեզ համար։ Օրինակ՝ այն կարող է դուրս չգրել ձեզ կայքից կամ պահպանել գնումների զամբյուղում ավելացված ապրանքները։ Սովորաբար կայքերն այդ տեղեկությունները ժամանակավորապես պահում են ձեր սարքում։</translation>
 <translation id="6965382102122355670">Եղավ</translation>
+<translation id="6980507581230208647">Վարդագույն թեմա</translation>
 <translation id="6980861169612950611">Ջնջե՞լ կայքի տվյալները։ <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Մատչելիությունը</translation>
 <translation id="6991142177939282156">Թույլատրված է • Օգտագործվում է մոտավոր տեղադրությունը</translation>
@@ -581,6 +589,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="7250468141469952378">Ընտրված է <ph name="ITEM_COUNT" /> տարր</translation>
 <translation id="7260727271532453612">Թույլատրված են՝ «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />»</translation>
 <translation id="7276071417425470385">Երբ այս պարամետրը միացված է, կայքերը կարող են վիրտուալ իրականության ձեր սարքերն ու տվյալները օգտագործելու թույլտվություն խնդրել։ Երբ այն անջատված է, կայքերը չեն կարող օգտագործել վիրտուալ իրականության ձեր սարքերն ու տվյալները։</translation>
+<translation id="7282197670900591579">Կիտրոնագույն</translation>
 <translation id="728412880473384942">Կայքերն ավելի արագագործ են, սակայն պակաս անվտանգ</translation>
 <translation id="7366415735885268578">Ավելացրեք կայք</translation>
 <translation id="7368695150573390554">Անցանց ռեժիմում պահված բոլոր տվյալները կջնջվեն</translation>
@@ -619,6 +628,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="7688240020069572972">Թաքցնել Chrome-ի վերաբերյալ խորհուրդներով քարտը</translation>
 <translation id="7719367874908701697">Էջի մասշտաբավորում</translation>
 <translation id="775043444390799886">Չեղարկել թույլտվությունը</translation>
+<translation id="7758789811447313947">Մանուշակագույն թեմա</translation>
 <translation id="7759147511335618829">MIDI կառավարում և վերածրագրավոր․</translation>
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
@@ -637,6 +647,7 @@ Chrome-ի այս կարգավորումները կառավարվում են լր
 <translation id="7940722705963108451">Հիշեցնել ինձ</translation>
 <translation id="7948081750384205628">Իմանալ ավելին «<ph name="SETTING_TITLE" />» կարգավորման մասին</translation>
 <translation id="7952708427581814389">Կայքերը կարող են սեղմատախտակին պատճենված տեքստն ու պատկերները դիտելու թույլտվություն խնդրել</translation>
+<translation id="798299424881500862">Նարնջագույն թեմա</translation>
 <translation id="7986741934819883144">Ընտրեք կոնտակտ</translation>
 <translation id="7990211076305263060">Երբ այս պարամետրը միացված է, կայքերը կարող են խոսափողն օգտագործելու թույլտվություն խնդրել։ Երբ այն անջատված է, կայքերը չեն կարող օգտագործել ձեր խոսափողը։</translation>
 <translation id="8007176423574883786">Անջատված է այս սարքի համար</translation>

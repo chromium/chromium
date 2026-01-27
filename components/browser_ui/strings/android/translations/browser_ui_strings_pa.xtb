@@ -3,6 +3,7 @@
 <translationbundle lang="pa">
 <translation id="1006017844123154345">ਆਨਲਾਈਨ ਖੋਲ੍ਹੋ</translation>
 <translation id="1036348656032585052">ਬੰਦ ਕਰੋ</translation>
+<translation id="1046742265332833834">ਨੀਲਾ ਥੀਮ</translation>
 <translation id="1070329623210597193">ਉਹ ਫ਼ਾਈਲਾਂ ਜਿਨ੍ਹਾਂ ਨੂੰ ਇਹ ਸਾਈਟ ਦੇਖ ਸਕਦੀ ਹੈ ਜਾਂ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="1073417869336441572">ਸਾਨੂੰ ਇਹ ਦੱਸ ਕੇ Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰੋ ਕਿ ਤੁਸੀਂ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਕਿਉਂ ਦਿੱਤੀ ਹੈ। <ph name="BEGIN_LINK" />ਵਿਚਾਰ ਭੇਜੋ<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">ਤੁਸੀਂ ਸਾਈਟਾਂ ਦੇ ਡੈਸਕਟਾਪ ਵਰਜਨ ਨੂੰ ਦੇਖਣ ਲਈ ਪੁੱਛ ਸਕਦੇ ਹੋ</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">ਰੋਕੋ</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1192844206376121885">ਇੰਝ ਕਰਨ ਨਾਲ <ph name="ORIGIN" /> ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ ਸਾਰੇ ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="1199963004393929848">ਹਰਾ ਥੀਮ</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
 <translation id="1240190568154816272">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> 'ਤੇ ਪਰੋਇਆ ਗਿਆ</translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">Discover ਫ਼ੀਡ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ਸਟੋਰ ਕੀਤਾ ਡਾਟਾ</translation>
 <translation id="3199078925536734975">ਇਸ ਸਮੇਂ ਆਗਿਆ ਦਿੱਤੀ ਗਈ • ਅੰਦਾਜ਼ਨ</translation>
+<translation id="3208584281581115441">ਹੁਣ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ਨੂੰ ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਦੇਣ ਲਈ, <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਸੂਚਨਾਵਾਂ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="3223425961342298674">ਟਿਕਾਣੇ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="3227137524299004712">ਮਾਈਕ੍ਰੋਫੋਨ</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">ਖਾਰਜ ਕਰੋ ਅਤੇ ਅਗਲੀ ਕਾਰਵਾਈ ਦਿਖਾਓ</translation>
 <translation id="3744111561329211289">ਬੈਕਗ੍ਰਾਊਂਡ ਸਿੰਕ</translation>
 <translation id="3746834924069123416">ਜ਼ਿਆਦਾ ਹਾਲੀਆ ਟੈਬ ਦੇਖੋ</translation>
+<translation id="3753618528540214374">ਵਿਰੀਡੀਅਨ ਥੀਮ</translation>
 <translation id="3763247130972274048">10 ਸਕਿੰਟ ਅੱਗੇ ਜਾਂ ਪਿੱਛੇ ਜਾਣ ਲਈ ਵੀਡੀਓ 'ਤੇ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਡਬਲ ਟੈਪ ਕਰੋ</translation>
 <translation id="3776508619697147021">ਸਾਈਟਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਈ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="3779154269823594982">ਪਾਸਵਰਡ ਬਦਲੋ</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">ਫ਼ੋਨ ਨੰਬਰ</translation>
 <translation id="3823453485268218808">ਮੋਨੋ ਫ਼ੌਂਟ</translation>
 <translation id="3826050100957962900">ਤੀਜੀ-ਧਿਰ ਦਾ ਸਾਈਨ-ਇਨ</translation>
+<translation id="3831065134033923230">ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੇਖੋ</translation>
 <translation id="3835233591525155343">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ</translation>
 <translation id="3843916486309149084">Chrome ਕੁਕੀਜ਼ ਨੂੰ ਅੱਜ ਦੁਬਾਰਾ ਬਲਾਕ ਕਰ ਦੇਵੇਗਾ</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">Discover ਫ਼ੀਡ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6012967556075291653">ਪਿੰਨ ਕੀਤਾ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="6015775454662021376">ਆਪਣੇ ਡੀਵਾਈਸ ਤੱਕ ਇਸ ਸਾਈਟ ਦੀ ਪਹੁੰਚ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
+<translation id="6022659036123304283">Chrome ਨੂੰ ਆਪਣੇ ਅਨੁਸਾਰ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
 <translation id="6064125863973209585">ਮੁਕੰਮਲ ਹੋਏ ਡਾਊਨਲੋਡ</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">ਤੀਜੀ-ਧਿਰ ਵਾਲੀਆਂ ਕੁੱਕੀਜ਼ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="6205314730813004066">ਵਿਗਿਆਪਨ ਪਰਦੇਦਾਰੀ</translation>
 <translation id="6207207788774442484">ਡਾਟਾ ਮਿਟਾਓ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
+<translation id="6218508144653756827">ਫਿਊਸ਼ਾ ਥੀਮ</translation>
 <translation id="6231752747840485235">ਕੀ '<ph name="APP_NAME" />' ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6234351944623978659">ਐਪ ਬ੍ਰਾਊਜ਼ਰ ਕਰੋ &gt; Chrome 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="6260830281887654268">'ਨਵੀਂ ਟੈਬ' ਪੰਨੇ 'ਤੇ ਦਿਖਣ ਵਾਲੇ ਥੀਮ ਸੰਗ੍ਰਹਿ ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ ਅੱਧੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
 <translation id="6262191102408817757">ਤੁਹਾਡੀ ਪਿਛਲੀ ਟੈਬ ਦੇ ਆਧਾਰ 'ਤੇ</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ਅਤੇ <ph name="PERMISSION_2" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6270391203985052864">ਸਾਈਟਾਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
-<translation id="6278428485366576908">ਥੀਮ</translation>
 <translation id="6295158916970320988">ਸਾਰੀਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="6320088164292336938">ਵਾਈਬ੍ਰੇਟ ਕਰੋ</translation>
 <translation id="6367753977865761591">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੇ ਸਾਈਨ-ਇਨ ਨੂੰ ਬਲਾਕ ਕਰੋ।</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}one{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> ਸਾਈਟਾਂ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
+<translation id="6619015782482868078">ਐਕਵਾ ਥੀਮ</translation>
 <translation id="662080504995468778">ਇੱਥੇ ਰੁਕੋ</translation>
 <translation id="6630443592285535486">ਹੈਕਸ ਕੋਡ ਇੱਥੇ ਟਾਈਪ ਕਰੋ</translation>
 <translation id="6635327442719709864">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਸੀਰੀਅਲ ਪੋਰਟਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਸੀਰੀਅਲ ਪੋਰਟਾਂ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ।</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
 <translation id="6950072572526089586">ਤੁਸੀਂ ਜਿਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਉਹ ਤੁਹਾਡੀਆਂ ਕਾਰਵਾਈਆਂ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰ ਸਕਦੀ ਹੈ, ਤਾਂ ਜੋ ਇਹ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰੇ — ਉਦਾਹਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਕਿਸੇ ਸਾਈਟ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਰੱਖਣ ਜਾਂ ਤੁਹਾਡੇ ਖਰੀਦਦਾਰੀ ਕਾਰਟ ਵਿੱਚ ਆਈਟਮਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਾਸਤੇ। ਅਕਸਰ ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਇਸ ਜਾਣਕਾਰੀ ਨੂੰ ਕੁਝ ਸਮੇਂ ਲਈ ਰੱਖਿਅਤ ਕਰਦੀਆਂ ਹਨ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
+<translation id="6980507581230208647">ਗੁਲਾਬ ਦੇ ਰੰਗ ਵਾਲੀ ਥੀਮ</translation>
 <translation id="6980861169612950611">ਕੀ ਸਾਈਟ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ਪਹੁੰਚਯੋਗਤਾ</translation>
 <translation id="6991142177939282156">ਆਗਿਆ ਦਿੱਤੀ ਗਈ • ਅੰਦਾਜ਼ਨ ਟਿਕਾਣਾ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ਅਤੇ <ph name="PERMISSION_2" /> ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="7276071417425470385">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="7282197670900591579">ਨਿੰਬੂ ਰੰਗਾ ਥੀਮ</translation>
 <translation id="728412880473384942">ਤੇਜ਼ ਸਾਈਟਾਂ, ਪਰ ਘੱਟ ਸੁਰੱਖਿਅਤ</translation>
 <translation id="7366415735885268578">ਕੋਈ ਸਾਈਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7368695150573390554">ਹਰੇਕ ਆਫ਼ਲਾਈਨ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">'Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ' ਕਾਰਡ ਲੁਕਾਓ</translation>
 <translation id="7719367874908701697">ਪੰਨਾ ਜ਼ੂਮ</translation>
 <translation id="775043444390799886">ਇਜਾਜ਼ਤ ਰੱਦ ਕਰੋ</translation>
+<translation id="7758789811447313947">ਬੈਂਗਣੀ ਥੀਮ</translation>
 <translation id="7759147511335618829">MIDI ਡੀਵਾਈਸ ਕੰਟਰੋਲ ਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ</translation>
 <translation id="7781829728241885113">ਕੱਲ੍ਹ</translation>
 <translation id="7791543448312431591">ਜੋੜੋ</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">ਮੈਨੂੰ ਯਾਦ ਕਰਵਾਓ</translation>
 <translation id="7948081750384205628"><ph name="SETTING_TITLE" /> ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="7952708427581814389">ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ ਦੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
+<translation id="798299424881500862">ਸੰਤਰੀ ਥੀਮ</translation>
 <translation id="7986741934819883144">ਇੱਕ ਸੰਪਰਕ ਚੁਣੋ</translation>
 <translation id="7990211076305263060">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ।</translation>
 <translation id="8007176423574883786">ਇਸ ਡਿਵਾਈਸ ਲਈ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>

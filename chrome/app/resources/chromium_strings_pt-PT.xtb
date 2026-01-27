@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">Novo! Pode traduzir texto e imagens no ecrã</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1397530502368084401">&amp;Gerir perfis do Chromium</translation>
-<translation id="1414495520565016063">Tem sessão iniciada no Chromium!</translation>
 <translation id="141901961143729572">Partilhe a sua opinião</translation>
 <translation id="1465192221147974788">Para partilhar a sua janela, permita a gravação de ecrã para o Chromium nas Definições do sistema.</translation>
 <translation id="1478370723027452770">Obter ajuda com o Chrome for Testing</translation>
@@ -325,10 +324,8 @@
 <translation id="4510853178268397146">Esta extensão não publicou Práticas de Privacidade, por exemplo, a forma como recolhe e usa os dados. O Chromium recomenda que a remova.</translation>
 <translation id="452711251841752011">Damos-lhe as boas-vindas ao Chromium; nova janela do navegador aberta</translation>
 <translation id="4531137820806573936">O Chromium precisa de autorização para mapear o ambiente à sua volta e acompanhar as suas mãos</translation>
-<translation id="4534145890176164066">O Chromium compreende melhor os formulários e pode preenchê-los automaticamente de forma mais rápida</translation>
 <translation id="4536805923587466102">Já tem sessão iniciada como <ph name="USER_EMAIL_ADDRESS" /> noutro perfil do Chromium</translation>
 <translation id="4548534452171747496">O Chromium pré-carrega páginas, o que torna a navegação e a pesquisa mais rápidas. <ph name="BEGIN_LINK" />Saiba mais sobre o pré-carregamento de páginas<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Tem sessão iniciada como <ph name="USER_EMAIL_ADDRESS" />. Agora, pode aceder aos seus marcadores, ao histórico e a outras definições em todos os dispositivos com sessão iniciada.</translation>
 <translation id="4570813286784708942">O Chromium bloqueou esta transferência porque desativou a Navegação Segura e não é possível validar o ficheiro</translation>
 <translation id="4583692638088316420">Experimente o Google Lens com o Chromium no telemóvel</translation>
 <translation id="4594305310729380060">No Gestor de Palavras-passe neste dispositivo</translation>

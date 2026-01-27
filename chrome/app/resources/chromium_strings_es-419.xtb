@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">¡Novedad! Puedes traducir texto e imágenes en pantalla</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1397530502368084401">&amp;Administrar perfiles de Chromium</translation>
-<translation id="1414495520565016063">Accediste a Chromium.</translation>
 <translation id="141901961143729572">Comparte tu opinión</translation>
 <translation id="1465192221147974788">Para compartir tu ventana, permite la grabación de pantalla de Chromium en Configuración del sistema.</translation>
 <translation id="1478370723027452770">Obtener ayuda con Chrome for Testing</translation>
@@ -323,10 +322,8 @@
 <translation id="4510853178268397146">Esta extensión no publicó prácticas de privacidad, como la forma en que recopila y usa datos. Chromium te recomienda quitarla.</translation>
 <translation id="452711251841752011">Te damos la bienvenida a Chromium; se abrió una nueva ventana del navegador</translation>
 <translation id="4531137820806573936">Chromium necesita permiso para comprender tu entorno y hacer un seguimiento de tus manos</translation>
-<translation id="4534145890176164066">Chromium comprende mejor los formularios y puede autocompletarlos más rápido</translation>
 <translation id="4536805923587466102">Ya accediste como <ph name="USER_EMAIL_ADDRESS" /> en otro perfil de Chromium</translation>
 <translation id="4548534452171747496">Chromium precarga páginas, lo que agiliza la navegación y las búsquedas. <ph name="BEGIN_LINK" />Obtén más información sobre la precarga de páginas<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Accediste como <ph name="USER_EMAIL_ADDRESS" />. Ahora puedes ir a los favoritos, al historial y a otras opciones en todos los dispositivos en los que hayas accedido.</translation>
 <translation id="4570813286784708942">Chromium bloqueó esta descarga porque desactivaste la Navegación segura y no se puede verificar el archivo</translation>
 <translation id="4583692638088316420">Prueba Google Lens con Chromium en tu teléfono</translation>
 <translation id="4594305310729380060">En el Administrador de contraseñas en este dispositivo</translation>

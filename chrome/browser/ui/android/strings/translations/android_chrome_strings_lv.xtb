@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Google paroļu pārvaldniekā nav saglabāta neviena parole.</translation>
 <translation id="115483310321669804">Izmantot paroli <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Ciļņu un vēstures sinhronizēšana</translation>
 <translation id="1165109137568919258">Lai meklētu, uzņemiet fotoattēlu vai pievienojiet attēlu no fotoattēlu galerijas.</translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
 <translation id="1174479719160874822">Ja ekrāns būs šaurs, Chrome pieprasīs mobilajām ierīcēm paredzēto vietni.</translation>
@@ -981,6 +982,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5210286577605176222">Pāriet uz iepriekšējo cilni</translation>
 <translation id="5210365745912300556">Aizvērt cilni</translation>
 <translation id="5212800876504289412">Lai lietotu šīs izmaiņas, restartējiet pārlūku Chrome. Pēc restartēšanas cilnes tiek automātiski atkal atvērtas.</translation>
+<translation id="5213114823401215820">Atkārtoti atvērt aizvērtu grupu</translation>
 <translation id="5215957675041756913">Datu un konta pārvaldība</translation>
 <translation id="5218324087477576825">Kartes numurs jānorāda obligāti</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un citas <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo pēdējā laikā neesat apmeklējis vietni</translation>
@@ -1436,6 +1438,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7020741890149022655">Iekļaut lasīš. sarakstā <ph name="BEGIN_NEW" />Jauns<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Atvērt pārlūkā</translation>
 <translation id="7029809446516969842">Paroles</translation>
+<translation id="7037994709569287156">Iestatiet Chrome kā noklusējuma pārlūku</translation>
 <translation id="7053256416619638731">Uzlabojiet paroļu drošumu šajā ierīcē</translation>
 <translation id="7053983685419859001">Bloķēt</translation>
 <translation id="7054588988317389591">Vai vēlaties iespējot attēlu aprakstus?</translation>
@@ -1801,6 +1804,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8458413889418591446">Sinhronizējiet vēsturi un cilnes, lai ātri atgrieztos iepriekš apmeklētajās vietnēs</translation>
 <translation id="84594714173170813">Turpiniet izmantot Google kontā saglabātos Chrome datus</translation>
 <translation id="8460448946170646641">Pārskatiet galvenās konfidencialitātes un drošības vadīklas.</translation>
+<translation id="8460932807646981183">Meklētājprogrammu un meklēšanas vietnēs pārvaldība</translation>
 <translation id="8473863474539038330">Adreses un citi dati</translation>
 <translation id="847433688444405067">Pārlūkošana dažādās ierīcēs</translation>
 <translation id="8477178913400731244">Dzēst datus</translation>

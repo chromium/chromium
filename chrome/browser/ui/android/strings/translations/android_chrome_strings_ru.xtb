@@ -41,6 +41,7 @@
 <translation id="1150263420752757504">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">У вас нет сохраненных паролей.</translation>
 <translation id="115483310321669804">Использовать пароль <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Синхронизируйте вкладки и историю</translation>
 <translation id="1165109137568919258">Чтобы выполнить поиск, сделайте фото или добавьте изображение из галереи.</translation>
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1174479719160874822">Если экран узкий, Chrome будет запрашивать мобильный сайт.</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">Перейти к предыдущей вкладке</translation>
 <translation id="5210365745912300556">Закрыть вкладку</translation>
 <translation id="5212800876504289412">Перезапустите Chrome, чтобы применить изменения. После перезапуска ваши вкладки откроются снова.</translation>
+<translation id="5213114823401215820">Восстановить закрытую группу</translation>
 <translation id="5215957675041756913">Управление данными и аккаунтом</translation>
 <translation id="5218324087477576825">Номер карты (обязательно)</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и другие <ph name="SEPARATOR" /> Chrome отозвал эти разрешения у сайта, так как вы давно его не посещали</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">Добавить в список для чтения <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Открыть в браузере</translation>
 <translation id="7029809446516969842">Пароли</translation>
+<translation id="7037994709569287156">Сделать Chrome браузером по умолчанию</translation>
 <translation id="7053256416619638731">На устройстве нужно повысить надежность паролей</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7054588988317389591">Генерировать описания изображений?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">Чтобы быстро возвращаться к просмотренным сайтам, включите синхронизацию истории и вкладок.</translation>
 <translation id="84594714173170813">Продолжайте использовать данные Chrome в аккаунте Google.</translation>
 <translation id="8460448946170646641">Проверка основных настроек конфиденциальности и безопасности</translation>
+<translation id="8460932807646981183">Управление поисковыми системами и поиском по сайту</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="847433688444405067">Всё нужное всегда под рукой</translation>
 <translation id="8477178913400731244">Удалить данные</translation>

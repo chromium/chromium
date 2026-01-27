@@ -176,7 +176,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2857540653560290388">Zagon Chroma …</translation>
 <translation id="286025080868315611">Preberite, zakaj Chrome blokira nekatere prenose</translation>
 <translation id="2861074815332034794">Posodabljanje Chroma (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Zdaj ste prijavljeni v Chrome.</translation>
 <translation id="2875053229394024379">Ko se prijavite v Chrome z računom Google, lahko profil v Chromu uporabljate z Geminijem. <ph name="BEGIN_LINK" />Preberite več o prijavi v Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Preberite več o tem, <ph name="BEGIN_LINK" />kako Chrome zagotavlja zasebnost vaših podatkov<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Upravitelj opravil</translation>
@@ -331,7 +330,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4459234553906210702">Merjenje oglasov spletnim mestom omogoča, da od Chroma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>
 <translation id="4493028449971051158">Napaka pri zagonu: Zaženite namestitveni program kot skrbnik.</translation>
 <translation id="4501471624619070934">Namestitev ni bila uspešna, ker je dostop v tej državi omejen.</translation>
-<translation id="4567424176335768812">Prijavljeni ste kot <ph name="USER_EMAIL_ADDRESS" />. Zdaj imate dostop do zaznamkov, zgodovine in drugih nastavitev v vseh napravah, v katerih ste prijavljeni.</translation>
 <translation id="4571503333518166079">Odpri nastavitve obvestil v Chromu</translation>
 <translation id="4592634244097223647">Vprašajte Google o tej sliki</translation>
 <translation id="459622048091363950">Ko bo imel Chrome dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
@@ -756,7 +754,6 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="8821043148920470810">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 7.</translation>
 <translation id="8823341990149967727">Chrome je zastarel</translation>
 <translation id="8834965163890861871">Google Chrome poskuša urejati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
-<translation id="8843516219908676469">Chrome bolje razume obrazce in jih lahko hitreje samodejno izpolni</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome priporoča, da jo odstranite}one{Chrome priporoča, da jih odstranite}two{Chrome priporoča, da jih odstranite}few{Chrome priporoča, da jih odstranite}other{Chrome priporoča, da jih odstranite}}</translation>
 <translation id="8862326446509486874">Nimate ustreznih pravic za namestitev na ravni sistema. Poskusite znova zagnati namestitveni program kot skrbnik.</translation>
 <translation id="8865415417596392024">Podatki v Chromu v računu</translation>

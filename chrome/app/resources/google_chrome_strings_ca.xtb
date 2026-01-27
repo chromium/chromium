@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">S'està iniciant Chrome...</translation>
 <translation id="286025080868315611">Descobreix per què Chrome bloqueja algunes baixades</translation>
 <translation id="2861074815332034794">S'està actualitzant Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Teniu la sessió iniciada a Chrome.</translation>
 <translation id="2875053229394024379">Si inicies la sessió a Chrome amb el teu Compte de Google, podràs utilitzar el teu perfil de Chrome amb Gemini. <ph name="BEGIN_LINK" />Obtén informació sobre com pots iniciar la sessió a Chrome<ph name="END_LINK" />.</translation>
 <translation id="2876628302275096482">Més informació sobre <ph name="BEGIN_LINK" />com Chrome manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Gestor de tasques</translation>
@@ -327,7 +326,6 @@
 <translation id="4459234553906210702">El mesurament d'anuncis permet als llocs web que visites sol·licitar informació de Chrome que els ajudi a mesurar el rendiment dels anuncis. El mesurament d'anuncis restringeix el seguiment entre llocs web transferint la quantitat mínima possible d'informació entre llocs web.</translation>
 <translation id="4493028449971051158">Error d'arrencada: executa l'instal·lador com a administrador.</translation>
 <translation id="4501471624619070934">La instal·lació ha fallat perquè l'accés està restringit en aquest país.</translation>
-<translation id="4567424176335768812">Has iniciat la sessió com a <ph name="USER_EMAIL_ADDRESS" />. Ja pots accedir a les teves adreces d'interès, al teu historial i a altres paràmetres en tots els dispositius en què tens la sessió iniciada.</translation>
 <translation id="4571503333518166079">Ves a la configuració de notificacions de Chrome</translation>
 <translation id="4592634244097223647">Pregunta a Google sobre aquesta imatge</translation>
 <translation id="459622048091363950">Un cop Chrome tingui accés, els llocs web et podran demanar accés.</translation>
@@ -748,7 +746,6 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="8821043148920470810">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 7.</translation>
 <translation id="8823341990149967727">Chrome no està actualitzat</translation>
 <translation id="8834965163890861871">Google Chrome està provant d'editar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
-<translation id="8843516219908676469">Chrome entén millor els formularis i pot emplenar-los automàticament més ràpid</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome et recomana que la suprimeixis.}other{Chrome et recomana que les suprimeixis.}}</translation>
 <translation id="8862326446509486874">No disposeu dels drets necessaris per instal·lar aplicacions al sistema. Proveu de tornar a executar l'instal·lador com a administrador.</translation>
 <translation id="8865415417596392024">Dades de Chrome al teu compte</translation>

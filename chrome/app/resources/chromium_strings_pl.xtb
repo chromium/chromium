@@ -34,7 +34,6 @@
 <translation id="1356661055722410047">Nowość! Możesz tłumaczyć tekst i obrazy na ekranie</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1397530502368084401">Zarządzaj profila&amp;mi Chromium</translation>
-<translation id="1414495520565016063">Jesteś zalogowany w Chromium.</translation>
 <translation id="141901961143729572">Podziel się swoimi wrażeniami</translation>
 <translation id="1465192221147974788">Aby udostępnić okno, pozwól Chromium na nagrywanie ekranu w ustawieniach systemu.</translation>
 <translation id="1478370723027452770">Pomoc dotycząca Chrome for Testing</translation>
@@ -322,10 +321,8 @@
 <translation id="4510853178268397146">Dla tego rozszerzenia nie opublikowano procedur ochrony prywatności, na przykład informacji o tym, jak zbiera i wykorzystuje ono dane. Chromium zaleca jego usunięcie.</translation>
 <translation id="452711251841752011">Witamy w Chromium. Zostało otwarte nowe okno przeglądarki.</translation>
 <translation id="4531137820806573936">Chromium potrzebuje uprawnień do tworzenia mapy otoczenia i śledzenia rąk</translation>
-<translation id="4534145890176164066">Chromium lepiej rozumie formularze i szybciej je uzupełnia</translation>
 <translation id="4536805923587466102">Jesteś już zalogowany(-a) jako <ph name="USER_EMAIL_ADDRESS" /> w innym profilu Chromium</translation>
 <translation id="4548534452171747496">Chromium wstępnie wczytuje strony, co przyspiesza przeglądanie i wyszukiwanie. <ph name="BEGIN_LINK" />Więcej informacji o wstępnym wczytywaniu stron<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Jesteś zalogowany jako <ph name="USER_EMAIL_ADDRESS" />. Teraz możesz korzystać ze swoich zakładek, historii i innych ustawień na wszystkich zalogowanych urządzeniach.</translation>
 <translation id="4570813286784708942">Pobieranie zostało zablokowane przez Chromium, ponieważ masz wyłączone Bezpieczne przeglądanie i nie można zweryfikować pliku</translation>
 <translation id="4583692638088316420">Wypróbuj Obiektyw Google w Chromium na telefonie</translation>
 <translation id="4594305310729380060">W Menedżerze haseł na tym urządzeniu</translation>

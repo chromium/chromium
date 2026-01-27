@@ -1560,6 +1560,15 @@ Esta política de dispositivo es equivalente a la política del usuario existent
 
       Si habilitas la política o no la estableces, se habilitarán las definiciones de Respuestas rápidas.
       Si inhabilitas la política, se inhabilitarán la definiciones de Respuestas rápidas.</translation>
+<translation id="2095778788783569758">Lista de los tipos de archivos que se deben abrir automáticamente cuando se descargan. Cuando se enumera el tipo de archivo, no debe incluirse el separador principal. Por lo tanto, usa "txt" en lugar de ".txt".
+
+Si habilitas la Navegación segura, esta función revisará los archivos que se pueden abrir automáticamente. Si los archivos no son seguros, no se abrirán.
+
+Si no estableces esta política, solo se abrirán los tipos de archivos que el usuario haya especificado para que se abran automáticamente cuando se descarguen.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="209586405398070749">Canal estable</translation>
 <translation id="2096932573113293941">Solicitar permiso al usuario para ejecutar complementos que requieren autorización</translation>
 <translation id="2098658257603918882">Habilitar informes de uso y datos relacionados con bloqueos</translation>
@@ -3673,19 +3682,7 @@ Si se establece la política <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> 
       La disponibilidad de esta funcionalidad también depende de la política del usuario correspondiente.</translation>
 <translation id="3495602011142234826">Si la estableces como verdadera, esta extensión podrá firmar datos arbitrarios con todas las claves diseñadas para uso corporativo. Si la estableces como falsa, no podrá acceder a ninguna de esas claves, y el usuario tampoco podrá otorgarle permiso para hacerlo. Como excepción, una extensión podrá acceder a la clave exactamente una vez si esa extensión generó la clave.</translation>
 <translation id="3496296378755072552">Administrador de contraseñas</translation>
-<translation id="3496519114741602716">Controla si los usuarios pueden activar el modo de desarrollador en chrome://extensions.
-
-Si no estableces la política, los usuarios podrán activar el modo de desarrollador en la página de extensiones, a menos que la política de <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> se establezca como <ph name="DEVELOPER_TOOLS_DISALLOWED" /> (2).
-Si estableces la política como <ph name="ALLOW" /> (0), los usuarios podrán activar el modo de desarrollador en la página de extensiones.
-Si estableces la política como <ph name="DISALLOW" /> (1), los usuarios no podrán activar el modo de desarrollador en la página de extensiones.
-
-Si estableces esta política, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ya no podrá controlar el modo de desarrollador de extensiones.</translation>
 <translation id="3496761649331792755">Habilitar la barra de favoritos</translation>
-<translation id="3498109920669229084">Si estableces la política, se especificarán las extensiones que no están sujetas a la lista de elementos bloqueados.
-
-       Un valor de <ph name="ALL_EXTENSIONS" /> en una lista de elementos bloqueados significa que se incluyen todas las extensiones en esa lista, y los usuarios solo podrán instalar extensiones que figuren en la lista de elementos permitidos.
-
-       De forma predeterminada, se permiten todas las extensiones. Sin embargo, si prohibiste extensiones mediante una política, usa la lista de extensiones permitidas para cambiar esa política.</translation>
 <translation id="3501606938635483637">Las combinaciones de teclas internacionales están asignadas al glifo de la tecla y no a la ubicación de las teclas en el teclado</translation>
 <translation id="3501850499442915474">Habilitar o inhabilitar el proveedor de <ph name="UIA_NAME" /> a través del framework de variantes.</translation>
 <translation id="3502438748205582075">Inhabilitar Kerberos</translation>
@@ -5323,13 +5320,6 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
       Si no estableces la política, <ph name="PRODUCT_NAME" /> usará el tamaño predeterminado. Los usuarios podrán cambiar la configuración mediante la función experimental --disk-cache-size.
 
       Nota: El valor especificado en esta política se utiliza como pauta para varios subsistemas del navegador almacenados en caché. Por lo tanto, el uso total del disco destinado al almacenamiento en caché será mayor, pero en la misma proporción que el valor especificado.</translation>
-<translation id="4584427961967778141">Si estableces esta política, se controlará la configuración de la administración de extensiones para <ph name="PRODUCT_NAME" />, incluido cualquier parámetro de configuración controlado por políticas existentes relacionadas con extensiones. Esta política sustituye a cualquier política heredada que se haya establecido.
-
-Esta política asigna un ID de extensión o una URL de actualización solo a su configuración específica. Se puede establecer una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones que no tengan una configuración personalizada en esta política. Con una URL de actualización, la configuración se aplica a todas las extensiones con la URL de actualización exacta establecida en el manifiesto de la extensión (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si estableces la función experimental "override_update_url" como verdadera, se instalará la extensión y se actualizará a través de la URL "update" especificada en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará la función experimental "override_update_url" si "update_url" es una URL de Chrome Web Store.
-
-En instancias de <ph name="MS_WIN_NAME" />, las apps y extensiones que no provengan de Chrome Web Store podrán instalarse de manera automática solo si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" />, vinculada a <ph name="MS_AAD_NAME" /> o inscrita en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En instancias de <ph name="MAC_OS_NAME" />, las apps y extensiones que no provengan de Chrome Web Store podrán instalarse de manera automática solo si la instancia está administrada con MDM, vinculada a un dominio a través de MCX o inscrita en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4591366717022345234">Proporcionarles a los usuarios una versión Quick Fix</translation>
 <translation id="4593391169954484940">El hash SHA-256 del archivo.</translation>
 <translation id="4594027034164195984">Permitir que las imágenes de terceros muestren una solicitud de autenticación</translation>
@@ -7223,11 +7213,6 @@ Esta política afecta los flujos de autenticación de acceso y de pantalla de bl
 <translation id="5708969689202733975">Configurar los modos de desbloqueo rápido permitidos</translation>
 <translation id="5714563837055244378">Permitir que Android comparta aplicaciones web</translation>
 <translation id="5715739768416614900">Habilitar las herramientas de solución de problemas del Kiosco</translation>
-<translation id="5716156630400143265">Si estableces <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> como RestoreOnStartupIsURLs, configurar <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> con una lista de URLs determinará qué URLs se abrirán.
-
-Si no la estableces, se abrirá la página Nueva pestaña al iniciar el navegador.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5717973246079053225">Inhabilitar los informes en la nube de navegadores administrados</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
 <translation id="5722577409367087850">Cargar la extensión</translation>
@@ -7412,11 +7397,6 @@ Para obtener más información sobre el manejo de datos de las funciones potenci
           Ten en cuenta que los patrones que incluyas aquí se tratarán como dominios, no como URL, por lo que no debes especificar un esquema ni un puerto.</translation>
 <translation id="5851248808417680865">Usar el Tema oscuro</translation>
 <translation id="585270638818921943">Impide que el usuario use apps para Android de fuentes no confiables</translation>
-<translation id="5859344336338527083">Si estableces esta política, se especificarán las URL que pueden instalar extensiones, apps y temas. Antes de la versión <ph name="PRODUCT_NAME" /> 21, los usuarios podían hacer clic en un vínculo que los dirigía a un archivo *.crx y <ph name="PRODUCT_NAME" /> ofrecía instalar el archivo después de unas advertencias. A partir de esa versión, este tipo de archivos debe descargarse y arrastrarse a la página de configuración de <ph name="PRODUCT_NAME" />. Esta configuración permite especificar las URL que tendrán el flujo de instalación anterior, que es más sencillo.
-
-      Cada elemento en esta lista es un patrón de coincidencia con el formato de extensiones (consulta https://developer.chrome.com/extensions/match_patterns). Los usuarios pueden instalar fácilmente elementos desde cualquier URL que coincida con un elemento de la lista. Estos patrones deben permitir tanto la ubicación del archivo *.crx como la página desde donde se inicia la descarga (la URL de referencia).
-
-      <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> tiene prioridad sobre esta política. Esto quiere decir que no se instalará ninguna extensión de la lista de elementos bloqueados, incluso si proviene de un sitio de esta lista.</translation>
 <translation id="5860010874344790473">Si habilitas la política, se enviarán registros del sistema al servidor de administración para que los administradores puedan supervisarlos.
 
       Si la inhabilitas o no la estableces, no se enviarán registros del sistema.</translation>
@@ -7556,6 +7536,23 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Esta política dejó de estar disponible; usa <ph name="PRINTERS_BULK_BLOCKLIST" /> en su lugar.</translation>
 <translation id="591088232153082363">Carga adaptable de la batería según el patrón de uso</translation>
+<translation id="5913506885872855604">Esto se puede usar para tratar ciertos rangos de direcciones internas como "públicos" y, por lo tanto, no sujetos a las verificaciones de <ph name="LOCAL_NETWORK_ACCES" />. Por el contrario, esto se puede usar para tratar ciertos rangos de direcciones públicas que podrían usarse internamente como "locales" para que estén protegidos por las verificaciones de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Las anulaciones del espacio de direcciones IP tienen dos formas:
+
+[cidr]=[public|local|loopback]
+
+donde [cidr] es un rango de direcciones IP en notación CIDR (consulta la sección 3.1 de https://tools.ietf.org/html/rfc4632 para IPv4 y la sección 2.3 de https://tools.ietf.org/html/rfc4291 para IPv6). Las direcciones IPv6 deben especificarse en formato seguro para URL (entre corchetes). Las anulaciones de CIDR se aplican a todos los puertos.
+
+o
+
+[ip-address]:[port]=[public|local|loopback]
+
+Para obtener más información sobre <ph name="LOCAL_NETWORK_ACCESS" />, consulta https://wicg.github.io/local-network-access/ y https://developer.chrome.com/blog/local-network-access.
+
+Esta política no admite la actualización dinámica.
+
+Las anulaciones del parámetro de línea de comandos --ip-address-space-overrides tienen prioridad sobre las anulaciones establecidas por esta política.</translation>
 <translation id="5915023683182228340">Si habilitas la política o no la estableces, se permitirá el uso del protocolo QUIC en <ph name="PRODUCT_NAME" />.
 
       Si la inhabilitas, no se permitirá el uso de este protocolo.</translation>
@@ -7941,13 +7938,6 @@ No es necesario establecer esta política para la seguridad. La criptografía pr
 Si estableces esta política, <ph name="PRODUCT_NAME" /> será más lento cuando accedas a sitios web.
 
 Esta política solo afecta a TLS 1.3 y QUIC, y no a versiones anteriores de TLS.</translation>
-<translation id="6215023506958127056">Controla la instalación de extensiones externas.
-
-Si habilitas esta política, no se podrán instalar extensiones externas.
-
-Si inhabilitas esta política o no la estableces, se podrán instalar extensiones externas.
-
-Las extensiones externas y su instalación están documentadas en https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions.</translation>
 <translation id="6219841576688651072">No permitir la agrupación de la ventana de la Visión general creada por IA generativa.</translation>
 <translation id="6220835555850906733">Si habilitas la política o no la estableces, se permitirán todas las salidas de audio compatibles en los dispositivos de los usuarios.
 
@@ -8918,32 +8908,10 @@ Si la habilitas, los datos se recopilan y se suben a <ph name="GOOGLE_ADMIN_CONS
 Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
 Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6720330829631914048">Las horas transcurridas desde que comienza el día (en formato de 24 horas).</translation>
+<translation id="6720862827454058309">Anular las asignaciones de espacio de direcciones IP</translation>
 <translation id="6721252203593581486">WebSQL en contextos de terceros (p. ej., iframes entre sitios) está desactivado de forma predeterminada a partir de la versión M97 y se quitará por completo en la versión M101.
           Si estableces esta política como falsa o no la estableces, WebSQL en contextos de terceros permanecerá inhabilitada.
           Si la estableces como verdadera, WebSQL en contextos de terceros se volverá a habilitar.</translation>
-<translation id="6723472666969849951">Si estableces la política, se controlarán las apps y extensiones que se pueden instalar en <ph name="PRODUCT_NAME" />, así como los hosts con los que estas pueden interactuar, y se limitará el acceso al entorno de ejecución.
-
-      Si no estableces la política, no habrá restricciones para los tipos de apps y extensiones admitidos
-
-      No se instalarán las extensiones ni las apps con un tipo que no se incluya en la lista. Cada valor debe ser una de estas strings:
-
-      * "extension"
-
-      * "theme"
-
-      * "user_script"
-
-      * "hosted_app"
-
-      * "legacy_packaged_app"
-
-      * "platform_app"
-
-      Consulta la documentación sobre las extensiones de <ph name="PRODUCT_NAME" /> para obtener más información sobre estos tipos.
-
-      Las versiones anteriores a la 75, que usan varios ID de extensiones separados por comas, no son compatibles y se omitirán. Se aplicará el resto de la política.
-
-      Nota: Esta política también afecta a las extensiones y apps que se instalan de manera automática usando <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
 <translation id="6733851879899284032">
       Especifica si puede utilizarse la política SharedArrayBuffers en un contexto que no está aislado de orígenes cruzados. <ph name="PRODUCT_NAME" /> requerirá el aislamiento de origen cruzado cuando se utilice la política SharedArrayBuffers a partir de <ph name="PRODUCT_NAME" /> 91 (25-05-2021) por motivos de compatibilidad con la Web. Encontrarás información adicional en el siguiente sitio: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
 
@@ -8984,13 +8952,6 @@ las configuren.</translation>
 <translation id="6766216162565713893">Permitir que los sitios soliciten permiso al usuario para acceder a un dispositivo Bluetooth cercano</translation>
 <translation id="6770454900105963262">Informar datos sobre las sesiones de kiosco activas</translation>
 <translation id="6774132787348495175">No permitir que los usuarios usen las máquinas virtuales necesarias para admitir apps de Linux</translation>
-<translation id="678121785914414680">Lista de los tipos de archivos que se deben abrir automáticamente cuando se descargan. Cuando se enumera el tipo de archivo, no debe incluirse el separador principal. Por lo tanto, usa "txt" en lugar de ".txt".
-
-Si habilitas la Navegación segura, esta función revisará los archivos que se pueden abrir automáticamente. Si los archivos no son seguros, no se abrirán.
-
-Si no estableces esta política, solo se abrirán los tipos de archivos que el usuario haya especificado para que se abran automáticamente cuando se descarguen.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6782331708811245959">Habilitar los informes del modo de inicio del dispositivo</translation>
 <translation id="6783578496154221347">Usa WeeklyTimeIntervalChecked en el código nuevo.</translation>
 <translation id="6785201942412171878">Controlar la combinación de teclas utilizada para activar las teclas RePág/AvPág del "paquete de seis"</translation>
@@ -9040,6 +9001,17 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
 <translation id="6813263547126514821">Encendido y apagado</translation>
 <translation id="681446116407619279">Esquemas de autenticación admitidos</translation>
 <translation id="6815628711329903153">Permitir la asignación moderna de búfer para el complemento PPAPI de las APIs de Graphics3D</translation>
+<translation id="6819031008957510729">Si habilitas esta política, se habilitará de forma predeterminada el envío anónimo de datos sobre el uso y las fallas de <ph name="PRODUCT_NAME" /> a Google. Los usuarios aún podrán cambiar este parámetro de configuración.
+
+Si inhabilitas esta política, se desactivará el envío de informes anónimos de datos sobre el uso y los fallos a Google. Los usuarios no podrán cambiar este parámetro.
+
+Si no estableces esta política, los usuarios podrán elegir el comportamiento de los informes anónimos durante la instalación o la primera ejecución, y podrán cambiar este parámetro más adelante.
+
+(Para <ph name="PRODUCT_OS_NAME" />, consulta <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6819838337315703072">Si está activada la compatibilidad para apps de <ph name="LINUX_OS_NAME" /> y habilitas la política, se enviará información sobre el uso de las apps de <ph name="LINUX_OS_NAME" /> al servidor.
 
       Si inhabilitas la política o no la estableces, no se informarán datos sobre el uso.</translation>
@@ -9111,7 +9083,6 @@ política mientras se esté ejecutando el navegador.</translation>
 Si habilitas la política, se cerrará la sesión anterior del usuario cuando acceda correctamente en un nuevo dispositivo <ph name="PRODUCT_OS_NAME" />.
 
 Si inhabilitas la política o no la estableces, se cerrará la sesión anterior del usuario solo si habilitas las políticas <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> o <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" />.</translation>
-<translation id="6854694645176150141">Configurar los factores de autenticación local permitidos</translation>
 <translation id="6854767649023671426">Si habilitas la política o no la estableces, a excepción de las URL que se indican en la lista VideoCaptureAllowedUrls, se les solicitará a los usuarios acceso para capturar videos.
 
       Si inhabilitas la política, se desactivarán los mensajes, y la captura de video solo estará disponible para las URL que se establezcan en la lista VideoCaptureAllowedUrls.
@@ -11315,23 +11286,6 @@ Si se inhabilita, se bloqueará la página.</translation>
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="8267520984570984190">No se modifica el comportamiento predeterminado de cambio de tamaño del teclado virtual</translation>
 <translation id="8269238942896230153">Las cuentas administradas deben ser cuentas principales y se pueden importar datos de navegación existentes cuando se cree la cuenta.</translation>
-<translation id="827020625039819798">Si estableces la política, se especificará una lista de apps y extensiones que se instalan en segundo plano, sin la interacción del usuario, y que este no puede desinstalar ni desactivar en la interfaz de <ph name="PRODUCT_NAME" />. Se otorgan los permisos de manera implícita, incluidos los de las APIs de extensión enterprise.deviceAttributes y enterprise.platformKeys. (Estas 2 APIs no están disponibles para las apps y extensiones que no se instalan de manera automática).
-
-Aunque <ph name="PRODUCT_NAME" /> tiene como objetivo evitar que los usuarios desinstalen estas extensiones, algunos sistemas operativos impiden que <ph name="PRODUCT_NAME" /> se proteja de manera eficaz contra las extensiones que se modifican de forma externa. Por lo tanto, esta prevención es lo mejor que se puede hacer.
-
-Si no estableces la política, no se instalará ninguna app ni extensión de manera automática, y los usuarios podrán desinstalar cualquier app o extensión en <ph name="PRODUCT_NAME" />.
-
-Esta política sustituye a la política <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Si se quita de esta lista una app o extensión instalada de manera automática, <ph name="PRODUCT_NAME" /> la desinstalará sin interacción del usuario.
-
-Los usuarios pueden modificar el código fuente de cualquier extensión con las herramientas para desarrolladores (y probablemente la extensión deje de funcionar). Si esta situación puede plantear problemas, establece la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
-
-Cada elemento de la lista de la política es una cadena que contiene un ID de extensión y, de forma opcional, una URL de actualización separada por un punto y coma (;). El ID de extensión es la cadena de 32 letras que se encuentra, por ejemplo, en chrome://extensions, en el modo de desarrollador. Si se especifica, la URL de actualización debe direccionar a un documento XML del manifiesto de actualización (https://developer.chrome.com/extensions/autoupdate). La URL de actualización debe usar uno de los siguientes esquemas: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> o <ph name="FILE_SCHEME" />. De forma predeterminada, se usa la URL de actualización de Chrome Web Store. La URL de actualización que se establece en esta política solo se usa para la instalación inicial; las actualizaciones posteriores de la extensión utilizan la URL de actualización que se indica en el manifiesto de la extensión. La URL de actualización para actualizaciones posteriores puede anularse con la política <ph name="EXTENSION_SETTINGS_POLICY_NAME" />; consulta http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
-
-En instancias de <ph name="MS_WIN_NAME" />, las apps y extensiones que no provengan de Chrome Web Store podrán instalarse de manera automática solo si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" />, vinculada a <ph name="MS_AAD_NAME" /> o inscrita en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En instancias de <ph name="MAC_OS_NAME" />, las apps y extensiones que no provengan de Chrome Web Store podrán instalarse de manera automática solo si la instancia está administrada con MDM, vinculada a un dominio a través de MCX o inscrita en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Nota: Esta política no se aplica al modo Incógnito. Obtén más información sobre el alojamiento de extensiones en https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Habilita la IU relacionada con la conexión en el escritorio host cuando una conexión está activa</translation>
 <translation id="8272422063636310696">Controla si se informará una página que usa tecnologías heredadas en función de su URL.
@@ -11597,11 +11551,6 @@ las configuren.</translation>
 
       Nota para los administradores de <ph name="MS_WIN_NAME" />: Esta opción de configuración solo podrá habilitarse en máquinas con Windows 7. Para las versiones posteriores, el usuario debe implementar un archivo con "asociaciones de apps predeterminadas" que convierta a <ph name="PRODUCT_NAME" /> en el controlador de los protocolos <ph name="HTTPS_PROTOCOL" /> y <ph name="HTTP_PROTOCOL" /> (y, opcionalmente, el protocolo <ph name="FTP_PROTOCOL" /> y otros formatos de archivo). Consulta la Ayuda de Chrome ( https://support.google.com/chrome?p=make_chrome_default_win).</translation>
 <translation id="8437147918598002525">Habilitar el Modo solo HTTPS en el modo estricto</translation>
-<translation id="8437836857126992452">Te permite especificar las extensiones que los usuarios NO pueden instalar. Si se bloquean extensiones que ya están instaladas, no funcionarán y el usuario no podrá habilitarlas. Si las quitas de la lista de extensiones bloqueadas, se volverán a habilitar automáticamente.
-
-          Un valor de asterisco (*) en la lista de extensiones bloqueadas significa que todas las extensiones están incluidas en esa lista de forma predeterminada. Las extensiones que se enumeran de forma explícita en la lista de extensiones permitidas se admiten si están firmadas (comprimidas). Todas las extensiones sin empaquetar están bloqueadas.
-
-          Si no estableces esta política, el usuario podrá instalar cualquier extensión de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8441105784056442638">Habilitar la función de restauración completa</translation>
 <translation id="844322176712318428">Permitir la API de Translator</translation>
 <translation id="8444157920689124099">Habilitar la encriptación vinculada a la aplicación</translation>
@@ -11732,6 +11681,7 @@ Si habilitas la política o no la estableces, el software de terceros no podrá 
 <translation id="8511192250554640451">Permitir que los usuarios configuren la limitación de los temporizadores de JavaScript en segundo plano y que la controle la lógica de Chrome</translation>
 <translation id="8511708772548158302">Revierte el dispositivo a la versión de destino si la versión actual del SO es más reciente que la de destino. Powerwash se usa en el dispositivo, pero la configuración de red de todo el dispositivo sin certificados se conserva y este se vuelve a inscribir automáticamente.
 No se admite la reversión a la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni a versiones anteriores.</translation>
+<translation id="8518816549668729151">Configurar los factores de autenticación local permitidos</translation>
 <translation id="8519264904050090490">Direcciones URL de excepción manual de usuario administrado</translation>
 <translation id="8519516251436131647">Habilita las combinaciones de teclas para las funciones de accesibilidad.
 
@@ -12639,7 +12589,6 @@ Nota: Si reinicias el dispositivo, se borrará la memoria caché. Se almacenan e
       Si estableces la política como falsa o no la estableces, no se informarán los eventos.
       Si la estableces como verdadera, se informarán los eventos de acceso y salida desde el dispositivo.</translation>
 <translation id="9087652369391570821">Política de configuración para Chrome Enterprise Connector OnFileTransfer</translation>
-<translation id="9088191250434406767">Si no estableces la política o la habilitas, los usuarios podrán realizar búsquedas con sus cámaras mediante <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Si la inhabilitas, los usuarios no verán el botón de <ph name="GOOGLE_LENS_PRODUCT_NAME" /> en el cuadro de búsqueda, independientemente de que sea compatible la búsqueda asistida por cámara mediante <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="9088433379343318874">Habilitar el proveedor de contenido de un usuario supervisado</translation>
 <translation id="9088444059179765143">Configurar el método de detección automática de la zona horaria</translation>
 <translation id="9095599826504830315">No permitir la Comparación de pestañas.</translation>
@@ -12812,6 +12761,13 @@ Se puede usar la política <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> independient
       La configuración predeterminada permite al navegador del host realizar el procesamiento, pero puedes anularlo de manera opcional y tener las páginas HTML del procesador de <ph name="PRODUCT_FRAME_NAME" /> de forma predeterminada.</translation>
 <translation id="944817693306670849">Configurar el tamaño de caché de disco</translation>
 <translation id="949192525372487705">Bloquear el cambio a un administrador de contraseñas de terceros</translation>
+<translation id="950536431142353155">Obsoleto: Se quitó la función de configuración del nombre de host en la versión M145. El administrador aún puede controlar el nombre de host con la política <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />.
+
+Determina si un usuario puede configurar el nombre de host del dispositivo.
+
+      Si estableces <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador establecerá el nombre de host, y el usuario no podrá elegirlo independientemente de cómo se establezca esta política.
+      Si estableces esta política como verdadera y no estableces <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador no establecerá el nombre de host, y el usuario podrá elegir uno.
+      Si estableces esta política como falsa y no estableces <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador no establecerá el nombre de host, y el usuario no podrá elegir uno. Por lo tanto, se utilizará el nombre predeterminado.</translation>
 <translation id="956107219808875608">Controla la configuración de las herramientas de administración de clases.</translation>
 <translation id="957322141096206402">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red según la configuración del sistema y las marcas de función</translation>
 <translation id="957778406002650056">La URL desde la cual se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -12865,5 +12821,12 @@ Si habilitas <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />, se ignora
 <translation id="989197274317162189">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />".</translation>
 <translation id="990830704772547092">Configurar el instalador para las VMs de Bruschetta en dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="991560005425213776">Enviar el nombre de usuario y del archivo a las impresoras nativas</translation>
+<translation id="992338580870256858">Si estableces <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> como RestoreOnStartupIsURLs, configurar <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> con una lista de URLs determinará qué URLs se abrirán.
+
+Si no la estableces, se abrirá la página Nueva pestaña al iniciar el navegador.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="999340611001666174">Inhabilitar la corrección de colores</translation>
 </translationbundle>

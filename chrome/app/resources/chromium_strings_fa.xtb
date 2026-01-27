@@ -35,7 +35,6 @@
 <translation id="1356661055722410047">جدید! می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1397530502368084401">‏مدیریت نمایه‌های Chromium</translation>
-<translation id="1414495520565016063">‏شما وارد سیستم Chromium شدید!</translation>
 <translation id="141901961143729572">افکارتان را هم‌رسانی</translation>
 <translation id="1465192221147974788">‏برای هم‌رسانی پنجره، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chromium مجاز کنید.</translation>
 <translation id="1478370723027452770">‏دریافت راهنمایی درباره Chrome for Testing</translation>
@@ -324,10 +323,8 @@
 <translation id="4510853178268397146">‏این افزونه روش‌های اعمال حریم خصوصی، مثل نحوه جمع‌آوری و استفاده از داده‌ها را منتشر نکرده است. ‫Chromium توصیه می‌کند آن را حذف کنید.</translation>
 <translation id="452711251841752011">‏به Chromium خوش‌آمدید؛ پنجره مرورگر جدید راه‌اندازی شد</translation>
 <translation id="4531137820806573936">‏‫Chromium برای نقشه‌برداری از محیط اطراف و ردیابی دستان شما به اجازه نیاز دارد</translation>
-<translation id="4534145890176164066">‏‫Chromium فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند</translation>
 <translation id="4536805923587466102">‏قبلاً با <ph name="USER_EMAIL_ADDRESS" /> در نمایه Chromium دیگری به سیستم وارد شده‌اید</translation>
 <translation id="4548534452171747496">‏‫Chromium صفحه‌ها را پیش‌بارگیری می‌کند تا مرور و جستجو کردن سریع‌تر شود. <ph name="BEGIN_LINK" />درباره پیش‌بارگیری صفحه‌ها بیشتر بدانید<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">با حساب <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شده‌اید. اکنون در همه دستگاه‌هایی که با آنها به سیستم وارد شده‌اید می‌توانید به نشانک‌ها، سابقه و دیگر تنظیماتتان دسترسی داشته باشید.</translation>
 <translation id="4570813286784708942">‏‫Chromium این بارگیری را مسدود کرد زیرا «مرور ایمن» خاموش است و نمی‌توان فایل را تأیید کرد</translation>
 <translation id="4583692638088316420">‏«لنز Google» را با Chromium در تلفنتان امتحان کنید</translation>
 <translation id="4594305310729380060">در «مدیر گذرواژه» در این دستگاه</translation>

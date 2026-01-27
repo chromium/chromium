@@ -174,7 +174,6 @@
 <translation id="2857540653560290388">Notiek Chrome palaišana...</translation>
 <translation id="286025080868315611">Uzziniet, kāpēc Chrome bloķē noteiktas lejupielādes</translation>
 <translation id="2861074815332034794">Notiek Chrome atjaunināšana (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Esat pierakstījies pārlūkā Chrome!</translation>
 <translation id="2875053229394024379">Pierakstoties pārlūkā Chrome ar savu Google kontu, varat izmantot savu Chrome profilu ar Gemini. <ph name="BEGIN_LINK" />Uzziniet, kā pierakstīties pārlūkā Chrome<ph name="END_LINK" />.</translation>
 <translation id="2876628302275096482">Uzziniet vairāk par to, <ph name="BEGIN_LINK" />kā pārlūkā Chrome tiek saglabāta jūsu datu konfidencialitāte<ph name="END_LINK" />.</translation>
 <translation id="2885378588091291677">Uzdevumu pārvaldnieks</translation>
@@ -328,7 +327,6 @@
 <translation id="4459234553906210702">Reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chrome, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.</translation>
 <translation id="4493028449971051158">Palaišanas kļūda: lūdzu, palaidiet instalēšanas programmu kā administrators.</translation>
 <translation id="4501471624619070934">Instalēšana neizdevās, jo šajā valstī piekļuve ir ierobežota.</translation>
-<translation id="4567424176335768812">Jūs esat pierakstījies kā <ph name="USER_EMAIL_ADDRESS" />. Tagad varat piekļūt savām grāmatzīmēm, vēsturei un citiem iestatījumiem visās ierīcēs, kurās esat pierakstījies.</translation>
 <translation id="4571503333518166079">Pāriet uz Chrome paziņojumu iestatījumiem</translation>
 <translation id="4592634244097223647">Jautāt Google par šo attēlu</translation>
 <translation id="459622048091363950">Tiklīdz pārlūkam Chrome tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.</translation>
@@ -751,7 +749,6 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="8821043148920470810">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 7.</translation>
 <translation id="8823341990149967727">Chrome versija ir novecojusi</translation>
 <translation id="8834965163890861871">Google Chrome mēģina rediģēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
-<translation id="8843516219908676469">Chrome labāk izprot veidlapas un var tās ātrāk automātiski aizpildīt.</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome iesaka to noņemt.}zero{Chrome iesaka tos noņemt.}one{Chrome iesaka tos noņemt.}other{Chrome iesaka tos noņemt.}}</translation>
 <translation id="8862326446509486874">Jums nav vajadzīgo tiesību, lai instalētu sistēmas līmenī. Mēģiniet vēlreiz palaist instalēšanas programmu kā administrators.</translation>
 <translation id="8865415417596392024">Chrome dati jūsu kontā</translation>

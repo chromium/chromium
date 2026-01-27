@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> avautuu Chromessa. Jatkamalla hyväksyt <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Et ole tallentanut salasanoja Google Salasanoihin.</translation>
 <translation id="115483310321669804">Käytä salasanaa <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Synkronoi välilehdet ja historia</translation>
 <translation id="1165109137568919258">Ota kuva tai lisää kuva galleriasta, niin voit tehdä hakuja</translation>
 <translation id="1173894706177603556">Muuta nimeä</translation>
 <translation id="1174479719160874822">Chrome pyytää mobiilisivustoa, kun näyttö on kapea</translation>
@@ -981,6 +982,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5210286577605176222">Siirry edelliselle välilehdelle</translation>
 <translation id="5210365745912300556">Sulje välilehti</translation>
 <translation id="5212800876504289412">Viimeistele muutos käynnistämällä Chrome uudelleen. Välilehdet avautuvat automaattisesti uudelleen, kun käynnistät laitteen uudelleen.</translation>
+<translation id="5213114823401215820">Avaa suljettu ryhmä uudelleen</translation>
 <translation id="5215957675041756913">Datan ja tilin ylläpito</translation>
 <translation id="5218324087477576825">Kortin numero, pakollinen</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja muu Chrome (<ph name="SEPARATOR" />) poisti nämä luvat, koska et ole käynyt sivustolla viime aikoina</translation>
@@ -1436,6 +1438,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7020741890149022655">Lisää lukulistaan <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Avaa selaimessa</translation>
 <translation id="7029809446516969842">Salasanat</translation>
+<translation id="7037994709569287156">Tee Chromesta oletus</translation>
 <translation id="7053256416619638731">Vahvista salasanoja tällä laitteella</translation>
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7054588988317389591">Muodostetaanko kuvaselitykset?</translation>
@@ -1801,6 +1804,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8458413889418591446">Synkronoimalla historian ja välilehdet voit palata nopeasti aiemmin käymillesi sivustoille</translation>
 <translation id="84594714173170813">Jatka Chrome-datan käyttöä Google-tilillä</translation>
 <translation id="8460448946170646641">Tarkista tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
+<translation id="8460932807646981183">Hallitse hakukoneita ja sivustojen hakua</translation>
 <translation id="8473863474539038330">Osoitteet ja muita tietoja</translation>
 <translation id="847433688444405067">Selaa eri laitteilla</translation>
 <translation id="8477178913400731244">Poista data</translation>

@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։</translation>
 <translation id="1154555449933432029">Դուք չունեք Google գաղտնաբառերի կառավարիչում պահված գաղտնաբառեր։</translation>
 <translation id="115483310321669804">Օգտագործել <ph name="PASSWORD" /> գաղտնաբառը</translation>
+<translation id="1161065531352634524">Համաժամացրեք ներդիրներն ու պատմությունը</translation>
 <translation id="1165109137568919258">Որոնելու համար լուսանկարեք կամ ավելացրեք պատկեր ձեր ֆոտոդարանից</translation>
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1174479719160874822">Նեղ էկրան հայտնաբերելու դեպքում Chrome-ը կառաջարկի բացել կայքի բջջային տարբերակը</translation>
@@ -54,7 +55,7 @@
 <translation id="1197267115302279827">Տեղափոխել էջանիշները</translation>
 <translation id="1197761954713363183">Մուտքի բանալու հաստատման թերթը փակված է</translation>
 <translation id="1197933394627598677">Բացել Ընթերցման ռեժիմը</translation>
-<translation id="1201402288615127009">Հաջորդը</translation>
+<translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1202892408424955784">Ապրանքներ, որոնց գներին հետևում եք</translation>
 <translation id="1204037785786432551">Ներբեռնել հղումը</translation>
 <translation id="1206892813135768548">Պատճենել հղման տեքստը</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">Անցնել նախորդ ներդիր</translation>
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
 <translation id="5212800876504289412">Վերագործարկեք Chrome-ը՝ այս փոփոխությունը կիրառելու համար։ Վերագործարկումից հետո ներդիրներն ավտոմատ կերպով նորից կբացվեն։</translation>
+<translation id="5213114823401215820">Վերականգնել փակված խումբը</translation>
 <translation id="5215957675041756913">Տվյալների ու հաշվի կառավարում</translation>
 <translation id="5218324087477576825">Քարտի համարը, պարտադիր է</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> և այլն <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ դուք վերջին ժամանակահատվածում չեք այցելել այս կայք</translation>
@@ -1338,7 +1340,7 @@
 <translation id="6689436252814043643">Ընթերցման ռեժիմը հասանելի չէ</translation>
 <translation id="6700279777779583398">Ընտրված կարգավորումները պահվել են</translation>
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
-<translation id="6710213216561001401">Նախորդը</translation>
+<translation id="6710213216561001401">Նախորդ</translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
 <translation id="6716434912087331834">Նոր պատուհան վերականգնելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ պատուհան։ Ոչ ակտիվ պատուհանները 6 ամիս հետո ջնջվում են։</translation>
 <translation id="6723740634201835758">Ձեր Google հաշվում</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">Ավելացնել ընթերցանության ցանկում <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Բացել դիտարկիչով</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
+<translation id="7037994709569287156">Դարձնել Chrome-ը կանխադրված դիտարկիչ</translation>
 <translation id="7053256416619638731">Ուժեղացրեք ձեր գաղտնաբառերը այս սարքում</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">Համաժամացրեք ձեր պատմությունը և ներդիրները, որպեսզի արագ վերադառնաք ձեր այցելած կայքեր</translation>
 <translation id="84594714173170813">Շարունակեք օգտագործել Chrome-ի տվյալները ձեր Google հաշվում</translation>
 <translation id="8460448946170646641">Դիտեք գաղտնիության և անվտանգության հիմնական կառավարման տարրերը</translation>
+<translation id="8460932807646981183">Որոնողական համակարգերի կառավարում և որոնում կայքերում</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
 <translation id="847433688444405067">Դիտարկեք տարբեր սարքերում</translation>
 <translation id="8477178913400731244">Ջնջել տվյալները</translation>

@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Non tes ningún contrasinal gardado no xestor de contrasinais de Google.</translation>
 <translation id="115483310321669804">Usar contrasinal <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Sincroniza as pestanas e o historial</translation>
 <translation id="1165109137568919258">Tira unha foto ou engade unha imaxe da galería para facer buscas</translation>
 <translation id="1173894706177603556">Cambiar o nome</translation>
 <translation id="1174479719160874822">Chrome solicitará abrir o sitio para móbiles cando a pantalla sexa estreita</translation>
@@ -981,6 +982,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5210286577605176222">Saltar á pestana anterior</translation>
 <translation id="5210365745912300556">Pechar pestana</translation>
 <translation id="5212800876504289412">Reinicia Google Chrome para completar este cambio. As pestanas volven abrirse automaticamente co reinicio.</translation>
+<translation id="5213114823401215820">Volver abrir grupo pechado</translation>
 <translation id="5215957675041756913">Controlar os teus datos e a túa conta</translation>
 <translation id="5218324087477576825">Cómpre indicar o número da tarxeta</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e algúns máis <ph name="SEPARATOR" /> Chrome quitou estes permisos porque levas tempo sen acceder</translation>
@@ -1436,6 +1438,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7020741890149022655">Engadir á lista lectura <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
+<translation id="7037994709569287156">Definir Chrome como navegador predeterminado</translation>
 <translation id="7053256416619638731">Reforza os contrasinais deste dispositivo</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054588988317389591">Queres obter descricións de imaxes?</translation>
@@ -1801,6 +1804,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8458413889418591446">Para volver rapidamente aos sitios que xa visitaches, sincroniza as pestanas e o historial</translation>
 <translation id="84594714173170813">Sigue usando os datos de Chrome na túa Conta de Google</translation>
 <translation id="8460448946170646641">Revisa os controis clave de privacidade e seguranza</translation>
+<translation id="8460932807646981183">Xestionar motores de busca e busca de sitios</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="847433688444405067">Navega en varios dispositivos</translation>
 <translation id="8477178913400731244">Eliminar datos</translation>

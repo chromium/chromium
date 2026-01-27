@@ -174,7 +174,6 @@
 <translation id="2857540653560290388">‏جارٍ إطلاق Chrome...</translation>
 <translation id="286025080868315611">‏تعرّف على سبب حظر Chrome لبعض عمليات التنزيل</translation>
 <translation id="2861074815332034794">‏جارٍ تحديث Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">‏تم تسجيل دخولك إلى Chrome!</translation>
 <translation id="2875053229394024379">‏عند تسجيل الدخول إلى Chrome بحسابك على Google، يمكنك استخدام ملفك الشخصي على Chrome مع Gemini. <ph name="BEGIN_LINK" />التعرّف على طريقة تسجيل الدخول إلى Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chrome للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">إدارة المهام</translation>
@@ -329,7 +328,6 @@
 <translation id="4459234553906210702">‏تسمح ميزة "قياس أداء الإعلانات" للمواقع الإلكترونية التي تزورها بطلب معلومات من Chrome تساعد الموقع الإلكتروني في قياس أداء الإعلانات التي يعرضها. وتحدّ هذه الميزة من عملية تتبّع البيانات ونشاط التصفّح على المواقع الإلكترونية، وذلك من خلال نقل أقل قدر ممكن من المعلومات بينها.</translation>
 <translation id="4493028449971051158">خطأ في بدء التشغيل: يُرجى تشغيل أداة التثبيت بصفتك مشرفًا.</translation>
 <translation id="4501471624619070934">تعذّر تثبيت التطبيق بسبب حظر الدخول المفروض في هذا البلد.</translation>
-<translation id="4567424176335768812">لقد سجلت دخولك باعتبارك <ph name="USER_EMAIL_ADDRESS" />. ويُمكنك الآن الاستمتاع بالدخول إلى الإشارات المرجعية، والسجلّ، والإعدادات الأخرى على جميع الأجهزة التي تسجّل الدخول إليها.</translation>
 <translation id="4571503333518166079">‏الانتقال إلى إعدادات الإشعارات في Chrome</translation>
 <translation id="4592634244097223647">‏طرح أسئلة على Google حول هذه الصورة</translation>
 <translation id="459622048091363950">‏بعد حصول Chrome على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.</translation>
@@ -752,7 +750,6 @@
 <translation id="8821043148920470810">‏للحصول على تحديثات Google Chrome في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل Windows 10 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل Windows 7.</translation>
 <translation id="8823341990149967727">‏إصدار Chrome قديم</translation>
 <translation id="8834965163890861871">‏يحاول Google Chrome تعديل كلمات المرور. للسماح بذلك، يُرجى كتابة كلمة مرور Windows الخاصة بك.</translation>
-<translation id="8843516219908676469">‏يفهم Chrome النماذج بشكل أفضل ويمكنه ملء بياناتها تلقائيًا بشكل أسرع</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{‏ينصح متصفّح Chrome بإزالتها}zero{‏ينصح متصفّح Chrome بإزالتها}two{‏ينصح متصفّح Chrome بإزالتهما}few{‏ينصح متصفّح Chrome بإزالتها}many{‏ينصح متصفّح Chrome بإزالتها}other{‏ينصح متصفّح Chrome بإزالتها}}</translation>
 <translation id="8862326446509486874">لا تملك الحقوق الكافية للتثبيت على مستوى النظام. جرّب تشغيل المثبِّت بصفة مشرف.</translation>
 <translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>

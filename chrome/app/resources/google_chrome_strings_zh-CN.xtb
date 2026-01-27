@@ -172,7 +172,6 @@
 <translation id="2857540653560290388">正在启动 Chrome…</translation>
 <translation id="286025080868315611">了解 Chrome 为何会拦截部分下载内容</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">您已登录 Chrome！</translation>
 <translation id="2875053229394024379">使用 Google 账号登录 Chrome 后，您就可以搭配 Chrome 资料使用 Gemini 了。<ph name="BEGIN_LINK" />了解如何登录 Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">详细了解 <ph name="BEGIN_LINK" />Chrome 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">任务管理器</translation>
@@ -326,7 +325,6 @@
 <translation id="4459234553906210702">借助 Ad measurement，您访问的网站可向 Chrome 请求信息，以便对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
 <translation id="4493028449971051158">启动错误：请以管理员身份运行安装程序。</translation>
 <translation id="4501471624619070934">由于在此国家/地区的访问权限遭到限制，安装失败。</translation>
-<translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。现在您可在已登录的所有设备上访问您的书签、历史记录和其他设置。</translation>
 <translation id="4571503333518166079">转到 Chrome 通知设置</translation>
 <translation id="4592634244097223647">向 Google 询问此图片</translation>
 <translation id="459622048091363950">一旦 Chrome 获得了使用权限，网站便能请求您向其授予使用权限。</translation>
@@ -747,7 +745,6 @@
 <translation id="8821043148920470810">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome版本太旧</translation>
 <translation id="8834965163890861871">Google Chrome 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
-<translation id="8843516219908676469">Chrome 可以更好地理解表单，并更快地为您自动填充表单</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome 建议您移除它}other{Chrome 建议您移除它们}}</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8865415417596392024">您账号中的 Chrome 数据</translation>

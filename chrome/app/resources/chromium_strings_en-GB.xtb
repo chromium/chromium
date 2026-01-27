@@ -37,7 +37,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1356661055722410047">New! You can translate both text and images on your screen</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1397530502368084401">&amp;Manage Chromium profiles</translation>
-<translation id="1414495520565016063">You're signed in to Chromium!</translation>
 <translation id="141901961143729572">Share your thoughts</translation>
 <translation id="1465192221147974788">To share your window, allow screen recording for Chromium in System Settings.</translation>
 <translation id="1478370723027452770">Get help with Chrome for testing</translation>
@@ -327,10 +326,8 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4510853178268397146">This extension hasn't published privacy practices, such as how it collects and uses data. Chromium recommends that you remove it.</translation>
 <translation id="452711251841752011">Welcome to Chromium; new browser window opened</translation>
 <translation id="4531137820806573936">Chromium needs permission to map your surroundings and track your hands</translation>
-<translation id="4534145890176164066">Chromium understands forms better and can autofill them faster for you</translation>
 <translation id="4536805923587466102">You're already signed in as <ph name="USER_EMAIL_ADDRESS" /> in another Chromium profile</translation>
 <translation id="4548534452171747496">Chromium preloads pages which makes browsing and searching faster. <ph name="BEGIN_LINK" />Learn more about preload pages<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4570813286784708942">Chromium blocked this download because you turned Safe Browsing off and the file can't be verified</translation>
 <translation id="4583692638088316420">Try Google Lens with Chromium on your phone</translation>
 <translation id="4594305310729380060">To Password Manager on this device</translation>

@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
 <translation id="1154555449933432029">Google Password Manager တွင် သိမ်းထားသောစကားဝှက် မရှိပါ။</translation>
 <translation id="115483310321669804"><ph name="PASSWORD" /> စကားဝှက်သုံးရန်</translation>
+<translation id="1161065531352634524">တဘ်များနှင့် မှတ်တမ်းတို့ကို စင့်ခ်လုပ်ခြင်း</translation>
 <translation id="1165109137568919258">ရှာရန်အတွက် ဓာတ်ပုံရိုက်ပါ (သို့) ဓာတ်ပုံပြခန်းမှ ပုံထည့်ပါ</translation>
 <translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
 <translation id="1174479719160874822">ဖန်သားပြင်ကျဉ်းသွားသောအခါ Chrome သည် မိုဘိုင်းဝဘ်ဆိုက်ကို တောင်းဆိုပါမည်</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">ယခင်တဘ်သို့ ပြန်သွားရန်</translation>
 <translation id="5210365745912300556">တဘ် ပိတ်ရန်</translation>
 <translation id="5212800876504289412">ပြောင်းလဲမှုကို အပြီးသတ်ရန် Chrome ကို ပြန်စပါ။ သင်က ပြန်စသောအခါ တဘ်များကို အလိုအလျောက် ပြန်ဖွင့်သည်။</translation>
+<translation id="5213114823401215820">ပိတ်ထားသောအုပ်စုကို ပြန်ဖွင့်ရန်</translation>
 <translation id="5215957675041756913">သင့်ဒေတာနှင့် အကောင့်ကို ထိန်းချုပ်ခြင်း</translation>
 <translation id="5218324087477576825">ကတ်နံပါတ်၊ လိုအပ်သည်</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> စသည် <ph name="SEPARATOR" /> လတ်တလော သင်ဝင်ကြည့်ခြင်းမရှိသဖြင့် Chrome က ဤခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
@@ -1435,6 +1437,7 @@
 <translation id="7020741890149022655">ဖတ်ရန် စာရင်းသို့ ထည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ဘရောက်ဇာတွင် ဖွင့်ပါ</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
+<translation id="7037994709569287156">Chrome ကို မူရင်းသတ်မှတ်ရန်</translation>
 <translation id="7053256416619638731">ဤစက်တွင် သင့်စကားဝှက်များကို အားကောင်းအောင်လုပ်ပါ</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7054588988317389591">ပုံရှင်းလင်းချက်များ ရယူမလား။</translation>
@@ -1800,6 +1803,7 @@
 <translation id="8458413889418591446">သင်ဝင်ကြည့်ထားသည့် ဝဘ်ဆိုက်များသို့ အမြန်ပြန်သွားရန် မှတ်တမ်းနှင့် တဘ်များကို စင့်ခ်လုပ်ပါ</translation>
 <translation id="84594714173170813">သင့် Google Account တွင် Chrome ဒေတာများ ဆက်သုံးပါ</translation>
 <translation id="8460448946170646641">အဓိကကျသော ကိုယ်ရေးအချက်အလက်နှင့် လုံခြုံရေး ထိန်းချုပ်မှုများကို ကြည့်ရှုရန်</translation>
+<translation id="8460932807646981183">ရှာဖွေရေး အင်ဂျင်များနှင့် Site Search ကို စီမံရန်</translation>
 <translation id="8473863474539038330">လိပ်စာများနှင့် အခြားအရာများ</translation>
 <translation id="847433688444405067">စက်အားလုံးတွင် ကြည့်ပါ</translation>
 <translation id="8477178913400731244">ဒေတာဖျက်ရန်</translation>

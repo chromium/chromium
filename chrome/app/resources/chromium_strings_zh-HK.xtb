@@ -36,7 +36,6 @@
 <translation id="1356661055722410047">新功能！你可翻譯畫面上的文字和圖片</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1397530502368084401">管理 Chromium 設定檔</translation>
-<translation id="1414495520565016063">您已登入 Chromium！</translation>
 <translation id="141901961143729572">分享你的想法</translation>
 <translation id="1465192221147974788">如要分享視窗，請前往「系統設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
@@ -326,10 +325,8 @@
 <translation id="4510853178268397146">此擴充程式尚未發佈私隱守則，例如擴充程式如何收集和使用資料。Chromium 建議你移除此擴充程式。</translation>
 <translation id="452711251841752011">歡迎使用 Chromium；開咗新瀏覽器視窗</translation>
 <translation id="4531137820806573936">Chromium 需要適當權限，才能繪製周遭環境並進行手部追蹤</translation>
-<translation id="4534145890176164066">Chromium 可以更準確識別表格內容，更快自動填入相關資料</translation>
 <translation id="4536805923587466102">你已在另一個 Chromium 個人檔案中以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入</translation>
 <translation id="4548534452171747496">Chromium 會預先載入網頁，加快瀏覽和搜尋速度。<ph name="BEGIN_LINK" />進一步瞭解預先載入網頁<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用您的書籤、記錄和其他設定。</translation>
 <translation id="4570813286784708942">「安全瀏覽」功能已關閉，系統無法驗證此檔案，因此 Chromium 已禁止下載</translation>
 <translation id="4583692638088316420">透過手機的 Chromium 試用「Google 智能鏡頭」</translation>
 <translation id="4594305310729380060">儲存至此裝置的「密碼管理工具」中</translation>

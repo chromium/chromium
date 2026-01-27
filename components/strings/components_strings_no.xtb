@@ -2235,6 +2235,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4528888973346221791">informasjon om jobbprofilen (for eksempel brukernavnet ditt)</translation>
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Virtuelt kortnummer</translation>
+<translation id="4534145890176164066">Chromium forstår skjemaer bedre og kan autofylle dem raskere for deg</translation>
 <translation id="4535523368173457420">Disse søkemotorene er populære i regionen din og vises i tilfeldig rekkefølge</translation>
 <translation id="4535602490975885745">Kan ikke lagre bildet i OneDrive</translation>
 <translation id="4539931187424170595">{NUM_YEARS,plural, =1{Opprettet for ett år siden}other{Opprettet for {NUM_YEARS} år siden}}</translation>
@@ -4075,6 +4076,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7473891865547856676">Nei takk</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481603210197454575">Italiensk konvolutt</translation>
+<translation id="7482823403440483089">Forbedret autofyll</translation>
 <translation id="7483482939016730822">Skolerekvisita</translation>
 <translation id="7483863401933039889"><ph name="CHROME_TIP" /> – trykk på Tab og deretter på Enter for å lukke Chrome-tipset.</translation>
 <translation id="7485085230273446323">Forretning og industri</translation>
@@ -4912,6 +4914,7 @@ Mer informasjon:
 <translation id="883848425547221593">Andre bokmerker</translation>
 <translation id="8842351563145134519">Betalingsmåter som kan fylles ut ved å trykkes på, åpnes i halv høyde.</translation>
 <translation id="884264119367021077">Leveringsadresse</translation>
+<translation id="8843516219908676469">Chrome forstår skjemaer bedre og kan autofylle dem raskere for deg</translation>
 <translation id="8849032795302265570">Administrer enkelt hvordan de ansatte surfer på nettet</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Finner ingen tilbakekallingsmekanisme.</translation>

@@ -36,7 +36,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1356661055722410047">Novinka! Můžete překládat text i obrázky na obrazovce</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1397530502368084401">&amp;Spravovat profily prohlížeče Chromium</translation>
-<translation id="1414495520565016063">Jste přihlášeni do prohlížeče Chromium.</translation>
 <translation id="141901961143729572">Podělte se o svůj názor</translation>
 <translation id="1465192221147974788">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chromium nahrávání obrazovky.</translation>
 <translation id="1478370723027452770">Nápověda k Chrome for Testing</translation>
@@ -326,10 +325,8 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4510853178268397146">Pro toto rozšíření nebyly publikovány postupy v oblasti ochrany soukromí, například informace o tom, jak shromažďuje a používá data. Chromium vám doporučuje odstranit ho.</translation>
 <translation id="452711251841752011">Vítá vás Chromium; bylo otevřeno nové okno prohlížeče</translation>
 <translation id="4531137820806573936">Chromium potřebuje oprávnění k mapování vašeho okolí a sledování vašich rukou</translation>
-<translation id="4534145890176164066">Chromium lépe rozumí formulářům a může je automaticky vyplňovat rychleji</translation>
 <translation id="4536805923587466102">Jako <ph name="USER_EMAIL_ADDRESS" /> už jste přihlášeni v jiném profilu Chromium</translation>
 <translation id="4548534452171747496">Chromium načítá stránky předběžně, což zrychluje procházení a vyhledávání. <ph name="BEGIN_LINK" />Další informace o předběžném načítání stránek<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Jste přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Nyní můžete přistupovat ke všem svým záložkám, historii a dalším nastavením ve všech přihlášených zařízeních.</translation>
 <translation id="4570813286784708942">Prohlížeč Chromium toto stahování zablokoval, protože jste vypnuli Bezpečné prohlížení a soubor nelze ověřit</translation>
 <translation id="4583692638088316420">Vyzkoušejte Google Lens v Chromiu na telefonu</translation>
 <translation id="4594305310729380060">Do Správce hesel na tomto zařízení</translation>

@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Нямате запазени пароли в Google Мениджър на пароли.</translation>
 <translation id="115483310321669804">Използване на паролата <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Синхронизиране на разделите и историята</translation>
 <translation id="1165109137568919258">Направете снимка или добавете изображение от фотогалерията си, за да извършите търсене.</translation>
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1174479719160874822">Chrome ще заявява мобилната версия на сайта, когато екранът е тесен</translation>
@@ -981,6 +982,7 @@
 <translation id="5210286577605176222">Преминаване към предишния раздел</translation>
 <translation id="5210365745912300556">Затваряне на раздела</translation>
 <translation id="5212800876504289412">Рестартирайте Chrome, за да завършите тази промяна. Разделите се отварят автоматично след рестартиране.</translation>
+<translation id="5213114823401215820">Повторно отваряне на затворената група</translation>
 <translation id="5215957675041756913">Управление на данните и профила ви</translation>
 <translation id="5218324087477576825">Номер на картата, задължителен</translation>
 <translation id="5221437554987713282">„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и др. <ph name="SEPARATOR" /> Chrome премахна тези разрешения, защото не сте посещавали този сайт наскоро</translation>
@@ -1436,6 +1438,7 @@
 <translation id="7020741890149022655">Списък за четене: Добав. <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Отваряне в браузъра</translation>
 <translation id="7029809446516969842">Пароли</translation>
+<translation id="7037994709569287156">Задаване на Chrome като браузър по подразбиране</translation>
 <translation id="7053256416619638731">Подобрете паролите си на това устройство</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7054588988317389591">Искате ли да получавате описания на изображенията?</translation>
@@ -1801,6 +1804,7 @@
 <translation id="8458413889418591446">За да се връщате бързо към посетените от вас сайтове, синхронизирайте историята и разделите си</translation>
 <translation id="84594714173170813">Продължете да използвате данните в Chrome в профила си в Google</translation>
 <translation id="8460448946170646641">Прегледайте ключовите контроли за поверителност и сигурност</translation>
+<translation id="8460932807646981183">Управление на търсещите машини и търсенето в сайтовете</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
 <translation id="847433688444405067">Разглеждане от всички устройства</translation>
 <translation id="8477178913400731244">Изтриване на данните</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="fa">
 <translation id="1006017844123154345">باز کردن نسخه آنلاین</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
+<translation id="1046742265332833834">زمینه آبی</translation>
 <translation id="1070329623210597193">فایل‌هایی که این سایت می‌تواند مشاهده یا ویرایش کند</translation>
 <translation id="1073417869336441572">‏با گفتن دلیل مجاز کردن کوکی‌های طرف سوم، به ما در بهبود Chrome کمک کنید. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">می‌توانید درخواست کنید نسخه رایانه سایت‌ها را ببینید</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1181037720776840403">برداشتن</translation>
 <translation id="1192844206376121885">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط <ph name="ORIGIN" /> حذف می‌شود.</translation>
+<translation id="1199963004393929848">زمینه سبز</translation>
 <translation id="1201402288615127009">بعدی</translation>
 <translation id="1240190568154816272">‏نکته‌های Chrome</translation>
 <translation id="1242008676835033345">جاسازی‌شده در <ph name="WEBSITE_URL" /></translation>
@@ -215,6 +217,7 @@
 <translation id="3167868116600277716">فید «یافته‌ها»</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> داده‌های ذخیره شده</translation>
 <translation id="3199078925536734975">این بار اجازه هست • تقریبی</translation>
+<translation id="3208584281581115441">اکنون بررسی شود</translation>
 <translation id="321187648315454507">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید برایتان اعلان ارسال کند، اعلان‌ها را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
 <translation id="3223425961342298674">مکان مجاز نیست</translation>
 <translation id="3227137524299004712">میکروفن</translation>
@@ -264,6 +267,7 @@
 <translation id="3721953990244350188">بستن و نمایش کنش دردسترس بعدی</translation>
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3746834924069123416">دیدن برگه‌های اخیر بیشتر</translation>
+<translation id="3753618528540214374">زمینه سبزآبی</translation>
 <translation id="3763247130972274048">در سمت راست یا چپ ویدیو دو ضربه سریع بزنید تا ۱۰ ثانیه رد شود</translation>
 <translation id="3776508619697147021">سایت‌ها می‌توانند بارگیری خودکار چند فایل را درخواست کنند</translation>
 <translation id="3779154269823594982">تغییر دادن گذرواژه‌ها</translation>
@@ -273,6 +277,7 @@
 <translation id="381841723434055211">شماره‌های تلفن</translation>
 <translation id="3823453485268218808">قلم تک‌رنگ</translation>
 <translation id="3826050100957962900">ورود به سیستم شخص ثالث</translation>
+<translation id="3831065134033923230">گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید</translation>
 <translation id="3835233591525155343">استفاده از دستگاه</translation>
 <translation id="3843916486309149084">‏Chrome کوکی‌ها را امروز دوباره مسدود خواهد کرد</translation>
 <translation id="385051799172605136">برگشتن</translation>
@@ -475,6 +480,7 @@
 <translation id="5998071268779572583">روشن کردن فید یافته‌ها</translation>
 <translation id="6012967556075291653">میان‌بر سنجاق‌شده</translation>
 <translation id="6015775454662021376">کنترل کردن دسترسی این سایت به دستگاه</translation>
+<translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6042308850641462728">بیشتر</translation>
 <translation id="6064125863973209585">بارگیری‌های کامل‌شده</translation>
@@ -492,13 +498,13 @@
 <translation id="6196640612572343990">مسدود کردن کوکی‌های طرف سوم</translation>
 <translation id="6205314730813004066">حریم خصوصی آگهی</translation>
 <translation id="6207207788774442484">حذف داده‌ها و بازنشانی اجازه‌ها</translation>
+<translation id="6218508144653756827">زمینه سرخابی</translation>
 <translation id="6231752747840485235">«<ph name="APP_NAME" />» حذف نصب شود؟</translation>
 <translation id="6234351944623978659">‏روی «برنامه مرورگر &gt; Chrome» تک‌ضرب بزنید</translation>
 <translation id="6260830281887654268">برگ زیرین مجموعه زمینه‌های ظاهر صفحه زبانه جدید به‌صورت نیمه باز شده است</translation>
 <translation id="6262191102408817757">براساس آخرین زبانه شما</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مسدود هستند</translation>
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>
-<translation id="6278428485366576908">زمینه</translation>
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="6320088164292336938">لرزش</translation>
 <translation id="6367753977865761591">ورود به سیستم طرف سوم برای سایت خاصی مسدود می‌شود.</translation>
@@ -525,6 +531,7 @@
 <translation id="659938948789980540">{COUNT,plural, =1{کوکی‌ها برای <ph name="RWS_MEMBERS_COUNT" /> سایت <ph name="RWS_OWNER" /> مجاز هستند}one{کوکی‌ها برای <ph name="RWS_MEMBERS_COUNT" /> سایت <ph name="RWS_OWNER" /> مجاز هستند}other{کوکی‌ها برای <ph name="RWS_MEMBERS_COUNT" /> سایت <ph name="RWS_OWNER" /> مجاز هستند}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> گیگابایت</translation>
 <translation id="6612358246767739896">محتوای محافظت‌شده</translation>
+<translation id="6619015782482868078">زمینه سبز آبی‌فام</translation>
 <translation id="662080504995468778">ماندن</translation>
 <translation id="6630443592285535486">مبنای شانزده را اینجا تایپ کنید</translation>
 <translation id="6635327442719709864">وقتی روشن باشد، سایت‌ها می‌توانند درخواست استفاده از درگاه‌های سریال را داشته باشند. وقتی خاموش باشد، سایت‌ها نمی‌توانند از درگاه‌های سریال استفاده کنند.</translation>
@@ -553,6 +560,7 @@
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6950072572526089586">سایتی که بازدید می‌کنید می‌تواند اطلاعاتی درباره کاری که انجام می‌دهید ذخیره کند تا عملکردی مطابق انتظار داشته باشد — برای مثال، برای اینکه در سیستم سایت باقی بمانید یا برای ذخیره کردن مواردی که در سبد خریدتان است. سایت‌ها در اغلب موارد این اطلاعات را به‌صورت موقتی در دستگاهتان ذخیره می‌کنند.</translation>
 <translation id="6965382102122355670">تأیید</translation>
+<translation id="6980507581230208647">زمینه صورتی</translation>
 <translation id="6980861169612950611">داده‌های سایت حذف شود؟ <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="6991142177939282156">مجاز است • از مکان تقریبی استفاده می‌شود</translation>
@@ -581,6 +589,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> مورد انتخاب شد</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مجاز هستند</translation>
 <translation id="7276071417425470385">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از دستگاه‌های واقعیت مجازی را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از دستگاه‌های واقعیت مجازی استفاده کنند.</translation>
+<translation id="7282197670900591579">زمینه لیمویی</translation>
 <translation id="728412880473384942">سایت‌ها سرعت بیشتری دارند اما امنیت آن‌ها کمتر است</translation>
 <translation id="7366415735885268578">افزودن سایت</translation>
 <translation id="7368695150573390554">همه داده‌های آفلاین حذف خواهند شد</translation>
@@ -619,6 +628,7 @@
 <translation id="7688240020069572972">‏پنهان کردن کارت نکته‌های Chrome</translation>
 <translation id="7719367874908701697">بزرگ‌نمایی صفحه</translation>
 <translation id="775043444390799886">لغو اجازه</translation>
+<translation id="7758789811447313947">زمینه بنفش</translation>
 <translation id="7759147511335618829">‏برنامه‌ریزی مجدد و کنترل دستگاه MIDI</translation>
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="7791543448312431591">افزودن</translation>
@@ -637,6 +647,7 @@
 <translation id="7940722705963108451">به من یادآوری شود</translation>
 <translation id="7948081750384205628">درباره «<ph name="SETTING_TITLE" />» بیشتر بدانید</translation>
 <translation id="7952708427581814389">سایت‌ها می‌توانند دیدن نوشتار و تصاویر موجود در بریده‌دان را درخواست کنند</translation>
+<translation id="798299424881500862">زمینه نارنجی</translation>
 <translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
 <translation id="7990211076305263060">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از میکروفون استفاده کنند.</translation>
 <translation id="8007176423574883786">برای این دستگاه غیرفعال شد</translation>

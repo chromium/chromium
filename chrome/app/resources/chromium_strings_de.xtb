@@ -34,7 +34,6 @@
 <translation id="1356661055722410047">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen lassen</translation>
 <translation id="1383876407941801731">Suchen</translation>
 <translation id="1397530502368084401">&amp;Chromium-Profile verwalten</translation>
-<translation id="1414495520565016063">Du bist in Chromium angemeldet.</translation>
 <translation id="141901961143729572">Lass uns wissen, was du denkst</translation>
 <translation id="1465192221147974788">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
 <translation id="1478370723027452770">Hilfe zu Chrome for Testing</translation>
@@ -324,10 +323,8 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="4510853178268397146">Für diese Erweiterung wurden keine Informationen zum Umgang mit dem Datenschutz veröffentlicht, wie z. B. Informationen darüber, wie Daten erhoben und verwendet werden. Chromium empfiehlt daher, sie zu entfernen.</translation>
 <translation id="452711251841752011">Willkommen bei Chromium; neues Browserfenster geöffnet</translation>
 <translation id="4531137820806573936">Chromium benötigt eine Berechtigung für das Erstellen einer Karte deiner Umgebung und das Hand-Tracking</translation>
-<translation id="4534145890176164066">Chromium erkennt den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen</translation>
 <translation id="4536805923587466102">Du bist in einem anderen Chromium-Profil bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet.</translation>
 <translation id="4548534452171747496">In Chromium werden Seiten vorab geladen, um das Surfen und die Suche zu beschleunigen. <ph name="BEGIN_LINK" />Weitere Informationen zum Vorabladen von Seiten<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">Du bist als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Auf allen Geräten, auf denen du angemeldet bist, sind nun deine Lesezeichen, dein Verlauf und andere Einstellungen verfügbar.</translation>
 <translation id="4570813286784708942">Chromium hat diesen Download blockiert, weil du Safe Browsing deaktiviert hast und die Datei nicht überprüft werden kann</translation>
 <translation id="4583692638088316420">Google Lens mit Chromium auf deinem Smartphone ausprobieren</translation>
 <translation id="4594305310729380060">In den Passwortmanager auf diesem Gerät</translation>
