@@ -60,7 +60,8 @@ enum class PermissionAiRelevanceModel {
   kAIv4 = 2,
   kMaxValue = kAIv4,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionAiRelevanceModel)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionAiRelevanceModel,
+// //components/permissions/prediction_service/prediction_common.cc:PermissionsAiSetRelevance)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
