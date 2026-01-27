@@ -22,6 +22,10 @@ static constexpr char kPAFeatureEnabledProcessesStr[] = "enabled-processes";
 static constexpr char kBrowserOnlyStr[] = "browser-only";
 static constexpr char kBrowserAndRendererStr[] = "browser-and-renderer";
 static constexpr char kNonRendererStr[] = "non-renderer";
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+static constexpr char kGPUOnlyStr[] = "gpu-only";
+static constexpr char kBrowserAndGPUStr[] = "browser-and-gpu";
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 static constexpr char kAllProcessesStr[] = "all-processes";
 
 }  // namespace
@@ -103,6 +107,10 @@ constexpr FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>::Option
          kBrowserAndRendererStr},
         {PartitionAllocWithAdvancedChecksEnabledProcesses::kNonRenderer,
          kNonRendererStr},
+        {PartitionAllocWithAdvancedChecksEnabledProcesses::kGPUOnly,
+         kGPUOnlyStr},
+        {PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserAndGPU,
+         kBrowserAndGPUStr},
         {PartitionAllocWithAdvancedChecksEnabledProcesses::kAllProcesses,
          kAllProcessesStr}};
 // Note: Do not use the prepared macro as of no need for a local cache.
@@ -125,19 +133,25 @@ BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantineTaskControlledPurge,
              FEATURE_DISABLED_BY_DEFAULT);
 constexpr FeatureParam<
     PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses>::Option
-    kPartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcessesOptions[] =
-        {{PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
-              kBrowserOnly,
-          kBrowserOnlyStr},
-         {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
-              kBrowserAndRenderer,
-          kBrowserAndRendererStr},
-         {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
-              kNonRenderer,
-          kNonRendererStr},
-         {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
-              kAllProcesses,
-          kAllProcessesStr}};
+    kPartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcessesOptions[] = {
+        {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+             kBrowserOnly,
+         kBrowserOnlyStr},
+        {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+             kBrowserAndRenderer,
+         kBrowserAndRendererStr},
+        {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+             kNonRenderer,
+         kNonRendererStr},
+        {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+             kGPUOnly,
+         kGPUOnlyStr},
+        {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+             kBrowserAndGPU,
+         kBrowserAndGPUStr},
+        {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+             kAllProcesses,
+         kAllProcessesStr}};
 // Note: Do not use the prepared macro as of no need for a local cache.
 constinit const FeatureParam<
     PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses>

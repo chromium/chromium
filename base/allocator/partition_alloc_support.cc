@@ -137,6 +137,7 @@ constexpr int kDefaultMaxEmptySlotSpansDirtyBytesShift = 3;
 // This is defined in content/public/common/content_switches.h, which is not
 // accessible in ::base. They must be kept in sync.
 namespace switches {
+constexpr char kGpuProcess[] = "gpu-process";
 constexpr char kProcessType[] = "type";
 [[maybe_unused]] constexpr char kRendererProcess[] = "renderer";
 constexpr char kZygoteProcess[] = "zygote";
@@ -384,6 +385,10 @@ bool ShouldEnableFeatureOnProcess(
       return process_type.empty();
     case features::internal::PAFeatureEnabledProcesses::kNonRenderer:
       return process_type != switches::kRendererProcess;
+    case features::internal::PAFeatureEnabledProcesses::kGPUOnly:
+      return process_type == switches::kGpuProcess;
+    case features::internal::PAFeatureEnabledProcesses::kBrowserAndGPU:
+      return process_type.empty() || process_type == switches::kGpuProcess;
     case features::internal::PAFeatureEnabledProcesses::kBrowserAndRenderer:
       return process_type.empty() || process_type == switches::kRendererProcess;
     case features::internal::PAFeatureEnabledProcesses::kRendererOnly:
