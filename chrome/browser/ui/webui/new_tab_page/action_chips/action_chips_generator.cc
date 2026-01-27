@@ -270,7 +270,8 @@ std::vector<ActionChipPtr> CreateChipsForSteadyState(
     const AimEligibilityService* aim_eligibility_service,
     const CreateChipsForSteadyStateOptions& options) {
   std::vector<ActionChipPtr> chips;
-  if (!tab.is_null()) {
+  if (!tab.is_null() &&
+      ntp_features::kNtpNextShowStaticRecentTabChipParam.Get()) {
     chips.push_back(
         CreateRecentTabChip(std::move(tab), options.recent_tab_suggestion));
   }

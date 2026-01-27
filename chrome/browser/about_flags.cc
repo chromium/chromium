@@ -1821,6 +1821,22 @@ const FeatureEntry::FeatureParam
         {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
 };
 
+const FeatureEntry::FeatureParam
+    kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState[] = {
+        {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
+        {"kNtpNextShowStaticRecentTabChipParam", "false"},
+};
+
+const FeatureEntry::FeatureParam
+    kNtpNextShowSimplificationUIWithNtpActionClientWithNoRecentTabInSteadyState
+        [] = {
+            {"NtpNextShowSimplificationUIParam", "true"},
+            {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+            {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
+            {"kNtpNextShowStaticRecentTabChipParam", "false"},
+};
+
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDismissal[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
     {"NtpNextShowDeepDiveSuggestionsParam", "true"},
@@ -1837,12 +1853,24 @@ const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
      std::size(kNtpNextShowSimplificationUI), nullptr},
     {"- Show Row UI With Deep Dive", kNtpNextShowSimplificationUIWithDeepDive,
      std::size(kNtpNextShowSimplificationUIWithDeepDive), nullptr},
-    {"- Show Chips UI with a New Suggestions Client.",
+    {"- Show Chips UI with a New Suggestions Client",
      kNtpNextShowChipsUIWithChromeNtpActionClient,
      std::size(kNtpNextShowChipsUIWithChromeNtpActionClient), nullptr},
-    {"- Show Row UI with a New Suggestions Client.",
+    {"- Show Row UI with a New Suggestions Client",
      kNtpNextShowSimplificationUIWithChromeNtpActionClient,
      std::size(kNtpNextShowSimplificationUIWithChromeNtpActionClient), nullptr},
+    {"- Show Chips UI with a New Client and No Recent Tab Chip in the Steady "
+     "State",
+     kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState,
+     std::size(
+         kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState),
+     nullptr},
+    {"- Show Row UI with a New Client and  No Recent Tab Chip in the Steady "
+     "State",
+     kNtpNextShowSimplificationUIWithNtpActionClientWithNoRecentTabInSteadyState,
+     std::size(
+         kNtpNextShowSimplificationUIWithNtpActionClientWithNoRecentTabInSteadyState),
+     nullptr},
     {"- Show Dismissal UI", kNtpNextShowSimplificationUIWithDismissal,
      std::size(kNtpNextShowSimplificationUIWithDismissal), nullptr},
 };

@@ -341,6 +341,10 @@ const base::FeatureParam<bool>
         &ntp_features::kNtpNextFeatures,
         "NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam",
         false);
+const base::FeatureParam<bool> kNtpNextShowStaticRecentTabChipParam(
+    &ntp_features::kNtpNextFeatures,
+    "NtpNextShowStaticRecentTabChipParam",
+    true);
 const base::FeatureParam<bool> kNtpNextShowSimplificationUIParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextShowSimplificationUIParam",
