@@ -188,12 +188,20 @@ void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
 }
 
 void ContextualTasksPageHandler::OnFileClickedFromSourcesMenu(const GURL& url) {
-  // TODO(crbug.com/475032728): Implement logic to handle file click.
+  if (ui_service_) {
+    ui_service_->OnFileClickedFromSourcesMenu(
+        url, webui::GetBrowserWindowInterface(
+                 web_ui_controller_->web_ui()->GetWebContents()));
+  }
 }
 
 void ContextualTasksPageHandler::OnImageClickedFromSourcesMenu(
     const GURL& url) {
-  // TODO(crbug.com/473514418): Implement logic to handle image click.
+  if (ui_service_) {
+    ui_service_->OnImageClickedFromSourcesMenu(
+        url, webui::GetBrowserWindowInterface(
+                 web_ui_controller_->web_ui()->GetWebContents()));
+  }
 }
 
 void ContextualTasksPageHandler::OnWebviewMessage(
