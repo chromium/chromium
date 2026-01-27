@@ -90,6 +90,9 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
     private static final String KEY_FRAGMENT_STATE = "FragmentState";
     private static final String KEY_PANE_OPENED_BY_SEARCH = "PaneOpenedBySearch";
+    private static final String KEY_QUERY = "Query";
+    private static final String KEY_SELECTION_START = "SelectionStart";
+    private static final String KEY_SELECTION_END = "SelectionEnd";
 
     private final AppCompatActivity mActivity;
     private final BooleanSupplier mUseMultiColumnSupplier;
@@ -233,6 +236,14 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
             if (state == FS_SEARCH || state == FS_RESULTS) {
                 enterSearchState(/* clearFragment= */ false);
                 if (state == FS_RESULTS) enterSearchResultState();
+                String queryText = savedState.getString(KEY_QUERY);
+                if (!TextUtils.isEmpty(queryText)) {
+                    queryEdit.setText(queryText);
+                    int selectionStart = savedState.getInt(KEY_SELECTION_START);
+                    int selectionEnd = savedState.getInt(KEY_SELECTION_END);
+                    queryEdit.setSelection(selectionStart, selectionEnd);
+                    queryEdit.requestFocus();
+                }
                 restoreFragmentState();
             }
             mPaneOpenedBySearch = savedState.getBoolean(KEY_PANE_OPENED_BY_SEARCH);
@@ -1118,6 +1129,13 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt(KEY_FRAGMENT_STATE, mFragmentState);
         outState.putBoolean(KEY_PANE_OPENED_BY_SEARCH, mPaneOpenedBySearch);
+        EditText queryEdit = mActivity.findViewById(R.id.search_query);
+        String queryText = queryEdit.getText().toString();
+        if (!TextUtils.isEmpty(queryText)) {
+            outState.putString(KEY_QUERY, queryText);
+            outState.putInt(KEY_SELECTION_START, queryEdit.getSelectionStart());
+            outState.putInt(KEY_SELECTION_END, queryEdit.getSelectionEnd());
+        }
     }
 
     public void destroy() {
