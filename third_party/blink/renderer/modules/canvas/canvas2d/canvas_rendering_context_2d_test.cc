@@ -598,7 +598,10 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
         GetSharedImageUsageFlags()));
   }
   sk_sp<SkSurface> CreateSkSurface() const override {
-    return SkSurfaces::Raster(GetSkImageInfo());
+    const auto info = SkImageInfo::Make(
+        size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
+        alpha_type_, color_space_.ToSkColorSpace());
+    return SkSurfaces::Raster(info);
   }
 
   MOCK_METHOD((void), RasterRecord, (cc::PaintRecord last_recording));
