@@ -10,7 +10,7 @@ namespace composeboxAttachments {
 /// The height of input items.
 const float kAttachmentHeight = 44.0f;
 /// The corner radius of input items.
-const float kAttachmentCornerRadius = kAttachmentHeight / 2;
+const float kAttachmentCornerRadius = 16.0f;
 /// Image input item size.
 const CGSize kImageInputItemSize = {86.0f, kAttachmentHeight};
 /// Tab/File input item size.
