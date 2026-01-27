@@ -325,8 +325,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
                                       kHistorySyncOptinViewId);
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController, kSigninErrorViewId);
-
 SigninViewController::SigninViewController(BrowserWindowInterface* browser,
                                            Profile* profile,
                                            TabStripModel* tab_strip_model)

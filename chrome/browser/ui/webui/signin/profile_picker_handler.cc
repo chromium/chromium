@@ -477,11 +477,10 @@ void ProfilePickerHandler::DisplaySigninErrorDialog(
 
   const SigninUIError& generic_signin_error = std::get<SigninUIError>(error);
   CHECK(!generic_signin_error.message().empty());
-  FireWebUIListener(
-      "display-signin-error-dialog",
-      base::Value(SigninErrorUI::GetTitle(generic_signin_error.email())),
-      base::Value(generic_signin_error.message()),
-      base::Value(std::u16string()));
+  FireDisplaySigninErrorDialog(
+      SigninErrorUI::GetTitle(generic_signin_error.email()),
+      generic_signin_error.message(),
+      /*profile_path=*/std::u16string());
 }
 
 void ProfilePickerHandler::DisplayForceSigninErrorDialog(
@@ -489,9 +488,16 @@ void ProfilePickerHandler::DisplayForceSigninErrorDialog(
     const ForceSigninUIError& error) {
   AllowJavascript();
   const auto& [title, body] = error.GetErrorTexts();
+  FireDisplaySigninErrorDialog(title, body, profile_path.AsUTF16Unsafe());
+}
+
+void ProfilePickerHandler::FireDisplaySigninErrorDialog(
+    const std::u16string& title,
+    const std::u16string& body,
+    const std::u16string& profile_path) {
+  AllowJavascript();
   FireWebUIListener("display-signin-error-dialog", base::Value(title),
-                    base::Value(body),
-                    base::Value(profile_path.AsUTF16Unsafe()));
+                    base::Value(body), base::Value(profile_path));
 }
 
 void ProfilePickerHandler::HandleLaunchAllProfiles(

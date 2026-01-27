@@ -513,8 +513,6 @@ FirstRunFlowController::~FirstRunFlowController() {
 
 void FirstRunFlowController::ShowSigninError(Profile* profile,
                                              const SigninUIError& error) {
-  base::UmaHistogramEnumeration("ProfilePicker.FREFlow.SignInError",
-                                error.type());
   // Display the signin error once the browser opens.
   HandleSigninErrorInBrowser(profile, error);
 }

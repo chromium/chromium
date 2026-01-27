@@ -71,7 +71,6 @@ class SigninViewController {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kSignoutConfirmationDialogViewElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinViewId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSigninErrorViewId);
 
   class Observer : public base::CheckedObserver {
    public:

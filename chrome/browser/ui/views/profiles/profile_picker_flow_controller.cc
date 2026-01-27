@@ -673,8 +673,6 @@ void ProfilePickerFlowController::ShowSigninError(Profile* profile,
                                                   const SigninUIError& error) {
   CHECK_EQ(Step::kAccountSelection, current_step());
   CHECK(!error.IsOk());
-  base::UmaHistogramEnumeration("ProfilePicker.ProfilePickerFlow.SignInError",
-                                error.type());
 
   if (signin_util::IsForceSigninEnabled() &&
       error.type() ==

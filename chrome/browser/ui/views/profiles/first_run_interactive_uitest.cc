@@ -26,7 +26,6 @@
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
-#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -35,7 +34,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
-#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -58,7 +56,6 @@
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -504,42 +501,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, MAYBE_SignIn) {
                                       4);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
                                       6);
-}
-
-IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInError) {
-  base::test::TestFuture<bool> proceed_future;
-  OpenFirstRun(proceed_future.GetCallback());
-
-  RunTestSequenceInContext(
-      views::ElementTrackerViews::GetContextForView(view()),
-      // Wait for the profile picker to show the intro.
-      WaitForShow(kProfilePickerViewId),
-      InstrumentNonTabWebView(kWebContentsId, web_view()),
-      CompleteIntroStep(/*sign_in=*/true),
-      // Wait for switch to the Gaia sign-in page to complete.
-      WaitForWebContentsNavigation(kWebContentsId,
-                                   GetSigninChromeSyncDiceUrl()));
-
-  // Simulate a sign-in error.
-  content::WebContents* signin_web_contents = web_contents();
-  auto auth_error =
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
-  {
-    std::unique_ptr<ProcessDiceHeaderDelegateImpl>
-        process_dice_header_delegate_impl =
-            ProcessDiceHeaderDelegateImpl::Create(signin_web_contents);
-    process_dice_header_delegate_impl->HandleTokenExchangeFailure(kTestEmail,
-                                                                  auth_error);
-  }
-  histogram_tester().ExpectUniqueSample(
-      "ProfilePicker.FREFlow.SignInError",
-      static_cast<int>(SigninUIError::Type::kFromGoogleServiceAuthError), 1);
-
-  // Wait for the picker to be closed and deleted.
-  WaitForPickerClosed();
-  EXPECT_TRUE(proceed_future.Get());
-  // The error dialog is shown to the user.
-  RunTestSequence(WaitForShow(SigninViewController::kSigninErrorViewId));
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, ExitAtSignIn) {

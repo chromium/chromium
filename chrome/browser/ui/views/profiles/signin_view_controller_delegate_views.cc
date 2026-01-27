@@ -171,13 +171,9 @@ SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(
 // static
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateSigninErrorWebView(Browser* browser) {
-  auto web_view = CreateDialogWebView(
-      browser, GURL(chrome::kChromeUISigninErrorURL), kSigninErrorDialogHeight,
-      std::nullopt, InitializeSigninWebDialogUI(true));
-  CHECK(web_view);
-  web_view->SetProperty(views::kElementIdentifierKey,
-                        SigninViewController::kSigninErrorViewId);
-  return web_view;
+  return CreateDialogWebView(browser, GURL(chrome::kChromeUISigninErrorURL),
+                             kSigninErrorDialogHeight, std::nullopt,
+                             InitializeSigninWebDialogUI(true));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
