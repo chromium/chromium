@@ -84,6 +84,9 @@ export class LineFocusController {
 
       if (this.model_.getInitiatedScroll()) {
         this.model_.setInitiatedScroll(false);
+        if (this.isStatic() && this.getCurrentLineFocusLines_() > 1) {
+          return;
+        }
         const oldHeight = this.getHeight();
         const oldTop = this.getTop();
         this.calculateHeight_();
