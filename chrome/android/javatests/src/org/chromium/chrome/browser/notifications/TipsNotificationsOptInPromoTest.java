@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.util.Pair;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -32,24 +33,27 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.notifications.TipsOptInBottomSheetFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.RenderTestRule.Component;
 import org.chromium.ui.widget.ButtonCompat;
 
-/** Integration tests for the tips notifications opt in promo. */
+import java.io.IOException;
+
+// TODO(crbug.com/478907175): Remove casting when value returns the view type.
+/** Integration and render tests for the tips notifications opt in promo. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS + ":always_show_opt_in_promo/true"})
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
@@ -57,6 +61,13 @@ public class TipsNotificationsOptInPromoTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
+                    .setBugComponent(Component.UI_NOTIFICATIONS)
+                    .build();
 
     private Context mContext;
 
@@ -67,10 +78,14 @@ public class TipsNotificationsOptInPromoTest {
 
     @Test
     @MediumTest
-    public void testOptInBottomSheetDismiss() {
+    @Feature({"RenderTest"})
+    public void testOptInBottomSheetDismiss() throws IOException {
         var tripResult = showOptInBottomSheet();
         TipsOptInBottomSheetFacility bottomSheet = tripResult.first;
         RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) bottomSheet.bottomSheetElement.value()), "opt_in_bottom_sheet");
 
         // Check that backpress dismisses the opt in bottom sheet.
         bottomSheet.dismiss();
