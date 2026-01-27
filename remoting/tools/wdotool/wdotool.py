@@ -155,46 +155,57 @@ class Options:
                            None]] = dataclasses.field(default_factory=list)
 
 
+def process_event(e: ei.Event, devices: Devices,
+                  options: Options) -> None:
+  # Protect access to event_type because the getter throws for unknown
+  # events.
+  try:
+    event_type = e.event_type
+  except Exception as err:
+    print(err)
+    return
+  if options.verbose:
+    print(e)
+
+  if event_type == ei.EventType.SEAT_ADDED:
+    if options.verbose:
+      print(e.seat)
+    e.seat.bind(ei.DeviceCapability.all())
+  elif event_type == ei.EventType.DEVICE_RESUMED:
+    if options.verbose:
+      print(e.device)
+    e.device.start_emulating()
+    if ei.DeviceCapability.POINTER in e.device.capabilities:
+      devices.pointer_relative = e.device
+    if ei.DeviceCapability.POINTER_ABSOLUTE in e.device.capabilities:
+      devices.pointer_absolute = e.device
+    if ei.DeviceCapability.SCROLL in e.device.capabilities:
+      devices.scroll = e.device
+    if ei.DeviceCapability.BUTTON in e.device.capabilities:
+      devices.button = e.device
+    if ei.DeviceCapability.KEYBOARD in e.device.capabilities:
+      devices.keyboard = e.device
+
+
 def connect_to_eis(fd: int, options: Options) -> None:
   ctx = ei.Sender.create_for_fd(fd=IOLike(fd), name="ei-debug-events")
   poll = select.poll()
   poll.register(ctx.fd)
   devices = Devices()
-  while poll.poll():
+  executors = options.executors
+
+  while True:
+    poll.poll(0.0001)
     ctx.dispatch()
     for e in ctx.events:
-      # Protect access to event_type because the getter throws for unknown
-      # events.
-      try:
-        event_type = e.event_type
-      except Exception as err:
-        print(err)
-        continue
-      if options.verbose:
-        print(e)
+      process_event(e, devices, options)
 
-      if event_type == ei.EventType.SEAT_ADDED:
-        if options.verbose:
-          print(e.seat)
-        e.seat.bind(ei.DeviceCapability.all())
-      elif event_type == ei.EventType.DEVICE_RESUMED:
-        if options.verbose:
-          print(e.device)
-        e.device.start_emulating()
-        if ei.DeviceCapability.POINTER in e.device.capabilities:
-          devices.pointer_relative = e.device
-        if ei.DeviceCapability.POINTER_ABSOLUTE in e.device.capabilities:
-          devices.pointer_absolute = e.device
-        if ei.DeviceCapability.SCROLL in e.device.capabilities:
-          devices.scroll = e.device
-        if ei.DeviceCapability.BUTTON in e.device.capabilities:
-          devices.button = e.device
-        if ei.DeviceCapability.KEYBOARD in e.device.capabilities:
-          devices.keyboard = e.device
-        if devices.ready():
-          for executor in options.executors:
-            executor(devices)
-          return
+    if devices.ready():
+      keep = executors[0](devices)
+      if not keep:
+        executors = executors[1:]
+    if not executors:
+      break
 
 
 # snegg doesn't expose the scroll functions on devices
@@ -210,13 +221,22 @@ def scroll_delta(device: ei.Device, y: int) -> None:
   device.frame()
 
 
+# Sleep for 1s per tick, up to the specified duration.
 class SleepAction(argparse.Action):
   def __call__(self,
                parser: argparse.ArgumentParser,
                namespace: argparse.Namespace,
                values: Any,
                option: Optional[str] = None) -> None:
-    namespace.executors.append(lambda _: time.sleep(values[0]))
+    self.duration = values[0]
+    namespace.executors.append(lambda _: self.exec())
+
+  def exec(self) -> None:
+    tick = self.duration if self.duration <= 1 else 1
+    self.duration -= 1
+    time.sleep(tick)
+    # Continue executing until the duration has elapsed.
+    return self.duration > 0
 
 
 class ScrollDeltaAction(argparse.Action):
