@@ -837,7 +837,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // sites, with an additional restriction that a process may only be reused while
 // the number of main frames in that process stays below a threshold.
 BASE_FEATURE(kProcessPerSiteUpToMainFrameThreshold,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Specifies the threshold for `kProcessPerSiteUpToMainFrameThreshold` feature.
 constexpr base::FeatureParam<int> kProcessPerSiteMainFrameThreshold{
@@ -1047,7 +1047,7 @@ const base::FeatureParam<int> kTouchDragMovementThresholdDip{
 // when a new renderer process is needed. Currently, only background renderer
 // processes are considered for reuse.
 BASE_FEATURE(kTrackEmptyRendererProcessesForReuse,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
 // sites as they migrate towards requiring cross-origin isolation for these
