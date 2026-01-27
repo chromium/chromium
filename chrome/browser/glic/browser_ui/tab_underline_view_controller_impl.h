@@ -47,6 +47,7 @@ class TabUnderlineViewControllerImpl
   // TabUnderlineViewController overrides:
   void Initialize(TabUnderlineView* underline_view,
                   BrowserWindowInterface* browser_window_interface) override;
+  void OnViewAddedToWidget() override;
 
   // contextual_tasks::ActiveTaskContextProvider::Observer overrides:
   // Handles updates from the contextual Tasks backend.

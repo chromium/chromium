@@ -96,6 +96,18 @@ void TabUnderlineViewControllerImpl::Initialize(
   }
 }
 
+void TabUnderlineViewControllerImpl::OnViewAddedToWidget() {
+  if (!glic_service_ || !ShouldUseSignalsForGlicUnderlines()) {
+    return;
+  }
+
+  // During cases such as tabstrip attachment, the underline controller consumes
+  // changes in pinned state before the underline view is reconstructed. Check
+  // consistency with pinned state post-construction to ensure the UI state of
+  // the underline is correct.
+  OnPinnedTabsChanged(glic_service_->sharing_manager().GetPinnedTabs());
+}
+
 void TabUnderlineViewControllerImpl::OnFocusedTabChanged(
     const FocusedTabData& focused_tab_data) {
   tabs::TabInterface* tab = focused_tab_data.focus();

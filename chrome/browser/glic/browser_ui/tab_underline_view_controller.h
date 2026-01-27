@@ -20,6 +20,11 @@ class TabUnderlineViewController {
   // Initialization. Starts observing the state of the browser.
   virtual void Initialize(TabUnderlineView* underline_view,
                           BrowserWindowInterface* browser_window_interface) = 0;
+
+  // Called when the owning TabUnderlineView is added to its widget hierarchy.
+  // Handles any initialization based on underline state changes that occurred
+  // before construction, for example during tabstrip attachment.
+  virtual void OnViewAddedToWidget() = 0;
 };
 
 }  // namespace glic

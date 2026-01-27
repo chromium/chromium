@@ -143,6 +143,11 @@ void TabUnderlineView::OnThemeChanged() {
   SchedulePaint();
 }
 
+void TabUnderlineView::AddedToWidget() {
+  View::AddedToWidget();
+  controller_->OnViewAddedToWidget();
+}
+
 std::vector<SkColor> TabUnderlineView::GetEffectColors() {
   // Overwrite colors used for shader effect to follow Chrome theming instead of
   // kGlicParameterizedShader feature values.

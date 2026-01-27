@@ -100,6 +100,7 @@ class TabUnderlineView : public AnimatedEffectView {
 
   // `views::View`:
   void OnThemeChanged() override;
+  void AddedToWidget() override;
 
   int ComputeDimension();
 
