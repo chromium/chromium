@@ -74,9 +74,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
   source->AddResourcePath(
-      chrome::kChromeUIPrivacySandboxDialogCombinedPath,
-      IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_COMBINED_DIALOG_HTML);
-  source->AddResourcePath(
       chrome::kChromeUIPrivacySandboxDialogNoticePath,
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_DIALOG_HTML);
 

@@ -55,29 +55,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PrivacySandboxDialogTest,
                          testing::Values(WindowSize::kSmall, WindowSize::kBig));
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Combined) {
-  RunTestSuite("Combined");
-}
-
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeROW) {
   RunTestSuite("NoticeROW");
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Mixin) {
   RunTestSuite("Mixin");
-}
-
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, CombinedAdsApiUxEnhancement) {
-  RunTestSuite("CombinedAdsApiUxEnhancement");
-}
-
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest,
-                       CombinedAdsApiUxEnhancementAdTopicsContentParity) {
-  RunTestSuite("CombinedAdsApiUxEnhancementAdTopicsContentParity");
-}
-
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeEEAAdsApiUxEnhancement) {
-  RunTestSuite("NoticeEEAAdsApiUxEnhancement");
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeROWAdsApiUxEnhancement) {

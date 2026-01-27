@@ -16,16 +16,12 @@ build_webui("build") {
     "images/fledge_banner_dark.svg",
     "images/topics_banner.svg",
     "images/topics_banner_dark.svg",
-    "privacy_sandbox_combined_dialog.html",
     "privacy_sandbox_notice_dialog.html",
     "privacy_sandbox_privacy_policy.html",
   ]
 
   web_component_files = [
-    "privacy_sandbox_combined_dialog_app.ts",
-    "privacy_sandbox_dialog_consent_step.ts",
     "privacy_sandbox_dialog_learn_more.ts",
-    "privacy_sandbox_dialog_notice_step.ts",
     "privacy_sandbox_notice_dialog_app.ts",
   ]
 
