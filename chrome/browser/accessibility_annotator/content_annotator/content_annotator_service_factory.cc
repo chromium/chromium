@@ -39,8 +39,7 @@ ContentAnnotatorServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(kContentAnnotator)) {
     return nullptr;
   }
-  return std::make_unique<ContentAnnotatorService>(
-      Profile::FromBrowserContext(context));
+  return std::make_unique<ContentAnnotatorService>();
 }
 
 bool ContentAnnotatorServiceFactory::ServiceIsCreatedWithBrowserContext()

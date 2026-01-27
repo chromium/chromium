@@ -5,25 +5,17 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_H_
 #define CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-
-class Profile;
 
 namespace accessibility_annotator {
 
 class ContentAnnotatorService : public KeyedService {
  public:
-  explicit ContentAnnotatorService(Profile* profile);
+  ContentAnnotatorService();
   ~ContentAnnotatorService() override;
 
   ContentAnnotatorService(const ContentAnnotatorService&) = delete;
-  ContentAnnotatorService& operator=(
-      const ContentAnnotatorService&) = delete;
-
- private:
-  // Not owned. Guaranteed to outlive `this`.
-  raw_ptr<Profile> profile_;
+  ContentAnnotatorService& operator=(const ContentAnnotatorService&) = delete;
 };
 
 }  // namespace accessibility_annotator

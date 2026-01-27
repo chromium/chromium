@@ -4,12 +4,9 @@
 
 #include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service.h"
 
-#include "chrome/browser/profiles/profile.h"
-
 namespace accessibility_annotator {
 
-ContentAnnotatorService::ContentAnnotatorService(Profile* profile)
-    : profile_(profile) {}
+ContentAnnotatorService::ContentAnnotatorService() = default;
 
 ContentAnnotatorService::~ContentAnnotatorService() = default;
 
