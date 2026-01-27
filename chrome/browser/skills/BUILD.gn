@@ -55,6 +55,8 @@ source_set("ui") {
 
   deps = [
     ":skills",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/toasts",
@@ -85,5 +87,29 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/skills:features",
     "//components/skills/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "skills_ui_tab_controller_unittest.cc" ]
+
+  deps = [
+    ":skills",
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/keyed_service/core",
+    "//components/skills/public",
+    "//components/tabs:test_support",
+    "//content/public/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/unowned_user_data",
   ]
 }

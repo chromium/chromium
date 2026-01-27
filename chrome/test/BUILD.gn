@@ -7601,7 +7601,10 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    deps += [ "//chrome/browser/ui/views/session_restore_infobar:unit_tests" ]
+    deps += [
+      "//chrome/browser/skills:unit_tests",
+      "//chrome/browser/ui/views/session_restore_infobar:unit_tests",
+    ]
   }
 
   if (is_win) {
