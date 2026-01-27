@@ -8,10 +8,12 @@
 #endif
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "v8/src/fuzzilli/cov.h"
 
@@ -76,10 +78,26 @@ int LLVMFuzzerRunDriverImpl(int* argc,
   while (true) {
     // Read the action message ("exec") from Fuzzilli.
     constexpr auto kExpectedAction = base::span_from_cstring("exec");
-    uint8_t action_msg[kExpectedAction.size()];
-    if (!ctrl_read_file.ReadAtCurrentPosAndCheck(base::span(action_msg)) ||
-        !std::ranges::equal(kExpectedAction, action_msg)) {
-      LOG(WARNING) << "Unexpected message from Fuzzilli: " << action_msg;
+    uint8_t read_buffer[kExpectedAction.size()];
+    std::optional<size_t> bytes_read =
+        ctrl_read_file.ReadAtCurrentPos(base::span(read_buffer));
+
+    if (!bytes_read.has_value()) {
+      LOG(ERROR) << "Failed to read from Fuzzilli control pipe.";
+      return 0;
+    }
+
+    base::span<const uint8_t> bytes =
+        base::span(read_buffer).first(*bytes_read);
+    if (bytes.empty()) {
+      LOG(WARNING) << "Fuzzilli disconnected (EOF). Exiting.";
+      return 0;
+    }
+
+    if (bytes != kExpectedAction) {
+      LOG(WARNING) << "Unexpected message from Fuzzilli. Expected size: "
+                   << kExpectedAction.size() << ", Read size: " << bytes.size()
+                   << ", Expected: exec, Got: " << base::as_string_view(bytes);
       return 0;
     }
 
