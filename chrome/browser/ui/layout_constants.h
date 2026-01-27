@@ -183,8 +183,11 @@ enum class LayoutConstant {
   // tabs.
   kVerticalTabCornerRadius,
 
-  // The height of a vertical tab.
+  // The height of an unpinned vertical tab.
   kVerticalTabHeight,
+
+  // The height of a pinned vertical tab.
+  kVerticalTabPinnedHeight,
 
   // The minimum possible width for a vertical tab.
   kVerticalTabMinWidth,

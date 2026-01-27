@@ -135,6 +135,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 8;
     case LayoutConstant::kVerticalTabHeight:
       return 30;
+    case LayoutConstant::kVerticalTabPinnedHeight:
+      return 32;
     case LayoutConstant::kVerticalTabMinWidth:
       return 32;
     case LayoutConstant::kVerticalTabStripUncollapsedPadding:

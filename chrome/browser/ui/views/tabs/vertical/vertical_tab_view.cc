@@ -429,7 +429,9 @@ views::ProposedLayout VerticalTabView::CalculateProposedLayout(
 
   const int width = size_bounds.width().value_or(
       VerticalTabStripRegionView::kUncollapsedMaxWidth);
-  const int height = GetLayoutConstant(LayoutConstant::kVerticalTabHeight);
+  const int height =
+      GetLayoutConstant(pinned_ ? LayoutConstant::kVerticalTabPinnedHeight
+                                : LayoutConstant::kVerticalTabHeight);
 
   views::ProposedLayout layouts;
   layouts.host_size = gfx::Size(width, height);
