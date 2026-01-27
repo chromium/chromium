@@ -303,18 +303,24 @@ public class NtpCustomizationMediatorUnitTest {
         // Verifies mViewFlipperMap is cleared.
         mViewFlipperMap.put(BottomSheetType.NTP_CARDS, 9);
         mViewFlipperMap.put(BottomSheetType.MAIN, 10);
-
         assertEquals(2, mViewFlipperMap.size());
-        mMediator.destroy();
-        assertEquals(0, mViewFlipperMap.size());
 
         // Verifies mTypeToListenerMap is cleared.
         Map<Integer, View.OnClickListener> typeToListenerMap =
                 mMediator.getTypeToListenersForTesting();
         typeToListenerMap.put(BottomSheetType.NTP_CARDS, view -> {});
         assertEquals(1, typeToListenerMap.size());
+
+        // Verifies mListContent is cleared.
+        List<Integer> listItems = mListDelegate.getListItems();
+        assertFalse(listItems.isEmpty());
+
         mMediator.destroy();
+
+        assertEquals(0, mViewFlipperMap.size());
         assertEquals(0, typeToListenerMap.size());
+        assertTrue(listItems.isEmpty());
+        verify(mContainerPropertyModel).set(eq(LIST_CONTAINER_VIEW_DELEGATE), eq(null));
     }
 
     @Test

@@ -110,7 +110,14 @@ public class NtpThemeMediator {
     void destroy() {
         mBottomSheetPropertyModel.set(BACK_PRESS_HANDLER, null);
         mThemePropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, null);
-        mActivityResultLauncher = null;
+        mThemePropertyModel.set(SECTION_ON_CLICK_LISTENER, new Pair<>(DEFAULT, null));
+        mThemePropertyModel.set(SECTION_ON_CLICK_LISTENER, new Pair<>(IMAGE_FROM_DISK, null));
+        mThemePropertyModel.set(SECTION_ON_CLICK_LISTENER, new Pair<>(CHROME_COLOR, null));
+        mThemePropertyModel.set(SECTION_ON_CLICK_LISTENER, new Pair<>(THEME_COLLECTION, null));
+        if (mActivityResultLauncher != null) {
+            mActivityResultLauncher.unregister();
+            mActivityResultLauncher = null;
+        }
         mActivityResultRegistry = null;
     }
 

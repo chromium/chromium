@@ -328,8 +328,12 @@ public class NtpCustomizationMediator {
 
     /** Clears maps */
     void destroy() {
+        if (mContainerPropertyModel != null) {
+            mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, null);
+        }
         mViewFlipperMap.clear();
         mTypeToListenersMap.clear();
+        mListContent.clear();
     }
 
     /**

@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.IS_SECTION_TRAILING_ICON_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS;
@@ -131,6 +132,14 @@ public class NtpThemeMediatorUnitTest {
 
         assertNull(mBottomSheetPropertyModel.get(BACK_PRESS_HANDLER));
         assertNull(mThemePropertyModel.get(LEARN_MORE_BUTTON_CLICK_LISTENER));
+        verify(mThemePropertyModel)
+                .set(eq(SECTION_ON_CLICK_LISTENER), eq(new Pair<>(DEFAULT, null)));
+        verify(mThemePropertyModel)
+                .set(eq(SECTION_ON_CLICK_LISTENER), eq(new Pair<>(IMAGE_FROM_DISK, null)));
+        verify(mThemePropertyModel)
+                .set(eq(SECTION_ON_CLICK_LISTENER), eq(new Pair<>(CHROME_COLOR, null)));
+        verify(mThemePropertyModel)
+                .set(eq(SECTION_ON_CLICK_LISTENER), eq(new Pair<>(THEME_COLLECTION, null)));
     }
 
     @Test
