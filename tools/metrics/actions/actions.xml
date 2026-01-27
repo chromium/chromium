@@ -18483,6 +18483,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.Omnibox.MobileFusebox.Action.DragAndDrop">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>ericekey@google.com</owner>
+  <description>
+    Recorded when a user drags and drops an item into the Composebox. The item
+    type is recorded in the Omnibox.MobileFusebox.DragAndDrop histogram.
+  </description>
+</action>
+
 <action name="IOS.OpenIn">
   <obsolete>Renamed to IOS.OpenIn.Tapped, 08/2020</obsolete>
   <owner>ewannpv@chromium.org</owner>

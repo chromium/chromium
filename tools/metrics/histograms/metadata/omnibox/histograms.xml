@@ -55,6 +55,19 @@ chromium-metrics-reviews@google.com.
                or decrease is necessarily good."/>
 </variants>
 
+<!-- LINT.IfChange(ComposeboxDragAndDropType) -->
+
+<variants name="ComposeboxDragAndDropType">
+  <variant name="" summary="All drag and drop types"/>
+  <variant name=".Image" summary="Image drag and drop"/>
+  <variant name=".PDF" summary="PDF drag and drop"/>
+  <variant name=".Tab" summary="Tab drag and drop"/>
+  <variant name=".Text" summary="Text drag and drop"/>
+  <variant name=".Unknown" summary="Unknown drag and drop type"/>
+</variants>
+
+<!-- LINT.ThenChange(ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:ComposeboxDragAndDropType, //tools/metrics/histograms/metadata/omnibox/enums.xml:ComposeboxDragAndDropType) -->
+
 <!-- LINT.IfChange(ContextType) -->
 
 <variants name="ContextType">
@@ -2486,6 +2499,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Records the autocomplete request type at the time of navigation. Recorded
     when the omnibox is used to navigate.
   </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.DragAndDrop{ComposeboxDragAndDropType}"
+    enum="ComposeboxDragAndDropType" expires_after="2026-11-11">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>ericekey@google.com</owner>
+  <summary>
+    Records the type of content (Text, Image, Tab, PDF, or Unknown) that is
+    dragged and dropped into the Composebox, categorized by specific content
+    type. Recorded for each processed item from a drag-and-drop action into the
+    Composebox. {ComposeboxDragAndDropType}
+  </summary>
+  <token key="ComposeboxDragAndDropType" variants="ComposeboxDragAndDropType"/>
 </histogram>
 
 <histogram name="Omnibox.MobileFusebox.TabPickerTabsAttached" units="count"

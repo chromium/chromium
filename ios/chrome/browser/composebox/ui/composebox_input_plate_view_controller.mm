@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
@@ -1862,23 +1863,38 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 /// Performs a drop action for a given drop session.
 - (void)performDrop:(id<UIDropSession>)session {
+  base::RecordAction(
+      base::UserMetricsAction("IOS.Omnibox.MobileFusebox.Action.DragAndDrop"));
   // Drop each eligible dragged item into the Composebox.
   for (UIDragItem* item in session.items) {
     if ([self willAllowPDFDrop:session] &&
         [item.itemProvider
             hasItemConformingToTypeIdentifier:UTTypePDF.identifier]) {
+      [self.delegate composeboxViewController:self
+                    didAttemptDragAndDropType:ComposeboxDragAndDropType::kPDF];
       [self performDropForPDF:item.itemProvider];
     } else if ([self willAllowImageDrop:session] &&
                [item.itemProvider
                    hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+      [self.delegate
+           composeboxViewController:self
+          didAttemptDragAndDropType:ComposeboxDragAndDropType::kImage];
       [self performDropForImage:item.itemProvider];
     } else if ([self willAllowTabDrop:session] &&
                [item.localObject isKindOfClass:[TabInfo class]]) {
+      [self.delegate composeboxViewController:self
+                    didAttemptDragAndDropType:ComposeboxDragAndDropType::kTab];
       [self performDropForTab:item.localObject];
     } else if ([self willAllowTextDrop:session] &&
                [item.itemProvider
                    hasItemConformingToTypeIdentifier:UTTypeText.identifier]) {
+      [self.delegate composeboxViewController:self
+                    didAttemptDragAndDropType:ComposeboxDragAndDropType::kText];
       [self performDropForText:item.itemProvider];
+    } else {
+      [self.delegate
+           composeboxViewController:self
+          didAttemptDragAndDropType:ComposeboxDragAndDropType::kUnknown];
     }
   }
   // Drop complete.

@@ -109,6 +109,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Off the record"/>
 </enum>
 
+<!-- LINT.IfChange(ComposeboxDragAndDropType) -->
+
+<enum name="ComposeboxDragAndDropType">
+  <int value="0" label="Text"/>
+  <int value="1" label="Image"/>
+  <int value="2" label="Tab"/>
+  <int value="3" label="PDF"/>
+  <int value="4" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:ComposeboxDragAndDropType, //tools/metrics/histograms/metadata/omnibox/histograms.xml:ComposeboxDragAndDropType) -->
+
 <!-- LINT.IfChange(ContextType) -->
 
 <enum name="ContextType">
