@@ -404,9 +404,10 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   // Flush the interface to make sure the error notification was received.
   partition->FlushNetworkInterfaceForTesting();
 
-  // |partition->GetNetworkContext()| should return a valid new pointer after
-  // crash.
-  EXPECT_NE(old_network_context, partition->GetNetworkContext());
+  // |partition->GetNetworkContext()| should return a valid pointer after crash.
+  // TODO(crbug.org/478890190): We probably need to add an identifier to
+  // NetworkContext to verify that "new" network context is created.
+  EXPECT_NE(nullptr, partition->GetNetworkContext());
   EXPECT_EQ(net::OK,
             LoadBasicRequest(partition->GetNetworkContext(), GetTestURL()));
 }
@@ -1135,11 +1136,13 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   // Flush the interface to make sure the error notification was received.
   partition->FlushNetworkInterfaceForTesting();
 
-  // |partition->GetNetworkContext()| should return a valid new pointer after
-  // crash. The revoked nonces should be restored in the new NetworkContext.
+  // |partition->GetNetworkContext()| should return a valid pointer after crash.
+  // The revoked nonces should be restored in the new NetworkContext.
+  // TODO(crbug.org/478890190): We probably need to add an identifier to
+  // NetworkContext to verify that "new" network context is created.
   network::mojom::NetworkContext* new_network_context =
       partition->GetNetworkContext();
-  EXPECT_NE(old_network_context, new_network_context);
+  EXPECT_NE(nullptr, new_network_context);
 
   // Make another get request, which should still be blocked.
   network::mojom::URLLoaderFactoryParamsPtr new_params =

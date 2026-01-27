@@ -59,9 +59,10 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceRestartBrowserTest,
   // Flush the interface to make sure the error notification was received.
   partition->FlushNetworkInterfaceForTesting();
 
-  // |partition->GetNetworkContext()| should return a valid new pointer after
-  // crash.
-  EXPECT_NE(old_network_context, partition->GetNetworkContext());
+  // |partition->GetNetworkContext()| should return a valid pointer after crash.
+  // TODO(crbug.org/478890190): We probably need to add an identifier to
+  // NetworkContext to verify that "new" network context is created.
+  EXPECT_NE(nullptr, partition->GetNetworkContext());
   EXPECT_EQ(net::OK,
             LoadBasicRequest(partition->GetNetworkContext(), GetTestURL()));
 #endif

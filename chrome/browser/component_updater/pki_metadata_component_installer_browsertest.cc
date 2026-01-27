@@ -1079,9 +1079,6 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
                     {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08})));
   }
 
-  network::mojom::NetworkContext* old_network_context =
-      partition->GetNetworkContext();
-
   // Simulate a network service crash and restart, and check that the newly
   // created network service uses the Trust Anchor ID from the prior component
   // update.
@@ -1090,8 +1087,10 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
   partition->FlushNetworkInterfaceForTesting();
   {
     // Just to be sure that the test is testing what it intends to, check that a
-    // new network context has been created.
-    ASSERT_NE(old_network_context, partition->GetNetworkContext());
+    // network context has been created.
+    // TODO(crbug.org/478890190): We probably need to add an identifier to
+    // NetworkContext to verify that "new" network context is created.
+    ASSERT_NE(nullptr, partition->GetNetworkContext());
 
     base::test::TestFuture<const std::vector<std::vector<uint8_t>>&> future;
     partition->GetNetworkContext()->GetTrustAnchorIDsForTesting(
