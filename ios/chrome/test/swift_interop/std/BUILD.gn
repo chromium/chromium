@@ -13,17 +13,36 @@ if (enable_swift_cxx_interop) {
       "vector.h",
     ]
     deps = [ "//base" ]
+    visibility = [ ":*" ]
   }
 
-  swift_modulemap("swift_std_test_helpers") {
+  swift_modulemap("_swift_string_helpers") {
     modules = [
       {
-        name = "StdTestHelpers"
-        sources = [
-          "string_helper.h",
-          "vector.h",
-        ]
+        name = "StringTestHelpers"
+        sources = [ "string_helper.h" ]
       },
+    ]
+
+    # Test that visibility is handled correctly by swift_modulemap
+    visibility = [ ":*" ]
+  }
+
+  swift_modulemap("_swift_vector_helpers") {
+    modules = [
+      {
+        name = "VectorTestHelpers"
+        sources = [ "vector.h" ]
+      },
+    ]
+    visibility = [ ":*" ]
+  }
+
+  swift_modulemap_group("swift_std_test_helpers") {
+    module_name = "StdTestHelpers"
+    deps = [
+      ":_swift_string_helpers",
+      ":_swift_vector_helpers",
     ]
   }
 
