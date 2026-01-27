@@ -4,8 +4,6 @@
 
 package org.chromium.base.supplier;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -65,7 +63,10 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
 
     @Override
     public T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
-        assumeNonNull(mObservers); // Check not destroyed.
+        assert mObservers != null : "addObserver called on destroyed supplier";
+        if (mObservers == null) {
+            return null;
+        }
         // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
 
