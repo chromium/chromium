@@ -45,8 +45,6 @@ export class OmniboxAimAppElement extends CrLitElement {
   protected disableComposeboxAnimation_: boolean =
       loadTimeData.getBoolean('composeboxAnimationDisabled');
 
-  private isDebug_: boolean =
-      new URLSearchParams(window.location.search).has('debug');
   private eventTracker_ = new EventTracker();
   private searchboxPageHandler_: SearchboxPageHandlerInterface;
   private pageHandler_: PageHandlerInterface;
@@ -76,13 +74,6 @@ export class OmniboxAimAppElement extends CrLitElement {
     ];
 
     this.$.composebox.focusInput();
-
-    if (!this.isDebug_) {
-      this.eventTracker_.add(
-          document.documentElement, 'contextmenu', (e: Event) => {
-            e.preventDefault();
-          });
-    }
 
     this.setupLocalizedLinkListener();
   }
