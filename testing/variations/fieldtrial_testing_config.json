@@ -24095,22 +24095,6 @@
             ]
         }
     ],
-    "SharedImageStubHighPriority": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SharedImageStubHighPriority"
-                    ]
-                }
-            ]
-        }
-    ],
     "SharedStorageWorkletThreadImplementation": [
         {
             "platforms": [
