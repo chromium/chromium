@@ -1762,10 +1762,11 @@ void CanvasResourceProvider::ClearAtCreation() {
   // printing operations. See crbug.com/1003114
   DCHECK(IsValid());
   MemoryManagedPaintRecorder recorder(Size(), this);
-  if (info_.alphaType() == kOpaque_SkAlphaType)
+  if (alpha_type_ == kOpaque_SkAlphaType) {
     recorder.getRecordingCanvas().clear(SkColors::kBlack);
-  else
+  } else {
     recorder.getRecordingCanvas().clear(SkColors::kTransparent);
+  }
 
   RasterRecord(recorder.ReleaseMainRecording());
 }
