@@ -65,6 +65,7 @@ source_set("ui_bundled") {
     "//components/password_manager/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/badges/model:features",
+    "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:badge",

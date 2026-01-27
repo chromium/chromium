@@ -38,9 +38,6 @@ const CGFloat kEntrypointHeightMultiplier = 0.72;
 const CGFloat kLabelTrailingSpaceMultiplier = 0.375;
 const CGFloat kLabelLeadingSpaceMultiplier = 0.095;
 
-// Entrypoint and Infobar badges separator constants.
-const CGFloat kSeparatorHeightMultiplier = 0.35;
-const CGFloat kSeparatorWidthConstant = 1;
 
 // Amount of time animating the entrypoint into the location bar should take.
 const NSTimeInterval kEntrypointDisplayingAnimationTime = 0.3;
@@ -79,9 +76,6 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   UIImageView* _imageView;
   UILabel* _label;
 
-  // The small vertical pill-shaped line separating the Contextual Panel
-  // entrypoint and Infobar badges, if present.
-  UIView* _separator;
 
   // Constraints for the two states of the trailing edge of the entrypoint
   // container. They are activated/deactivated as needed when the label is
@@ -125,10 +119,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _entrypointItemsWrapper = [self configuredEntrypointItemsWrapper];
   _imageView = [self configuredImageView];
   _label = [self configuredLabel];
-  _separator = [self configuredSeparator];
 
   [self.view addSubview:_entrypointContainer];
-  [self.view addSubview:_separator];
   [_entrypointContainer addSubview:_entrypointItemsWrapper];
   [_entrypointItemsWrapper addSubview:_imageView];
   [_entrypointItemsWrapper addSubview:_label];
@@ -155,7 +147,6 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _entrypointItemsWrapper.layer.cornerRadius =
       _entrypointItemsWrapper.bounds.size.height / 2.0;
 
-  _separator.layer.cornerRadius = _separator.bounds.size.width / 2.0;
 }
 
 - (void)displayEntrypointView:(BOOL)display {
@@ -279,16 +270,6 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   return label;
 }
 
-// Creates and configures the entrypoint's pill-shaped separator (vertical
-// line).
-- (UIView*)configuredSeparator {
-  UIView* view = [[UIView alloc] init];
-  view.translatesAutoresizingMaskIntoConstraints = NO;
-  view.isAccessibilityElement = NO;
-  view.backgroundColor = [UIColor colorNamed:kGrey400Color];
-
-  return view;
-}
 
 - (void)activateInitialConstraints {
   // Leading space before the start of the button container view.
@@ -323,12 +304,6 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
         constraintEqualToAnchor:_entrypointContainer.leadingAnchor],
     [_entrypointContainer.leadingAnchor
         constraintEqualToAnchor:entrypointLeadingSpace.trailingAnchor],
-    [_separator.centerXAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-    [_separator.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
-    [_separator.widthAnchor constraintEqualToConstant:kSeparatorWidthConstant],
-    [_separator.heightAnchor
-        constraintEqualToAnchor:self.view.heightAnchor
-                     multiplier:kSeparatorHeightMultiplier],
     [_entrypointContainer.heightAnchor
         constraintEqualToAnchor:self.view.heightAnchor
                      multiplier:kEntrypointHeightMultiplier],
@@ -429,9 +404,6 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _entrypointContainer.configuration =
       [self entrypointContainerConfigurationWithBackgroundColor:
                 entrypointContainerBackgroundColor];
-
-  // Separator visibility.
-  _separator.hidden = !_infobarBadgesCurrentlyShown;
 }
 
 // Applies the correct color to the entrypoint (highlighted blue when the

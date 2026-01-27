@@ -303,12 +303,6 @@
 
   BOOL infobarBadgesCurrentlyShown = badgesCount > 0;
 
-  // Disable contextual panel separator when Proactive Suggestions Framework is
-  // enabled to prevent conflicts.
-  if (IsProactiveSuggestionsFrameworkEnabled()) {
-    infobarBadgesCurrentlyShown = NO;
-  }
-
   if (_infobarBadgesCurrentlyShown == infobarBadgesCurrentlyShown) {
     return;
   }

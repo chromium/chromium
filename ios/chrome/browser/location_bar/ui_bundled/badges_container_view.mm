@@ -35,12 +35,23 @@ const CGFloat kBackgroundHeightMultiplier = 0.72;
 // The horizontal inset for unified badge background leading and trailing edges.
 const CGFloat kBackgroundHorizontalInset = 5.0;
 
+// The width of the separator between the contextual panel entrypoint and the
+// badge view.
+const CGFloat kSeparatorWidth = 2.0;
+
+// The corner radius of the separator.
+const CGFloat kSeparatorCornerRadius = 1.0;
+
+// The vertical padding for the separator.
+const CGFloat kSeparatorVerticalPadding = 12.0;
+
 }  // namespace
 
 @implementation LocationBarBadgesContainerView {
   UIStackView* _containerStackView;
   UIButton* _tapOverlayButton;
   UIView* _badgeBackgroundView;
+  UIView* _separatorView;
   BOOL _disableProactiveOverlay;
 
   /// Whether the contextual panel entrypoint should be visible. The placeholder
@@ -71,6 +82,24 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 
     [self addSubview:_containerStackView];
     AddSameConstraints(self, _containerStackView);
+
+    if (IsProactiveSuggestionsFrameworkEnabled()) {
+      _separatorView = [[UIView alloc] init];
+      _separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+      _separatorView.isAccessibilityElement = NO;
+      _separatorView.backgroundColor = [UIColor colorNamed:kGrey300Color];
+      _separatorView.layer.cornerRadius = kSeparatorCornerRadius;
+      _separatorView.clipsToBounds = YES;
+      _separatorView.hidden = YES;
+      [_containerStackView addArrangedSubview:_separatorView];
+
+      [NSLayoutConstraint activateConstraints:@[
+        [_separatorView.widthAnchor constraintEqualToConstant:kSeparatorWidth],
+        [_separatorView.heightAnchor
+            constraintEqualToAnchor:_containerStackView.heightAnchor
+                           constant:-(kSeparatorVerticalPadding * 2)],
+      ]];
+    }
   }
 
   return self;
@@ -382,6 +411,26 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
   }
 
   if (IsProactiveSuggestionsFrameworkEnabled()) {
+    if (_separatorView) {
+      BOOL separatorShouldBeVisible =
+          contextualPanelEntrypointShouldBeVisibleFinal &&
+          badgeViewShouldBeVisibleFinal;
+      _separatorView.hidden = !separatorShouldBeVisible;
+
+      if (separatorShouldBeVisible) {
+        NSInteger badgeIndex =
+            [_containerStackView.arrangedSubviews indexOfObject:_badgeView];
+        if (badgeIndex != NSNotFound && badgeIndex > 0) {
+          NSInteger separatorIndex = [_containerStackView.arrangedSubviews
+              indexOfObject:_separatorView];
+          if (separatorIndex > badgeIndex) {
+            [_containerStackView removeArrangedSubview:_separatorView];
+            [_containerStackView insertArrangedSubview:_separatorView
+                                               atIndex:badgeIndex];
+          }
+        }
+      }
+    }
     [self updateBackgroundVisibility];
     [self updateTapOverlayButtonVisibility];
   }

@@ -77,18 +77,13 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   UIView* _badgeContentView;
   UIImageView* _badgeIcon;
   UILabel* _label;
-  // The small vertical pill-shaped line separating the Location Bar Badge
-  // entrypoint and Infobar badges, if present.
-  UIView* _separator;
   // Constraints for the two states of the trailing edge of the badge
   // container. They are activated/deactivated as needed when the label is
   // shown/hidden.
   NSLayoutConstraint* _expandedContainerTrailingConstraint;
   NSLayoutConstraint* _collapsedContainerTrailingConstraint;
-  // Constraint for default leading view. By default, the leading view is
-  // `leadingSpace`. In incognito, the leading view is
-  // `incognitoBadgeView`.
-  NSLayoutConstraint* _defaultLeadingViewConstraint;
+  // The leading spacer view.
+  UIView* _leadingSpacer;
   // Whether the badge is tapped. Used to update the badge's colors.
   BOOL _badgeTapped;
   // Whether the entrypoint should currently collapse for fullscreen.
@@ -127,19 +122,20 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   [self.view addSubview:_badgeStackView];
 
   // Setup for capsule badges and chips.
+  _leadingSpacer = [[UIView alloc] init];
+  _leadingSpacer.translatesAutoresizingMaskIntoConstraints = NO;
   _buttonContainer = [self configuredButtonContainer];
   _badgeContentView = [self configuredBadgeContentView];
   _badgeIcon = [self configuredBadgeIcon];
   _label = [self configuredLabel];
-  _separator = [self configuredSeparator];
 
   [_buttonContainer addSubview:_badgeContentView];
   [_badgeContentView addSubview:_badgeIcon];
   [_badgeContentView addSubview:_label];
+  [_badgeStackView addArrangedSubview:_leadingSpacer];
   [_badgeStackView addArrangedSubview:_buttonContainer];
   [_badgeStackView setCustomSpacing:kLeadingSeparatorSpace
                           afterView:_buttonContainer];
-  [_badgeStackView addArrangedSubview:_separator];
 
   [self updateAccessibilityStatus];
 
@@ -167,7 +163,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   _badgeContentView.layer.cornerRadius =
       _badgeContentView.bounds.size.height / 2.0;
 
-  _separator.layer.cornerRadius = _separator.bounds.size.width / 2.0;
 }
 
 - (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox {
@@ -198,19 +193,20 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     (IncognitoBadgeViewController*)incognitoViewController {
   incognitoViewController.visibilityDelegate = self;
   _incognitoBadgeView = incognitoViewController.view;
+  _incognitoBadgeView.hidden = YES;
   _incognitoBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
   _incognitoBadgeView.isAccessibilityElement = NO;
   [_badgeStackView insertArrangedSubview:_incognitoBadgeView atIndex:0];
-  HideViewIfNecessary(_incognitoBadgeView, YES);
   [self addChildViewController:incognitoViewController];
   [incognitoViewController didMoveToParentViewController:self];
   _incognitoBadgeViewController = incognitoViewController;
 
-  _defaultLeadingViewConstraint.active = NO;
+  _leadingSpacer.hidden = YES;
   [NSLayoutConstraint activateConstraints:@[
     [_incognitoBadgeView.heightAnchor
         constraintEqualToAnchor:self.view.heightAnchor],
   ]];
+  [self updateViewsVisibility];
 }
 
 #pragma mark - LocationBarBadgeConsumer
@@ -261,6 +257,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   }
 
   _incognitoBadgeViewShouldBeVisible = !hidden;
+  _leadingSpacer.hidden = !hidden;
   [self setLocationBarBadgeHidden:hidden];
 }
 
@@ -392,22 +389,8 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   return label;
 }
 
-// Creates and configures the button's pill-shaped separator (vertical
-// line).
-- (UIView*)configuredSeparator {
-  UIView* view = [[UIView alloc] init];
-  view.translatesAutoresizingMaskIntoConstraints = NO;
-  view.isAccessibilityElement = NO;
-  view.backgroundColor = [UIColor colorNamed:kGrey400Color];
-
-  return view;
-}
 
 - (void)activateInitialConstraints {
-  // Leading space before the start of the button container view.
-  UILayoutGuide* leadingSpace = [[UILayoutGuide alloc] init];
-  [self.view addLayoutGuide:leadingSpace];
-
   UILayoutGuide* labelLeadingSpace = [[UILayoutGuide alloc] init];
   UILayoutGuide* labelTrailingSpace = [[UILayoutGuide alloc] init];
 
@@ -418,8 +401,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
       constraintEqualToAnchor:_badgeIcon.trailingAnchor];
   _expandedContainerTrailingConstraint = [_buttonContainer.trailingAnchor
       constraintEqualToAnchor:labelTrailingSpace.trailingAnchor];
-  _defaultLeadingViewConstraint = [leadingSpace.leadingAnchor
-      constraintEqualToAnchor:_badgeStackView.leadingAnchor];
 
   [NSLayoutConstraint activateConstraints:@[
     [self.view.widthAnchor
@@ -429,21 +410,14 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     // make it exactly follow the curvature of the location bar's corner radius,
     // it must be placed with the same amount of margin space horizontally that
     // exists vertically between the entrypoint and the location bar itself.
-    [leadingSpace.widthAnchor
+    [_leadingSpacer.widthAnchor
         constraintEqualToAnchor:self.view.heightAnchor
                      multiplier:((1 - kBadgeHeightMultiplier) / 2)],
-    [leadingSpace.trailingAnchor
-        constraintEqualToAnchor:_buttonContainer.leadingAnchor],
-    _defaultLeadingViewConstraint,
     [_badgeStackView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
     [_badgeStackView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [_badgeStackView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
-    [_separator.widthAnchor constraintEqualToConstant:kSeparatorWidthConstant],
-    [_separator.heightAnchor
-        constraintEqualToAnchor:self.view.heightAnchor
-                     multiplier:kSeparatorHeightMultiplier],
     [_buttonContainer.heightAnchor
         constraintEqualToAnchor:self.view.heightAnchor
                      multiplier:kBadgeHeightMultiplier],
@@ -529,7 +503,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
       _infobarBadgesCurrentlyShown && !IsReaderModeAvailable();
   BOOL shouldShowMutedColors =
       shouldAccountForVisibleInfobarBadges || _badgeTapped;
-  BOOL isInUnifiedContainer = [self useMultiBadge] && [self isBadgeVisible];
+  BOOL isInUnifiedContainer = [self useMultiBadge];
 
   // Badge icon tint color.
   if (isInUnifiedContainer) {
@@ -564,20 +538,24 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   _buttonContainer.configuration = [self
       buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
 
-  // Separator visibility.
-  _separator.hidden = !_infobarBadgesCurrentlyShown;
 }
 
 // Applies the correct color to the badge (highlighted blue when the
 // in-product help is present), otherwise back to the normal colorset.
 - (void)updateBadgeHighlight:(BOOL)highlighted {
-  _badgeIcon.tintColor = highlighted ? [UIColor colorNamed:kBackgroundColor]
-                                     : [self defaultBadgeTintColor];
+  BOOL isInUnifiedContainer = [self useMultiBadge];
+  UIColor* defaultTintColor = isInUnifiedContainer
+                                  ? [UIColor colorNamed:kSolidWhiteColor]
+                                  : [self defaultBadgeTintColor];
+  _badgeIcon.tintColor =
+      highlighted ? [UIColor colorNamed:kBackgroundColor] : defaultTintColor;
 
   // Update entrypoint container background.
+  UIColor* defaultBackgroundColor = isInUnifiedContainer
+                                        ? [UIColor clearColor]
+                                        : [UIColor colorNamed:kBackgroundColor];
   UIColor* buttonContainerBackgroundColor =
-      highlighted ? [UIColor colorNamed:kBlue600Color]
-                  : [UIColor colorNamed:kBackgroundColor];
+      highlighted ? [UIColor colorNamed:kBlue600Color] : defaultBackgroundColor;
   _buttonContainer.configuration = [self
       buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
 }

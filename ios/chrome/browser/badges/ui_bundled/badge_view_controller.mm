@@ -36,10 +36,10 @@ const CGFloat kUnreadIndicatorViewHeight = 6.0;
 const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
 
 // Width of the divider between badges.
-CGFloat const kDividerWidthConstant = 1;
+CGFloat const kDividerWidthConstant = 2;
 
 // Corner radius of the divider between badges.
-CGFloat const kPSFSeparatorCornerRadius = 0.5;
+CGFloat const kPSFSeparatorCornerRadius = 1;
 
 // Vertical padding for separator.
 CGFloat const kDividerVerticalPadding = 12.0;
