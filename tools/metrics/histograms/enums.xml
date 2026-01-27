@@ -8063,7 +8063,6 @@ from previous Chrome versions.
   <int value="-2143113994" label="enable-ephemeral-apps-in-webstore"/>
   <int value="-2142729205"
       label="PriceTrackingSubscriptionServiceLocaleKey:disabled"/>
-  <int value="-2142707203" label="FreezingOnBatterySaver:enabled"/>
   <int value="-2142665444" label="ScrollableTabStrip:disabled"/>
   <int value="-2141661938" label="AnimatedAppMenuIcon:enabled"/>
   <int value="-2141657384" label="AndroidAppIntegration:disabled"/>
@@ -9473,7 +9472,6 @@ from previous Chrome versions.
       label="SwapSideVolumeButtonsForOrientation:disabled"/>
   <int value="-1672098165" label="SearchResultInlineIcon:enabled"/>
   <int value="-1671494049" label="TrimOnFreeze:disabled"/>
-  <int value="-1671116979" label="FreezingOnBatterySaver:disabled"/>
   <int value="-1670137340"
       label="OptimizeLoadingIPCForSmallResources:disabled"/>
   <int value="-1669727073"
@@ -12346,7 +12344,6 @@ from previous Chrome versions.
   <int value="-694622753" label="VizHitTest:disabled"/>
   <int value="-694601891" label="ToastRefinements:enabled"/>
   <int value="-694187898" label="MashOopViz:disabled"/>
-  <int value="-693684972" label="FreezingOnBatterySaverForTesting:enabled"/>
   <int value="-691977647"
       label="ReleaseNotesNotificationAlwaysEligible:enabled"/>
   <int value="-690852008"
@@ -15685,7 +15682,6 @@ from previous Chrome versions.
   <int value="465600939" label="DefaultPassthroughCommandDecoder:enabled"/>
   <int value="466248382" label="disable-push-api-background-mode"/>
   <int value="467078443" label="FwupdDeveloperMode:disabled"/>
-  <int value="467188653" label="FreezingOnBatterySaverForTesting:disabled"/>
   <int value="468665559" label="TrilinearFiltering:disabled"/>
   <int value="468901900" label="AppStoreBillingDebug:disabled"/>
   <int value="468959230"

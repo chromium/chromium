@@ -412,8 +412,7 @@ void FreezingPolicy::UpdateFrozenState(
   // Determine whether:
   // - Any connected page has a `CannotFreezeReason`.
   // - Any browsing instance hosting a frame from a connected page was CPU
-  //   intensive in the background and Battery Saver is active and the
-  //   `kFreezingOnBatterySaver` feature is enabled.
+  //   intensive in the background and Battery Saver mode is active.
   // - Any connected page is in a periodic unfreeze period.
   // - All connected page have a freeze vote.
   CanFreezePerTypeTracker can_freeze_per_type_tracker;
@@ -445,16 +444,7 @@ void FreezingPolicy::UpdateFrozenState(
       if (browsing_instance_state
                   .highest_cpu_without_battery_saver_cannot_freeze >=
               high_cpu_proportion &&
-          is_battery_saver_active_ &&
-          // Note: Feature state is checked last so that only clients that
-          // have a browsing instance that is CPU intensive in background
-          // while Battery Saver is active are enrolled in the experiment.
-          base::FeatureList::IsEnabled(features::kFreezingOnBatterySaver)) {
-        eligible_for_freezing_on_battery_saver = true;
-      }
-
-      if (base::FeatureList::IsEnabled(
-              features::kFreezingOnBatterySaverForTesting)) {
+          is_battery_saver_active_) {
         eligible_for_freezing_on_battery_saver = true;
       }
     }

@@ -4875,16 +4875,6 @@
     "expiry_milestone": 147
   },
   {
-    "name": "freezing-on-energy-saver",
-    "owners": [ "fdoray@chromium.org" ],
-    "expiry_milestone": 134
-  },
-  {
-    "name": "freezing-on-energy-saver-testing",
-    "owners": [ "fdoray@chromium.org" ],
-    "expiry_milestone": 134
-  },
-  {
     "name": "fullscreen-promos-manager-skip-internal-limits",
     "owners": [ "bwwilliams@google.com", "bling-flags@google.com" ],
     // Used by developers for testing their promos' display behavior locally, without being restricted by the Promos Manager's internal impression limits.

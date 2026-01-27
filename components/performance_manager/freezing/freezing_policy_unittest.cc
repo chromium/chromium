@@ -1365,10 +1365,6 @@ namespace {
 class FreezingPolicyBatterySaverTest : public FreezingPolicyTest {
  public:
   FreezingPolicyBatterySaverTest() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kFreezingOnBatterySaver};
 };
 
 }  // namespace
@@ -2267,7 +2263,6 @@ TEST_F(FreezingPolicyInfiniteTabsTest, InteractionWithVoting) {
 // Saver is active can be frozen even if it's in the list of most recently
 // used tabs (this list only affects Infinite Tabs Freezing).
 TEST_F(FreezingPolicyInfiniteTabsTest, InteractionWithBatterySaver) {
-  base::test::ScopedFeatureList feature_list{features::kFreezingOnBatterySaver};
   policy()->ToggleFreezingOnBatterySaverMode(true);
 
   EXPECT_EQ(policy()->GetCanFreezeDetails(pages_[0].get()).can_freeze,

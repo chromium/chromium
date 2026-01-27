@@ -10952,17 +10952,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kAutofillUnmaskCardRequestTimeout)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"freezing-on-energy-saver", flag_descriptions::kFreezingOnEnergySaverName,
-     flag_descriptions::kFreezingOnEnergySaverDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kFreezingOnBatterySaver)},
-
-    {"freezing-on-energy-saver-testing",
-     flag_descriptions::kFreezingOnEnergySaverTestingName,
-     flag_descriptions::kFreezingOnEnergySaverTestingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         performance_manager::features::kFreezingOnBatterySaverForTesting)},
-
     {"infinite-tabs-freezing", flag_descriptions::kInfiniteTabsFreezingName,
      flag_descriptions::kInfiniteTabsFreezingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(performance_manager::features::kInfiniteTabsFreezing)},

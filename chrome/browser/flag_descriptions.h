@@ -5912,20 +5912,6 @@ inline constexpr char kEnableShouldShowPromotionName[] =
 inline constexpr char kEnableShouldShowPromotionDescription[] =
     "Enables showing the promotion banner on chromewebstore page.";
 
-inline constexpr char kFreezingOnEnergySaverName[] =
-    "Freeze CPU intensive background tabs on Energy Saver";
-inline constexpr char kFreezingOnEnergySaverDescription[] =
-    "When Energy Saver is active, freeze eligible background tabs that use a "
-    "lot of CPU. A tab is eligible if it's silent, doesn't provide audio- or "
-    "video- conference functionality and doesn't use WebUSB or Web Bluetooth.";
-
-inline constexpr char kFreezingOnEnergySaverTestingName[] =
-    "Freeze CPU intensive background tabs on Energy Saver - Testing Mode";
-inline constexpr char kFreezingOnEnergySaverTestingDescription[] =
-    "Similar to #freezing-on-energy-saver, with changes to facilitate testing: "
-    "1) pretend that Energy Saver is active even when it's not and 2) pretend "
-    "that all tabs use a lot of CPU.";
-
 inline constexpr char kImprovedPasswordChangeServiceName[] =
     "Improved password change service";
 inline constexpr char kImprovedPasswordChangeServiceDescription[] =

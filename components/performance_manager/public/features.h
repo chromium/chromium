@@ -153,16 +153,6 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFreezingVisibleProtectionTime);
 // Time for which a page cannot be frozen after being audible.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFreezingAudioProtectionTime);
 
-// When enabled, browsing instances with high CPU usage in background are frozen
-// when Battery Saver is active. Depends on `kCPUMeasurementInFreezingPolicy`.
-BASE_DECLARE_FEATURE(kFreezingOnBatterySaver);
-
-// This is the similar to `kFreezingOnBatterySaver`, with some changes to
-// facilitate testing:
-// - Pretend that Battery Saver is active even if it's not.
-// - Pretend that all tabs have high CPU usage in background.
-BASE_DECLARE_FEATURE(kFreezingOnBatterySaverForTesting);
-
 // When enabled, the freezing policy won't freeze pages that are opted out of
 // tab discarding.
 BASE_DECLARE_FEATURE(kFreezingFollowsDiscardOptOut);
