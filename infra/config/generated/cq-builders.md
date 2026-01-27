@@ -627,7 +627,7 @@ builder.
 * [linux-metadata-validator](https://ci.chromium.org/p/chromium/builders/try/linux-metadata-validator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-metadata-validator""))
 
   Location filters:
-  * [`//regex:.*/README\.chromium`](https://cs.chromium.org/search?q=+file:regex:.*/README\.chromium)
+  * [`//.*/README\.chromium`](https://cs.chromium.org/search?q=+file:.*/README\.chromium)
 
 * [linux-oi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-oi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-oi-rel""))
 
