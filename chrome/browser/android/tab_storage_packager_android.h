@@ -34,7 +34,9 @@ enum class TabModelType {
   kIncognito = 2,
   // Scoped to a profile.
   kArchived = 3,
-  kMaxValue = kArchived,
+  // Scoped to a profile and activity.
+  kCustom = 4,
+  kMaxValue = kCustom,
 };
 
 // This class is the Android implementation of the TabStoragePackager.
@@ -63,11 +65,12 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
       int64_t last_navigation_committed_timestamp_millis,
       bool tab_has_sensitive_content,
       TabAndroid* tab);
+
   // Returns a pointer to an UnmappedTabStripCollectionStorageData (as a long in
   // Java). The caller is responsible for managing the lifecycle of the returned
   // object.
   long ConsolidateTabStripCollectionData(JNIEnv* env,
-                                         int32_t window_id,
+                                         std::string window_tag,
                                          int32_t j_tab_model_type,
                                          TabAndroid* active_tab);
 

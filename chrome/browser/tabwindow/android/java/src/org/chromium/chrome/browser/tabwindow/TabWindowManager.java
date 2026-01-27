@@ -46,6 +46,9 @@ public interface TabWindowManager {
      */
     @WindowId int INVALID_WINDOW_ID = -1;
 
+    /** Represents an invalid task ID (i.e. when the task wasn't found in the list). */
+    int INVALID_TASK_ID = -1;
+
     // Maximum number of TabModelSelectors since Android N that supports split screen.
     int MAX_SELECTORS_LEGACY = 3;
 
@@ -196,7 +199,10 @@ public interface TabWindowManager {
     @WindowId
     int getWindowIdForSelector(TabModelSelector selector);
 
-    /** Gets a Collection of all TabModelSelectors. */
+    /**
+     * Gets a Collection of all TabModelSelectors. Does not include the archived selector or
+     * selectors for custom tabs.
+     */
     Collection<TabModelSelector> getAllTabModelSelectors();
 
     /** Returns whether the tab with the given id can safely be deleted. */
@@ -229,4 +235,28 @@ public interface TabWindowManager {
      */
     @WindowId
     int findWindowIdForTabGroup(Token tabGroupId);
+
+    /**
+     * Registers a {@link TabModelSelector} for a Custom Tab.
+     *
+     * @param taskId The task id for the Custom Tab's associated activity.
+     * @param selector The {@link TabModelSelector} containing the custom tab.
+     */
+    void registerCustomTabsTabModelSelector(int taskId, TabModelSelector selector);
+
+    /**
+     * Unregisters a {@link TabModelSelector} for a Custom Tab.
+     *
+     * @param selector The {@link TabModelSelector} containing the custom tab.
+     */
+    void unregisterCustomTabsTabModelSelector(TabModelSelector selector);
+
+    /** Returns a collection of all Custom Tab {@link TabModelSelector}s. */
+    Collection<TabModelSelector> getCustomTabsTabModelSelectors();
+
+    /**
+     * Returns the task ID for a Custom Tab's {@link TabModelSelector}. If the TabModelSelector is
+     * not registered for a custom tab, will return -1.
+     */
+    int getTaskIdForCustomTab(TabModelSelector selector);
 }

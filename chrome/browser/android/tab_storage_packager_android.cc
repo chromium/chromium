@@ -198,12 +198,12 @@ long TabStoragePackagerAndroid::ConsolidateTabData(
 
 long TabStoragePackagerAndroid::ConsolidateTabStripCollectionData(
     JNIEnv* env,
-    int32_t window_id,
+    std::string window_tag,
     int32_t j_tab_model_type,
     TabAndroid* active_tab) {
   tabs_pb::TabStripCollectionState state;
 
-  state.set_window_id(window_id);
+  state.set_window_tag(std::move(window_tag));
   state.set_tab_model_type(j_tab_model_type);
 
   UnmappedTabStripCollectionStorageData* data =

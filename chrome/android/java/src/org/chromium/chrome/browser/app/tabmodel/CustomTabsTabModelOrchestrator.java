@@ -32,6 +32,9 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
     public CustomTabsTabModelOrchestrator() {}
 
+    public static final String CUSTOM_WINDOW_PREFIX =
+            TabPersistentStoreImpl.CLIENT_TAG_CUSTOM + "_";
+
     /** Creates the TabModelSelector and the TabPersistentStore. */
     public void createTabModels(
             Activity activity,
@@ -56,8 +59,11 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                         activityType,
                         false);
 
-        // Instantiate TabPersistentStore
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
+        tabWindowManager.registerCustomTabsTabModelSelector(
+                activity.getTaskId(), mTabModelSelector);
+
+        // Instantiate TabPersistentStore
         mTabPersistencePolicy = persistencePolicy;
         mTabPersistentStore =
                 buildAuthoritativeStore(
@@ -71,5 +77,13 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
 
         wireSelectorAndStore();
         markTabModelsInitialized();
+    }
+
+    @Override
+    public void destroy() {
+        assert mTabModelSelector != null;
+        TabWindowManagerSingleton.getInstance()
+                .unregisterCustomTabsTabModelSelector(mTabModelSelector);
+        super.destroy();
     }
 }

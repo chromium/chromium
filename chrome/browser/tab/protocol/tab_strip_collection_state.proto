@@ -13,7 +13,7 @@ import "chrome/browser/tab/protocol/token.proto";
 // Stores the state of a TabStripCollection.
 message TabStripCollectionState {
   // Contains information about the window associated with this collection.
-  optional int32 window_id = 1;
+  optional string window_tag = 1;
 
   // Represents the type of tab model.
   // Tied to TabModelType in

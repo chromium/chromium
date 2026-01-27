@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tabwindow;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -123,9 +122,10 @@ public class TabWindowManagerImpl implements TabWindowManager {
     private final Map<TabModelSelector, @WindowId Integer> mSelectorsToWindowId = new HashMap<>();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    // Selectors exclusively exist in one of the two following maps.
+    // Selectors exclusively exist in one of the three following maps.
     private final Map<TabModelSelector, Destroyable> mHeadlessAssignments = new HashMap<>();
     private final Map<Activity, TabModelSelector> mActivityAssignments = new HashMap<>();
+    private final Map<TabModelSelector, Integer> mCustomTabsSelectors = new HashMap<>();
 
     private final ActivityStateListener mActivityStateListener = this::onActivityStateChange;
     private final TabModelSelectorFactory mSelectorFactory;
@@ -551,6 +551,26 @@ public class TabWindowManagerImpl implements TabWindowManager {
     @Override
     public Collection<TabModelSelector> getAllTabModelSelectors() {
         return mSelectorsToWindowId.keySet();
+    }
+
+    @Override
+    public void registerCustomTabsTabModelSelector(int taskId, TabModelSelector selector) {
+        mCustomTabsSelectors.put(selector, taskId);
+    }
+
+    @Override
+    public void unregisterCustomTabsTabModelSelector(TabModelSelector selector) {
+        mCustomTabsSelectors.remove(selector);
+    }
+
+    @Override
+    public Collection<TabModelSelector> getCustomTabsTabModelSelectors() {
+        return mCustomTabsSelectors.keySet();
+    }
+
+    @Override
+    public int getTaskIdForCustomTab(TabModelSelector selector) {
+        return mCustomTabsSelectors.getOrDefault(selector, INVALID_TASK_ID);
     }
 
     @Override
