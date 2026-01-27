@@ -1680,12 +1680,12 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   {
     base::HistogramTester h_tester;
     token_service.UpdateCredentials(account_id, "refresh_token",
-                                    Source::kInlineLoginHandler_Signin);
-    EXPECT_EQ("InlineLoginHandler::Signin",
+                                    Source::kDiceResponseHandler_Signin);
+    EXPECT_EQ("DiceResponseHandler::Signin",
               source_for_refresh_token_available_);
     h_tester.ExpectUniqueSample(
         "Signin.RefreshTokenUpdated.ToValidToken.Source",
-        Source::kInlineLoginHandler_Signin, 1);
+        Source::kDiceResponseHandler_Signin, 1);
 
     token_service.RevokeCredentials(
         account_id, Source::kAccountReconcilor_GaiaCookiesUpdated);

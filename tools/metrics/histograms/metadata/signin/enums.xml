@@ -1455,7 +1455,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="TokenService::LoadCredentials"/>
   <int value="2" label="SupervisedUser::InitSync (obsolete)"/>
-  <int value="3" label="InlineLoginHandler::Signin"/>
+  <int value="3" label="InlineLoginHandler::Signin (obsolete)"/>
   <int value="4" label="PrimaryAccountManager::ClearPrimaryAccount"/>
   <int value="5"
       label="PrimaryAccountManager::LegacyPreDiceSigninFlow (obsolete)"/>

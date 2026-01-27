@@ -44336,13 +44336,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Signin_Show_UntrustedSigninPrompt">
-  <owner>gogerald@chromium.org</owner>
-  <description>
-    Recorded when showing untrusted sign in confirmation dialog.
-  </description>
-</action>
-
 <action name="Signin_Signin_AbortAdvancedSyncSettings">
   <owner>tangltom@chromium.org</owner>
   <description>

@@ -23,7 +23,6 @@ source_set("profiles") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "profile_customization_bubble_sync_controller.h",
       "profile_customization_synced_theme_waiter.h",
       "profile_customization_util.h",
       "profile_picker.h",

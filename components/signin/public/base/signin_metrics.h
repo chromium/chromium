@@ -510,7 +510,8 @@ enum class SourceForRefreshTokenOperation {
   kTokenService_LoadCredentials = 1,
   // DEPRECATED
   // kSupervisedUser_InitSync = 2,
-  kInlineLoginHandler_Signin = 3,
+  // DEPRECATED
+  // kInlineLoginHandler_Signin = 3,
   kPrimaryAccountManager_ClearAccount = 4,
   // DEPRECATED
   // kPrimaryAccountManager_LegacyPreDiceSigninFlow = 5,

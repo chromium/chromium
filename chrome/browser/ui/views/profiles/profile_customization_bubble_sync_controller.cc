@@ -171,29 +171,3 @@ void ProfileCustomizationBubbleSyncController::MaybeInvokeCallback(
     std::move(show_bubble_callback_).Run(outcome);
   }
 }
-
-// Defined in
-// chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h
-void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
-    BrowserWindowInterface* bwi,
-    SkColor suggested_profile_color) {
-  if (!bwi) {
-    return;
-  }
-
-  BrowserView* const browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
-  if (browser_view && browser_view->toolbar_button_provider()) {
-    bwi->GetFeatures()
-        .profile_customization_bubble_sync_controller()
-        ->ShowOnSyncFailedOrDefaultTheme(suggested_profile_color);
-  }
-}
-
-// Defined in
-// chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h
-bool IsProfileCustomizationBubbleSyncControllerRunning(
-    BrowserWindowInterface* bwi) {
-  return bwi && bwi->GetFeatures()
-                    .profile_customization_bubble_sync_controller()
-                    ->IsWaitingForTheme();
-}

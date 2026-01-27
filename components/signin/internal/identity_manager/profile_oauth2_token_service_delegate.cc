@@ -37,8 +37,6 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
       return "Unknown";
     case SourceForRefreshTokenOperation::kTokenService_LoadCredentials:
       return "TokenService::LoadCredentials";
-    case SourceForRefreshTokenOperation::kInlineLoginHandler_Signin:
-      return "InlineLoginHandler::Signin";
     case SourceForRefreshTokenOperation::kPrimaryAccountManager_ClearAccount:
       return "PrimaryAccountManager::ClearAccount";
     case SourceForRefreshTokenOperation::kUserMenu_SignOutAllAccounts:
