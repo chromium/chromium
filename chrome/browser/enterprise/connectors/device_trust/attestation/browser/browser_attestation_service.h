@@ -17,6 +17,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/attester.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 
 namespace enterprise_connectors {
 
@@ -26,8 +27,8 @@ class KeyInfo;
 // IdP and Verified Access.
 class BrowserAttestationService : public AttestationService {
  public:
-  explicit BrowserAttestationService(
-      std::vector<std::unique_ptr<Attester>> attesters);
+  BrowserAttestationService(std::vector<std::unique_ptr<Attester>> attesters,
+                            VerifiedAccessFlow flow_type);
   ~BrowserAttestationService() override;
 
   // AttestationService:
@@ -66,6 +67,8 @@ class BrowserAttestationService : public AttestationService {
   // Array of attesters each of which carry out specific attestation actions
   // respective to their policy level.
   std::vector<std::unique_ptr<Attester>> attesters_;
+
+  const VerifiedAccessFlow flow_type_;
 
   // Runner for tasks needed to be run in the background.
   scoped_refptr<base::TaskRunner> background_task_runner_;

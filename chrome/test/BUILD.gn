@@ -8928,6 +8928,8 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/ash/ash_attestation_policy_observer_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_impl_unittest.cc",
+      "../browser/enterprise/connectors/device_trust/attestation/ash/flex_attester_unittest.cc",
+      "../browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service_chromeos_unittest.cc",
       "../browser/enterprise/connectors/device_trust/signals/ash/ash_signals_filterer_unittest.cc",
       "../browser/enterprise/reporting/android_app_info_generator_unittest.cc",
       "../browser/extensions/api/document_scan/document_scan_api_handler_unittest.cc",

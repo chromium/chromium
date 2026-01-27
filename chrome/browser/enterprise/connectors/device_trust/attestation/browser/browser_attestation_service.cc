@@ -128,8 +128,10 @@ std::optional<std::string> CreateChallengeResponseString(
 }  // namespace
 
 BrowserAttestationService::BrowserAttestationService(
-    std::vector<std::unique_ptr<Attester>> attesters)
+    std::vector<std::unique_ptr<Attester>> attesters,
+    VerifiedAccessFlow flow_type)
     : attesters_(std::move(attesters)),
+      flow_type_(flow_type),
       background_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
@@ -186,7 +188,7 @@ void BrowserAttestationService::OnChallengeValidated(
 
   // Fill `key_info` out for Chrome Browser.
   auto key_info = std::make_unique<KeyInfo>();
-  key_info->set_flow_type(CBCM);
+  key_info->set_flow_type(flow_type_);
   // VA should accept signals JSON string.
   std::string signals_json;
   if (!base::JSONWriter::Write(signals, &signals_json)) {

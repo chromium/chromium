@@ -18,7 +18,7 @@ using SignalsType = ::attestation::DeviceTrustSignals;
 }  // namespace enterprise_connectors
 
 #else
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"  // nogncheck
 
 namespace enterprise_connectors {
 
