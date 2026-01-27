@@ -38,9 +38,6 @@ namespace webauthn::passkey_model_utils {
 
 namespace {
 
-// The byte length of the WebauthnCredentialSpecifics `credential_id` field.
-constexpr size_t kCredentialIdLength = 16u;
-
 // The length of the nonce prefix used for AES-256-GCM encryption of
 // `WebAuthnCredentialSpecifics.encrypted_data` (both `private_key` and
 // `encrypted` oneof cases).
@@ -195,12 +192,18 @@ std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
       std::make_move_iterator(grouped.end()));
 }
 
-bool IsGpmPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
+bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
+  const size_t cred_id_size = passkey.credential_id().size();
   return passkey.sync_id().size() == kSyncIdLength &&
-         passkey.credential_id().size() == kCredentialIdLength &&
-         !passkey.rp_id().empty() &&
+         !passkey.rp_id().empty() && cred_id_size >= kCredentialIdMinLength &&
+         cred_id_size <= kCredentialIdMaxLength &&
          passkey.user_id().length() <= kUserIdMaxLength &&
          (passkey.has_private_key() || passkey.has_encrypted());
+}
+
+bool IsGpmPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
+  return IsPasskeyValid(passkey) &&
+         passkey.credential_id().size() == kGpmCreatedCredentialIdLength;
 }
 
 std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
@@ -212,7 +215,8 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
                                  ExtensionOutputData* extension_output_data) {
   sync_pb::WebauthnCredentialSpecifics specifics;
   specifics.set_sync_id(base::RandBytesAsString(kSyncIdLength));
-  specifics.set_credential_id(base::RandBytesAsString(kCredentialIdLength));
+  specifics.set_credential_id(
+      base::RandBytesAsString(kGpmCreatedCredentialIdLength));
   specifics.set_rp_id(std::string(rp_id));
   specifics.set_user_id(user_entity.id.data(), user_entity.id.size());
   specifics.set_user_name(user_entity.name);

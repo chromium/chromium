@@ -4,6 +4,7 @@
 
 #include "components/webauthn/core/browser/passkey_model_utils.h"
 
+#include "base/rand_util.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "crypto/keypair.h"
@@ -20,6 +21,18 @@ constexpr std::string_view kRpId = "example.com";
 static const PasskeyModel::UserEntity kTestUser(std::vector<uint8_t>{1, 2, 3},
                                                 "user@example.com",
                                                 "Example User");
+
+sync_pb::WebauthnCredentialSpecifics CreateValidPasskey() {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_rp_id("example.com");
+  passkey.set_sync_id(base::RandBytesAsString(kSyncIdLength));
+  passkey.set_credential_id(base::RandBytesAsString(kCredentialIdMinLength));
+  passkey.set_user_id(base::RandBytesAsString(kUserIdMaxLength));
+  passkey.set_private_key({1, 2, 3, 4});
+  passkey.set_user_name("username");
+  passkey.set_user_display_name("display_name");
+  return passkey;
+}
 
 // Test decryption of the `encrypted` case for
 // `WebAuthnCredentialSpecifics.encrypted_data`.
@@ -286,6 +299,70 @@ TEST(PasskeyModelUtilsTest, PRFInputsEmptyVSMissing) {
                                    ExtensionInputData(input_data_11),
                                    &extension_output_data);
   EXPECT_EQ(extension_output_data.prf_result.size(), 64u);
+}
+
+TEST(PasskeyModelUtilsTest, ReturnsTrueForValidPasskey) {
+  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
+
+  EXPECT_TRUE(IsPasskeyValid(passkey));
+  EXPECT_TRUE(IsGpmPasskeyValid(passkey));
+}
+
+TEST(PasskeyModelUtilsTest, ValidatesIncorrectSyncIdLength) {
+  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
+  passkey.set_sync_id(base::RandBytesAsString(kSyncIdLength - 1));
+
+  EXPECT_FALSE(IsPasskeyValid(passkey));
+  EXPECT_FALSE(IsGpmPasskeyValid(passkey));
+}
+
+TEST(PasskeyModelUtilsTest, ValidatesRpIdPresence) {
+  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
+  passkey.clear_rp_id();
+
+  EXPECT_FALSE(IsPasskeyValid(passkey));
+  EXPECT_FALSE(IsGpmPasskeyValid(passkey));
+}
+
+TEST(PasskeyModelUtilsTest, ValidatesCredentialIdLength) {
+  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
+
+  passkey.set_credential_id(
+      base::RandBytesAsString(kCredentialIdMinLength - 1));
+  EXPECT_FALSE(IsPasskeyValid(passkey));
+  EXPECT_FALSE(IsGpmPasskeyValid(passkey));
+
+  passkey.set_credential_id(
+      base::RandBytesAsString(kCredentialIdMaxLength + 1));
+  EXPECT_FALSE(IsPasskeyValid(passkey));
+  EXPECT_FALSE(IsGpmPasskeyValid(passkey));
+
+  passkey.set_credential_id(
+      base::RandBytesAsString(kGpmCreatedCredentialIdLength + 1));
+  EXPECT_TRUE(IsPasskeyValid(passkey));
+  EXPECT_FALSE(IsGpmPasskeyValid(passkey));
+
+  passkey.set_credential_id(
+      base::RandBytesAsString(kGpmCreatedCredentialIdLength));
+  EXPECT_TRUE(IsPasskeyValid(passkey));
+  EXPECT_TRUE(IsGpmPasskeyValid(passkey));
+}
+
+TEST(PasskeyModelUtilsTest, ValidatesUserIdLength) {
+  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
+
+  passkey.set_user_id(base::RandBytesAsString(kUserIdMaxLength + 1));
+  EXPECT_FALSE(IsPasskeyValid(passkey));
+  EXPECT_FALSE(IsGpmPasskeyValid(passkey));
+}
+
+TEST(PasskeyModelUtilsTest, ValidatesMissingEncryptedFields) {
+  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
+
+  passkey.clear_private_key();
+  passkey.clear_encrypted();
+  EXPECT_FALSE(IsPasskeyValid(passkey));
+  EXPECT_FALSE(IsGpmPasskeyValid(passkey));
 }
 
 }  // namespace

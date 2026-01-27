@@ -46,7 +46,6 @@ source_set("browser") {
     deps += [
       ":passkey_model",
       "//base",
-      "//components/webauthn/core/browser/import",
     ]
   }
 }

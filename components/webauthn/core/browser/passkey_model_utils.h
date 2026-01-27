@@ -28,6 +28,18 @@ inline constexpr size_t kSyncIdLength = 16u;
 // The maximum byte length of the WebauthnCredentialSpecifics `user_id` field.
 inline constexpr size_t kUserIdMaxLength = 64u;
 
+// Lower bound for credential ID length
+// (https://www.w3.org/TR/webauthn-2/#credential-id).
+inline constexpr size_t kCredentialIdMinLength = 16u;
+
+// Upper bound for credential ID length
+// (https://www.w3.org/TR/webauthn-3/#credential-id).
+inline constexpr size_t kCredentialIdMaxLength = 1023u;
+
+// The byte length of the WebauthnCredentialSpecifics `credential_id` field for
+// passkeys created by GPM.
+inline constexpr size_t kGpmCreatedCredentialIdLength = 16u;
+
 // Extension output data for passkey creation and assertion.
 struct ExtensionOutputData {
   ExtensionOutputData();
@@ -104,6 +116,15 @@ struct SerializedAttestationObject {
 // this function, if applicable for the use case.
 std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys);
+
+// Returns whether the passkey is of the expected format. The conditions checked
+// in this function should apply to every passkey stored in Google Password
+// Manager, regardless of whether they were actually created by GPM or imported
+// through Credential Exchange. For more specific functions based on the source
+// of passkeys, use one of the following:
+// * `passkey_model_utils::IsGpmPasskeyValid()`
+// * `webauthn::CheckImportedPasskey()`
+bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey);
 
 // Returns whether the passkey created by the Google Password Manager is of the
 // expected format. This function might make some stricter assumptions than what

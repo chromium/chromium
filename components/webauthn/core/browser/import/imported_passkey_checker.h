@@ -13,14 +13,6 @@ class WebauthnCredentialSpecifics;
 
 namespace webauthn {
 
-// Lower bound for credential ID length
-// (https://www.w3.org/TR/webauthn-2/#credential-id).
-inline constexpr size_t kCredentialIdMinLength = 16u;
-
-// Upper bound for credential ID length
-// (https://www.w3.org/TR/webauthn-3/#credential-id).
-inline constexpr size_t kCredentialIdMaxLength = 1023u;
-
 // Represents status of a validity check for an about to be imported passkey.
 //
 // These values are persisted to logs. Entries should not be renumbered and
