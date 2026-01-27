@@ -188,6 +188,10 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
     // clang-format off
     feature_list_.InitWithFeatures(
         {
+#if !BUILDFLAG(IS_ANDROID)
+          features::kInitialWebUI,
+          features::kWebUIReloadButton,
+#endif  // !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
 #if BUILDFLAG(IS_WIN)
           switches::kEnableBoundSessionCredentials,
@@ -403,6 +407,14 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ExtensionInstallEventRouter",
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ChromeEnterpriseRealTimeUrlLookupService",
+#if !BUILDFLAG(IS_ANDROID)
+    "ChromePasswordProtectionService",
+#if BUILDFLAG(IS_CHROMEOS)
+    "AshPolicyBlocklistService",
+#else
+    "ChromePolicyBlocklistService",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS)
     "ComponentExtensionContentSettingsAllowlist",
 #endif
@@ -427,6 +439,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
     "LiveTranslateController",
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)
+    "LookalikeUrlServiceFactory",
+#endif
     "MediaRouter",
     "MediaRouterUIService",
     "NotificationDisplayService",
@@ -452,6 +467,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ResumableUDPSocketManager",
     "RulesRegistryService",
     "SafeBrowsingPrivateEventRouter",
+#if !BUILDFLAG(IS_ANDROID)
+    "SafeSearch",
+#endif
     "SerialConnectionManager",
     "SerialPortManager",
     "SettingsPrivateEventRouter",
@@ -797,6 +815,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "RulesRegistryService",
     "RuntimeAPI",
     "SafeBrowsingMetricsCollector",
+#if !BUILDFLAG(IS_ANDROID)
+    "SafeBrowsingNetworkContextService",
+#endif
     "SafeBrowsingPrivateEventRouter",
     "SafeBrowsingTailoredSecurityService",
     "SearchEngineChoiceServiceFactory",
