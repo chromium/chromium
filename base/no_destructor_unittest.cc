@@ -211,7 +211,7 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
     // Create threads that are higher priority than background_getter. See above
     // for why these particular priorities are chosen.
     foreground_threads.push_back(std::make_unique<BlockingConstructorThread>(
-        ThreadType::kDisplayCritical, foreground_thread_ready_callback));
+        ThreadType::kPresentation, foreground_thread_ready_callback));
     foreground_threads.back()->Start();
   }
 

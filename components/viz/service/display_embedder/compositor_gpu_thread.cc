@@ -212,7 +212,7 @@ CompositorGpuThread::GetSharedContextState() {
 bool CompositorGpuThread::Initialize() {
   // Setup thread options.
   base::Thread::Options thread_options(base::MessagePumpType::DEFAULT, 0);
-  thread_options.thread_type = base::ThreadType::kDisplayCritical;
+  thread_options.thread_type = base::ThreadType::kPresentation;
 
 #if BUILDFLAG(IS_MAC)
   thread_options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;

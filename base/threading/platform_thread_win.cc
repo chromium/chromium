@@ -384,7 +384,7 @@ void SetThreadPriority(PlatformThreadHandle thread_handle,
     case ThreadType::kDefault:
       desired_priority = THREAD_PRIORITY_NORMAL;
       break;
-    case ThreadType::kDisplayCritical:
+    case ThreadType::kPresentation:
       desired_priority = THREAD_PRIORITY_ABOVE_NORMAL;
       break;
     case ThreadType::kInteractive:
@@ -433,7 +433,7 @@ void SetThreadQualityOfService(PlatformThreadHandle thread_handle,
       desire_ecoqos = true;
       break;
     case ThreadType::kDefault:
-    case ThreadType::kDisplayCritical:
+    case ThreadType::kPresentation:
     case ThreadType::kInteractive:
     case ThreadType::kRealtimeAudio:
       desire_ecoqos = false;
@@ -533,7 +533,7 @@ ThreadType PlatformThread::GetCurrentEffectiveThreadTypeForTest() {
       [[fallthrough]];
     case kWinDisplayPriority2:
     case THREAD_PRIORITY_ABOVE_NORMAL:
-      return ThreadType::kDisplayCritical;
+      return ThreadType::kPresentation;
     case THREAD_PRIORITY_HIGHEST:
       return ThreadType::kInteractive;
     case THREAD_PRIORITY_TIME_CRITICAL:
