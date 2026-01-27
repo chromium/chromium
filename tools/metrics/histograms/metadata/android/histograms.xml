@@ -8858,7 +8858,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.InitReason2"
-    enum="WebViewStartupCallSite" expires_after="2025-12-31">
+    enum="WebViewStartupCallSite" expires_after="2026-06-30">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8871,6 +8871,9 @@ chromium-metrics-reviews@google.com.
     callsite enum. If any WebView instance methods or static method was the
     callsite, we couldn't know which exact method it was since it was grouped
     together as the same callsite. This issue is fixed in this histogram.
+
+    Warning: this histogram was expired from 2026-01-01 to 2026-01-26; data may
+    be missing.
   </summary>
 </histogram>
 
