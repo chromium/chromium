@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -243,6 +244,20 @@ public class RecentlyClosedEntriesManager {
             mRecentlyClosedEntries.add(0, window);
         }
 
+        // Remove the excess entry from the list, and clean up the storage.
+        int size = mRecentlyClosedEntries.size();
+        if (size > RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW) {
+            RecentlyClosedEntry excessEntry = mRecentlyClosedEntries.remove(size - 1);
+            if (excessEntry instanceof SessionRecentlyClosedEntry) {
+                mRecentlyClosedTabManager.clearLeastRecentlyUsedClosedEntries(/* numToRemove= */ 1);
+            } else if (excessEntry instanceof RecentlyClosedWindow excessWindow) {
+                mMultiInstanceManager.closeWindows(
+                        Collections.singletonList(excessWindow.getInstanceId()),
+                        CloseWindowAppSource.RECENT_TABS);
+            }
+        }
+        assert mRecentlyClosedEntries.size() <= RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW;
+
         if (mEntriesUpdatedCallback != null) {
             mEntriesUpdatedCallback.onResult(mRecentlyClosedEntries);
         }
@@ -376,8 +391,10 @@ public class RecentlyClosedEntriesManager {
             mMultiInstanceManager.closeWindows(
                     instanceIdsToClose, CloseWindowAppSource.RECENT_TABS);
         }
-        mRecentlyClosedTabManager.clearLeastRecentlyUsedClosedEntries(
-                /* numToRemove= */ sessionEntrySize - sessionEntryCount);
+        if (sessionEntryCount < sessionEntrySize) {
+            mRecentlyClosedTabManager.clearLeastRecentlyUsedClosedEntries(
+                    /* numToRemove= */ sessionEntrySize - sessionEntryCount);
+        }
     }
 
     private List<RecentlyClosedWindow> getRecentlyClosedWindows() {

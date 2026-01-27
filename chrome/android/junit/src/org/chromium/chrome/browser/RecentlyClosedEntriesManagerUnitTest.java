@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -657,6 +658,70 @@ public class RecentlyClosedEntriesManagerUnitTest {
         entries = mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
         assertEquals(2, entries.size());
         assertEquals(olderWindow, entries.get(0));
+        assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
+    }
+
+    @Test
+    public void testOnWindowClosed_ExceedsMaxEntries_ClearWindowStorage() {
+        int size = 25;
+        createRecentlyClosedWindows(/* numOfWindows= */ 25);
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+
+        assertEquals(size, entries.size());
+        RecentlyClosedWindow newWindow =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 10,
+                        /* instanceId= */ 1,
+                        /* url= */ "url",
+                        /* title= */ "title",
+                        /* activeTabTitle= */ "tab title",
+                        /* tabCount= */ 1);
+        int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
+
+        // Verify the excess window entry is cleaned up from storage.
+        mRecentlyClosedEntriesManager.onWindowClosed(newWindow, /* isPermanentDeletion= */ false);
+        ArgumentCaptor<List<Integer>> listCaptor = ArgumentCaptor.forClass(List.class);
+        verify(mMultiInstanceManager)
+                .closeWindows(listCaptor.capture(), eq(CloseWindowAppSource.RECENT_TABS));
+        assertEquals(1, listCaptor.getValue().size());
+        verify(mRecentlyClosedTabManager, never()).clearLeastRecentlyUsedClosedEntries(anyInt());
+
+        entries = mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals(25, entries.size());
+        assertEquals(newWindow, entries.get(0));
+        assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
+    }
+
+    @Test
+    public void testOnWindowClosed_ExceedsMaxEntries_ClearSessionEntryStorage() {
+        int size = 25;
+        createRecentlyClosedWindows(/* numOfWindows= */ 15);
+        createSessionRecentlyClosedEntries(/* numOfEntries= */ 10);
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+        List<RecentlyClosedEntry> entries =
+                mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+
+        assertEquals(size, entries.size());
+        RecentlyClosedWindow newWindow =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 10,
+                        /* instanceId= */ 1,
+                        /* url= */ "url",
+                        /* title= */ "title",
+                        /* activeTabTitle= */ "tab title",
+                        /* tabCount= */ 1);
+        int callbackCount = mEntriesUpdatedCallbackHelper.getCallCount();
+
+        // Verify the excess session entry is cleaned up from storage.
+        mRecentlyClosedEntriesManager.onWindowClosed(newWindow, /* isPermanentDeletion= */ false);
+        verify(mMultiInstanceManager, never()).closeWindows(any(), anyInt());
+        verify(mRecentlyClosedTabManager).clearLeastRecentlyUsedClosedEntries(eq(1));
+
+        entries = mRecentlyClosedEntriesManager.getRecentlyClosedEntries();
+        assertEquals(25, entries.size());
+        assertEquals(newWindow, entries.get(0));
         assertEquals(callbackCount + 1, mEntriesUpdatedCallbackHelper.getCallCount());
     }
 
