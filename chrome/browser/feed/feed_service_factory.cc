@@ -194,7 +194,6 @@ FeedServiceFactory::FeedServiceFactory()
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
-  DependsOn(background_task::BackgroundTaskSchedulerFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 
 #if BUILDFLAG(IS_ANDROID)
@@ -243,8 +242,7 @@ FeedServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<FeedServiceDelegateImpl>(),
 #if BUILDFLAG(IS_ANDROID)
       std::make_unique<RefreshTaskSchedulerImpl>(
-          background_task::BackgroundTaskSchedulerFactory::GetForKey(
-              profile->GetProfileKey())),
+          background_task::BackgroundTaskSchedulerFactory::GetScheduler()),
 #else
       std::make_unique<internal::NoOpRefreshTaskScheduler>(),
 #endif
