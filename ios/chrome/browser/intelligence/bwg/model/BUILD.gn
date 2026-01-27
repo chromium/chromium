@@ -15,6 +15,7 @@ source_set("model") {
     "gemini_camera_delegate.h",
     "gemini_camera_handler.h",
     "gemini_camera_handler.mm",
+    "gemini_page_state_change_delegate.h",
     "gemini_session_delegate.h",
     "gemini_suggestion_delegate.h",
     "gemini_suggestion_handler.h",

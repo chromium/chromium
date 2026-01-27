@@ -8,11 +8,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_page_state_change_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_delegate.h"
 
 class PrefService;
 
-@interface BWGPageStateChangeHandler : NSObject <BWGPageStateChangeDelegate>
+@interface BWGPageStateChangeHandler : NSObject <GeminiPageStateChangeDelegate>
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
