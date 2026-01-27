@@ -123,7 +123,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.Embedding.LoadDlcStatus"
-    enum="EmbeddingModelLoadDlcStatus" expires_after="2026-05-24">
+    enum="EmbeddingModelLoadDlcStatus" expires_after="2026-07-26">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <owner>zuan@chromium.org</owner>

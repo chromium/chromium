@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="LanguageDetection.TFLiteModel.ClassifyText.Detected"
-    enum="BooleanDetected" expires_after="2026-05-24">
+    enum="BooleanDetected" expires_after="2026-07-26">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

@@ -625,7 +625,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}.Raw"
-    units="score" expires_after="2026-05-12">
+    units="score" expires_after="2026-07-26">
   <owner>shaktisahu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>salg@google.com</owner>
@@ -644,7 +644,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}.Scaled100"
-    units="score" expires_after="2026-05-12">
+    units="score" expires_after="2026-07-26">
   <owner>shaktisahu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>salg@google.com</owner>

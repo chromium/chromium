@@ -362,7 +362,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.NewDisplayConnected"
-    enum="DisplayType" expires_after="2026-05-24">
+    enum="DisplayType" expires_after="2026-07-26">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -384,7 +384,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}"
-    enum="DisplaySettingsType" expires_after="2026-05-24">
+    enum="DisplaySettingsType" expires_after="2026-07-26">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -651,7 +651,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.LobsterEnabled"
-    enum="BooleanToggled" expires_after="2026-05-24">
+    enum="BooleanToggled" expires_after="2026-07-26">
   <owner>curtismcmullan@google.com</owner>
   <owner>hdchuong@google.com</owner>
   <summary>

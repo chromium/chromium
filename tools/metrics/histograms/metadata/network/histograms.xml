@@ -1839,7 +1839,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.ContentDecodingInterceptor.CreateDataPipeSuccessTime.{ContentDecodingInterceptorClientType}"
-    units="microseconds" expires_after="2026-04-26">
+    units="microseconds" expires_after="2026-07-26">
   <owner>horo@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
