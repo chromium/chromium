@@ -1367,6 +1367,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.IsInLayoutNGInlineFormattingContext();
   }
+  bool IsAtomicInline() const {
+    NOT_DESTROYED();
+    return IsInline() && IsBox();
+  }
   bool IsAtomicInlineLevel() const {
     NOT_DESTROYED();
     return bitfields_.IsAtomicInlineLevel();
