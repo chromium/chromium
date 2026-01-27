@@ -275,6 +275,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _plusButton = [self createPlusButton];
   _sendButton = [self createSendButton];
   _aimButton = [self createAIMButton];
+  [self setupAIMButtonSizeConstraints];
   _imageGenerationButton = [self createImageGenerationButton];
   [self updatePlusButtonItems];
   [self setupCarouselContainer];
@@ -1085,6 +1086,16 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   return button;
 }
 
+- (void)setupAIMButtonSizeConstraints {
+  self.aimButtonWidthConstraint = [_aimButton.widthAnchor
+      constraintEqualToConstant:kAIMButtonDisabledWidth];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_aimButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight],
+    self.aimButtonWidthConstraint
+  ]];
+}
+
 /// Creates the plus button that contains the menu.
 - (UIButton*)createPlusButton {
   UIButton* plusButton =
@@ -1230,12 +1241,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 /// Creates and returns the toolbar view containing action buttons.
 - (UIView*)createToolbarView {
   [self updateAIMButtonAppearance];
-
-  [_aimButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight].active =
-      YES;
-  self.aimButtonWidthConstraint = [_aimButton.widthAnchor
-      constraintEqualToConstant:kAIMButtonDisabledWidth];
-  self.aimButtonWidthConstraint.active = YES;
 
   // Horizontal stack view for buttons
   UIView* spacerView = [[UIView alloc] init];
