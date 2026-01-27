@@ -48,6 +48,7 @@ include domains/PerformanceTimeline.pdl
 include domains/Preload.pdl
 include domains/Security.pdl
 include domains/ServiceWorker.pdl
+include domains/SmartCardEmulation.pdl
 include domains/Storage.pdl
 include domains/SystemInfo.pdl
 include domains/Target.pdl
