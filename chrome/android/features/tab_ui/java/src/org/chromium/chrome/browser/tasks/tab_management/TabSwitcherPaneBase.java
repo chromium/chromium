@@ -225,13 +225,11 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     public void setPaneHubController(@Nullable PaneHubController paneHubController) {
         mPaneHubController = paneHubController;
 
-        boolean showSearch = false;
         if (isFocused()) {
             int screenWidthDp =
                     mRootView.getContext().getResources().getConfiguration().screenWidthDp;
-            showSearch = !HubUtils.isScreenWidthTablet(screenWidthDp);
+            mHubSearchBoxVisibilitySupplier.set(!HubUtils.isScreenWidthTablet(screenWidthDp));
         }
-        mHubSearchBoxVisibilitySupplier.set(showSearch);
     }
 
     @Override

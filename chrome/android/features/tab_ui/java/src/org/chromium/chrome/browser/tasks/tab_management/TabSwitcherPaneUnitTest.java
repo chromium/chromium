@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationListener;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationType;
+import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -1377,5 +1378,18 @@ public class TabSwitcherPaneUnitTest {
     private void createSelectedTab() {
         mTabModel.addTab(TAB_ID);
         mTabModel.setIndex(0, TabSelectionType.FROM_USER);
+    }
+
+    @Test
+    public void testSetPaneHubController_SearchBoxVisibility() {
+        HubUtils.setIsTabletForTesting(false);
+
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        assertTrue(mTabSwitcherPane.getHubSearchBoxVisibilitySupplier().get());
+        mTabSwitcherPane.setPaneHubController(null);
+
+        HubUtils.setIsTabletForTesting(true);
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+        assertFalse(mTabSwitcherPane.getHubSearchBoxVisibilitySupplier().get());
     }
 }
