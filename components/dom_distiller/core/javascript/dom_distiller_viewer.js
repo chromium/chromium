@@ -89,12 +89,14 @@ class ImageClassifier {
     'data-sizes',
     'data-lazy-sizes',
   ];
-
+  static IMG_BLOCK_LEVEL_CONTAINER_TAGS = ['P', 'DIV', 'FIGURE', 'BODY'];
+  static NON_WHITESPACE_REGEXP = /\S/;
 
   constructor() {
     // Baseline thresholds in density-independent units (CSS pixels).
     this.smallAreaUpperBoundDp = 64 * 64;
     this.inlineWidthFallbackUpperBoundDp = 300;
+    this.loneImageMinWidthDp = 150;
 
     // Matches common keywords for icons or mathematical formulas.
     const mathyKeywords =
@@ -107,6 +109,25 @@ class ImageClassifier {
 
     // Extracts the filename from a URL path.
     this._filenameRegex = /(?:.*\/)?([^?#]*)/;
+
+    // Cache for _getContainerStats() to avoid re-computing for the same
+    // container.
+    this._containerStatsCache = new Map();
+  }
+
+  /**
+   * Checks quickly whether an image is visually dominant.
+   * @param {HTMLImageElement} img The image element to check.
+   * @return {boolean} Whether the image is visually dominant.
+   * @private
+   */
+  _isImageVisuallyDominant(img) {
+    const renderedWidth = img.getBoundingClientRect().width;
+    if (renderedWidth > 0 && window.innerWidth > 0 &&
+        (renderedWidth / window.innerWidth) >
+            ImageClassifier.DOMINANT_IMAGE_MIN_VIEWPORT_RATIO) {
+      return ImageClassifier.FULL_WIDTH_CLASS;
+    }
   }
 
   /**
@@ -148,44 +169,74 @@ class ImageClassifier {
   }
 
   /**
+   * Computes various stats on a container and unconditionally writes to cache.
+   * @param {Element} container The containing elements.
+   * @return {{imgCount: number, hasText: boolean}} Container stats.
+   * @private
+   */
+  _addContainerStats(container) {
+    const stats = {
+      imgCount: container.querySelectorAll('img').length,
+      hasText:
+          ImageClassifier.NON_WHITESPACE_REGEXP.test(container.textContent),
+    };
+    this._containerStatsCache.set(container, stats);
+    return stats;
+  }
+
+  /**
+   * Gets stats (image count, text presence) for a container, with caching.
+   * @param {Element} container The container element.
+   * @return {{imgCount: number, hasText: boolean}} Container stats.
+   * @private
+   */
+  _getContainerStats(container) {
+    return this._containerStatsCache.get(container) ??
+        this._addContainerStats(container);
+  }
+
+  /**
+   * Checks if the given image is the only significant content within its
+   * nearest block-level container.
+   * @param {HTMLImageElement} img The image element to check.
+   * @return {boolean} Whether the image is the lone significant content.
+   * @private
+   */
+  _isLoneImageInContainer(img) {
+    let container = img.parentElement;
+    // Find `img`'s nearest relevant block-level container.
+    while (container &&
+           !ImageClassifier.IMG_BLOCK_LEVEL_CONTAINER_TAGS.includes(
+               container.tagName)) {
+      container = container.parentElement;
+    }
+    if (!container) {
+      return false;
+    }
+
+    const {imgCount, hasText} = this._getContainerStats(container);
+    // `img` should be alone, and all text should be whitespace.
+    return imgCount === 1 && !hasText;
+  }
+
+  /**
    * Checks if the image is the primary content of its container.
    * @param {HTMLImageElement} img The image element to check.
    * @return {boolean} True if the image should be full-width.
    * @private
    */
   _isDefinitelyFullWidth(img) {
-    // Image is in a <figure> with a <figcaption>.
     const parent = img.parentElement;
+
+    // Image is in a <figure> with a <figcaption>.
     if (parent && parent.tagName === 'FIGURE' &&
         parent.querySelector('figcaption')) {
       return true;
     }
 
-    // Image is the only significant content in its container.
-    let container = parent;
-    while (container &&
-           !['P', 'DIV', 'FIGURE', 'BODY'].includes(container.tagName)) {
-      container = container.parentElement;
-    }
-
-    if (container) {
-      for (const child of container.childNodes) {
-        // Skip insignificant nodes.
-        if (child === img) {
-          continue;
-        }
-        if (child.tagName === 'BR') {
-          continue;
-        }
-        if (child.nodeType === Node.TEXT_NODE &&
-            child.textContent.trim() === '') {
-          continue;
-        }
-
-        // If we reach this point, the node must be significant.
-        return false;
-      }
-      // If we finish the loop, no significant siblings were found.
+    // Image is a medium-to-large standalone image.
+    if (img.naturalWidth > this.loneImageMinWidthDp &&
+        this._isLoneImageInContainer(img)) {
       return true;
     }
 
@@ -247,10 +298,7 @@ class ImageClassifier {
   classify(img) {
     // Check for visually dominant images first, as this is the most reliable
     // signal and overrides all other heuristics.
-    const renderedWidth = img.getBoundingClientRect().width;
-    if (renderedWidth > 0 && window.innerWidth > 0 &&
-        (renderedWidth / window.innerWidth) >
-            ImageClassifier.DOMINANT_IMAGE_MIN_VIEWPORT_RATIO) {
+    if (this._isImageVisuallyDominant(img)) {
       return ImageClassifier.FULL_WIDTH_CLASS;
     }
 
@@ -267,7 +315,7 @@ class ImageClassifier {
   }
 
   /**
-   * Post-processes all images in an element to apply classification classes.
+   * Applies classification to all images within an element.
    * @param {HTMLElement} element The element to search for images in.
    */
   static processImagesIn(element) {
