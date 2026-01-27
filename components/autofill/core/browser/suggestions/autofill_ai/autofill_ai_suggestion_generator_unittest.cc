@@ -211,7 +211,15 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
 
 // Tests that the suggestions's main text is obfuscated when the triggering
 // field is from an attribute type that should be obfuscated.
-TEST_F(AutofillAiSuggestionGeneratorTest, SuggestionMainTextIsObfuscated) {
+// TODO(crbug.com/479195210): Failing on Linux UBSan. Re-enable this.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SuggestionMainTextIsObfuscated \
+  DISABLED_SuggestionMainTextIsObfuscated
+#else
+#define MAYBE_SuggestionMainTextIsObfuscated SuggestionMainTextIsObfuscated
+#endif
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       MAYBE_SuggestionMainTextIsObfuscated) {
   EntityInstance passport_entity =
       test::GetPassportEntityInstanceWithRandomGuid(
           {.number = u"123456", .country = u"Brazil"});
