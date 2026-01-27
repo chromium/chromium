@@ -28,7 +28,7 @@ TEST(PolicyEngineTest, Rules1) {
   // If the security descriptor is null AND
   // If the path ends with *.txt AND
   // If the creation mode is not 'create new' THEN
-  // return Access Denied.
+  // return constant (uintptr_t)-1.
 
   enum FileCreateArgs {
     FileNameArg,
@@ -47,14 +47,15 @@ TEST(PolicyEngineTest, Rules1) {
   opcode_maker.MakeOpNumberMatch(CreationDispositionArg, OPEN_EXISTING,
                                  kPolNone);
   opcode_maker.MakeOpVoidPtrMatch(SecurityAttributes, nullptr, kPolNone);
-  opcode_maker.MakeOpAction(ASK_BROKER, kPolNone);
+  opcode_maker.MakeOpAction(ASK_BROKER, 0U);
 
   // Add rule set #2
   opcode_maker.MakeOpWStringMatch(FileNameArg, L".TXT", kSeekToEnd, kPolNone,
                                   true);
   opcode_maker.MakeOpNumberMatch(CreationDispositionArg, CREATE_NEW,
                                  kPolNegateEval);
-  opcode_maker.MakeOpAction(FAKE_ACCESS_DENIED, kPolNone);
+  constexpr uintptr_t kConstantValue = static_cast<uintptr_t>(-1);
+  opcode_maker.MakeOpAction(RETURN_CONST, kConstantValue);
   policy->opcode_count = 7;
 
   std::wstring_view filename =
@@ -82,6 +83,7 @@ TEST(PolicyEngineTest, Rules1) {
   pr = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, pr);
   EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
+  EXPECT_EQ(0U, pol_ev.GetConstant());
 
   // Changing creation_mode such that evaluation should not match any rule.
   creation_mode = CREATE_NEW;
@@ -92,7 +94,8 @@ TEST(PolicyEngineTest, Rules1) {
   creation_mode = OPEN_ALWAYS;
   pr = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, pr);
-  EXPECT_EQ(FAKE_ACCESS_DENIED, pol_ev.GetAction());
+  EXPECT_EQ(RETURN_CONST, pol_ev.GetAction());
+  EXPECT_EQ(kConstantValue, pol_ev.GetConstant());
 
   // Cope ok with nullptr string fields.
   filename = std::wstring_view();

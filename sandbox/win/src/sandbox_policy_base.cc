@@ -281,9 +281,12 @@ ResultCode ConfigBase::AllowExtraDll(const wchar_t* path) {
               mitigations_ & MITIGATION_FORCE_MS_SIGNED_BINS)
         << "Enable MITIGATION_FORCE_MS_SIGNED_BINS before adding signed "
            "policy rules.";
-    if (!SignedPolicy::GenerateRules(base::FilePath(path), PolicyMaker())) {
+    auto handle =
+        SignedPolicy::GenerateRules(base::FilePath(path), PolicyMaker());
+    if (!handle.is_valid()) {
       return SBOX_ERROR_BAD_PARAMS;
     }
+    shared_handles_.emplace_back(std::move(handle));
   }
   return SBOX_ALL_OK;
 }

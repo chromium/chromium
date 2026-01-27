@@ -912,6 +912,27 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadSuccess) {
 #endif  // !defined(ADDRESS_SANITIZER) && !defined(COMPONENT_BUILD)
 }
 
+// This test validates that AllowExtraDll can be called twice on the same DLL.
+TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyMultipleLoads) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2) {
+    return;
+  }
+
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  std::wstring path = exe_path.Append(hooking_dll::g_hook_dll_file).value();
+  TestRunner runner;
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+            SBOX_ALL_OK);
+  EXPECT_EQ(sandbox::SBOX_ALL_OK, config->AllowExtraDll(path.c_str()));
+  TestRunner runner2;
+  config = runner2.GetPolicy()->GetConfig();
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+            SBOX_ALL_OK);
+  EXPECT_EQ(sandbox::SBOX_ALL_OK, config->AllowExtraDll(path.c_str()));
+}
+
 //------------------------------------------------------------------------------
 // Disable child process creation.
 // - JobLevel <= JobLevel::kLimitedUser (on < WIN10_TH2).

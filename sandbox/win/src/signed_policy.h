@@ -5,12 +5,8 @@
 #ifndef SANDBOX_WIN_SRC_SIGNED_POLICY_H_
 #define SANDBOX_WIN_SRC_SIGNED_POLICY_H_
 
-#include <stdint.h>
-
 #include "base/files/file_path.h"
 #include "base/win/scoped_handle.h"
-#include "sandbox/win/src/crosscall_server.h"
-#include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_low_level.h"
 
 namespace sandbox {
@@ -19,17 +15,11 @@ namespace sandbox {
 class SignedPolicy {
  public:
   // Creates the required low-level policy rules to evaluate a high-level
-  // policy rule. Note - dll_path must be an exact path.
-  static bool GenerateRules(base::FilePath dll_path, LowLevelPolicy* policy);
-
-  // Performs the desired policy action on a request.
-  // client_info is the target process that is making the request and
-  // eval_result is the desired policy action to accomplish.
-  static NTSTATUS CreateSectionAction(
-      EvalResult eval_result,
-      const ClientInfo& client_info,
-      const base::win::ScopedHandle& local_file_handle,
-      HANDLE* section_handle);
+  // policy rule. Note - dll_path should be an exact path. Returns a handle
+  // to the created section object that will need to be shared with the new
+  // process for the interception to function.
+  static base::win::ScopedHandle GenerateRules(base::FilePath dll_path,
+                                               LowLevelPolicy* policy);
 };
 
 }  // namespace sandbox

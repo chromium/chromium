@@ -29,9 +29,6 @@ class SignedDispatcher : public Dispatcher {
   bool SetupService(InterceptionManager* manager, IpcTag service) override;
 
  private:
-  // Processes IPC requests coming from calls to CreateSection in the target.
-  bool CreateSection(IPCInfo* ipc, HANDLE file_handle);
-
   raw_ptr<PolicyBase> policy_base_;
 };
 

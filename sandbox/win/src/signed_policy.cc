@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/win/security_descriptor.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_params.h"
@@ -18,64 +19,51 @@
 
 namespace sandbox {
 
-bool SignedPolicy::GenerateRules(base::FilePath dll_path,
-                                 LowLevelPolicy* policy) {
-  // Disallow patterns to allow for future API changes.
-  if (dll_path.value().contains(L'*')) {
-    return false;
-  }
-  if (!dll_path.IsAbsolute()) {
-    return false;
-  }
-
-  auto nt_path_name = GetNtPathFromWin32Path(dll_path.DirName().value());
-  if (!nt_path_name) {
-    return false;
+base::win::ScopedHandle SignedPolicy::GenerateRules(base::FilePath dll_path,
+                                                    LowLevelPolicy* policy) {
+  base::win::ScopedHandle file_handle(
+      ::CreateFile(dll_path.value().c_str(), FILE_EXECUTE,
+                   FILE_SHARE_READ | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING,
+                   FILE_ATTRIBUTE_NORMAL, nullptr));
+  if (!file_handle.is_valid()) {
+    return {};
   }
 
-  base::FilePath nt_path(nt_path_name.value());
-  std::wstring nt_filename = nt_path.Append(dll_path.BaseName()).value();
-  // Create a rule to ASK_BROKER if name matches.
-  PolicyRule signed_policy(ASK_BROKER);
-  if (!signed_policy.AddStringMatch(IF, NameBased::NAME, nt_filename.c_str())) {
-    return false;
-  }
-  if (!policy->AddRule(IpcTag::NTCREATESECTION, &signed_policy)) {
-    return false;
+  auto nt_filename = GetPathFromHandle(file_handle.get());
+  if (!nt_filename) {
+    return {};
   }
 
-  return true;
-}
-
-NTSTATUS SignedPolicy::CreateSectionAction(
-    EvalResult eval_result,
-    const ClientInfo& client_info,
-    const base::win::ScopedHandle& local_file_handle,
-    HANDLE* target_section_handle) {
-  // The only action supported is ASK_BROKER which means create the requested
-  // section as specified.
-  if (ASK_BROKER != eval_result)
-    return false;
-
+  // Create a security descriptor with an empty DACL.
+  base::win::SecurityDescriptor sd;
+  sd.set_dacl({});
+  SECURITY_DESCRIPTOR sd_abs = sd.ToAbsolute();
+  OBJECT_ATTRIBUTES obj_attr = {};
+  InitializeObjectAttributes(&obj_attr, nullptr, OBJ_INHERIT, nullptr, &sd_abs);
   HANDLE local_section_handle = nullptr;
   NTSTATUS status = GetNtExports()->CreateSection(
       &local_section_handle,
       SECTION_QUERY | SECTION_MAP_WRITE | SECTION_MAP_READ |
           SECTION_MAP_EXECUTE,
-      nullptr, 0, PAGE_EXECUTE, SEC_IMAGE, local_file_handle.get());
+      &obj_attr, 0, PAGE_EXECUTE, SEC_IMAGE, file_handle.get());
 
-  if (status != STATUS_SUCCESS || !local_section_handle) {
-    return status;
+  if (status != STATUS_SUCCESS) {
+    return {};
   }
 
-  // Duplicate section handle back to the target. `local_section_handle` must
-  // be a valid real handle and `client_info.process` is trusted.
-  if (!::DuplicateHandle(::GetCurrentProcess(), local_section_handle,
-                         client_info.process, target_section_handle, 0, false,
-                         DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
-    return STATUS_ACCESS_DENIED;
+  base::win::ScopedHandle section_handle(local_section_handle);
+  // Create a rule to RETURN_CONST the section handle if the name matches.
+  PolicyRule signed_policy(RETURN_CONST,
+                           reinterpret_cast<uintptr_t>(section_handle.get()));
+  if (!signed_policy.AddStringMatch(IF, NameBased::NAME,
+                                    nt_filename->c_str())) {
+    return {};
   }
-  return status;
+  if (!policy->AddRule(IpcTag::NTCREATESECTION, &signed_policy)) {
+    return {};
+  }
+
+  return section_handle;
 }
 
 }  // namespace sandbox

@@ -124,7 +124,8 @@ bool LowLevelPolicy::Done() {
   return true;
 }
 
-PolicyRule::PolicyRule(EvalResult action) : action_(action), done_(false) {
+PolicyRule::PolicyRule(EvalResult action, uintptr_t constant)
+    : action_(action), constant_(constant), done_(false) {
   char* memory = new char[sizeof(PolicyBuffer) + kRuleBufferSize];
   buffer_ = reinterpret_cast<PolicyBuffer*>(memory);
   buffer_->opcode_count = 0;
@@ -280,8 +281,9 @@ bool PolicyRule::Done() {
   if (done_) {
     return true;
   }
-  if (!opcode_factory_->MakeOpAction(action_, kPolNone))
+  if (!opcode_factory_->MakeOpAction(action_, constant_)) {
     return false;
+  }
   ++buffer_->opcode_count;
   done_ = true;
   return true;

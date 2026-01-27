@@ -544,9 +544,11 @@ BrokerServicesBase::PreSpawnTarget(std::wstring_view exe_path,
   startup_info->SetStdHandles(policy_base->GetStdoutHandle(),
                               policy_base->GetStderrHandle());
   // Add any additional handles that were requested.
-  const auto& policy_handle_list = policy_base->GetHandlesBeingShared();
-  for (HANDLE handle : policy_handle_list) {
+  for (HANDLE handle : policy_base->GetHandlesBeingShared()) {
     startup_info->AddInheritedHandle(handle);
+  }
+  for (const auto& handle : config_base->shared_handles()) {
+    startup_info->AddInheritedHandle(handle.get());
   }
 
   AppContainer* container = config_base->GetAppContainer();
