@@ -1181,6 +1181,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT,
                 "Enables content restriction support in WebView."),
+        Flag.baseFeature(
+                "CancelPendingCallbacksBeforeFetchRestart",
+                "The flag for ServiceWorkerSubresourceLoader. If enabled, the loader cancels"
+                        + " pending callbacks before restarting a fetch."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 
