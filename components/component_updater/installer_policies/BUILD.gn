@@ -16,8 +16,6 @@ static_library("installer_policies_no_content_deps") {
   sources = [
     "amount_extraction_heuristic_regexes_component_installer.cc",
     "amount_extraction_heuristic_regexes_component_installer.h",
-    "autofill_states_component_installer.cc",
-    "autofill_states_component_installer.h",
     "first_party_sets_component_installer_policy.cc",
     "first_party_sets_component_installer_policy.h",
     "origin_trials_component_installer.cc",
@@ -72,7 +70,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "amount_extraction_heuristic_regexes_component_installer_unittest.cc",
-    "autofill_states_component_installer_unittest.cc",
     "first_party_sets_component_installer_policy_unittest.cc",
     "history_search_strings_component_installer_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",

@@ -6501,7 +6501,6 @@ test("unit_tests") {
     "../browser/collaboration/messaging/messaging_backend_service_factory_unittest.cc",
     "../browser/command_updater_impl_unittest.cc",
     "../browser/commerce/product_specifications/product_specifications_service_factory_unittest.cc",
-    "../browser/component_updater/afp_blocked_domain_list_component_remover_unittest.cc",
     "../browser/component_updater/chrome_component_updater_configurator_unittest.cc",
     "../browser/component_updater/crl_set_component_installer_unittest.cc",
     "../browser/component_updater/origin_trials_component_installer_unittest.cc",

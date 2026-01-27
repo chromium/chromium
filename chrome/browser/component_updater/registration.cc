@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,26 +15,19 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/component_updater/afp_blocked_domain_list_component_remover.h"
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
 #include "chrome/browser/component_updater/captcha_provider_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
-#include "chrome/browser/component_updater/cookie_readiness_list_component_remover.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
-#include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
-#include "chrome/browser/component_updater/masked_domain_list_component_remover.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
-#include "chrome/browser/component_updater/open_cookie_database_component_remover.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
-#include "chrome/browser/component_updater/probabilistic_reveal_token_component_remover.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
-#include "chrome/browser/component_updater/tpcd_metadata_component_remover.h"
 #include "chrome/browser/component_updater/trust_token_key_commitments_component_installer.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/common/buildflags.h"
@@ -41,7 +35,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #include "components/component_updater/installer_policies/history_search_strings_component_installer.h"
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
@@ -100,10 +93,6 @@
 #include "ui/aura/env.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/component_updater/lacros_component_remover.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -113,6 +102,35 @@
 #endif
 
 namespace component_updater {
+
+namespace {
+
+// Runs in the thread pool, may block.
+void DeleteOldComponents(const base::FilePath& user_data_dir) {
+  for (const base::FilePath::StringType& dir : {
+           FILE_PATH_LITERAL("MaskedDomainListPreloaded"),  // Remove in M146+
+           FILE_PATH_LITERAL("DesktopSharingHub"),          // Remove in M146+
+           FILE_PATH_LITERAL("CookieReadinessList"),        // Remove in M146+
+           FILE_PATH_LITERAL("OpenCookieDatabase"),         // Remove in M146+
+           FILE_PATH_LITERAL("TpcdMetadata"),               // Remove in M147+
+           FILE_PATH_LITERAL(
+               "ProbabilisticRevealTokenRegistry"),  // Remove in M148+
+           FILE_PATH_LITERAL("AutofillStates"),      // Remove in M153+
+           FILE_PATH_LITERAL(
+               "Fingerprinting Protection Filter"),  // Remove in M156+
+#if BUILDFLAG(IS_CHROMEOS)
+           // TODO(crbug.com/380780352): Remove these after the stepping stone.
+           FILE_PATH_LITERAL("lacros-dogfood-canary"),
+           FILE_PATH_LITERAL("lacros-dogfood-dev"),
+           FILE_PATH_LITERAL("lacros-dogfood-beta"),
+           FILE_PATH_LITERAL("lacros-dogfood-stable"),
+#endif  // BUILDFLAG(IS_CHROMEOS)
+       }) {
+    base::DeletePathRecursively(user_data_dir.Append(dir));
+  }
+}
+
+}  // namespace
 
 void RegisterComponentsForUpdate() {
   auto* const cus = g_browser_process->component_updater();
@@ -138,48 +156,6 @@ void RegisterComponentsForUpdate() {
   RegisterPrivacySandboxAttestationsComponent(cus);
   if (history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
     RegisterHistorySearchStringsComponent(cus);
-  }
-
-  base::FilePath path;
-  if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
-    // Clean up any remaining desktop sharing hub state.
-    component_updater::DeleteDesktopSharingHub(path);
-    // TODO: crbug.com/457391753 - Remove this cleanup code in M146+.
-    component_updater::DeleteMaskedDomainList(path);
-
-    // TODO: crbug.com/456742487 - Remove this after M148.
-    DeleteProbabilisticRevealTokenRegistry(path);
-
-    if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
-      DeleteHistorySearchStringsComponent(path);
-    }
-
-    // Clean up any remaining state for the blocked domain list component.
-    //
-    // TODO(crbug.com/456488732): Delete this call in M156.
-    UnregisterAntiFingerprintingBlockedDomainListComponent(cus, path);
-
-    // Clean up remaining state for Open Cookie Database component.
-    //
-    // TODO(crbug.com/473796598): Remove this code in M146+.
-    DeleteOpenCookieDatabase(path);
-
-    // Clean up remaining state for Cookie Readiness List component.
-    //
-    // TODO(crbug.com/473796598): Remove this code in M146+.
-    DeleteCookieReadinessList(path);
-
-    // Clean up remaining state for TPCD Metadata component.
-    //
-    // TODO(crbug.com/477611289): Remove this code in M147+.
-    DeleteTPCDMetadataComponent(path);
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // Lacros is sunsetted. While rootfs Lacros was already taken care of,
-    // stateful Lacros needs to be cleaned up just like a regular component.
-    // TODO(crbug.com/380780352): Remove this after the stepping stone.
-    component_updater::DeleteStatefulLacros(path);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   RegisterSSLErrorAssistantComponent(cus);
 
@@ -222,9 +198,6 @@ void RegisterComponentsForUpdate() {
   RegisterRealTimeUrlChecksAllowlistComponent(cus);
 #endif  // BUIDLFLAG(IS_ANDROID)
 
-  // TODO(crbug.com/466086121) - Remove this cleanup code in M153+.
-  DeleteAutofillStatesComponent(path);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   ManageScreenAIComponentRegistration(cus, g_browser_process->local_state());
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -254,6 +227,16 @@ void RegisterComponentsForUpdate() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   RegisterCaptchaProviderComponent(cus);
+
+  base::FilePath path;
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
+    if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
+      DeleteHistorySearchStringsComponent(path);
+    }
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::BindOnce(&DeleteOldComponents, path));
+  }
 }
 
 }  // namespace component_updater
