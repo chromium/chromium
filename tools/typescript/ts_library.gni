@@ -10,7 +10,6 @@ template("ts_library") {
 
     forward_variables_from(invoker,
                            [
-                             "deps",
                              "extra_deps",
                              "in_files",
                              "tsconfig_base",
@@ -102,9 +101,12 @@ template("ts_library") {
       args += [ "--definitions" ] + definitions
     }
 
-    if (defined(deps)) {
+    deps = [ "//tools/typescript:copy_package_json" ]
+
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
       args += [ "--deps" ]
-      foreach(dep, deps) {
+      foreach(dep, invoker.deps) {
         name = get_label_info(dep, "name")
         tsconfig_dep =
             get_label_info(dep, "target_gen_dir") + "/tsconfig_$name.json"
@@ -138,9 +140,6 @@ template("ts_library") {
                "Did you mean to list ${_extra_dep} in deps instead of " +
                    "extra_deps? extra_deps should not hold any ts_library() " +
                    "targets.")
-      }
-      if (!defined(deps)) {
-        deps = []
       }
       deps += extra_deps
     }
