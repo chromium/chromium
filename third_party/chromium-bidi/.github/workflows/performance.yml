@@ -66,7 +66,7 @@ jobs:
           npm link chromium-bidi
       - name: Run JS performance benchmark
         run: |
-          node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
+          DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
       - name: Extract and store performance metrics
         id: extract_metrics
         # Publish 2 metrics: mean and median relative difference. Group them together by
@@ -76,18 +76,26 @@ jobs:
 
           mean_value=$(grep 'PERF_METRIC:DIFF_MEAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:VALUE://')
           mean_range=$(grep 'PERF_METRIC:DIFF_MEAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEAN_REL:RANGE://')
-          echo "{\"name\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_mean_rel\", \"value\": $mean_value, \"range\": $mean_range, \"unit\": \"Percent\", \"extra\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_rel\"}," >> pup_perf_metrics.json
-
+          echo "{\"name\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_mean_rel\", \"value\": $mean_value, \"range\": $mean_range, \"unit\": \"Percent\", \"extra\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_rel\"}" >> pup_perf_metrics.json
+          echo "," >> pup_perf_metrics.json
           median_value=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:VALUE://')
           median_range=$(grep 'PERF_METRIC:DIFF_MEDIAN_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_MEDIAN_REL:RANGE://')
           echo "{\"name\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_median_rel\", \"value\": $median_value, \"range\": $median_range, \"unit\": \"Percent\", \"extra\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_rel\"}" >> pup_perf_metrics.json
+          echo "," >> pup_perf_metrics.json
+          p10_value=$(grep 'PERF_METRIC:DIFF_P10_REL:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_P10_REL:VALUE://')
+          p10_range=$(grep 'PERF_METRIC:DIFF_P10_REL:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:DIFF_P10_REL:RANGE://')
+          echo "{\"name\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_p10_rel\", \"value\": $p10_value, \"range\": $p10_range, \"unit\": \"Percent\", \"extra\": \"${{ matrix.os }}-shell:pup-perf-metric:diff_rel\"}" >> pup_perf_metrics.json
+
           echo "Extracted performance metrics:"
           cat pup_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: pup-perf-metrics-${{ matrix.os }}
-          path: pup_perf_metrics.json
+          path: |
+            pup_perf_metrics.json
+            debug.cdp.log
+            debug.bidi.log
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
   e2e-perf-metric:
@@ -166,7 +174,7 @@ jobs:
                 split($2, parts, ":");
                 if (length(parts) >= 2) {
                   if (count > 0) printf ",";
-                  printf "{\"name\": \"%s:%s\", \"value\": %s, \"unit\": \"ms\", \"extra\": \"${{ matrix.os }}:e2e-perf-metric\"}", prefix, parts[1], parts[2];
+                  printf "{\"name\": \"%s:%s\", \"value\": %s, \"unit\": \"ms\", \"extra\": \"${{ matrix.os }}-${{ matrix.head }}:e2e-perf-metric\"}", prefix, parts[1], parts[2];
                   count++;
                 }
               }

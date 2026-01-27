@@ -17,6 +17,8 @@
  * limitations under the License.
  */
 
+import fs from 'fs';
+
 import puppeteer from 'puppeteer';
 
 import {installAndGetChromePath} from './path-getter/path-getter.mjs';
@@ -40,6 +42,32 @@ const BENCHMARK_HTML = `
 </div>`;
 
 /**
+ * Calculates the Standard Error for a specific percentile using rank-based confidence intervals.
+ * @param {number[]} sortedLatencies
+ * @param {number} percentile (between 0 and 1, e.g., 0.1 for P10, 0.5 for Median)
+ * @returns {number} The estimated Standard Error.
+ */
+function calculateRankBasedStandardError(sortedLatencies, percentile) {
+  const count = sortedLatencies.length;
+  // Standard Error of the Index
+  const seIndex = Math.sqrt(count * percentile * (1 - percentile));
+
+  // 95% Confidence Interval Indices
+  let lowerIndex = Math.floor(count * percentile - T_CRIT_95_LARGE_N * seIndex);
+  let upperIndex = Math.ceil(count * percentile + T_CRIT_95_LARGE_N * seIndex);
+
+  // Clamp indices to valid range.
+  lowerIndex = Math.max(0, lowerIndex);
+  upperIndex = Math.min(count - 1, upperIndex);
+
+  const lowerValue = sortedLatencies[lowerIndex];
+  const upperValue = sortedLatencies[upperIndex];
+
+  // Approximate Standard Error: (Upper - Lower) / (2 * Z)
+  return (upperValue - lowerValue) / (2 * T_CRIT_95_LARGE_N);
+}
+
+/**
  * Calculates statistical metrics for a set of benchmark run means.
  *
  * This function processes an array of latencies to compute central tendency (mean),
@@ -57,12 +85,15 @@ function calculateStats(latencies) {
   const max = latencies[count - 1];
 
   // Median: The value separating the higher half from the lower half of the data samples.
-  let median;
-  if (count % 2 === 0) {
-    median = (latencies[count / 2 - 1] + latencies[count / 2]) / 2;
-  } else {
-    median = latencies[Math.floor(count / 2)];
-  }
+  const median = latencies[Math.floor(count * 0.5)];
+
+  // 10th Percentile (P10):
+  // The value below which 10% of the data falls.
+  // We use the nearest rank method.
+  const p10 = latencies[Math.floor(count * 0.1)];
+
+  // 90th Percentile (P90):
+  const p90 = latencies[Math.floor(count * 0.9)];
 
   // Sample Variance (s²): Unbiased estimator of the population variance.
   // Uses Bessel's correction (n - 1) because we are estimating the true variance
@@ -105,10 +136,8 @@ function calculateStats(latencies) {
   // The Margin of Error expressed as a percentage of the mean.
   const ciRsdMean = (marginOfErrorMean / mean) * 100;
 
-  // Standard Error of the Median (SE_med) approximation:
-  // Under the assumption of a Normal distribution, the asymptotic variance of the median
-  // is (π/2) * (σ^2 / n). Thus, SE_med ≈ SE_mean * √1.57 ≈ 1.253 * SE_mean.
-  const standardErrorMedian = 1.253 * standardErrorMean;
+  // Standard Error of the Median (SE_med) using Rank-Based Consistency Interval:
+  const standardErrorMedian = calculateRankBasedStandardError(latencies, 0.5);
 
   // Margin of Error (MOE) for the Median:
   // MOE_med = z* * SE_med
@@ -117,6 +146,24 @@ function calculateStats(latencies) {
   // CI Relative Standard Deviation (CI RSD) for Median:
   // The Margin of Error expressed as a percentage of the median.
   const ciRsdMedian = (marginOfErrorMedian / median) * 100;
+
+  // Standard Error of P10 (SE_p10) using Rank-Based Consistency Interval:
+  const standardErrorP10 = calculateRankBasedStandardError(latencies, 0.1);
+
+  // Margin of Error (MOE) for P10:
+  const marginOfErrorP10 = tCrit * standardErrorP10;
+
+  // CI Relative Standard Deviation (CI RSD) for P10:
+  const ciRsdP10 = (marginOfErrorP10 / p10) * 100;
+
+  // Standard Error of P90 (SE_p90) using Rank-Based Consistency Interval:
+  const standardErrorP90 = calculateRankBasedStandardError(latencies, 0.9);
+
+  // Margin of Error (MOE) for P90:
+  const marginOfErrorP90 = tCrit * standardErrorP90;
+
+  // CI Relative Standard Deviation (CI RSD) for P90:
+  const ciRsdP90 = (marginOfErrorP90 / p90) * 100;
 
   return {
     mean,
@@ -131,6 +178,14 @@ function calculateStats(latencies) {
     standardErrorMedian,
     marginOfErrorMedian,
     ciRsdMedian,
+    p10,
+    standardErrorP10,
+    marginOfErrorP10,
+    ciRsdP10,
+    p90,
+    standardErrorP90,
+    marginOfErrorP90,
+    ciRsdP90,
   };
 }
 
@@ -284,6 +339,38 @@ async function main() {
     `  Median: ${medianDiffRel.toFixed(2)}% ±${medianDiffRelMoe.toFixed(2)}% / ${medianDiffAbs.toFixed(4)}ms ±${medianDiffAbsMoe.toFixed(4)}ms`,
   );
 
+  const p10DiffAbs = bidiFinal.p10 - cdpFinal.p10;
+  const p10DiffRel = (p10DiffAbs / cdpFinal.p10) * 100;
+
+  // Standard Error of the Difference (SE_diff) for P10.
+  const p10DiffStandardError = Math.sqrt(
+    Math.pow(cdpFinal.standardErrorP10, 2) +
+      Math.pow(bidiFinal.standardErrorP10, 2),
+  );
+
+  const p10DiffAbsMoe = p10DiffStandardError * T_CRIT_95_LARGE_N;
+  const p10DiffRelMoe = (p10DiffAbsMoe / cdpFinal.p10) * 100;
+
+  console.log(
+    `  P10:    ${p10DiffRel.toFixed(2)}% ±${p10DiffRelMoe.toFixed(2)}% / ${p10DiffAbs.toFixed(4)}ms ±${p10DiffAbsMoe.toFixed(4)}ms`,
+  );
+
+  const p90DiffAbs = bidiFinal.p90 - cdpFinal.p90;
+  const p90DiffRel = (p90DiffAbs / cdpFinal.p90) * 100;
+
+  // Standard Error of the Difference (SE_diff) for P90.
+  const p90DiffStandardError = Math.sqrt(
+    Math.pow(cdpFinal.standardErrorP90, 2) +
+      Math.pow(bidiFinal.standardErrorP90, 2),
+  );
+
+  const p90DiffAbsMoe = p90DiffStandardError * T_CRIT_95_LARGE_N;
+  const p90DiffRelMoe = (p90DiffAbsMoe / cdpFinal.p90) * 100;
+
+  console.log(
+    `  P90:    ${p90DiffRel.toFixed(2)}% ±${p90DiffRelMoe.toFixed(2)}% / ${p90DiffAbs.toFixed(4)}ms ±${p90DiffAbsMoe.toFixed(4)}ms`,
+  );
+
   console.log('\n=== CI output ===');
 
   console.log(`PERF_METRIC:CDP_MEAN_ABS:VALUE:${cdpFinal.mean.toFixed(4)}`);
@@ -294,6 +381,11 @@ async function main() {
   console.log(`PERF_METRIC:CDP_MEDIAN_ABS:VALUE:${cdpFinal.median.toFixed(4)}`);
   console.log(
     `PERF_METRIC:CDP_MEDIAN_ABS:RANGE:${cdpFinal.marginOfErrorMedian.toFixed(4)}`,
+  );
+
+  console.log(`PERF_METRIC:CDP_P90_ABS:VALUE:${cdpFinal.p90.toFixed(4)}`);
+  console.log(
+    `PERF_METRIC:CDP_P90_ABS:RANGE:${cdpFinal.marginOfErrorP90.toFixed(4)}`,
   );
 
   console.log(`PERF_METRIC:BIDI_MEAN_ABS:VALUE:${bidiFinal.mean.toFixed(4)}`);
@@ -308,6 +400,11 @@ async function main() {
     `PERF_METRIC:BIDI_MEDIAN_ABS:RANGE:${bidiFinal.marginOfErrorMedian.toFixed(4)}`,
   );
 
+  console.log(`PERF_METRIC:BIDI_P90_ABS:VALUE:${bidiFinal.p90.toFixed(4)}`);
+  console.log(
+    `PERF_METRIC:BIDI_P90_ABS:RANGE:${bidiFinal.marginOfErrorP90.toFixed(4)}`,
+  );
+
   console.log(`PERF_METRIC:DIFF_MEAN_REL:VALUE:${meanDiffRel.toFixed(4)}`);
   console.log(`PERF_METRIC:DIFF_MEAN_REL:RANGE:${meanDiffRelMoe.toFixed(4)}`);
 
@@ -315,6 +412,19 @@ async function main() {
   console.log(
     `PERF_METRIC:DIFF_MEDIAN_REL:RANGE:${medianDiffRelMoe.toFixed(4)}`,
   );
+
+  console.log(`PERF_METRIC:DIFF_P10_REL:VALUE:${p10DiffRel.toFixed(4)}`);
+  console.log(`PERF_METRIC:DIFF_P10_REL:RANGE:${p10DiffRelMoe.toFixed(4)}`);
+
+  console.log(`PERF_METRIC:DIFF_P90_REL:VALUE:${p90DiffRel.toFixed(4)}`);
+  console.log(`PERF_METRIC:DIFF_P90_REL:RANGE:${p90DiffRelMoe.toFixed(4)}`);
+
+  if (process.env.DEBUG_CDP_DATA) {
+    fs.writeFileSync(process.env.DEBUG_CDP_DATA, stats.cdp.join('\n'));
+  }
+  if (process.env.DEBUG_BIDI_DATA) {
+    fs.writeFileSync(process.env.DEBUG_BIDI_DATA, stats.bidi.join('\n'));
+  }
 }
 
 await main();
