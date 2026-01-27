@@ -55,7 +55,7 @@ class TabStripCollection : public TabCollection {
       size_t destination_index,
       std::optional<tab_groups::TabGroupId> new_group_id,
       bool new_pinned_state,
-      const std::set<TabCollection::Type>& retain_collection_types);
+      const TabCollection::TypeEnumSet retain_collection_types);
 
   // Removes the tab present at a recursive index in the collection and
   // returns the unique_ptr to the tab model. If there is no tab present
@@ -138,7 +138,7 @@ class TabStripCollection : public TabCollection {
   // in the collection.
   ChildrenPtrs GetTabsAndCollectionsForMove(
       const std::vector<int>& tab_indices,
-      const std::set<TabCollection::Type>& retain_collection_types);
+      const TabCollection::TypeEnumSet retain_collection_types);
 
   // Helper to centralize updates to `group_mapping_` and `split_mapping_`. If
   // `root_collection` is a group, the appropriate splits need to group need to

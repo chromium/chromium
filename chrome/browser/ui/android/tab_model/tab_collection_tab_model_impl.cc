@@ -283,9 +283,8 @@ int TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
     tab_indices.push_back(base::checked_cast<int>(i));
   }
 
-  const std::set<tabs::TabCollection::Type> kRetainCollectionTypes =
-      std::set<tabs::TabCollection::Type>(
-          {tabs::TabCollection::Type::SPLIT, tabs::TabCollection::Type::GROUP});
+  static constexpr TabCollection::TypeEnumSet kRetainCollectionTypes{
+      tabs::TabCollection::Type::SPLIT, tabs::TabCollection::Type::GROUP};
 
   tab_strip_collection_->MoveTabsRecursive(
       tab_indices, static_cast<size_t>(to_index),

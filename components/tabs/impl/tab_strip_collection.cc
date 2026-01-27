@@ -20,6 +20,7 @@
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/unpinned_tab_collection.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace {
 tabs::TabCollection* GetCommonAncestor(tabs::TabCollection* collection_a,
@@ -29,7 +30,7 @@ tabs::TabCollection* GetCommonAncestor(tabs::TabCollection* collection_a,
   }
 
   // Use a set to store all ancestors of the first collection.
-  std::set<tabs::TabCollection*> ancestors;
+  absl::flat_hash_set<tabs::TabCollection*> ancestors;
 
   // 1. Trace the path from collection_a to the root and store it.
   tabs::TabCollection* current_a = collection_a;
@@ -104,7 +105,7 @@ void TabStripCollection::MoveTabRecursive(
 
   const std::vector<int> tab_indices = {static_cast<int>(initial_index)};
 
-  std::set<tabs::TabCollection::Type> retain_collection_types;
+  TabCollection::TypeEnumSet retain_collection_types;
 
   if (old_group.has_value() && old_group == new_group_id) {
     TabGroupTabCollection* old_group_collection =
@@ -112,8 +113,8 @@ void TabStripCollection::MoveTabRecursive(
 
     // If we are moving the only tab in a group then treat this as a group move.
     if (old_group_collection->TabCountRecursive() == 1) {
-      retain_collection_types.insert(
-          {tabs::TabCollection::Type::SPLIT, tabs::TabCollection::Type::GROUP});
+      retain_collection_types = {tabs::TabCollection::Type::SPLIT,
+                                 tabs::TabCollection::Type::GROUP};
       new_group_id = std::nullopt;
     }
   }
@@ -127,7 +128,7 @@ void TabStripCollection::MoveTabsRecursive(
     size_t destination_index,
     std::optional<tab_groups::TabGroupId> new_group_id,
     bool new_pinned_state,
-    const std::set<TabCollection::Type>& retain_collection_types) {
+    const TabCollection::TypeEnumSet retain_collection_types) {
   CHECK(destination_index >= 0);
   ChildrenPtrs tab_or_collections =
       GetTabsAndCollectionsForMove(tab_indices, retain_collection_types);
@@ -215,8 +216,9 @@ TabCollection::Position TabStripCollection::GetMovePosition(
 
 ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
     const std::vector<int>& tab_indices,
-    const std::set<TabCollection::Type>& retain_collection_types) {
-  std::set<const TabInterface*> selected_tabs;
+    const TabCollection::TypeEnumSet retain_collection_types) {
+  absl::flat_hash_set<const TabInterface*> selected_tabs;
+  selected_tabs.reserve(tab_indices.size());
   for (int index : tab_indices) {
     selected_tabs.insert(GetTabAtIndexRecursive(index));
   }
@@ -224,9 +226,9 @@ ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
   // Contains set of all the collections fully covered by `tab_indices`. This
   // does not include `pinned_collection_` or `unpinned_collection_` as they
   // cannot be moved.
-  std::set<const TabCollection*> selected_collections;
+  absl::flat_hash_set<const TabCollection*> selected_collections;
 
-  if (retain_collection_types.contains(TabCollection::Type::GROUP)) {
+  if (retain_collection_types.Has(TabCollection::Type::GROUP)) {
     for (const auto& [group_id_, group_collection] : group_mapping_) {
       bool fully_selected = true;
       for (const TabInterface* tab : *group_collection) {
@@ -242,7 +244,7 @@ ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
     }
   }
 
-  if (retain_collection_types.contains(TabCollection::Type::SPLIT)) {
+  if (retain_collection_types.Has(TabCollection::Type::SPLIT)) {
     for (const auto& [split_id, split_collection] : split_mapping_) {
       bool fully_selected = true;
       for (const TabInterface* tab : *split_collection) {
