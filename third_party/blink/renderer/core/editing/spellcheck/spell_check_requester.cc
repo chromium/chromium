@@ -28,6 +28,7 @@
 #include <algorithm>
 
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/web/web_spelling_marker.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
@@ -54,9 +55,9 @@ static Vector<TextCheckingResult> ToCoreResults(
   return core_results;
 }
 
-std::vector<WebTextCheckClient::WebSpellingMarker> MapToWebSpellingMarkers(
+std::vector<WebSpellingMarker> MapToWebSpellingMarkers(
     const blink::DocumentMarkerVector& spelling_markers) {
-  std::vector<WebTextCheckClient::WebSpellingMarker> web_spelling_markers;
+  std::vector<WebSpellingMarker> web_spelling_markers;
   for (const auto& marker : spelling_markers) {
     if (marker->GetType() != DocumentMarker::kSpelling &&
         marker->GetType() != DocumentMarker::kGrammar) {
@@ -65,8 +66,8 @@ std::vector<WebTextCheckClient::WebSpellingMarker> MapToWebSpellingMarkers(
     web_spelling_markers.emplace_back(
         marker->StartOffset(), marker->EndOffset(),
         marker->GetType() == DocumentMarker::kGrammar
-            ? WebTextCheckClient::SpellingMarkerType::kGrammar
-            : WebTextCheckClient::SpellingMarkerType::kSpelling);
+            ? WebSpellingMarker::SpellingMarkerType::kGrammar
+            : WebSpellingMarker::SpellingMarkerType::kSpelling);
   }
   return web_spelling_markers;
 }

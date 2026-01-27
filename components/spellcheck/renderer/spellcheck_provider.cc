@@ -53,17 +53,17 @@ static_assert(static_cast<int>(blink::kWebTextDecorationTypeGrammar) ==
 namespace {
 
 spellcheck::Decoration MapToDecoration(
-    blink::WebTextCheckClient::SpellingMarkerType marker_type) {
+    blink::WebSpellingMarker::SpellingMarkerType marker_type) {
   switch (marker_type) {
-    case blink::WebTextCheckClient::SpellingMarkerType::kSpelling:
+    case blink::WebSpellingMarker::SpellingMarkerType::kSpelling:
       return spellcheck::Decoration::SPELLING;
-    case blink::WebTextCheckClient::SpellingMarkerType::kGrammar:
+    case blink::WebSpellingMarker::SpellingMarkerType::kGrammar:
       return spellcheck::Decoration::GRAMMAR;
   }
 }
 
 spellcheck::SpellingMarker MapToSpellingMarker(
-    const blink::WebTextCheckClient::WebSpellingMarker& marker) {
+    const blink::WebSpellingMarker& marker) {
   return spellcheck::SpellingMarker(marker.start, marker.end,
                                     MapToDecoration(marker.marker_type));
 }
@@ -328,8 +328,7 @@ void SpellCheckProvider::CheckSpelling(
 
 void SpellCheckProvider::RequestCheckingOfText(
     const WebString& text,
-    const std::vector<blink::WebTextCheckClient::WebSpellingMarker>&
-        spelling_markers,
+    const std::vector<blink::WebSpellingMarker>& spelling_markers,
     blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
         should_force_refresh,
     std::unique_ptr<WebTextCheckingCompletion> completion) {
