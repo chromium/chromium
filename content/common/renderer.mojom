@@ -26,12 +26,8 @@ enum ScrollerStyle {
 
 [EnableIf=is_mac]
 struct UpdateScrollbarThemeParams {
-  // TODO(avi): Update these to optional values when optional numeric types are
-  // allowed. (https://crbug.com/657632)
-  bool has_initial_button_delay;
-  float initial_button_delay;
-  bool has_autoscroll_button_delay;
-  float autoscroll_button_delay;
+  float? initial_button_delay;
+  float? autoscroll_button_delay;
 
   bool jump_on_track_click;
   ScrollerStyle preferred_scroller_style;

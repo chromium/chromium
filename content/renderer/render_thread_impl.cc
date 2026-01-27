@@ -1396,12 +1396,7 @@ void RenderThreadImpl::SetWebKitSharedTimersSuspended(bool suspend) {
 void RenderThreadImpl::UpdateScrollbarTheme(
     mojom::UpdateScrollbarThemeParamsPtr params) {
   blink::WebScrollbarTheme::UpdateScrollbarsWithNSDefaults(
-      params->has_initial_button_delay
-          ? std::make_optional(params->initial_button_delay)
-          : std::nullopt,
-      params->has_autoscroll_button_delay
-          ? std::make_optional(params->autoscroll_button_delay)
-          : std::nullopt,
+      params->initial_button_delay, params->autoscroll_button_delay,
       params->preferred_scroller_style, params->redraw,
       params->jump_on_track_click);
   is_elastic_overscroll_enabled_on_root_ = params->scroll_view_rubber_banding;

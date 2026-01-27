@@ -107,7 +107,7 @@ for message parameters.
 | *`pending_receiver<InterfaceType>`*            | A pending receiver for any user-defined Mojom interface type. This is sugar for a more strongly-typed message pipe handle which is expected to receive request messages and should therefore eventually be bound to an implementation of the interface.
 | *`pending_associated_remote<InterfaceType>`*  | An associated interface handle. See [Associated Interfaces](#Associated-Interfaces)
 | *`pending_associated_receiver<InterfaceType>`* | A pending associated receiver. See [Associated Interfaces](#Associated-Interfaces)
-| *T*?                          | An optional (nullable) value. Primitive numeric types (integers, floats, booleans, and enums) used to be non-nullable, but they are now nullable. (see https://crbug.com/657632)
+| *T*?                          | An optional (nullable) value.
 
 ### Modules
 
