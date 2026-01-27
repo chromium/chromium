@@ -678,12 +678,11 @@ bool ProfileSubMenuModel::BuildSyncSection() {
           icon = &vector_icons::kErrorOutlineIcon;
           break;
         case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
-          // TODO(crbug.com/452968646): For kBookmarksLimitExceeded, lead to
-          // sync settings instead of a help article. The "Learn more" string is
-          // generic, and the sync settings page would show the user the
-          // specific error.
-          break;
+          // For this specific error (as opposed to all others), there is no
+          // error UI in the menu.
+          return true;
       }
+      CHECK_NE(command_id, 0);
       AddItemWithStringIdAndVectorIcon(this, command_id, button_string_id,
                                        *icon);
       return true;
