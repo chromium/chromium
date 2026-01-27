@@ -81,8 +81,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
-#import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
-#import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
@@ -374,7 +372,6 @@ void OnListFamilyMembersResponse(
 // TODO(crbug.com/429354805): Add method comments(!)
 
 @interface SceneController () <AuthenticationServiceObserving,
-                               HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                ProfileStateObserver,
                                SceneUIProvider,
@@ -413,9 +410,6 @@ void OnListFamilyMembersResponse(
       _authServiceObserverBridge;
   BOOL _handleExternalIntentsInProgress;
 }
-
-// Coordinator for displaying history.
-@property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
 
 // Coordinates the creation of PDF screenshots with the window's content.
 @property(nonatomic, strong) ScreenshotDelegate* screenshotDelegate;
@@ -1333,9 +1327,6 @@ void OnListFamilyMembersResponse(
 
 - (void)teardownUI {
   // The UI should be stopped before the models they observe are stopped.
-  [self.historyCoordinator stop];
-  self.historyCoordinator = nil;
-
   // Force close the settings if open. This gives Settings the opportunity to
   // unregister observers and destroy C++ objects before the application is
   // shut down without depending on non-deterministic call to -dealloc.
@@ -1780,15 +1771,7 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)showHistory {
-  CHECK(!self.currentInterface.incognito)
-      << "Current interface is incognito and should NOT show history. Call "
-         "this on regular interface.";
-  self.historyCoordinator = [[HistoryCoordinator alloc]
-      initWithBaseViewController:self.currentInterface.viewController
-                         browser:self.mainInterface.browser];
-  self.historyCoordinator.loadStrategy = UrlLoadStrategy::NORMAL;
-  self.historyCoordinator.delegate = self;
-  [self.historyCoordinator start];
+  [self.mainCoordinator showHistory];
 }
 
 - (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command {
@@ -3310,8 +3293,7 @@ using UserFeedbackDataCallback =
   self.incognitoInterstitialCoordinator = nil;
 
   // If History is active, stop it.
-  [self.historyCoordinator stop];
-  self.historyCoordinator = nil;
+  [self.mainCoordinator stopHistoryCoordinator];
 
   // If Assistant Sheet is active, stop it.
   [self.mainCoordinator stopAssistantSheetCoordinator];
@@ -3668,23 +3650,6 @@ using UserFeedbackDataCallback =
 
 - (UIViewController*)activeViewController {
   return self.mainCoordinator.activeViewController;
-}
-
-#pragma mark - HistoryCoordinatorDelegate
-
-- (void)closeHistoryWithCompletion:(ProceduralBlock)completion {
-  __weak __typeof(self) weakSelf = self;
-  [self.historyCoordinator dismissWithCompletion:^{
-    if (completion) {
-      completion();
-    }
-    [weakSelf.historyCoordinator stop];
-    weakSelf.historyCoordinator = nil;
-  }];
-}
-
-- (void)closeHistory {
-  [self closeHistoryWithCompletion:nil];
 }
 
 #pragma mark - AuthenticationServiceObserving

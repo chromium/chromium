@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
@@ -66,6 +67,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 }  // namespace
 
 @interface SceneCoordinator () <AccountMenuCoordinatorDelegate,
+                                HistoryCoordinatorDelegate,
                                 PasswordCheckupCoordinatorDelegate,
                                 PolicyWatcherBrowserAgentObserving,
                                 SafariDataImportMainCoordinatorDelegate,
@@ -96,6 +98,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   SafariDataImportMainCoordinator* _safariDataImportCoordinator;
   // Coordinator for display of the Password Checkup.
   PasswordCheckupCoordinator* _passwordCheckupCoordinator;
+  // Coordinator for displaying history.
+  HistoryCoordinator* _historyCoordinator;
   // Coordinator for the AI prototyping menu.
   AIPrototypingCoordinator* _AIPrototypingCoordinator;
   // The coordinator for the Assistant Sheet.
@@ -148,6 +152,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [self stopSigninCoordinatorWithCompletionAnimated:NO];
   [self stopSafariDataImportCoordinator];
   [self stopPasswordCheckupCoordinator];
+  [self stopHistoryCoordinator];
   [self stopSettingsAnimated:NO completion:nil];
   [_AIPrototypingCoordinator stop];
   _AIPrototypingCoordinator = nil;
@@ -547,6 +552,24 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 - (void)stopAssistantSheetCoordinator {
   [_assistantSheetCoordinator stop];
   _assistantSheetCoordinator = nil;
+}
+
+- (void)stopHistoryCoordinator {
+  [_historyCoordinator stop];
+  _historyCoordinator.delegate = nil;
+  _historyCoordinator = nil;
+}
+
+- (void)showHistory {
+  CHECK(!self.currentBrowser->GetProfile()->IsOffTheRecord())
+      << "Current interface is incognito and should NOT show history. Call "
+         "this on regular interface.";
+  _historyCoordinator = [[HistoryCoordinator alloc]
+      initWithBaseViewController:self.activeViewController
+                         browser:_regularBrowser.get()];
+  _historyCoordinator.loadStrategy = UrlLoadStrategy::NORMAL;
+  _historyCoordinator.delegate = self;
+  [_historyCoordinator start];
 }
 
 #pragma mark - SettingsCommands
@@ -961,6 +984,22 @@ void RecordIfNeededSigninFullscreenPromoEvent(
     (PasswordCheckupCoordinator*)coordinator {
   CHECK_EQ(_passwordCheckupCoordinator, coordinator);
   [self stopPasswordCheckupCoordinator];
+}
+
+#pragma mark - HistoryCoordinatorDelegate
+
+- (void)closeHistoryWithCompletion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  [_historyCoordinator dismissWithCompletion:^{
+    if (completion) {
+      completion();
+    }
+    [weakSelf stopHistoryCoordinator];
+  }];
+}
+
+- (void)closeHistory {
+  [self closeHistoryWithCompletion:nil];
 }
 
 #pragma mark - PasswordManagerReauthenticationDelegate

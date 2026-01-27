@@ -136,6 +136,12 @@ enum class WarningType;
 // Stops the Password Checkup coordinator.
 - (void)stopPasswordCheckupCoordinator;
 
+// Shows the History page.
+- (void)showHistory;
+
+// Stops the History coordinator.
+- (void)stopHistoryCoordinator;
+
 // Shows the settings navigation controller.
 - (void)presentSettingsFromViewController:(UIViewController*)baseViewController;
 

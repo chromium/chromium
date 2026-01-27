@@ -5,6 +5,7 @@ include_rules = [
   "+ios/chrome/browser/authentication/account_menu",
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/history/ui_bundled",
   "+ios/chrome/browser/safari_data_import/coordinator",
   "+ios/chrome/browser/safari_data_import/model/features.h",
   "+ios/chrome/browser/safari_data_import/public",
