@@ -37,6 +37,7 @@
 #include "components/page_content_annotations/core/page_content_cache.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/url_util.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -101,6 +102,14 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
       contextual_search::ContextualSearchSource::kOmnibox,
       lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
 
+  if (!session_handle_->CheckSearchContentSharingSettings(
+          profile->GetPrefs())) {
+    // TODO(https://crbug.com/470404040): Handle should support a broken state
+    // where the service is null and calls are no-oped. Otherwise we allow
+    // future calls to fail when things already should be disabled.
+    return;
+  }
+
   query_controller()->AddObserver(this);
 }
 
@@ -134,21 +143,16 @@ ComposeboxQueryControllerBridge::AddFile(
     std::string& file_name,
     std::string& file_type,
     const jni_zero::JavaRef<jobject>& file_data) {
-  base::UnguessableToken file_token = base::UnguessableToken::Create();
+  base::UnguessableToken file_token = session_handle_->CreateContextToken();
 
   std::optional<lens::ImageEncodingOptions> image_options = std::nullopt;
-  lens::MimeType mime_type;
-  AimEligibilityService* aim_service =
-      AimEligibilityServiceFactory::GetForProfile(profile_);
-
   if (file_type.find("pdf") != std::string::npos) {
+    AimEligibilityService* aim_service =
+        AimEligibilityServiceFactory::GetForProfile(profile_);
     if (!aim_service->IsPdfUploadEligible()) {
       return {};
     }
-
-    mime_type = lens::MimeType::kPdf;
   } else if (file_type.find("image") != std::string::npos) {
-    mime_type = lens::MimeType::kImage;
     image_options = lens::ImageEncodingOptions{.enable_webp_encoding = false,
                                                .max_size = 1500000,
                                                .max_height = 1600,
@@ -159,19 +163,11 @@ ComposeboxQueryControllerBridge::AddFile(
     return {};
   }
 
-  std::unique_ptr<lens::ContextualInputData> input_data =
-      std::make_unique<lens::ContextualInputData>();
-  input_data->context_input = std::vector<lens::ContextualInput>();
-  input_data->primary_content_type = mime_type;
-
   base::span<const uint8_t> file_bytes_span =
       base::android::JavaByteBufferToSpan(env, file_data);
-  std::vector<uint8_t> file_data_vector(file_bytes_span.begin(),
-                                        file_bytes_span.end());
-  input_data->context_input->push_back(
-      lens::ContextualInput(std::move(file_data_vector), mime_type));
-  query_controller()->StartFileUploadFlow(file_token, std::move(input_data),
-                                          std::move(image_options));
+  session_handle_->StartFileContextUploadFlow(
+      file_token, file_type, mojo_base::BigBuffer(file_bytes_span),
+      std::move(image_options));
 
   return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
 }
@@ -187,7 +183,7 @@ ComposeboxQueryControllerBridge::AddTabContext(
     return {};
   }
 
-  base::UnguessableToken file_token = base::UnguessableToken::Create();
+  base::UnguessableToken file_token = session_handle_->CreateContextToken();
   lens::TabContextualizationController* tab_contextualization_controller =
       lens::TabContextualizationController::From(tab);
   if (!tab_contextualization_controller) {
@@ -280,7 +276,7 @@ void ComposeboxQueryControllerBridge::RemoveAttachment(
   std::optional<base::UnguessableToken> unguessable_token =
       base::UnguessableToken::DeserializeFromString(token);
   if (unguessable_token.has_value()) {
-    query_controller()->DeleteFile(unguessable_token.value());
+    session_handle_->DeleteFile(unguessable_token.value());
   }
 }
 
@@ -342,7 +338,7 @@ void ComposeboxQueryControllerBridge::OnGetTabPageContext(
                                  .max_width = 1600,
                                  .compression_quality = 40};
 
-  query_controller()->StartFileUploadFlow(
+  session_handle_->StartTabContextUploadFlow(
       context_token, std::move(page_content_data), std::move(image_options));
 }
 
