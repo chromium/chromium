@@ -1798,8 +1798,12 @@ targets.bundle(
     name = "chromium_ios_scripts",
     targets = [
         "check_static_initializers",
-        # TODO(crbug.com/478828041): return base_unittests on IPHONE_15_PRO_18
-        # after machines are brought back to life
+        targets.bundle(
+            targets = "base_unittests",
+            variants = [
+                "IPHONE_15_PRO_18",
+            ],
+        ),
     ],
 )
 
