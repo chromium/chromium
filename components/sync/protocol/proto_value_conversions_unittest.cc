@@ -26,6 +26,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
+#include "components/sync/protocol/gemini_thread_specifics.pb.h"
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/os_preference_specifics.pb.h"
@@ -394,6 +395,20 @@ TEST(ProtoValueConversionsTest, CompareSpecificsData) {
   EXPECT_TRUE((*data_list)[1].GetDict().FindString("url"));
   EXPECT_STREQ("https://www.bar.com",
                (*data_list)[1].GetDict().FindString("url")->c_str());
+}
+
+TEST(ProtoValueConversionsTest, GeminiThreadSpecificsToValue) {
+  sync_pb::GeminiThreadSpecifics gemini_specifics;
+  gemini_specifics.set_conversation_id("my_id");
+  gemini_specifics.set_title("my_title");
+
+  base::Value::Dict value =
+      GeminiThreadSpecificsToValue(gemini_specifics).TakeDict();
+  EXPECT_FALSE(value.empty());
+  EXPECT_THAT(value.FindString("conversation_id"),
+              ::testing::Pointee(testing::Eq("my_id")));
+  EXPECT_THAT(value.FindString("title"),
+              ::testing::Pointee(testing::Eq("my_title")));
 }
 
 }  // namespace

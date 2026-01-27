@@ -2198,7 +2198,8 @@ VISIT_PROTO_FIELDS(const sync_pb::SimpleSkill& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::GeminiThreadSpecifics& proto) {
-  // TODO(crbug.com/476335087): In CL #2, VISIT fields added to specifics.
+  VISIT(conversation_id);
+  VISIT(title);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {

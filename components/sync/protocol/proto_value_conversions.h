@@ -43,6 +43,7 @@ class EntitySpecifics;
 class EwalletDetails;
 class ExtensionSettingSpecifics;
 class ExtensionSpecifics;
+class GeminiThreadSpecifics;
 class HistoryDeleteDirectiveSpecifics;
 class HistorySpecifics;
 class IncomingPasswordSharingInvitationSpecifics;
@@ -190,6 +191,9 @@ base::Value ExtensionSettingSpecificsToValue(
 
 base::Value ExtensionSpecificsToValue(
     const sync_pb::ExtensionSpecifics& extension_specifics);
+
+base::Value GeminiThreadSpecificsToValue(
+    const sync_pb::GeminiThreadSpecifics& gemini_specifics);
 
 base::Value HistoryDeleteDirectiveSpecificsToValue(
     const sync_pb::HistoryDeleteDirectiveSpecifics&

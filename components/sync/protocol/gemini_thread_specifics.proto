@@ -15,5 +15,9 @@ option optimize_for = LITE_RUNTIME;
 package sync_pb;
 
 message GeminiThreadSpecifics {
-  // TODO(crbug.com/476335087) Add in proto fields
+  // A server-generated unique identifier for the conversation.
+  optional string conversation_id = 1;
+
+  // The title of the chat.
+  optional string title = 2;
 }

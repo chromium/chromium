@@ -31,6 +31,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
+#include "components/sync/protocol/gemini_thread_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -368,6 +369,7 @@ IMPLEMENT_PROTO_TO_VALUE(EwalletDetails)
 IMPLEMENT_PROTO_TO_VALUE(ExtensionSettingSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ExtensionSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(GlobalIdDirective)
+IMPLEMENT_PROTO_TO_VALUE(GeminiThreadSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(HistoryDeleteDirectiveSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(HistorySpecifics)
 IMPLEMENT_PROTO_TO_VALUE(IncomingPasswordSharingInvitationSpecifics)
