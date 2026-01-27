@@ -572,20 +572,42 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         var observer = mock(ChromeAndroidTaskTrackerObserver.class);
         mChromeAndroidTaskTracker.addObserver(observer);
 
-        // Act (add task).
+        // Act (add new task).
         var activityScopedObjects =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(/* taskId= */ 1);
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
                         BrowserWindowType.NORMAL, activityScopedObjects, /* pendingId= */ null);
 
-        // Assert (add task).
+        // Assert (add new task).
         verify(observer).onTaskAdded(chromeAndroidTask);
 
-        // Act (remove task).
+        // Act (add pending task).
+        var pendingTask =
+                mChromeAndroidTaskTracker.createPendingTask(
+                        ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                                BrowserWindowType.NORMAL,
+                                new Rect(10, 20, 800, 600),
+                                WindowShowState.DEFAULT),
+                        /* callback= */ null);
+        assertNotNull(pendingTask);
+        var chromeAndroidPendingTask =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL, activityScopedObjects, pendingTask.getId());
+
+        // Assert (add pending task).
+        verify(observer).onTaskAdded(chromeAndroidPendingTask);
+
+        // Act (remove pending task).
+        mChromeAndroidTaskTracker.remove(assertNonNull(chromeAndroidPendingTask.getId()));
+
+        // Assert (remove pending task).
+        verify(observer).onTaskRemoved(chromeAndroidPendingTask);
+
+        // Act (remove new task).
         mChromeAndroidTaskTracker.remove(assertNonNull(chromeAndroidTask.getId()));
 
-        // Assert (remove task).
+        // Assert (remove new task).
         verify(observer).onTaskRemoved(chromeAndroidTask);
 
         // Cleanup.

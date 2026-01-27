@@ -99,6 +99,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             assert pendingTask != null : "Invalid pendingId provided.";
             pendingTask.addActivityScopedObjects(activityScopedObjects);
             mTasks.put(taskId, pendingTask);
+            mObservers.forEach((observer) -> observer.onTaskAdded(pendingTask));
             return pendingTask;
         }
 
