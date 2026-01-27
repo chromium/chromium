@@ -183,6 +183,9 @@ content::WebContents* BrowserExtensionWindowController::GetActiveTab() const {
 }
 
 bool BrowserExtensionWindowController::HasEditableTabStrip() const {
+  if (disable_tab_strip_editing_for_test_) {
+    return false;
+  }
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
   return true;

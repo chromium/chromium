@@ -75,6 +75,10 @@ class BrowserExtensionWindowController : public WindowController {
                        bool open_in_tab) override;
   bool SupportsTabs() override;
 
+  void disable_tab_strip_editing_for_test() {
+    disable_tab_strip_editing_for_test_ = true;
+  }
+
  private:
   const raw_ref<BrowserWindowInterface> browser_;
   // TODO(https://crbug.com/423725749): Migrate these to cross-platform
@@ -85,6 +89,7 @@ class BrowserExtensionWindowController : public WindowController {
   const raw_ref<TabListInterface> tab_list_;
   const SessionID session_id_;
   const api::tabs::WindowType window_type_;
+  bool disable_tab_strip_editing_for_test_ = false;
 
   ui::ScopedUnownedUserData<BrowserExtensionWindowController>
       scoped_data_holder_;

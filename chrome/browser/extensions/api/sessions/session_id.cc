@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 
-#include "base/memory/ptr_util.h"
+#include <memory>
+#include <string>
+
 #include "base/strings/string_number_conversions.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -34,7 +36,7 @@ std::unique_ptr<SessionId> SessionId::Parse(const std::string& session_id) {
       &id)) {
     return nullptr;
   }
-  return base::WrapUnique(new SessionId(session_tag, id));
+  return std::make_unique<SessionId>(session_tag, id);
 }
 
 SessionId::SessionId(const std::string& session_tag, int id)

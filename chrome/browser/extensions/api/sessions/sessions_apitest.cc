@@ -23,6 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/sessions/sessions_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
+#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -356,25 +357,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreInIncognito) {
       << error;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/405219627): Port to desktop Android when Android has support
-// for HasEditableTabstrip. See BrowserExtensionWindowController.
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
   CreateSessionModels();
 
-  // Set up a browser with a non-editable tabstrip, simulating one in the midst
-  // of a tab dragging session.
-  Browser* non_editable_browser =
-      Browser::Create(Browser::CreateParams(GetProfile(), true));
-  non_editable_browser->window()->DisableTabStripEditingForTesting();
+  // Set up the browser with a non-editable tabstrip, simulating one in the
+  // midst of a tab dragging session.
+  auto* window_controller =
+      BrowserExtensionWindowController::From(browser_window_interface());
+  window_controller->disable_tab_strip_editing_for_test();
 
-  EXPECT_TRUE(base::MatchPattern(
-      utils::RunFunctionAndReturnError(
-          CreateFunction<SessionsRestoreFunction>(true).get(), "[\"1\"]",
-          non_editable_browser->profile()),
-      ExtensionTabUtil::kTabStripNotEditableError));
+  std::string error = utils::RunFunctionAndReturnError(
+      CreateFunction<SessionsRestoreFunction>(true).get(), "[\"1\"]",
+      GetProfile());
+  EXPECT_TRUE(
+      base::MatchPattern(error, ExtensionTabUtil::kTabStripNotEditableError))
+      << error;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedIncognito) {
   base::ListValue sessions(
