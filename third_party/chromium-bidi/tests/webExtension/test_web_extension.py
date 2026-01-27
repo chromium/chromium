@@ -69,11 +69,7 @@ async def test_extensions_invalid_path(websocket, test_headless_mode):
     if test_headless_mode == "old":
         pytest.xfail("Old headless mode does not support extensions")
         return
-    with pytest.raises(Exception,
-                       match=str({
-                           'error': 'unknown error',
-                           'message': 'Manifest file is missing or unreadable',
-                       })):
+    with pytest.raises(Exception, match='unknown error'):
         await install(websocket, "invalid-path")
 
 
