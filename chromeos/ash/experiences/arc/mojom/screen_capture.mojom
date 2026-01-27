@@ -16,7 +16,28 @@ module arc.mojom;
 
 import "chromeos/ash/experiences/arc/mojom/gfx.mojom";
 import "chromeos/ash/experiences/arc/mojom/video_common.mojom";
-import "ui/gfx/mojom/buffer_types.mojom";
+
+// Corresponds to equivalent BufferFormat enum in ArcScreenCapture within
+// Android source code. Please update both when updating either one of them.
+// See arc-services/aidl/com/android/server/screen_capture/BufferFormat.aidl
+enum BufferFormat {
+  R_8,
+  R_16,
+  RG_88,
+  RG_1616,
+  BGR_565,
+  RGBA_4444,
+  RGBX_8888,
+  RGBA_8888,
+  BGRX_8888,
+  BGRA_1010102,
+  RGBA_1010102,
+  BGRA_8888,
+  RGBA_F16,
+  YVU_420,
+  YUV_420_BIPLANAR,
+  P010,
+};
 
 // Implemented by Chrome in order to allow requesting of permissions to perform
 // desktop capture as well as creating a session for it.
@@ -68,12 +89,8 @@ interface ScreenCaptureSession {
   // buffer_format_modifier is an additional buffer format modifier value
   //     (See DRM_FORMAT_MOD_* in drm_fourcc.h)
   // stride is the stride in pixels for each row of the buffer
-  // NOTE: As this interface is used by ARC, we cannot easily update it to use
-  // SharedImageFormat. Instead, we will scope down the BufferFormat type that
-  // it uses to be ARC-specific once we are at or near the point of otherwise
-  // eliminating BufferFormat. See crbug.com/457323824 for details.
   [MinVersion=2] SetOutputBuffer@1(handle graphics_buffer,
-                                   gfx.mojom.BufferFormat buffer_format,
+                                   BufferFormat buffer_format,
                                    uint64 buffer_format_modifier,
                                    uint32 stride) => ();
 };

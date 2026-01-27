@@ -65,7 +65,7 @@ class ArcScreenCaptureSession : public display::DisplayObserver,
       uint32_t stride,
       SetOutputBufferDeprecatedCallback callback) override;
   void SetOutputBuffer(mojo::ScopedHandle graphics_buffer,
-                       gfx::BufferFormat buffer_format,
+                       mojom::BufferFormat buffer_format,
                        uint64_t buffer_format_modifier,
                        uint32_t stride,
                        SetOutputBufferCallback callback) override;
