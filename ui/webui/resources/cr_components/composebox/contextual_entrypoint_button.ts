@@ -22,9 +22,6 @@ import {getCss} from './contextual_entrypoint_button.css.js';
 import {getHtml} from './contextual_entrypoint_button.html.js';
 import type {ContextualActionMenuElement} from './contextual_action_menu.js';
 
-/** The string value of the tall bottom context layout mode. */
-const TALL_BOTTOM_CONTEXT_LAYOUT_MODE = 'TallBottomContext';
-
 export interface ContextualEntrypointButtonElement {
   $: {
     menu: ContextualActionMenuElement,
@@ -62,7 +59,6 @@ export class ContextualEntrypointButtonElement extends
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
       showMenuOnClick: {type: Boolean},
-      searchboxLayoutMode: {type: String},
       glifAnimationState: {type: String, reflect: true},
 
       // =========================================================================
@@ -82,7 +78,6 @@ export class ContextualEntrypointButtonElement extends
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
   accessor showMenuOnClick: boolean = true;
-  accessor searchboxLayoutMode: string = '';
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
 
@@ -95,8 +90,7 @@ export class ContextualEntrypointButtonElement extends
   }
 
   openMenuForMultiSelection() {
-    if (this.enableMultiTabSelection_ &&
-        this.searchboxLayoutMode !== TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
+    if (this.enableMultiTabSelection_) {
       this.updateComplete.then(this.showMenuAtEntrypoint_.bind(this));
     }
   }
