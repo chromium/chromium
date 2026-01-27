@@ -23,6 +23,7 @@
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/list_selection_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/view_utils.h"
 
@@ -83,31 +84,44 @@ void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
   const auto& selected_tabs =
       tab_strip_model_->selection_model().selected_tabs();
 
-  std::vector<TabSlotView*> dragged_views(selected_tabs.size());
-  size_t next_dragged_view_idx = 0;
+  std::vector<TabSlotView*> dragged_views;
+  dragged_views.reserve(selected_tabs.size());
 
   TabSlotView* source_dragged_view = nullptr;
 
+  CHECK_EQ(node.type(), TabCollectionNode::Type::TAB);
+  const auto* source_tab =
+      std::get<const tabs::TabInterface*>(node.GetNodeData());
+
   // Track the node and build a shim view for each selected node.
+  ui::ListSelectionModel list_selection_model;
   for (tabs::TabInterface* tab : selected_tabs) {
-    CHECK(tab);
+    // Filter out selections that don't match the pinned state of the latest
+    // selected tab.
+    if (source_tab->IsPinned() != tab->IsPinned()) {
+      continue;
+    }
+    size_t index = tab_strip_model_->GetIndexOfTab(tab);
+    list_selection_model.AddIndexToSelection(index);
     TabCollectionNode* selected_node =
         root_node_->GetNodeForHandle(tab->GetHandle());
     CHECK(selected_node);
     auto* slot_view = &GetOrCreateSlotViewForNode(*selected_node);
     slot_view->SetBoundsRect(selected_node->view()->GetLocalBounds());
-    dragged_views[next_dragged_view_idx++] = slot_view;
+    dragged_views.push_back(slot_view);
     if (selected_node == &node) {
       source_dragged_view = slot_view;
+      list_selection_model.set_active(index);
     }
   }
+  dragged_views.shrink_to_fit();
+
   CHECK(source_dragged_view);
 
   const gfx::Point offset_from_source = event.location();
-  if (drag_controller_->Init(
-          this, source_dragged_view, dragged_views, offset_from_source,
-          tab_strip_model_->selection_model().GetListSelectionModel(),
-          EventSourceFromEvent(event)) ==
+  if (drag_controller_->Init(this, source_dragged_view, dragged_views,
+                             offset_from_source, list_selection_model,
+                             EventSourceFromEvent(event)) ==
       TabDragController::Liveness::kDeleted) {
     ResetDragState();
   }
@@ -273,6 +287,15 @@ bool VerticalTabDragHandlerImpl::IsViewDragging(const views::View& view) const {
     }
   }
   return false;
+}
+
+bool VerticalTabDragHandlerImpl::IsDraggingPinnedTabs() const {
+  if (!drag_controller_) {
+    return false;
+  }
+  const auto& drag_data = drag_controller_->GetSessionData().tab_drag_data_;
+  return std::any_of(drag_data.cbegin(), drag_data.cend(),
+                     [](const auto& tab_data) { return tab_data.pinned; });
 }
 
 views::View* VerticalTabDragHandlerImpl::ViewFromTabSlot(

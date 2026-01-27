@@ -40,10 +40,15 @@ class VerticalUnpinnedTabContainerView
   bool IsViewDragging(const views::View& child_view) const override;
   bool ShouldSnapToTarget(const views::View& child_view) const override;
 
+  // VerticalDraggedTabsContainer:
+  VerticalDraggedTabsContainer& GetTabDragTarget(
+      const gfx::Point& point_in_screen) override;
+
  private:
   // VerticalDraggedTabsContainer:
   VerticalTabDragHandler& GetDragHandler() override;
   const VerticalTabDragHandler& GetDragHandler() const override;
+  bool IsTabStripCollapsed() const override;
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateLayoutForDrag() override;
   void HandleTabDragInContainer(const gfx::Point point_in_container) override;

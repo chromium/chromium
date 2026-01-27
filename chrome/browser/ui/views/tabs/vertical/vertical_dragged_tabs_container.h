@@ -9,6 +9,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_observer.h"
 
 class VerticalTabDragHandler;
@@ -27,7 +28,12 @@ class ScrollView;
 class VerticalDraggedTabsContainer : public TabDragTarget,
                                      public views::ViewObserver {
  public:
-  explicit VerticalDraggedTabsContainer(views::View& host_view);
+  enum class DragAxes {
+    kVerticalOnly,
+    kBoth,
+  };
+
+  VerticalDraggedTabsContainer(views::View& host_view, DragAxes drag_axis);
   VerticalDraggedTabsContainer(const VerticalDraggedTabsContainer& other) =
       delete;
   VerticalDraggedTabsContainer& operator=(const VerticalDraggedTabsContainer&) =
@@ -36,7 +42,7 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
 
   // Recursively searches through the view hierarchy to find the collection
   // that should should be handling the tab drag at the given point.
-  VerticalDraggedTabsContainer& GetTabDragTarget(
+  virtual VerticalDraggedTabsContainer& GetTabDragTarget(
       const gfx::Point& point_in_screen);
 
   // TabDragTarget
@@ -54,8 +60,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   void OnViewBoundsChanged(views::View* observed_view) override;
 
  protected:
-  // Returns the expected Y coordinate for a dragged tab view's bounds, or null
-  // if the view isn't being dragged in this.
+  // Returns the expected X/Y coordinate for a dragged tab view's bounds, or
+  // null if the view isn't being dragged in this.
+  std::optional<int> GetXForDraggedTabBounds(const views::View& view) const;
   std::optional<int> GetYForDraggedTabBounds(const views::View& view) const;
 
   // Helper for getting the view at a given point, excluding dragged views.
@@ -65,6 +72,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
  private:
   virtual VerticalTabDragHandler& GetDragHandler() = 0;
   virtual const VerticalTabDragHandler& GetDragHandler() const = 0;
+
+  // Whether the tab strip is collapsed.
+  virtual bool IsTabStripCollapsed() const = 0;
 
   // Returns the scroll view for the container.
   virtual views::ScrollView* GetScrollViewForContainer() const = 0;
@@ -89,15 +99,20 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // the last drag point.
   void UpdateDraggingViewTransforms(const gfx::Point& point_in_container);
 
-  // Returns the minimum top bounds to clamp the transformation applied to the
+  // Returns the bounds to clamp the transformation applied to the
   // drag view. This is to ensure the dragged view transform doesn't clip.
-  int GetMinYForDragToClamp() const;
+  gfx::Rect GetBoundsForDragToClamp() const;
+
+  bool IsHorizontalDragSupported() const;
 
   const raw_ref<const views::View> host_view_;
 
   // Child views that are being dragged.
   base::flat_set<raw_ptr<views::View>> dragging_views_;
   gfx::Point last_drag_point_in_screen_;
+  int tab_strip_padding_;
+
+  const DragAxes drag_axes_;
 
   base::ScopedObservation<views::View, views::ViewObserver>
       host_view_observation_{this};

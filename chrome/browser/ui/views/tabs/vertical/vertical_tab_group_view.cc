@@ -61,7 +61,8 @@ bool SupportsDataSharing() {
 }  // namespace
 
 VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
-    : VerticalDraggedTabsContainer(static_cast<views::View&>(*this)),
+    : VerticalDraggedTabsContainer(static_cast<views::View&>(*this),
+                                   DragAxes::kVerticalOnly),
       collection_node_(collection_node),
       tab_group_visual_data_(
           *GetTabGroupFromNode(collection_node_)->visual_data()),
@@ -106,9 +107,7 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   views::ProposedLayout layouts;
   int width = 0;
   int height = kGroupHeaderVerticalMargin;
-  auto* controller =
-      collection_node_ ? collection_node_->GetController() : nullptr;
-  bool is_tab_strip_collapsed = controller && controller->IsCollapsed();
+  bool is_tab_strip_collapsed = IsTabStripCollapsed();
 
   gfx::Rect header_bounds;
   gfx::Rect group_line_bounds;
@@ -195,9 +194,7 @@ void VerticalTabGroupView::ToggleCollapsedState(
 
 views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
     bool stop_context_menu_propagation) {
-  auto* controller =
-      collection_node_ ? collection_node_->GetController() : nullptr;
-  bool is_tab_strip_collapsed = controller && controller->IsCollapsed();
+  bool is_tab_strip_collapsed = IsTabStripCollapsed();
   // When the tab strip is collapsed, anchor to the group header, otherwise
   // anchor to the editor bubble button.
   views::View* anchor_view =
@@ -279,6 +276,12 @@ const VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() const {
   CHECK(collection_node_);
   CHECK(collection_node_->GetController());
   return collection_node_->GetController()->GetDragHandler();
+}
+
+bool VerticalTabGroupView::IsTabStripCollapsed() const {
+  const auto* controller =
+      collection_node_ ? collection_node_->GetController() : nullptr;
+  return controller && controller->IsCollapsed();
 }
 
 views::ScrollView* VerticalTabGroupView::GetScrollViewForContainer() const {

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
@@ -126,7 +127,7 @@ VerticalTabStripRegionView::~VerticalTabStripRegionView() {
   tab_strip_controller_.reset();
 
   if (drag_handler_) {
-    auto handler = RemoveChildViewT(drag_handler_);
+    auto handler = RemoveChildViewT(drag_handler_->GetDragContext());
     drag_handler_ = nullptr;
   }
 }
@@ -202,7 +203,9 @@ void VerticalTabStripRegionView::ResetTabStrip() {
   tab_strip_controller_.reset();
 
   CHECK(drag_handler_);
-  RemoveChildViewT(std::exchange(drag_handler_, nullptr));
+  auto* drag_handler = drag_handler_.get();
+  drag_handler_ = nullptr;
+  RemoveChildViewT(drag_handler->GetDragContext());
 
   root_node_.reset();
 }
@@ -334,7 +337,7 @@ views::View* VerticalTabStripRegionView::GetTabGroupAnchorView(
 }
 
 TabDragContext* VerticalTabStripRegionView::GetDragContext() {
-  return drag_handler_.get();
+  return drag_handler_->GetDragContext();
 }
 
 std::optional<BrowserRootView::DropIndex>
@@ -570,13 +573,17 @@ TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
   if (!drag_handler_) {
     return nullptr;
   }
-
-  VerticalUnpinnedTabContainerView* container = GetUnpinnedTabsContainer();
-  CHECK(container);
-  if (container->GetBoundsInScreen().Contains(point_in_screen)) {
-    return &container->GetTabDragTarget(point_in_screen);
+  if (!tab_strip_view_->GetBoundsInScreen().Contains(point_in_screen)) {
+    return nullptr;
   }
-  return nullptr;
+
+  // Note: if the drag has not attached to this tab strip yet, it doesn't matter
+  // which container is used because the first drag loop iteration just attaches
+  // it.
+  if (drag_handler_->IsDraggingPinnedTabs()) {
+    return &GetPinnedTabsContainer()->GetTabDragTarget(point_in_screen);
+  }
+  return &GetUnpinnedTabsContainer()->GetTabDragTarget(point_in_screen);
 }
 
 BEGIN_METADATA(VerticalTabStripRegionView)

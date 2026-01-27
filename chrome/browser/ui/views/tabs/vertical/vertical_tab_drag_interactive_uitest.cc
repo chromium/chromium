@@ -6,6 +6,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -38,6 +39,7 @@ namespace {
 using URL = std::string_view;
 using TabGroupURLs = std::vector<URL>;
 using URLs = std::vector<std::variant<URL, TabGroupURLs>>;
+using PinnedURLs = std::vector<URL>;
 
 int TabSelectModifier() {
 #if BUILDFLAG(IS_MAC)
@@ -70,6 +72,22 @@ base::RepeatingCallback<URLs()> GetTabOrder(TabStripModel* model) {
             urls.push_back(url);
             current_group_id = std::nullopt;
           }
+        }
+        return urls;
+      },
+      model);
+}
+
+base::RepeatingCallback<PinnedURLs()> GetPinnedTabOrder(TabStripModel* model) {
+  return base::BindRepeating(
+      [](TabStripModel* model) {
+        PinnedURLs urls;
+        for (auto i = 0; i < model->count(); ++i) {
+          tabs::TabInterface* tab = model->GetTabAtIndex(i);
+          if (!tab->IsPinned()) {
+            break;
+          }
+          urls.push_back(tab->GetContents()->GetURL().spec());
         }
         return urls;
       },
@@ -161,6 +179,12 @@ class VerticalTabDragHandlerTest
                             TabSelectModifier()));
   }
 
+  auto PinTabAt(int tab_index) {
+    return Do([&, tab_index]() {
+      browser()->tab_strip_model()->SetTabPinned(tab_index, true);
+    });
+  }
+
   BrowserView& GetBrowserView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
@@ -187,6 +211,8 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kDragStatePoller);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<URLs>,
                                     kTabOrderPoller);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<PinnedURLs>,
+                                    kPinnedTabOrderPoller);
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
 // flakes on Wayland
@@ -747,4 +773,168 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragOutOfGroup) {
         EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
                   tab_strip_model->GetWebContentsAt(2)->GetURL());
       }));
+}
+
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#define MAYBE_DragPinnedTabWithinContainer DragPinnedTabWithinContainer
+#else
+#define MAYBE_DragPinnedTabWithinContainer DISABLED_DragPinnedTabWithinContainer
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
+                       MAYBE_DragPinnedTabWithinContainer) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kFourthTab, GURL(chrome::kChromeUIVersionURL), 3),
+      PinTabAt(0), PinTabAt(1), PinTabAt(2), PinTabAt(3), SelectTabAt(0),
+      SelectTabAt(2),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(3); },
+          true),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(2); },
+          true),
+      DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
+                       gfx::Vector2d(50, 50)),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true),
+
+      PollState(kPinnedTabOrderPoller, GetPinnedTabOrder(tab_strip_model)),
+
+      MoveMouseToTabAsync(0),
+      WaitForState(kPinnedTabOrderPoller, PinnedURLs({
+                                              chrome::kChromeUISettingsURL,
+                                              chrome::kChromeUIVersionURL,
+                                              url::kAboutBlankURL,
+                                              chrome::kChromeUIBookmarksURL,
+                                          })),
+      MoveMouseToTabAsync(2),
+      WaitForState(kPinnedTabOrderPoller, PinnedURLs({
+                                              url::kAboutBlankURL,
+                                              chrome::kChromeUISettingsURL,
+                                              chrome::kChromeUIVersionURL,
+                                              chrome::kChromeUIBookmarksURL,
+                                          })),
+      ReleaseMouseAsync());
+}
+
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#define MAYBE_DragSplitWithinPinnedContainer DragSplitWithinPinnedContainer
+#else
+#define MAYBE_DragSplitWithinPinnedContainer \
+  DISABLED_DragSplitWithinPinnedContainer
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
+                       MAYBE_DragSplitWithinPinnedContainer) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kFourthTab, GURL(chrome::kChromeUIVersionURL), 3),
+      PinTabAt(0), PinTabAt(1), PinTabAt(2), PinTabAt(3), Do([&]() {
+        tab_strip_model->ActivateTabAt(
+            2, TabStripUserGestureDetails(
+                   TabStripUserGestureDetails::GestureType::kOther));
+        tab_strip_model->AddToNewSplit(
+            {3}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+      }),
+      DragTabTo(3, GetBrowserView().GetBoundsInScreen().top_right() +
+                       gfx::Vector2d(50, 50)),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true),
+
+      PollState(kPinnedTabOrderPoller, GetPinnedTabOrder(tab_strip_model)),
+      MoveMouseToTabAsync(0),
+      WaitForState(kPinnedTabOrderPoller, PinnedURLs({
+                                              chrome::kChromeUISettingsURL,
+                                              chrome::kChromeUIVersionURL,
+                                              url::kAboutBlankURL,
+                                              chrome::kChromeUIBookmarksURL,
+                                          })),
+      MoveMouseToTabAsync(2),
+      WaitForState(kPinnedTabOrderPoller, PinnedURLs({
+                                              url::kAboutBlankURL,
+                                              chrome::kChromeUISettingsURL,
+                                              chrome::kChromeUIVersionURL,
+                                              chrome::kChromeUIBookmarksURL,
+                                          })),
+      ReleaseMouseAsync());
+}
+
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#define MAYBE_DetachPinnedTab DetachPinnedTab
+#else
+#define MAYBE_DetachPinnedTab DISABLED_DetachPinnedTab
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, MAYBE_DetachPinnedTab) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      PinTabAt(0), PinTabAt(1),
+      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
+                       gfx::Vector2d(50, 50)),
+
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2), ReleaseMouseAsync(),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, false), Do([&]() {
+        TabStripModel* new_tab_strip_model =
+            GetLatestBrowser().GetTabStripModel();
+        ASSERT_NE(nullptr, new_tab_strip_model);
+        EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
+                  new_tab_strip_model->GetWebContentsAt(0)->GetURL());
+        EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+      }));
+}
+
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#define MAYBE_DragFromPinnedToUnpinnedContainer \
+  DragFromPinnedToUnpinnedContainer
+#else
+#define MAYBE_DragFromPinnedToUnpinnedContainer \
+  DISABLED_DragFromPinnedToUnpinnedContainer
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
+                       MAYBE_DragFromPinnedToUnpinnedContainer) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      PinTabAt(0),
+      DragTabTo(0, GetBrowserView().GetBoundsInScreen().top_right() +
+                       gfx::Vector2d(50, 50)),
+
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2),
+
+      // Drag the detached pinned tab over the second unpinned tab in the
+      // original window, the pinned tab should remain pinned.
+      MoveMouseToTabAsync(1),
+      PollState(kPinnedTabOrderPoller, GetPinnedTabOrder(tab_strip_model)),
+      PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
+      WaitForState(kPinnedTabOrderPoller, PinnedURLs({url::kAboutBlankURL})),
+      WaitForState(kTabOrderPoller, URLs({
+                                        url::kAboutBlankURL,
+                                        chrome::kChromeUIBookmarksURL,
+                                        chrome::kChromeUISettingsURL,
+                                    })),
+      ReleaseMouseAsync());
 }

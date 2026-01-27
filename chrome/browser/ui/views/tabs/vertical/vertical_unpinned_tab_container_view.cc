@@ -54,7 +54,8 @@ class VerticalUnpinnedTabContainerViewTargeter
 
 VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
     TabCollectionNode* collection_node)
-    : VerticalDraggedTabsContainer(static_cast<views::View&>(*this)),
+    : VerticalDraggedTabsContainer(static_cast<views::View&>(*this),
+                                   DragAxes::kVerticalOnly),
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
@@ -82,8 +83,7 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   views::ProposedLayout layouts;
   int width = 0;
   int height = 0;
-  auto* controller = collection_node_->GetController();
-  bool is_collapsed = controller && controller->IsCollapsed();
+  bool is_collapsed = IsTabStripCollapsed();
 
   const int horizontal_padding = GetLayoutConstant(
       is_collapsed ? LayoutConstant::kVerticalTabStripCollapsedPadding
@@ -156,6 +156,12 @@ const VerticalTabDragHandler& VerticalUnpinnedTabContainerView::GetDragHandler()
   return collection_node_->GetController()->GetDragHandler();
 }
 
+bool VerticalUnpinnedTabContainerView::IsTabStripCollapsed() const {
+  const auto* controller =
+      collection_node_ ? collection_node_->GetController() : nullptr;
+  return controller && controller->IsCollapsed();
+}
+
 views::ScrollView* VerticalUnpinnedTabContainerView::GetScrollViewForContainer()
     const {
   return views::ScrollView::GetScrollViewForContents(
@@ -183,6 +189,29 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
   }
   CHECK(node);
   GetDragHandler().HandleDraggedTabsOverNode(*node);
+}
+
+VerticalDraggedTabsContainer&
+VerticalUnpinnedTabContainerView::GetTabDragTarget(
+    const gfx::Point& point_in_screen) {
+  gfx::Point point_in_container =
+      views::View::ConvertPointFromScreen(this, point_in_screen);
+  // Use the center of the bounds so views with padding are still targetable
+  // from the sides of the tabstrip.
+  point_in_container.set_x(bounds().x() + bounds().width() / 2);
+
+  for (views::View* child : children()) {
+    if (!child->GetVisible() || !child->bounds().Contains(point_in_container) ||
+        IsViewDragging(*child)) {
+      continue;
+    }
+    if (auto* group_view = views::AsViewClass<VerticalTabGroupView>(child)) {
+      if (!group_view->IsCollapsed()) {
+        return *group_view;
+      }
+    }
+  }
+  return *this;
 }
 
 BEGIN_METADATA(VerticalUnpinnedTabContainerView)

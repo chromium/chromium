@@ -44,6 +44,9 @@ class VerticalTabDragHandler {
   // dragged.
   virtual bool IsViewDragging(const views::View& view) const = 0;
 
+  // Returns true if there is an ongoing drag that includes a pinned tab.
+  virtual bool IsDraggingPinnedTabs() const = 0;
+
   // For vertical tabs, `TabSlotView` doesn't represent the actual tab
   // view. This method converts `view` to its actual tab view, or nullptr
   // if this handler doesn't manage it.
@@ -59,8 +62,8 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
                                    public TabDragContext {
   METADATA_HEADER(VerticalTabDragHandlerImpl, TabDragContext)
  public:
-  VerticalTabDragHandlerImpl(TabStripModel& tab_strip_model,
-                             TabCollectionNode& root_node);
+  explicit VerticalTabDragHandlerImpl(TabStripModel& tab_strip_model,
+                                      TabCollectionNode& root_node);
   ~VerticalTabDragHandlerImpl() override;
   VerticalTabDragHandlerImpl(const VerticalTabDragHandlerImpl&) = delete;
   VerticalTabDragHandlerImpl& operator=(const VerticalTabDragHandlerImpl&) =
@@ -75,6 +78,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleDraggedTabsOverNode(const TabCollectionNode& node) override;
   TabDragContext* GetDragContext() override;
   bool IsViewDragging(const views::View& view) const override;
+  bool IsDraggingPinnedTabs() const override;
   views::View* ViewFromTabSlot(TabSlotView* view) const override;
 
   // TabDragContext
