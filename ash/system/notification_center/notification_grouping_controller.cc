@@ -13,6 +13,8 @@
 #include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center_types.h"
@@ -74,7 +76,7 @@ class GroupedNotificationList {
     return child_parent_map_[child_id];
   }
 
-  std::set<std::string>& GetGroupedNotificationsForParent(
+  absl::flat_hash_set<std::string>& GetGroupedNotificationsForParent(
       const std::string& parent_id) {
     return notifications_in_parent_map_[parent_id];
   }
@@ -112,12 +114,13 @@ class GroupedNotificationList {
  private:
   // Map for looking up the parent `notification_id` for any given notification
   // id.
-  std::map<std::string, std::string> child_parent_map_;
+  absl::flat_hash_map<std::string, std::string> child_parent_map_;
 
   // Map containing a list of child notification ids per each group parent id.
   // Used to keep track of grouped notifications which already have a parent
   // notification view.
-  std::map<std::string, std::set<std::string>> notifications_in_parent_map_;
+  absl::flat_hash_map<std::string, absl::flat_hash_set<std::string>>
+      notifications_in_parent_map_;
 };
 
 // Needs to be a static instance because we need a single instance to be shared
