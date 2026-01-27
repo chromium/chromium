@@ -34,15 +34,11 @@ struct EventFilteringInfo {
 
   string? service_type;
 
-  // TODO(yoichio): Use nullable when https://crbug.com/657632 is fixed.
-  bool has_instance_id;
-  int32 instance_id;
+  int32? instance_id;
 
   string? window_type;
 
-  // TODO(yoichio): Use nullable when https://crbug.com/657632 is fixed.
-  bool has_window_exposed_by_default;
-  bool window_exposed_by_default;
+  bool? window_exposed_by_default;
 };
 
 struct DispatchEventParams {

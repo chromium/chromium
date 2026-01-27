@@ -292,7 +292,6 @@ void SendOnMessageEventOnUI(
   // process. We use a filter here so that only event listeners for a particular
   // <webview> will fire.
   if (is_web_view_guest) {
-    event_filtering_info->has_instance_id = true;
     event_filtering_info->instance_id = web_view_instance_id;
     histogram_value = events::WEB_VIEW_INTERNAL_ON_MESSAGE;
     event_name = kEventMessage;

@@ -118,7 +118,6 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
     int instance_id) {
   CHECK(guest);
   mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
-  info->has_instance_id = true;
   info->instance_id = instance_id;
   base::ListValue event_args;
   event_args.Append(std::move(args));

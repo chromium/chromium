@@ -142,7 +142,6 @@ void DispatchEventWithGuestView(const MenuItem& item,
   event->user_gesture = EventRouter::UserGestureState::kEnabled;
 
   if (webview_guest) {
-    event->filter_info->has_instance_id = true;
     event->filter_info->instance_id = webview_guest->view_instance_id();
   }
 

@@ -28,8 +28,8 @@ EventMatcher::~EventMatcher() {
 
 bool EventMatcher::MatchNonURLCriteria(
     const mojom::EventFilteringInfo& event_info) const {
-  if (event_info.has_instance_id) {
-    return event_info.instance_id == GetInstanceID();
+  if (event_info.instance_id.has_value()) {
+    return event_info.instance_id.value() == GetInstanceID();
   }
 
   if (event_info.window_type) {
@@ -44,13 +44,13 @@ bool EventMatcher::MatchNonURLCriteria(
     return false;
   }
 
-  if (event_info.has_window_exposed_by_default) {
+  if (event_info.window_exposed_by_default.has_value()) {
     // An event with a |window_exposed_by_default| set is only
     // relevant to the listener if no window type filter is set.
     if (GetWindowTypeCount() > 0) {
       return false;
     }
-    return event_info.window_exposed_by_default;
+    return event_info.window_exposed_by_default.value();
   }
 
   const std::string& service_type_filter = GetServiceTypeFilter();

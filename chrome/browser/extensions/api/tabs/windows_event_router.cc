@@ -92,7 +92,6 @@ bool WillDispatchWindowEvent(
     event_filtering_info_out->window_type =
         window_controller->GetWindowTypeText();
   } else {
-    event_filtering_info_out->has_window_exposed_by_default = true;
     event_filtering_info_out->window_exposed_by_default = true;
   }
   return true;
@@ -132,7 +131,6 @@ bool WillDispatchWindowFocusedEvent(
         window_controller ? window_controller->GetWindowTypeText()
                           : api::tabs::ToString(api::tabs::WindowType::kNormal);
   } else {
-    event_filtering_info_out->has_window_exposed_by_default = true;
     event_filtering_info_out->window_exposed_by_default = true;
   }
 
