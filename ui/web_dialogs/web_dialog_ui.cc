@@ -40,14 +40,24 @@ class WebDialogDelegateUserData : public base::SupportsUserData::Data {
 }  // namespace
 
 // static
-void WebDialogUIBase::SetDelegate(content::WebContents* web_contents,
-                                  WebDialogDelegate* delegate) {
+void WebDialogUI::SetDelegate(content::WebContents* web_contents,
+                              WebDialogDelegate* delegate) {
   web_contents->SetUserData(
       &kWebDialogDelegateUserDataKey,
       std::make_unique<WebDialogDelegateUserData>(delegate));
 }
 
-WebDialogUIBase::WebDialogUIBase(content::WebUI* web_ui) : web_ui_(web_ui) {}
+WebDialogDelegate* WebDialogUI::GetDelegate(
+    content::WebContents* web_contents) {
+  WebDialogDelegateUserData* user_data =
+      static_cast<WebDialogDelegateUserData*>(
+          web_contents->GetUserData(&kWebDialogDelegateUserDataKey));
+
+  return user_data ? user_data->delegate() : nullptr;
+}
+
+WebDialogUI::WebDialogUI(content::WebUI* web_ui)
+    : content::WebUIController(web_ui), web_ui_(web_ui) {}
 
 // Don't unregister our user data. During the teardown of the WebContents, this
 // will be deleted, but the WebContents will already be destroyed.
@@ -57,27 +67,22 @@ WebDialogUIBase::WebDialogUIBase(content::WebUI* web_ui) : web_ui_(web_ui) {}
 // since the user data will still point to the old delegate. But the delegate is
 // itself the owner of the WebContents for a dialog so will be in scope, and the
 // HTML dialogs won't swap WebUIs anyway since they don't navigate.
-WebDialogUIBase::~WebDialogUIBase() = default;
+WebDialogUI::~WebDialogUI() = default;
 
-void WebDialogUIBase::CloseDialog(const base::ListValue& args) {
+void WebDialogUI::CloseDialog(const base::ListValue& args) {
   OnDialogClosed(args);
 }
 
-WebDialogDelegate* WebDialogUIBase::GetDelegate(
-    content::WebContents* web_contents) {
-  WebDialogDelegateUserData* user_data =
-      static_cast<WebDialogDelegateUserData*>(
-          web_contents->GetUserData(&kWebDialogDelegateUserDataKey));
-
-  return user_data ? user_data->delegate() : NULL;
+void WebDialogUI::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
+  content::WebUIController::WebUIRenderFrameCreated(render_frame_host);
+  HandleRenderFrameCreated(render_frame_host);
 }
 
-void WebDialogUIBase::HandleRenderFrameCreated(
-    RenderFrameHost* render_frame_host) {
+void WebDialogUI::HandleRenderFrameCreated(RenderFrameHost* render_frame_host) {
   // Hook up the javascript function calls, also known as chrome.send("foo")
   // calls in the HTML, to the actual C++ functions.
   web_ui_->RegisterMessageCallback(
-      "dialogClose", base::BindRepeating(&WebDialogUIBase::OnDialogClosed,
+      "dialogClose", base::BindRepeating(&WebDialogUI::OnDialogClosed,
                                          base::Unretained(this)));
 
   // Pass the arguments to the renderer supplied by the delegate.
@@ -101,7 +106,7 @@ void WebDialogUIBase::HandleRenderFrameCreated(
   }
 }
 
-void WebDialogUIBase::OnDialogClosed(const base::ListValue& args) {
+void WebDialogUI::OnDialogClosed(const base::ListValue& args) {
   WebDialogDelegate* delegate = GetDelegate(web_ui_->GetWebContents());
   if (delegate) {
     std::string json_retval;
@@ -117,20 +122,10 @@ void WebDialogUIBase::OnDialogClosed(const base::ListValue& args) {
   }
 }
 
-WebDialogUI::WebDialogUI(content::WebUI* web_ui)
-    : WebDialogUIBase(web_ui), content::WebUIController(web_ui) {}
-
-WebDialogUI::~WebDialogUI() = default;
-
-void WebDialogUI::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
-  content::WebUIController::WebUIRenderFrameCreated(render_frame_host);
-  HandleRenderFrameCreated(render_frame_host);
-}
-
 // Note: chrome.send() must always be enabled for dialogs, since dialogs rely on
 // chrome.send() to notify their handlers that the dialog should be closed. See
 // the "dialogClose" message handler above in
-// WebDialogUIBase::HandleRenderFrameCreated().
+// WebDialogUI::HandleRenderFrameCreated().
 MojoWebDialogUI::MojoWebDialogUI(content::WebUI* web_ui)
     : WebDialogUI(web_ui),
       ui::EnableMojoWebUI(web_ui,

@@ -33,7 +33,7 @@ using content::WebContents;
 using content::WebUIMessageHandler;
 using input::NativeWebKeyboardEvent;
 using ui::WebDialogDelegate;
-using ui::WebDialogUIBase;
+using ui::WebDialogUI;
 using ui::WebDialogWebContentsDelegate;
 
 namespace views {
@@ -538,7 +538,7 @@ void WebDialogView::InitDialog() {
   web_contents->SetIgnoreZoomGestures(true);
   // Set the delegate. This must be done before loading the page. See
   // the comment above WebDialogUI in its header file for why.
-  WebDialogUIBase::SetDelegate(web_contents, this);
+  WebDialogUI::SetDelegate(web_contents, this);
 
   if (!disable_url_load_for_test_) {
     web_view_->LoadInitialURL(GetDialogContentURL());

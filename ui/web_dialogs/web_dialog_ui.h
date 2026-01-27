@@ -20,22 +20,37 @@ namespace ui {
 
 class WebDialogDelegate;
 
-class WEB_DIALOGS_EXPORT WebDialogUIBase {
+// Displays file URL contents inside a modal web dialog.
+//
+// This application really should not use WebContents + WebUI. It should instead
+// just embed a RenderView in a dialog and be done with it.
+//
+// Before loading a URL corresponding to this WebUI, the caller should set its
+// delegate as user data on the WebContents by calling SetDelegate(). This WebUI
+// will pick it up from there and call it back. This is a bit of a hack to allow
+// the dialog to pass its delegate to the Web UI without having nasty accessors
+// on the WebContents. The correct design using RVH directly would avoid all of
+// this.
+class WEB_DIALOGS_EXPORT WebDialogUI : public content::WebUIController {
  public:
   // Sets the delegate on the WebContents.
   static void SetDelegate(content::WebContents* web_contents,
                           WebDialogDelegate* delegate);
 
-  WebDialogUIBase(content::WebUI* web_ui);
-
-  WebDialogUIBase(const WebDialogUIBase&) = delete;
-  WebDialogUIBase& operator=(const WebDialogUIBase&) = delete;
+  // When created, the delegate should already be set as user data on the
+  // WebContents.
+  explicit WebDialogUI(content::WebUI* web_ui);
+  ~WebDialogUI() override;
+  WebDialogUI(const WebDialogUI&) = delete;
+  WebDialogUI& operator=(const WebDialogUI&) = delete;
 
   // Close the dialog, passing the specified arguments to the close handler.
   void CloseDialog(const base::ListValue& args);
 
  protected:
-  virtual ~WebDialogUIBase();
+  // content::WebUIController:
+  void WebUIRenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override;
 
   // Prepares |render_frame_host| to host a dialog.
   void HandleRenderFrameCreated(content::RenderFrameHost* render_frame_host);
@@ -48,33 +63,6 @@ class WEB_DIALOGS_EXPORT WebDialogUIBase {
   void OnDialogClosed(const base::ListValue& args);
 
   raw_ptr<content::WebUI> web_ui_;
-};
-
-// Displays file URL contents inside a modal web dialog.
-//
-// This application really should not use WebContents + WebUI. It should instead
-// just embed a RenderView in a dialog and be done with it.
-//
-// Before loading a URL corresponding to this WebUI, the caller should set its
-// delegate as user data on the WebContents by calling SetDelegate(). This WebUI
-// will pick it up from there and call it back. This is a bit of a hack to allow
-// the dialog to pass its delegate to the Web UI without having nasty accessors
-// on the WebContents. The correct design using RVH directly would avoid all of
-// this.
-class WEB_DIALOGS_EXPORT WebDialogUI : public WebDialogUIBase,
-                                       public content::WebUIController {
- public:
-  // When created, the delegate should already be set as user data on the
-  // WebContents.
-  explicit WebDialogUI(content::WebUI* web_ui);
-  ~WebDialogUI() override;
-  WebDialogUI(const WebDialogUI&) = delete;
-  WebDialogUI& operator=(const WebDialogUI&) = delete;
-
- protected:
-  // content::WebUIController:
-  void WebUIRenderFrameCreated(
-      content::RenderFrameHost* render_frame_host) override;
 };
 
 // Displays file URL contents inside a modal web dialog while also enabling
