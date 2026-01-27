@@ -112,8 +112,9 @@ std::string ArcCertInstaller::InstallArcCert(
     const CertDescription& certificate) {
   VLOG(1) << "ArcCertInstaller::InstallArcCert " << name;
 
+  auto [known_cert_it, inserted] = known_cert_names_.emplace(name);
   // Do not install certificate if it is already installed or pending.
-  if (known_cert_names_.count(name)) {
+  if (!inserted) {
     VLOG(1) << "Certificate " << name << " is already installed or pending";
     return "";
   }
@@ -123,7 +124,6 @@ std::string ArcCertInstaller::InstallArcCert(
     LOG(ERROR) << "Certificate encoding error: " << name;
     return "";
   }
-  known_cert_names_.insert(name);
 
   // Install certificate.
   std::unique_ptr<policy::RemoteCommandJob> job =
@@ -154,7 +154,7 @@ std::string ArcCertInstaller::InstallArcCert(
   if (!job || !job->Init(queue_->GetNowTicks(), command_proto,
                          enterprise_management::SignedData())) {
     LOG(ERROR) << "Initialization of remote command failed";
-    known_cert_names_.erase(name);
+    known_cert_names_.erase(known_cert_it);
     return "";
   } else {
     pending_commands_[next_id_++] = name;
@@ -166,7 +166,8 @@ std::string ArcCertInstaller::InstallArcCert(
 
 void ArcCertInstaller::OnJobFinished(policy::RemoteCommandJob* command) {
   VLOG(1) << "ArcCertInstaller::OnJobFinished";
-  if (!pending_commands_.count(command->unique_id())) {
+  auto pending_command_it = pending_commands_.find(command->unique_id());
+  if (pending_command_it == pending_commands_.end()) {
     LOG(ERROR) << "Received invalid ARC remote command with unrecognized "
                << "unique_id = " << command->unique_id();
     return;
@@ -177,9 +178,10 @@ void ArcCertInstaller::OnJobFinished(policy::RemoteCommandJob* command) {
   // re-try installation.
   if (command->status() != policy::RemoteCommandJob::Status::SUCCEEDED) {
     LOG(ERROR) << "Failed to install certificate "
-               << pending_commands_[command->unique_id()];
-    if (known_cert_names_.count(pending_commands_[command->unique_id()])) {
-      known_cert_names_.erase(pending_commands_[command->unique_id()]);
+               << pending_command_it->second;
+    if (auto it = known_cert_names_.find(pending_command_it->second);
+        it != known_cert_names_.end()) {
+      known_cert_names_.erase(it);
       pending_status_ = false;
     }
   }
