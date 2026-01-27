@@ -25,6 +25,7 @@ using omnibox::SearchboxConfig;
 using omnibox::ToolMode;
 
 // Represents a valid searchbox inputs state.
+// LINT.IfChange(InputState)
 struct InputState {
   InputState();
   ~InputState();
@@ -40,6 +41,7 @@ struct InputState {
   std::vector<ModelMode> disabled_models;
   std::vector<InputType> disabled_input_types;
 };
+// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputState)
 
 // Manages the state of composebox inputs including tools, models, and
 // multimodal inputs.

@@ -85,6 +85,7 @@ enum InputType {
 };
 
 // Represents the current state of inputs, models, and tools within AIM.
+// LINT.IfChange(InputState)
 struct InputState {
   // The set of allowed models.
   array<ModelMode> allowed_models;
@@ -103,3 +104,4 @@ struct InputState {
   // The set of currently disabled input types.
   array<InputType> disabled_input_types;
 };
+// LINT.ThenChange(//components/contextual_search/input_state_model.h:InputState)
