@@ -1386,6 +1386,13 @@ class FileSystemAccessBrowserTestForWebUI
     CHECK(temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
   }
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    factory_registration_ =
+        std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
+            &factory_);
+  }
+
   content::WebContents* SetUpAndNavigateToTestWebUI() {
     const GURL kWebUITestUrl = content::GetWebUIURL("webui/title1.html");
     WebUIAllowlist::GetOrCreate(browser()->profile())
@@ -1474,8 +1481,8 @@ class FileSystemAccessBrowserTestForWebUI
 
  private:
   content::TestWebUIControllerFactory factory_;
-  content::ScopedWebUIControllerFactoryRegistration factory_registration_{
-      &factory_};
+  std::unique_ptr<content::ScopedWebUIControllerFactoryRegistration>
+      factory_registration_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

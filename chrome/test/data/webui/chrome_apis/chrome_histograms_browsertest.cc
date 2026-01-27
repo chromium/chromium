@@ -48,10 +48,18 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
 }  // namespace
 
 class ChromeHistogramsBrowserTest : public WebUIMochaBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    WebUIMochaBrowserTest::SetUpOnMainThread();
+    factory_registration_ =
+        std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
+            &factory_);
+  }
+
  private:
   TestWebUIControllerFactory factory_;
-  content::ScopedWebUIControllerFactoryRegistration factory_registration_{
-      &factory_};
+  std::unique_ptr<content::ScopedWebUIControllerFactoryRegistration>
+      factory_registration_;
 };
 
 // Tests for the chrome.histograms API in WebUIs.
