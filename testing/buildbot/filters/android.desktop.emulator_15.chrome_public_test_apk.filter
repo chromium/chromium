@@ -4,11 +4,6 @@
 -org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
 
 # crbug.com/376100658
--org.chromium.chrome.browser.payments.PaymentRequestIncompletePhoneTest.*
--org.chromium.chrome.browser.payments.PaymentRequestInputProtectionTest.*
--org.chromium.chrome.browser.payments.PaymentRequestJourneyLoggerTest.*
--org.chromium.chrome.browser.payments.PaymentRequestLongIdTest.*
--org.chromium.chrome.browser.payments.PaymentRequestMetricsTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestShowPromiseEmptyListsTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestShowPromiseEmptyTest.*
 -org.chromium.chrome.browser.payments.PaymentRequestShowPromiseInvalidDetailsTest.*
