@@ -183,6 +183,9 @@ BASE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected,
 BASE_FEATURE(kUseActionablesForImprovedPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUserInterventionForPasswordChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 
 // Enabled by default in M138. Remove in or after M141.

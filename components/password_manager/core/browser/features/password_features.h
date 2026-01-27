@@ -221,6 +221,10 @@ BASE_DECLARE_FEATURE(kUseActionablesForImprovedPasswordChange);
 // websites like slack.com.
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 
+// Handles user intervention in the Password Change flow for all steps except
+// IS_LOGGED_IN_STEP.
+BASE_DECLARE_FEATURE(kUserInterventionForPasswordChange);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 
 // Moves the "Use a passkey / Use a different passkey" to the context menu from
