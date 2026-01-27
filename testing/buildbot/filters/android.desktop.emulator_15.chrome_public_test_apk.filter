@@ -42,21 +42,6 @@
 # crbug.com/376528174
 -org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
 
-# crbug.com/394668480
--org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenu
--org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuBeforeFirstRun
--org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuForOfflinePage
--org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuNoCustomEntries
--org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testMaxMenuItems
--org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_FeatureDisabled
--org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_NoClientPackage
-
-# crbug.com/394671175
-
-# crbug.com/394673741
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesImageLinkOptions
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesLinkOptions
-
 # crbug.com/394674606
 -org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy
 -org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfDataTypesSyncing
@@ -64,8 +49,6 @@
 # crbug.com/394675204
 -org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
 -org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testShowOnSecureWebsiteDark
-
-# crbug.com/415118264
 
 # https://crbug.com/446934111
 # Aggressively disable failed tests to green the suite ASAP.
@@ -80,13 +63,6 @@
 -org.chromium.chrome.browser.bookmarks.BookmarkOpenerTest.testOpenBookmarkInCurrentTab_Incognito
 -org.chromium.chrome.browser.bookmarks.BookmarkOpenerTest.testOpenBookmarksInNewTabs_Incognito
 -org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfDataTypesAreManagedByPolicy
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuOpenedFromHighlight
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImage
--org.chromium.chrome.browser.contextmenu.CustomTabContextMenuTest.*
--org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testContextualDictionaryDefinitions
--org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testPanelDismissedOnToggleFullscreen
--org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTriggeringContextualSearchHidesFindInPageOverlay
--org.chromium.chrome.browser.contextualsearch.ContextualSearchTriggerTest.testTapGestureFollowedByScrollClearsSelection
 -org.chromium.chrome.browser.input.SelectPopupOtherContentViewTest.testPopupNotClosedByOtherContentView
 -org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.*
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
