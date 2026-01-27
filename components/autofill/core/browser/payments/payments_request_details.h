@@ -508,7 +508,7 @@ struct GetBnplPaymentInstrumentForFetchingUrlRequestDetails {
   // The number for the Google Payments account this request is sent to.
   int64_t billing_customer_number = 0;
   // The instrument ID is used by the server to identify a specific BNPL issuer.
-  std::string_view instrument_id;
+  std::string instrument_id;
   // The fingerprint data for the user and the device.
   std::string_view risk_data;
   // The merchant domain (including the scheme).
@@ -574,7 +574,7 @@ struct GetDetailsForUpdateBnplPaymentInstrumentRequestDetails {
   // server.
   std::vector<ClientBehaviorConstants> client_behavior_signals;
   // The platform identifier for the instrument being updated.
-  int64_t instrument_id = 0;
+  std::string instrument_id;
   // The type of the GetDetailsForUpdateBnplPaymentInstrument request.
   GetDetailsForUpdateBnplPaymentInstrumentType type =
       GetDetailsForUpdateBnplPaymentInstrumentType::kUnknown;
@@ -613,7 +613,7 @@ struct UpdateBnplPaymentInstrumentRequestDetails {
   // The ID of the BNPL partner to be linked. i.e. Affirm
   std::string issuer_id;
   // The platform identifier for the instrument being updated.
-  int64_t instrument_id = 0;
+  std::string instrument_id;
   // An opaque token used to chain consecutive payments requests together.
   std::string context_token;
   // Client encoded risk data.

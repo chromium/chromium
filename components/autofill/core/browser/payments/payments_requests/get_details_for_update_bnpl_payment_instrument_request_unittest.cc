@@ -19,7 +19,7 @@ namespace {
 
 constexpr char kAppLocale[] = "dummy_locale";
 constexpr int64_t kBillingCustomerNumber = 111222333;
-constexpr int64_t kInstrumentId = 555666777;
+constexpr char kInstrumentId[] = "555666777";
 
 MATCHER_P(HasLegalMessageLineText, text, "A LegalMessageLine that has text.") {
   return base::UTF16ToUTF8(arg.text()) == text;

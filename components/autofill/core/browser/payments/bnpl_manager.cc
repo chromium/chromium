@@ -361,7 +361,8 @@ void BnplManager::FetchVcnDetails(GURL url) {
   GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
-  request_details.instrument_id = ongoing_flow_state_->instrument_id;
+  request_details.instrument_id = base::NumberToString(
+      ongoing_flow_state_->issuer->payment_instrument()->instrument_id());
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.redirect_url = std::move(url);
@@ -429,7 +430,8 @@ void BnplManager::OnVcnDetailsFetched(
         ongoing_flow_state_->issuer->issuer_id()));
     credit_card.set_is_bnpl_card(true);
     credit_card.SetNickname(ongoing_flow_state_->issuer->GetDisplayName());
-    credit_card.set_server_id(ongoing_flow_state_->instrument_id);
+    credit_card.set_server_id(base::NumberToString(
+        ongoing_flow_state_->issuer->payment_instrument()->instrument_id()));
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
         .Run(credit_card);
   } else {
@@ -442,17 +444,6 @@ void BnplManager::OnVcnDetailsFetched(
 
 void BnplManager::OnIssuerSelected(BnplIssuer selected_issuer) {
   ongoing_flow_state_->issuer = std::move(selected_issuer);
-
-  // TODO(crbug.com/424259928): Refactor BnplManager to always use
-  // `ongoing_flow_state_->instrument_id` instead of
-  // `ongoing_flow_state_->issuer->payment_instrument()->instrument_id()` to
-  // prevent duplicity.
-  bool is_linked_issuer =
-      ongoing_flow_state_->issuer->payment_instrument().has_value();
-  if (is_linked_issuer) {
-    ongoing_flow_state_->instrument_id = base::NumberToString(
-        ongoing_flow_state_->issuer->payment_instrument()->instrument_id());
-  }
 
   // When an issuer is selected but amount is not received, call server-side AI
   // to extract the amount.
@@ -547,8 +538,8 @@ void BnplManager::GetDetailsForUpdateBnplPaymentInstrument() {
   request_details.client_behavior_signals.push_back(
       ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
 #endif  // BUILDFLAG(IS_ANDROID)
-  request_details.instrument_id =
-      ongoing_flow_state_->issuer->payment_instrument()->instrument_id();
+  request_details.instrument_id = base::NumberToString(
+      ongoing_flow_state_->issuer->payment_instrument()->instrument_id());
   request_details.type =
       GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
           GetDetailsForUpdateBnplPaymentInstrumentType::kGetDetailsForAcceptTos;
@@ -598,6 +589,9 @@ void BnplManager::OnDidGetLegalMessageFromServer(
         base::BindOnce(&BnplManager::OnTosDialogAccepted,
                        weak_factory_.GetWeakPtr()),
         base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+    if (ongoing_flow_state_) {
+      ongoing_flow_state_->tos_ui_was_shown = true;
+    }
     return;
   }
 
@@ -654,7 +648,8 @@ void BnplManager::FetchRedirectUrl() {
   GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details;
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
-  request_details.instrument_id = ongoing_flow_state_->instrument_id;
+  request_details.instrument_id = base::NumberToString(
+      ongoing_flow_state_->issuer->payment_instrument()->instrument_id());
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.merchant_domain =
       browser_autofill_manager_->client()
@@ -682,20 +677,16 @@ void BnplManager::OnRedirectUrlFetched(
   if (payments_autofill_client()
           .GetBnplStrategy()
           ->ShouldRemoveExistingUiOnServerReturn(result)) {
-    if (ongoing_flow_state_->issuer->payment_instrument().has_value() &&
-        !AcceptTosActionRequired()) {
-      // If the BNPL issuer selected is linked and doesn't require ToS
-      // acceptance, then the issuer selection UI or progress UI must be
-      // showing, so close it.
-      payments_autofill_client()
-          .GetBnplUiDelegate()
-          ->RemoveSelectBnplIssuerOrProgressUi();
-    } else {
-      // If the BNPL issuer selected is unlinked, or is linked but requires ToS
-      // acceptance, then the ToS/progress UI must be showing, so remove it.
+    if (ongoing_flow_state_->tos_ui_was_shown) {
       payments_autofill_client()
           .GetBnplUiDelegate()
           ->RemoveBnplTosOrProgressUi();
+    } else {
+      // If the ToS UI wasn't shown during this flow, then the issuer
+      // selection UI or progress UI must be showing, so remove it.
+      payments_autofill_client()
+          .GetBnplUiDelegate()
+          ->RemoveSelectBnplIssuerOrProgressUi();
     }
   }
 
@@ -868,8 +859,17 @@ void BnplManager::CreateBnplPaymentInstrument() {
 void BnplManager::OnBnplPaymentInstrumentCreated(
     PaymentsAutofillClient::PaymentsRpcResult result,
     std::string instrument_id) {
-  if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
-    ongoing_flow_state_->instrument_id = std::move(instrument_id);
+  int64_t instrument_id_int = 0;
+
+  if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess &&
+      base::StringToInt64(instrument_id, &instrument_id_int)) {
+    ongoing_flow_state_->issuer->set_payment_instrument(PaymentInstrument(
+        /*instrument_id=*/instrument_id_int, /*nickname=*/u"",
+        /*display_icon_url=*/GURL::EmptyGURL(),
+        /*supported_rails=*/
+        DenseSet<PaymentInstrument::PaymentRail>(
+            {PaymentInstrument::PaymentRail::kCardNumber})));
+
     FetchRedirectUrl();
   } else {
     OnFailureAfterTosAccepted(result);
@@ -884,8 +884,8 @@ void BnplManager::UpdateBnplPaymentInstrument() {
   request_details.context_token = ongoing_flow_state_->context_token;
   request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
       ongoing_flow_state_->issuer->issuer_id());
-  request_details.instrument_id =
-      ongoing_flow_state_->issuer->payment_instrument()->instrument_id();
+  request_details.instrument_id = base::NumberToString(
+      ongoing_flow_state_->issuer->payment_instrument()->instrument_id());
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.type = UpdateBnplPaymentInstrumentRequestDetails::
       UpdateBnplPaymentInstrumentType::kAcceptTos;

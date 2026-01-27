@@ -19,7 +19,7 @@ constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr char kContextToken[] = "somecontexttoken";
 constexpr char kEncodedRiskData[] = "wjhJLga67gowLp3vIbJ4W";
 constexpr char kIssuerId[] = "Affirm";
-constexpr int64_t kInstrumentId = 444555666;
+constexpr char kInstrumentId[] = "444555666";
 
 class UpdateBnplPaymentInstrumentRequestTest : public testing::Test {
  public:

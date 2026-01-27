@@ -23,7 +23,6 @@ class BnplManagerTestApi {
 
   void PopulateManagerWithUserAndBnplIssuerDetails(
       int64_t billing_customer_number,
-      std::string instrument_id,
       std::string risk_data,
       std::string context_token,
       GURL redirect_url,
@@ -32,8 +31,6 @@ class BnplManagerTestApi {
         std::make_unique<BnplManager::OngoingFlowState>();
     bnpl_manager_->ongoing_flow_state_->billing_customer_number =
         std::move(billing_customer_number);
-    bnpl_manager_->ongoing_flow_state_->instrument_id =
-        std::move(instrument_id);
     bnpl_manager_->ongoing_flow_state_->risk_data = std::move(risk_data);
     bnpl_manager_->ongoing_flow_state_->context_token =
         std::move(context_token);

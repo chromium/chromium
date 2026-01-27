@@ -52,8 +52,7 @@ std::string UpdateBnplPaymentInstrumentRequest::GetRequestContent() {
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
-  request_dict.Set("instrument_id",
-                   base::NumberToString(request_details_.instrument_id));
+  request_dict.Set("instrument_id", request_details_.instrument_id);
 
   base::DictValue buy_now_pay_later_info;
   buy_now_pay_later_info.Set("type", static_cast<int>(request_details_.type));
