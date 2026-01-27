@@ -178,8 +178,7 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
   tabstrip_ = tabstrip;
   model_->SetTabStripUI(this);
 
-  // Walk the model, calling our insertion observer method for each item within
-  // it.
+  // Add all pinned / unpinned tabs regardless of group / split affiliation.
   std::vector<std::pair<tabs::TabInterface*, int>> tabs_to_add;
   for (int i = 0; i < model_->count(); ++i) {
     tabs_to_add.emplace_back(model_->GetTabAtIndex(i), i);
@@ -208,6 +207,8 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
     split_tabs::SplitTabData* data = model_->GetSplitData(split_id);
     tabstrip_->OnSplitCreated(data->GetIndexRange().ToIntVector(), split_id);
   }
+
+  tabstrip_->StopAnimating();
 }
 
 void BrowserTabStripController::Reset() {
