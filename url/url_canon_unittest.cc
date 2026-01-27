@@ -2579,49 +2579,6 @@ TEST_F(URLCanonTest, CanonicalizeMailtoUrl) {
   }
 }
 
-#ifndef WIN32
-
-TEST_F(URLCanonTest, _itoa_s) {
-  // We fill the buffer with 0xff to ensure that it's getting properly
-  // null-terminated. We also allocate one byte more than what we tell
-  // _itoa_s about, and ensure that the extra byte is untouched.
-  char buf[6];
-  std::ranges::fill(buf, 0xff);
-  EXPECT_EQ(0, _itoa_s(12, buf, sizeof(buf) - 1, 10));
-  EXPECT_STREQ("12", buf);
-  EXPECT_EQ('\xFF', buf[3]);
-
-  // Test the edge cases - exactly the buffer size and one over
-  std::ranges::fill(buf, 0xff);
-  EXPECT_EQ(0, _itoa_s(1234, buf, sizeof(buf) - 1, 10));
-  EXPECT_STREQ("1234", buf);
-  EXPECT_EQ('\xFF', buf[5]);
-
-  std::ranges::fill(buf, 0xff);
-  EXPECT_EQ(EINVAL, _itoa_s(12345, buf, sizeof(buf) - 1, 10));
-  EXPECT_EQ('\xFF', buf[5]);  // should never write to this location
-
-  // Test the template overload (note that this will see the full buffer)
-  std::ranges::fill(buf, 0xff);
-  EXPECT_EQ(0, _itoa_s(12, buf, 10));
-  EXPECT_STREQ("12", buf);
-  EXPECT_EQ('\xFF', buf[3]);
-
-  std::ranges::fill(buf, 0xff);
-  EXPECT_EQ(0, _itoa_s(12345, buf, 10));
-  EXPECT_STREQ("12345", buf);
-
-  EXPECT_EQ(EINVAL, _itoa_s(123456, buf, 10));
-
-  // Test that radix 16 is supported.
-  std::ranges::fill(buf, 0xff);
-  EXPECT_EQ(0, _itoa_s(1234, buf, sizeof(buf) - 1, 16));
-  EXPECT_STREQ("4d2", buf);
-  EXPECT_EQ('\xFF', buf[5]);
-}
-
-#endif  // !WIN32
-
 // Returns true if the given two structures are the same.
 static bool ParsedIsEqual(const Parsed& a, const Parsed& b) {
   return a.scheme.begin == b.scheme.begin && a.scheme.len == b.scheme.len &&

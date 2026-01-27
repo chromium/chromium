@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/stack_allocated.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/span_printf.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "third_party/icu/source/common/unicode/ucnv_cb.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -42,10 +43,9 @@ void appendURLEscapedChar(const void* context,
     ucnv_cbFromUWriteBytes(from_args, prefix, prefix_len, 0, err);
 
     DCHECK(code_point < 0x110000);
-    char number[8];  // Max Unicode code point is 7 digits.
-    _itoa_s(code_point, number, 10);
-    int number_len = static_cast<int>(strlen(number));
-    ucnv_cbFromUWriteBytes(from_args, number, number_len, 0, err);
+    std::array<char, 8> number;  // Max Unicode code point is 7 digits.
+    int number_len = base::SpanPrintf(number, "%d", code_point);
+    ucnv_cbFromUWriteBytes(from_args, number.data(), number_len, 0, err);
 
     const static int postfix_len = 3;
     const static char postfix[postfix_len + 1] = "%3B";   // ";" percent-escaped

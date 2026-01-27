@@ -556,20 +556,6 @@ constexpr uint64_t StringToUint64WithBase(std::string_view str, uint8_t base) {
   return result;
 }
 
-#ifndef WIN32
-
-// Implementations of Windows' int-to-string conversions
-COMPONENT_EXPORT(URL)
-int _itoa_s(int value, char* buffer, size_t size_in_chars, int radix);
-
-// Secure template overloads for these functions
-template <size_t N>
-inline int _itoa_s(int value, char (&buffer)[N], int radix) {
-  return _itoa_s(value, buffer, N, radix);
-}
-
-#endif  // WIN32
-
 // The threshold we set to consider SIMD processing, in bytes; there is
 // no deep theory here, it's just set empirically to a value that seems
 // to be good. (We don't really know why there's a slowdown for zero;
