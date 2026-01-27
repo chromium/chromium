@@ -72,6 +72,8 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
   void TearDown() override {
     battery_notifier_.reset();
     battery_listener_.reset();
+    system_tray_client_ = nullptr;
+    message_center_ = nullptr;
     AshTestBase::TearDown();
     chromeos::PowerManagerClient::Shutdown();
   }
@@ -129,8 +131,8 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<message_center::MessageCenter, DanglingUntriaged> message_center_;
-  raw_ptr<TestSystemTrayClient, DanglingUntriaged> system_tray_client_;
+  raw_ptr<message_center::MessageCenter> message_center_;
+  raw_ptr<TestSystemTrayClient> system_tray_client_;
   std::unique_ptr<PeripheralBatteryNotifier> battery_notifier_;
   std::unique_ptr<PeripheralBatteryListener> battery_listener_;
 
