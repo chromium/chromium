@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -251,11 +250,11 @@ void ComposeboxHandler::ExecuteAction(uint8_t line,
                                       bool ctrl_key,
                                       bool meta_key,
                                       bool shift_key) {
-  NOTREACHED();
+  mojo::ReportBadMessage("Composebox does not have actions");
 }
 
 void ComposeboxHandler::OnThumbnailRemoved() {
-  NOTREACHED();
+  mojo::ReportBadMessage("No thumbnails in composebox input");
 }
 
 void ComposeboxHandler::ClearFiles() {

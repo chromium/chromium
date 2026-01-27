@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_composebox_controller.h"
@@ -156,16 +155,12 @@ void LensComposeboxHandler::FocusChanged(bool focused) {
 }
 
 void LensComposeboxHandler::SetDeepSearchMode(bool enabled) {
-  // Intentionally unimplemented for Lens. Deep search not yet implemented
-  // in Lens.
-  NOTREACHED();
+  mojo::ReportBadMessage("Deep search not implemented for lens");
 }
 
 void LensComposeboxHandler::SetCreateImageMode(bool enabled,
                                                bool image_present) {
-  // Intentionally unimplemented for Lens. Create image not yet implemented
-  // in Lens.
-  NOTREACHED();
+  mojo::ReportBadMessage("Create image not implemented for lens");
 }
 
 void LensComposeboxHandler::HandleLensButtonClick() {
@@ -173,9 +168,7 @@ void LensComposeboxHandler::HandleLensButtonClick() {
 }
 
 void LensComposeboxHandler::HandleFileUpload(bool is_image) {
-  // Intentionally unimplemented for Lens, file upload is not yet
-  // implemented in Lens.
-  NOTREACHED();
+  mojo::ReportBadMessage("File upload is not implemented in Lens");
 }
 
 void LensComposeboxHandler::NavigateUrl(const GURL& url) {
@@ -186,7 +179,7 @@ void LensComposeboxHandler::NavigateUrl(const GURL& url) {
 
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
                                                     const GURL& url) {
-  NOTREACHED();
+  mojo::ReportBadMessage("Delete autocomplete match not implemented in lens");
 }
 
 void LensComposeboxHandler::ExecuteAction(
@@ -199,11 +192,11 @@ void LensComposeboxHandler::ExecuteAction(
     bool ctrl_key,
     bool meta_key,
     bool shift_key) {
-  NOTREACHED();
+  mojo::ReportBadMessage("No actions in lens composebox");
 }
 
 void LensComposeboxHandler::OnThumbnailRemoved() {
-  NOTREACHED();
+  mojo::ReportBadMessage("No thumbnails in lens composebox input");
 }
 
 void LensComposeboxHandler::DeleteContext(
