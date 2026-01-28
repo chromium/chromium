@@ -210,7 +210,6 @@ TEST_F(BluetoothSocketFlossTest, Connect) {
   socket = nullptr;
 }
 
-// TODO (crbug.com/1412530) Test is failing on ASan bots
 TEST_F(BluetoothSocketFlossTest, Listen) {
   // Get socket id for next returned socket.
   FlossSocketManager::SocketId id = GetFakeFlossSocketManager()->GetNextId();
