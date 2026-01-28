@@ -68,6 +68,11 @@
       margin-bottom: 5px;
     }
 
+    /* Lay out #logs-container is a <table> element. */
+    #logs-container {
+      display: table;
+    }
+
     #logs-container a {
       text-decoration: none;
       color: inherit;
@@ -75,6 +80,82 @@
 
     #logs-container a:hover {
       text-decoration: underline;
+    }
+
+    .log-line {
+      display: table-row;
+      font-family: monospace;
+      margin-bottom: 5px;
+    }
+
+    .log-column {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    .timestamp, .severity, .file-and-line {
+      color: var(--google-grey-700);
+      padding-right: 1ch;
+      text-align: right;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .timestamp, .severity, .file-and-line {
+        color: var(--google-grey-500);
+        text-align: right;
+      }
+    }
+
+    .timestamp {
+      width: 24ch;
+    }
+
+    .severity {
+      width: 7ch;
+    }
+
+    .file-and-line {
+      white-space: nowrap;
+    }
+
+    .file {
+      display: inline-block;
+      max-width: 35ch;
+      overflow-x: hidden;
+      text-decoration: inherit;
+      text-overflow: ellipsis;
+      vertical-align: bottom;
+    }
+
+    @media (max-width: 1000px) {
+      .file {
+        max-width: 26ch;
+      }
+    }
+
+    @media (max-width: 800px) {
+      /* On mobile, don't lay out #logs-container as a <table>. Instead,
+         show the timestamp, severity, and file/line right above the
+         message. */
+      #logs-container {
+        display: block;
+      }
+
+      .log-line {
+          display: block;
+      }
+
+      .log-column {
+        display: inline-block;
+      }
+
+      .message {
+          display: block;
+      }
+    }
+
+    .message {
+      text-align: left;
     }
   </style>
 </head>
@@ -108,7 +189,7 @@
 
     <h2>Logs</h2>
 
-    <ul id="logs-container" aria-label="Logs List"></ul>
+    <div id="logs-container" role="grid" aria-label="Logs List"></div>
 
     <h2>$i18n{variations}</h2>
 

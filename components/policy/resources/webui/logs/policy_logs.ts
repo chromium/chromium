@@ -43,7 +43,9 @@ function displayList() {
     logMessageContainer.innerHTML = '';
   }
   logs.forEach(log => {
-    const logMessage = document.createElement('li');
+    const logMessage = document.createElement('div');
+    logMessage.setAttribute('role', 'row');
+    logMessage.className = 'log-line';
 
     // Use en-CA locale to get a format of YYYY-MM-DD, HH:MM:SS.
     const timestamp = new Date(log.timestamp).toLocaleString('en-CA', {
@@ -51,21 +53,44 @@ function displayList() {
       hour12: false,
     });
 
-    // Create a line that looks like:
-    //   [2026-01-01, 12:34:56 UTC:ERROR:file.cc:123] message
-    // where "file.cc:123" is a link to Chromium codesearch.
+    // Create a row with 4 columns: timestamp, severity, file and line, message.
 
-    logMessage.appendChild(
-        document.createTextNode(`[${timestamp}:${log.logSeverity}:`));
+    const timestampDiv = document.createElement('div');
+    timestampDiv.setAttribute('role', 'gridcell');
+    timestampDiv.className = 'log-column timestamp';
+    timestampDiv.textContent = timestamp;
+    logMessage.appendChild(timestampDiv);
 
+    const severityDiv = document.createElement('div');
+    severityDiv.setAttribute('role', 'gridcell');
+    severityDiv.className = 'log-column severity';
+    severityDiv.textContent = log.logSeverity;
+    logMessage.appendChild(severityDiv);
+
+    const fileAndLineDiv = document.createElement('div');
+    fileAndLineDiv.setAttribute('role', 'gridcell');
+    fileAndLineDiv.className = 'log-column file-and-line';
+    // "file.cc:123" is a link to the file in the Chromium code search.
     const anchor = document.createElement('a');
     anchor.href = log.location;
+    anchor.title = log.fileAndLine;
     anchor.setAttribute('target', '_blank');
-    anchor.textContent = log.fileAndLine;
-    logMessage.appendChild(anchor);
+    // If the name is too long, only shorten the "file" part with ellipses,
+    // not the line number.
+    const [file, line] = log.fileAndLine.split(':');
+    const fileSpan = document.createElement('span');
+    fileSpan.className = 'file';
+    fileSpan.textContent = file ?? null;
+    anchor.appendChild(fileSpan);
+    anchor.appendChild(document.createTextNode(':' + line));
+    fileAndLineDiv.appendChild(anchor);
+    logMessage.appendChild(fileAndLineDiv);
 
-    // createTextNode() escapes the HTML for us.
-    logMessage.appendChild(document.createTextNode(`] ${log.message}`));
+    const messageDiv = document.createElement('div');
+    messageDiv.setAttribute('role', 'gridcell');
+    messageDiv.className = 'log-column message';
+    messageDiv.textContent = log.message;
+    logMessage.appendChild(messageDiv);
 
     logMessageContainer.appendChild(logMessage);
   });
