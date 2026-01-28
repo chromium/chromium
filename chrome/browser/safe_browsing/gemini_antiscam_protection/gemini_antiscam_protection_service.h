@@ -8,8 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 class OptimizationGuideKeyedService;
@@ -44,8 +47,16 @@ class GeminiAntiscamProtectionService : public KeyedService {
 
  private:
   // Callback for querying the history service. Depending on the value of
-  // |result|, maybe trigger a call to Gemini to determine scamminess.
-  void DidGetVisibleVisitCount(history::VisibleVisitCountToHostResult result);
+  // |result|, maybe trigger a call to Gemini to determine scamminess using
+  // |url| and |page_inner_text|.
+  void DidGetVisibleVisitCount(GURL url,
+                               std::string page_inner_text,
+                               history::VisibleVisitCountToHostResult result);
+
+  void OnModelResponse(
+      base::TimeTicks start_time,
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
 

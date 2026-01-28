@@ -678,6 +678,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/history",
       "//chrome/browser/optimization_guide",
+      "//chrome/browser/optimization_guide:test_support",
       "//components/safe_browsing/core/common/proto:csd_proto",
     ]
   }

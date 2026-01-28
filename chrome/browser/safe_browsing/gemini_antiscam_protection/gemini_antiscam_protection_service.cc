@@ -4,8 +4,23 @@
 
 #include "chrome/browser/safe_browsing/gemini_antiscam_protection/gemini_antiscam_protection_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/proto/features/gemini_antiscam_protection.pb.h"
+
+namespace {
+
+optimization_guide::proto::GeminiAntiscamProtectionRequest
+BuildGeminiAntiscamProtectionRequest(GURL url, std::string page_inner_text) {
+  optimization_guide::proto::GeminiAntiscamProtectionRequest request;
+  request.set_url(url.spec());
+  request.set_page_content(page_inner_text);
+  return request;
+}
+
+}  // namespace
 
 namespace safe_browsing {
 
@@ -40,11 +55,13 @@ void GeminiAntiscamProtectionService::MaybeStartAntiscamProtection(
   history_service_->GetVisibleVisitCountToHost(
       url,
       base::BindOnce(&GeminiAntiscamProtectionService::DidGetVisibleVisitCount,
-                     weak_factory_.GetWeakPtr()),
+                     weak_factory_.GetWeakPtr(), url, page_inner_text),
       &task_tracker_);
 }
 
 void GeminiAntiscamProtectionService::DidGetVisibleVisitCount(
+    GURL url,
+    std::string page_inner_text,
     history::VisibleVisitCountToHostResult result) {
   if (!result.success) {
     // If the history service was not able to determine the number of visits,
@@ -55,7 +72,41 @@ void GeminiAntiscamProtectionService::DidGetVisibleVisitCount(
     // If the URL has been visited before, we don't need to run Gemini.
     return;
   }
-  // TODO(crbug.com/467358093): Run Gemini to determine scamminess.
+
+  // Query server-side model.
+  optimization_guide::proto::GeminiAntiscamProtectionRequest request =
+      BuildGeminiAntiscamProtectionRequest(url, page_inner_text);
+  optimization_guide_keyed_service_->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kGeminiAntiscamProtection,
+      request, {},
+      base::BindOnce(&GeminiAntiscamProtectionService::OnModelResponse,
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+}
+
+void GeminiAntiscamProtectionService::OnModelResponse(
+    base::TimeTicks start_time,
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  base::TimeDelta latency = base::TimeTicks::Now() - start_time;
+  if (!result.response.has_value()) {
+    base::UmaHistogramTimes(
+        "SafeBrowsing.GeminiAntiscamProtection.FailedEmptyResponse.Latency",
+        latency);
+    return;
+  }
+  std::optional<optimization_guide::proto::GeminiAntiscamProtectionResponse>
+      response = optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::GeminiAntiscamProtectionResponse>(
+          result.response.value());
+  if (!response) {
+    base::UmaHistogramTimes(
+        "SafeBrowsing.GeminiAntiscamProtection.FailedParsingError.Latency",
+        latency);
+    return;
+  }
+  base::UmaHistogramTimes(
+      "SafeBrowsing.GeminiAntiscamProtection.Success.Latency", latency);
+  // TODO(crbug.com/467358093): Process the model response.
 }
 
 }  // namespace safe_browsing

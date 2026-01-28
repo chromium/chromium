@@ -1495,6 +1495,24 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.GeminiAntiscamProtection.{GeminiAntiscamProtectionResponseStatus}.Latency"
+    units="ms" expires_after="2027-01-26">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the latency of receiving a response from the Gemini Antiscam
+    Protection request. Log when the response is received and
+    {GeminiAntiscamProtectionResponseStatus}.
+  </summary>
+  <token key="GeminiAntiscamProtectionResponseStatus">
+    <variant name="FailedEmptyResponse" summary="the value is empty."/>
+    <variant name="FailedParsingError"
+        summary="the value cannot be parsed, so it is invalid."/>
+    <variant name="Success" summary="the value is valid."/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.GetReferringAppInfo.Duration" units="ms"
     expires_after="2027-01-12">
   <owner>nwokedi@chromium.org</owner>

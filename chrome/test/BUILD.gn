@@ -4353,6 +4353,8 @@ if (!is_android) {
         "//components/safe_browsing/content/renderer/phishing_classifier",
         "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
       ]
+
+      sources += [ "../browser/safe_browsing/gemini_antiscam_protection/gemini_antiscam_protection_service_browsertest.cc" ]
     }
 
     if (is_linux) {
