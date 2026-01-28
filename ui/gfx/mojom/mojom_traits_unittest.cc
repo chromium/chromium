@@ -111,12 +111,12 @@ sk_sp<SkData> GetTestAgtm() {
               {
                   .fComponentMixing =
                       {
-                          .fRed = 0.1f,
-                          .fGreen = 0.2f,
-                          .fBlue = 0.3f,
-                          .fMax = 0.4f,
-                          .fMin = 0.5f,
-                          .fComponent = 0.6f,
+                          .fRed = 0.01f,
+                          .fGreen = 0.02f,
+                          .fBlue = 0.03f,
+                          .fMax = 0.04f,
+                          .fMin = 0.05f,
+                          .fComponent = 0.85f,
                       },
                   .fGainCurve =
                       {
