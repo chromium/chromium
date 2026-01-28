@@ -225,6 +225,12 @@ void GlicActorTaskIcon::UpdateInkdropHoverColor(bool is_frame_active) {
   }
 }
 
+gfx::Rect GlicActorTaskIcon::GetAnchorBoundsInScreen() const {
+  gfx::Rect bounds = GetBoundsInScreen();
+  bounds.Inset(GetInsets());
+  return bounds;
+}
+
 GlicActorTaskIcon::~GlicActorTaskIcon() = default;
 
 BEGIN_METADATA(GlicActorTaskIcon)

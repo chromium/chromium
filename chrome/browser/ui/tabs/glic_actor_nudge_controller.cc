@@ -141,7 +141,7 @@ void GlicActorNudgeController::UpdateNudgeLabelOrRetrigger(
   // TODO(crbug.com/473593979): The bubble should not always be triggered in
   // this case.
   ActorTaskListBubbleController::From(browser_)->ShowBubble(
-      tab_strip_action_container_->glic_actor_button_container());
+      tab_strip_action_container_->glic_actor_task_icon());
 }
 
 void GlicActorNudgeController::RegisterActorNudgeStateCallback() {
