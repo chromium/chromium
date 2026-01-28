@@ -36,6 +36,7 @@ if (_is_default_toolchain) {
   import("//chrome/chrome_paks.gni")
   import("//chrome/common/features.gni")
   import("//chrome/version.gni")
+  import("//components/autofill/android/browser/buildflags.gni")
   import("//components/password_manager/core/browser/buildflags.gni")
   import("//components/plus_addresses/core/browser/buildflags.gni")
   import("//content/public/common/features.gni")
@@ -249,6 +250,14 @@ if (_is_default_toolchain) {
       "//third_party/androidx:androidx_gridlayout_gridlayout_java",
       "//third_party/androidx:androidx_preference_preference_java",
     ]
+
+    if (autofill_use_internal_android_resources) {
+      deps += [ "//clank/components/autofill:java_resources" ]
+    } else {
+      deps += [
+        "//components/autofill/android:autofill_unbranded_browser_resources",
+      ]
+    }
 
     if (plus_addresses_use_internal_android_resources) {
       deps += [ "//clank/components/plus_addresses:java_resources" ]
