@@ -33,8 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
          (autofill::PersonalDataManager*)personalDataManager
                    passwordStore:
                        (password_manager::PasswordStoreInterface*)passwordStore
-             affiliationsService:
-                 (affiliations::AffiliationService*)affiliationsService
     isPasswordAffiliationEnabled:(BOOL)isPasswordAffiliationEnabled
     NS_DESIGNATED_INITIALIZER;
 

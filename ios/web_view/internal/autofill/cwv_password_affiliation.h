@@ -1,3 +1,4 @@
+
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -14,7 +15,7 @@ class PrefRegistrySyncable;
 namespace ios_web_view {
 
 inline constexpr char kCWVPasswordAffiliationEnabled[] =
-    "cwv.autofill.password_affiliation_enabled";
+    "cwv.autofill.password_affiliation_matching_enabled";
 
 // Registers the CWVPasswordAffiliation preferences for this `pref_registry`.
 void RegisterCWVPasswordAffiliationPrefs(

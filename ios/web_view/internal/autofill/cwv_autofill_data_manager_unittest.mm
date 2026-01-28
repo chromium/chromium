@@ -8,9 +8,6 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/affiliations/core/browser/affiliation_service.h"
-#import "components/affiliations/core/browser/fake_affiliation_service.h"
-#import "components/affiliations/core/browser/mock_affiliation_service.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -23,7 +20,6 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
-#import "ios/web_view/internal/autofill/cwv_password_affiliation.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
 #import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
@@ -68,12 +64,10 @@ class CWVAutofillDataManagerTest : public PlatformTest {
         password_manager::IsAccountStore(true));
     password_store_->Init(/*affiliated_match_helper=*/nullptr);
 
-    affiliations::MockAffiliationService affiliationsService;
 
     autofill_data_manager_ = [[CWVAutofillDataManager alloc]
          initWithPersonalDataManager:personal_data_manager_.get()
                        passwordStore:password_store_.get()
-                 affiliationsService:&affiliationsService
         isPasswordAffiliationEnabled:NO];
   }
 
