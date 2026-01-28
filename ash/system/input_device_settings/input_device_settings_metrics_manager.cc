@@ -56,7 +56,6 @@ enum class PointerSensitivity {
 
 // Do not change ordering of this list as the ordering is used to compute
 // modifier hash in `RecordModifierRemappingHash()`.
-// TODO(b/329330990): Update modifier names map.
 struct ModifierName {
   const char* key_name;
   ui::mojom::ModifierKey modifier_key;
@@ -106,7 +105,6 @@ constexpr int kSplitModifierNumModifiers = std::size(kModifierNames) - 1;
 // Verify that the number of modifiers we are trying to hash together into a
 // 32-bit int will fit without any overflow or UB.
 // Modifier hash is limited to 32 bits as metrics can only handle 32 bit ints.
-// TODO(b/329330990): Update modifier hash.
 static_assert((sizeof(int32_t) * 8) >= (kModifierHashWidth * kNumModifiers));
 static_assert(static_cast<int>(ui::mojom::ModifierKey::kMaxValue) <=
               kMaxModifierValue);
