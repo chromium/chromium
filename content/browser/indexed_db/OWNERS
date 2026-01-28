@@ -11,3 +11,6 @@ file://storage/OWNERS  #{LAST_RESORT_SUGGESTION}
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# For trivial or mechanical horizontal WebUI changes.
+per-file indexed_db_internals_ui*=file://ui/webui/PLATFORM_OWNERS

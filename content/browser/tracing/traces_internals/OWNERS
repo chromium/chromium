@@ -6,3 +6,7 @@ per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
+
+# For trivial or mechanical horizontal WebUI changes.
+per-file traces_internals_handler*=file://ui/webui/PLATFORM_OWNERS
+per-file traces_internals_ui*=file://ui/webui/PLATFORM_OWNERS
