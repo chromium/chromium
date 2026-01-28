@@ -1,10 +1,1 @@
-# crbug.com/446934111
--org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManagerTest.*
-
-# https://crbug.com/446934111
-# Aggressively disable failed tests to green the suite ASAP.
--org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
--org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testMutedPlaybackDoesNotTakeAudioFocus
--org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testUnmutedPlaybackTakesAudioFocus
--org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.*
--org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusTrackerTest.*
+# This filter file is now empty as all entries have been converted to @DisableIf annotations in Java code.
