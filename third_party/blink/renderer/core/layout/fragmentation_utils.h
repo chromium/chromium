@@ -97,6 +97,10 @@ EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
                                          const LayoutResult&,
                                          const BoxFragmentBuilder&);
 
+// Return true if breaking inside this child is discouraged (break-inside:avoid)
+// or impossible (monolithic).
+bool ShouldAvoidBreakInside(const ConstraintSpace&, const LayoutResult&);
+
 // Return true if the container is being resumed after a fragmentainer break,
 // and the child is at the first fragment of a node, and we are allowed to break
 // before it. Normally, this isn't allowed, as that would take us nowhere,
@@ -448,21 +452,14 @@ void BreakBeforeChild(
     BoxFragmentBuilder*,
     std::optional<LayoutUnit> block_size_override = std::nullopt);
 
-// Propagate the block-size of unbreakable content. This is used to inflate the
+// Calculate the block-size of unbreakable content. This is used to inflate the
 // initial minimal column block-size when balancing columns, before we calculate
 // a tentative (or final) column block-size. Unbreakable content will actually
 // fragment if the columns aren't large enough, and we want to prevent that, if
 // possible.
-inline void PropagateUnbreakableBlockSize(LayoutUnit block_size,
-                                          LayoutUnit fragmentainer_block_offset,
-                                          BoxFragmentBuilder* builder) {
-  // Whatever is before the block-start of the fragmentainer isn't considered to
-  // intersect with the fragmentainer, so subtract it (by adding the negative
-  // offset).
-  if (fragmentainer_block_offset < LayoutUnit())
-    block_size += fragmentainer_block_offset;
-  builder->PropagateTallestUnbreakableBlockSize(block_size);
-}
+LayoutUnit CalculateUnbreakableBlockSize(const ConstraintSpace&,
+                                         const LayoutResult&,
+                                         LayoutUnit fragmentainer_block_offset);
 
 // Propagate space shortage to the builder and beyond, if appropriate. This is
 // something we do during column balancing, when we already have a tentative

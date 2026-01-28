@@ -170,6 +170,16 @@ EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
   return break_before;
 }
 
+bool ShouldAvoidBreakInside(const ConstraintSpace& space,
+                            const LayoutResult& result) {
+  const auto& fragment = result.GetPhysicalFragment();
+  if (fragment.IsMonolithic()) {
+    return true;
+  }
+  return fragment.IsBox() &&
+         IsAvoidBreakValue(space, fragment.Style().BreakInside());
+}
+
 bool IsBreakableAtStartOfResumedContainer(
     const ConstraintSpace& space,
     const LayoutResult& child_layout_result,
@@ -973,6 +983,22 @@ void BreakBeforeChild(const ConstraintSpace& space,
   builder->AddBreakBeforeChild(child, appeal, is_forced_break);
 }
 
+LayoutUnit CalculateUnbreakableBlockSize(
+    const ConstraintSpace& space,
+    const LayoutResult& result,
+    LayoutUnit fragmentainer_block_offset) {
+  LayoutUnit block_size =
+      BlockSizeForFragmentation(result, space.GetWritingDirection());
+
+  // Whatever is before the block-start of the fragmentainer isn't considered to
+  // intersect with the fragmentainer, so subtract it (by adding the negative
+  // offset).
+  if (fragmentainer_block_offset < LayoutUnit()) {
+    block_size += fragmentainer_block_offset;
+  }
+  return block_size;
+}
+
 void PropagateSpaceShortage(const ConstraintSpace& space,
                             const LayoutResult* layout_result,
                             LayoutUnit fragmentainer_block_offset,
@@ -1088,19 +1114,14 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
     }
   }
 
-  if (!space.HasKnownFragmentainerBlockSize() &&
-      space.IsInitialColumnBalancingPass() && builder) {
-    if (layout_result.GetPhysicalFragment().IsMonolithic() ||
-        (child.IsBlock() &&
-         IsAvoidBreakValue(space, child.Style().BreakInside()))) {
-      // If this is the initial column balancing pass, attempt to make the
-      // column block-size at least as large as the tallest piece of monolithic
-      // content and/or block with break-inside:avoid.
-      LayoutUnit block_size =
-          BlockSizeForFragmentation(layout_result, space.GetWritingDirection());
-      PropagateUnbreakableBlockSize(block_size, fragmentainer_block_offset,
-                                    builder);
-    }
+  if (space.IsInitialColumnBalancingPass() && builder &&
+      ShouldAvoidBreakInside(space, layout_result)) {
+    // If this is the initial column balancing pass, attempt to make the column
+    // block-size at least as large as the tallest piece of monolithic content
+    // and/or block with break-inside:avoid.
+    LayoutUnit block_size = CalculateUnbreakableBlockSize(
+        space, layout_result, fragmentainer_block_offset);
+    builder->PropagateTallestUnbreakableBlockSize(block_size);
   }
 
   bool move_past =

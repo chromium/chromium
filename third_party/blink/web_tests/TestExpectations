@@ -313,7 +313,6 @@ crbug.com/1347984 fragmentation/table-row-dimensions-break-freely.html [ Failure
 crbug.com/1347984 fragmentation/table-row-dimensions-with-thead.html [ Failure ]
 crbug.com/1347984 fragmentation/table-row-dimensions.html [ Failure ]
 
-crbug.com/394900337 fast/multicol/balance-float-in-inline.html [ Failure ]
 crbug.com/1225630 fast/multicol/flexbox/doubly-nested-with-zero-width-flexbox-and-forced-break-crash.html [ Skip Timeout ]
 crbug.com/1225630 fast/multicol/infinite-height-causing-fractional-row-height-crash.html [ Skip Timeout ]
 crbug.com/1225630 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Skip Timeout ]

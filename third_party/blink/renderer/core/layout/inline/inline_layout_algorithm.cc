@@ -883,6 +883,11 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
         if (positioned_float.minimum_space_shortage) {
           line_info->PropagateMinimumSpaceShortage(
               positioned_float.minimum_space_shortage);
+          DCHECK_EQ(positioned_float.tallest_unbreakable_block_size,
+                    LayoutUnit());
+        } else if (positioned_float.tallest_unbreakable_block_size) {
+          line_info->PropagateTallestUnbreakableBlockSize(
+              positioned_float.tallest_unbreakable_block_size);
         }
       }
       if (!break_token || !break_token->IsBreakBefore()) {
@@ -1456,6 +1461,11 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     if (std::optional<LayoutUnit> minimum_space_shortage =
             line_info.MinimumSpaceShortage()) {
       container_builder_.PropagateSpaceShortage(minimum_space_shortage);
+      DCHECK(!line_info.TallestUnbreakableBlockSize());
+    } else if (LayoutUnit tallest_unbreakable_block_size =
+                   line_info.TallestUnbreakableBlockSize()) {
+      container_builder_.PropagateTallestUnbreakableBlockSize(
+          tallest_unbreakable_block_size);
     }
 
     if (line_info.IsEmptyLine()) {
@@ -1784,6 +1794,10 @@ PositionedFloat InlineLayoutAlgorithm::PositionFloat(
   if (positioned_float.minimum_space_shortage) {
     container_builder_.PropagateSpaceShortage(
         positioned_float.minimum_space_shortage);
+    DCHECK_EQ(positioned_float.tallest_unbreakable_block_size, LayoutUnit());
+  } else if (positioned_float.tallest_unbreakable_block_size) {
+    container_builder_.PropagateTallestUnbreakableBlockSize(
+        positioned_float.tallest_unbreakable_block_size);
   }
 
   return positioned_float;

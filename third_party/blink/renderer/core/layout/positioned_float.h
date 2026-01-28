@@ -22,10 +22,12 @@ struct CORE_EXPORT PositionedFloat {
   PositionedFloat(const LayoutResult* layout_result,
                   const BlockBreakToken* break_before_token,
                   const BfcOffset& bfc_offset,
+                  LayoutUnit tallest_unbreakable_block_size,
                   LayoutUnit minimum_space_shortage)
       : layout_result(layout_result),
         break_before_token(break_before_token),
         bfc_offset(bfc_offset),
+        tallest_unbreakable_block_size(tallest_unbreakable_block_size),
         minimum_space_shortage(minimum_space_shortage) {}
   PositionedFloat(PositionedFloat&&) noexcept = default;
   PositionedFloat(const PositionedFloat&) = default;
@@ -39,6 +41,7 @@ struct CORE_EXPORT PositionedFloat {
   Member<const LayoutResult> layout_result;
   Member<const BlockBreakToken> break_before_token;
   BfcOffset bfc_offset;
+  LayoutUnit tallest_unbreakable_block_size;
   LayoutUnit minimum_space_shortage;
 };
 

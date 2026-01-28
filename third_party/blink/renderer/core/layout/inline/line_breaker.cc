@@ -3772,6 +3772,12 @@ void LineBreaker::HandleFloat(const InlineItem& item,
       if (item_result->positioned_float->minimum_space_shortage) {
         line_info->PropagateMinimumSpaceShortage(
             item_result->positioned_float->minimum_space_shortage);
+        DCHECK_EQ(item_result->positioned_float->tallest_unbreakable_block_size,
+                  LayoutUnit());
+      } else if (item_result->positioned_float
+                     ->tallest_unbreakable_block_size) {
+        line_info->PropagateTallestUnbreakableBlockSize(
+            item_result->positioned_float->tallest_unbreakable_block_size);
       }
       if (break_token->IsBreakBefore()) {
         return;

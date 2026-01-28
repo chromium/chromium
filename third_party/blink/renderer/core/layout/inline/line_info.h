@@ -124,6 +124,13 @@ class CORE_EXPORT LineInfo {
       minimum_space_shortage_ = shortage;
     }
   }
+  LayoutUnit TallestUnbreakableBlockSize() const {
+    return tallest_unbreakable_block_size_;
+  }
+  void PropagateTallestUnbreakableBlockSize(LayoutUnit size) {
+    DCHECK_GE(size, LayoutUnit());
+    tallest_unbreakable_block_size_ = size;
+  }
 
   void SetTextIndent(LayoutUnit indent) { text_indent_ = indent; }
   LayoutUnit TextIndent() const { return text_indent_; }
@@ -307,6 +314,7 @@ class CORE_EXPORT LineInfo {
   Member<const LayoutResult> block_in_inline_layout_result_;
 
   std::optional<LayoutUnit> minimum_space_shortage_;
+  LayoutUnit tallest_unbreakable_block_size_;
 
   LayoutUnit available_width_;
   LayoutUnit width_;
