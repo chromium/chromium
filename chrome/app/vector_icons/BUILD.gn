@@ -27,6 +27,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "autofill/local_offer_flipped_refresh.icon",
     "autofill/webauthn_dialog_header.icon",
     "autofill/webauthn_dialog_header_dark.icon",
+    "autorenew.icon",
     "back_arrow_touch.icon",
     "backspace.icon",
     "battery_saver_refresh.icon",
