@@ -621,10 +621,6 @@ mojom("media_types") {
           cpp = "::media::VideoColorSpace::MatrixID"
         },
         {
-          mojom = "media.mojom.VideoColorSpace.RangeID"
-          cpp = "::gfx::ColorSpace::RangeID"
-        },
-        {
           mojom = "media.mojom.VideoColorSpace"
           cpp = "::media::VideoColorSpace"
         },

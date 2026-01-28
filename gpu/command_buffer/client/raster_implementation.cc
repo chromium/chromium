@@ -49,7 +49,6 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 #if defined(GPU_CLIENT_DEBUG)
 #define GPU_CLIENT_SINGLE_THREAD_CHECK() SingleThreadChecker checker(this);

@@ -87,7 +87,6 @@ source_set("service_sources") {
     "//gpu/ipc/common",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/gfx/ipc/color",
     "//ui/gl",
   ]
 

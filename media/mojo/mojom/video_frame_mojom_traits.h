@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
-#include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
 

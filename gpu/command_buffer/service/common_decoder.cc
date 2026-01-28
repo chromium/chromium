@@ -15,7 +15,6 @@
 #include "base/pickle.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
-#include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace gpu {
 namespace {

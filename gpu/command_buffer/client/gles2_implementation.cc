@@ -57,7 +57,6 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gpu_preference.h"

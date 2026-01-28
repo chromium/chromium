@@ -192,13 +192,10 @@ struct VideoColorSpace {
   [Native]
   enum MatrixID;
 
-  [Native]
-  enum RangeID;
-
   PrimaryID primaries;
   TransferID transfer;
   MatrixID matrix;
-  RangeID range;
+  gfx.mojom.ColorSpaceRangeID range;
 };
 
 // This defines a mojo transport format for media::AudioDecoderConfig.

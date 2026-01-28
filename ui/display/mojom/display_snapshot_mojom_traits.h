@@ -11,7 +11,6 @@
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
-#include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
 

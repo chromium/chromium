@@ -36,7 +36,6 @@ target(link_target_type, "service") {
     "//media/gpu",
     "//media/gpu:buildflags",
     "//media/gpu/ipc/common",
-    "//ui/gfx/ipc/color",
     "//ui/gl:gl_headers",
   ]
 

@@ -301,7 +301,6 @@ source_set("common_sources") {
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/ipc",
-    "//ui/gfx/ipc/color",
     "//ui/gfx/ipc/geometry",
   ]
 

@@ -39,7 +39,6 @@ source_set("common") {
 
   deps = [
     "//components/viz/common/resources:shared_image_format",
-    "//ui/gfx/ipc/color",
     "//ui/gl",
     "//ui/gl:buildflags",
   ]

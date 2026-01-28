@@ -96,10 +96,8 @@ source_set("ipc_common_sources") {
     "//gpu/config",
     "//third_party/libyuv",
     "//ui/base",
-    "//ui/gfx:color_space",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc",
-    "//ui/gfx/ipc/color",
     "//ui/gfx/ipc/geometry",
     "//ui/gl",
   ]

@@ -245,7 +245,6 @@ component("gles2_implementation") {
     "//gpu/command_buffer/common:gles2_utils",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
-    "//ui/gfx/ipc/color",
   ]
 }
 
@@ -270,7 +269,6 @@ source_set("raster_sources") {
     "//ui/base:features",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
-    "//ui/gfx/ipc/color",
   ]
   public_deps = [ ":raster_interface" ]
 
@@ -339,7 +337,6 @@ component("gles2_implementation_no_check") {
     "//ui/gfx",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
-    "//ui/gfx/ipc/color",
   ]
 }
 

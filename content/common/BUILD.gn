@@ -258,7 +258,6 @@ source_set("common") {
     "//ui/gfx/geometry",
     "//ui/gfx/geometry/mojom:mojom_traits",
     "//ui/gfx/ipc",
-    "//ui/gfx/ipc/color",
     "//ui/gfx/ipc/geometry",
     "//ui/gl",
     "//ui/gl/init",
