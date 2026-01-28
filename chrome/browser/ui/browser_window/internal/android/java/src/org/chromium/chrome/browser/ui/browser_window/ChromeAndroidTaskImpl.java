@@ -434,6 +434,7 @@ final class ChromeAndroidTaskImpl
         @Nullable Rect futureBounds = mPendingActionManager.getFutureBoundsInDp();
         @Nullable Rect futureRestoredBounds = mPendingActionManager.getFutureRestoredBoundsInDp();
         mState = State.IDLE;
+        setLastActivatedTimeMillis();
         dispatchPendingActions(topActivityScopedObjects, futureBounds, futureRestoredBounds);
 
         JniOnceCallback<Long> taskCreationCallbackForNative =
@@ -654,6 +655,10 @@ final class ChromeAndroidTaskImpl
                     return DisplayUtil.scaleToEnclosingRect(restoredBoundsInPx, 1.0f / dipScale);
                 },
                 /* defaultValue= */ new Rect());
+    }
+
+    private void setLastActivatedTimeMillis() {
+        mLastActivatedTimeMillis = TimeUtils.elapsedRealtimeMillis();
     }
 
     @Override
@@ -888,7 +893,7 @@ final class ChromeAndroidTaskImpl
         ThreadUtils.assertOnUiThread();
 
         if (isTopResumedActivity) {
-            mLastActivatedTimeMillis = TimeUtils.elapsedRealtimeMillis();
+            setLastActivatedTimeMillis();
             if (mShouldDispatchPendingDeactivate) {
                 ChromeAndroidTaskTrackerImpl.getInstance().activatePenultimatelyActivatedTask();
                 mShouldDispatchPendingDeactivate = false;

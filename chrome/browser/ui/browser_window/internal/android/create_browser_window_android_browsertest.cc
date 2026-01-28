@@ -13,6 +13,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/test/android/browser_window_android_browsertest_base.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -224,4 +225,24 @@ IN_PROC_BROWSER_TEST_F(
       CreateBrowserWindowAsync(type, incognito_profile);
 
   EXPECT_EQ(new_browser_window, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowAsync_ReturnsBrowserWindowAsLastActivatedWindow) {
+  auto type = BrowserWindowInterface::Type::TYPE_NORMAL;
+  Profile* profile = GetProfile();
+
+  // 1. Create a new browser window asynchronously.
+  BrowserWindowInterface* new_browser_window =
+      CreateBrowserWindowAsync(type, profile);
+
+  // 2. Obtain the last active browser window.
+  // This call would have crashed without the fix, as it sorts windows by their
+  // activation time.
+  BrowserWindowInterface* last_active_browser_window =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+
+  // 3. Verify the newly created window is the last active window.
+  EXPECT_EQ(new_browser_window, last_active_browser_window);
 }
