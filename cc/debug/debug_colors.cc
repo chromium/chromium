@@ -171,6 +171,7 @@ static SkColor4f FadedGreen(int initial_value, int step) {
   int value = step * initial_value / DebugColors::kFadeSteps;
   return {0.0f, 195.0f / 255.0f, 0.0f, static_cast<float>(value) / 255.0f};
 }
+
 // Paint rects in green.
 SkColor4f DebugColors::PaintRectBorderColor(int step) {
   return FadedGreen(255, step);
@@ -186,9 +187,10 @@ static SkColor4f FadedBlue(int initial_value, int step) {
   int value = step * initial_value / DebugColors::kFadeSteps;
   return {0.0f, 0.0f, 1.0f, static_cast<float>(value) / 255.0f};
 }
+
 /// Layout Shift rects in blue.
-SkColor4f DebugColors::LayoutShiftRectBorderColor() {
-  return {0.0f, 0.0f, 1.0f, 0.0f};
+SkColor4f DebugColors::LayoutShiftRectBorderColor(int step) {
+  return FadedBlue(255, step);
 }
 int DebugColors::LayoutShiftRectBorderWidth() {
   // We don't want any border showing for the layout shift debug rects so we set

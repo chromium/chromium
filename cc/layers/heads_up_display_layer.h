@@ -17,6 +17,17 @@
 
 namespace cc {
 
+enum class WebVitalMetricType {
+  kLayoutShift,
+};
+
+struct WebVitalsDebugRect {
+  WebVitalsDebugRect(WebVitalMetricType new_type, const gfx::Rect& new_rect)
+      : type(new_type), rect(new_rect) {}
+  WebVitalMetricType type;
+  gfx::Rect rect;
+};
+
 class CC_EXPORT HeadsUpDisplayLayer : public Layer {
  public:
   static scoped_refptr<HeadsUpDisplayLayer> Create();
@@ -27,8 +38,8 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
   void UpdateLocationAndSize(const gfx::Size& device_viewport,
                              float device_scale_factor);
 
-  const std::vector<gfx::Rect>& LayoutShiftRects() const;
-  void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
+  void ClearWebVitalsDebugRects();
+  void AddWebVitalsDebugRect(const WebVitalsDebugRect& rect);
 
   void SetLayerTreeHost(LayerTreeHost* host) override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
@@ -49,7 +60,8 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
   ~HeadsUpDisplayLayer() override;
 
   ProtectedSequenceWritable<sk_sp<SkTypeface>> typeface_;
-  ProtectedSequenceWritable<std::vector<gfx::Rect>> layout_shift_rects_;
+  ProtectedSequenceWritable<std::vector<WebVitalsDebugRect>>
+      web_vitals_debug_rects_;
 
   std::string paused_debugger_message_;
 };

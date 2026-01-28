@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
+#include "cc/layers/heads_up_display_layer.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/resources/memory_history.h"
 #include "cc/resources/resource_pool.h"
@@ -70,13 +71,14 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
 
   bool IsAnimatingHUDContents() const {
-    return paint_rects_fade_step_ > 0 || layout_shift_rects_fade_step_ > 0;
+    return !layer_tree_impl()->debug_rect_history()->debug_rects().empty();
   }
 
   void SetHUDTypeface(sk_sp<SkTypeface> typeface);
-  void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
-  void ClearLayoutShiftRects();
-  const std::vector<gfx::Rect>& LayoutShiftRects() const;
+
+  void SetWebVitalsDebugRects(const std::vector<WebVitalsDebugRect>& rects);
+  const std::vector<WebVitalsDebugRect>& WebVitalsDebugRects() const;
+  void ClearWebVitalsDebugRects();
 
   // This evicts hud quad appended during render pass preparation.
   void EvictHudQuad(const viz::CompositorRenderPassList& list);
@@ -164,7 +166,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   sk_sp<SkSurface> staging_surface_;
 
   sk_sp<SkTypeface> typeface_;
-  std::vector<gfx::Rect> layout_shift_rects_;
+  std::vector<WebVitalsDebugRect> web_vitals_debug_rects_;
 
   float internal_contents_scale_ = 1.0f;
   gfx::Size internal_content_bounds_;
@@ -173,10 +175,6 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   // Obtained from the current BeginFrameArgs.
   std::optional<base::TimeDelta> frame_interval_;
   MemoryHistory::Entry memory_entry_;
-  int paint_rects_fade_step_ = 0;
-  int layout_shift_rects_fade_step_ = 0;
-  std::vector<DebugRect> paint_rects_;
-  std::vector<DebugRect> layout_shift_debug_rects_;
 
   base::TimeTicks time_of_last_graph_update_;
 

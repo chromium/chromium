@@ -68,6 +68,17 @@ void HeadsUpDisplayLayer::UpdateLocationAndSize(
   SetBounds(bounds_in_layout_space);
 }
 
+void HeadsUpDisplayLayer::ClearWebVitalsDebugRects() {
+  web_vitals_debug_rects_.Write(*this).clear();
+  SetNeedsPushProperties();
+}
+
+void HeadsUpDisplayLayer::AddWebVitalsDebugRect(
+    const WebVitalsDebugRect& rect) {
+  web_vitals_debug_rects_.Write(*this).push_back(rect);
+  SetNeedsPushProperties();
+}
+
 bool HeadsUpDisplayLayer::HasDrawableContent() const {
   return true;
 }
@@ -76,16 +87,6 @@ std::unique_ptr<LayerImpl> HeadsUpDisplayLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return HeadsUpDisplayLayerImpl::Create(tree_impl, id(),
                                          paused_debugger_message_);
-}
-
-const std::vector<gfx::Rect>& HeadsUpDisplayLayer::LayoutShiftRects() const {
-  return layout_shift_rects_.Read(*this);
-}
-
-void HeadsUpDisplayLayer::SetLayoutShiftRects(
-    const std::vector<gfx::Rect>& rects) {
-  layout_shift_rects_.Write(*this) = rects;
-  SetNeedsPushProperties();
 }
 
 void HeadsUpDisplayLayer::PushDirtyPropertiesTo(
@@ -101,8 +102,8 @@ void HeadsUpDisplayLayer::PushDirtyPropertiesTo(
         static_cast<HeadsUpDisplayLayerImpl*>(layer);
 
     layer_impl->SetHUDTypeface(typeface_.Write(*this));
-    layer_impl->SetLayoutShiftRects(LayoutShiftRects());
-    layout_shift_rects_.Write(*this).clear();
+    layer_impl->SetWebVitalsDebugRects(web_vitals_debug_rects_.Read(*this));
+    web_vitals_debug_rects_.Write(*this).clear();
   }
 }
 

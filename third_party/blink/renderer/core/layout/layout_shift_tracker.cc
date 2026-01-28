@@ -879,15 +879,14 @@ void LayoutShiftTracker::SendLayoutShiftRectsToHud(
   if (cc_layer && cc_layer->layer_tree_host()) {
     if (!cc_layer->layer_tree_host()->GetDebugState().show_layout_shift_regions)
       return;
-    if (cc_layer->layer_tree_host()->hud_layer()) {
-      std::vector<gfx::Rect> rects;
+    if (auto* hud_layer = cc_layer->layer_tree_host()->hud_layer()) {
       cc::Region blink_region;
       for (const gfx::Rect& rect : int_rects)
         blink_region.Union(rect);
-      for (gfx::Rect rect : blink_region)
-        rects.emplace_back(rect);
-      cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(rects);
-      cc_layer->layer_tree_host()->hud_layer()->SetNeedsPushProperties();
+      for (gfx::Rect rect : blink_region) {
+        hud_layer->AddWebVitalsDebugRect(
+            {cc::WebVitalMetricType::kLayoutShift, rect});
+      }
     }
   }
 }

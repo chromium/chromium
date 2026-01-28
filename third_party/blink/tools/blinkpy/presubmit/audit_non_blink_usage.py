@@ -688,6 +688,7 @@ _CONFIG = [
             'cc::EventListenerClass',
             'cc::EventListenerProperties',
             'cc::HitTestOpaqueness',
+            'cc::WebVitalMetricType',
             'cc::HORIZONTAL',
             'cc::THUMB',
             'cc::TRACK_BUTTONS_TICKMARKS',

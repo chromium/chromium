@@ -435,18 +435,21 @@ void HeadsUpDisplayLayerImpl::SetHUDTypeface(sk_sp<SkTypeface> typeface) {
   NoteLayerPropertyChanged();
 }
 
-const std::vector<gfx::Rect>& HeadsUpDisplayLayerImpl::LayoutShiftRects()
-    const {
-  return layout_shift_rects_;
+void HeadsUpDisplayLayerImpl::SetWebVitalsDebugRects(
+    const std::vector<WebVitalsDebugRect>& rects) {
+  web_vitals_debug_rects_ = rects;
+  if (!web_vitals_debug_rects_.empty()) {
+    NoteLayerPropertyChanged();
+  }
 }
 
-void HeadsUpDisplayLayerImpl::SetLayoutShiftRects(
-    const std::vector<gfx::Rect>& rects) {
-  layout_shift_rects_ = rects;
+const std::vector<WebVitalsDebugRect>&
+HeadsUpDisplayLayerImpl::WebVitalsDebugRects() const {
+  return web_vitals_debug_rects_;
 }
 
-void HeadsUpDisplayLayerImpl::ClearLayoutShiftRects() {
-  layout_shift_rects_.clear();
+void HeadsUpDisplayLayerImpl::ClearWebVitalsDebugRects() {
+  web_vitals_debug_rects_.clear();
 }
 
 void HeadsUpDisplayLayerImpl::GetContentsResourceId(
@@ -472,8 +475,8 @@ void HeadsUpDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
       static_cast<HeadsUpDisplayLayerImpl*>(layer);
 
   layer_impl->SetHUDTypeface(typeface_);
-  layer_impl->SetLayoutShiftRects(layout_shift_rects_);
-  layout_shift_rects_.clear();
+  layer_impl->SetWebVitalsDebugRects(web_vitals_debug_rects_);
+  web_vitals_debug_rects_.clear();
 }
 
 void HeadsUpDisplayLayerImpl::UpdateHudContents() {
@@ -918,23 +921,25 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
     DebugRectHistory* debug_rect_history) {
   PaintFlags flags;
 
-  const std::vector<DebugRect>& debug_rects = debug_rect_history->debug_rects();
-  std::vector<DebugRect> new_paint_rects;
-  std::vector<DebugRect> new_layout_shift_rects;
-
-  for (size_t i = 0; i < debug_rects.size(); ++i) {
+  for (auto& debug_rect : debug_rect_history->debug_rects()) {
     SkColor4f stroke_color = SkColors::kTransparent;
     SkColor4f fill_color = SkColors::kTransparent;
     float stroke_width = 0.f;
     std::string label_text;
 
-    switch (debug_rects[i].type) {
+    switch (debug_rect.type) {
       case DebugRectType::kLayoutShift:
-        new_layout_shift_rects.push_back(debug_rects[i]);
-        continue;
+        stroke_color =
+            DebugColors::LayoutShiftRectBorderColor(debug_rect.fade_step);
+        fill_color =
+            DebugColors::LayoutShiftRectFillColor(debug_rect.fade_step);
+        stroke_width = DebugColors::LayoutShiftRectBorderWidth();
+        break;
       case DebugRectType::kPaint:
-        new_paint_rects.push_back(debug_rects[i]);
-        continue;
+        stroke_color = DebugColors::PaintRectBorderColor(debug_rect.fade_step);
+        fill_color = DebugColors::PaintRectFillColor(debug_rect.fade_step);
+        stroke_width = DebugColors::PaintRectBorderWidth();
+        break;
       case DebugRectType::kPropertyChanged:
         stroke_color = DebugColors::PropertyChangedRectBorderColor();
         fill_color = DebugColors::PropertyChangedRectFillColor();
@@ -955,7 +960,7 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
         fill_color = DebugColors::TouchEventHandlerRectFillColor();
         stroke_width = DebugColors::TouchEventHandlerRectBorderWidth();
         label_text = "touch event listener: ";
-        label_text.append(TouchActionToString(debug_rects[i].touch_action));
+        label_text.append(TouchActionToString(debug_rect.touch_action));
         break;
       case DebugRectType::kWheelEventHandler:
         stroke_color = DebugColors::WheelEventHandlerRectBorderColor();
@@ -981,7 +986,7 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
         stroke_width = DebugColors::MainThreadScrollRepaintRectBorderWidth();
         label_text = "main thread scroll repaint: ";
         label_text.append(base::ToLowerASCII(MainThreadScrollingReason::AsText(
-            debug_rects[i].main_thread_scroll_repaint_reasons)));
+            debug_rect.main_thread_scroll_repaint_reasons)));
         break;
       case DebugRectType::kRasterInducingScroll:
         stroke_color = DebugColors::RasterInducingScrollRectBorderColor();
@@ -997,39 +1002,13 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
         break;
     }
 
-    DrawDebugRect(canvas, &flags, debug_rects[i], stroke_color, fill_color,
+    DrawDebugRect(canvas, &flags, debug_rect, stroke_color, fill_color,
                   stroke_width, label_text);
+    debug_rect.fade_step--;
   }
 
-  if (new_paint_rects.size()) {
-    paint_rects_.swap(new_paint_rects);
-    paint_rects_fade_step_ = DebugColors::kFadeSteps;
-  }
-  if (paint_rects_fade_step_ > 0) {
-    paint_rects_fade_step_--;
-    for (auto& paint_rect : paint_rects_) {
-      DrawDebugRect(canvas, &flags, paint_rect,
-                    DebugColors::PaintRectBorderColor(paint_rects_fade_step_),
-                    DebugColors::PaintRectFillColor(paint_rects_fade_step_),
-                    DebugColors::PaintRectBorderWidth(), "");
-    }
-  }
-  if (new_layout_shift_rects.size()) {
-    layout_shift_debug_rects_.swap(new_layout_shift_rects);
-    layout_shift_rects_fade_step_ = DebugColors::kFadeSteps;
-  }
-  if (layout_shift_rects_fade_step_ > 0) {
-    layout_shift_rects_fade_step_--;
-    for (auto& layout_shift_debug_rect : layout_shift_debug_rects_) {
-      // TODO(crbug.com/40219248): Remove all instances of toSkColor below and
-      // make all SkColor4f.
-      DrawDebugRect(
-          canvas, &flags, layout_shift_debug_rect,
-          DebugColors::LayoutShiftRectBorderColor(),
-          DebugColors::LayoutShiftRectFillColor(layout_shift_rects_fade_step_),
-          DebugColors::LayoutShiftRectBorderWidth(), "");
-    }
-  }
+  std::erase_if(debug_rect_history->debug_rects(),
+                [](auto& debug_rect) { return debug_rect.fade_step <= 0; });
 }
 
 void HeadsUpDisplayLayerImpl::AsValueInto(

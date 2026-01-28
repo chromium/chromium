@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "cc/cc_export.h"
+#include "cc/debug/debug_colors.h"
 #include "cc/input/touch_action.h"
 #include "cc/layers/layer_collections.h"
 #include "ui/gfx/geometry/rect.h"
@@ -57,11 +58,13 @@ struct DebugRect {
   DebugRect(DebugRectType new_type,
             const gfx::Rect& new_rect,
             TouchAction new_touch_action = TouchAction::kNone,
-            uint32_t main_thread_scroll_repaint_reasons = 0)
+            uint32_t main_thread_scroll_repaint_reasons = 0,
+            int fade_step = 1)
       : type(new_type),
         rect(new_rect),
         touch_action(new_touch_action),
-        main_thread_scroll_repaint_reasons(main_thread_scroll_repaint_reasons) {
+        main_thread_scroll_repaint_reasons(main_thread_scroll_repaint_reasons),
+        fade_step(fade_step) {
     DCHECK(type == DebugRectType::kTouchEventHandler ||
            touch_action == TouchAction::kNone);
     DCHECK(type != DebugRectType::kMainThreadScrollRepaint ||
@@ -74,6 +77,7 @@ struct DebugRect {
   TouchAction touch_action;
   // Valid when `type` is `kMainThreadScrollRepaint`, otherwise 0.
   uint32_t main_thread_scroll_repaint_reasons;
+  int fade_step;
 };
 
 // This class maintains a history of rects of various types that can be used
@@ -96,12 +100,13 @@ class CC_EXPORT DebugRectHistory {
       const RenderSurfaceList& render_surface_list,
       const LayerTreeDebugState& debug_state);
 
-  const std::vector<DebugRect>& debug_rects() { return debug_rects_; }
+  std::vector<DebugRect>& debug_rects() { return debug_rects_; }
+  void clear_rects() { debug_rects_.clear(); }
 
  private:
   DebugRectHistory();
 
-  void SaveLayoutShiftRects(HeadsUpDisplayLayerImpl* hud);
+  void SaveWebVitalsDebugRects(HeadsUpDisplayLayerImpl* hud);
   void SavePaintRects(LayerTreeImpl* tree_impl);
   void SavePropertyChangedRects(LayerTreeImpl* tree_impl, LayerImpl* hud_layer);
   void SaveSurfaceDamageRects(const RenderSurfaceList& render_surface_list);
