@@ -938,6 +938,14 @@ EVENT_TYPE(TRANSPORT_CONNECT_JOB_CONNECT_ATTEMPT)
 //   {
 //     "ech_enabled": <True when ECH is enabled>,
 //     "ech_config_list": <The binary representation of ECH config list>,
+//     "trust_anchor_ids_from_dns": <Optional: comma-separated trust anchor IDs
+//                                   advertised in the server's DNS record>,
+//     "selected_trust_anchor_ids": <Optional: comma-separated trust anchor IDs
+//                                   sent in the TLS ClientHello on first
+//                                   connection attempt>,
+//     "selected_trust_anchor_ids_for_retry": <Optional: comma-separated trust
+//                                             anchor IDs sent in the TLS
+//                                             ClientHello on retry>,
 //   }
 EVENT_TYPE(SSL_CONNECT_JOB_SSL_CONNECT)
 

@@ -38,6 +38,8 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
+#include "net/log/test_net_log.h"
+#include "net/log/test_net_log_util.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
 #include "net/socket/connect_job_test_util.h"
@@ -229,6 +231,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
     session_context.http_auth_handler_factory =
         http_auth_handler_factory_.get();
     session_context.http_server_properties = &http_server_properties_;
+    session_context.net_log = NetLog::Get();
     session_context.http_user_agent_settings = &http_user_agent_settings_;
     session_context.quic_context = &quic_context_;
     return std::make_unique<HttpNetworkSession>(HttpNetworkSessionParams(),
@@ -1232,6 +1235,8 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDs) {
 
         base::HistogramTester histogram_tester;
         TestConnectJobDelegate test_delegate;
+        RecordingNetLogObserver net_log_observer(
+            common_connect_job_params_.net_log, NetLogCaptureMode::kDefault);
         std::unique_ptr<ConnectJob> ssl_connect_job =
             CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
         EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
@@ -1243,6 +1248,28 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDs) {
         histogram_tester.ExpectUniqueSample(
             "Net.SSL.TrustAnchorIDsResult",
             SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessInitial, 1);
+        auto events = net_log_observer.GetEntriesWithType(
+            NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
+        ASSERT_EQ(1u, events.size());
+        EXPECT_FALSE(
+            events[0].params.contains("selected_trust_anchor_ids_for_retry"));
+        EXPECT_EQ(
+            "1.2.3, 4.4, 5.5.5",
+            GetStringValueFromParams(events[0], "trust_anchor_ids_from_dns"));
+        if (!trust_anchor_ids_enabled ||
+            (!set_normal_trust_anchor_id && !set_mtc_trust_anchor_id)) {
+          EXPECT_FALSE(events[0].params.contains("selected_trust_anchor_ids"));
+        } else if (!set_normal_trust_anchor_id) {
+          EXPECT_EQ("7.8.9, 6.6", GetStringValueFromParams(
+                                      events[0], "selected_trust_anchor_ids"));
+        } else if (!set_mtc_trust_anchor_id) {
+          EXPECT_EQ("1.2.3, 4.4", GetStringValueFromParams(
+                                      events[0], "selected_trust_anchor_ids"));
+        } else {
+          EXPECT_EQ(
+              "1.2.3, 4.4, 7.8.9, 6.6",
+              GetStringValueFromParams(events[0], "selected_trust_anchor_ids"));
+        }
       }
     }
   }
@@ -1302,6 +1329,8 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetry) {
 
   base::HistogramTester histogram_tester;
   TestConnectJobDelegate test_delegate;
+  RecordingNetLogObserver net_log_observer(common_connect_job_params_.net_log,
+                                           NetLogCaptureMode::kDefault);
   std::unique_ptr<ConnectJob> ssl_connect_job =
       CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
   EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
@@ -1313,6 +1342,20 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetry) {
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
       SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessRetry, 1);
+  auto events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
+  ASSERT_EQ(2u, events.size());
+  EXPECT_EQ("1.2.3, 4.4, 5.5.5",
+            GetStringValueFromParams(events[0], "trust_anchor_ids_from_dns"));
+  EXPECT_EQ("1.2.3, 4.4",
+            GetStringValueFromParams(events[0], "selected_trust_anchor_ids"));
+  EXPECT_FALSE(
+      events[0].params.contains("selected_trust_anchor_ids_for_retry"));
+  EXPECT_EQ("1.2.3, 4.4, 5.5.5",
+            GetStringValueFromParams(events[1], "trust_anchor_ids_from_dns"));
+  EXPECT_FALSE(events[1].params.contains("selected_trust_anchor_ids"));
+  EXPECT_EQ("2.2", GetStringValueFromParams(
+                       events[1], "selected_trust_anchor_ids_for_retry"));
 }
 
 // Test that when `SSLConnectJob` sends Trust Anchor IDs and the connection

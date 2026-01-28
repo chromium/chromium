@@ -394,6 +394,25 @@ int SSLConnectJob::DoSSLConnect() {
     base::DictValue dict;
     dict.Set("ech_enabled", ssl_client_context()->config().ech_enabled);
     dict.Set("ech_config_list", NetLogBinaryValue(ssl_config.ech_config_list));
+    if (ssl_config.trust_anchor_ids) {
+      if (trust_anchor_ids_for_retry_.has_value()) {
+        dict.Set(
+            "selected_trust_anchor_ids_for_retry",
+            x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
+                *ssl_config.trust_anchor_ids)));
+      } else {
+        dict.Set(
+            "selected_trust_anchor_ids",
+            x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
+                *ssl_config.trust_anchor_ids)));
+      }
+    }
+    if (endpoint_result_ &&
+        !endpoint_result_->metadata.trust_anchor_ids.empty()) {
+      dict.Set("trust_anchor_ids_from_dns",
+               x509_util::TrustAnchorIDsToString(
+                   endpoint_result_->metadata.trust_anchor_ids));
+    }
     return dict;
   });
   ssl_socket_ = client_socket_factory()->CreateSSLClientSocket(
