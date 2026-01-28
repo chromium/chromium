@@ -1026,9 +1026,10 @@ LayoutUnit CalculateSpaceShortage(
     if (layout_result->Status() != LayoutResult::kSuccess) {
       return kIndefiniteSize;
     }
-    LogicalFragment fragment(space.GetWritingDirection(),
-                             layout_result->GetPhysicalFragment());
-    space_shortage = fragmentainer_block_offset + fragment.BlockSize() -
+
+    LayoutUnit child_block_size =
+        BlockSizeForFragmentation(*layout_result, space.GetWritingDirection());
+    space_shortage = fragmentainer_block_offset + child_block_size -
                      fragmentainer_block_size;
   } else {
     // However, if space shortage was reported inside the child, use that. If we
