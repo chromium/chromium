@@ -5,6 +5,7 @@
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 
 #import "base/base64url.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
@@ -290,7 +291,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
 
   auto request_info = BuildRequestInfo(dict);
   if (!request_info.has_value()) {
-    // TODO(460485333): Log the error.
+    base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
+                                  request_info.error());
     return;
   }
 
@@ -300,7 +302,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     auto assertion_request_params =
         BuildAssertionRequestParams(std::move(*request_info), dict);
     if (!assertion_request_params.has_value()) {
-      // TODO(460485333): Log the error.
+      base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
+                                    assertion_request_params.error());
       passkey_tab_helper->DeferToRenderer(std::move(*request_info));
       return;
     }
@@ -320,7 +323,8 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     auto registration_request_params =
         BuildRegistrationRequestParams(std::move(*request_info), dict);
     if (!registration_request_params.has_value()) {
-      // TODO(460485333): Log the error.
+      base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
+                                    registration_request_params.error());
       passkey_tab_helper->DeferToRenderer(std::move(*request_info));
       return;
     }

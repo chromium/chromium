@@ -22387,6 +22387,42 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Widget swapped"/>
 </enum>
 
+<!-- LINT.IfChange(PasskeysParsingError) -->
+
+<enum name="PasskeysParsingError">
+  <int value="0" label="MissingFrameId"/>
+  <int value="1" label="EmptyFrameId"/>
+  <int value="2" label="MissingRequestId"/>
+  <int value="3" label="EmptyRequestId"/>
+  <int value="4" label="MissingRequest"/>
+  <int value="5" label="MissingChallenge"/>
+  <int value="6" label="EmptyChallenge"/>
+  <int value="7" label="MalformedChallenge"/>
+  <int value="8" label="MissingRpEntity"/>
+  <int value="9" label="MissingRpId"/>
+  <int value="10" label="EmptyRpId"/>
+  <int value="11" label="MissingConditional"/>
+  <int value="12" label="MissingUserEntity"/>
+  <int value="13" label="MissingUserId"/>
+  <int value="14" label="EmptyUserId"/>
+  <int value="15" label="MalformedUserId"/>
+  <int value="16" label="MissingCredentialType"/>
+  <int value="17" label="MissingCredentialId"/>
+  <int value="18" label="EmptyCredentialId"/>
+  <int value="19" label="MalformedCredentialId"/>
+  <int value="20" label="MissingExtensions"/>
+  <int value="21" label="EvalByCredentialOnCreate"/>
+  <int value="22" label="MissingEvalByCredential"/>
+  <int value="23" label="MalformedEvalByCredential"/>
+  <int value="24" label="EvalByCredentialNotAllowed"/>
+  <int value="25" label="MissingFirstPRFInput"/>
+  <int value="26" label="MalformedFirstPRFInput"/>
+  <int value="27" label="MalformedSecondPRFInput"/>
+  <int value="28" label="PRFInputTooLarge"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/webauthn/ios/passkey_request_parser.h:PasskeysParsingError) -->
+
 <enum name="PasswordBubbleDismissalReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Accepted"/>

@@ -12,6 +12,7 @@
 namespace webauthn {
 
 // List of errors which can be returned by the parsing methods below.
+// LINT.IfChange(PasskeysParsingError)
 enum class PasskeysParsingError {
   kMissingFrameId,
   kEmptyFrameId,
@@ -42,7 +43,9 @@ enum class PasskeysParsingError {
   kMalformedFirstPRFInput,
   kMalformedSecondPRFInput,
   kPRFInputTooLarge,
+  kMaxValue = kPRFInputTooLarge,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PasskeysParsingError)
 
 // Builds a IOSPasskeyClient::RequestInfo object from the parameters contained
 // in the provided dictionary.

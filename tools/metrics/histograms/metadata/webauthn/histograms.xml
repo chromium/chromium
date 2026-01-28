@@ -530,6 +530,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.IOS.PasskeyParsingError"
+    enum="PasskeysParsingError" expires_after="2026-07-14">
+  <owner>sinhasourav@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the specific error type encountered when the JavaScript shim fails
+    to parse a WebAuthn request.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable2"
     enum="Boolean" expires_after="2026-06-28">
   <owner>kenrb@chromium.org</owner>
