@@ -78,16 +78,26 @@ void WebSocketPerProcessThrottler::Roll() {
 WebSocketThrottler::WebSocketThrottler() {}
 WebSocketThrottler::~WebSocketThrottler() {}
 
-bool WebSocketThrottler::HasTooManyPendingConnections(int process_id) const {
-  auto it = per_process_throttlers_.find(process_id);
+bool WebSocketThrottler::HasTooManyPendingConnections(
+    const network::OriginatingProcess& process_id) const {
+  if (process_id.is_browser()) {
+    return false;
+  }
+
+  auto it = per_process_throttlers_.find(process_id.renderer_process());
   if (it == per_process_throttlers_.end())
     return false;
 
   return it->second->HasTooManyPendingConnections();
 }
 
-base::TimeDelta WebSocketThrottler::CalculateDelay(int process_id) const {
-  auto it = per_process_throttlers_.find(process_id);
+base::TimeDelta WebSocketThrottler::CalculateDelay(
+    const network::OriginatingProcess& process_id) const {
+  if (process_id.is_browser()) {
+    return base::TimeDelta();
+  }
+
+  auto it = per_process_throttlers_.find(process_id.renderer_process());
   if (it == per_process_throttlers_.end())
     return base::TimeDelta();
 
@@ -95,17 +105,19 @@ base::TimeDelta WebSocketThrottler::CalculateDelay(int process_id) const {
 }
 
 std::optional<WebSocketThrottler::PendingConnection>
-WebSocketThrottler::IssuePendingConnectionTracker(int process_id) {
-  if (process_id == mojom::kBrowserProcessId) {
+WebSocketThrottler::IssuePendingConnectionTracker(
+    const network::OriginatingProcess& process_id) {
+  if (process_id.is_browser()) {
     // The browser process is not throttled.
     return std::nullopt;
   }
 
-  auto it = per_process_throttlers_.find(process_id);
+  auto it = per_process_throttlers_.find(process_id.renderer_process());
   if (it == per_process_throttlers_.end()) {
     it = per_process_throttlers_
              .insert(std::make_pair(
-                 process_id, std::make_unique<WebSocketPerProcessThrottler>()))
+                 process_id.renderer_process(),
+                 std::make_unique<WebSocketPerProcessThrottler>()))
              .first;
   }
 

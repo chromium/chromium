@@ -41,6 +41,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/base/isolation_info.h"
@@ -527,7 +528,7 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
           static_cast<StoragePartitionImpl*>(
               GetProcessHost()->GetStoragePartition())
               ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-                  GetProcessHost()->GetDeprecatedID(), origin),
+                  ToOriginatingProcess(GetProcessHost()->GetID()), origin),
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_),
           /*debug_tag=*/
@@ -648,7 +649,8 @@ void SharedWorkerHost::CreateWebSocketConnector(
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
-          GetProcessHost()->GetDeprecatedID(), IPC::mojom::kRoutingIdNone,
+          GlobalRenderFrameHostId(GetProcessHost()->GetID(),
+                                  IPC::mojom::kRoutingIdNone),
           storage_key.origin(), storage_key.ToPartialNetIsolationInfo(),
           worker_client_security_state_->Clone()),
       std::move(receiver));

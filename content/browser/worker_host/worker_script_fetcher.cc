@@ -433,8 +433,9 @@ void WorkerScriptFetcher::CreateScriptLoader(
       url_loader_network_observer =
           factory_process->GetStoragePartition()
               ->CreateURLLoaderNetworkObserverForFrame(
-                  creator_render_frame_host->GetProcess()->GetDeprecatedID(),
-                  creator_render_frame_host->GetRoutingID());
+                  content::GlobalRenderFrameHostId(
+                      creator_render_frame_host->GetProcess()->GetID(),
+                      creator_render_frame_host->GetRoutingID()));
       devtools_observer = NetworkServiceDevToolsObserver::MakeSelfOwned(
           creator_render_frame_host->GetDevToolsFrameToken().ToString());
     }

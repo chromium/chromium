@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "services/network/public/cpp/renderer_process.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace network {
 

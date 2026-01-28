@@ -6,6 +6,8 @@
 
 #include <tuple>
 
+#include "content/public/common/child_process_id_util.h"
+
 namespace page_load_metrics {
 
 ResourceTracker::ResourceTracker() = default;
@@ -33,7 +35,8 @@ void ResourceTracker::ProcessResourceUpdate(
   if (resource->cache_type == page_load_metrics::mojom::CacheType::kMemory)
     return;
 
-  content::GlobalRequestID global_id(process_id, resource->request_id);
+  content::GlobalRequestID global_id(
+      content::ToOriginatingProcessUnsafe(process_id), resource->request_id);
   auto it = unfinished_resources_.find(global_id);
 
   // This is the first update received for a resource.

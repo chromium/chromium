@@ -798,11 +798,11 @@ bool WebRequestAPI::MaybeProxyAuthRequest(
   }
 
   content::GlobalRequestID proxied_request_id = request_id;
-  // In MaybeProxyURLLoaderFactory, we use -1 as render_process_id for
+  // In MaybeProxyURLLoaderFactory, we use an invalid render_process_id for
   // navigation requests. Applying the same logic here so that we can correctly
   // identify the request.
   if (is_request_for_navigation) {
-    proxied_request_id.child_id = -1;
+    proxied_request_id.child_id = network::OriginatingProcess();
   }
 
   // NOTE: This request may be proxied on behalf of an incognito frame, but

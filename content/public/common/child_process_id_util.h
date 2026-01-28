@@ -14,7 +14,23 @@ namespace content {
 // Converts a `content::ChildProcessId` to a `network::OriginatingProcess` for
 // passing to network services.
 network::OriginatingProcess CONTENT_EXPORT
-ToOriginatingProcess(const ChildProcessId& process);
+ToOriginatingProcess(ChildProcessId process);
+
+// Converts a `content::ChildProcessId` to a `network::RendererProcess` for
+// passing to network services.  This requires that the process is valid.
+network::RendererProcess CONTENT_EXPORT
+ToRendererProcess(ChildProcessId process);
+
+// Converts a `network::RendererProcess` to a `content::ChildProcessId` for
+// reading from network services.
+ChildProcessId CONTENT_EXPORT
+ToChildProcessId(network::RendererProcess process);
+
+// Converts a deprecated int32_t process_id to a `network::OriginatingProcess`
+// while all of the usages are ported.
+// TODO(crbug.com/379869738) Remove unsafe usages.
+network::OriginatingProcess CONTENT_EXPORT
+ToOriginatingProcessUnsafe(int32_t process_id);
 
 }  // namespace content
 

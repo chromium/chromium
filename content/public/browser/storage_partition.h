@@ -77,6 +77,7 @@ class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
 class FileSystemAccessEntryFactory;
 class GeneratedCodeCacheContext;
+struct GlobalRenderFrameHostId;
 class HostZoomLevelContext;
 class HostZoomMap;
 class InterestGroupManager;
@@ -140,8 +141,8 @@ class CONTENT_EXPORT StoragePartition {
       const url::Origin& top_frame_origin) = 0;
 
   virtual mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-  CreateURLLoaderNetworkObserverForFrame(int process_id,
-                                         int frame_routing_id) = 0;
+  CreateURLLoaderNetworkObserverForFrame(
+      const content::GlobalRenderFrameHostId& frame_id) = 0;
 
   virtual mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
   CreateURLLoaderNetworkObserverForNavigationRequest(

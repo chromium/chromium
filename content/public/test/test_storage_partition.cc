@@ -60,8 +60,8 @@ void TestStoragePartition::CreateTrustTokenQueryAnswerer(
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-TestStoragePartition::CreateURLLoaderNetworkObserverForFrame(int process_id,
-                                                             int routing_id) {
+TestStoragePartition::CreateURLLoaderNetworkObserverForFrame(
+    const content::GlobalRenderFrameHostId& frame_id) {
   return mojo::NullRemote();
 }
 

@@ -310,8 +310,10 @@ TEST_F(WebSocketThrottlerTest, InitialState) {
 }
 
 TEST_F(WebSocketThrottlerTest, TooManyPendingConnections) {
-  constexpr int process1 = 1;
-  constexpr int process2 = 2;
+  const auto process1 =
+      network::OriginatingProcess::renderer(network::RendererProcess(1));
+  const auto process2 =
+      network::OriginatingProcess::renderer(network::RendererProcess(2));
   constexpr int limit = 255;
   WebSocketThrottler throttler;
 
@@ -342,10 +344,12 @@ TEST_F(WebSocketThrottlerTest, TooManyPendingConnections) {
 
 TEST_F(WebSocketThrottlerTest, BrowserProcessNotThrottled) {
   WebSocketThrottler throttler;
+  ASSERT_FALSE(throttler.HasTooManyPendingConnections(
+      network::OriginatingProcess::browser()));
   ASSERT_FALSE(
-      throttler.HasTooManyPendingConnections(mojom::kBrowserProcessId));
-  ASSERT_FALSE(throttler.IssuePendingConnectionTracker(mojom::kBrowserProcessId)
-                   .has_value());
+      throttler
+          .IssuePendingConnectionTracker(network::OriginatingProcess::browser())
+          .has_value());
 }
 
 }  // namespace

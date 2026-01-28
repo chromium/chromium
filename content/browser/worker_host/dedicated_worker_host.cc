@@ -749,8 +749,9 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
   // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
-          ancestor_render_frame_host_id_.child_id.GetUnsafeValue(),
-          ancestor_render_frame_host_id_.frame_routing_id,
+          GlobalRenderFrameHostId(
+              ancestor_render_frame_host_id_.child_id,
+              ancestor_render_frame_host_id_.frame_routing_id),
           GetStorageKey().origin(),
           ancestor_render_frame_host->GetIsolationInfoForSubresources(),
           worker_client_security_state_->Clone()),

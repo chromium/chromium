@@ -47,6 +47,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -172,13 +173,14 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
         url, requested_protocols, site_for_cookies,
         net::StorageAccessApiStatus::kNone, isolation_info,
-        std::move(additional_headers), process->GetDeprecatedID(), origin,
-        network::mojom::ClientSecurityState::New(),
+        std::move(additional_headers), ToOriginatingProcess(process->GetID()),
+        origin, network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(handshake_client),
         process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
-            process->GetDeprecatedID(), frame->GetRoutingID()),
+            content::GlobalRenderFrameHostId(process->GetID(),
+                                             frame->GetRoutingID())),
         /*auth_handler=*/mojo::NullRemote(), std::move(header_client),
         /*throttling_profile_id=*/std::nullopt);
   }

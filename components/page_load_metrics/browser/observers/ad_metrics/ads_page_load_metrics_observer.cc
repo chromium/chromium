@@ -47,6 +47,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -826,7 +827,8 @@ base::ByteCount AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
   if (!resource->reported_as_ad_resource) {
     return base::ByteCount(0);
   }
-  content::GlobalRequestID global_request_id(process_id, resource->request_id);
+  content::GlobalRequestID global_request_id(
+      content::ToOriginatingProcessUnsafe(process_id), resource->request_id);
 
   // Resource just started loading.
   if (!GetDelegate().GetResourceTracker().HasPreviousUpdateForResource(

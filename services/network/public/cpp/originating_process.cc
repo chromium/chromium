@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/originating_process.h"
 
 #include "base/check.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace {
 // This is the magic legacy value for the browser process, we keep using it

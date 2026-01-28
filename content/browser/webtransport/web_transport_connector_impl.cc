@@ -13,6 +13,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
 #include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -252,10 +253,13 @@ void WebTransportConnectorImpl::OnThrottleDone(
   } else {
     content::StoragePartition* storage_partition =
         process->GetStoragePartition();
+    // TODO(crbug.com/379869738): Remove FromUnsafeValue.
     url_loader_network_observer =
         static_cast<StoragePartitionImpl*>(storage_partition)
             ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-                process_id_, origin_);
+                ToOriginatingProcess(
+                    ChildProcessId::FromUnsafeValue(process_id_)),
+                origin_);
   }
 
   GetContentClient()->browser()->WillCreateWebTransport(

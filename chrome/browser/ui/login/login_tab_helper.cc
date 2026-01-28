@@ -166,19 +166,13 @@ LoginTabHelper::WillProcessMainFrameUnauthorizedResponse(
   // cancelling auth. If so, remember the navigation handle ID so as to be able
   // to suppress a prompt for this navigation when it finishes in
   // DidFinishNavigation().
-  if (navigation_handle->GetGlobalRequestID().request_id ==
-      request_id_for_extension_cancelled_navigation_.request_id) {
-    // Navigation requests are always initiated in the browser process. Due to a
-    // bug (https://crbug.com/1078216), different |child_id|s are used in
-    // different places to represent the browser process. Therefore, we don't
-    // compare the two GlobalRequestIDs directly here but rather check that they
-    // each have the expected |child_id| value signifying the browser process
-    // initiated the request.
-    CHECK_EQ(request_id_for_extension_cancelled_navigation_.child_id, 0);
-    CHECK_EQ(navigation_handle->GetGlobalRequestID().child_id, -1);
+  if (navigation_handle->GetGlobalRequestID() ==
+      request_id_for_extension_cancelled_navigation_) {
+    // Navigation requests are always initiated in the browser process.
+    CHECK(request_id_for_extension_cancelled_navigation_.child_id.is_browser());
     navigation_handle_id_for_extension_cancelled_navigation_ =
         navigation_handle->GetNavigationId();
-    request_id_for_extension_cancelled_navigation_ = {0, -1};
+    request_id_for_extension_cancelled_navigation_.request_id = -1;
     return content::NavigationThrottle::PROCEED;
   }
 

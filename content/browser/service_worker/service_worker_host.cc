@@ -102,8 +102,9 @@ void ServiceWorkerHost::CreateWebSocketConnector(
   const blink::StorageKey& storage_key = version_->key();
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
-          worker_process_id_, IPC::mojom::kRoutingIdNone, storage_key.origin(),
-          storage_key.ToPartialNetIsolationInfo(),
+          content::GlobalRenderFrameHostId(worker_process_id_,
+                                           IPC::mojom::kRoutingIdNone),
+          storage_key.origin(), storage_key.ToPartialNetIsolationInfo(),
           version_->BuildClientSecurityState()->Clone()),
       std::move(receiver));
 }

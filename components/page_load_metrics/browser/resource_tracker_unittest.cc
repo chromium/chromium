@@ -66,10 +66,12 @@ class ResourceTrackerTest : public testing::Test {
     resource_data_update->delta_bytes = delta_bytes;
     resource_data_update->is_complete = is_complete;
     resources.push_back(std::move(resource_data_update));
-    resource_tracker_.UpdateResourceDataUse(process_id_, resources);
+    resource_tracker_.UpdateResourceDataUse(process_id_.GetUnsafeValue(),
+                                            resources);
   }
 
-  const int process_id_ = 0;
+  const network::OriginatingProcess process_id_ =
+      network::OriginatingProcess::browser();
 
   page_load_metrics::ResourceTracker resource_tracker_;
 };

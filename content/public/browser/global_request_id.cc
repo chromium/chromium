@@ -14,7 +14,8 @@ namespace content {
 
 void GlobalRequestID::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("child_id", child_id);
+  dict.Add("child_id",
+           child_id.is_browser() ? 0 : child_id.renderer_process().value());
   dict.Add("request_id", request_id);
 }
 
@@ -28,7 +29,7 @@ NOINLINE GlobalRequestID GlobalRequestID::MakeBrowserInitiated() {
   // around to the max (0x7fffffff). There are no undefined results.
   const int32_t request_id = s_next_request_id--;
   CHECK_LT(request_id, 0);
-  return GlobalRequestID(-1, request_id);
+  return GlobalRequestID(network::OriginatingProcess::browser(), request_id);
 }
 
 }  // namespace content

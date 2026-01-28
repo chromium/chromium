@@ -35,6 +35,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
@@ -1578,7 +1579,9 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
     // Requests with a request ID of 0 therefore do not support
     // dispatching |WebRequest.onAuthRequired| events.
     proxies_->AssociateProxyWithRequestId(
-        this, content::GlobalRequestID(render_process_id_, request_id));
+        this, content::GlobalRequestID(
+                  content::ToOriginatingProcessUnsafe(render_process_id_),
+                  request_id));
     network_request_id_to_web_request_id_.emplace(request_id, web_request_id);
   }
 
@@ -1681,8 +1684,9 @@ void WebRequestProxyingURLLoaderFactory::RemoveRequest(
   requests_.erase(request_id);
   if (network_service_request_id) {
     proxies_->DisassociateProxyWithRequestId(
-        this, content::GlobalRequestID(render_process_id_,
-                                       network_service_request_id));
+        this, content::GlobalRequestID(
+                  content::ToOriginatingProcessUnsafe(render_process_id_),
+                  network_service_request_id));
   }
 
   MaybeRemoveProxy();

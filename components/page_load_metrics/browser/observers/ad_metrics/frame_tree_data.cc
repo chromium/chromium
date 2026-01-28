@@ -17,6 +17,7 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -265,7 +266,8 @@ void FrameTreeData::ProcessResourceLoadInFrame(
     const mojom::ResourceDataUpdatePtr& resource,
     int process_id,
     const ResourceTracker& resource_tracker) {
-  content::GlobalRequestID global_id(process_id, resource->request_id);
+  content::GlobalRequestID global_id(
+      content::ToOriginatingProcessUnsafe(process_id), resource->request_id);
   if (!resource_tracker.HasPreviousUpdateForResource(global_id))
     num_resources_++;
   resource_data_.ProcessResourceLoad(resource);
