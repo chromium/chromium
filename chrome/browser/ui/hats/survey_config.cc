@@ -89,6 +89,9 @@ constexpr char kHatsSurveyTriggerDownloadWarningPageHeed[] =
 constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
     "download-warning-page-ignore";
 constexpr char kHatsSurveyTriggerHistoryEmbeddings[] = "history-embeddings";
+constexpr char kHatsSurveyTriggerHistoryPageExperiment[] =
+    "history-page-experiment";
+constexpr char kHatsSurveyTriggerHistoryPageControl[] = "history-page-control";
 constexpr char kHatsSurveyTriggerIdentityAddressBubbleSignin[] =
     "identity-address-bubble-signin";
 constexpr char kHatsSurveyTriggerIdentityDiceWebSigninAccepted[] =
@@ -326,6 +329,14 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
       kHatsSurveyTriggerPrivacyGuide);
+
+  // History page surveys.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopHistoryPageExperiment,
+      kHatsSurveyTriggerHistoryPageExperiment);
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopHistoryPageControl,
+      kHatsSurveyTriggerHistoryPageControl);
 
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopSEHijacking,

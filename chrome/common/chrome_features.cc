@@ -1059,6 +1059,15 @@ const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopPrivacyGuideTime{
         &kHappinessTrackingSurveysForDesktopPrivacyGuide, "settings-time",
         base::Seconds(20)};
+// Enables or disables the Happiness Tracking System for Desktop History Page in
+// the Experiment group.
+BASE_FEATURE(kHappinessTrackingSurveysForDesktopHistoryPageExperiment,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for Desktop History Page in
+// the Control group.
+BASE_FEATURE(kHappinessTrackingSurveysForDesktopHistoryPageControl,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the Happiness Tracking System for Desktop Chrome
 // Settings.
