@@ -2380,8 +2380,6 @@ bool RequestService::OnResolve(GURL idp_config_url,
                   TokenStatus::kSuccessUsingIdentityProviderResolve,
                   /*token_error=*/std::nullopt, idp_config_url, token.Clone(),
                   /*should_delay_callback=*/false);
-  // TODO(crbug.com/40262526): handle the corner cases where CompleteRequest
-  // can't actually fulfill the request.
   return true;
 }
 
