@@ -6,6 +6,7 @@
       "linux",
       "mac",
       "chromeos",
+      "android",
       "fuchsia"
     ],
     "policy_pref_mapping_tests": [

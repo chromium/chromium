@@ -463,6 +463,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kStaticStorageQuotaEnabled,
     prefs::kStaticStorageQuotaEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kNewTabPageLocation,
+    prefs::kNewTabPageLocationOverride,
+    base::Value::Type::STRING },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,
@@ -711,9 +714,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kMediaRouterCastAllowAllIPs,
     media_router::prefs::kMediaRouterCastAllowAllIPs,
     base::Value::Type::BOOLEAN },
-  { key::kNewTabPageLocation,
-    prefs::kNewTabPageLocationOverride,
-    base::Value::Type::STRING },
   { key::kNTPCardsVisible,
     prefs::kNtpModulesVisible,
     base::Value::Type::BOOLEAN },

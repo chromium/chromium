@@ -804,8 +804,12 @@ GURL ReplaceURLHostAndPath(const GURL& url,
 bool HandleNewTabPageLocationOverride(
     GURL* url,
     content::BrowserContext* browser_context) {
-  if (!url->SchemeIs(content::kChromeUIScheme) ||
-      url->GetHost() != chrome::kChromeUINewTabHost) {
+  if (!(url->SchemeIs(content::kChromeUIScheme) ||
+        url->SchemeIs(content::kChromeNativeScheme))) {
+    return false;
+  }
+
+  if (url->GetHost() != chrome::kChromeUINewTabHost) {
     return false;
   }
 
