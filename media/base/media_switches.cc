@@ -398,7 +398,7 @@ BASE_FEATURE(kResumeBackgroundVideo,
 #if BUILDFLAG(IS_WIN)
 // Enables application audio capture for getDisplayMedia (gDM) window capture in
 // Windows.
-BASE_FEATURE(kApplicationAudioCaptureWin, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kApplicationAudioCaptureWin, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC)
