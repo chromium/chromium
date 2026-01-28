@@ -55,6 +55,10 @@ struct MatchFamilyNameResult {
 
   // Variable font properties.
   VariationPosition? variation_position;
+
+  // Flags to indicate that bold/oblique are being internally simulated.
+  bool synthetic_bold;
+  bool synthetic_oblique;
 };
 
 // Loads and resolves fonts from the renderer to the browser (embedder). Takes

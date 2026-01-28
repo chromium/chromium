@@ -480,6 +480,9 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(
     return nullptr;
   }
 
+  result->synthetic_bold = typeface->isSyntheticBold();
+  result->synthetic_oblique = typeface->isSyntheticOblique();
+
   const int axis_count = typeface->getVariationDesignPosition({});
   if (axis_count > 0) {
     auto coordinate_list =

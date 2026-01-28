@@ -330,6 +330,8 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
     base::HeapArray<SkFontArguments::VariationPosition::Coordinate>
         typeface_axis;
     SkFontArguments args;
+    args.setSyntheticBold(match_result->synthetic_bold);
+    args.setSyntheticOblique(match_result->synthetic_oblique);
     args.setCollectionIndex(match_result->ttc_index);
     if (match_result->variation_position &&
         match_result->variation_position->coordinateCount > 0) {
