@@ -132,6 +132,7 @@ source_set("bwg_service") {
   deps = [
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/search_engines",
     "//components/signin/public/identity_manager",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/intelligence/bwg/metrics",

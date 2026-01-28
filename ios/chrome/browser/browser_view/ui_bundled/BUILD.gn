@@ -43,6 +43,7 @@ source_set("ui_bundled") {
     "//components/profile_metrics",
     "//components/reading_list/core",
     "//components/safe_browsing/core/common",
+    "//components/search_engines",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/send_tab_to_self",

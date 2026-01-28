@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/util.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -106,6 +107,13 @@ bool BwgService::IsProfileEligibleForBwg() {
 bool BwgService::IsBwgAvailableForWebState(web::WebState* web_state) {
   if (!web_state || !IsProfileEligibleForBwg()) {
     return false;
+  }
+
+  if (IsGeminiCopresenceEnabled()) {
+    const GURL& url = web_state->GetVisibleURL();
+    if (IsAimURL(url)) {
+      return false;
+    }
   }
 
   return CanExtractPageContextForWebState(web_state);
