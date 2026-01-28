@@ -537,18 +537,14 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   // Starts the actual signing operation and afterwards passes the signature (or
   // error) to |callback_|.
   void Sign() {
-    // TODO(crbug.com/40489779): This can be simplified when mojo supports
-    // optional enums.
-    bool is_keystore_provided = false;
-    KeystoreType keystore = KeystoreType::kUser;
+    std::optional<KeystoreType> keystore;
     if (token_id_.has_value()) {
-      is_keystore_provided = true;
       keystore = KeystoreTypeFromTokenId(token_id_.value());
     }
 
     service_->keystore_service_->Sign(
-        is_keystore_provided, keystore, public_key_spki_der_, signing_scheme_,
-        data_, base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
+        keystore, public_key_spki_der_, signing_scheme_, data_,
+        base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
   }
 
   void DidSign(KeystoreBinaryResultPtr result) {

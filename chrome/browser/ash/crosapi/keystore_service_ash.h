@@ -113,8 +113,7 @@ class KeystoreServiceAsh : public KeyedService {
   void RemoveKey(KeystoreType keystore,
                  const std::vector<uint8_t>& public_key,
                  RemoveKeyCallback callback);
-  void Sign(bool is_keystore_provided,
-            KeystoreType keystore,
+  void Sign(std::optional<KeystoreType> keystore,
             const std::vector<uint8_t>& public_key,
             SigningScheme scheme,
             const std::vector<uint8_t>& data,

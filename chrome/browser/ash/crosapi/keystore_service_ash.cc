@@ -649,8 +649,7 @@ void KeystoreServiceAsh::DidRemoveKey(RemoveKeyCallback callback,
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::Sign(bool is_keystore_provided,
-                              KeystoreType keystore,
+void KeystoreServiceAsh::Sign(std::optional<KeystoreType> keystore,
                               const std::vector<uint8_t>& public_key,
                               SigningScheme scheme,
                               const std::vector<uint8_t>& data,
@@ -658,8 +657,8 @@ void KeystoreServiceAsh::Sign(bool is_keystore_provided,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::optional<TokenId> token_id;
-  if (is_keystore_provided) {
-    token_id = KeystoreToToken(keystore);
+  if (keystore.has_value()) {
+    token_id = KeystoreToToken(keystore.value());
     if (!token_id) {
       std::move(callback).Run(mojom::KeystoreBinaryResult::NewError(
           mojom::KeystoreError::kUnsupportedKeystoreType));

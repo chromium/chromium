@@ -337,10 +337,9 @@ TEST_F(KeystoreServiceAshTest, SignRsaSuccess) {
       .WillOnce(RunOnceCallback<4>(GetDataBin(), Status::kSuccess));
 
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
-  keystore_service_.Sign(
-      /*is_keystore_provided=*/true, mojom::KeystoreType::kUser,
-      GetPublicKeyBin(), KeystoreSigningScheme::kRsassaPkcs1V15Sha256,
-      GetDataBin(), observer.GetCallback());
+  keystore_service_.Sign(mojom::KeystoreType::kUser, GetPublicKeyBin(),
+                         KeystoreSigningScheme::kRsassaPkcs1V15Sha256,
+                         GetDataBin(), observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   AssertBlobEq(observer.result.value(), GetDataBin());
@@ -356,10 +355,9 @@ TEST_F(KeystoreServiceAshTest, SignEcSuccess) {
       .WillOnce(RunOnceCallback<4>(GetDataBin(), Status::kSuccess));
 
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
-  keystore_service_.Sign(
-      /*is_keystore_provided=*/true, mojom::KeystoreType::kDevice,
-      GetPublicKeyBin(), KeystoreSigningScheme::kEcdsaSha512, GetDataBin(),
-      observer.GetCallback());
+  keystore_service_.Sign(mojom::KeystoreType::kDevice, GetPublicKeyBin(),
+                         KeystoreSigningScheme::kEcdsaSha512, GetDataBin(),
+                         observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   AssertBlobEq(observer.result.value(), GetDataBin());
@@ -376,9 +374,8 @@ TEST_F(KeystoreServiceAshTest, UsingRsassaPkcs1V15NoneSignSuccess) {
       KeystoreSigningScheme::kRsassaPkcs1V15None;
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
 
-  keystore_service_.Sign(
-      /*is_keystore_provided=*/true, mojom::KeystoreType::kDevice,
-      GetPublicKeyBin(), sign_scheme, GetDataBin(), observer.GetCallback());
+  keystore_service_.Sign(mojom::KeystoreType::kDevice, GetPublicKeyBin(),
+                         sign_scheme, GetDataBin(), observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value());
   AssertBlobEq(observer.result.value(), GetDataBin());
@@ -390,10 +387,9 @@ TEST_F(KeystoreServiceAshTest, KeyNotAllowedSignFail) {
                                    Status::kErrorKeyNotAllowedForOperation));
 
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
-  keystore_service_.Sign(
-      /*is_keystore_provided=*/true, mojom::KeystoreType::kDevice,
-      GetPublicKeyBin(), KeystoreSigningScheme::kEcdsaSha512, GetDataBin(),
-      observer.GetCallback());
+  keystore_service_.Sign(mojom::KeystoreType::kDevice, GetPublicKeyBin(),
+                         KeystoreSigningScheme::kEcdsaSha512, GetDataBin(),
+                         observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   AssertErrorEq(observer.result.value(),
@@ -404,10 +400,9 @@ TEST_F(KeystoreServiceAshTest, UnknownSignSchemeSignFail) {
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   KeystoreSigningScheme unknown_sign_scheme = KeystoreSigningScheme::kUnknown;
 
-  keystore_service_.Sign(
-      /*is_keystore_provided=*/true, mojom::KeystoreType::kDevice,
-      GetPublicKeyBin(), unknown_sign_scheme, GetDataBin(),
-      observer.GetCallback());
+  keystore_service_.Sign(mojom::KeystoreType::kDevice, GetPublicKeyBin(),
+                         unknown_sign_scheme, GetDataBin(),
+                         observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value());
   AssertErrorEq(observer.result.value(),
