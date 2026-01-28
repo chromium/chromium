@@ -203,10 +203,22 @@ class SyncServiceImplHarness {
   [[nodiscard]] bool EnableSelectableType(syncer::UserSelectableType type);
   [[nodiscard]] bool DisableSelectableType(syncer::UserSelectableType type);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Enables a particular selectable OS type. The user must already be signed
+  // in, or this has no effect.
+  [[nodiscard]] bool EnableSelectableOsType(syncer::UserSelectableOsType type);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Enables/disables all available selectable types. The user must already be
   // signed in, or this has no effect.
   [[nodiscard]] bool EnableAllSelectableTypes();
   [[nodiscard]] bool DisableAllSelectableTypes();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Disables all available selectable OS types. The user must already be signed
+  // in, or this has no effect.
+  [[nodiscard]] bool DisableAllSelectableOsTypes();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns a snapshot of the current sync session.
   syncer::SyncCycleSnapshot GetLastCycleSnapshot() const;

@@ -13,10 +13,13 @@ namespace web_app::integration_tests {
 
 class TwoClientWebAppsIntegrationTestBase
     : public ::web_app::WebAppsSyncTestBase,
-      public WebAppIntegrationTestDriver::TestDelegate {
+      public WebAppIntegrationTestDriver::TestDelegate,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientWebAppsIntegrationTestBase();
   ~TwoClientWebAppsIntegrationTestBase() override;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override;
 
   // WebAppIntegrationTestDriver::TestDelegate:
   Browser* CreateBrowser(Profile* profile) override;
@@ -44,6 +47,7 @@ class TwoClientWebAppsIntegrationTestBase
   base::AutoReset<bool> multi_user_window_manager_resetter_;
 #endif  // BUIDLFLAG(IS_CHROMEOS)
 
+  base::test::ScopedFeatureList feature_overrides_;
   WebAppIntegrationTestDriver helper_;
 };
 

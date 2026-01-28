@@ -21,6 +21,12 @@
 
 namespace web_app::integration_tests {
 
+using WebAppIntegration = TwoClientWebAppsIntegrationTestBase;
+INSTANTIATE_TEST_SUITE_P(,
+                         WebAppIntegration,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
 TwoClientWebAppsIntegrationTestBase::TwoClientWebAppsIntegrationTestBase()
     : WebAppsSyncTestBase(TWO_CLIENT),
 #if BUILDFLAG(IS_CHROMEOS)
@@ -33,10 +39,19 @@ TwoClientWebAppsIntegrationTestBase::TwoClientWebAppsIntegrationTestBase()
           ash::MultiUserWindowManager::DisableForTesting()),
 #endif  // BUILDFLAG(IS_CHROMEOS)
       helper_(this) {
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    feature_overrides_.InitAndEnableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
 }
 
 TwoClientWebAppsIntegrationTestBase::~TwoClientWebAppsIntegrationTestBase() =
     default;
+
+SyncTest::SetupSyncMode TwoClientWebAppsIntegrationTestBase::GetSetupSyncMode()
+    const {
+  return GetParam();
+}
 
 // WebAppIntegrationTestDriver::TestDelegate
 Browser* TwoClientWebAppsIntegrationTestBase::CreateBrowser(Profile* profile) {
@@ -154,22 +169,38 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
       continue;
     }
 
-    ASSERT_TRUE(GetClient(i)->SetupSyncWithCustomSettings(
-        base::BindLambdaForTesting([](syncer::SyncUserSettings* user_settings) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+      ASSERT_TRUE(
+          GetClient(i)->SetupSyncWithCustomSettings(base::BindLambdaForTesting(
+              [](syncer::SyncUserSettings* user_settings) {
 #if BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetSelectedTypes(/*sync_everything=*/false,
-                                          /*types=*/{});
-          user_settings->SetSelectedOsTypes(
-              /*sync_everything=*/false,
-              /*types=*/{syncer::UserSelectableOsType::kOsApps});
+                user_settings->SetSelectedTypes(/*sync_everything=*/false,
+                                                /*types=*/{});
+                user_settings->SetSelectedOsTypes(
+                    /*sync_everything=*/false,
+                    /*types=*/{syncer::UserSelectableOsType::kOsApps});
 #else   // BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetSelectedTypes(
-              /*sync_everything=*/false,
-              /*types=*/{syncer::UserSelectableType::kApps});
-          user_settings->SetInitialSyncFeatureSetupComplete(
-              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
+                user_settings->SetSelectedTypes(
+                    /*sync_everything=*/false,
+                    /*types=*/{syncer::UserSelectableType::kApps});
+                user_settings->SetInitialSyncFeatureSetupComplete(
+                    syncer::SyncFirstSetupCompleteSource::
+                        ADVANCED_FLOW_CONFIRM);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-        })));
+              })));
+    } else {
+      ASSERT_TRUE(GetClient(i)->SignInPrimaryAccount());
+      ASSERT_TRUE(GetClient(i)->AwaitSyncTransportActive());
+      ASSERT_TRUE(GetClient(i)->DisableAllSelectableTypes());
+#if BUILDFLAG(IS_CHROMEOS)
+      ASSERT_TRUE(GetClient(i)->DisableAllSelectableOsTypes());
+      ASSERT_TRUE(GetClient(i)->EnableSelectableOsType(
+          syncer::UserSelectableOsType::kOsApps));
+#else
+      ASSERT_TRUE(GetClient(i)->EnableSelectableType(
+          syncer::UserSelectableType::kApps));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    }
   }
 
   helper_.SetUpOnMainThread();
