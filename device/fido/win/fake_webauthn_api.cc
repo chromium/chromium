@@ -177,7 +177,7 @@ bool FakeWinWebAuthnApi::InjectDiscoverableCredential(
   return was_inserted;
 }
 
-bool FakeWinWebAuthnApi::IsAvailable() const {
+bool FakeWinWebAuthnApi::IsAvailable() {
   return is_available_;
 }
 

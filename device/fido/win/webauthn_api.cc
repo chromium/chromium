@@ -105,14 +105,129 @@ WEBAUTHN_HMAC_SECRET_SALT_VALUES* FillHMACSaltValues(
 
 class WinWebAuthnApiImpl : public WinWebAuthnApi {
  public:
-  WinWebAuthnApiImpl() {
+  WinWebAuthnApiImpl() = default;
+
+  ~WinWebAuthnApiImpl() override = default;
+
+  // WinWebAuthnApi:
+  bool IsAvailable() override {
+    if (!base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
+      return false;
+    }
+
+    EnsureBound();
+    return is_bound_ && (api_version_ >= WEBAUTHN_API_VERSION_1);
+  }
+
+  bool SupportsSilentDiscovery() const override {
+    return get_platform_credential_list_;
+  }
+
+  HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
+      BOOL* available) override {
+    EnsureBound();
+    DCHECK(is_bound_);
+    // TODO(https://crbug.com/478100526): Make this load on a background thread
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    return is_user_verifying_platform_authenticator_available_(available);
+  }
+
+  HRESULT AuthenticatorMakeCredential(
+      HWND h_wnd,
+      PCWEBAUTHN_RP_ENTITY_INFORMATION rp,
+      PCWEBAUTHN_USER_ENTITY_INFORMATION user,
+      PCWEBAUTHN_COSE_CREDENTIAL_PARAMETERS cose_credential_parameters,
+      PCWEBAUTHN_CLIENT_DATA client_data,
+      PCWEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options,
+      PWEBAUTHN_CREDENTIAL_ATTESTATION* credential_attestation_ptr) override {
+    EnsureBound();
+    DCHECK(is_bound_);
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    return authenticator_make_credential_(
+        h_wnd, rp, user, cose_credential_parameters, client_data, options,
+        credential_attestation_ptr);
+  }
+
+  HRESULT AuthenticatorGetAssertion(
+      HWND h_wnd,
+      LPCWSTR rp_id,
+      PCWEBAUTHN_CLIENT_DATA client_data,
+      PCWEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS options,
+      PWEBAUTHN_ASSERTION* assertion_ptr) override {
+    EnsureBound();
+    DCHECK(is_bound_);
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    return authenticator_get_assertion_(h_wnd, rp_id, client_data, options,
+                                        assertion_ptr);
+  }
+
+  HRESULT CancelCurrentOperation(GUID* cancellation_id) override {
+    EnsureBound();
+    DCHECK(is_bound_);
+    return cancel_current_operation_(cancellation_id);
+  }
+
+  HRESULT GetPlatformCredentialList(
+      PCWEBAUTHN_GET_CREDENTIALS_OPTIONS options,
+      PWEBAUTHN_CREDENTIAL_DETAILS_LIST* credentials) override {
+    EnsureBound();
+    DCHECK(is_bound_ && get_platform_credential_list_);
+    return get_platform_credential_list_(options, credentials);
+  }
+
+  HRESULT DeletePlatformCredential(
+      base::span<const uint8_t> credential_id) override {
+    EnsureBound();
+    DCHECK(is_bound_);
+    return delete_platform_credential_(credential_id.size(),
+                                       credential_id.data());
+  }
+
+  PCWSTR GetErrorName(HRESULT hr) override {
+    EnsureBound();
+    DCHECK(is_bound_);
+    return get_error_name_(hr);
+  }
+
+  void FreeCredentialAttestation(
+      PWEBAUTHN_CREDENTIAL_ATTESTATION attestation_ptr) override {
+    EnsureBound();
+    DCHECK(is_bound_);
+    return free_credential_attestation_(attestation_ptr);
+  }
+
+  void FreeAssertion(PWEBAUTHN_ASSERTION assertion_ptr) override {
+    EnsureBound();
+    DCHECK(is_bound_);
+    return free_assertion_(assertion_ptr);
+  }
+
+  void FreePlatformCredentialList(
+      PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials) override {
+    EnsureBound();
+    DCHECK(is_bound_ && free_platform_credential_list_);
+    free_platform_credential_list_(credentials);
+  }
+
+  int Version() override { return api_version_; }
+
+ private:
+  void EnsureBound() {
+    if (is_bound_) {
+      return;
+    }
+
     if (!base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
       FIDO_LOG(DEBUG) << "Windows WebAuthn API deactivated via feature flag";
       return;
     }
     {
-      // Mitigate the issues caused by loading DLLs on a background thread
-      // (http://crbug/973868).
+      // TODO(https://crbug.com/478100526): Make this load on a background
+      // thread
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
       webauthn_dll_ =
           LoadLibraryExA("webauthn.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
@@ -171,101 +286,6 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
     FIDO_LOG(DEBUG) << "webauthn.dll version " << api_version_;
   }
 
-  ~WinWebAuthnApiImpl() override = default;
-
-  // WinWebAuthnApi:
-  bool IsAvailable() const override {
-    return base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi) &&
-           is_bound_ && (api_version_ >= WEBAUTHN_API_VERSION_1);
-  }
-
-  bool SupportsSilentDiscovery() const override {
-    return get_platform_credential_list_;
-  }
-
-  HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
-      BOOL* available) override {
-    DCHECK(is_bound_);
-    // Mitigate the issues caused by loading DLLs on a background thread
-    // (http://crbug/973868).
-    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    return is_user_verifying_platform_authenticator_available_(available);
-  }
-
-  HRESULT AuthenticatorMakeCredential(
-      HWND h_wnd,
-      PCWEBAUTHN_RP_ENTITY_INFORMATION rp,
-      PCWEBAUTHN_USER_ENTITY_INFORMATION user,
-      PCWEBAUTHN_COSE_CREDENTIAL_PARAMETERS cose_credential_parameters,
-      PCWEBAUTHN_CLIENT_DATA client_data,
-      PCWEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options,
-      PWEBAUTHN_CREDENTIAL_ATTESTATION* credential_attestation_ptr) override {
-    DCHECK(is_bound_);
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    return authenticator_make_credential_(
-        h_wnd, rp, user, cose_credential_parameters, client_data, options,
-        credential_attestation_ptr);
-  }
-
-  HRESULT AuthenticatorGetAssertion(
-      HWND h_wnd,
-      LPCWSTR rp_id,
-      PCWEBAUTHN_CLIENT_DATA client_data,
-      PCWEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS options,
-      PWEBAUTHN_ASSERTION* assertion_ptr) override {
-    DCHECK(is_bound_);
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-    return authenticator_get_assertion_(h_wnd, rp_id, client_data, options,
-                                        assertion_ptr);
-  }
-
-  HRESULT CancelCurrentOperation(GUID* cancellation_id) override {
-    DCHECK(is_bound_);
-    return cancel_current_operation_(cancellation_id);
-  }
-
-  HRESULT GetPlatformCredentialList(
-      PCWEBAUTHN_GET_CREDENTIALS_OPTIONS options,
-      PWEBAUTHN_CREDENTIAL_DETAILS_LIST* credentials) override {
-    DCHECK(is_bound_ && get_platform_credential_list_);
-    return get_platform_credential_list_(options, credentials);
-  }
-
-  HRESULT DeletePlatformCredential(
-      base::span<const uint8_t> credential_id) override {
-    return delete_platform_credential_(credential_id.size(),
-                                       credential_id.data());
-  }
-
-  PCWSTR GetErrorName(HRESULT hr) override {
-    DCHECK(is_bound_);
-    return get_error_name_(hr);
-  }
-
-  void FreeCredentialAttestation(
-      PWEBAUTHN_CREDENTIAL_ATTESTATION attestation_ptr) override {
-    DCHECK(is_bound_);
-    return free_credential_attestation_(attestation_ptr);
-  }
-
-  void FreeAssertion(PWEBAUTHN_ASSERTION assertion_ptr) override {
-    DCHECK(is_bound_);
-    return free_assertion_(assertion_ptr);
-  }
-
-  void FreePlatformCredentialList(
-      PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials) override {
-    DCHECK(is_bound_ && free_platform_credential_list_);
-    free_platform_credential_list_(credentials);
-  }
-
-  int Version() override { return api_version_; }
-
- private:
   bool is_bound_ = false;
   uint32_t api_version_ = 0;
   HMODULE webauthn_dll_;

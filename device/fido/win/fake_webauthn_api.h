@@ -126,7 +126,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   }
 
   // WinWebAuthnApi:
-  bool IsAvailable() const override;
+  bool IsAvailable() override;
   bool SupportsSilentDiscovery() const override;
   HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
       BOOL* available) override;
