@@ -153,6 +153,42 @@ enum class ReaderModeDeactivationReason {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeDeactivationReason)
 
+// Translation states recorded when Reading Mode is deactivated.
+// Recorded for IOS.ReaderMode.TranslationState. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(ReaderModeTranslationPageEventState)
+enum class ReaderModeTranslationPageEventState {
+  // Original page was not translated and Reading Mode was not translated.
+  kSourceUntranslatedReaderModeUntranslated = 0,
+  // Original page was not translated and Reading Mode was translated.
+  kSourceUntranslatedReaderModeTranslated = 1,
+  // Original page was manually translated and Reading Mode was translated.
+  kSourceManuallyTranslatedReaderModeTranslated = 2,
+  // Original page was manually translated and Reading Mode was translated with
+  // a different language than on the original page.
+  kSourceManuallyTranslatedReaderModeTranslatedWithLanguageChange = 3,
+  // Original page was manually translated and Reading Mode was not translated.
+  kSourceManuallyTranslatedReaderModeUntranslated = 4,
+  // Original page was auto-translated and Reading Mode was translated.
+  kSourceAutoTranslatedReaderModeTranslated = 5,
+  // Original page was auto-translated and Reading Mode was translated with a
+  // different language than on the original page.
+  kSourceAutoTranslatedReaderModeTranslatedWithLanguageChange = 6,
+  // Original page was auto-translated and Reading Mode was not translated.
+  kSourceAutoTranslatedReaderModeUntranslated = 7,
+  kMaxValue = kSourceAutoTranslatedReaderModeUntranslated,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeTranslationPageEventState)
+
+// The state of translation for a specific IOSChromeTranslateClient and it's
+// associated web state.
+struct ReaderModeTranslationState {
+  std::string source_code;
+  std::string target_code;
+  bool is_page_translated = false;
+  bool is_automated_translation = false;
+};
+
 // Default delay in seconds for triggering Reader Mode distiller heuristic.
 // This allows the page to react to the DOM loading and ensures minimal
 // interference with the JavaScript execution.
@@ -168,6 +204,9 @@ extern const char kReaderModeStateHistogram[];
 
 // Histogram name for Reader Mode deactivation reason.
 extern const char kReaderModeDeactivationReasonHistogram[];
+
+// Histogram name for Reader Mode translation state on deactivation.
+extern const char kReaderModeTranslationStateHistogram[];
 
 // Histogram name for Reader Mode heuristic result.
 extern const char kReaderModeHeuristicResultHistogram[];

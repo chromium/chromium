@@ -193,13 +193,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   std::unique_ptr<ReaderModeDistillerViewer> distiller_viewer_;
 
-  // The state of translation prior to distilling the source page.
-  struct TranslationState {
-    std::string source_code;
-    std::string target_code;
-    bool is_original_source_translated = false;
-  };
-  TranslationState source_translation_state_;
+  ReaderModeTranslationState source_translation_state_;
 
   // Records metrics for the Reader mode with `web_state_`.
   ReaderModeMetricsHelper metrics_helper_;

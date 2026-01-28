@@ -392,6 +392,100 @@ TEST_F(ReaderModeMetricsHelperTest, DataLoadTimeNotRecordedWithoutTrigger) {
   histogram_tester_.ExpectTotalCount(kReaderModeDataLoadLatencyHistogram, 0);
 }
 
+// Test fixture for testing translation state metrics.
+struct TranslationStateTestCase {
+  ReaderModeTranslationState original_page_state;
+  ReaderModeTranslationState reader_mode_page_state;
+  ReaderModeTranslationPageEventState expected_event;
+};
+
+class ReaderModeMetricsHelperTranslationStateTest
+    : public ReaderModeMetricsHelperTest,
+      public ::testing::WithParamInterface<TranslationStateTestCase> {};
+
+TEST_P(ReaderModeMetricsHelperTranslationStateTest, RecordTranslationState) {
+  TranslationStateTestCase param = GetParam();
+  metrics_helper()->RecordTranslationState(param.original_page_state,
+                                           param.reader_mode_page_state);
+
+  histogram_tester_.ExpectUniqueSample(kReaderModeTranslationStateHistogram,
+                                       param.expected_event, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ReaderModeMetricsHelperTranslationStateTest,
+    ::testing::Values(
+        // Source not translated. Reader not translated.
+        TranslationStateTestCase{{/*source_code=*/"en", /*target_code=*/"en",
+                                  /*is_page_translated=*/false,
+                                  /*is_automated_translation=*/false},
+                                 {/*source_code=*/"en", /*target_code=*/"en",
+                                  /*is_page_translated=*/false},
+                                 ReaderModeTranslationPageEventState::
+                                     kSourceUntranslatedReaderModeUntranslated},
+        // Source not translated. Reader translated.
+        TranslationStateTestCase{{/*source_code=*/"en", /*target_code=*/"en",
+                                  /*is_page_translated=*/false,
+                                  /*is_automated_translation=*/false},
+                                 {/*source_code=*/"en", /*target_code=*/"es",
+                                  /*is_page_translated=*/true},
+                                 ReaderModeTranslationPageEventState::
+                                     kSourceUntranslatedReaderModeTranslated},
+        // Source manually translated. Reader translated to same language.
+        TranslationStateTestCase{
+            {/*source_code=*/"en", /*target_code=*/"es",
+             /*is_page_translated=*/true,
+             /*is_automated_translation=*/false},
+            {/*source_code=*/"en", /*target_code=*/"es",
+             /*is_page_translated=*/true},
+            ReaderModeTranslationPageEventState::
+                kSourceManuallyTranslatedReaderModeTranslated},
+        // Source manually translated. Reader translated to different language.
+        TranslationStateTestCase{
+            {/*source_code=*/"en", /*target_code=*/"es",
+             /*is_page_translated=*/true,
+             /*is_automated_translation=*/false},
+            {/*source_code=*/"en", /*target_code=*/"fr",
+             /*is_page_translated=*/true},
+            ReaderModeTranslationPageEventState::
+                kSourceManuallyTranslatedReaderModeTranslatedWithLanguageChange},
+        // Source manually translated. Reader not translated.
+        TranslationStateTestCase{
+            {/*source_code=*/"en", /*target_code=*/"es",
+             /*is_page_translated=*/true,
+             /*is_automated_translation=*/false},
+            {/*source_code=*/"en", /*target_code=*/"en",
+             /*is_page_translated=*/false},
+            ReaderModeTranslationPageEventState::
+                kSourceManuallyTranslatedReaderModeUntranslated},
+        // Source auto translated. Reader translated to same language.
+        TranslationStateTestCase{{/*source_code=*/"en", /*target_code=*/"es",
+                                  /*is_page_translated=*/true,
+                                  /*is_automated_translation=*/true},
+                                 {/*source_code=*/"en", /*target_code=*/"es",
+                                  /*is_page_translated=*/true},
+                                 ReaderModeTranslationPageEventState::
+                                     kSourceAutoTranslatedReaderModeTranslated},
+        // Source auto translated. Reader translated to different language.
+        TranslationStateTestCase{
+            {/*source_code=*/"en", /*target_code=*/"es",
+             /*is_page_translated=*/true,
+             /*is_automated_translation=*/true},
+            {/*source_code=*/"en", /*target_code=*/"fr",
+             /*is_page_translated=*/true},
+            ReaderModeTranslationPageEventState::
+                kSourceAutoTranslatedReaderModeTranslatedWithLanguageChange},
+        // Source auto translated. Reader not translated.
+        TranslationStateTestCase{
+            {/*source_code=*/"en", /*target_code=*/"es",
+             /*is_page_translated=*/true,
+             /*is_automated_translation=*/true},
+            {/*source_code=*/"en", /*target_code=*/"en",
+             /*is_page_translated=*/false},
+            ReaderModeTranslationPageEventState::
+                kSourceAutoTranslatedReaderModeUntranslated}));
+
 // Tests metrics functionality based on the heuristic result.
 class ReaderModeMetricsHelperWithEligibilityTest
     : public ReaderModeMetricsHelperTest,

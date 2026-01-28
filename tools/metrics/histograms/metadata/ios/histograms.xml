@@ -5684,6 +5684,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ReaderMode.TranslationState"
+    enum="ReaderModeTranslationPageEventState" expires_after="2027-01-28">
+  <owner>fernandex@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the translation state of the original web page and Reading Mode page to
+    capture translation events within Reading Mode at the time that it has been
+    deactivated.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.BulkAddURLsCount" units="count"
     expires_after="2026-06-01">
   <owner>nicolasmacbeth@google.com</owner>

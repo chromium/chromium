@@ -2138,6 +2138,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeTheme) -->
 
+<!-- LINT.IfChange(ReaderModeTranslationPageEventState) -->
+
+<enum name="ReaderModeTranslationPageEventState">
+  <int value="0" label="Source untranslated, Reading Mode untranslated"/>
+  <int value="1" label="Source untranslated, Reading Mode translated"/>
+  <int value="2" label="Source manually translated, Reading Mode translated"/>
+  <int value="3"
+      label="Source manually translated, Reading Mode translated new language"/>
+  <int value="4" label="Source manually translated, Reading Mode untranslated"/>
+  <int value="5" label="Source auto-translated, Reading Mode translated"/>
+  <int value="6"
+      label="Source auto-translated, Reading Mode translated new language"/>
+  <int value="7" label="Source auto-translated, Reading Mode untranslated"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeTranslationPageEventState) -->
+
 <!-- LINT.IfChange(SafariDataImportEntryPointAction) -->
 
 <enum name="SafariDataImportEntryPointAction">
