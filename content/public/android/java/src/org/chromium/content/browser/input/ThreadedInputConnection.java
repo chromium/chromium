@@ -221,6 +221,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     }
 
     private void updateSelection(@Nullable TextInputState textInputState) {
+        if (DEBUG_LOGS) Log.i(TAG, "updateSelection");
         if (textInputState == null) return;
         assertOnImeThread();
         if (mNumNestedBatchEdits != 0) return;
@@ -800,6 +801,11 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
 
     /**
      * @see InputConnection#commitCorrection(android.view.inputmethod.CorrectionInfo)
+     *     <p>Note: Android spec requires committing the replacement and calling updateSelection(),
+     *     we omit the synchronous call here to avoid high input latency. There is no requirement
+     *     for this update to be synchronous. So we reply on Blink’s asynchronous calls. This also
+     *     accommodates Gboard, which treats commitCorrection as a signal rather than following the
+     *     official spec to replace text.
      */
     @Override
     public boolean commitCorrection(CorrectionInfo correctionInfo) {

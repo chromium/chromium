@@ -277,4 +277,15 @@ public class ImeAdapterImplUnitTest {
 
         assertNull(adapter.getAutocorrectManagerForTesting());
     }
+
+    @Test
+    @EnableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
+    public void testAppendAutocorrectUnderlineSpan() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        adapter.appendAutocorrectUnderlineSpan(0, 8);
+
+        verify(mImeAdapterImplJni).appendAutocorrectUnderlineSpan(anyLong(), eq(0), eq(8));
+    }
 }

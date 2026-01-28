@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/ime_host.mojom.h"
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom.h"
@@ -654,6 +655,29 @@ void ImeAdapterAndroid::PerformSpellCheck(JNIEnv* env) {
   }
 
   rfh->GetAssociatedLocalFrame()->PerformSpellCheck();
+}
+
+void ImeAdapterAndroid::AppendAutocorrectUnderlineSpan(JNIEnv* env,
+                                                       int32_t start,
+                                                       int32_t end) {
+  if (!base::FeatureList::IsEnabled(features::kAndroidPkAutocorrectUnderline)) {
+    return;
+  }
+  blink::mojom::FrameWidgetInputHandler* input_handler =
+      GetFocusedFrameWidgetInputHandler();
+  if (!input_handler) {
+    return;
+  }
+  ui::ImeTextSpan ime_text_span =
+      ui::ImeTextSpan(ui::ImeTextSpan::Type::kAutocorrect,
+                      /*start_offset=*/0,
+                      /*end_offset=*/static_cast<unsigned>(end - start),
+                      ui::ImeTextSpan::Thickness::kThick,
+                      ui::ImeTextSpan::UnderlineStyle::kDot);
+  ime_text_span.underline_color =
+      SkColorSetA(gfx::kGoogleGrey700, SK_AlphaOPAQUE * 0.7);
+
+  input_handler->AddImeTextSpansToExistingText(start, end, {ime_text_span});
 }
 
 }  // namespace content

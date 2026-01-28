@@ -4,24 +4,63 @@
 
 package org.chromium.content.browser.input;
 
+import static org.mockito.Mockito.verify;
+
+import android.view.inputmethod.CorrectionInfo;
+
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link AutocorrectManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutocorrectManagerUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private AutocorrectManager mAutocorrectManager;
+    @Mock private ImeAdapterImpl mImeAdapterImpl;
 
     @Before
     public void setUp() {
-        mAutocorrectManager = new AutocorrectManager();
+        mAutocorrectManager = new AutocorrectManager(mImeAdapterImpl);
     }
 
     @Test
-    public void testHandlePendingCorrection() {
-        // TODO: crbug.com/474213520 - Verify handling autocorrection.
+    public void testMaybeAppendAutocorrectUnderlineSpanEnterCase() {
+        String text = "receive";
+        CorrectionInfo correctionInfo = new CorrectionInfo(0, "", text);
+        mAutocorrectManager.handlePendingCorrection(correctionInfo);
+
+        mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
+
+        verify(mImeAdapterImpl).appendAutocorrectUnderlineSpan(0, text.length());
+    }
+
+    @Test
+    public void testMaybeAppendAutocorrectUnderlineSpanPunctuationCase() {
+        String text = "good morning!";
+        CorrectionInfo correctionInfo = new CorrectionInfo(0, "", text);
+        mAutocorrectManager.handlePendingCorrection(correctionInfo);
+
+        mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
+
+        verify(mImeAdapterImpl).appendAutocorrectUnderlineSpan(0, text.length() - 1);
+    }
+
+    @Test
+    public void testMaybeAppendAutocorrectUnderlineSpanSpaceCase() {
+        String text = "receive ";
+        CorrectionInfo correctionInfo = new CorrectionInfo(0, "", text);
+        mAutocorrectManager.handlePendingCorrection(correctionInfo);
+
+        mAutocorrectManager.maybeAppendAutocorrectUnderlineSpan();
+
+        verify(mImeAdapterImpl).appendAutocorrectUnderlineSpan(0, text.length() - 1);
     }
 }
