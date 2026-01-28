@@ -48,6 +48,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
@@ -412,7 +413,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
   // WebView.
   // TODO(crbug.com/40244149): Expand this to other platforms and non-x-headers.
   if (allow_x_header_mismatch) {
-    std::set<std::string> headers_to_be_removed;
+    absl::flat_hash_set<std::string> headers_to_be_removed;
     for (net::HttpRequestHeaders::Iterator it(prerender_headers);
          it.GetNext();) {
       if (it.name().starts_with("X-") || it.name().starts_with("x-")) {
