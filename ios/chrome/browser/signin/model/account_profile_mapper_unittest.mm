@@ -316,12 +316,10 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
 class AccountProfileMapperTest : public PlatformTest {
  public:
   explicit AccountProfileMapperTest(
-      bool separate_profiles_enabled,
       bool separate_profiles_force_migration_enabled) {
-    features_.InitWithFeatureStates(
-        {{kSeparateProfilesForManagedAccounts, separate_profiles_enabled},
-         {kSeparateProfilesForManagedAccountsForceMigration,
-          separate_profiles_force_migration_enabled}});
+    features_.InitWithFeatureState(
+        kSeparateProfilesForManagedAccountsForceMigration,
+        separate_profiles_force_migration_enabled);
 
     profile_manager_ = std::make_unique<FakeProfileManagerIOS>(
         GetApplicationContext()->GetLocalState());
@@ -384,19 +382,8 @@ class AccountProfileMapperAccountsInSeparateProfilesTest
  public:
   AccountProfileMapperAccountsInSeparateProfilesTest()
       : AccountProfileMapperTest(
-            /*separate_profiles_enabled=*/true,
             /*separate_profiles_force_migration_enabled=*/false) {}
   ~AccountProfileMapperAccountsInSeparateProfilesTest() override = default;
-};
-
-class AccountProfileMapperAccountsInSingleProfileTest
-    : public AccountProfileMapperTest {
- public:
-  AccountProfileMapperAccountsInSingleProfileTest()
-      : AccountProfileMapperTest(
-            /*separate_profiles_enabled=*/false,
-            /*separate_profiles_force_migration_enabled=*/false) {}
-  ~AccountProfileMapperAccountsInSingleProfileTest() override = default;
 };
 
 class AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest
@@ -404,7 +391,6 @@ class AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest
  public:
   AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest()
       : AccountProfileMapperTest(
-            /*separate_profiles_enabled=*/true,
             /*separate_profiles_force_migration_enabled=*/true) {}
   ~AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest()
       override = default;
@@ -412,20 +398,6 @@ class AccountProfileMapperAccountsInSeparateProfilesWithForceMigrationTest
  private:
   base::test::ScopedFeatureList features_;
 };
-
-// Tests that AccountProfileMapper lists no identity when there are no
-// identities.
-TEST_F(AccountProfileMapperAccountsInSingleProfileTest, NoIdentity) {
-  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get(),
-      GetApplicationContext()->GetLocalState());
-  testing::StrictMock<MockObserver> mock_observer;
-  account_profile_mapper_->AddObserver(&mock_observer, kPersonalProfileName);
-
-  EXPECT_NSEQ(@[], GetIdentitiesForProfile(kPersonalProfileName));
-
-  account_profile_mapper_->RemoveObserver(&mock_observer, kPersonalProfileName);
-}
 
 TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
        OnlyAvailableOnIos17Plus) {
@@ -526,95 +498,6 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
                                           kPersonalProfileName);
   account_profile_mapper_->RemoveObserver(&mock_profile1_observer,
                                           kTestProfile1Name);
-}
-
-// Tests that `OnIdentityRefreshTokenUpdated()` is called when the refresh
-// token is updated. This test is when having only one profile.
-TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
-       RefreshTokenNotification) {
-  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get(),
-      GetApplicationContext()->GetLocalState());
-  testing::StrictMock<MockObserver> mock_personal_observer;
-  account_profile_mapper_->AddObserver(&mock_personal_observer,
-                                       kPersonalProfileName);
-
-  EXPECT_CALL(mock_personal_observer, OnIdentitiesInProfileChanged());
-  EXPECT_CALL(mock_personal_observer, OnIdentitiesOnDeviceChanged());
-  system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_personal_observer,
-              OnIdentityRefreshTokenUpdated(gmail_identity1));
-  system_identity_manager_->FireIdentityRefreshTokenUpdatedNotification(
-      gmail_identity1);
-
-  account_profile_mapper_->RemoveObserver(&mock_personal_observer,
-                                          kPersonalProfileName);
-}
-
-// Tests that when the feature flag is disabled, all identities are visible
-// in all profiles.
-TEST_F(AccountProfileMapperAccountsInSingleProfileTest,
-       AllIdentitiesAreVisibleInAllProfiles) {
-  const std::string kTestProfile1Name("TestProfile1");
-  base::test::TestFuture<ScopedProfileKeepAliveIOS> profile_initialized;
-  profile_manager_->CreateProfileAsync(
-      kTestProfile1Name, profile_initialized.GetCallback(), base::DoNothing());
-  ASSERT_TRUE(profile_initialized.Wait());
-
-  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
-      system_identity_manager_, profile_manager_.get(),
-      GetApplicationContext()->GetLocalState());
-  testing::StrictMock<MockObserver> mock_observer0;
-  account_profile_mapper_->AddObserver(&mock_observer0, kPersonalProfileName);
-  testing::StrictMock<MockObserver> mock_observer1;
-  account_profile_mapper_->AddObserver(&mock_observer1, kTestProfile1Name);
-
-  // Identity events should be forwarded to all observers.
-  EXPECT_CALL(mock_observer0, OnIdentitiesInProfileChanged()).Times(3);
-  EXPECT_CALL(mock_observer0, OnIdentitiesOnDeviceChanged()).Times(3);
-  EXPECT_CALL(mock_observer1, OnIdentitiesInProfileChanged()).Times(3);
-  EXPECT_CALL(mock_observer1, OnIdentitiesOnDeviceChanged()).Times(3);
-  system_identity_manager_->AddIdentity(gmail_identity1);
-  system_identity_manager_->AddIdentity(gmail_identity2);
-  system_identity_manager_->AddIdentity(google_identity);
-
-  EXPECT_CALL(mock_observer0, OnIdentityInProfileUpdated(gmail_identity1));
-  EXPECT_CALL(mock_observer0, OnIdentityOnDeviceUpdated(gmail_identity1));
-  EXPECT_CALL(mock_observer1, OnIdentityInProfileUpdated(gmail_identity1));
-  EXPECT_CALL(mock_observer1, OnIdentityOnDeviceUpdated(gmail_identity1));
-  system_identity_manager_->FireIdentityUpdatedNotification(gmail_identity1);
-
-  // All identities should be visible in all profiles.
-  NSArray* expected_identities =
-      @[ gmail_identity1, gmail_identity2, google_identity ];
-  EXPECT_NSEQ(expected_identities,
-              GetIdentitiesForProfile(kPersonalProfileName));
-  EXPECT_NSEQ(expected_identities, GetIdentitiesForProfile(kTestProfile1Name));
-
-  // Remove an identity; this should also apply to all profiles.
-  EXPECT_CALL(mock_observer0, OnIdentitiesInProfileChanged());
-  EXPECT_CALL(mock_observer0, OnIdentitiesOnDeviceChanged());
-  EXPECT_CALL(mock_observer1, OnIdentitiesInProfileChanged());
-  EXPECT_CALL(mock_observer1, OnIdentitiesOnDeviceChanged());
-  base::RunLoop run_loop;
-  system_identity_manager_->ForgetIdentity(
-      gmail_identity2, base::BindOnce(
-                           [](base::RunLoop* run_loop, NSError* error) {
-                             EXPECT_EQ(nil, error);
-                             run_loop->Quit();
-                           },
-                           &run_loop));
-  run_loop.Run();
-
-  // All (remaining) identities should be visible in all profiles.
-  expected_identities = @[ gmail_identity1, google_identity ];
-  EXPECT_NSEQ(expected_identities,
-              GetIdentitiesForProfile(kPersonalProfileName));
-  EXPECT_NSEQ(expected_identities, GetIdentitiesForProfile(kTestProfile1Name));
-
-  account_profile_mapper_->RemoveObserver(&mock_observer1, kTestProfile1Name);
-  account_profile_mapper_->RemoveObserver(&mock_observer0,
-                                          kPersonalProfileName);
 }
 
 // Tests that 2 non-managed identities are added to the personal profile.
