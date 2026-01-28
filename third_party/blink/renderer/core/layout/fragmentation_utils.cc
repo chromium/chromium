@@ -1559,6 +1559,16 @@ LayoutUnit BlockSizeForFragmentation(
     // Then remove any block-end trimming, since it shouldn't take up space in
     // ancestry layout.
     block_size -= result.TrimBlockEndBy().value_or(LayoutUnit());
+
+    if (const auto* box_fragment =
+            DynamicTo<PhysicalBoxFragment>(&result.GetPhysicalFragment())) {
+      if (box_fragment->IsFloating()) {
+        // Margins on floats do not break or truncate.
+        BoxStrut margins = box_fragment->Margins().ConvertToLogical(
+            container_writing_direction);
+        block_size += margins.BlockSum();
+      }
+    }
   }
 
   // Ruby annotations do not take up space in the line box, so we need this to

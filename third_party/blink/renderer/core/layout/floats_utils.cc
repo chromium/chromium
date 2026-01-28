@@ -456,10 +456,17 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
       }
     } else if (ShouldAvoidBreakInside(parent_space, *layout_result)) {
       // Make sure the columns become at least as tall as the largest piece of
-      // unbreakable content.
+      // unbreakable content. Keep in mind that margins are an unbreakble part
+      // of a float. Subtract block-start margin from the fragmentainer offset,
+      // so that we don't make room for the the parts that end up before the
+      // fragmentainer start.
       DCHECK(parent_space.IsInitialColumnBalancingPass());
+      PhysicalBoxStrut margins = physical_fragment.Margins();
+      BoxStrut logical_margins =
+          margins.ConvertToLogical(parent_space.GetWritingDirection());
       tallest_unbreakable_block_size = CalculateUnbreakableBlockSize(
-          parent_space, *layout_result, fragmentainer_block_offset);
+          parent_space, *layout_result,
+          fragmentainer_block_offset - logical_margins.block_start);
     }
   }
 
