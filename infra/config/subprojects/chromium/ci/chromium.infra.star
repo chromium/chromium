@@ -53,7 +53,7 @@ packager_builder(
     # Every 6 hours starting at 5am UTC.
     schedule = "0 5/6 * * * *",
     triggered_by = [],
-    pool = "luci.chromium.packager.ci",
+    pool = "luci.chromium.provenance.ci",
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "packager|3pp|linux",
@@ -153,6 +153,7 @@ packager_builder(
     executable = "recipe:android/androidx_packager",
     schedule = "0 7,14,22 * * * *",
     triggered_by = [],
+    pool = "luci.chromium.provenance.ci",
     gardener_rotations = gardener_rotations.ANDROID,
     console_view_entry = consoles.console_view_entry(
         category = "packager|android",
