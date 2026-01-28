@@ -108,7 +108,8 @@ GlicTabObserverAndroid::~GlicTabObserverAndroid() {
 }
 
 void GlicTabObserverAndroid::OnTabModelAdded(TabModel* model) {
-  if (model->GetProfile() != profile_) {
+  if (model->GetProfile() != profile_ ||
+      model->GetTabModelType() != TabModel::TabModelType::kStandard) {
     return;
   }
 
