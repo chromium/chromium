@@ -3796,6 +3796,13 @@ void NetworkHandler::GetResponseBodyForInterception(
 void NetworkHandler::BodyDataReceived(const String& request_id,
                                       const String& body,
                                       bool is_base64_encoded) {
+  network::mojom::DurableMessageCollector* collector =
+      root_session_->MaybeGetDurableMessageCollector();
+  if (collector) {
+    // When Durable Message is enabled, we don't need to store the body data
+    // in the NetworkHandler, to avoid doubling the memory usage.
+    return;
+  }
   received_body_data_[request_id] = {body, is_base64_encoded};
 }
 
