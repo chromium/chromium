@@ -347,7 +347,8 @@ void FeaturedSearchProvider::AddStarterPackMatch(
 
   const std::u16string destination_url =
       template_url_starter_pack_data::GetDestinationUrlForStarterPackId(
-          template_url.starter_pack_id());
+          static_cast<template_url_starter_pack_data::StarterPackId>(
+              template_url.starter_pack_id()));
   match.fill_into_edit = template_url.keyword();
   if (match.fill_into_edit.starts_with(input.text())) {
     match.inline_autocompletion =

@@ -113,7 +113,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetStarterPackEngines() {
   return t_urls;
 }
 
-std::u16string GetDestinationUrlForStarterPackId(int id) {
+std::u16string GetDestinationUrlForStarterPackId(StarterPackId id) {
   for (auto* engine : engines) {
     if (engine->id == id) {
       return base::UTF8ToUTF16(engine->destination_url);
