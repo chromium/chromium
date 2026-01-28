@@ -406,7 +406,6 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
   // practice `height` can be smaller.  They are advertised as the coded size,
   // though, so that's how we use them here.  `crop*` take this difference into
   // account, and are meant to be applied to `width` and `height` as they are.
-  const gfx::Size coded_size(frame->width, frame->height);
   const gfx::Rect visible_rect(frame->crop_left, frame->crop_top,
                                frame->width - frame->crop_right,
                                frame->height - frame->crop_bottom);
