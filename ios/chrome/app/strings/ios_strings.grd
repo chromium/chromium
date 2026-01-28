@@ -1461,6 +1461,9 @@
       <message name="IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION" desc="The contextual menu option instructing the input plate to use the image generation tool. [iOS only].">
         Create image
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_CREATE_IMAGE_PRO_ACTION" desc="The contextual menu option instructing the input plate to use the image generation tool when the advanced model is being used. [iOS only].">
+        Create image Pro
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_DELETE_ATTACHMENT_ACCESSIBILITY_CUSTOM_ACTION" desc="The name of the custom accessibility action for that deletes a previously added attachment from the list of attachments in the AIM Composebox. [iOS only].">
         Delete attachment
       </message>
@@ -1489,11 +1492,11 @@
       <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO" desc="Title for the contextual menu option where the system automatically selects the optimal model per query. [iOS only].">
         Auto
       </message>
-      <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE" desc="Title for the contextual menu section for selecting the AI model to us. [iOS only].">
-        Gemini <ph name="VERSION_NUMBER">$1<ex>3</ex></ph> models
-      </message>
       <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING" desc="Title for the contextual menu option for the advanced thinking reasoning model. [iOS only].">
         Thinking
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE" desc="Title for the contextual menu section for selecting the AI model to us. [iOS only].">
+        Gemini <ph name="VERSION_NUMBER">$1<ex>3</ex></ph> models
       </message>
       <message name="IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION" desc="The contextual menu option for opening the tab picker for selection. [iOS only].">
         Tabs

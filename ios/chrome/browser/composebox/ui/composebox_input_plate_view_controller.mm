@@ -709,6 +709,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)setModelOption:(ComposeboxModelOption)modelOption {
   _modelOption = modelOption;
   [self updatePlusButtonItems];
+  [self updateCreateImageTitle];
 }
 
 #pragma mark - Actions
@@ -1405,8 +1406,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
 
   UIAction* createImageAction =
-      [UIAction actionWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION)
+      [UIAction actionWithTitle:[self createImageActionTitle]
                           image:[self bananaIcon]
                      identifier:nil
                         handler:^(UIAction* action) {
@@ -1790,8 +1790,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   button.layer.borderWidth = 0;
 
   UIButtonConfiguration* config =
-      [self modeIndicatorButtonConfigWithTitle:
-                l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION)
+      [self modeIndicatorButtonConfigWithTitle:[self createImageActionTitle]
                                          image:[self bananaIcon]];
   config.contentInsets = kImageGenerationButtonInsets;
   config.background.backgroundColor =
@@ -1803,6 +1802,29 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self setupXMarkInButton:button];
 
   return button;
+}
+
+// Uptates the create image nudge button title.
+- (void)updateCreateImageTitle {
+  UIButtonConfiguration* config = _imageGenerationButton.configuration;
+
+  NSString* createImageTitle = [self createImageActionTitle];
+  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
+                                   weight:UIFontWeightMedium];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+
+  config.attributedTitle =
+      [[NSAttributedString alloc] initWithString:createImageTitle
+                                      attributes:attributes];
+
+  _imageGenerationButton.configuration = config;
+}
+
+- (NSString*)createImageActionTitle {
+  BOOL isPro = _modelOption == ComposeboxModelOption::kThinking;
+  return l10n_util::GetNSString(isPro
+                                    ? IDS_IOS_COMPOSEBOX_CREATE_IMAGE_PRO_ACTION
+                                    : IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION);
 }
 
 // Creates a new canvas button to be displayed in the input plate.
