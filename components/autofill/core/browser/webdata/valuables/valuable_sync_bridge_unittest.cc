@@ -113,8 +113,7 @@ class ValuableSyncBridgeTest : public testing::Test {
  public:
   // Creates the `bridge()` and mocks its `ValuablesTable`.
   void SetUp() override {
-    feature_list_.InitWithFeatures({syncer::kSyncMoveValuablesToProfileDb,
-                                    syncer::kSyncWalletFlightReservations,
+    feature_list_.InitWithFeatures({syncer::kSyncWalletFlightReservations,
                                     syncer::kSyncWalletVehicleRegistrations},
                                    /*disabled_features=*/{});
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -394,21 +393,6 @@ TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForLoyaltyCards) {
   EXPECT_THAT(loyalty_cards, UnorderedElementsAre(card1, card2));
 }
 
-// Tests that `GetAllDataForDebugging()` returns no vehicle registrations if the
-// profile DB flag is not enabled.
-TEST_F(ValuableSyncBridgeTest,
-       GetAllDataForDebuggingForVehicleRegistrationsFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kSyncMoveValuablesToProfileDb);
-  EntityInstance server_vehicle = GetServerVehicleEntityInstance(
-      {.guid = "00000000-0000-4000-8000-500000000000"});
-  AddEntities({server_vehicle});
-
-  std::vector<EntityInstance> entities =
-      ExtractEntitiesFromDataBatch(bridge().GetAllDataForDebugging());
-  EXPECT_THAT(entities, IsEmpty());
-}
-
 // Tests that `ApplyDisableSyncChanges()` clears all data in ValuablesTable when
 // the data type gets disabled.
 TEST_F(ValuableSyncBridgeTest, ApplyDisableSyncChanges) {
@@ -521,24 +505,6 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_PreservesLocalMetadata) {
   EXPECT_EQ(entities_in_db[0].metadata(), local_metadata);
 }
 
-// Tests that `SetEntities()` does nothing when the profile db migration feature
-// flag is disabled.
-TEST_F(ValuableSyncBridgeTest, SetEntities_ProfileDbMigrationFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(syncer::kSyncMoveValuablesToProfileDb);
-
-  const EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
-      {.guid = "00000000-0000-4000-8000-300000000000"});
-  const EntityInstance wallet_vehicle = GetServerVehicleEntityInstance(
-      {.guid = "00000000-0000-5000-3000-200000000000"});
-
-  AddEntities({local_vehicle});
-
-  EXPECT_TRUE(SyncEntityInstances({wallet_vehicle}));
-  EXPECT_THAT(GetAllEntityInstancesFromTable(),
-              UnorderedElementsAre(local_vehicle));
-}
-
 // Tests that `GetAllDataForDebugging()` returns all vehicle registrations.
 TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForVehicleRegistrations) {
   EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
@@ -569,8 +535,7 @@ TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForFlightReservations) {
 // sync feature is disabled.
 TEST_F(ValuableSyncBridgeTest, SetEntities_VehicleSyncDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({syncer::kSyncMoveValuablesToProfileDb},
-                                {syncer::kSyncWalletVehicleRegistrations});
+  feature_list.InitAndDisableFeature(syncer::kSyncWalletVehicleRegistrations);
 
   EXPECT_CALL(backend(), CommitChanges);
   EXPECT_CALL(backend(),

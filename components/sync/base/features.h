@@ -33,9 +33,6 @@ BASE_DECLARE_FEATURE(kSyncMakeAutofillValuableNonEncryptable);
 // Enables syncing of usage metadata from Google Wallet passes.
 BASE_DECLARE_FEATURE(kSyncAutofillValuableMetadata);
 
-// Enables storing valuables in the profile db instead of the account db.
-BASE_DECLARE_FEATURE(kSyncMoveValuablesToProfileDb);
-
 // Enables syncing account-local metadata for shared tab groups.
 BASE_DECLARE_FEATURE(kSyncSharedTabGroupAccountData);
 

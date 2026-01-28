@@ -21,8 +21,6 @@ BASE_FEATURE(kSyncMakeAutofillValuableNonEncryptable,
 
 BASE_FEATURE(kSyncAutofillValuableMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncMoveValuablesToProfileDb, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncSharedTabGroupAccountData, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncSharedComment, base::FEATURE_DISABLED_BY_DEFAULT);

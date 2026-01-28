@@ -813,9 +813,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE) &&
       base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
     scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service =
-        base::FeatureList::IsEnabled(syncer::kSyncMoveValuablesToProfileDb)
-            ? profile_autofill_web_data_service_.value()
-            : account_autofill_web_data_service_.value();
+        profile_autofill_web_data_service_.value();
     if (autofill_web_data_service) {
       controllers.push_back(
           std::make_unique<autofill::AutofillValuableDataTypeController>(

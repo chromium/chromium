@@ -307,10 +307,6 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
     batch->Put(id, CreateEntityDataFromLoyaltyCard(card));
   }
 
-  if (!base::FeatureList::IsEnabled(syncer::kSyncMoveValuablesToProfileDb)) {
-    return batch;
-  }
-
   const bool is_sync_flight_reservations_enabled =
       IsSyncWalletFlightReservationsEnabled();
 
@@ -482,10 +478,6 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetLoyaltyCards(
 
 ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
     std::vector<EntityInstance> entities) {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncMoveValuablesToProfileDb)) {
-    return ValuableDatabaseOperationResult::kNoChange;
-  }
-
   EntityTable* entity_table = GetEntityTable();
   // No updates are necessary if both the local and the server list of entities
   // are empty.

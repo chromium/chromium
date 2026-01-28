@@ -197,8 +197,7 @@ class SingleClientValuableSyncTestBase : public SyncTest {
 
 class SingleClientValuablesSyncTest
     : public SingleClientValuableSyncTestBase,
-      public testing::WithParamInterface<
-          std::tuple<bool, SyncTest::SetupSyncMode>> {
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientValuablesSyncTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
@@ -207,22 +206,14 @@ class SingleClientValuablesSyncTest
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (IsValuablesInProfileDBEnabled()) {
-      enabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
-    } else {
-      disabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeatures(enabled_features, {});
   }
 
   ~SingleClientValuablesSyncTest() override = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return std::get<1>(GetParam());
+    return GetParam();
   }
-
-  bool IsValuablesInProfileDBEnabled() const { return std::get<0>(GetParam()); }
 };
 
 // Valuables data should get loaded on initial sync.
@@ -333,99 +324,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
   EXPECT_THAT(vdm->GetLoyaltyCards(), testing::IsEmpty());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SingleClientValuablesSyncTest,
-    testing::Combine(testing::Bool(), GetSyncTestModes()),
-    [](const testing::TestParamInfo<SingleClientValuablesSyncTest::ParamType>&
-           info) {
-      return base::StrCat({std::get<0>(info.param) ? "ValuablesInProfileDB"
-                                                   : "ValuablesInAccountDB",
-                           testing::PrintToString(std::get<1>(info.param))});
-    });
-
-// DB migration tests for valuables.
-class MigrateValuableDatabasesSyncTest
-    : public SingleClientValuableSyncTestBase,
-      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
- public:
-  MigrateValuableDatabasesSyncTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        autofill::features::kAutofillEnableLoyaltyCardsFilling,
-        syncer::kSyncAutofillLoyaltyCard};
-
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetTestPreCount() == 0 || GetTestPreCount() == 2) {
-      disabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
-    } else {
-      enabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  void SetUpOnMainThread() override {
-    SingleClientValuableSyncTestBase::SetUpOnMainThread();
-    GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card1_),
-                                      LoyaltyCardToSyncEntity(loyalty_card2_)});
-  }
-  ~MigrateValuableDatabasesSyncTest() override = default;
-
-  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return GetParam();
-  }
-
- protected:
-  const LoyaltyCard loyalty_card1_ = CreateLoyaltyCard();
-  const LoyaltyCard loyalty_card2_ = CreateLoyaltyCard2();
-};
-
-// With `kSyncMoveValuablesToProfileDb` disabled, valuables are loaded normally
-// from the account DB.
-IN_PROC_BROWSER_TEST_P(MigrateValuableDatabasesSyncTest,
-                       PRE_PRE_MigrateValuablesDB) {
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(SetupSync());
-  ValuablesDataManager* vdm = GetValuablesDataManager(0);
-  ASSERT_NE(nullptr, vdm);
-  // Make sure the data & metadata is in the DB.
-  WaitForNumberOfLoyaltyCards(2, vdm);
-  EXPECT_THAT(vdm->GetLoyaltyCards(),
-              UnorderedElementsAre(loyalty_card1_, loyalty_card2_));
-}
-
-// With `kSyncMoveValuablesToProfileDb` enabled, valuables storage is migrated
-// to the profile DB. The DB starts fresh and sync downloads the latest set of
-// valuables.
-IN_PROC_BROWSER_TEST_P(MigrateValuableDatabasesSyncTest,
-                       PRE_MigrateValuablesDB) {
-  ASSERT_TRUE(SetupClients());
-  ValuablesDataManager* vdm = GetValuablesDataManager(0);
-  ASSERT_NE(nullptr, vdm);
-  WaitForNumberOfLoyaltyCards(2, vdm);
-  // Make sure the data & metadata is in the DB.
-  EXPECT_THAT(vdm->GetLoyaltyCards(),
-              UnorderedElementsAre(loyalty_card1_, loyalty_card2_));
-}
-
-// With `kSyncMoveValuablesToProfileDb` disabled again, valuables are loaded
-// from the account DB again.
-IN_PROC_BROWSER_TEST_P(MigrateValuableDatabasesSyncTest, MigrateValuablesDB) {
-  ASSERT_TRUE(SetupClients());
-  ValuablesDataManager* vdm = GetValuablesDataManager(0);
-  ASSERT_NE(nullptr, vdm);
-  WaitForNumberOfLoyaltyCards(2, vdm);
-  // Make sure the data & metadata is in the DB.
-  EXPECT_THAT(vdm->GetLoyaltyCards(),
-              UnorderedElementsAre(loyalty_card1_, loyalty_card2_));
-}
-
 INSTANTIATE_TEST_SUITE_P(,
-                         MigrateValuableDatabasesSyncTest,
+                         SingleClientValuablesSyncTest,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
@@ -435,8 +335,7 @@ class SingleClientEntityValuablesSyncTest
  public:
   SingleClientEntityValuablesSyncTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kSyncAutofillLoyaltyCard, syncer::kSyncMoveValuablesToProfileDb,
-        syncer::kSyncWalletFlightReservations,
+        syncer::kSyncAutofillLoyaltyCard, syncer::kSyncWalletFlightReservations,
         syncer::kSyncWalletVehicleRegistrations};
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
