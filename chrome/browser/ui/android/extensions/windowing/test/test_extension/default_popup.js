@@ -181,14 +181,18 @@ document.getElementById("create_window_button").onclick = async () => {
                 'input[name="create_window_state_value"]:checked').value;
         createOptions.state = state;
 
-        createOptions.left = parseInt(
-            document.getElementById("create_window_left_input").value);
-        createOptions.top = parseInt(
-            document.getElementById("create_window_top_input").value);
-        createOptions.width = parseInt(
-            document.getElementById("create_window_width_input").value);
-        createOptions.height = parseInt(
-            document.getElementById("create_window_height_input").value);
+        // The minimized, maximized, and fullscreen states cannot be combined
+        // with left, top, width, or height.
+        if (state === 'normal') {
+            createOptions.left = parseInt(
+                document.getElementById("create_window_left_input").value);
+            createOptions.top = parseInt(
+                document.getElementById("create_window_top_input").value);
+            createOptions.width = parseInt(
+                document.getElementById("create_window_width_input").value);
+            createOptions.height = parseInt(
+                document.getElementById("create_window_height_input").value);
+        }
 
         const url = document.getElementById("create_window_url_input").value;
         if (url) {
