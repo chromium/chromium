@@ -134,6 +134,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ManualFillingControllerTest {
     private static final int sKeyboardHeightDp = 100;
     private static final int sAccessoryHeightDp = 48;
+    private static final int sDynamicPositioningMaxWidthPx = 100;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -358,6 +359,9 @@ public class ManualFillingControllerTest {
         Configuration config = new Configuration();
         config.hardKeyboardHidden = HARDKEYBOARDHIDDEN_UNDEFINED;
         when(mMockResources.getConfiguration()).thenReturn(config);
+        when(mMockResources.getDimensionPixelSize(
+                        R.dimen.keyboard_accessory_bar_dynamic_positioning_max_width))
+                .thenReturn(sDynamicPositioningMaxWidthPx);
         doNothing()
                 .when(mMockBackPressManager)
                 .addHandler(any(), eq(BackPressHandler.Type.MANUAL_FILLING));
@@ -1490,7 +1494,7 @@ public class ManualFillingControllerTest {
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
         KeyboardAccessoryStyle style = mStyleCaptor.getValue();
         assertFalse(style.isDocked());
-        assertTrue(style.getMaxWidth() > 0);
+        assertEquals(sDynamicPositioningMaxWidthPx, style.getMaxWidth());
         verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
         verify(mMockKeyboardAccessory).setAnimateSuggestionsFromTop(true);
     }
@@ -1555,7 +1559,7 @@ public class ManualFillingControllerTest {
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
         KeyboardAccessoryStyle style = mStyleCaptor.getValue();
         assertFalse(style.isDocked());
-        assertTrue(style.getMaxWidth() > 0);
+        assertEquals(sDynamicPositioningMaxWidthPx, style.getMaxWidth());
         assertEquals(KeyboardAccessoryStyle.NotchPosition.TOP, style.getNotchPosition());
 
         assertEquals(bottomBound * density, style.getVerticalOffset());
@@ -1594,7 +1598,7 @@ public class ManualFillingControllerTest {
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
         KeyboardAccessoryStyle style = mStyleCaptor.getValue();
         assertFalse(style.isDocked());
-        assertTrue(style.getMaxWidth() > 0);
+        assertEquals(sDynamicPositioningMaxWidthPx, style.getMaxWidth());
         assertEquals(KeyboardAccessoryStyle.NotchPosition.BOTTOM, style.getNotchPosition());
 
         assertEquals(topBound * density - paddingForNotch - barHeight, style.getVerticalOffset());
@@ -1623,7 +1627,7 @@ public class ManualFillingControllerTest {
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
         KeyboardAccessoryStyle style = mStyleCaptor.getValue();
         assertFalse(style.isDocked());
-        assertTrue(style.getMaxWidth() > 0);
+        assertEquals(sDynamicPositioningMaxWidthPx, style.getMaxWidth());
         verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
         verify(mMockKeyboardAccessory).setAnimateSuggestionsFromTop(true);
     }
@@ -1649,7 +1653,7 @@ public class ManualFillingControllerTest {
         verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
         KeyboardAccessoryStyle style = mStyleCaptor.getValue();
         assertFalse(style.isDocked());
-        assertTrue(style.getMaxWidth() > 0);
+        assertEquals(sDynamicPositioningMaxWidthPx, style.getMaxWidth());
         verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
         verify(mMockKeyboardAccessory).setAnimateSuggestionsFromTop(true);
     }

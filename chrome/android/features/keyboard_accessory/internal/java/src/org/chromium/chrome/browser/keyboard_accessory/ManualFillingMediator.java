@@ -864,6 +864,13 @@ class ManualFillingMediator
     }
 
     private @Px int getMaxWidth() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+            return mActivity
+                    .getResources()
+                    .getDimensionPixelSize(
+                            R.dimen.keyboard_accessory_bar_dynamic_positioning_max_width);
+        }
         int screenWidthDp = mActivity.getResources().getConfiguration().screenWidthDp;
         @Px int screenWidth = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), screenWidthDp);
         return (int) (MAXIMUM_BAR_WIDTH_PERCENTAGE * screenWidth);
