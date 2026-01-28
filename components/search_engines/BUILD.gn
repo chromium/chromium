@@ -291,6 +291,7 @@ if (is_android) {
     sources = [
       "choice_made_location.h",
       "search_engine_type.h",
+      "template_url_starter_pack_data.h",
     ]
   }
 }

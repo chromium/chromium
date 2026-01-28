@@ -1,6 +1,7 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 package org.chromium.components.search_engines;
 
 import android.graphics.Bitmap;
@@ -84,6 +85,13 @@ public class TemplateUrl {
     }
 
     /**
+     * @return The starter pack id of the search engine.
+     */
+    public @StarterPackId int getStarterPackId() {
+        return TemplateUrlJni.get().getStarterPackId(mTemplateUrlPtr);
+    }
+
+    /**
      * @return The new Tab URL of the search engine. The format can be looked up in
      *     prepopulated_engines.json.
      */
@@ -132,6 +140,9 @@ public class TemplateUrl {
         long getLastVisitedTime(long templateUrlPtr);
 
         int getPrepopulatedId(long templateUrlPtr);
+
+        @StarterPackId
+        int getStarterPackId(long templateUrlPtr);
 
         String getURL(long templateUrlPtr);
 

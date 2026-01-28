@@ -21,6 +21,8 @@ struct TemplateURLData;
 
 namespace template_url_starter_pack_data {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.search_engines
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
 enum StarterPackId {
   kBookmarks = 1,
   kHistory = 2,
