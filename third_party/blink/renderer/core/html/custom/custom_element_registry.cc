@@ -481,10 +481,7 @@ void CustomElementRegistry::initialize(Node* root,
     // 4-4. Try to upgrade inclusiveDescendant.
     if (descendant_element->GetCustomElementState() ==
         CustomElementState::kUndefined) {
-      if (CustomElementDefinition* definition =
-              this->DefinitionForName(descendant_element->localName())) {
-        definition->EnqueueUpgradeReaction(*descendant_element);
-      }
+      CustomElement::TryToUpgrade(*descendant_element);
     }
   }
 }

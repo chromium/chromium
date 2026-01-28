@@ -19,5 +19,9 @@ This is a testharness.js-based test.
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] CustomElementRegistry.prototype.initialize upgrades already initialized elements
   Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] CustomElementRegistry.prototype.initialize upgrades custom elements in declarative shadow root when initialize() runs before define()
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] CustomElementRegistry.prototype.initialize upgrades custom elements in imperative shadow root when inserted before define()
+  Failed to construct 'CustomElementRegistry': Illegal constructor
 Harness: the test ran to completion.
 
