@@ -94,6 +94,7 @@ found in the LICENSE file.
     <color name="baseline_tertiary_80">#6DD58C</color>
     <color name="baseline_tertiary_40">#146C2E</color>
     <color name="baseline_tertiary_30">#0F5223</color>
+    <color name="baseline_tertiary_10">#072711</color>
 
     <!-- GM3 Baseline colors. See https://crbug.com/1410537. -->
     <color name="gm3_baseline_surface_tint_light">#6991D6</color>
@@ -170,7 +171,6 @@ found in the LICENSE file.
     <color name="material_secondary_60">@color/baseline_secondary_60</color>
     <color name="material_secondary_50">@color/baseline_secondary_50</color>
     <color name="material_secondary_40">@color/baseline_secondary_40</color>
-    <color name="material_tertiary_90">@color/baseline_tertiary_90</color>
     <color name="material_tertiary_80">@color/baseline_tertiary_80</color>
     <color name="material_tertiary_40">@color/baseline_tertiary_40</color>
 
