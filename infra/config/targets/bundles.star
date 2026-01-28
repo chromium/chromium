@@ -553,6 +553,29 @@ targets.bundle(
     },
 )
 
+# Android desktop tests that run on a Linux host. These are necessary for now
+# as some junit tests are behind desktop GN args, e.g. gated on
+# enable_extensions_core.
+targets.bundle(
+    name = "android_desktop_junit_tests",
+    targets = [
+        "chrome_junit_tests",
+    ],
+    mixins = [
+        "has_native_resultdb_integration",
+        "junit-swarming-emulator",
+        "linux-jammy",
+        "x86-64",
+    ],
+    per_test_modifications = {
+        "chrome_junit_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 10,
+            ),
+        ),
+    },
+)
+
 targets.bundle(
     name = "android_emulator_specific_chrome_public_tests",
     targets = [
@@ -1793,7 +1816,6 @@ targets.bundle(
         "base_junit_tests",
         "build_junit_tests",
         "chrome_java_test_pagecontroller_junit_tests",
-        "chrome_junit_tests",
         "components_junit_tests",
         "content_junit_tests",
         "device_junit_tests",
@@ -1860,24 +1882,6 @@ targets.bundle(
                 "pie-x86-emulator",
                 "10-x86-emulator",
                 "16-x64-emulator",
-            ],
-        ),
-        "chrome_junit_tests": targets.per_test_modification(
-            remove_mixins = [
-                "chromium_pixel_2_q",
-                "emulator-4-cores",
-                "nougat-x86-emulator",
-                "oreo-x86-emulator",
-                "pie-x86-emulator",
-                "10-x86-emulator",
-                "16-x64-emulator",
-            ],
-            mixins = [
-                targets.mixin(
-                    swarming = targets.swarming(
-                        shards = 10,
-                    ),
-                ),
             ],
         ),
         "components_junit_tests": targets.per_test_modification(
