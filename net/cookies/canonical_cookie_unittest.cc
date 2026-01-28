@@ -4110,13 +4110,23 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
        CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
+  // Test that empty domain with valid path succeeds (creates a host cookie).
+  // This demonstrates that the invalid path test below fails solely due to
+  // the path, not the domain.
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com/foo"), "A", "B", std::string(), "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status));
+  EXPECT_TRUE(status.IsInclude());
+  // Test invalid path (missing leading slash).
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com/foo"), "A", "B", std::string(), "foo",
       base::Time(), base::Time(), base::Time(), false /*secure*/,
       false /*httponly*/, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PATH}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com"), "A", "B", std::string(), "/foo ",
       base::Time(), base::Time(), base::Time(), /*secure=*/false,

@@ -110,8 +110,11 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_NO_COOKIE_CONTENT = 26,
     // Cookie is unpartitioned and being accessed from an anonymous context
     EXCLUDE_ANONYMOUS_CONTEXT = 27,
+    // Cookie was set with an invalid Path attribute (path was modified during
+    // canonicalization, indicating the original path was malformed).
+    EXCLUDE_INVALID_PATH = 28,
     // This should be kept last.
-    MAX_EXCLUSION_REASON = EXCLUDE_ANONYMOUS_CONTEXT
+    MAX_EXCLUSION_REASON = EXCLUDE_INVALID_PATH
   };
 
   // Reason to warn about a cookie. Any information contained in

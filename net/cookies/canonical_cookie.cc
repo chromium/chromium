@@ -699,8 +699,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     if (cookie_path != path) {
       // The path attribute was specified and found to be invalid, so record an
       // error.
-      status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
-                                     EXCLUDE_FAILURE_TO_STORE);
+      status->AddExclusionReason(
+          net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PATH);
     } else if (!ParsedCookie::CookieAttributeValueHasValidSize(
                    encoded_cookie_path)) {
       // The path attribute was specified and encodes into a value that's longer
