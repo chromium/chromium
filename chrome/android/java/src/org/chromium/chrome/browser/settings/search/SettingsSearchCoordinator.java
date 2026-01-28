@@ -675,18 +675,31 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
                     View query = mActivity.findViewById(R.id.search_query_container);
 
                     int minWidePadding = getPixelSize(R.dimen.settings_wide_display_min_padding);
-                    int padding =
+                    int margin =
                             ViewResizerUtil.computePaddingForWideDisplay(
                                     mActivity, searchBox, minWidePadding);
-                    int settingsMargin = padding;
-                    if (padding > minWidePadding) {
-                        settingsMargin += getPixelSize(R.dimen.settings_item_margin);
+                    boolean isOnWideScreen = margin > minWidePadding;
+                    int menuWidth = menuView.getWidth();
+                    int searchBoxWidth;
+                    int queryWidth;
+                    int startMargin = margin;
+                    int endMargin = margin;
+                    if (isOnWideScreen) {
+                        int itemMargin = getPixelSize(R.dimen.settings_item_margin);
+                        margin += itemMargin;
+                        searchBoxWidth = appBarWidth - margin * 2;
+                        queryWidth = searchBoxWidth;
+                        // The menu icon on the right pushes the UI to left. Adjust the margin.
+                        startMargin += menuWidth - itemMargin;
+                        endMargin -= menuWidth - itemMargin;
+                    } else {
+                        searchBoxWidth = appBarWidth - margin * 2;
+                        // Only on narrow screens, query UI needs shrinking to avoid overlapping
+                        // with menu icon on the right side.
+                        queryWidth = searchBoxWidth - menuWidth;
                     }
-
-                    int searchBoxWidth = appBarWidth - settingsMargin * 2;
-                    int queryWidth = searchBoxWidth - menuView.getWidth();
-                    updateView(searchBox, settingsMargin, settingsMargin, searchBoxWidth);
-                    updateView(query, settingsMargin, settingsMargin, queryWidth);
+                    updateView(searchBox, margin, margin, searchBoxWidth);
+                    updateView(query, startMargin, endMargin, queryWidth);
                 });
     }
 
