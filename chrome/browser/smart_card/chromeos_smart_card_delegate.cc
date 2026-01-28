@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/map_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/smart_card/get_smart_card_context_factory.h"
@@ -71,8 +72,15 @@ ChromeOsSmartCardDelegate::~ChromeOsSmartCardDelegate() = default;
 
 mojo::PendingRemote<device::mojom::SmartCardContextFactory>
 ChromeOsSmartCardDelegate::GetSmartCardContextFactory(
-    content::BrowserContext& browser_context) {
-  return ::GetSmartCardContextFactory(browser_context);
+    content::RenderFrameHost& render_frame_host) {
+  // Try to get the emulated factory.
+  auto emulated_factory = GetEmulationFactory(render_frame_host.GetGlobalId());
+  if (emulated_factory.is_valid()) {
+    return emulated_factory;
+  }
+  // If no emulation is active use the real system factory.
+  return ::GetSmartCardContextFactory(
+      CHECK_DEREF(render_frame_host.GetBrowserContext()));
 }
 
 bool ChromeOsSmartCardDelegate::IsPermissionBlocked(
@@ -155,4 +163,29 @@ void ChromeOsSmartCardDelegate::RemoveObserver(
       CHECK_DEREF(
           Profile::FromBrowserContext(render_frame_host.GetBrowserContext())))
       .RemoveObserver(observer);
+}
+
+void ChromeOsSmartCardDelegate::SetEmulationFactory(
+    content::GlobalRenderFrameHostId frame_id,
+    base::RepeatingCallback<
+        mojo::PendingRemote<device::mojom::SmartCardContextFactory>()>
+        factory_getter) {
+  emulation_overrides_[frame_id] = std::move(factory_getter);
+}
+
+void ChromeOsSmartCardDelegate::ClearEmulationFactory(
+    content::GlobalRenderFrameHostId frame_id) {
+  emulation_overrides_.erase(frame_id);
+}
+
+mojo::PendingRemote<device::mojom::SmartCardContextFactory>
+ChromeOsSmartCardDelegate::GetEmulationFactory(
+    content::GlobalRenderFrameHostId frame_id) {
+  auto* callback_ptr = base::FindOrNull(emulation_overrides_, frame_id);
+  if (!callback_ptr) {
+    return mojo::PendingRemote<device::mojom::SmartCardContextFactory>();
+  }
+
+  // Invoke the callback to get a fresh pipe to the Emulation Factory.
+  return callback_ptr->Run();
 }

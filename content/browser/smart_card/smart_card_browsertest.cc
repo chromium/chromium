@@ -16,6 +16,7 @@
 #include "content/browser/smart_card/smart_card_histograms.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/smart_card_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -152,7 +153,16 @@ class FakeSmartCardDelegate : public SmartCardDelegate {
   FakeSmartCardDelegate() = default;
   // SmartCardDelegate overrides:
   mojo::PendingRemote<device::mojom::SmartCardContextFactory>
-  GetSmartCardContextFactory(BrowserContext& browser_context) override;
+  GetSmartCardContextFactory(RenderFrameHost& render_frame_host) override;
+
+  void SetEmulationFactory(
+      content::GlobalRenderFrameHostId frame_id,
+      base::RepeatingCallback<
+          mojo::PendingRemote<device::mojom::SmartCardContextFactory>()>
+          factory_getter) override {}  // Do nothing.
+
+  void ClearEmulationFactory(
+      content::GlobalRenderFrameHostId frame_id) override {}  // Do nothing.
 
   MOCK_METHOD(bool,
               IsPermissionBlocked,
@@ -370,7 +380,7 @@ SmartCardTestContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
 
 mojo::PendingRemote<device::mojom::SmartCardContextFactory>
 FakeSmartCardDelegate::GetSmartCardContextFactory(
-    BrowserContext& browser_context) {
+    RenderFrameHost& render_frame_host) {
   return mock_context_factory.GetRemote();
 }
 

@@ -52,9 +52,6 @@ SmartCardService::~SmartCardService() {
 void SmartCardService::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::SmartCardService> receiver) {
-  BrowserContext* browser_context = render_frame_host->GetBrowserContext();
-  DCHECK(browser_context);
-
   if (!base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
     mojo::ReportBadMessage("The SmartCard feature is disabled.");
     return;
@@ -81,8 +78,9 @@ void SmartCardService::Create(
     return;
   }
 
-  new SmartCardService(*render_frame_host, std::move(receiver),
-                       delegate->GetSmartCardContextFactory(*browser_context));
+  new SmartCardService(
+      *render_frame_host, std::move(receiver),
+      delegate->GetSmartCardContextFactory(*render_frame_host));
 }
 
 void SmartCardService::CreateContext(CreateContextCallback callback) {
