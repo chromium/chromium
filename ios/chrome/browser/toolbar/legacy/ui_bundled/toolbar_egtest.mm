@@ -188,8 +188,7 @@ void WaitForEmpyOmnibox() {
 
   [ChromeEarlGrey loadURL:URL];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(URL.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"foo"];
 
   id<GREYMatcher> typingShield = grey_accessibilityID(@"Typing Shield");
