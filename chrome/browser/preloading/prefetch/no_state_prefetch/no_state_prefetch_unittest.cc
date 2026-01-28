@@ -287,57 +287,6 @@ TEST_F(NoStatePrefetchTest, RespectsThirdPartyCookiesPref) {
       "Prerender.FinalStatus", FINAL_STATUS_BLOCK_THIRD_PARTY_COOKIES, 1);
 }
 
-class NoStatePrefetchGWSPrefetchHoldbackTest : public NoStatePrefetchTest {
- public:
-  NoStatePrefetchGWSPrefetchHoldbackTest() {
-    feature_list_.InitAndEnableFeature(kGWSPrefetchHoldback);
-  }
-};
-
-TEST_F(NoStatePrefetchGWSPrefetchHoldbackTest,
-       GWSPrefetchHoldbackNonGWSSReferrer) {
-  GURL url("http://www.notgoogle.com/");
-  no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      url, FINAL_STATUS_PROFILE_DESTROYED);
-
-  EXPECT_TRUE(AddSimpleLinkTrigger(url));
-}
-
-TEST_F(NoStatePrefetchGWSPrefetchHoldbackTest, GWSPrefetchHoldbackGWSReferrer) {
-  GURL url("http://www.notgoogle.com/");
-  no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      url, url::Origin::Create(GURL("www.google.com")), ORIGIN_GWS_PRERENDER,
-      FINAL_STATUS_PROFILE_DESTROYED);
-
-  EXPECT_FALSE(AddSimpleGWSLinkTrigger(url));
-}
-
-class NoStatePrefetchGWSPrefetchHoldbackOffTest : public NoStatePrefetchTest {
- public:
-  NoStatePrefetchGWSPrefetchHoldbackOffTest() {
-    feature_list_.InitAndDisableFeature(kGWSPrefetchHoldback);
-  }
-};
-
-TEST_F(NoStatePrefetchGWSPrefetchHoldbackOffTest,
-       GWSPrefetchHoldbackOffNonGWSReferrer) {
-  GURL url("http://www.notgoogle.com/");
-  no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      url, FINAL_STATUS_PROFILE_DESTROYED);
-
-  EXPECT_TRUE(AddSimpleLinkTrigger(url));
-}
-
-TEST_F(NoStatePrefetchGWSPrefetchHoldbackOffTest,
-       GWSPrefetchHoldbackOffGWSReferrer) {
-  GURL url("http://www.notgoogle.com/");
-  no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      url, url::Origin::Create(GURL("www.google.com")), ORIGIN_GWS_PRERENDER,
-      FINAL_STATUS_PROFILE_DESTROYED);
-
-  EXPECT_TRUE(AddSimpleGWSLinkTrigger(url));
-}
-
 class PrerendererNavigationPredictorPrefetchHoldbackTest
     : public NoStatePrefetchTest {
  public:

@@ -531,12 +531,6 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     return nullptr;
   }
 
-  if ((origin == ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN ||
-       origin == ORIGIN_LINK_REL_PRERENDER_SAMEDOMAIN) &&
-      IsGoogleOriginURL(referrer.url)) {
-    origin = ORIGIN_GWS_PRERENDER;
-  }
-
   GURL url = url_arg;
 
   if (delegate_->GetCookieSettings()->ShouldBlockThirdPartyCookies()) {
@@ -565,19 +559,6 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     SetPreloadingEligibility(
         attempt.get(),
         PreloadingEligibility::kPreloadingInvokedWithinTimelimit);
-    return nullptr;
-  }
-
-  // If this is GWS and we are in the holdback, skip the prefetch. Record the
-  // status as holdback, so we can analyze via UKM.
-  if (origin == ORIGIN_GWS_PRERENDER &&
-      base::FeatureList::IsEnabled(kGWSPrefetchHoldback)) {
-    SetPreloadingEligibility(attempt.get(),
-                             PreloadingEligibility::kPreloadingDisabled);
-    // Set the holdback status on the prefetch entry.
-    SetPrefetchFinalStatusForUrl(url, FINAL_STATUS_GWS_HOLDBACK);
-    SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
-                                                  FINAL_STATUS_GWS_HOLDBACK);
     return nullptr;
   }
 

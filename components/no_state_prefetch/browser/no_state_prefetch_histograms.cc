@@ -37,8 +37,6 @@ std::string NoStatePrefetchHistograms::GetHistogramPrefix(Origin origin) {
       return "webcross";
     case ORIGIN_LINK_REL_NEXT:
       return "webnext";
-    case ORIGIN_GWS_PRERENDER:
-      return "gws";
     case ORIGIN_NAVIGATION_PREDICTOR:
       return "navigationpredictor";
     case ORIGIN_MAX:

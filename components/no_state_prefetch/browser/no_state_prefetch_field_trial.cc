@@ -8,8 +8,6 @@
 
 namespace prerender {
 
-BASE_FEATURE(kGWSPrefetchHoldback, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNavigationPredictorPrefetchHoldback,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -9,9 +9,6 @@
 
 namespace prerender {
 
-// Preconnects instead of prefetching from GWS.
-BASE_DECLARE_FEATURE(kGWSPrefetchHoldback);
-
 // Preconnects instead of prefetching from NavigationPredictor.
 BASE_DECLARE_FEATURE(kNavigationPredictorPrefetchHoldback);
 

@@ -17,7 +17,7 @@ namespace prerender {
 enum Origin {
   // Obsolete: ORIGIN_LINK_REL_PRERENDER = 0,
   // Obsolete: ORIGIN_OMNIBOX_ORIGINAL = 1,
-  ORIGIN_GWS_PRERENDER = 2,
+  // Obsolete: ORIGIN_GWS_PRERENDER = 2,
   // Obsolete: ORIGIN_OMNIBOX_CONSERVATIVE = 3,
   // Obsolete: ORIGIN_OMNIBOX_EXACT = 4,
   // Obsolete: ORIGIN_OMNIBOX = 5,
