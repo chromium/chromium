@@ -32,8 +32,8 @@ using jni_zero::ScopedJavaLocalRef;
 
 namespace jni_zero::tests {
 
-double CPPClass::InnerClass::MethodOtherP0(JNIEnv* env,
-                                           const JavaRef<jobject>& caller) {
+jdouble CPPClass::InnerClass::MethodOtherP0(JNIEnv* env,
+                                            const JavaRef<jobject>& caller) {
   return 0.0;
 }
 
@@ -48,9 +48,9 @@ void CPPClass::Destroy(JNIEnv* env,
   delete this;
 }
 
-int32_t CPPClass::Method(JNIEnv* env,
-                         const JavaRef<jobject>& caller,
-                         std::vector<std::string>& strArray) {
+jint CPPClass::Method(JNIEnv* env,
+                      const JavaRef<jobject>& caller,
+                      std::vector<std::string>& strArray) {
   return 0;
 }
 
@@ -83,26 +83,26 @@ ScopedJavaLocalRef<jstring> CPPClass::ReturnAString(
 }
 
 // Static free functions declared and called directly from java.
-static int64_t JNI_SampleForTests_Init(
+static jlong JNI_SampleForTests_Init(
     JNIEnv* env,
     const JavaRef<jobject>& caller,
     const JavaRef<jstring>& param,
     jni_zero::ByteArrayView& bytes,
     CPPClass* converted_type,
     std::vector<jni_zero::ScopedJavaLocalRef<jobject>>& non_converted_array) {
-  return static_cast<int64_t>(bytes.size());
+  return static_cast<jlong>(bytes.size());
 }
 
 static void JNI_SampleForTests_ClassUnderSamePackageTest(
     JNIEnv*,
     const JavaRef<jobject>&) {}
 
-static double JNI_SampleForTests_GetDoubleFunction(JNIEnv*,
-                                                   const JavaRef<jobject>&) {
+static jdouble JNI_SampleForTests_GetDoubleFunction(JNIEnv*,
+                                                    const JavaRef<jobject>&) {
   return 0;
 }
 
-static float JNI_SampleForTests_GetFloatFunction(JNIEnv*) {
+static jfloat JNI_SampleForTests_GetFloatFunction(JNIEnv*) {
   return 0;
 }
 
@@ -199,27 +199,27 @@ JNI_SampleForAnnotationProcessor_SendSamplesToNative(
   return jni_zero::tests::JNI_SampleForTests_GetNonPODDatatype(env, strs);
 }
 
-static bool JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env) {
-  return true;
+static jboolean JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env) {
+  return jboolean(true);
 }
 
 static std::vector<int> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
     JNIEnv* env,
     int zint,
     std::vector<int>& ints,
-    int64_t zlong,
+    jlong zlong,
     const JavaRef<jlongArray>& longs,
-    int16_t zshort,
+    jshort zshort,
     const JavaRef<jshortArray>& shorts,
     int zchar,
     const JavaRef<jcharArray>& chars,
-    int8_t zbyte,
+    jbyte zbyte,
     const JavaRef<jbyteArray>& bytes,
-    double zdouble,
+    jdouble zdouble,
     const JavaRef<jdoubleArray>& doubles,
-    float zfloat,
+    jfloat zfloat,
     const JavaRef<jfloatArray>& floats,
-    bool zbool,
+    jboolean zbool,
     const JavaRef<jbooleanArray>& bools) {
   return {};
 }
@@ -290,8 +290,8 @@ JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(JNIEnv* env) {
   return {};
 }
 
-static std::vector<int32_t>
-JNI_SampleForAnnotationProcessor_ReturnConvertedInts(JNIEnv* env) {
+static std::vector<jint> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(
+    JNIEnv* env) {
   return {};
 }
 

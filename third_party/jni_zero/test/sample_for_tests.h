@@ -43,16 +43,17 @@ class CPPClass {
 
   class InnerClass {
    public:
-    double MethodOtherP0(JNIEnv* env, const jni_zero::JavaRef<jobject>& caller);
+    jdouble MethodOtherP0(JNIEnv* env,
+                          const jni_zero::JavaRef<jobject>& caller);
   };
 
   void Destroy(JNIEnv* env,
                const jni_zero::JavaRef<jobject>& caller,
                std::vector<uint8_t>& bytes);
 
-  int32_t Method(JNIEnv* env,
-                 const jni_zero::JavaRef<jobject>& caller,
-                 std::vector<std::string>& strings);
+  jint Method(JNIEnv* env,
+              const jni_zero::JavaRef<jobject>& caller,
+              std::vector<std::string>& strings);
 
   void AddStructB(JNIEnv* env,
                   const jni_zero::JavaRef<jobject>& caller,

@@ -32,7 +32,7 @@ def _param_type_cpp(java_type):
     return f'{type_str} const&'
   ret = java_type.to_cpp()
   if java_type.is_primitive():
-    if ret == 'int32_t':
+    if ret == 'jint' or ret == 'int32_t':
       return 'JniIntWrapper'
     return ret
   return f'const jni_zero::JavaRef<{ret}>&'

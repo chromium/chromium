@@ -527,6 +527,10 @@ def _WriteHeaders(jni_mode,
                   enable_definition_macros=False,
                   extra_includes=None,
                   add_natives_macro_definition=True):
+  if not enable_definition_macros:
+    java_types.CPP_UNDERLYING_TYPE_BY_JAVA_TYPE = \
+        java_types.CPP_TYPE_BY_JAVA_TYPE
+
   for jni_obj, header_name in zip(jni_objs, output_names):
     output_file = os.path.join(output_dir, header_name)
     content = _generate_header(
