@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/preload_serving_metrics.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
@@ -222,12 +223,14 @@ PrefetchContainerMetrics& PrefetchContainerMetrics::operator=(
 
 PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics::
     PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics()
-    :  // It will be filled just after ctor, but `PrefetchMatchResolverAction`
-       // has no default ctor. Here, we fill a garbage.
+    :  // The fields will be filled just after ctor, but they have no default
+       // ctor. Here, we fill invalid values.
       match_resolver_action(PrefetchMatchResolverAction(
           PrefetchMatchResolverAction::ActionKind::kDrop,
           PrefetchContainer::LoadState::kFailed,
-          /*is_expired=*/std::nullopt)) {}
+          /*is_expired=*/std::nullopt)),
+      prefetch_key_navigated(std::nullopt, GURL()),
+      prefetch_key_ahead_of_prerender(std::nullopt, GURL()) {}
 
 PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics::
     ~PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics() = default;
@@ -370,6 +373,43 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
           *this, prefix,
           /*is_prerender_initial_navigation=*/true,
           /*prefetch_match_metrics_force_use=*/&prefetch_match_metrics);
+
+      if (prefetch_match_metrics.prerender_debug_metrics &&
+          prefetch_match_metrics.prerender_debug_metrics
+              ->prefetch_ahead_of_prerender_debug_metrics) {
+        const PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics& debug_metrics =
+            *prefetch_match_metrics.prerender_debug_metrics
+                 ->prefetch_ahead_of_prerender_debug_metrics.get();
+        if (debug_metrics.collect_result ==
+            PrefetchPotentialCandidateCollectResult::
+                kUnavailablePrefetchIsNotInPrefetchService) {
+          // -
+          //   `PrefetchPotentialCandidateCollectResult::kUnavailablePrefetchIsNotInPrefetchService`
+          //   implies prefetch ahead of prerender didn't exist at the match
+          //   timing in the sense of
+          //   `CollectPotentialMatchPrefetchContainers()`.
+          // - Existence of `PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics`
+          //   implies prefetch ahead of prerender existed at the match timing
+          //   in the sense of
+          //   `PrefetchService::FindPrefetchAheadOfPrerenderForMetrics()`.
+          //
+          // We don't expect the difference as it aborts the prerender. We
+          // record some values to investigate the issue.
+          SCOPED_CRASH_KEY_BOOL(
+              "PreloadServingMetrics", "keys_same",
+              debug_metrics.prefetch_key_navigated ==
+                  debug_metrics.prefetch_key_ahead_of_prerender);
+          SCOPED_CRASH_KEY_BOOL(
+              "PreloadServingMetrics", "urls_same",
+              debug_metrics.prefetch_key_navigated.url() ==
+                  debug_metrics.prefetch_key_ahead_of_prerender.url());
+          SCOPED_CRASH_KEY_BOOL(
+              "PreloadServingMetrics", "non_urls_same",
+              debug_metrics.prefetch_key_navigated.NonUrlPartIsSame(
+                  debug_metrics.prefetch_key_ahead_of_prerender));
+          base::debug::DumpWithoutCrashing();
+        }
+      }
     }
   }
 }

@@ -892,6 +892,10 @@ void PrefetchMatchResolver::AttachPrefetchMatchPrerenderDebugMetrics() {
             *prefetch_container);
     metrics->prefetch_ahead_of_prerender_debug_metrics->collect_result =
         collect_result_ahead_of_prerender_for_metrics_;
+    metrics->prefetch_ahead_of_prerender_debug_metrics->prefetch_key_navigated =
+        navigated_key_;
+    metrics->prefetch_ahead_of_prerender_debug_metrics
+        ->prefetch_key_ahead_of_prerender = prefetch_container->key();
   }();
 
   prefetch_match_metrics_->prerender_debug_metrics = std::move(metrics);
