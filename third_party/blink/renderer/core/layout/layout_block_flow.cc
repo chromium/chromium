@@ -607,7 +607,6 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
   // This means that we cannot coalesce inlines before |insertionPoint| with
   // inlines following |insertionPoint|, because the new child is going to be
   // inserted in between the inlines, splitting them.
-  DCHECK(!IsInline() || IsAtomicInlineLevel());
   DCHECK(!insertion_point || insertion_point->Parent() == this);
 
   SetChildrenInline(false);
@@ -838,7 +837,7 @@ PositionWithAffinity LayoutBlockFlow::PositionForPoint(
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
 
-  if (IsAtomicInlineLevel()) {
+  if (IsInline()) {
     PositionWithAffinity position =
         PositionForPointIfOutsideAtomicInlineLevel(point);
     if (!position.IsNull())

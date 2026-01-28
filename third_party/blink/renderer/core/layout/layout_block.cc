@@ -457,7 +457,7 @@ bool LayoutBlock::NodeAtPoint(HitTestResult& result,
 PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  DCHECK(IsAtomicInlineLevel());
+  DCHECK(IsInline());
   LogicalOffset logical_offset =
       WritingModeConverter({StyleRef().GetWritingMode(), ResolvedDirection()},
                            StitchedSize())
@@ -481,7 +481,7 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
   DCHECK(GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kPrePaintClean);
 
-  if (IsAtomicInlineLevel()) {
+  if (IsInline()) {
     PositionWithAffinity position =
         PositionForPointIfOutsideAtomicInlineLevel(point);
     if (!position.IsNull())
@@ -528,8 +528,9 @@ const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {
   NOT_DESTROYED();
   const LayoutBlock* first_line_block = this;
   // Inline blocks do not get ::first-line style from its containing blocks.
-  if (IsAtomicInlineLevel())
+  if (IsInline()) {
     return nullptr;
+  }
   // Floats and out of flow blocks do not get ::first-line style from its
   // containing blocks.
   if (IsFloatingOrOutOfFlowPositioned())
@@ -573,8 +574,8 @@ LayoutBlockFlow* LayoutBlock::NearestInnerBlockWithFirstLine() {
 // so the firstChild() is nullptr if the only child is an empty inline-block.
 inline bool LayoutBlock::IsInlineBoxWrapperActuallyChild() const {
   NOT_DESTROYED();
-  return IsInline() && IsAtomicInlineLevel() && !StitchedSize().IsEmpty() &&
-         GetNode() && EditingIgnoresContent(*GetNode());
+  return IsInline() && !StitchedSize().IsEmpty() && GetNode() &&
+         EditingIgnoresContent(*GetNode());
 }
 
 PhysicalRect LayoutBlock::LocalCaretRect(int caret_offset,

@@ -47,7 +47,7 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
   if (IsRenderedLegend())
     return true;
 
-  if (IsAtomicInlineLevel()) {
+  if (IsInline()) {
     return true;
   }
 

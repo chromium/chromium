@@ -753,7 +753,7 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     if (old_style->OverflowClipMargin() != new_style.OverflowClipMargin())
       SetNeedsPaintPropertyUpdate();
 
-    if (IsInLayoutNGInlineFormattingContext() && IsAtomicInlineLevel() &&
+    if (IsInLayoutNGInlineFormattingContext() && IsInline() &&
         old_style->Direction() != new_style.Direction()) {
       SetNeedsCollectInlines();
     }
@@ -780,9 +780,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   // Update the script style map, from the new computed style.
   if (IsCustomItem())
     GetCustomLayoutChild()->styleMap()->UpdateStyle(GetDocument(), StyleRef());
-
-  // Non-atomic inlines should be LayoutInline or LayoutText, not LayoutBox.
-  DCHECK(!IsInline() || IsAtomicInlineLevel());
 }
 
 void LayoutBox::UpdateShapeOutsideInfoAfterStyleChange(
@@ -3727,8 +3724,8 @@ bool LayoutBox::IsMonolithic() const {
   // TODO(almaher): Don't consider a writing mode root monolitic if
   // IsFlexibleBox(). The breakability should be handled at the item
   // level. (Likely same for Table and Grid).
-  if (IsAtomicInlineLevel() || IsSemiReplaced() ||
-      HasUnsplittableScrollingOverflow() || (Parent() && IsWritingModeRoot()) ||
+  if (IsInline() || IsSemiReplaced() || HasUnsplittableScrollingOverflow() ||
+      (Parent() && IsWritingModeRoot()) ||
       (IsFixedPositioned() && GetDocument().Printing() &&
        IsA<LayoutView>(Container())) ||
       ShouldApplySizeContainment() || IsFrameSet() ||
@@ -4028,8 +4025,7 @@ RasterEffectOutset LayoutBox::VisualRectOutsetForRasterEffects() const {
 
 TextDirection LayoutBox::ResolvedDirection() const {
   NOT_DESTROYED();
-  if (IsInline() && IsAtomicInlineLevel() &&
-      IsInLayoutNGInlineFormattingContext()) {
+  if (IsInLayoutNGInlineFormattingContext() && IsInline()) {
     InlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor) {
