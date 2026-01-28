@@ -40,7 +40,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="141901961143729572">Povejte svoje mnenje</translation>
 <translation id="1465192221147974788">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chromium.</translation>
 <translation id="1478370723027452770">Pomoč za Chrome for Testing</translation>
-<translation id="1496875977627931224">Pozdravljeni, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />o čem razmišljate danes?</translation>
 <translation id="1497802159252041924">Napaka pri namestitvi: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Ta stran je zaščitena</translation>
 <translation id="1524282610922162960">Deljenje zavihka v Chromiumu</translation>
@@ -364,7 +363,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5083712646171654472">Gemini v Chromiumu uporablja samodejno brskanje za delo na vaših zavihkih in dokončanje opravil, ki mu jih dodelite. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium potrebuje dovoljenje za sledenje potezam dlani</translation>
 <translation id="5141988424377517949">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
-<translation id="5167819546851111585">O čem razmišljate danes?</translation>
 <translation id="5174969993834422967">Obvestila običajno blokirate. Če želite dovoliti, da vas to spletno mesto obvešča, kliknite ikono obvestila v desnem kotu vrstice z lokacijo.</translation>
 <translation id="5174983315706567306">Premalo prostora na disku.</translation>
 <translation id="5187123684706427865">Račun Chromium zahteva vnovično preverjanje pristnosti</translation>

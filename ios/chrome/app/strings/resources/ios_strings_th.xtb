@@ -1021,6 +1021,7 @@
 <translation id="483689884442613745">บันทึก…</translation>
 <translation id="4840495572919996524">บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป</translation>
 <translation id="484280513275854557">คุณออกจากระบบแล้ว ลบข้อมูลการท่องเว็บแล้ว</translation>
+<translation id="484462545196658690">อัตโนมัติ</translation>
 <translation id="4850886885716139402">ดู</translation>
 <translation id="4854068532375923088">อนุญาตให้ "Gemini" ใช้กล้อง</translation>
 <translation id="4860895144060829044">โทร</translation>
@@ -1522,6 +1523,7 @@
 <translation id="6556866813142980365">ทำซ้ำ</translation>
 <translation id="6559301491397835130">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="656065428026159829">ดูเพิ่มเติม</translation>
+<translation id="6565899972286925956">ลองสร้างอะไรก็ได้</translation>
 <translation id="6571070086367343653">แก้ไขบัตรเครดิต</translation>
 <translation id="6574092468346088891">เปิดการแจ้งเตือนสำหรับการตรวจสอบความปลอดภัย</translation>
 <translation id="6579867704846662339">คุณเลือกเปิด URL ที่มีเข้ามาจากแอปอื่นๆ ในโหมดไม่ระบุตัวตนได้</translation>

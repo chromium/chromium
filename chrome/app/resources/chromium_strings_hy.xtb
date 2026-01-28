@@ -40,7 +40,6 @@
 <translation id="141901961143729572">Կիսվեք ձեր մտքերով</translation>
 <translation id="1465192221147974788">Ձեր պատուհանով կիսվելու համար Համակարգի կարգավորումներում թույլատրեք էկրանի տեսագրումը Chromium-ի համար։</translation>
 <translation id="1478370723027452770">Ստանալ օգնություն Chrome for Testing-ի միջոցով</translation>
-<translation id="1496875977627931224">Ողջույն, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />կիսվեք ձեր այսօրվա գաղափարներով</translation>
 <translation id="1497802159252041924">Տեղադրման սխալ՝ <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Այս էջը պաշտպանված է</translation>
 <translation id="1524282610922162960">Կիսվեք Chromium-ի ներդիրով</translation>
@@ -364,7 +363,6 @@
 <translation id="5083712646171654472">Gemini-ը Chromium-ում օգտագործում է ավտոմատ դիտարկումը՝ ձեր ներդիրներում աշխատելու և ձեր հանձնարարած առաջադրանքները կատարելու համար։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium-ին անհրաժեշտ է թույլտվություն՝ ձեր ձեռքերի շարժումները հետագծելու համար</translation>
 <translation id="5141988424377517949">Դուք վաղուց չեք այցելել կայք։ Chromium-ը հեռացրել է «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» և «<ph name="PERMISSION_3" />» թույլտվությունները։</translation>
-<translation id="5167819546851111585">Կիսվեք ձեր այսօրվա գաղափարներով</translation>
 <translation id="5174969993834422967">Դուք սովորաբար արգելափակում եք ծանուցումները։ Հասցեագոտու աջ անկյունում սեղմեք ծանուցման պատկերակը, որպեսզի թույլ տաք կայքին ծանուցել ձեզ։</translation>
 <translation id="5174983315706567306">Սկավառակում բավարար տարածք չկա։</translation>
 <translation id="5187123684706427865">Chromium հաշիվը պահանջում է վերաիսկորոշում</translation>

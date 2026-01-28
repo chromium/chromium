@@ -37,7 +37,6 @@
 <translation id="141901961143729572">Düşüncelerinizi paylaşın</translation>
 <translation id="1465192221147974788">Pencerenizi paylaşmak için Sistem Ayarları'nda Chromium'un ekranı kaydetmesine izin verin.</translation>
 <translation id="1478370723027452770">Chrome for Testing ile ilgili yardım alın</translation>
-<translation id="1496875977627931224">Merhaba <ph name="USER_NAME" />,<ph name="LINE_BREAK" />bugün aklınızda ne var?</translation>
 <translation id="1497802159252041924">Yükleme hatası: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Bu sayfa korunuyor</translation>
 <translation id="1524282610922162960">Chromium sekmesini paylaşın</translation>
@@ -359,7 +358,6 @@
 <translation id="5083712646171654472">Chromium'da Gemini, sekmelerinizde çalışmak ve verdiğiniz görevleri tamamlamak için otomatik göz atma özelliğini kullanır. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="5123973130450702873">Chromium'un ellerinizi takip etmek için izne ihtiyacı var</translation>
 <translation id="5141988424377517949">Son zamanlarda ziyaret etmediniz. Chromium; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
-<translation id="5167819546851111585">Aklınızda ne var?</translation>
 <translation id="5174969993834422967">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için konum çubuğunuzun sağ köşesindeki bildirim simgesini tıklayın.</translation>
 <translation id="5174983315706567306">Yeterli disk alanı yok.</translation>
 <translation id="5187123684706427865">Chromium hesabı için yeniden kimlik doğrulama gerekiyor</translation>

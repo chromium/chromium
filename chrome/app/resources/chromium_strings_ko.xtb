@@ -39,7 +39,6 @@
 <translation id="141901961143729572">의견 공유</translation>
 <translation id="1465192221147974788">창을 공유하려면 시스템 설정에서 Chromium의 화면 녹화를 허용하세요.</translation>
 <translation id="1478370723027452770">Chrome for Testing 관련 지원받기</translation>
-<translation id="1496875977627931224"><ph name="USER_NAME" />님, 안녕하세요.<ph name="LINE_BREAK" />오늘은 어떤 생각을 하고 계시나요?</translation>
 <translation id="1497802159252041924">설치 오류: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">보호된 페이지입니다.</translation>
 <translation id="1524282610922162960">Chromium 탭 공유</translation>
@@ -363,7 +362,6 @@
 <translation id="5083712646171654472">Chromium의 Gemini는 자동 탐색을 사용하여 탭에서 작동하고 사용자가 지정한 작업을 완료합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium에서 손 추적 기능을 사용하려면 권한이 필요합니다.</translation>
 <translation id="5141988424377517949">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
-<translation id="5167819546851111585">오늘은 어떤 생각을 하고 계시나요?</translation>
 <translation id="5174969993834422967">기본적으로 알림을 차단하는 중입니다. 이 사이트의 알림을 허용하려면 위치 표시줄의 오른쪽 모서리에 있는 알림 아이콘을 클릭하세요.</translation>
 <translation id="5174983315706567306">디스크 공간이 충분하지 않습니다.</translation>
 <translation id="5187123684706427865">Chromium 계정에 재인증이 필요함</translation>

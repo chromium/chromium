@@ -2574,6 +2574,7 @@
 <translation id="2724841811573117416">บันทึก WebRTC</translation>
 <translation id="272488616838512378">การแปลงหน่วย</translation>
 <translation id="2725200716980197196">กู้คืนการเชื่อมต่อเครือข่ายแล้ว</translation>
+<translation id="2725312032345042618">ประวัติกิจกรรม</translation>
 <translation id="2726776862643824793">ลดความสว่างของหน้าจอ</translation>
 <translation id="272741954544380994">ค้นหารูปภาพด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">ไม่ต้องเตือนฉันอีก</translation>
@@ -2915,6 +2916,7 @@
 <translation id="2950666755714083615">ให้ฉันลงชื่อสมัครใช้</translation>
 <translation id="2953210795988451570">การอัปเดตความปลอดภัยสิ้นสุดแล้ว เปลี่ยนไปใช้ Chromebook รุ่นใหม่</translation>
 <translation id="2953218713108551165">ไม่อนุญาตให้ <ph name="SITE" /> ส่งการแจ้งเตือน ระบบจะถามคุณอีกครั้งเมื่อเข้าชมครั้งถัดไป</translation>
+<translation id="2954777802959138493">ดูสถานะของโปรแกรมอัปเดตไม่ได้</translation>
 <translation id="2955048943983973430">บริการของ Google ที่เกี่ยวข้อง</translation>
 <translation id="2956070239128776395">ส่วนที่ฝังอยู่ในกลุ่ม: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">เปิดโหมดนักพัฒนาซอฟต์แวร์เพื่อใช้ส่วนขยายนี้ ซึ่ง Chrome เว็บสโตร์ไม่สามารถตรวจสอบได้</translation>
@@ -3647,6 +3649,7 @@
 <translation id="3468298837301810372">ป้ายกำกับ</translation>
 <translation id="3468999815377931311">โทรศัพท์ Android</translation>
 <translation id="3469583217479686109">เครื่องมือการเลือก</translation>
+<translation id="3471687177769494956">แก้ไขทางลัดการนำทาง</translation>
 <translation id="3471876058939596279">ใช้พอร์ต HDMI และ USB Type-C สำหรับวิดีโอพร้อมกันไม่ได้ โปรดใช้พอร์ตวิดีโออื่น</translation>
 <translation id="3472469028191701821">เปิดในแท็บใหม่</translation>
 <translation id="3473241910002674503">ไปยังหน้าแรก ย้อนกลับ และสลับแอปด้วยปุ่มในโหมดแท็บเล็ต</translation>
@@ -7078,6 +7081,7 @@
 <translation id="5828181959764767444">พระอาทิตย์ตก</translation>
 <translation id="5828545842856466741">เพิ่มโปรไฟล์...</translation>
 <translation id="5828633471261496623">กำลังพิมพ์...</translation>
+<translation id="5829544019044013776">วิธีการชำระเงินของคุณใน Google Wallet</translation>
 <translation id="5830205393314753525">เปิด <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="5830512293931520102">รหัสผ่านของคุณได้รับการเข้ารหัสและจะไม่มีใครเห็นรหัสผ่านของคุณ</translation>
 <translation id="5830720307094128296">บันทึกหน้าเ&amp;ป็น...</translation>
@@ -7642,6 +7646,7 @@
 <translation id="6212168817037875041">ปิดจอแสดงผล</translation>
 <translation id="6212752530110374741">ส่งลิงก์ทางอีเมล</translation>
 <translation id="6214106213498203737">ภาพสีน้ำ</translation>
+<translation id="6214157047210274853">แก้ไขใน Google Wallet</translation>
 <translation id="621470880408090483">ไม่อนุญาตให้เว็บไซต์เชื่อมต่ออุปกรณ์บลูทูธ</translation>
 <translation id="6215039389782910006">{1,plural, =1{<ph name="BRAND" /> จะล็อกหลังจากที่ไม่มีการใช้งานเป็นเวลา 1 นาทีเพื่อรักษารหัสผ่านของคุณให้ปลอดภัย}other{<ph name="BRAND" /> จะล็อกหลังจากที่ไม่มีการใช้งานเป็นเวลา # นาทีเพื่อรักษารหัสผ่านของคุณให้ปลอดภัย}}</translation>
 <translation id="6216154119179790291">เลื่อนไปที่แท็บแรก</translation>
@@ -11286,6 +11291,7 @@
 <translation id="8703346390800944767">ข้ามโฆษณา</translation>
 <translation id="8703372953981978786">ลิงก์นี้ใช้ไม่ได้</translation>
 <translation id="8703766890819308134">แสดงทางลัดการค้นหา</translation>
+<translation id="8704248383043944131">แก้ไขแป้นพิมพ์ลัด</translation>
 <translation id="8704662571571150811">โดเมน</translation>
 <translation id="8705331520020532516">หมายเลขซีเรียล</translation>
 <translation id="870536819717176711">เมื่อคุณเลือกแชร์แท็บปัจจุบันกับ Gemini ระบบจะส่งเนื้อหาทั้งหมด สื่อ และ URL ของแท็บไปยัง Google</translation>
@@ -11606,6 +11612,7 @@
 <translation id="8911914282056933784">ซ่อนโปรเจ็กต์</translation>
 <translation id="8912362522468806198">บัญชี Google</translation>
 <translation id="8912810933860534797">เปิดใช้การสแกนอัตโนมัติ</translation>
+<translation id="8913485523736543337">โปรแกรมอัปเดต</translation>
 <translation id="8914030287343429787">ดูรหัสผ่านได้แม้ไม่ได้ใช้ Chrome หรือ Android โดยลงชื่อเข้าใช้ที่ <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">เปิด Chrome ขึ้นใหม่</translation>
 <translation id="8915307125957890427">คลิกขวาที่แท็บแล้วเลือก "เพิ่มแท็บไปยังกลุ่ม" จากนั้นเลือก "กลุ่มใหม่"</translation>
@@ -11746,6 +11753,7 @@
 <translation id="8999560016882908256">ข้อผิดพลาดทางไวยากรณ์ของส่วน: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">การเคลื่อนไหวบนหน้าจอลดลง</translation>
 <translation id="9000185763019430629">แตะเซ็นเซอร์ลายนิ้วมือที่ด้านขวาของ <ph name="DEVICE_TYPE" /> ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ</translation>
+<translation id="9000529821022336229">ไม่พบการติดตั้งโปรแกรมอัปเดต</translation>
 <translation id="900267527532832868">พาสคีย์นี้ใช้งานไม่ได้แล้ว ระบบจะลบออกจาก <ph name="GOOGLE_PASSWORD_MANAGER" /> ในเร็วๆ นี้</translation>
 <translation id="9003031149571024583">ป้อนหมายเลข PIN ลำดับที่ <ph name="NUM_DIGIT" /> จาก 6 กด Backspace หรือ Delete เพื่อนำตัวเลขสุดท้ายออก</translation>
 <translation id="9003185744423389627">การเชื่อมต่อกับเซิร์ฟเวอร์การจัดการอุปกรณ์ไม่สำเร็จโดยมีสถานะ "<ph name="STATUS_TEXT" />" เมื่อ <ph name="FAILURE_TIME" /></translation>

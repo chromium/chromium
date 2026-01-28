@@ -38,7 +38,6 @@
 <translation id="141901961143729572">Podijelite svoje misli</translation>
 <translation id="1465192221147974788">Da biste dijelili prozor, u postavkama sustava dopustite snimanje zaslona za Chromium.</translation>
 <translation id="1478370723027452770">Zatražite pomoć za Chrome for Testing</translation>
-<translation id="1496875977627931224">Pozdrav, <ph name="USER_NAME" />,<ph name="LINE_BREAK" />što vam je danas na umu?</translation>
 <translation id="1497802159252041924">Instalacijska pogreška: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Ova je stranica zaštićena</translation>
 <translation id="1524282610922162960">Dijeljenje kartice Chromium</translation>
@@ -362,7 +361,6 @@
 <translation id="5083712646171654472">Gemini u Chromiumu upotrebljava automatsko pregledavanje za rad na vašim karticama i dovršavanje zadataka koje mu dodijelite. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium treba dopuštenje za praćenje pokreta vaših ruku</translation>
 <translation id="5141988424377517949">U posljednje vrijeme niste posjećivali web-lokaciju. Chromium je uklonio dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
-<translation id="5167819546851111585">Što vam je danas na umu?</translation>
 <translation id="5174969993834422967">Uglavnom blokirate obavijesti. Da biste dopustili web-lokaciji da vas obavještava, kliknite ikonu obavijesti u desnom kutu trake za lokaciju.</translation>
 <translation id="5174983315706567306">Nema dovoljno prostora na disku.</translation>
 <translation id="5187123684706427865">Chromium račun zahtijeva ponovnu autentifikaciju</translation>

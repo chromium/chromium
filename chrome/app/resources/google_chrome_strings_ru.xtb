@@ -46,7 +46,6 @@
 <translation id="146866447420868597">Войти в Chrome?</translation>
 <translation id="1476347941828409626">&amp;Настроить профили Chrome</translation>
 <translation id="1492280395845991349">Перезапустите Chrome, чтобы завершить обновление</translation>
-<translation id="1496875977627931224">Здравствуйте, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />О чем вы хотите спросить?</translation>
 <translation id="1497802159252041924">Ошибка установки: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="1507198376417198979">Настройте новый профиль Chrome</translation>
 <translation id="1518627427551567882">Эта страница защищена.</translation>
@@ -376,7 +375,6 @@
 <translation id="5139423532931106058">Настройка профиля Chrome</translation>
 <translation id="5163087008893166964">Добро пожаловать в Chrome! Открыто новое окно браузера.</translation>
 <translation id="5166439563123238795">Chrome необходимо разрешение на отслеживание рук</translation>
-<translation id="5167819546851111585">О чем вы хотите узнать?</translation>
 <translation id="5169778651486082413">Используйте пароли в Chrome на телефоне</translation>
 <translation id="5170938038195470297">Использовать этот профиль невозможно, так как он был создан в более новой версии Google Chrome. Некоторые функции могут быть недоступны. Укажите другой каталог профиля или установите более новую версию Chrome.</translation>
 <translation id="5174969993834422967">Обычно вы блокируете уведомления. Чтобы получать их с этого сайта, нажмите на значок оповещений в правом верхнем углу адресной строки.</translation>

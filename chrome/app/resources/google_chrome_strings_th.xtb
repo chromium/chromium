@@ -26,6 +26,7 @@
 <translation id="1158134713295836892">Gemini ใน Chrome</translation>
 <translation id="1184145431117212167">ติดตั้งไม่สำเร็จเนื่องจากระบบไม่รองรับ Windows เวอร์ชันที่คุณใช้</translation>
 <translation id="1194807384646768652">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์ประเภทนี้ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและอาจเป็นอันตราย</translation>
+<translation id="1197860368385086056">ครั้งถัดไปที่เปิด Chrome ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้เปิดใช้การแจ้งเตือนการติดตามราคา</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="1278833599417554002">เปิดอีกครั้งเพื่ออัปเดต Chrome</translation>
 <translation id="1290883685122687410">ข้อผิดพลาดในการตั้งค่า: <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
@@ -46,7 +47,6 @@
 <translation id="146866447420868597">ลงชื่อเข้าใช้ Chrome ไหม</translation>
 <translation id="1476347941828409626">&amp;จัดการโปรไฟล์ Chrome</translation>
 <translation id="1492280395845991349">เปิดอีกครั้งเพื่อให้การอัปเดต Chrome เสร็จสิ้น</translation>
-<translation id="1496875977627931224">สวัสดี <ph name="USER_NAME" /><ph name="LINE_BREAK" />วันนี้คุณกำลังคิดอะไรอยู่</translation>
 <translation id="1497802159252041924">ข้อผิดพลาดในการติดตั้ง: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">ปรับแต่งโปรไฟล์ Chrome ใหม่</translation>
 <translation id="1518627427551567882">หน้านี้ได้รับการป้องกัน</translation>
@@ -376,7 +376,6 @@
 <translation id="5139423532931106058">ปรับแต่งโปรไฟล์ Chrome ของคุณ</translation>
 <translation id="5163087008893166964">ยินดีต้อนรับสู่ Chrome เปิดหน้าต่างเบราวเซอร์ใหม่แล้ว</translation>
 <translation id="5166439563123238795">Chrome ต้องการสิทธิ์ในการติดตามการเคลื่อนไหวของมือ</translation>
-<translation id="5167819546851111585">วันนี้คุณกำลังคิดอะไรอยู่</translation>
 <translation id="5169778651486082413">ใช้รหัสผ่านกับ Chrome ในโทรศัพท์</translation>
 <translation id="5170938038195470297">โปรไฟล์ของคุณไม่สามารถใช้ได้เพราะมาจากรุ่นที่ใหม่กว่าของ Google Chrome ฟีเจอร์บางอย่างอาจจะไม่พร้อมใช้งาน โปรดระบุไดเรกทอรีของโปรไฟล์อื่นหรือใช้ Chrome รุ่นที่ใหม่กว่า</translation>
 <translation id="5174969993834422967">คุณมักจะบล็อกการแจ้งเตือน หากต้องการให้เว็บไซต์ส่งการแจ้งเตือน ให้คลิกไอคอนการแจ้งเตือนที่มุมขวาของแถบตําแหน่ง</translation>
@@ -501,6 +500,7 @@
 <translation id="6321592572353357376">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ต้องการให้คุณลงชื่อเข้าใช้ Chrome</translation>
 <translation id="6326175484149238433">ลบจาก Chrome</translation>
 <translation id="6327105987658262776">ไม่มีอัปเดตพร้อมใช้งาน</translation>
+<translation id="6333195756043503664">เปิด Chrome เมื่อคอมพิวเตอร์เริ่มทำงาน</translation>
 <translation id="6334815226785304306">ตั้ง Google Chrome เป็นเบราว์เซอร์เริ่มต้นและปักหมุดไว้ที่แถบงาน</translation>
 <translation id="63540178978900677">Chrome ไม่ใช่เบราว์เซอร์เริ่มต้นของคุณอีกต่อไป ทำให้ Chrome เป็นเบราว์เซอร์เริ่มต้นไหม</translation>
 <translation id="6360449101159168105">ขณะที่แท็บนี้ไม่มีการใช้งาน ระบบจะเพิ่มพื้นที่ว่างในหน่วยความจำเพื่อให้ใช้ Chrome ได้อย่างรวดเร็วอยู่เสมอ ทั้งนี้คุณจะเลือกยกเว้นให้เว็บไซต์นี้ทำงานตลอดเวลาได้</translation>
@@ -610,6 +610,7 @@
 <translation id="7515191208480168435">คุณสามารถปักหมุด Google Lens เพื่อให้เข้าถึงได้ง่าย</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">ลงชื่อเข้าใช้ Chrome เพื่อดูบุ๊กมาร์กนี้และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
+<translation id="756134248912568991">ครั้งถัดไปที่เปิด Chrome ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้ใช้กลุ่มแท็บ</translation>
 <translation id="756809126120519699">ล้างข้อมูล Chrome แล้ว</translation>
 <translation id="7572537927358445944">ปิด • Chrome ยืนยันไม่ได้ว่าส่วนขยายนี้มาจากไหน</translation>
 <translation id="7583399374488819119">โปรแกรมติดตั้ง <ph name="COMPANY_NAME" /></translation>

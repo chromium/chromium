@@ -40,7 +40,6 @@
 <translation id="141901961143729572">Делите размишљања</translation>
 <translation id="1465192221147974788">Да бисте делили прозор, дозволите снимање екрана за Chromium у подешавањима система.</translation>
 <translation id="1478370723027452770">Потражите помоћ за верзију Chrome for Testing</translation>
-<translation id="1496875977627931224">Здраво <ph name="USER_NAME" />,<ph name="LINE_BREAK" />о чему размишљате данас?</translation>
 <translation id="1497802159252041924">Грешка при инсталацији: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Ова страница је заштићена</translation>
 <translation id="1524282610922162960">Делите Chromium картицу</translation>
@@ -364,7 +363,6 @@
 <translation id="5083712646171654472">Gemini у Chromium-у користи аутоматско прегледање за рад на картицама и обављање задатака које му доделите. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium-у треба дозвола за праћење руку</translation>
 <translation id="5141988424377517949">Нисте скоро посећивали сајт. Chromium је уклонио дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
-<translation id="5167819546851111585">О чему размишљате данас?</translation>
 <translation id="5174969993834422967">Обично блокирате обавештења. Да бисте дозволили овом сајту да вас обавештава, кликните на икону обавештења у десном углу траке за локацију.</translation>
 <translation id="5174983315706567306">Нема довољно простора на диску.</translation>
 <translation id="5187123684706427865">Chromium налог захтева поновну потврду идентитета</translation>

@@ -41,6 +41,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> åpnes i Chrome. Ved å fortsette samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Du har ikke passord lagret i Google Passordlagring.</translation>
 <translation id="115483310321669804">Bruk passordet <ph name="PASSWORD" /></translation>
+<translation id="1161065531352634524">Synkroniser faner og logg</translation>
 <translation id="1165109137568919258">Ta et bilde eller legg til et bilde fra bildegalleriet for å søke</translation>
 <translation id="1173894706177603556">Gi nytt navn</translation>
 <translation id="1174479719160874822">Chrome forespør mobilnettstedet når skjermen er smal</translation>
@@ -126,6 +127,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="147982357559798527">Endret</translation>
 <translation id="1480287803138246127">Det kan hende at deler av loggen din ikke vises her. For å se hele Chrome-loggen din, åpne hele Chrome-loggen.</translation>
 <translation id="1493287004536771723">Du følger <ph name="SITE_NAME" /></translation>
+<translation id="1495677929897281669">Tilbake til fanen</translation>
 <translation id="1496514951988037011">brukernavn</translation>
 <translation id="1501480321619201731">Slett gruppen</translation>
 <translation id="1506061864768559482">Søkemotor</translation>
@@ -1437,6 +1439,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7020741890149022655">Legg til på leselisten <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Åpne i nettleseren</translation>
 <translation id="7029809446516969842">Passord</translation>
+<translation id="7037994709569287156">Gjør Chrome til standardnettleser</translation>
 <translation id="7053256416619638731">Gjør passordene dine sterkere på denne enheten</translation>
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7054588988317389591">Vil du ha bildebeskrivelser?</translation>

@@ -28,6 +28,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1158134713295836892">Gemini in Chrome</translation>
 <translation id="1184145431117212167">Installation failed because your version of Windows is not supported.</translation>
 <translation id="1194807384646768652">Chrome blocked this download because the file type isn't commonly downloaded and it may be dangerous</translation>
+<translation id="1197860368385086056">Next time you open Chrome on your <ph name="DEVICE_TYPE" />, you'll see a prompt to enable price tracking alerts.</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Relaunch to update &amp;Chrome</translation>
 <translation id="1290883685122687410">Setup error: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -48,7 +49,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="146866447420868597">Sign in to Chrome?</translation>
 <translation id="1476347941828409626">&amp;Manage Chrome profiles</translation>
 <translation id="1492280395845991349">Relaunch to finish Chrome update</translation>
-<translation id="1496875977627931224">Hi <ph name="USER_NAME" />,<ph name="LINE_BREAK" />what's on your mind today?</translation>
 <translation id="1497802159252041924">Install error: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1518627427551567882">This page is protected</translation>
@@ -381,7 +381,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5139423532931106058">Customise your Chrome profile</translation>
 <translation id="5163087008893166964">Welcome to Chrome; new browser window opened</translation>
 <translation id="5166439563123238795">Chrome needs permission to track your hands</translation>
-<translation id="5167819546851111585">What's on your mind today?</translation>
 <translation id="5169778651486082413">Use your passwords with Chrome on your phone</translation>
 <translation id="5170938038195470297">Your profile cannot be used because it is from a newer version of Google Chrome.
 
@@ -510,6 +509,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6321592572353357376">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chrome</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6327105987658262776">No update is available.</translation>
+<translation id="6333195756043503664">Open Chrome when my computer starts</translation>
 <translation id="6334815226785304306">Make Google Chrome the default browser and pin to the taskbar</translation>
 <translation id="63540178978900677">Chrome is no longer your default browser. Make Chrome the default browser?</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
@@ -619,6 +619,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7515191208480168435">You can pin Google Lens for easy access</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">To get this bookmark and more on all your devices, sign in to Chrome</translation>
+<translation id="756134248912568991">Next time you open Chrome on your <ph name="DEVICE_TYPE" />, you'll see a prompt to use tab groups.</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>
 <translation id="7572537927358445944">Off • Chrome can't verify where this extension comes from</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>

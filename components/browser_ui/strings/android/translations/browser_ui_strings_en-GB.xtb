@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">You can ask to see the desktop version of sites</translation>
 <translation id="1085696779717592361">Use Chrome by default</translation>
 <translation id="113098737392899175">Navigate pages with a text cursor when a keyboard is attached</translation>
+<translation id="1149644372535087155">Save passwords in Chrome</translation>
 <translation id="1178015372320901893">My shortcuts bottom sheet</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
@@ -171,6 +172,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="2682367912565197520">Delete saved zoom level</translation>
 <translation id="2683434792633810741">Delete and reset?</translation>
 <translation id="2685514716378236873">Not allowed</translation>
+<translation id="2710883118091822664">Sign in to easily continue on all your devices</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2717722538473713889">Email addresses</translation>
 <translation id="2726059656860238749">Launch Chrome with the omnibox focused, reducing start-up time on low-end devices.</translation>
@@ -198,6 +200,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3004438526346162184">Sites can use this feature to manage windows on all your displays</translation>
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="301521992641321250">Automatically blocked</translation>
+<translation id="3026311960038210">Theme collections</translation>
 <translation id="3064871050034234884">Sites can play sound</translation>
 <translation id="3065787901655140044">Advanced Protection is on</translation>
 <translation id="3069226013421428034">Allow third-party sign-in for a specific site.</translation>
@@ -340,6 +343,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4478158430052450698">Make it easier to customise zoom for different sites</translation>
 <translation id="4479647676395637221">Ask first before allowing sites to use your camera (recommended)</translation>
 <translation id="4505788138578415521">URL expanded</translation>
+<translation id="4523472416386354622">Sign in to start</translation>
 <translation id="4534723447064627427">To let <ph name="APP_NAME" /> access your microphone, also turn on microphone in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="4570913071927164677">Details</translation>
@@ -396,6 +400,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="512938610812707830">New tab page appearance theme collections bottom sheet opened at full height</translation>
 <translation id="5137460097045297858">Discover feed bottom sheet opened at half height</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Price drop on your open tabs}other{Price drops on your open tabs}}</translation>
+<translation id="5150048675001754041">Sign in quickly and easily into sites and apps</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Customise your new tab page bottom sheet closed</translation>
@@ -564,6 +569,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="6980861169612950611">Delete site data? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6991142177939282156">Allowed • Using approximate</translation>
+<translation id="6992014788289743568">Strengthen your security and keep your data safer by checking your passwords</translation>
 <translation id="6992289844737586249">Ask first before allowing sites to use your microphone (recommended)</translation>
 <translation id="7000754031042624318">Turned off in Android settings</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>

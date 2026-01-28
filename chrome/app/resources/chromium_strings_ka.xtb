@@ -40,7 +40,6 @@
 <translation id="141901961143729572">გაგვიზიარეთ თქვენი მოსაზრებები</translation>
 <translation id="1465192221147974788">თქვენი ფანჯრის გასაზიარებლად დაუშვით ეკრანის ჩაწერა Chromium-ისთვის სისტემის პარამეტრებში.</translation>
 <translation id="1478370723027452770">დახმარების მიღება Chrome for Testing-თან დაკავშირებით</translation>
-<translation id="1496875977627931224">გამარჯობა, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />რას ფიქრობთ დღეს?</translation>
 <translation id="1497802159252041924">შეცდომა ინსტალაციისას: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">ეს გვერდი დაცულია</translation>
 <translation id="1524282610922162960">Chromium ჩანართის გაზიარება</translation>
@@ -364,7 +363,6 @@
 <translation id="5083712646171654472">Gemini Chromium-ში იყენებს ავტომატურ დათვალიერებას, რათა იმუშაოს თქვენს ჩანართებში და შეასრულოს თქვენ მიერ დაკისრებული მიცემული დავალებები. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium-ს სჭირდება ნებართვა თქვენი ხელების მოძრაობაზე თვალის მისადევნებლად</translation>
 <translation id="5141988424377517949">ბოლო დროს არ ყოფილხართ. Chromium-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="PERMISSION_3" />.</translation>
-<translation id="5167819546851111585">რას ფიქრობთ დღეს?</translation>
 <translation id="5174969993834422967">როგორც წესი, თქვენ ბლოკავთ შეტყობინებებს. ამ საიტისგან შეტყობინებების მისაღებად დააწკაპუნეთ მდებარეობის ზოლის მარჯვენა კუთხეში მდებარე ხატულას.</translation>
 <translation id="5174983315706567306">სივრცე დისკზე საკმარისი არ არის.</translation>
 <translation id="5187123684706427865">Chromium ანგარიში საჭიროებს ხელახლა ავტორიზაციას</translation>

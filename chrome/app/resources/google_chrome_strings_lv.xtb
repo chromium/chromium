@@ -46,7 +46,6 @@
 <translation id="146866447420868597">Vai pierakstīties pārlūkā Chrome?</translation>
 <translation id="1476347941828409626">&amp;Pārvaldīt Chrome profilus</translation>
 <translation id="1492280395845991349">Atkārtota palaišana, lai pabeigtu Chrome atjaunināšanu</translation>
-<translation id="1496875977627931224">Labdien, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />Kas jums šodien padomā?</translation>
 <translation id="1497802159252041924">Instalēšanas kļūda: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Pielāgojiet savu jauno Chrome profilu.</translation>
 <translation id="1518627427551567882">Šī lapa ir aizsargāta</translation>
@@ -378,7 +377,6 @@
 <translation id="5139423532931106058">Pielāgot Chrome profilu</translation>
 <translation id="5163087008893166964">Laipni lūdzam pārlūkā Chrome (tika atvērts jauns pārlūka logs)!</translation>
 <translation id="5166439563123238795">Pārlūkam Chrome ir nepieciešama atļauja izsekot jūsu roku kustības.</translation>
-<translation id="5167819546851111585">Kas jums šodien padomā?</translation>
 <translation id="5169778651486082413">Izmantojiet savas paroles pārlūkā Chrome savā tālrunī</translation>
 <translation id="5170938038195470297">Jūsu profilu nevar lietot, jo tas ir veidots ar jaunāku Google Chrome versiju.
 

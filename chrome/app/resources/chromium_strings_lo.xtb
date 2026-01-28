@@ -40,7 +40,6 @@
 <translation id="141901961143729572">ແບ່ງປັນຄວາມຄິດຂອງທ່ານ</translation>
 <translation id="1465192221147974788">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chromium ໃນການຕັ້ງຄ່າລະບົບ.</translation>
 <translation id="1478370723027452770">ຮັບຄວາມຊ່ວຍເຫຼືອກ່ຽວກັບ Chrome ສຳລັບການທົດສອບ</translation>
-<translation id="1496875977627931224">ສະບາຍດີ <ph name="USER_NAME" />,<ph name="LINE_BREAK" />ມື້ນີ້ທ່ານກຳລັງຄິດຫຍັງຢູ່?</translation>
 <translation id="1497802159252041924">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">ໜ້ານີ້ໄດ້ຮັບການປ້ອງກັນ</translation>
 <translation id="1524282610922162960">ແບ່ງປັນແຖບ Chromium</translation>
@@ -364,7 +363,6 @@
 <translation id="5083712646171654472">Gemini ໃນ Chromium ໃຊ້ການທ່ອງເວັບອັດຕະໂນມັດເພື່ອເຮັດວຽກໃນແຖບຂອງທ່ານ ແລະ ເຮັດໜ້າວຽກທີ່ທ່ານກຳນົດໃຫ້ສຳເລັດ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium ຕ້ອງໄດ້ຮັບການອະນຸຍາດເພື່ອຕິດຕາມການເຄື່ອນໄຫວຂອງມືທ່ານ</translation>
 <translation id="5141988424377517949">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chromium ໄດ້ລຶບ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ອອກແລ້ວ.</translation>
-<translation id="5167819546851111585">ມື້ນີ້ທ່ານກຳລັງຄິດຫຍັງຢູ່?</translation>
 <translation id="5174969993834422967">ໂດຍປົກກະຕິແລ້ວທ່ານບລັອກການແຈ້ງເຕືອນ. ເພື່ອໃຫ້ເວັບໄຊນີ້ແຈ້ງເຕືອນທ່ານ, ໃຫ້ຄລິກທີ່ໄອຄອນການແຈ້ງເຕືອນຢູ່ມຸມຂວາຂອງແຖບສະຖານທີ່ຂອງທ່ານ.</translation>
 <translation id="5174983315706567306">ພື້ນທີ່ດິສກ໌ບໍ່ພຽງພໍ.</translation>
 <translation id="5187123684706427865">ບັນຊີ Chromium ຕ້ອງມີການພິສູດຢືນຢັນຄືນໃໝ່</translation>

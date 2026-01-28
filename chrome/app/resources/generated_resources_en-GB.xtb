@@ -2587,6 +2587,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2724841811573117416">WebRTC logs</translation>
 <translation id="272488616838512378">Unit conversion</translation>
 <translation id="2725200716980197196">Network connectivity restored</translation>
+<translation id="2725312032345042618">Event history</translation>
 <translation id="2726776862643824793">Display brightness down</translation>
 <translation id="272741954544380994">Search image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Don't remind me again</translation>
@@ -2928,6 +2929,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2950666755714083615">Sign me up</translation>
 <translation id="2953210795988451570">Security updates have ended. Upgrade to a new Chromebook.</translation>
 <translation id="2953218713108551165">Notifications not allowed for <ph name="SITE" />. You’ll be asked again on your next visit.</translation>
+<translation id="2954777802959138493">Failed to query the updater state.</translation>
 <translation id="2955048943983973430">Related Google services</translation>
 <translation id="2956070239128776395">Section nested in group: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Turn on developer mode to use this extension, which can't be reviewed by the Chrome Web Store.</translation>
@@ -3662,6 +3664,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android phone</translation>
 <translation id="3469583217479686109">Selection tool</translation>
+<translation id="3471687177769494956">Edit navigation shortcut</translation>
 <translation id="3471876058939596279">HDMI and USB Type-C ports can't be used for video at the same time. Use a different video port.</translation>
 <translation id="3472469028191701821">Opens in new tab</translation>
 <translation id="3473241910002674503">Navigate home or back and switch apps with buttons in tablet mode.</translation>
@@ -7097,6 +7100,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5828181959764767444">Sunset</translation>
 <translation id="5828545842856466741">Add profile…</translation>
 <translation id="5828633471261496623">Printing...</translation>
+<translation id="5829544019044013776">Your payment methods in Google Wallet</translation>
 <translation id="5830205393314753525">Can't open <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Your password is encrypted and never seen by anyone</translation>
 <translation id="5830720307094128296">Save Page &amp;As...</translation>
@@ -7662,6 +7666,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6212168817037875041">Turn off display</translation>
 <translation id="6212752530110374741">Email Link</translation>
 <translation id="6214106213498203737">Watercolour</translation>
+<translation id="6214157047210274853">Edit in Google Wallet</translation>
 <translation id="621470880408090483">Don't allow sites to connect to Bluetooth devices</translation>
 <translation id="6215039389782910006">{1,plural, =1{To keep your passwords safe, <ph name="BRAND" /> locks after 1 minute of inactivity}other{To keep your passwords safe, <ph name="BRAND" /> locks after # minutes of inactivity}}</translation>
 <translation id="6216154119179790291">Scroll to first tab</translation>
@@ -11307,6 +11312,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8703346390800944767">Skip ad</translation>
 <translation id="8703372953981978786">This link doesn't work</translation>
 <translation id="8703766890819308134">Show search shortcuts</translation>
+<translation id="8704248383043944131">Edit keyboard shortcut</translation>
 <translation id="8704662571571150811">Domains</translation>
 <translation id="8705331520020532516">Serial Number</translation>
 <translation id="870536819717176711">When you choose to share the current tab with Gemini, the tab's full content, media and URL are sent to Google.</translation>
@@ -11627,6 +11633,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8911914282056933784">Hide projects</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912810933860534797">Enable auto-scan</translation>
+<translation id="8913485523736543337">Updater</translation>
 <translation id="8914030287343429787">View your passwords even when you're not using Chrome or Android by signing in to <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Relaunch Chrome</translation>
 <translation id="8915307125957890427">Right-click on a tab and select 'Add tab to group' and then select 'New group'</translation>
@@ -11767,6 +11774,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8999560016882908256">Section syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Reduced movement on the screen</translation>
 <translation id="9000185763019430629">Touch the fingerprint sensor at the right hand side of your <ph name="DEVICE_TYPE" />. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000529821022336229">No updater installations could be found.</translation>
 <translation id="900267527532832868">This passkey doesn't work any more. It will get deleted soon from <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Enter PIN digit <ph name="NUM_DIGIT" /> of 6. Use backspace or delete to remove the last digit.</translation>
 <translation id="9003185744423389627">Connection to Device Management Server failed with status ‘<ph name="STATUS_TEXT" />’ at <ph name="FAILURE_TIME" /></translation>

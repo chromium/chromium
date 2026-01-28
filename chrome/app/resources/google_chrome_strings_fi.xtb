@@ -46,7 +46,6 @@
 <translation id="146866447420868597">Haluatko kirjautua Chromeen?</translation>
 <translation id="1476347941828409626">Hallinnoi Chrome-profiileja</translation>
 <translation id="1492280395845991349">Viimeistele Chrome-päivitys käynnistämällä se uudelleen</translation>
-<translation id="1496875977627931224">Hei <ph name="USER_NAME" />!<ph name="LINE_BREAK" />Mitä on mielessäsi tänään?</translation>
 <translation id="1497802159252041924">Asennusvirhe: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Muokkaa uusi Chrome-profiili näköiseksesi</translation>
 <translation id="1518627427551567882">Tämä sivu on suojattu</translation>
@@ -377,7 +376,6 @@
 <translation id="5139423532931106058">Muokkaa Chrome-profiiliasi</translation>
 <translation id="5163087008893166964">Tervetuloa Chromeen, uusi selainikkuna avattu</translation>
 <translation id="5166439563123238795">Chrome tarvitsee luvan käsiesi liikkeen seuraamiseen</translation>
-<translation id="5167819546851111585">Mitä mielessä tänään?</translation>
 <translation id="5169778651486082413">Käytä salasanoja Chromen avulla puhelimella</translation>
 <translation id="5170938038195470297">Profiiliasi ei voi käyttää, koska se on peräisin uudemmasta Google Chromen versiosta. Kaikkia toimintoja ei välttämättä voi käyttää. Määritä toinen profiilihakemisto tai käytä uudempaa Chromen versiota.</translation>
 <translation id="5174969993834422967">Estät yleensä ilmoitukset. Voit antaa tälle sivustolle luvan lähettää ilmoituksia klikkaamalla ilmoituskuvaketta osoitepalkin oikeassa reunassa.</translation>

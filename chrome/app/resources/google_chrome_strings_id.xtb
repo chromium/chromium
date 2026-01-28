@@ -26,6 +26,7 @@
 <translation id="1158134713295836892">Gemini di Chrome</translation>
 <translation id="1184145431117212167">Penginstalan gagal karena versi Windows Anda tidak didukung.</translation>
 <translation id="1194807384646768652">Chrome memblokir download ini karena jenis file tersebut tidak biasa didownload dan mungkin berbahaya</translation>
+<translation id="1197860368385086056">Saat lain kali membuka Chrome di <ph name="DEVICE_TYPE" />, Anda akan melihat perintah untuk mengaktifkan notifikasi pemantauan harga.</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Luncurkan kembali untuk mengupdate &amp;Chrome</translation>
 <translation id="1290883685122687410">Kesalahan saat penyiapan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -46,7 +47,6 @@
 <translation id="146866447420868597">Login ke Chrome?</translation>
 <translation id="1476347941828409626">&amp;Kelola profil Chrome</translation>
 <translation id="1492280395845991349">Luncurkan kembali untuk menyelesaikan update Chrome</translation>
-<translation id="1496875977627931224">Halo <ph name="USER_NAME" />,<ph name="LINE_BREAK" />apa yang Anda pikirkan hari ini?</translation>
 <translation id="1497802159252041924">Error saat penginstalan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Sesuaikan profil Chrome baru Anda</translation>
 <translation id="1518627427551567882">Halaman ini dilindungi</translation>
@@ -377,7 +377,6 @@
 <translation id="5139423532931106058">Sesuaikan profil Chrome Anda</translation>
 <translation id="5163087008893166964">Selamat datang di Chrome; jendela browser baru terbuka</translation>
 <translation id="5166439563123238795">Chrome memerlukan izin untuk melacak tangan Anda</translation>
-<translation id="5167819546851111585">Apa yang Anda pikirkan hari ini?</translation>
 <translation id="5169778651486082413">Gunakan sandi dengan Chrome di ponsel</translation>
 <translation id="5170938038195470297">Profil Anda tidak dapat digunakan karena berasal dari versi terbaru Google Chrome. Beberapa fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda atau gunakan versi Chrome yang lebih anyar.</translation>
 <translation id="5174969993834422967">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik ikon notifikasi di sudut kanan kolom lokasi.</translation>
@@ -502,6 +501,7 @@
 <translation id="6321592572353357376">Ekstensi "<ph name="EXTENSION_NAME" />" ingin Anda login ke Chrome</translation>
 <translation id="6326175484149238433">Hapus dari Chrome</translation>
 <translation id="6327105987658262776">Tidak ada update yang tersedia.</translation>
+<translation id="6333195756043503664">Buka Chrome saat komputer saya dinyalakan</translation>
 <translation id="6334815226785304306">Jadikan Google Chrome sebagai browser default dan sematkan ke taskbar</translation>
 <translation id="63540178978900677">Chrome bukan lagi browser default Anda. Jadikan Chrome browser default?</translation>
 <translation id="6360449101159168105">Saat tab ini tidak aktif, memori akan dikosongkan agar Chrome tetap cepat. Anda dapat memilih untuk selalu mengecualikan situs ini agar tetap aktif.</translation>
@@ -611,6 +611,7 @@
 <translation id="7515191208480168435">Anda dapat menyematkan Google Lens agar mudah diakses</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">Untuk mendapatkan bookmark ini dan lainnya di semua perangkat Anda, login ke Chrome</translation>
+<translation id="756134248912568991">Saat lain kali membuka Chrome di <ph name="DEVICE_TYPE" />, Anda akan melihat perintah untuk menggunakan grup tab.</translation>
 <translation id="756809126120519699">Data Chrome telah dihapus</translation>
 <translation id="7572537927358445944">Nonaktif • Chrome tidak dapat memverifikasi asal ekstensi ini</translation>
 <translation id="7583399374488819119">Penginstal <ph name="COMPANY_NAME" /></translation>

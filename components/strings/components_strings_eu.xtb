@@ -369,7 +369,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1574714699824202614">Ordainketa-metodoa egiaztatzen</translation>
 <translation id="1576277203042721907">Erosketen estatistikak</translation>
 <translation id="1579189948231786790">Zure erakundeak webgune hau blokeatu du</translation>
-<translation id="1581080074034554886">CVC</translation>
+<translation id="1581080074034554886">CVCa</translation>
 <translation id="1583429793053364125">Arazo bat izan da web-orria bistaratzean.</translation>
 <translation id="1584492003828271317">Arakatzen duzunean, hainbat faktorek zehazten dute ikusten dituzun iragarkiak pertsonalizatuta dauden ala ez: ezarpen hau, Webguneek iradokitako iragarkiak ezarpena, cookieen ezarpenak eta ikusten dituzun webguneek iragarkiak pertsonalizatzen dituzten ala ez</translation>
 <translation id="1585306568496579337">"<ph name="EXTENSION_NAME" />" luzapenak <ph name="PROTOCOL" /> estekak ireki behar ditu <ph name="HANDLER_HOSTNAME" /> bidez</translation>
@@ -2714,7 +2714,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5307166000025436103">Ados</translation>
 <translation id="5308380583665731573">Konektatu</translation>
 <translation id="5308689395849655368">Hutsegite-txostenak bidaltzeko aukera desgaituta dago.</translation>
-<translation id="5309562313526658209">Nabigatu</translation>
 <translation id="5314967030527622926">Koadernagailua</translation>
 <translation id="5316812925700871227">Biratu ezkerretara</translation>
 <translation id="5317780077021120954">Gorde</translation>
@@ -3322,7 +3321,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6289939620939689042">Orriaren kolorea</translation>
 <translation id="6292819926564202163">Chrome-n darabilzun bilatzailea</translation>
 <translation id="6293309776179964942">JIS B5</translation>
-<translation id="6295618774959045776">CVC:</translation>
+<translation id="6295618774959045776">CVCa:</translation>
 <translation id="6295855836753816081">Gordetzen…</translation>
 <translation id="629730747756840877">Kontua</translation>
 <translation id="6300452962057769623">{0,plural, =0{Orain berrabiaraziko da gailua}=1{1 segundo barru berrabiaraziko da gailua}other{# segundo barru berrabiaraziko da gailua}}</translation>
@@ -3659,7 +3658,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6816109178681043245">Kirol-salgaiak</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">serie-atakak</translation>
-<translation id="6820686453637990663">CVC</translation>
+<translation id="6820686453637990663">CVCa</translation>
 <translation id="6820949753458790123">Ordaindu epe erosoetan</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> domeinura konektatzen saiatu zara, baina zerbitzariak aurkeztu duen sinadura-algoritmoa ez da segurua (adibidez, SHA-1). Horrek esan nahi du zerbitzariak aurkeztutako segurtasun-kredentzialak faltsuak direla eta balitekeela zerbitzaria ez izatea zuk espero zenuena, hau da, posible dela erasotzaile batekin komunikatzen ari izatea.</translation>
 <translation id="6826993739343257035">EA erabiltzeko baimena eman nahi duzu?</translation>

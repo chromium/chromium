@@ -39,7 +39,6 @@
 <translation id="141901961143729572">ඔබේ සිතුවිලි බෙදා ගන්න</translation>
 <translation id="1465192221147974788">ඔබේ කවුළුව බෙදා ගැනීමට, පද්ධති සැකසීම් තුළ Chromium සඳහා තිර පටිගත කිරීමට ඉඩ දෙන්න.</translation>
 <translation id="1478370723027452770">පරීක්ෂා කිරීම සඳහා Chrome සමග උදවු ලබා ගන්න</translation>
-<translation id="1496875977627931224">ආයුබෝවන් <ph name="USER_NAME" />,<ph name="LINE_BREAK" />අද ඔබේ හිතේ තිබෙන්නේ කුමක් ද?</translation>
 <translation id="1497802159252041924">ස්ථාපනය කිරීමේ දෝෂයක්: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">මෙම පිටුව ආරක්ෂිතයි.</translation>
 <translation id="1524282610922162960">Chromium පටිත්තක් බෙදා ගන්න</translation>
@@ -363,7 +362,6 @@
 <translation id="5083712646171654472">Chromium හි Gemini ඔබේ පටිතිවල වැඩ කිරීමට සහ ඔබ එයට දෙන කාර්යයන් සම්පූර්ණ කිරීමට ස්වයං බ්‍රවුස් භාවිත කරයි. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium හට ඔබේ අත් නිරීක්ෂණය කිරීමට අවසරය අවශ්‍යයි</translation>
 <translation id="5141988424377517949">ඔබ මෑත පැමිණ නැත. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ඉවත් කළා.</translation>
-<translation id="5167819546851111585">අද ඔබේ සිතෙහි ඇත්තේ කුමක් ද?</translation>
 <translation id="5174969993834422967">ඔබ සාමාන්‍යයෙන් දැනුම් දීම් අවහිර කරයි. මෙම අඩවිය ඔබට දැනුම් දීමට ඉඩ දීමට, ඔබේ ස්ථාන තීරුවේ දකුණු කෙළවරේ ඇති දැනුම්දීම් නිරූපකය ක්ලික් කරන්න.</translation>
 <translation id="5174983315706567306">ප්‍රමාණවත් තැටි ඉඩක් නැත.</translation>
 <translation id="5187123684706427865">Chromium ගිණුමට නැවත සත්‍යාපනය අවශ්‍යයි</translation>

@@ -40,7 +40,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="141901961143729572">Ойлоруңузду бөлүшүңүз</translation>
 <translation id="1465192221147974788">Терезени бөлүшүү үчүн Тутумдун параметрлеринен Chromium'га экрандан видео жаздырып алууга уруксат бериңиз.</translation>
 <translation id="1478370723027452770">Chrome for Testing боюнча жардам алуу</translation>
-<translation id="1496875977627931224">Салам <ph name="USER_NAME" />,<ph name="LINE_BREAK" />бүгүн эмнени ойлонуп жатасыз?</translation>
 <translation id="1497802159252041924">Орнотуу катасы: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Бул барак корголгон</translation>
 <translation id="1524282610922162960">Chromium өтмөгүн бөлүшүү</translation>
@@ -364,7 +363,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="5083712646171654472">Chromium'дагы Gemini өтмөктөрүңүздө иштеп, сиз берген тапшырмаларды аткаруу үчүн маалыматтарды автоматтык түрдө издейт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium'га колдорго көз салууга уруксат керек</translation>
 <translation id="5141988424377517949">Акыркы убакта кирген жоксуз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана <ph name="PERMISSION_3" /> өчүрдү.</translation>
-<translation id="5167819546851111585">Бүгүн эмнени ойлонуп жатасыз?</translation>
 <translation id="5174969993834422967">Адатта сиз билдирмелерге тыюу саласыз. Бул сайттан билдирмелерди алуу үчүн дарек тилкесинин оң бурчундагы билдирменин сүрөтчөсүн басыңыз.</translation>
 <translation id="5174983315706567306">Дискте орун аз.</translation>
 <translation id="5187123684706427865">Chromium аккаунтунун аныктыгын кайрадан текшерүү керек</translation>

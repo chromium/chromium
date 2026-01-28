@@ -2587,6 +2587,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2724841811573117416">Log WebRTC</translation>
 <translation id="272488616838512378">Konversi Unit</translation>
 <translation id="2725200716980197196">Konektivitas jaringan dipulihkan</translation>
+<translation id="2725312032345042618">Histori Peristiwa</translation>
 <translation id="2726776862643824793">kurangi kecerahan layar</translation>
 <translation id="272741954544380994">Telusuri Gambar dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="2727633948226935816">Jangan ingatkan saya lagi</translation>
@@ -2928,6 +2929,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2950666755714083615">Daftar</translation>
 <translation id="2953210795988451570">Update keamanan telah berakhir. Upgrade ke Chromebook baru.</translation>
 <translation id="2953218713108551165">Notifikasi tidak diizinkan untuk <ph name="SITE" />. Anda akan ditanyai lagi pada kunjungan berikutnya.</translation>
+<translation id="2954777802959138493">Gagal melakukan kueri status updater.</translation>
 <translation id="2955048943983973430">Layanan Google terkait</translation>
 <translation id="2956070239128776395">Bagian tersarang dalam grup: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Aktifkan mode developer untuk menggunakan ekstensi ini, yang tidak dapat ditinjau oleh Chrome Web Store.</translation>
@@ -3662,6 +3664,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Ponsel Android</translation>
 <translation id="3469583217479686109">Alat Pemilih</translation>
+<translation id="3471687177769494956">Edit pintasan navigasi</translation>
 <translation id="3471876058939596279">Port HDMI dan USB Type-C tidak dapat digunakan untuk video secara bersamaan. Gunakan port video yang berbeda.</translation>
 <translation id="3472469028191701821">Terbuka di tab baru</translation>
 <translation id="3473241910002674503">Buka layar utama, kembali, dan alihkan aplikasi dengan tombol dalam mode tablet.</translation>
@@ -7097,6 +7100,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5828181959764767444">Matahari terbenam</translation>
 <translation id="5828545842856466741">Tambahkan profil ...</translation>
 <translation id="5828633471261496623">Mencetak...</translation>
+<translation id="5829544019044013776">Metode pembayaran Anda di Google Wallet</translation>
 <translation id="5830205393314753525">Tidak dapat membuka <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Sandi Anda dienkripsi dan tidak akan dilihat oleh siapa pun</translation>
 <translation id="5830720307094128296">Simp&amp;an Halaman Sebagai...</translation>
@@ -7662,6 +7666,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6212168817037875041">Matikan layar</translation>
 <translation id="6212752530110374741">Email Link</translation>
 <translation id="6214106213498203737">Cat Air</translation>
+<translation id="6214157047210274853">Edit di Google Wallet</translation>
 <translation id="621470880408090483">Jangan izinkan situs terhubung ke perangkat Bluetooth</translation>
 <translation id="6215039389782910006">{1,plural, =1{Untuk menjaga keamanan sandi Anda, <ph name="BRAND" /> akan terkunci setelah tidak aktif selama 1 menit}other{Untuk menjaga keamanan sandi Anda, <ph name="BRAND" /> akan terkunci setelah tidak aktif selama # menit}}</translation>
 <translation id="6216154119179790291">Scroll ke tab pertama</translation>
@@ -11306,6 +11311,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8703346390800944767">Lewati Iklan</translation>
 <translation id="8703372953981978786">Link ini tidak berfungsi</translation>
 <translation id="8703766890819308134">Tampilkan pintasan penelusuran</translation>
+<translation id="8704248383043944131">Edit pintasan keyboard</translation>
 <translation id="8704662571571150811">Domain</translation>
 <translation id="8705331520020532516">Nomor Seri</translation>
 <translation id="870536819717176711">Saat Anda memilih untuk membagikan tab saat ini kepada Gemini, URL, media, dan konten lengkap tab tersebut akan dikirim ke Google.</translation>
@@ -11626,6 +11632,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8911914282056933784">Sembunyikan project</translation>
 <translation id="8912362522468806198">Akun Google</translation>
 <translation id="8912810933860534797">Aktifkan pindai otomatis</translation>
+<translation id="8913485523736543337">Updater</translation>
 <translation id="8914030287343429787">Lihat sandi Anda bahkan saat Anda tidak menggunakan Chrome atau Android dengan login ke <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="8914504000324227558">Luncurkan Ulang Chrome</translation>
 <translation id="8915307125957890427">Klik kanan tab dan pilih "Tambahkan tab ke grup", lalu pilih "Grup baru"</translation>
@@ -11766,6 +11773,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8999560016882908256">Sintaksis bagian error: <ph name="ERROR_LINE" /></translation>
 <translation id="8999651235576960439">Pengurangan gerakan di layar</translation>
 <translation id="9000185763019430629">Sentuh sensor sidik jari di sisi kanan <ph name="DEVICE_TYPE" />. Data sidik jari Anda disimpan dengan aman dan tidak pernah dikirim ke luar <ph name="DEVICE_TYPE" />.</translation>
+<translation id="9000529821022336229">Penginstalan updater tidak ditemukan.</translation>
 <translation id="900267527532832868">Kunci sandi ini tidak berfungsi lagi. Kunci sandi ini akan segera dihapus dari <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="9003031149571024583">Masukkan digit PIN ke-<ph name="NUM_DIGIT" /> dari 6. Gunakan tombol backspace atau delete untuk menghapus digit terakhir.</translation>
 <translation id="9003185744423389627">Koneksi ke Server Pengelolaan Perangkat gagal dengan status '<ph name="STATUS_TEXT" />' pada <ph name="FAILURE_TIME" /></translation>

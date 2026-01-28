@@ -37,7 +37,6 @@
 <translation id="141901961143729572">Fikr-mulohaza qoldiring</translation>
 <translation id="1465192221147974788">Oynani ulashish uchun tizim sozlamalarida Chromium brauzeriga ekranni yozib olish uchun ruxsat bering.</translation>
 <translation id="1478370723027452770">Chrome for Testing yuzasidan yordam olish</translation>
-<translation id="1496875977627931224">Salom, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />bugun nimalarni xayol qilyapsiz?</translation>
 <translation id="1497802159252041924">O'rnatishdagi xatolik: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Bu sahifa himoyalangan</translation>
 <translation id="1524282610922162960">Chromium sahifasini namoyish qilish</translation>
@@ -359,7 +358,6 @@
 <translation id="5083712646171654472">Chromium ichidagi Gemini varaqlardan qidirish va siz bergan vazifalarni bajarish uchun avtomatik kezish funksiyasidan foydalanadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium qoʻllaringiz holatini kuzatishi uchun ruxsat olmagan</translation>
 <translation id="5141988424377517949">Yaqinda ochmagansiz. Chromium olib tashladi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
-<translation id="5167819546851111585">Bugun nimalarni xayol qilyapsiz?</translation>
 <translation id="5174969993834422967">Odatda bildirishnomalarni bloklaysiz. Ularni olish uchun manzillar qatoridan yuqori oʻng burchakdagi bildirishnoma belgisini bosing.</translation>
 <translation id="5174983315706567306">Diskdagi joy yetarli emas.</translation>
 <translation id="5187123684706427865">Chromium hisobi uchun qayta autentifikatsiya kerak</translation>
@@ -481,6 +479,7 @@
 <translation id="6450948450282634257">Narxlarni kuzatish va istalgan saytda narx pasayishi haqida xabar olish uchun telefonga Chromium ilovasini yuklab oling</translation>
 <translation id="645458117210240797">Oʻchiq • Chromium bu kengaytma manbasini tekshira olmadi</translation>
 <translation id="6455857529632101747">Chromium profillariga xush kelibsiz</translation>
+<translation id="6460614424172581323">Keyingi safar <ph name="DEVICE_TYPE" /> qurilmangizda Chromium ochilganda varaqlar guruhidan foydalanish taklifi chiqadi.</translation>
 <translation id="6466344609055215035">Hisobni Chromiumdan chiqarish</translation>
 <translation id="6475912303565314141">Bundan tashqari, kengaytma Chromium bosh sahifasini o‘zgarib qo‘ydi.</translation>
 <translation id="648319183876919572">Saytlarni kuchaytirilgan rejimda xavfsiz kezish yordamida zararli saytlar va yuklanmalardan himoyalanish mumkin</translation>
@@ -627,6 +626,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8086881907087796310">Kompyuter minimal talablarga javob bermasligi sababli oʻrnatilmadi.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium bu saytda joylashuv axborotidan foydalanishiga ruxsat kerak</translation>
+<translation id="8107060931443639922">Keyingi safar <ph name="DEVICE_TYPE" /> qurilmangizda Chromium ochilganda narx kuzatuvi xabarlarini yoqish taklifi chiqadi.</translation>
 <translation id="8118331347066725040">Lens bilan qidirish haqida fikr-mulohaza yuborish</translation>
 <translation id="8133124826068723441">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromiumOS maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>
@@ -703,6 +703,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="897581876605952338">Chromium Enterprise logotipi</translation>
 <translation id="8981150672034878610">Profilingizni ochishda nimadir xato ketgani uchun Chromium ishga tushmadi. Chromiumni qayta ishga tushirish.</translation>
 <translation id="8988036198400390003">Chromium profillarini boshqaring</translation>
+<translation id="9003988359820989654">Kompyuter ishga tushganda Chromium ochilsin</translation>
 <translation id="9019929317751753759">Ma’lumotlaringiz xavfsizligini ta’minlash maqsadida ayrim kengaytmalarni o‘chirib qo‘ydik, chunki <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />da ular haqida hech qanday ma’lumot yo‘q (ya’ni, ular sizning ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin).</translation>
 <translation id="904366664621834601">Chromium bu yuklanmani blokladi, chunki bu arxivda zararli dastur yashirilgan boʻlishi mumkin</translation>
 <translation id="9062666675513499497">Boshqa Google xizmatlariga kirilganda Chromium hisobiga kirilsin</translation>

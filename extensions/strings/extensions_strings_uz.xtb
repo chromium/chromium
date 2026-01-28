@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Tasvirni dekodlab bo‘lmadi: “<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Mahalliylashtirish qo‘llanilmoqda, lekin manifest faylida “default_locale” qiymati belgilanmagan.</translation>
 <translation id="2576842806987913196">Bu nomdagi CRX fayli allaqachon mavjud.</translation>
+<translation id="2743583586211388067">Tashkilotingizning kengaytmalardan xatarlarga oid siyosatiga binoan ushbu kengaytmaga ruxsat bloklandi.</translation>
 <translation id="2785530881066938471">Kontent skripti uchun <ph name="RELATIVE_PATH" /> faylini yuklab bo‘lmadi. Uning kodirovkasi UTF-8‘dan farq qiladi.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (kengaytma identifikatori: "<ph name="EXTENSION_ID" />") administrator tomonidan bloklandi. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Quyidagi paketni o‘rnatib bo‘lmadi: “<ph name="ERROR_CODE" />”</translation>

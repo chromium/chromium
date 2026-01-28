@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">Tidak dapat mendekode gambar: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalisasi digunakan, tetapi default_locale tidak ditentukan dalam manifes.</translation>
 <translation id="2576842806987913196">Sudah ada file CRX dengan nama ini.</translation>
+<translation id="2743583586211388067">Akses ke ekstensi ini diblokir berdasarkan kebijakan risiko ekstensi organisasi Anda.</translation>
 <translation id="2785530881066938471">Tidak dapat memuat file '<ph name="RELATIVE_PATH" />' untuk skrip konten. File ini tidak bersandiaksara UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID ekstensi "<ph name="EXTENSION_ID" />") diblokir oleh administrator. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Tidak dapat memasang paket: '<ph name="ERROR_CODE" />'</translation>

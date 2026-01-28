@@ -127,6 +127,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="147982357559798527">Changed</translation>
 <translation id="1480287803138246127">Some of your history might not show up here. To see all your Chrome history, open full Chrome history.</translation>
 <translation id="1493287004536771723">You’re following <ph name="SITE_NAME" /></translation>
+<translation id="1495677929897281669">Back to tab</translation>
 <translation id="1496514951988037011">username</translation>
 <translation id="1501480321619201731">Delete group</translation>
 <translation id="1506061864768559482">Search engine</translation>
@@ -1571,6 +1572,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7523960634226602883">Search with your camera using Google Lens</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> closed and saved</translation>
 <translation id="7545347190366646170">People with access</translation>
+<translation id="7553482318994371148">Reopen closed tabs</translation>
 <translation id="7554643625247105821">Can't check Chrome version</translation>
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7573665567024262965">Choose your default apps</translation>

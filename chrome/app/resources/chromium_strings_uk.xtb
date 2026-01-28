@@ -38,7 +38,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="141901961143729572">Поділіться своєю думкою</translation>
 <translation id="1465192221147974788">Щоб показувати своє вікно, у системних параметрах дозвольте Chromium записувати відео з екрана.</translation>
 <translation id="1478370723027452770">Отримати довідку щодо Chrome for Testing</translation>
-<translation id="1496875977627931224">Вітаю, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />Про що думаєте?</translation>
 <translation id="1497802159252041924">Помилка встановлення: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Цю сторінку захищено</translation>
 <translation id="1524282610922162960">Поділитися вкладкою Chromium</translation>
@@ -362,7 +361,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5083712646171654472">Gemini у Chromium використовує функцію автоматичного перегляду, щоб шукати інформацію на ваших вкладках і виконувати для вас завдання. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Вебпереглядачу Chromium потрібен дозвіл на відстеження ваших рук</translation>
 <translation id="5141988424377517949">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і "<ph name="PERMISSION_3" />".</translation>
-<translation id="5167819546851111585">Про що ви думаєте?</translation>
 <translation id="5174969993834422967">Зазвичай ви блокуєте сповіщення. Щоб дозволити сайту показувати сповіщення, натисніть значок сповіщення в правому куті панелі місцезнаходження.</translation>
 <translation id="5174983315706567306">Недостатньо місця на диску.</translation>
 <translation id="5187123684706427865">Потрібно пройти повторну автентифікацію в обліковому записі Chromium</translation>

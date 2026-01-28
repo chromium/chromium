@@ -1021,6 +1021,7 @@
 <translation id="483689884442613745">Simpan…</translation>
 <translation id="4840495572919996524">Bookmark, histori, sandi, dan informasi Anda lainnya tidak akan lagi disinkronkan ke Akun Google Anda.</translation>
 <translation id="484280513275854557">Anda telah logout; data penjelajahan dihapus</translation>
+<translation id="484462545196658690">Otomatis</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4854068532375923088">Izinkan “Gemini” menggunakan kamera</translation>
 <translation id="4860895144060829044">Telepon</translation>
@@ -1522,6 +1523,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6556866813142980365">Urungkan</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}other{Bookmark disimpan ke "{title}". Bookmark hanya disimpan ke perangkat ini.}}</translation>
 <translation id="656065428026159829">Lihat lebih banyak</translation>
+<translation id="6565899972286925956">Buat apa saja</translation>
 <translation id="6571070086367343653">Edit kartu kredit</translation>
 <translation id="6574092468346088891">Aktifkan notifikasi untuk Pemeriksaan Keamanan</translation>
 <translation id="6579867704846662339">Anda dapat memilih untuk membuka URL masuk dari aplikasi lain dalam mode Samaran.</translation>

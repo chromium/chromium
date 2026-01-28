@@ -37,7 +37,6 @@
 <translation id="141901961143729572">Поделитесь мнением.</translation>
 <translation id="1465192221147974788">Чтобы запустить демонстрацию окна, в системных настройках разрешите Chromium записывать видео с экрана.</translation>
 <translation id="1478370723027452770">Справка о Chrome для тестирования</translation>
-<translation id="1496875977627931224">Здравствуйте, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />О чем вы хотите спросить?</translation>
 <translation id="1497802159252041924">Ошибка установки: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="1518627427551567882">Эта страница защищена.</translation>
 <translation id="1524282610922162960">Откройте доступ к вкладке Chromium</translation>
@@ -359,7 +358,6 @@
 <translation id="5083712646171654472">Gemini в Chromium будет автоматически искать информацию, чтобы выполнять задачи на вкладках браузера. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium необходимо разрешение на отслеживание рук</translation>
 <translation id="5141988424377517949">Вы давно не посещали этот сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и "<ph name="PERMISSION_3" />".</translation>
-<translation id="5167819546851111585">О чем вы хотите узнать?</translation>
 <translation id="5174969993834422967">Обычно вы блокируете уведомления. Чтобы получать их с этого сайта, нажмите на значок оповещений в правом верхнем углу адресной строки.</translation>
 <translation id="5174983315706567306">Недостаточно места на диске.</translation>
 <translation id="5187123684706427865">Необходимо снова войти в аккаунт Chromium</translation>

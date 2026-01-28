@@ -40,7 +40,6 @@
 <translation id="141901961143729572">Бодол санаагаа хуваалц</translation>
 <translation id="1465192221147974788">Цонхоо хуваалцахын тулд Системийн тохиргоонд Chromium-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү.</translation>
 <translation id="1478370723027452770">Chrome for Testing-р тусламж авах</translation>
-<translation id="1496875977627931224">Сайн уу <ph name="USER_NAME" />?<ph name="LINE_BREAK" />Өнөөдөр та юу бодож байна вэ?</translation>
 <translation id="1497802159252041924">Суулгалтын алдаа: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Энэ хуудсыг хамгаалагдсан байна</translation>
 <translation id="1524282610922162960">Chromium-н таб хуваалцах</translation>
@@ -362,7 +361,6 @@
 <translation id="5083712646171654472">Chromium дахь Gemini таны табд ажиллаж, таны өгсөн даалгаврыг гүйцэтгэхийн тулд автоматаар үзэх онцлогийг ашигладаг. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium-д таны гарыг хянах зөвшөөрөл шаардлагатай</translation>
 <translation id="5141988424377517949">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан.</translation>
-<translation id="5167819546851111585">Өнөөдөр та юу бодож байна вэ?</translation>
 <translation id="5174969993834422967">Та ихэвчлэн мэдэгдлийг блоклодог. Энэ сайтад танд мэдэгдэхийг зөвшөөрөхийн тулд байршлын хэсгийн тань баруун дээд буланд байх мэдэгдлийн дүрс тэмдгийг товшино уу.</translation>
 <translation id="5174983315706567306">Дискийн зай хангалтгүй байна.</translation>
 <translation id="5187123684706427865">Chromium бүртгэл дахин баталгаажуулахыг шаарддаг</translation>

@@ -12,6 +12,7 @@
 <translation id="2159915644201199628">ไม่สามารถถอดรหัสภาพ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ใช้การแปลภาษาท้องถิ่นแล้ว แต่ไม่ได้ระบุ default_locale ในมานิเฟสต์</translation>
 <translation id="2576842806987913196">มีไฟล์ CRX ที่มีชื่อนี้อยู่แล้ว</translation>
+<translation id="2743583586211388067">การเข้าถึงส่วนขยายนี้ถูกบล็อกภายใต้นโยบายความเสี่ยงของส่วนขยายขององค์กร</translation>
 <translation id="2785530881066938471">ไม่สามารถโหลดไฟล์ "<ph name="RELATIVE_PATH" />" สำหรับสคริปต์เนื้อหา ไม่ใช่การเข้ารหัส UTF-8</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (รหัสส่วนขยาย "<ph name="EXTENSION_ID" />") ถูกบล็อกโดยผู้ดูแลระบบ <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">ไม่สามารถติดตั้งแพ็กเกจ: "<ph name="ERROR_CODE" />"</translation>

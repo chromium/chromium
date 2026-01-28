@@ -39,7 +39,6 @@
 <translation id="141901961143729572">分享你的想法</translation>
 <translation id="1465192221147974788">如要分享視窗，請前往「系統設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
-<translation id="1496875977627931224"><ph name="USER_NAME" />，你好：<ph name="LINE_BREAK" />你今天有什麼想法？</translation>
 <translation id="1497802159252041924">安裝錯誤：<ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">此為受保護頁面</translation>
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
@@ -363,7 +362,6 @@
 <translation id="5083712646171654472">Chromium 版 Gemini 會使用自動瀏覽功能在分頁中運作，完成你指派的任務。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
 <translation id="5141988424377517949">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
-<translation id="5167819546851111585">你今天有什麼想法？</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許此網站傳送通知，請按一下網址列右上角的通知圖示。</translation>
 <translation id="5174983315706567306">磁碟空間不足。</translation>
 <translation id="5187123684706427865">Chromium 帳戶需要重新驗證</translation>

@@ -37,7 +37,6 @@
 <translation id="141901961143729572">Podziel się swoimi wrażeniami</translation>
 <translation id="1465192221147974788">Aby udostępnić okno, pozwól Chromium na nagrywanie ekranu w ustawieniach systemu.</translation>
 <translation id="1478370723027452770">Pomoc dotycząca Chrome for Testing</translation>
-<translation id="1496875977627931224">Cześć <ph name="USER_NAME" />,<ph name="LINE_BREAK" />nco dziś chodzi Ci po głowie?</translation>
 <translation id="1497802159252041924">Błąd instalacji: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Ta strona jest zabezpieczona</translation>
 <translation id="1524282610922162960">Udostępnij kartę Chromium</translation>
@@ -359,7 +358,6 @@
 <translation id="5083712646171654472">Gemini w Chromium używa automatycznego przeglądania, aby działać na kartach i realizować zadania, o których wykonanie poprosisz. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium potrzebuje uprawnień do śledzenia rąk</translation>
 <translation id="5141988424377517949">Od jakiegoś czasu nie odwiedzasz tej witryny. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
-<translation id="5167819546851111585">Co dziś chodzi Ci po głowie?</translation>
 <translation id="5174969993834422967">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na wysyłanie powiadomień, kliknij ikonę powiadomienia w prawym rogu paska lokalizacji.</translation>
 <translation id="5174983315706567306">Za mało miejsca na dysku.</translation>
 <translation id="5187123684706427865">Konto Chromium wymaga ponownego uwierzytelnienia</translation>

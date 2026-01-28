@@ -421,6 +421,7 @@
 <translation id="1652862280638399816">หากต้องการใช้เครื่องมือจัดการรหัสผ่านกับ Keychain ของ macOS ให้เปิด Chromium อีกครั้งแล้วอนุญาตให้มีการเข้าถึง Keychain แท็บจะเปิดขึ้นมาใหม่หลังจากที่เปิดอีกครั้ง</translation>
 <translation id="1652887625750064647">ตรงที่สุดจาก AI</translation>
 <translation id="1653465303147789530">ชำระเงินด้วย <ph name="PAYMENT_METHOD" /> โดยไม่ต้องเปลี่ยนแอป</translation>
+<translation id="1655159794885649984">ไม่อนุญาตให้ลากเนื้อหาในเว็บไซต์นี้</translation>
 <translation id="1656024727720460136">Chrome ทำให้หน้านี้อ่านง่ายขึ้น Chrome ดึงข้อมูลหน้าต้นฉบับผ่านการเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="1656489000284462475">การรับ</translation>
 <translation id="1658111267661135323">ทีวีและวิดีโอ</translation>
@@ -1677,6 +1678,7 @@
 <translation id="365641980390710834">เครื่องแต่งกายในวันหยุด</translation>
 <translation id="3658742229777143148">การแก้ไข</translation>
 <translation id="3659521826520353662">เข้าชมเว็บไซต์ใดบ้างที่ผู้ดูแลระบบกำหนดไว้และเมื่อใด: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">ระบบบันทึก IBAN นี้ไว้ใน Google Wallet เพื่อให้คุณใช้ในบริการต่างๆ ของ Google ได้</translation>
 <translation id="3664479564786885722">ค้นหาตัวเลือกการซื้อเพิ่มเติมจากร้านค้าอื่นๆ ที่ขายผลิตภัณฑ์นี้</translation>
 <translation id="3664782872746246217">คีย์เวิร์ด:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END1" /></translation>
@@ -2717,7 +2719,6 @@
 <translation id="5307166000025436103">ปกติ</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5308689395849655368">การรายงานข้อขัดข้องถูกปิดใช้งาน</translation>
-<translation id="5309562313526658209">นำทาง</translation>
 <translation id="5314967030527622926">เครื่องทำจุลสาร</translation>
 <translation id="5316812925700871227">หมุนทวนเข็มนาฬิกา</translation>
 <translation id="5317780077021120954">บันทึก</translation>
@@ -3198,6 +3199,7 @@
 <translation id="6085149458302186532">ป้าย (มีสี)</translation>
 <translation id="6087312102907839798">การค้นหาที่เกี่ยวข้อง</translation>
 <translation id="6089505343295765444">แท็บที่คุณลบออกจากประวัติการเข้าชมใน Chrome จะยังคงแสดงในตารางเปรียบเทียบ</translation>
+<translation id="6091115085465716987">โลโก้ Google Wallet</translation>
 <translation id="6091691259076781835">บันทึก CVC นี้ลงในอุปกรณ์เพื่อให้ชำระเงินได้เร็วขึ้น</translation>
 <translation id="6093599771645355227">เหลือง 1</translation>
 <translation id="6093795393556121384">ยืนยันบัตรของคุณแล้ว</translation>
@@ -3814,6 +3816,7 @@
 <translation id="7057567173736333354">อธิบายรูปภาพของคุณ</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="7058774143982824355">บริการโปรแกรมแยกวิเคราะห์รหัสผ่าน CSV</translation>
+<translation id="7062344833049251424">บันทึกบัตรและที่อยู่สำหรับการเรียกเก็บเงินไว้ใน Google Wallet เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="706295145388601875">เพิ่มและจัดการที่อยู่ในการตั้งค่า Chrome</translation>
 <translation id="7063157783216323487">เขียว 2</translation>
 <translation id="7064443976734085921">รถขนาดเล็ก</translation>
@@ -4284,6 +4287,7 @@
 <translation id="7754587126786572336">แท็บและแอป Chrome จะปิดลงเมื่อการอัปเดตเริ่มขึ้น</translation>
 <translation id="7755287808199759310">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
 <translation id="7755624218968747854">ม้วนกระดาษหลัก</translation>
+<translation id="7756441544371887150">ป้อนข้อมูลบัตรนี้โดยอัตโนมัติสำหรับการซื้อใน Chrome เมื่อบันทึกบัตรไว้ใน Google Wallet</translation>
 <translation id="7758069387465995638">ไฟร์วอลล์หรือซอฟต์แวร์ป้องกันไวรัสอาจบล็อกการเชื่อมต่อนี้</translation>
 <translation id="7759147511335618829">ระบบควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่</translation>
 <translation id="7759809451544302770">ไม่บังคับ</translation>
@@ -5207,6 +5211,7 @@
 <translation id="975560348586398090">{COUNT,plural, =0{ไม่มี}=1{1 รายการ}other{# รายการ}}</translation>
 <translation id="976522784004777030">5 x 8 นิ้ว</translation>
 <translation id="977502174772294970">งานแต่งงาน</translation>
+<translation id="978750072783101994">ป้อนข้อมูลบัตรนี้โดยอัตโนมัติสำหรับการซื้อใน Chromium เมื่อบันทึกบัตรไว้ใน Google Wallet</translation>
 <translation id="979107176848483472">เบราว์เซอร์และโปรไฟล์ของคุณได้รับการจัดการโดย <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">นิทรรศการและการประชุม</translation>
 <translation id="979503328401807348">โฆษณาที่เป็นประโยชน์มากขึ้น</translation>

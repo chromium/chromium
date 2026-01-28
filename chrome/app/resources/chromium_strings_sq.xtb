@@ -39,7 +39,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="141901961143729572">Ndaj mendimet e tua</translation>
 <translation id="1465192221147974788">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit".</translation>
 <translation id="1478370723027452770">Merr ndihmë për Chrome for Testing</translation>
-<translation id="1496875977627931224">Përshëndetje <ph name="USER_NAME" />,<ph name="LINE_BREAK" />çfarë ke në mendje sot?</translation>
 <translation id="1497802159252041924">Gabim gjatë instalimit: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Kjo faqe është e mbrojtur</translation>
 <translation id="1524282610922162960">Ndaj një skedë të Chromium</translation>
@@ -363,7 +362,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5083712646171654472">Gemini në Chromium përdor shfletimin automatik për të punuar në skedat e tua dhe për të përfunduar detyrat që ti i jep. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium ka nevojë për leje për të gjurmuar duart e tua</translation>
 <translation id="5141988424377517949">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
-<translation id="5167819546851111585">Çfarë ke në mendje sot?</translation>
 <translation id="5174969993834422967">Ti i bllokon zakonisht njoftimet. Për ta lejuar këtë sajt që të të njoftojë, kliko tek ikona e njoftimit në këndin e djathtë të shiritit të vendndodhjes.</translation>
 <translation id="5174983315706567306">Nuk ka hapësirë të mjaftueshme në disk.</translation>
 <translation id="5187123684706427865">Llogaria e Chromium kërkon rivërtetim</translation>

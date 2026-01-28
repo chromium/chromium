@@ -26,6 +26,7 @@
 <translation id="1158134713295836892">Chrome ichida Gemini</translation>
 <translation id="1184145431117212167">Windows versiyasi mos emasligi uchun oʻrnatilmadi.</translation>
 <translation id="1194807384646768652">Chrome bu yuklamani blokladi, chunki bunday turdagi fayl odatda yuklab olinmaydi va xavfli boʻlishi mumkin</translation>
+<translation id="1197860368385086056">Keyingi safar <ph name="DEVICE_TYPE" /> qurilmangizda Chrome ochilganda narx kuzatuvi xabarlarini yoqish taklifi chiqadi.</translation>
 <translation id="1203500561924088507">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin brauzerni qayta ishga tushirishingiz lozim.</translation>
 <translation id="1278833599417554002">&amp;Chrome brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="1290883685122687410">Sozlash xatosi: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -46,7 +47,6 @@
 <translation id="146866447420868597">Chrome hisobiga kirasizmi?</translation>
 <translation id="1476347941828409626">Chrome profillarini boshqarish</translation>
 <translation id="1492280395845991349">Chrome yangilanishini yakunlash uchun qayta oching</translation>
-<translation id="1496875977627931224">Salom, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />bugun nimalarni xayol qilyapsiz?</translation>
 <translation id="1497802159252041924">O'rnatishdagi xatolik: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Yangi Chrome profilini moslash</translation>
 <translation id="1518627427551567882">Bu sahifa himoyalangan</translation>
@@ -377,7 +377,6 @@
 <translation id="5139423532931106058">Chrome profilingizni sozlang</translation>
 <translation id="5163087008893166964">Chrome brauzeriga xush kelibsiz, yangi oyna ochildi</translation>
 <translation id="5166439563123238795">Chrome qoʻllaringiz holatini kuzatishi uchun ruxsat olmagan</translation>
-<translation id="5167819546851111585">Bugun nimalarni xayol qilyapsiz?</translation>
 <translation id="5169778651486082413">Telefonda Chrome orqali parollardan foydalaning</translation>
 <translation id="5170938038195470297">Profilingizdan foydalanib bo‘lmaydi, chunki u yanada yangiroq Google Chrome versiyasiga ta’luqli.
 
@@ -506,6 +505,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" kengaytmasi Chrome hisobiga kirishni soʻramoqda</translation>
 <translation id="6326175484149238433">Chrome‘dan olib tashlash</translation>
 <translation id="6327105987658262776">Hech qanday yangilanish mavjud emas.</translation>
+<translation id="6333195756043503664">Kompyuter ishga tushganda Chrome ochilsin</translation>
 <translation id="6334815226785304306">Chromeni birlamchi brauzer etib tayinlash va vazifalar paneliga mahkamlash</translation>
 <translation id="63540178978900677">Chrome endi birlamchi brauzeringiz emas. Chrome asosiy brauzer etib tayinlansinmi?</translation>
 <translation id="6360449101159168105">Bu varaq nofaol boʻlganida Chrome tezroq ishlashi uchun xotira boʻshatiladi. Bu saytni har doim nofaol boʻlmasligini tanlash mumkin.</translation>
@@ -615,6 +615,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7515191208480168435">Tezkor ochish uchun Google Lensni mahkamlash mumkin</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7543146567111253230">Bu bukmark va boshqalardan barcha qurilmalarda foydalanish uchun Chrome hisobiga kiring</translation>
+<translation id="756134248912568991">Keyingi safar <ph name="DEVICE_TYPE" /> qurilmangizda Chrome ochilganda varaqlar guruhidan foydalanish taklifi chiqadi.</translation>
 <translation id="756809126120519699">Chrome ma’lumotlari tozalandi</translation>
 <translation id="7572537927358445944">Oʻchiq • Chrome bu kengaytma manbasini tekshira olmadi</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> oʻrnatish vositasi</translation>

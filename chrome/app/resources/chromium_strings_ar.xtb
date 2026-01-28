@@ -38,7 +38,6 @@
 <translation id="141901961143729572">شارِك أفكارك</translation>
 <translation id="1465192221147974788">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chromium ضِمن "إعدادات النظام" (System Settings).</translation>
 <translation id="1478370723027452770">‏الحصول على مساعدة بشأن Chrome for Testing</translation>
-<translation id="1496875977627931224">مرحبًا "<ph name="USER_NAME" />"،<ph name="LINE_BREAK" />ما الذي يجول في خاطرك اليوم؟</translation>
 <translation id="1497802159252041924">حدث خطأ أثناء التثبيت: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">هذه الصفحة محمية</translation>
 <translation id="1524282610922162960">‏مشاركة علامة تبويب Chromium</translation>
@@ -362,7 +361,6 @@
 <translation id="5083712646171654472">‏يستخدم "Gemini في Chromium" ميزة التصفّح التلقائي للعمل في علامات التبويب وإكمال المهام المطلوبة منه. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">‏يحتاج Chromium إلى إذن لتتبُّع حركات يديك</translation>
 <translation id="5141988424377517949">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chromium أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" />.</translation>
-<translation id="5167819546851111585">ما الذي يجول في خاطرك اليوم؟</translation>
 <translation id="5174969993834422967">أنت تحظر الإشعارات عادةً. للسماح لهذا الموقع الإلكتروني بإرسال إشعارات، انقر على رمز الإشعارات في الزاوية اليسرى من شريط الموقع الجغرافي.</translation>
 <translation id="5174983315706567306">لا تتوفّر مساحة كافية على القرص.</translation>
 <translation id="5187123684706427865">‏يتطلب حساب Chromium إعادة المصادقة</translation>

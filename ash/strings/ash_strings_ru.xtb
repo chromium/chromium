@@ -342,7 +342,6 @@
 <translation id="2201071101391734388">Недавнее фото <ph name="INDEX" /> из <ph name="TOTAL_COUNT" /></translation>
 <translation id="2201687081523799384">Скрыть информацию из Google Задач</translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
-<translation id="2210311543574621570">Чтобы открыть историю буфера обмена, нажмите и удерживайте клавиши Ctrl + V. Если вы не хотите использовать это сочетание клавиш, отключите экспериментальный параметр #clipboard-history-longpress на странице chrome://flags.</translation>
 <translation id="2215920961700443347">Нет доступа к интернету. Подключитесь и повторите попытку.</translation>
 <translation id="2222841058024245321">Рабочий стол 7</translation>
 <translation id="2223384056430485343">В режиме разделения экрана</translation>

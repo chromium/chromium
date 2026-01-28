@@ -48,7 +48,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="146866447420868597">Vill du logga in i Chrome?</translation>
 <translation id="1476347941828409626">&amp;Hantera Chrome-profiler</translation>
 <translation id="1492280395845991349">Starta om för att slutföra uppdateringen av Chrome</translation>
-<translation id="1496875977627931224">Hej <ph name="USER_NAME" />!<ph name="LINE_BREAK" />Vad vill du ha hjälp med i dag?</translation>
 <translation id="1497802159252041924">Installationsfel: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Anpassa din nya Chrome-profil</translation>
 <translation id="1518627427551567882">Den här sidan är skyddad</translation>
@@ -381,7 +380,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5139423532931106058">Anpassa din Chrome-profil</translation>
 <translation id="5163087008893166964">Välkommen till Chrome, ett nytt webbläsarfönster har öppnats</translation>
 <translation id="5166439563123238795">Chrome behöver behörighet för handspårning</translation>
-<translation id="5167819546851111585">Vad vill du ha hjälp med i dag?</translation>
 <translation id="5169778651486082413">Använd dina lösenord med Chrome på telefonen</translation>
 <translation id="5170938038195470297">Profilen kan inte användas eftersom den tillhör en nyare version av Google Chrome.
 

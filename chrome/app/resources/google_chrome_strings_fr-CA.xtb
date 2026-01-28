@@ -48,7 +48,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="146866447420868597">Se connecter à Chrome?</translation>
 <translation id="1476347941828409626">&amp;Gérer les profils Chrome</translation>
 <translation id="1492280395845991349">Relancer pour terminer la mise à jour de Chrome</translation>
-<translation id="1496875977627931224">Bonjour <ph name="USER_NAME" />,<ph name="LINE_BREAK" />À quoi pensez-vous aujourd'hui?</translation>
 <translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personnaliser votre nouveau profil Chrome</translation>
 <translation id="1518627427551567882">Cette page est protégée</translation>
@@ -307,7 +306,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4242034826641750751">Chrome requiert l'autorisation d'accéder au microphone et à l'appareil photo pour ce site</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome?</translation>
 <translation id="4251615635259297716">Associer vos données Chrome à ce compte?</translation>
-<translation id="4280647692742956593">Téléchargez Chrome sur votre téléphone pour ouvrir ou créer de nouveaux groupes d'onglets en déplacement.</translation>
+<translation id="4280647692742956593">Téléchargez Chrome sur votre téléphone pour ouvrir des groupes d'onglets ou en créer de nouveaux en déplacement.</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4293420128516039005">Vous connecter pour synchroniser et personnaliser Chrome sur vos appareils</translation>
 <translation id="430327780270213103">Autoriser l'extension à afficher les demandes d'accès dans la barre d'outils Chrome</translation>
@@ -380,7 +379,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="5139423532931106058">Personnaliser votre profil Chrome</translation>
 <translation id="5163087008893166964">Bienvenue à Chrome, une nouvelle fenêtre de navigateur a été ouverte</translation>
 <translation id="5166439563123238795">Chrome a besoin de l'autorisation de suivre vos mains</translation>
-<translation id="5167819546851111585">À quoi pensez-vous aujourd'hui?</translation>
 <translation id="5169778651486082413">Utilisez vos mots de passe avec Chrome sur votre téléphone</translation>
 <translation id="5170938038195470297">Votre profil ne peut pas être utilisé parce qu'il provient d'une version plus récente de Google Chrome.
 

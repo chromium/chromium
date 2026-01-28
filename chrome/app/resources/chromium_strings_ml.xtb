@@ -40,7 +40,6 @@
 <translation id="141901961143729572">നിങ്ങളുടെ ചിന്തകൾ പങ്കിടുക</translation>
 <translation id="1465192221147974788">നിങ്ങളുടെ വിൻഡോ പങ്കിടാൻ, സിസ്റ്റം ക്രമീകരണത്തിൽ Chromium-നായി സ്‌ക്രീൻ റെക്കോർഡിംഗ് അനുവദിക്കുക.</translation>
 <translation id="1478370723027452770">Chrome for Testing-മായി ബന്ധപ്പെട്ട സഹായം നേടൂ</translation>
-<translation id="1496875977627931224">ഹായ് <ph name="USER_NAME" />,<ph name="LINE_BREAK" />ഇന്ന് നിങ്ങളുടെ മനസ്സിലുള്ളത് എന്താണ്?</translation>
 <translation id="1497802159252041924">ഇൻസ്‌റ്റാൾ ചെയ്യലിൽ പിശക്: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">ഈ പേജ് പരിരക്ഷിതമാണ്</translation>
 <translation id="1524282610922162960">ഒരു Chromium ടാബ് പങ്കിടുക</translation>
@@ -364,7 +363,6 @@
 <translation id="5083712646171654472">നിങ്ങളുടെ ടാബുകളിൽ പ്രവർത്തിക്കാനും നിങ്ങൾ നൽകുന്ന ടാസ്ക്കുകൾ പൂർത്തിയാക്കാനും Chromium-ലെ Gemini ഓട്ടോ ബ്രൗസ് ഉപയോഗിക്കുന്നു. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">നിങ്ങളുടെ കൈകൾ ട്രാക്ക് ചെയ്യാൻ Chromium-ന് അനുമതി ആവശ്യമാണ്</translation>
 <translation id="5141988424377517949">നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ല. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> എന്നീ അനുമതികൾ Chromium നീക്കം ചെയ്തു.</translation>
-<translation id="5167819546851111585">ഇന്ന് നിങ്ങളുടെ മനസ്സിലുള്ളത് എന്താണ്?</translation>
 <translation id="5174969993834422967">നിങ്ങൾ സാധാരണയായി അറിയിപ്പുകൾ ബ്ലോക്ക് ചെയ്യാറുണ്ട്. നിങ്ങൾക്ക് അറിയിപ്പ് അയയ്ക്കുന്നതിന് ഈ സൈറ്റിനെ അനുവദിക്കാൻ, നിങ്ങളുടെ ലൊക്കേഷൻ ബാറിന്റെ വലത് മൂലയിലെ അറിയിപ്പ് ഐക്കൺ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="5174983315706567306">മതിയായ ഡിസ്‌ക് സ്പെയ്‌സ് ഇല്ല.</translation>
 <translation id="5187123684706427865">Chromium അക്കൗണ്ട് വീണ്ടും പരിശോധിച്ചുറപ്പിക്കേണ്ടതുണ്ട്</translation>

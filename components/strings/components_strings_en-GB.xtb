@@ -421,6 +421,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1652862280638399816">To use Password Manager with macOS Keychain, relaunch Chromium and allow Keychain access. Your tabs will reopen after relaunching.</translation>
 <translation id="1652887625750064647">AI best match</translation>
 <translation id="1653465303147789530">Pay with <ph name="PAYMENT_METHOD" /> without switching apps</translation>
+<translation id="1655159794885649984">Dragging content on this site isn't allowed</translation>
 <translation id="1656024727720460136">Chrome simplified this page to make it easier to read. Chrome retrieved the original page over a secure connection.</translation>
 <translation id="1656489000284462475">Pick-up</translation>
 <translation id="1658111267661135323">TV and Video</translation>
@@ -1678,6 +1679,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="365641980390710834">Casual Apparel</translation>
 <translation id="3658742229777143148">Revision</translation>
 <translation id="3659521826520353662">Which administrator-defined websites are visited and when: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3662040827609932717">This IBAN is saved in Google Wallet so that you can use it across Google services.</translation>
 <translation id="3664479564786885722">Search more buying options from other shops that sell this product.</translation>
 <translation id="3664782872746246217">Keywords:</translation>
 <translation id="3665806835792525231"><ph name="BEGIN_LINK1" />Learn more<ph name="LINK_END1" /></translation>
@@ -2718,7 +2720,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5308689395849655368">Crash reporting is disabled.</translation>
-<translation id="5309562313526658209">Navigate</translation>
 <translation id="5314967030527622926">Booklet maker</translation>
 <translation id="5316812925700871227">Rotate anticlockwise</translation>
 <translation id="5317780077021120954">Save</translation>
@@ -3199,6 +3200,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6085149458302186532">Labels (coloured)</translation>
 <translation id="6087312102907839798">Related searches</translation>
 <translation id="6089505343295765444">Tabs that you delete from your Chrome history will still show up in your comparison tables</translation>
+<translation id="6091115085465716987">Google Wallet logo</translation>
 <translation id="6091691259076781835">For faster checkout, save this CVC on your device</translation>
 <translation id="6093599771645355227">Yellow 1</translation>
 <translation id="6093795393556121384">Your card is verified</translation>
@@ -3815,6 +3817,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7057567173736333354">Describe your image</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
 <translation id="7058774143982824355">CSV password parser service</translation>
+<translation id="7062344833049251424">To pay faster next time, save your card and billing address in Google Wallet</translation>
 <translation id="706295145388601875">Add and manage addresses in Chrome settings</translation>
 <translation id="7063157783216323487">Green 2</translation>
 <translation id="7064443976734085921">Compact Cars</translation>
@@ -4285,6 +4288,7 @@ Additional details:
 <translation id="7754587126786572336">Your Chrome tabs and apps will close when the update starts</translation>
 <translation id="7755287808199759310">Your parent can unblock it for you</translation>
 <translation id="7755624218968747854">Primary roll</translation>
+<translation id="7756441544371887150">Autofill this card for purchases made in Chrome when it's saved in Google Wallet</translation>
 <translation id="7758069387465995638">Firewall or antivirus software may have blocked the connection.</translation>
 <translation id="7759147511335618829">MIDI device control and reprogramming</translation>
 <translation id="7759809451544302770">Optional</translation>
@@ -5208,6 +5212,7 @@ Additional details:
 <translation id="975560348586398090">{COUNT,plural, =0{None}=1{1 item}other{# items}}</translation>
 <translation id="976522784004777030">5.0 in x 8.0 in</translation>
 <translation id="977502174772294970">Weddings</translation>
+<translation id="978750072783101994">Autofill this card for purchases made in Chromium when it's saved in Google Wallet</translation>
 <translation id="979107176848483472">Your browser and profile are managed by <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Expos and Conventions</translation>
 <translation id="979503328401807348">More useful ads</translation>

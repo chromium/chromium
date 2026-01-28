@@ -40,7 +40,6 @@
 <translation id="141901961143729572">သင့်ထင်မြင်ချက်များ မျှဝေပါ</translation>
 <translation id="1465192221147974788">သင့်ဝင်းဒိုးကို မျှဝေရန် ‘စနစ် ဆက်တင်များ’ တွင် Chromium အတွက် ဖန်သားပြင်ရိုက်ကူးခြင်းကို ခွင့်ပြုပါ။</translation>
 <translation id="1478370723027452770">Chrome for Testing အတွက် အကူအညီရယူရန်</translation>
-<translation id="1496875977627931224"><ph name="USER_NAME" />၊ ယနေ့<ph name="LINE_BREAK" />သင် ဘာစဉ်းစားနေသလဲ</translation>
 <translation id="1497802159252041924">တပ်ဆင်မှုအမှား- <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">ဤစာမျက်နှာကို ကာကွယ်ထားသည်</translation>
 <translation id="1524282610922162960">Chromium တဘ် မျှဝေခြင်း</translation>
@@ -365,7 +364,6 @@
 <translation id="5083712646171654472">Chromium ရှိ Gemini သည် သင့်တဘ်များတွင် လုပ်ဆောင်ရန်နှင့် သင် ပေးထားသော လုပ်ဆောင်စရာများကို အပြီးသတ်ရန် အော်တို ဘရောက်စ်လုပ်ခြင်းကို သုံးသည်။ <ph name="LINK_BEGIN" />ပိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium သည် သင့်လက်များကို စောင့်ကြည့်ရန် ခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="5141988424377517949">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chromium သည် <ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" />၊ <ph name="PERMISSION_3" /> တို့ကို ဖယ်ရှားလိုက်သည်။</translation>
-<translation id="5167819546851111585">ယနေ့ သင် ဘာစဉ်းစားနေသလဲ</translation>
 <translation id="5174969993834422967">သင်သည် ပုံမှန်အားဖြင့် အကြောင်းကြားချက်များ ပိတ်ထားတတ်သည်။ ဤဝဘ်ဆိုက်ကို အကြောင်းကြားခွင့်ပြုရန်အတွက် သင့်တည်နေရာပြဘား၏ ညာဘက်ထောင့်ရှိ အကြောင်းကြားချက် သင်္ကေတကို နှိပ်ပါ။</translation>
 <translation id="5174983315706567306">ဒစ်ခ်နေရာ မလုံလောက်ပါ။</translation>
 <translation id="5187123684706427865">Chromium အကောင့်ကို အထောက်အထားပြန်လည်စိစစ်ရန် လိုအပ်သည်</translation>

@@ -127,6 +127,7 @@
 <translation id="147982357559798527">เปลี่ยนแปลงแล้ว</translation>
 <translation id="1480287803138246127">ประวัติการเข้าชมเว็บบางส่วนอาจไม่แสดงที่นี่ หากต้องการดูประวัติการเข้าชมใน Chrome ทั้งหมด ให้เปิดประวัติการเข้าชมใน Chrome แบบเต็ม</translation>
 <translation id="1493287004536771723">คุณกำลังติดตาม <ph name="SITE_NAME" /></translation>
+<translation id="1495677929897281669">กลับไปที่แท็บ</translation>
 <translation id="1496514951988037011">ชื่อผู้ใช้</translation>
 <translation id="1501480321619201731">ลบกลุ่ม</translation>
 <translation id="1506061864768559482">เครื่องมือค้นหา</translation>
@@ -1571,6 +1572,7 @@
 <translation id="7523960634226602883">ค้นหาด้วยกล้องโดยใช้ Google Lens</translation>
 <translation id="7525248386620136756">ปิดและบันทึก <ph name="TAB_GROUPS_AND_TABS_PART" />แล้ว</translation>
 <translation id="7545347190366646170">บุคคลที่มีสิทธิ์เข้าถึง</translation>
+<translation id="7553482318994371148">เปิดแท็บที่ปิดไปแล้วขึ้นมาใหม่</translation>
 <translation id="7554643625247105821">ตรวจสอบเวอร์ชัน Chrome ไม่ได้</translation>
 <translation id="7557508262441527045">ออกจากระบบแล้ว</translation>
 <translation id="7573665567024262965">เลือกแอปเริ่มต้น</translation>

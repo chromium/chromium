@@ -38,7 +38,6 @@
 <translation id="141901961143729572">Μοιραστείτε τις σκέψεις σας</translation>
 <translation id="1465192221147974788">Για να μοιραστείτε το παράθυρό σας, επιτρέψτε την εγγραφή οθόνης για το Chromium στις Ρυθμίσεις συστήματος.</translation>
 <translation id="1478370723027452770">Λήψη βοήθειας για το Chrome for Testing</translation>
-<translation id="1496875977627931224">Γεια σας <ph name="USER_NAME" />,<ph name="LINE_BREAK" />τι σας απασχολεί σήμερα;</translation>
 <translation id="1497802159252041924">Σφάλμα εγκατάστασης: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Αυτή η σελίδα είναι προστατευμένη</translation>
 <translation id="1524282610922162960">Μοιραστείτε μια καρτέλα του Chromium</translation>
@@ -362,7 +361,6 @@
 <translation id="5083712646171654472">Το Gemini στο Chromium χρησιμοποιεί την αυτόματη περιήγηση για να εργάζεται στις καρτέλες σας και να ολοκληρώνει τις εργασίες που του αναθέτετε. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Το Chromium χρειάζεται άδεια για να παρακολουθεί τα χέρια σας</translation>
 <translation id="5141988424377517949">Δεν έχετε επισκεφτεί πρόσφατα τον ιστότοπο. Το Chromium κατάργησε τις άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="PERMISSION_3" />.</translation>
-<translation id="5167819546851111585">Τι σκέφτεστε σήμερα;</translation>
 <translation id="5174969993834422967">Συνήθως αποκλείετε τις ειδοποιήσεις. Για να επιτρέψετε σε αυτόν τον ιστότοπο να σας στέλνει ειδοποιήσεις, κάντε κλικ στο εικονίδιο ειδοποίησης στη δεξιά γωνία της γραμμής τοποθεσίας.</translation>
 <translation id="5174983315706567306">Δεν υπάρχει αρκετός χώρος δίσκου.</translation>
 <translation id="5187123684706427865">Ο λογαριασμός Chromium απαιτεί εκ νέου έλεγχο ταυτότητας</translation>

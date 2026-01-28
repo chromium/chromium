@@ -37,7 +37,6 @@
 <translation id="141901961143729572">分享您的想法</translation>
 <translation id="1465192221147974788">若要共享窗口，请在“系统设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1478370723027452770">获取 Chrome for Testing 方面的帮助</translation>
-<translation id="1496875977627931224"><ph name="USER_NAME" />，您好！<ph name="LINE_BREAK" />今天想聊点什么？</translation>
 <translation id="1497802159252041924">安装时出错：<ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">此页面受保护</translation>
 <translation id="1524282610922162960">共享 Chromium 标签页</translation>
@@ -361,7 +360,6 @@
 <translation id="5083712646171654472">Chromium 中的 Gemini 会使用自动浏览功能在标签页中运行，完成您交代的各种任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5141988424377517949">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和<ph name="PERMISSION_3" />权限。</translation>
-<translation id="5167819546851111585">今天想聊点什么？</translation>
 <translation id="5174969993834422967">您通常会屏蔽通知。要允许此网站向您发送通知，请点击位置栏右侧的通知图标。</translation>
 <translation id="5174983315706567306">磁盘可用空间不足。</translation>
 <translation id="5187123684706427865">Chromium 账号需要重新验证身份</translation>

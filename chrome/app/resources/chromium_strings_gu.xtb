@@ -40,7 +40,6 @@
 <translation id="141901961143729572">તમારા વિચારો શેર કરો</translation>
 <translation id="1465192221147974788">તમારી વિન્ડો શેર કરવા માટે, સિસ્ટમના સેટિંગમાં Chromium માટે સ્ક્રીન રેકોર્ડિંગની મંજૂરી આપો.</translation>
 <translation id="1478370723027452770">Chrome for Testing માટે સહાય મેળવો</translation>
-<translation id="1496875977627931224">નમસ્તે <ph name="USER_NAME" />,<ph name="LINE_BREAK" />આજે તમારા મનમાં શું છે?</translation>
 <translation id="1497802159252041924">ઇન્સ્ટૉલ કરવામાં ભૂલ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">આ પેજ સંરક્ષિત છે</translation>
 <translation id="1524282610922162960">Chromium ટૅબ શેર કરો</translation>
@@ -364,7 +363,6 @@
 <translation id="5083712646171654472">Gemini in Chromium તમારા ટૅબમાં કામ કરવા માટે ઑટોમૅટિક રીતે બ્રાઉઝ કરવાની સુવિધાનો ઉપયોગ કરે છે અને તમે તેને આપેલા કાર્યો પૂર્ણ કરે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromiumને તમારા હાથ ટ્રૅક કરવા માટે પરવાનગીની જરૂર છે</translation>
 <translation id="5141988424377517949">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chromium દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />ની પરવાનગીઓ કાઢી નાખવામાં આવી.</translation>
-<translation id="5167819546851111585">આજે તમારા મનમાં શું છે?</translation>
 <translation id="5174969993834422967">તમે સામાન્ય રીતે નોટિફિકેશનને બ્લૉક કરો છો. આ સાઇટ તમને સૂચિત કરી શકે તે માટે, તમારા લોકેશન બારના જમણા ખૂણે દેખાતા નોટિફિકેશનના આઇકન પર ક્લિક કરો.</translation>
 <translation id="5174983315706567306">પર્યાપ્ત ડિસ્ક સ્પેસ નથી.</translation>
 <translation id="5187123684706427865">Chromium એકાઉન્ટને પુન:પ્રમાણીકરણની જરૂર છે</translation>

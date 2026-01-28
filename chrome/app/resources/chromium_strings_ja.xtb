@@ -37,7 +37,6 @@
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
 <translation id="1465192221147974788">ウィンドウを共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="1478370723027452770">Chrome for Testing のヘルプを見る</translation>
-<translation id="1496875977627931224"><ph name="USER_NAME" /> さん、<ph name="LINE_BREAK" />何かお手伝いできることはありますか？</translation>
 <translation id="1497802159252041924">インストール エラー: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">このページは保護されています</translation>
 <translation id="1524282610922162960">Chromium タブの共有</translation>
@@ -357,7 +356,6 @@
 <translation id="5083712646171654472">Gemini in Chromium が自動でブラウジングして、タブ上の作業や指定されたタスクを行います。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium がハンド トラッキングの許可を求めています</translation>
 <translation id="5141988424377517949">最近アクセスしていないため、Chromium で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました。</translation>
-<translation id="5167819546851111585">何かお手伝いできることはありますか？</translation>
 <translation id="5174969993834422967">通知はデフォルトでブロックされています。このサイトの通知を表示するには、ロケーション バーの右上にある通知アイコンをクリックしてください。</translation>
 <translation id="5174983315706567306">ディスクの空き容量が不足しています。</translation>
 <translation id="5187123684706427865">Chromium アカウントの再認証が必要です</translation>

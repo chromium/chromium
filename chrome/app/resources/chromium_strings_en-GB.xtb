@@ -40,7 +40,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="141901961143729572">Share your thoughts</translation>
 <translation id="1465192221147974788">To share your window, allow screen recording for Chromium in System Settings.</translation>
 <translation id="1478370723027452770">Get help with Chrome for testing</translation>
-<translation id="1496875977627931224">Hi <ph name="USER_NAME" />,<ph name="LINE_BREAK" />what's on your mind today?</translation>
 <translation id="1497802159252041924">Install error: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">This page is protected</translation>
 <translation id="1524282610922162960">Share a Chromium tab</translation>
@@ -364,7 +363,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5083712646171654472">Gemini in Chromium uses auto-browse to work in your tabs and complete tasks that you give it. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium needs permission to track your hands</translation>
 <translation id="5141988424377517949">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
-<translation id="5167819546851111585">What's on your mind today?</translation>
 <translation id="5174969993834422967">You usually block notifications. To let this site notify you, click the notification icon on the right corner of your location bar.</translation>
 <translation id="5174983315706567306">Not enough disk space.</translation>
 <translation id="5187123684706427865">Chromium account requires re-authentication</translation>
@@ -486,6 +484,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6450948450282634257">Download Chromium on your phone to track prices and get alerts when the price drops on any site</translation>
 <translation id="645458117210240797">Off • Chromium can't verify where this extension comes from</translation>
 <translation id="6455857529632101747">Welcome to Chromium profiles</translation>
+<translation id="6460614424172581323">Next time you open Chromium on your <ph name="DEVICE_TYPE" />, you'll see a prompt to use tab groups.</translation>
 <translation id="6466344609055215035">Remove account from Chromium</translation>
 <translation id="6475912303565314141">It also controls what page is shown when you start Chromium.</translation>
 <translation id="648319183876919572">Enhanced Safe Browsing does more to protect you against dangerous websites and downloads</translation>
@@ -632,6 +631,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8086881907087796310">Installation failed because your computer does not meet the minimum hardware requirements.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium needs location permission for this site</translation>
+<translation id="8107060931443639922">Next time you open Chromium on your <ph name="DEVICE_TYPE" />, you'll see a prompt to enable price tracking alerts.</translation>
 <translation id="8118331347066725040">Send feedback for search with Lens</translation>
 <translation id="8133124826068723441">Chromium OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="813913629614996137">Initialising...</translation>
@@ -708,6 +708,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="897581876605952338">Chromium Enterprise logo</translation>
 <translation id="8981150672034878610">Cannot start Chromium because something went wrong when opening your profile. Try to restart Chromium.</translation>
 <translation id="8988036198400390003">Manage Chromium profiles</translation>
+<translation id="9003988359820989654">Open Chromium when my computer starts</translation>
 <translation id="9019929317751753759">To make Chromium safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="904366664621834601">Chromium blocked this download because the archive file includes other files that may hide malware</translation>
 <translation id="9062666675513499497">Sign in to Chromium when you sign in to other Google services</translation>

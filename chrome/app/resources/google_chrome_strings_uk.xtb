@@ -46,7 +46,6 @@
 <translation id="146866447420868597">Увійти в Chrome?</translation>
 <translation id="1476347941828409626">&amp;Керувати профілями Chrome</translation>
 <translation id="1492280395845991349">Перезапустіть, щоб завершити оновлення Chrome</translation>
-<translation id="1496875977627931224">Вітаю, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />Про що думаєте?</translation>
 <translation id="1497802159252041924">Помилка встановлення: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Налаштуйте свій новий профіль Chrome</translation>
 <translation id="1518627427551567882">Цю сторінку захищено</translation>
@@ -377,7 +376,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5139423532931106058">Налаштувати профіль Chrome</translation>
 <translation id="5163087008893166964">Вітаємо в Chrome! Відкрито нове вікно веб-переглядача</translation>
 <translation id="5166439563123238795">Вебпереглядачу Chrome потрібен дозвіл на відстеження ваших рук</translation>
-<translation id="5167819546851111585">Про що ви думаєте?</translation>
 <translation id="5169778651486082413">Користуйтеся своїми паролями в Chrome на телефоні</translation>
 <translation id="5170938038195470297">Ваш профіль не можна використати, оскільки його створено в новішій версії Google Chrome. Деякі функції можуть бути недоступними. Укажіть інший каталог профілю чи скористайтеся новішою версією Chrome.</translation>
 <translation id="5174969993834422967">Зазвичай ви блокуєте сповіщення. Щоб дозволити сайту показувати сповіщення, натисніть значок сповіщення в правому куті панелі місцезнаходження.</translation>

@@ -38,7 +38,6 @@
 <translation id="141901961143729572">మీ ఆలోచనలను షేర్ చేయండి</translation>
 <translation id="1465192221147974788">మీ విండోను షేర్ చేయడానికి, సిస్టమ్ సెట్టింగ్‌లలో Chromium కోసం స్క్రీన్ రికార్డింగ్‌ను అనుమతించండి.</translation>
 <translation id="1478370723027452770">Chrome for Testingకు సంబంధించి సహాయాన్ని పొందండి</translation>
-<translation id="1496875977627931224">హాయ్ <ph name="USER_NAME" />,<ph name="LINE_BREAK" />ఈ రోజు మీ మనస్సులో ఏం ఉంది?</translation>
 <translation id="1497802159252041924">ఇన్‌స్టాలేషన్ ఎర్రర్: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">ఈ పేజీకి ప్రొటెక్షన్ జోడించబడింది</translation>
 <translation id="1524282610922162960">Chromium ట్యాబ్‌ను షేర్ చేయండి</translation>
@@ -360,7 +359,6 @@
 <translation id="5083712646171654472">Chromiumలో Gemini మీ ట్యాబ్‌లలో పని చేయడానికి, మీరు ఇచ్చిన టాస్క్‌లను పూర్తి చేయడానికి ఆటోమేటిక్ బ్రౌజ్‌ను ఉపయోగిస్తుంది. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium మీ హ్యాండ్స్‌ను ట్రాక్ చేయడానికి అనుమతి అవసరం</translation>
 <translation id="5141988424377517949">మీరు ఇటీవల వెళ్లలేదు. Chromium <ph name="PERMISSION_1" />,‌ <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />ను తీసివేసింది.</translation>
-<translation id="5167819546851111585">మీ మనస్సులో ఏమి ఉంది?</translation>
 <translation id="5174969993834422967">మీరు సాధారణంగా నోటిఫికేషన్‌లను బ్లాక్ చేస్తుంటారు. ఈ సైట్ నుండి నోటిఫికేషన్‌లను పొందాలంటే, మీ లొకేషన్ బార్ కుడి మూలన ఉన్న నోటిఫికేషన్ చిహ్నాన్ని క్లిక్ చేయండి.</translation>
 <translation id="5174983315706567306">తగినంత డిస్క్ స్పేస్ లేదు.</translation>
 <translation id="5187123684706427865">Chromium ఖాతాకు మళ్లీ ప్రామాణీకరణ అనసరమవుతుంది</translation>

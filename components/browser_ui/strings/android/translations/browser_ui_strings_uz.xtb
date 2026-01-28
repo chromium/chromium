@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Saytlarning kompyuter versiyasini ochishga ruxsat soʻrash mumkin</translation>
 <translation id="1085696779717592361">Chrome birlamchi boʻlsin</translation>
 <translation id="113098737392899175">Klaviatura ulanganda sahifalarni matn kursori bilan kezing</translation>
+<translation id="1149644372535087155">Parollarni Chromeda saqlang</translation>
 <translation id="1178015372320901893">Mening yorliqlarim quyi ekrani</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
@@ -171,6 +172,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="2682367912565197520">Saqlangan zum darajasini oʻchirish</translation>
 <translation id="2683434792633810741">Oʻchirib, tiklansinmi?</translation>
 <translation id="2685514716378236873">Ruxsat berilmagan</translation>
+<translation id="2710883118091822664">Ishni barcha qurilmalarda oson davom ettirish uchun hisobga kiring</translation>
 <translation id="2713106313042589954">Kamerani faolsizlantirish</translation>
 <translation id="2717722538473713889">Email manzillar</translation>
 <translation id="2726059656860238749">Chromeni fokusdagi omniboks bilan ishga tushirish, arzon qurilmalarda ishga tushirish vaqtini kamaytiradi.</translation>
@@ -198,6 +200,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="3004438526346162184">Saytlar bu funksiya yordamida barcha displeylardagi oynalarni boshqarishi mumkin</translation>
 <translation id="3008272652534848354">Ruxsatlarni qasliga qaytarish</translation>
 <translation id="301521992641321250">Avtomatik bloklangan</translation>
+<translation id="3026311960038210">Mavzular termasi</translation>
 <translation id="3064871050034234884">Saytlar ovoz chiqarishi mumkin</translation>
 <translation id="3065787901655140044">Kengaytirilgan himoya yoqildi</translation>
 <translation id="3069226013421428034">Muayyan sayt uchun tashqi xizmatga kirishga ruxsat bering.</translation>
@@ -340,6 +343,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="4478158430052450698">Foydalanuvchilarga turli saytlar masshtabini oʻzgartirishni osonlashtirish</translation>
 <translation id="4479647676395637221">Kameradan foydalanishga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="4505788138578415521">URL manzil yoyildi</translation>
+<translation id="4523472416386354622">Avval hisobga kiring</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> mikrofondan foydalanishiga ruxsat berish uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali mikrofonni yoqing.</translation>
 <translation id="4566417217121906555">Mikrofonni ovozsiz qilish</translation>
 <translation id="4570913071927164677">Tafsilotlar</translation>
@@ -396,6 +400,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="512938610812707830">Yangi varaq sahifasi koʻrinishining mavzular toʻplami pastki oynasi toʻliq balandlikda ochildi</translation>
 <translation id="5137460097045297858">Discover tasmasi quyi ekrani yarim hajmda ochildi</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ochiq varaqlarda narx tushishi}other{Ochiq varaqlarda narx tushishi}}</translation>
+<translation id="5150048675001754041">Sayt va ilovalarga tez va oson kiring</translation>
 <translation id="5186036860380548585">Parametr ekranning yuqoriroq qismida joylashgan</translation>
 <translation id="5197729504361054390">Tanlangan kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytiga ulashiladi.</translation>
 <translation id="5198930230016462977">Yangi varaq sahifasini moslash quyi ekrani yopildi</translation>
@@ -564,6 +569,7 @@ Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
 <translation id="6980861169612950611">Sayt maʼlumotlari oʻchirilsinmi? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
 <translation id="6991142177939282156">Ruxsat berilgan • Taxminiy axboroti ishlatilmoqda</translation>
+<translation id="6992014788289743568">Parollaringizni tekshirish orqali xavfsizlikni kuchaytiring va maʼlumotlaringizni xavfsiz saqlang</translation>
 <translation id="6992289844737586249">Mikrofondan foydalanishga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="7000754031042624318">Android sozlamalari orqali faolsizlantirilgan</translation>
 <translation id="702275896380648118">Bu sayt sizga qiziq narsalarni aniqlashi va boshqa saytlarga taklif qilishi mumkin. Bu sayt ham mos reklamalarni chiqarish uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>

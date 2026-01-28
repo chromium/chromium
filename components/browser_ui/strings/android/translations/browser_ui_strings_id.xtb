@@ -9,6 +9,7 @@
 <translation id="1074758928858737435">Anda dapat meminta untuk melihat situs versi desktop</translation>
 <translation id="1085696779717592361">Gunakan Chrome secara Default</translation>
 <translation id="113098737392899175">Buka halaman dengan kursor teks saat keyboard terhubung</translation>
+<translation id="1149644372535087155">Simpan sandi di Chrome</translation>
 <translation id="1178015372320901893">Panel bawah pintasan saya</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Hapus</translation>
@@ -171,6 +172,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="2682367912565197520">Hapus tingkat zoom tersimpan</translation>
 <translation id="2683434792633810741">Hapus &amp; reset?</translation>
 <translation id="2685514716378236873">Tidak Diizinkan</translation>
+<translation id="2710883118091822664">Login agar dapat melanjutkan dengan mudah di semua perangkat Anda</translation>
 <translation id="2713106313042589954">Nonaktifkan kamera</translation>
 <translation id="2717722538473713889">Alamat email</translation>
 <translation id="2726059656860238749">Luncurkan Chrome dengan fokus pada Omnibox, sehingga mengurangi waktu sistem dimulai di perangkat kelas bawah.</translation>
@@ -198,6 +200,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3004438526346162184">Situs dapat menggunakan fitur ini untuk mengelola jendela di semua layar Anda</translation>
 <translation id="3008272652534848354">Reset izin</translation>
 <translation id="301521992641321250">Diblokir secara otomatis</translation>
+<translation id="3026311960038210">Koleksi tema</translation>
 <translation id="3064871050034234884">Situs dapat memutar suara</translation>
 <translation id="3065787901655140044">Perlindungan Lanjutan aktif</translation>
 <translation id="3069226013421428034">Izinkan login pihak ketiga untuk situs tertentu.</translation>
@@ -340,6 +343,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4478158430052450698">Permudah penyesuaian zoom untuk berbagai situs</translation>
 <translation id="4479647676395637221">Minta izin terlebih dahulu sebelum memungkinkan situs menggunakan kamera Anda (disarankan)</translation>
 <translation id="4505788138578415521">URL ditampilkan penuh</translation>
+<translation id="4523472416386354622">Login untuk memulai</translation>
 <translation id="4534723447064627427">Untuk mengizinkan <ph name="APP_NAME" /> mengakses mikrofon, aktifkan juga mikrofon di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Nonaktifkan mikrofon</translation>
 <translation id="4570913071927164677">Detail</translation>
@@ -396,6 +400,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="512938610812707830">Panel bawah kumpulan tema tampilan halaman tab baru terbuka sepenuhnya</translation>
 <translation id="5137460097045297858">Panel bawah feed Discover terbuka setengah</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Penurunan harga di tab yang terbuka}other{Penurunan harga di tab yang terbuka}}</translation>
+<translation id="5150048675001754041">Login dengan cepat dan mudah ke situs dan aplikasi</translation>
 <translation id="5186036860380548585">Opsi tersedia di dekat bagian atas layar</translation>
 <translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Sheet bawah sesuaikan halaman tab baru ditutup</translation>
@@ -564,6 +569,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="6980861169612950611">Hapus data situs? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
 <translation id="6991142177939282156">Diizinkan • Menggunakan perkiraan</translation>
+<translation id="6992014788289743568">Tingkatkan keamanan dan perkuat perlindungan data Anda dengan memeriksa sandi</translation>
 <translation id="6992289844737586249">Tanya terlebih dahulu sebelum mengizinkan situs menggunakan mikrofon Anda (disarankan)</translation>
 <translation id="7000754031042624318">Dinonaktifkan di setelan Android</translation>
 <translation id="702275896380648118">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain. Situs ini juga mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan.</translation>

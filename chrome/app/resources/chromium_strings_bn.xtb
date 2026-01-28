@@ -38,7 +38,6 @@
 <translation id="141901961143729572">আপনার মতামত শেয়ার করুন</translation>
 <translation id="1465192221147974788">আপনার উইন্ডো শেয়ার করতে, সিস্টেম সেটিংস থেকে Chromium-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন।</translation>
 <translation id="1478370723027452770">Chrome for Testing ব্যবহার করে সহায়তা পান</translation>
-<translation id="1496875977627931224">হ্যালো <ph name="USER_NAME" />,<ph name="LINE_BREAK" />আজ আপনি কী ভাবছেন?</translation>
 <translation id="1497802159252041924">ইনস্টলেশন সংক্রান্ত সমস্যা: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">এই পৃষ্ঠাটি সুরক্ষিত</translation>
 <translation id="1524282610922162960">একটি Chromium ট্যাব শেয়ার করুন</translation>
@@ -362,7 +361,6 @@
 <translation id="5083712646171654472">Gemini in Chromium আপনার ট্যাবে কাজ করতে ও আপনি তাকে যে টাস্ক দেন সেটি সম্পূর্ণ করতে অটোমেটিক ব্রাউজ ব্যবহার করে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">আপনার হাত ট্র্যাক করতে Chromium-এর অনুমতি প্রয়োজন</translation>
 <translation id="5141988424377517949">আপনি সম্প্রতি ভিজিট করেননি। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে।</translation>
-<translation id="5167819546851111585">আজ আপনি কী ভাবছেন?</translation>
 <translation id="5174969993834422967">আপনি সাধারণত বিজ্ঞপ্তি ব্লক করেন। এই সাইট থেকে বিজ্ঞপ্তি পেতে, আপনার লোকেশন বারের ডানদিকের কোণায় বিজ্ঞপ্তির আইকনে ক্লিক করুন।</translation>
 <translation id="5174983315706567306">ডিস্ক স্টোরেজে যথেষ্ট খালি জায়গা নেই।</translation>
 <translation id="5187123684706427865">Chromium অ্যাকাউন্ট আবার যাচাই করতে হবে</translation>

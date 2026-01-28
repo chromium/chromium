@@ -39,7 +39,6 @@
 <translation id="141901961143729572">तुमचे विचार शेअर करा</translation>
 <translation id="1465192221147974788">तुमची विंडो शेअर करण्यासाठी, सिस्टीम सेटिंग्ज मध्ये Chromium साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या.</translation>
 <translation id="1478370723027452770">Chrome for Testing शी संबंधित मदत मिळवा</translation>
-<translation id="1496875977627931224">हॅलो <ph name="USER_NAME" />,<ph name="LINE_BREAK" />आज तुमच्या मनात काय आहे?</translation>
 <translation id="1497802159252041924">इंस्टॉलसंबंधित एरर: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">हे पेज सुरक्षित आहे</translation>
 <translation id="1524282610922162960">Chromium टॅब शेअर करा</translation>
@@ -363,7 +362,6 @@
 <translation id="5083712646171654472">Chromium मधील Gemini तुमच्या टॅबमध्ये काम करण्यासाठी आणि तुम्ही त्याला दिलेल्या टास्क पूर्ण करण्यासाठी ऑटोमॅटिक ब्राउझ वापरते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium ला तुमचे हात ट्रॅक करण्याच्या परवानगीची आवश्यकता आहे</translation>
 <translation id="5141988424377517949">तुम्ही अलीकडे भेट दिलेली नाही. Chromium ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> परवानग्या काढून टाकल्या आहेत.</translation>
-<translation id="5167819546851111585">आज तुमच्या मनात काय आहे?</translation>
 <translation id="5174969993834422967">तुम्ही सहसा सूचना ब्लॉक करता. या साइटला तुम्हाला सूचित करू देण्यासाठी, तुमच्या स्थान बारच्या उजव्या कोपऱ्यातील नोटिफिकेशन आयकनवर क्लिक करा.</translation>
 <translation id="5174983315706567306">डिस्कमधील जागा पुरेशी नाही.</translation>
 <translation id="5187123684706427865">Chromium खात्यासाठी री-ऑथेंटिकेशन आवश्यक आहे</translation>

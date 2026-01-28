@@ -39,7 +39,6 @@
 <translation id="141901961143729572">Што вы думаеце</translation>
 <translation id="1465192221147974788">Каб абагуліць акно, у сістэмных наладах дазвольце браўзеру Chromium запіс экрана.</translation>
 <translation id="1478370723027452770">Атрымаць даведку па Chrome for Testing</translation>
-<translation id="1496875977627931224">Вітаем, <ph name="USER_NAME" />!<ph name="LINE_BREAK" />Пра што вы хочаце спытаць?</translation>
 <translation id="1497802159252041924">Памылка ўсталявання: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Гэта старонка абаронена</translation>
 <translation id="1524282610922162960">Абагульце ўкладку Chromium</translation>
@@ -363,7 +362,6 @@
 <translation id="5083712646171654472">Gemini ў Chromium выкарыстоўвае функцыю аўтаматычнага прагляду, каб працаваць ва ўкладках і выконваць задачы, атрыманыя ад вас. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium запытвае дазвол на адсочванне рухаў рук</translation>
 <translation id="5141988424377517949">Вы даўно не наведвалі сайт. Браўзер Chromium адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і <ph name="PERMISSION_3" />.</translation>
-<translation id="5167819546851111585">Пра што вы хочаце спытаць?</translation>
 <translation id="5174969993834422967">Звычайна вы блакіруеце апавяшчэнні. Каб даць дазвол гэтаму сайту на паказ апавяшчэнняў, націсніце значок апавяшчэнняў у правым вугле панэлі месцазнаходжання.</translation>
 <translation id="5174983315706567306">Недастаткова месца на дыску.</translation>
 <translation id="5187123684706427865">Патрабуецца паўторная аўтэнтыфікацыя ўліковага запісу Chromium</translation>

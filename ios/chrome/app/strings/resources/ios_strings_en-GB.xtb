@@ -1021,6 +1021,7 @@
 <translation id="483689884442613745">Save…</translation>
 <translation id="4840495572919996524">Your bookmarks, history, passwords and more will no longer be synced to your Google Account.</translation>
 <translation id="484280513275854557">You were signed out; browsing data was deleted</translation>
+<translation id="484462545196658690">Auto</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4854068532375923088">Allow 'Gemini' to use your camera</translation>
 <translation id="4860895144060829044">Call</translation>
@@ -1522,6 +1523,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6556866813142980365">Redo</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bookmark saved to ‘{title}’. It is saved only to this device.}other{Bookmarks saved to ‘{title}’. They are only saved to this device.}}</translation>
 <translation id="656065428026159829">See more</translation>
+<translation id="6565899972286925956">Create anything</translation>
 <translation id="6571070086367343653">Edit credit card</translation>
 <translation id="6574092468346088891">Turn on notifications for Safety Check</translation>
 <translation id="6579867704846662339">You can choose to open incoming URLs from other apps in Incognito mode.</translation>
