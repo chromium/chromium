@@ -117,8 +117,7 @@ bool TipsNotificationsPromo::IsEnabled(int impression_count) {
     return true;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kEducationalTipModule) ||
-      !base::FeatureList::IsEnabled(features::kAndroidTipsNotifications)) {
+  if (!base::FeatureList::IsEnabled(features::kAndroidTipsNotifications)) {
     return false;
   }
 

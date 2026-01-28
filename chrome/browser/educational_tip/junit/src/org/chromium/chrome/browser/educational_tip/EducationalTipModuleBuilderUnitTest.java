@@ -112,33 +112,15 @@ public class EducationalTipModuleBuilderUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
-    public void testBuildEducationalTipModule_NotEligible() {
-        assertFalse(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
-        assertFalse(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
-        verify(mBuildCallback, never()).onResult(any(ModuleProvider.class));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
-    })
+    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     public void testBuildEducationalTipModule_Eligible() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback).onResult(any(ModuleProvider.class));
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
-    })
+    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     @DisableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD})
     public void testBuildEducationalTipDefaultBrowserModule_NotEligible() {
         EducationalTipModuleBuilder moduleBuilderForDefaultBrowser =
@@ -151,7 +133,6 @@ public class EducationalTipModuleBuilderUnitTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
         ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER,
     })
     public void testBuildEducationalTipTabGroupSyncModule_Eligible() {
@@ -164,10 +145,7 @@ public class EducationalTipModuleBuilderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
-    })
+    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     public void testCreateInputContext() {
         EducationalTipModuleBuilder moduleBuilderForDefaultBrowserPromo =
                 new EducationalTipModuleBuilder(ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate);

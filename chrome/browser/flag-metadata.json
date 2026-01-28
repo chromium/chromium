@@ -3143,11 +3143,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-educational-tip-module",
-    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-empty-space-context-menu-clank",
     "owners": [ "hscham@google.com", "lokeric@google.com", "skavuluru@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 150

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -100,13 +99,8 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2
-    })
+    @EnableFeatures({ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2})
     public void testCreateInputContext_DefaultBrowserPromoCard() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
         InputContext inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
@@ -201,10 +195,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testCreateInputContext_TabGroupPromoCard_TabGroupExists() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.isReparentingInProgress()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
@@ -233,10 +224,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testCreateInputContext_TabGroupPromoCard_NumberOfTabs() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
         InputContext inputContext;
 
         // Test cases when tab state is already initialized.
@@ -291,9 +279,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testCreateInputContext_TabGroupSyncPromoCard() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
         when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
 
         InputContext inputContext =

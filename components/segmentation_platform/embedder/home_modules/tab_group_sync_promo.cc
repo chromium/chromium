@@ -118,10 +118,6 @@ bool TabGroupSyncPromo::IsEnabled(int impression_count) {
     return true;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kEducationalTipModule)) {
-    return false;
-  }
-
   if (impression_count >= kSingleEphemeralCardMaxImpressions) {
     return false;
   }

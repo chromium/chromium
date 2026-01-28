@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -112,10 +111,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testShowModule() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
         // Test showing default browser promo card.
         testShowModuleImpl(
                 ModuleType.DEFAULT_BROWSER_PROMO,
@@ -161,10 +157,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.ANDROID_SETUP_LIST
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETUP_LIST})
     public void testShowSetupList_EnhancedSafeBrowsingPromo() {
         // Test showing enhance safe browsing promo card.
         testShowModuleImpl(
@@ -176,10 +169,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.ANDROID_SETUP_LIST
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETUP_LIST})
     public void testShowSetupList_AddressBarPlacementPromo() {
         // Test showing address bar placement promo card.
         testShowModuleImpl(
@@ -191,10 +181,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.ANDROID_SETUP_LIST
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETUP_LIST})
     public void testShowSetupList_SignInPromo() {
         // Test showing sign in promo card.
         testShowModuleImpl(
@@ -206,10 +193,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.ANDROID_SETUP_LIST
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETUP_LIST})
     public void testShowSetupList_SavePasswordsPromo() {
         // Test showing save passwords promo card.
         testShowModuleImpl(
@@ -221,10 +205,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.ANDROID_SETUP_LIST
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETUP_LIST})
     public void testShowSetupList_PasswordCheckupPromo() {
         // Test showing password checkup promo card.
         testShowModuleImpl(
@@ -236,7 +217,6 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.EDUCATIONAL_TIP_MODULE)
     public void testShowSetupList_Completed() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
         mPrefsManager.writeBoolean(
@@ -252,7 +232,6 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.EDUCATIONAL_TIP_MODULE)
     public void testShowSetupList_NotCompleted() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
         mPrefsManager.writeBoolean(
@@ -268,7 +247,6 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.EDUCATIONAL_TIP_MODULE)
     public void testShowModule_NonSetupList_IsCompletedNull() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
         // ModuleType.TAB_GROUP_PROMO is not a Setup List module.
@@ -281,9 +259,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testOnViewCreated_DefaultBrowserPromo_TrackerInitialized_ShouldDisplay() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
         when(mTracker.isInitialized()).thenReturn(true);
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
                 .thenReturn(true);
@@ -299,9 +275,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testOnViewCreated_DefaultBrowserPromo_TrackerInitialized_ShouldNotDisplay() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
         when(mTracker.isInitialized()).thenReturn(true);
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
                 .thenReturn(false);
@@ -314,9 +288,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testOnViewCreated_DefaultBrowserPromo_TrackerNotInitialized() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
         when(mTracker.isInitialized()).thenReturn(false);
 
         mEducationalTipModuleMediator.showModule();
@@ -331,9 +303,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testOnViewCreated_OtherPromoType() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
         mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.TAB_GROUP_PROMO);
 
         mEducationalTipModuleMediator.showModule();
@@ -344,9 +314,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testRemoveModule() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
         mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.DEFAULT_BROWSER_PROMO);
         mEducationalTipModuleMediator.showModule();
         verify(mMockDefaultBrowserPromoUtils)

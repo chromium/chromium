@@ -185,7 +185,6 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCard) {
 // Tests that the Registry registers the DefaultBrowserPromo card when its
 // feature is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
@@ -209,7 +208,6 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
 // Tests that the Registry won't register the DefaultBrowserPromo card when it
 // is disabled because of user's interaction history.
 TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   profile_pref_service_.SetUserPref(kDefaultBrowserPromoImpressionCounterPref,
                                     std::make_unique<base::Value>(4));
   registry_ = std::make_unique<HomeModulesCardRegistry>(
@@ -238,7 +236,6 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
 // Tests that the Registry registers the TabGroupPromo card when its feature is
 // enabled.
 TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardEnabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
@@ -262,7 +259,6 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardEnabled) {
 // Tests that the Registry won't register the TabGroupPromo card when it is
 // disabled because of user's interaction history.
 TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardDisabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   profile_pref_service_.SetUserPref(kTabGroupPromoImpressionCounterPref,
                                     std::make_unique<base::Value>(11));
   registry_ = std::make_unique<HomeModulesCardRegistry>(
@@ -289,7 +285,6 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardDisabled) {
 // card, could send a notification when the card is shown once per session,
 // rather than every time it is displayed.
 TEST_F(HomeModulesCardRegistryTest, TestShouldNotifyCardShownPerSession) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
   const char* card_name_1 = "TabGroupPromo";
@@ -303,7 +298,6 @@ TEST_F(HomeModulesCardRegistryTest, TestShouldNotifyCardShownPerSession) {
 // Tests that the Registry registers the TabGroupSyncPromo card when its feature
 // is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardEnabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
@@ -325,7 +319,6 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardEnabled) {
 // Tests that the Registry won't register the TabGroupSyncPromo card when it is
 // disabled because of user's interaction history.
 TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardDisabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   profile_pref_service_.SetUserPref(kTabGroupSyncPromoImpressionCounterPref,
                                     std::make_unique<base::Value>(11));
   registry_ = std::make_unique<HomeModulesCardRegistry>(
@@ -350,7 +343,6 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupSyncPromoCardDisabled) {
 // Tests that the Registry registers the QuickDeletePromo card when its feature
 // is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardEnabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
@@ -375,7 +367,6 @@ TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardEnabled) {
 // Tests that the Registry won't register the QuickDeletePromo card when it is
 // disabled because of user's interaction history.
 TEST_F(HomeModulesCardRegistryTest, TestQuickDeletePromoCardDisabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   profile_pref_service_.SetUserPref(kQuickDeletePromoImpressionCounterPref,
                                     std::make_unique<base::Value>(11));
   registry_ = std::make_unique<HomeModulesCardRegistry>(
@@ -445,7 +436,6 @@ TEST_F(HomeModulesCardRegistryTest, TestAuxiliarySearchPromoCardDisabled) {
 // Tests that the Registry registers the HistorySyncPromo card when its feature
 // is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
@@ -467,7 +457,6 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
 // Tests that the Registry won't register the HistorySyncPromo card when it is
 // disabled because of user's interaction history.
 TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardDisabled) {
-  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   profile_pref_service_.SetUserPref(kHistorySyncPromoImpressionCounterPref,
                                     std::make_unique<base::Value>(11));
   registry_ = std::make_unique<HomeModulesCardRegistry>(
@@ -491,9 +480,7 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardDisabled) {
 // Tests that the Registry registers the TipsNotificationsPromo card when its
 // feature is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestTipsNotificationsPromoCardEnabled) {
-  feature_list_.InitWithFeatures(
-      {features::kEducationalTipModule, features::kAndroidTipsNotifications},
-      {});
+  feature_list_.InitWithFeatures({features::kAndroidTipsNotifications}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
@@ -516,9 +503,7 @@ TEST_F(HomeModulesCardRegistryTest, TestTipsNotificationsPromoCardEnabled) {
 // Tests that the Registry won't register the TipsNotificationsPromo card when
 // it is disabled because of user's interaction history.
 TEST_F(HomeModulesCardRegistryTest, TestTipsNotificationsPromoCardDisabled) {
-  feature_list_.InitWithFeatures(
-      {features::kEducationalTipModule, features::kAndroidTipsNotifications},
-      {});
+  feature_list_.InitWithFeatures({features::kAndroidTipsNotifications}, {});
   profile_pref_service_.SetUserPref(
       kTipsNotificationsPromoImpressionCounterPref,
       std::make_unique<base::Value>(11));

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -24,10 +23,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoBottomSheetContent;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.ui.widget.ButtonCompat;
@@ -57,10 +54,7 @@ public class DefaultBrowserPromoCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testDefaultBrowserPromoCardBottomSheet() {
-        assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
-
         mDefaultBrowserPromoCoordinator.onCardClicked();
 
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());

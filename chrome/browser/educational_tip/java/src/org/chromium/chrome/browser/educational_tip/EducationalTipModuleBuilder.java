@@ -44,9 +44,8 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
     @Override
     public boolean build(
             ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
-        if (!ChromeFeatureList.sEducationalTipModule.isEnabled()
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER)) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER)) {
             return false;
         }
 
@@ -97,7 +96,7 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
 
     @Override
     public boolean isEligible() {
-        return ChromeFeatureList.sEducationalTipModule.isEnabled();
+        return true;
     }
 
     @Override

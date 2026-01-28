@@ -5305,10 +5305,6 @@ inline constexpr char kEducationalTipDefaultBrowserPromoCardDescription[] =
     "Show the default browser promo card of the educational tip module on "
     "magic stack in clank";
 
-inline constexpr char kEducationalTipModuleName[] = "Educational Tip Module";
-inline constexpr char kEducationalTipModuleDescription[] =
-    "Show educational tip module on magic stack in clank";
-
 inline constexpr char kEnableAndroidSidePanelName[] =
     "Enable Android Side Panel";
 inline constexpr char kEnableAndroidSidePanelDescription[] =

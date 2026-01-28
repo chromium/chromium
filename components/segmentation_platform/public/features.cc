@@ -167,8 +167,6 @@ BASE_FEATURE(kSegmentationSurveyPage,
 constexpr base::FeatureParam<bool> kSegmentationSurveyInternalsPage{
     &kSegmentationSurveyPage, "survey_internals_page", /*default_value=*/true};
 
-BASE_FEATURE(kEducationalTipModule, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAndroidAppIntegrationModule, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool> kMaxAuxiliarySearchForceShow{

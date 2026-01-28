@@ -7975,12 +7975,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMagicStackAndroidVariations,
                                     "MagicStackAndroid")},
 
-    {"enable-educational-tip-module",
-     flag_descriptions::kEducationalTipModuleName,
-     flag_descriptions::kEducationalTipModuleDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         segmentation_platform::features::kEducationalTipModule)},
-
     {"enable-educational-tip-default-browser-promo-card",
      flag_descriptions::kEducationalTipDefaultBrowserPromoCardName,
      flag_descriptions::kEducationalTipDefaultBrowserPromoCardDescription,

@@ -143,10 +143,6 @@ bool DefaultBrowserPromo::IsEnabled(int impression_count) {
     return true;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kEducationalTipModule)) {
-    return false;
-  }
-
   if (impression_count >= kMaxDefaultBrowserCardImpressions) {
     return false;
   }

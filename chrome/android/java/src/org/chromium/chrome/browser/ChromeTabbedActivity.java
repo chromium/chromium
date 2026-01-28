@@ -3173,12 +3173,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         getModalDialogManagerSupplier());
         moduleRegistry.registerModule(ModuleType.SAFETY_HUB, safetyHubMagicStackBuilder);
 
-        if (ChromeFeatureList.sEducationalTipModule.isEnabled()) {
-            // Fetch and register the appropriate collection of educational tip or setup list
-            // modules.
-            HomeTipsModulesProvider.registerTipModules(
-                    createEducationTipModuleActionDelegate(), moduleRegistry);
-        }
+        // Fetch and register the appropriate collection of educational tip or setup list modules.
+        HomeTipsModulesProvider.registerTipModules(
+                createEducationTipModuleActionDelegate(), moduleRegistry);
 
         // The AuxiliarySearchControllerFactory#setIsTablet() must be called before using the
         // builder which checks AuxiliarySearchControllerFactory#isEnabled().

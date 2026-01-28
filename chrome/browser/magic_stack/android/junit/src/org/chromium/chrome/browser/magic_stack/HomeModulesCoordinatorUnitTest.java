@@ -252,10 +252,7 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER
-    })
+    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     public void testOnModuleConfigChangedForEducationalTipModules() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
