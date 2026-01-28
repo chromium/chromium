@@ -174,6 +174,18 @@ device::UserVerificationRequirement ToUserVerificationRequirement(
       .value_or(device::UserVerificationRequirement::kPreferred);
 }
 
+// Converts the provided booleans to a PasskeyRequestParams::RequestType enum.
+PasskeyRequestParams::RequestType ToRequestType(bool is_conditional,
+                                                bool for_create_request) {
+  if (!is_conditional) {
+    return PasskeyRequestParams::RequestType::kModal;
+  }
+
+  return for_create_request
+             ? PasskeyRequestParams::RequestType::kConditionalCreate
+             : PasskeyRequestParams::RequestType::kConditionalGet;
+}
+
 // Reads a list of PublicKeyCredentialDescriptor from the provided list.
 base::expected<std::vector<device::PublicKeyCredentialDescriptor>,
                PasskeysParsingError>
@@ -380,7 +392,8 @@ base::expected<PasskeyRequestParams, PasskeysParsingError> BuildRequestParams(
                               std::move(*challenge),
                               ToUserVerificationRequirement(
                                   request_dict->FindString(kUserVerification)),
-                              *isConditional, std::move(*extension_data));
+                              ToRequestType(*isConditional, for_create_request),
+                              std::move(*extension_data));
 }
 
 }  // namespace

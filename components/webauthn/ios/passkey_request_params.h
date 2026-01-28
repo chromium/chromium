@@ -36,11 +36,25 @@ struct PasskeyExtensionData {
 // registration requests.
 class PasskeyRequestParams {
  public:
+  // LINT.IfChange
+  // Whether the request in modal, conditional get or conditional create.
+  enum class RequestType {
+    // Unknown (due to bad request).
+    kUnknown = 0,
+    // Modal (non conditional) request.
+    kModal = 1,
+    // Conditional assertion request.
+    kConditionalGet = 2,
+    // Conditional registration request.
+    kConditionalCreate = 3,
+  };
+  // LINT.ThenChange(//components/webauthn/ios/resources/passkey_controller.ts)
+
   PasskeyRequestParams(IOSPasskeyClient::RequestInfo request_info,
                        device::PublicKeyCredentialRpEntity rp_entity,
                        std::vector<uint8_t> challenge,
                        device::UserVerificationRequirement user_verification,
-                       bool is_conditional,
+                       RequestType request_type,
                        PasskeyExtensionData extension_data);
   PasskeyRequestParams(PasskeyRequestParams&& other);
   ~PasskeyRequestParams();
@@ -64,8 +78,8 @@ class PasskeyRequestParams {
   bool ShouldPerformUserVerification(
       bool is_biometric_authentication_enabled) const;
 
-  // Returns whether the request is a conditional request (as opposed to modal).
-  bool IsConditional() const;
+  // Returns the request type (modal / conditional).
+  PasskeyRequestParams::RequestType Type() const;
 
   // Returns the extensions input data for passkey creation.
   passkey_model_utils::ExtensionInputData ExtensionInputForCreation() const;
@@ -84,8 +98,8 @@ class PasskeyRequestParams {
   const std::vector<uint8_t> challenge_;
   // The passkey request's user verification preference.
   const device::UserVerificationRequirement user_verification_;
-  // Whether this is a conditional request (as opposed to a modal request).
-  const bool is_conditional_ = false;
+  // Type of request (modal / conditional).
+  const RequestType request_type_ = RequestType::kUnknown;
   // Extension data, including the PRF extension.
   const PasskeyExtensionData extension_data_;
 };

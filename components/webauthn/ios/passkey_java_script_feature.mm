@@ -130,10 +130,10 @@ ReadLogEventType(const std::string& event,
 }
 
 bool ValidateFeatureUsage(const PasskeyRequestParams& request_params) {
-  if (request_params.IsConditional()) {
-    return base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim);
-  } else {
+  if (request_params.Type() == PasskeyRequestParams::RequestType::kModal) {
     return base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
+  } else {
+    return base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim);
   }
 }
 
@@ -193,10 +193,14 @@ PasskeyJavaScriptFeature::PasskeyJavaScriptFeature()
 
 PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 
-void PasskeyJavaScriptFeature::DeferToRenderer(web::WebFrame* web_frame,
-                                               std::string_view request_id) {
+void PasskeyJavaScriptFeature::DeferToRenderer(
+    web::WebFrame* web_frame,
+    std::string_view request_id,
+    PasskeyRequestParams::RequestType request_type) {
   CallJavaScriptFunction(web_frame, "passkey.deferToRenderer",
-                         base::ListValue().Append(request_id));
+                         base::ListValue()
+                             .Append(request_id)
+                             .Append(std::to_underlying(request_type)));
 }
 
 void PasskeyJavaScriptFeature::ResolveAttestationRequest(
@@ -304,13 +308,16 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     if (!assertion_request_params.has_value()) {
       base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
                                     assertion_request_params.error());
-      passkey_tab_helper->DeferToRenderer(std::move(*request_info));
+      passkey_tab_helper->DeferToRenderer(
+          std::move(*request_info),
+          PasskeyRequestParams::RequestType::kUnknown);
       return;
     }
 
     if (!ValidateFeatureUsage(*assertion_request_params)) {
       // TODO(460485333): Log the error.
-      passkey_tab_helper->DeferToRenderer(std::move(*request_info));
+      passkey_tab_helper->DeferToRenderer(std::move(*request_info),
+                                          assertion_request_params->Type());
       return;
     }
 
@@ -325,13 +332,16 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     if (!registration_request_params.has_value()) {
       base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
                                     registration_request_params.error());
-      passkey_tab_helper->DeferToRenderer(std::move(*request_info));
+      passkey_tab_helper->DeferToRenderer(
+          std::move(*request_info),
+          PasskeyRequestParams::RequestType::kUnknown);
       return;
     }
 
     if (!ValidateFeatureUsage(*registration_request_params)) {
       // TODO(460485333): Log the error.
-      passkey_tab_helper->DeferToRenderer(std::move(*request_info));
+      passkey_tab_helper->DeferToRenderer(std::move(*request_info),
+                                          registration_request_params->Type());
       return;
     }
 

@@ -79,7 +79,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void StartPasskeyAssertion(std::string request_id, std::string credential_id);
 
   // Utility function to defer the passkey request back to the renderer.
-  void DeferToRenderer(IOSPasskeyClient::RequestInfo request_info) const;
+  void DeferToRenderer(IOSPasskeyClient::RequestInfo request_info,
+                       PasskeyRequestParams::RequestType request_type) const;
 
   // Utility function to defer a pending passkey request back to the renderer.
   void DeferPendingRequestToRenderer(const std::string& request_id);
@@ -156,6 +157,10 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Handles passkey assertion request after it passes validation.
   void HandleAssertion(AssertionRequestParams params);
 
+  // Whether automatic passkey upgrade is allowed.
+  bool CanPerformAutomaticPasskeyUpgrade(
+      const RegistrationRequestParams& params) const;
+
   // Handles passkey registration requests after it passes validation.
   void HandleRegistration(RegistrationRequestParams params);
 
@@ -165,7 +170,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Utility function to defer the passkey request back to the renderer.
   void DeferToRenderer(web::WebFrame* web_frame,
-                       const std::string& request_id) const;
+                       const std::string& request_id,
+                       PasskeyRequestParams::RequestType request_type) const;
 
   // If `request_id` exists in the `assertion_requests_` map, this function will
   // remove the parameters from the `assertion_requests_` map and return them.
