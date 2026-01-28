@@ -28,15 +28,15 @@
     transition: transform 300ms ease;
 }
 
-.tab:hover:not(.active) {
+:host(:not([drag-in-progress]):not([active])) .tab:hover {
     background-color: var(--color-tab-background-highlighted);
     transition: background-color 100ms ease-in-out;
 }
-.tab:not(:hover):not(.active) {
+:host(:not([drag-in-progress]):not([active])) .tab:not(:hover) {
     transition: background-color 300ms ease-in-out;
 }
 
-.tab.active {
+:host([active]) .tab {
     color: var(--color-tab-foreground-active-frame-active);
     background-color: var(--color-tab-background-active-frame-active);
 }

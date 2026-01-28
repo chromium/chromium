@@ -7,15 +7,13 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Tab as TabData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
-import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
+import {NetworkState} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 
 import {getCss} from './tab.css.js';
 import {getHtml} from './tab.html.js';
-import type {TabStrip} from './tab_strip.js';
 
 export class TabElement extends CrLitElement {
   static get is() {
-    // cannot use "tab" because custom element name must contain a hyphen "-".
     return 'webui-browser-tab';
   }
 
@@ -29,6 +27,11 @@ export class TabElement extends CrLitElement {
 
   static override get properties() {
     return {
+      data: {type: Object},
+      dragInProgress: {
+        type: Boolean,
+        reflect: true,
+      },
       active: {
         type: Boolean,
         reflect: true,
@@ -36,30 +39,39 @@ export class TabElement extends CrLitElement {
     };
   }
 
-  tabId: NodeId;
-  accessor active: boolean = false;
+  accessor data: TabData = {
+    alertStates: [],
+    favicon: {dataUrl: 'chrome://favicon2/'},
+    id: '',
+    isActive: false,
+    isBlocked: false,
+    isSelected: false,
+    networkState: NetworkState.kNone,
+    title: '',
+    url: '',
+  };
 
-  faviconUrl: string = 'chrome://favicon2/';
-  tabTitle: string = '';
+  protected accessor dragInProgress = false;
+  protected accessor active = false;
 
-  constructor(tab: TabData) {
-    super();
-    this.tabId = tab.id;
-    this.updateData(tab);
-  }
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
-  override update(changedProperties: PropertyValues) {
-    this.style.setProperty('--favicon-url', `url(${this.faviconUrl})`);
-    this.style.setProperty('z-index', this.active ? '1' : '0');
-    super.update(changedProperties);
-  }
-
-  updateData(tab: TabData) {
-    if (tab.favicon.dataUrl) {
-      this.faviconUrl = tab.favicon.dataUrl;
+    if (changedProperties.has('data')) {
+      this.active = this.data.isActive;
     }
-    this.tabTitle = tab.title;
-    this.requestUpdate();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('data')) {
+      if (this.data.favicon.dataUrl) {
+        this.style.setProperty(
+            '--favicon-url', `url(${this.data.favicon.dataUrl})`);
+      }
+      this.style.setProperty('z-index', this.data.isActive ? '1' : '0');
+    }
   }
 
   // Calculating the dom matrix value could be expensive.
@@ -70,24 +82,13 @@ export class TabElement extends CrLitElement {
     return matrix.m41;
   }
 
-  protected handleClick(e: MouseEvent) {
-    e = e || window.event;
-    e.preventDefault();
-    this.dispatchEvent(new CustomEvent(
-        'tab-click',
-        {bubbles: true, composed: true, detail: {tabId: this.tabId}}));
-  }
-
-  protected handleClose() {
-    this.dispatchEvent(new CustomEvent(
-        'tab-close',
-        {bubbles: true, composed: true, detail: {tabId: this.tabId}}));
+  protected onCloseClick() {
+    this.fire('tab-close-click', {id: this.data.id});
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'webui-browser-tab-strip': TabStrip;
     'webui-browser-tab': TabElement;
   }
 }

@@ -18,7 +18,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {Tab} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import type {Tab as TabData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -29,9 +29,8 @@ import {FullscreenContext, PageHandlerFactory, SecurityIcon} from './browser.moj
 import {BrowserProxy} from './browser_proxy.js';
 import type {ContentRegion} from './content_region.js';
 import type {SidePanel} from './side_panel.js';
+import type {TabActivated, TabAdded, TabClosed, TabUpdated} from './tab_strip/events.js';
 import {TabStrip} from './tab_strip/tab_strip.js';
-import type {TabStripControllerDelegate} from './tab_strip/tab_strip_controller.js';
-import {TabStripController} from './tab_strip/tab_strip_controller.js';
 
 export interface WebuiBrowserAppElement {
   $: {
@@ -45,8 +44,7 @@ export interface WebuiBrowserAppElement {
   };
 }
 
-export class WebuiBrowserAppElement extends CrLitElement implements
-    TabStripControllerDelegate {
+export class WebuiBrowserAppElement extends CrLitElement {
   static get is() {
     return 'webui-browser-app';
   }
@@ -73,7 +71,6 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     };
   }
 
-  private tabStripController_: TabStripController;
   private trackedElementManager_: TrackedElementManager;
   protected accessor backButtonDisabled_: boolean = true;
   protected accessor forwardButtonDisabled_: boolean = true;
@@ -88,8 +85,6 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     super();
     ColorChangeUpdater.forDocument().start();
 
-    this.tabStripController_ =
-        new TabStripController(this, this.$.tabstrip, this.$.contentRegion);
     this.trackedElementManager_ = TrackedElementManager.getInstance();
 
     const callbackRouter = BrowserProxy.getCallbackRouter();
@@ -138,38 +133,6 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     [SecurityIcon.ExtensionChromeRefresh, 'ExtensionChromeRefresh'],
     [SecurityIcon.OfflinePin, 'OfflinePin'],
   ]);
-
-  async activeTabUpdated(tabData: Tab) {
-    let displayUrl = '';
-    const activeTabUrl = tabData.url;
-    // TODO(webium): Should match
-    // ChromeLocationBarModelDelegate::ShouldDisplayURL and
-    // LocationBarModelImpl::GetFormattedURL logic.
-    //
-    // There are also likely some subtleties about what happens when the user
-    // is typing and the tab navigates.
-    const isNTP = activeTabUrl.startsWith('chrome://newtab');
-    if (!isNTP) {
-      displayUrl = activeTabUrl;
-
-      if (this.$.contentRegion.activeWebview) {
-        const securityIcon =
-            await this.$.contentRegion.activeWebview.getSecurityIcon();
-        const iconName = this.securityIconToIconNameMap.get(securityIcon);
-        // Failure here indicates a new icon needs to be added to icons.html.ts
-        // and then to |securityIconToIconNameMap|.
-        assert(iconName);
-        this.locationIcon_ = iconName;
-      }
-    }
-    this.showLocationIconButton_ = !isNTP;
-    this.$.address.setInputText(displayUrl);
-    this.$.contentRegion.classList.toggle('modalScrim', tabData.isBlocked);
-  }
-
-  protected onLaunchDevtoolsClick_(_: Event) {
-    BrowserProxy.getPageHandler().launchDevToolsForBrowser();
-  }
 
   protected onAppMenuClick_(_: Event) {
     BrowserProxy.getPageHandler().openAppMenu();
@@ -225,6 +188,65 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     }
   }
 
+  protected onTabAdded_(event: CustomEvent<TabAdded>) {
+    this.$.contentRegion.createWebView(event.detail.id, event.detail.isActive);
+    this.refreshLayout();
+  }
+
+  protected onTabClosed_(event: CustomEvent<TabClosed>) {
+    this.$.contentRegion.removeTab(event.detail);
+    this.refreshLayout();
+  }
+
+  protected onTabActivated_(event: CustomEvent<TabActivated>) {
+    this.$.contentRegion.activateTab(event.detail.id);
+    this.updateUrlForActiveTab_(event.detail);
+    this.refreshLayout();
+  }
+
+  protected onTabUpdated_(event: CustomEvent<TabUpdated>) {
+    const tabData = event.detail;
+    if (!tabData.isActive) {
+      return;
+    }
+
+    this.updateUrlForActiveTab_(tabData);
+  }
+
+  private updateUrlForActiveTab_(active: TabData) {
+    assert(active.isActive);
+
+    let displayUrl = '';
+    const activeTabUrl = active.url;
+    // TODO(webium): Should match
+    // ChromeLocationBarModelDelegate::ShouldDisplayURL and
+    // LocationBarModelImpl::GetFormattedURL logic.
+    //
+    // There are also likely some subtleties about what happens when the user
+    // is typing and the tab navigates.
+    const isNTP = activeTabUrl.startsWith('chrome://newtab');
+    if (!isNTP) {
+      displayUrl = activeTabUrl;
+
+      const tabWebView = this.$.contentRegion.activeWebview;
+      if (tabWebView) {
+        tabWebView.getSecurityIcon().then(securityIcon => {
+          // The content may have changed by the time this is resolved.
+          if (this.$.contentRegion.activeWebview === tabWebView) {
+            const iconName = this.securityIconToIconNameMap.get(securityIcon);
+            assert(iconName);
+            this.locationIcon_ = iconName;
+            // Failure here indicates a new icon needs to be added to
+            // icons.html.ts and then to |securityIconToIconNameMap|.
+          }
+        });
+      }
+    }
+    this.showLocationIconButton_ = !isNTP;
+    this.$.address.setInputText(displayUrl);
+    this.$.contentRegion.classList.toggle('modalScrim', active.isBlocked);
+  }
+
   private async updateToolbarButtons_() {
     const webview = this.$.contentRegion.activeWebview;
     if (webview) {
@@ -236,23 +258,6 @@ export class WebuiBrowserAppElement extends CrLitElement implements
       this.backButtonDisabled_ = true;
       this.forwardButtonDisabled_ = true;
     }
-  }
-
-  protected onTabClick_(e: CustomEvent) {
-    this.tabStripController_.onTabClick(e);
-  }
-
-  protected onTabDragOutOfBounds_(e: CustomEvent) {
-    this.tabStripController_.onTabDragOutOfBounds(e);
-  }
-
-  protected onTabClosed_(e: CustomEvent) {
-    const tabId = e.detail.tabId;
-    this.tabStripController_.removeTab(tabId);
-  }
-
-  protected onAddTabClick_(_: Event) {
-    this.tabStripController_.addNewTab();
   }
 
   protected override firstUpdated() {
