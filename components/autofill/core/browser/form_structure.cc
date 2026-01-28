@@ -610,6 +610,12 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
   // Whether the AutofillAI model may be run is set at the same time as the
   // server predictions - it also needs to be retrieved from the cache.
   may_run_autofill_ai_model_ = cached_form.may_run_autofill_ai_model_;
+
+  // The last successfully queried version is set at the same time as the
+  // server predictions - it also needs to be retrieved from the cache to avoid
+  // applying outdated server predictions.
+  last_successfully_queried_version_ =
+      cached_form.last_successfully_queried_version_;
 }
 
 void FormStructure::SetFieldTypesFromAutocompleteAttribute() {

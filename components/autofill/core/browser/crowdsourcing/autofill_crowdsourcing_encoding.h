@@ -172,6 +172,7 @@ class ServerPredictions {
   void ApplyTo(FormStructure& form) const;
 
  private:
+  FormVersion version_;
   bool may_run_autofill_ai_model_;
 
   // Contains the predictions to be applied to each field given its

@@ -4011,6 +4011,38 @@ TEST_F(AutofillCrowdsourcingEncoding,
               ElementsAre(ADDRESS_HOME_LINE2));
 }
 
+TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UpdatesVersion) {
+  FormData form_data;
+  form_data.set_version(FormVersion(2));
+
+  FormStructure& form_structure = SeeAndGetParsedForm(form_data);
+  form_structure.set_last_successfully_queried_version(FormVersion(1));
+
+  AutofillQueryResponse response;
+  test_api(autofill_manager())
+      .OnLoadedServerPredictions(SerializeAndEncode(response),
+                                 test::GetEncodedSignatures({form_structure}),
+                                 {form_data});
+
+  EXPECT_EQ(form_structure.last_successfully_queried_version(), FormVersion(2));
+}
+
+TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_SkipsOldVersion) {
+  FormData form_data;
+  form_data.set_version(FormVersion(1));
+
+  FormStructure& form_structure = SeeAndGetParsedForm(form_data);
+  form_structure.set_last_successfully_queried_version(FormVersion(2));
+
+  AutofillQueryResponse response;
+  test_api(autofill_manager())
+      .OnLoadedServerPredictions(SerializeAndEncode(response),
+                                 test::GetEncodedSignatures({form_structure}),
+                                 {form_data});
+
+  EXPECT_EQ(form_structure.last_successfully_queried_version(), FormVersion(2));
+}
+
 struct ClearSmallAddressFormPredictions_TestCase {
   std::string test_name;
   std::vector<std::vector<FieldPrediction>> received_predictions;
