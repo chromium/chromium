@@ -83,6 +83,11 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
       const HeapVector<Member<DOMRect>>& options_bounds,
       bool children_updated);
 
+  // This methis is used to log messages from script running in the popup for
+  // debugging purposes because running console.log in the popup doesn't print
+  // to stdout or stderr.
+  void debugLog(const String&);
+
  private:
   PagePopup& popup_;
   std::optional<gfx::Point> popup_origin_;
