@@ -511,9 +511,15 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
 
   // Silently grant all active permissions to pre-installed apps and apps
   // installed in kiosk mode.
+  // Newly-installed external extensions will already trigger a separate prompt
+  // for the user, so their initial permissions are not treated as an increase.
+  bool is_new_external_extension =
+      !is_extension_installed &&
+      Manifest::IsExternalLocation(extension->location());
   bool auto_grant_permission =
       extension->was_installed_by_default() ||
-      ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode();
+      ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode() ||
+      is_new_external_extension;
   if (auto_grant_permission) {
     PermissionsUpdater(profile_).GrantActivePermissions(extension);
   }
@@ -528,42 +534,34 @@ void ChromeExtensionRegistrarDelegate::CheckPermissionsIncrease(
 
   // Verify privilege increases for non-trusted and non-auto-granted extensions.
   if (!is_trusted_location && !auto_grant_permission) {
-    bool is_external_install =
-        Manifest::IsExternalLocation(extension->location());
-    if (!is_extension_installed && is_external_install) {
-      // Grant initial permissions to establish a baseline for update checks.
-      // TODO(crbug.com/435980394): Grant for this extension type on install.
+    // Add all the recognized permissions if the granted permissions list
+    // hasn't been initialized yet. Compare requested permissions against the
+    // existing granted set to detect a privilege increase.
+    std::unique_ptr<const PermissionSet> granted_permissions =
+        extension_prefs_->GetGrantedPermissions(extension->id());
+    CHECK(granted_permissions.get());
+    std::unique_ptr<const PermissionSet> runtime_granted_permissions =
+        extension_prefs_->GetRuntimeGrantedPermissions(extension->id());
+    std::unique_ptr<const PermissionSet> total_permissions =
+        PermissionSet::CreateUnion(*granted_permissions,
+                                   *runtime_granted_permissions);
+
+    // Check if an extension's privileges have increased in a manner that
+    // requires the user's approval. This could occur because the browser
+    // upgraded and recognized additional privileges, or an extension upgrades
+    // to a version that requires additional privileges.
+    is_privilege_increase =
+        PermissionMessageProvider::Get()->IsPrivilegeIncrease(
+            *total_permissions,
+            extension->permissions_data()->active_permissions(),
+            extension->GetType());
+
+    // If there was no privilege increase, the extension might still have new
+    // permissions (which either don't generate a warning message, or whose
+    // warning messages are suppressed by existing permissions). Grant the new
+    // permissions.
+    if (!is_privilege_increase) {
       PermissionsUpdater(profile_).GrantActivePermissions(extension);
-    } else {
-      // Add all the recognized permissions if the granted permissions list
-      // hasn't been initialized yet. Compare requested permissions against the
-      // existing granted set to detect a privilege increase.
-      std::unique_ptr<const PermissionSet> granted_permissions =
-          extension_prefs_->GetGrantedPermissions(extension->id());
-      CHECK(granted_permissions.get());
-      std::unique_ptr<const PermissionSet> runtime_granted_permissions =
-          extension_prefs_->GetRuntimeGrantedPermissions(extension->id());
-      std::unique_ptr<const PermissionSet> total_permissions =
-          PermissionSet::CreateUnion(*granted_permissions,
-                                     *runtime_granted_permissions);
-
-      // Check if an extension's privileges have increased in a manner that
-      // requires the user's approval. This could occur because the browser
-      // upgraded and recognized additional privileges, or an extension upgrades
-      // to a version that requires additional privileges.
-      is_privilege_increase =
-          PermissionMessageProvider::Get()->IsPrivilegeIncrease(
-              *total_permissions,
-              extension->permissions_data()->active_permissions(),
-              extension->GetType());
-
-      // If there was no privilege increase, the extension might still have new
-      // permissions (which either don't generate a warning message, or whose
-      // warning messages are suppressed by existing permissions). Grant the new
-      // permissions.
-      if (!is_privilege_increase) {
-        PermissionsUpdater(profile_).GrantActivePermissions(extension);
-      }
     }
   }
 
