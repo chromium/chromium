@@ -483,14 +483,11 @@ pub mod remote {
         /// header, retrieve the corresponding response callback from
         /// the map, and invoke the interface's response handler with
         /// it.
-        fn incoming_message_handler(
-            raw_message: (Vec<u8>, Vec<UntypedHandle>),
-            callback_map: &CallbackMap<T>,
-        ) {
+        fn incoming_message_handler(raw_message: RawMojoMessage, callback_map: &CallbackMap<T>) {
             // FOR_RELEASE: This indicates a malformed mojo message, we should figure out
             // what to do about those
-            let message: MojomMessage = MojomMessage::from_bytes(raw_message.0)
-                .expect("Incoming response failed to parse!");
+            let message: MojomMessage =
+                MojomMessage::from_raw(&raw_message).expect("Incoming response failed to parse!");
             let response_callback = callback_map
                 .lock()
                 .expect("Callback map should never be poisoned")
@@ -654,14 +651,14 @@ pub mod receiver {
         /// header, call the corresponding method on the state object, and then
         /// send a response back through the pipe (if the message expects one).
         fn incoming_message_handler(
-            raw_message: (Vec<u8>, Vec<UntypedHandle>),
+            raw_message: RawMojoMessage,
             state_weak: &Weak<Mutex<StateTy>>,
             sender: &ResponseSender,
         ) {
             // FOR_RELEASE: This indicates a malformed mojo message, we should figure out
             // what to do about those
-            let message: MojomMessage = MojomMessage::from_bytes(raw_message.0)
-                .expect("Incoming response failed to parse!");
+            let message: MojomMessage =
+                MojomMessage::from_raw(&raw_message).expect("Incoming response failed to parse!");
 
             let expects_response = message
                 .header

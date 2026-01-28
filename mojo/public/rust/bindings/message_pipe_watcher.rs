@@ -12,7 +12,7 @@ chromium::import! {
 }
 
 use mojo_rust_system_api::message_pipe::{MessageEndpoint, RawMojoMessage};
-use mojo_rust_system_api::mojo_types::{HandleSignals, MojoResult, UntypedHandle};
+use mojo_rust_system_api::mojo_types::{HandleSignals, MojoResult};
 use mojo_rust_system_api::raw_trap::TriggerCondition;
 use mojo_rust_system_api::trap::{ArmingPolicyForBlockingEvents, Trap, TrapError, TrapEvent};
 use sequences::SequencedTaskRunnerHandle;
@@ -90,12 +90,12 @@ impl ResponseSender {
 /// 2. A (weak) reference to the endpoint in question, so the handler can send a
 ///    response if it wishes.
 pub trait MessagePipeWatcherHandler:
-    FnMut((Vec<u8>, Vec<UntypedHandle>), ResponseSender) + Send + 'static
+    FnMut(RawMojoMessage, ResponseSender) + Send + 'static
 {
 }
 
 impl<T> MessagePipeWatcherHandler for T where
-    T: FnMut((Vec<u8>, Vec<UntypedHandle>), ResponseSender) + Send + 'static
+    T: FnMut(RawMojoMessage, ResponseSender) + Send + 'static
 {
 }
 

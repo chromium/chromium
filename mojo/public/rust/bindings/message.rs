@@ -9,9 +9,11 @@
 
 chromium::import! {
     "//mojo/public/rust/mojom_parser";
+    "//mojo/public/rust:mojo_rust_system_api";
 }
 
 use crate::message_header::*;
+use mojo_rust_system_api::message_pipe::RawMojoMessage;
 use mojom_parser::ParsingResult;
 
 /// Represents a Mojom message with a structured header and unstructured
@@ -38,6 +40,11 @@ impl MojomMessage {
         let num_consumed_bytes = data.len() - remaining_bytes_len;
         let _ = data.drain(0..num_consumed_bytes);
         Ok(MojomMessage { header, payload: data })
+    }
+
+    /// Parse the given raw message into a structured representation.
+    pub fn from_raw(msg: &RawMojoMessage) -> ParsingResult<Self> {
+        Self::from_bytes(msg.read_bytes().unwrap().to_vec())
     }
 
     /// Serialize this message into its binary equivalent.

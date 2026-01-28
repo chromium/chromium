@@ -39,8 +39,13 @@ fn test_basic_message_write_and_send() {
     expect_true!(write_result.is_ok());
 
     // Attempt to read the result.
-    let (hello_data, _) = endpoint_a.read().expect("failed to read from endpoint_a");
-    expect_eq!(String::from_utf8(hello_data), Ok("hello".to_string()));
+    let hello_msg = endpoint_a.read().expect("failed to read from endpoint_a");
+    expect_eq!(
+        String::from_utf8(hello_msg.read_bytes().unwrap().to_vec()),
+        Ok("hello".to_string())
+    );
+    // Call the other read function just so we have some coverage of it
+    let (_, _) = hello_msg.read_data().unwrap();
 
     // Additional C++ unit tests include:
     // * core
@@ -207,7 +212,7 @@ fn test_raw_trap_signal_on_readable() {
     clear_trap_events(1);
 
     // Read the data so we don't receive the same event again.
-    let (_, _) = endpoint_a.read().expect("failed to read from endpoint_a");
+    let _ = endpoint_a.read().expect("failed to read from endpoint_a");
 
     match trap.arm(Some(&mut blocking_events_buf)) {
         system::raw_trap::ArmResult::Armed => (),
