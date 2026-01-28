@@ -510,11 +510,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   bool IsValid() const override;
 
-  // ExternalCanvasDrawHelper() is used by clients that require the invocation
-  // of WillDrawIfNeeded() before obtaining a canvas and drawing on it.
-  void ExternalCanvasDrawHelper(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback);
-
   void RasterRecord(cc::PaintRecord last_recording) override;
   sk_sp<SkSurface> CreateSkSurface() const override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id);
@@ -554,6 +549,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void EnsureWriteAccess();
   void EndWriteAccess();
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
+
+  scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
  private:
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
@@ -627,7 +624,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   // The resource that is currently being used by this provider.
   scoped_refptr<CanvasResourceSharedImage> resource_;
-  scoped_refptr<StaticBitmapImage> cached_snapshot_;
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
 
@@ -651,6 +647,11 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImageNon2D
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate*);
   ~CanvasResourceProviderSharedImageNon2D() override = default;
+
+  // ExternalCanvasDrawHelper() is used by clients that require the invocation
+  // of WillDrawIfNeeded() before obtaining a canvas and drawing on it.
+  void ExternalCanvasDrawHelper(
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback);
 
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,

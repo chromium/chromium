@@ -872,7 +872,7 @@ CanvasResourceProviderSharedImage::GetSharedImageUsageFlags() const {
   return shared_image_usage_flags_;
 }
 
-void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
+void CanvasResourceProviderSharedImageNon2D::ExternalCanvasDrawHelper(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) {
   cached_snapshot_.reset();
   draw_callback(Canvas());
