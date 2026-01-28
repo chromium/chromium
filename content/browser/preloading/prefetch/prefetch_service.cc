@@ -1782,12 +1782,6 @@ void PrefetchService::OnPrefetchRedirect(
 
   CHECK(IsPrefetchContainerInActiveSet(*prefetch_container));
 
-  // Update the prefetch's referrer in case a redirect requires a change in
-  // network context and a new request needs to be started.
-  const auto new_referrer_policy =
-      blink::ReferrerUtils::NetToMojoReferrerPolicy(
-          redirect_info.new_referrer_policy);
-
   std::optional<PrefetchRedirectResult> failure;
   if (redirect_info.new_method != "GET") {
     failure = PrefetchRedirectResult::kFailedInvalidMethod;
@@ -1797,7 +1791,9 @@ void PrefetchService::OnPrefetchRedirect(
     failure = PrefetchRedirectResult::kFailedInvalidResponseCode;
   } else if (!net::SchemefulSite::IsSameSite(
                  prefetch_container->GetCurrentURL(), redirect_info.new_url) &&
-             !IsReferrerPolicySufficientlyStrict(new_referrer_policy)) {
+             !IsReferrerPolicySufficientlyStrict(
+                 blink::ReferrerUtils::NetToMojoReferrerPolicy(
+                     redirect_info.new_referrer_policy))) {
     // The new referrer policy is not sufficiently strict to allow cross-site
     // redirects.
     failure = PrefetchRedirectResult::kFailedInsufficientReferrerPolicy;
@@ -1842,8 +1838,6 @@ void PrefetchService::OnPrefetchRedirect(
   }
 
   prefetch_container->AddRedirectHop(redirect_info);
-  prefetch_container->UpdateReferrer(GURL(redirect_info.new_referrer),
-                                     new_referrer_policy);
 
   auto params = CheckEligibilityParams(
       {.prefetch_container_internal = prefetch_container,

@@ -278,7 +278,6 @@ PrefetchContainer::PrefetchContainer(
     base::PassKey<PrefetchContainer>,
     std::unique_ptr<const PrefetchRequest> request)
     : request_(std::move(request)),
-      referrer_(request_->initial_referrer()),
       request_id_(base::UnguessableToken::Create().ToString()) {
   CHECK(request_);
 
@@ -922,8 +921,10 @@ void PrefetchContainer::UpdateResourceRequest(
       resource_request_->trusted_params->isolation_info.CreateForRedirect(
           url::Origin::Create(resource_request_->url));
 
-  // TODO(jbroman): This somewhat duplicates |referrer_|. Revisit usage of that
-  // (and related data members) to see if they can/should use this data instead.
+  // Update the ResourceRequest's referrer in case a redirect requires a change
+  // in network context and a new request needs to be started. For
+  // `FollowRedirect()` cases, referrer etc. are updated similarly on the
+  // network service.
   resource_request_->referrer = GURL(redirect_info.new_referrer);
   resource_request_->referrer_policy = redirect_info.new_referrer_policy;
 
@@ -1624,7 +1625,8 @@ void PrefetchContainer::MakeResourceRequest() {
 
   auto resource_request = CreateResourceRequestForNavigation(
       net::HttpRequestHeaders::kGetMethod, url,
-      network::mojom::RequestDestination::kDocument, referrer_, isolation_info,
+      network::mojom::RequestDestination::kDocument,
+      request().initial_referrer(), isolation_info,
       std::move(devtools_observer_remote), priority, is_main_frame);
 
   // Note: Even without LOAD_DISABLE_CACHE, a cross-site prefetch uses a
@@ -1685,13 +1687,6 @@ void PrefetchContainer::MakeResourceRequest() {
   CHECK(!resource_request->skip_service_worker);
 
   resource_request_ = std::move(resource_request);
-}
-
-void PrefetchContainer::UpdateReferrer(
-    const GURL& new_referrer_url,
-    const network::mojom::ReferrerPolicy& new_referrer_policy) {
-  referrer_.url = new_referrer_url;
-  referrer_.policy = new_referrer_policy;
 }
 
 const PrefetchKey& PrefetchContainer::key() const {

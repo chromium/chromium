@@ -245,11 +245,6 @@ class CONTENT_EXPORT PrefetchContainer {
   }
   void MakeResourceRequest();
 
-  // Updates |referrer_| after a redirect.
-  void UpdateReferrer(
-      const GURL& new_referrer_url,
-      const network::mojom::ReferrerPolicy& new_referrer_policy);
-
   // Equivalent to `request().no_vary_search_hint()`.
   // Exposed for `PrefetchMatchResolver`.
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const;
@@ -677,9 +672,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   PrefetchServiceWorkerState service_worker_state_ =
       PrefetchServiceWorkerState::kAllowed;
-
-  // The referrer to use for the request. This is updated through redirects.
-  blink::mojom::Referrer referrer_;
 
   // Information about the current prefetch request. Updated when a redirect is
   // encountered, whether or not the direct can be processed by the same URL

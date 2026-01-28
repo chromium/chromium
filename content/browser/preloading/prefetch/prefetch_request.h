@@ -297,8 +297,8 @@ class CONTENT_EXPORT PrefetchRequest final {
   const bool is_javascript_enabled_;
 
   // The referrer to use for the initial request.
-  // Only for initialization of `PrefetchContainer::referrer_`.
-  // For other cases, use `PrefetchContainer::referrer_` instead.
+  // Only for initialization of `PrefetchContainer::resource_request_`'s
+  // `referrer` / `referrer_policy`, which are updated upon redirects.
   const blink::mojom::Referrer initial_referrer_;
 
   // The origin and URL that initiates the prefetch request.
