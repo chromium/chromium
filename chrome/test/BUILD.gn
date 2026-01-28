@@ -4032,10 +4032,13 @@ if (!is_android) {
         "//chrome/browser/glic:impl",
         "//chrome/browser/glic/fre",
         "//chrome/browser/glic/test_support",
+        "//chrome/browser/legion",
         "//chrome/browser/ui/omnibox",
         "//chrome/browser/ui/views/tabs/glic",
         "//chrome/renderer/actor:browser_tests",
         "//chrome/renderer/webui_browser:browser_tests",
+        "//components/legion",
+        "//components/legion:testing",
       ]
     }
 

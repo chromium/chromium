@@ -62,6 +62,8 @@ class PrivateAiService : public KeyedService,
 
   Client* GetClient();
 
+  void SetClientForTesting(std::unique_ptr<Client> client);
+
   // phosphor::OAuthTokenProvider override:
   bool IsTokenFetchEnabled() override;
   void RequestOAuthToken(RequestOAuthTokenCallback callback) override;

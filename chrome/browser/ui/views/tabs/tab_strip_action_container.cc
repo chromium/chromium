@@ -62,6 +62,16 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_and_actor_buttons_container.h"
 #include "chrome/grit/branded_strings.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "base/types/expected.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/legion/private_ai_service.h"
+#include "chrome/browser/legion/private_ai_service_factory.h"
+#include "components/legion/client.h"
+#include "components/legion/features.h"
+#include "components/legion/legion_common.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
 
@@ -79,6 +89,32 @@ constexpr int kOutsideBorderAroundGlicButtons = 11;
 constexpr int kLargeSpaceBetweenSeparatorRight = 8;
 constexpr int kLargeSpaceBetweenSeparatorLeft = 2;
 #endif  // !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_ANDROID)
+void PrewarmLegionSession(Profile* profile) {
+  if (!profile) {
+    return;
+  }
+  if (base::FeatureList::IsEnabled(legion::kLegion) &&
+      base::FeatureList::IsEnabled(
+          contextual_cueing::kZeroStateSuggestionsUseLegion)) {
+    legion::PrivateAiService* private_ai_service =
+        legion::PrivateAiServiceFactory::GetForProfile(profile);
+    if (private_ai_service) {
+      legion::Client* client = private_ai_service->GetClient();
+      if (client) {
+        // Prewarm the session.
+        client->EstablishSession(
+            base::BindOnce([](base::expected<void, legion::ErrorCode> result) {
+              if (!result.has_value()) {
+                LOG(ERROR) << "Failed to prewarm Legion session: "
+                           << static_cast<int>(result.error());
+              }
+            }));
+      }
+    }
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 using TaskIconAnimationMode = glic::GlicActorTaskIcon::AnimationMode;
@@ -564,6 +600,9 @@ void TabStripActionContainer::OnGlicButtonDismissed() {
 
 void TabStripActionContainer::OnGlicButtonHovered() {
   Profile* const profile = browser_window_interface_->GetProfile();
+#if !BUILDFLAG(IS_ANDROID)
+  PrewarmLegionSession(profile);
+#endif  // !BUILDFLAG(IS_ANDROID)
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   if (auto* instance =

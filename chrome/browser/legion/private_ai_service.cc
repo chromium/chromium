@@ -78,6 +78,10 @@ Client* PrivateAiService::GetClient() {
   return client_.get();
 }
 
+void PrivateAiService::SetClientForTesting(std::unique_ptr<Client> client) {
+  client_ = std::move(client);
+}
+
 bool PrivateAiService::IsTokenFetchEnabled() {
   CHECK(identity_manager_);
   if (is_shutting_down_ ||

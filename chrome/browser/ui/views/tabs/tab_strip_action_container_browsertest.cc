@@ -71,6 +71,15 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/legion/private_ai_service.h"
+#include "chrome/browser/legion/private_ai_service_factory.h"
+#include "components/legion/client.h"
+#include "components/legion/features.h"
+#include "components/legion/testing/mock_legion_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace {
 using base::test::RunUntil;
 using testing::SizeIs;
@@ -864,4 +873,75 @@ IN_PROC_BROWSER_TEST_F(GlicActorGlobalFlagDisabledBrowserTest,
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Actor.Ui.TaskNudge.NeedsAttention.Click"));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class TabStripActionContainerLegionBrowserTest
+    : public TabStripActionContainerBrowserTest {
+ public:
+  TabStripActionContainerLegionBrowserTest() {
+    legion_feature_list_.InitWithFeatures(
+        {legion::kLegion, contextual_cueing::kZeroStateSuggestionsUseLegion},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList legion_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
+                       PrewarmsLegionOnGlicButtonHover) {
+  auto* legion_service =
+      legion::PrivateAiServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(legion_service);
+  auto mock_client =
+      std::make_unique<testing::StrictMock<legion::MockLegionClient>>();
+  auto* mock_client_ptr = mock_client.get();
+  legion_service->SetClientForTesting(std::move(mock_client));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_client_ptr, EstablishSession(::testing::_))
+      .WillOnce(
+          [&run_loop](
+              legion::Client::OnEstablishSessionCompletedCallback callback) {
+            std::move(callback).Run(base::ok());
+            run_loop.Quit();
+          });
+
+  // Hover over the glic button.
+  ui::MouseEvent mouse_enter(ui::EventType::kMouseEntered, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  GlicNudgeButton()->OnMouseEntered(mouse_enter);
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
+                       PrewarmsLegionOnGlicButtonHoverFails) {
+  auto* legion_service =
+      legion::PrivateAiServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(legion_service);
+  auto mock_client =
+      std::make_unique<testing::StrictMock<legion::MockLegionClient>>();
+  auto* mock_client_ptr = mock_client.get();
+  legion_service->SetClientForTesting(std::move(mock_client));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_client_ptr, EstablishSession(::testing::_))
+      .WillOnce(
+          [&run_loop](
+              legion::Client::OnEstablishSessionCompletedCallback callback) {
+            std::move(callback).Run(
+                base::unexpected(legion::ErrorCode::kError));
+            run_loop.Quit();
+          });
+
+  // Hover over the glic button.
+  ui::MouseEvent mouse_enter(ui::EventType::kMouseEntered, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  GlicNudgeButton()->OnMouseEntered(mouse_enter);
+
+  run_loop.Run();
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_GLIC)
