@@ -30,18 +30,17 @@
 // `Span<const T>` when such types may be difficult to identify due to issues
 // with implicit conversion.
 //
-// The C++20 draft standard includes a `std::span` type. As of June 2020, the
+// The C++20 standard includes a `std::span` type. As of January 2026, the
 // differences between `absl::Span` and `std::span` are:
 //    * `absl::Span` has `operator==` (which is likely a design bug,
 //       per https://abseil.io/blog/20180531-regular-types)
 //    * `absl::Span` has the factory functions `MakeSpan()` and
 //      `MakeConstSpan()`
 //    * bounds-checked access to `absl::Span` is accomplished with `at()`
+//      however `std::span` now supports the same as of the draft C++26 standard
 //    * `absl::Span` has compiler-provided move and copy constructors and
 //      assignment. This is due to them being specified as `constexpr`, but that
 //      implies const in C++11.
-//    * A read-only `absl::Span<const T>` can be implicitly constructed from an
-//      initializer list.
 //    * `absl::Span` has no `bytes()`, `size_bytes()`, `as_bytes()`, or
 //      `as_writable_bytes()` methods
 //    * `absl::Span` has no static extent template parameter, nor constructors

@@ -434,7 +434,7 @@ EXPORTS
     ?AssertHeld@Mutex@absl@@QBEXXZ
     ?AssertNotHeld@Mutex@absl@@QBEXXZ
     ?AssertReaderHeld@Mutex@absl@@QBEXXZ
-    ?AssertValidType@FlagImpl@flags_internal@absl@@QBEXPBXP6APBVtype_info@@XZ@Z
+    ?AssertValidType@FlagImpl@flags_internal@absl@@QBEXVFastTypeIdType@3@P6APBVtype_info@@XZ@Z
     ?AssignLargeString@Cord@absl@@AAEAAV12@$$QAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?AssignSlow@InlineRep@Cord@absl@@AAEXABV123@@Z
     ?AsyncSignalSafeWriteError@raw_log_internal@absl@@YAXPBDI@Z
@@ -727,7 +727,7 @@ EXPORTS
     ?GetCordzStatistics@CordzInfo@cord_internal@absl@@QBE?AUCordzStatistics@23@XZ
     ?GetCpuType@crc_internal@absl@@YA?AW4CpuType@12@XZ
     ?GetCurrentTimeNanos@absl@@YA_JXZ
-    ?GetDebugStackTraceHook@debugging_internal@absl@@YAP6AXQBQAXHP6AXPBDPAX@Z2@ZXZ
+    ?GetDebugStackTraceHook@debugging_internal@absl@@YAP6AXQBQAXHPBXP6AXPBDPAX@Z3@ZXZ
     ?GetDebugStackTraceHookLegacy@debugging_internal@absl@@YAP6AXQBQAXHP6AXPBDPAX@Z2@ZXZ
     ?GetEntropyFromRandenPool@random_internal@absl@@YAXPAXI@Z
     ?GetEstimatedFairShareMemoryUsage@cord_internal@absl@@YAIPBUCordRep@12@@Z
@@ -961,8 +961,8 @@ EXPORTS
     ?Post@StdcppWaiter@synchronization_internal@absl@@QAEXXZ
     ?Post@Win32Waiter@synchronization_internal@absl@@QAEXXZ
     ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QAEX_JIIIG@Z
-    ?PrepareInsertLarge@container_internal@absl@@YAIAAVCommonFields@12@ABUPolicyFunctions@12@IV?$NonIterableBitMask@G$0BA@$0A@@12@UFindInfo@12@@Z
-    ?PrepareInsertLargeGenerationsEnabled@container_internal@absl@@YAIAAVCommonFields@12@ABUPolicyFunctions@12@IV?$NonIterableBitMask@G$0BA@$0A@@12@UFindInfo@12@V?$FunctionRef@$$A6AII@Z@2@@Z
+    ?PrepareInsertLarge@container_internal@absl@@YAIAAVCommonFields@12@ABUPolicyFunctions@12@IV?$NonIterableBitMask@I$0BA@$0A@@12@UFindInfo@12@@Z
+    ?PrepareInsertLargeGenerationsEnabled@container_internal@absl@@YAIAAVCommonFields@12@ABUPolicyFunctions@12@IV?$NonIterableBitMask@I$0BA@$0A@@12@UFindInfo@12@V?$FunctionRef@$$A6AII@Z@2@@Z
     ?PrepareInsertSmallNonSoo@container_internal@absl@@YA?AU?$pair@PAW4ctrl_t@container_internal@absl@@PAX@__Cr@std@@AAVCommonFields@12@ABUPolicyFunctions@12@V?$FunctionRef@$$A6AII@Z@2@@Z
     ?PrepareToDie@LogMessage@log_internal@absl@@AAEXXZ
     ?PrepareToModify@Status@absl@@CAPAVStatusRep@status_internal@2@I@Z
@@ -1017,7 +1017,7 @@ EXPORTS
     ?RegisterAndInitialize@log_internal@absl@@YAHPAVVLogSite@12@@Z
     ?RegisterCommandLineFlag@flags_internal@absl@@YA_NAAVCommandLineFlag@2@PBD@Z
     ?RegisterCondVarTracer@absl@@YAXP6AXPBDPBX@Z@Z
-    ?RegisterDebugStackTraceHook@debugging_internal@absl@@YAXP6AXQBQAXHP6AXPBDPAX@Z2@Z@Z
+    ?RegisterDebugStackTraceHook@debugging_internal@absl@@YAXP6AXQBQAXHPBXP6AXPBDPAX@Z3@Z@Z
     ?RegisterFlag@FlagRegistry@flags_internal@absl@@QAEXAAVCommandLineFlag@3@PBD@Z
     ?RegisterInternalLogFunction@raw_log_internal@absl@@YAXP6AXW4LogSeverity@2@PBDHABV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z@Z
     ?RegisterLivePointers@absl@@YAXPBXI@Z
@@ -1046,7 +1046,7 @@ EXPORTS
     ?ResourceExhaustedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?Restore@FlagState@flags_internal@absl@@EHAEXXZ
     ?RestoreState@FlagImpl@flags_internal@absl@@AAE_NABVFlagState@23@@Z
-    ?Retire@flags_internal@absl@@YAXPBDPBXPAE@Z
+    ?Retire@flags_internal@absl@@YAXPBDVFastTypeIdType@2@PAE@Z
     ?ReverseConsume@cord_internal@absl@@YAXPAUCordRep@12@V?$FunctionRef@$$A6AXPAUCordRep@cord_internal@absl@@II@Z@2@@Z
     ?SafeToDelete@CordzHandle@cord_internal@absl@@QBE_NXZ
     ?SampleSlow@container_internal@absl@@YAPAUHashtablezInfo@12@AAUSamplingState@12@IIIG@Z
@@ -1232,8 +1232,8 @@ EXPORTS
     ?TryParse@FlagImpl@flags_internal@absl@@ABE?AV?$unique_ptr@XUDynValueDeleter@flags_internal@absl@@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@56@AAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@56@@Z
     ?TryRead@SequenceLock@flags_internal@absl@@QBE_NPAXPBU?$atomic@_K@__Cr@std@@I@Z
     ?TryRemove@Mutex@absl@@AAEXPAUPerThreadSynch@base_internal@2@@Z
-    ?TypeId@FlagImpl@flags_internal@absl@@EBEPBXXZ
-    ?TypeId@PrivateHandleAccessor@flags_internal@absl@@SAPBXABVCommandLineFlag@3@@Z
+    ?TypeId@FlagImpl@flags_internal@absl@@EBE?AVFastTypeIdType@3@XZ
+    ?TypeId@PrivateHandleAccessor@flags_internal@absl@@SA?AVFastTypeIdType@3@ABVCommandLineFlag@3@@Z
     ?TypeName@CommandLineFlag@absl@@EBE?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
     ?TypeName@FlagImpl@flags_internal@absl@@EBE?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
     ?TypeName@PrivateHandleAccessor@flags_internal@absl@@SA?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@ABVCommandLineFlag@3@@Z

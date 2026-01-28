@@ -696,7 +696,7 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // Clang standalone LeakSanitizer (-fsanitize=leak)
 #elif ABSL_HAVE_FEATURE(leak_sanitizer)
 #define ABSL_HAVE_LEAK_SANITIZER 1
-#elif defined(ABSL_HAVE_ADDRESS_SANITIZER)
+#elif defined(ABSL_HAVE_ADDRESS_SANITIZER) && !defined(_WIN32)
 // GCC or Clang using the LeakSanitizer integrated into AddressSanitizer.
 #define ABSL_HAVE_LEAK_SANITIZER 1
 #endif
