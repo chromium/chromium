@@ -17,7 +17,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
-#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -26,16 +25,11 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/pref_names.h"
-#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller_delegate.h"
-#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/common/features_generated.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -127,16 +121,6 @@ bool IsForceInstalledIwaOrigin(content::RenderFrameHost& host,
       app_id, web_app::WebAppFilter::PolicyInstalledIsolatedWebApp());
 }
 
-// Check whether an app with the target origin is in the WebAppRegistrar.
-bool IsForceInstalledOrigin(content::RenderFrameHost& host,
-                            const url::Origin& origin) {
-  ASSIGN_OR_RETURN(const web_app::WebAppRegistrar& registrar,
-                   GetRegistrar(host, origin), [] { return false; });
-  ASSIGN_OR_RETURN(webapps::AppId app_id, GetAppId(registrar, origin),
-                   [] { return false; });
-  return registrar.IsInstalledByPolicy(app_id);
-}
-
 bool IsAffiliatedUser() {
 #if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user =
@@ -145,11 +129,6 @@ bool IsAffiliatedUser() {
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-bool IsPermissionsPolicyFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kDeviceAttributesPermissionPolicy);
 }
 
 bool IsTrustedContext(content::RenderFrameHost& host,
@@ -172,25 +151,12 @@ bool IsTrustedContext(content::RenderFrameHost& host,
     return IsEqualToKioskOrigin(origin);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return IsPermissionsPolicyFeatureEnabled()
-             ? IsForceInstalledIwaOrigin(host, origin)
-             : IsForceInstalledOrigin(host, origin);
+  return IsForceInstalledIwaOrigin(host, origin);
 }
 
 bool IsAllowedByPermissionsPolicy(content::RenderFrameHost& host) {
   return host.IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kDeviceAttributes);
-}
-
-bool IsAllowedByAdminPolicy(content::RenderFrameHost& host,
-                            const url::Origin& origin) {
-#if BUILDFLAG(IS_CHROMEOS)
-  return policy::IsOriginInAllowlist(
-      origin.GetURL(), GetProfile(host)->GetPrefs(),
-      prefs::kManagedDeviceAttributesAllowedForOrigins);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool IsAllowedByContentSettings(content::RenderFrameHost& host,
@@ -229,12 +195,6 @@ DeviceServiceImpl::DeviceServiceImpl(
       prefs::kKioskBrowserPermissionsAllowedForOrigins,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
-  if (!IsPermissionsPolicyFeatureEnabled()) {
-    pref_change_registrar_.Add(
-        prefs::kManagedDeviceAttributesAllowedForOrigins,
-        base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
-                            base::Unretained(this)));
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile));
@@ -262,8 +222,7 @@ void DeviceServiceImpl::Create(
     // user.
     return;
   }
-  if (IsPermissionsPolicyFeatureEnabled() &&
-      !IsAllowedByPermissionsPolicy(*host)) {
+  if (!IsAllowedByPermissionsPolicy(*host)) {
     mojo::ReportBadMessage(
         "Permissions policy blocks access to Device Attributes.");
     return;
@@ -354,16 +313,9 @@ void DeviceServiceImpl::GetDeviceAttribute(
     return;
   }
 
-  if (IsPermissionsPolicyFeatureEnabled()) {
-    if (!IsAllowedByContentSettings(render_frame_host(), origin())) {
-      device_attribute_api_->ReportNotAllowedError(std::move(callback));
-      return;
-    }
-  } else {
-    if (!IsAllowedByAdminPolicy(render_frame_host(), origin())) {
-      device_attribute_api_->ReportNotAllowedError(std::move(callback));
-      return;
-    }
+  if (!IsAllowedByContentSettings(render_frame_host(), origin())) {
+    device_attribute_api_->ReportNotAllowedError(std::move(callback));
+    return;
   }
 
   (device_attribute_api_.get()->*method)(std::move(callback));

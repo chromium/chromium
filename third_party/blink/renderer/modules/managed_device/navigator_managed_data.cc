@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/managed_device/navigator_managed_data.h"
 
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -17,7 +16,6 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -40,14 +38,7 @@ constexpr char kDeviceAttributesNotAllowedByPermissionsPolicy[] =
 constexpr char kDeviceAttributesNotAllowedInChildFrames[] =
     "This API is allowed only in top level frames.";
 
-bool IsDeviceAttributesPermissionsPolicyFeatureEnabled() {
-  return RuntimeEnabledFeatures::DeviceAttributesPermissionPolicyEnabled();
-}
-
 bool AreDeviceAttributesAllowedByPermissionsPolicy(ExecutionContext* context) {
-  if (!IsDeviceAttributesPermissionsPolicyFeatureEnabled()) {
-    return true;
-  }
   return context->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kDeviceAttributes);
 }

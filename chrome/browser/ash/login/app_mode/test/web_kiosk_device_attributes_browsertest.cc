@@ -38,7 +38,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "url/origin.h"
 
 namespace {
@@ -88,14 +87,11 @@ constexpr char kNotTrustedOriginExpectedError[] =
     "is available only for managed apps.\"\n";
 
 struct WebKioskDeviceAttributesTestParams {
-  using TupleT = std::tuple<bool, bool, bool>;
-  bool feature_flag;
+  using TupleT = std::tuple<bool, bool>;
   bool allow_policy;
   bool block_policy;
   explicit WebKioskDeviceAttributesTestParams(TupleT t)
-      : feature_flag(std::get<0>(t)),
-        allow_policy(std::get<1>(t)),
-        block_policy(std::get<2>(t)) {}
+      : allow_policy(std::get<0>(t)), block_policy(std::get<1>(t)) {}
 };
 
 }  // namespace
@@ -129,9 +125,6 @@ class WebKioskDeviceAttributesTest
   }
 
  protected:
-  bool IsDeviceAttributesPermissionPolicyFeatureFlagEnabled() {
-    return GetParam().feature_flag;
-  }
   bool IsAllowPolicySet() { return GetParam().allow_policy; }
   bool IsBlockPolicySet() { return GetParam().block_policy; }
 
@@ -182,21 +175,9 @@ class WebKioskDeviceAttributesTest
     base::FieldTrialParams feature_params;
     feature_params[permissions::feature_params::
                        kWebKioskBrowserPermissionsAllowlist.name] = origin;
-    if (IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()) {
-      feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {{permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
-            feature_params},
-           {blink::features::kDeviceAttributesPermissionPolicy, {}}},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/
-          {{permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
-            feature_params}},
-          /*disabled_features=*/{
-              blink::features::kDeviceAttributesPermissionPolicy});
-    }
+    feature_list_.InitAndEnableFeatureWithParameters(
+        permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
+        feature_params);
   }
 
  private:
@@ -222,10 +203,7 @@ class WebKioskDeviceAttributesTest
 IN_PROC_BROWSER_TEST_P(WebKioskDeviceAttributesTest,
                        KioskOriginWithAttributesUnset) {
   content::WebContents& web_contents = GetKioskAppWebContents();
-  const bool device_attributes_should_work =
-      IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-          ? !IsBlockPolicySet()
-          : IsAllowPolicySet();
+  const bool device_attributes_should_work = !IsBlockPolicySet();
   MaybeSetEnterprisePoliciesForOrigin(kKioskOrigin);
 
   WaitForDeviceAttributesApiObject(web_contents);
@@ -247,10 +225,7 @@ IN_PROC_BROWSER_TEST_P(WebKioskDeviceAttributesTest,
   SetDeviceAttributes();
 
   content::WebContents& web_contents = GetKioskAppWebContents();
-  const bool device_attributes_should_work =
-      IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-          ? !IsBlockPolicySet()
-          : IsAllowPolicySet();
+  const bool device_attributes_should_work = !IsBlockPolicySet();
   MaybeSetEnterprisePoliciesForOrigin(kKioskOrigin);
 
   WaitForDeviceAttributesApiObject(web_contents);
@@ -273,10 +248,7 @@ IN_PROC_BROWSER_TEST_P(WebKioskDeviceAttributesTest,
   SetDeviceAttributes();
 
   content::WebContents& web_contents = GetKioskAppWebContents();
-  const bool device_attributes_should_work =
-      IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-          ? !IsBlockPolicySet()
-          : IsAllowPolicySet();
+  const bool device_attributes_should_work = !IsBlockPolicySet();
   MaybeSetEnterprisePoliciesForOrigin(kTrustedOrigin);
   ASSERT_TRUE(content::NavigateToURL(
       &web_contents, GURL(kTrustedOrigin).Resolve(kKioskPagePath)));
@@ -319,19 +291,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     WebKioskDeviceAttributesTest,
     ::testing::ConvertGenerator<WebKioskDeviceAttributesTestParams::TupleT>(
-        ::testing::Combine(
-            ::testing::Bool(),  // kDeviceAttributesPermissionPolicy
-                                // feature flag
-            ::testing::Bool(),  // allow policy
-            ::testing::Bool()   // block policy
-            )),
+        ::testing::Combine(::testing::Bool(),  // allow policy
+                           ::testing::Bool()   // block policy
+                           )),
     [](const ::testing::TestParamInfo<WebKioskDeviceAttributesTestParams>&
            info) {
-      return base::StringPrintf(
-          "FeatureFlag%s_AllowPolicy%s_BlockPolicy%s",
-          info.param.feature_flag ? "Enabled" : "Disabled",
-          info.param.allow_policy ? "Set" : "Unset",
-          info.param.block_policy ? "Set" : "Unset");
+      return base::StringPrintf("AllowPolicy%s_BlockPolicy%s",
+                                info.param.allow_policy ? "Set" : "Unset",
+                                info.param.block_policy ? "Set" : "Unset");
     });
 
 }  // namespace ash

@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
@@ -43,7 +42,6 @@
 #include "net/base/host_port_pair.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -103,16 +101,14 @@ content::EvalJsResult CallDeviceAttributesApi(
 }
 
 struct KioskIwaDeviceAttributesApiTestParams {
-  using TupleT = std::tuple<bool, bool, bool, bool>;
-  bool feature_flag;
+  using TupleT = std::tuple<bool, bool, bool>;
   bool allow_policy;
   bool block_policy;
   bool permissions_policy;
   explicit KioskIwaDeviceAttributesApiTestParams(TupleT t)
-      : feature_flag(std::get<0>(t)),
-        allow_policy(std::get<1>(t)),
-        block_policy(std::get<2>(t)),
-        permissions_policy(std::get<3>(t)) {}
+      : allow_policy(std::get<0>(t)),
+        block_policy(std::get<1>(t)),
+        permissions_policy(std::get<2>(t)) {}
 };
 
 }  // namespace
@@ -123,7 +119,6 @@ class KioskIwaDeviceAttributesApiTest
           KioskIwaDeviceAttributesApiTestParams> {
  public:
   KioskIwaDeviceAttributesApiTest() {
-    InitFeatureList();
     iwa_test_update_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(GetIwaManifestBuilder())
             .BuildBundle(web_app::test::GetDefaultEd25519KeyPair()));
@@ -161,9 +156,6 @@ class KioskIwaDeviceAttributesApiTest
     return browser_view ? browser_view->GetActiveWebContents() : nullptr;
   }
 
-  bool IsDeviceAttributesPermissionPolicyFeatureFlagEnabled() {
-    return GetParam().feature_flag;
-  }
   bool IsAllowPolicySet() { return GetParam().allow_policy; }
   bool IsBlockPolicySet() { return GetParam().block_policy; }
   bool IsPermissionsPolicyGranted() { return GetParam().permissions_policy; }
@@ -193,20 +185,6 @@ class KioskIwaDeviceAttributesApiTest
   }
 
  private:
-  void InitFeatureList() {
-    if (IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{blink::features::
-                                    kDeviceAttributesPermissionPolicy},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{
-              blink::features::kDeviceAttributesPermissionPolicy});
-    }
-  }
-
   web_app::ManifestBuilder GetIwaManifestBuilder() {
     auto manifest_builder = web_app::ManifestBuilder();
     if (IsPermissionsPolicyGranted()) {
@@ -257,7 +235,6 @@ class KioskIwaDeviceAttributesApiTest
                                              kTestWebBundleId.id(),
                                              /*port=*/0);
 
-  base::test::ScopedFeatureList feature_list_;
   web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   KioskMixin kiosk_{&mixin_host_};
@@ -269,9 +246,7 @@ class KioskIwaDeviceAttributesApiTest
 IN_PROC_BROWSER_TEST_P(KioskIwaDeviceAttributesApiTest,
                        ObtainingDeviceAttributes) {
   const bool device_attributes_should_work =
-      IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-          ? !IsBlockPolicySet() && IsPermissionsPolicyGranted()
-          : IsAllowPolicySet();
+      !IsBlockPolicySet() && IsPermissionsPolicyGranted();
   MaybeSetEnterprisePoliciesForIwaOrigin();
 
   ASSERT_EQ(kDeviceAttributeNames.size(),
@@ -283,8 +258,7 @@ IN_PROC_BROWSER_TEST_P(KioskIwaDeviceAttributesApiTest,
       EXPECT_EQ(kExpectedDeviceAttributeValues[i], result.ExtractString());
     } else {
       std::string expected_error;
-      if (IsDeviceAttributesPermissionPolicyFeatureFlagEnabled() &&
-          !IsPermissionsPolicyGranted()) {
+      if (!IsPermissionsPolicyGranted()) {
         expected_error = base::StringPrintf(kPermissionsPolicyErrorTemplate,
                                             kDeviceAttributeNames[i]);
       } else {
@@ -300,18 +274,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     KioskIwaDeviceAttributesApiTest,
     ::testing::ConvertGenerator<KioskIwaDeviceAttributesApiTestParams::TupleT>(
-        ::testing::Combine(
-            ::testing::Bool(),  // kDeviceAttributesPermissionPolicy
-                                // feature flag
-            ::testing::Bool(),  // allow policy
-            ::testing::Bool(),  // block policy
-            ::testing::Bool()   // permissions policy
-            )),
+        ::testing::Combine(::testing::Bool(),  // allow policy
+                           ::testing::Bool(),  // block policy
+                           ::testing::Bool()   // permissions policy
+                           )),
     [](const ::testing::TestParamInfo<KioskIwaDeviceAttributesApiTestParams>&
            info) {
       return base::StringPrintf(
-          "FeatureFlag%s_AllowPolicy%s_BlockPolicy%s_PermissionsPolicy%s",
-          info.param.feature_flag ? "Enabled" : "Disabled",
+          "AllowPolicy%s_BlockPolicy%s_PermissionsPolicy%s",
           info.param.allow_policy ? "Set" : "Unset",
           info.param.block_policy ? "Set" : "Unset",
           info.param.permissions_policy ? "Granted" : "Denied");

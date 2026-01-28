@@ -53,7 +53,6 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -78,8 +77,6 @@ constexpr char kDefaultAppInstallUrl[] = "https://example.com/install";
 constexpr char kTrustedUrl[] = "https://example.com/sample";
 constexpr char kUntrustedUrl[] = "https://non-example.com/sample";
 constexpr char kUserEmail[] = "user-email@example.com";
-constexpr char kNotAffiliatedErrorMessage[] =
-    "This web API is not allowed if the current profile is not affiliated.";
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kKioskAppInstallUrl[] = "https://kiosk.com/install";
@@ -90,6 +87,8 @@ constexpr char kNoDeviceAttributesPermissionErrorMessage[] =
     "'device-attributes' permission.";
 constexpr char kPermissionsPolicyMojoErrorMessage[] =
     "Permissions policy blocks access to Device Attributes.";
+constexpr char kNotAffiliatedErrorMessage[] =
+    "This web API is not allowed if the current profile is not affiliated.";
 #endif
 
 }  // namespace
@@ -293,105 +292,27 @@ class DeviceAPIServiceWebAppTest : public DeviceAPIServiceTest,
     WebAppTest::TearDown();
   }
 
-  void EnableFeature(const base::Feature& param) {
-    feature_list_.InitAndEnableFeature(param);
-  }
-
-  void DisableFeature(const base::Feature& feature) {
-    feature_list_.InitAndDisableFeature(feature);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-
  private:
   AccountId account_id_;
 };
 
-TEST_F(DeviceAPIServiceWebAppTest, ConnectsForTrustedApps) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
+TEST_F(DeviceAPIServiceWebAppTest, DoesNotConnectForTrustedApps) {
   TryCreatingService(GURL(kTrustedUrl),
                      std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
-  ASSERT_TRUE(remote()->is_connected());
+  ASSERT_FALSE(remote()->is_connected());
 }
 
-// The service should be disabled in the Incognito mode.
 TEST_F(DeviceAPIServiceWebAppTest, DoesNotConnectForIncognitoProfile) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
   profile_metrics::SetBrowserProfileType(
       profile(), profile_metrics::BrowserProfileType::kIncognito);
   TryCreatingService(GURL(kTrustedUrl),
                      std::make_unique<DeviceAttributeApiImpl>());
-
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
 
 TEST_F(DeviceAPIServiceWebAppTest, DoesNotConnectForUntrustedApps) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  TryCreatingService(GURL(kUntrustedUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  remote()->FlushForTesting();
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceWebAppTest, DisconnectWhenTrustRevoked) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  remote()->FlushForTesting();
-  UninstallAllApps();
-  remote()->FlushForTesting();
-
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceWebAppTest, MultiOriginDisconnectWhenTrustRevoked) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  webapps::AppId app_id = UserInstallWebApp();
-
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  remote()->FlushForTesting();
-  UninstallAllApps();
-  remote()->FlushForTesting();
-
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceWebAppTest, ReportErrorForDefaultUser) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
-      kNotAffiliatedErrorMessage);
-  ASSERT_TRUE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceWebAppTest,
-       DoesNotConnectForTrustedAppsWithFeatureFlagEnabled) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  remote()->FlushForTesting();
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceWebAppTest,
-       DoesNotConnectForIncognitoProfileWithFeatureFlagEnabled) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  profile_metrics::SetBrowserProfileType(
-      profile(), profile_metrics::BrowserProfileType::kIncognito);
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  remote()->FlushForTesting();
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceWebAppTest,
-       DoesNotConnectForUntrustedAppsWithFeatureFlagEnabled) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
   TryCreatingService(GURL(kUntrustedUrl),
                      std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
@@ -403,7 +324,7 @@ TEST_F(DeviceAPIServiceWebAppTest,
 class DeviceAPIServiceIwaTest
     : public DeviceAPIServiceTest,
       public web_app::IsolatedWebAppTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   void SetUp() override {
     web_app::IsolatedWebAppTest::SetUp();
@@ -480,28 +401,9 @@ class DeviceAPIServiceIwaTest
 
   void InitWebContents() {}
 
-  void EnableFeature(const base::Feature& param) {
-    feature_list_.InitAndEnableFeature(param);
-  }
-
-  void DisableFeature(const base::Feature& feature) {
-    feature_list_.InitAndDisableFeature(feature);
-  }
-
-  void SetDeviceAttributesPermissionPolicyFeatureFlag() {
-    if (IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()) {
-      EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-    } else {
-      DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-    }
-  }
-
-  bool IsDeviceAttributesPermissionPolicyFeatureFlagEnabled() {
-    return std::get<0>(GetParam());
-  }
-  bool IsAllowPolicySet() { return std::get<1>(GetParam()); }
-  bool IsBlockPolicySet() { return std::get<2>(GetParam()); }
-  bool IsPermissionsPolicyGranted() { return std::get<3>(GetParam()); }
+  bool IsAllowPolicySet() { return std::get<0>(GetParam()); }
+  bool IsBlockPolicySet() { return std::get<1>(GetParam()); }
+  bool IsPermissionsPolicyGranted() { return std::get<2>(GetParam()); }
 
  private:
   web_app::IsolatedWebAppUrlInfo InstallIWA(bool trusted) {
@@ -527,22 +429,17 @@ class DeviceAPIServiceIwaTest
 
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(DeviceAPIServiceIwaTest, CheckTrustedApps) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
-  SetDeviceAttributesPermissionPolicyFeatureFlag();
 
   auto url_info = InstallTrustedIWA();
-  bool should_connect = IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-                            ? IsPermissionsPolicyGranted()
-                            : true;
   TryCreatingService(url_info.origin().GetURL(),
                      std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
-  if (should_connect) {
+  if (IsPermissionsPolicyGranted()) {
     ASSERT_TRUE(remote()->is_connected());
   } else {
     ASSERT_FALSE(remote()->is_connected());
@@ -552,7 +449,6 @@ TEST_P(DeviceAPIServiceIwaTest, CheckTrustedApps) {
 }
 
 TEST_P(DeviceAPIServiceIwaTest, CheckUntrustedApps) {
-  SetDeviceAttributesPermissionPolicyFeatureFlag();
   auto url_info = InstallUntrustedIWA();
   TryCreatingService(url_info.origin().GetURL(),
                      std::make_unique<DeviceAttributeApiImpl>());
@@ -564,15 +460,11 @@ TEST_P(DeviceAPIServiceIwaTest, CheckTrustRevoked) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  SetDeviceAttributesPermissionPolicyFeatureFlag();
   auto url_info = InstallTrustedIWA();
-  bool should_connect = IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-                            ? IsPermissionsPolicyGranted()
-                            : true;
   TryCreatingService(url_info.origin().GetURL(),
                      std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
-  if (should_connect) {
+  if (IsPermissionsPolicyGranted()) {
     ForceUninstall(url_info);
     remote()->FlushForTesting();
     ASSERT_FALSE(remote()->is_connected());
@@ -587,15 +479,11 @@ TEST_P(DeviceAPIServiceIwaTest, CheckErrorForDefaultUser) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
-  bool should_connect = IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-                            ? IsPermissionsPolicyGranted()
-                            : true;
-  SetDeviceAttributesPermissionPolicyFeatureFlag();
   auto url_info = InstallTrustedIWA();
   TryCreatingService(url_info.origin().GetURL(),
                      std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
-  if (should_connect) {
+  if (IsPermissionsPolicyGranted()) {
     VerifyErrorMessageResultForAllDeviceAttributesAPIs(
         remote()->get(), kNotAffiliatedErrorMessage);
     ASSERT_TRUE(remote()->is_connected());
@@ -609,20 +497,16 @@ TEST_P(DeviceAPIServiceIwaTest, CheckErrorForDefaultUser) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeviceAPIServiceIwaTest,
-    ::testing::Combine(
-        ::testing::Bool(),  // kDeviceAttributesPermissionPolicy feature flag
-        ::testing::Bool(),  // allow policy
-        ::testing::Bool(),  // block policy
-        ::testing::Bool()   // permissions policy
-        ),
-    [](const ::testing::TestParamInfo<std::tuple<bool, bool, bool, bool>>&
-           info) {
+    ::testing::Combine(::testing::Bool(),  // allow policy
+                       ::testing::Bool(),  // block policy
+                       ::testing::Bool()   // permissions policy
+                       ),
+    [](const ::testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
       return base::StringPrintf(
-          "FeatureFlag%s_AllowPolicy%s_BlockPolicy%s_PermissionsPolicy%s",
-          std::get<0>(info.param) ? "Enabled" : "Disabled",
+          "AllowPolicy%s_BlockPolicy%s_PermissionsPolicy%s",
+          std::get<0>(info.param) ? "Set" : "Unset",
           std::get<1>(info.param) ? "Set" : "Unset",
-          std::get<2>(info.param) ? "Set" : "Unset",
-          std::get<3>(info.param) ? "Granted" : "Denied");
+          std::get<2>(info.param) ? "Granted" : "Denied");
     });
 
 class DeviceAPIServiceParamTest
@@ -647,27 +531,6 @@ class DeviceAPIServiceParamTest
     profile()->GetTestingPrefService()->SetManagedPref(
         prefs::kManagedDefaultDeviceAttributesSetting,
         base::Value(kBlockSetting));
-  }
-
-  void EnableFeatureAndAllowlistOrigin(const base::Feature& param,
-                                       const std::string& origin) {
-    base::FieldTrialParams feature_params;
-    feature_params[permissions::feature_params::
-                       kWebKioskBrowserPermissionsAllowlist.name] = origin;
-    feature_list_.InitAndEnableFeatureWithParameters(param, feature_params);
-  }
-
-  void InitWithFeatures(
-      const std::vector<base::test::FeatureRef>& enabled_features,
-      const std::vector<base::test::FeatureRef>& disabled_features) {
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  void InitWithFeaturesAndParameters(
-      const std::vector<base::test::FeatureRefAndParams>& enabled_features,
-      const std::vector<base::test::FeatureRef>& disabled_features) {
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
   }
 
   void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
@@ -704,7 +567,7 @@ class DeviceAPIServiceParamTest
   static constexpr int32_t kBlockSetting = 2;
 };
 
-class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceParamTest {
+class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceWebAppTest {
  public:
   void LoginRegularUser(bool is_affiliated) {
     const user_manager::User* user =
@@ -727,51 +590,11 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceParamTest {
 
   void TearDown() override {
     provider()->Shutdown();
-    DeviceAPIServiceParamTest::TearDown();
+    DeviceAPIServiceWebAppTest::TearDown();
   }
 };
 
-TEST_F(DeviceAPIServiceRegularUserTest, ReportErrorForUnaffiliatedUser) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  LoginRegularUser(false);
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<FakeDeviceAttributeApi>());
-  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
-      kNotAffiliatedErrorMessage);
-  ASSERT_TRUE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceRegularUserTest, ReportErrorForDisallowedOrigin) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  LoginRegularUser(true);
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<FakeDeviceAttributeApi>());
-  RemoveAllowedOrigin();
-
-  VerifyErrorMessageResultForAllDeviceAttributesAPIs(
-      kNoDeviceAttributesPermissionErrorMessage);
-  ASSERT_TRUE(remote()->is_connected());
-}
-
-TEST_P(DeviceAPIServiceRegularUserTest, TestPolicyOriginPatterns) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  SetAllowedOriginFromParam();
-  LoginRegularUser(true);
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<FakeDeviceAttributeApi>());
-
-  if (ExpectApiAvailable()) {
-    VerifyCanAccessForAllDeviceAttributesAPIs();
-  } else {
-    VerifyErrorMessageResultForAllDeviceAttributesAPIs(
-        kNoDeviceAttributesPermissionErrorMessage);
-  }
-  ASSERT_TRUE(remote()->is_connected());
-}
-
-TEST_F(DeviceAPIServiceRegularUserTest,
-       DoesNotConnectForUnaffiliatedUserWithFeatureFlag) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
+TEST_F(DeviceAPIServiceRegularUserTest, DoesNotConnectForUnaffiliatedUser) {
   LoginRegularUser(false);
   TryCreatingService(GURL(kTrustedUrl),
                      std::make_unique<FakeDeviceAttributeApi>());
@@ -779,31 +602,13 @@ TEST_F(DeviceAPIServiceRegularUserTest,
   ASSERT_FALSE(remote()->is_connected());
 }
 
-TEST_F(DeviceAPIServiceRegularUserTest,
-       DoesNotConnectForAffiliatedUserWithFeatureFlag) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
+TEST_F(DeviceAPIServiceRegularUserTest, DoesNotConnectForAffiliatedUser) {
   LoginRegularUser(true);
   TryCreatingService(GURL(kTrustedUrl),
                      std::make_unique<FakeDeviceAttributeApi>());
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DeviceAPIServiceRegularUserTest,
-    testing::ValuesIn(
-        {std::pair<std::string, bool>("*", false),
-         std::pair<std::string, bool>(".example.com", false),
-         std::pair<std::string, bool>("example.", false),
-         std::pair<std::string, bool>("file://example*", false),
-         std::pair<std::string, bool>("invalid-example.com", false),
-         std::pair<std::string, bool>(kTrustedUrl, true),
-         std::pair<std::string, bool>("https://example.com", true),
-         std::pair<std::string, bool>("https://example.com/sample", true),
-         std::pair<std::string, bool>("example.com", true),
-         std::pair<std::string, bool>("*://example.com:*/", true),
-         std::pair<std::string, bool>("[*.]example.com", true)}));
 
 class DeviceAPIServiceRegularUserIwaTest : public DeviceAPIServiceIwaTest {
  public:
@@ -873,19 +678,15 @@ TEST_P(DeviceAPIServiceRegularUserIwaTest,
        CheckTrustedAppsForUnaffiliatedUser) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
-  SetDeviceAttributesPermissionPolicyFeatureFlag();
 
   LoginRegularUser(false);
   auto url_info = InstallTrustedIWA();
   SetEnterprisePoliciesForOrigin(url_info.origin().Serialize());
-  bool should_connect = IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-                            ? IsPermissionsPolicyGranted()
-                            : true;
   TryCreatingService(url_info.origin().GetURL(),
                      std::make_unique<FakeDeviceAttributeApi>());
   remote()->FlushForTesting();
 
-  if (should_connect) {
+  if (IsPermissionsPolicyGranted()) {
     ASSERT_TRUE(remote()->is_connected());
     VerifyErrorMessageResultForAllDeviceAttributesAPIs(
         kNotAffiliatedErrorMessage);
@@ -899,22 +700,15 @@ TEST_P(DeviceAPIServiceRegularUserIwaTest,
 TEST_P(DeviceAPIServiceRegularUserIwaTest, CheckTrustedAppsForAffiliatedUser) {
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
-  SetDeviceAttributesPermissionPolicyFeatureFlag();
-
   LoginRegularUser(true);
   auto url_info = InstallTrustedIWA();
   SetEnterprisePoliciesForOrigin(url_info.origin().Serialize());
-  bool should_connect = IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-                            ? IsPermissionsPolicyGranted()
-                            : true;
-  bool should_work = IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
-                         ? IsPermissionsPolicyGranted() && !IsBlockPolicySet()
-                         : IsAllowPolicySet();
+  bool should_work = IsPermissionsPolicyGranted() && !IsBlockPolicySet();
   TryCreatingService(url_info.origin().GetURL(),
                      std::make_unique<FakeDeviceAttributeApi>());
   remote()->FlushForTesting();
 
-  if (should_connect) {
+  if (IsPermissionsPolicyGranted()) {
     ASSERT_TRUE(remote()->is_connected());
     if (should_work) {
       VerifyCanAccessForAllDeviceAttributesAPIs();
@@ -932,20 +726,16 @@ TEST_P(DeviceAPIServiceRegularUserIwaTest, CheckTrustedAppsForAffiliatedUser) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeviceAPIServiceRegularUserIwaTest,
-    ::testing::Combine(
-        ::testing::Bool(),  // kDeviceAttributesPermissionPolicy feature flag
-        ::testing::Bool(),  // allow policy
-        ::testing::Bool(),  // block policy
-        ::testing::Bool()   // permissions policy
-        ),
-    [](const ::testing::TestParamInfo<std::tuple<bool, bool, bool, bool>>&
-           info) {
+    ::testing::Combine(::testing::Bool(),  // allow policy
+                       ::testing::Bool(),  // block policy
+                       ::testing::Bool()   // permissions policy
+                       ),
+    [](const ::testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
       return base::StringPrintf(
-          "FeatureFlag%s_AllowPolicy%s_BlockPolicy%s_PermissionsPolicy%s",
-          std::get<0>(info.param) ? "Enabled" : "Disabled",
+          "AllowPolicy%s_BlockPolicy%s_PermissionsPolicy%s",
+          std::get<0>(info.param) ? "Set" : "Unset",
           std::get<1>(info.param) ? "Set" : "Unset",
-          std::get<2>(info.param) ? "Set" : "Unset",
-          std::get<3>(info.param) ? "Granted" : "Denied");
+          std::get<2>(info.param) ? "Granted" : "Denied");
     });
 
 class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceParamTest {
@@ -993,7 +783,6 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceParamTest {
 // The service should be enabled if the current origin is same as the origin of
 // Kiosk app.
 TEST_F(DeviceAPIServiceWithKioskUserTest, ConnectsForKioskOrigin) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
   LoginKioskUser();
   TryCreatingService(GURL(kKioskAppUrl),
                      std::make_unique<DeviceAttributeApiImpl>());
@@ -1004,7 +793,6 @@ TEST_F(DeviceAPIServiceWithKioskUserTest, ConnectsForKioskOrigin) {
 // The service should be disabled if the current origin is different from the
 // origin of Kiosk app.
 TEST_F(DeviceAPIServiceWithKioskUserTest, DoesNotConnectForInvalidOrigin) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
   LoginKioskUser();
   TryCreatingService(GURL(kInvalidKioskAppUrl),
                      std::make_unique<DeviceAttributeApiImpl>());
@@ -1016,43 +804,6 @@ TEST_F(DeviceAPIServiceWithKioskUserTest, DoesNotConnectForInvalidOrigin) {
 // origin of Kiosk app, even if it is trusted (force-installed).
 TEST_F(DeviceAPIServiceWithKioskUserTest,
        DoesNotConnectForNonKioskTrustedOrigin) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  LoginKioskUser();
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  remote()->FlushForTesting();
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-// The service should be enabled if the current origin is same as the origin of
-// Kiosk app.
-TEST_F(DeviceAPIServiceWithKioskUserTest,
-       ConnectsForKioskOriginWithFeatureEnabled) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  LoginKioskUser();
-  TryCreatingService(GURL(kKioskAppUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  remote()->FlushForTesting();
-  ASSERT_TRUE(remote()->is_connected());
-}
-
-// The service should be disabled if the current origin is different from the
-// origin of Kiosk app.
-TEST_F(DeviceAPIServiceWithKioskUserTest,
-       DoesNotConnectForInvalidOriginWithFeatureEnabled) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  LoginKioskUser();
-  TryCreatingService(GURL(kInvalidKioskAppUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  remote()->FlushForTesting();
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-// The service should be disabled if the current origin is different from the
-// origin of Kiosk app, even if it is trusted (force-installed).
-TEST_F(DeviceAPIServiceWithKioskUserTest,
-       DoesNotConnectForNonKioskTrustedOriginWithFeatureEnabled) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
   LoginKioskUser();
   TryCreatingService(GURL(kTrustedUrl),
                      std::make_unique<DeviceAttributeApiImpl>());
@@ -1087,38 +838,16 @@ class DeviceAPIServiceWithChromeAppKioskUserTest
         url, std::move(device_attribute_api), web_contents());
   }
 
-  void EnableFeature(const base::Feature& param) {
-    feature_list_.InitAndEnableFeature(param);
-  }
-
-  void DisableFeature(const base::Feature& feature) {
-    feature_list_.InitAndDisableFeature(feature);
-  }
-
  private:
   AccountId account_id_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // The service should be disabled if a non-PWA kiosk user is logged in.
 TEST_F(DeviceAPIServiceWithChromeAppKioskUserTest,
        DoesNotConnectForChromeAppKioskSession) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  LoginChromeAppKioskUser();
-
-  TryCreatingService(GURL(kKioskAppUrl),
-                     std::make_unique<DeviceAttributeApiImpl>());
-  remote()->FlushForTesting();
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-// The service should be disabled if a non-PWA kiosk user is logged in.
-TEST_F(DeviceAPIServiceWithChromeAppKioskUserTest,
-       DoesNotConnectForChromeAppKioskSessionWithFeatureFlagEnabled) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
   LoginChromeAppKioskUser();
 
   TryCreatingService(GURL(kKioskAppUrl),
@@ -1128,20 +857,33 @@ TEST_F(DeviceAPIServiceWithChromeAppKioskUserTest,
 }
 
 class DeviceAPIServiceWithKioskUserTestForOrigins
-    : public DeviceAPIServiceWithKioskUserTest {};
+    : public DeviceAPIServiceWithKioskUserTest {
+ public:
+  void EnableFeature(const base::Feature& param) {
+    feature_list_.InitAndEnableFeature(param);
+  }
+
+  void DisableFeature(const base::Feature& feature) {
+    feature_list_.InitAndDisableFeature(feature);
+  }
+
+  void EnableFeatureAndAllowlistOrigin(const base::Feature& param,
+                                       const std::string& origin) {
+    base::FieldTrialParams feature_params;
+    feature_params[permissions::feature_params::
+                       kWebKioskBrowserPermissionsAllowlist.name] = origin;
+    feature_list_.InitAndEnableFeatureWithParameters(param, feature_params);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
        TestTrustedKioskOriginsWhenEnabledByFeature) {
-  base::FieldTrialParams feature_params;
-  feature_params
-      [permissions::feature_params::kWebKioskBrowserPermissionsAllowlist.name] =
-          kTrustedUrl;
-  InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{permissions::features::
-                                 kAllowMultipleOriginsForWebKioskPermissions,
-                             feature_params}},
-      /*disabled_features=*/{
-          blink::features::kDeviceAttributesPermissionPolicy});
+  EnableFeatureAndAllowlistOrigin(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
+      kTrustedUrl);
 
   LoginKioskUser();
   TryCreatingService(GURL(kTrustedUrl),
@@ -1155,16 +897,9 @@ TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
 
 TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
        TestUntrustedKioskOriginsWhenEnabledByFeature) {
-  base::FieldTrialParams feature_params;
-  feature_params
-      [permissions::feature_params::kWebKioskBrowserPermissionsAllowlist.name] =
-          kTrustedUrl;
-  InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{permissions::features::
-                                 kAllowMultipleOriginsForWebKioskPermissions,
-                             feature_params}},
-      /*disabled_features=*/{
-          blink::features::kDeviceAttributesPermissionPolicy});
+  EnableFeatureAndAllowlistOrigin(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
+      kTrustedUrl);
 
   LoginKioskUser();
   TryCreatingService(GURL(kUntrustedUrl),
@@ -1177,11 +912,8 @@ TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
 
 TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
        TestTrustedKioskOriginWhenMultipleOriginPrefIsSet) {
-  InitWithFeatures(
-      /*enabled_features=*/{permissions::features::
-                                kAllowMultipleOriginsForWebKioskPermissions},
-      /*disabled_features=*/{
-          blink::features::kDeviceAttributesPermissionPolicy});
+  EnableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
   SetKioskBrowserPermissionsAllowedForOrigins(kTrustedUrl);
 
   LoginKioskUser();
@@ -1196,11 +928,8 @@ TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
 
 TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
        TestKioskInstallOriginWhenMultipleOriginPrefIsNotSet) {
-  InitWithFeatures(
-      /*enabled_features=*/{permissions::features::
-                                kAllowMultipleOriginsForWebKioskPermissions},
-      /*disabled_features=*/{
-          blink::features::kDeviceAttributesPermissionPolicy});
+  EnableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
 
   LoginKioskUser();
   TryCreatingService(GURL(kKioskAppInstallUrl),
@@ -1214,10 +943,8 @@ TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
 
 TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
        TestMultipleOriginPolicyWhenFeatureIsDisabled) {
-  InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          blink::features::kDeviceAttributesPermissionPolicy,
-          permissions::features::kAllowMultipleOriginsForWebKioskPermissions});
+  DisableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
   SetKioskBrowserPermissionsAllowedForOrigins(kTrustedUrl);
 
   LoginKioskUser();
@@ -1230,131 +957,6 @@ TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
 }
 
 TEST_P(DeviceAPIServiceWithKioskUserTestForOrigins, TestPolicyOriginPatterns) {
-  DisableFeature(blink::features::kDeviceAttributesPermissionPolicy);
-  BlockOriginsByDefault();
-  SetAllowedOriginFromParam();
-  LoginKioskUser();
-  TryCreatingService(GURL(kKioskAppUrl),
-                     std::make_unique<FakeDeviceAttributeApi>());
-
-  remote()->FlushForTesting();
-
-  ASSERT_TRUE(remote()->is_connected());
-
-  if (ExpectApiAvailable()) {
-    VerifyCanAccessForAllDeviceAttributesAPIs();
-  } else {
-    VerifyErrorMessageResultForAllDeviceAttributesAPIs(
-        kNoDeviceAttributesPermissionErrorMessage);
-  }
-}
-
-TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
-       TestTrustedKioskOriginsWhenEnabledByFeatureWithDAPPFeatureEnabled) {
-  base::FieldTrialParams feature_params;
-  feature_params
-      [permissions::feature_params::kWebKioskBrowserPermissionsAllowlist.name] =
-          kTrustedUrl;
-  InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{permissions::features::
-                                 kAllowMultipleOriginsForWebKioskPermissions,
-                             feature_params},
-                            {blink::features::kDeviceAttributesPermissionPolicy,
-                             {}}},
-      /*disabled_features=*/{});
-
-  LoginKioskUser();
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<FakeDeviceAttributeApi>());
-  remote()->FlushForTesting();
-
-  // Check whether the service connects for a different allowed origin.
-  ASSERT_TRUE(remote()->is_connected());
-  VerifyCanAccessForAllDeviceAttributesAPIs();
-}
-
-TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
-       TestUntrustedKioskOriginsWhenEnabledByFeatureWithDAPPFeatureEnabled) {
-  base::FieldTrialParams feature_params;
-  feature_params
-      [permissions::feature_params::kWebKioskBrowserPermissionsAllowlist.name] =
-          kTrustedUrl;
-  InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{permissions::features::
-                                 kAllowMultipleOriginsForWebKioskPermissions,
-                             feature_params},
-                            {blink::features::kDeviceAttributesPermissionPolicy,
-                             {}}},
-      /*disabled_features=*/{});
-
-  LoginKioskUser();
-  TryCreatingService(GURL(kUntrustedUrl),
-                     std::make_unique<FakeDeviceAttributeApi>());
-  remote()->FlushForTesting();
-
-  // Check whether the service connects for a different allowed origin.
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-TEST_F(
-    DeviceAPIServiceWithKioskUserTestForOrigins,
-    TestTrustedKioskOriginWhenMultipleOriginPrefIsSetWithDAPPFeatureEnabled) {
-  InitWithFeatures(
-      /*enabled_features=*/{permissions::features::
-                                kAllowMultipleOriginsForWebKioskPermissions,
-                            blink::features::kDeviceAttributesPermissionPolicy},
-      /*disabled_features=*/{});
-  SetKioskBrowserPermissionsAllowedForOrigins(kTrustedUrl);
-
-  LoginKioskUser();
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<FakeDeviceAttributeApi>());
-  remote()->FlushForTesting();
-
-  // Check whether the service connects for a different allowed origin.
-  ASSERT_TRUE(remote()->is_connected());
-  VerifyCanAccessForAllDeviceAttributesAPIs();
-}
-
-TEST_F(
-    DeviceAPIServiceWithKioskUserTestForOrigins,
-    TestKioskInstallOriginWhenMultipleOriginPrefIsNotSetWithDAPPFeatureEnabled) {
-  InitWithFeatures(
-      /*enabled_features=*/{permissions::features::
-                                kAllowMultipleOriginsForWebKioskPermissions,
-                            blink::features::kDeviceAttributesPermissionPolicy},
-      /*disabled_features=*/{});
-
-  LoginKioskUser();
-  TryCreatingService(GURL(kKioskAppInstallUrl),
-                     std::make_unique<FakeDeviceAttributeApi>());
-  remote()->FlushForTesting();
-
-  // Check whether the service connects for install origin.
-  ASSERT_TRUE(remote()->is_connected());
-  VerifyCanAccessForAllDeviceAttributesAPIs();
-}
-
-TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
-       TestMultipleOriginPolicyWhenFeatureIsDisabledWithDAPPFeatureEnabled) {
-  InitWithFeatures(
-      /*enabled_features=*/{blink::features::kDeviceAttributesPermissionPolicy},
-      /*disabled_features=*/{
-          permissions::features::kAllowMultipleOriginsForWebKioskPermissions});
-  SetKioskBrowserPermissionsAllowedForOrigins(kTrustedUrl);
-
-  LoginKioskUser();
-  TryCreatingService(GURL(kTrustedUrl),
-                     std::make_unique<FakeDeviceAttributeApi>());
-  remote()->FlushForTesting();
-
-  // Check that the service is not able to connect when the feature is disabled.
-  ASSERT_FALSE(remote()->is_connected());
-}
-
-TEST_P(DeviceAPIServiceWithKioskUserTestForOrigins,
-       TestPolicyOriginPatternsWithDAPPFeatureEnabled) {
-  EnableFeature(blink::features::kDeviceAttributesPermissionPolicy);
   BlockOriginsByDefault();
   SetAllowedOriginFromParam();
   LoginKioskUser();

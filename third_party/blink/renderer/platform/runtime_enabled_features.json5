@@ -1905,10 +1905,6 @@
       },
     },
     {
-      name: "DeviceAttributesPermissionPolicy",
-      status: "stable",
-    },
-    {
       name: "DeviceBoundSessionCredentials",
       origin_trial_feature_name: "DeviceBoundSessionCredentials",
       origin_trial_os: ["win", "linux", "mac"],
