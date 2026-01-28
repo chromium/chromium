@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   EXPECT_EQ(0, reload.GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
 
   // Verify enabling menu is reflected in HasPopup attribute.
-  webui_toolbar_view->GetReloadControl()->SetMenuEnabled(true);
+  webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Reload");
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   EXPECT_EQ(GetCenterPixelColor(web_view, control_rect), SK_ColorTRANSPARENT);
 
   // Show reload button context menu.
-  webui_toolbar_view->GetReloadControl()->SetMenuEnabled(true);
+  webui_toolbar_view->GetReloadControl()->SetDevToolsStatus(true);
   webui_toolbar_view->HandleContextMenu(
       browser_controls_api::mojom::ContextMenuType::kReload,
       element->GetScreenBounds().bottom_right(),

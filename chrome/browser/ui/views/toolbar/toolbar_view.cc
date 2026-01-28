@@ -506,7 +506,7 @@ void ToolbarView::Update(WebContents* tab) {
   }
 
   if (ReloadControl* reload_control = GetReloadButton(); reload_control) {
-    reload_control->SetMenuEnabled(
+    reload_control->SetDevToolsStatus(
         chrome::IsDebuggerAttachedToCurrentTab(browser_));
   }
 }

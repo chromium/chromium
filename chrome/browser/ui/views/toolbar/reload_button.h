@@ -73,8 +73,8 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
 
   // ReloadControl overrides:
   void ChangeMode(Mode mode, bool force) override;
-  bool GetMenuEnabled() const override;
-  void SetMenuEnabled(bool is_menu_enabled) override;
+  bool GetDevToolsStatusForTesting() const override;
+  void SetDevToolsStatus(bool is_dev_tools_connected) override;
 
   void ExecuteCommand(int command_id, int event_flags) override;
 
@@ -128,8 +128,8 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   base::TimeDelta double_click_timer_delay_;
   base::TimeDelta mode_switch_timer_delay_;
 
-  // Indicates if reload menu is enabled.
-  bool is_menu_enabled_ = false;
+  // Indicates if dev tools is connected.
+  bool is_dev_tools_connected_ = false;
 
   // TESTING ONLY
   // True if we should pretend the button is hovered.
@@ -147,7 +147,7 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
 };
 
 BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ReloadButton, ToolbarButton)
-VIEW_BUILDER_PROPERTY(bool, MenuEnabled)
+VIEW_BUILDER_PROPERTY(bool, DevToolsStatus)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ReloadButton)

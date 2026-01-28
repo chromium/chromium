@@ -216,28 +216,28 @@ TEST_F(ReloadButtonTest, AccessibleHasPopup) {
 
   button_data = ui::AXNodeData();
   reload_button()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
-  EXPECT_FALSE(reload_button()->GetMenuEnabled());
+  EXPECT_FALSE(reload_button()->GetDevToolsStatusForTesting());
   EXPECT_EQ(ax::mojom::HasPopup::kNone, button_data.GetHasPopup());
 
   button_data = ui::AXNodeData();
-  reload_button()->SetMenuEnabled(true);
+  reload_button()->SetDevToolsStatus(true);
   reload_button()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
-  EXPECT_TRUE(reload_button()->GetMenuEnabled());
+  EXPECT_TRUE(reload_button()->GetDevToolsStatusForTesting());
   EXPECT_EQ(ax::mojom::HasPopup::kMenu, button_data.GetHasPopup());
 }
 
 TEST_F(ReloadButtonTest, TooltipText) {
   reload_button()->SetVisibleMode(ReloadButton::Mode::kReload);
-  EXPECT_FALSE(reload_button()->GetMenuEnabled());
+  EXPECT_FALSE(reload_button()->GetDevToolsStatusForTesting());
   EXPECT_EQ(reload_button()->GetRenderedTooltipText(gfx::Point()),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));
   reload_button()->SetVisibleMode(ReloadButton::Mode::kStop);
   EXPECT_EQ(reload_button()->GetRenderedTooltipText(gfx::Point()),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_STOP));
 
-  reload_button()->SetMenuEnabled(true);
+  reload_button()->SetDevToolsStatus(true);
   reload_button()->SetVisibleMode(ReloadButton::Mode::kReload);
-  EXPECT_TRUE(reload_button()->GetMenuEnabled());
+  EXPECT_TRUE(reload_button()->GetDevToolsStatusForTesting());
   EXPECT_EQ(reload_button()->GetRenderedTooltipText(gfx::Point()),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD_WITH_MENU));
   reload_button()->SetVisibleMode(ReloadButton::Mode::kStop);
@@ -249,7 +249,7 @@ TEST_F(ReloadButtonTest, TooltipTextAccessibility) {
   ui::AXNodeData button_data;
   reload_button()->SetVisibleMode(ReloadButton::Mode::kReload);
   reload_button()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
-  EXPECT_FALSE(reload_button()->GetMenuEnabled());
+  EXPECT_FALSE(reload_button()->GetDevToolsStatusForTesting());
   EXPECT_EQ(reload_button()->GetRenderedTooltipText(gfx::Point()),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));
   EXPECT_EQ(button_data.GetString16Attribute(
@@ -265,10 +265,10 @@ TEST_F(ReloadButtonTest, TooltipTextAccessibility) {
             reload_button()->GetRenderedTooltipText(gfx::Point()));
   button_data = ui::AXNodeData();
 
-  reload_button()->SetMenuEnabled(true);
+  reload_button()->SetDevToolsStatus(true);
   reload_button()->SetVisibleMode(ReloadButton::Mode::kReload);
   reload_button()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
-  EXPECT_TRUE(reload_button()->GetMenuEnabled());
+  EXPECT_TRUE(reload_button()->GetDevToolsStatusForTesting());
   EXPECT_EQ(reload_button()->GetRenderedTooltipText(gfx::Point()),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD_WITH_MENU));
   EXPECT_EQ(button_data.GetString16Attribute(

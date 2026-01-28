@@ -36,7 +36,12 @@ WebUIReloadControl::~WebUIReloadControl() = default;
 void WebUIReloadControl::Init() {
   CHECK(!is_initialized_);
   is_initialized_ = true;
-  SetReloadButtonUIState();
+
+  // TODO: These two mojo messages are likely unnecessary if `mode_` and
+  // `is_dev_tools_connected_` match the corresponding default values in
+  // TypeScript.
+  OnNavigationStatusChanged();
+  OnDevToolsStatusChanged();
 }
 
 void WebUIReloadControl::ChangeMode(ReloadControl::Mode mode, bool force) {
@@ -45,22 +50,22 @@ void WebUIReloadControl::ChangeMode(ReloadControl::Mode mode, bool force) {
   // change accordingly. We may need to implement the timer/force updating logic
   // in the future.
   mode_ = mode;
-  SetReloadButtonUIState();
+  OnNavigationStatusChanged();
 }
 
-bool WebUIReloadControl::GetMenuEnabled() const {
-  return is_menu_enabled_;
+bool WebUIReloadControl::GetDevToolsStatusForTesting() const {
+  return is_dev_tools_connected_;
 }
 
-void WebUIReloadControl::SetMenuEnabled(bool is_menu_enabled) {
-  is_menu_enabled_ = is_menu_enabled;
-  SetReloadButtonUIState();
+void WebUIReloadControl::SetDevToolsStatus(bool is_dev_tools_connected) {
+  is_dev_tools_connected_ = is_dev_tools_connected;
+  OnDevToolsStatusChanged();
 }
 
 bool WebUIReloadControl::HandleContextMenu(views::Widget* widget,
                                            gfx::Point screen_location,
                                            ui::mojom::MenuSourceType source) {
-  if (is_menu_enabled_) {
+  if (is_dev_tools_connected_) {
     auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
     CHECK(webui_toolbar_ui);
     webui_toolbar_ui->OnContextMenuStateChanged(
@@ -108,15 +113,20 @@ void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
       command_id, ui::DispositionFromEventFlags(event_flags));
 }
 
-void WebUIReloadControl::SetReloadButtonUIState() {
+void WebUIReloadControl::OnNavigationStatusChanged() {
   auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
   CHECK(webui_toolbar_ui);
   webui_toolbar_ui->OnNavigationStatusChanged(
       (mode_ == ReloadControl::Mode::kStop)
           ? browser_controls_api::mojom::NavigationState::kLoading
           : browser_controls_api::mojom::NavigationState::kNotLoading);
+}
+
+void WebUIReloadControl::OnDevToolsStatusChanged() {
+  auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
+  CHECK(webui_toolbar_ui);
   webui_toolbar_ui->OnDevToolsStatusChanged(
-      is_menu_enabled_
+      is_dev_tools_connected_
           ? browser_controls_api::mojom::DevToolsState::kConnected
           : browser_controls_api::mojom::DevToolsState::kDisconnected);
 }

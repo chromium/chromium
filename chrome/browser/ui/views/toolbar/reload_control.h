@@ -23,8 +23,8 @@ class ReloadControl : public ui::SimpleMenuModel::Delegate {
   virtual void ChangeMode(Mode mode, bool force) = 0;
 
   // Gets/Sets whether reload drop-down menu is enabled.
-  virtual bool GetMenuEnabled() const = 0;
-  virtual void SetMenuEnabled(bool is_menu_enabled) = 0;
+  virtual bool GetDevToolsStatusForTesting() const = 0;
+  virtual void SetDevToolsStatus(bool is_dev_tools_connected) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_CONTROL_H_
