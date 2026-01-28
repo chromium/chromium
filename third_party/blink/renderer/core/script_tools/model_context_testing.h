@@ -21,9 +21,9 @@ class CORE_EXPORT ModelContextTesting : public ScriptWrappable {
   explicit ModelContextTesting(ModelContext* model_context);
 
   HeapVector<Member<RegisteredTool>> listTools();
-  ScriptPromise<IDLString> executeTool(ScriptState* state,
-                                       String tool_name,
-                                       String input_arguments);
+  ScriptPromise<IDLNullable<IDLString>> executeTool(ScriptState* state,
+                                                    String tool_name,
+                                                    String input_arguments);
   void registerToolsChangedCallback(V8ToolsChangedCallback* callback);
 
   void Trace(Visitor*) const override;

@@ -43,17 +43,18 @@ HeapVector<Member<RegisteredTool>> ModelContextTesting::listTools() {
   return tools;
 }
 
-ScriptPromise<IDLString> ModelContextTesting::executeTool(
+ScriptPromise<IDLNullable<IDLString>> ModelContextTesting::executeTool(
     ScriptState* script_state,
     String tool_name,
     String input_arguments) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
+          script_state);
 
   ScriptPromise promise = resolver->Promise();
 
   auto callback =
-      [](ScriptPromiseResolver<IDLString>* resolver,
+      [](ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
          base::expected<WebString, WebDocument::ScriptToolError> result) {
         if (!resolver->GetScriptState() ||
             !resolver->GetScriptState()->ContextIsValid()) {

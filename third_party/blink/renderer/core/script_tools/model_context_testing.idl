@@ -14,6 +14,7 @@ callback ToolsChangedCallback = void ();
     RuntimeEnabled=WebMCPTesting
 ] interface ModelContextTesting {
   sequence<RegisteredTool> listTools();
-  [CallWith=ScriptState] Promise<DOMString> executeTool(DOMString tool_name, DOMString input_arguments);
+  // Returns null when a navigation is triggered.
+  [CallWith=ScriptState] Promise<DOMString?> executeTool(DOMString tool_name, DOMString input_arguments);
   undefined registerToolsChangedCallback(ToolsChangedCallback callback);
 };

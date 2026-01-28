@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<form toolautosubmit toolname="search_tool" tooldescription="Search the web" target="_blank">
+  <input type="text" name="query">
+</form>
 <script>
 async function echo(obj) {
   return obj.text;
@@ -42,7 +45,7 @@ async function runTests() {
         return;
     }
 
-    // Correct case
+    // Correct same-document case
     try {
         const inputArgs = JSON.stringify({ text: "Hello world" });
         const result = await navigator.modelContextTesting.executeTool("echo", inputArgs);
@@ -51,6 +54,20 @@ async function runTests() {
             print("PASS");
         } else {
             print(`FAIL: Expected 'Hello world' but got '${result}'`);
+        }
+    } catch (error) {
+        print(`FAIL: ${error.message}`);
+    }
+
+    // Correct cross-document case
+    try {
+        const inputArgs = JSON.stringify({ query: "testing" });
+        const result = await navigator.modelContextTesting.executeTool("search_tool", inputArgs);
+
+        if (result === null) {
+            print("PASS");
+        } else {
+            print(`FAIL: Expected null but got '${result}'`);
         }
     } catch (error) {
         print(`FAIL: ${error.message}`);
