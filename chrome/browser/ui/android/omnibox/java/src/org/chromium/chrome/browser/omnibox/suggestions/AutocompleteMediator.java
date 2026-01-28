@@ -240,9 +240,6 @@ class AutocompleteMediator
         mAnimationDriver = initializeAnimationDriver();
 
         mFuseboxCoordinator.addAttachmentChangeListener(this);
-        mFuseboxCoordinator
-                .getAutocompleteRequestTypeSupplier()
-                .addSyncObserver(mOnAutocompleteRequestTypeChanged);
         mFuseboxCoordinator.getFuseboxStateSupplier().addSyncObserver(mOnFuseboxStateChanged);
 
         mDataProvider
@@ -276,6 +273,7 @@ class AutocompleteMediator
 
     public void destroy() {
         stopAutocomplete(false);
+        endInput();
         mDataProvider.getToolbarPositionSupplier().removeObserver(mToolbarPositionChangedCallback);
         if (mAutocomplete != null) {
             mAutocomplete.removeOnSuggestionsReceivedListener(this);
@@ -285,9 +283,6 @@ class AutocompleteMediator
             OmniboxActionFactoryImpl.get().destroyNativeFactory();
         }
         mFuseboxCoordinator.removeAttachmentChangeListener(this);
-        mFuseboxCoordinator
-                .getAutocompleteRequestTypeSupplier()
-                .removeObserver(mOnAutocompleteRequestTypeChanged);
         mFuseboxCoordinator.getFuseboxStateSupplier().removeObserver(mOnFuseboxStateChanged);
         mHandler.removeCallbacksAndMessages(null);
         mDropdownViewInfoListBuilder.destroy();
@@ -445,6 +440,10 @@ class AutocompleteMediator
         assert mAutocompleteInput == null;
         mAutocompleteInput = input;
 
+        mAutocompleteInput
+                .getRequestTypeSupplier()
+                .addSyncObserver(mOnAutocompleteRequestTypeChanged);
+
         // Propagate the information about omnibox session state change to all the processors first.
         // Processors need this for accounting purposes.
         // The change information should be passed before Processors receive first
@@ -531,6 +530,9 @@ class AutocompleteMediator
         // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
         // a consequence the omnibox is unfocused).
         clearSuggestions();
+        mAutocompleteInput
+                .getRequestTypeSupplier()
+                .removeObserver(mOnAutocompleteRequestTypeChanged);
         mAutocompleteInput = null;
     }
 
@@ -1015,8 +1017,6 @@ class AutocompleteMediator
 
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
         if (!isInInputSession()) return;
-        mAutocompleteInput.setRequestType(type);
-        mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
         onTextChanged(
                 mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
                 /* isOnFocusContext= */ false);
@@ -1168,7 +1168,7 @@ class AutocompleteMediator
                                 finalTransition);
                     };
 
-            switch (mFuseboxCoordinator.getAutocompleteRequestTypeSupplier().get()) {
+            switch (assumeNonNull(mAutocompleteInput).getRequestType()) {
                 case AutocompleteRequestType.AI_MODE ->
                         mFuseboxCoordinator.getAimUrl(url, onUrlReady);
                 case AutocompleteRequestType.IMAGE_GENERATION ->

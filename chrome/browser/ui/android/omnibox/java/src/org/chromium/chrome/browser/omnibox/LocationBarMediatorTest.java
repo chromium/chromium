@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.omnibox.LocationBarMediator.LocationBarState;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -243,9 +244,6 @@ public class LocationBarMediatorTest {
     private boolean mIsToolbarMicEnabled;
     private LocationBarEmbedderUiOverrides mUiOverrides;
     private OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
-    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-            mAutocompleteRequestTypeSupplier =
-                    ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.EXPANDED);
     private final UserDataHost mTabUserDataHost = new UserDataHost();
@@ -318,7 +316,6 @@ public class LocationBarMediatorTest {
                         mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
-                        mAutocompleteRequestTypeSupplier,
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mMultiInstanceManager,
@@ -358,7 +355,6 @@ public class LocationBarMediatorTest {
                         mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
-                        ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH),
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mMultiInstanceManager,
@@ -474,7 +470,8 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator)
                 .setAutocompleteText("text", "textWithAutocomplete", "additionalText");
 
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        var state = LocationBarState.from(mTab);
+        state.autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsChanged(defaultMatch);
         verify(mStatusCoordinator, times(2)).onDefaultMatchClassified(true);
     }
@@ -1129,7 +1126,6 @@ public class LocationBarMediatorTest {
                         mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
-                        ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH),
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mMultiInstanceManager,
@@ -1634,15 +1630,17 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mUrlCoordinator).isTextWrapped();
         doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
         mMediator.onUrlFocusChange(true);
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+
+        var state = LocationBarState.from(mTab);
+        state.autocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertTrue(mNavigateButtonIsVisible);
 
         doReturn(false).when(mUrlCoordinator).isTextWrapped();
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        state.autocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         assertTrue(mNavigateButtonIsVisible);
 
         doReturn(false).when(mUrlCoordinator).isTextWrapped();
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        state.autocompleteInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
         assertTrue(mNavigateButtonIsVisible);
     }
 
@@ -1687,6 +1685,7 @@ public class LocationBarMediatorTest {
 
         // Verifies that the composeplate button isn't visible if disabled by policy.
         mMediator.updateButtonVisibility();
+
         verify(mLocationBarLayout).setMicButtonVisibility(eq(true));
         verify(mLocationBarLayout).setLensButtonVisibility(eq(true));
         verify(mLocationBarLayout, never()).setComposeplateButtonVisibility(anyBoolean());
@@ -1813,6 +1812,7 @@ public class LocationBarMediatorTest {
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
     public void testRestoringTextAndEditingStateOnTablet() {
         OmniboxFeatures.sOmniboxImprovementForLFFPersistEditingState.setForTesting(true);
+
         // Recreate mediator to respect the overridden feature flag and params.
         mTabletMediator = createTabletMediator();
 
@@ -1856,11 +1856,14 @@ public class LocationBarMediatorTest {
         ShadowLooper.idleMainLooper();
 
         // The state for mTab was restored.
+        ArgumentCaptor<UrlBarData> captor = ArgumentCaptor.forClass(UrlBarData.class);
         verify(mUrlCoordinator)
                 .setUrlBarData(
-                        argThat(matchesUrlBarDataForQuery(newText)),
+                        captor.capture(),
                         eq(UrlBar.ScrollType.NO_SCROLL),
                         eq(SelectionState.SELECT_END));
+
+        assertEquals(newText, captor.getValue().displayText);
         verify(mUrlCoordinator).setSelection(eq(newSelectionStart), eq(newSelectionEnd));
 
         // The state for previousTab was saved.

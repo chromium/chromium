@@ -101,7 +101,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -448,9 +447,8 @@ public class ToolbarPhone extends ToolbarLayout
     @Initializer
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
-        mLocationBar
-                .getAutocompleteRequestTypeSupplier()
-                .addObserver((type) -> updateBackgroundHairline(urlHasFocus(), type));
+        mLocationBar.setOnSpecializedFuseboxModeActivatedListener(
+                isSpecializedMode -> updateBackgroundHairline(urlHasFocus(), isSpecializedMode));
         Resources res = getResources();
         mLocationBarBackgroundVerticalInset =
                 res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
@@ -499,17 +497,14 @@ public class ToolbarPhone extends ToolbarLayout
         }
     }
 
-    private void updateBackgroundHairline(boolean urlHasFocus, @AutocompleteRequestType int type) {
+    private void updateBackgroundHairline(boolean urlHasFocus, boolean shouldShowRainbowOutline) {
         if (!urlHasFocus) {
             mLocationBarBackground.setHairlineBehavior(HairlineBehavior.NONE);
             return;
         }
 
         mLocationBarBackground.setHairlineBehavior(
-                type == AutocompleteRequestType.AI_MODE
-                                || type == AutocompleteRequestType.IMAGE_GENERATION
-                        ? HairlineBehavior.RAINBOW
-                        : HairlineBehavior.NONE);
+                shouldShowRainbowOutline ? HairlineBehavior.RAINBOW : HairlineBehavior.NONE);
     }
 
     @Override

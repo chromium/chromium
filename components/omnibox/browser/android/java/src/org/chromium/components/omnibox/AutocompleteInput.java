@@ -7,6 +7,9 @@ package org.chromium.components.omnibox;
 import android.text.TextUtils;
 
 import org.chromium.base.UserData;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -32,7 +35,8 @@ public class AutocompleteInput implements UserData {
     private boolean mHasAttachments;
     private int mSelectionStart;
     private int mSelectionEnd;
-    private @AutocompleteRequestType int mRequestType;
+    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
+            mRequestTypeSupplier = new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
 
     public AutocompleteInput() {
         reset();
@@ -74,9 +78,18 @@ public class AutocompleteInput implements UserData {
         };
     }
 
+    /**
+     * Returns the page classification not adjusted for the tools or models.
+     *
+     * @return The raw page classification.
+     */
+    public int getRawPageClassification() {
+        return mPageClassification;
+    }
+
     /** Returns the current page classification. */
     public int getPageClassification() {
-        return switch (mRequestType) {
+        return switch (mRequestTypeSupplier.get()) {
             case AutocompleteRequestType.AI_MODE, AutocompleteRequestType.IMAGE_GENERATION ->
                     getComposeboxEquivalentOfPageClassification();
             default -> mPageClassification;
@@ -116,18 +129,41 @@ public class AutocompleteInput implements UserData {
     }
 
     /** Set the AutocompleteRequestType */
-    public void setRequestType(@AutocompleteRequestType int type) {
-        mRequestType = type;
+    public AutocompleteInput setRequestType(@AutocompleteRequestType int type) {
+        mRequestTypeSupplier.set(type);
+        return this;
     }
 
     /** Returns the AutocompleteRequestType value. */
     public @AutocompleteRequestType int getRequestType() {
-        return mRequestType;
+        return mRequestTypeSupplier.get();
+    }
+
+    /**
+     * Returns the supplier for the AutocompleteRequestType.
+     *
+     * <p>Use sparingly - to install/remove observers. Readers should use {@see getRequestType()}.
+     * Writers should use {@see setRequestType()}.
+     */
+    public NonNullObservableSupplier<@AutocompleteRequestType Integer> getRequestTypeSupplier() {
+        return mRequestTypeSupplier;
+    }
+
+    /**
+     * Whether the given mode allows "conventional" fulfillment of a valid typed url, i.e.
+     * navigating to that url directly. As an example of where this might return false: if if the
+     * user types www.foo.com and presses enter with this mode active, they will be taken to some
+     * DSE-specific landing page where www.foo.com is the input, not directly to foo.com.
+     *
+     * @return Whether the request is of a conventional type.
+     */
+    public boolean isConventionalRequestType() {
+        return mRequestTypeSupplier.get() == AutocompleteRequestType.SEARCH;
     }
 
     /** Returns the Autocomplete Tool to use to fulfill the Request. */
     public /* ToolMode */ int getToolMode() {
-        return switch (mRequestType) {
+        return switch (mRequestTypeSupplier.get()) {
             case AutocompleteRequestType.IMAGE_GENERATION ->
                     mHasAttachments
                             ? ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE
@@ -226,6 +262,7 @@ public class AutocompleteInput implements UserData {
         mSelectionStart = 0;
         mSelectionEnd = 0;
         mPageClassification = PageClassification.BLANK_VALUE;
+        mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
 
         return this;
     }

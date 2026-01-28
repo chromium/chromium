@@ -67,11 +67,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     }
 
     private final @Nullable FuseboxViewHolder mViewHolder;
-
     private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
-
-    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-            mAutocompleteRequestTypeSupplier;
     private final PropertyModel mModel;
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
@@ -79,6 +75,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable FuseboxMediator mMediator;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private @Nullable AutocompleteInput mInput;
     private boolean mDefaultSearchEngineIsGoogle = true;
     private TemplateUrlService mTemplateUrlService;
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
@@ -107,14 +104,11 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             MonotonicObservableSupplier<Profile> profileObservableSupplier,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
-            SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-                    autocompleteRequestTypeSupplier,
             SnackbarManager snackbarManager) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mProfileSupplier = profileObservableSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mSnackbarManager = snackbarManager;
         mModelList = new FuseboxAttachmentModelList(tabModelSelectorSupplier);
 
@@ -206,7 +200,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mModel,
                         assumeNonNull(mViewHolder),
                         mModelList,
-                        mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
@@ -218,6 +211,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     }
 
     public void destroy() {
+        endInput();
         mProfileSupplier.removeObserver(mProfileObserver);
         if (mMediator != null) {
             mMediator.destroy();
@@ -261,7 +255,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      */
     public void beginInput(AutocompleteInput input) {
         boolean isSupportedPageClass =
-                switch (input.getPageClassification()) {
+                switch (input.getRawPageClassification()) {
                     // LINT.IfChange(FuseboxSupportedPageClassifications)
                     case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
                             PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
@@ -271,21 +265,24 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                     default -> false;
                 };
 
+        // Terminate any current input to re-set session and re-install observers.
+        // This should ideally be an assert ensuring that we don't begin a new input while the old
+        // one is still active; will turn to an assert separately in case this scenario happens.
+        endInput();
         if (mMediator == null || !isSupportedPageClass || !mDefaultSearchEngineIsGoogle) {
-            endInput();
             return;
         }
 
-        mMediator.setAutocompleteRequestTypeChangeable(true);
-        mMediator.setToolbarVisible(true);
+        mInput = input;
+        mMediator.beginInput(mInput);
         FuseboxMetrics.notifyOmniboxSessionStarted();
     }
 
     /** Called when the user stops interacting with the Omnibox. */
     public void endInput() {
-        if (mMediator == null) return;
-        mMediator.setAutocompleteRequestTypeChangeable(false);
-        mMediator.setToolbarVisible(false);
+        if (mInput == null) return;
+        assumeNonNull(mMediator).endInput();
+        mInput = null;
     }
 
     // TemplateUrlServiceObserver
@@ -293,12 +290,11 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     public void onTemplateURLServiceChanged() {
         boolean isDseGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
         if (isDseGoogle == mDefaultSearchEngineIsGoogle) return;
-
         mDefaultSearchEngineIsGoogle = isDseGoogle;
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
-        mDefaultSearchEngineIsGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
-        if (mMediator != null && !mDefaultSearchEngineIsGoogle) {
-            mMediator.setToolbarVisible(false);
+
+        if (mInput != null && !mDefaultSearchEngineIsGoogle) {
+            mInput.setRequestType(AutocompleteRequestType.SEARCH);
+            assumeNonNull(mMediator).setToolbarVisible(false);
         }
     }
 
@@ -306,10 +302,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * @return An {@link NonNullObservableSupplier} that notifies observers when the autocomplete
      *     request type changes.
      */
-    public NonNullObservableSupplier<@AutocompleteRequestType Integer>
-            getAutocompleteRequestTypeSupplier() {
-        return mAutocompleteRequestTypeSupplier;
-    }
 
     /** Returns the URL associated with the current AIM session. */
     public void getAimUrl(GURL url, Callback<GURL> callback) {
@@ -360,26 +352,16 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     public void onFuseboxTextWrappingChanged(boolean isWrapping) {
         // We only care about url bar wrapping state when compact variant is enabled. Guard against
         // entering compact mode when the variant is disabled by returning early.
-        if (mMediator == null || !OmniboxFeatures.sCompactFusebox.getValue()) return;
-        mMediator.setUseCompactUi(
-                !isWrapping
-                        && mAutocompleteRequestTypeSupplier.get()
-                                == AutocompleteRequestType.SEARCH);
-    }
-
-    /**
-     * Whether the given mode allows "conventional" fulfillment of a valid typed url, i.e.
-     * navigating to that url directly. As an example of where this might return false: if if the
-     * user types www.foo.com and presses enter with this mode active, they will be taken to some
-     * DSE-specific landing page where www.foo.com is the input, not directly to foo.com *
-     */
-    public static boolean isConventionalFulfillmentType(@AutocompleteRequestType int mode) {
-        return mode == AutocompleteRequestType.SEARCH;
+        if (mInput == null || !OmniboxFeatures.sCompactFusebox.getValue()) return;
+        assumeNonNull(mMediator)
+                .setUseCompactUi(
+                        !isWrapping && mInput.getRequestType() == AutocompleteRequestType.SEARCH);
     }
 
     public void notifyOmniboxSessionEnded(boolean userDidNavigate) {
-        FuseboxMetrics.notifyOmniboxSessionEnded(
-                userDidNavigate, mAutocompleteRequestTypeSupplier.get());
+        // Skip cases where session should not be recorded (e.g. unsupported page class).
+        if (mInput == null) return;
+        FuseboxMetrics.notifyOmniboxSessionEnded(userDidNavigate, mInput.getRequestType());
     }
 
     /**

@@ -146,8 +146,6 @@ public class AutocompleteMediatorUnitTest {
     private AutocompleteResult mAutocompleteResult;
     private ModelList mSuggestionModels;
     private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
-    private SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-            mAutocompleteRequestTypeSupplier;
     private SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private Context mContext;
 
@@ -163,8 +161,6 @@ public class AutocompleteMediatorUnitTest {
         OmniboxActionFactoryJni.setInstanceForTesting(mActionFactoryJni);
         AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
         mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
-        mAutocompleteRequestTypeSupplier =
-                ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
         mFuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
 
         lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
@@ -182,11 +178,6 @@ public class AutocompleteMediatorUnitTest {
                 .doReturn(mToolbarPositionSupplier)
                 .when(mLocationBarDataProvider)
                 .getToolbarPositionSupplier();
-
-        lenient()
-                .doReturn(mAutocompleteRequestTypeSupplier)
-                .when(mFuseboxCoordinator)
-                .getAutocompleteRequestTypeSupplier();
 
         lenient()
                 .doReturn(mFuseboxStateSupplier)
@@ -1678,10 +1669,13 @@ public class AutocompleteMediatorUnitTest {
     public void loadTypedOmniboxText_aimUrl() {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        var input = new AutocompleteInput();
+        input.setPageClassification(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        mMediator.beginInput(input);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
         GURL url = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {
@@ -1713,14 +1707,17 @@ public class AutocompleteMediatorUnitTest {
     public void loadTypedOmniboxText_imageGenerationUrl() {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
-        mMediator.beginInput(new AutocompleteInput());
+        var input = new AutocompleteInput();
+        input.setPageClassification(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+        input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        mMediator.beginInput(input);
         setUpLocationBarDataProvider(
                 JUnitTestGURLs.NTP_URL,
                 "New Tab Page",
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
         GURL url2 = JUnitTestGURLs.BLUE_2;
         doAnswer(
                         invocation -> {

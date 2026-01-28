@@ -96,11 +96,6 @@ public class AutocompleteCoordinatorUnitTest {
                 .thenReturn(mControlsPositionSupplier);
 
         lenient()
-                .doReturn(mAutocompleteRequestTypeSupplier)
-                .when(mFuseboxCoordinator)
-                .getAutocompleteRequestTypeSupplier();
-
-        lenient()
                 .doReturn(mFuseboxStateSupplier)
                 .when(mFuseboxCoordinator)
                 .getFuseboxStateSupplier();

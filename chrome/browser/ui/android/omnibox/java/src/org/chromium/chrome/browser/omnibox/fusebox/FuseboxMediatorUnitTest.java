@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.RenderWidgetHostView;
@@ -119,19 +121,16 @@ public class FuseboxMediatorUnitTest {
     private FuseboxMediator mMediator;
     private FuseboxAttachmentModelList mAttachments;
     private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-            mAutocompleteRequestTypeSupplier;
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private boolean mCompactModeEnabled;
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+    private final AutocompleteInput mInput = new AutocompleteInput();
 
     @Before
     public void setUp() {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
-        mAutocompleteRequestTypeSupplier =
-                ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
         ConstraintLayout viewGroup = new ConstraintLayout(activity);
@@ -158,7 +157,6 @@ public class FuseboxMediatorUnitTest {
                         mModel,
                         mViewHolder,
                         mAttachments,
-                        mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
@@ -166,6 +164,10 @@ public class FuseboxMediatorUnitTest {
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
         doReturn(mBitmap).when(mTabFaviconFactory).apply(any());
+
+        mInput.setPageClassification(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
+        mMediator.beginInput(mInput);
 
         // Start with no init calls.
         clearInvocations(mComposeBoxQueryControllerBridge);
@@ -186,11 +188,11 @@ public class FuseboxMediatorUnitTest {
                         mModel,
                         mViewHolder,
                         new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
-                        mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
                         mSnackbarManager);
+        mMediator.beginInput(mInput);
     }
 
     private void addTabAttachment(Tab tab) {
@@ -265,13 +267,14 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testDestroy() {
-        assertTrue(mAutocompleteRequestTypeSupplier.hasObservers());
+        assertTrue(mInput.getRequestTypeSupplier().hasObservers());
         mMediator.destroy();
-        assertFalse(mAutocompleteRequestTypeSupplier.hasObservers());
+        assertFalse(mInput.getRequestTypeSupplier().hasObservers());
     }
 
     @Test
     public void initialState_toolbarIsHidden() {
+        mMediator.endInput();
         assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
     }
 
@@ -284,7 +287,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onUrlFocusChange_startInAiMode() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.setToolbarVisible(true);
         assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.COMPACT_UI));
@@ -460,7 +463,6 @@ public class FuseboxMediatorUnitTest {
         doReturn(false).when(mWebContents).isLoading();
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         recreateMediator();
         ShadowLooper.idleMainLooper();
 
@@ -482,7 +484,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void maybeActivateAiMode_takesEffectInSearchMode() {
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
         mMediator.maybeActivateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
         assertEquals(
                 AutocompleteRequestType.AI_MODE,
@@ -492,7 +494,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void maybeActivateAiMode_doesNotAlterCurrentCustomMode() {
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
         mMediator.maybeActivateAiMode(AiModeActivationSource.DEDICATED_BUTTON);
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
@@ -515,9 +517,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void setToolbarVisible_noBridge_doesNothing() {
-        var requestTypeSupplier = ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
-
-        // Create a mediator, but don't initialize the bridge.
         FuseboxMediator mediator =
                 new FuseboxMediator(
                         mContext,
@@ -526,7 +525,6 @@ public class FuseboxMediatorUnitTest {
                         mModel,
                         mViewHolder,
                         new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
-                        requestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
@@ -652,9 +650,9 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void autocompleteRequestTypeClicked_activatesSearchMode() {
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
-        assertEquals(AutocompleteRequestType.SEARCH, (int) mAutocompleteRequestTypeSupplier.get());
+        assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
     }
 
     @Test
@@ -684,7 +682,7 @@ public class FuseboxMediatorUnitTest {
         assertEquals("integration-token", attachment.getToken());
 
         // Verify AI mode is activated
-        assertEquals(AutocompleteRequestType.AI_MODE, (int) mAutocompleteRequestTypeSupplier.get());
+        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
     }
 
     @Test
@@ -740,17 +738,17 @@ public class FuseboxMediatorUnitTest {
         recreateMediator();
         Callback<@FuseboxState Integer> compactModeCallback =
                 (val) -> mCompactModeEnabled = val == FuseboxState.COMPACT;
-        mFuseboxStateSupplier.addObserver(compactModeCallback);
+        mFuseboxStateSupplier.addSyncObserverAndCallIfNonNull(compactModeCallback);
 
         mMediator.setToolbarVisible(true);
         assertTrue(mModel.get(FuseboxProperties.COMPACT_UI));
         assertTrue(mCompactModeEnabled);
 
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         assertFalse(mModel.get(FuseboxProperties.COMPACT_UI));
         assertFalse(mCompactModeEnabled);
 
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertTrue(mModel.get(FuseboxProperties.COMPACT_UI));
         assertTrue(mCompactModeEnabled);
 
@@ -871,7 +869,7 @@ public class FuseboxMediatorUnitTest {
         assertEquals(new HashSet<>(selectedTabIds), getCurrentlyAttachedIdsFromModel());
 
         // Verify AutocompleteRequestType is AI Mode.
-        assertEquals(AutocompleteRequestType.AI_MODE, (int) mAutocompleteRequestTypeSupplier.get());
+        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
     }
 
     @Test
@@ -879,13 +877,13 @@ public class FuseboxMediatorUnitTest {
         Intent resultIntent = createTabPickerResultIntent(new ArrayList<>());
 
         // Set a non-AI mode starting state
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
         mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
         assertEquals(new HashSet<>(), getCurrentlyAttachedIdsFromModel());
 
         // AI Mode is NOT activated and AutocompleteRequestType remains SEARCH.
-        assertEquals(AutocompleteRequestType.SEARCH, (int) mAutocompleteRequestTypeSupplier.get());
+        assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
     }
 
     @Test
@@ -896,7 +894,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testIsMaxAttachmentCountReached_imageInImageGeneration() {
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
         assertFalse(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE));
         verify(mSnackbarManager, never()).showSnackbar(any());
 
@@ -907,7 +905,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testIsMaxAttachmentCountReached_nonImageInImageGeneration() {
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
 
         assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB));
 
@@ -958,7 +956,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testUpdatePopupButtonEnabledStates_maxAttachmentsReached() {
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertTrue(mModel.get(FuseboxProperties.POPUP_CAMERA_BUTTON_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_GALLERY_BUTTON_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
@@ -990,7 +988,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testUpdatePopupButtonEnabledStates_modeChanges() {
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_CAMERA_BUTTON_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_GALLERY_BUTTON_ENABLED));

@@ -26,6 +26,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.Clipboard;
@@ -71,14 +73,13 @@ public class FuseboxMediator {
     private final FuseboxPopup mPopup;
     private final FuseboxAttachmentModelList mModelList;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-            mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private final SnackbarManager mSnackbarManager;
     private final Snackbar mAttachmentUploadFailedSnackbar;
+    private @Nullable AutocompleteInput mInput;
 
     FuseboxMediator(
             Context context,
@@ -87,8 +88,6 @@ public class FuseboxMediator {
             PropertyModel model,
             FuseboxViewHolder viewHolder,
             FuseboxAttachmentModelList modelList,
-            SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-                    autocompleteRequestTypeSupplier,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
             SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
@@ -101,12 +100,9 @@ public class FuseboxMediator {
         mPopup = viewHolder.popup;
         mModelList = modelList;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mSnackbarManager = snackbarManager;
-
-        mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
 
         // Create the upload failed snackbar
         mAttachmentUploadFailedSnackbar =
@@ -148,7 +144,35 @@ public class FuseboxMediator {
     }
 
     public void destroy() {
-        mAutocompleteRequestTypeSupplier.removeObserver(mOnAutocompleteRequestTypeChanged);
+        endInput();
+    }
+
+    @EnsuresNonNullIf("mInput")
+    private boolean isInInputSession() {
+        return mInput != null;
+    }
+
+    /**
+     * Called when the user begins interacting with the Omnibox.
+     *
+     * @param input The user's input state.
+     */
+    /* package */ void beginInput(AutocompleteInput input) {
+        assert mInput == null;
+        mInput = input;
+        setAutocompleteRequestTypeChangeable(true);
+        setToolbarVisible(true);
+        mInput.getRequestTypeSupplier()
+                .addSyncObserverAndCallIfNonNull(mOnAutocompleteRequestTypeChanged);
+    }
+
+    /** Called when the user stops interacting with the Omnibox. */
+    /* package */ void endInput() {
+        if (mInput == null) return;
+        setAutocompleteRequestTypeChangeable(false);
+        setToolbarVisible(false);
+        mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
+        mInput = null;
     }
 
     private Snackbar createStyledSnackbar(CharSequence text, int snackbarIdentifier) {
@@ -174,7 +198,9 @@ public class FuseboxMediator {
     }
 
     private void onRequestTypeButtonClicked() {
-        switch (mAutocompleteRequestTypeSupplier.get()) {
+        if (!isInInputSession()) return;
+
+        switch (mInput.getRequestType()) {
             case AutocompleteRequestType.AI_MODE:
             case AutocompleteRequestType.IMAGE_GENERATION:
                 activateSearchMode();
@@ -189,8 +215,10 @@ public class FuseboxMediator {
     /** Activate Search as the Next Request fulfillment type. */
     void activateSearchMode() {
         mPopup.dismiss();
-        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.SEARCH) return;
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        if (!isInInputSession()) return;
+
+        if (mInput.getRequestType() == AutocompleteRequestType.SEARCH) return;
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
         mModelList.clear();
     }
@@ -198,25 +226,31 @@ public class FuseboxMediator {
     /** Activate AI Mode if no other custom mode is already active. */
     void maybeActivateAiMode(@AiModeActivationSource int activationReason) {
         mPopup.dismiss();
-        if (mAutocompleteRequestTypeSupplier.get() != AutocompleteRequestType.SEARCH) return;
+        if (!isInInputSession()) return;
+
+        if (mInput.getRequestType() != AutocompleteRequestType.SEARCH) return;
         activateAiMode(activationReason);
     }
 
     /** Activate AI Mode as the Next Request fulfillment type. */
     void activateAiMode(@AiModeActivationSource int activationReason) {
         mPopup.dismiss();
-        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.AI_MODE) return;
+        if (!isInInputSession()) return;
+
+        if (mInput.getRequestType() == AutocompleteRequestType.AI_MODE) return;
         FuseboxMetrics.notifyAiModeActivated(activationReason);
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
     }
 
     /** Activate image generation as the Next Request fulfillment type. */
     void activateImageGeneration() {
         mPopup.dismiss();
-        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.IMAGE_GENERATION) {
+        if (!isInInputSession()) return;
+
+        if (mInput.getRequestType() == AutocompleteRequestType.IMAGE_GENERATION) {
             return;
         }
-        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
     }
 
     /**
@@ -225,25 +259,18 @@ public class FuseboxMediator {
      * @param visible Whether the toolbar should be visible.
      */
     void setToolbarVisible(boolean visible) {
+        if (!isInInputSession()) return;
+
         mModel.set(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
         // The omnibox can become focused with the autocomplete request type immediately set
         // to AI_MODE. We check the mode here to avoid erroneously staying in compact mode.
         setUseCompactUi(
                 OmniboxFeatures.sCompactFusebox.getValue()
-                        && mAutocompleteRequestTypeSupplier.get()
-                                == AutocompleteRequestType.SEARCH);
+                        && mInput.getRequestType() == AutocompleteRequestType.SEARCH);
     }
 
     public void setAutocompleteRequestTypeChangeable(boolean isChangeable) {
-        // Don't take an action if the state isn't really changing.
-        if (mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) == isChangeable) {
-            return;
-        }
-
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE, isChangeable);
-        if (!isChangeable) {
-            activateSearchMode();
-        }
     }
 
     /**
@@ -327,8 +354,10 @@ public class FuseboxMediator {
      */
     @VisibleForTesting
     /* package */ boolean isMaxAttachmentCountReached(@FuseboxAttachmentType int attachmentType) {
+        if (!isInInputSession()) return true;
+
         boolean isImageGenerationUsed =
-                mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.IMAGE_GENERATION;
+                mInput.getRequestType() == AutocompleteRequestType.IMAGE_GENERATION;
 
         // Permit image reselection when image generation is picked.
         if (attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE && isImageGenerationUsed) {
@@ -499,13 +528,15 @@ public class FuseboxMediator {
     }
 
     private void updatePopupButtonEnabledStates() {
+        if (!isInInputSession()) return;
+
         // Disable Camera and Gallery Selection popup buttons if no remaining attachments are left.
         boolean allowByCapacity = mModelList.getRemainingAttachments() > 0;
 
         // Disables popup buttons for Current Tab, Tab Picker, and File selection if the
         // autocomplete request is not image generation and if there are no remaining attachments.
         boolean allowNonImage =
-                mAutocompleteRequestTypeSupplier.get() != AutocompleteRequestType.IMAGE_GENERATION
+                mInput.getRequestType() != AutocompleteRequestType.IMAGE_GENERATION
                         && allowByCapacity;
 
         mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED, allowNonImage);
@@ -550,11 +581,13 @@ public class FuseboxMediator {
     @VisibleForTesting
     void onImagePickerClicked() {
         mPopup.dismiss();
+        if (!isInInputSession()) return;
+
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
 
         boolean allowMultipleAttachments =
-                mAutocompleteRequestTypeSupplier.get() != AutocompleteRequestType.IMAGE_GENERATION;
+                mInput.getRequestType() != AutocompleteRequestType.IMAGE_GENERATION;
         Intent intent;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             int imageMax = allowMultipleAttachments ? mModelList.getRemainingAttachments() : 1;
@@ -668,8 +701,10 @@ public class FuseboxMediator {
      * @param attachment Contains information about the input that will be added as context.
      */
     /* package */ void uploadAndAddAttachment(FuseboxAttachment attachment) {
+        if (!isInInputSession()) return;
+
         // Image generation is only allowed to have a single piece of context.
-        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.IMAGE_GENERATION) {
+        if (mInput.getRequestType() == AutocompleteRequestType.IMAGE_GENERATION) {
             mModelList.clear();
         }
 

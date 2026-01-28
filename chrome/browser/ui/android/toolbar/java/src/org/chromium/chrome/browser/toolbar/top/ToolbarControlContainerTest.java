@@ -80,7 +80,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarVi
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -636,9 +635,6 @@ public class ToolbarControlContainerTest {
 
         ToolbarPhone toolbarPhone = controlContainer.findViewById(R.id.toolbar);
         doReturn(mLocationBarCoordinatorPhone).when(mLocationBarCoordinator).getPhoneCoordinator();
-        doReturn(ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH))
-                .when(mLocationBarCoordinator)
-                .getAutocompleteRequestTypeSupplier();
         doReturn(mNewTabPageDelegate).when(mToolbarDataProvider).getNewTabPageDelegate();
         doReturn(new GURL(UrlConstants.ABOUT_URL)).when(mToolbarDataProvider).getCurrentGurl();
         toolbarPhone.setLocationBarCoordinator(mLocationBarCoordinator);

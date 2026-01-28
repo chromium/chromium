@@ -33,7 +33,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -76,7 +75,6 @@ import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -258,9 +256,6 @@ public class LocationBarCoordinator
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
         OmniboxResourceProvider.setTabFaviconFactory(tabFaviconFunction);
-        SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
-                autocompleteRequestTypeSupplier =
-                        ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
         mFuseboxCoordinator =
                 new FuseboxCoordinator(
                         context,
@@ -269,7 +264,6 @@ public class LocationBarCoordinator
                         profileObservableSupplier,
                         tabModelSelectorSupplier,
                         templateUrlServiceSupplier,
-                        autocompleteRequestTypeSupplier,
                         snackbarManager);
         NonNullObservableSupplier<Integer> fuseboxStateSupplier;
         if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
@@ -325,7 +319,6 @@ public class LocationBarCoordinator
                         tabModelSelectorSupplier,
                         browserControlsStateProvider,
                         modalDialogManagerSupplier,
-                        autocompleteRequestTypeSupplier,
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         multiInstanceManager,
@@ -1090,9 +1083,10 @@ public class LocationBarCoordinator
         mLocationBarMediator.updateButtonBackground(backgroundResId);
     }
 
-    public NonNullObservableSupplier<@AutocompleteRequestType Integer>
-            getAutocompleteRequestTypeSupplier() {
-        return mLocationBarMediator.getAutocompleteRequestTypeSupplier();
+    public void setOnSpecializedFuseboxModeActivatedListener(
+            @Nullable Callback<Boolean> onSpecializedFuseboxModeActivatedCallback) {
+        mLocationBarMediator.setOnSpecializedFuseboxModeActivatedListener(
+                onSpecializedFuseboxModeActivatedCallback);
     }
 
     public NonNullObservableSupplier<@FuseboxState Integer> getFuseboxStateSupplier() {
