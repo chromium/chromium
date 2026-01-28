@@ -268,10 +268,10 @@ class MEDIA_EXPORT AudioBuffer
 
   // Provides spanified access to the channels buffer for ffmpeg and Android
   // MediaCodec decoders to write directly to.
-  // For planar formats the returned vector elements correspond to the channels.
-  // For interleaved formats the returned vector will contain exactly one
+  // For planar formats, each element in the returned span maps to one channel.
+  // For interleaved formats the returned span will contain exactly one
   // element which is the interleaved data buffer.
-  const std::vector<base::raw_span<uint8_t>>& channels() const {
+  base::span<const base::raw_span<uint8_t>> channels() const {
     CHECK_EQ(channel_spans_.size(), channel_data_.size());
     return channel_spans_;
   }

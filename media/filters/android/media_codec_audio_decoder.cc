@@ -420,7 +420,7 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
         sample_format_, channel_layout_, channel_count_, sample_rate_,
         frame_count, out.size, pool_);
 
-    auto channels = audio_buffer->channels();
+    const auto channels = audio_buffer->channels();
     CHECK(!channels.empty());
     MediaCodecResult result = media_codec->CopyFromOutputBuffer(
         out.index, out.offset, channels.front());
@@ -462,7 +462,7 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
   // Copy data into AudioBuffer.
   CHECK_LE(out.size, audio_buffer->data_size());
 
-  auto channels = audio_buffer->channels();
+  const auto channels = audio_buffer->channels();
   CHECK(!channels.empty());
   MediaCodecResult result = media_codec->CopyFromOutputBuffer(
       out.index, out.offset, channels.front());
