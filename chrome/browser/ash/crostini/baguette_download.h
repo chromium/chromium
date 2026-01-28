@@ -16,7 +16,6 @@
 #include "url/gurl.h"
 
 class PrefService;
-class Profile;
 
 namespace net {
 struct NetworkTrafficAnnotationTag;
@@ -41,7 +40,6 @@ class BaguetteDownload {
   virtual ~BaguetteDownload() = default;
 
   virtual void StartDownload(
-      Profile* profile,
       GURL url,
       base::OnceCallback<void(base::FilePath path, std::string sha256)>
           callback) = 0;
@@ -52,7 +50,6 @@ class SimpleURLLoaderDownload : public BaguetteDownload {
   explicit SimpleURLLoaderDownload(PrefService& local_state);
 
   void StartDownload(
-      Profile* profile,
       GURL url,
       base::OnceCallback<void(base::FilePath path, std::string sha256)>
           callback) override;
@@ -64,7 +61,7 @@ class SimpleURLLoaderDownload : public BaguetteDownload {
   ~SimpleURLLoaderDownload() override;
 
  private:
-  void Download(Profile* profile, std::unique_ptr<base::ScopedTempDir> dir);
+  void Download(std::unique_ptr<base::ScopedTempDir> dir);
   void Finished(base::FilePath path);
 
   const raw_ref<PrefService> local_state_;

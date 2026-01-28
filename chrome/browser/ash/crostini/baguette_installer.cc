@@ -174,7 +174,7 @@ void BaguetteInstaller::DownloadBaguetteImage(
 
   image_download_ = download_factory_.Run();
   image_download_->StartDownload(
-      profile_, GURL(response->url()),
+      GURL(response->url()),
       base::BindOnce(&crostini::BaguetteInstaller::OnDiskImageDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      response->sha256()));

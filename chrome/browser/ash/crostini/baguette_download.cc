@@ -14,7 +14,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
 #include "crypto/hash.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -103,7 +102,6 @@ SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
 }
 
 void SimpleURLLoaderDownload::StartDownload(
-    Profile* profile,
     GURL url,
     base::OnceCallback<void(base::FilePath path, std::string sha256)>
         callback) {
@@ -113,11 +111,10 @@ void SimpleURLLoaderDownload::StartDownload(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&MakeTempDir),
       base::BindOnce(&SimpleURLLoaderDownload::Download,
-                     weak_ptr_factory_.GetWeakPtr(), profile));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SimpleURLLoaderDownload::Download(
-    Profile* profile,
     std::unique_ptr<base::ScopedTempDir> dir) {
   scoped_temp_dir_ = std::move(dir);
   auto path = scoped_temp_dir_->GetPath().Append("download");
