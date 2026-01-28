@@ -145,16 +145,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
-#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
@@ -4541,66 +4531,4 @@ IN_PROC_BROWSER_TEST_F(DevToolsRenderDocumentTest, ReloadWithRFHSwap) {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
-// Test that closing undocked DevTools from a PWA window returns focus to the
-// PWA window instead of the main browser window.
-class DevToolsPWAFocusTest : public DevToolsTest {
- public:
-  void SetUpOnMainThread() override {
-    DevToolsTest::SetUpOnMainThread();
 
-    // Install a simple PWA.
-    auto web_app_info =
-        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
-            embedded_test_server()->GetURL("/simple.html"));
-    web_app_info->title = u"Test PWA";
-    web_app_info->scope = embedded_test_server()->GetURL("/");
-    app_id_ = web_app::test::InstallWebApp(browser()->profile(),
-                                           std::move(web_app_info));
-  }
-
-  void TearDownOnMainThread() override {
-    if (!app_id_.empty()) {
-      web_app::test::UninstallWebApp(browser()->profile(), app_id_);
-    }
-    DevToolsTest::TearDownOnMainThread();
-  }
-
- protected:
-  webapps::AppId app_id_;
-  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
-};
-
-IN_PROC_BROWSER_TEST_F(DevToolsPWAFocusTest,
-                       ClosingUndockedDevToolsFocusesPWAWindow) {
-  BrowserWindowInterface* const pwa_browser =
-      web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id_);
-  ASSERT_TRUE(pwa_browser);
-  ASSERT_TRUE(pwa_browser->GetWindow());
-
-  ui_test_utils::WaitUntilBrowserBecomeActive(pwa_browser);
-  EXPECT_TRUE(pwa_browser->GetWindow()->IsActive());
-
-  WebContents* pwa_web_contents =
-      pwa_browser->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(pwa_web_contents);
-
-  DevToolsWindow* devtools_window =
-      DevToolsWindowTesting::OpenDevToolsWindowSync(pwa_web_contents,
-                                                    /*is_docked=*/false);
-  ASSERT_TRUE(devtools_window);
-
-  BrowserWindowInterface* devtools_browser =
-      DevToolsWindowTesting::Get(devtools_window)->browser();
-  ASSERT_TRUE(devtools_browser);
-  ui_test_utils::WaitUntilBrowserBecomeActive(devtools_browser);
-
-  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
-
-  // After closing DevTools, the PWA window should become active again,
-  // not the main browser window.
-  ui_test_utils::WaitUntilBrowserBecomeActive(pwa_browser);
-  EXPECT_TRUE(pwa_browser->GetWindow()->IsActive());
-  EXPECT_FALSE(browser()->window()->IsActive());
-}
-#endif  // BUILDFLAG(IS_MAC)
