@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -66,7 +67,8 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   tab_group_icon_->SetImageSize(kTabGroupIconImageSize);
   tab_group_icon_->SetProperty(views::kMarginsKey, kTabGroupsIconMargins);
 
-  title_ = AddChildView(std::make_unique<views::Label>(group.title()));
+  auto group_title = tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(group);
+  title_ = AddChildView(std::make_unique<views::Label>(group_title));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetTextStyle(views::style::STYLE_BODY_3);
   title_->SetPreferredSize(kTitleSize);
@@ -87,7 +89,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   SetProperty(views::kMarginsKey, kTabGroupsItemMargins);
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelTabGroupsItemViewElementId);
-  GetViewAccessibility().SetName(group.title());
+  GetViewAccessibility().SetName(group_title);
 }
 
 ProjectsPanelTabGroupsItemView::~ProjectsPanelTabGroupsItemView() = default;

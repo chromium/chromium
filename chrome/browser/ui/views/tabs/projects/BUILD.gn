@@ -34,6 +34,7 @@ source_set("projects") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs/projects:impl",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views/tabs/vertical",
     "//components/contextual_tasks/public",
     "//components/saved_tab_groups/public",
