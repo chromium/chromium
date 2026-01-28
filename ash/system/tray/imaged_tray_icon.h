@@ -5,11 +5,14 @@
 #ifndef ASH_SYSTEM_TRAY_IMAGED_TRAY_ICON_H_
 #define ASH_SYSTEM_TRAY_IMAGED_TRAY_ICON_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
+class ImageModel;
 class LocatedEvent;
 }  // namespace ui
 
@@ -27,6 +30,8 @@ class ASH_EXPORT ImagedTrayIcon : public TrayBackgroundView {
 
  public:
   ImagedTrayIcon(Shelf* shelf,
+                 const ui::ImageModel& image_model,
+                 const std::u16string& tooltip,
                  const TrayBackgroundViewCatalogName catalog_name);
 
   ImagedTrayIcon(const ImagedTrayIcon&) = delete;

@@ -4,24 +4,37 @@
 
 #include "ash/system/tray/imaged_tray_icon.h"
 
+#include <utility>
+
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_container.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
 
 ImagedTrayIcon::ImagedTrayIcon(Shelf* shelf,
+                               const ui::ImageModel& image_model,
+                               const std::u16string& tooltip,
                                const TrayBackgroundViewCatalogName catalog_name)
     : TrayBackgroundView(shelf,
                          catalog_name,
                          RoundedCornerBehavior::kAllRounded) {
-  image_view_ =
-      tray_container()->AddChildView(std::make_unique<views::ImageView>());
+  auto image_view =
+      views::Builder<views::ImageView>()
+          .SetHorizontalAlignment(views::ImageView::Alignment::kCenter)
+          .SetVerticalAlignment(views::ImageView::Alignment::kCenter)
+          .SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize))
+          .SetImage(image_model)
+          .SetTooltipText(tooltip)
+          .Build();
+
+  image_view_ = tray_container()->AddChildView(std::move(image_view));
 }
 
 ImagedTrayIcon::~ImagedTrayIcon() = default;
