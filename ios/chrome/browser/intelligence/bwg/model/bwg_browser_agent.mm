@@ -501,7 +501,7 @@ void BwgBrowserAgent::HideFloatyIfInvoked(bool animated) {
 }
 
 void BwgBrowserAgent::ShowFloatyIfInvoked(bool animated) {
-  if (!is_floaty_invoked_) {
+  if (!is_floaty_invoked_ || !is_floaty_temporarily_hidden_) {
     return;
   }
 
@@ -577,6 +577,17 @@ void BwgBrowserAgent::OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) {
 void BwgBrowserAgent::FullscreenProgressUpdated(
     FullscreenController* controller,
     CGFloat progress) {
+  // Catch-all in case the floaty is still in a temporarily hidden state. A
+  // fullscreen update implies a user is interacting with the web page,
+  // therefore we should force-show the floaty if invoked. Uses the command
+  // handler to do eligibility checks outside of this browser agent before
+  // showing the floaty.
+  if (is_floaty_temporarily_hidden_) {
+    id<BWGCommands> gemini_handler =
+        HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
+    [gemini_handler showFloatyIfInvokedAnimated:NO];
+  }
+
   CGFloat offset = GetFloatyOffsetFromFullscreenController(controller);
 
   // When fullscreen mode is disabled (progress == 1), the offset will be a
