@@ -125,7 +125,7 @@ Parsed DoParseFileUrl(std::basic_string_view<CharT> url) {
   if (DoesBeginWindowsDriveSpec(url.data(), after_slashes, url.length())) {
     // Windows path, don't try to extract the scheme (for example, "c:\foo").
     after_scheme = after_slashes;
-  } else if (DoesBeginUNCPath(url.data(), begin, url.length(), false)) {
+  } else if (DoesBeginUncPath(url, begin, false)) {
     // Windows UNC path: don't try to extract the scheme, but keep the slashes.
     after_scheme = begin;
   } else

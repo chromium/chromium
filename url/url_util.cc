@@ -272,7 +272,7 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   // has no meaning as an absolute path name. This is because browsers on Mac
   // & Unix don't generally do this, so there is no compatibility reason for
   // doing so.
-  if (DoesBeginUNCPath(spec.data(), 0, spec.length(), false) ||
+  if (DoesBeginUncPath(spec, 0, false) ||
       DoesBeginWindowsDriveSpec(spec.data(), 0, spec.length())) {
     return CanonicalizeFileUrl(spec, ParseFileUrl(spec), charset_converter,
                                output, output_parsed);

@@ -137,7 +137,7 @@ bool DoIsRelativeUrl(std::string_view base,
   // We require strict backslashes when detecting UNC since two forward
   // slashes should be treated a a relative URL with a hostname.
   if (DoesBeginWindowsDriveSpec(url.data(), 0, url.length()) ||
-      DoesBeginUNCPath(url.data(), 0, url.length(), true)) {
+      DoesBeginUncPath(url, 0, true)) {
     return true;
   }
 #endif  // WIN32
@@ -593,8 +593,8 @@ bool DoResolveRelativeUrl(std::string_view base_url,
   // This assumes the absolute path resolver handles absolute URLs like this
   // properly. DoCanonicalize does this.
   int after_slashes = relative_component.begin + num_slashes;
-  if (DoesBeginUNCPath(relative_url.data(), relative_component.begin,
-                       relative_component.end(), !base_is_file) ||
+  if (DoesBeginUncPath(relative_component.AsViewOn(relative_url), 0,
+                       !base_is_file) ||
       ((num_slashes == 0 || base_is_file) &&
        DoesBeginWindowsDriveSpec(relative_url.data(), after_slashes,
                                  relative_component.end()))) {

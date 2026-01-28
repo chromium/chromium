@@ -456,7 +456,7 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
 #if BUILDFLAG(IS_WIN)
   int trimmed_length = static_cast<int>(trimmed.length());
   if (url::DoesBeginWindowsDriveSpec(trimmed.data(), 0, trimmed_length) ||
-      url::DoesBeginUNCPath(trimmed.data(), 0, trimmed_length, true)) {
+      url::DoesBeginUncPath(std::string_view(trimmed), 0, true)) {
     scheme = url::kFileScheme;
   }
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

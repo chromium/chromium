@@ -73,20 +73,20 @@ inline bool DoesBeginWindowsDriveSpec(const CHAR* spec,
 // When strict_slashes is set, this function will only accept backslashes as is
 // standard for Windows. Otherwise, it will accept forward slashes as well
 // which we use for a lot of URL handling.
-template<typename CHAR>
-inline bool DoesBeginUNCPath(const CHAR* text,
-                             int start_offset,
-                             int len,
+template <typename CHAR>
+inline bool DoesBeginUncPath(std::basic_string_view<CHAR> text,
+                             size_t start_offset,
                              bool strict_slashes) {
-  int remaining_len = len - start_offset;
-  if (remaining_len < 2)
+  if (start_offset >= text.length() || text.length() - start_offset < 2) {
     return false;
+  }
 
-  if (strict_slashes)
-    return UNSAFE_TODO(text[start_offset]) == '\\' &&
-           UNSAFE_TODO(text[start_offset + 1]) == '\\';
-  return IsSlashOrBackslash(UNSAFE_TODO(text[start_offset])) &&
-         IsSlashOrBackslash(UNSAFE_TODO(text[start_offset + 1]));
+  CHAR ch0 = text[start_offset];
+  CHAR ch1 = text[++start_offset];
+  if (strict_slashes) {
+    return ch0 == '\\' && ch1 == '\\';
+  }
+  return IsSlashOrBackslash(ch0) && IsSlashOrBackslash(ch1);
 }
 
 #endif  // WIN32
