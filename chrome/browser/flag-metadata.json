@@ -6341,11 +6341,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "maylaunchurl-uses-separate-storage-partition",
-    "owners": ["bingler@chromium.org"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "mbi-mode",
     "owners": [ "dom@chromium.org", "blink-isolation-dev@chromium.org" ],
     "expiry_milestone": 120

@@ -7981,13 +7981,6 @@ const FeatureEntry kFeatureEntries[] = {
          kEphemeralCardRankerCardOverrideOptions,
          "EducationalTipModule")},
 
-    {"maylaunchurl-uses-separate-storage-partition",
-     flag_descriptions::kMayLaunchUrlUsesSeparateStoragePartitionName,
-     flag_descriptions::kMayLaunchUrlUsesSeparateStoragePartitionDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kMayLaunchUrlUsesSeparateStoragePartition)},
-
     {"enable-segmentation-platform-android-home-module-ranker-v2",
      flag_descriptions::kSegmentationPlatformAndroidHomeModuleRankerV2Name,
      flag_descriptions::
