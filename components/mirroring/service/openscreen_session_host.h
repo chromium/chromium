@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/unguessable_token.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
@@ -151,6 +152,11 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Called when the GPU is either set up or determined to be unavailable due
   // to software rendering being used.
   void OnAsyncInitialized(const SupportedProfiles& profiles);
+
+  // Called when the MirroringGpuFactoriesFactory has fully initialized and
+  // the GPU channel token and route ID are available.
+  void OnGpuFactoriesConfigured(const base::UnguessableToken& channel_token,
+                                int32_t route_id);
 
   // Notify `observer_` that error occurred and close the session.
   //
@@ -346,6 +352,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   SupportedProfiles supported_profiles_;
   mojo::Remote<media::mojom::VideoEncodeAcceleratorProvider> vea_provider_;
   std::unique_ptr<MirroringGpuFactoriesFactory> gpu_factories_factory_;
+  std::vector<media::cast::ReceiveVideoEncodeAcceleratorCallback>
+      pending_vea_requests_;
+  base::UnguessableToken channel_token_;
+  int32_t route_id_ = 0;
 
   // Called when the session host has fully initialized.
   AsyncInitializedCallback initialized_cb_;

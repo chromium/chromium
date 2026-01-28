@@ -5,6 +5,8 @@
 #include "components/mirroring/service/mirroring_gpu_factories_factory.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -21,10 +23,12 @@ using media::cast::CastEnvironment;
 MirroringGpuFactoriesFactory::MirroringGpuFactoriesFactory(
     scoped_refptr<CastEnvironment> cast_environment,
     viz::Gpu& gpu,
-    base::OnceClosure context_lost_cb)
+    base::OnceClosure context_lost_cb,
+    ContextConfiguredCallback context_configured_cb)
     : cast_environment_(std::move(cast_environment)),
       gpu_(gpu),
-      context_lost_cb_(std::move(context_lost_cb)) {}
+      context_lost_cb_(std::move(context_lost_cb)),
+      context_configured_cb_(std::move(context_configured_cb)) {}
 
 MirroringGpuFactoriesFactory::MirroringGpuFactoriesFactory(
     MirroringGpuFactoriesFactory&&) = default;
@@ -95,6 +99,30 @@ void MirroringGpuFactoriesFactory::BindOnVideoThread() {
     return;
   }
   context_provider_->AddObserver(this);
+
+  auto* command_buffer_proxy = context_provider_->GetCommandBufferProxy();
+  if (command_buffer_proxy) {
+    // The `base::Unretained(this)` is safe because if `OnContextLost()` is
+    // called before `OnChannelTokenReady()` executes, `context_provider_`
+    // (which owns the `CommandBufferProxy`) will be reset, implicitly
+    // cancelling any pending `GetChannelToken` callbacks. Thus,
+    // `OnChannelTokenReady()` will not be invoked on a destroyed `this`.
+    command_buffer_proxy->GetGpuChannel().GetChannelToken(base::BindOnce(
+        &MirroringGpuFactoriesFactory::OnChannelTokenReady,
+        base::Unretained(this), command_buffer_proxy->route_id()));
+  }
+}
+
+void MirroringGpuFactoriesFactory::OnChannelTokenReady(
+    int32_t route_id,
+    const base::UnguessableToken& channel_token) {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kVideo));
+  if (context_configured_cb_) {
+    cast_environment_->PostTask(
+        CastEnvironment::ThreadId::kMain, FROM_HERE,
+        base::BindOnce(std::move(context_configured_cb_), channel_token,
+                       route_id));
+  }
 }
 
 void MirroringGpuFactoriesFactory::OnContextLost() {

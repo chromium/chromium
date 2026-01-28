@@ -470,14 +470,17 @@ void OpenscreenSessionHost::OnNegotiated(
         metrics_provider_pending_remote.InitWithNewPipeAndPassReceiver());
 
     media::GpuVideoAcceleratorFactories* gpu_factories = nullptr;
-    if (base::FeatureList::IsEnabled(media::kCastStreamingMediaVideoEncoder) &&
-        video_config->use_hardware_encoder) {
+    if (video_config->use_hardware_encoder) {
       gpu_factories_factory_ = std::make_unique<MirroringGpuFactoriesFactory>(
           cast_environment_, *gpu_,
           base::BindPostTask(
               base::SingleThreadTaskRunner::GetCurrentDefault(),
               base::BindOnce(&OpenscreenSessionHost::OnGpuFactoryContextLost,
-                             weak_factory_.GetWeakPtr(), *video_config)));
+                             weak_factory_.GetWeakPtr(), *video_config)),
+          base::BindPostTask(
+              base::SingleThreadTaskRunner::GetCurrentDefault(),
+              base::BindOnce(&OpenscreenSessionHost::OnGpuFactoriesConfigured,
+                             weak_factory_.GetWeakPtr())));
       gpu_factories = &gpu_factories_factory_->GetInstance();
     }
 
@@ -646,14 +649,25 @@ void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
 
   std::unique_ptr<media::VideoEncodeAccelerator> mojo_vea;
   if (gpu_ && !supported_profiles_.empty()) {
+    if (route_id_ == 0) {
+      // The GPU channel token and route ID are not yet available. Queue the
+      // request until OnGpuFactoriesConfigured() is called.
+      pending_vea_requests_.push_back(std::move(callback));
+      return;
+    }
+
     if (!vea_provider_) {
       gpu_->CreateVideoEncodeAcceleratorProvider(
           vea_provider_.BindNewPipeAndPassReceiver());
     }
     mojo::PendingRemote<media::mojom::VideoEncodeAccelerator> vea;
+    media::mojom::EncodeCommandBufferIdPtr command_buffer_id =
+        media::mojom::EncodeCommandBufferId::New();
+    command_buffer_id->channel_token = channel_token_;
+    command_buffer_id->route_id = route_id_;
+
     vea_provider_->CreateVideoEncodeAccelerator(
-        nullptr /* EncodeCommandBufferIdPtr */,
-        vea.InitWithNewPipeAndPassReceiver());
+        std::move(command_buffer_id), vea.InitWithNewPipeAndPassReceiver());
 
     // This is a highly unusual statement due to the fact that
     // `MojoVideoEncodeAccelerator` must be destroyed using `Destroy()` and has
@@ -665,6 +679,24 @@ void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
   }
   std::move(callback).Run(base::SingleThreadTaskRunner::GetCurrentDefault(),
                           std::move(mojo_vea));
+}
+
+void OpenscreenSessionHost::OnGpuFactoriesConfigured(
+    const base::UnguessableToken& channel_token,
+    int32_t route_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  channel_token_ = channel_token;
+  route_id_ = route_id;
+
+  // Move the pending requests to a local vector before iterating. This is to
+  // prevent iterator invalidation if `CreateVideoEncodeAccelerator()` re-queues
+  // a request (e.g., if `route_id_` is still 0), and to ensure that all
+  // requests are processed before `pending_vea_requests_` is cleared.
+  auto requests = std::move(pending_vea_requests_);
+  pending_vea_requests_.clear();
+  for (auto& callback : requests) {
+    CreateVideoEncodeAccelerator(std::move(callback));
+  }
 }
 
 // MediaRemoter::Client overrides.
@@ -962,9 +994,20 @@ void OpenscreenSessionHost::OnGpuFactoryContextLost(
   // TODO(crbug.com/402802379): instead of deleting the factory, we could just
   // call GetInstance again and do a partial re-setup of the video stream stack.
   gpu_factories_factory_.reset();
+  channel_token_ = base::UnguessableToken();
+  route_id_ = 0;
   base::UmaHistogramEnumeration(
       "MediaRouter.MirroringService.GpuFactoryContextLost",
       config.video_codec());
+
+  // Fail all pending VEA requests as the GPU factory is lost. This explicitly
+  // signals failure to callers, so they won't get an invalid token/ID. They'll
+  // simply know VEA creation failed.
+  for (auto& callback : pending_vea_requests_) {
+    std::move(callback).Run(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            nullptr);
+  }
+  pending_vea_requests_.clear();
 
   MaybeDenylistHardwareCodecAndRenegotiate(config.video_codec());
 }

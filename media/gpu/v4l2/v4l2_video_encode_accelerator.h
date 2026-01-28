@@ -185,7 +185,9 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   //
 
   // The device task.
-  void DevicePollTask(bool poll_device);
+  void DevicePollTask(
+      base::WeakPtr<V4L2VideoEncodeAccelerator> encoder_weak_ptr,
+      bool poll_device);
 
   //
   // Safe from any thread.
@@ -415,9 +417,17 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   scoped_refptr<gpu::SharedImageInterface> sii_;
 
   // WeakPtr<> pointing to |this| for use in posting tasks to
+  // |encoder_task_runner_|. This factory should only be accessed on
   // |encoder_task_runner_|.
-  base::WeakPtr<V4L2VideoEncodeAccelerator> weak_this_;
-  base::WeakPtrFactory<V4L2VideoEncodeAccelerator> weak_this_factory_{this};
+  base::WeakPtr<V4L2VideoEncodeAccelerator> encoder_weak_this_;
+  base::WeakPtrFactory<V4L2VideoEncodeAccelerator> encoder_weak_this_factory_{
+      this};
+
+  // WeakPtr<> pointing to |this| for use in posting tasks to
+  // |child_task_runner_|. This factory should only be accessed on
+  // |child_task_runner_|.
+  base::WeakPtrFactory<V4L2VideoEncodeAccelerator> child_weak_this_factory_{
+      this};
 };
 
 }  // namespace media
