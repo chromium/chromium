@@ -683,6 +683,14 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   FRIEND_TEST_ALL_PREFIXES(ScrollableAreaTest,
                            FilterIncomingScrollDuringSmoothUserScroll);
 
+  // This enum hints at the reason for calling PerformSnapping.
+  enum class PerformSnapReason {
+    // Snapping due to scroll operation.
+    kScroll,
+    // Snapping due to layout change.
+    kLayout,
+  };
+
   void SetScrollbarsHiddenIfOverlayInternal(bool);
 
   bool ProgrammaticScrollHelper(const ScrollOffset&,
@@ -712,8 +720,12 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Returns true if a snap point was found.
   bool PerformSnapping(const cc::SnapSelectionStrategy& strategy,
                        cc::ScrollSourceType source_type,
-                       mojom::blink::ScrollBehavior behavior,
+                       PerformSnapReason reason,
                        bool preserve_pinned_marker);
+  mojom::blink::ScrollBehavior SelectScrollBehaviorForSnapReason(
+      PerformSnapReason reason,
+      std::optional<cc::TargetSnapAreaElementIds> previous_snap_targets,
+      const cc::TargetSnapAreaElementIds& current_snap_targets);
 
   void ScrollToScrollInitialTarget(const LayoutObject*);
 

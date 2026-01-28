@@ -1187,8 +1187,7 @@ bool ScrollableArea::SnapForEndPosition(const gfx::PointF& end_position,
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndPosition(end_position, scrolled_x,
                                                       scrolled_y);
-  return PerformSnapping(*strategy, source_type,
-                         mojom::blink::ScrollBehavior::kSmooth,
+  return PerformSnapping(*strategy, source_type, PerformSnapReason::kScroll,
                          /*preserve_pinned_marker=*/false);
 }
 
@@ -1205,7 +1204,7 @@ bool ScrollableArea::SnapForDirection(ScrollDirectionPhysical direction) {
   // Only called for arrow key press scrolls, which are relative scrolls.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
   return PerformSnapping(*strategy, cc::ScrollSourceType::kRelativeScroll,
-                         mojom::blink::ScrollBehavior::kSmooth,
+                         PerformSnapReason::kScroll,
                          /*preserve_pinned_marker=*/false);
 }
 
@@ -1216,7 +1215,7 @@ bool ScrollableArea::SnapForPageScroll(ScrollDirectionPhysical direction) {
   // Only called for PgUp/PgDn key press scrolls, which are relative scrolls.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
   return PerformSnapping(*strategy, cc::ScrollSourceType::kRelativeScroll,
-                         mojom::blink::ScrollBehavior::kSmooth,
+                         PerformSnapReason::kScroll,
                          /*preserve_pinned_marker=*/false);
 }
 
@@ -1252,20 +1251,52 @@ void ScrollableArea::SnapAfterLayout() {
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForTargetElement(current_position);
   PerformSnapping(*strategy, cc::ScrollSourceType::kStationaryScroll,
-                  mojom::blink::ScrollBehavior::kInstant,
+                  PerformSnapReason::kLayout,
                   /*preserve_pinned_marker=*/true);
 }
 
-bool ScrollableArea::PerformSnapping(
-    const cc::SnapSelectionStrategy& strategy,
-    cc::ScrollSourceType source_type,
-    mojom::blink::ScrollBehavior scroll_behavior,
-    bool preserve_pinned_marker) {
+mojom::blink::ScrollBehavior ScrollableArea::SelectScrollBehaviorForSnapReason(
+    PerformSnapReason reason,
+    std::optional<cc::TargetSnapAreaElementIds> previous_snap_targets,
+    const cc::TargetSnapAreaElementIds& current_snap_targets) {
+  switch (reason) {
+    case PerformSnapReason::kScroll:
+      return mojom::blink::ScrollBehavior::kSmooth;
+    case PerformSnapReason::kLayout:
+      if (RuntimeEnabledFeatures::
+              AuthorSpecifiedLayoutScrollSnapBehaviorEnabled()) {
+        // If simply tracking previously snapped targets due to a layout change,
+        // do it instantaneously. Otherwise, use author-specified scroll
+        // behavior.
+        return current_snap_targets == previous_snap_targets
+                   ? mojom::blink::ScrollBehavior::kInstant
+                   : ScrollBehaviorStyle();
+      } else {
+        return mojom::blink::ScrollBehavior::kInstant;
+      }
+  }
+  NOTREACHED();
+}
+
+bool ScrollableArea::PerformSnapping(const cc::SnapSelectionStrategy& strategy,
+                                     cc::ScrollSourceType source_type,
+                                     PerformSnapReason reason,
+                                     bool preserve_pinned_marker) {
+  std::optional<cc::TargetSnapAreaElementIds> previous_snap_targets;
+  if (const cc::SnapContainerData* container_data = GetSnapContainerData()) {
+    previous_snap_targets = container_data->GetTargetSnapAreaElementIds();
+  }
+
   std::optional<gfx::PointF> snap_point = GetSnapPositionAndSetTarget(strategy);
   if (!snap_point) {
     UpdateSnappedTargetsAndEnqueueScrollSnapChange();
     return false;
   }
+
+  mojom::blink::ScrollBehavior scroll_behavior =
+      SelectScrollBehaviorForSnapReason(
+          reason, previous_snap_targets,
+          GetSnapContainerData()->GetTargetSnapAreaElementIds());
 
   // We should set the scrollsnapchanging targets of a snap container the first
   // time it is laid out to avoid a spurious scrollsnapchanging event firing the

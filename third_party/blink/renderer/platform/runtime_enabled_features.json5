@@ -669,6 +669,11 @@
       public: true,
     },
     {
+      // https://drafts.csswg.org/css-scroll-snap
+      name: "AuthorSpecifiedLayoutScrollSnapBehavior",
+      status: "stable",
+    },
+    {
       name: "AutoDarkMode",
       base_feature: "none",
       origin_trial_feature_name: "AutoDarkMode",
