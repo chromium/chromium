@@ -289,7 +289,10 @@ CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
            2 * (ntp_home::kHeaderIconMargin + ntp_home::kIdentityAvatarPadding);
   }
 
-  header_height += kTopSpacingMaterial;
+  // Minimize spacing between AI-mode entrypoint on large size class.
+  if (!base::FeatureList::IsEnabled(kAIMNTPEntrypointTablet)) {
+    header_height += kTopSpacingMaterial;
+  }
 
   return header_height;
 }
