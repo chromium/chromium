@@ -158,7 +158,7 @@ InlineCaretPositionResolution TryResolveInlineCaretPositionInTextFragment(
 unsigned GetTextOffsetBefore(const Node& node) {
   // TODO(xiaochengh): Design more straightforward way to get text offset of
   // atomic inline box.
-  DCHECK(node.GetLayoutObject()->IsAtomicInlineLevel());
+  DCHECK(node.GetLayoutObject()->IsAtomicInline());
   const Position before_node = Position::BeforeNode(node);
   std::optional<unsigned> maybe_offset_before =
       OffsetMapping::GetFor(before_node)->GetTextContentOffset(before_node);

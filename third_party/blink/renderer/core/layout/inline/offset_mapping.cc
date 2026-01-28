@@ -209,10 +209,11 @@ bool OffsetMapping::AcceptsPosition(const Position& position) {
   }
   if (!position.IsBeforeAnchor() && !position.IsAfterAnchor())
     return false;
-  const LayoutObject* layout_object = position.AnchorNode()->GetLayoutObject();
-  if (!layout_object || !layout_object->IsInline())
-    return false;
-  return layout_object->IsText() || layout_object->IsAtomicInlineLevel();
+  if (const LayoutObject* layout_object =
+          position.AnchorNode()->GetLayoutObject()) {
+    return layout_object->IsText() || layout_object->IsAtomicInline();
+  }
+  return false;
 }
 
 // static

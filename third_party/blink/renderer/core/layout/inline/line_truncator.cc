@@ -80,7 +80,7 @@ LayoutUnit LineTruncator::PlaceEllipsisNextTo(
   DCHECK(ellipsized_layout_object);
   DCHECK(ellipsized_layout_object->IsInline());
   DCHECK(ellipsized_layout_object->IsText() ||
-         ellipsized_layout_object->IsAtomicInlineLevel());
+         ellipsized_layout_object->IsAtomicInline());
 
   // Now the offset of the ellpisis is determined. Place the ellpisis into the
   // line box.
@@ -430,7 +430,7 @@ void LineTruncator::HideChild(LogicalLineItem* child) {
     DCHECK(fragment.IsMonolithic());
     LayoutObject* layout_object = fragment.GetMutableLayoutObject();
     DCHECK(layout_object);
-    DCHECK(layout_object->IsAtomicInlineLevel());
+    DCHECK(layout_object->IsAtomicInline());
     layout_object->SetIsTruncated(true);
     return;
   }
