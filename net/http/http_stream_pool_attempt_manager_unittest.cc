@@ -2764,6 +2764,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOk) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyCreateSessionFail) {
+  // Only allow one socket per group to make the second request pending.
+  pool().set_max_stream_sockets_per_group_for_testing(1);
+
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       resolver()->AddFakeRequest();
 
@@ -2777,15 +2780,25 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyCreateSessionFail) {
   ssl->peer_application_settings = "invalid alps";
   socket_factory()->AddSSLSocketDataProvider(ssl.get());
 
-  StreamRequester requester;
-  requester.set_destination("https://a.test").RequestStream(pool());
+  std::array<StreamRequester, 2> requesters;
+  for (auto& requester : requesters) {
+    requester.set_destination("https://a.test").RequestStream(pool());
+  }
 
   endpoint_request
-      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v4("192.0.2.1")
+                         .add_v4("192.0.2.2")
+                         .endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
-  RunUntilIdle();
 
-  EXPECT_THAT(requester.result(), Optional(IsError(ERR_HTTP2_PROTOCOL_ERROR)));
+  // We treat SpdySession creation failure as a fatal error so all requests
+  // should fail.
+  for (auto& requester : requesters) {
+    requester.WaitForResult();
+    EXPECT_THAT(requester.result(),
+                Optional(IsError(ERR_HTTP2_PROTOCOL_ERROR)));
+  }
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, DoNotUseSpdySessionForHttpRequest) {

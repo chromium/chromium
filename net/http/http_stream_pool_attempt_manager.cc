@@ -793,8 +793,13 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
             spdy_session_key(), std::move(handle), net_log(),
             MultiplexedSessionCreationInitiator::kUnknown, &spdy_session,
             std::nullopt, SpdySessionInitiator::kHttpStreamPoolAttemptManager);
+    // Treat SpdySession creation failure as a fatal error, since the creation
+    // failure indicates that the socket doesn't have acceptable transport
+    // security or ALPS. The passed socket is already closed on failure.
     if (create_result != OK) {
-      HandleTcpBasedAttemptFailure(std::move(tcp_based_attempt), create_result);
+      DCHECK_NE(create_result, ERR_IO_PENDING);
+      tcp_based_attempt.reset();
+      HandleFinalError(create_result);
       return;
     }
 
