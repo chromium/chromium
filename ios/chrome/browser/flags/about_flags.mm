@@ -229,6 +229,21 @@ const FeatureEntry::FeatureVariation kDisableKeyboardAccessoryVariations[] = {
     {"C) disable completely", kDisableKeyboardAccessoryCompletelyParam,
      std::size(kDisableKeyboardAccessoryCompletelyParam), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kIOSKeyboardAccessoryTwoBubbleWithKeyboardIcon[] = {
+        {kIOSKeyboardAccessoryTwoBubbleKeyboardIconParamName, "true"}};
+
+const FeatureEntry::FeatureParam
+    kIOSKeyboardAccessoryTwoBubbleWithCheckmarkIcon[] = {
+        {kIOSKeyboardAccessoryTwoBubbleKeyboardIconParamName, "false"}};
+
+const FeatureEntry::FeatureVariation
+    kIOSKeyboardAccessoryTwoBubbleVariations[] = {
+        {"With Keyboard Icon", kIOSKeyboardAccessoryTwoBubbleWithKeyboardIcon,
+         std::size(kIOSKeyboardAccessoryTwoBubbleWithKeyboardIcon), nullptr},
+        {"With Checkmark Icon", kIOSKeyboardAccessoryTwoBubbleWithCheckmarkIcon,
+         std::size(kIOSKeyboardAccessoryTwoBubbleWithCheckmarkIcon), nullptr}};
+
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -1651,7 +1666,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"ios-keyboard-accessory-two-bubble",
      flag_descriptions::kIOSKeyboardAccessoryTwoBubbleName,
      flag_descriptions::kIOSKeyboardAccessoryTwoBubbleDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSKeyboardAccessoryTwoBubble)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSKeyboardAccessoryTwoBubble,
+                                    kIOSKeyboardAccessoryTwoBubbleVariations,
+                                    "IOSKeyboardAccessoryTwoBubble")},
     {"ios-magic-stack-segmentation-ranking",
      flag_descriptions::kSegmentationPlatformIosModuleRankerName,
      flag_descriptions::kSegmentationPlatformIosModuleRankerDescription,

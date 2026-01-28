@@ -449,6 +449,15 @@ bool IsIOSKeyboardAccessoryDefaultViewEnabled();
 // enabled.
 bool IsIOSKeyboardAccessoryTwoBubbleEnabled();
 
+// Name of the parameter for kIOSKeyboardAccessoryTwoBubble to use a keyboard
+// icon.
+inline constexpr char kIOSKeyboardAccessoryTwoBubbleKeyboardIconParamName[] =
+    "use_keyboard_icon";
+
+// Feature param for kIOSKeyboardAccessoryTwoBubble to use a keyboard icon.
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kIOSKeyboardAccessoryTwoBubbleKeyboardIconParam);
+
 // Kill switch for disabling the navigations when the application is in
 // foreground inactive state after opening an external app.
 BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);

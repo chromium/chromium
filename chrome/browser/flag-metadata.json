@@ -5720,12 +5720,12 @@
   {
     "name": "ios-keyboard-accessory-default-view",
     "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 160
   },
   {
     "name": "ios-keyboard-accessory-two-bubble",
     "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
-    "expiry_milestone": 148
+    "expiry_milestone": 160
   },
   {
     "name": "ios-magic-stack-segmentation-ranking",

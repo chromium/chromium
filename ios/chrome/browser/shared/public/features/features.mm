@@ -457,6 +457,13 @@ bool IsIOSKeyboardAccessoryTwoBubbleEnabled() {
   return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryTwoBubble);
 }
 
+// Feature parameter for kIOSKeyboardAccessoryTwoBubble.
+BASE_FEATURE_PARAM(bool,
+                   kIOSKeyboardAccessoryTwoBubbleKeyboardIconParam,
+                   &kIOSKeyboardAccessoryTwoBubble,
+                   kIOSKeyboardAccessoryTwoBubbleKeyboardIconParamName,
+                   false);
+
 BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
              "kInactiveNavigationAfterAppLaunchKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);

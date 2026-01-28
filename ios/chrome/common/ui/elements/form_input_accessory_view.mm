@@ -916,7 +916,13 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   }
 
   if ([self isSplitViewActive]) {
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
+    // When the close button symbol is supplied, presumably it is a keyboard
+    // icon. The icon isn't aligned with the icon of the expand button. Extra
+    // inset has to be added to align the icon with the expand button.
+    buttonConfiguration.contentInsets =
+        self.closeButtonSymbol ? NSDirectionalEdgeInsetsMake(
+                                     0, 0, ManualFillCloseButtonBottomInset, 0)
+                               : NSDirectionalEdgeInsetsZero;
     closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   } else {
     buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(

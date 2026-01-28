@@ -405,8 +405,12 @@ UIImage* GetManualFillSymbol() {
 
   UIImage* closeButtonSymbol = nil;
   // When using liquid glass (on iOS 26+), the close button symbol uses the
-  // default checkmark symbol.
-  if (!IsLiquidGlassEffectEnabled()) {
+  // default checkmark symbol with the exception that a two-bubble experiment
+  // can supply a parameter to use the keyboard down symbol.
+  bool useKeyboardDownSymbol =
+      !IsLiquidGlassEffectEnabled() ||
+      kIOSKeyboardAccessoryTwoBubbleKeyboardIconParam.Get();
+  if (useKeyboardDownSymbol) {
     closeButtonSymbol =
         DefaultSymbolWithPointSize(kKeyboardDownSymbol, kSymbolActionPointSize);
   }
