@@ -31,6 +31,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -367,4 +368,19 @@ void ToastService::RegisterToasts(
       ToastId::kSkillDeleted,
       ToastSpecification::Builder(kDeleteIcon, IDS_SKILL_DELETED_TOAST_BODY)
           .Build());
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiWalletPrivatePasses)) {
+    toast_registry_->RegisterToast(
+        ToastId::kSavedAutofillAiEntityToWallet,
+        // TODO(crbug.com/477845712): Use the correct icon.
+        ToastSpecification::Builder(kCheckIcon)
+            .AddCloseButton()
+            .AddActionButton(
+                IDS_AUTOFILL_AI_TOAST_BUTTON,
+                base::BindRepeating(chrome::ShowYourSavedInfo,
+                                    base::Unretained(browser_window_interface)))
+            .AddGlobalScoped()
+            .Build());
+  }
 }  // RegisterToasts() end.

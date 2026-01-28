@@ -147,6 +147,7 @@ void ShowPaymentMethods(BrowserWindowInterface* bwi);
 void ShowContactInfo(BrowserWindowInterface* bwi);
 void ShowIdentityDocs(BrowserWindowInterface* bwi);
 void ShowTravel(BrowserWindowInterface* bwi);
+void ShowYourSavedInfo(BrowserWindowInterface* bwi);
 void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
     const std::string& rws_owner_host_name);

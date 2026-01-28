@@ -660,6 +660,10 @@ void ShowTravel(BrowserWindowInterface* bwi) {
   ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kTravelSubPage);
 }
 
+void ShowYourSavedInfo(BrowserWindowInterface* bwi) {
+  ShowSettingsSubPage(bwi->GetBrowserForMigrationOnly(), kYourSavedInfoSubPage);
+}
+
 void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
     const std::string& rws_owner_host_name) {
