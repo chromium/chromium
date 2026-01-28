@@ -443,7 +443,7 @@ crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl graphite-disabled ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
-
+[ mac asan amd-0x7340 angle-opengl passthrough graphite-disabled ] Pixel_WebGLSadCanvas [ RetryOnFailure ]
 
 # Fails with hung renderer
 crbug.com/1372149 [ android android-sm-a236b no-passthrough ] Pixel_WebGLFloat [ Failure ]
