@@ -1729,6 +1729,7 @@ base::DictValue DevToolsUIBindings::GetSyncInformationForProfile(
 
   if (!extended_info.IsEmpty()) {
     result.Set("accountFullName", extended_info.full_name);
+    result.Set("accountGivenName", extended_info.given_name);
   }
 
   return result;
