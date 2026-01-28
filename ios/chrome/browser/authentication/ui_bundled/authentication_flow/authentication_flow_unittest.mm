@@ -70,15 +70,9 @@ NSString* const kFakeDMToken = @"fake_dm_token";
 NSString* const kFakeClientID = @"fake_client_id";
 NSString* const kFakeUserAffiliationID = @"fake_user_affiliation_id";
 
-// The parameter determines whether `kSeparateProfilesForManagedAccounts` is
-// enabled.
-class AuthenticationFlowTest : public PlatformTest,
-                               public testing::WithParamInterface<bool> {
+class AuthenticationFlowTest : public PlatformTest {
  protected:
-  AuthenticationFlowTest() {
-    features_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
-                                   GetParam());
-  }
+  AuthenticationFlowTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -424,8 +418,6 @@ class AuthenticationFlowTest : public PlatformTest,
         GetApplicationContext()->GetSystemIdentityManager());
   }
 
-  base::test::ScopedFeatureList features_;
-
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
@@ -458,7 +450,7 @@ class AuthenticationFlowTest : public PlatformTest,
 };
 
 // Tests a Sign In of a normal account on the same profile.
-TEST_P(AuthenticationFlowTest, TestSignInSimple) {
+TEST_F(AuthenticationFlowTest, TestSignInSimple) {
   SignIn(identity1_, signin_metrics::AccessPoint::kStartPage);
 
   histogram_tester_.ExpectUniqueSample(
@@ -467,7 +459,7 @@ TEST_P(AuthenticationFlowTest, TestSignInSimple) {
 }
 
 // Tests the fetch managed status failure case.
-TEST_P(AuthenticationFlowTest, TestFailFetchManagedStatus) {
+TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
   CreateAuthenticationFlow(PostSignInActionSet(), identity1_,
                            signin_metrics::AccessPoint::kStartPage,
                            /*shouldHandOverToFlowInProfile=*/NO);
@@ -496,7 +488,7 @@ TEST_P(AuthenticationFlowTest, TestFailFetchManagedStatus) {
 
 // Tests that when signed in only with a managed account, the managed account
 // confirmation dialog is shown.
-TEST_P(AuthenticationFlowTest,
+TEST_F(AuthenticationFlowTest,
        TestShowManagedConfirmationForSigninConsentLevel) {
   SignIn(managed_identity1_, signin_metrics::AccessPoint::kSettings);
   histogram_tester_.ExpectUniqueSample(
@@ -508,7 +500,7 @@ TEST_P(AuthenticationFlowTest,
 // Tests that when the browser is already managed at the machine level, the
 // management confirmation dialog is only shown without multiprofile. In all
 // cases, the user policies should still be fetched.
-TEST_P(AuthenticationFlowTest,
+TEST_F(AuthenticationFlowTest,
        TestSkipManagedConfirmationWhenAlreadyManagedAtMachineLevel) {
   // Set a machine level policy.
   base::ScopedTempDir state_directory;
@@ -534,7 +526,7 @@ TEST_P(AuthenticationFlowTest,
 
 // Tests that the managed confirmation dialog is only show once per account,
 // when signing in from the Account Menu.
-TEST_P(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
+TEST_F(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
   // First signin, show the dialog.
   SignIn(managed_identity1_,
          signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
@@ -560,7 +552,7 @@ TEST_P(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
   EXPECT_EQ(2, managed_confirmation_dialog_shown_count_);
 }
 
-TEST_P(AuthenticationFlowTest, TestDontShowUnsyncedDataConfirmation) {
+TEST_F(AuthenticationFlowTest, TestDontShowUnsyncedDataConfirmation) {
   // Another account is already signed in.
   AuthenticationServiceFactory::GetForProfile(personal_profile_.get())
       ->SignIn(identity1_, signin_metrics::AccessPoint::kStartPage);
@@ -592,7 +584,7 @@ TEST_P(AuthenticationFlowTest, TestDontShowUnsyncedDataConfirmation) {
   run_loop_->Run();
 }
 
-TEST_P(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
+TEST_F(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
   // Another account is already signed in.
   AuthenticationServiceFactory::GetForProfile(personal_profile_.get())
       ->SignIn(identity1_, signin_metrics::AccessPoint::kStartPage);
@@ -634,13 +626,5 @@ TEST_P(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
   [authentication_flow_ startSignIn];
   run_loop_->Run();
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AuthenticationFlowTest,
-                         testing::Bool(),
-                         [](testing::TestParamInfo<bool> info) {
-                           return info.param ? "WithSeparateProfiles"
-                                             : "WithoutSeparateProfiles";
-                         });
 
 }  // namespace

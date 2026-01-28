@@ -39,16 +39,9 @@ NSString* const kFakeDMToken = @"fake_dm_token";
 NSString* const kFakeClientID = @"fake_client_id";
 NSString* const kFakeUserAffiliationID = @"fake_user_affiliation_id";
 
-// The parameter determines whether `kSeparateProfilesForManagedAccounts` is
-// enabled.
-class AuthenticationFlowInProfileTest
-    : public PlatformTest,
-      public testing::WithParamInterface<bool> {
+class AuthenticationFlowInProfileTest : public PlatformTest {
  protected:
   AuthenticationFlowInProfileTest() {
-    features_.InitWithFeatureState(kSeparateProfilesForManagedAccounts,
-                                   GetParam());
-
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -124,8 +117,6 @@ class AuthenticationFlowInProfileTest
         authentication_flow_in_profile_);
   }
 
-  base::test::ScopedFeatureList features_;
-
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
@@ -139,7 +130,7 @@ class AuthenticationFlowInProfileTest
 };
 
 // Tests the regular sign-in case.
-TEST_P(AuthenticationFlowInProfileTest, TestSignIn) {
+TEST_F(AuthenticationFlowInProfileTest, TestSignIn) {
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kStartPage;
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), identity1_,
@@ -157,7 +148,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignIn) {
 
 // Tests sign-in flow with a profile that is already signed-in with the right
 // identity.
-TEST_P(AuthenticationFlowInProfileTest, TestSignInWhileBeingSignedIn) {
+TEST_F(AuthenticationFlowInProfileTest, TestSignInWhileBeingSignedIn) {
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kStartPage;
 
@@ -178,7 +169,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWhileBeingSignedIn) {
 
 // Tests sign-in flow with a profile that is already signed-in with a different
 // identity.
-TEST_P(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
+TEST_F(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kStartPage;
 
@@ -218,7 +209,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
 }
 
 // Tests sign-in flow with an identity that is not available in the profile.
-TEST_P(AuthenticationFlowInProfileTest, TestSignInWithUnknownIdentity) {
+TEST_F(AuthenticationFlowInProfileTest, TestSignInWithUnknownIdentity) {
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kStartPage;
   FakeSystemIdentity* unknown_identity = [FakeSystemIdentity fakeIdentity3];
@@ -238,7 +229,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithUnknownIdentity) {
 
 // Tests sign-in flow with a managed identity. The managed identity is assigned
 // the unique TestProfile. There is profile switching involved.
-TEST_P(AuthenticationFlowInProfileTest, TestSignInWithManagedIdentity) {
+TEST_F(AuthenticationFlowInProfileTest, TestSignInWithManagedIdentity) {
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kStartPage;
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), managed_identity_,
@@ -276,7 +267,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithManagedIdentity) {
 
 // Tests that there is no crash if the browser is destroyed in the middle of the
 // flow, during `registerForUserPolicyIfNeededStep`.
-TEST_P(AuthenticationFlowInProfileTest,
+TEST_F(AuthenticationFlowInProfileTest,
        BrowserDestroyedDuringRegisterForUserPolicy) {
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kStartPage;
@@ -313,7 +304,7 @@ TEST_P(AuthenticationFlowInProfileTest,
 
 // Tests that there is no crash if the browser is destroyed in the middle of the
 // flow, during `fetchUserPolicyIfNeededStep`.
-TEST_P(AuthenticationFlowInProfileTest, BrowserDestroyedDuringFetchUserPolicy) {
+TEST_F(AuthenticationFlowInProfileTest, BrowserDestroyedDuringFetchUserPolicy) {
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kStartPage;
   CreateAuthenticationFlowInProfile(PostSignInActionSet(), managed_identity_,
@@ -360,7 +351,7 @@ TEST_P(AuthenticationFlowInProfileTest, BrowserDestroyedDuringFetchUserPolicy) {
 
 // Tests that there is no crash if the browser is destroyed in the middle of the
 // flow, during `fetchCapabilitiesIfNeededStep`.
-TEST_P(AuthenticationFlowInProfileTest,
+TEST_F(AuthenticationFlowInProfileTest,
        BrowserDestroyedDuringFetchCapabilities) {
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::kStartPage;
@@ -395,13 +386,5 @@ TEST_P(AuthenticationFlowInProfileTest,
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), signin_ui::CancelationReason::kFailed);
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AuthenticationFlowInProfileTest,
-                         testing::Bool(),
-                         [](testing::TestParamInfo<bool> info) {
-                           return info.param ? "WithSeparateProfiles"
-                                             : "WithoutSeparateProfiles";
-                         });
 
 }  // namespace
