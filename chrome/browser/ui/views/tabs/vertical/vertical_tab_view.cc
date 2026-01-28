@@ -71,7 +71,7 @@ constexpr int kIconDesignWidth = 16;
 constexpr int kTitleMinWidth = 10;
 constexpr int kHorizontalInset = 7;
 constexpr int kDefaultPadding = 4;
-constexpr int kFocusRingInset = -2.0f;
+constexpr int kFocusRingInset = 0.0f;
 
 class VerticalTabHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
@@ -253,7 +253,7 @@ void VerticalTabView::Layout(PassKey) {
 }
 
 bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
-  if (event.key_code() == ui::VKEY_RETURN && selected_) {
+  if (event.key_code() == ui::VKEY_RETURN && !selected_) {
     collection_node_->GetController()->SelectTab(GetTabInterface(),
                                                  GetGestureDetail(event));
     return true;
@@ -262,7 +262,7 @@ bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool VerticalTabView::OnKeyReleased(const ui::KeyEvent& event) {
-  if (event.key_code() == ui::VKEY_SPACE && selected_) {
+  if (event.key_code() == ui::VKEY_SPACE && !selected_) {
     collection_node_->GetController()->SelectTab(GetTabInterface(),
                                                  GetGestureDetail(event));
     return true;
