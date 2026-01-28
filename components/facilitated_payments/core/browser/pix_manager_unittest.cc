@@ -364,7 +364,7 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled, CopyTrigger_LogPixCodeCopied) {
   GURL url("https://example.com/");
   url::Origin origin = url::Origin::Create(url);
   pix_manager_->OnPixCodeCopiedToClipboard(
-      url, origin, PixCodeRustValidationResult::kDynamic,
+      url, std::nullopt, origin, PixCodeRustValidationResult::kDynamic,
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       ukm::UkmRecorder::GetNewSourceID());
 
@@ -400,7 +400,7 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
   pix_manager_->OnPixCodeCopiedToClipboard(
-      url, origin, PixCodeRustValidationResult::kDynamic,
+      url, std::nullopt, origin, PixCodeRustValidationResult::kDynamic,
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       ukm::UkmRecorder::GetNewSourceID());
 
@@ -432,7 +432,7 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   pix_manager_->OnPixCodeCopiedToClipboard(
-      url, origin, PixCodeRustValidationResult::kDynamic,
+      url, std::nullopt, origin, PixCodeRustValidationResult::kDynamic,
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       ukm::UkmRecorder::GetNewSourceID());
   // The DataDecoder (utility process) validates the Pix code string
@@ -461,7 +461,7 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
           optimization_guide::OptimizationGuideDecision::kFalse));
 
   pix_manager_->OnPixCodeCopiedToClipboard(
-      url, origin, PixCodeRustValidationResult::kDynamic,
+      url, std::nullopt, origin, PixCodeRustValidationResult::kDynamic,
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       ukm::UkmRecorder::GetNewSourceID());
   // The DataDecoder (utility process) validates the Pix code string
@@ -498,7 +498,7 @@ TEST_P(
   EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
   pix_manager_->OnPixCodeCopiedToClipboard(
-      url, origin, PixCodeRustValidationResult::kDynamic,
+      url, std::nullopt, origin, PixCodeRustValidationResult::kDynamic,
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       ukm::UkmRecorder::GetNewSourceID());
   // The DataDecoder (utility process) validates the Pix code string
@@ -528,11 +528,11 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
   std::string pix_code =
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F";
   pix_manager_->OnPixCodeCopiedToClipboard(
-      url, origin, PixCodeRustValidationResult::kDynamic, pix_code,
-      ukm::UkmRecorder::GetNewSourceID());
+      url, std::nullopt, origin, PixCodeRustValidationResult::kDynamic,
+      pix_code, ukm::UkmRecorder::GetNewSourceID());
   pix_manager_->OnPixCodeCopiedToClipboard(
-      url, origin, PixCodeRustValidationResult::kDynamic, pix_code,
-      ukm::UkmRecorder::GetNewSourceID());
+      url, std::nullopt, origin, PixCodeRustValidationResult::kDynamic,
+      pix_code, ukm::UkmRecorder::GetNewSourceID());
   // The DataDecoder (utility process) validates the Pix code string
   // asynchronously.
   task_environment_.RunUntilIdle();
@@ -959,8 +959,8 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
 
   // Simulate Pix code being copied. The transaction latency is computed from
   // this point.
-  pix_manager_->OnPixCodeCopiedToClipboard(url, origin, std::nullopt,
-                                           std::string(),
+  pix_manager_->OnPixCodeCopiedToClipboard(url, std::nullopt, origin,
+                                           std::nullopt, std::string(),
                                            ukm::UkmRecorder::GetNewSourceID());
   // Fully mocked time, does not advance by itself.
   FastForwardBy(base::Seconds(2));
@@ -1146,8 +1146,8 @@ TEST_P(PixManagerTestWithAccountLinkingEnabled,
   url::Origin origin = url::Origin::Create(url);
 
   // Simulate Pix code being copied. The latency is computed from this point.
-  pix_manager_->OnPixCodeCopiedToClipboard(url, origin, std::nullopt,
-                                           std::string(),
+  pix_manager_->OnPixCodeCopiedToClipboard(url, std::nullopt, origin,
+                                           std::nullopt, std::string(),
                                            ukm::UkmRecorder::GetNewSourceID());
   // Fully mocked time, does not advance by itself.
   FastForwardBy(base::Seconds(2));

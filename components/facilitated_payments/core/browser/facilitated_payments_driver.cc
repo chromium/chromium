@@ -74,8 +74,9 @@ void FacilitatedPaymentsDriver::DidNavigateToOrAwayFromPage() const {
 }
 
 void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(
-    const GURL& render_frame_host_url,
-    const url::Origin& render_frame_host_origin,
+    const GURL& main_frame_url,
+    const std::optional<GURL>& iframe_url,
+    const url::Origin& main_frame_origin,
     const std::u16string& copied_text,
     ukm::SourceId ukm_source_id) {
   std::string copied_text_utf8 = base::UTF16ToUTF8(copied_text);
@@ -104,7 +105,7 @@ void FacilitatedPaymentsDriver::OnTextCopiedToClipboard(
         facilitated_payments_client_->GetOptimizationGuideDecider());
   }
   pix_manager_->OnPixCodeCopiedToClipboard(
-      render_frame_host_url, render_frame_host_origin, rust_validation_result,
+      main_frame_url, iframe_url, main_frame_origin, rust_validation_result,
       std::move(copied_text_utf8), ukm_source_id);
 }
 

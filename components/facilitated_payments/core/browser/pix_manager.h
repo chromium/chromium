@@ -53,16 +53,17 @@ class PixManager {
   // Resets `this` to initial state. Cancels any alive async callbacks.
   void Reset();
 
-  // Checks whether the `render_frame_host_url` is allowlisted and validates
-  // the `pix_code` before triggering the Pix payments flow. Note: If the Pix
-  // payment flow has already been triggered by the other code detection
-  // methods like DOM search then this method is a no-op.
+  // Checks whether the `main_frame_url` or the `iframe_url` (if present) is
+  // allowlisted and validates the `pix_code` before triggering the Pix payments
+  // flow. Note: If the Pix payment flow has already been triggered by the other
+  // code detection methods like DOM search then this method is a no-op.
   //
   // If Rust Pix code validation is enabled, `rust_validation_result` will
   // always have a value.
   virtual void OnPixCodeCopiedToClipboard(
-      const GURL& render_frame_host_url,
-      const url::Origin& render_frame_host_origin,
+      const GURL& main_frame_url,
+      const std::optional<GURL>& iframe_url,
+      const url::Origin& main_frame_origin,
       std::optional<PixCodeRustValidationResult> rust_validation_result,
       std::string pix_code,
       ukm::SourceId ukm_source_id);

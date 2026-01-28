@@ -77,8 +77,9 @@ void PixManager::Reset() {
 }
 
 void PixManager::OnPixCodeCopiedToClipboard(
-    const GURL& render_frame_host_url,
-    const url::Origin& render_frame_host_origin,
+    const GURL& main_frame_url,
+    const std::optional<GURL>& iframe_url,
+    const url::Origin& main_frame_origin,
     std::optional<PixCodeRustValidationResult> rust_validation_result,
     std::string pix_code,
     ukm::SourceId ukm_source_id) {
@@ -91,15 +92,16 @@ void PixManager::OnPixCodeCopiedToClipboard(
   pix_code_copied_timestamp_ = base::TimeTicks::Now();
   ukm_source_id_ = ukm_source_id;
   LogPixCodeCopied(ukm_source_id_);
-  // Check whether the domain for the render_frame_host_url is allowlisted.
-  if (!IsMerchantAllowlisted(render_frame_host_url)) {
+  // Check whether the domain for the main_frame_url is allowlisted.
+  if (!IsMerchantAllowlisted(main_frame_url)) {
     // The merchant is not part of the allowlist, ignore the copy event.
     LogPixFlowExitedReason(PixFlowExitedReason::kMerchantNotAllowlisted);
     return;
   }
+  // TODO(crbug.com/479520609): Add PSP allowlist check.
   initiate_payment_request_details_->merchant_payment_page_hostname_ =
-      render_frame_host_url.GetHost();
-  pix_payment_page_origin_ = render_frame_host_origin;
+      main_frame_url.GetHost();
+  pix_payment_page_origin_ = main_frame_origin;
   if (base::FeatureList::IsEnabled(kUseRustPixCodeValidator)) {
     // This logic is duplicated into faciliated_payments_metrics.h, but it's
     // temporary and will be cleaned up once the validator is fully switched

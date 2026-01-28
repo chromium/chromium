@@ -15,5 +15,7 @@ specific_include_rules = {
       "+components/ukm/test_ukm_recorder.h",
       "+content/public/test",
    ],
-   "content_facilitated_payments_driver_factory_unittest.cc": ["+content/public/test",]
+   "content_facilitated_payments_driver_factory_unittest.cc": [
+      "+components/optimization_guide/core",
+      "+content/public/test",]
 }

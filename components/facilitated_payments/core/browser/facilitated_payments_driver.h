@@ -48,12 +48,12 @@ class FacilitatedPaymentsDriver {
   void DidNavigateToOrAwayFromPage() const;
 
   // Inform the `PixManager` about `copied_text` being copied to
-  // the clipboard. It is invoked only for the primary main frame.
-  virtual void OnTextCopiedToClipboard(
-      const GURL& render_frame_host_url,
-      const url::Origin& render_frame_host_origin,
-      const std::u16string& copied_text,
-      ukm::SourceId ukm_source_id);
+  // the clipboard.
+  virtual void OnTextCopiedToClipboard(const GURL& main_frame_url,
+                                       const std::optional<GURL>& iframe_url,
+                                       const url::Origin& main_frame_origin,
+                                       const std::u16string& copied_text,
+                                       ukm::SourceId ukm_source_id);
 
   // Inform the `PaymentLinkManager` to trigger the payment link push payment
   // flow. The payment information is included in the `payment_link_url`

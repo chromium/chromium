@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "components/facilitated_payments/content/browser/security_checker.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
@@ -82,7 +83,10 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishNavigation(
 void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {
-  if (render_frame_host != render_frame_host->GetOutermostMainFrame()) {
+  // If the copy event occurred in iframe, only proceed if the iframe flag is
+  // enabled.
+  if (render_frame_host != render_frame_host->GetOutermostMainFrame() &&
+      !base::FeatureList::IsEnabled(kEnableIframeForPix)) {
     LogPixFlowExitedReason(PixFlowExitedReason::kPixCodeInIFrame);
     return;
   }
@@ -91,12 +95,26 @@ void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
     return;
   }
 
+  content::RenderFrameHost* main_frame =
+      render_frame_host->GetOutermostMainFrame();
+  std::optional<GURL> iframe_url;
+
+  // If the copy event occurred in an iframe, capture the iframe URL.
+  if (render_frame_host != main_frame) {
+    iframe_url = render_frame_host->GetLastCommittedURL();
+  }
+
   auto& driver = GetOrCreateForFrame(render_frame_host);
 
-  driver.OnTextCopiedToClipboard(render_frame_host->GetLastCommittedURL(),
-                                 render_frame_host->GetLastCommittedOrigin(),
-                                 copied_text,
-                                 render_frame_host->GetPageUkmSourceId());
+  // Pass the main frame URL as the primary identifier for the merchant site,
+  // while providing the optional iframe URL for PSP allowlist verification.
+  // To ensure that the PixManager receives the main frame origin for account
+  // linking, the third parameter is now always the main frame origin.
+  driver.OnTextCopiedToClipboard(
+      /*main_frame_url=*/main_frame->GetLastCommittedURL(),
+      /*iframe_url=*/iframe_url,
+      /*main_frame_origin=*/main_frame->GetLastCommittedOrigin(), copied_text,
+      render_frame_host->GetPageUkmSourceId());
 }
 
 }  // namespace payments::facilitated

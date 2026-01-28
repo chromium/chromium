@@ -40,6 +40,7 @@ class MockPixManager : public PixManager {
   MOCK_METHOD(void,
               OnPixCodeCopiedToClipboard,
               (const GURL&,
+               const std::optional<GURL>&,
                const url::Origin&,
                std::optional<PixCodeRustValidationResult>,
                std::string,
@@ -87,8 +88,9 @@ TEST_P(FacilitatedPaymentsDriverTest,
 
   // "0014br.gov.bcb.pix" is the Pix identifier.
   driver_->OnTextCopiedToClipboard(
-      /*render_frame_host_url=*/url,
-      /*render_frame_host_origin=*/origin, /*copied_text=*/
+      /*main_frame_url=*/url,
+      /*iframe_url=*/std::nullopt,
+      /*main_frame_origin=*/origin, /*copied_text=*/
       u"00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
       /*ukm_source_id=*/123);
 }
@@ -101,8 +103,8 @@ TEST_P(FacilitatedPaymentsDriverTest,
   EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard).Times(0);
 
   driver_->OnTextCopiedToClipboard(
-      /*render_frame_host_url=*/url, /*render_frame_host_origin=*/origin,
-      /*copied_text=*/u"notAValidPixIdentifier",
+      /*main_frame_url=*/url, /*iframe_url=*/std::nullopt,
+      /*main_frame_origin=*/origin, /*copied_text=*/u"notAValidPixIdentifier",
       /*ukm_source_id=*/123);
 }
 

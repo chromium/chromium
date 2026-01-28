@@ -48,6 +48,12 @@ class ContentFacilitatedPaymentsDriverFactory
       OnTextCopiedToClipboard_PixCodeInIFrame_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
+      OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_PixFlowExitedReasonNotLogged);
+  FRIEND_TEST_ALL_PREFIXES(
+      ContentFacilitatedPaymentsDriverFactoryTest,
+      OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_CorrectIframeUrlPassedToDriver);
+  FRIEND_TEST_ALL_PREFIXES(
+      ContentFacilitatedPaymentsDriverFactoryTest,
       OnTextCopiedToClipboard_FrameNotActive_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
