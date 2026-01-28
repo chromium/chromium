@@ -82,8 +82,8 @@ TEST_P(SupervisedUserProviderTestForGeolocation, GeolocationTest) {
   service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
 
   // Check that nothing happened since the setting is not registered on IOS.
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+  rule_iterator = provider_->GetRuleIterator(
+      content_settings::GeolocationContentSettingsType(), false);
   EXPECT_FALSE(rule_iterator);
 }
 
@@ -119,8 +119,8 @@ TEST_P(SupervisedUserProviderTestForGeolocation, GeolocationTest) {
   // Re-enable the default geolocation setting.
   service_.SetLocalSetting(kGeolocationDisabled, base::Value(false));
 
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+  rule_iterator = provider_->GetRuleIterator(
+      content_settings::GeolocationContentSettingsType(), false);
   EXPECT_FALSE(rule_iterator);
 }
 #endif  // !BUILDFLAG(IS_IOS)
