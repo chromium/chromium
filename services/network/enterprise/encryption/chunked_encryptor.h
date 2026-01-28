@@ -64,13 +64,15 @@ struct COMPONENT_EXPORT(NETWORK_SERVICE) EncryptionContext {
 
 // Error types for encryption/decryption operations. Don't remove or reorder
 // existing values.
-// TODO(crbug.com/460509865): Persist values to UMA.
+// LINT.IfChange(EnterpriseDiskCacheError)
 enum class EncryptionError {
-  kInvalidKey = 0,        // Key is invalid/empty.
-  kInvalidHeader = 1,     // Header is malformed or size mismatch.
-  kDecryptionFailed = 2,  // AEAD Open failed (tag mismatch) or data too short.
+  kSuccess = 0,
+  kInvalidKey = 1,        // Key is invalid/empty.
+  kInvalidHeader = 2,     // Header is malformed or size mismatch.
+  kDecryptionFailed = 3,  // AEAD Open failed (tag mismatch) or data too short.
   kMaxValue = kDecryptionFailed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseDiskCacheError)
 
 // Creates a new header (containing random salt/nonce prefix) and derives the
 // key. Returns the header bytes and the derived encryption context on success.

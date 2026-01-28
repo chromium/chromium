@@ -545,6 +545,14 @@ chromium-metrics-reviews@google.com.
   <int value="909" label="SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK"/>
 </enum>
 
+<enum name="EnterpriseDiskCacheError">
+  <summary>Errors triggered by encrypted HTTP cache file operations.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid Key"/>
+  <int value="2" label="Invalid Header"/>
+  <int value="3" label="Decryption Failed"/>
+</enum>
+
 <enum name="EnterpriseDlpFileAccessDefaultAction">
   <summary>Type of action triggering a default file access behaviour.</summary>
   <int value="0" label="Creating file access in MyFiles"/>

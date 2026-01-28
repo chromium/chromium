@@ -95,6 +95,14 @@ chromium-metrics-reviews@google.com.
   <variant name="Upload" summary="Initiated from uploading 1+ file(s)"/>
 </variants>
 
+<variants name="EncryptedCacheOperation">
+  <variant name="Open"
+      summary="Opening the file (checking header validity and initializing
+               encryptor)"/>
+  <variant name="Read" summary="Reading and decrypting a chunk"/>
+  <variant name="Write" summary="Encrypting and writing a chunk"/>
+</variants>
+
 <variants name="Enterprise_CrdSessionType">
   <variant name="RemoteAccess"
       summary="A CRD session where the admin has exclusive control of the
@@ -2088,6 +2096,17 @@ chromium-metrics-reviews@google.com.
       <owner>zmin@chromium.org</owner>
     </variant>
   </token>
+</histogram>
+
+<histogram name="Enterprise.EncryptedCache.{Operation}.Result"
+    enum="EnterpriseDiskCacheError" expires_after="2027-01-28">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the result of {Operation} in the enterprise encrypted cache file.
+  </summary>
+  <token key="Operation" variants="EncryptedCacheOperation"/>
 </histogram>
 
 <histogram name="Enterprise.EnrolledDevicePolicyPresent" enum="Boolean"
