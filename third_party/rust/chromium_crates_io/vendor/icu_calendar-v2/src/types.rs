@@ -6,6 +6,7 @@
 
 #[doc(no_inline)]
 pub use calendrical_calculations::rata_die::RataDie;
+use core::cmp::Ordering;
 use core::fmt;
 use tinystr::TinyAsciiStr;
 use zerovec::ule::AsULE;
@@ -507,6 +508,23 @@ impl ValidMonthCode {
             ])
             .unwrap(),
         )
+    }
+
+    /// # Examples
+    ///
+    /// ```
+    /// let m01 = Month::new(1);
+    /// let m02 = Month::new(2);
+    /// let m02l = Month::leap(2);
+    /// let m03 = Month::new(3);
+    /// let m10 = Month::new(10);
+    /// let m10l = Month::leap(10);
+    ///
+    /// TODO
+    /// ```
+    pub(crate) fn cmp_lexicographic(self, other: Self) -> Ordering {
+        // true > false in Rust, and leap months occur after regular months
+        self.number.cmp(&other.number).then_with(|| self.is_leap.cmp(&other.is_leap))
     }
 }
 

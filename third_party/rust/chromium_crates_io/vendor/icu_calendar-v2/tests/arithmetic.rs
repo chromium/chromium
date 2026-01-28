@@ -5,7 +5,7 @@
 use std::convert::Infallible;
 
 use icu_calendar::{
-    cal::Hebrew,
+    cal::{ChineseTraditional, Hebrew},
     options::{DateAddOptions, DateDifferenceOptions, Overflow},
     types::{DateDuration, DateDurationUnit, MonthCode},
     AsCalendar, Calendar, Date, Iso,
@@ -209,6 +209,10 @@ fn test_tricky_leap_months() {
             .unwrap()
     }
 
+    fn chinese_date(year: i32, month: Month, day: u8) -> Date<ChineseTraditional> {
+        Date::try_new_from_codes(None, year, month.code(), day, ChineseTraditional::new()).unwrap()
+    }
+
     // M06 + 1yr = M06 (common to leap)
     let date0 = hebrew_date(5783, "M06", 20);
     let duration0 = DateDuration::for_years(1);
@@ -219,6 +223,13 @@ fn test_tricky_leap_months() {
     let duration0_actual = date0.try_until_with_options(&date1, until_options).unwrap();
     assert_eq!(duration0_actual, duration0);
 
+    // M02L until M02 = 12mo
+    let cdate0 = chinese_date(2023, Month::leap(2), 1);
+    let cdate1 = chinese_date(2024, Month::new(2), 1);
+    let duration0a = DateDuration::for_months(12);
+    let diff0 = cdate0.try_until_with_options(&cdate1, until_options).unwrap();
+    assert_eq!(diff0, duration0a);
+
     // M06 - 1mo = M05L (leap to leap)
     let duration1 = DateDuration::for_months(-1);
     let date2 = date1
@@ -227,6 +238,11 @@ fn test_tricky_leap_months() {
     assert_eq!(date2, hebrew_date(5784, "M05L", 20));
     let duration1_actual = date1.try_until_with_options(&date2, until_options).unwrap();
     assert_eq!(duration1_actual, duration1);
+
+    // M05L until previous M06 = -12mo (leap to common)
+    let diff1 = date2.try_until_with_options(&date0, until_options).unwrap();
+    let duration0an = DateDuration::for_months(-12);
+    assert_eq!(diff1, duration0an);
 
     // M05L + 1yr1mo = M07 (leap to common)
     let duration2 = DateDuration {

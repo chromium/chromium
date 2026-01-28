@@ -413,6 +413,73 @@ impl<C: DateFieldsResolver> ArithmeticDate<C> {
         Self::new_unchecked(resolved_year, resolved_month, resolved_day)
     }
 
+    fn compare_surpasses_lexicographic(sign: i64, year: C::YearInfo, month: ValidMonthCode, day: u8, target: &Self, cal: &C) -> bool {
+        // 1. If _year_ ≠ _target_.[[Year]], then
+        //   1. If _sign_ × (_year_ - _target_.[[Year]]) > 0, return *true*.
+        // 1. Else if _monthCode_ ≠ _target_.[[MonthCode]], then
+        //   1. If _sign > 0, then
+        //     1. If _monthCode_ is lexicographically greater than _target_.[[MonthCode]], return *true*.
+        //   1. Else,
+        //     1. If _target_.[[MonthCode]] is lexicographically greater than _monthCode_, return *true*.
+        // (note: integer steps omitted)
+        // 1. Else if _day_ ≠ _target_.[[Day]], then
+        //   1. If _sign_ × (_day_ - _target_.[[Day]]) > 0, return *true*.
+        if year != target.year {
+            if sign
+                * (i64::from(year.to_extended_year()) - i64::from(target.year.to_extended_year()))
+                > 0
+            {
+                return true;
+            }
+        } else {
+            let target_month = cal.month_code_from_ordinal(&target.year, target.month);
+            if month != target_month {
+                let ordering = month.cmp_lexicographic(target_month);
+                if sign > 0 {
+                    if ordering.is_gt() {
+                        return true;
+                    }
+                } else {
+                    if ordering.reverse().is_gt() {
+                        return true;
+                    }
+                }
+            } else if day != target.day {
+                if sign * (i64::from(day) - i64::from(target.day)) > 0 {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    fn compare_surpasses_ordinally(sign: i64, year: C::YearInfo, month: u8, day: u8, target: &Self) -> bool {
+        // 1. If _year_ ≠ _target_.[[Year]], then
+        //   1. If _sign_ × (_year_ - _target_.[[Year]]) > 0, return *true*.
+        // (note: month code steps omitted)
+        // 1. Else if _month_ ≠ _target_.[[Month]], then
+        //   1. If _sign_ × (_month_ - _target_.[[Month]]) > 0, return *true*.
+        // 1. Else if _day_ ≠ _target_.[[Day]], then
+        //   1. If _sign_ × (_day_ - _target_.[[Day]]) > 0, return *true*.
+        if year != target.year {
+            if sign
+                * (i64::from(year.to_extended_year()) - i64::from(target.year.to_extended_year()))
+                > 0
+            {
+                return true;
+            }
+        } else if month != target.month {
+            if sign * (i64::from(month) - i64::from(target.month)) > 0 {
+                return true;
+            }
+        } else if day != target.day {
+            if sign * (i64::from(day) - i64::from(target.day)) > 0 {
+                return true;
+            }
+        }
+        false
+    }
+
     /// Implements the Temporal abstract operation NonISODateSurpasses.
     ///
     /// This takes two dates (`self` and `other`), `duration`, and `sign` (either -1 or 1), then
@@ -426,15 +493,22 @@ impl<C: DateFieldsResolver> ArithmeticDate<C> {
         cal: &C,
     ) -> bool {
         // 1. Let _parts_ be CalendarISOToDate(_calendar_, _fromIsoDate_).
+        let parts = self;
+        // 1. Let _calDate2_ be CalendarISOToDate(_calendar_, _toIsoDate_).
+        let cal_date_2 = other;
         // 1. Let _y0_ be _parts_.[[Year]] + _years_.
-        let y0 = cal.year_info_from_extended(duration.add_years_to(self.year.to_extended_year()));
+        let y0 = cal.year_info_from_extended(duration.add_years_to(parts.year.to_extended_year()));
+        // 1. If CompareSurpasses(_sign_, _y0_, _parts_.[[MonthCode]], _parts_.[[Day]], _calDate2_) is *true*, return *true*.
+        let base_month = cal.month_code_from_ordinal(&parts.year, parts.month);
+        if Self::compare_surpasses_lexicographic(sign, y0, base_month, parts.day, cal_date_2, cal) {
+            return true;
+        }
         // 1. Let _m0_ be MonthCodeToOrdinal(_calendar_, _y0_, ! ConstrainMonthCode(_calendar_, _y0_, _parts_.[[MonthCode]], ~constrain~)).
-        let base_month_code = cal.month_code_from_ordinal(&self.year, self.month);
         let constrain = DateFromFieldsOptions {
             overflow: Some(Overflow::Constrain),
             ..Default::default()
         };
-        let m0_result = cal.ordinal_month_from_code(&y0, base_month_code, constrain);
+        let m0_result = cal.ordinal_month_from_code(&y0, base_month, constrain);
         let m0 = match m0_result {
             Ok(m0) => m0,
             Err(_) => {
@@ -445,71 +519,39 @@ impl<C: DateFieldsResolver> ArithmeticDate<C> {
                 1
             }
         };
-        // 1. Let _endOfMonth_ be BalanceNonISODate(_calendar_, _y0_, _m0_ + _months_ + 1, 0).
-        let end_of_month = Self::new_balanced(y0, duration.add_months_to(m0) + 1, 0, cal);
+        // 1. Let _monthsAdded_ be BalanceNonISODate(_calendar_, _y0_, _m0_ + _months_, 1).
+        let months_added = Self::new_balanced(y0, duration.add_months_to(m0), 1, cal);
+        // 1. If CompareSurpasses(_sign_, _monthsAdded_.[[Year]], _monthsAdded_.[[Month]], _parts_.[[Day]], _calDate2_) is *true*, return *true*.
+        if Self::compare_surpasses_ordinally(sign, months_added.year, months_added.month, parts.day, cal_date_2) {
+            return true;
+        }
+        // 1. If _weeks_ = 0 and _days_ = 0, return *false*.
+        if duration.weeks == 0 && duration.days == 0 {
+            return false;
+        }
+        // 1. Let _endOfMonth_ be BalanceNonISODate(_calendar_, _monthsAdded_.[[Year]], _monthsAdded_.[[Month]] + 1, 0).
+        let end_of_month = Self::new_balanced(months_added.year, i64::from(months_added.month) + 1, 0, cal);
         // 1. Let _baseDay_ be _parts_.[[Day]].
-        let base_day = self.day;
-        let y1;
-        let m1;
-        let d1;
-        // 1. If _weeks_ is not 0 or _days_ is not 0, then
-        if duration.weeks != 0 || duration.days != 0 {
-            //   1. If _baseDay_ &lt; _endOfMonth_.[[Day]], then
-            //     1. Let _regulatedDay_ be _baseDay_.
-            //   1. Else,
-            //     1. Let _regulatedDay_ be _endOfMonth_.[[Day]].
-            let regulated_day = if base_day < end_of_month.day {
-                base_day
-            } else {
-                end_of_month.day
-            };
-            //   1. Let _balancedDate_ be BalanceNonISODate(_calendar_, _endOfMonth_.[[Year]], _endOfMonth_.[[Month]], _regulatedDay_ + 7 * _weeks_ + _days_).
-            //   1. Let _y1_ be _balancedDate_.[[Year]].
-            //   1. Let _m1_ be _balancedDate_.[[Month]].
-            //   1. Let _d1_ be _balancedDate_.[[Day]].
-            let balanced_date = Self::new_balanced(
-                end_of_month.year,
-                i64::from(end_of_month.month),
-                duration.add_weeks_and_days_to(regulated_day),
-                cal,
-            );
-            y1 = balanced_date.year;
-            m1 = balanced_date.month;
-            d1 = balanced_date.day;
+        let base_day = parts.day;
+        // 1. If _baseDay_ &le; _endOfMonth_.[[Day]], then
+        //   1. Let _regulatedDay_ be _baseDay_.
+        // 1. Else,
+        //   1. Let _regulatedDay_ be _endOfMonth_.[[Day]].
+        let regulated_day = if base_day < end_of_month.day {
+            base_day
         } else {
-            // 1. Else,
-            //   1. Let _y1_ be _endOfMonth_.[[Year]].
-            //   1. Let _m1_ be _endOfMonth_.[[Month]].
-            //   1. Let _d1_ be _baseDay_.
-            y1 = end_of_month.year;
-            m1 = end_of_month.month;
-            d1 = base_day;
-        }
-        // 1. Let _calDate2_ be CalendarISOToDate(_calendar_, _toIsoDate_).
-        // 1. If _y1_ ≠ _calDate2_.[[Year]], then
-        //   1. If _sign_ × (_y1_ - _calDate2_.[[Year]]) > 0, return *true*.
-        // 1. Else if _m1_ ≠ _calDate2_.[[Month]], then
-        //   1. If _sign_ × (_m1_ - _calDate2_.[[Month]]) > 0, return *true*.
-        // 1. Else if _d1_ ≠ _calDate2_.[[Day]], then
-        //   1. If _sign_ × (_d1_ - _calDate2_.[[Day]]) > 0, return *true*.
-        #[allow(clippy::collapsible_if)] // to align with the spec
-        if y1 != other.year {
-            if sign * (i64::from(y1.to_extended_year()) - i64::from(other.year.to_extended_year()))
-                > 0
-            {
-                return true;
-            }
-        } else if m1 != other.month {
-            if sign * (i64::from(m1) - i64::from(other.month)) > 0 {
-                return true;
-            }
-        } else if d1 != other.day {
-            if sign * (i64::from(d1) - i64::from(other.day)) > 0 {
-                return true;
-            }
-        }
-        // 1. Return *false*.
-        false
+            end_of_month.day
+        };
+        // 1. Let _daysInWeek_ be 7 (the number of days in a week for all supported calendars).
+        // 1. Let _balancedDate_ be BalanceNonISODate(_calendar_, _endOfMonth_.[[Year]], _endOfMonth_.[[Month]], _regulatedDay_ + _daysInWeek_ * _weeks_ + _days_).
+        // 1. Return CompareSurpasses(_sign_, _balancedDate_.[[Year]], _balancedDate_.[[Month]], _balancedDate_.[[Day]], _calDate2_).
+        let balanced_date = Self::new_balanced(
+            end_of_month.year,
+            i64::from(end_of_month.month),
+            duration.add_weeks_and_days_to(regulated_day),
+            cal,
+        );
+        Self::compare_surpasses_ordinally(sign, balanced_date.year, balanced_date.month, balanced_date.day, cal_date_2)
     }
 
     /// Implements the Temporal abstract operation NonISODateAdd.
