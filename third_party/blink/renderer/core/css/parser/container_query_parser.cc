@@ -51,7 +51,16 @@ class SizeFeatureSet : public MediaQueryParser::FeatureSet {
   bool IsCaseSensitive(const AtomicString& feature) const override {
     return false;
   }
-  bool SupportsRange() const override { return true; }
+  bool IsRangeTypeFeature(const AtomicString& feature) const override {
+    // All size query features are range type features, but the min/max-prefixed
+    // features can not be matched using range-syntax.
+    return feature == media_feature_names::kWidthMediaFeature ||
+           feature == media_feature_names::kHeightMediaFeature ||
+           feature == media_feature_names::kInlineSizeMediaFeature ||
+           feature == media_feature_names::kBlockSizeMediaFeature ||
+           feature == media_feature_names::kAspectRatioMediaFeature ||
+           feature == media_feature_names::kOrientationMediaFeature;
+  }
   bool SupportsStyleRange() const override { return false; }
   bool SupportsElementDependent() const override { return true; }
 };
@@ -77,7 +86,9 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
   bool IsCaseSensitive(const AtomicString& feature) const override {
     return false;
   }
-  bool SupportsRange() const override { return false; }
+  bool IsRangeTypeFeature(const AtomicString& feature) const override {
+    return false;
+  }
   bool SupportsStyleRange() const override { return false; }
   bool SupportsElementDependent() const override { return true; }
 };
@@ -99,7 +110,9 @@ class AnchoredFeatureSet : public MediaQueryParser::FeatureSet {
   bool IsCaseSensitive(const AtomicString& feature) const override {
     return false;
   }
-  bool SupportsRange() const override { return false; }
+  bool IsRangeTypeFeature(const AtomicString& feature) const override {
+    return false;
+  }
   bool SupportsStyleRange() const override { return false; }
   bool SupportsElementDependent() const override { return true; }
 };

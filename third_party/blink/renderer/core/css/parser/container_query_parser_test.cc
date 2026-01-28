@@ -52,7 +52,9 @@ class ContainerQueryParserTest : public PageTestBase {
     bool IsCaseSensitive(const AtomicString& feature) const override {
       return false;
     }
-    bool SupportsRange() const override { return true; }
+    bool IsRangeTypeFeature(const AtomicString& feature) const override {
+      return true;
+    }
     bool SupportsStyleRange() const override { return false; }
     bool SupportsElementDependent() const override { return false; }
   };

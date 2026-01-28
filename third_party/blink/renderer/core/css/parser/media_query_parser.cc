@@ -58,8 +58,6 @@ bool MediaQueryParser::MediaQueryFeatureSet::IsAllowedWithoutValue(
          feature == media_feature_names::kGridMediaFeature ||
          feature == media_feature_names::kHeightMediaFeature ||
          feature == media_feature_names::kWidthMediaFeature ||
-         feature == media_feature_names::kBlockSizeMediaFeature ||
-         feature == media_feature_names::kInlineSizeMediaFeature ||
          feature == media_feature_names::kDeviceHeightMediaFeature ||
          feature == media_feature_names::kDeviceWidthMediaFeature ||
          feature == media_feature_names::kOrientationMediaFeature ||
@@ -116,6 +114,24 @@ bool MediaQueryParser::MediaQueryFeatureSet::IsAllowedWithValue(
     const AtomicString& feature) const {
   return (!RuntimeEnabledFeatures::CSSCustomMediaEnabled() ||
           !CSSVariableParser::IsValidVariableName(feature));
+}
+
+bool MediaQueryParser::MediaQueryFeatureSet::IsRangeTypeFeature(
+    const AtomicString& feature) const {
+  return feature == media_feature_names::kHeightMediaFeature ||
+         feature == media_feature_names::kWidthMediaFeature ||
+         feature == media_feature_names::kDeviceHeightMediaFeature ||
+         feature == media_feature_names::kDeviceWidthMediaFeature ||
+         feature == media_feature_names::kAspectRatioMediaFeature ||
+         feature == media_feature_names::kDeviceAspectRatioMediaFeature ||
+         feature == media_feature_names::kResolutionMediaFeature ||
+         feature == media_feature_names::kColorMediaFeature ||
+         feature == media_feature_names::kColorIndexMediaFeature ||
+         feature == media_feature_names::kMonochromeMediaFeature ||
+         feature == media_feature_names::kDevicePixelRatioMediaFeature ||
+         feature ==
+             media_feature_names::kHorizontalViewportSegmentsMediaFeature ||
+         feature == media_feature_names::kVerticalViewportSegmentsMediaFeature;
 }
 
 MediaQuerySet* MediaQueryParser::ParseMediaQuerySet(
@@ -316,14 +332,10 @@ AtomicString MediaQueryParser::ConsumeRangeContextFeatureName(
     CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
   AtomicString name = ConsumeAllowedName(stream, feature_set);
-  if (name.IsNull()) {
+  if (!name.IsNull() && feature_set.IsRangeTypeFeature(name)) {
     return name;
   }
-  if (name.StartsWith("min-") || name.StartsWith("max-") ||
-      name.StartsWith("--")) {
-    return g_null_atom;
-  }
-  return name;
+  return g_null_atom;
 }
 
 // <style-range> = <unparsed> <mf-comparison> <unparsed>
@@ -429,12 +441,7 @@ const ConditionalExpNode* MediaQueryParser::ConsumeFeature(
   if (feature_set.SupportsStyleRange() &&
       RuntimeEnabledFeatures::CSSContainerStyleQueriesRangeEnabled()) {
     // A feature set must either support regular ranges *or* style ranges.
-    CHECK(!feature_set.SupportsRange());
     return ConsumeStyleFeatureRange(stream);
-  }
-
-  if (!feature_set.SupportsRange()) {
-    return nullptr;
   }
 
   // Otherwise <mf-range>:

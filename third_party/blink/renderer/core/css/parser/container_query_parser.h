@@ -45,7 +45,9 @@ class CORE_EXPORT ContainerQueryParser : public ConditionalParser {
       // TODO(crbug.com/40217044): non-custom properties are case-insensitive.
       return true;
     }
-    bool SupportsRange() const override { return false; }
+    bool IsRangeTypeFeature(const AtomicString& feature) const override {
+      return false;
+    }
     bool SupportsStyleRange() const override { return true; }
     bool SupportsElementDependent() const override { return true; }
   };

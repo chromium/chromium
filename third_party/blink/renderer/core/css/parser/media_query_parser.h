@@ -58,9 +58,9 @@ class CORE_EXPORT MediaQueryParser : public ConditionalParser {
     // Returns true is the feature name is case sensitive.
     virtual bool IsCaseSensitive(const AtomicString& feature) const = 0;
 
-    // Whether the features support media query range syntax. This is typically
-    // false for style container queries.
-    virtual bool SupportsRange() const = 0;
+    // Whether this feature is a Type:range feature and can be compared using
+    // range syntax.
+    virtual bool IsRangeTypeFeature(const AtomicString& feature) const = 0;
 
     // Whether the features support style query range syntax, e.g. queries like
     // 10em < 10px < 10% or --x > --y > --z
@@ -85,7 +85,7 @@ class CORE_EXPORT MediaQueryParser : public ConditionalParser {
     bool IsCaseSensitive(const AtomicString& feature) const override {
       return false;
     }
-    bool SupportsRange() const override { return true; }
+    bool IsRangeTypeFeature(const AtomicString& feature) const override;
     bool SupportsStyleRange() const override { return false; }
     bool SupportsElementDependent() const override { return false; }
   };
