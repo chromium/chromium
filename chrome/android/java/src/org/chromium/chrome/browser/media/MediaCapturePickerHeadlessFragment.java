@@ -105,10 +105,6 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    public void startAndroidCapturePrompt(Delegate delegate) {
-        startAndroidCapturePrompt(delegate, /* intent= */ null);
-    }
-
     public void startAndroidCapturePrompt(Delegate delegate, @Nullable Intent intent) {
         assert mNextDelegate == null;
         mNextDelegate = delegate;
