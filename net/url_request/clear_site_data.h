@@ -6,6 +6,7 @@
 #define NET_URL_REQUEST_CLEAR_SITE_DATA_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "net/base/net_export.h"
@@ -25,7 +26,7 @@ NET_EXPORT extern const char kDatatypePrefetchCache[];
 NET_EXPORT extern const char kDatatypePrerenderCache[];
 
 NET_EXPORT std::vector<std::string> ClearSiteDataHeaderContents(
-    std::string header);
+    std::string_view header);
 
 }  // namespace net
 
