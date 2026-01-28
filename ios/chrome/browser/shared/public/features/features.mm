@@ -265,16 +265,6 @@ DownloadListUIType CurrentDownloadListUIType() {
 
 BASE_FEATURE(kDownloadList, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Key for NSUserDefaults containing a bool indicating whether the next run
-// should enable feed background refresh capability. This is used because
-// registering for background refreshes must happen early in app initialization
-// and FeatureList is not yet available. Enabling or disabling background
-// refresh features will always take effect after two cold starts after the
-// feature has been changed on the server (once for the Finch configuration, and
-// another for reading the stored value from NSUserDefaults).
-NSString* const kEnableFeedBackgroundRefreshCapabilityForNextColdStart =
-    @"EnableFeedBackgroundRefreshCapabilityForNextColdStart";
-
 const char kEnableServerDrivenBackgroundRefreshSchedule[] =
     "EnableServerDrivenBackgroundRefreshSchedule";
 const char kEnableRecurringBackgroundRefreshSchedule[] =
