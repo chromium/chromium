@@ -22,11 +22,7 @@
 + (SpotlightInterface*)defaultInterface {
   static SpotlightInterface* const kDefaultSpotlightInterface =
       [[SpotlightInterface alloc]
-          initWithSearchableIndex:(base::FeatureList::IsEnabled(
-                                       kSpotlightNeverRetainIndex)
-                                       ? nil
-                                       : [CSSearchableIndex
-                                             defaultSearchableIndex])
+          initWithSearchableIndex:[CSSearchableIndex defaultSearchableIndex]
                       maxAttempts:spotlight::kMaxAttempts - 1];
   return kDefaultSpotlightInterface;
 }
@@ -62,13 +58,6 @@
     _maxAttempts = maxAttempts;
   }
   return self;
-}
-
-- (CSSearchableIndex*)searchableIndex {
-  if (_searchableIndex) {
-    return _searchableIndex;
-  }
-  return [CSSearchableIndex defaultSearchableIndex];
 }
 
 - (void)indexSearchableItems:(NSArray<CSSearchableItem*>*)items {

@@ -1455,11 +1455,6 @@ const char kSmartTabGroupingDescription[] =
     "When enabled, users will have access to use the smart tab grouping "
     "feature in the tab grid.";
 
-const char kSpotlightNeverRetainIndexName[] = "Don't retain spotlight index";
-const char kSpotlightNeverRetainIndexDescription[] =
-    "Tentative spotlight memory improvement by not storing a strong pointer to "
-    "the spotlight default index";
-
 const char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 const char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";
