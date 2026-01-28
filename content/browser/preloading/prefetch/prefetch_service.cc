@@ -110,6 +110,8 @@ bool ShouldConsiderDecoyRequestForStatus(PreloadingEligibility eligibility) {
       // request.
       return false;
     case PreloadingEligibility::kEligible:
+      // Eligible prefetches don't need a decoy.
+      return false;
     default:
       // Other ineligible cases are not used in `PrefetchService`.
       NOTREACHED();
@@ -1170,14 +1172,11 @@ void PrefetchService::OnGotEligibilityForNonRedirect(
                     params.request().preload_pipeline_info().GetTrack());
 
   const bool eligible = eligibility == PreloadingEligibility::kEligible;
-  bool is_decoy = false;
-  if (!eligible) {
-    is_decoy =
-        params.IsProxyRequired() &&
-        ShouldConsiderDecoyRequestForStatus(eligibility) &&
-        PrefetchServiceSendDecoyRequestForIneligblePrefetch(
-            delegate_ ? delegate_->DisableDecoysBasedOnUserSettings() : false);
-  }
+  const bool is_decoy =
+      params.IsProxyRequired() &&
+      ShouldConsiderDecoyRequestForStatus(eligibility) &&
+      PrefetchServiceSendDecoyRequestForIneligblePrefetch(
+          delegate_ ? delegate_->DisableDecoysBasedOnUserSettings() : false);
   // The prefetch decoy is pushed onto the queue and the network request will be
   // dispatched, but the response will not be used. Thus it is eligible but a
   // failure.
@@ -1259,14 +1258,11 @@ void PrefetchService::OnGotEligibilityForRedirect(
                            : PrefetchRedirectResult::kFailedIneligible);
 
   // If the redirect is ineligible, the prefetch may change into a decoy.
-  bool is_decoy = false;
-  if (!eligible) {
-    is_decoy =
-        params.IsProxyRequired() &&
-        ShouldConsiderDecoyRequestForStatus(eligibility) &&
-        PrefetchServiceSendDecoyRequestForIneligblePrefetch(
-            delegate_ ? delegate_->DisableDecoysBasedOnUserSettings() : false);
-  }
+  const bool is_decoy =
+      params.IsProxyRequired() &&
+      ShouldConsiderDecoyRequestForStatus(eligibility) &&
+      PrefetchServiceSendDecoyRequestForIneligblePrefetch(
+          delegate_ ? delegate_->DisableDecoysBasedOnUserSettings() : false);
   prefetch_container->SetIsDecoy(prefetch_container->IsDecoy() || is_decoy);
 
   // Inform the prefetch container of the result of the eligibility check
