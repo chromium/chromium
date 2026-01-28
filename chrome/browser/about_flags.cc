@@ -5200,6 +5200,16 @@ const FeatureEntry::Choice kOmniboxAutofocusOnIncognitoNtpChoices[] = {
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam
+    kDeviceBoundSessionsForRestrictedSitesExperimentIdFromFlags[] = {
+        {"Value", "set_from_flags"}};
+const FeatureEntry::FeatureVariation
+    kDeviceBoundSessionsForRestrictedSitesExperimentIdVariations[] = {
+        {"- set_from_flags",
+         kDeviceBoundSessionsForRestrictedSitesExperimentIdFromFlags,
+         std::size(kDeviceBoundSessionsForRestrictedSitesExperimentIdFromFlags),
+         nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10804,6 +10814,20 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableStandardBoundSessionDevToolsDebuggingDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kDeviceBoundSessionsDevTools)},
+    {"enable-standard-device-bound-session-google",
+     flag_descriptions::kEnableStandardBoundSessionsGoogleName,
+     flag_descriptions::kEnableStandardBoundSessionsGoogleDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessionsForRestrictedSites)},
+    {"enable-standard-device-bound-session-google-experiment-id",
+     flag_descriptions::kEnableStandardBoundSessionsGoogleExperimentIdName,
+     flag_descriptions::
+         kEnableStandardBoundSessionsGoogleExperimentIdDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         net::features::kDeviceBoundSessionsForRestrictedSitesExperimentId,
+         kDeviceBoundSessionsForRestrictedSitesExperimentIdVariations,
+         "DeviceBoundSessionsForRestrictedSitesExperimentIdVariations")},
 
     {"responsive-iframes", flag_descriptions::kResponsiveIframesName,
      flag_descriptions::kResponsiveIframesDescription, kOsAll,

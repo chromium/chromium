@@ -4003,6 +4003,16 @@
     "expiry_milestone": 147
   },
   {
+    "name": "enable-standard-device-bound-session-google",
+    "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
+    "expiry_milestone": 149
+  },
+  {
+    "name": "enable-standard-device-bound-session-google-experiment-id",
+    "owners": [ "drubery@chromium.org",  "thefrog@chromium.org"],
+    "expiry_milestone": 149
+  },
+  {
     "name": "enable-standard-device-bound-session-persistence",
     "owners": [ "anunoy@chromium.org", "drubery@chromium.org",  "thefrog@chromium.org"],
     "expiry_milestone": 147

@@ -5450,7 +5450,6 @@ inline constexpr char kMigrateAccountManagerDelegateDescription[] =
     "Enables a refactoring of the Account Manager Delegate to use "
     "PlatformAccounts";
 
-
 inline constexpr char kNavBarColorAnimationName[] = "NavBarColorAnimation";
 inline constexpr char kNavBarColorAnimationDescription[] =
     "Enables animations for color changes to the OS navigation bar.";
@@ -8278,6 +8277,18 @@ inline constexpr char
     kEnableStandardBoundSessionDevToolsDebuggingDescription[] =
         "Enables DevTools debugging for the official version of "
         "Device Bound Session Credentials.";
+inline constexpr char kEnableStandardBoundSessionsGoogleName[] =
+    "Device Bound Session Credentials (Standard) on Google";
+inline constexpr char kEnableStandardBoundSessionsGoogleDescription[] =
+    "Enables Device Bound Session Credentials (Standard) to register sessions "
+    "on Google sites";
+inline constexpr char kEnableStandardBoundSessionsGoogleExperimentIdName[] =
+    "Experiment ID for Device Bound Session Credentials (Standard) on Google";
+inline constexpr char
+    kEnableStandardBoundSessionsGoogleExperimentIdDescription[] =
+        "Sets the experiment ID sent when Device Bound Session Credentials "
+        "(Standard) registers sessions "
+        "on Google sites";
 
 inline constexpr char kEnablePolicyPromotionBannerName[] =
     "Enable Policy Promotion Banner";

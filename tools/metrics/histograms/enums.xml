@@ -9900,6 +9900,8 @@ from previous Chrome versions.
   <int value="-1526740682"
       label="EnableHistorySyncOptinExpansionPill:disabled"/>
   <int value="-1525432906" label="AllowLegacyMV2Extensions:disabled"/>
+  <int value="-1525286543"
+      label="DeviceBoundSessionsForRestrictedSites:enabled"/>
   <int value="-1525129540"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
   <int value="-1524510718"
@@ -11461,6 +11463,8 @@ from previous Chrome versions.
   <int value="-997185008" label="LensFullscreenSearch:disabled"/>
   <int value="-996868396" label="SmartDimNewMlAgent:enabled"/>
   <int value="-996673716" label="enable-web-app-frame"/>
+  <int value="-996374397"
+      label="DeviceBoundSessionsForRestrictedSitesExperimentId:disabled"/>
   <int value="-996231379" label="SideBySide:enabled"/>
   <int value="-995361761" label="ReloadTabUiResourcesIfChanged:enabled"/>
   <int value="-995224626" label="BatchTabRestore:enabled"/>
@@ -12510,6 +12514,8 @@ from previous Chrome versions.
   <int value="-637647384" label="MigrateAccountPrefs:disabled"/>
   <int value="-637297943" label="WebAuthenticationCableSecondFactor:disabled"/>
   <int value="-637215276" label="QuickAnswersOnEditableText:enabled"/>
+  <int value="-636963126"
+      label="DeviceBoundSessionsForRestrictedSites:disabled"/>
   <int value="-636701420"
       label="AutofillEnableAmountExtractionDesktop:disabled"/>
   <int value="-636062300" label="BlinkExtensionDiagnostics:disabled"/>
@@ -17742,6 +17748,8 @@ from previous Chrome versions.
   <int value="1187868655" label="FloatingWorkspaceV2:disabled"/>
   <int value="1188109510" label="AssistantAudioEraser:enabled"/>
   <int value="1190035852" label="MediaRemoting:enabled"/>
+  <int value="1190296804"
+      label="DeviceBoundSessionsForRestrictedSitesExperimentId:enabled"/>
   <int value="1190803434"
       label="AccessibilityReducedAnimationsInKiosk:disabled"/>
   <int value="1191078225" label="UseRunningCompact:enabled"/>
