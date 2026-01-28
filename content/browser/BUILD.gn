@@ -2682,6 +2682,7 @@ source_set("browser") {
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
       "//components/value_store",
+      "//content/browser/smart_card/emulation",
     ]
   }
 

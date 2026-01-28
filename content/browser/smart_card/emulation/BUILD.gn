@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/compiler/compiler.gni")
+
+source_set("emulation") {
+  sources = [
+    "emulated_smart_card_context.cc",
+    "emulated_smart_card_context.h",
+    "emulated_smart_card_context_factory.cc",
+    "emulated_smart_card_context_factory.h",
+    "smart_card_emulation_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+  ]
+}
