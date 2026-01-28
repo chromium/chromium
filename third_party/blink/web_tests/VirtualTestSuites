@@ -1235,71 +1235,7 @@
       "chrome-first-party-sets@chromium.org"
     ]
   },
-  {
-    "prefix": "fledge-bidding-and-auction",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "owners": [
-      "behamilton@google.com",
-      "mmenke@chromium.org",
-      "pauljensen@chromium.org"
-    ],
-    "bases": [
-      "external/wpt/fledge/tentative/get-interest-group-auction-data.https.window.js",
-      "external/wpt/fledge/tentative/server-response.https.window.js"
-    ],
-    "args": [
-      "--enable-features=EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
-    ],
-    "expires": "Jul 14, 2025"
-  },
-  {
-    "prefix": "fledge-bidding-and-auction-for-debugging-only",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "owners": [
-      "behamilton@google.com",
-      "pauljensen@chromium.org",
-      "qingxinwu@google.com"
-    ],
-    "bases": [
-      "external/wpt/fledge/tentative/server-response-for-debugging-only.https.window.js"
-    ],
-    "args": [
-      "--enable-features=EnableBandASampleDebugReports,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
-      "--disable-features=FledgeSampleDebugReports"
-    ],
-    "expires": "Jul 14, 2025"
-  },
-  {
-    "prefix": "fledge-bidding-and-auction-private-aggregation",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "owners": [
-      "behamilton@google.com",
-      "pauljensen@chromium.org",
-      "qingxinwu@google.com"
-    ],
-    "bases": [
-      "external/wpt/fledge/tentative/private-aggregation.https.window.js",
-      "external/wpt/fledge/tentative/server-response-private-aggregation.https.window.js"
-    ],
-    "args": [
-      "--private-aggregation-developer-mode",
-      "--enable-features=EnableBandAPrivateAggregation,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
-    ],
-    "expires": "Jul 14, 2025"
-  },
-  "RasterInducingScroll disabled due to crbug.com/349939555",
+ "RasterInducingScroll disabled due to crbug.com/349939555",
   "TODO(crbug.com/398193016): Merge this suite into virtual/overlay-scrollbar",
   {
     "prefix": "fluent-overlay-scrollbar",

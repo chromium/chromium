@@ -59,7 +59,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/http/http_response_headers.h"
-#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -1188,12 +1187,8 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
   for (const auto& [seller, _] : state.sellers) {
     seller_origins.push_back(seller);
   }
-  GetInterestGroupManager().GetInterestGroupAdAuctionData(
-      GetTopWindowOrigin(),
-      /* generation_id=*/base::Uuid::GenerateRandomV4(), state.timestamp,
-      std::move(state.config), std::move(seller_origins),
-      base::BindOnce(&AdAuctionServiceImpl::OnGotAuctionData,
-                     weak_ptr_factory_.GetWeakPtr(), state.request_id));
+  // Don't actually load the groups from disk. Instead OnGotAuctionDataAndKey
+  // will pretend that the read succeeded, but was empty.
 
   for (const auto& [seller, coordinator] : state.sellers) {
     // If the interest group API is not allowed for this origin, skip this
@@ -1219,20 +1214,6 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
   }
 }
 
-void AdAuctionServiceImpl::OnGotAuctionData(base::Uuid request_id,
-                                            BiddingAndAuctionData data) {
-  if (ba_data_callbacks_.empty() ||
-      request_id != ba_data_callbacks_.front().request_id) {
-    return;
-  }
-  BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
-  state.data = std::make_unique<BiddingAndAuctionData>(std::move(data));
-  auto pending_keys = std::exchange(state.keys, {});
-  for (const auto& [seller, key] : pending_keys) {
-    OnGotAuctionDataAndKey(request_id, seller, key);
-  }
-}
-
 void AdAuctionServiceImpl::OnGotOneBiddingAndAuctionServerKey(
     base::Uuid request_id,
     const url::Origin& seller,
@@ -1241,20 +1222,13 @@ void AdAuctionServiceImpl::OnGotOneBiddingAndAuctionServerKey(
       request_id != ba_data_callbacks_.front().request_id) {
     return;
   }
-  BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
   if (!maybe_key.has_value()) {
     AddEmptyGetInterestGroupAdAuctionDataRequest(seller,
                                                  std::move(maybe_key.error()));
     return;
   }
 
-  if (state.data) {
-    OnGotAuctionDataAndKey(request_id, seller, *maybe_key);
-  } else {
-    if (!state.keys.contains(seller)) {
-      state.keys[seller] = BiddingAndAuctionServerKey(std::move(*maybe_key));
-    }
-  }
+  OnGotAuctionDataAndKey(request_id, seller, maybe_key.value());
 }
 
 void AdAuctionServiceImpl::OnGotAuctionDataAndKey(
@@ -1266,92 +1240,7 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(
     return;
   }
 
-  BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
-  DCHECK(state.data);
-
-  if (state.data->requests[seller].empty()) {
-    AddEmptyGetInterestGroupAdAuctionDataRequest(seller, "");
-    return;
-  }
-
-  uint32_t key_id = 0;
-  bool success =
-      base::HexStringToUInt(std::string_view(ba_key.id).substr(0, 2), &key_id);
-  DCHECK(success);
-  auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-      key_id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
-      EVP_HPKE_AES_256_GCM);
-  CHECK(maybe_key_config.ok()) << maybe_key_config.status();
-
-  auto maybe_request =
-      quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
-          std::string(state.data->requests[seller].begin(),
-                      state.data->requests[seller].end()),
-          ba_key.key, maybe_key_config.value(),
-          kBiddingAndAuctionEncryptionRequestMediaType);
-  if (!maybe_request.ok()) {
-    AddEmptyGetInterestGroupAdAuctionDataRequest(seller,
-                                                 "Could not create request");
-    return;
-  }
-
-  std::string data = maybe_request->EncapsulateAndSerialize();
-
-  // Preconnect to seller since we know JS will send a request there.
-  render_frame_host()
-      .GetStoragePartition()
-      ->GetNetworkContext()
-      ->PreconnectSockets(
-          /*num_streams=*/1, seller.GetURL(),
-          network::mojom::CredentialsMode::kInclude,
-          render_frame_host()
-              .GetIsolationInfoForSubresources()
-              .network_anonymization_key(),
-          net::MutableNetworkTrafficAnnotationTag(),
-          /*keepalive_config=*/std::nullopt, mojo::NullRemote());
-
-  AdAuctionPageData* ad_auction_page_data = GetAdAuctionPageData();
-  if (!ad_auction_page_data) {
-    AddEmptyGetInterestGroupAdAuctionDataRequest(
-        seller, "Page destruction in progress");
-    return;
-  }
-
-  if (!ad_auction_page_data->GetContextForAdAuctionRequest(
-          ContextMapKey(state.request_id, seller))) {
-    AdAuctionRequestContext context(
-        seller, std::move(state.data->group_names),
-        std::move(*maybe_request).ReleaseContext(), state.start_time,
-        std::move(state.data->group_pagg_coordinators));
-    ad_auction_page_data->RegisterAdAuctionRequestContext(state.request_id,
-                                                          std::move(context));
-  }
-
-  // Pre-warm data decoder.
-  ad_auction_page_data->GetDecoderFor(seller)->GetService();
-
-  // For the modified request format we need to prepend a version number byte
-  // to the request.
-  size_t start_offset = 1;
-  mojo_base::BigBuffer buf(data.size() + start_offset);
-
-  // Write the version byte. If we are not using a modified request this will
-  // be immediately overwritten.
-  buf.data()[0] = 0;
-
-  // Write the request starting at `start_offset`
-  CHECK_EQ(data.size() + start_offset, buf.size());
-  base::span(buf)
-      .subspan(start_offset)
-      .copy_from_nonoverlapping(base::as_byte_span(data));
-  state.requests.emplace_back(blink::mojom::AdAuctionPerSellerRequest::New(
-      seller,
-      blink::mojom::AdAuctionRequestOrError::NewRequest(std::move(buf))));
-  RecordBaDataConstructionResultMetric(data.size(), state.start_time);
-  state.has_valid_request = true;
-  if (state.sellers.size() == state.requests.size()) {
-    RunGetInterestGroupAdAuctionDataCallback(request_id);
-  }
+  AddEmptyGetInterestGroupAdAuctionDataRequest(seller, "");
 }
 
 InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()

@@ -6377,7 +6377,6 @@ crbug.com/1048761 [ Win ] external/wpt/websockets/interfaces/WebSocket/send/006.
 
 # These tests are very flaky and driving up shard retry rates: crbug.com/426959932
 external/wpt/editing/other/join-different-white-space-style-paragraphs.html?* [ Failure Pass ]
-crbug.com/415323248 crbug.com/415292402 crbug.com/413189476 virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.js [ Failure Pass Timeout ]
 crbug.com/417924844 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
 crbug.com/417816138 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynn.html [ Skip Timeout ]
 crbug.com/417870384 virtual/threaded/external/wpt/long-animation-frame/loaf-promise-scheduled-render.html [ Failure Pass ]
@@ -9639,11 +9638,6 @@ crbug.com/451712152 virtual/permission-element/external/wpt/html/semantics/permi
 crbug.com/377152628 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-cross-origin-multi-query.tentative.https.sub.html [ Failure Pass ]
 
 # Gardener 2025-10-17
-crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?1-5 [ Crash Failure Pass ]
-crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?6-10 [ Crash Failure Pass ]
-crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?11-15 [ Crash Failure Pass ]
-crbug.com/452868863 [ Linux ] virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.html?16-20 [ Crash Failure Pass ]
-
 crbug.com/301364727 http/tests/devtools/a11y-axe-core/elements/main-tool-test.js [ Failure Pass ]
 crbug.com/301364727 http/tests/devtools/a11y-axe-core/sources/watch-expression-a11y-test.js [ Failure Pass ]
 crbug.com/301364727 http/tests/devtools/elements/styles-1/empty-background-url.js [ Failure Pass ]

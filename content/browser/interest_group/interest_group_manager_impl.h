@@ -24,7 +24,6 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "content/browser/interest_group/auction_process_manager.h"
-#include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/browser/interest_group/for_debugging_only_report_util.h"
@@ -524,14 +523,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Updates the last time that the key was reported to the k-anonymity server.
   void UpdateLastKAnonymityReported(const std::string& hashed_key);
 
-  void GetInterestGroupAdAuctionData(
-      url::Origin top_level_origin,
-      base::Uuid generation_id,
-      base::Time timestamp,
-      blink::mojom::AuctionDataConfigPtr config,
-      std::vector<url::Origin> sellers,
-      base::OnceCallback<void(BiddingAndAuctionData)> callback);
-
   // Get the public key to use for the auction data. The `callback` may be
   // called synchronously if the key is already available or the coordinator is
   // not recognized.
@@ -613,16 +604,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     const char* name;
     int request_url_size_bytes;
     FrameTreeNodeId frame_tree_node_id;
-  };
-
-  struct AdAuctionDataLoaderState {
-    AdAuctionDataLoaderState();
-    ~AdAuctionDataLoaderState();
-    AdAuctionDataLoaderState(AdAuctionDataLoaderState&& state);
-    BiddingAndAuctionSerializer serializer;
-    std::vector<url::Origin> sellers;
-    base::OnceCallback<void(BiddingAndAuctionData)> callback;
-    base::TimeTicks start_time;
   };
 
   // Callbacks for CheckPermissionsAndJoinInterestGroup(),
@@ -711,40 +692,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Clears `report_requests_`.  Does not abort currently pending requests.
   void TimeoutReports();
-
-  // Shuffles the owners then calls `LoadNextInterestGroupAdAuctionData()`.
-  // We need the shuffle so that interest group owners are not included in the
-  // auction data in the same order every time. Our serialization only solves
-  // an approximation of the "knapsack" problem, so the amount of interest
-  // groups we can fit for each owner may depend on the order in which
-  // they are processed. Shuffling helps guarantee fairness.
-  void ShuffleOwnersThenLoadInterestGroupAdAuctionData(
-      AdAuctionDataLoaderState state,
-      std::vector<url::Origin> owners);
-
-  // Loads the next owner's interest group data. If there are no more owners
-  // whose interest groups need to be loaded, calls OnAdAuctionDataLoadComplete.
-  void LoadNextInterestGroupAdAuctionData(AdAuctionDataLoaderState state,
-                                          std::vector<url::Origin> owners);
-
-  // Serializes the loaded auction data and then calls
-  // LoadNextInterestGroupAdAuctionData to continue loading.
-  void OnLoadedNextInterestGroupAdAuctionData(
-      AdAuctionDataLoaderState state,
-      std::vector<url::Origin> owners,
-      url::Origin owner,
-      scoped_refptr<StorageInterestGroups> groups);
-
-  // Invoked when loading interest groups is completed. Load debug report
-  // lockout information if sampling debug report is enabled, otherwise invoke
-  // `OnAdAuctionDataLoadComplete()` directly.
-  void OnInterestGroupAdAuctionDataLoadComplete(AdAuctionDataLoaderState state);
-
-  // Constructs the AdAuctionData when the load is complete and calls the
-  // provided callback.
-  void OnAdAuctionDataLoadComplete(
-      AdAuctionDataLoaderState state,
-      std::optional<DebugReportLockoutAndCooldowns> lockout);
 
   // Helper to that returns bound NotifyInterestGroupAccessed() callbacks to
   // allow notifications to be sent after a database update.

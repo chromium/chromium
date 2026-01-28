@@ -22,7 +22,6 @@
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
-#include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/dwa_auction_metrics.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
@@ -131,7 +130,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
     base::TimeTicks start_time;  // time used for metrics
     std::map<url::Origin, BiddingAndAuctionServerKey> keys;
-    std::unique_ptr<BiddingAndAuctionData> data;
     base::Uuid request_id;
     base::flat_map<url::Origin, std::optional<url::Origin>> sellers;
     base::Time timestamp;  // timestamp to include in the request.
@@ -202,7 +200,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // following request in ba_data_callbacks_.
   void RunGetInterestGroupAdAuctionDataCallback(base::Uuid request_id);
   void LoadAuctionDataAndKeyForNextQueuedRequest();
-  void OnGotAuctionData(base::Uuid request_id, BiddingAndAuctionData data);
   void OnGotOneBiddingAndAuctionServerKey(
       base::Uuid request_id,
       const url::Origin& seller,

@@ -1222,8 +1222,6 @@ source_set("browser") {
     "interest_group/auction_worklet_manager.h",
     "interest_group/bidding_and_auction_response.cc",
     "interest_group/bidding_and_auction_response.h",
-    "interest_group/bidding_and_auction_serializer.cc",
-    "interest_group/bidding_and_auction_serializer.h",
     "interest_group/bidding_and_auction_server_key_fetcher.cc",
     "interest_group/bidding_and_auction_server_key_fetcher.h",
     "interest_group/data_decoder_manager.cc",
