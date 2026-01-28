@@ -4792,6 +4792,9 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (horizontal_tab_strip_region_view_) {
     panes->push_back(horizontal_tab_strip_region_view_);
   }
+  if (vertical_tab_strip_region_view_) {
+    panes->push_back(vertical_tab_strip_region_view_);
+  }
   if (toolbar_ && toolbar_->custom_tab_bar()) {
     panes->push_back(toolbar_->custom_tab_bar());
   }
