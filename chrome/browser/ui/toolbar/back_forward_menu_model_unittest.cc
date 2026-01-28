@@ -139,17 +139,19 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
   std::unique_ptr<Browser> browser(
       CreateBrowserWithTestWindowForParams(native_params));
 
-  std::unique_ptr<BackForwardMenuModel> back_model(new BackForwardMenuModel(
-      browser.get(), BackForwardMenuModel::ModelType::kBackward));
+  std::unique_ptr<BackForwardMenuModel> back_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kBackward);
   back_model->set_test_web_contents(web_contents());
 
-  std::unique_ptr<BackForwardMenuModel> forward_model(new BackForwardMenuModel(
-      browser.get(), BackForwardMenuModel::ModelType::kForward));
+  std::unique_ptr<BackForwardMenuModel> forward_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kForward);
   forward_model->set_test_web_contents(web_contents());
 
   EXPECT_EQ(0u, back_model->GetItemCount());
   EXPECT_EQ(0u, forward_model->GetItemCount());
-  EXPECT_FALSE(back_model->ItemHasCommand(1));
+  EXPECT_FALSE(back_model->IsEnabledAt(1));
 
   // Seed the controller with a few URLs
   LoadURLAndUpdateState("http://www.a.com/1", "A1");
@@ -168,12 +170,12 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
   EXPECT_EQ(u"A1", back_model->GetLabelAt(6));
   EXPECT_EQ(back_model->GetShowFullHistoryLabel(), back_model->GetLabelAt(8));
 
-  EXPECT_TRUE(back_model->ItemHasCommand(0));
-  EXPECT_TRUE(back_model->ItemHasCommand(6));
+  EXPECT_TRUE(back_model->IsEnabledAt(0));
+  EXPECT_TRUE(back_model->IsEnabledAt(6));
   EXPECT_TRUE(back_model->IsSeparator(7));
-  EXPECT_TRUE(back_model->ItemHasCommand(8));
-  EXPECT_FALSE(back_model->ItemHasCommand(9));
-  EXPECT_FALSE(back_model->ItemHasCommand(9));
+  EXPECT_TRUE(back_model->IsEnabledAt(8));
+  EXPECT_FALSE(back_model->IsEnabledAt(9));
+  EXPECT_FALSE(back_model->IsEnabledAt(9));
 
   NavigateToOffset(-7);
 
@@ -184,12 +186,12 @@ TEST_F(BackFwdMenuModelTest, BasicCase) {
   EXPECT_EQ(forward_model->GetShowFullHistoryLabel(),
             forward_model->GetLabelAt(8));
 
-  EXPECT_TRUE(forward_model->ItemHasCommand(0));
-  EXPECT_TRUE(forward_model->ItemHasCommand(6));
+  EXPECT_TRUE(forward_model->IsEnabledAt(0));
+  EXPECT_TRUE(forward_model->IsEnabledAt(6));
   EXPECT_TRUE(forward_model->IsSeparator(7));
-  EXPECT_TRUE(forward_model->ItemHasCommand(8));
-  EXPECT_FALSE(forward_model->ItemHasCommand(7));
-  EXPECT_FALSE(forward_model->ItemHasCommand(9));
+  EXPECT_TRUE(forward_model->IsEnabledAt(8));
+  EXPECT_FALSE(forward_model->IsEnabledAt(7));
+  EXPECT_FALSE(forward_model->IsEnabledAt(9));
 
   NavigateToOffset(4);
 
@@ -209,12 +211,14 @@ TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
   std::unique_ptr<Browser> browser(
       CreateBrowserWithTestWindowForParams(native_params));
 
-  std::unique_ptr<BackForwardMenuModel> back_model(new BackForwardMenuModel(
-      browser.get(), BackForwardMenuModel::ModelType::kBackward));
+  std::unique_ptr<BackForwardMenuModel> back_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kBackward);
   back_model->set_test_web_contents(web_contents());
 
-  std::unique_ptr<BackForwardMenuModel> forward_model(new BackForwardMenuModel(
-      browser.get(), BackForwardMenuModel::ModelType::kForward));
+  std::unique_ptr<BackForwardMenuModel> forward_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kForward);
   forward_model->set_test_web_contents(web_contents());
 
   // Seed the controller with 32 URLs
@@ -262,11 +266,11 @@ TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
                                    chapter_stop_offset));
 
   // Test for out of bounds (beyond Show Full History).
-  EXPECT_FALSE(back_model->ItemHasCommand(
-      BackForwardMenuModel::kMaxHistoryItems + chapter_stop_offset + 2));
+  EXPECT_FALSE(back_model->IsEnabledAt(BackForwardMenuModel::kMaxHistoryItems +
+                                       chapter_stop_offset + 2));
 
   EXPECT_TRUE(
-      back_model->ItemHasCommand(BackForwardMenuModel::kMaxHistoryItems - 1));
+      back_model->IsEnabledAt(BackForwardMenuModel::kMaxHistoryItems - 1));
   EXPECT_TRUE(back_model->IsSeparator(BackForwardMenuModel::kMaxHistoryItems));
 
   NavigateToIndex(0);
@@ -280,11 +284,11 @@ TEST_F(BackFwdMenuModelTest, MaxItemsTest) {
                                       1 + chapter_stop_offset));
 
   // Out of bounds
-  EXPECT_FALSE(forward_model->ItemHasCommand(
+  EXPECT_FALSE(forward_model->IsEnabledAt(
       BackForwardMenuModel::kMaxHistoryItems + 2 + chapter_stop_offset));
 
-  EXPECT_TRUE(forward_model->ItemHasCommand(
-      BackForwardMenuModel::kMaxHistoryItems - 1));
+  EXPECT_TRUE(
+      forward_model->IsEnabledAt(BackForwardMenuModel::kMaxHistoryItems - 1));
   EXPECT_TRUE(
       forward_model->IsSeparator(BackForwardMenuModel::kMaxHistoryItems));
 }
@@ -294,12 +298,14 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   std::unique_ptr<Browser> browser(
       CreateBrowserWithTestWindowForParams(native_params));
 
-  std::unique_ptr<BackForwardMenuModel> back_model(new BackForwardMenuModel(
-      browser.get(), BackForwardMenuModel::ModelType::kBackward));
+  std::unique_ptr<BackForwardMenuModel> back_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kBackward);
   back_model->set_test_web_contents(web_contents());
 
-  std::unique_ptr<BackForwardMenuModel> forward_model(new BackForwardMenuModel(
-      browser.get(), BackForwardMenuModel::ModelType::kForward));
+  std::unique_ptr<BackForwardMenuModel> forward_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kForward);
   forward_model->set_test_web_contents(web_contents());
 
   // Seed the controller with 32 URLs.
@@ -515,12 +521,13 @@ TEST_F(BackFwdMenuModelTest, EscapeLabel) {
   std::unique_ptr<Browser> browser(
       CreateBrowserWithTestWindowForParams(native_params));
 
-  std::unique_ptr<BackForwardMenuModel> back_model(new BackForwardMenuModel(
-      browser.get(), BackForwardMenuModel::ModelType::kBackward));
+  std::unique_ptr<BackForwardMenuModel> back_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kBackward);
   back_model->set_test_web_contents(web_contents());
 
   EXPECT_EQ(0u, back_model->GetItemCount());
-  EXPECT_FALSE(back_model->ItemHasCommand(1));
+  EXPECT_FALSE(back_model->IsEnabledAt(1));
 
   LoadURLAndUpdateState("http://www.a.com/1", "A B");
   LoadURLAndUpdateState("http://www.a.com/2", "A & B");
@@ -606,8 +613,9 @@ TEST_F(BackFwdMenuModelTest, NavigationWhenMenuShownTest) {
   base::RunLoop loop;
   TestBackForwardMenuDelegate delegate(loop.QuitWhenIdleClosure());
 
-  std::unique_ptr<BackForwardMenuModel> back_model(new BackForwardMenuModel(
-      browser.get(), BackForwardMenuModel::ModelType::kBackward));
+  std::unique_ptr<BackForwardMenuModel> back_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kBackward);
   back_model->set_test_web_contents(web_contents());
   back_model->SetMenuModelDelegate(&delegate);
 
@@ -636,13 +644,14 @@ TEST_F(BackFwdMenuModelIncognitoTest, IncognitoCaseTest) {
   std::unique_ptr<Browser> browser(
       CreateBrowserWithTestWindowForParams(native_params));
 
-  std::unique_ptr<BackForwardMenuModel> back_model(new BackForwardMenuModel(
-      browser.get(), BackForwardMenuModel::ModelType::kBackward));
+  std::unique_ptr<BackForwardMenuModel> back_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kBackward);
 
   back_model->set_test_web_contents(web_contents());
 
   EXPECT_EQ(0u, back_model->GetItemCount());
-  EXPECT_FALSE(back_model->ItemHasCommand(1));
+  EXPECT_FALSE(back_model->IsEnabledAt(1));
 
   // Seed the controller with a few URLs
   LoadURLAndUpdateState("http://www.a.com/1", u"A1");
@@ -655,6 +664,155 @@ TEST_F(BackFwdMenuModelIncognitoTest, IncognitoCaseTest) {
   EXPECT_EQ(u"A2", back_model->GetLabelAt(0));
   EXPECT_EQ(u"A1", back_model->GetLabelAt(1));
 
-  EXPECT_TRUE(back_model->ItemHasCommand(0));
-  EXPECT_TRUE(back_model->ItemHasCommand(1));
+  EXPECT_TRUE(back_model->IsEnabledAt(0));
+  EXPECT_TRUE(back_model->IsEnabledAt(1));
+}
+
+// Test the new helper functions for accessing menu sections.
+TEST_F(BackFwdMenuModelTest, MenuSections) {
+  Browser::CreateParams native_params(profile(), true);
+  std::unique_ptr<Browser> browser(
+      CreateBrowserWithTestWindowForParams(native_params));
+
+  std::unique_ptr<BackForwardMenuModel> back_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kBackward);
+  back_model->set_test_web_contents(web_contents());
+
+  // Test empty menu - "Show Full History" should not be shown when menu is
+  // empty.
+  EXPECT_FALSE(back_model->HasSection(
+      BackForwardMenuModel::MenuSection::kShowFullHistory));
+  EXPECT_FALSE(back_model
+                   ->GetStartingIndexOfSection(
+                       BackForwardMenuModel::MenuSection::kShowFullHistory)
+                   .has_value());
+
+  // Seed the controller with a few URLs to test section helpers.
+  LoadURLAndUpdateState("http://www.a.com/1", "A1");
+  LoadURLAndUpdateState("http://www.a.com/2", "A2");
+  LoadURLAndUpdateState("http://www.a.com/3", "A3");
+
+  // Test HasSection.
+  EXPECT_TRUE(
+      back_model->HasSection(BackForwardMenuModel::MenuSection::kHistory));
+  EXPECT_FALSE(
+      back_model->HasSection(BackForwardMenuModel::MenuSection::kChapterStops));
+  EXPECT_TRUE(back_model->HasSection(
+      BackForwardMenuModel::MenuSection::kShowFullHistory));
+
+  // Test GetSectionItemCount.
+  EXPECT_EQ(2u, back_model->GetSectionItemCount(
+                    BackForwardMenuModel::MenuSection::kHistory));
+  EXPECT_EQ(0u, back_model->GetSectionItemCount(
+                    BackForwardMenuModel::MenuSection::kChapterStops));
+  EXPECT_EQ(1u, back_model->GetSectionItemCount(
+                    BackForwardMenuModel::MenuSection::kShowFullHistory));
+
+  // Test GetStartingIndexOfSection.
+  std::optional<size_t> history_start = back_model->GetStartingIndexOfSection(
+      BackForwardMenuModel::MenuSection::kHistory);
+  EXPECT_TRUE(history_start.has_value());
+  EXPECT_EQ(0u, history_start.value());
+
+  std::optional<size_t> show_full_history_index =
+      back_model->GetStartingIndexOfSection(
+          BackForwardMenuModel::MenuSection::kShowFullHistory);
+  EXPECT_TRUE(show_full_history_index.has_value());
+  EXPECT_EQ(3u, show_full_history_index.value());
+
+  // Test GetSectionForIndex.
+  EXPECT_EQ(std::make_optional(BackForwardMenuModel::MenuSection::kHistory),
+            back_model->GetSectionForIndex(0));
+  EXPECT_EQ(std::make_optional(BackForwardMenuModel::MenuSection::kHistory),
+            back_model->GetSectionForIndex(1));
+  EXPECT_EQ(std::make_optional(BackForwardMenuModel::MenuSection::kSeparator),
+            back_model->GetSectionForIndex(2));
+  EXPECT_EQ(
+      std::make_optional(BackForwardMenuModel::MenuSection::kShowFullHistory),
+      back_model->GetSectionForIndex(3));
+  EXPECT_EQ(std::nullopt, back_model->GetSectionForIndex(4));
+
+  // Test with chapter stops.
+  LoadURLAndUpdateState("http://www.b.com/1", "B1");
+  LoadURLAndUpdateState("http://www.b.com/2", "B2");
+  LoadURLAndUpdateState("http://www.b.com/3", "B3");
+  LoadURLAndUpdateState("http://www.c.com/1", "C1");
+  LoadURLAndUpdateState("http://www.c.com/2", "C2");
+  LoadURLAndUpdateState("http://www.c.com/3", "C3");
+  LoadURLAndUpdateState("http://www.d.com/1", "D1");
+  LoadURLAndUpdateState("http://www.d.com/2", "D2");
+  LoadURLAndUpdateState("http://www.d.com/3", "D3");
+  LoadURLAndUpdateState("http://www.e.com/1", "E1");
+  LoadURLAndUpdateState("http://www.e.com/2", "E2");
+  LoadURLAndUpdateState("http://www.e.com/3", "E3");
+  LoadURLAndUpdateState("http://www.f.com/1", "F1");
+  LoadURLAndUpdateState("http://www.f.com/2", "F2");
+  LoadURLAndUpdateState("http://www.f.com/3", "F3");
+  LoadURLAndUpdateState("http://www.g.com/1", "G1");
+  LoadURLAndUpdateState("http://www.g.com/2", "G2");
+  LoadURLAndUpdateState("http://www.g.com/3", "G3");
+  LoadURLAndUpdateState("http://www.h.com/1", "H1");
+  LoadURLAndUpdateState("http://www.h.com/2", "H2");
+  LoadURLAndUpdateState("http://www.h.com/3", "H3");
+  LoadURLAndUpdateState("http://www.i.com/1", "I1");
+  LoadURLAndUpdateState("http://www.i.com/2", "I2");
+  LoadURLAndUpdateState("http://www.i.com/3", "I3");
+  LoadURLAndUpdateState("http://www.j.com/1", "J1");
+  LoadURLAndUpdateState("http://www.j.com/2", "J2");
+  LoadURLAndUpdateState("http://www.j.com/3", "J3");
+  LoadURLAndUpdateState("http://www.k.com/1", "K1");
+  LoadURLAndUpdateState("http://www.k.com/2", "K2");
+  LoadURLAndUpdateState("http://www.k.com/3", "K3");
+
+  // Test section helpers with chapter stops.
+  EXPECT_TRUE(
+      back_model->HasSection(BackForwardMenuModel::MenuSection::kChapterStops));
+  size_t chapter_stop_count = back_model->GetSectionItemCount(
+      BackForwardMenuModel::MenuSection::kChapterStops);
+  EXPECT_GT(chapter_stop_count, 0u);
+
+  std::optional<size_t> chapter_stops_start =
+      back_model->GetStartingIndexOfSection(
+          BackForwardMenuModel::MenuSection::kChapterStops);
+  EXPECT_TRUE(chapter_stops_start.has_value());
+  EXPECT_EQ(BackForwardMenuModel::kMaxHistoryItems + 1,
+            chapter_stops_start.value());
+
+  // Test GetSectionForIndex with chapter stops.
+  size_t history_items = BackForwardMenuModel::kMaxHistoryItems;
+  EXPECT_EQ(std::make_optional(BackForwardMenuModel::MenuSection::kHistory),
+            back_model->GetSectionForIndex(0));
+  EXPECT_EQ(std::make_optional(BackForwardMenuModel::MenuSection::kSeparator),
+            back_model->GetSectionForIndex(history_items));
+  EXPECT_EQ(
+      std::make_optional(BackForwardMenuModel::MenuSection::kChapterStops),
+      back_model->GetSectionForIndex(history_items + 1));
+}
+
+// Test menu section helpers in incognito mode (no "Show Full History").
+TEST_F(BackFwdMenuModelIncognitoTest, MenuSectionsIncognito) {
+  Browser::CreateParams native_params(profile()->GetPrimaryOTRProfile(true),
+                                      true);
+  std::unique_ptr<Browser> browser(
+      CreateBrowserWithTestWindowForParams(native_params));
+
+  std::unique_ptr<BackForwardMenuModel> back_model =
+      std::make_unique<BackForwardMenuModel>(
+          browser.get(), BackForwardMenuModel::ModelType::kBackward);
+  back_model->set_test_web_contents(web_contents());
+
+  LoadURLAndUpdateState("http://www.a.com/1", u"A1");
+  LoadURLAndUpdateState("http://www.a.com/2", u"A2");
+  LoadURLAndUpdateState("http://www.a.com/3", u"A3");
+
+  // Test that "Show Full History" section is not available in incognito.
+  EXPECT_FALSE(back_model->HasSection(
+      BackForwardMenuModel::MenuSection::kShowFullHistory));
+  EXPECT_EQ(0u, back_model->GetSectionItemCount(
+                    BackForwardMenuModel::MenuSection::kShowFullHistory));
+  EXPECT_FALSE(back_model
+                   ->GetStartingIndexOfSection(
+                       BackForwardMenuModel::MenuSection::kShowFullHistory)
+                   .has_value());
 }

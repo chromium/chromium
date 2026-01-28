@@ -44,6 +44,14 @@ class BackForwardMenuModel final : public ui::MenuModel,
   // browser window using View::GetViewByID.
   enum class ModelType { kForward = 1, kBackward = 2 };
 
+  // Enum identifying different sections of the menu. Made public for testing.
+  enum class MenuSection {
+    kHistory,       // History navigation items
+    kChapterStops,  // Chapter stop navigation items
+    kSeparator,  // Separator (between sections or before "Show Full History")
+    kShowFullHistory,  // "Show Full History" item
+  };
+
   BackForwardMenuModel(Browser* browser, ModelType model_type);
 
   BackForwardMenuModel(const BackForwardMenuModel&) = delete;
@@ -81,6 +89,21 @@ class BackForwardMenuModel final : public ui::MenuModel,
   bool IsSeparator(size_t index) const;
 
  private:
+  // Returns which section the given index belongs to, or nullopt if the index
+  // doesn't belong to any section.
+  std::optional<MenuSection> GetSectionForIndex(size_t index) const;
+
+  // Returns true if the menu has the specified section.
+  bool HasSection(MenuSection section) const;
+
+  // Returns the number of items in the specified section. Returns 0 if the
+  // section doesn't exist.
+  size_t GetSectionItemCount(MenuSection section) const;
+
+  // Returns the starting index of the specified section, or nullopt if the
+  // section doesn't exist.
+  std::optional<size_t> GetStartingIndexOfSection(MenuSection section) const;
+
   friend class BackFwdMenuModelTest;
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, BasicCase);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, MaxItemsTest);
@@ -88,7 +111,10 @@ class BackForwardMenuModel final : public ui::MenuModel,
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, EscapeLabel);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, FaviconLoadTest);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, NavigationWhenMenuShownTest);
+  FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelTest, MenuSections);
   FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelIncognitoTest, IncognitoCaseTest);
+  FRIEND_TEST_ALL_PREFIXES(BackFwdMenuModelIncognitoTest,
+                           MenuSectionsIncognito);
   FRIEND_TEST_ALL_PREFIXES(ChromeNavigationBrowserTest,
                            NoUserActivationSetSkipOnBackForward);
 
@@ -122,6 +148,11 @@ class BackForwardMenuModel final : public ui::MenuModel,
   // returned does not include the separator lines before and after the
   // chapter-stops.
   size_t GetChapterStopCount(size_t history_items) const;
+
+  // Returns how many separators the menu should show. Separators appear before
+  // chapter stops (if chapter stops exist) and before "Show Full History" (if
+  // it exists).
+  size_t GetSeparatorCount() const;
 
   // Finds the next chapter-stop in the NavigationEntryList starting from
   // the index specified in |start_from| and continuing in the direction
@@ -166,11 +197,7 @@ class BackForwardMenuModel final : public ui::MenuModel,
   // "Show Full History" link in which case this function returns nullopt.
   std::optional<size_t> MenuIndexToNavEntryIndex(size_t index) const;
 
-  // Does the item have a command associated with it?
-  bool ItemHasCommand(size_t index) const;
 
-  // Returns true if there is an icon for this menu item.
-  bool ItemHasIcon(size_t index) const;
 
   // Allow the unit test to use the "Show Full History" label.
   std::u16string GetShowFullHistoryLabel() const;
