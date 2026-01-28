@@ -9372,18 +9372,19 @@ class RenderFrameHostImplConnectionAllowlistBrowserTest
  private:
   bool InterceptURLRequest(URLLoaderInterceptor::RequestParams* params) {
     const std::string path = std::string(params->url_request.url.path());
-    if (path == "/title1.html") {
+    if (path == "/connection_allowlist_response_origin.html") {
       std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
       // The special value is `(response-origin)` which is a keyword.
       base::StrAppend(&headers, {"Connection-Allowlist: (response-origin)\n"});
-      std::string body = "<html>This is title1.html</html>";
+      std::string body =
+          "<html>This is connection_allowlist_response_origin.html</html>";
       URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
       return true;
     }
-    if (path == "/title3.html") {
+    if (path == "/connection_allowlist_empty.html") {
       std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
       base::StrAppend(&headers, {"Connection-Allowlist: ()\n"});
-      std::string body = "<html>This is title3.html</html>";
+      std::string body = "<html>This is connection_allowlist_empty.html</html>";
       URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
       return true;
     }
@@ -9403,7 +9404,8 @@ class RenderFrameHostImplConnectionAllowlistBrowserTest
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlist) {
-  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  GURL url(embedded_test_server()->GetURL(
+      "/connection_allowlist_response_origin.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   std::optional<base::UnguessableToken> first_network_restrictions_id =
@@ -9455,10 +9457,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   // urls should succeed.
   // Navigate to a same-origin URL. This should be allowed.
   // New document title1 also has the same connection allowlist policy.
-  GURL same_origin_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL same_origin_url(embedded_test_server()->GetURL(
+      "a.com", "/connection_allowlist_response_origin.html"));
   EXPECT_TRUE(NavigateToURL(shell(), same_origin_url));
-  GURL cross_origin_url(
-      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL cross_origin_url(embedded_test_server()->GetURL(
+      "b.com", "/connection_allowlist_response_origin.html"));
   EXPECT_TRUE(NavigateToURL(shell(), cross_origin_url));
 
   // Navigate back to the original document to apply the connection allowlist.
@@ -9494,7 +9497,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_TRUE(iframe->IsRenderFrameLive());
 
   // Renderer-initiated navigation in iframe to same-origin should succeed.
-  GURL same_origin_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL same_origin_url(embedded_test_server()->GetURL(
+      "a.com", "/connection_allowlist_response_origin.html"));
   EXPECT_TRUE(
       NavigateToURLFromRenderer(iframe->frame_tree_node(), same_origin_url));
 
@@ -9517,7 +9521,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        EmptyIframeInjectedScriptFetch) {
-  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  GURL main_url = embedded_test_server()->GetURL(
+      "/connection_allowlist_response_origin.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   RenderFrameHostImpl* main_rfh = web_contents()->GetPrimaryMainFrame();
@@ -9587,16 +9592,19 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        AboutBlankIframeInheritsConnectionAllowlist) {
   // 1. Navigate top-level frame to a page with connection allowlists.
-  // title1.html has Connection-Allowlist: (response-origin)
-  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  // connection_allowlist_response_origin.html has Connection-Allowlist:
+  // (response-origin)
+  GURL main_url = embedded_test_server()->GetURL(
+      "/connection_allowlist_response_origin.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   RenderFrameHostImpl* main_rfh = web_contents()->GetPrimaryMainFrame();
 
   // 2. Create an iframe and point its src to a page with a different value of
   // connection allowlist.
-  // title3.html has Connection-Allowlist: ()
-  GURL iframe_url = embedded_test_server()->GetURL("/title3.html");
+  // connection_allowlist_empty.html has Connection-Allowlist: ()
+  GURL iframe_url =
+      embedded_test_server()->GetURL("/connection_allowlist_empty.html");
   EXPECT_TRUE(
       ExecJs(main_rfh, JsReplace("let child = document.createElement('iframe');"
                                  "child.id = 'test_iframe';"
@@ -9609,8 +9617,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
   EXPECT_TRUE(iframe->IsRenderFrameLive());
 
-  // In title3.html, same-origin fetch should fail because the allowlist is
-  // empty.
+  // In connection_allowlist_empty.html, same-origin fetch should fail because
+  // the allowlist is empty.
   GURL fetch_url(embedded_test_server()->GetURL("/cors-ok.txt"));
   std::string fetch_resource = JsReplace(
       "(async () => {"
@@ -9629,7 +9637,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   iframe = main_rfh->child_at(0)->current_frame_host();
 
   // In about:blank, same-origin fetch should succeed as it inherits
-  // (response-origin) from title1.html.
+  // (response-origin) from connection_allowlist_response_origin.html.
   EXPECT_EQ(200, EvalJs(iframe, fetch_resource));
 
   // Cross-origin fetch should still fail.
@@ -9644,7 +9652,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistEmpty) {
-  GURL url(embedded_test_server()->GetURL("/title3.html"));
+  GURL url(embedded_test_server()->GetURL("/connection_allowlist_empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   std::optional<base::UnguessableToken> main_network_restrictions_id =
@@ -9831,8 +9839,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistBrowserBackAllowed) {
   GURL allowlist_url(
       embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
-  GURL cross_origin_url(
-      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL cross_origin_url(embedded_test_server()->GetURL(
+      "b.com", "/connection_allowlist_response_origin.html"));
 
   // 1. Navigate to a.com with Connection-Allowlist.
   EXPECT_TRUE(NavigateToURL(shell(), allowlist_url));
@@ -9856,8 +9864,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistHistoryBackAllowedBFCache) {
   GURL allowlist_url(
       embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
-  GURL cross_origin_url(
-      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL cross_origin_url(embedded_test_server()->GetURL(
+      "b.com", "/connection_allowlist_response_origin.html"));
 
   // 1. Navigate to a.com with Connection-Allowlist.
   EXPECT_TRUE(NavigateToURL(shell(), allowlist_url));
@@ -9901,8 +9909,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistHistoryBackDisallowedNoBFCache) {
   GURL allowlist_url(
       embedded_test_server()->GetURL("a.com", "/connection_allowlist.html"));
-  GURL cross_origin_url(
-      embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL cross_origin_url(embedded_test_server()->GetURL(
+      "b.com", "/connection_allowlist_response_origin.html"));
 
   // 1. Navigate to a.com with Connection-Allowlist.
   EXPECT_TRUE(NavigateToURL(shell(), allowlist_url));
