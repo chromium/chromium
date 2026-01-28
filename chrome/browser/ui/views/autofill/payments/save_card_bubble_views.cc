@@ -104,12 +104,25 @@ void SaveCardBubbleViews::AddedToWidget() {
     return;
   }
 
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(
-          GetWindowTitle(),
-          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
-              ? TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET
-              : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  bool is_upload_cvc_only_save = controller()->GetPaymentsBubbleType() ==
+                                 PaymentsBubbleType::kUploadCvcSave;
+  if (is_upload_cvc_only_save &&
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)) {
+    // CVC-only saves should not show a Google Wallet logo.
+    auto title_view = std::make_unique<views::Label>(
+        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
+    title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    title_view->SetMultiLine(true);
+    GetBubbleFrameView()->SetTitleView(std::move(title_view));
+  } else {
+    GetBubbleFrameView()->SetTitleView(
+        std::make_unique<TitleWithIconAfterLabelView>(
+            GetWindowTitle(),
+            base::FeatureList::IsEnabled(
+                features::kAutofillEnableWalletBranding)
+                ? TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET
+                : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  }
 }
 
 std::u16string SaveCardBubbleViews::GetWindowTitle() const {
