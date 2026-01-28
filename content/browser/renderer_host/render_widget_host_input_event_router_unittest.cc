@@ -1020,17 +1020,6 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   EXPECT_FALSE(rwhier()->BubbleScrollEvent(view_root_.get(), child.view.get(),
                                            scroll_begin));
 
-  // Verify that the DwoC code set the crash string.
-  // TODO(crbug.com/346629231): remove this block and associated code when
-  // resolved.
-  if (base::FeatureList::IsEnabled(
-          input::features::kLogBubblingTouchscreenGesturesForDebug)) {
-    std::ostringstream stream;
-    base::debug::OutputCrashKeysToStream(stream);
-    EXPECT_EQ("Bug346629231-tscr_gesture_evt_history:{GestureTapDown,TS,f};",
-              stream.str());
-  }
-
   EXPECT_EQ(nullptr, bubbling_gesture_scroll_origin());
   EXPECT_EQ(nullptr, bubbling_gesture_scroll_target());
 }

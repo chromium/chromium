@@ -503,11 +503,6 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
   std::deque<TouchscreenGestureEventDebugData>
       touchscreen_gesture_event_debug_queue_;
   base::debug::CrashKeyString* GetTouchscreenGestureEventHistoryCrashString();
-  void LogTouchscreenEventHistoryForDebug(void* target_view,
-                                          void* resending_view,
-                                          void* touchscreen_gesture_target,
-                                          void* touchpad_gesture_target,
-                                          void* touch_target);
 
   // This is expected to outlive RenderWidgetHostInputEventRouter object.
   const raw_ptr<viz::HitTestDataProvider> hit_test_provider_ = nullptr;

@@ -1185,76 +1185,6 @@ base::debug::CrashKeyString* RenderWidgetHostInputEventRouter::
   return crash_key;
 }
 
-// Logs debug data for https://crbug.com/346629231.
-void RenderWidgetHostInputEventRouter::LogTouchscreenEventHistoryForDebug(
-    void* target_view,
-    void* resending_view,
-    void* touchscreen_gesture_target,
-    void* touchpad_gesture_target,
-    void* touch_target) {
-  // To avoid undue performance impact, only dump this data once for this tab.
-  // Hitting this codepath is expected to be a rare event.
-  static bool has_fired_once = false;
-
-  if (has_fired_once || !touchscreen_gesture_target_ ||
-      touchscreen_gesture_event_debug_queue_.empty()) {
-    return;
-  }
-
-  has_fired_once = true;
-
-  // Add crashkeys for the various targets, so we can see what's going on.
-  std::string target_view_str = base::StringPrintf("%p", target_view);
-  SCOPED_CRASH_KEY_STRING256("Bug346629231", "target_view",
-                             target_view_str.c_str());
-  std::string resending_view_str = base::StringPrintf("%p", resending_view);
-  SCOPED_CRASH_KEY_STRING256("Bug346629231", "resending_view",
-                             resending_view_str.c_str());
-  std::string touchscreen_gesture_target_str =
-      base::StringPrintf("%p", touchscreen_gesture_target);
-  // "tchscreen" below isn't a misspelling, it was shortened to fit in the
-  // 39 char limit for a crashkey name.
-  SCOPED_CRASH_KEY_STRING256("Bug346629231", "tchscreen_gesture_target",
-                             touchscreen_gesture_target_str.c_str());
-  std::string touchpad_gesture_target_str =
-      base::StringPrintf("%p", touchpad_gesture_target);
-  SCOPED_CRASH_KEY_STRING256("Bug346629231", "touchpad_gesture_target",
-                             touchpad_gesture_target_str.c_str());
-  std::string touch_target_str = base::StringPrintf("%p", touch_target);
-  SCOPED_CRASH_KEY_STRING256("Bug346629231", "touch_target",
-                             touch_target_str.c_str());
-
-  std::string gesture_event_history;
-  // Populate sequence history.
-  for (auto event_data : touchscreen_gesture_event_debug_queue_) {
-    std::string device_name;
-    switch (event_data.device) {
-      case blink::mojom::GestureDevice::kTouchpad:
-        device_name = "TP";
-        break;
-      case blink::mojom::GestureDevice::kTouchscreen:
-        device_name = "TS";
-        break;
-      case blink::mojom::GestureDevice::kSyntheticAutoscroll:
-        device_name = "AS";
-        break;
-      case blink::mojom::GestureDevice::kScrollbar:
-        device_name = "SB";
-        break;
-      default:
-        device_name = "UI";
-    }
-    std::string event_data_str = base::StringPrintf(
-        "{%s,%s,%s}", blink::WebInputEvent::GetName(event_data.type),
-        device_name, (event_data.is_emulated ? "t" : "f"));
-    gesture_event_history += event_data_str;
-  }
-
-  base::debug::SetCrashKeyString(GetTouchscreenGestureEventHistoryCrashString(),
-                                 gesture_event_history);
-  base::debug::DumpWithoutCrashing();
-}
-
 bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
     RenderWidgetHostViewInput* target_view,
     RenderWidgetHostViewInput* resending_view,
@@ -1307,12 +1237,6 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
                           "touchpad_gesture_target_",
                           static_cast<void*>(touchpad_gesture_target_),
                           "touch_target_", static_cast<void*>(touch_target_));
-      if (base::FeatureList::IsEnabled(
-              features::kLogBubblingTouchscreenGesturesForDebug)) {
-        LogTouchscreenEventHistoryForDebug(
-            target_view, resending_view, touchscreen_gesture_target_.get(),
-            touchpad_gesture_target_, touch_target_);
-      }
       return false;
     }
 

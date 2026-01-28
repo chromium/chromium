@@ -29,14 +29,6 @@ const base::FeatureParam<bool> kForwardEventsSeenOnBrowserToViz{
 BASE_FEATURE(kDispatchSingleEventIfNoPrediction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLogBubblingTouchscreenGesturesForDebug,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
 // Flag guard for fix for crbug.com/346629231.
 BASE_FEATURE(kIgnoreBubblingCollisionIfSourceDevicesMismatch,
              base::FEATURE_ENABLED_BY_DEFAULT);
