@@ -93,9 +93,6 @@ EXCLUDED_TESTS_WINDOWS = [
 
     # Temporarily disabled due to https://crbug.com/400524229
     os.path.join('tests', 'ui', 'process', 'win-command-child-path.rs'),
-
-    # Temporarily disabled due to https://crbug.com/436652831
-    os.path.join('tests', 'ui', 'asm', 'x86_64', 'may_unwind.rs'),
 ]
 EXCLUDED_TESTS_MAC = [
 ]
