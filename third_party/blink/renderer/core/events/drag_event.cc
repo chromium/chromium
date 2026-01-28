@@ -19,7 +19,7 @@ DragEvent::DragEvent(const AtomicString& type,
                      base::TimeTicks platform_time_stamp,
                      SyntheticEventType synthetic_event_type)
     : MouseEvent(type, initializer, platform_time_stamp, synthetic_event_type),
-      data_transfer_(initializer->getDataTransfer()) {}
+      data_transfer_(initializer->dataTransfer()) {}
 
 bool DragEvent::IsDragEvent() const {
   return true;

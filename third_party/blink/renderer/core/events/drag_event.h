@@ -40,7 +40,7 @@ class CORE_EXPORT DragEvent final : public MouseEvent {
             base::TimeTicks platform_time_stamp,
             SyntheticEventType);
 
-  DataTransfer* getDataTransfer() const override {
+  DataTransfer* dataTransfer() const override {
     return IsDragEvent() ? data_transfer_.Get() : nullptr;
   }
 

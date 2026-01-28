@@ -1085,7 +1085,7 @@ WebInputEventResult MouseEventManager::DispatchDragEvent(
           ui::mojom::blink::DragOperation::kNone);
     }
   }
-  initializer->setGetDataTransfer(data_transfer);
+  initializer->setDataTransfer(data_transfer);
   initializer->setSourceCapabilities(
       frame_->GetDocument()->domWindow()
           ? frame_->GetDocument()
