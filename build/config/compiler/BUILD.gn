@@ -976,9 +976,9 @@ config("compiler") {
     }
   }
 
-  # Pass flag to LLD so Android builds can allow debuggerd to properly symbolize
-  # stack crashes (http://crbug.com/919499).
-  if (use_lld && is_android) {
+  # Pass flag to LLD so Android builds can allow pre-Android Q's debuggerd to
+  # properly symbolize stack crashes (http://crbug.com/919499).
+  if (use_lld && is_android && android_ndk_api_level < 29) {
     ldflags += [ "-Wl,--no-rosegment" ]
   }
 
