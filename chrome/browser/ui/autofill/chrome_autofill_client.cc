@@ -868,12 +868,16 @@ void ChromeAutofillClient::ShowPlusAddressEmailOverrideNotification(
       AutofillSnackbarType::kPlusAddressEmailOverride,
       std::move(email_override_undo_callback));
 #else
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents());
-  if (!browser) {
+  tabs::TabInterface* tab = GetTabInterface();
+  if (!tab) {
     return;
   }
-  if (ToastController* const controller =
-          browser->browser_window_features()->toast_controller()) {
+  BrowserWindowInterface* window_interface = tab->GetBrowserWindowInterface();
+  if (!window_interface) {
+    return;
+  }
+  if (ToastController* controller =
+          window_interface->GetFeatures().toast_controller()) {
     ToastParams params(ToastId::kPlusAddressOverride);
     params.menu_model = std::make_unique<plus_addresses::PlusAddressMenuModel>(
         base::UTF8ToUTF16(
@@ -1255,9 +1259,14 @@ Profile* ChromeAutofillClient::GetProfile() const {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
+tabs::TabInterface* ChromeAutofillClient::GetTabInterface() {
+  // Autofill is (currently) instantiated also in non-tab contexts - therefore
+  // use the `MaybeGet` function.
+  return tabs::TabInterface::MaybeGetFromContents(web_contents());
+}
+
 void ChromeAutofillClient::ShowEmailVerifiedToast() {
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::GetFromContents(web_contents());
+  tabs::TabInterface* tab_interface = GetTabInterface();
   if (!tab_interface) {
     return;
   }
@@ -1269,9 +1278,8 @@ void ChromeAutofillClient::ShowEmailVerifiedToast() {
   if (!window_interface) {
     return;
   }
-  ToastController* toast_controller =
-      window_interface->GetFeatures().toast_controller();
-  if (toast_controller) {
+  if (ToastController* toast_controller =
+          window_interface->GetFeatures().toast_controller()) {
     toast_controller->MaybeShowToast(ToastParams(ToastId::kEmailVerified));
   }
 #endif
@@ -1453,8 +1461,7 @@ void ChromeAutofillClient::OnActorTaskStateChange(
     return;
   }
 
-  const tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  const tabs::TabInterface* tab_interface = GetTabInterface();
   if (tab_interface && !task->HasTab(tab_interface->GetHandle())) {
     // The status update is for an actor that isn't interacting with this tab.
     // The value of `is_actor_mode_` shouldn't be updated.

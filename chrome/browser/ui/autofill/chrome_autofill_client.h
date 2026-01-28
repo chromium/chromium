@@ -52,6 +52,10 @@ namespace optimization_guide {
 class RemoteModelExecutor;
 }
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace autofill {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -283,6 +287,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
 
  private:
   Profile* GetProfile() const;
+  tabs::TabInterface* GetTabInterface();
   bool SupportsConsentlessExecution(const url::Origin& origin);
   void ShowAutofillSuggestionsImpl(
       SuggestionUiSessionId session_id,
