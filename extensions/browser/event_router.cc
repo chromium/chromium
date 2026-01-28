@@ -649,15 +649,17 @@ void EventRouter::RemoveObserverForTesting(TestObserver* observer) {
 
 void EventRouter::OnListenerAdded(const EventListener* listener) {
   RenderProcessHost* process = listener->process();
+  int render_process_id = content::ChildProcessHost::kInvalidUniqueID;
   if (process) {
+    render_process_id = process->GetDeprecatedID();
     ObserveProcess(process);
   }
 
   const EventListenerInfo details(
       listener->event_name(), listener->extension_id(),
-      listener->listener_url(), listener->browser_context(),
-      listener->worker_thread_id(), listener->service_worker_version_id(),
-      listener->IsLazy());
+      listener->listener_url(), listener->filter(), listener->browser_context(),
+      render_process_id, listener->worker_thread_id(),
+      listener->service_worker_version_id(), listener->IsLazy());
   std::string base_event_name = GetBaseEventName(listener->event_name());
   auto it = observer_map_.find(base_event_name);
   if (it != observer_map_.end()) {
@@ -668,11 +670,14 @@ void EventRouter::OnListenerAdded(const EventListener* listener) {
 }
 
 void EventRouter::OnListenerRemoved(const EventListener* listener) {
+  int render_process_id = listener->process()
+                              ? listener->process()->GetDeprecatedID()
+                              : content::ChildProcessHost::kInvalidUniqueID;
   const EventListenerInfo details(
       listener->event_name(), listener->extension_id(),
-      listener->listener_url(), listener->browser_context(),
-      listener->worker_thread_id(), listener->service_worker_version_id(),
-      listener->IsLazy());
+      listener->listener_url(), listener->filter(), listener->browser_context(),
+      render_process_id, listener->worker_thread_id(),
+      listener->service_worker_version_id(), listener->IsLazy());
   std::string base_event_name = GetBaseEventName(listener->event_name());
   auto it = observer_map_.find(base_event_name);
   if (it != observer_map_.end()) {
@@ -1548,11 +1553,14 @@ std::unique_ptr<Event> Event::DeepCopy() const {
 EventListenerInfo::EventListenerInfo(const std::string& event_name,
                                      const ExtensionId& extension_id,
                                      const GURL& listener_url,
+                                     const base::Value::Dict* filter,
                                      content::BrowserContext* browser_context)
     : event_name(event_name),
       extension_id(extension_id),
       listener_url(listener_url),
+      filter(filter ? std::make_optional(filter->Clone()) : std::nullopt),
       browser_context(browser_context),
+      render_process_id(content::ChildProcessHost::kInvalidUniqueID),
       worker_thread_id(kMainThreadId),
       service_worker_version_id(blink::mojom::kInvalidServiceWorkerVersionId),
       is_lazy(false) {}
@@ -1560,16 +1568,22 @@ EventListenerInfo::EventListenerInfo(const std::string& event_name,
 EventListenerInfo::EventListenerInfo(const std::string& event_name,
                                      const ExtensionId& extension_id,
                                      const GURL& listener_url,
+                                     const base::Value::Dict* filter,
                                      content::BrowserContext* browser_context,
+                                     int render_process_id,
                                      int worker_thread_id,
                                      int64_t service_worker_version_id,
                                      bool is_lazy)
     : event_name(event_name),
       extension_id(extension_id),
       listener_url(listener_url),
+      filter(filter ? std::make_optional(filter->Clone()) : std::nullopt),
       browser_context(browser_context),
+      render_process_id(render_process_id),
       worker_thread_id(worker_thread_id),
       service_worker_version_id(service_worker_version_id),
       is_lazy(is_lazy) {}
+
+EventListenerInfo::~EventListenerInfo() = default;
 
 }  // namespace extensions

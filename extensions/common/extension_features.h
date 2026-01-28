@@ -327,6 +327,11 @@ BASE_DECLARE_FEATURE(kWebRequestSecurityInfo);
 // browser startup).
 BASE_DECLARE_FEATURE(kWebRequestPersistFilteredEvents);
 
+// When enabled, use an alternative way to add listeners for the webRequest API,
+// which uses the standard `addListener` only, rather than using
+// WebRequestInternal's custom API.
+BASE_DECLARE_FEATURE(kWebRequestAlternativeAddListener);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

@@ -359,6 +359,11 @@ class CONTENT_EXPORT ServiceWorkerContext {
   virtual void SetForceUpdateOnPageLoadForTesting(
       bool force_update_on_page_load) = 0;
 
+  // Adds `message` to a service worker's DevTools console.
+  virtual void AddMessageToConsole(int64_t service_worker_version_id,
+                                   blink::mojom::ConsoleMessageLevel level,
+                                   const std::string& message) = 0;
+
  protected:
   ServiceWorkerContext() {}
   virtual ~ServiceWorkerContext() {}

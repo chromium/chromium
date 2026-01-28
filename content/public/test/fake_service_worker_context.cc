@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -163,6 +164,18 @@ void FakeServiceWorkerContext::StopAllServiceWorkers(base::OnceClosure) {
 const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
 FakeServiceWorkerContext::GetRunningServiceWorkerInfos() {
   NOTREACHED();
+}
+
+void FakeServiceWorkerContext::AddMessageToConsole(
+    int64_t service_worker_version_id,
+    blink::mojom::ConsoleMessageLevel level,
+    const std::string& message) {
+  for (auto& observer : observers_) {
+    observer.OnReportConsoleMessage(
+        service_worker_version_id, GURL(),
+        content::ConsoleMessage(blink::mojom::ConsoleMessageSource::kOther,
+                                level, base::UTF8ToUTF16(message), -1, GURL()));
+  }
 }
 
 void FakeServiceWorkerContext::NotifyObserversOnVersionActivated(

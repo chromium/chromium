@@ -711,22 +711,29 @@ struct EventListenerInfo {
   EventListenerInfo(const std::string& event_name,
                     const ExtensionId& extension_id,
                     const GURL& listener_url,
+                    const base::Value::Dict* filter,
                     content::BrowserContext* browser_context);
 
   EventListenerInfo(const std::string& event_name,
                     const ExtensionId& extension_id,
                     const GURL& listener_url,
+                    const base::Value::Dict* filter,
                     content::BrowserContext* browser_context,
+                    int render_process_id,
                     int worker_thread_id,
                     int64_t service_worker_version_id,
                     bool is_lazy);
+
+  ~EventListenerInfo();
 
   // The event name including any sub-event, e.g. "runtime.onStartup" or
   // "webRequest.onCompleted/123".
   const std::string event_name;
   const ExtensionId extension_id;
   const GURL listener_url;
+  const std::optional<base::Value::Dict> filter;
   const raw_ptr<content::BrowserContext> browser_context;
+  const int render_process_id;
   const int worker_thread_id;
   const int64_t service_worker_version_id;
   const bool is_lazy;

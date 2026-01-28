@@ -66,7 +66,7 @@ class BluetoothEventRouterTest : public ExtensionsTest {
 };
 
 TEST_F(BluetoothEventRouterTest, BluetoothEventListener) {
-  EventListenerInfo info("", "", GURL(), nullptr);
+  EventListenerInfo info("", "", GURL(), nullptr, nullptr);
   router_->OnListenerAdded(info);
   EXPECT_CALL(*mock_adapter_, RemoveObserver(testing::_)).Times(1);
   router_->OnListenerRemoved(info);
@@ -74,7 +74,7 @@ TEST_F(BluetoothEventRouterTest, BluetoothEventListener) {
 
 TEST_F(BluetoothEventRouterTest, MultipleBluetoothEventListeners) {
   // TODO(rkc/stevenjb): Test multiple extensions and WebUI.
-  EventListenerInfo info("", "", GURL(), nullptr);
+  EventListenerInfo info("", "", GURL(), nullptr, nullptr);
   router_->OnListenerAdded(info);
   router_->OnListenerAdded(info);
   router_->OnListenerAdded(info);

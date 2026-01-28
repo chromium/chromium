@@ -273,7 +273,7 @@ TEST_F(MDnsAPIDiscoveryTest, ServiceListenersAddedAndRemoved) {
   extensions::EventListenerMap::ListenerList listeners;
 
   extensions::EventListenerInfo listener_info(
-      kEventFilterServiceTypeKey, kExtId, GURL(), browser_context());
+      kEventFilterServiceTypeKey, kExtId, GURL(), nullptr, browser_context());
 
   EXPECT_CALL(*mdns_api_, GetEventListeners())
       .WillRepeatedly(ReturnRef(listeners));

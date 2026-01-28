@@ -57,13 +57,13 @@ ScopedListen::ScopedListen(IdleManager* idle_manager,
                            const ExtensionId& extension_id)
     : idle_manager_(idle_manager), extension_id_(extension_id) {
   const EventListenerInfo details(idle::OnStateChanged::kEventName,
-                                  extension_id_, GURL(), nullptr);
+                                  extension_id_, GURL(), nullptr, nullptr);
   idle_manager_->OnListenerAdded(details);
 }
 
 ScopedListen::~ScopedListen() {
   const EventListenerInfo details(idle::OnStateChanged::kEventName,
-                                  extension_id_, GURL(), nullptr);
+                                  extension_id_, GURL(), nullptr, nullptr);
   idle_manager_->OnListenerRemoved(details);
 }
 

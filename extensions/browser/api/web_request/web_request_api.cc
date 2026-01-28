@@ -29,6 +29,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -73,6 +74,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -97,6 +99,9 @@ namespace web_request = api::web_request;
 namespace {
 
 WebRequestAPI::TestObserver* g_test_observer = nullptr;
+
+constexpr char kExtraInfoKey[] = "_options.extraInfo";
+constexpr char kWebViewInstanceIdKey[] = "_options.webViewInstanceId";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -183,6 +188,38 @@ bool HasAnyDeclarativeWebRequestPermissions(const Extension& extension) {
 bool HasWebViewPermission(const Extension& extension) {
   const PermissionsData* permissions = extension.permissions_data();
   return permissions->HasAPIPermission(APIPermissionID::kWebView);
+}
+
+// Logs a console message for an extension's webRequest event listener. This is
+// used to report errors with a listener's registration.
+void AddMessageToConsoleForListener(const EventListenerInfo& details,
+                                    blink::mojom::ConsoleMessageLevel level,
+                                    const std::string& message) {
+  // For service worker-based extensions, the message is routed to the service
+  // worker's console. For other contexts, it's sent to the console of each of
+  // the extension's primary main frames.
+  if (details.service_worker_version_id !=
+      blink::mojom::kInvalidServiceWorkerVersionId) {
+    content::StoragePartition* storage_partition =
+        util::GetStoragePartitionForExtensionId(details.extension_id,
+                                                details.browser_context,
+                                                /*can_create=*/false);
+    if (storage_partition && storage_partition->GetServiceWorkerContext()) {
+      storage_partition->GetServiceWorkerContext()->AddMessageToConsole(
+          details.service_worker_version_id, level, message);
+    }
+    return;
+  }
+
+  auto* process = content::RenderProcessHost::FromID(details.render_process_id);
+  if (process) {
+    process->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+      if (rfh->IsInPrimaryMainFrame() &&
+          rfh->GetLastCommittedURL().host() == details.extension_id) {
+        rfh->AddMessageToConsole(level, message);
+      }
+    });
+  }
 }
 
 // Mirrors the histogram enum of the same name. DO NOT REORDER THESE VALUES OR
@@ -373,6 +410,158 @@ void WebRequestAPI::SetObserverForTest(TestObserver* observer) {
 WebRequestAPI::TestObserver::TestObserver() = default;
 
 WebRequestAPI::TestObserver::~TestObserver() = default;
+
+void WebRequestAPI::OnListenerAdded(const EventListenerInfo& details) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kWebRequestAlternativeAddListener)) {
+    return;
+  }
+  if (details.is_lazy) {
+    return;
+  }
+
+  WebRequestEventRouter::RequestFilter filter;
+  std::string error;
+  // Failure + an empty error string means a fatal error.
+  bool success =
+      details.filter && filter.InitFromValue(*details.filter, &error);
+  if (!success) {
+    // TODO(crbug.com/477654111): this validation should happen at the
+    // EventRouter layer. Currently, it's possible for an invalid listener to be
+    // added at the EventRouter layer, and for the validation to then fail here.
+    if (!error.empty()) {
+      AddMessageToConsoleForListener(
+          details, blink::mojom::ConsoleMessageLevel::kError, error);
+    }
+    return;
+  }
+
+  int extra_info_spec = 0;
+  if (auto* extra_info = details.filter->FindListByDottedPath(kExtraInfoKey)) {
+    if (!ExtraInfoSpec::InitFromValue(base::Value(extra_info->Clone()),
+                                      &extra_info_spec)) {
+      AddMessageToConsoleForListener(details,
+                                     blink::mojom::ConsoleMessageLevel::kError,
+                                     "Invalid extraInfo spec.");
+      return;
+    }
+  }
+  int web_view_instance_id =
+      details.filter->FindIntByDottedPath(kWebViewInstanceIdKey).value_or(0);
+
+  const Extension* extension = nullptr;
+  if (!details.extension_id.empty()) {
+    extension = ExtensionRegistry::Get(details.browser_context)
+                    ->enabled_extensions()
+                    .GetByID(details.extension_id);
+    // If the extension ID was provided, the extension should always be
+    // available. Otherwise, we should never have added the listener.
+    CHECK(extension);
+  }
+  std::string extension_name = extension ? extension->name() : std::string();
+  std::string event_name = EventRouter::GetBaseEventName(details.event_name);
+  std::string sub_event_name = details.event_name;
+  auto* process = content::RenderProcessHost::FromID(details.render_process_id);
+
+  if (extra_info_spec & ExtraInfoSpec::SECURITY_INFO) {
+    // Security info should not be available in Chrome Apps and
+    // non-controlled frame, non-extension contexts.
+    if ((extension && extension->is_platform_app()) ||
+        (!extension &&
+         !BrowserProcessContextData(process).HasControlledFrameCapability())) {
+      AddMessageToConsoleForListener(details,
+                                     blink::mojom::ConsoleMessageLevel::kError,
+                                     keys::kSecurityInfoAPINotAvailable);
+      return;
+    }
+
+    // Select the appropriate feature flag and error key based on the context.
+    const auto& feature =
+        extension ? extensions_features::kWebRequestSecurityInfo
+                  : blink::features::kControlledFrameWebRequestSecurityInfo;
+    const char* error_key =
+        extension ? keys::kSecurityInfoFlagAbsentInExtensions
+                  : keys::kSecurityInfoFlagAbsentInControlledFrame;
+    if (!base::FeatureList::IsEnabled(feature)) {
+      AddMessageToConsoleForListener(
+          details, blink::mojom::ConsoleMessageLevel::kError, error_key);
+      return;
+    }
+  }
+
+  if (web_view_instance_id) {
+    // If a web view ID has been supplied and the call is from an extension
+    // (i.e. not from WebUI), we require the extension to have the webview
+    // permission.
+    if (extension && !extension->permissions_data()->HasAPIPermission(
+                         mojom::APIPermissionID::kWebView)) {
+      AddMessageToConsoleForListener(details,
+                                     blink::mojom::ConsoleMessageLevel::kError,
+                                     "Missing webview permission.");
+      return;
+    }
+  } else {
+    auto has_blocking_permission = [&extension, &event_name]() {
+      DCHECK(extension);
+      if (extension->permissions_data()->HasAPIPermission(
+              APIPermissionID::kWebRequestBlocking)) {
+        return true;
+      }
+
+      return event_name == keys::kOnAuthRequiredEvent &&
+             extension->permissions_data()->HasAPIPermission(
+                 APIPermissionID::kWebRequestAuthProvider);
+    };
+
+    // We check automatically whether the extension has the 'webRequest'
+    // permission. For blocking calls we require the additional permission
+    // 'webRequestBlocking' or 'webRequestAuthProvider'.
+    bool is_blocking = extra_info_spec & (ExtraInfoSpec::BLOCKING |
+                                          ExtraInfoSpec::ASYNC_BLOCKING);
+    if (is_blocking && !has_blocking_permission()) {
+      AddMessageToConsoleForListener(details,
+                                     blink::mojom::ConsoleMessageLevel::kError,
+                                     keys::kBlockingPermissionRequired);
+      return;
+    }
+
+    // We allow to subscribe to patterns that are broader than the host
+    // permissions. E.g., we could subscribe to http://www.example.com/*
+    // while having host permissions for http://www.example.com/foo/* and
+    // http://www.example.com/bar/*.
+    // For this reason we do only a coarse check here to warn the extension
+    // developer if they do something obviously wrong.
+    if (extension &&
+        extension->permissions_data()
+            ->GetEffectiveHostPermissions()
+            .is_empty() &&
+        extension->permissions_data()
+            ->withheld_permissions()
+            .explicit_hosts()
+            .is_empty()) {
+      AddMessageToConsoleForListener(details,
+                                     blink::mojom::ConsoleMessageLevel::kError,
+                                     keys::kHostPermissionsRequired);
+      return;
+    }
+  }
+
+  if (!WebRequestEventRouter::Get(details.browser_context)
+           ->AddEventListener(
+               details.browser_context, details.extension_id, extension_name,
+               event_name, sub_event_name, std::move(filter), extra_info_spec,
+               details.render_process_id, web_view_instance_id,
+               details.worker_thread_id, details.service_worker_version_id)) {
+    AddMessageToConsoleForListener(details,
+                                   blink::mojom::ConsoleMessageLevel::kError,
+                                   "Failed to add listener.");
+    return;
+  }
+
+  helpers::ClearCacheOnNavigation();
+}
 
 void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

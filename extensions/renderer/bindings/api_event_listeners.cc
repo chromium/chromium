@@ -31,13 +31,12 @@ const char kErrorTooManyListeners[] = "Too many listeners.";
 // We should generate an argument spec for it and match it exactly.
 bool ValidateFilter(v8::Local<v8::Context> context,
                     v8::Local<v8::Object> filter,
-                    std::unique_ptr<base::DictValue>* filter_dict,
+                    base::DictValue& filter_dict,
                     std::string* error) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope handle_scope(isolate);
 
   if (filter.IsEmpty()) {
-    *filter_dict = std::make_unique<base::DictValue>();
     return true;
   }
 
@@ -70,7 +69,54 @@ bool ValidateFilter(v8::Local<v8::Context> context,
     return false;
   }
 
-  *filter_dict = std::make_unique<base::DictValue>(value->GetDict().Clone());
+  filter_dict = value->GetDict().Clone();
+  return true;
+}
+
+// Pseudo-validates the given `options`, converts it and injects it into the
+// `filter` base::DictValue. Returns true on success.
+bool ValidateOptions(v8::Local<v8::Context> context,
+                     v8::Local<v8::Object> options,
+                     base::DictValue& filter_dict,
+                     std::string* error) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::HandleScope handle_scope(isolate);
+
+  // Prevent user scripts from spoofing options without validating.
+  filter_dict.Remove("_options");
+
+  if (options.IsEmpty()) {
+    return true;
+  }
+
+  base::DictValue options_dict;
+  auto converter = content::V8ValueConverter::Create();
+
+  v8::Local<v8::Value> extra_info;
+  if (options->Get(context, gin::StringToSymbol(isolate, "extraInfo"))
+          .ToLocal(&extra_info) &&
+      !extra_info->IsUndefined() && !extra_info->IsNull()) {
+    if (!extra_info->IsArray()) {
+      return false;
+    }
+    if (auto value = converter->FromV8Value(extra_info, context)) {
+      options_dict.Set("extraInfo", std::move(*value));
+    }
+  }
+
+  v8::Local<v8::Value> web_view_instance_id;
+  if (options->Get(context, gin::StringToSymbol(isolate, "webViewInstanceId"))
+          .ToLocal(&web_view_instance_id) &&
+      !web_view_instance_id->IsUndefined()) {
+    if (!web_view_instance_id->IsNumber()) {
+      return false;
+    }
+    if (auto value = converter->FromV8Value(web_view_instance_id, context)) {
+      options_dict.Set("webViewInstanceId", std::move(*value));
+    }
+  }
+
+  filter_dict.Set("_options", std::move(options_dict));
   return true;
 }
 
@@ -96,8 +142,13 @@ UnfilteredEventListeners::UnfilteredEventListeners(
 }
 UnfilteredEventListeners::~UnfilteredEventListeners() = default;
 
+const std::string& UnfilteredEventListeners::GetEventName() const {
+  return event_name_;
+}
+
 bool UnfilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
                                            v8::Local<v8::Object> filter,
+                                           v8::Local<v8::Object> options,
                                            v8::Local<v8::Context> context,
                                            std::string* error) {
   // |filter| should be checked before getting here.
@@ -255,8 +306,13 @@ FilteredEventListeners::FilteredEventListeners(
 
 FilteredEventListeners::~FilteredEventListeners() = default;
 
+const std::string& FilteredEventListeners::GetEventName() const {
+  return event_name_;
+}
+
 bool FilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
                                          v8::Local<v8::Object> filter,
+                                         v8::Local<v8::Object> options,
                                          v8::Local<v8::Context> context,
                                          std::string* error) {
   if (HasListener(listener))
@@ -268,11 +324,16 @@ bool FilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
     return false;
   }
 
-  std::unique_ptr<base::DictValue> filter_dict;
-  if (!ValidateFilter(context, filter, &filter_dict, error))
+  auto filter_dict = std::make_unique<base::DictValue>();
+  if (!ValidateFilter(context, filter, *filter_dict, error)) {
     return false;
-
+  }
+  // NOTE: injects options into the filter dictionary.
+  if (!ValidateOptions(context, options, *filter_dict, error)) {
+    return false;
+  }
   base::DictValue* filter_weak = filter_dict.get();
+
   int filter_id = -1;
   bool was_first_of_kind = false;
   LazilySetContextOwner(context);

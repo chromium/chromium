@@ -252,6 +252,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       int64_t service_worker_version_id) override;
   blink::AssociatedInterfaceProvider& GetRemoteAssociatedInterfaces(
       int64_t service_worker_version_id) override;
+  void AddMessageToConsole(int64_t service_worker_version_id,
+                           blink::mojom::ConsoleMessageLevel level,
+                           const std::string& message) override;
 
   // Returns the running info for a worker with `version_id`, if found.
   std::optional<ServiceWorkerRunningInfo> GetRunningServiceWorkerInfo(

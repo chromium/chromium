@@ -51,6 +51,9 @@ class APIEventListeners {
 
   virtual ~APIEventListeners() = default;
 
+  // Returns the name of the event.
+  virtual const std::string& GetEventName() const = 0;
+
   // Adds the given `listener` to the list, possibly associating it with the
   // given `filter`. Returns true if the listener is added. Populates `error`
   // with any errors encountered. Note that `error` is *not* always populated
@@ -58,6 +61,7 @@ class APIEventListeners {
   // to be an error.
   virtual bool AddListener(v8::Local<v8::Function> listener,
                            v8::Local<v8::Object> filter,
+                           v8::Local<v8::Object> options,
                            v8::Local<v8::Context> context,
                            std::string* error) = 0;
 
@@ -99,8 +103,10 @@ class UnfilteredEventListeners final : public APIEventListeners {
 
   ~UnfilteredEventListeners() override;
 
+  const std::string& GetEventName() const override;
   bool AddListener(v8::Local<v8::Function> listener,
                    v8::Local<v8::Object> filter,
+                   v8::Local<v8::Object> options,
                    v8::Local<v8::Context> context,
                    std::string* error) override;
   void RemoveListener(v8::Local<v8::Function> listener,
@@ -174,8 +180,10 @@ class FilteredEventListeners final : public APIEventListeners {
 
   ~FilteredEventListeners() override;
 
+  const std::string& GetEventName() const override;
   bool AddListener(v8::Local<v8::Function> listener,
                    v8::Local<v8::Object> filter,
+                   v8::Local<v8::Object> options,
                    v8::Local<v8::Context> context,
                    std::string* error) override;
   void RemoveListener(v8::Local<v8::Function> listener,

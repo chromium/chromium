@@ -105,6 +105,9 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
+  void AddMessageToConsole(int64_t service_worker_version_id,
+                           blink::mojom::ConsoleMessageLevel level,
+                           const std::string& message) override;
 
   // Explicitly notify ServiceWorkerContextObservers added to this context.
   void NotifyObserversOnVersionActivated(int64_t version_id, const GURL& scope);

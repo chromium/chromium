@@ -205,6 +205,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   static void SetObserverForTest(TestObserver* observer);
 
   // EventRouter::Observer overrides:
+  void OnListenerAdded(const EventListenerInfo& details) override;
   void OnListenerRemoved(const EventListenerInfo& details) override;
 
   // If any WebRequest event listeners are currently active for this
