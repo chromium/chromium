@@ -633,6 +633,11 @@ void ContextualSearchboxHandler::DeleteContext(
   } else if (num_files == 0 && tab_context_snapshot_.has_value()) {
     context_input_data_ = std::optional(*tab_context_snapshot_.value().second);
   }
+
+  // Ensure `input_state_model_` is updated when context deleted.
+  if (input_state_model_) {
+    input_state_model_->OnContextChanged();
+  }
 }
 
 void ContextualSearchboxHandler::ClearFiles() {
@@ -641,6 +646,11 @@ void ContextualSearchboxHandler::ClearFiles() {
   }
   context_input_data_ = std::nullopt;
   tab_context_snapshot_.reset();
+
+  // Ensure `input_state_model_` is updated when context is cleared.
+  if (input_state_model_) {
+    input_state_model_->OnContextChanged();
+  }
 }
 
 void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
@@ -673,6 +683,11 @@ void ContextualSearchboxHandler::OnFileUploadStatusChanged(
         error_type.has_value()
             ? std::make_optional(contextual_search::ToMojom(error_type.value()))
             : std::nullopt);
+  }
+
+  // Ensure `input_state_model_` is updated when file is uploaded.
+  if (input_state_model_) {
+    input_state_model_->OnContextChanged();
   }
 }
 
@@ -756,6 +771,11 @@ void ContextualSearchboxHandler::OnGetTabPageContext(
     SnapshotTabContext(context_token, std::move(page_content_data));
   } else {
     UploadTabContext(context_token, std::move(page_content_data));
+  }
+
+  // Ensure `input_state_model_` is updated when tab is uploaded.
+  if (input_state_model_) {
+    input_state_model_->OnContextChanged();
   }
 }
 

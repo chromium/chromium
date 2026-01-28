@@ -325,6 +325,7 @@ TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
   EXPECT_EQ(handler().GetUploadedContextTokens().size(), 1u);
 
   EXPECT_CALL(query_controller(), ClearFiles).Times(0);
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
   handler().ClearFiles();
   EXPECT_EQ(handler().GetUploadedContextTokens().size(), 0u);
 }
@@ -633,6 +634,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext) {
   EXPECT_CALL(query_controller(),
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(1);
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
   EXPECT_CALL(callback, Run).Times(1);
 
@@ -682,6 +684,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
               composebox_query::mojom::FileUploadStatus file_upload_status,
               std::optional<composebox_query::mojom::FileUploadErrorType>
                   file_upload_error_type) { status = file_upload_status; });
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
   EXPECT_CALL(callback, Run).Times(1);
@@ -725,6 +728,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
   EXPECT_CALL(query_controller(),
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(0);
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(2);
   base::test::TestFuture<const std::optional<base::UnguessableToken>&> future;
   auto sample_contextual_input_data =
       std::make_unique<lens::ContextualInputData>();
@@ -765,6 +769,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
                        callback) {
         std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
       });
+
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(3);
 
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
   handler().AddTabContext(tab_id1, /*delay_upload=*/true, callback.Get());
@@ -830,6 +836,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
   EXPECT_CALL(query_controller(),
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(1);
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
@@ -925,6 +932,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   EXPECT_CALL(query_controller(),
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(2);
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(2);
 
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
@@ -986,6 +994,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   EXPECT_CALL(query_controller(),
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(1);
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
@@ -1041,6 +1050,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextRecencyRankingMetric) {
   EXPECT_CALL(query_controller(),
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(1);
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
   // Click on the first tab.
   base::test::TestFuture<std::optional<base::UnguessableToken>> future;
@@ -1230,6 +1240,7 @@ TEST_P(ContextualSearchboxHandlerFileUploadStatusTest,
               composebox_query::mojom::FileUploadStatus file_upload_status,
               std::optional<composebox_query::mojom::FileUploadErrorType>
                   file_upload_error_type) { status = file_upload_status; });
+  EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
   const auto expected_status = GetParam();
   base::UnguessableToken token = base::UnguessableToken::Create();

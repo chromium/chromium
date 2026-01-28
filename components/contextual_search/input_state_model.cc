@@ -216,6 +216,14 @@ void InputStateModel::setActiveModel(ModelMode model) {
   updateSelectedState(state_.active_tool, model);
 }
 
+void InputStateModel::OnContextChanged() {
+  // Update the disabled state based on the new inputs uploaded.
+  updateDisabledState();
+
+  // Notify subscribers once `state_` is updated.
+  notifySubscribers();
+}
+
 void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
   state_.active_model = model;
   state_.active_tool = tool;
