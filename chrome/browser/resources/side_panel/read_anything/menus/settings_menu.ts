@@ -331,9 +331,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     const currentTarget = e.currentTarget as HTMLElement;
     if (currentTarget) {
       currentTarget.classList.remove('active');
-    this.startCloseTimer_();
+      this.startCloseTimer_();
+    }
   }
-}
 
   private startCloseTimer_() {
     if (this.closeTimer_) {
@@ -375,12 +375,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       window.addEventListener(
           eventType, this.pointerEventCallback_, {capture: true});
     });
+    this.fire(ToolbarEvent.SETTINGS_OPENED);
   }
 
   close() {
     this.clearTimers_();
     this.$.lazyMenu.get().close();
-    document.body.classList.remove('read-anything-menu-open');
     window.removeEventListener(
         'keydown', this.keyDownCallback_, {capture: true});
     this.interceptedEvents_.forEach(eventType => {
@@ -388,6 +388,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
           eventType, this.pointerEventCallback_, {capture: true});
     });
     this.currentOpenId_ = null;
+    this.fire(ToolbarEvent.SETTINGS_CLOSED);
   }
 
   // Immersive design uses non-modal menus to support submenus. Since non-modal

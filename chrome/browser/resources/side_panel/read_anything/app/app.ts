@@ -51,6 +51,7 @@ export interface AppElement {
     languageToast: LanguageToastElement,
     containerScroller: HTMLElement,
     lineFocus: HTMLElement,
+    settingsOverlay: HTMLElement,
   };
 }
 
@@ -197,6 +198,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.$.toolbar.addEventListener('mousemove', mouseEvent => {
         this.lineFocusController_.onMouseMoveInToolbar(mouseEvent.clientY);
       });
+      this.$.settingsOverlay.addEventListener('mousemove', mouseEvent => {
+        this.lineFocusController_.onMouseMoveInToolbar(mouseEvent.clientY);
+      });
       this.lineFocusController_.addListener(this);
     }
     this.contentController_.addListener(this);
@@ -330,6 +334,21 @@ export class AppElement extends AppElementBase implements SpeechListener,
     requestAnimationFrame(() => {
       this.onTextLocationsChange_();
     });
+  }
+
+  protected onSettingsOpened_() {
+    if (this.$.settingsOverlay) {
+      this.$.settingsOverlay.style.display = 'block';
+    }
+  }
+
+  protected onSettingsClosed_() {
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.lineFocusController_.onAllMenusClose();
+    }
+    if (this.$.settingsOverlay) {
+      this.$.settingsOverlay.style.display = 'none';
+    }
   }
 
   protected onContainerScroll_() {

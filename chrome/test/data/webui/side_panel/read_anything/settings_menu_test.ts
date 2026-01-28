@@ -234,4 +234,22 @@ suite('SettingsMenuElement', () => {
     assertFalse(openSubmenuWasFiredAfterClose);
     timer.uninstall();
   });
+
+  test('opening the menu fires a settings-opened event', async () => {
+    settingsMenu.close();
+
+    const whenFired =
+        eventToPromise(ToolbarEvent.SETTINGS_OPENED, settingsMenu);
+    const anchor = document.createElement('div');
+    document.body.appendChild(anchor);
+    settingsMenu.open(anchor);
+    await whenFired;
+  });
+
+  test('closing the menu fires a settings-closed event', async () => {
+    const whenFired =
+        eventToPromise(ToolbarEvent.SETTINGS_CLOSED, settingsMenu);
+    settingsMenu.close();
+    await whenFired;
+  });
 });

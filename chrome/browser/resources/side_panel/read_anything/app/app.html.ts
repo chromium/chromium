@@ -14,6 +14,9 @@ export function getHtml(this: AppElement) {
     ?hidden="${!this.isImmersiveMode()}">
 </immersive-mode-header>
 <div id="appFlexParent" class="${immersiveClass}">
+<!-- Overlay to prevent cursor from interacting with background elements when
+ the settings menu is open. -->
+<div id="settingsOverlay" class="settings-overlay"></div>
   <div id="toolbar-container">
     <read-anything-toolbar
         .presentationState="${this.presentationState_}"
@@ -51,6 +54,8 @@ export function getHtml(this: AppElement) {
         @line-focus-style-change="${this.onLineFocusStyleChange_}"
         @line-focus-movement-change="${this.onLineFocusMovementChange_}"
         @close-all-menus="${this.onAllMenusClose_}"
+        @settings-opened="${this.onSettingsOpened_}"
+        @settings-closed="${this.onSettingsClosed_}"
         id="toolbar">
     </read-anything-toolbar>
   </div>

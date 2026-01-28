@@ -17,6 +17,7 @@
   color: var(--foreground-color);
   display: flex;
   font-size: 14px;
+  height: var(--header-height);
   justify-content: space-between;
   padding-left: 16px;
   padding-right: 8px;

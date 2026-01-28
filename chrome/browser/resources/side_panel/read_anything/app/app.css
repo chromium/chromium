@@ -14,6 +14,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  background-color: var(--background-color);
+  --header-height: 36px;
 }
 
 :host #appFlexParent {
@@ -207,4 +209,17 @@ img.distilled-full-width-img {
   display: block;
   width: 100%;
   height: auto;
+}
+
+/* TODO(crbug.com/476449753): Remove overlay top offset once the immersive
+ * header is removed. */
+.settings-overlay {
+  width: 100vw;
+  height: calc(100vh - var(--header-height));
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  background-color: transparent;
+  z-index: 9998;
+  display: none;
 }

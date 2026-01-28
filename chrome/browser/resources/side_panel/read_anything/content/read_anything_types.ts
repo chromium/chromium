@@ -123,6 +123,8 @@ export enum ToolbarEvent {
   OPEN_SETTINGS_SUBMENU = 'open-settings-submenu',
   PRESENTATION_CHANGE = 'presentation-change',
   CLOSE_SUBMENU_REQUESTED = 'close-submenu-requested',
+  SETTINGS_OPENED = 'settings-opened',
+  SETTINGS_CLOSED = 'settings-closed',
 }
 
 // The available menu items in Reading mode
