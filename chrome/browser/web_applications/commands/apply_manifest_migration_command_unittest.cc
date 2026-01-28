@@ -107,7 +107,6 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
     params.add_to_applications_menu = do_os_integration;
     params.add_to_desktop = do_os_integration;
     params.add_to_quick_launch_bar = do_os_integration;
-    params.add_to_search = do_os_integration;
 
     if (set_valid_migration_source) {
       web_app::proto::WebAppMigrationSource source;
@@ -226,6 +225,173 @@ TEST_F(ApplyManifestMigrationCommandTest,
       WebAppFilter::InstalledInOperatingSystemForTesting()));
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
+        profile(), destination_app_id,
+        base::UTF16ToUTF8(destination_app_name)));
+  }
+}
+
+TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
+  base::HistogramTester histogram_tester;
+  // Install the source app first with complete OS integration.
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  std::u16string source_app_name = u"Source app";
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const webapps::AppId& source_app_id = InstallAppWithInstallState(
+      GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+
+  auto state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          source_app_id);
+  EXPECT_TRUE(state.has_value());
+  EXPECT_TRUE(state.value().has_shortcut());
+  if (IsOsIntegrationSupported()) {
+    EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
+        profile(), source_app_id, base::UTF16ToUTF8(source_app_name)));
+  }
+
+  // Install the destination app as if it was suggested for migration.
+  std::map<SquareSizePx, SkBitmap> icon_map2;
+  std::u16string destination_app_name = u"Destination app";
+  icon_map2[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorRED);
+
+  origin_association_manager().SetMigrationSourcesData(
+      {webapps::ManifestId(GURL("https://app.source.com/"))});
+
+  const webapps::AppId& destination_app_id = InstallAppWithInstallState(
+      GURL("https://app.destination.com/"), destination_app_name,
+      std::move(icon_map2), proto::InstallState::SUGGESTED_FROM_MIGRATION);
+
+  auto destination_state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          destination_app_id);
+  EXPECT_TRUE(destination_state.has_value());
+  EXPECT_FALSE(destination_state.value().has_shortcut());
+  if (IsOsIntegrationSupported()) {
+    EXPECT_FALSE(fake_os_integration().IsShortcutCreated(
+        profile(), destination_app_id,
+        base::UTF16ToUTF8(destination_app_name)));
+  }
+
+  // Trigger the command, and verify a successful migration.
+  ApplyManifestMigrationResult result =
+      RunMigrationAndGetResult(source_app_id, destination_app_id);
+  ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
+            result);
+
+  EXPECT_THAT(
+      GetApplyMigrationHistograms(),
+      BucketsAre(base::Bucket(
+          ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully, 1)));
+
+  // Source app is not in the registrar, and has no OS integration left over.
+  EXPECT_FALSE(fake_provider().registrar_unsafe().AppMatches(
+      source_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+  if (IsOsIntegrationSupported()) {
+    EXPECT_FALSE(fake_os_integration().IsShortcutCreated(
+        profile(), source_app_id, base::UTF16ToUTF8(source_app_name)));
+  }
+
+  // Destination app is in the registrar with full OS integration.
+  EXPECT_TRUE(fake_provider().registrar_unsafe().AppMatches(
+      destination_app_id,
+      WebAppFilter::InstalledInOperatingSystemForTesting()));
+  EXPECT_TRUE(fake_provider()
+                  .registrar_unsafe()
+                  .GetAppById(destination_app_id)
+                  ->IsSynced());
+  if (IsOsIntegrationSupported()) {
+    EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
+        profile(), destination_app_id,
+        base::UTF16ToUTF8(destination_app_name)));
+  }
+}
+
+TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
+  base::HistogramTester histogram_tester;
+  // Install the source app first with complete OS integration.
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  std::u16string source_app_name = u"Source app";
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  const webapps::AppId& source_app_id = InstallAppWithInstallState(
+      GURL("https://app.source.com/"), source_app_name, std::move(icon_map),
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+
+  // Set up Run on OS login for the web app to be opened in a windowed mode.
+  base::test::TestFuture<void> future;
+  provider().scheduler().SetRunOnOsLoginMode(
+      source_app_id, RunOnOsLoginMode::kWindowed, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  auto state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          source_app_id);
+  EXPECT_TRUE(state.has_value());
+  EXPECT_TRUE(state->has_run_on_os_login());
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
+            state->run_on_os_login().run_on_os_login_mode());
+  if (IsOsIntegrationSupported()) {
+    EXPECT_TRUE(fake_os_integration().IsRunOnOsLoginEnabled(
+        profile(), source_app_id, base::UTF16ToUTF8(source_app_name)));
+  }
+
+  // Install the destination app as if it was suggested for migration.
+  std::map<SquareSizePx, SkBitmap> icon_map2;
+  std::u16string destination_app_name = u"Destination app";
+  icon_map2[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorRED);
+
+  origin_association_manager().SetMigrationSourcesData(
+      {webapps::ManifestId(GURL("https://app.source.com/"))});
+
+  const webapps::AppId& destination_app_id = InstallAppWithInstallState(
+      GURL("https://app.destination.com/"), destination_app_name,
+      std::move(icon_map2),
+      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
+
+  if (IsOsIntegrationSupported()) {
+    EXPECT_FALSE(fake_os_integration().IsRunOnOsLoginEnabled(
+        profile(), destination_app_id,
+        base::UTF16ToUTF8(destination_app_name)));
+  }
+
+  // Trigger the command, and verify a successful migration.
+  ApplyManifestMigrationResult result =
+      RunMigrationAndGetResult(source_app_id, destination_app_id);
+  ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
+            result);
+
+  EXPECT_THAT(
+      GetApplyMigrationHistograms(),
+      BucketsAre(base::Bucket(
+          ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully, 1)));
+
+  // Source app is not in the registrar, and has no OS integration for run on OS
+  // login left over.
+  EXPECT_FALSE(fake_provider().registrar_unsafe().AppMatches(
+      source_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
+  if (IsOsIntegrationSupported()) {
+    EXPECT_FALSE(fake_os_integration().IsRunOnOsLoginEnabled(
+        profile(), source_app_id, base::UTF16ToUTF8(source_app_name)));
+  }
+
+  // Destination app is in the registrar with full OS integration.
+  auto dest_state =
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          destination_app_id);
+  EXPECT_TRUE(dest_state.has_value());
+  EXPECT_TRUE(dest_state->has_run_on_os_login());
+  EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
+            state->run_on_os_login().run_on_os_login_mode());
+  EXPECT_TRUE(fake_provider()
+                  .registrar_unsafe()
+                  .GetAppById(destination_app_id)
+                  ->IsSynced());
+  if (IsOsIntegrationSupported()) {
+    EXPECT_TRUE(fake_os_integration().IsRunOnOsLoginEnabled(
         profile(), destination_app_id,
         base::UTF16ToUTF8(destination_app_name)));
   }

@@ -24,6 +24,10 @@ namespace web_app {
 
 class RemoveInstallSourceJob;
 
+struct ShortcutInfo;
+struct ShortcutLocations;
+struct SynchronizeOsOptions;
+
 // This command executes the core logic for a manifest migration in the
 // following order:
 // 1. Finalize the installation of the new application (|destination_app_id|),
@@ -48,6 +52,17 @@ class ApplyManifestMigrationCommand
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
 
  private:
+  // Gathers OS integration information for the source app so that the shortcut
+  // locations can be computed from it.
+  void StartGatheringOsIntegrationInfoForSourceApp(
+      std::unique_ptr<ShortcutInfo> source_app_shortcut_info);
+  void MigrateOsIntegrationFromSourceApp(
+      ShortcutLocations source_app_locations);
+
+  // Synchronizes OS integration for the destination app, and uninstalls the
+  // source app consequently.
+  void SynchronizeOsIntegration(SynchronizeOsOptions os_options);
+  void UninstallSourceApp();
   void AppUninstalledCompleteMigration(webapps::UninstallResultCode code);
   void CompleteCommandAndSelfDestruct(ApplyManifestMigrationResult result);
 
