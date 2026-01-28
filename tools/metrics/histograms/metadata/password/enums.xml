@@ -1113,7 +1113,7 @@ chromium-metrics-reviews@google.com.
     passwords in the account. Recorded only on Win/Mac/Linux.
   </int>
   <int value="4"
-      label="(obsolete)ExplicitlyTriggeredForSinglePasswordInDetailsInSettings">
+      label="kExplicitlyTriggeredForSinglePasswordInDetailsInSettings">
     The user explicitly asked to move a password to account store from password
     details page.
   </int>
