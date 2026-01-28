@@ -177,17 +177,6 @@ bool InvalidationSet::InvalidatesElement(Element& element) const {
   return false;
 }
 
-bool InvalidationSet::InvalidatesTagName(Element& element) const {
-  if (HasTagNames() && HasTagName(element.LocalNameForSelectorMatching())) {
-    TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED(
-        element, kInvalidationSetMatchedTagName, *this,
-        element.LocalNameForSelectorMatching());
-    return true;
-  }
-
-  return false;
-}
-
 void InvalidationSet::Combine(const InvalidationSet& other) {
   CHECK_EQ(GetType(), other.GetType());
 
