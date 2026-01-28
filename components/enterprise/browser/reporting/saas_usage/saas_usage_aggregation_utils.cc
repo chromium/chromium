@@ -11,7 +11,6 @@
 namespace {
 
 constexpr char kNavigationCount[] = "navigation_count";
-constexpr char kContentTransferCount[] = "content_transfer_count";
 constexpr char kEncryptionProtocols[] = "encryption_protocols";
 
 base::DictValue& GetOrCreateEntry(base::DictValue& report_dict,
@@ -21,7 +20,6 @@ base::DictValue& GetOrCreateEntry(base::DictValue& report_dict,
     base::DictValue new_entry =
         base::DictValue()
             .Set(kNavigationCount, 0)
-            .Set(kContentTransferCount, 0)
             .Set(kEncryptionProtocols, base::ListValue());
     entry = report_dict.Set(domain, std::move(new_entry))->GetIfDict();
   }
@@ -52,15 +50,6 @@ void RecordNavigation(PrefService* pref_service,
   if (!protocols->contains(encryption_protocol)) {
     protocols->Append(encryption_protocol);
   }
-}
-
-void RecordContentTransfer(PrefService* pref_service, std::string_view domain) {
-  CHECK(pref_service);
-  ScopedDictPrefUpdate update(pref_service, kSaasUsageReport);
-  base::DictValue& entry = GetOrCreateEntry(*update, domain);
-
-  int count = entry.FindInt(kContentTransferCount).value_or(0);
-  entry.Set(kContentTransferCount, count + 1);
 }
 
 }  // namespace enterprise_reporting

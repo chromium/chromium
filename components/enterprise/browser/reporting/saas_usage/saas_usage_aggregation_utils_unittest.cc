@@ -16,38 +16,33 @@
 
 namespace {
 constexpr char kNavigationCount[] = "navigation_count";
-constexpr char kContentTransferCount[] = "content_transfer_count";
 constexpr char kEncryptionProtocols[] = "encryption_protocols";
 }  // namespace
 
 namespace enterprise_reporting {
 
-enum class ActionType { kNavigation, kContentTransfer };
-
-struct Action {
-  ActionType type;
+struct Navigation {
   std::string domain;
   std::string protocol;
 };
 
 struct ExpectedDomainState {
   int navigation_count = 0;
-  int content_transfer_count = 0;
   std::vector<std::string> encryption_protocols;
 };
 
 struct TestCase {
   std::string test_name;
-  std::vector<Action> actions;
+  std::vector<Navigation> navigations;
   std::map<std::string, ExpectedDomainState> expected_states;
 };
 
-class DomainReportingAggregationUtilsParameterizedTest
+class SaasUsageAggregationUtilsParameterizedTest
     : public testing::Test,
       public testing::WithParamInterface<TestCase> {
  public:
-  DomainReportingAggregationUtilsParameterizedTest() = default;
-  ~DomainReportingAggregationUtilsParameterizedTest() override = default;
+  SaasUsageAggregationUtilsParameterizedTest() = default;
+  ~SaasUsageAggregationUtilsParameterizedTest() override = default;
 
   void SetUp() override {
     pref_service_.registry()->RegisterDictionaryPref(kSaasUsageReport);
@@ -57,17 +52,12 @@ class DomainReportingAggregationUtilsParameterizedTest
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_P(DomainReportingAggregationUtilsParameterizedTest, Run) {
+TEST_P(SaasUsageAggregationUtilsParameterizedTest, Run) {
   const TestCase& test_case = GetParam();
 
-  for (const auto& action : test_case.actions) {
-    if (action.type == ActionType::kNavigation) {
-      enterprise_reporting::RecordNavigation(&pref_service_, action.domain,
-                                             action.protocol);
-    } else {
-      enterprise_reporting::RecordContentTransfer(&pref_service_,
-                                                  action.domain);
-    }
+  for (const auto& navigation : test_case.navigations) {
+    enterprise_reporting::RecordNavigation(&pref_service_, navigation.domain,
+                                           navigation.protocol);
   }
 
   const base::DictValue& report = pref_service_.GetDict(kSaasUsageReport);
@@ -79,8 +69,6 @@ TEST_P(DomainReportingAggregationUtilsParameterizedTest, Run) {
 
     EXPECT_EQ(expected.navigation_count,
               entry->FindInt(kNavigationCount).value_or(0));
-    EXPECT_EQ(expected.content_transfer_count,
-              entry->FindInt(kContentTransferCount).value_or(0));
 
     const base::ListValue* protocols = entry->FindList(kEncryptionProtocols);
     ASSERT_TRUE(protocols);
@@ -94,49 +82,31 @@ TEST_P(DomainReportingAggregationUtilsParameterizedTest, Run) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    DomainReportingAggregationUtilsParameterizedTest,
+    SaasUsageAggregationUtilsParameterizedTest,
     testing::Values(
         TestCase{"RecordNavigation_NewDomain",
-                 {{ActionType::kNavigation, "example.com", "TLS 1.3"}},
-                 {{"example.com", {1, 0, {"TLS 1.3"}}}}},
+                 {{"example.com", "TLS 1.3"}},
+                 {{"example.com", {1, {"TLS 1.3"}}}}},
         TestCase{"RecordNavigation_ExistingDomain",
-                 {{ActionType::kNavigation, "example.com", "TLS 1.3"},
-                  {ActionType::kNavigation, "example.com", "TLS 1.3"}},
-                 {{"example.com", {2, 0, {"TLS 1.3"}}}}},
+                 {{"example.com", "TLS 1.3"}, {"example.com", "TLS 1.3"}},
+                 {{"example.com", {2, {"TLS 1.3"}}}}},
         TestCase{"RecordNavigation_NewProtocol",
-                 {{ActionType::kNavigation, "example.com", "TLS 1.2"},
-                  {ActionType::kNavigation, "example.com", "TLS 1.3"}},
-                 {{"example.com", {2, 0, {"TLS 1.2", "TLS 1.3"}}}}},
+                 {{"example.com", "TLS 1.2"}, {"example.com", "TLS 1.3"}},
+                 {{"example.com", {2, {"TLS 1.2", "TLS 1.3"}}}}},
         TestCase{"RecordNavigation_ExistingProtocol",
-                 {{ActionType::kNavigation, "example.com", "TLS 1.2"},
-                  {ActionType::kNavigation, "example.com", "TLS 1.3"},
-                  {ActionType::kNavigation, "example.com", "TLS 1.3"}},
-                 {{"example.com", {3, 0, {"TLS 1.2", "TLS 1.3"}}}}},
+                 {{"example.com", "TLS 1.2"},
+                  {"example.com", "TLS 1.3"},
+                  {"example.com", "TLS 1.3"}},
+                 {{"example.com", {3, {"TLS 1.2", "TLS 1.3"}}}}},
         TestCase{"RecordNavigation_EmptyProtocol",
-                 {{ActionType::kNavigation, "example.com", ""}},
-                 {{"example.com", {1, 0, {}}}}},
+                 {{"example.com", ""}},
+                 {{"example.com", {1, {}}}}},
         TestCase{"RecordNavigation_MultipleDomains",
-                 {{ActionType::kNavigation, "example.com", "TLS 1.3"},
-                  {ActionType::kNavigation, "google.com", "QUIC"}},
-                 {{"example.com", {1, 0, {"TLS 1.3"}}},
-                  {"google.com", {1, 0, {"QUIC"}}}}},
-        TestCase{"RecordContentTransfer_NewDomain",
-                 {{ActionType::kContentTransfer, "example.com"}},
-                 {{"example.com", {0, 1, {}}}}},
-        TestCase{"RecordContentTransfer_ExistingDomain",
-                 {{ActionType::kContentTransfer, "example.com"},
-                  {ActionType::kContentTransfer, "example.com"}},
-                 {{"example.com", {0, 2, {}}}}},
-        TestCase{"RecordContentTransfer_MultipleDomains",
-                 {{ActionType::kContentTransfer, "example.com"},
-                  {ActionType::kContentTransfer, "google.com"}},
-                 {{"example.com", {0, 1, {}}}, {"google.com", {0, 1, {}}}}},
-        TestCase{"RecordContentTransfer_WithNavigation",
-                 {{ActionType::kNavigation, "example.com", "TLS 1.3"},
-                  {ActionType::kContentTransfer, "example.com"}},
-                 {{"example.com", {1, 1, {"TLS 1.3"}}}}}),
+                 {{"example.com", "TLS 1.3"}, {"google.com", "QUIC"}},
+                 {{"example.com", {1, {"TLS 1.3"}}},
+                  {"google.com", {1, {"QUIC"}}}}}),
     [](const testing::TestParamInfo<
-        DomainReportingAggregationUtilsParameterizedTest::ParamType>& info) {
+        SaasUsageAggregationUtilsParameterizedTest::ParamType>& info) {
       return info.param.test_name;
     });
 
