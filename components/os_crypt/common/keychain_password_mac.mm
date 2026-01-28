@@ -6,6 +6,8 @@
 
 #import <Security/Security.h>
 
+#include <atomic>
+
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
@@ -14,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/types/expected.h"
 #include "build/branding_buildflags.h"
 #include "crypto/apple/keychain.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -48,12 +51,17 @@ enum class FindGenericPasswordResult {
   kMaxValue = kErrorOccurred,
 };
 
+// Tracks the most recent OSStatus from GetPasswordImpl to log successes that
+// recover from previous failures.
+std::atomic<OSStatus> g_last_keychain_error{noErr};
+
 // Generates a random password and adds it to the Keychain.  The added password
-// is returned from the function.  If an error occurs, an empty password is
+// is returned from the function.  If an error occurs, the OSStatus is
 // returned.
-std::string AddRandomPasswordToKeychain(const Keychain& keychain,
-                                        const std::string& service_name,
-                                        const std::string& account_name) {
+base::expected<std::string, OSStatus> AddRandomPasswordToKeychain(
+    const Keychain& keychain,
+    const std::string& service_name,
+    const std::string& account_name) {
   // Generate a password with 128 bits of randomness.
   const int kBytes = 128 / 8;
   std::string password = base::Base64Encode(base::RandBytesAsVector(kBytes));
@@ -63,10 +71,39 @@ std::string AddRandomPasswordToKeychain(const Keychain& keychain,
 
   if (error != noErr) {
     OSSTATUS_DLOG(ERROR, error) << "Keychain add failed";
-    return std::string();
+    return base::unexpected(error);
   }
 
   return password;
+}
+
+base::expected<std::string, OSStatus> GetPasswordImpl(
+    const Keychain& keychain,
+    const std::string& service_name,
+    const std::string& account_name) {
+  FindGenericPasswordResult uma_result;
+  absl::Cleanup log_uma_result = [&uma_result] {
+    base::UmaHistogramEnumeration("OSCrypt.Mac.FindGenericPasswordResult",
+                                  uma_result);
+  };
+
+  auto password = keychain.FindGenericPassword(service_name, account_name);
+
+  if (password.has_value()) {
+    uma_result = FindGenericPasswordResult::kPasswordFound;
+    return std::string(base::as_string_view(*password));
+  }
+
+  if (password.error() == errSecItemNotFound) {
+    uma_result = FindGenericPasswordResult::kPasswordNotFound;
+    return AddRandomPasswordToKeychain(keychain, service_name, account_name);
+  }
+
+  OSSTATUS_LOG(ERROR, password.error()) << "Keychain lookup failed";
+  uma_result = FindGenericPasswordResult::kErrorOccurred;
+  base::UmaHistogramSparse("OSCrypt.Mac.FindGenericPasswordError",
+                           password.error());
+  return base::unexpected(password.error());
 }
 
 }  // namespace
@@ -89,29 +126,17 @@ KeychainPassword::KeychainPassword(const Keychain& keychain)
 KeychainPassword::~KeychainPassword() = default;
 
 std::string KeychainPassword::GetPassword() const {
-  FindGenericPasswordResult uma_result;
-  absl::Cleanup log_uma_result = [&uma_result] {
-    base::UmaHistogramEnumeration("OSCrypt.Mac.FindGenericPasswordResult",
-                                  uma_result);
-  };
-
   auto password =
-      keychain_->FindGenericPassword(GetServiceName(), GetAccountName());
+      GetPasswordImpl(*keychain_, GetServiceName(), GetAccountName());
 
-  if (password.has_value()) {
-    uma_result = FindGenericPasswordResult::kPasswordFound;
-    return std::string(base::as_string_view(*password));
+  OSStatus current_status = password.has_value() ? noErr : password.error();
+  OSStatus previous_error =
+      g_last_keychain_error.exchange(current_status, std::memory_order_relaxed);
+
+  if (current_status == noErr && previous_error != noErr) {
+    base::UmaHistogramSparse("OSCrypt.Mac.SuccessAfterPreviousError",
+                             previous_error);
   }
 
-  if (password.error() == errSecItemNotFound) {
-    uma_result = FindGenericPasswordResult::kPasswordNotFound;
-    return AddRandomPasswordToKeychain(*keychain_, GetServiceName(),
-                                       GetAccountName());
-  }
-
-  OSSTATUS_LOG(ERROR, password.error()) << "Keychain lookup failed";
-  uma_result = FindGenericPasswordResult::kErrorOccurred;
-  base::UmaHistogramSparse("OSCrypt.Mac.FindGenericPasswordError",
-                           password.error());
-  return std::string();
+  return password.value_or(std::string());
 }

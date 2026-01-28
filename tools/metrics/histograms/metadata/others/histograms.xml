@@ -6029,6 +6029,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.Mac.SuccessAfterPreviousError"
+    enum="MacSecurityFrameworkOSStatus" expires_after="2026-06-07">
+  <owner>thestig@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Logged when a Keychain operation successfully retrieves or adds a password
+    after a previous operation in the same browser lifetime resulted in an
+    error. The logged value is the OSStatus of the *previous* error. This helps
+    track which errors are transient and can be successfully recovered from.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.SecretPortalKeyProvider.GotToken" enum="Boolean"
     expires_after="2025-11-30">
   <owner>thomasanderson@chromium.org</owner>
