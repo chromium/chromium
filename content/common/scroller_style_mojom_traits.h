@@ -27,9 +27,11 @@ struct EnumTraits<content::mojom::ScrollerStyle, blink::ScrollerStyle> {
                         blink::ScrollerStyle* out) {
     switch (in) {
       case content::mojom::ScrollerStyle::kScrollerStyleLegacy:
-        return blink::ScrollerStyle::kScrollerStyleLegacy;
+        *out = blink::ScrollerStyle::kScrollerStyleLegacy;
+        return true;
       case content::mojom::ScrollerStyle::kScrollerStyleOverlay:
-        return blink::ScrollerStyle::kScrollerStyleOverlay;
+        *out = blink::ScrollerStyle::kScrollerStyleOverlay;
+        return true;
     }
     return false;
   }
