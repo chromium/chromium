@@ -1015,12 +1015,10 @@ if (_is_default_toolchain) {
       "//components/resources/android/permissions_resource_id.h",
       "//components/resources/android/sms_resource_id.h",
       "//components/resources/android/webxr_resource_id.h",
-      "$root_gen_dir/build/branding_buildflags.h",
       "$root_gen_dir/device/vr/buildflags/buildflags.h",
     ]
 
     deps = [
-      "//build:branding_buildflags",
       "//chrome/browser/page_info:page_info_buildflags",
       "//components/password_manager/core/browser:password_manager_buildflags",
       "//device/vr/buildflags",
