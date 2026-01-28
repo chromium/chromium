@@ -781,6 +781,167 @@ TEST_F(AutofillManagerTest,
   EXPECT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
 }
 
+// Tests that QueryServerPredictions() starts a query request for the forms
+// that should be queried and that the resulting call to
+// OnLoadedServerPredictions() updates the existing form structure with the
+// same form ID but different form signature and lower version.
+TEST_F(AutofillManagerTest,
+       EarlyServerPredictions_QueryServerPredictions_UpdatesExistingFormId) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillServerQueryPredictionsEarly};
+
+  // Create a form and add it to the form cache via OnFormsSeen().
+  EXPECT_CALL(autofill_manager(), ShouldParseForms).WillOnce(Return(true));
+  TestAutofillManagerWaiter waiter(autofill_manager());
+  FormData initial_form = test::CreateTestAddressFormData();
+  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{});
+  ASSERT_TRUE(waiter.Wait());
+  ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
+
+  // Create a form with the same form ID but different form signature and higher
+  // version for server predictions.
+  FormData updated_form = initial_form;
+  updated_form.set_action(GURL("https://example.test/"));
+  updated_form.set_version(autofill::FormVersion::FromUnsafeValue(
+      initial_form.version().value() + 1));
+  std::vector<FormSignature> form_signatures = {
+      CalculateFormSignature(updated_form)};
+  ASSERT_NE(test_api(autofill_manager()).form_structures()[0]->form_signature(),
+            form_signatures[0]);
+  ASSERT_EQ(test_api(autofill_manager()).form_structures()[0]->global_id(),
+            updated_form.global_id());
+
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [form_signatures](
+              const std::vector<FormData>&, std::optional<net::IsolationInfo>,
+              base::OnceCallback<void(
+                  std::optional<AutofillCrowdsourcingManager::QueryResponse>)>
+                  callback) {
+            std::move(callback).Run(AutofillCrowdsourcingManager::QueryResponse(
+                "", form_signatures));
+            return true;
+          });
+
+  // Expect updated form to be stored in the form cache.
+  test_api(autofill_manager()).QueryServerPredictions({updated_form});
+  ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
+  EXPECT_EQ(test_api(autofill_manager()).form_structures()[0]->form_signature(),
+            form_signatures[0]);
+  EXPECT_EQ(test_api(autofill_manager()).form_structures()[0]->version(),
+            updated_form.version());
+}
+
+// Tests that QueryServerPredictions() starts a query request for the forms
+// that should be queried and that the resulting call to
+// OnLoadedServerPredictions() updates the existing form structure
+// with the same form ID but same form signature and lower version.
+TEST_F(
+    AutofillManagerTest,
+    EarlyServerPredictions_QueryServerPredictions_UpdatesExistingFormIdWithSameSignature) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillServerQueryPredictionsEarly};
+
+  // Create a form and add it to the form cache via OnFormsSeen().
+  EXPECT_CALL(autofill_manager(), ShouldParseForms).WillOnce(Return(true));
+  TestAutofillManagerWaiter waiter(autofill_manager());
+  FormData initial_form = test::CreateTestAddressFormData();
+  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{});
+  ASSERT_TRUE(waiter.Wait());
+  ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
+  const FormStructure& form_structure = CHECK_DEREF(
+      autofill_manager().FindCachedFormById(initial_form.global_id()));
+  ASSERT_EQ(form_structure.field_count(), 11u);
+  ASSERT_EQ(form_structure.fields()[0]->heuristic_type(), NAME_FIRST);
+  ASSERT_EQ(form_structure.fields()[1]->heuristic_type(), NAME_MIDDLE);
+
+  // Create a form with the same form ID but same form signature and higher
+  // version for server predictions.
+  FormData updated_form = initial_form;
+  updated_form.set_version(autofill::FormVersion::FromUnsafeValue(
+      initial_form.version().value() + 1));
+  std::vector<FormSignature> form_signatures = {
+      CalculateFormSignature(updated_form)};
+  ASSERT_EQ(test_api(autofill_manager()).form_structures()[0]->form_signature(),
+            form_signatures[0]);
+  ASSERT_EQ(test_api(autofill_manager()).form_structures()[0]->global_id(),
+            updated_form.global_id());
+
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [form_signatures](
+              const std::vector<FormData>&, std::optional<net::IsolationInfo>,
+              base::OnceCallback<void(
+                  std::optional<AutofillCrowdsourcingManager::QueryResponse>)>
+                  callback) {
+            std::move(callback).Run(AutofillCrowdsourcingManager::QueryResponse(
+                "", form_signatures));
+            return true;
+          });
+
+  // The cached form should still be in the cache, predictions should be applied
+  // and other attributes (like heuristic predictions) should not be overridden.
+  test_api(autofill_manager()).QueryServerPredictions({updated_form});
+  ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
+  EXPECT_EQ(form_structure.form_signature(), form_signatures[0]);
+  EXPECT_EQ(form_structure.version(), updated_form.version());
+  ASSERT_EQ(form_structure.field_count(), 11u);
+  EXPECT_EQ(form_structure.fields()[0]->heuristic_type(), NAME_FIRST);
+  EXPECT_EQ(form_structure.fields()[1]->heuristic_type(), NAME_MIDDLE);
+}
+
+// Tests that QueryServerPredictions() starts a query request for the forms
+// that should be queried and that the resulting call to
+// OnLoadedServerPredictions() does not override the existing form structure
+// with the same form ID but different form signature and higher version.
+TEST_F(
+    AutofillManagerTest,
+    EarlyServerPredictions_QueryServerPredictions_DoesNotOverridesExistingFormIdWithHigherVersion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillServerQueryPredictionsEarly};
+
+  // Create a form and add it to the form cache via OnFormsSeen().
+  EXPECT_CALL(autofill_manager(), ShouldParseForms).WillOnce(Return(true));
+  TestAutofillManagerWaiter waiter(autofill_manager());
+  FormData initial_form = test::CreateTestAddressFormData();
+  initial_form.set_version(autofill::FormVersion::FromUnsafeValue(1));
+  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{});
+  ASSERT_TRUE(waiter.Wait());
+  ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
+
+  // Create a form with the same form ID but different form signature and lower
+  // version for server predictions.
+  FormData previous_form = initial_form;
+  previous_form.set_action(GURL("https://example.test/"));
+  previous_form.set_version(autofill::FormVersion::FromUnsafeValue(
+      initial_form.version().value() - 1));
+  std::vector<FormSignature> form_signatures = {
+      CalculateFormSignature(previous_form)};
+  ASSERT_NE(test_api(autofill_manager()).form_structures()[0]->form_signature(),
+            form_signatures[0]);
+  ASSERT_EQ(test_api(autofill_manager()).form_structures()[0]->global_id(),
+            previous_form.global_id());
+
+  EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
+      .WillOnce(
+          [form_signatures](
+              const std::vector<FormData>&, std::optional<net::IsolationInfo>,
+              base::OnceCallback<void(
+                  std::optional<AutofillCrowdsourcingManager::QueryResponse>)>
+                  callback) {
+            std::move(callback).Run(AutofillCrowdsourcingManager::QueryResponse(
+                "", form_signatures));
+            return true;
+          });
+
+  // Expect server predictions to still be processed for the previous form.
+  EXPECT_CALL(autofill_manager(), OnFormProcessed);
+  test_api(autofill_manager()).QueryServerPredictions({previous_form});
+  ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
+  EXPECT_EQ(test_api(autofill_manager()).form_structures()[0]->form_signature(),
+            CalculateFormSignature(initial_form));
+}
+
 // Tests that OnLoadedServerPredictions() does not add forms to the cache if
 // their signature is not part of the query response.
 TEST_F(AutofillManagerTest,

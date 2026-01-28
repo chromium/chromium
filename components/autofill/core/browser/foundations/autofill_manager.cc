@@ -858,9 +858,13 @@ void AutofillManager::PopulateCacheForQueryResponse(
 
   // Add the forms to the cache if their signature was part of the query
   // and if they do not already exist in the cache. Forms may already exist
-  // if local parsing finished before the server predictions arrived.
+  // if local parsing finishes before the server predictions arrived or due
+  // to a previous request. Already existing forms are updated if the
+  // incoming form has a higher version.
   for (const FormData& form : forms) {
-    if (FindCachedFormById(form.global_id())) {
+    FormStructure* form_structure =
+        FindCachedFormById(form.global_id(), /*pass_key=*/{});
+    if (form_structure && form_structure->version() >= form.version()) {
       continue;
     }
 
@@ -868,7 +872,9 @@ void AutofillManager::PopulateCacheForQueryResponse(
       continue;
     }
 
-    if (form_structures_.size() + 1 > kAutofillManagerMaxFormCacheSize) {
+    const bool is_new_form = !form_structure;
+    if (form_structures_.size() + is_new_form >
+        kAutofillManagerMaxFormCacheSize) {
       LOG_AF(log_manager()) << LoggingScope::kAbortParsing
                             << LogMessage::kAbortParsingTooManyForms << form;
       break;
@@ -878,7 +884,12 @@ void AutofillManager::PopulateCacheForQueryResponse(
     // UpdateFormCache(), as we would call
     // FormStructure::UpdateFormData(form_data) where form_data and the data
     // in FormStructure are already identical.
-    form_structures_[form.global_id()] = std::make_unique<FormStructure>(form);
+    if (is_new_form) {
+      form_structures_[form.global_id()] =
+          std::make_unique<FormStructure>(form);
+    } else {
+      form_structure->UpdateFormData(form, /*pass_key=*/{});
+    }
   }
 }
 
