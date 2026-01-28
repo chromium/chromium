@@ -1,40 +1,46 @@
 <script>
-	var n = 125;
+var n = 125;
 
-	function addFrames() {
-	  var parent = document.createElement('iframe');
-	  parent.id = 'theframe';
-	  document.body.appendChild(parent);
-	
-	  for (i = 0; i < n; i++) {
-	    var frame = document.createElement("iframe");
-	    frame.setAttribute("src", "data:text/plain," + i);
-	    frame.style.display = 'none';
-	    parent.contentDocument.body.appendChild(frame);
-	  }		
-	}
-	
-	function runTest() {
-		if (window.testRunner)
-			testRunner.dumpAsText();
-			
-		// Add n frames. 
-		addFrames();
+function addFrames() {
+  const parent = document.createElement('iframe');
+  parent.id = 'theframe';
+  document.body.appendChild(parent);
 
-		// Remove the parent frame
-		var parent = document.getElementById('theframe');
-		parent.parentNode.removeChild(parent);
+  for (i = 0; i < n; i++) {
+    var frame = document.createElement("iframe");
+    frame.setAttribute("src", "data:text/plain," + i);
+    frame.style.display = 'none';
+    parent.contentDocument.body.appendChild(frame);
+  }
+  return parent;
+}
 
-		// Add n frames again.
-		addFrames();
-		var parent = document.getElementById('theframe');
+async function runTest() {
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+  }
 
-		if (parent.contentWindow.frames.length != n)
-			return;
-			
-		document.getElementById('result').innerHTML = 'SUCCESS';
-	}
+  // Add n frames.
+  let parent = addFrames();
+
+  // Remove the parent frame
+  parent.remove();
+
+  // Add n frames again after a timeout to let the browser process the destruction of the previous frames.
+  await new Promise(resolve => setTimeout(resolve, 0));
+  parent = addFrames();
+
+  // Test for success.
+  if (parent.contentWindow.frames.length == n) {
+    document.getElementById('result').innerHTML = 'SUCCESS';
+  }
+  if (window.testRunner) {
+    testRunner.notifyDone();
+  }
+}
 </script>
+
 <body onload="runTest()">
 <div>This tests that frames are properly deregistered with the page's counter when removed. If this test is successful, the text "SUCCESS" will be shown below.</div>
 <div id="result">FAILURE</div>
