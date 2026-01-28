@@ -318,7 +318,7 @@ void VerticalTabGroupView::HandleTabDragInContainer(
     node = split_tab_view->collection_node();
   }
   CHECK(node);
-  GetDragHandler().HandleDraggedTabsOverNode(*node);
+  GetDragHandler().HandleDraggedTabsOverNode(*node, std::nullopt);
 }
 
 bool VerticalTabGroupView::GetIsShared() {

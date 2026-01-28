@@ -168,7 +168,7 @@ void VerticalPinnedTabContainerView::HandleTabDragInContainer(
     node = split_tab_view->collection_node();
   }
   if (node) {
-    GetDragHandler().HandleDraggedTabsOverNode(*node);
+    GetDragHandler().HandleDraggedTabsOverNode(*node, std::nullopt);
   }
 }
 

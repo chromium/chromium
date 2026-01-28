@@ -175,6 +175,12 @@ void VerticalUnpinnedTabContainerView::UpdateLayoutForDrag() {
 void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
     const gfx::Point point_in_container) {
   const views::ProposedLayout& target_layout = layout_manager_->target_layout();
+  if (point_in_container.y() >= target_layout.host_size.height()) {
+    GetDragHandler().HandleDraggedTabsOverNode(*collection_node_,
+                                               DragPositionHint::kBottom);
+    return;
+  }
+
   views::View* view_at_point =
       GetViewAtPoint(target_layout, point_in_container);
   const TabCollectionNode* node = collection_node_;
@@ -188,7 +194,7 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
     node = split_tab_view->collection_node();
   }
   CHECK(node);
-  GetDragHandler().HandleDraggedTabsOverNode(*node);
+  GetDragHandler().HandleDraggedTabsOverNode(*node, std::nullopt);
 }
 
 VerticalDraggedTabsContainer&

@@ -152,7 +152,8 @@ void VerticalTabDragHandlerImpl::EndDrag(EndDragReason reason) {
 }
 
 void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
-    const TabCollectionNode& node) {
+    const TabCollectionNode& node,
+    std::optional<DragPositionHint> position_hint) {
   if (!drag_controller_) {
     // Do nothing if the drag is not attached to our context yet (e.g. on the
     // first iteration of the drag loop).
@@ -169,7 +170,7 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
       HandleTabDragOverGroup(node);
       break;
     case TabCollectionNode::Type::UNPINNED:
-      HandleTabDragOverUnpinnedContainer(node);
+      HandleTabDragOverUnpinnedContainer(node, position_hint);
       break;
     default:
       NOTREACHED();
@@ -258,7 +259,17 @@ void VerticalTabDragHandlerImpl::HandleTabDragOverGroup(
 }
 
 void VerticalTabDragHandlerImpl::HandleTabDragOverUnpinnedContainer(
-    const TabCollectionNode& node) {
+    const TabCollectionNode& node,
+    std::optional<DragPositionHint> position_hint) {
+  if (position_hint == DragPositionHint::kBottom) {
+    // Move the selected tabs to the end.
+    tab_strip_model_->MoveSelectedTabsTo(
+        tab_strip_model_->count() -
+            tab_strip_model_->selection_model().selected_tabs().size(),
+        std::nullopt);
+    return;
+  }
+
   const tabs::TabInterface* selected_tab =
       *tab_strip_model_->selection_model().selected_tabs().cbegin();
 

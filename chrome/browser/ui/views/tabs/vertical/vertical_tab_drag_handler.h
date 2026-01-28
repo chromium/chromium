@@ -20,6 +20,11 @@
 class TabCollectionNode;
 class TabStripModel;
 
+enum class DragPositionHint {
+  kTop,    // The drag is at the top of the drag target.
+  kBottom  // The drag is at the bottom of the drag target.
+};
+
 // Interface for views to interact with drag handling.
 class VerticalTabDragHandler {
  public:
@@ -34,8 +39,11 @@ class VerticalTabDragHandler {
   // Ends the drag, if started.
   virtual void EndDrag(EndDragReason reason) = 0;
 
-  // Handles tab strip model updates to reflect a drag over a give tab node.
-  virtual void HandleDraggedTabsOverNode(const TabCollectionNode& node) = 0;
+  // Handles tab strip model updates to reflect a drag over a given node.
+  // Position hint is used to determine where the drag is, relative to the node.
+  virtual void HandleDraggedTabsOverNode(
+      const TabCollectionNode& node,
+      std::optional<DragPositionHint> position_hint) = 0;
 
   // Returns the drag context for this handler.
   virtual TabDragContext* GetDragContext() = 0;
@@ -75,7 +83,9 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   bool ContinueDrag(views::View& event_source_view,
                     const ui::MouseEvent& event) override;
   void EndDrag(EndDragReason reason) override;
-  void HandleDraggedTabsOverNode(const TabCollectionNode& node) override;
+  void HandleDraggedTabsOverNode(
+      const TabCollectionNode& node,
+      std::optional<DragPositionHint> position_hint) override;
   TabDragContext* GetDragContext() override;
   bool IsViewDragging(const views::View& view) const override;
   bool IsDraggingPinnedTabs() const override;
@@ -123,7 +133,9 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleTabDragOverTab(const TabCollectionNode& node);
   void HandleTabDragOverSplit(const TabCollectionNode& node);
   void HandleTabDragOverGroup(const TabCollectionNode& node);
-  void HandleTabDragOverUnpinnedContainer(const TabCollectionNode& node);
+  void HandleTabDragOverUnpinnedContainer(
+      const TabCollectionNode& node,
+      std::optional<DragPositionHint> position_hint);
 
   const raw_ref<TabStripModel> tab_strip_model_;
   const raw_ref<TabCollectionNode> root_node_;
