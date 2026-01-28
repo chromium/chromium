@@ -438,7 +438,6 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [
       "glic_metrics_unittest.cc",
-      "host/context/glic_delegating_sharing_manager_unittest.cc",
       "host/context/glic_pin_candidate_comparator_unittest.cc",
       "host/context/glic_screenshot_capturer_unittest.cc",
       "host/context/glic_tab_data_unittest.cc",
@@ -511,6 +510,7 @@ source_set("browser_tests") {
       "glic_profile_manager_browsertest.cc",
       "glic_user_status_browsertest.cc",
       "host/context/glic_active_instance_sharing_manager_browsertest.cc",
+      "host/context/glic_delegating_sharing_manager_browsertest.cc",
       "host/context/glic_pinned_tab_manager_browsertest.cc",
       "host/context/glic_tab_data_browsertest.cc",
       "host/glic_api_browsertest.cc",
