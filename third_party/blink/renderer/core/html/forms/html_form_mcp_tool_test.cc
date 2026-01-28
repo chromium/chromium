@@ -34,9 +34,10 @@ class HTMLFormMcpToolTest : public PageTestBase {
                                const String& input_arguments) {
     CHECK(IsValidWebMCPForm(form_element));
     CHECK(form_element.active_webmcp_tool_);
+    bool require_submit_button = false;
     HTMLFormControlElement* submit_button;
-    return form_element.active_webmcp_tool_->FillFormControls(input_arguments,
-                                                              &submit_button);
+    return form_element.active_webmcp_tool_->FillFormControls(
+        input_arguments, require_submit_button, &submit_button);
   }
 
  private:

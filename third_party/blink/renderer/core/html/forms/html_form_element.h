@@ -271,6 +271,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     // were filled successfully. Otherwise, the state of all form controls
     // are left unchanged.
     bool FillFormControls(const String& input_arguments,
+                          bool require_submit_button,
                           HTMLFormControlElement** submit_button);
     String ToolName() const { return tool_name_; }
     String ToolDescription() const { return tool_description_; }

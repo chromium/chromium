@@ -164,8 +164,11 @@ bool HTMLFormElement::MatchesToolFormActivePseudoClass() const {
 void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
     String input_arguments,
     base::OnceCallback<void(McpToolCallbackResult)> done_callback) {
+  bool require_submit_button =
+      !form_->FastHasAttribute(html_names::kToolautosubmitAttr);
   HTMLFormControlElement* submit_button = nullptr;
-  if (!FillFormControls(input_arguments, &submit_button)) {
+  if (!FillFormControls(input_arguments, require_submit_button,
+                        &submit_button)) {
     return std::move(done_callback)
         .Run(base::unexpected(
             WebDocument::ScriptToolError::kInvalidInputArguments));
@@ -182,12 +185,23 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
     submit_button->PseudoStateChanged(CSSSelector::kPseudoToolSubmitActive);
   }
   done_callback_ = std::move(done_callback);
-  form_->PrepareForSubmission(/*event*/ nullptr, submit_button);
+
+  if (require_submit_button) {
+    // Without `toolautosubmit`, we focus the submit button, tell the agent to
+    // allow user input, and wait for the user to submit it.
+    submit_button->Focus();
+    // TODO(khushal) Let the agent know we need to unblock input here.
+  } else {
+    // With the `toolautosubmit` attribute, we immediately submit the form.
+    form_->PrepareForSubmission(/*event*/ nullptr, submit_button);
+  }
 }
 
 bool HTMLFormElement::HTMLFormMcpTool::FillFormControls(
     const String& input_arguments,
+    bool require_submit_button,
     HTMLFormControlElement** submit_button) {
+  *submit_button = nullptr;
   std::unique_ptr<JSONValue> json = ParseJSON(input_arguments);
   if (!json) {
     return false;
@@ -199,17 +213,19 @@ bool HTMLFormElement::HTMLFormMcpTool::FillFormControls(
   }
 
   HeapHashMap<String, Member<HTMLFormControlElement>> controls_map;
-  *submit_button = nullptr;
   for (ListedElement* element : form_->ListedElements()) {
     if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
       if (form_control->SupportsWebMCP()) {
         controls_map.insert(form_control->GetWebMCPParameterName(),
                             form_control);
       }
-      if (form_control->IsSuccessfulSubmitButton()) {
+      if (form_control->IsSuccessfulSubmitButton() && !*submit_button) {
         *submit_button = form_control;
       }
     }
+  }
+  if (!*submit_button && require_submit_button) {
+    return false;
   }
 
   // For each entry in `json_obj`, we find the corresponding form control
@@ -620,27 +636,18 @@ void HTMLFormElement::PrepareForSubmission(
             promise_and_script_state.has_value()) {
           auto promise = promise_and_script_state->first;
           auto script_state = promise_and_script_state->second;
-          auto* resolved = MakeGarbageCollected<RespondWithHandler>(
-              active_webmcp_tool_, /*resolved=*/true);
-          auto* rejected = MakeGarbageCollected<RespondWithHandler>(
-              active_webmcp_tool_, /*resolved=*/false);
-          if (should_submit) {
-            // preventDefault was *not* called on the event, but respondWith was
-            // called. This is an error.
-            GetDocument().AddConsoleMessage(
-                MakeGarbageCollected<ConsoleMessage>(
-                    mojom::blink::ConsoleMessageSource::kJavaScript,
-                    mojom::blink::ConsoleMessageLevel::kError,
-                    "The respondWith() function was called, but the event was "
-                    "not preventDefaulted. This is an error."));
-            // Act like it was rejected either way.
-            rejected = MakeGarbageCollected<RespondWithHandler>(
-                active_webmcp_tool_, /*resolved=*/false);
-          }
+          // Since we have a promise, respondWith() was called. That should only
+          // work if `preventDefault()` was already called. So we should never
+          // be submitting the form here.
+          CHECK(!should_submit);
           // Wait for the provided promise to resolve or reject, and then call
           // the active_webmcp_tool_'s callback with the result.
           ScriptState::Scope scope(script_state);
-          promise.Unwrap().Then(script_state, resolved, rejected);
+          promise.Unwrap().Then(script_state,
+                                MakeGarbageCollected<RespondWithHandler>(
+                                    active_webmcp_tool_, /*resolved*/ true),
+                                MakeGarbageCollected<RespondWithHandler>(
+                                    active_webmcp_tool_, /*resolved*/ false));
         }
       }
     }
