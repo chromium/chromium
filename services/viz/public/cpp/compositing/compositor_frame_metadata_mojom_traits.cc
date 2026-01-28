@@ -62,10 +62,7 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   out->min_page_scale_factor = data.min_page_scale_factor();
   out->is_mobile_optimized = data.is_mobile_optimized();
   out->is_software = data.is_software();
-  if (data.top_controls_visible_height_set()) {
-    out->top_controls_visible_height.emplace(
-        data.top_controls_visible_height());
-  }
+  out->top_controls_visible_height = data.top_controls_visible_height();
 
   if (!data.ReadScreenshotDestination(&out->screenshot_destination)) {
     return false;

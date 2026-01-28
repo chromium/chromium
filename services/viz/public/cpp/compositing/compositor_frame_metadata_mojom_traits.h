@@ -129,14 +129,9 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.min_page_scale_factor;
   }
 
-  static bool top_controls_visible_height_set(
+  static std::optional<float> top_controls_visible_height(
       const viz::CompositorFrameMetadata& metadata) {
-    return metadata.top_controls_visible_height.has_value();
-  }
-
-  static float top_controls_visible_height(
-      const viz::CompositorFrameMetadata& metadata) {
-    return metadata.top_controls_visible_height.value_or(0.f);
+    return metadata.top_controls_visible_height;
   }
 
   static gfx::OverlayTransform display_transform_hint(
