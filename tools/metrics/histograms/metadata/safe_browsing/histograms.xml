@@ -2088,7 +2088,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.IOS.RepeatedResponseCalled"
-    enum="BooleanSubsequentResponse" expires_after="2026-03-08">
+    enum="BooleanSubsequentResponse" expires_after="2027-03-08">
   <owner>danieltwhite@google.com</owner>
   <owner>joemerramos@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
