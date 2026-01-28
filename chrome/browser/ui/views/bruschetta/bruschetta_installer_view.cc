@@ -302,8 +302,6 @@ bool BruschettaInstallerView::Accept() {
     RemoveChildViewT(radio_button_container_.get());
     radio_button_container_ = nullptr;
     radio_buttons_.clear();
-    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
-                                       true);
   }
 
   observation_.Reset();

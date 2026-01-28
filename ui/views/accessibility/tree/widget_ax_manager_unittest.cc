@@ -309,7 +309,7 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   // Fire an event on v1, one on v2, before the first send.
   auto before = task_environment()->GetPendingMainThreadTaskCount();
   manager()->OnEvent(v1->GetViewAccessibility(), ax::mojom::Event::kFocus);
-  manager()->OnEvent(v2->GetViewAccessibility(), ax::mojom::Event::kBlur);
+  manager()->OnEvent(v2->GetViewAccessibility(), ax::mojom::Event::kFocus);
 
   // Still just one task posted.
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before + 1u);
@@ -330,7 +330,7 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   EXPECT_EQ(api.last_serialization().events[0].event_type,
             ax::mojom::Event::kFocus);
   EXPECT_EQ(api.last_serialization().events[1].event_type,
-            ax::mojom::Event::kBlur);
+            ax::mojom::Event::kFocus);
 }
 
 TEST_F(WidgetAXManagerTest, DiesOnUnhandledEventRouting) {
@@ -405,7 +405,7 @@ TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
 
   // Second batch.
   auto before = task_environment()->GetPendingMainThreadTaskCount();
-  manager()->OnEvent(v->GetViewAccessibility(), ax::mojom::Event::kBlur);
+  manager()->OnEvent(v->GetViewAccessibility(), ax::mojom::Event::kFocus);
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before + 1u);
   EXPECT_TRUE(api.processing_update_posted());
   EXPECT_EQ(api.pending_events().size(), 1u);
@@ -414,7 +414,7 @@ TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
   api.WaitForNextSerialization();
   ASSERT_EQ(api.last_serialization().events.size(), 1u);
   EXPECT_EQ(api.last_serialization().events[0].event_type,
-            ax::mojom::Event::kBlur);
+            ax::mojom::Event::kFocus);
 }
 
 TEST_F(WidgetAXManagerTest, OnDataChanged_CanScheduleAgainAfterSend) {

@@ -756,7 +756,6 @@ void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
 void IconLabelBubbleView::AnimateOut() {
   if (label()->GetVisible()) {
     alert_virtual_view_->SetIsInvisible(true);
-    alert_virtual_view_->NotifyEvent(ax::mojom::Event::kHide, true);
     HideAnimation();
   }
 }
