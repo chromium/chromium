@@ -423,6 +423,39 @@ gfx::Rect VerticalTabView::GetChildBounds(const gfx::Rect& container,
   return gfx::Rect(x, y, actual_width, preferred_size.height());
 }
 
+absl::flat_hash_map<views::View*, bool>
+VerticalTabView::CalculateChildVisibilities() const {
+  absl::flat_hash_map<views::View*, bool> child_visibility_map;
+
+  child_visibility_map[title_] = !pinned_;
+
+  child_visibility_map[alert_indicator_] =
+      alert_indicator_->showing_alert_state().has_value();
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_tab_underline_view_ && (alert_indicator_->showing_alert_state() ==
+                                       tabs::TabAlert::kGlicAccessing ||
+                                   alert_indicator_->showing_alert_state() ==
+                                       tabs::TabAlert::kGlicSharing)) {
+    child_visibility_map[alert_indicator_] = false;
+  }
+#endif
+
+  child_visibility_map[icon_] =
+      !pinned_ || !child_visibility_map[alert_indicator_];
+
+  if (pinned_) {
+    child_visibility_map[close_button_] = false;
+  } else if (active_) {
+    child_visibility_map[close_button_] = true;
+  } else if (collapsed_) {
+    child_visibility_map[close_button_] = false;
+  } else {
+    child_visibility_map[close_button_] = hovered_;
+  }
+
+  return child_visibility_map;
+}
+
 views::ProposedLayout VerticalTabView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   auto child_visibility_map = CalculateChildVisibilities();
@@ -580,39 +613,6 @@ void VerticalTabView::UpdateBorder() {
   } else if (GetBorder()) {
     SetBorder(nullptr);
   }
-}
-
-absl::flat_hash_map<views::View*, bool>
-VerticalTabView::CalculateChildVisibilities() const {
-  absl::flat_hash_map<views::View*, bool> child_visibility_map;
-
-  child_visibility_map[title_] = !pinned_;
-
-  child_visibility_map[alert_indicator_] =
-      alert_indicator_->showing_alert_state().has_value();
-#if BUILDFLAG(ENABLE_GLIC)
-  if (glic_tab_underline_view_ && (alert_indicator_->showing_alert_state() ==
-                                       tabs::TabAlert::kGlicAccessing ||
-                                   alert_indicator_->showing_alert_state() ==
-                                       tabs::TabAlert::kGlicSharing)) {
-    child_visibility_map[alert_indicator_] = false;
-  }
-#endif
-
-  child_visibility_map[icon_] =
-      !pinned_ || !child_visibility_map[alert_indicator_];
-
-  if (pinned_) {
-    child_visibility_map[close_button_] = false;
-  } else if (active_) {
-    child_visibility_map[close_button_] = true;
-  } else if (collapsed_) {
-    child_visibility_map[close_button_] = false;
-  } else {
-    child_visibility_map[close_button_] = hovered_;
-  }
-
-  return child_visibility_map;
 }
 
 void VerticalTabView::UpdateColors() {

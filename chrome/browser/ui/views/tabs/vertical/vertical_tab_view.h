@@ -97,6 +97,9 @@ class VerticalTabView : public views::View,
                            const TabChildConfig& config,
                            const bool center) const;
 
+  // Calculates the visibilities of child views based on various states.
+  absl::flat_hash_map<views::View*, bool> CalculateChildVisibilities() const;
+
   // views::LayoutDelegate
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
@@ -121,12 +124,7 @@ class VerticalTabView : public views::View,
   void OnDataChanged();
 
   void UpdateTitle();
-
   void UpdateBorder();
-
-  // Calculates the visibilities of child views based on various states.
-  absl::flat_hash_map<views::View*, bool> CalculateChildVisibilities() const;
-
   void UpdateColors();
   void UpdateContrastRatioValues();
 
