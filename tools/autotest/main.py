@@ -976,7 +976,7 @@ def main():
   if args.run_changed:
     files_to_test.extend(GetChangedTestFiles())
     # Remove duplicates.
-    files_to_test = list[set(files_to_test)]
+    files_to_test = list(set(files_to_test))
 
   filenames: list[str] = []
   for file in files_to_test:
