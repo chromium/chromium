@@ -310,8 +310,7 @@ float Font::TabWidth(const SimpleFontData* font_data,
     return GetFontDescription().LetterSpacing();
 
   float modulized_position = fmodf(position, base_tab_width);
-  if (RuntimeEnabledFeatures::TabWidthNegativePositionEnabled() &&
-      modulized_position < 0) [[unlikely]] {
+  if (modulized_position < 0) [[unlikely]] {
     modulized_position += base_tab_width;
   }
 
@@ -334,8 +333,7 @@ LayoutUnit Font::TabWidth(const TabSize& tab_size, LayoutUnit position) const {
   }
 
   float modulized_position = fmodf(position, base_tab_width);
-  if (RuntimeEnabledFeatures::TabWidthNegativePositionEnabled() &&
-      modulized_position < 0) [[unlikely]] {
+  if (modulized_position < 0) [[unlikely]] {
     modulized_position += base_tab_width;
   }
 

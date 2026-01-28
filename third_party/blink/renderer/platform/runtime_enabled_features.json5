@@ -5210,10 +5210,6 @@
       status: "stable",
     },
     {
-      name: "TabWidthNegativePosition",
-      status: "stable",
-    },
-    {
       // When checking the shadow tree during invoke(),
       // use the invocationTargetInShadowTree saved before
       // calling the listener.
