@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_view_finder_coordinator.h"
 
 #import "base/ios/block_types.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
@@ -13,7 +15,9 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_view_finder_metrics_recorder.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_view_finder_transition_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -25,7 +29,9 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 
@@ -76,18 +82,17 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  [super start];
   _metricsRecorder = [[LensViewFinderMetricsRecorder alloc] init];
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(LensCommands)];
+  [self updateLensAvailabilityForWidgets];
 }
 
 - (void)stop {
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self lockOrientationPortrait:NO];
   _metricsRecorder = nil;
-  [super stop];
 }
 
 #pragma mark - LensCommands
@@ -301,6 +306,25 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   id<BrowserCoordinatorCommands> browserCoordinatorHandler =
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
   [browserCoordinatorHandler hideComposebox];
+}
+
+// Sets the visibility of the Lens replacement for the QR code scanner in the
+// home screen widget.
+- (void)updateLensAvailabilityForWidgets {
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  NSString* enableLensInWidgetKey =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupEnableLensInWidget);
+
+  // Determine the availability of the Lens entrypoint in the home screen
+  // widget. We don't use LensAvailability here because the seach engine status
+  // is determined elsewhere in the Extension Search Engine Data Updater.
+  const bool enableLensInWidget =
+      ios::provider::IsLensSupported() &&
+      GetApplicationContext()->GetLocalState()->GetBoolean(
+          prefs::kLensCameraAssistedSearchPolicyAllowed) &&
+      !base::FeatureList::IsEnabled(kDisableLensCamera) &&
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+  [sharedDefaults setBool:enableLensInWidget forKey:enableLensInWidgetKey];
 }
 
 @end

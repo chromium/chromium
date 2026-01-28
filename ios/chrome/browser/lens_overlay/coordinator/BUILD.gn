@@ -95,6 +95,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model:delegate",
     "//ios/chrome/common:string_conversions",
+    "//ios/chrome/common/app_group",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/lens:lens_api",
