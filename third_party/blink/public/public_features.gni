@@ -11,3 +11,7 @@ enable_unhandled_tap = is_android
 
 # Use Minikin hyphenation engine.
 use_minikin_hyphenation = !is_apple
+
+# Web Smart Card API is currently supported only on chromeos.
+# TODO(crbug.com/470349523): Migrate more smart card files to this flag.
+enable_smart_card = is_chromeos

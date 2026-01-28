@@ -7,6 +7,7 @@ import("//build/config/devtools.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/browser/devtools/features.gni")
 import("//device/bluetooth/emulation/buildflags.gni")
+import("//third_party/blink/public/public_features.gni")
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
@@ -177,6 +178,13 @@ inspector_protocol_generate("protocol_sources") {
     outputs += [
       "protocol/bluetooth_emulation.cc",
       "protocol/bluetooth_emulation.h",
+    ]
+  }
+
+  if (enable_smart_card) {
+    outputs += [
+      "protocol/smart_card_emulation.cc",
+      "protocol/smart_card_emulation.h",
     ]
   }
 }

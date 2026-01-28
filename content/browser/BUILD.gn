@@ -2657,8 +2657,12 @@ source_set("browser") {
     deps += [ "//media/mojo/mojom" ]
   }
 
-  if (is_chromeos) {
+  if (enable_smart_card) {
+    # TODO(crbug.com/470349523): Migrate more smart card files to use this flag.
+    defines += [ "ENABLE_SMART_CARD" ]
     sources += [
+      "$target_gen_dir/devtools/protocol/smart_card_emulation.cc",
+      "$target_gen_dir/devtools/protocol/smart_card_emulation.h",
       "handwriting/handwriting_recognition_service_impl_cros.cc",
       "handwriting/handwriting_recognition_service_impl_cros.h",
       "handwriting/handwriting_recognizer_impl_cros.cc",

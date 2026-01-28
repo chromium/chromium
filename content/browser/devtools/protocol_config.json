@@ -241,6 +241,9 @@
                     "removeDescriptor",
                     "simulateGATTDisconnection"
                 ]
+            },
+            {
+                "domain": "SmartCardEmulation"
             }
         ]
     },
