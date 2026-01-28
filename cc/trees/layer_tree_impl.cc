@@ -12,7 +12,6 @@
 #include <limits>
 #include <memory>
 #include <set>
-#include <unordered_set>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -61,6 +60,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/traced_value.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -2868,7 +2868,7 @@ static void FindClosestMatchingLayerForAttribution(
     const gfx::PointF& screen_space_point,
     const LayerImpl* root_layer,
     FindClosestMatchingLayerState* state) {
-  std::unordered_set<ElementId, ElementIdHash> hit_visible_frame_element_ids;
+  absl::flat_hash_set<ElementId, ElementIdHash> hit_visible_frame_element_ids;
   // We want to iterate from front to back when hit testing.
   for (auto* layer : base::Reversed(*root_layer->layer_tree_impl())) {
     if (!layer->HitTestable())
