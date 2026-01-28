@@ -26843,6 +26843,27 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiFloatyCollapsedToDismissed">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    The user dismissed the Gemini floaty from a collapsed state. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiFloatyCollapsedToExpanded">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    The user expanded the Gemini view from a collapsed state. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiFloatyExpandedToCollapsed">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    The user collapsed the Gemini view from an expanded state. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiFREConsentAccept">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>

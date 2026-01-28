@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
 namespace {
 // Minimum time between FRE entry point impression logs.
@@ -108,6 +109,11 @@ const char kResponseLatencyWithoutContextHistogram[] =
 const char kSessionPromptCountHistogram[] = "IOS.Gemini.Session.PromptCount";
 
 const char kSessionFirstPromptHistogram[] = "IOS.Gemini.Session.FirstPrompt";
+
+const char kFloatyTimeMinimizedHistogram[] = "IOS.Gemini.Floaty.TimeMinimized";
+
+const char kFloatyViewStateTransitionHistogram[] =
+    "IOS.Gemini.Floaty.ViewStateTransition";
 
 const char kImageRemixContextMenuEntryPointAspectRatioTappedHistogram[] =
     "IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped";
@@ -255,6 +261,57 @@ void RecordSessionPromptCount(int prompt_count) {
 
 void RecordSessionFirstPrompt(bool had_first_prompt) {
   base::UmaHistogramBoolean(kSessionFirstPromptHistogram, had_first_prompt);
+}
+
+void RecordFloatyExpandedToCollapsed() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiFloatyExpandedToCollapsed"));
+  RecordGeminiViewStateTransition(
+      IOSGeminiViewStateTransition::kExpandedToCollapsed);
+}
+
+void RecordFloatyCollapsedToExpanded() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiFloatyCollapsedToExpanded"));
+  RecordGeminiViewStateTransition(
+      IOSGeminiViewStateTransition::kCollapsedToExpanded);
+}
+
+void RecordFloatyDismissedWhileCollapsed() {
+  base::RecordAction(
+      base::UserMetricsAction("MobileGeminiFloatyCollapsedToDismissed"));
+}
+
+void RecordFloatyMinimizedTime(base::TimeTicks elapsed_minimized_floaty_time) {
+  if (elapsed_minimized_floaty_time.is_null()) {
+    return;
+  }
+
+  base::TimeDelta minimized_floaty_time =
+      base::TimeTicks::Now() - elapsed_minimized_floaty_time;
+  base::UmaHistogramLongTimes100(kFloatyTimeMinimizedHistogram,
+                                 minimized_floaty_time);
+}
+
+void RecordGeminiViewStateTransition(IOSGeminiViewStateTransition transition) {
+  base::UmaHistogramEnumeration(kFloatyViewStateTransitionHistogram,
+                                transition);
+}
+
+void RecordGeminiViewStateHiddenToShown(
+    ios::provider::GeminiViewState view_state) {
+  switch (view_state) {
+    case ios::provider::GeminiViewState::kCollapsed:
+      RecordGeminiViewStateTransition(
+          IOSGeminiViewStateTransition::kHiddenToCollapsed);
+      break;
+    case ios::provider::GeminiViewState::kExpanded:
+      RecordGeminiViewStateTransition(
+          IOSGeminiViewStateTransition::kHiddenToExpanded);
+      break;
+    default:
+      break;
+  }
 }
 
 void RecordURLOpened() {

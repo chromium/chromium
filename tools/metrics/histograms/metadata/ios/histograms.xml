@@ -2425,6 +2425,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.Floaty.TimeMinimized" units="ms"
+    expires_after="2027-01-25">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the duration of a floaty in the minimized state until expanded.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.Floaty.ViewStateTransition"
+    enum="IOSGeminiViewStateTransition" expires_after="2027-01-25">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the transition between different Gemini view states. This enum is
+    defined in IOSGeminiViewStateTransition.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.FRE.ConsentAction" enum="IOSGeminiFREAction"
     expires_after="2026-06-01">
   <owner>sebsg@chromium.org</owner>

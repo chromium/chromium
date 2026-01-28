@@ -814,6 +814,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/settings/ui_bundled/bwg/utils/gemini_settings_metrics.h:IOSGeminiSettingsItem) -->
 
+<!-- LINT.IfChange(IOSGeminiViewStateTransition) -->
+
+<enum name="IOSGeminiViewStateTransition">
+  <summary>
+    Enum describing the transition between different Gemini view states.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="CollapsedToExpanded"/>
+  <int value="2" label="ExpandedToCollapsed"/>
+  <int value="3" label="HiddenToCollapsed"/>
+  <int value="4" label="HiddenToExpanded"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiViewStateTransition) -->
+
 <enum name="IOSHomeActionType">
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>

@@ -11,11 +11,16 @@ typedef NS_ENUM(NSInteger, GeminiInputType);
 
 namespace base {
 class TimeDelta;
+class TimeTicks;
 }  // namespace base
 
 namespace gemini {
 enum class EntryPoint;
 }  // namespace gemini
+
+namespace ios::provider {
+enum class GeminiViewState;
+}
 
 // UMA histogram key for IOS.Gemini.Eligibility.
 extern const char kEligibilityHistogram[];
@@ -37,6 +42,12 @@ extern const char kSessionPromptCountHistogram[];
 
 // UMA histogram key for IOS.Gemini.Session.FirstPrompt.
 extern const char kSessionFirstPromptHistogram[];
+
+// UMA histogram key for IOS.Gemini.Floaty.TimeMinimized.
+extern const char kFloatyTimeMinimizedHistogram[];
+
+// UMA histogram key for IOS.Gemini.Floaty.ViewStateTransition.
+extern const char kFloatyViewStateTransitionHistogram[];
 
 // Enum for the IOS.Gemini.FRE.PromoAction and IOS.Gemini.FRE.ConsentAction
 // histograms.
@@ -257,6 +268,36 @@ void RecordSessionPromptCount(int prompt_count);
 
 // Records if a first prompt was sent in a Gemini session.
 void RecordSessionFirstPrompt(bool had_first_prompt);
+
+// Enum for the IOS.Gemini.ViewStateTransition histogram.
+// LINT.IfChange(IOSGeminiViewStateTransition)
+enum class IOSGeminiViewStateTransition {
+  kUnknown = 0,
+  kCollapsedToExpanded = 1,
+  kExpandedToCollapsed = 2,
+  kHiddenToCollapsed = 3,
+  kHiddenToExpanded = 4,
+  kMaxValue = kHiddenToExpanded,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiViewStateTransition)
+
+// Records the floaty transition from expanded to collapsed.
+void RecordFloatyExpandedToCollapsed();
+
+// Records the floaty transition from collapsed to expanded.
+void RecordFloatyCollapsedToExpanded();
+
+// Records the floaty dismissing while collapsed.
+void RecordFloatyDismissedWhileCollapsed();
+
+// Records the length of time a floaty is minimized until it is expanded.
+void RecordFloatyMinimizedTime(base::TimeTicks elapsed_minimized_floaty_time);
+
+// Records the Gemini floaty view state transition.
+void RecordGeminiViewStateTransition(IOSGeminiViewStateTransition transition);
+
+void RecordGeminiViewStateHiddenToShown(
+    ios::provider::GeminiViewState last_shown_view_state);
 
 // Records that the user clicked a URL in a Gemini session.
 void RecordURLOpened();

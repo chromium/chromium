@@ -419,8 +419,18 @@ void BwgBrowserAgent::CollapseFloatyIfInvoked() {
 
 void BwgBrowserAgent::SetLastShownViewState(
     ios::provider::GeminiViewState view_state) {
-  if (view_state == ios::provider::GeminiViewState::kHidden) {
+  if (view_state == ios::provider::GeminiViewState::kHidden ||
+      view_state == last_shown_view_state_) {
     return;
+  }
+
+  if (view_state == ios::provider::GeminiViewState::kExpanded) {
+    RecordFloatyCollapsedToExpanded();
+    RecordFloatyMinimizedTime(elapsed_minimized_floaty_time_);
+    elapsed_minimized_floaty_time_ = base::TimeTicks();
+  } else if (view_state == ios::provider::GeminiViewState::kCollapsed) {
+    RecordFloatyExpandedToCollapsed();
+    elapsed_minimized_floaty_time_ = base::TimeTicks::Now();
   }
   last_shown_view_state_ = view_state;
 }
@@ -481,6 +491,10 @@ void BwgBrowserAgent::DismissFloaty() {
     return;
   }
 
+  if (last_shown_view_state_ == ios::provider::GeminiViewState::kCollapsed) {
+    RecordFloatyDismissedWhileCollapsed();
+  }
+
   is_floaty_invoked_ = false;
   ios::provider::ResetGemini();
 }
@@ -514,6 +528,7 @@ void BwgBrowserAgent::ShowFloatyIfInvoked(bool animated) {
     return;
   }
 
+  RecordGeminiViewStateHiddenToShown(last_shown_view_state_);
   is_floaty_temporarily_hidden_ = false;
   ios::provider::UpdateGeminiViewState(last_shown_view_state_, animated);
 }
