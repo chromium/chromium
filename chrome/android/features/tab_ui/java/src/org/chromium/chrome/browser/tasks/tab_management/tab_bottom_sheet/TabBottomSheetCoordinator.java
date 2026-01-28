@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -45,14 +44,11 @@ public class TabBottomSheetCoordinator {
         mModel = TabBottomSheetProperties.createDefaultModel();
     }
 
-    /** Shows the bottom sheet. */
-    public void showBottomSheet(
-            @Nullable View toolbarView,
-            View webUiView,
-            @Nullable View fuseboxView,
-            Callback<Boolean> onBottomSheetShowAttempted) {
+    /** Tries to show the bottom sheet. */
+    public boolean tryToShowBottomSheet(
+            @Nullable View toolbarView, View webUiView, @Nullable View fuseboxView) {
         if (mIsSheetCurrentlyManagedByController) {
-            return;
+            return false;
         }
 
         // Build the bottom sheet.
@@ -76,17 +72,18 @@ public class TabBottomSheetCoordinator {
         mSheetContent = new TabBottomSheetContent(mContentView);
 
         if (mBottomSheetController.requestShowContent(mSheetContent, true)) {
-            mSheetObserver = buildBottomSheetObserver(onBottomSheetShowAttempted);
+            mSheetObserver = buildBottomSheetObserver();
             mBottomSheetController.addObserver(mSheetObserver);
             mIsSheetCurrentlyManagedByController = true;
+            return true;
         } else {
             // This happens when either.
             // 1) If the sheet content is null.
             // 2) The bottom sheet is null.
             // 3) If its being shown, or is in queue but not currently shown.
             // 4) If a sheet of higher priority came up.
-            onBottomSheetShowAttempted.onResult(false);
             cleanupSheetResources();
+            return false;
         }
     }
 
@@ -135,19 +132,8 @@ public class TabBottomSheetCoordinator {
     }
 
     // Observer methods.
-    private BottomSheetObserver buildBottomSheetObserver(
-            Callback<Boolean> onBottomSheetShowAttempted) {
+    private BottomSheetObserver buildBottomSheetObserver() {
         return new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetOpened(@StateChangeReason int reason) {
-                onBottomSheetShowAttempted.onResult(true);
-            }
-
-            @Override
-            public void onSheetClosed(@StateChangeReason int reason) {
-                destroy();
-            }
-
             @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
                 mModel.set(TabBottomSheetProperties.FUSEBOX_OFFSET, offsetPx);

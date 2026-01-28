@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.view.View;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.lifetime.Destroyable;
@@ -17,6 +18,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -26,6 +30,7 @@ public class TabBottomSheetManager implements Destroyable {
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
+    private final BottomSheetObserver mBottomSheetObserver;
     private @Nullable TabBottomSheetToolbar mToolbar;
     private @Nullable TabBottomSheetWebUi mWebUi;
     private @Nullable TabBottomSheetFusebox mFusebox;
@@ -65,6 +70,7 @@ public class TabBottomSheetManager implements Destroyable {
                             snackbarManager);
         }
 
+        mBottomSheetObserver = buildBottomSheetObserver();
         TabBottomSheetUtils.attachManagerToWindow(windowAndroid, this);
     }
 
@@ -77,15 +83,20 @@ public class TabBottomSheetManager implements Destroyable {
      */
     void tryToShowBottomSheet(boolean shouldShowToolbar, boolean shouldShowFusebox) {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
+            assert mWebUi != null : "WebUi should not be null";
             if (mTabBottomSheetCoordinator == null) {
                 mTabBottomSheetCoordinator =
                         new TabBottomSheetCoordinator(mActivity, mBottomSheetController);
             }
-            mTabBottomSheetCoordinator.showBottomSheet(
-                    mToolbar != null && shouldShowToolbar ? mToolbar.getToolbarView() : null,
-                    assumeNonNull(mWebUi).getWebUiView(),
-                    mFusebox != null && shouldShowFusebox ? mFusebox.getFuseboxView() : null,
-                    this::onBottomSheetShowAttempted);
+            View toolbarView =
+                    mToolbar != null && shouldShowToolbar ? mToolbar.getToolbarView() : null;
+            View webUiView = mWebUi.getWebUiView();
+            View fuseboxView =
+                    mFusebox != null && shouldShowFusebox ? mFusebox.getFuseboxView() : null;
+            if (mTabBottomSheetCoordinator.tryToShowBottomSheet(
+                    toolbarView, webUiView, fuseboxView)) {
+                mBottomSheetController.addObserver(mBottomSheetObserver);
+            }
         }
     }
 
@@ -109,10 +120,22 @@ public class TabBottomSheetManager implements Destroyable {
         return mWebUi != null ? mWebUi.getWebContents() : null;
     }
 
-    void onBottomSheetShowAttempted(boolean didSucceed) {
-        if (didSucceed && mFusebox != null) {
-            mFusebox.onBottomSheetShown();
-        }
+    // Observer methods.
+    private BottomSheetObserver buildBottomSheetObserver() {
+        return new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetOpened(@StateChangeReason int reason) {
+                if (mFusebox != null) {
+                    mFusebox.onBottomSheetShown();
+                }
+            }
+
+            @Override
+            public void onSheetClosed(@StateChangeReason int reason) {
+                mBottomSheetController.removeObserver(mBottomSheetObserver);
+                assumeNonNull(mTabBottomSheetCoordinator).destroy();
+            }
+        };
     }
 
     @Override
