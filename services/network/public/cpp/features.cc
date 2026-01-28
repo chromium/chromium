@@ -373,9 +373,6 @@ BASE_FEATURE_PARAM(bool,
                    /*name=*/"SkipTpcdMitigationsForAdsTopLevelTrial",
                    /*default_value=*/false);
 
-// Avoids copying ResourceRequest when possible.
-BASE_FEATURE(kAvoidResourceRequestCopies, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Document-Isolation-Policy (DIP).
 // https://github.com/WICG/document-isolation-policy
 BASE_FEATURE(kDocumentIsolationPolicy,

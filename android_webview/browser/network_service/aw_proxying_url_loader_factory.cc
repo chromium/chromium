@@ -1082,24 +1082,13 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
 
   // manages its own lifecycle
   // TODO(timvolodine): consider keeping track of requests.
-  InterceptedRequest* req;
-  if (base::FeatureList::IsEnabled(
-          network::features::kAvoidResourceRequestCopies)) {
-    // TODO(crbug.com/332697604): Pass by non-const ref once mojo supports it.
-    req = new InterceptedRequest(
-        std::move(get_cookie_header), std::move(set_cookie_header),
-        web_contents_key_, frame_tree_node_id_, request_id, options,
-        std::move(request), traffic_annotation, std::move(loader),
-        std::move(client), std::move(target_factory_clone), intercept_only_,
-        security_options_, origin_matched_headers_, browser_context_handle_);
-  } else {
-    req = new InterceptedRequest(
-        std::move(get_cookie_header), std::move(set_cookie_header),
-        web_contents_key_, frame_tree_node_id_, request_id, options, request,
-        traffic_annotation, std::move(loader), std::move(client),
-        std::move(target_factory_clone), intercept_only_, security_options_,
-        origin_matched_headers_, browser_context_handle_);
-  }
+  // TODO(crbug.com/332697604): Pass by non-const ref once mojo supports it.
+  InterceptedRequest* req = new InterceptedRequest(
+      std::move(get_cookie_header), std::move(set_cookie_header),
+      web_contents_key_, frame_tree_node_id_, request_id, options,
+      std::move(request), traffic_annotation, std::move(loader),
+      std::move(client), std::move(target_factory_clone), intercept_only_,
+      security_options_, origin_matched_headers_, browser_context_handle_);
   req->Restart();
 }
 

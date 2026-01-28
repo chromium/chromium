@@ -470,45 +470,22 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
       }
     }
 
-    std::unique_ptr<CorsURLLoader> loader;
-    if (base::FeatureList::IsEnabled(
-            network::features::kAvoidResourceRequestCopies)) {
-      loader = std::make_unique<CorsURLLoader>(
-          std::move(receiver), process_id_, request_id, options,
-          base::BindOnce(&CorsURLLoaderFactory::DestroyCorsURLLoader,
-                         base::Unretained(this)),
-          std::move(resource_request), ignore_isolated_world_origin_,
-          factory_override_ &&
-              factory_override_->ShouldSkipCorsEnabledSchemeCheck(),
-          std::move(client), traffic_annotation, inner_url_loader_factory,
-          factory_override_ ? nullptr : network_loader_factory_.get(),
-          origin_access_list_, *isolation_info_ptr,
-          std::move(devtools_observer), client_security_state_.get(),
-          &url_loader_network_service_observer_, cross_origin_embedder_policy_,
-          shared_dictionary_storage,
-          shared_dictionary_observer_ ? shared_dictionary_observer_.get()
-                                      : nullptr,
-          context_, factory_cookie_setting_overrides_,
-          devtools_cookie_setting_overrides_);
-    } else {
-      loader = std::make_unique<CorsURLLoader>(
-          std::move(receiver), process_id_, request_id, options,
-          base::BindOnce(&CorsURLLoaderFactory::DestroyCorsURLLoader,
-                         base::Unretained(this)),
-          resource_request, ignore_isolated_world_origin_,
-          factory_override_ &&
-              factory_override_->ShouldSkipCorsEnabledSchemeCheck(),
-          std::move(client), traffic_annotation, inner_url_loader_factory,
-          factory_override_ ? nullptr : network_loader_factory_.get(),
-          origin_access_list_, *isolation_info_ptr,
-          std::move(devtools_observer), client_security_state_.get(),
-          &url_loader_network_service_observer_, cross_origin_embedder_policy_,
-          shared_dictionary_storage,
-          shared_dictionary_observer_ ? shared_dictionary_observer_.get()
-                                      : nullptr,
-          context_, factory_cookie_setting_overrides_,
-          devtools_cookie_setting_overrides_);
-    }
+    std::unique_ptr<CorsURLLoader> loader = std::make_unique<CorsURLLoader>(
+        std::move(receiver), process_id_, request_id, options,
+        base::BindOnce(&CorsURLLoaderFactory::DestroyCorsURLLoader,
+                       base::Unretained(this)),
+        std::move(resource_request), ignore_isolated_world_origin_,
+        factory_override_ &&
+            factory_override_->ShouldSkipCorsEnabledSchemeCheck(),
+        std::move(client), traffic_annotation, inner_url_loader_factory,
+        factory_override_ ? nullptr : network_loader_factory_.get(),
+        origin_access_list_, *isolation_info_ptr, std::move(devtools_observer),
+        client_security_state_.get(), &url_loader_network_service_observer_,
+        cross_origin_embedder_policy_, shared_dictionary_storage,
+        shared_dictionary_observer_ ? shared_dictionary_observer_.get()
+                                    : nullptr,
+        context_, factory_cookie_setting_overrides_,
+        devtools_cookie_setting_overrides_);
     auto* raw_loader = loader.get();
     OnCorsURLLoaderCreated(std::move(loader));
     raw_loader->Start();
@@ -973,18 +950,11 @@ CorsURLLoaderFactory::GetDevToolsObserver(
   mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
   if (resource_request.trusted_params &&
       resource_request.trusted_params->devtools_observer) {
-    if (base::FeatureList::IsEnabled(features::kAvoidResourceRequestCopies)) {
-      auto& original_observer =
-          resource_request.trusted_params->devtools_observer;
-      mojo::Remote<mojom::DevToolsObserver> remote(
-          std::move(original_observer));
-      remote->Clone(devtools_observer.InitWithNewPipeAndPassReceiver());
-      original_observer = remote.Unbind();
-    } else {
-      ResourceRequest::TrustedParams cloned_params =
-          *resource_request.trusted_params;
-      devtools_observer = std::move(cloned_params.devtools_observer);
-    }
+    auto& original_observer =
+        resource_request.trusted_params->devtools_observer;
+    mojo::Remote<mojom::DevToolsObserver> remote(std::move(original_observer));
+    remote->Clone(devtools_observer.InitWithNewPipeAndPassReceiver());
+    original_observer = remote.Unbind();
   } else {
     mojom::DevToolsObserver* observer =
         factory_override_ ? factory_override_->GetDevToolsObserver()

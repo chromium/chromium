@@ -763,9 +763,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP,
                 "Use initial network state at startup"),
         Flag.baseFeature(
-                NetworkServiceFeatures.AVOID_RESOURCE_REQUEST_COPIES,
-                "Avoids copying ResourceRequest when possible."),
-        Flag.baseFeature(
                 BlinkFeatures.LOWER_HIGH_RESOLUTION_TIMER_THRESHOLD,
                 "Schedule DOM Timers with high precision only if their deadline is <4ms."),
         Flag.baseFeature(
