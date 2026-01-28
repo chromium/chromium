@@ -33,9 +33,7 @@ namespace glic {
 class GlicFocusedBrowserManager;
 
 // Responsible for managing which tab is considered "focused" and for accessing
-// its WebContents. This is an implementation detail of GlicKeyedService and
-// others should rely on the interface that GlicKeyedService exposes for
-// observing state changes.
+// its WebContents.
 class GlicFocusedTabManager : public GlicFocusedTabManagerInterface,
                               public content::WebContentsObserver,
                               public TabStripModelObserver {
