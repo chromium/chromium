@@ -13,6 +13,7 @@ import "components/enterprise/common/proto/google3_protos.proto";
 import "components/enterprise/common/proto/synced/browser_events.proto";
 import "components/enterprise/common/proto/synced/extension_install_events.proto";
 import "components/enterprise/common/proto/synced/policy_validation_report.proto";
+import "components/enterprise/common/proto/synced/saas_usage_report_event.proto";
 import "components/reporting/proto/synced/record.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -35,6 +36,10 @@ message Event {
 
   // Optional. IP addresses of the user.
   repeated string local_ips = 5;
+
+  // TODO(b/443747355): Add field to event converter. See: cl/840724098.
+  // Boolean. CEP Customer.
+  bool cep_customer = 6;
 
   // Required. Details about the actual event.
   oneof event {
@@ -101,7 +106,10 @@ message Event {
     // A telomere event.
     TelomereEvent telomere_event = 120;
 
-    // Next ID: 121
+    // A SaaS usage report event.
+    SaasUsageReportEvent saas_usage_report_event = 121;
+
+    // Next ID: 122
   }
 }
 

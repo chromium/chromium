@@ -988,6 +988,7 @@ void MaybeTruncateLongUrls(proto::Event& event_variant) {
     case proto::Event::kSuspiciousUrlEvent:
     case proto::Event::kPrototypeRawEvent:
     case proto::Event::kTelomereEvent:
+    case proto::Event::kSaasUsageReportEvent:
     case proto::Event::EVENT_NOT_SET:
       break;
   }
