@@ -1568,12 +1568,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (mTabModelObserver != null) mTabModelObserver.destroy();
         // This handles a case where an instance is deleted within Chrome but not through
         // Window manager UI, and the task is removed by system. See https://crbug.com/1241719.
-        // A point of activity destruction should be recorded as last access of the instance for a
-        // more accurate ordering of inactive instances displayed on surfaces like the instance
-        // switcher dialog and Recent Tabs.
         removeInvalidInstanceData();
-
-        MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
 
         // Activity#isFinishing() is true in case of explicit user intent, for eg. task swipe up
         // from Android Recents or app trigger, for eg. programmatically invoking #finish() on the
@@ -1584,6 +1579,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // subsequent task kill will also not be reflected as an instance closure until the Recent
         // Tabs page is reopened.
         if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
+            // A point of activity destruction should be recorded as last access of the instance for
+            // a more accurate ordering of inactive instances displayed on surfaces like the
+            // instance switcher dialog and Recent Tabs.
+            MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+
             if (mActivity.isFinishing()) {
                 // Notify Recent Tabs page that the instance is closing.
                 int normalTabCount = MultiInstancePersistentStore.readNormalTabCount(mInstanceId);
@@ -1633,7 +1633,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // destruction needs to be recorded as an additional case of last access of the instance so
         // that surfaces like Recent Tabs and the instance switcher dialog can display a more
         // accurate list of inactive instances sorted by their last accessed time.
-        MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+        if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
+            MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+        }
     }
 
     @Override
