@@ -298,7 +298,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".camera-app"/>
   <variant name=".cast-feedback"/>
   <variant name=".certificate-manager"/>
-  <variant name=".chrome"/>
   <variant name=".chrome-signin"/>
   <variant name=".chrome-urls"/>
   <variant name=".class-tools-remote-display"/>
@@ -314,6 +313,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".connection-monitoring-detected"/>
   <variant name=".connectivity-diagnostics"/>
   <variant name=".connectors-internals"/>
+  <variant name=".constrained-test"/>
   <variant name=".contextual-tasks"/>
   <variant name=".crashes"/>
   <variant name=".credits"/>

@@ -32,7 +32,7 @@ using content::WebUIMessageHandler;
 
 ConstrainedWebDialogUIConfig::ConstrainedWebDialogUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
-                         chrome::kChromeUIConstrainedHTMLTestURL) {}
+                         chrome::kChromeUIConstrainedHTMLTestHost) {}
 
 namespace {
 
