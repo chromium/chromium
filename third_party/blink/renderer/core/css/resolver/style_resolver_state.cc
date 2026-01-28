@@ -183,6 +183,13 @@ void StyleResolverState::UpdateLengthConversionData() const {
           GetAnchorEvaluator(), StyleBuilder().PositionAnchor(),
           StyleBuilder().PositionAreaOffsets()),
       StyleBuilder().EffectiveZoom(), length_conversion_flags_, &GetElement());
+  if (should_update_line_height_) {
+    css_to_length_conversion_data_.SetLineHeightSize(
+        CSSToLengthConversionData::LineHeightSize(
+            style_builder_->GetFontSizeStyle(),
+            GetDocument().documentElement()->GetComputedStyle()));
+    should_update_line_height_ = false;
+  }
   css_to_length_conversion_data_dirty_ = false;
   element_style_resources_.UpdateLengthConversionData(
       &css_to_length_conversion_data_);
@@ -442,16 +449,27 @@ CSSValue& StyleResolverState::ResolveGradients(CSSValue& value) const {
 
 void StyleResolverState::UpdateFont() {
   GetFontBuilder().CreateFont(StyleBuilder(), ParentStyle());
-  SetConversionFontSizes(CSSToLengthConversionData::FontSizes(
-      style_builder_->GetFontSizeStyle(), RootElementStyle()));
-  SetConversionZoom(StyleBuilder().EffectiveZoom());
+  if (css_to_length_conversion_data_dirty_) {
+    // Mutating values on css_to_length_conversion_data_ is pointless,
+    // they will be overwritten next time anyone asks for the object anyways.
+  } else {
+    SetConversionFontSizes(CSSToLengthConversionData::FontSizes(
+        style_builder_->GetFontSizeStyle(), RootElementStyle()));
+    SetConversionZoom(StyleBuilder().EffectiveZoom());
+  }
 }
 
 void StyleResolverState::UpdateLineHeight() {
-  MutableCssToLengthConversionData().SetLineHeightSize(
-      CSSToLengthConversionData::LineHeightSize(
-          style_builder_->GetFontSizeStyle(),
-          GetDocument().documentElement()->GetComputedStyle()));
+  if (css_to_length_conversion_data_dirty_) {
+    // We need to defer this until we actually have
+    // css_to_length_conversion_data_.
+    should_update_line_height_ = true;
+  } else {
+    MutableCssToLengthConversionData().SetLineHeightSize(
+        CSSToLengthConversionData::LineHeightSize(
+            style_builder_->GetFontSizeStyle(),
+            GetDocument().documentElement()->GetComputedStyle()));
+  }
 }
 
 bool StyleResolverState::CanAffectAnimations() const {

@@ -140,13 +140,6 @@ class CORE_EXPORT StyleResolverState {
     return flags;
   }
 
-  void SetConversionFontSizes(
-      const CSSToLengthConversionData::FontSizes& font_sizes) {
-    MutableCssToLengthConversionData().SetFontSizes(font_sizes);
-  }
-  void SetConversionZoom(float zoom) {
-    MutableCssToLengthConversionData().SetZoom(zoom);
-  }
   void SubtractScrollbarsFromViewportUnits(const gfx::Size& scrollbars) {
     MutableCssToLengthConversionData().SubtractScrollbars(scrollbars);
   }
@@ -299,6 +292,14 @@ class CORE_EXPORT StyleResolverState {
   void SetComputedStyleFlagsFromAuthorFlags(CSSProperty::Flags author_flags);
 
  private:
+  void SetConversionFontSizes(
+      const CSSToLengthConversionData::FontSizes& font_sizes) {
+    MutableCssToLengthConversionData().SetFontSizes(font_sizes);
+  }
+  void SetConversionZoom(float zoom) {
+    MutableCssToLengthConversionData().SetZoom(zoom);
+  }
+
   // Const because it only touches mutable members.
   void UpdateLengthConversionData() const;
 
@@ -336,6 +337,7 @@ class CORE_EXPORT StyleResolverState {
   // conversion data from.
   mutable CSSToLengthConversionData::Flags length_conversion_flags_ = 0;
   mutable bool css_to_length_conversion_data_dirty_ = false;
+  mutable bool should_update_line_height_ = false;
   mutable CSSToLengthConversionData css_to_length_conversion_data_;
 
   // parent_style_ is not always just ElementResolveContext::ParentStyle(),
