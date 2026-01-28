@@ -847,6 +847,160 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280166,4,11.111000,1,0,0,1,1,623464226968270,1292554023976270,1292554027681257,3704987,1292554029847257,1292554030083257,2166000,236000,1292554030360210,1292554030737210,276953,377000,1292554030360210,1292554030725210,-377000,365000,1292554030873210,148000,1292554031441210,1292554031668210,568000,227000,1292554032587633,1292554033341633,919423,754000,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]",1292554048008270,1292554063604270,"[NULL]",15596000
         """))
 
+  def test_chrome_scroll_frame_info_v4(self):
+    return DiffTestBlueprint(
+        trace=DataPath('scroll_m144.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.scroll_jank_v4;
+        INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
+
+        -- Select a cross-section of various frames from the trace, as
+        -- categorized by the scroll jank v4 metric (damaging, non-damaging,
+        -- real, synthetic, janky).
+        WITH damaging_real_ids AS (
+          SELECT
+            "damaging real" AS category,
+            id
+          FROM chrome_scroll_jank_v4_results
+          WHERE damage_type = 'DAMAGING' AND first_scroll_update_type = 'REAL'
+          ORDER BY ts ASC
+          LIMIT 3
+        ), non_damaging_ids AS (
+          SELECT
+            "non-damaging" AS category,
+            id
+          FROM chrome_scroll_jank_v4_results
+          WHERE damage_type GLOB 'NON_DAMAGING*'
+          ORDER BY ts ASC
+          LIMIT 3
+        ), synthetic_ids AS (
+          SELECT
+            "synthetic" AS category,
+            id
+          FROM chrome_scroll_jank_v4_results
+          WHERE first_scroll_update_type GLOB 'SYNTHETIC*'
+          ORDER BY ts ASC
+          LIMIT 3
+        ), janky_ids AS (
+          SELECT
+            "janky" AS category,
+            id
+          FROM chrome_scroll_jank_v4_results
+          WHERE is_janky
+          ORDER BY ts ASC
+          LIMIT 3
+        ), ids AS (
+          SELECT * FROM damaging_real_ids
+          UNION ALL
+          SELECT * FROM non_damaging_ids
+          UNION ALL
+          SELECT * FROM synthetic_ids
+          UNION ALL
+          SELECT * FROM janky_ids
+        )
+      SELECT
+        category,
+        -- Don't query for `id` because Perfetto doesn't guarantee stable slice
+        -- IDs.
+        scroll_update_latency_id,
+        scroll_id,
+        vsync_interval_dur,
+        is_janky,
+        is_inertial,
+        frame_index_in_scroll,
+        real_abs_total_raw_delta_pixels,
+        browser_uptime_dur,
+        first_input_generation_ts,
+        input_reader_dur,
+        input_dispatcher_dur,
+        previous_last_input_to_first_input_generation_dur,
+        browser_utid,
+        first_input_generation_to_browser_main_dur,
+        first_input_generation_to_browser_main_delta_dur,
+        first_input_touch_move_received_slice_id,
+        first_input_touch_move_received_ts,
+        first_input_touch_move_processing_dur,
+        first_input_touch_move_processing_delta_dur,
+        first_input_scroll_update_created_slice_id,
+        first_input_scroll_update_created_ts,
+        first_input_scroll_update_processing_dur,
+        first_input_scroll_update_processing_delta_dur,
+        first_input_scroll_update_created_end_ts,
+        first_input_browser_to_compositor_delay_dur,
+        first_input_browser_to_compositor_delay_delta_dur,
+        compositor_utid,
+        first_input_compositor_dispatch_slice_id,
+        first_input_compositor_dispatch_ts,
+        first_input_compositor_dispatch_dur,
+        first_input_compositor_dispatch_delta_dur,
+        first_input_compositor_dispatch_end_ts,
+        first_input_compositor_dispatch_to_on_begin_frame_delay_dur,
+        first_input_compositor_dispatch_to_on_begin_frame_delay_delta_dur,
+        compositor_resample_slice_id,
+        compositor_coalesced_input_handled_slice_id,
+        compositor_on_begin_frame_ts,
+        compositor_on_begin_frame_dur,
+        compositor_on_begin_frame_delta_dur,
+        compositor_on_begin_frame_end_ts,
+        compositor_on_begin_frame_to_generation_delay_dur,
+        compositor_on_begin_frame_to_generation_delay_delta_dur,
+        compositor_generate_compositor_frame_slice_id,
+        compositor_generate_compositor_frame_ts,
+        compositor_generate_frame_to_submit_frame_dur,
+        compositor_generate_frame_to_submit_frame_delta_dur,
+        compositor_submit_compositor_frame_slice_id,
+        compositor_submit_compositor_frame_ts,
+        compositor_submit_frame_dur,
+        compositor_submit_frame_delta_dur,
+        compositor_submit_compositor_frame_end_ts,
+        viz_compositor_utid,
+        compositor_to_viz_delay_dur,
+        compositor_to_viz_delay_delta_dur,
+        viz_receive_compositor_frame_slice_id,
+        viz_receive_compositor_frame_ts,
+        viz_receive_compositor_frame_dur,
+        viz_receive_compositor_frame_delta_dur,
+        viz_receive_compositor_frame_end_ts,
+        viz_wait_for_draw_dur,
+        viz_wait_for_draw_delta_dur,
+        viz_draw_and_swap_slice_id,
+        viz_draw_and_swap_ts,
+        viz_draw_and_swap_dur,
+        viz_draw_and_swap_delta_dur,
+        viz_send_buffer_swap_slice_id,
+        viz_send_buffer_swap_end_ts,
+        viz_gpu_thread_utid,
+        viz_to_gpu_delay_dur,
+        viz_to_gpu_delay_delta_dur,
+        viz_swap_buffers_slice_id,
+        viz_swap_buffers_ts,
+        viz_swap_buffers_dur,
+        viz_swap_buffers_delta_dur,
+        viz_swap_buffers_end_ts,
+        viz_swap_buffers_to_latch_dur,
+        viz_swap_buffers_to_latch_delta_dur,
+        latch_timestamp,
+        viz_latch_to_presentation_dur,
+        viz_latch_to_presentation_delta_dur,
+        presentation_ts
+      FROM chrome_scroll_frame_info_v4
+      JOIN ids USING(id)
+      """,
+      out=Csv("""
+      "category","scroll_update_latency_id","scroll_id","vsync_interval_dur","is_janky","is_inertial","frame_index_in_scroll","real_abs_total_raw_delta_pixels","browser_uptime_dur","first_input_generation_ts","input_reader_dur","input_dispatcher_dur","previous_last_input_to_first_input_generation_dur","browser_utid","first_input_generation_to_browser_main_dur","first_input_generation_to_browser_main_delta_dur","first_input_touch_move_received_slice_id","first_input_touch_move_received_ts","first_input_touch_move_processing_dur","first_input_touch_move_processing_delta_dur","first_input_scroll_update_created_slice_id","first_input_scroll_update_created_ts","first_input_scroll_update_processing_dur","first_input_scroll_update_processing_delta_dur","first_input_scroll_update_created_end_ts","first_input_browser_to_compositor_delay_dur","first_input_browser_to_compositor_delay_delta_dur","compositor_utid","first_input_compositor_dispatch_slice_id","first_input_compositor_dispatch_ts","first_input_compositor_dispatch_dur","first_input_compositor_dispatch_delta_dur","first_input_compositor_dispatch_end_ts","first_input_compositor_dispatch_to_on_begin_frame_delay_dur","first_input_compositor_dispatch_to_on_begin_frame_delay_delta_dur","compositor_resample_slice_id","compositor_coalesced_input_handled_slice_id","compositor_on_begin_frame_ts","compositor_on_begin_frame_dur","compositor_on_begin_frame_delta_dur","compositor_on_begin_frame_end_ts","compositor_on_begin_frame_to_generation_delay_dur","compositor_on_begin_frame_to_generation_delay_delta_dur","compositor_generate_compositor_frame_slice_id","compositor_generate_compositor_frame_ts","compositor_generate_frame_to_submit_frame_dur","compositor_generate_frame_to_submit_frame_delta_dur","compositor_submit_compositor_frame_slice_id","compositor_submit_compositor_frame_ts","compositor_submit_frame_dur","compositor_submit_frame_delta_dur","compositor_submit_compositor_frame_end_ts","viz_compositor_utid","compositor_to_viz_delay_dur","compositor_to_viz_delay_delta_dur","viz_receive_compositor_frame_slice_id","viz_receive_compositor_frame_ts","viz_receive_compositor_frame_dur","viz_receive_compositor_frame_delta_dur","viz_receive_compositor_frame_end_ts","viz_wait_for_draw_dur","viz_wait_for_draw_delta_dur","viz_draw_and_swap_slice_id","viz_draw_and_swap_ts","viz_draw_and_swap_dur","viz_draw_and_swap_delta_dur","viz_send_buffer_swap_slice_id","viz_send_buffer_swap_end_ts","viz_gpu_thread_utid","viz_to_gpu_delay_dur","viz_to_gpu_delay_delta_dur","viz_swap_buffers_slice_id","viz_swap_buffers_ts","viz_swap_buffers_dur","viz_swap_buffers_delta_dur","viz_swap_buffers_end_ts","viz_swap_buffers_to_latch_dur","viz_swap_buffers_to_latch_delta_dur","latch_timestamp","viz_latch_to_presentation_dur","viz_latch_to_presentation_delta_dur","presentation_ts"
+      "damaging real",5142157485014680669,1,11111000,0,0,1,26.285707,5706731150017,16783549288017,"[NULL]","[NULL]","[NULL]",6,3155800,"[NULL]",3361,16783552443817,660000,"[NULL]",3471,16783553103817,69000,"[NULL]",16783553172817,118264,"[NULL]",2,3523,16783553291081,10000,"[NULL]",16783553301081,8282000,"[NULL]",3630,3642,16783561583081,175000,"[NULL]",16783561758081,72000,"[NULL]",3652,16783561830081,168000,"[NULL]",3668,16783561998081,81000,"[NULL]",16783562079081,5,53640,"[NULL]",3675,16783562132721,48000,"[NULL]",16783562180721,9000,"[NULL]",3680,16783562189721,239000,"[NULL]",3691,16783562428721,7,5734,"[NULL]",3740,16783562434455,1368000,"[NULL]",16783563802455,14154562,"[NULL]",16783577957017,10160000,"[NULL]",16783588117017
+      "damaging real",5142157485014686654,1,11111000,0,0,2,57.000023,5706741756017,16783559894017,"[NULL]","[NULL]",5353000,6,2954800,-201000,3696,16783562848817,81000,-579000,3710,16783562929817,78000,9000,16783563007817,136264,18000,2,3738,16783563144081,11000,1000,16783563155081,9485000,1203000,3862,3874,16783572640081,100000,-75000,16783572740081,45000,-27000,3881,16783572785081,138000,-30000,3896,16783572923081,54000,-27000,16783572977081,5,158640,105000,3902,16783573135721,31000,-17000,16783573166721,10000,1000,3906,16783573176721,239000,0,3916,16783573415721,7,34734,29000,3981,16783573450455,1601000,233000,16783575051455,14206562,52000,16783589258017,9959000,-201000,16783599217017
+      "damaging real",5142157485014686601,1,11111000,0,0,3,67.999985,5706752415017,16783570553017,"[NULL]","[NULL]",5310000,6,2947800,-7000,3922,16783573500817,104000,23000,3941,16783573604817,96000,18000,16783573700817,139264,3000,2,3979,16783573840081,8000,-3000,16783573848081,10093000,608000,4087,4106,16783583941081,128000,28000,16783584069081,60000,15000,4135,16783584129081,181000,43000,4159,16783584310081,166000,112000,16783584476081,5,-51360,-210000,4162,16783584424721,33000,2000,16783584457721,10000,0,4168,16783584467721,245000,6000,4203,16783584712721,7,8734,-26000,4220,16783584721455,1321000,-280000,16783586042455,14093562,-113000,16783600136017,10184000,225000,16783610320017
+      "non-damaging",5142157485014686261,1,11111000,0,0,21,0.000000,5706944168017,16783762306017,"[NULL]","[NULL]",5301000,6,3012800,160000,8305,16783765318817,132000,44000,8319,16783765450817,107000,25000,16783765557817,311264,91000,2,8361,16783765869081,13000,8000,16783765882081,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]"
+      "non-damaging",5142157485014686139,1,11111000,0,0,34,112.000053,5707088034017,16783906172017,"[NULL]","[NULL]",5357000,6,2662800,-446000,11522,16783908834817,117000,-39000,11536,16783908951817,78000,-47000,16783909029817,198264,-194000,2,11564,16783909228081,6000,-3000,16783909234081,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]"
+      "non-damaging",5142157485014686084,1,11111000,0,0,35,107.999985,5707098689017,16783916827017,"[NULL]","[NULL]",5353000,6,2966800,304000,11764,16783919793817,151000,34000,11778,16783919944817,124000,46000,16783920068817,335264,137000,2,11806,16783920404081,6000,0,16783920410081,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]"
+      "synthetic",1807314982282248007,3,11111000,0,0,35,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]",2,45503,16786247024081,92000,80000,16786247116081,-8000,-8751000,"[NULL]",45511,16786247108081,3000,-233000,16786247111081,84000,-35000,45520,16786247195081,148000,-56000,45533,16786247343081,431000,358000,16786247774081,5,-288360,-418000,45535,16786247485721,54000,-26000,16786247539721,21000,-41000,45540,16786247560721,346000,-27000,45561,16786247906721,7,26734,14000,45621,16786247933455,1618000,-220000,16786249551455,13772562,389000,16786263324017,10155000,272000,16786273479017
+      "synthetic",1807314982282248116,3,11111000,0,0,41,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]",2,46603,16786335798081,103000,95000,16786335901081,-8000,-6306000,"[NULL]",46611,16786335893081,3000,-336000,16786335896081,96000,-38000,46621,16786335992081,181000,-47000,46634,16786336173081,812000,143000,16786336985081,5,-649360,-152000,46636,16786336335721,54000,2000,16786336389721,17000,-3000,46640,16786336406721,408000,35000,46653,16786336814721,7,9734,5000,46677,16786336824455,2556000,999000,16786339380455,12661562,-714000,16786352042017,10211000,-5000,16786362253017
+      "synthetic",1807314982282248105,3,11111000,0,0,43,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]",2,46893,16786357921081,110000,97000,16786358031081,-13000,-12086000,"[NULL]",46901,16786358018081,6000,-280000,16786358024081,111000,-101000,46910,16786358135081,163000,1000,46923,16786358298081,707000,-201000,16786359005081,5,-562360,191000,46925,16786358442721,47000,-10000,16786358489721,19000,-1000,46929,16786358508721,308000,-39000,46941,16786358816721,7,5734,-5000,46966,16786358822455,1325000,-231000,16786360147455,14185562,620000,16786374333017,10122000,99000,16786384455017
+      "janky",5142157485014685698,2,11111000,1,0,2,90.000061,5708004274017,16784822412017,"[NULL]","[NULL]",5362000,6,3126800,510000,24970,16784825538817,128000,-582000,24984,16784825666817,112000,21000,16784825778817,19264,-259000,2,25013,16784825798081,9000,2000,16784825807081,17146000,11790000,25327,25341,16784842953081,165000,-6000,16784843118081,108000,58000,25361,16784843226081,134000,-88000,25376,16784843360081,481000,267000,16784843841081,5,-392360,-282000,25378,16784843448721,27000,-31000,16784843475721,12000,-8000,25384,16784843487721,327000,-13000,25401,16784843814721,7,45734,37000,25414,16784843860455,1540000,112000,16784845400455,14111562,-269000,16784859512017,15878000,5583000,16784875390017
+      "janky",5142157485014685711,2,11111000,1,0,3,149.999985,5708020148017,16784838286017,"[NULL]","[NULL]",5241000,6,2996800,-130000,25262,16784841282817,126000,-2000,25276,16784841408817,95000,-17000,16784841503817,219264,200000,2,25304,16784841723081,8000,-1000,16784841731081,17913000,767000,25657,25672,16784859644081,183000,18000,16784859827081,106000,-2000,25691,16784859933081,144000,10000,25704,16784860077081,322000,-159000,16784860399081,5,-210360,182000,25706,16784860188721,32000,5000,16784860220721,10000,-2000,25711,16784860230721,285000,-42000,25726,16784860515721,7,11734,-34000,25728,16784860527455,1410000,-130000,16784861937455,19559562,5448000,16784881497017,16059000,181000,16784897556017
+      """))
+
   def test_chrome_scroll_update_info_step_templates(self):
     # Verify that chrome_scroll_update_info_step_templates references at
     # least one valid column name and no invalid column names in
@@ -1001,3 +1155,51 @@ class ChromeScrollJankStdlib(TestSuite):
         -4678090656722456587,1,"long_wait_for_begin_frame"
         -4678090656722456583,1,"long_viz_swap_to_latch,long_wait_for_begin_frame"
         """))
+
+  def test_chrome_scroll_jank_tags_v4(self):
+    return DiffTestBlueprint(
+        trace=DataPath('scroll_m144.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.scroll_jank_tagging;
+
+        SELECT
+          -- Don't include `tags.frame_id` because Perfetto doesn't guarantee
+          -- stable slice IDs. Instead, include the `EventLatency` of the first
+          -- scroll update in the frame.
+          info.scroll_update_latency_id,
+          tags.tag
+        FROM chrome_scroll_jank_tags_v4 AS tags
+        JOIN chrome_scroll_frame_info_v4 AS info
+          ON tags.frame_id = info.id
+        ORDER BY info.scroll_update_latency_id ASC, tags.tag ASC
+      """,
+      out=Csv("""
+      "scroll_update_latency_id","tag"
+      5142157485014685698,"long_wait_for_begin_frame"
+      5142157485014685711,"long_viz_swap_to_latch"
+      5142157485014685711,"long_wait_for_begin_frame"
+      """))
+
+  def test_chrome_tagged_janky_scroll_frames_v4(self):
+    return DiffTestBlueprint(
+        trace=DataPath('scroll_m144.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.scroll_jank_tagging;
+
+        SELECT
+          -- Don't include `tagged_frames.frame_id` because Perfetto doesn't
+          -- guarantee stable slice IDs. Instead, include the `EventLatency` of
+          -- the first scroll update in the frame.
+          info.scroll_update_latency_id,
+          tagged_frames.tagged,
+          tagged_frames.tags
+        FROM chrome_tagged_janky_scroll_frames_v4 AS tagged_frames
+        JOIN chrome_scroll_frame_info_v4 AS info
+          ON tagged_frames.frame_id = info.id
+        ORDER BY info.scroll_update_latency_id ASC
+      """,
+      out=Csv("""
+      "scroll_update_latency_id","tagged","tags"
+      5142157485014685698,1,"long_wait_for_begin_frame"
+      5142157485014685711,1,"long_viz_swap_to_latch,long_wait_for_begin_frame"
+      """))
