@@ -5,15 +5,20 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
+#include "ui/compositor/compositor.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -49,6 +54,21 @@ void OmniboxPopupPresenterBase::Show() {
     content->ShowUI();
 
     widget_->ShowInactive();
+    auto show_widget_time = base::TimeTicks::Now();
+    widget_->GetCompositor()->RequestPresentationTimeForNextFrame(
+        base::BindOnce(
+            [](std::string_view uma_metric, base::TimeTicks show_widget_time,
+               const gfx::PresentationFeedback& feedback) {
+              // If there is ever an error, the timestamp means the timestamp
+              // of the error. In that case we shouldn't record anything.
+              if (feedback.failed()) {
+                return;
+              }
+              const base::TimeDelta delta =
+                  feedback.timestamp - show_widget_time;
+              base::UmaHistogramTimes(uma_metric, delta);
+            },
+            GetPopupShowToPaintMetric(), show_widget_time));
 
     content->GetWebContents()->WasShown();
     if (ShouldReceiveFocus()) {

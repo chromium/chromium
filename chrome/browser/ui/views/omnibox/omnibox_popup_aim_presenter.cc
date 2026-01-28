@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 
 #include <optional>
+#include <string_view>
 
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
@@ -71,4 +72,8 @@ void OmniboxPopupAimPresenter::WidgetDestroyed() {
       OmniboxPopupState::kAim) {
     controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
   }
+}
+
+std::string_view OmniboxPopupAimPresenter::GetPopupShowToPaintMetric() const {
+  return "Omnibox.Popup.Aim.PresenterShowLatency.ToPaint";
 }

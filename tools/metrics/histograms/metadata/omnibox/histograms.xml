@@ -2926,6 +2926,18 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Popup.Aim.PresenterShowLatency.ToPaint" units="ms"
+    expires_after="2026-11-12">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Record the time between the request of the AIM popup widget to show and when
+    the first frame is painted by the widget on the screen.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Popup.WebUI.ConstructionToFirstShownDuration"
     units="ms" expires_after="2026-11-12">
   <owner>mahmadi@chromium.org</owner>
@@ -2959,6 +2971,18 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Records whether WebUI page remote is bound and ready to receive calls when
     the WebUI Handler attempts to make its first call to the WebUI Page.
     Recorded at most once per browser window.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.WebUI.PresenterShowLatency.ToPaint" units="ms"
+    expires_after="2026-11-12">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Record the time between the request of the classic popup widget to show and
+    when the first frame is painted by the widget on the screen.
   </summary>
 </histogram>
 
