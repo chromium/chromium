@@ -175,8 +175,11 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
 
   enum class PostOperationQueue { kNone, kPostDoom, kPostOpenByHash };
 
-  void InitializeIndex(CompletionOnceCallback callback,
-                       const DiskStatResult& result);
+  // file_operations_factory is only passed here to extend its lifetime.
+  void InitializeIndex(
+      scoped_refptr<BackendFileOperationsFactory> file_operations_factory,
+      CompletionOnceCallback callback,
+      const DiskStatResult& result);
 
   // Dooms all entries previously accessed between |initial_time| and
   // |end_time|. Invoked when the index is ready.
@@ -253,10 +256,13 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
                              EntryResult result);
 
   // A callback thunk used by DoomEntries to clear the |entries_pending_doom_|
-  // after a mass doom.
-  void DoomEntriesComplete(std::unique_ptr<std::vector<uint64_t>> entry_hashes,
-                           CompletionOnceCallback callback,
-                           int result);
+  // after a mass doom. file_operations_factory is passed here to extend its
+  // lifetime.
+  void DoomEntriesComplete(
+      std::unique_ptr<std::vector<uint64_t>> entry_hashes,
+      scoped_refptr<BackendFileOperationsFactory> file_operations_factory,
+      CompletionOnceCallback callback,
+      int result);
 
   // Calculates and returns a new entry's worker pool priority.
   uint32_t GetNewEntryPriority(net::RequestPriority request_priority);

@@ -61,6 +61,10 @@ class MockCacheEncryptionProvider
   // Returns a dummy key, which is not encrypted.
   void GetEncryptedCacheEncryptionKey(
       GetEncryptedCacheEncryptionKeyCallback callback) override {
+    if (return_empty_key_) {
+      std::move(callback).Run({});
+      return;
+    }
     std::move(callback).Run(std::vector<uint8_t>(32, 2));
   }
 
@@ -92,10 +96,47 @@ class MockCacheEncryptionProvider
     return_invalid_encryptor_ = value;
   }
 
+  void set_return_empty_key(bool value) { return_empty_key_ = value; }
+
  private:
   bool call_get_encryptor_immediately_ = true;
   bool return_invalid_encryptor_ = false;
+  bool return_empty_key_ = false;
   base::OnceCallback<void(os_crypt_async::Encryptor)> get_encryptor_callback_;
+};
+
+class TestCacheEncryptionProviderWithRealEncryption
+    : public network::mojom::CacheEncryptionProvider {
+ public:
+  TestCacheEncryptionProviderWithRealEncryption() {
+    os_crypt_async::Encryptor::KeyRing keys;
+    keys.emplace(kProviderName, MakeTestKey());
+    TestEncryptor encryptor(std::move(keys), kProviderName, kProviderName);
+
+    const std::string primary_key_plaintext = "my primary key";
+    std::string primary_key_ciphertext;
+    CHECK(encryptor.EncryptString(primary_key_plaintext,
+                                  &primary_key_ciphertext));
+    encrypted_primary_key_ = std::vector<uint8_t>(
+        primary_key_ciphertext.begin(), primary_key_ciphertext.end());
+  }
+  ~TestCacheEncryptionProviderWithRealEncryption() override = default;
+
+  void GetEncryptor(
+      base::OnceCallback<void(os_crypt_async::Encryptor)> callback) override {
+    os_crypt_async::Encryptor::KeyRing keys;
+    keys.emplace(kProviderName, MakeTestKey());
+    std::move(callback).Run(
+        TestEncryptor(std::move(keys), kProviderName, kProviderName));
+  }
+
+  void GetEncryptedCacheEncryptionKey(
+      GetEncryptedCacheEncryptionKeyCallback callback) override {
+    std::move(callback).Run(encrypted_primary_key_);
+  }
+
+ private:
+  std::vector<uint8_t> encrypted_primary_key_;
 };
 
 }  // namespace
@@ -141,13 +182,33 @@ TEST_F(OSCryptCacheEncryptionDelegateTest, EncryptDecrypt) {
 }
 
 TEST_F(OSCryptCacheEncryptionDelegateTest, NotInitialized) {
+#if defined(GTEST_HAS_DEATH_TEST)
   const std::vector<uint8_t> kPlaintext = {1, 2, 3, 4, 5};
   std::vector<uint8_t> ciphertext;
-  EXPECT_FALSE(delegate_.EncryptData(kPlaintext, &ciphertext));
+  EXPECT_DEATH(delegate_.EncryptData(kPlaintext, &ciphertext),
+               "Check failed: instance_.has_value()");
 
   std::vector<uint8_t> plaintext2;
   const std::vector<uint8_t> kCiphertext = {1, 2, 3, 4, 5, 6, 7};
-  EXPECT_FALSE(delegate_.DecryptData(kCiphertext, &plaintext2));
+  EXPECT_DEATH(delegate_.DecryptData(kCiphertext, &plaintext2),
+               "Check failed: instance_.has_value()");
+  EXPECT_DEATH(delegate_.GetEncryptionFileOperationsFactory(nullptr),
+               "Check failed: instance_.has_value()");
+#endif  // defined(GTEST_HAS_DEATH_TEST)
+}
+
+TEST_F(OSCryptCacheEncryptionDelegateTest, InitFailsWithEmptyKey) {
+  mock_provider_.set_return_empty_key(true);
+
+  base::RunLoop run_loop;
+  net::Error result_out = net::OK;
+  delegate_.Init(base::BindLambdaForTesting([&](net::Error result) {
+    result_out = result;
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+
+  EXPECT_EQ(net::ERR_FAILED, result_out);
 }
 
 TEST_F(OSCryptCacheEncryptionDelegateTest, InitAfterInit) {
@@ -198,8 +259,11 @@ TEST_F(OSCryptCacheEncryptionDelegateTest, Disconnect) {
   provider_.reset();
   task_environment_.RunUntilIdle();
 
+#if defined(GTEST_HAS_DEATH_TEST)
   std::vector<uint8_t> plaintext2;
-  EXPECT_FALSE(delegate_.DecryptData(ciphertext, &plaintext2));
+  EXPECT_DEATH(delegate_.DecryptData(ciphertext, &plaintext2),
+               "Check failed: instance_.has_value()");
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 }
 
 TEST_F(OSCryptCacheEncryptionDelegateTest, DisconnectDuringInit) {
@@ -220,9 +284,12 @@ TEST_F(OSCryptCacheEncryptionDelegateTest, DisconnectDuringInit) {
   task_environment_.RunUntilIdle();
 
   // The delegate should still be uninitialized.
+#if defined(GTEST_HAS_DEATH_TEST)
   const std::vector<uint8_t> kPlaintext = {1, 2, 3, 4, 5};
   std::vector<uint8_t> ciphertext;
-  EXPECT_FALSE(delegate_.EncryptData(kPlaintext, &ciphertext));
+  EXPECT_DEATH(delegate_.EncryptData(kPlaintext, &ciphertext),
+               "Check failed: instance_.has_value()");
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 }
 
 TEST_F(OSCryptCacheEncryptionDelegateTest, InitEncryptorNotAvailable) {
@@ -246,8 +313,37 @@ TEST_F(OSCryptCacheEncryptionDelegateTest, InitEncryptorNotAvailable) {
     EXPECT_TRUE(delegate_.EncryptData(kPlaintext, &ciphertext));
   } else {
     EXPECT_EQ(net::ERR_FAILED, result_out);
-    EXPECT_FALSE(delegate_.EncryptData(kPlaintext, &ciphertext));
+#if defined(GTEST_HAS_DEATH_TEST)
+    EXPECT_DEATH(delegate_.EncryptData(kPlaintext, &ciphertext),
+                 "Check failed: instance_.has_value()");
+#endif  // defined(GTEST_HAS_DEATH_TEST)
   }
+}
+
+TEST_F(OSCryptCacheEncryptionDelegateTest,
+       GetEncryptionFileOperationsFactory_Success) {
+  // Use a provider that returns a valid encrypted primary key.
+  TestCacheEncryptionProviderWithRealEncryption provider;
+  mojo::Receiver<network::mojom::CacheEncryptionProvider> receiver{&provider};
+  OSCryptCacheEncryptionDelegate delegate(receiver.BindNewPipeAndPassRemote());
+
+  base::RunLoop run_loop;
+  net::Error result_out = net::ERR_FAILED;
+  delegate.Init(base::BindLambdaForTesting([&](net::Error result) {
+    result_out = result;
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+  ASSERT_EQ(net::OK, result_out);
+
+  EXPECT_NE(nullptr, delegate.GetEncryptionFileOperationsFactory(nullptr));
+}
+
+TEST_F(OSCryptCacheEncryptionDelegateTest,
+       GetEncryptionFileOperationsFactory_FailsWhenKeyIsInvalid) {
+  InitDelegate();
+  // The default mock provider returns a key that cannot be decrypted.
+  EXPECT_EQ(nullptr, delegate_.GetEncryptionFileOperationsFactory(nullptr));
 }
 
 }  // namespace network::enterprise_encryption

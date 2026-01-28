@@ -275,7 +275,7 @@ void SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
                      std::move(file_operations), path_, orig_max_size_,
                      GetCacheType()),
       base::BindOnce(&SimpleBackendImpl::InitializeIndex,
-                     weak_ptr_factory_.GetWeakPtr(),
+                     weak_ptr_factory_.GetWeakPtr(), file_operations_factory_,
                      std::move(completion_callback)));
 }
 
@@ -357,7 +357,8 @@ void SimpleBackendImpl::DoomEntries(std::vector<uint64_t>* entry_hashes,
                      file_operations_factory_->CreateUnbound()),
       base::BindOnce(&SimpleBackendImpl::DoomEntriesComplete,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(mass_doom_entry_hashes), barrier_callback));
+                     std::move(mass_doom_entry_hashes),
+                     file_operations_factory_, barrier_callback));
 }
 
 base::expected<int32_t, net::Error> SimpleBackendImpl::GetEntryCount(
@@ -574,8 +575,9 @@ class SimpleBackendImpl::SimpleIterator final : public Iterator {
 
   // From Backend::Iterator:
   EntryResult OpenNextEntry(EntryResultCallback callback) override {
-    if (!backend_)
+    if (!backend_) {
       return EntryResult::MakeError(net::ERR_FAILED);
+    }
     CompletionOnceCallback open_next_entry_impl =
         base::BindOnce(&SimpleIterator::OpenNextEntryImpl,
                        weak_factory_.GetWeakPtr(), std::move(callback));
@@ -594,8 +596,9 @@ class SimpleBackendImpl::SimpleIterator final : public Iterator {
           static_cast<net::Error>(index_initialization_error_code)));
       return;
     }
-    if (!hashes_to_enumerate_)
+    if (!hashes_to_enumerate_) {
       hashes_to_enumerate_ = backend_->index()->GetAllHashes();
+    }
 
     while (!hashes_to_enumerate_->empty()) {
       uint64_t entry_hash = hashes_to_enumerate_->back();
@@ -608,8 +611,9 @@ class SimpleBackendImpl::SimpleIterator final : public Iterator {
             weak_factory_.GetWeakPtr(), std::move(split_callback.second));
         EntryResult open_result = backend_->OpenEntryFromHash(
             entry_hash, std::move(continue_iteration));
-        if (open_result.net_error() == net::ERR_IO_PENDING)
+        if (open_result.net_error() == net::ERR_IO_PENDING) {
           return;
+        }
         if (open_result.net_error() != net::ERR_FAILED) {
           std::move(callback).Run(std::move(open_result));
           return;
@@ -654,8 +658,10 @@ uint8_t SimpleBackendImpl::GetEntryInMemoryData(const std::string& key) {
   return index_->GetEntryInMemoryData(entry_hash);
 }
 
-void SimpleBackendImpl::InitializeIndex(CompletionOnceCallback callback,
-                                        const DiskStatResult& result) {
+void SimpleBackendImpl::InitializeIndex(
+    scoped_refptr<BackendFileOperationsFactory> file_operations_factory,
+    CompletionOnceCallback callback,
+    const DiskStatResult& result) {
   if (result.net_error == net::OK) {
     index_->SetMaxSize(result.max_size);
 #if BUILDFLAG(IS_ANDROID)
@@ -886,8 +892,9 @@ net::Error SimpleBackendImpl::DoomEntryFromHash(
   }
 
   auto active_it = active_entries_.find(entry_hash);
-  if (active_it != active_entries_.end())
+  if (active_it != active_entries_.end()) {
     return active_it->second->DoomEntry(std::move(callback));
+  }
 
   // There's no pending dooms, nor any open entry. We can make a trivial
   // call to DoomEntries() to delete this entry.
@@ -897,16 +904,16 @@ net::Error SimpleBackendImpl::DoomEntryFromHash(
   return net::ERR_IO_PENDING;
 }
 
-void SimpleBackendImpl::OnEntryOpenedFromHash(
-    uint64_t hash,
-    EntryResultCallback callback,
-    EntryResult result) {
+void SimpleBackendImpl::OnEntryOpenedFromHash(uint64_t hash,
+                                              EntryResultCallback callback,
+                                              EntryResult result) {
   post_open_by_hash_waiting_->OnOperationComplete(hash);
   std::move(callback).Run(std::move(result));
 }
 
 void SimpleBackendImpl::DoomEntriesComplete(
     std::unique_ptr<std::vector<uint64_t>> entry_hashes,
+    scoped_refptr<BackendFileOperationsFactory> file_operations_factory,
     CompletionOnceCallback callback,
     int result) {
   for (const uint64_t& entry_hash : *entry_hashes)
