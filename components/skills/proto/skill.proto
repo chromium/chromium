@@ -24,6 +24,9 @@ message Skill {
 
   // The prompt to execute the Skill.
   optional string prompt = 5;
+
+  // A user-facing short description of the Skill.
+  optional string description = 6;
 }
 
 // Contains a list of Skills received from the server.
