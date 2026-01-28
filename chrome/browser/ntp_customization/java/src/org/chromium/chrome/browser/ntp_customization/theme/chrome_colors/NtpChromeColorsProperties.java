@@ -41,7 +41,7 @@ public class NtpChromeColorsProperties {
     public static final WritableIntPropertyKey RECYCLER_VIEW_ITEM_WIDTH =
             new WritableIntPropertyKey();
     public static final WritableIntPropertyKey RECYCLER_VIEW_SPACING = new WritableIntPropertyKey();
-    public static final WritableIntPropertyKey RECYCLER_VIEW_MAX_WIDTH_PX =
+    public static final WritableIntPropertyKey RECYCLER_VIEW_MAX_ITEM_COUNT =
             new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<OnCheckedChangeListener>
             DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER = new WritableObjectPropertyKey<>();
@@ -71,7 +71,7 @@ public class NtpChromeColorsProperties {
                 RECYCLER_VIEW_ADAPTER,
                 RECYCLER_VIEW_ITEM_WIDTH,
                 RECYCLER_VIEW_SPACING,
-                RECYCLER_VIEW_MAX_WIDTH_PX,
+                RECYCLER_VIEW_MAX_ITEM_COUNT,
                 DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 IS_DAILY_REFRESH_SWITCH_CHECKED,
                 HIGHLIGHTED_ITEM_INDEX

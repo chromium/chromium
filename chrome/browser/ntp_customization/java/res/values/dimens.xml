@@ -34,8 +34,7 @@ found in the LICENSE file.
   <dimen name="ntp_customization_theme_collections_recycle_view_padding_horizontal">18dp</dimen>
   <dimen name="ntp_customization_theme_collections_list_item_leading_icon_size">48dp</dimen>
   <dimen name="ntp_customization_theme_collections_spinner_elevation">2dp</dimen>
-  <dimen name="ntp_customization_chrome_colors_grid_spacing">24dp</dimen>
-  <dimen name="ntp_customization_chrome_colors_grid_half_spacing">12dp</dimen>
+  <dimen name="ntp_customization_chrome_colors_grid_lateral_margin">4dp</dimen>
   <dimen name="ntp_customization_chrome_colors_selector_size">64dp</dimen>
   <dimen name="ntp_customization_pinch_to_resize_icon_size">20dp</dimen>
   <dimen name="ntp_customization_theme_collections_recycler_view_margin_top">24dp</dimen>

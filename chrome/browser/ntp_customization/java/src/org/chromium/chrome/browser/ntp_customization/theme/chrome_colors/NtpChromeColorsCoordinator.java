@@ -110,20 +110,23 @@ public class NtpChromeColorsCoordinator {
         mItemWidth =
                 context.getResources()
                         .getDimensionPixelSize(
-                                R.dimen.ntp_customization_back_button_clickable_size);
+                                R.dimen.ntp_customization_chrome_colors_selector_size);
         mSpacing =
                 context.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.ntp_customization_chrome_colors_grid_spacing);
+                                .getDimensionPixelSize(
+                                        R.dimen.ntp_customization_chrome_colors_grid_lateral_margin)
+                        * 2;
 
         mPropertyModel.set(
                 NtpChromeColorsProperties.RECYCLER_VIEW_LAYOUT_MANAGER,
                 new GridLayoutManager(mContext, 1));
         mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_ITEM_WIDTH, mItemWidth);
         mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_SPACING, mSpacing);
+        mPropertyModel.set(
+                NtpChromeColorsProperties.RECYCLER_VIEW_MAX_ITEM_COUNT,
+                MAX_NUMBER_OF_COLORS_PER_ROW);
 
         mPrimaryColorInfo = NtpCustomizationConfigManager.getInstance().getNtpThemeColorInfo();
-        setRecyclerViewMaxWidth();
     }
 
     /**
@@ -171,11 +174,6 @@ public class NtpChromeColorsCoordinator {
             // highlights the first color info.
             mPropertyModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, 0);
         }
-    }
-
-    private void setRecyclerViewMaxWidth() {
-        int maxWidthPx = MAX_NUMBER_OF_COLORS_PER_ROW * (mItemWidth + mSpacing);
-        mPropertyModel.set(NtpChromeColorsProperties.RECYCLER_VIEW_MAX_WIDTH_PX, maxWidthPx);
     }
 
     /**

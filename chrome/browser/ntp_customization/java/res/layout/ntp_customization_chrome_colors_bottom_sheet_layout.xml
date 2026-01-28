@@ -97,8 +97,9 @@ found in the LICENSE file.
         <view
             class="org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorGridRecyclerView"
             android:id="@+id/chrome_colors_recycler_view"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:overScrollMode="never"/>
     </FrameLayout>
 

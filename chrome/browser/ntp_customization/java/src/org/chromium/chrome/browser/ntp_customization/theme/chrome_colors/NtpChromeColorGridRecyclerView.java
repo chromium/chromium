@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 
@@ -24,6 +26,7 @@ public class NtpChromeColorGridRecyclerView extends RecyclerView {
     private int mSpanCount;
     private int mItemWidth;
     private int mSpacing;
+    private int mMaxItemCount;
     private int mLastRecyclerViewWidth;
 
     public NtpChromeColorGridRecyclerView(Context context, @Nullable AttributeSet attrs) {
@@ -42,21 +45,25 @@ public class NtpChromeColorGridRecyclerView extends RecyclerView {
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
-        assert mGridLayoutManager != null;
+        assumeNonNull(mGridLayoutManager);
+        int availableWidth = MeasureSpec.getSize(widthSpec);
 
-        super.onMeasure(widthSpec, heightSpec);
-        int measuredWidth = getMeasuredWidth();
-        if (measuredWidth > 0 && mLastRecyclerViewWidth != measuredWidth) {
-            mLastRecyclerViewWidth = measuredWidth;
+        int newWidthSpec = widthSpec;
+        if (availableWidth > 0 && availableWidth != mLastRecyclerViewWidth) {
+            mLastRecyclerViewWidth = availableWidth;
             int totalItemSpace = mItemWidth + mSpacing;
-            assert totalItemSpace > 0;
+            int maxSpanCount =
+                    Math.min(mMaxItemCount, Math.max(1, availableWidth / totalItemSpace));
 
-            int maxSpanCount = Math.max(1, measuredWidth / totalItemSpace);
             if (mSpanCount != maxSpanCount) {
                 mSpanCount = maxSpanCount;
                 mGridLayoutManager.setSpanCount(mSpanCount);
             }
+
+            int contentWidth = mSpanCount * totalItemSpace;
+            newWidthSpec = MeasureSpec.makeMeasureSpec(contentWidth, MeasureSpec.EXACTLY);
         }
+        super.onMeasure(newWidthSpec, heightSpec);
     }
 
     /** Sets the item width for span calculation. */
@@ -67,5 +74,13 @@ public class NtpChromeColorGridRecyclerView extends RecyclerView {
     /** Sets the spacing for span calculation. */
     void setSpacing(int spacing) {
         mSpacing = spacing;
+    }
+
+    /**
+     * Sets the maximum number of items allowed per row. This value acts as an upper limit (cap)
+     * when calculating the span count based on the available width.
+     */
+    void setMaxItemCount(int maxItem) {
+        mMaxItemCount = maxItem;
     }
 }

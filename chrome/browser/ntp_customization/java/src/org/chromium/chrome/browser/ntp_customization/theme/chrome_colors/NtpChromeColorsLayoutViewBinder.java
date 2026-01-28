@@ -17,7 +17,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.RECYCLER_VIEW_ADAPTER;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.RECYCLER_VIEW_ITEM_WIDTH;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.RECYCLER_VIEW_LAYOUT_MANAGER;
-import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.RECYCLER_VIEW_MAX_WIDTH_PX;
+import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.RECYCLER_VIEW_MAX_ITEM_COUNT;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.RECYCLER_VIEW_SPACING;
 import static org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsProperties.SAVE_BUTTON_CLICK_LISTENER;
 
@@ -25,13 +25,9 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.VisibleForTesting;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -87,16 +83,8 @@ public class NtpChromeColorsLayoutViewBinder {
             recyclerView.setItemWidth(model.get(RECYCLER_VIEW_ITEM_WIDTH));
         } else if (propertyKey == RECYCLER_VIEW_SPACING) {
             recyclerView.setSpacing(model.get(RECYCLER_VIEW_SPACING));
-        } else if (propertyKey == RECYCLER_VIEW_MAX_WIDTH_PX) {
-            if (view instanceof ConstraintLayout constraintLayout) {
-                FrameLayout recyclerViewContainer =
-                        view.findViewById(R.id.chrome_colors_recycler_view_container);
-                setConstraintSet(
-                        new ConstraintSet(),
-                        constraintLayout,
-                        recyclerViewContainer,
-                        model.get(RECYCLER_VIEW_MAX_WIDTH_PX));
-            }
+        } else if (propertyKey == RECYCLER_VIEW_MAX_ITEM_COUNT) {
+            recyclerView.setMaxItemCount(model.get(RECYCLER_VIEW_MAX_ITEM_COUNT));
         } else if (propertyKey == IS_DAILY_REFRESH_SWITCH_CHECKED) {
             MaterialSwitchWithText dailyRefreshSwitch =
                     view.findViewById(R.id.chrome_colors_switch_button);
@@ -122,17 +110,5 @@ public class NtpChromeColorsLayoutViewBinder {
             ((GradientDrawable) background.mutate()).setColor(color);
             circleImageView.setVisibility(View.VISIBLE);
         }
-    }
-
-    @VisibleForTesting
-    static void setConstraintSet(
-            ConstraintSet constraintSet,
-            ConstraintLayout constraintLayout,
-            FrameLayout recyclerViewContainer,
-            int maxWidthPx) {
-        constraintSet.clone(constraintLayout);
-        constraintSet.constrainedWidth(recyclerViewContainer.getId(), true);
-        constraintSet.constrainMaxWidth(recyclerViewContainer.getId(), maxWidthPx);
-        constraintSet.applyTo(constraintLayout);
     }
 }

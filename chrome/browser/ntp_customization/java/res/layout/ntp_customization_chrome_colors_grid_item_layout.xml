@@ -7,7 +7,7 @@ found in the LICENSE file.
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/ntp_customization_chrome_colors_selector_size"
     android:layout_height="@dimen/ntp_customization_chrome_colors_selector_size"
-    android:layout_margin="@dimen/ntp_customization_chrome_colors_grid_half_spacing"
+    android:layout_margin="@dimen/ntp_customization_chrome_colors_grid_lateral_margin"
     android:background="@drawable/chrome_color_icon_list_selector"
     android:clickable="true"
     android:focusable="true" >

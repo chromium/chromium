@@ -280,8 +280,10 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
         int itemWidth = 50;
         int spacing = 10;
+        int maxItemCount = 5;
         gridRecyclerView.setItemWidth(itemWidth);
         gridRecyclerView.setSpacing(spacing);
+        gridRecyclerView.setMaxItemCount(maxItemCount);
 
         // Test case 1: width allows for exactly 3 items
         int width1 = 3 * (itemWidth + spacing);
