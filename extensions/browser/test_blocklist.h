@@ -84,7 +84,7 @@ class TestBlocklist {
   const BlocklistStateFetcherMock* fetcher() { return &state_fetcher_mock_; }
 
  private:
-  raw_ptr<Blocklist> blocklist_;
+  raw_ptr<Blocklist> blocklist_ = nullptr;
 
   // The BlocklistStateFetcher object is normally managed by Blocklist. Because
   // of this, we need to prevent this object from being deleted with Blocklist.

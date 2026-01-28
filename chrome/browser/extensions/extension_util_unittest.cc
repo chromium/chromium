@@ -52,7 +52,10 @@ constexpr char kExtensionUpdateUrl[] =
 
 class ExtensionUtilUnittest : public ExtensionServiceTestBase {
  public:
-  void SetUp() override { InitializeEmptyExtensionService(); }
+  void SetUp() override {
+    ExtensionServiceTestBase::SetUp();
+    InitializeEmptyExtensionService();
+  }
 };
 
 TEST_F(ExtensionUtilUnittest, SetAllowFileAccess) {

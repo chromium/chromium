@@ -41,8 +41,9 @@ class AppTabHelperUnitTest : public ExtensionServiceTestWithInstall {
       while (!browser_->tab_strip_model()->empty()) {
         browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
       }
+      browser_.reset();
     }
-    ExtensionServiceTestBase::TearDown();
+    ExtensionServiceTestWithInstall::TearDown();
   }
 
   Browser* browser() {

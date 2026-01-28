@@ -45,6 +45,11 @@ using ManagementPrefUpdater = ExtensionManagementPrefUpdater<
 // DisableMalwareExtensionsRemotely are enabled.
 class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
  protected:
+  void TearDown() override {
+    extension_prefs_ = nullptr;
+    ExtensionServiceTestBase::TearDown();
+  }
+
   // Creates a test extension service with 3 installed extensions.
   void CreateExtensionService(bool enhanced_protection_enabled) {
     ExtensionServiceInitParams params;
@@ -96,7 +101,7 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
   ExtensionPrefs* extension_prefs() { return extension_prefs_; }
 
  private:
-  raw_ptr<ExtensionPrefs> extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
 };
 
 class ExtensionAllowlistUnitTest : public ExtensionAllowlistUnitTestBase {

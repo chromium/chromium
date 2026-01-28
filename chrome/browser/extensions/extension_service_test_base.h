@@ -131,9 +131,6 @@ class ExtensionServiceTestBase : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  // Nulls out pointers to avoid dangling. May be called multiple times.
-  void Shutdown();
-
   // Initialize an ExtensionService according to the given `params`.
   virtual void InitializeExtensionService(ExtensionServiceInitParams params);
 
@@ -241,6 +238,8 @@ class ExtensionServiceTestBase : public testing::Test {
   base::FilePath data_dir_;
 
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
+
+  bool is_setup_called_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

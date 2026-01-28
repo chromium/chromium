@@ -67,6 +67,11 @@ ExtensionServiceTestWithInstall::ExtensionServiceTestWithInstall(
 
 ExtensionServiceTestWithInstall::~ExtensionServiceTestWithInstall() = default;
 
+void ExtensionServiceTestWithInstall::TearDown() {
+  registry_observation_.Reset();
+  ExtensionServiceUserTestBase::TearDown();
+}
+
 void ExtensionServiceTestWithInstall::InitializeExtensionService(
     ExtensionServiceInitParams params) {
   ExtensionServiceTestBase::InitializeExtensionService(std::move(params));

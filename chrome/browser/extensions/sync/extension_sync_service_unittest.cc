@@ -2036,6 +2036,13 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionSyncServiceTest {
     processor_raw_->changes().clear();
   }
 
+  void TearDown() override {
+    extension_.reset();
+    processor_raw_ = nullptr;
+    test_blocklist_.Detach();
+    ExtensionSyncServiceTest::TearDown();
+  }
+
   void ForceBlocklistUpdate() {
     service()->OnBlocklistUpdated();
     content::RunAllTasksUntilIdle();
@@ -2050,7 +2057,7 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionSyncServiceTest {
   extensions::TestBlocklist& test_blocklist() { return test_blocklist_; }
 
  private:
-  raw_ptr<syncer::FakeSyncChangeProcessor> processor_raw_;
+  raw_ptr<syncer::FakeSyncChangeProcessor> processor_raw_ = nullptr;
   scoped_refptr<const Extension> extension_;
   extensions::ExtensionId extension_id_;
   extensions::TestBlocklist test_blocklist_;
@@ -2153,6 +2160,11 @@ class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
     AccountExtensionTracker::Get(profile());
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  }
+
+  void TearDown() override {
+    identity_test_env_profile_adaptor_.reset();
+    ExtensionSyncServiceTest::TearDown();
   }
 
  protected:

@@ -60,7 +60,7 @@ class HostAccessRequestsHelperUnittest : public ExtensionServiceTestBase {
  private:
   std::unique_ptr<Browser> browser_;
 
-  raw_ptr<PermissionsManager> permissions_manager_;
+  raw_ptr<PermissionsManager> permissions_manager_ = nullptr;
 };
 
 scoped_refptr<const Extension>
@@ -130,6 +130,7 @@ void HostAccessRequestsHelperUnittest::TearDown() {
     while (!browser_->tab_strip_model()->empty()) {
       browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
     }
+    browser_.reset();
   }
   permissions_manager_ = nullptr;
 

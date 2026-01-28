@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ash/extensions/scoped_app_window.h"
 
+#include <utility>
+
+#include "content/public/test/test_utils.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "ui/aura/test/window_destroyed_waiter.h"
+
 namespace ash {
 
 ScopedAppWindow::ScopedAppWindow() = default;
@@ -19,7 +25,13 @@ ScopedAppWindow& ScopedAppWindow::operator=(ScopedAppWindow&& other) {
   return *this;
 }
 
-ScopedAppWindow::~ScopedAppWindow() = default;
+ScopedAppWindow::~ScopedAppWindow() {
+  if (window_) {
+    aura::test::WindowDestroyedWaiter waiter(window_->GetNativeWindow());
+    std::exchange(window_, nullptr)->GetBaseWindow()->Close();
+    waiter.Wait();
+  }
+}
 
 extensions::AppWindow* ScopedAppWindow::Get() {
   return window_.get();

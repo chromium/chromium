@@ -52,19 +52,19 @@ void BlocklistStateFetcherMock::Clear() {
 }
 
 TestBlocklist::TestBlocklist()
-    : blocklist_(nullptr),
-      blocklist_db_(new FakeSafeBrowsingDatabaseManager(true)),
+    : blocklist_db_(new FakeSafeBrowsingDatabaseManager(true)),
       scoped_blocklist_db_(blocklist_db_) {}
 
 TestBlocklist::TestBlocklist(Blocklist* blocklist)
-    : blocklist_(nullptr),
-      blocklist_db_(new FakeSafeBrowsingDatabaseManager(true)),
+    : blocklist_db_(new FakeSafeBrowsingDatabaseManager(true)),
       scoped_blocklist_db_(blocklist_db_) {
   Attach(blocklist);
 }
 
 TestBlocklist::~TestBlocklist() {
-  Detach();
+  if (blocklist_) {
+    Detach();
+  }
 }
 
 void TestBlocklist::Attach(Blocklist* blocklist) {
@@ -79,6 +79,7 @@ void TestBlocklist::Attach(Blocklist* blocklist) {
 void TestBlocklist::Detach() {
   blocklist_->ResetBlocklistStateFetcherForTest();
   blocklist_->ResetDatabaseUpdatedListenerForTest();
+  blocklist_ = nullptr;
 }
 
 void TestBlocklist::SetBlocklistState(const std::string& extension_id,

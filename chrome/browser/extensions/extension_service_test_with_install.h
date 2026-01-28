@@ -50,6 +50,9 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceUserTestBase,
 
   ~ExtensionServiceTestWithInstall() override;
 
+  // ExtensionServiceUserTestBase overrides:
+  void TearDown() override;
+
  protected:
   void InitializeExtensionService(ExtensionServiceInitParams params) override;
 

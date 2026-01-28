@@ -113,8 +113,10 @@ static_library("test_support") {
     ":extensions",
     "//base",
     "//chrome/browser",
+    "//content/test:test_support",
     "//extensions/browser",
     "//extensions/browser/updater",
+    "//ui/aura:test_support",
   ]
 }
 

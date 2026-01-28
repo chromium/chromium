@@ -283,10 +283,9 @@ TEST_F(ComponentLoaderTest, LoadAll) {
 class ComponentLoaderExtensionServiceTest
     : public ExtensionServiceUserTestBase {
  public:
-  // testing::Test:
   void SetUp() override {
-    ExtensionServiceUserTestBase::InitializeEmptyExtensionService();
     ExtensionServiceUserTestBase::SetUp();
+    ExtensionServiceUserTestBase::InitializeEmptyExtensionService();
   }
 
   // Test that certain histograms are emitted for user and non-user profiles

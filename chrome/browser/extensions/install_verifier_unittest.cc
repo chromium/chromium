@@ -44,6 +44,11 @@ class InstallVerifierTest : public ExtensionServiceTestBase {
         new InstallVerifier(ExtensionPrefs::Get(profile()), profile()));
   }
 
+  void TearDown() override {
+    install_verifier_.reset();
+    ExtensionServiceTestBase::TearDown();
+  }
+
   // Adds an extension as being allowed by policy.
   void AddExtensionAsPolicyInstalled(const ExtensionId& id) {
     base::DictValue extension_entry =
@@ -61,7 +66,6 @@ class InstallVerifierTest : public ExtensionServiceTestBase {
  private:
   ScopedInstallVerifierBypassForTest force_install_verification{
       ScopedInstallVerifierBypassForTest::kForceOn};
-  std::unique_ptr<ExtensionManagement> extension_management_;
   std::unique_ptr<InstallVerifier> install_verifier_;
 };
 

@@ -35,10 +35,11 @@ class TabHelperUnitTest : public ExtensionServiceTestWithInstall {
   }
 
   void TearDown() override {
+    permissions_manager_ = nullptr;
     tab_helper_ = nullptr;
     web_contents_tester_ = nullptr;
     web_contents_.reset();
-    ExtensionServiceTestBase::TearDown();
+    ExtensionServiceTestWithInstall::TearDown();
   }
 
   content::WebContentsTester* web_contents_tester() {

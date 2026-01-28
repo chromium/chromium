@@ -46,6 +46,12 @@ class BlocklistStatesInteractionUnitTest : public ExtensionServiceTestBase {
     extension_prefs_ = ExtensionPrefs::Get(profile());
   }
 
+  void TearDown() override {
+    extension_prefs_ = nullptr;
+    test_blocklist_.Detach();
+    ExtensionServiceTestBase::TearDown();
+  }
+
  protected:
   void SetSafeBrowsingBlocklistStateForExtension(
       const ExtensionId& extension_id,
@@ -68,7 +74,7 @@ class BlocklistStatesInteractionUnitTest : public ExtensionServiceTestBase {
 
  private:
   TestBlocklist test_blocklist_;
-  raw_ptr<ExtensionPrefs> extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
 };
 
 // 1. The extension is added to the Safe Browsing blocklist with
