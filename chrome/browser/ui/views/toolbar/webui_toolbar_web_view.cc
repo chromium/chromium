@@ -70,7 +70,8 @@ void WebUIToolbarWebView::AddedToWidget() {
   webui_toolbar_ui_ = web_view_->GetWebContents()
                           ->GetWebUI()
                           ->GetController()
-                          ->GetAs<WebUIToolbarUI>();
+                          ->GetAs<WebUIToolbarUI>()
+                          ->GetWeakPtr();
   reload_control_.Init();
 }
 
@@ -94,6 +95,25 @@ void WebUIToolbarWebView::DidFinishLoad(
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
   return &reload_control_;
+}
+
+void WebUIToolbarWebView::DidFirstVisuallyNonEmptyPaint() {
+  has_finished_first_non_empty_paint_ = true;
+  if (did_first_non_empty_paint_callback_) {
+    std::move(did_first_non_empty_paint_callback_).Run();
+  }
+}
+
+void WebUIToolbarWebView::SetDidFirstNonEmptyPaintCallbackForTesting(
+    base::OnceClosure callback) {
+  if (callback.is_null()) {
+    return;
+  }
+  if (has_finished_first_non_empty_paint_) {
+    std::move(callback).Run();
+    return;
+  }
+  did_first_non_empty_paint_callback_ = std::move(callback);
 }
 
 BEGIN_METADATA(WebUIToolbarWebView)

@@ -45,18 +45,23 @@ class WebUIToolbarWebView : public views::View,
   // content::WebContentsObserver:
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
+  void DidFirstVisuallyNonEmptyPaint() override;
+
+  void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
 
  private:
   friend WebUIReloadControl;
 
   chrome::BrowserCommandController* controller() { return controller_; }
-  WebUIToolbarUI* webui_toolbar_ui() { return webui_toolbar_ui_; }
+  base::WeakPtr<WebUIToolbarUI> webui_toolbar_ui() { return webui_toolbar_ui_; }
 
-  raw_ptr<WebUIToolbarUI> webui_toolbar_ui_ = nullptr;
+  base::WeakPtr<WebUIToolbarUI> webui_toolbar_ui_ = nullptr;
   raw_ptr<views::WebView> web_view_ = nullptr;
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;
   WebUIReloadControl reload_control_;
+  base::OnceClosure did_first_non_empty_paint_callback_;
+  bool has_finished_first_non_empty_paint_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_WEB_VIEW_H_

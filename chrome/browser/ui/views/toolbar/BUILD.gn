@@ -235,6 +235,27 @@ source_set("impl") {
 }
 
 if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "webui_test_utils.cc",
+      "webui_test_utils.h",
+    ]
+    deps = [
+      ":toolbar",
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/views/frame",
+      "//components/metrics:content",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/views",
+    ]
+  }
+
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -259,6 +280,7 @@ if (!is_android) {
     }
 
     deps = [
+      ":test_support",
       ":toolbar",
       "//base",
       "//chrome/browser:flags",
