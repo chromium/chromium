@@ -1,8 +1,3 @@
-# crbug.com/376095153
-
-# crbug.com/375710620
--org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
-
 # crbug.com/446934111
 -org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManagerTest.*
 
@@ -14,11 +9,6 @@
 
 # https://crbug.com/446934111
 # Aggressively disable failed tests to green the suite ASAP.
--org.chromium.chrome.browser.app.appmenu.TabbedAppMenuPTTest.testNewTabPageIncognitoAppMenuItems
--org.chromium.chrome.browser.app.appmenu.TabbedAppMenuPTTest.testWebPageIncognitoAppMenuItems
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testSearchBookmarks_Delete
--org.chromium.chrome.browser.app.flags.ChromeCachedFlagsTest.testValueIsConsistentWithDefault
--org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestratorTest.testOpenArchivedTabFromHubSearch_Incognito
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
 -org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testMutedPlaybackDoesNotTakeAudioFocus
 -org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testUnmutedPlaybackTakesAudioFocus
