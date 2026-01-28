@@ -37,6 +37,7 @@ bitflags::bitflags! {
 /// an incoming message without calling `new`). It might be nicer for it to be
 /// in a different file though if we can get the visibility to work out.
 pub struct RawMojoMessage {
+    // Invariant: this handle is valid and exclusively owned by the RawMojoMessage object
     message_handle: MojoMessageHandle,
     // This member is equivalent to `impl !Sync`, which is currently unstable
     _phantom_unsync: std::marker::PhantomData<std::cell::Cell<()>>,
@@ -54,6 +55,7 @@ impl Drop for RawMojoMessage {
 }
 
 impl RawMojoMessage {
+    /// Construct an empty RawMojoMessage
     pub fn new() -> Self {
         let mut message_handle: MojoMessageHandle = 0;
         // SAFETY: MojoCreateMessage allows the first argument to be null.
@@ -62,6 +64,15 @@ impl RawMojoMessage {
             unsafe { mojo_ffi::MojoCreateMessage(std::ptr::null(), &mut message_handle as *mut _) }
                 .into();
         assert_eq!(MojoResult::Okay, result);
+        // We just got this handle from Mojo so we know it's valid.
+        Self::new_unchecked(message_handle)
+    }
+
+    /// Construct a RawMojoMessage from an existing handle, without checking
+    /// whether that handle is valid. Not technically unsafe, but passing an
+    /// invalid handle breaks the `RawMojoMessage`'s invariants which may
+    /// cause API calls to fail.
+    fn new_unchecked(message_handle: MojoMessageHandle) -> Self {
         RawMojoMessage { message_handle, _phantom_unsync: std::marker::PhantomData }
     }
 
@@ -307,8 +318,19 @@ impl RawMojoMessage {
     /// will trigger the error handler which was set up during mojo
     /// initialization. Typically this will result in the process that
     /// created the message being terminated.
-    pub fn report_bad_message(&self) {
-        todo!()
+    ///
+    /// Note that reporting a bad message does not stop the _current_ process
+    /// from running. However, you should almost always abort whatever you're
+    /// doing, rather than try to continue processing the known-bad message.
+    /// To make it harder to forget to do so, this function will always return
+    /// an error result so the compiler will warn if you try to treat it like a
+    /// panic and ignore its return value.
+    pub fn report_bad_message(&self, error_msg: &str) -> Result<(), ()> {
+        // Ignore the MojoResult; this can only fail if the message_handle is invalid,
+        // and we guarantee that it's valid as part of this type.
+        // SAFETY: We guarantee that our contained handle is alive.
+        let _ = unsafe { mojo_ffi::MojoNotifyBadMessage(self.message_handle, error_msg) };
+        Err(())
     }
 }
 
@@ -385,7 +407,8 @@ impl MessageEndpoint {
             }
         };
 
-        Ok(RawMojoMessage { message_handle, _phantom_unsync: std::marker::PhantomData })
+        // We got this handle from MojoReadMessage so we know it's valid.
+        Ok(RawMojoMessage::new_unchecked(message_handle))
     }
 
     /// Write the given message to the pipe, sending it to the other side.

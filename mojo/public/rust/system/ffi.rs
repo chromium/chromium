@@ -78,6 +78,24 @@ pub use raw_ffi::MojoWriteMessage;
 // SAFETY: The message handle must be alive or invalid.
 pub use raw_ffi::MojoDestroyMessage;
 
+/// Convenience wrapper around MojoNotifyBadMessage.
+/// SAFETY: The message handle must be alive or invalid.
+pub unsafe fn MojoNotifyBadMessage(
+    message: types::MojoMessageHandle,
+    error_msg: &str,
+) -> raw_ffi::MojoResult {
+    // SAFETY: The option pointer may be null. The string parts were constructed
+    // from an &str, and will not be retained by C code after the function returns.
+    unsafe {
+        raw_ffi::MojoNotifyBadMessage(
+            message,
+            error_msg.as_ptr() as *const ::std::os::raw::c_char,
+            error_msg.len().try_into().unwrap(), // u32 is smaller than usize on chromium platforms
+            std::ptr::null(),
+        )
+    }
+}
+
 // SAFETY: The `buffer` and `num_bytes` arguments must not be null.
 // The `options` and `num_handles` arguments may be null.
 // The `handles` argument may be null only if `num_handles` is null or

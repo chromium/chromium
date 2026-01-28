@@ -7,7 +7,20 @@ rust_static_library("test_util") {
   sources = [ "test_util.rs" ]
   cxx_bindings = [ "test_util.rs" ]
   deps = [
+    ":cxx_shim",
     "//base",
     "//mojo/core/embedder",
+  ]
+
+  allow_circular_includes_from = [ ":cxx_shim" ]
+
+  visibility = [ "../*" ]
+}
+
+source_set("cxx_shim") {
+  sources = [ "cxx_shim.h" ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/system",
   ]
 }

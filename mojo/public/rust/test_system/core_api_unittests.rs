@@ -37,6 +37,7 @@ fn test_basic_message_write_and_send() {
         vec![dummy_handle.into_untyped()],
     )
     .unwrap();
+
     let write_result = endpoint_b.write(hello);
     expect_true!(write_result.is_ok());
 
@@ -554,4 +555,22 @@ fn test_make_regular_trap() {
     test_util::init_mojo_if_needed();
 
     let _trap = system::trap::Trap::new().unwrap();
+}
+
+#[gtest(RustSystemAPITestSuite, ReportBadMessage)]
+fn test_report_bad_message() {
+    let msg = system::message_pipe::RawMojoMessage::new_with_bytes(b"moist").unwrap();
+
+    let err_msg: Arc<Mutex<String>> = Arc::new(Mutex::new("".to_string()));
+    let err_msg_clone = err_msg.clone();
+    test_util::set_default_process_error_handler(move |msg: &str| {
+        *err_msg_clone.try_lock().unwrap() = msg.to_string()
+    });
+
+    let _ = msg.report_bad_message("OH NO!");
+
+    // SAFETY: We're single-threaded so this isn't racy
+    expect_eq!("OH NO!".to_string(), (*err_msg.try_lock().unwrap()).clone());
+
+    test_util::set_default_process_error_handler(|_| {});
 }

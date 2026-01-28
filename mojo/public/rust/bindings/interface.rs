@@ -484,18 +484,27 @@ pub mod remote {
         /// the map, and invoke the interface's response handler with
         /// it.
         fn incoming_message_handler(raw_message: RawMojoMessage, callback_map: &CallbackMap<T>) {
-            // FOR_RELEASE: This indicates a malformed mojo message, we should figure out
-            // what to do about those
-            let message: MojomMessage =
-                MojomMessage::from_raw(&raw_message).expect("Incoming response failed to parse!");
+            let message: MojomMessage = match MojomMessage::from_raw(&raw_message) {
+                Ok(msg) => msg,
+                Err(err) => {
+                    raw_message.report_bad_message(&err.to_string());
+                    return;
+                }
+            };
             let response_callback = callback_map
                 .lock()
                 .expect("Callback map should never be poisoned")
                 .remove(&message.header.request_id);
-            // FOR_RELEASE: This indicates a malformed mojo message, we should figure out
-            // what to do about those
-            let response_callback =
-                response_callback.expect("Incoming response had no request_id!");
+            let response_callback = match response_callback {
+                Some(callback) => callback,
+                None => {
+                    raw_message.report_bad_message(&format!(
+                        "Received message with unknown request_id {}",
+                        message.header.request_id
+                    ));
+                    return;
+                }
+            };
             T::handle_incoming_response(message, response_callback);
         }
     }
@@ -655,10 +664,13 @@ pub mod receiver {
             state_weak: &Weak<Mutex<StateTy>>,
             sender: &ResponseSender,
         ) {
-            // FOR_RELEASE: This indicates a malformed mojo message, we should figure out
-            // what to do about those
-            let message: MojomMessage =
-                MojomMessage::from_raw(&raw_message).expect("Incoming response failed to parse!");
+            let message: MojomMessage = match MojomMessage::from_raw(&raw_message) {
+                Ok(msg) => msg,
+                Err(err) => {
+                    raw_message.report_bad_message(&err.to_string());
+                    return;
+                }
+            };
 
             let expects_response = message
                 .header
