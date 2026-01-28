@@ -453,6 +453,7 @@ ruleEdgeInset
 ruleInset
 ruleInteriorInset
 ruleStyle
+ruleVisibilityItems
 ruleWidth
 rx
 ry

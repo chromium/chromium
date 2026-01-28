@@ -924,6 +924,9 @@ All changes to this list should go through Blink's feature review process: http:
     rule-style
         column-rule-style
         row-rule-style
+    rule-visibility-items
+        column-rule-visibility-items
+        row-rule-visibility-items
     rule-width
         column-rule-width
         row-rule-width

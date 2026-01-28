@@ -704,6 +704,9 @@ String StylePropertySerializer::SerializeShorthand(
           ruleInsetShorthand());
     case CSSPropertyID::kRuleStyle:
       return GetShorthandValueForBidirectionalGapRules(ruleStyleShorthand());
+    case CSSPropertyID::kRuleVisibilityItems:
+      return GetShorthandValueForBidirectionalGapRules(
+          ruleVisibilityItemsShorthand());
     case CSSPropertyID::kRuleWidth:
       return GetShorthandValueForBidirectionalGapRules(ruleWidthShorthand());
     case CSSPropertyID::kTextBox:

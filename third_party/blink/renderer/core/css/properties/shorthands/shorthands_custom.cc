@@ -5394,6 +5394,43 @@ const CSSValue* RuleStyle::CSSValueFromComputedStyleInternal(
       value_phase);
 }
 
+bool RuleVisibilityItems::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  DCHECK_EQ(ruleVisibilityItemsShorthand().length(), 2u);
+  CSSValue* rule_visibility_items =
+      css_parsing_utils::ConsumeIdent<CSSValueID::kAll, CSSValueID::kAround,
+                                      CSSValueID::kBetween>(stream);
+
+  if (!rule_visibility_items) {
+    return false;
+  }
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleVisibilityItems,
+      CSSPropertyID::kRuleVisibilityItems, *rule_visibility_items, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kRowRuleVisibilityItems,
+      CSSPropertyID::kRuleVisibilityItems, *rule_visibility_items, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  return true;
+}
+
+const CSSValue* RuleVisibilityItems::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValuesForBidirectionalGapRuleShorthand(
+      ruleVisibilityItemsShorthand(), style, layout_object, allow_visited_style,
+      value_phase);
+}
+
 bool TextBox::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,

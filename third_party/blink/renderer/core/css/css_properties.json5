@@ -9099,6 +9099,12 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
+      name: "rule-visibility-items",
+      longhands: ["column-rule-visibility-items", "row-rule-visibility-items"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "scroll-margin",
       longhands: ["scroll-margin-top", "scroll-margin-right", "scroll-margin-bottom", "scroll-margin-left"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

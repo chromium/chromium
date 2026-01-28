@@ -1393,6 +1393,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kRuleBreak:
     case CSSPropertyID::kRuleColor:
     case CSSPropertyID::kRuleInset:
+    case CSSPropertyID::kRuleVisibilityItems:
     case CSSPropertyID::kRuleWidth:
     case CSSPropertyID::kRuleStyle:
     case CSSPropertyID::kScrollMargin:
