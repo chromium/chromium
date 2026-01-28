@@ -504,6 +504,13 @@ public class HistoryManager
 
     @Override
     public void onSearchTextChanged(String query) {
+        assumeNonNull(mSelectionDelegate);
+        boolean isLargeScreenWithKeyboard =
+                DeviceInput.supportsKeyboard()
+                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        if (isLargeScreenWithKeyboard && mSelectionDelegate.isSelectionEnabled()) {
+            mSelectionDelegate.clearSelection();
+        }
         assumeNonNull(mContentManager).search(query);
     }
 
