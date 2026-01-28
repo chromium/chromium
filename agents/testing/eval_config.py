@@ -21,6 +21,7 @@ class TestConfig:
     in `test_file` unless this object is constructed with `from_file`.
     """
     test_file: pathlib.Path
+    description: str = ""
     owner: str = None
     runs_per_test: int = 1
     pass_k_threshold: int = 1
@@ -91,8 +92,10 @@ class TestConfig:
             precompile_targets = metadata.get('precompile_targets', [])
             tags = metadata.get('tags', [])
         owner = config.get('owner')
+        description = config.get('description', '')
 
         instance = cls(test_file=test_file,
+                       description=description,
                        runs_per_test=runs_per_test,
                        pass_k_threshold=pass_k_threshold,
                        precompile_targets=precompile_targets,

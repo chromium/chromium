@@ -539,6 +539,10 @@ def _parse_args() -> argparse.Namespace:
               f'{_TOTAL_SHARDS_ENV_VAR}.'))
 
     group = parser.add_argument_group('Promptfoo Arguments')
+    group.add_argument('--list-tests',
+                       action='store_true',
+                       help='List all discovered test file paths and '
+                       'descriptions, then exit.')
     promptfoo_install_group = group.add_mutually_exclusive_group()
     promptfoo_install_group.add_argument(
         '--promptfoo-bin',
@@ -606,6 +610,14 @@ def main() -> int:
         level=logging.DEBUG if args.verbose else logging.INFO,
         format='%(message)s',
     )
+    if args.list_tests:
+        configs = _get_tests_to_run(args.shard_index, args.total_shards,
+                                    args.filter, args.tag_filter,
+                                    args.extra_tests_paths)
+        for config in configs:
+            print(f'{config.src_relative_test_file}: {config.description}')
+        return 0
+
     return _run_prompt_eval_tests(args)
 
 
