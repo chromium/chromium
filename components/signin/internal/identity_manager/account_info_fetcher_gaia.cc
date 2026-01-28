@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/signin/internal/identity_manager/gaia_account_info_fetcher.h"
+#include "components/signin/internal/identity_manager/account_info_fetcher_gaia.h"
 
 #include <memory>
 #include <utility>
@@ -14,7 +14,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
-GaiaAccountInfoFetcher::GaiaAccountInfoFetcher(
+AccountInfoFetcherGaia::AccountInfoFetcherGaia(
     ProfileOAuth2TokenService* token_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AccountFetcherService* service,
@@ -31,12 +31,12 @@ GaiaAccountInfoFetcher::GaiaAccountInfoFetcher(
   Start();
 }
 
-GaiaAccountInfoFetcher::~GaiaAccountInfoFetcher() {
+AccountInfoFetcherGaia::~AccountInfoFetcherGaia() {
   TRACE_EVENT_END("AccountFetcherService",
                   /* AccountIdFetcher */ perfetto::Track::FromPointer(this));
 }
 
-void GaiaAccountInfoFetcher::Start() {
+void AccountInfoFetcherGaia::Start() {
   OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
   scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
@@ -44,7 +44,7 @@ void GaiaAccountInfoFetcher::Start() {
       token_service_->StartRequest(account_id_, scopes, this);
 }
 
-void GaiaAccountInfoFetcher::OnGetTokenSuccess(
+void AccountInfoFetcherGaia::OnGetTokenSuccess(
     const OAuth2AccessTokenManager::Request* request,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   TRACE_EVENT_INSTANT("AccountFetcherService", "OnGetTokenSuccess",
@@ -58,7 +58,7 @@ void GaiaAccountInfoFetcher::OnGetTokenSuccess(
                                   this);
 }
 
-void GaiaAccountInfoFetcher::OnGetTokenFailure(
+void AccountInfoFetcherGaia::OnGetTokenFailure(
     const OAuth2AccessTokenManager::Request* request,
     const GoogleServiceAuthError& error) {
   TRACE_EVENT_INSTANT("AccountFetcherService", "OnGetTokenFailure",
@@ -69,7 +69,7 @@ void GaiaAccountInfoFetcher::OnGetTokenFailure(
   service_->OnUserInfoFetchFailure(account_id_);
 }
 
-void GaiaAccountInfoFetcher::OnGetUserInfoResponse(
+void AccountInfoFetcherGaia::OnGetUserInfoResponse(
     const base::DictValue& user_info) {
   TRACE_EVENT_INSTANT("AccountFetcherService", "OnGetUserInfoResponse",
                       perfetto::Track::FromPointer(this), "account_id",
@@ -77,14 +77,14 @@ void GaiaAccountInfoFetcher::OnGetUserInfoResponse(
   service_->OnUserInfoFetchSuccess(account_id_, user_info);
 }
 
-void GaiaAccountInfoFetcher::OnOAuthError() {
+void AccountInfoFetcherGaia::OnOAuthError() {
   TRACE_EVENT_INSTANT("AccountFetcherService", "OnOAuthError",
                       perfetto::Track::FromPointer(this));
   LOG(ERROR) << "OnOAuthError";
   service_->OnUserInfoFetchFailure(account_id_);
 }
 
-void GaiaAccountInfoFetcher::OnNetworkError(int response_code) {
+void AccountInfoFetcherGaia::OnNetworkError(int response_code) {
   TRACE_EVENT_INSTANT("AccountFetcherService", "OnNetworkError",
                       perfetto::Track::FromPointer(this), "response_code",
                       response_code);

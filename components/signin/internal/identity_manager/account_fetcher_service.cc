@@ -22,8 +22,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
+#include "components/signin/internal/identity_manager/account_info_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
-#include "components/signin/internal/identity_manager/gaia_account_info_fetcher.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_client.h"
@@ -176,7 +176,7 @@ void AccountFetcherService::StartFetchingUserInfo(
     DVLOG(1) << "StartFetching " << account_id;
     user_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
     user_info_requests_.emplace(
-        account_id, std::make_unique<GaiaAccountInfoFetcher>(
+        account_id, std::make_unique<AccountInfoFetcherGaia>(
                         token_service_, signin_client_->GetURLLoaderFactory(),
                         this, account_id));
   }

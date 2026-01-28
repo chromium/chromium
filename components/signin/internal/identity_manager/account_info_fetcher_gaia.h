@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_GAIA_ACCOUNT_INFO_FETCHER_H_
-#define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_GAIA_ACCOUNT_INFO_FETCHER_H_
+#ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_FETCHER_GAIA_H_
+#define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_FETCHER_GAIA_H_
 
 #include <memory>
 
@@ -25,20 +25,20 @@ class ProfileOAuth2TokenService;
 // scope and uses it to fetch account information. This does not handle
 // refreshing the information and is meant to be used in a one shot fashion.
 // Fetching is started automatically as soon as an instance is created.
-class GaiaAccountInfoFetcher : public AccountInfoFetcher,
+class AccountInfoFetcherGaia : public AccountInfoFetcher,
                                public OAuth2AccessTokenManager::Consumer,
                                public gaia::GaiaOAuthClient::Delegate {
  public:
-  GaiaAccountInfoFetcher(
+  AccountInfoFetcherGaia(
       ProfileOAuth2TokenService* token_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       AccountFetcherService* service,
       const CoreAccountId& account_id);
 
-  GaiaAccountInfoFetcher(const GaiaAccountInfoFetcher&) = delete;
-  GaiaAccountInfoFetcher& operator=(const GaiaAccountInfoFetcher&) = delete;
+  AccountInfoFetcherGaia(const AccountInfoFetcherGaia&) = delete;
+  AccountInfoFetcherGaia& operator=(const AccountInfoFetcherGaia&) = delete;
 
-  ~GaiaAccountInfoFetcher() override;
+  ~AccountInfoFetcherGaia() override;
 
   // OAuth2AccessTokenManager::Consumer implementation.
   void OnGetTokenSuccess(
@@ -65,4 +65,4 @@ class GaiaAccountInfoFetcher : public AccountInfoFetcher,
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
 };
 
-#endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_GAIA_ACCOUNT_INFO_FETCHER_H_
+#endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_FETCHER_GAIA_H_
