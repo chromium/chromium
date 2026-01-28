@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -21,6 +21,8 @@ package metrics;
 // These values are used as HTTP CGI parameter values. Entries should not be
 // renumbered and numeric values should never be reused.
 enum OmniboxFocusType {
+  option features.enum_type = CLOSED;
+
   // The default value. This is used for any search requests without any
   // special interaction annotation, including: normal omnibox searches,
   // as-you-type omnibox suggestions, as well as non-omnibox searches.

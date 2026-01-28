@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -18,6 +18,8 @@ package metrics;
 // probably intends to type more and have it eventually become a URL, so we
 // need to make sure we still run it through inline autocomplete.
 enum OmniboxInputType {
+  option features.enum_type = CLOSED;
+
   // Empty input
   EMPTY = 0;
 

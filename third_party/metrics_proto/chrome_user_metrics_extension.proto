@@ -65,7 +65,8 @@ message ChromeUserMetricsExtension {
   // device.
   // An id of 0 is reserved for test data (monitoring and internal testing) and
   // should normally be ignored in analysis of the data.
-  // [1] http://www.chromium.org/user-experience/user-data-directory
+  // [1]
+  // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md
   // For non-Chrome Android clients, this is the install id unique to the app.
   optional fixed64 client_id = 1;
 

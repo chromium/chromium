@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -13,15 +13,15 @@ package metrics;
 // Next tag: 5
 message ReportingInfo {
   // Number of times upload of the current report has been attempted.
-  optional int32 attempt_count = 1;
+  int32 attempt_count = 1;
 
   // The HTTP response/error code of the last upload attempt.
-  optional int32 last_response_code = 2;
+  int32 last_response_code = 2;
 
   // The NET_ERROR code of the last upload attempt.
   // See chromium's net/base/net_error_list.h for examples.
-  optional int32 last_error_code = 3;
+  int32 last_error_code = 3;
 
   // True if the last upload attempt was over HTTPS.
-  optional bool last_attempt_was_https = 4;
+  bool last_attempt_was_https = 4;
 }

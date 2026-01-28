@@ -14,8 +14,8 @@ import "layer.proto";
 option features.enum_type = CLOSED;
 option features.utf8_validation = NONE;
 
-// This defines the Protocol Buffer representation of a Chrome Variations study
-// as sent to clients of the Variations server.
+// This defines the Protocol Buffer representation of a Finch study as sent to
+// clients of the Finch server.
 //
 // Next tag: 19
 message Study {
@@ -60,16 +60,20 @@ message Study {
   // Ex: "default"
   string default_experiment_name = 8;
 
-  // Specifies under which conditions a |google_web_experiment_id| or
-  // |google_web_trigger_experiment_id| is visible to Google web properties.
+  // Specifies under which conditions a Google web experiment ID or a Google web
+  // trigger experiment ID is visible to Google web properties. An ID is visible
+  // if it is included in the X-Client-Data header of a request to a Google web
+  // property.
   enum GoogleWebVisibility {
-    // Eligible requests to Google web properties include the experiment ID. See
-    // AppendHeaderIfNeeded() in variations_http_headers.cc for eligibility
-    // details.
+    // The experiment ID is included in the header regardless of the context
+    // in which the request is initiated.
+    //
+    // Use this option only when necessary. This is the default at the
+    // Experiment level to match the previous behavior.
     ANY = 0;
 
     // Only requests initiated from a first-party context include the
-    // experiment ID.
+    // experiment ID. This option is preferred.
     //
     // The following requests are considered to be from a first-party context:
     // requests initiated by (i) the browser, (ii) a Chrome internal page,
@@ -79,23 +83,23 @@ message Study {
     FIRST_PARTY = 1;
   }
 
-  // The starting timestamp for Google web visibility, in Unix time format
-  // (seconds since epoch; midnight January 1, 1970 UTC). It specifies the date
-  // and time when Google web visibility should commence once this experiment
-  // is activated. If not set, or 0, the experiment becomes visible immediately
-  // upon activation.
+  // The start date for Google web visibility visibility in Unix time format.
+  // (Seconds since midnight January 1, 1970 UTC). It specifies the exact date
+  // when Google web IDs reporting for a particular study should commence. The
+  // Google web visibility start and end dates provide more finely-grained
+  // control over when an experiment reports its Google web IDs. If omitted, the
+  // client will default to the de-facto behavior of always reporting Google web
+  // IDs when the study is active.
   int64 google_web_visibility_start_date = 17;
 
-  // The ending timestamp for Google web visibility, in Unix time format
-  // (seconds since epoch; midnight January 1, 1970 UTC). It specifies the date
-  // and time when Google web visibility should cease if this experiment
-  // is active. If not set, or 0, the experiment remains visible once
-  // activated.
+  // The end date for Google web visibility in Unix time format. (Seconds since
+  // midnight January 1, 1970 UTC). It defines the specific date on which Google
+  // web ID reporting for a study should cease.
   int64 google_web_visibility_end_date = 18;
 
   // An experiment within the study.
   //
-  // Next tag: 17
+  // Next tag: 21
   message Experiment {
     // A named parameter value for this experiment.
     //
@@ -124,12 +128,11 @@ message Study {
     // behavior on Google web properties.
     uint64 google_web_trigger_experiment_id = 8;
 
-    // Optional visibility setting affecting |google_web_experiment_id| and
-    // |google_web_trigger_experiment_id| fields. See GoogleWebVisibility
-    // enum for details.
+    // Optional visibility setting affecting the experiment ID fields. See
+    // GoogleWebVisibility enum for details.
     GoogleWebVisibility google_web_visibility = 16 [default = ANY];
 
-    // Optional id used to uniquely identify this experiment when activating
+    // Optional ID used to uniquely identify this experiment when activating
     // integrations with the Android Google App.
     // IMPORTANT: This field is only approved for integrations with the Android
     // Google App and must receive a privacy review before extending to other
@@ -243,15 +246,24 @@ message Study {
   }
 
   // Possible form factors Chrome is running on.
+  // The set of field trials to apply is determined at application startup. For
+  // foldables--which are devices that can change from phone-sized to
+  // tablet-sized--this can cause problems. When folding/unfolding, while
+  // ChromeTabbedActivity may be recreated, the Chrome application intentionally
+  // is not. For foldables, this means that a feature that's limited in the
+  // Finch config to 'phone' or 'tablet' only may incorrectly be (un)available
+  // after (un)folding. Rather than using the Finch form_factor field, features
+  // that should only be enabled on a phone-sized or tablet-sized screen should
+  // check the current UI mode in client Java or C++ code.
   enum FormFactor {
     // Chrome Desktop on Windows, Mac, Linux, or Chrome OS.
     DESKTOP = 0;
 
     // Phone-based mobile Chrome, e.g. an Android phone or iPhone.
-    PHONE = 1;
+    PHONE = 1;  // beware of foldables; see comment by enum definition.
 
     // Tablet-based mobile Chrome, e.g. an Android tablet or iPad.
-    TABLET = 2;
+    TABLET = 2;  // beware of foldables; see comment by enum definition.
 
     // Chrome OS running in single-app Kiosk mode.
     KIOSK = 3;
@@ -279,16 +291,6 @@ message Study {
     // A Mac-only value, indicating an x86-64 binary running on an arm64 host
     // via "Rosetta 2" binary translation.
     TRANSLATED_X86_64 = 4;
-  }
-
-  // Enum to pass as optional bool.
-  enum OptionalBool {
-    // Neither True nor False. (For cases like missing / unset / default etc.)
-    OPTIONAL_BOOL_MISSING = 0;
-    // Explicit True.
-    OPTIONAL_BOOL_TRUE = 1;
-    // Explicit False.
-    OPTIONAL_BOOL_FALSE = 2;
   }
 
   // Possible states of the policy restriction filter.
@@ -509,6 +511,7 @@ message Study {
     // associated with ACTIVATE_ON_QUERY and for studying longer-term effects
     // without activation on start up. Only valid for studies using PERMANENT
     // consistency.
+    // Supported starting with version 142.0.7444.48.
     STICKY_AFTER_QUERY = 2;
   }
 
