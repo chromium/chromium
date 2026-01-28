@@ -20,6 +20,8 @@ import static org.chromium.components.browser_ui.widget.scrim.ScrimProperties.VI
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -72,7 +74,10 @@ class ScrimViewBinder {
             if (view.getVisibility() != targetVisibility) view.setVisibility(targetVisibility);
 
         } else if (BACKGROUND_COLOR == propertyKey) {
-            view.setBackgroundColor(model.get(BACKGROUND_COLOR));
+            @ColorInt Integer backgroundColor = model.get(BACKGROUND_COLOR);
+            // This can happen during init. The mediator will update to a default fallback shortly.
+            if (backgroundColor == null) return;
+            view.setBackgroundColor(backgroundColor);
         } else if (GESTURE_DETECTOR == propertyKey) {
             // Noop; gesture handling is delegated out to the mediator.
         } else if (AFFECTS_NAVIGATION_BAR == propertyKey) {

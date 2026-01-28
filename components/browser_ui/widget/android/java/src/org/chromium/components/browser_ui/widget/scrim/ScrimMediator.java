@@ -105,8 +105,7 @@ class ScrimMediator implements TouchEventDelegate {
             return Color.TRANSPARENT;
         }
 
-        @ColorInt int color = mModel.get(ScrimProperties.BACKGROUND_COLOR);
-        return ColorUtils.applyAlphaFloat(color, alpha);
+        return ColorUtils.applyAlphaFloat(safeReadScrimColor(), alpha);
     }
 
     /* package */ @Nullable PropertyModel getModel() {
@@ -137,12 +136,7 @@ class ScrimMediator implements TouchEventDelegate {
         mModel.set(ScrimProperties.TOUCH_EVENT_DELEGATE, this);
         mIsHidingOrHidden = false;
 
-        // When clients do not specify a background color, use the default.
-        if (mModel.get(ScrimProperties.BACKGROUND_COLOR) == ScrimProperties.INVALID_COLOR) {
-            mModel.set(ScrimProperties.BACKGROUND_COLOR, mDefaultScrimColor);
-        }
-
-        @ColorInt int currentScrimColor = model.get(ScrimProperties.BACKGROUND_COLOR);
+        @ColorInt int currentScrimColor = safeReadScrimColor();
         mFullScrimColorSupplier.set(currentScrimColor);
 
         // Make sure alpha is reset to 0 since the model may be reused.
@@ -176,6 +170,15 @@ class ScrimMediator implements TouchEventDelegate {
         mOverlayFadeInAnimator.setFloatValues(mModel.get(ScrimProperties.ALPHA), 1f);
         runFadeAnimation(mOverlayFadeInAnimator);
         if (!animate) mOverlayFadeInAnimator.end();
+    }
+
+    private @ColorInt int safeReadScrimColor() {
+        assumeNonNull(mModel);
+        // When clients do not specify a background color, use the default.
+        if (mModel.get(ScrimProperties.BACKGROUND_COLOR) == null) {
+            mModel.set(ScrimProperties.BACKGROUND_COLOR, mDefaultScrimColor);
+        }
+        return mModel.get(ScrimProperties.BACKGROUND_COLOR);
     }
 
     private int getAnimationDuration(int animDurationMs) {

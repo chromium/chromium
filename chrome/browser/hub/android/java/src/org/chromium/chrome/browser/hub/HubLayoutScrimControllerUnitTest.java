@@ -138,7 +138,7 @@ public class HubLayoutScrimControllerUnitTest {
         assertEquals(mAnchorView, model.get(ScrimProperties.ANCHOR_VIEW));
         assertFalse(model.get(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW));
         assertTrue(model.get(ScrimProperties.AFFECTS_STATUS_BAR));
-        final @ColorInt int scrimColor =
+        final @ColorInt Integer scrimColor =
                 isIncognito
                         ? ContextCompat.getColor(mActivity, R.color.default_bg_color_dark)
                         : SemanticColorUtils.getDefaultBgColor(mActivity);

@@ -96,9 +96,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
                 !isTablet
                         && !mLocationBarDataProvider.isIncognitoBranded()
                         && !ColorUtils.inNightMode(mContext);
-        mScrimModel.set(
-                ScrimProperties.BACKGROUND_COLOR,
-                useLightColor ? mLightScrimColor : ScrimProperties.INVALID_COLOR);
+        mScrimModel.set(ScrimProperties.BACKGROUND_COLOR, useLightColor ? mLightScrimColor : null);
         mScrimModel.set(
                 ScrimProperties.BOTTOM_MARGIN,
                 mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN));
