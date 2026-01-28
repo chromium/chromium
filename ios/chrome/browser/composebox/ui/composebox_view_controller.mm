@@ -7,6 +7,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "base/check_op.h"
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
@@ -170,6 +171,12 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                       withHandler:^(id<UITraitEnvironment> traitEnvironment,
                                     UITraitCollection* previousCollection) {
                         [weakSelf setupConstraints];
+                        if (traitEnvironment.traitCollection
+                                .horizontalSizeClass !=
+                            previousCollection.horizontalSizeClass) {
+                          [weakSelf.delegate
+                                  composeboxHorizontalSizeClassDidChange];
+                        }
                       }];
   }
 }

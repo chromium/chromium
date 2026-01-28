@@ -18,6 +18,8 @@
 @protocol ComposeboxViewControllerDelegate
 - (void)composeboxViewControllerDidTapCloseButton:
     (ComposeboxViewController*)viewController;
+// Indicates to the delegate to handle a change in horizontal size class.
+- (void)composeboxHorizontalSizeClassDidChange;
 @end
 
 // View Controller that contains the composebox, presenting it modally.

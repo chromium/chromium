@@ -257,6 +257,16 @@
   [self dismissComposebox];
 }
 
+- (void)composeboxHorizontalSizeClassDidChange {
+  _viewController.view.hidden = YES;
+  __weak __typeof(self) weakSelf = self;
+  [self.baseViewController
+      dismissViewControllerAnimated:NO
+                         completion:^{
+                           [weakSelf representViewController];
+                         }];
+}
+
 #pragma mark - ComposeboxNavigationMediatorDelegate
 
 - (void)navigationMediatorDidFinish:
@@ -331,6 +341,14 @@
          UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
          (base::ios::IsRunningOnIOS26OrLater() ||
           IsRegularXRegularSizeClass(self.baseViewController.traitCollection));
+}
+
+// Represents the coordinator's view controller with no animation.
+- (void)representViewController {
+  _viewController.view.hidden = NO;
+  [self.baseViewController presentViewController:_viewController
+                                        animated:NO
+                                      completion:nil];
 }
 
 #pragma mark - Clipboard checks
