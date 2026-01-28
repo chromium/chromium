@@ -713,7 +713,7 @@ chromium-metrics-reviews@google.com.
   <int value="61" label="InvalidDownloadedTrustedIconForPendingUpdate"/>
   <int value="62" label="MissingWasIgnoredForPendingUpdate"/>
   <int value="63" label="InvalidParsedTrustedIcons"/>
-  <int value="64" label="InvalidBorderlessUrlPatterns"/>
+  <int value="64" label="(Obsolete) InvalidBorderlessUrlPatterns"/>
   <int value="65" label="InvalidInstalledBy"/>
   <int value="66" label="InvalidWebAppUnvalidatedMigrationSource"/>
   <int value="67" label="InvalidPendingMigrationInfo"/>
