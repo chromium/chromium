@@ -1686,8 +1686,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testIsBrowserOpen) {
 
   // Open a new incognito tab so that Chrome doesn't exit, and close the first
   // browser.
-  CreateIncognitoBrowser();
-  CloseBrowserAsynchronously(browser());
+  // Open a new incognito tab so that Chrome doesn't exit, and close the first
+  // browser.
+  CloseMainBrowserWithIncognitoKeepAlive();
 
   ContinueJsTest();
 }
@@ -2026,13 +2027,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
   // Note: ideally this test would only open Glic after the main browser is
   // closed. This however crashes in `DeprecatedOpenGlicWindow()`.
-  TrackFloatingGlicInstance();
+  TrackOnlyGlicInstance();
   RunTestSequence(OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents));
 
   // Open a new incognito window first so that Chrome doesn't exit, then close
   // the first browser window.
-  CreateIncognitoBrowser();
-  CloseBrowserAsynchronously(browser());
+  CloseMainBrowserWithIncognitoKeepAlive();
 
   ExecuteJsTest({.wait_for_guest = false});
 }
@@ -3298,8 +3298,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionNoFocus) {
   // The JS test has now detached the Glic window if in multi-instance mode and
   // is waiting. Now we can close the browser to create a "no tab" state.
   // Open a new incognito window so that Chrome doesn't exit.
-  CreateIncognitoBrowser();
-  CloseBrowserAsynchronously(browser());
+  CloseMainBrowserWithIncognitoKeepAlive();
 
   ContinueJsTest();
 }

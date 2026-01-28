@@ -463,7 +463,7 @@ class PrefersColorSchemeTest
 
   void TearDownOnMainThread() override {
     guest_view_manager_ = nullptr;
-    InProcessBrowserTest::TearDownOnMainThread();
+    PrefersColorSchemeTestBase::TearDownOnMainThread();
   }
 
  protected:

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_NON_INTERACTIVE_GLIC_TEST_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_NON_INTERACTIVE_GLIC_TEST_H_
 
+#include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -24,13 +26,17 @@ class NonInteractiveGlicTest
                          const GlicTestEnvironmentConfig& glic_config);
   ~NonInteractiveGlicTest() override;
 
+  void SetUpOnMainThread() override;
+
+  void TearDownOnMainThread() override;
+
   // Returns this fixture's `BrowserActivator` instance so that tests can
   // customize how browser windows should be activated, if needed.
-  BrowserActivator& browser_activator() { return browser_activator_; }
+  BrowserActivator& browser_activator() { return *browser_activator_; }
 
  private:
   base::test::ScopedFeatureList features_;
-  BrowserActivator browser_activator_;
+  std::optional<BrowserActivator> browser_activator_;
 };
 
 }  // namespace glic
