@@ -3761,6 +3761,22 @@
       invalidate: ["layout", "paint"],
     },
     {
+      name: "image-animation",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_group: "*",
+      field_template: "keyword",
+      include_paths: [
+        "third_party/blink/renderer/platform/graphics/image_node_animation_info.h"
+      ],
+      type_name: "ImageAnimationEnum",
+      keywords: ["normal", "running", "paused"],
+      default_value: "normal",
+      typedom_types: ["Keyword"],
+      invalidate: ["paint"],
+      runtime_flag: "CSSImageAnimation",
+    },
+    {
       name: "image-rendering",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,

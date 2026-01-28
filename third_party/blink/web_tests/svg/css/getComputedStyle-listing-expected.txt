@@ -226,6 +226,7 @@ height: 100px
 hyphenate-character: auto
 hyphenate-limit-chars: auto
 hyphens: manual
+image-animation: normal
 image-orientation: from-image
 image-rendering: auto
 initial-letter: normal

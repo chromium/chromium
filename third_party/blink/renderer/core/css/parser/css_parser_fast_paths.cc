@@ -1249,6 +1249,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kColumnOverRow;
     case CSSPropertyID::kGridLanesPack:
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kDense;
+    case CSSPropertyID::kImageAnimation:
+      return value_id == CSSValueID::kRunning ||
+             value_id == CSSValueID::kPaused || value_id == CSSValueID::kNormal;
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||
@@ -1762,6 +1765,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kGapRuleOverlap,
     CSSPropertyID::kGridLanesPack,
     CSSPropertyID::kHyphens,
+    CSSPropertyID::kImageAnimation,
     CSSPropertyID::kImageRendering,
     CSSPropertyID::kInterpolateSize,
     CSSPropertyID::kListStylePosition,

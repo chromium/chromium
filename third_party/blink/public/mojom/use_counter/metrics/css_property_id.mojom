@@ -993,6 +993,7 @@ enum CSSSampleId {
     kGridLanesPack = 923,
     kTextFit = 924,
     kViewTransitionScope = 925,
+    kImageAnimation = 926,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -241,6 +241,7 @@ All changes to this list should go through Blink's feature review process: http:
     hyphenate-character
     hyphenate-limit-chars
     hyphens
+    image-animation
     image-orientation
     image-rendering
     initial-letter

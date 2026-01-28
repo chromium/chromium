@@ -273,6 +273,7 @@ hostname
 hyphenateCharacter
 hyphenateLimitChars
 hyphens
+imageAnimation
 imageOrientation
 imageRendering
 inherits
