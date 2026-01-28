@@ -5,7 +5,6 @@
 #ifndef CC_LAYERS_TILE_DISPLAY_LAYER_IMPL_H_
 #define CC_LAYERS_TILE_DISPLAY_LAYER_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <utility>
 #include <variant>
@@ -23,6 +22,7 @@
 #include "cc/tiles/tiling_set_coverage_iterator.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -105,7 +105,7 @@ class CC_EXPORT TileDisplayLayerTile {
 class CC_EXPORT TileDisplayLayerTiling {
  public:
   using Tile = TileDisplayLayerTile;
-  using TileMap = std::map<TileIndex, std::unique_ptr<Tile>>;
+  using TileMap = absl::flat_hash_map<TileIndex, std::unique_ptr<Tile>>;
   using CoverageIterator = DisplayTilingCoverageIterator;
 
   explicit TileDisplayLayerTiling(TileDisplayLayerImpl& layer, float scale_key);
