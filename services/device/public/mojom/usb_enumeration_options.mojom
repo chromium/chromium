@@ -7,21 +7,11 @@ module device.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 
 struct UsbDeviceFilter {
-  bool has_vendor_id;
-  uint16 vendor_id;
-
-  bool has_product_id;
-  uint16 product_id;
-
-  bool has_class_code;
-  uint8 class_code;
-
-  bool has_subclass_code;
-  uint8 subclass_code;
-
-  bool has_protocol_code;
-  uint8 protocol_code;
-
+  uint16? vendor_id;
+  uint16? product_id;
+  uint8? class_code;
+  uint8? subclass_code;
+  uint8? protocol_code;
   mojo_base.mojom.String16? serial_number;
 };
 

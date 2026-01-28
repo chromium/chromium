@@ -12,12 +12,15 @@ namespace device {
 
 bool UsbDeviceFilterMatches(const mojom::UsbDeviceFilter& filter,
                             const mojom::UsbDeviceInfo& device_info) {
-  if (filter.has_vendor_id) {
-    if (device_info.vendor_id != filter.vendor_id)
+  if (filter.vendor_id.has_value()) {
+    if (device_info.vendor_id != filter.vendor_id.value()) {
       return false;
+    }
 
-    if (filter.has_product_id && device_info.product_id != filter.product_id)
+    if (filter.product_id.has_value() &&
+        device_info.product_id != filter.product_id.value()) {
       return false;
+    }
   }
 
   if (filter.serial_number &&
@@ -25,12 +28,12 @@ bool UsbDeviceFilterMatches(const mojom::UsbDeviceFilter& filter,
     return false;
   }
 
-  if (filter.has_class_code) {
-    if (device_info.class_code == filter.class_code &&
-        (!filter.has_subclass_code ||
-         (device_info.subclass_code == filter.subclass_code &&
-          (!filter.has_protocol_code ||
-           device_info.protocol_code == filter.protocol_code)))) {
+  if (filter.class_code.has_value()) {
+    if (device_info.class_code == filter.class_code.value() &&
+        (!filter.subclass_code.has_value() ||
+         (device_info.subclass_code == filter.subclass_code.value() &&
+          (!filter.protocol_code.has_value() ||
+           device_info.protocol_code == filter.protocol_code.value())))) {
       return true;
     }
 
@@ -38,10 +41,11 @@ bool UsbDeviceFilterMatches(const mojom::UsbDeviceFilter& filter,
       for (auto& iface : config->interfaces) {
         for (auto& alternate_info : iface->alternates) {
           if (alternate_info->class_code == filter.class_code &&
-              (!filter.has_subclass_code ||
-               (alternate_info->subclass_code == filter.subclass_code &&
-                (!filter.has_protocol_code ||
-                 alternate_info->protocol_code == filter.protocol_code)))) {
+              (!filter.subclass_code.has_value() ||
+               (alternate_info->subclass_code == filter.subclass_code.value() &&
+                (!filter.protocol_code.has_value() ||
+                 alternate_info->protocol_code ==
+                     filter.protocol_code.value())))) {
             return true;
           }
         }

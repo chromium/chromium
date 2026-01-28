@@ -117,7 +117,6 @@ TEST_F(USBDeviceManagerImplTest, GetDevices) {
       device_manager.BindNewPipeAndPassReceiver());
 
   auto filter = mojom::UsbDeviceFilter::New();
-  filter->has_vendor_id = true;
   filter->vendor_id = 0x1234;
   UsbEnumerationOptionsPtr options = mojom::UsbEnumerationOptions::New();
   options->filters.push_back(std::move(filter));

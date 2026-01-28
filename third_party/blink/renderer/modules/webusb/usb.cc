@@ -52,12 +52,11 @@ void RejectWithTypeError(const String& error_details,
 UsbDeviceFilterPtr ConvertDeviceFilter(const USBDeviceFilter* filter,
                                        ScriptPromiseResolverBase* resolver) {
   auto mojo_filter = device::mojom::blink::UsbDeviceFilter::New();
-  mojo_filter->has_vendor_id = filter->hasVendorId();
-  if (mojo_filter->has_vendor_id)
+  if (filter->hasVendorId()) {
     mojo_filter->vendor_id = filter->vendorId();
-  mojo_filter->has_product_id = filter->hasProductId();
-  if (mojo_filter->has_product_id) {
-    if (!mojo_filter->has_vendor_id) {
+  }
+  if (filter->hasProductId()) {
+    if (!mojo_filter->vendor_id.has_value()) {
       RejectWithTypeError(
           "A filter containing a productId must also contain a vendorId.",
           resolver);
@@ -65,12 +64,11 @@ UsbDeviceFilterPtr ConvertDeviceFilter(const USBDeviceFilter* filter,
     }
     mojo_filter->product_id = filter->productId();
   }
-  mojo_filter->has_class_code = filter->hasClassCode();
-  if (mojo_filter->has_class_code)
+  if (filter->hasClassCode()) {
     mojo_filter->class_code = filter->classCode();
-  mojo_filter->has_subclass_code = filter->hasSubclassCode();
-  if (mojo_filter->has_subclass_code) {
-    if (!mojo_filter->has_class_code) {
+  }
+  if (filter->hasSubclassCode()) {
+    if (!mojo_filter->class_code.has_value()) {
       RejectWithTypeError(
           "A filter containing a subclassCode must also contain a classCode.",
           resolver);
@@ -78,9 +76,8 @@ UsbDeviceFilterPtr ConvertDeviceFilter(const USBDeviceFilter* filter,
     }
     mojo_filter->subclass_code = filter->subclassCode();
   }
-  mojo_filter->has_protocol_code = filter->hasProtocolCode();
-  if (mojo_filter->has_protocol_code) {
-    if (!mojo_filter->has_subclass_code) {
+  if (filter->hasProtocolCode()) {
+    if (!mojo_filter->subclass_code.has_value()) {
       RejectWithTypeError(
           "A filter containing a protocolCode must also contain a "
           "subclassCode.",
@@ -89,8 +86,9 @@ UsbDeviceFilterPtr ConvertDeviceFilter(const USBDeviceFilter* filter,
     }
     mojo_filter->protocol_code = filter->protocolCode();
   }
-  if (filter->hasSerialNumber())
+  if (filter->hasSerialNumber()) {
     mojo_filter->serial_number = filter->serialNumber();
+  }
   return mojo_filter;
 }
 

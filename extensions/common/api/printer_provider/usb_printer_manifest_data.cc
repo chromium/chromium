@@ -46,22 +46,17 @@ std::unique_ptr<UsbPrinterManifestData> UsbPrinterManifestData::FromValue(
     }
 
     auto output = device::mojom::UsbDeviceFilter::New();
-    output->has_vendor_id = true;
     output->vendor_id = input.vendor_id;
 
     if (input.product_id) {
-      output->has_product_id = true;
       output->product_id = *input.product_id;
     }
 
     if (input.interface_class) {
-      output->has_class_code = true;
       output->class_code = *input.interface_class;
       if (input.interface_subclass) {
-        output->has_subclass_code = true;
         output->subclass_code = *input.interface_subclass;
         if (input.interface_protocol) {
-          output->has_protocol_code = true;
           output->protocol_code = *input.interface_protocol;
         }
       }
