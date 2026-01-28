@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "third_party/omnibox_proto/ntp_composebox_config.pb.h"
 
@@ -120,6 +121,11 @@ bool IsAimPopupFeatureEnabled();
 // eligibility.
 bool IsAimPopupEnabled(Profile* profile);
 bool ShouldShowAimContextMenuOption(Profile* profile);
+
+// Returns true if search content sharing is permitted by enterprise policy.
+bool IsContentSharingEnabled(
+    Profile* profile,
+    contextual_search::ContextualSearchSessionHandle* session_handle);
 
 bool IsCreateImagesEnabled(Profile* profile);
 bool IsDeepSearchEnabled(Profile* profile);

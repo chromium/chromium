@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/testing_pref_service.h"
@@ -105,6 +106,9 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                        AddRecentTabsToMenu) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupURL)));
+
   auto* web_contents = GetWebContents();
   // TODO(crbug.com/458463536): Use proper web contents for the
   // aim popup.
@@ -118,12 +122,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   // The 1 separator and 4 static items.
   EXPECT_EQ(5u, model->GetItemCount());
 
-  // Navigate the initial tab and add a new one to have exactly two tabs.
+  // Add exactly two additional tabs to the tab strip model.
   GURL url1(embedded_test_server()->GetURL("/title1.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ASSERT_TRUE(AddTabAtIndex(1, url1, ui::PAGE_TRANSITION_TYPED));
 
   GURL url2(embedded_test_server()->GetURL("/title2.html"));
-  ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(AddTabAtIndex(2, url2, ui::PAGE_TRANSITION_TYPED));
 
   OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
                                           web_contents);
