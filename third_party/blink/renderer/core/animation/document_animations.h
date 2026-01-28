@@ -35,6 +35,8 @@
 
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
+#include "third_party/blink/renderer/core/animation/css/css_timeline_map.h"
+#include "third_party/blink/renderer/core/animation/deferred_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
@@ -124,6 +126,10 @@ class CORE_EXPORT DocumentAnimations final
   void UpdateCompositorAnimationTriggers(
       const PaintArtifactCompositor* paint_artifact_compositor);
 
+  DeferredTimeline& GetGlobalDeferredTimeline(const AtomicString& name) {
+    return *global_deferred_timelines_.Find(*document_, name);
+  }
+
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
 
@@ -142,6 +148,14 @@ class CORE_EXPORT DocumentAnimations final
   // Animations which should be attached to triggers after style and layout
   // updates.
   HeapHashSet<WeakMember<CSSAnimation>> triggered_animations_;
+  // In the new timeline name scoping model, names have document-global
+  // visibility by default. This is implementing by having CSSAnimations::
+  // FindAncestor[Deferred]Timeline() look up names in this map
+  // as a last resort.
+  //
+  // Only used when the CSSTimelineScopeGlobal flag is enabled.
+  CSSDeferredTimelineMap global_deferred_timelines_{StyleTimelineScope{
+      StyleTimelineScope::Type::kAll, /*names=*/Vector<AtomicString>()}};
 };
 
 }  // namespace blink

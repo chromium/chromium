@@ -1427,6 +1427,11 @@ ScrollSnapshotTimeline* CSSAnimations::FindAncestorTimeline(
 
   Element* parent_element = ParentElementForTimelineTraversal(*node);
   if (!parent_element) {
+    if (RuntimeEnabledFeatures::CSSTimelineScopeGlobalEnabled()) {
+      return &node->GetDocument()
+                  .GetDocumentAnimations()
+                  .GetGlobalDeferredTimeline(name);
+    }
     return nullptr;
   }
   return FindAncestorTimeline(name, parent_element,
@@ -1448,6 +1453,11 @@ DeferredTimeline* CSSAnimations::FindAncestorDeferredTimeline(
   }
   Element* parent_element = ParentElementForTimelineTraversal(*element);
   if (!parent_element) {
+    if (RuntimeEnabledFeatures::CSSTimelineScopeGlobalEnabled()) {
+      return &element->GetDocument()
+                  .GetDocumentAnimations()
+                  .GetGlobalDeferredTimeline(name);
+    }
     return nullptr;
   }
   return FindAncestorDeferredTimeline(

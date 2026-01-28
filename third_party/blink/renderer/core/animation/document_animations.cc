@@ -323,6 +323,7 @@ void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(timelines_);
   visitor->Trace(triggers_);
   visitor->Trace(triggered_animations_);
+  visitor->Trace(global_deferred_timelines_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(

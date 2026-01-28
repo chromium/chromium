@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/deferred_timeline.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/timeline_trigger.h"
@@ -135,6 +136,11 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
 
   bool HasDeferredTimeline(Element* element, const char* name) const {
     return GetDeferredTimeline(element, name) != nullptr;
+  }
+
+  DeferredTimeline& GetGlobalDeferredTimeline(const char* name) const {
+    return GetDocument().GetDocumentAnimations().GetGlobalDeferredTimeline(
+        AtomicString(name));
   }
 
  private:
@@ -1453,6 +1459,107 @@ TEST_P(CSSAnimationsTest, DeferredTimelineAttachment_Insert_Remove) {
     EXPECT_EQ(scroll0, attached_timelines[0]->GetReferenceElement());
     EXPECT_EQ(scroll1, attached_timelines[1]->GetReferenceElement());
   }
+}
+
+TEST_P(CSSAnimationsTest, DeferredTimelineGlobal) {
+  ScopedCSSTimelineScopeGlobalForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      /* No timeline-scope here. */
+      #scroll1 {
+        scroll-timeline: --t;
+      }
+      @keyframes anim {
+        from { width: 100px; }
+        to { width: 200px; }
+      }
+      #target {
+        animation: 1000s linear anim;
+        animation-timeline: --t
+      }
+    </style>
+    <div>
+      <div id=target></div>
+      <div id=scroll1></div>
+    </div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  Element* scroll1 = GetElementById("scroll1");
+  ASSERT_TRUE(scroll1);
+
+  ScrollTimeline* scroll_timeline = GetScrollTimeline(scroll1, "--t");
+  EXPECT_TRUE(scroll_timeline);
+  DeferredTimeline& deferred_timeline = GetGlobalDeferredTimeline("--t");
+  EXPECT_EQ(scroll_timeline, deferred_timeline.ExposedTimeline());
+
+  ElementAnimations* animations = target->GetElementAnimations();
+  ASSERT_EQ(1u, animations->Animations().size());
+  Animation* animation = (*animations->Animations().begin()).key;
+  ASSERT_TRUE(animation);
+
+  // The animation should be attached to the global deferred timeline,
+  // which in turn is attached to the scroll timeline.
+  EXPECT_EQ(&deferred_timeline, animation->TimelineInternal());
+  EXPECT_EQ(scroll_timeline, animation->timeline());
+}
+
+TEST_P(CSSAnimationsTest, DeferredTimelineGlobalVsRoot) {
+  ScopedCSSTimelineScopeGlobalForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      :root {
+        timeline-scope: all;
+      }
+      #scroll1 {
+        scroll-timeline: --t;
+      }
+      @keyframes anim {
+        from { width: 100px; }
+        to { width: 200px; }
+      }
+      #target {
+        animation: 1000s linear anim;
+        animation-timeline: --t
+      }
+    </style>
+    <div>
+      <div id=target></div>
+      <div id=scroll1></div>
+    </div>
+  )HTML");
+
+  Element* root = GetDocument().documentElement();
+  ASSERT_TRUE(root);
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  Element* scroll1 = GetElementById("scroll1");
+  ASSERT_TRUE(scroll1);
+
+  // There should be nothing attached to the document-global timeline;
+  // `--t` should be attached to a deferred timeline on `root` instead.
+  DeferredTimeline& global_deferred_timeline = GetGlobalDeferredTimeline("--t");
+  EXPECT_EQ(nullptr, global_deferred_timeline.ExposedTimeline());
+
+  ScrollTimeline* scroll_timeline = GetScrollTimeline(scroll1, "--t");
+  EXPECT_TRUE(scroll_timeline);
+  DeferredTimeline* root_timeline = GetDeferredTimeline(root, "--t");
+  ASSERT_TRUE(root_timeline);
+  EXPECT_EQ(scroll_timeline, root_timeline->ExposedTimeline());
+
+  ElementAnimations* animations = target->GetElementAnimations();
+  ASSERT_EQ(1u, animations->Animations().size());
+  Animation* animation = (*animations->Animations().begin()).key;
+  ASSERT_TRUE(animation);
+
+  // The animation should be attached to the root deferred timeline
+  // (not the document-global one), which in turn is attached
+  // to the scroll timeline.
+  EXPECT_EQ(root_timeline, animation->TimelineInternal());
+  EXPECT_EQ(scroll_timeline, animation->timeline());
 }
 
 TEST_P(CSSAnimationsTest, OpacityUnchangedWhileDeferred) {
