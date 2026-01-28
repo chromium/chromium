@@ -177,8 +177,9 @@ static bool IsRectInDirection(SpatialNavigationDirection direction,
 }
 
 int LineBoxes(const LayoutObject& layout_object) {
-  if (!layout_object.IsInline() || layout_object.IsAtomicInlineLevel())
+  if (!layout_object.IsNonAtomicInline()) {
     return 1;
+  }
 
   // If it has empty quads, it's most likely not a line broken ("fragmented")
   // text. <a><div></div></a> has for example one empty rect.
@@ -795,12 +796,9 @@ LayoutUnit TallestInlineAtomicChild(const LayoutObject& layout_object) {
   if (!layout_object.IsLayoutInline())
     return max_child_size;
 
-  for (LayoutObject* child = layout_object.SlowFirstChild(); child;
+  for (const LayoutObject* child = layout_object.SlowFirstChild(); child;
        child = child->NextSibling()) {
-    if (child->IsOutOfFlowPositioned())
-      continue;
-
-    if (child->IsAtomicInlineLevel()) {
+    if (child->IsAtomicInline()) {
       max_child_size =
           std::max(To<LayoutBox>(child)->LogicalHeight(), max_child_size);
     }
