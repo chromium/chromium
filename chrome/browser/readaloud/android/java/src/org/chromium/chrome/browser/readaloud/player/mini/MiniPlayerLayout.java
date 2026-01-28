@@ -37,12 +37,14 @@ import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
+import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** Convenience class for manipulating mini player UI layout. */
 @NullMarked
-public class MiniPlayerLayout extends LinearLayout {
+public class MiniPlayerLayout extends LinearLayout implements SwipeGestureListener.SwipeHandler {
     private static final long FADE_DURATION_MS = 300L;
     private static final Interpolator FADE_INTERPOLATOR =
             Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR;
@@ -71,6 +73,8 @@ public class MiniPlayerLayout extends LinearLayout {
     private int mYOffset;
     private PlaybackMode mRequestedPlaybackMode = PlaybackMode.UNSPECIFIED;
     private @Nullable TouchDelegate mTouchDelegate;
+    private @Nullable InteractionHandler mInteractionHandler;
+    private final SwipeGestureListener mSwipeGestureListener;
 
     private ProgressBar mSpinner;
 
@@ -78,6 +82,8 @@ public class MiniPlayerLayout extends LinearLayout {
     public MiniPlayerLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
+
+        mSwipeGestureListener = new SwipeGestureListener(context, this);
     }
 
     void destroy() {
@@ -153,7 +159,26 @@ public class MiniPlayerLayout extends LinearLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return mTouchDelegate != null && mTouchDelegate.onTouchEvent(event);
+        // First try to send this event to the TouchDelegate which extends the clickable area of the
+        // play/pause button.
+        if (mTouchDelegate != null && mTouchDelegate.onTouchEvent(event)) {
+            return true;
+        }
+
+        // Capture swipes.
+        if (mSwipeGestureListener != null && mSwipeGestureListener.onTouchEvent(event)) {
+            return true;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (mSwipeGestureListener != null && mSwipeGestureListener.onTouchEvent(event)) {
+            return true;
+        }
+        return super.onInterceptTouchEvent(event);
     }
 
     void changeOpacity(float startValue, float endValue) {
@@ -255,6 +280,7 @@ public class MiniPlayerLayout extends LinearLayout {
     }
 
     void setInteractionHandler(InteractionHandler handler) {
+        mInteractionHandler = handler;
         setOnClickListener(R.id.close_button, handler::onCloseClick);
         setOnClickListener(R.id.mini_player_container, handler::onMiniPlayerExpandClick);
         setOnClickListener(R.id.play_button, handler::onPlayPauseClick);
@@ -350,6 +376,20 @@ public class MiniPlayerLayout extends LinearLayout {
             mAnimator.removeAllListeners();
             mAnimator.cancel();
             mAnimator = null;
+        }
+    }
+
+    // SwipeGestureListener.SwipeHandler
+    @Override
+    public void onFling(
+            @ScrollDirection int direction,
+            MotionEvent current,
+            float tx,
+            float ty,
+            float velocityX,
+            float velocityY) {
+        if (direction == SwipeGestureListener.ScrollDirection.UP && mInteractionHandler != null) {
+            mInteractionHandler.onMiniPlayerExpandClick();
         }
     }
 
