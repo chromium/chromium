@@ -188,9 +188,10 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
                             parsed_policy)
           : CreateAllowlistsAndReportingEndpoints(parsed_policy);
   for (const auto& [feature, unused] : features) {
-    if (allow_lists_and_reporting_endpoints.allowlists_.contains(feature) &&
-        allow_lists_and_reporting_endpoints.allowlists_[feature].Contains(
-            origin)) {
+    if (const auto it =
+            allow_lists_and_reporting_endpoints.allowlists_.find(feature);
+        it != allow_lists_and_reporting_endpoints.allowlists_.end() &&
+        it->second.Contains(origin)) {
       inherited_policies.Add(feature);
     }
   }
