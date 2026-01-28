@@ -30,12 +30,9 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
-#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -165,11 +162,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   // This caches the PaintImage created with the last updated encoded data to
   // ensure re-use of generated decodes. This is cleared each time the encoded
   // data is updated in DataChanged.
-  // [node_id] : (cached frame, image animation)
-  HashMap<DOMNodeId, std::pair<PaintImage, ImageAnimationEnum>> cached_frames_;
-  // Reserved ids for non-running frames.
-  const DOMNodeId NORMAL_CACHED_FRAME_ID = -2;
-  const DOMNodeId PAUSED_CACHED_FRAME_ID = -3;
+  PaintImage cached_frame_;
 
   // Whether or not we can play animation.
   mojom::blink::ImageAnimationPolicy animation_policy_ =
@@ -186,21 +179,12 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   bool default_frame_has_alpha_ : 1;
 
-  // TODO(crbug.com/429459566): PaintImageForCurrentFrame is an overridden
-  // function that is broadly used. Will change this to
-  // PaintImageForCurrentFrame's optional argument in separated CL.
-  raw_ptr<ImageNodeAnimationInfo> current_image_node_animation_info_ = nullptr;
-
   RepetitionCountStatus repetition_count_status_;
   int repetition_count_;  // How many total animation loops we should do.  This
                           // will be cAnimationNone if this image type is
                           // incapable of animation.
 
   size_t frame_count_;
-  // The paused image will produce the first frame of animated image.
-  // This would possibly change via this issue [1].
-  // [1] https://github.com/webplatformco/project-image-animation/issues/2
-  PaintImage::Id paused_image_paint_image_id_ = -1;
 
   PaintImage::AnimationSequenceId reset_animation_sequence_id_ = 0;
 };

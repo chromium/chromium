@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
-#include "third_party/blink/renderer/platform/graphics/image_node_animation_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_image_rendering_settings.h"
@@ -846,9 +845,7 @@ bool PaintBGColorWithPaintWorklet(const Document& document,
       ImagePaintTimingInfo(
           /* image_may_be_lcp_candidate */ false,
           /* report_paint_timing */ false),
-      dest_rect, src_rect, SkBlendMode::kSrcOver, kRespectImageOrientation,
-      Image::kClampImageToSourceRect,
-      ImageNodeAnimationInfo(node->GetDomNodeId(), style.ImageAnimation()));
+      dest_rect, src_rect, SkBlendMode::kSrcOver, kRespectImageOrientation);
   animation->OnPaintWorkletImageCreated();
   return true;
 }
@@ -1046,8 +1043,7 @@ inline bool PaintFastBottomLayer(const Document& document,
       ComputeImagePaintTimingInfo(node, *image, *info.image, context,
                                   image_border.Rect()),
       image_border, src_rect, composite_op, info.respect_image_orientation,
-      clamping_mode,
-      ImageNodeAnimationInfo(node->GetDomNodeId(), style.ImageAnimation()));
+      clamping_mode);
   return true;
 }
 

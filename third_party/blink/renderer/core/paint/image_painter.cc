@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/image_node_animation_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_image_rendering_settings.h"
@@ -292,9 +291,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
       ComputeImagePaintTimingInfo(layout_image_, *image, image_content, context,
                                   pixel_snapped_dest_rect),
       gfx::RectF(pixel_snapped_dest_rect), &src_rect, SkBlendMode::kSrcOver,
-      respect_orientation, Image::ImageClampingMode::kClampImageToSourceRect,
-      ImageNodeAnimationInfo(layout_image_.GetNode()->GetDomNodeId(),
-                             layout_image_.StyleRef().ImageAnimation()));
+      respect_orientation);
 }
 
 }  // namespace blink

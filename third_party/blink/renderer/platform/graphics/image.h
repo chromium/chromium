@@ -27,8 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_H_
 
-#include <optional>
-
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -364,8 +362,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   // Creates and initializes a PaintImageBuilder with the metadata flags for the
   // PaintImage.
-  PaintImageBuilder CreatePaintImageBuilder(
-      std::optional<PaintImage::Id> = std::optional<PaintImage::Id>());
+  PaintImageBuilder CreatePaintImageBuilder();
 
   // Whether or not size is available yet.
   virtual bool IsSizeAvailable() { return true; }

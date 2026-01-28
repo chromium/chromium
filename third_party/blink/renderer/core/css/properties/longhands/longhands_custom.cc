@@ -5633,14 +5633,6 @@ const CSSValue* ImageOrientation::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(value);
 }
 
-const CSSValue* ImageAnimation::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.ImageAnimation());
-}
-
 const CSSValue* ImageRendering::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

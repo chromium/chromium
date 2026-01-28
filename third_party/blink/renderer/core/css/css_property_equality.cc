@@ -536,8 +536,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.HyphenateLimitChars() == b.HyphenateLimitChars();
     case CSSPropertyID::kHyphens:
       return a.GetHyphens() == b.GetHyphens();
-    case CSSPropertyID::kImageAnimation:
-      return a.ImageAnimation() == b.ImageAnimation();
     case CSSPropertyID::kImageOrientation:
       return a.ImageOrientation() == b.ImageOrientation();
     case CSSPropertyID::kImageRendering:

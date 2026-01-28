@@ -1484,11 +1484,6 @@
       status: "test",
     },
     {
-      // https://chromestatus.com/feature/5078177326170112
-      name: "CSSImageAnimation",
-      status: "test",
-    },
-    {
       // The inherit() function works like var(), except that it grabs
       // the computed value of the specified property from the parent style
       // instead of the current style.

@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/graphics/image_node_animation_info.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -102,16 +101,14 @@ struct ImageDrawOptions {
                             Image::ImageClampingMode clamping_mode,
                             Image::ImageDecodingMode decode_mode,
                             bool apply_dark_mode,
-                            bool may_be_lcp_candidate,
-                            ImageNodeAnimationInfo image_node_animation_info)
+                            bool may_be_lcp_candidate)
       : dark_mode_filter(dark_mode_filter),
         sampling_options(sampling_options),
         respect_orientation(respect_orientation),
         clamping_mode(clamping_mode),
         decode_mode(decode_mode),
         apply_dark_mode(apply_dark_mode),
-        may_be_lcp_candidate(may_be_lcp_candidate),
-        image_node_animation_info(image_node_animation_info) {}
+        may_be_lcp_candidate(may_be_lcp_candidate) {}
   DarkModeFilter* dark_mode_filter = nullptr;
   SkSamplingOptions sampling_options;
   RespectImageOrientationEnum respect_orientation = kRespectImageOrientation;
@@ -119,7 +116,6 @@ struct ImageDrawOptions {
   Image::ImageDecodingMode decode_mode = Image::kSyncDecode;
   bool apply_dark_mode = false;
   bool may_be_lcp_candidate = false;
-  ImageNodeAnimationInfo image_node_animation_info;
 };
 
 struct AutoDarkMode {
@@ -332,8 +328,7 @@ class PLATFORM_EXPORT GraphicsContext {
                  SkBlendMode = SkBlendMode::kSrcOver,
                  RespectImageOrientationEnum = kRespectImageOrientation,
                  Image::ImageClampingMode clamping_mode =
-                     Image::ImageClampingMode::kClampImageToSourceRect,
-                 ImageNodeAnimationInfo = ImageNodeAnimationInfo());
+                     Image::ImageClampingMode::kClampImageToSourceRect);
   void DrawImageRRect(Image&,
                       Image::ImageDecodingMode,
                       const ImageAutoDarkMode& auto_dark_mode,
@@ -343,8 +338,7 @@ class PLATFORM_EXPORT GraphicsContext {
                       SkBlendMode = SkBlendMode::kSrcOver,
                       RespectImageOrientationEnum = kRespectImageOrientation,
                       Image::ImageClampingMode clamping_mode =
-                          Image::ImageClampingMode::kClampImageToSourceRect,
-                      ImageNodeAnimationInfo = ImageNodeAnimationInfo());
+                          Image::ImageClampingMode::kClampImageToSourceRect);
   void DrawImageTiled(Image& image,
                       const gfx::RectF& dest_rect,
                       const ImageTilingInfo& tiling_info,
