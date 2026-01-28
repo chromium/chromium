@@ -7,4 +7,17 @@ include_rules = [
 
   "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/sync/data_type_store_service_factory.h",
+
+   # No files in this directory can use TabStripModel. This ensures
+   # platform-agnosticism for Android support.
+   "-chrome/browser/ui/tabs/tab_strip_model.h",
 ]
+
+specific_include_rules = {
+   # Allowlist: Exceptions for legacy files that haven't been refactored yet.
+   # TODO(crbug.com/475222385): Refactor these and remove them from this
+   # allowlist.
+   "(contextual_tasks_service_factory|contextual_tasks_ui_service|contextual_tasks_side_panel_coordinator).*\.(cc|h)": [
+     "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+}

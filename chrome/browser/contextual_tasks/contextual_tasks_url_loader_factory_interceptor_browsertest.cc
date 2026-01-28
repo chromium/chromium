@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -218,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
 
   // Wait for the WebUI to load and create the webview.
   content::WebContents* web_ui_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
 
   // Script to find the webview and navigate it.
   // Note: We access the shadowRoot of the app.
@@ -267,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
 
   // Wait for the WebUI to load and create the webview.
   content::WebContents* web_ui_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
 
   // Script to find the webview and perform a cross-origin fetch.
   // We navigate the webview to about:blank (no interception), then
