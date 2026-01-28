@@ -1754,12 +1754,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
 
-        Set<Integer> tabsToCloseIds = new HashSet<>();
-        for (Tab tab : tabsToClose) {
-            tabsToCloseIds.add(tab.getId());
-        }
-        setTabsMultiSelected(tabsToCloseIds, /* isSelected= */ false);
-
         if (!allowUndo) {
             notifyOnFinishingMultipleTabClosure(tabsToClose, params.saveToTabRestoreService);
         }
@@ -1802,6 +1796,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                         Tab.INVALID_TAB_ID, tabGroupId, DidRemoveTabGroupReason.CLOSE);
             }
         }
+
+        Set<Integer> tabsToCloseIds = new HashSet<>();
+        for (Tab tab : tabsToClose) {
+            tabsToCloseIds.add(tab.getId());
+        }
+        setTabsMultiSelected(tabsToCloseIds, /* isSelected= */ false);
 
         return true;
     }
