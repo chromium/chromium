@@ -12,10 +12,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -435,4 +440,35 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
 
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   EXPECT_FALSE(web_contents->IsCrashed());
+}
+
+class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {
+ public:
+  WebUIReloadButtonBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, NoCrashOnCommandUpdate) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ToolbarView* toolbar = browser_view->toolbar();
+
+  // Verify that the native reload button is not present.
+  EXPECT_EQ(toolbar->reload_button(), nullptr);
+
+  // Trigger a command update that would affect the reload button if it were
+  // there. This calls EnabledStateChangedForCommand under the hood.
+  bool enabled = browser()->command_controller()->IsCommandEnabled(IDC_RELOAD);
+  browser()->command_controller()->UpdateCommandEnabled(IDC_RELOAD, !enabled);
+
+  // Trigger a command update for something else in the list (e.g. Back)
+  // to ensure iteration happens.
+  enabled = browser()->command_controller()->IsCommandEnabled(IDC_BACK);
+  browser()->command_controller()->UpdateCommandEnabled(IDC_BACK, !enabled);
+
+  // Verify no crash.
 }

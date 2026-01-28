@@ -663,9 +663,11 @@ void ToolbarView::EnabledStateChangedForCommand(int id, bool enabled) {
   DCHECK(display_mode_ == DisplayMode::kNormal);
   const std::array<views::Button*, 5> kButtons{back_, forward_, reload_, home_,
                                                avatar_};
-  auto* button = *std::ranges::find(kButtons, id, &views::Button::tag);
-  DCHECK(button);
-  button->SetEnabled(enabled);
+  auto it = std::ranges::find_if(
+      kButtons, [id](views::Button* b) { return b && b->tag() == id; });
+  if (it != kButtons.end()) {
+    (*it)->SetEnabled(enabled);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
