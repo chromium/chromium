@@ -49,6 +49,8 @@ source_set("legion") {
     "connection_basic.cc",
     "connection_basic.h",
     "connection_factory.h",
+    "connection_metrics.cc",
+    "connection_metrics.h",
     "connection_timeout.cc",
     "connection_timeout.h",
     "connection_token_attestation.cc",
@@ -109,6 +111,7 @@ source_set("unit_tests") {
   sources = [
     "client_impl_unittest.cc",
     "connection_basic_unittest.cc",
+    "connection_metrics_unittest.cc",
     "connection_timeout_unittest.cc",
     "connection_token_attestation_unittest.cc",
     "secure_channel_impl_unittest.cc",
