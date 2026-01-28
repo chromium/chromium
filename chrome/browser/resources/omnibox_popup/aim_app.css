@@ -48,7 +48,8 @@ cr-composebox {
     transparent 100%);
 
   --color-composebox-file-carousel-url: var(--color-omnibox-text-dimmed);
-  --color-composebox-file-image-overlay: var(--color-omnibox-text);
+  --color-composebox-file-image-overlay: var(--color-omnibox-composebox-file-thumbnail-overlay);
+  --color-composebox-file-image-overlay-icon-color: var(--color-omnibox-composebox-file-thumbnail-overlay-icon);
   --color-composebox-font: var(--color-omnibox-text);
   --color-composebox-font-light: var(--color-omnibox-text);
   --color-composebox-hover: unset; /* Lens only */

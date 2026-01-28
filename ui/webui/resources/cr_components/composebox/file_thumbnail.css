@@ -7,6 +7,10 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  --image-chip-border-radius_: 8px;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -41,7 +45,7 @@
 
 #imgChip {
   align-items: center;
-  border-radius: 8px;
+  border-radius: var(--image-chip-border-radius_);
   display: flex;
   height: var(--composebox-thumbnail-img-chip-size, 44px);
   justify-content: center;
@@ -63,10 +67,10 @@
 #removeImgButton {
   --cr-icon-button-height: 100%;
   --cr-icon-button-width: 100%;
-  --cr-icon-button-fill-color: white;
+  --cr-icon-button-fill-color: var(--color-composebox-file-image-overlay-icon-color, white);
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-margin-start: 0px;
-  border-radius: 10px;
+  border-radius: var(--image-chip-border-radius_);
   display: flex;
 }
 
