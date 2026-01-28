@@ -14254,8 +14254,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableReadabilityHeuristic",
-                        "EnableReaderModeOptimizationGuideEligibility",
-                        "ReaderModeUseReadability"
+                        "EnableReaderModeOptimizationGuideEligibility"
                     ]
                 }
             ]
