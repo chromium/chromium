@@ -2843,7 +2843,13 @@ fuzzer_test("blink_avif_decoder_fuzzer") {
     ":platform",
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
-  libfuzzer_options = [ "rss_limit_mb=8192" ]
+  libfuzzer_options = [
+    "rss_limit_mb=8192",
+
+    # Large AVIF images can take a while to decode under ASAN (especially when
+    # they are fuzzer generated). The default timeout is 25 seconds.
+    "timeout_per_input=50",
+  ]
   centipede_options = libfuzzer_options
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
