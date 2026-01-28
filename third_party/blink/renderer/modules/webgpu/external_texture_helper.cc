@@ -29,7 +29,7 @@ namespace {
 
 bool DrawVideoFrameIntoResourceProvider(
     scoped_refptr<media::VideoFrame> frame,
-    CanvasResourceProviderSharedImage* resource_provider,
+    CanvasResourceProviderSharedImageNon2D* resource_provider,
     viz::RasterContextProvider* raster_context_provider,
     media::PaintCanvasVideoRenderer* video_renderer) {
   DCHECK(frame);
@@ -444,7 +444,7 @@ ExternalTexture CreateExternalTexture(
     return external_texture;
   }
 
-  CanvasResourceProviderSharedImage* resource_provider =
+  CanvasResourceProviderSharedImageNon2D* resource_provider =
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 
