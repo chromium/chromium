@@ -9,6 +9,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -96,7 +97,7 @@ base::FilePath GetWebAppsTempDirectory(
 // The return value (profile categories) are used to report metrics. They are
 // persisted to logs and should not be renamed. If new names are added, update
 // tool/metrics/histograms/histograms.xml: "SystemWebAppProfileCategory".
-std::string GetProfileCategoryForLogging(Profile* profile);
+std::string_view GetProfileCategoryForLogging(Profile* profile);
 
 // Returns true if the WebApp should have `WebAppChromeOsData()`.
 bool IsChromeOsDataMandatory();

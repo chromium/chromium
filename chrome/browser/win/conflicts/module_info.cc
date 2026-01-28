@@ -54,7 +54,7 @@ bool ConvertToLongPath(const std::u16string& short_path,
   DWORD return_value =
       ::GetLongPathName(base::as_wcstr(short_path), long_path_buf, MAX_PATH);
   if (return_value != 0 && return_value < MAX_PATH) {
-    *long_path = base::AsString16(std::wstring(long_path_buf));
+    *long_path = base::AsString16(long_path_buf);
     return true;
   }
 

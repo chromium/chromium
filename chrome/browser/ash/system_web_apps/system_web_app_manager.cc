@@ -219,8 +219,8 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
       on_tasks_started_(new base::OneShotEvent()),
       on_icon_check_completed_(new base::OneShotEvent()),
       install_result_per_profile_histogram_name_(
-          std::string(kInstallResultHistogramName) + ".Profiles." +
-          web_app::GetProfileCategoryForLogging(profile)),
+          base::StrCat({kInstallResultHistogramName, ".Profiles.",
+                        web_app::GetProfileCategoryForLogging(profile)})),
       pref_service_(profile_->GetPrefs()),
       icon_checker_(SystemWebAppIconChecker::Create(profile_)) {
   DCHECK(provider_);

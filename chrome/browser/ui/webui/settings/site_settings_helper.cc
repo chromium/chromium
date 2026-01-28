@@ -745,7 +745,8 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
   }
 }
 
-std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
+std::string_view ProviderToDefaultSettingSourceString(
+    const ProviderType provider) {
   switch (provider) {
     case ProviderType::kPolicyProvider:
       return "policy";
@@ -1384,7 +1385,7 @@ base::ListValue GetChooserExceptionListFromProfile(
     const ChooserTypeNameEntry& chooser_type) {
   base::ListValue exceptions;
   ContentSettingsType content_type =
-      ContentSettingsTypeFromGroupName(std::string(chooser_type.name));
+      ContentSettingsTypeFromGroupName(chooser_type.name);
   DCHECK(content_type != ContentSettingsType::DEFAULT);
 
   // The BluetoothChooserContext is only available when the

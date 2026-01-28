@@ -41,7 +41,7 @@ namespace {
 
 using AddContextButtonVariant = omnibox::AddContextButtonVariant;
 
-std::string AddContextButtonVariantToSearchboxLayoutMode(
+std::string_view AddContextButtonVariantToSearchboxLayoutMode(
     AddContextButtonVariant variant) {
   switch (variant) {
     case AddContextButtonVariant::kNone:
@@ -159,9 +159,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("steadyComposeboxShowVoiceSearch",
                      omnibox::kShowVoiceSearchInSteadyComposebox.Get());
   source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
-  const std::string searchbox_layout_mode =
-      AddContextButtonVariantToSearchboxLayoutMode(
-          omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get());
+  auto searchbox_layout_mode = AddContextButtonVariantToSearchboxLayoutMode(
+      omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get());
   source->AddString("searchboxLayoutMode", searchbox_layout_mode);
   source->AddBoolean("steadyComposeboxShowVoiceSearch",
                      omnibox::kShowVoiceSearchInSteadyComposebox.Get());

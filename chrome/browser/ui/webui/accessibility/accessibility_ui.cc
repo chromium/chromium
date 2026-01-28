@@ -1068,7 +1068,7 @@ void AccessibilityUIMessageHandler::RegisterProfilePrefs(
   const std::string_view default_api_type =
       std::string_view(ui::AXApiType::Type(ui::AXApiType::kBlink));
   registry->RegisterStringPref(prefs::kShownAccessibilityApiType,
-                               std::string(default_api_type));
+                               default_api_type);
 }
 
 void AccessibilityUIMessageHandler::OnVisibilityChanged(

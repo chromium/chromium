@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -48,7 +49,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
                                       kAllowOnceButtonElementId);
 
 namespace {
-std::string GetPermissionActionString(
+std::string_view GetPermissionActionString(
     PermissionPromptBubbleBaseView::PermissionDialogButton button) {
   switch (button) {
     case PermissionPromptBubbleBaseView::PermissionDialogButton::kAccept:

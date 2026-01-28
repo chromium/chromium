@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -30,7 +31,7 @@ using performance_manager::user_tuning::PerformanceDetectionManager;
 // called.
 constexpr base::TimeDelta kDailyEventIntervalTimeDelta = base::Minutes(30);
 
-std::string GetDetectionResourceTypeString(
+std::string_view GetDetectionResourceTypeString(
     PerformanceDetectionManager::ResourceType resource_type) {
   switch (resource_type) {
     case PerformanceDetectionManager::ResourceType::kCpu:

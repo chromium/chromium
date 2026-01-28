@@ -79,21 +79,20 @@ GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,
   GURL url = GetServerURL(is_staging);
   const auto active_features = whats_new_registry.GetActiveFeatureNames();
   if (!active_features.empty()) {
-    url = net::AppendQueryParameter(
-        url, "enabled", base::JoinString(active_features, std::string(",")));
+    url = net::AppendQueryParameter(url, "enabled",
+                                    base::JoinString(active_features, ","));
   }
 
   const auto rolled_features = whats_new_registry.GetRolledFeatureNames();
   if (!rolled_features.empty()) {
-    url = net::AppendQueryParameter(
-        url, "rolled", base::JoinString(rolled_features, std::string(",")));
+    url = net::AppendQueryParameter(url, "rolled",
+                                    base::JoinString(rolled_features, ","));
   }
 
   const auto customizations = whats_new_registry.GetCustomizations();
   if (!customizations.empty()) {
-    url = net::AppendQueryParameter(
-        url, "customization",
-        base::JoinString(customizations, std::string(",")));
+    url = net::AppendQueryParameter(url, "customization",
+                                    base::JoinString(customizations, ","));
   }
 
   return net::AppendQueryParameter(url, "internal", "true");

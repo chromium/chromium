@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
@@ -383,9 +384,9 @@ void MaybeRecordSupervisedUserStateMetrics(
   }
 
   base::UmaHistogramEnumeration(
-      kChromeSingInInterceptionSupervisionStateHistogramPrefix +
-          DiceWebSigninInterceptorDelegate::GetHistogramSuffix(
-              interception_type),
+      base::StrCat({kChromeSingInInterceptionSupervisionStateHistogramPrefix,
+                    DiceWebSigninInterceptorDelegate::GetHistogramSuffix(
+                        interception_type)}),
       CapabilityToSupervisionState(intercepted_account_info.capabilities));
 }
 

@@ -18,7 +18,7 @@ std::string SidePanelEntryIdToString(SidePanelEntryId id) {
                                                  histogram_name)      \
   case SidePanelEntryId::entry_id:                                    \
     return histogram_name;
-std::string SidePanelEntryIdToHistogramName(SidePanelEntryId id) {
+std::string_view SidePanelEntryIdToHistogramName(SidePanelEntryId id) {
   switch (id) { SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_HISTOGRAM_NAME_CASE_STATEMENT) }
   NOTREACHED();
 }

@@ -2319,7 +2319,7 @@ void PermissionUmaUtil::RecordBrowserAlwaysActiveWhilePrompting(
 // static
 void PermissionUmaUtil::RecordActionBrowserAlwaysActive(
     RequestTypeForUma request_type,
-    std::string permission_action,
+    std::string_view permission_action,
     bool always_active) {
   std::string histogram_name = base::StrCat(
       {"Permissions.Prompt.", GetPermissionRequestString(request_type), ".",

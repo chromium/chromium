@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/user_metrics.h"
@@ -428,7 +429,7 @@ base::debug::CrashKeyString* GetCurrentUrlCrashKey() {
   return crash_key;
 }
 
-std::string GetCurrentSiteAccessCrashValue(
+std::string_view GetCurrentSiteAccessCrashValue(
     PermissionsManager::UserSiteAccess site_access) {
   switch (site_access) {
     case PermissionsManager::UserSiteAccess::kOnClick:
@@ -442,7 +443,7 @@ std::string GetCurrentSiteAccessCrashValue(
   }
 }
 
-std::string GetCurrentSiteInteractionCrashValue(
+std::string_view GetCurrentSiteInteractionCrashValue(
     SitePermissionsHelper::SiteInteraction site_interaction) {
   switch (site_interaction) {
     case SitePermissionsHelper::SiteInteraction::kNone:

@@ -5,10 +5,11 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/notreached.h"
 
-std::string GetToastName(ToastId toast_id) {
+std::string_view GetToastName(ToastId toast_id) {
   switch (toast_id) {
     case ToastId::kLinkCopied:
       return "LinkCopied";

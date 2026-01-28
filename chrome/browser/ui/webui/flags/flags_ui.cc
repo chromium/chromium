@@ -64,8 +64,7 @@ namespace {
 content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFlagsHost);
-  source->AddString(flags_ui::kVersion,
-                    std::string(version_info::GetVersionNumber()));
+  source->AddString(flags_ui::kVersion, version_info::GetVersionNumber());
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!user_manager::UserManager::Get()->IsCurrentUserOwner() &&

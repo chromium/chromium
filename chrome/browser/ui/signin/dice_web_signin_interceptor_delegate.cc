@@ -318,7 +318,7 @@ void DiceWebSigninInterceptorDelegate::ShowSigninError(
 }
 
 // static
-std::string DiceWebSigninInterceptorDelegate::GetHistogramSuffix(
+std::string_view DiceWebSigninInterceptorDelegate::GetHistogramSuffix(
     WebSigninInterceptor::SigninInterceptionType interception_type) {
   switch (interception_type) {
     case WebSigninInterceptor::SigninInterceptionType::kEnterprise:

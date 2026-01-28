@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/i18n/rtl.h"
@@ -35,7 +36,7 @@
 #include "ui/menus/simple_menu_model.h"
 
 namespace {
-std::string GetMetricsSuffixForSource(
+std::string_view GetMetricsSuffixForSource(
     SplitTabMenuModel::MenuSource menu_source) {
   // These strings are persisted to logs. Entries should not be changed.
   switch (menu_source) {
@@ -227,7 +228,8 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
   }
 
   base::UmaHistogramEnumeration(
-      "Tabs.SplitViewMenu." + GetMetricsSuffixForSource(menu_source_),
+      base::StrCat(
+          {"Tabs.SplitViewMenu.", GetMetricsSuffixForSource(menu_source_)}),
       split_command_id);
 }
 

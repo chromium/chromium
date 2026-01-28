@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_
 #define CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_
 
+#include <string_view>
+
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
@@ -45,7 +47,7 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
                        const SigninUIError& error) override;
 
   // Returns the histogram suffix related to the given interception type.
-  static std::string GetHistogramSuffix(
+  static std::string_view GetHistogramSuffix(
       WebSigninInterceptor::SigninInterceptionType interception_type);
 
   // Record metrics about the result of the signin interception.

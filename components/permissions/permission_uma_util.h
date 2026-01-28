@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -882,9 +883,10 @@ class PermissionUmaUtil {
       bool always_active);
 
   // Records if the browser was always active before user's interaction.
-  static void RecordActionBrowserAlwaysActive(RequestTypeForUma request_type,
-                                              std::string permission_action,
-                                              bool always_active);
+  static void RecordActionBrowserAlwaysActive(
+      RequestTypeForUma request_type,
+      std::string_view permission_action,
+      bool always_active);
 
   // Records the execution time of prediction model inquiries.
   static void RecordPredictionModelInquireTime(

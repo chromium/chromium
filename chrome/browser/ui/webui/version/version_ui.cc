@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -134,7 +135,7 @@ std::string GetProductModifier() {
   return base::JoinString(modifier_parts, "-");
 }
 
-std::string GetVersionInformationalSuffix() {
+std::string_view GetVersionInformationalSuffix() {
 #if BUILDFLAG(IS_CHROMEOS) && CHROMIUM_COMMIT_POSITION_IS_MAIN
   // Adds the revision number as a suffix to the version number if the chrome
   // is built from the main branch.

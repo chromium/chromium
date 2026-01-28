@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt_view.h"
 
+#include <string_view>
+
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -55,7 +57,7 @@ void AddElementIdentifierToLabel(views::Label& label, size_t index) {
   label.SetProperty(views::kElementIdentifierKey, id);
 }
 
-std::string GetPermissionActionString(
+std::string_view GetPermissionActionString(
     ExclusiveAccessPermissionPromptView::ButtonType button) {
   switch (button) {
     case ExclusiveAccessPermissionPromptView::ButtonType::kAlwaysAllow:

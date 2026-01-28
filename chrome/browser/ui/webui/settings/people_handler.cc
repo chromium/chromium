@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -201,7 +202,7 @@ void ParseConfigurationArguments(const base::ListValue& args,
   }
 }
 
-std::string GetSyncErrorAction(SyncStatusActionType action_type) {
+std::string_view GetSyncErrorAction(SyncStatusActionType action_type) {
   switch (action_type) {
     case SyncStatusActionType::kReauthenticate:
       return "reauthenticate";

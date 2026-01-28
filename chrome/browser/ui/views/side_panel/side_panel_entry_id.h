@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -51,7 +52,7 @@ enum class SidePanelEntryId { SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_ENTRY_ID_ENUM) };
 
 std::string SidePanelEntryIdToString(SidePanelEntryId id);
 
-std::string SidePanelEntryIdToHistogramName(SidePanelEntryId id);
+std::string_view SidePanelEntryIdToHistogramName(SidePanelEntryId id);
 
 std::optional<actions::ActionId> SidePanelEntryIdToActionId(
     SidePanelEntryId id);

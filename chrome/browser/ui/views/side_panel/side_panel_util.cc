@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -189,7 +191,7 @@ void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::PanelType type,
                                                  SidePanelEntry::Id id,
                                                  int side_panel_contents_width,
                                                  int browser_window_width) {
-  std::string entry_name = SidePanelEntryIdToHistogramName(id);
+  std::string_view entry_name = SidePanelEntryIdToHistogramName(id);
 
   // Metrics per-id and overall for side panel width after resize.
   base::UmaHistogramCounts10000(base::StrCat({GetSidePanelNameFor(type), ".",

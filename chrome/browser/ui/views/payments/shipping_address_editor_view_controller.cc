@@ -546,8 +546,8 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
   for (const auto& field : text_fields()) {
     // ValidatingTextfield* is the key, EditorField is the value.
     if (field.first->IsValid()) {
-      success = profile->SetInfo(
-          field.second.type, std::u16string(field.first->GetText()), locale);
+      success =
+          profile->SetInfo(field.second.type, field.first->GetText(), locale);
     } else {
       success = false;
     }
