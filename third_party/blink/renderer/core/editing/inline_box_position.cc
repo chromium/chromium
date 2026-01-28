@@ -151,8 +151,9 @@ PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
       return position;
     }
     // Note: |InlineBoxPosition| supports only LayoutText and atomic inline.
-    if (layout_object.IsInline() && layout_object.IsAtomicInlineLevel())
+    if (layout_object.IsAtomicInline()) {
       return position;
+    }
   }
 
   // We perform block flow adjustment first, so that we can move into an inline
@@ -165,9 +166,9 @@ PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
                                            recursion_depth, rule);
   }
 
-  // TODO(crbug.com/567964): Change the second operand to DCHECK once fixed.
-  if (!layout_object.IsAtomicInlineLevel() || !layout_object.IsInline())
+  if (!layout_object.IsAtomicInline()) {
     return PositionWithAffinityTemplate<Strategy>();
+  }
   return position;
 }
 

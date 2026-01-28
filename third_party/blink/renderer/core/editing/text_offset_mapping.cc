@@ -39,10 +39,15 @@ bool HasNonPsuedoNode(const LayoutObject& parent) {
 
 bool CanBeInlineContentsContainer(const LayoutObject& layout_object) {
   const auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object);
-  if (!block_flow)
+  if (!block_flow) {
     return false;
-  if (!block_flow->ChildrenInline() || block_flow->IsAtomicInlineLevel())
+  }
+  if (!block_flow->ChildrenInline()) {
     return false;
+  }
+  if (block_flow->IsInline()) {
+    return false;
+  }
   if (block_flow->IsRuby()) {
     // We should not make |LayoutRubyAsBlock| as inline contents container,
     // because ruby base text comes after ruby text in layout tree.
@@ -83,8 +88,7 @@ const LayoutBlockFlow& RootInlineContentsContainerOf(
       break;
     root_block_flow = containing_block_flow;
   }
-  DCHECK(!root_block_flow->IsAtomicInlineLevel())
-      << block_flow << ' ' << root_block_flow;
+  DCHECK(!root_block_flow->IsInline()) << block_flow << ' ' << root_block_flow;
   return *root_block_flow;
 }
 
@@ -159,7 +163,7 @@ const LayoutBlockFlow* ComputeInlineContentsAsBlockFlow(
     return nullptr;
   if (!block_flow->ChildrenInline())
     return nullptr;
-  if (block_flow->IsAtomicInlineLevel()) {
+  if (block_flow->IsInline()) {
     const LayoutBlockFlow& root_block_flow =
         RootInlineContentsContainerOf(*block_flow);
     // Skip |root_block_flow| if it's an anonymous wrapper created for

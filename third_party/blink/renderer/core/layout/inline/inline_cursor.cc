@@ -345,8 +345,9 @@ bool InlineCursorPosition::IsPartOfCulledInlineBox(
 
 bool InlineCursor::IsLastLineInInlineBlock() const {
   DCHECK(Current().IsLineBox());
-  if (!GetLayoutBlockFlow()->IsAtomicInlineLevel())
+  if (!GetLayoutBlockFlow()->IsInline()) {
     return false;
+  }
   InlineCursor next_sibling(*this);
   for (;;) {
     next_sibling.MoveToNextSkippingChildren();

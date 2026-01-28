@@ -266,8 +266,8 @@ bool TextIteratorAlgorithm<Strategy>::IsInsideAtomicInlineElement() const {
   if (AtEnd() || length() != 1 || !node_)
     return false;
 
-  LayoutObject* layout_object = node_->GetLayoutObject();
-  return layout_object && layout_object->IsAtomicInlineLevel();
+  const LayoutObject* layout_object = node_->GetLayoutObject();
+  return layout_object && layout_object->IsAtomicInline();
 }
 
 template <typename Strategy>

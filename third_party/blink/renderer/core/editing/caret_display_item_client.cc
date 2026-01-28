@@ -129,7 +129,7 @@ CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(
     // (i.e. display: inline-block). In those cases, the layout object should be
     // either the caret rect's layout block, or its containing block.
     if (!(caret_rect.layout_object->IsLayoutBlock() &&
-          caret_rect.layout_object->IsAtomicInlineLevel())) {
+          caret_rect.layout_object->IsAtomicInline())) {
       DCHECK_EQ(caret_block, CaretLayoutBlock(caret_position.AnchorNode(),
                                               caret_rect.layout_object));
     } else if (caret_block != caret_rect.layout_object) {
