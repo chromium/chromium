@@ -607,8 +607,6 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
   // Default user choice is no choice.
   histogram_tester.ExpectUniqueSample("Signin.Settings.ChromeSignin.OnSignin",
                                       ChromeSigninUserChoice::kNoChoice, 1);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", 0);
 
   Signout();
 
@@ -621,8 +619,6 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
 
   histogram_tester.ExpectBucketCount("Signin.Settings.ChromeSignin.OnSignin",
                                      user_choice1, 1);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", 0);
 
   Signout();
 
@@ -634,9 +630,6 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
 
   histogram_tester.ExpectBucketCount("Signin.Settings.ChromeSignin.OnSignin",
                                      user_choice2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin", access_point,
-      1);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

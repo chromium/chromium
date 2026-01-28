@@ -3062,17 +3062,6 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin"
-    enum="SigninAccessPoint" expires_after="2026-07-29">
-  <owner>rsult@google.com</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records the access point for Chrome Signin when the setting for automatic
-    Chrome Signin choice is set to `Do not sign in automatically`. The value is
-    recorded upon Chrome Signin.
-  </summary>
-</histogram>
-
 <histogram name="Signin.Settings.ChromeSignin.OnSignin"
     enum="ChromeSigninUserChoice" expires_after="2026-07-26">
   <owner>rsult@google.com</owner>

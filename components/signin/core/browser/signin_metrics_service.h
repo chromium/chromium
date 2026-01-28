@@ -95,9 +95,7 @@ class SigninMetricsService : public KeyedService,
   void MaybeRecordWebSigninToChromeSigninMetrics(
       const CoreAccountId& account_id,
       signin_metrics::AccessPoint access_point);
-  void RecordSigninInterceptionMetrics(
-      const GaiaId& gaia_id,
-      signin_metrics::AccessPoint access_point);
+  void RecordSigninInterceptionMetrics(const GaiaId& gaia_id);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   void UpdateIsManagedForAllAccounts();

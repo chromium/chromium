@@ -280,8 +280,7 @@ void SigninMetricsService::OnPrimaryAccountChanged(
       pref_service_->ClearPref(kWebSigninAccountStartTimesPref);
 
       RecordSigninInterceptionMetrics(
-          event_details.GetCurrentState().primary_account.gaia,
-          access_point.value());
+          event_details.GetCurrentState().primary_account.gaia);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
       if (active_primary_accounts_metrics_recorder_) {
@@ -583,18 +582,12 @@ void SigninMetricsService::MaybeRecordWebSigninToChromeSigninMetrics(
 }
 
 void SigninMetricsService::RecordSigninInterceptionMetrics(
-    const GaiaId& gaia_id,
-    signin_metrics::AccessPoint access_point) {
+    const GaiaId& gaia_id) {
   ChromeSigninUserChoice signin_choice =
       SigninPrefs(pref_service_.get())
           .GetChromeSigninInterceptionUserChoice(gaia_id);
   base::UmaHistogramEnumeration("Signin.Settings.ChromeSignin.OnSignin",
                                 signin_choice);
-  if (signin_choice == ChromeSigninUserChoice::kDoNotSignin) {
-    base::UmaHistogramEnumeration(
-        "Signin.Settings.ChromeSignin.AccessPointWithDoNotSignin",
-        access_point);
-  }
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
