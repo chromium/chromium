@@ -10,7 +10,7 @@ import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {LocalAuthFactorsComplexity, PasswordComplexity, PasswordFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
+import {AuthFactorConfig, LocalAuthFactorsComplexity, PasswordComplexity, PasswordFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './set_local_password_input.html.js';
@@ -94,6 +94,7 @@ export class SetLocalPasswordInputElement extends
        */
       authToken: {
         type: String,
+        observer: 'fetchLocalAuthFactorsComplexity',
       },
 
       /**
@@ -139,8 +140,6 @@ export class SetLocalPasswordInputElement extends
   private confirmInputValidity_: null|ConfirmInputValidity;
   private isFirstPasswordVisible_: boolean;
   private isConfirmPasswordVisible_: boolean;
-  // TODO(crbug.com/445625494): Set the value for localAuthFactorsComplexity_
-  // (needs also piping through of authToken).
   private localAuthFactorsComplexity_: LocalAuthFactorsComplexity;
 
   constructor() {
@@ -377,6 +376,23 @@ export class SetLocalPasswordInputElement extends
   }
   private onConfirmShowHidePasswordButtonClick() {
     this.isConfirmPasswordVisible_ = !this.isConfirmPasswordVisible_;
+  }
+
+  private async fetchLocalAuthFactorsComplexity(): Promise<void> {
+    if (!this.authToken) {
+      console.error(
+          'Invalid authToken while calling fetchLocalAuthFactorsComplexity:',
+          this.authToken);
+      return;
+    }
+    try {
+      this.localAuthFactorsComplexity_ =
+          await AuthFactorConfig.getRemote().getLocalAuthFactorsComplexity(
+              this.authToken!);
+    } catch (e) {
+      console.error('Error calling fetchLocalAuthFactorsComplexity:', e);
+      this.localAuthFactorsComplexity_ = LocalAuthFactorsComplexity.kUnset;
+    }
   }
 }
 
