@@ -77,10 +77,17 @@ GetVisibleRectAndContentSize(CFDictionaryRef attachment) {
 
 bool IsPresenterOverlayLargeActive(CFDictionaryRef attachment) {
   if (@available(macOS 14.2, *)) {
+    // SCStreamFrameInfoPresenterOverlayContentRect might be weak-linked and
+    // resolve to nil even on supported macOS versions.
+    SCStreamFrameInfo overlay_key =
+        SCStreamFrameInfoPresenterOverlayContentRect;
+    if (!overlay_key) {
+      return false;
+    }
+
     CFDictionaryRef overlayContentRectValue =
         base::apple::CFCast<CFDictionaryRef>(CFDictionaryGetValue(
-            attachment, base::apple::NSToCFPtrCast(
-                            SCStreamFrameInfoPresenterOverlayContentRect)));
+            attachment, base::apple::NSToCFPtrCast(overlay_key)));
     if (!overlayContentRectValue) {
       return false;
     }
