@@ -648,8 +648,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImageNon2D
       Delegate*);
   ~CanvasResourceProviderSharedImageNon2D() override = default;
 
-  // ExternalCanvasDrawHelper() is used by clients that require the invocation
-  // of WillDrawIfNeeded() before obtaining a canvas and drawing on it.
+  // Drops the cached snapshot (if any) and invokes `draw_callback` on this
+  // instance's canvas.
   void ExternalCanvasDrawHelper(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback);
 
