@@ -9554,6 +9554,7 @@ from previous Chrome versions.
   <int value="-1643224308"
       label="OmniboxMostVisitedTilesTitleWrapAround:disabled"/>
   <int value="-1642482834" label="AutofillEnableBuyNowPayLater:disabled"/>
+  <int value="-1642043665" label="SearchEngineUnconditionalDialog:disabled"/>
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
   <int value="-1641656402"
       label="RTCDisallowPlanBOutsideDeprecationTrial:disabled"/>
@@ -10680,6 +10681,7 @@ from previous Chrome versions.
   <int value="-1266934701" label="AccessibilityAXModes:enabled"/>
   <int value="-1265863577"
       label="EnableBookmarksSelectedTypeOnSigninForTesting:enabled"/>
+  <int value="-1265739179" label="SearchEngineExplicitChoiceDialog:enabled"/>
   <int value="-1265627803" label="WebAppEnableManifestId:enabled"/>
   <int value="-1265374554" label="CctSignInPrompt:disabled"/>
   <int value="-1264634670" label="HideTabOnTabSwitcher:disabled"/>
@@ -15601,6 +15603,7 @@ from previous Chrome versions.
   <int value="428631746" label="BackGestureActivityTabProvider:disabled"/>
   <int value="430776375" label="TextureLayerSkipWaitForActivation:disabled"/>
   <int value="430959979" label="SyncStandaloneTransport:disabled"/>
+  <int value="431610096" label="SearchEngineUnconditionalDialog:enabled"/>
   <int value="431691805" label="MediaDocumentDownloadButton:enabled"/>
   <int value="432772847"
       label="AutofillEnableVcnGrayOutForMerchantOptOut:disabled"/>
@@ -19066,6 +19069,7 @@ from previous Chrome versions.
   <int value="1629289109" label="EnableBloom:disabled"/>
   <int value="1629497607" label="CertDualVerificationTrial:disabled"/>
   <int value="1629523329" label="WebUiSystemFont:enabled"/>
+  <int value="1630108932" label="SearchEngineExplicitChoiceDialog:disabled"/>
   <int value="1630159957" label="SharingSendViaSync:disabled"/>
   <int value="1630283072" label="CrOSAutoSelect:enabled"/>
   <int value="1630988998" label="VrBrowsingExperimentalRendering:disabled"/>

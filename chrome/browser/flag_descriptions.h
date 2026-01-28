@@ -3483,6 +3483,20 @@ inline constexpr char kSearchInSettingsName[] = "Search in Settings";
 inline constexpr char kSearchInSettingsDescription[] =
     "Enable search in settings";
 
+inline constexpr char kSearchEngineExplicitChoiceDialogName[] =
+    "Use explicit-choice dialog confirming new search engine overrides";
+inline constexpr char kSearchEngineExplicitChoiceDialogDescription[] =
+    "When enabled, web searches with a newly-installed search engine-"
+    "overriding extension will be deferred until a new explicit-choice dialog "
+    "confirms the change is intentional.";
+
+inline constexpr char kSearchEngineUnconditionalDialogName[] =
+    "Always show confirmation dialog for new search engine overrides";
+inline constexpr char kSearchEngineUnconditionalDialogDescription[] =
+    "When enabled, all newly-installed search engine-overriding extensions "
+    "encounter the confirmation dialog (exceptions for some extensions are "
+    "removed).";
+
 inline constexpr char kGlobalCacheListForGatingNotificationProtectionsName[] =
     "Global cache list for gating notification protections";
 inline constexpr char

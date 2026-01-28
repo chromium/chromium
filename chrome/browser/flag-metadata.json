@@ -8360,6 +8360,22 @@
     "expiry_milestone": 92
   },
   {
+    "name": "search-engine-explicit-choice-dialog",
+    "owners": [
+      "cjgrant@chromium.org",
+      "koretadaniel@chromium.org"
+    ],
+    "expiry_milestone": 155
+  },
+  {
+    "name": "search-engine-unconditional-dialog",
+    "owners": [
+      "koretadaniel@chromium.org",
+      "cjgrant@chromium.org"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "search-in-cct",
     "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 300

@@ -13450,6 +13450,21 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kCredentialManagementUnifiedUi)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    {"search-engine-explicit-choice-dialog",
+     flag_descriptions::kSearchEngineExplicitChoiceDialogName,
+     flag_descriptions::kSearchEngineExplicitChoiceDialogDescription,
+     kOsWin | kOsMac,
+     FEATURE_VALUE_TYPE(
+         extensions_features::kSearchEngineExplicitChoiceDialog)},
+
+    {"search-engine-unconditional-dialog",
+     flag_descriptions::kSearchEngineUnconditionalDialogName,
+     flag_descriptions::kSearchEngineUnconditionalDialogDescription,
+     kOsWin | kOsMac,
+     FEATURE_VALUE_TYPE(extensions_features::kSearchEngineUnconditionalDialog)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
