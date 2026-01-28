@@ -190,7 +190,7 @@ std::string GetIpcTagAsString(IpcTag service) {
   NOTREACHED();
 }
 
-std::string GetOpcodeAction(EvalResult action, uintptr_t constant) {
+std::string GetOpcodeAction(EvalResult action) {
   switch (action) {
     case EVAL_TRUE:
       return "true";
@@ -209,8 +209,7 @@ std::string GetOpcodeAction(EvalResult action, uintptr_t constant) {
     case FAKE_ACCESS_DENIED:
       return "fakeDenied";
     case RETURN_CONST:
-      return base::StringPrintf("returnConst %p",
-                                reinterpret_cast<void*>(constant));
+      return "returnConst";
   }
   NOTREACHED();
 }
@@ -278,9 +277,15 @@ std::string GetPolicyOpcode(const PolicyOpcode* opcode, bool continuation) {
     } break;
     case OP_ACTION:
       opcode->GetArgument(0, &args[0]);
-      uintptr_t constant;
-      opcode->GetArgument(1, &constant);
-      condition += GetOpcodeAction(static_cast<EvalResult>(args[0]), constant);
+      EvalResult result;
+      result = static_cast<EvalResult>(args[0]);
+      condition += GetOpcodeAction(result);
+      if (result == RETURN_CONST) {
+        uintptr_t constant;
+        opcode->GetArgument(1, &constant);
+        condition +=
+            base::StringPrintf(" %p", reinterpret_cast<void*>(constant));
+      }
       break;
     default:
       DCHECK(false) << "Unknown Opcode";
