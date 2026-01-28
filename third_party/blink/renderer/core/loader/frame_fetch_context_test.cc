@@ -871,9 +871,15 @@ TEST_P(FrameFetchContextHintsTest, MonitorDeviceMemoryHints) {
                "32");
 #endif
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(768);
+#if BUILDFLAG(IS_ANDROID)
+  ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "1");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Device-Memory", true,
+               "1");
+#else
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "2");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Device-Memory", true,
                "2");
+#endif
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Width", false, "");

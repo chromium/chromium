@@ -65,6 +65,26 @@ TEST_F(ApproximatedDeviceMemoryTest, GetApproximatedDeviceMemory) {
   scoped_feature_list.InitAndEnableFeature(
       features::kUpdatedDeviceMemoryLimitsFor2026);
 
+#if BUILDFLAG(IS_ANDROID)
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(128);  // 128MB
+  EXPECT_EQ(1, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(256);  // 256MB
+  EXPECT_EQ(1, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(510);  // <512MB
+  EXPECT_EQ(1, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(512);  // 512MB
+  EXPECT_EQ(1, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(640);  // 512+128MB
+  EXPECT_EQ(1, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(768);  // 512+256MB
+  EXPECT_EQ(1, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(1000);  // <1GB
+  EXPECT_EQ(1, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(1024);  // 1GB
+  EXPECT_EQ(1, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(1536);  // 1.5GB
+  EXPECT_EQ(1, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+#else
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(128);  // 128MB
   EXPECT_EQ(2, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(256);  // 256MB
@@ -83,6 +103,7 @@ TEST_F(ApproximatedDeviceMemoryTest, GetApproximatedDeviceMemory) {
   EXPECT_EQ(2, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(1536);  // 1.5GB
   EXPECT_EQ(2, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
+#endif
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(2000);  // <2GB
   EXPECT_EQ(2, ApproximatedDeviceMemory::GetApproximatedDeviceMemory());
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(2048);  // 2GB
