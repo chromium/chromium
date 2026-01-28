@@ -316,7 +316,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
         // Call
         dragOutOfStrip();
-        verifyDragOutOfStrip(mMultiTabStrategy);
+        verifyDragOutOfStrip(mMultiTabStrategy, /* isDragCancelled= */ false);
 
         // Verify tab properties
         assertTrue("DraggedOffStrip should be true", mInteractingTab.isDraggedOffStrip());
@@ -360,7 +360,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
         // Call
         dragOutOfStrip();
-        verifyDragOutOfStrip(mTabStrategy);
+        verifyDragOutOfStrip(mTabStrategy, /* isDragCancelled= */ false);
 
         // Verify tab properties
         assertTrue("DraggedOffStrip should be true", mInteractingTab.isDraggedOffStrip());
@@ -397,7 +397,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         float lastOffsetX = 12f; // Arbitrary value.
         mInteractingTab.setOffsetX(lastOffsetX);
         dragOutOfStrip();
-        verifyDragOutOfStrip(mTabStrategy);
+        verifyDragOutOfStrip(mTabStrategy, /* isDragCancelled= */ false);
         assertEquals(
                 "LastOffsetX should be set",
                 lastOffsetX,
@@ -551,7 +551,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         // Start and update reorder - drag out of strip. Verify tab strategy stop invoked.
         startTabReorder();
         dragOutOfStrip();
-        verifyDragOutOfStrip(mTabStrategy);
+        verifyDragOutOfStrip(mTabStrategy, /* isDragCancelled= */ false);
 
         // Call - Stop drag and drop strategy.
         mStrategy.stopReorderMode(mStripViews, mGroupTitles);
@@ -583,6 +583,37 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         assertEquals("offsetY should be 0", 0f, mOtherSelectedTab.getOffsetY(), EPSILON);
     }
 
+    @Test
+    public void testCancelReorder_restorePosition_tab() {
+        // Drag tab out of strip and verify tab is out of strip
+        startTabReorder();
+        verifyDragOntoStrip(mTabStrategy, mInteractingTab);
+        dragOutOfStrip();
+        verifyDragOutOfStrip(mTabStrategy, /* isDragCancelled= */ false);
+        assertTrue("Tab should be dragged off strip.", mInteractingTab.isDraggedOffStrip());
+
+        // Cancel drag and verify tab is in strip
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles, /* isDragCancelled= */ true);
+        assertFalse("Tab should be back on strip.", mInteractingTab.isDraggedOffStrip());
+        verify(mStripUpdateDelegate).resizeTabStrip(eq(mInteractingTab), eq(true));
+    }
+
+    @Test
+    public void testCancelReorder_restorePosition_group() {
+        // Drag group out of strip and verify tab is out of strip
+        startGroupReorder();
+        verifyDragOntoStrip(mGroupStrategy, mInteractingGroupTitle);
+        dragOutOfStrip();
+        verifyDragOutOfStrip(mGroupStrategy, /* isDragCancelled= */ false);
+
+        when(mTabGroupModelFilter.tabGroupExists(GROUP_ID1)).thenReturn(true);
+
+        // Cancel drag and verify group is in strip
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles, /* isDragCancelled= */ true);
+        assertFalse("Group should be back on strip.", mInteractingGroupTitle.isDraggedOffStrip());
+        verify(mStripUpdateDelegate, times(3)).resizeTabStrip(any(), eq(false));
+    }
+
     private void dragOntoStrip() {
         mStrategy.updateReorderPosition(
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
@@ -609,9 +640,9 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 ReorderType.DRAG_OUT_OF_STRIP);
     }
 
-    private void verifyDragOutOfStrip(ReorderStrategy reorderStrategy) {
+    private void verifyDragOutOfStrip(ReorderStrategy reorderStrategy, boolean isDragCancelled) {
         verify(reorderStrategy)
-                .stopReorderMode(mStripViews, mGroupTitles, /* isDragCancelled= */ false);
+                .stopReorderMode(mStripViews, mGroupTitles, /* isDragCancelled= */ isDragCancelled);
         verifyAdditionalCallsForTabSelection(reorderStrategy);
     }
 

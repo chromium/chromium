@@ -417,6 +417,39 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
         verify(mAnimationHost).startAnimations(anyList(), isNotNull());
     }
 
+    @Test
+    public void testCancelReorder_restorePosition_pastTab() {
+        //                     -------->
+        // [CollapsedGroup]  [Tab]  [Tab]  [ExpandedGroup]  [Tab]
+        int initialIndex = 1;
+        int expectedIndex = 2;
+
+        // Move tab and verify the position
+        testUpdateReorder_success(mUngroupedTab1, TAB_WIDTH, DRAG_PAST_TAB_SUCCESS, expectedIndex);
+        verify(mModel).moveTab(TAB_ID2, expectedIndex);
+
+        // Cancel drag and verify the tab goes back to the origin
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles, /* isDragCancelled= */ true);
+        verify(mModel).moveTab(TAB_ID2, initialIndex);
+    }
+
+    @Test
+    public void testCancelReorder_restorePosition_pastCollapsedGroup() {
+        //       <--------------
+        // [CollapsedGroup]  [Tab]  [Tab]  [ExpandedGroup]  [Tab]
+        int initialIndex = 1;
+        int expectedIndex = 0;
+
+        // Move tab and verify the position
+        testUpdateReorder_success(
+                mUngroupedTab1, -TAB_WIDTH, -DRAG_PAST_COLLAPSED_GROUP_SUCCESS, expectedIndex);
+        verify(mModel).moveTab(TAB_ID2, expectedIndex);
+
+        // Cancel drag and verify the tab goes back to the origin
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles, /* isDragCancelled= */ true);
+        verify(mModel).moveTab(TAB_ID2, initialIndex);
+    }
+
     // ============================================================================================
     // Event helpers
     // ============================================================================================

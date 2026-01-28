@@ -255,6 +255,43 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
         assertNull("Should clear interacting view on stop.", mStrategy.getInteractingView());
     }
 
+    @Test
+    public void testCancelReorder_restorePosition_pastTab() {
+        //    <------------
+        // [Tab1]  [ExpandedGroup]  [CollapsedGroup]
+        float dragDistance = -DRAG_PAST_TAB_SUCCESS;
+        float rebuildDeltaX = -TAB_WIDTH;
+        int initialIndex = 1;
+        int targetIndex = 0;
+        startReorderAndDragGroupAndCancel(mExpandedGroup, rebuildDeltaX, dragDistance, targetIndex);
+        verifySuccessfulRestore(initialIndex);
+    }
+
+    @Test
+    public void testCancelReorder_restorePosition_pastCollapsedGroup() {
+        //                ------------------>
+        // [Tab1]  [ExpandedGroup]  [CollapsedGroup]
+        float dragDistance = DRAG_PAST_COLLAPSED_GROUP_SUCCESS;
+        float rebuildDeltaX = TAB_WIDTH;
+        int initialIndex = 1;
+        int targetIndex = 2;
+        startReorderAndDragGroupAndCancel(mExpandedGroup, rebuildDeltaX, dragDistance, targetIndex);
+        verifySuccessfulRestore(initialIndex);
+    }
+
+    @Test
+    public void testCancelReorder_restorePosition_pastExpandedGroup() {
+        //                <------------------
+        // [Tab1]  [ExpandedGroup]  [CollapsedGroup]
+        float dragDistance = -DRAG_PAST_EXPANDED_GROUP_SUCCESS;
+        float rebuildDeltaX = -(2 * TAB_WIDTH);
+        int initialIndex = 2;
+        int targetIndex = 1;
+        startReorderAndDragGroupAndCancel(
+                mCollapsedGroup, rebuildDeltaX, dragDistance, targetIndex);
+        verifySuccessfulRestore(initialIndex);
+    }
+
     // ============================================================================================
     // Event helpers
     // ============================================================================================
@@ -275,6 +312,18 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
                 mInteractingGroupTitle.getDrawX() + deltaX,
                 deltaX,
                 ReorderType.DRAG_WITHIN_STRIP);
+    }
+
+    private void startReorderAndDragGroupAndCancel(
+            StripLayoutView[] draggedGroup,
+            float rebuildDeltaX,
+            float dragDistance,
+            int targetIndex) {
+        // Drag the group tab and verify
+        testUpdateReorder_success(draggedGroup, rebuildDeltaX, dragDistance, targetIndex);
+
+        // Cancel group drag and verify the group position has been restored
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles, /* isDragCancelled= */ true);
     }
 
     // ============================================================================================
@@ -305,6 +354,14 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
         for (StripLayoutView view : mDraggedGroup) {
             assertEquals("Unexpected offset.", expectedOffset, view.getOffsetX(), DELTA);
         }
+    }
+
+    @SuppressWarnings("DirectInvocationOnMock")
+    private void verifySuccessfulRestore(int initialIndex) {
+        @TabId
+        int lastShownTabId =
+                mTabGroupModelFilter.getGroupLastShownTabId(mInteractingGroupTitle.getTabGroupId());
+        verify(mTabGroupModelFilter).moveRelatedTabs(lastShownTabId, initialIndex);
     }
 
     // ============================================================================================
