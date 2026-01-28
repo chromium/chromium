@@ -151,7 +151,7 @@ TEST_F(UnexportableKeyServiceFactoryTest, DifferentPurposes) {
             dbsc_config.keychain_access_group);
   EXPECT_NE(lst_config.application_tag, dbsc_config.application_tag);
   EXPECT_TRUE(lst_config.application_tag.ends_with("lst"));
-  EXPECT_TRUE(dbsc_config.application_tag.ends_with("dbsc"));
+  EXPECT_TRUE(dbsc_config.application_tag.ends_with("dbsc-standard"));
 #endif  // BUILDFLAG(IS_MAC)
 }
 

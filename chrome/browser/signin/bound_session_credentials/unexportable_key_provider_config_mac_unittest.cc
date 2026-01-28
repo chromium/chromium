@@ -12,11 +12,15 @@
 #include "chrome/common/chrome_version.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace unexportable_keys {
 
 namespace {
+
+using ::testing::Not;
+using ::testing::StartsWith;
 
 constexpr std::string_view kKeychainAccessGroup = MAC_TEAM_IDENTIFIER_STRING
     "." MAC_BUNDLE_IDENTIFIER_STRING ".unexportable-keys";
@@ -141,7 +145,7 @@ TEST_F(UnexportableKeyProviderConfigTest,
                     "test_profile",
                     kUnixEpochHash,
                     kDefaultStoragePartitionPathHash,
-                    "dbsc",
+                    "dbsc-standard",
                 },
                 "."));
 
@@ -195,7 +199,7 @@ TEST_F(UnexportableKeyProviderConfigTest,
                                                  "test_profile",
                                                  kUnixEpochHash,
                                                  kTestStoragePartitionPathHash,
-                                                 "dbsc",
+                                                 "dbsc-standard",
                                              },
                                              "."));
 
@@ -215,6 +219,55 @@ TEST_F(UnexportableKeyProviderConfigTest,
                     "dbsc-prototype",
                 },
                 "."));
+}
+
+TEST_F(UnexportableKeyProviderConfigTest, ApplicationTagsArePrefixOfEachOther) {
+  TestingProfile profile(base::FilePath("/user/data/dir/test_profile"));
+
+  const std::string default_config_tag = GetDefaultConfig().application_tag;
+  const std::string user_data_dir_config_tag =
+      GetConfigForUserDataDir(profile.GetPath().DirName()).application_tag;
+  const std::string profile_path_config_tag =
+      GetConfigForProfilePath(profile.GetPath()).application_tag;
+  const std::string profile_config_tag =
+      GetConfigForProfile(profile).application_tag;
+  const std::string test_storage_partition_config_tag =
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath("test_partition"),
+          KeyPurpose::kRefreshTokenBinding)
+          .application_tag;
+
+  EXPECT_TRUE(user_data_dir_config_tag.starts_with(default_config_tag));
+  EXPECT_TRUE(profile_path_config_tag.starts_with(user_data_dir_config_tag));
+  EXPECT_TRUE(profile_config_tag.starts_with(profile_path_config_tag));
+  EXPECT_TRUE(
+      test_storage_partition_config_tag.starts_with(profile_config_tag));
+}
+
+TEST_F(UnexportableKeyProviderConfigTest,
+       ApplicationTagsAreNotPrefixesBetweenDifferentPurposes) {
+  TestingProfile profile(base::FilePath("/user/data/dir/test_profile"));
+
+  const std::string dbsc_prototype_tag =
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath(),
+          KeyPurpose::kDeviceBoundSessionCredentialsPrototype)
+          .application_tag;
+  const std::string dbsc_standard_tag =
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath(), KeyPurpose::kDeviceBoundSessionCredentials)
+          .application_tag;
+  const std::string lst_tag =
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath(), KeyPurpose::kRefreshTokenBinding)
+          .application_tag;
+
+  EXPECT_THAT(dbsc_prototype_tag, Not(StartsWith(dbsc_standard_tag)));
+  EXPECT_THAT(dbsc_prototype_tag, Not(StartsWith(lst_tag)));
+  EXPECT_THAT(dbsc_standard_tag, Not(StartsWith(dbsc_prototype_tag)));
+  EXPECT_THAT(dbsc_standard_tag, Not(StartsWith(lst_tag)));
+  EXPECT_THAT(lst_tag, Not(StartsWith(dbsc_prototype_tag)));
+  EXPECT_THAT(lst_tag, Not(StartsWith(dbsc_standard_tag)));
 }
 
 }  // namespace

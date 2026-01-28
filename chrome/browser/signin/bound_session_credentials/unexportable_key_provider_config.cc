@@ -4,10 +4,14 @@
 
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -34,17 +38,37 @@ std::string HexEncodeLowerSha64(std::string_view data) {
   return HexEncodeLowerSha64(base::as_byte_span(data));
 }
 
-std::string_view PurposeToString(KeyPurpose purpose) {
-  switch (purpose) {
-    case KeyPurpose::kRefreshTokenBinding:
-      return "lst";
-    case KeyPurpose::kDeviceBoundSessionCredentials:
-      return "dbsc";
-    case KeyPurpose::kDeviceBoundSessionCredentialsPrototype:
-      return "dbsc-prototype";
-  }
+// Checks the absence of prefixes in the given `strs` vector. That is, returns if there is
+// no `i` and `j` (different from `i`) such that `strs[i]` is a prefix of
+// `strs[j]`.
+consteval bool IsPrefixFree(std::vector<std::string_view> strs) {
+  std::ranges::sort(strs);
+  return std::ranges::adjacent_find(
+             strs, [](std::string_view lhs, std::string_view rhs) {
+               return lhs.starts_with(rhs);
+             }) == strs.end();
+}
 
-  NOTREACHED();
+// Returns the string representation of the given `purpose`. The strings are
+// used on macOS to group related keys in the Keychain so they can be
+// queried and deleted together.
+//
+// The strings must not be prefixes of each other.
+std::string_view PurposeToString(KeyPurpose purpose) {
+  using enum KeyPurpose;
+
+  static constexpr auto kPurposeMap =
+      base::MakeFixedFlatMap<KeyPurpose, std::string_view>({
+          {kRefreshTokenBinding, "lst"},
+          {kDeviceBoundSessionCredentials, "dbsc-standard"},
+          {kDeviceBoundSessionCredentialsPrototype, "dbsc-prototype"},
+      });
+
+  static_assert(IsPrefixFree(base::ToVector(
+                    kPurposeMap, [](const auto& pair) { return pair.second; })),
+                "Purpose strings must not be prefixes of each other.");
+
+  return kPurposeMap.at(purpose);
 }
 
 #endif  // BUILDFLAG(IS_MAC)

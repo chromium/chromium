@@ -85,7 +85,7 @@ crypto::UnexportableKeyProvider::Config GetConfigForProfile(
 //   dedicated cleanup logic.
 // - A hash of the storage partition path to uniquely identify the storage
 //   partition.
-// - A string representing the key's `purpose` (e.g., "dbsc", "lst").
+// - A string representing the key's `purpose` (e.g., "dbsc-standard", "lst").
 //
 // This allows for safe, bulk deletion of keys that are no longer in use without
 // affecting keys from other storage partitions or for other purposes.
