@@ -9,8 +9,8 @@ import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, S
 import {CustomizeChromeSection} from 'chrome://new-tab-page/customize_chrome.mojom-webui.js';
 import {ActionChipsApiProxyImpl, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
-import {ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, BackgroundManager, BrowserCommandProxy, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {ActionChipsRetrievalState, ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
+import {$$, BackgroundManager, BrowserCommandProxy, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, GlifAnimationState, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, CustomizeButtonsElement} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
@@ -2474,5 +2474,141 @@ suite('NewTabPageAppTest', () => {
       assertEquals(
           1, metrics.count('NewTabPage.Click', NtpElement.THREADS_RAIL));
     });
+  });
+});
+
+suite('NewTabPageAppReducedMotionTest', () => {
+  let app: AppElement;
+  let windowProxy: TestMock<WindowProxy>;
+  let handler: TestMock<PageHandlerRemote>;
+  let backgroundManager: TestMock<BackgroundManager>;
+  let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
+  let moduleRegistry: TestMock<ModuleRegistry>;
+  let moduleResolver: PromiseResolver<Module[]>;
+
+  const url: URL = new URL(location.href);
+  const backgroundImageLoadTime: number = 123;
+
+  function createSetup() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    windowProxy =
+        installMock(WindowProxy, (mock) => WindowProxy.setInstance(mock));
+    windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
+    windowProxy.setResultFor('createIframeSrc', '');
+    windowProxy.setResultFor('url', url);
+    handler = installMock(
+        PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+    handler.setResultFor('getMostVisitedSettings', Promise.resolve({
+      customLinksEnabled: false,
+      shortcutsVisible: false,
+    }));
+    handler.setResultFor('getDoodle', Promise.resolve({
+      doodle: null,
+    }));
+    handler.setResultFor('getModulesIdNames', Promise.resolve({data: []}));
+    backgroundManager = installMock(
+        BackgroundManager, (mock) => BackgroundManager.setInstance(mock));
+    backgroundManager.setResultFor(
+        'getBackgroundImageLoadTime', Promise.resolve(backgroundImageLoadTime));
+    moduleRegistry =
+        installMock(ModuleRegistry, (mock) => ModuleRegistry.setInstance(mock));
+    moduleResolver = new PromiseResolver();
+    moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
+    searchboxHandler = installMock(SearchboxPageHandlerRemote, (mock) => {
+      SearchboxBrowserProxy.getInstance().handler = mock;
+    });
+    searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
+    installMock(
+        ActionChipsHandlerRemote, mock => ActionChipsApiProxyImpl.setInstance({
+          getHandler: () => mock,
+          getCallbackRouter: () => new ActionChipsPageCallbackRouter(),
+        }));
+  }
+
+  suite('Initialization', () => {
+    setup(() => {
+      createSetup();
+    });
+
+    test(
+        'initializes as INELIGIBLE when reduced motion is preferred',
+        async () => {
+          windowProxy.setResultMapperFor(
+              'matchMedia',
+              (query: string) => ({
+                matches: query === '(prefers-reduced-motion: reduce)',
+                addListener() {},
+                addEventListener() {},
+                removeListener() {},
+                removeEventListener() {},
+              }));
+          app = document.createElement('ntp-app');
+          document.body.appendChild(app);
+          await microtasksFinished();
+
+          assertEquals(
+              GlifAnimationState.INELIGIBLE,
+              (app as any).contextMenuGlifAnimationState_);
+        });
+
+    test(
+        'initializes as SPINNER_ONLY when reduced motion is not preferred',
+        async () => {
+          loadTimeData.overrideValues({
+            ntpNextFeaturesEnabled: true,
+            actionChipsEnabled: true,
+          });
+          windowProxy.setResultMapperFor(
+              'matchMedia', () => ({
+                              matches: false,
+                              addListener() {},
+                              addEventListener() {},
+                              removeListener() {},
+                              removeEventListener() {},
+                            }));
+          app = document.createElement('ntp-app');
+          document.body.appendChild(app);
+          await microtasksFinished();
+
+          assertEquals(
+              GlifAnimationState.SPINNER_ONLY,
+              (app as any).contextMenuGlifAnimationState_);
+        });
+  });
+
+  suite('Event Handling', () => {
+    setup(async () => {
+      createSetup();
+
+      windowProxy.setResultMapperFor(
+          'matchMedia', (query: string) => ({
+                          matches: query === '(prefers-reduced-motion: reduce)',
+                          addListener() {},
+                          addEventListener() {},
+                          removeListener() {},
+                          removeEventListener() {},
+                        }));
+      app = document.createElement('ntp-app');
+      document.body.appendChild(app);
+      await microtasksFinished();
+    });
+
+    test(
+        'state-changing events are a no-op when reduced motion is preferred',
+        async () => {
+          assertEquals(
+              GlifAnimationState.INELIGIBLE,
+              (app as any).contextMenuGlifAnimationState_);
+
+          app.dispatchEvent(new CustomEvent(
+              'action-chips-retrieval-state-changed',
+              {detail: {state: ActionChipsRetrievalState.REQUESTED}}));
+          await microtasksFinished();
+
+          assertEquals(
+              GlifAnimationState.INELIGIBLE,
+              (app as any).contextMenuGlifAnimationState_);
+        });
   });
 });

@@ -415,8 +415,13 @@ export class AppElement extends AppElementBase {
   protected accessor searchboxInputFocused_: boolean = false;
   protected accessor composeboxInputFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
+  private reducedMotionPreferred_: boolean =
+      WindowProxy.getInstance()
+          .matchMedia('(prefers-reduced-motion: reduce)')
+          .matches;
   protected accessor contextMenuGlifAnimationState_: GlifAnimationState =
-      this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ?
+      !this.reducedMotionPreferred_ && this.ntpNextFeaturesEnabled_ &&
+          this.isActionChipsVisible_ ?
       GlifAnimationState.SPINNER_ONLY :
       GlifAnimationState.INELIGIBLE;
   protected accessor undoAutoRemovalCallback_: (() => void)|null = null;
@@ -1441,6 +1446,10 @@ export class AppElement extends AppElementBase {
   protected onActionChipsRetrievalStateChanged_(
       e: CustomEvent<{state: ActionChipsRetrievalState}>) {
     const state = e.detail.state;
+    if (this.reducedMotionPreferred_) {
+      // The animation should not be started.
+      return;
+    }
     // Mapping of ActionChipsRetrievalState => GlifAnimationState:
     // REQUESTED => SPINNER_ONLY
     // UPDATED => STARTED (or FINISHED if cr_context_menu_entrypoint sets it)

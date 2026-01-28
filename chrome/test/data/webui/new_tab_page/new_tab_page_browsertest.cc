@@ -279,6 +279,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ThreadsRail) {
           "runMochaSuite('NewTabPageAppTest ThreadsRail')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ReducedMotion) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppReducedMotionTest')");
+}
+
 // TODO(crbug.com/428156129): Re-enable test
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, DISABLED_WallpaperSearch) {
   RunTest("new_tab_page/app_test.js",
