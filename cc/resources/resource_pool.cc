@@ -404,8 +404,7 @@ bool ResourcePool::PrepareForExport(
   DCHECK(backing);
   viz::TransferableResource transferable;
   if (!backing->shared_image()) {
-    // This can happen if we failed to allocate a GpuMemoryBuffer. Avoid
-    // sending an invalid resource to the parent in that case, and avoid
+    // Avoid sending an invalid resource to the parent, and avoid
     // caching/reusing the resource.
     resource->set_resource_id(viz::kInvalidResourceId);
     resource->mark_avoid_reuse();
