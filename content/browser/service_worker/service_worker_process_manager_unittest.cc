@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
@@ -73,21 +72,7 @@ class SiteInstanceRenderProcessHostFactory : public RenderProcessHostFactory {
 
 class ServiceWorkerProcessManagerTest : public testing::Test {
  public:
-  ServiceWorkerProcessManagerTest() {
-    // These tests manually simulate site removal on MockRenderProcessHosts that
-    // have zero registered frames. The kTrackEmptyRendererProcessesForReuse
-    // feature enforces a safety check that the frame count is non-zero during
-    // removal, which these tests violate. We disable the feature to bypass this
-    // check.
-    //
-    // TODO(crbug.com/479203591): Refactor these tests to work with
-    // kTrackEmptyRendererProcessesForReuse. This likely involves setting up a
-    // proper process that the ServiceWorker can reuse (e.g. using
-    // NavigationSimulator) instead of manually calling
-    // RenderProcessHostImpl::AddFrameWithSite without a corresponding frame.
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kTrackEmptyRendererProcessesForReuse);
-  }
+  ServiceWorkerProcessManagerTest() = default;
 
   ServiceWorkerProcessManagerTest(const ServiceWorkerProcessManagerTest&) =
       delete;
@@ -128,9 +113,6 @@ class ServiceWorkerProcessManagerTest : public testing::Test {
   GURL script_url_;
   std::unique_ptr<SiteInstanceRenderProcessHostFactory>
       render_process_host_factory_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ServiceWorkerProcessManagerTest,
