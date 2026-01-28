@@ -18,6 +18,7 @@ def __step_config(ctx, step_config):
             "remote": config.get(ctx, "googlechrome"),
             # Only runs on Linux workers.
             "remote_command": "python3",
+            "platform_ref": "large",
         },
     ])
     return step_config
