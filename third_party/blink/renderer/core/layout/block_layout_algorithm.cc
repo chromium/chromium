@@ -3161,15 +3161,23 @@ BreakStatus BlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
         // there'll be enough lines after the break as well. Attempt to honor
         // the widows request.
         DCHECK_GE(line_count, first_overflowing_line_);
+        // If this is a block-in-inline, the layout result is for the block, not
+        // its containing dummy line. So we cannot assume that everything is
+        // PhysicalLineBoxFragment here.
+        const auto* line_box = DynamicTo<PhysicalLineBoxFragment>(
+            &layout_result.GetPhysicalFragment());
         int widows_found = line_count - first_overflowing_line_ + 1;
-        if (widows_found < Style().Widows()) {
+        if (widows_found < Style().Widows() ||
+            (line_box && line_box->IsEmptyLineBox())) {
           // Although we're out of space, we have to continue layout to figure
           // out exactly where to break in order to honor the widows
           // request. We'll make sure that we're going to leave at least as many
           // lines as specified by the 'widows' property for the next fragment
           // (if at all possible), which means that lines that could fit in the
           // current fragment (that we have already laid out) may have to be
-          // saved for the next fragment.
+          // saved for the next fragment. Ignore empty line boxes for these
+          // purposes. Empty line boxes may be created e.g. for floats, but they
+          // should not affect widows calculation.
           //
           // However, any text box block-end trimming must take place before
           // calculating widows, since we might fit an additional line by

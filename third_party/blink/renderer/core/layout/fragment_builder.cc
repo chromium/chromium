@@ -433,8 +433,9 @@ void FragmentBuilder::PropagateFromFragment(
         if (child_break_token)
           child_break_tokens_.push_back(child_break_token);
         break;
-      case PhysicalFragment::kFragmentLineBox:
-        if (child.IsLineForParallelFlow()) {
+      case PhysicalFragment::kFragmentLineBox: {
+        const auto& line_box = To<PhysicalLineBoxFragment>(child);
+        if (line_box.IsLineForParallelFlow()) {
           // This is a line that only contains a resumed float / block after a
           // fragmentation break. It should not affect orphans / widows
           // calculation.
@@ -452,8 +453,15 @@ void FragmentBuilder::PropagateFromFragment(
         // child_break_token is nullptr if this is the last line to be generated
         // from the node.
         last_inline_break_token_ = inline_break_token;
-        line_count_++;
+
+        // Count the line unless it's an empty one. Floats may trigger creation
+        // of empty lines, and they should not affect the line count, because
+        // that would incorrectly affect orphans / widows calculation.
+        if (!line_box.IsEmptyLineBox()) {
+          line_count_++;
+        }
         break;
+      }
     }
   }
 }
