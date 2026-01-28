@@ -11,16 +11,14 @@
  * #include=cr-shared-style md-select
  * #css_wrapper_metadata_end */
 
- :host {
+:host {
   --cr-dialog-width: 320px;
   --cr-dialog-button-container-padding-horizontal: 24px;
   --content-container-padding: 40px;
   --margin-between-panes: 80px;
   --radio-button-top-padding: 20px;
   --title-bottom-margin: 16px;
-}
 
-:host {
   --shimless-title-font-family: 'Google Sans', Roboto, sans-serif;
   --shimless-instructions-font-family: Roboto, sans-serif;
   --shimless-component-font-family: Roboto, sans-serif;

@@ -48,6 +48,7 @@
 
   :host-context(body.jelly-enabled) .diagnostics-chip {
     color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-2-font);
   }
 
   :host-context(body.jelly-enabled) .grey-container {
@@ -145,9 +146,6 @@
     width: var(--container-max-width-nav);
   }
 
-  :host-context(body.jelly-enabled) .diagnostics-chip {
-    font: var(--cros-body-2-font);
-  }
 
   .diagnostics-chip {
     background-color: var(--diagnostics-chip-bg-color);

@@ -14,8 +14,10 @@
 }
 
 .signin-frame {
+  background-color: white;
   height: 100%;
   margin: 0;
+  overflow: hidden;
   padding: 0;
   width: 100%;
 }
@@ -111,10 +113,6 @@
   width: 100%;
 }
 
-.signin-frame {
-  background-color: white;
-  overflow: hidden;
-}
 
 paper-spinner-lite {
   --spinner-size: 25px;

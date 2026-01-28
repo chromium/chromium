@@ -20,6 +20,8 @@
   --scanning-scrollbar-rgb: var(--google-grey-600-rgb);
   --scanning-scrollbar: rgba(var(--scanning-scrollbar-rgb), 0.38);
   --scanning-scrollbar-thumb: rgb(var(--scanning-scrollbar-rgb));
+  --action-toolbar-height: 40px;
+  --action-toolbar-width: 176px;
 }
 
 :host-context(body.jelly-enabled) {
@@ -94,10 +96,6 @@ cr-dialog [slot=title] {
   padding-bottom: 12px;
 }
 
-:host {
-  --action-toolbar-height: 40px;
-  --action-toolbar-width: 176px;
-}
 
 @media (min-width: 600px) {
   :host {
