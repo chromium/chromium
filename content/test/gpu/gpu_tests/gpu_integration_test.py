@@ -1388,6 +1388,7 @@ class GpuIntegrationTest(
         'qualcomm-adreno-(tm)-610',  # android-sm-a236b
         'qualcomm-adreno-(tm)-640',  # android-pixel-4
         'qualcomm-adreno-(tm)-740',  # android-sm-s911u1
+        'arm-0x92020010',  # android-pixel-6
         'arm-mali-g78',  # android-pixel-6
         'nvidia-nvidia-tegra',  # android-shield-android-tv
         'imagination-technologies-0x71061212',  # android-pixel-10
