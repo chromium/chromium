@@ -424,6 +424,7 @@ class DBusServices {
         dbus::ObjectPath(chromeos::kChromeFeaturesServicePath),
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<ChromeFeaturesServiceProvider>(
+                g_browser_process->local_state(),
                 std::move(feature_list_accessor))));
 
     printers_service_ = CrosDBusService::Create(

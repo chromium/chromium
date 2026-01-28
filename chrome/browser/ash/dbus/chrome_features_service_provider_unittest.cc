@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "dbus/message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,6 +42,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_Success) {
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       std::move(feature_list_accessor));
 
   const char kExpectedMessage[] =
@@ -70,6 +72,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_UnknownFeature) {
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       std::move(feature_list_accessor));
 
   const char kExpectedMessage[] =
@@ -100,6 +103,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_InvalidPrefix) {
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       std::move(feature_list_accessor));
 
   const char kExpectedMessage[] =
@@ -130,6 +134,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_InvalidInput) {
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       std::move(feature_list_accessor));
 
   const char kExpectedMessage[] =
@@ -160,6 +165,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_Success) {
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       std::move(feature_list_accessor));
 
   const char kExpectedMessage[] =
@@ -238,6 +244,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_NoInput) {
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       std::move(feature_list_accessor));
 
   constexpr char kExpectedMessage[] = R"--(message_type: MESSAGE_ERROR
@@ -262,6 +269,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_BadInput) {
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       std::move(feature_list_accessor));
 
   constexpr char kExpectedMessage[] = R"--(message_type: MESSAGE_ERROR
@@ -288,6 +296,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_BadArrayEntry) {
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       std::move(feature_list_accessor));
 
   constexpr char kExpectedMessage[] = R"--(message_type: MESSAGE_ERROR
@@ -317,6 +326,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_BadNameFormat) {
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       std::move(feature_list_accessor));
 
   constexpr char kExpectedMessage[] = R"--(message_type: MESSAGE_ERROR
