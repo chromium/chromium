@@ -1443,6 +1443,10 @@
       status: "experimental",
     },
     {
+      // crbug.com/417306102
+      name: "CssFitWidthTextReshaping",
+    },
+    {
       name: "CSSFontSizeAdjust",
       status: "stable",
     },

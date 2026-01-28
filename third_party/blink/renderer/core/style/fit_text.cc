@@ -4,10 +4,17 @@
 
 #include "third_party/blink/renderer/core/style/fit_text.h"
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+FitTextMethod FitText::Method() const {
+  return RuntimeEnabledFeatures::CssFitWidthTextReshapingEnabled()
+             ? FitTextMethod::kFontSize
+             : FitTextMethod::kScale;
+}
 
 String FitText::ToString() const {
   StringView type;

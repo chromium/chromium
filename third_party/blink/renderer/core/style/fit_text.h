@@ -23,10 +23,8 @@ enum class FitTextTarget : uint8_t {
 };
 
 enum class FitTextMethod : uint8_t {
-  kScale,  // This is the default method.
-  kFontSize,
-  kScaleInline,
-  kLetterSpacing,
+  kScale,     // Paint-time scaling. This is the default method.
+  kFontSize,  // Reshaping.
 };
 
 class CORE_EXPORT FitText {
@@ -44,7 +42,7 @@ class CORE_EXPORT FitText {
 
   FitTextType Type() const { return type_; }
   FitTextTarget Target() const { return target_; }
-  FitTextMethod Method() const { return FitTextMethod::kScale; }
+  FitTextMethod Method() const;
   // This returns 1.0 for "100%".
   std::optional<float> ScaleFactorLimit() const { return scale_factor_limit_; }
 

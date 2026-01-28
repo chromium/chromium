@@ -383,10 +383,6 @@ bool LineFitter::FitLine(float scale_factor,
       return ScaleLine(is_grow, scale_factor,
                        /* is_scaled_inline_only */ false, limit, line_info_);
 
-    case FitTextMethod::kScaleInline:
-      return ScaleLine(is_grow, scale_factor,
-                       /* is_scaled_inline_only */ true, limit, line_info_);
-
     case FitTextMethod::kFontSize: {
       LayoutUnit static_total_size;
       LayoutUnit flexible_total_size;
@@ -448,13 +444,6 @@ bool LineFitter::FitLine(float scale_factor,
       line_info_.SetTextFitScale(scale_factor);
       return true;
     }
-
-    case FitTextMethod::kLetterSpacing:
-      AddConsoleMessage(
-          node_, ConsoleMessage::Level::kInfo,
-          StrCat({"`text-", is_grow ? StringView("grow") : StringView("shrink"),
-                  ": ... letter-spacing` is not implemented yet."}));
-      break;
   }
   return false;
 }
