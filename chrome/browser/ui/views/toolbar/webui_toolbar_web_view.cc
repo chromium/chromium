@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
@@ -187,6 +188,8 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
     return;
   }
 
+  did_recover_from_previous_termination_ = false;
+
   // Reset the crash count if when the reset interval is reached.
   if (clock_->NowTicks() - last_crash_time_ >=
       features::kWebUIReloadButtonCrashRecoverResetInterval.Get()) {
@@ -203,19 +206,28 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
 
     // PostTask to avoid re-entrancy into RenderProcessHost during its death.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&WebUIToolbarWebView::ReloadWebContents,
-                                  weak_ptr_factory_.GetWeakPtr()));
+        FROM_HERE,
+        base::BindOnce(
+            &WebUIToolbarWebView::RecoverFromRendererCrashOrUnresponsiveness,
+            weak_ptr_factory_.GetWeakPtr()));
   } else {
     // TODO(crbug.com/474228715): if the crash_count exceeds the threshold, we
-    // should consider fall back to the C++ view or start a periodic attempt to
-    // recover.
+    // should consider fall back to the C++ view.
     base::UmaHistogramBoolean(
         kHistogramToolbarRenderProcessGoneExceedingRecoveryLimit, true);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &WebUIToolbarWebView::RecoverFromRendererCrashOrUnresponsiveness,
+            weak_ptr_factory_.GetWeakPtr()),
+        features::kWebUIReloadButtonCrashRecoverRetryInterval.Get());
   }
 }
 
-void WebUIToolbarWebView::ReloadWebContents() {
+void WebUIToolbarWebView::RecoverFromRendererCrashOrUnresponsiveness() {
   CHECK(web_view_);
+  CHECK(!did_recover_from_previous_termination_);
+  did_recover_from_previous_termination_ = true;
   web_view_->web_contents()->GetController().Reload(content::ReloadType::NORMAL,
                                                     /*check_for_repost=*/false);
 }

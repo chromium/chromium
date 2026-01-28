@@ -1812,14 +1812,32 @@ BASE_FEATURE(kWebUILocationBar, base::FEATURE_DISABLED_BY_DEFAULT);
 // UI reload button. If the renderer crashes, we will try to recover it by
 // reloading the contents until the number of crashes reaches
 // `kWebUIReloadButtonMaxCrashRecoveryTimes`. If the maximum number of crash
-// counts is reached, no recovery will be attempted. The counter will reset if
+// counts is reached, no recovery will be attempted until
+// `WebUIReloadButtonCrashRecoverRetryInterval` later. The counter will reset if
 // there is no crash within `WebUIReloadButtonCrashRecoverResetInterval`.
+// Here is an example with the default settings.
+// - 00:00 renderer crashes
+// - 00:00 recovery is triggered
+// - 00:05 renderer crashes
+// - 00:05 recovery is triggered
+// - 00:16 renderer crashes
+// - 00:16 recovery is triggered, as it has been >= 10s and the counter is reset
+// - 00:17 renderer crashes
+// - 00:17 recovery is triggered
+// - 00:18 renderer crashes
+// - 01:18 recovery is triggered, it's not immediate because the it exceeds the
+//         max recovery times, but it will retry after 1 minute
 const base::FeatureParam<int> kWebUIReloadButtonMaxCrashRecoveryTimes{
     &kWebUIReloadButton, "WebUIReloadButtonMaxCrashRecoveryTimes", 3};
 const base::FeatureParam<base::TimeDelta>
     kWebUIReloadButtonCrashRecoverResetInterval{
         &kWebUIReloadButton, "WebUIReloadButtonCrashRecoverResetInterval",
         base::Seconds(10)};
+const base::FeatureParam<base::TimeDelta>
+    kWebUIReloadButtonCrashRecoverRetryInterval{
+        &kWebUIReloadButton, "WebUIReloadButtonCrashRecoverRetryInterval",
+        base::Minutes(1)};
+
 // When enabled, initial WebUI renderers that become unresponsive will be
 // restarted without showing the hung renderer dialog.
 // `WebUIReloadButtonRestartUnresponsiveRenderersTimeout` controls the timeout
