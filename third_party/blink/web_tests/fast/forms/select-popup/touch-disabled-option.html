@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<link rel=help href="https://issues.chromium.org/issues/40815207">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../../../resources/testdriver-actions.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+
+<select>
+  <option disabled>disabled</option>
+  <option>one</option>
+  <option>two</option>
+</select>
+
+<script>
+function touch(x, y) {
+  eventSender.addTouchPoint(x, y);
+  eventSender.touchStart();
+  eventSender.releaseTouchPoint(0);
+  eventSender.touchEnd();
+}
+
+promise_test(async () => {
+  const select = document.querySelector('select');
+  assert_equals(select.value, 'one',
+    'select.value should be one at the start of the test.');
+
+  await openPicker(select);
+  const picker = internals.pagePopupWindow.global.picker;
+
+  const targetOption = picker.selectElement_.children[0];
+  let [x, y] = elementCenterPosition(targetOption);
+  // The y coordinate from elementCenterPosition isn't correct, but this fixes it.
+  y -= (targetOption.offsetHeight / 2);
+
+  eventSender.gestureTap(x, y);
+  assert_equals(select.value, 'one',
+    'select.value should not change after tapping disabled option.');
+  assert_true(!!internals.pagePopupWindow,
+    'picker should still be open after tapping disabled option.');
+}, 'Tapping a disabled option should not select it.');
+</script>
