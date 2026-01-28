@@ -8,24 +8,6 @@ import "mojo/public/mojom/base/string16.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
-[Extensible]
-enum SearchStatus {
-  // Indicates an error with the search. No results will be sent with this
-  // status, and there may or may not be further results sent.
-  [Default] kError = 0,
-  // Search session is complete and no more results will be sent. This
-  // accompanies the final set of results.
-  kDone = 1,
-  // Search session is still in progress and further results may be sent. This
-  // accompanies a set of results.
-  kInProgress = 2,
-  // Search session has been cancelled due to a newer query. No more results
-  // will be sent.
-  kCancelled = 3,
-  // The AutocompleteController is unavailable. No more results will be sent.
-  [MinVersion=1] kBackendUnavailable = 4,
-};
-
 // Enum represents the result type.
 [Extensible]
 enum SearchResultType {
@@ -174,32 +156,6 @@ struct SearchResult {
     kTyped = 1,
     kGenerated = 2,
   };
-};
-
-// Interface to send results from lacros to ash. Implemented in ash.
-// Next min method ID: 1
-[Uuid="ce797aae-286e-4b63-b7b3-090bf5040818"]
-interface SearchResultsPublisher {
-  // Sends search result from lacros to ash. For each query, this will be called
-  // multiple times, each time it will overwrite the existing results. When all
-  // results for a query are already sent, the connection will be reset and no
-  // more results will be sent.
-  OnSearchResultsReceived@0(SearchStatus status, array<SearchResult>? result);
-};
-
-// Interface to send search queries from ash to lacros. Implemented in lacros.
-// Next min method ID: 2
-[Uuid="c2d77467-b04d-4b10-8f54-de52c3cbe30d"]
-interface SearchController {
-  // Sends search queries from ash to lacros. If a search query is called while
-  // there is an in-flight search query, the in-flight search query will be
-  // cancelled before the new search query is executed.
-  //
-  // Returns the pipe to bind to the implementation of `SearchResultsPublisher`
-  // that should receive the results of this search. Returns a new pipe each
-  // invocation so that each pipe conceptually represents a single search.
-  Search@0(mojo_base.mojom.String16 query) =>
-      (pending_associated_receiver<SearchResultsPublisher> publisher);
 };
 
 // Interface implemented by result objects to receive asynchronously-updated
