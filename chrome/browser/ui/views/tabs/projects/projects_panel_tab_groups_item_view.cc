@@ -7,10 +7,16 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -61,7 +67,19 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
   layout->set_between_child_spacing(kSpacingBetweenChildViews);
   layout->SetCollapseMarginsSpacing(true);
-  SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
+
+  auto* ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop->SetLayerRegion(views::LayerRegion::kBelow);
+  ink_drop->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
+  ink_drop->SetHighlightOpacity(1.0f);
+  views::HighlightPathGenerator::Install(
+      this, projects_panel::GetListItemHighlightPathGenerator());
+  views::FocusRing::Install(this);
+  views::FocusRing::Get(this)->SetPathGenerator(
+      projects_panel::GetListItemHighlightPathGenerator());
+  views::FocusRing::Get(this)->SetHaloInset(
+      projects_panel::kListItemFocusRingHaloInset);
 
   tab_group_icon_ = AddChildView(std::make_unique<views::ImageView>());
   tab_group_icon_->SetImageSize(kTabGroupIconImageSize);
