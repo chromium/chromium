@@ -17,6 +17,7 @@
 #include "components/wallet/core/browser/data_models/data_model_utils.h"
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/browser/ingestion/walletable_pass_client.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_ingestion_utils.h"
 #include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
@@ -379,7 +380,7 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
   }
 
   processing_state_.extracted_pass =
-      WalletPass::FromProto(parsed_response->walletable_pass(0));
+      ExtractWalletPassFromProto(parsed_response->walletable_pass(0));
   if (!processing_state_.extracted_pass) {
     metrics::LogServerExtractionEvent(
         pass_category, WalletablePassServerExtractionFunnelEvents::

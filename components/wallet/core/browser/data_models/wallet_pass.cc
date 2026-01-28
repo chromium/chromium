@@ -4,22 +4,9 @@
 
 #include "components/wallet/core/browser/data_models/wallet_pass.h"
 
-#include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace wallet {
-
-// static
-LoyaltyCard LoyaltyCard::FromProto(
-    const optimization_guide::proto::LoyaltyCard& proto,
-    std::optional<WalletBarcode> barcode) {
-  LoyaltyCard card;
-  card.plan_name = proto.plan_name();
-  card.issuer_name = proto.issuer_name();
-  card.member_id = proto.member_id();
-  card.barcode = std::move(barcode);
-  return card;
-}
 
 LoyaltyCard::LoyaltyCard() = default;
 LoyaltyCard::LoyaltyCard(const LoyaltyCard&) = default;
@@ -28,59 +15,12 @@ LoyaltyCard::LoyaltyCard(LoyaltyCard&&) = default;
 LoyaltyCard& LoyaltyCard::operator=(LoyaltyCard&&) = default;
 LoyaltyCard::~LoyaltyCard() = default;
 
-// static
-EventPass EventPass::FromProto(
-    const optimization_guide::proto::EventPass& proto,
-    std::optional<WalletBarcode> barcode) {
-  EventPass event;
-  event.event_name = proto.event_name();
-  event.event_start_date = proto.event_start_date();
-  event.event_start_time = proto.event_start_time();
-  event.event_end_time = proto.event_end_time();
-  event.seat = proto.seat();
-  event.row = proto.row();
-  event.section = proto.section();
-  event.gate = proto.gate();
-  event.venue = proto.venue();
-  event.address = proto.address();
-  event.owner_name = proto.owner_name();
-  event.issuer_name = proto.issuer_name();
-  event.barcode = std::move(barcode);
-  return event;
-}
-
 EventPass::EventPass() = default;
 EventPass::EventPass(const EventPass&) = default;
 EventPass& EventPass::operator=(const EventPass&) = default;
 EventPass::EventPass(EventPass&&) = default;
 EventPass& EventPass::operator=(EventPass&&) = default;
 EventPass::~EventPass() = default;
-
-// static
-TransitTicket TransitTicket::FromProto(
-    const optimization_guide::proto::TransitTicket& proto,
-    std::optional<WalletBarcode> barcode) {
-  TransitTicket ticket;
-  ticket.issuer_name = proto.issuer_name();
-  ticket.card_number = proto.card_number();
-  ticket.date_of_expiry = proto.date_of_expiry();
-  ticket.card_verification_code = proto.card_verification_code();
-  ticket.owner_name = proto.owner_name();
-  ticket.agency_name = proto.agency_name();
-  ticket.vehicle_number = proto.vehicle_number();
-  ticket.seat_number = proto.seat_number();
-  ticket.carriage_number = proto.carriage_number();
-  ticket.platform = proto.platform();
-  ticket.ticket_type = proto.ticket_type();
-  ticket.validity_period = proto.validity_period();
-  ticket.origin = proto.origin();
-  ticket.destination = proto.destination();
-  ticket.time_of_travel = proto.time_of_travel();
-  ticket.date_of_travel = proto.date_of_travel();
-  ticket.barcode = std::move(barcode);
-
-  return ticket;
-}
 
 TransitTicket::TransitTicket() = default;
 TransitTicket::TransitTicket(const TransitTicket&) = default;
@@ -95,32 +35,6 @@ WalletPass& WalletPass::operator=(const WalletPass&) = default;
 WalletPass::WalletPass(WalletPass&&) = default;
 WalletPass& WalletPass::operator=(WalletPass&&) = default;
 WalletPass::~WalletPass() = default;
-
-// static
-std::optional<WalletPass> WalletPass::FromProto(
-    const optimization_guide::proto::WalletablePass& proto,
-    std::optional<WalletBarcode> barcode) {
-  if (proto.has_loyalty_card()) {
-    LoyaltyCard card =
-        LoyaltyCard::FromProto(proto.loyalty_card(), std::move(barcode));
-    WalletPass pass;
-    pass.pass_data = std::move(card);
-    return pass;
-  } else if (proto.has_event_pass()) {
-    EventPass event =
-        EventPass::FromProto(proto.event_pass(), std::move(barcode));
-    WalletPass pass;
-    pass.pass_data = std::move(event);
-    return pass;
-  } else if (proto.has_transit_ticket()) {
-    TransitTicket ticket =
-        TransitTicket::FromProto(proto.transit_ticket(), std::move(barcode));
-    WalletPass pass;
-    pass.pass_data = std::move(ticket);
-    return pass;
-  }
-  return std::nullopt;
-}
 
 PassCategory WalletPass::GetPassCategory() const {
   return std::visit(

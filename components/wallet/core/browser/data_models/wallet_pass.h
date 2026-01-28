@@ -12,13 +12,6 @@
 #include "components/wallet/core/browser/data_models/boarding_pass.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
 
-namespace optimization_guide::proto {
-class EventPass;
-class LoyaltyCard;
-class TransitTicket;
-class WalletablePass;
-}  // namespace optimization_guide::proto
-
 namespace wallet {
 
 // Represents the category of a walletable pass.
@@ -33,10 +26,6 @@ enum class PassCategory {
 
 // Represents a loyalty card with its relevant details.
 struct LoyaltyCard {
-  static LoyaltyCard FromProto(
-      const optimization_guide::proto::LoyaltyCard& proto,
-      std::optional<WalletBarcode> barcode);
-
   LoyaltyCard();
   LoyaltyCard(const LoyaltyCard&);
   LoyaltyCard& operator=(const LoyaltyCard&);
@@ -56,9 +45,6 @@ struct LoyaltyCard {
 
 // Represents an event pass with its relevant details.
 struct EventPass {
-  static EventPass FromProto(const optimization_guide::proto::EventPass& proto,
-                             std::optional<WalletBarcode> barcode);
-
   EventPass();
   EventPass(const EventPass&);
   EventPass& operator=(const EventPass&);
@@ -87,10 +73,6 @@ struct EventPass {
 
 // Represents a transit ticket with its relevant details.
 struct TransitTicket {
-  static TransitTicket FromProto(
-      const optimization_guide::proto::TransitTicket& proto,
-      std::optional<WalletBarcode> barcode);
-
   TransitTicket();
   TransitTicket(const TransitTicket&);
   TransitTicket& operator=(const TransitTicket&);
@@ -131,11 +113,6 @@ struct WalletPass {
   ~WalletPass();
 
   bool operator==(const WalletPass& other) const = default;
-
-  // TODO(crbug.com/478783796): Move closer to where it's used.
-  static std::optional<WalletPass> FromProto(
-      const optimization_guide::proto::WalletablePass& proto,
-      std::optional<WalletBarcode> barcode = std::nullopt);
 
   // Returns the pass category of the Google Wallet pass.
   PassCategory GetPassCategory() const;

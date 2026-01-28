@@ -17,6 +17,8 @@ static_library("browser") {
     "ingestion/walletable_pass_client.h",
     "ingestion/walletable_pass_ingestion_controller.cc",
     "ingestion/walletable_pass_ingestion_controller.h",
+    "ingestion/walletable_pass_ingestion_utils.cc",
+    "ingestion/walletable_pass_ingestion_utils.h",
     "metrics/wallet_metrics.cc",
     "metrics/wallet_metrics.h",
     "network/wallet_http_client.h",
@@ -60,6 +62,7 @@ source_set("unit_tests") {
   sources = [
     "data_models/boarding_pass_unittest.cc",
     "data_models/wallet_pass_unittest.cc",
+    "ingestion/walletable_pass_ingestion_utils_unittest.cc",
     "network/wallet_http_client_impl_unittest.cc",
     "walletable_permission_utils_unittest.cc",
   ]
