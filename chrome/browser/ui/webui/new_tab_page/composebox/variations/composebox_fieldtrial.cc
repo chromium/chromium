@@ -406,7 +406,7 @@ const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode(
 
 const base::FeatureParam<bool> kMultiLineEnabled(&kNtpRealboxNext,
                                                  "MultiLineEnabled",
-                                                 false);
+                                                 true);
 
 std::string_view RealboxLayoutModeToString(
     RealboxLayoutMode realbox_layout_mode) {
