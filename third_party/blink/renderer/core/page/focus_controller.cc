@@ -924,6 +924,9 @@ ScopedFocusNavigation ScopedFocusNavigation::OwnedByPopoverInvoker(
     const Element& invoker,
     FocusController::OwnerMap& owner_map) {
   HTMLElement* popover = invoker.GetOpenPopoverTarget();
+  if (IsShadowHost(popover)) {
+    return ScopedFocusNavigation::OwnedByShadowHost(*popover, owner_map);
+  }
   DCHECK(InvokerForOpenPopover(popover));
   return ScopedFocusNavigation(*popover, nullptr, owner_map);
 }
