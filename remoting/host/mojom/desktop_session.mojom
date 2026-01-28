@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "remoting/host/mojom/keyboard_layout.mojom";
 import "remoting/host/mojom/webrtc_types.mojom";
-import "remoting/host/mojom/wrapped_primitives.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Contains captured audio data.
@@ -85,8 +84,8 @@ struct KeyEvent {
   // Keyboard lock states. The field should be specified only if the state can
   // be reliably determined by the client. E.g., OS X does not have num lock, so
   // only caps_lock should be provided by a client running on OS X.
-  Bool? caps_lock_state;
-  Bool? num_lock_state;
+  bool? caps_lock_state;
+  bool? num_lock_state;
 };
 
 // This enum mirrors the remoting::protocol::MouseEvent::MouseButton enum.
@@ -106,25 +105,25 @@ struct MouseEvent {
   // coordinates are in DIPs. Otherwise they are in host's physical pixels. In
   // both coordinates systems, the top-left monitor on the system always starts
   // from (0, 0).
-  Int32? x;
-  Int32? y;
+  int32? x;
+  int32? y;
 
   // Mouse button event.
   MouseButton button;
   // |button_down| is not set when |button| is kUndefined.
-  Bool? button_down;
+  bool? button_down;
 
   // Mouse wheel information.
   // These values encode the number of pixels and 'ticks' of movement that
   // would result from the wheel event on the client system.
-  Float? wheel_delta_x;
-  Float? wheel_delta_y;
-  Float? wheel_ticks_x;
-  Float? wheel_ticks_y;
+  float? wheel_delta_x;
+  float? wheel_delta_y;
+  float? wheel_ticks_x;
+  float? wheel_ticks_y;
 
   // Mouse movement information. Provided only when mouse lock is engaged.
-  Int32? delta_x;
-  Int32? delta_y;
+  int32? delta_x;
+  int32? delta_y;
 };
 
 // Text input event for input method different from physical keyboards,
@@ -360,7 +359,7 @@ struct FileTransferError {
     kNotLoggedIn = 7,
   };
   Type type;
-  Int32? api_error_code;
+  int32? api_error_code;
   string function;
   string source_file;
   uint32 line_number;

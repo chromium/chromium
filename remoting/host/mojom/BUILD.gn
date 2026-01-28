@@ -16,7 +16,6 @@ mojom("mojom") {
     "remoting_host.mojom",
     "webauthn_proxy.mojom",
     "webrtc_types.mojom",
-    "wrapped_primitives.mojom",
   ]
 
   deps = [

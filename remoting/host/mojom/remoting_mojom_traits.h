@@ -32,7 +32,6 @@
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
 #include "remoting/host/mojom/remoting_host.mojom-shared.h"
 #include "remoting/host/mojom/webrtc_types.mojom-shared.h"
-#include "remoting/host/mojom/wrapped_primitives.mojom-shared.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/coordinates.pb.h"
@@ -46,52 +45,6 @@
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
-
-template <>
-class StructTraits<remoting::mojom::BoolDataView, bool> {
- public:
-  static bool value(bool value) { return value; }
-
-  static bool Read(remoting::mojom::BoolDataView data_view, bool* out_value) {
-    *out_value = data_view.value();
-    return true;
-  }
-};
-
-template <>
-class StructTraits<remoting::mojom::FloatDataView, float> {
- public:
-  static float value(float value) { return value; }
-
-  static bool Read(remoting::mojom::FloatDataView data_view, float* out_value) {
-    *out_value = data_view.value();
-    return true;
-  }
-};
-
-template <>
-class StructTraits<remoting::mojom::Int32DataView, int32_t> {
- public:
-  static int32_t value(int32_t value) { return value; }
-
-  static bool Read(remoting::mojom::Int32DataView data_view,
-                   int32_t* out_value) {
-    *out_value = data_view.value();
-    return true;
-  }
-};
-
-template <>
-class StructTraits<remoting::mojom::UInt32DataView, uint32_t> {
- public:
-  static uint32_t value(uint32_t value) { return value; }
-
-  static bool Read(remoting::mojom::UInt32DataView data_view,
-                   uint32_t* out_value) {
-    *out_value = data_view.value();
-    return true;
-  }
-};
 
 template <>
 class StructTraits<remoting::mojom::DesktopCaptureOptionsDataView,

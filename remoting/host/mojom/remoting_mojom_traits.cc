@@ -205,12 +205,8 @@ bool mojo::StructTraits<remoting::mojom::FileTransferErrorDataView,
   }
   out_error->set_type(type);
 
-  std::optional<int32_t> api_error_code;
-  if (!data_view.ReadApiErrorCode(&api_error_code)) {
-    return false;
-  }
-  if (api_error_code) {
-    out_error->set_api_error_code(*api_error_code);
+  if (data_view.api_error_code().has_value()) {
+    out_error->set_api_error_code(data_view.api_error_code().value());
   }
 
   std::string function;
@@ -278,20 +274,12 @@ bool mojo::StructTraits<remoting::mojom::KeyEventDataView,
   out_event->set_usb_keycode(data_view.usb_keycode());
   out_event->set_lock_states(data_view.lock_states());
 
-  std::optional<bool> caps_lock_state;
-  if (!data_view.ReadCapsLockState(&caps_lock_state)) {
-    return false;
-  }
-  if (caps_lock_state.has_value()) {
-    out_event->set_caps_lock_state(*caps_lock_state);
+  if (data_view.caps_lock_state().has_value()) {
+    out_event->set_caps_lock_state(data_view.caps_lock_state().value());
   }
 
-  std::optional<bool> num_lock_state;
-  if (!data_view.ReadNumLockState(&num_lock_state)) {
-    return false;
-  }
-  if (num_lock_state.has_value()) {
-    out_event->set_num_lock_state(*num_lock_state);
+  if (data_view.num_lock_state().has_value()) {
+    out_event->set_num_lock_state(data_view.num_lock_state().value());
   }
 
   return true;
@@ -344,20 +332,12 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
                         ::remoting::protocol::MouseEvent>::
     Read(remoting::mojom::MouseEventDataView data_view,
          ::remoting::protocol::MouseEvent* out_event) {
-  std::optional<int32_t> x;
-  if (!data_view.ReadX(&x)) {
-    return false;
-  }
-  if (x.has_value()) {
-    out_event->set_x(*x);
+  if (data_view.x().has_value()) {
+    out_event->set_x(data_view.x().value());
   }
 
-  std::optional<int32_t> y;
-  if (!data_view.ReadY(&y)) {
-    return false;
-  }
-  if (y.has_value()) {
-    out_event->set_y(*y);
+  if (data_view.y().has_value()) {
+    out_event->set_y(data_view.y().value());
   }
 
   if (data_view.button() != remoting::mojom::MouseButton::kUndefined) {
@@ -368,60 +348,32 @@ bool mojo::StructTraits<remoting::mojom::MouseEventDataView,
     out_event->set_button(mouse_button);
   }
 
-  std::optional<bool> button_down;
-  if (!data_view.ReadButtonDown(&button_down)) {
-    return false;
-  }
-  if (button_down.has_value()) {
-    out_event->set_button_down(*button_down);
+  if (data_view.button_down().has_value()) {
+    out_event->set_button_down(data_view.button_down().value());
   }
 
-  std::optional<float> wheel_delta_x;
-  if (!data_view.ReadWheelDeltaX(&wheel_delta_x)) {
-    return false;
-  }
-  if (wheel_delta_x.has_value()) {
-    out_event->set_wheel_delta_x(*wheel_delta_x);
+  if (data_view.wheel_delta_x().has_value()) {
+    out_event->set_wheel_delta_x(data_view.wheel_delta_x().value());
   }
 
-  std::optional<float> wheel_delta_y;
-  if (!data_view.ReadWheelDeltaY(&wheel_delta_y)) {
-    return false;
-  }
-  if (wheel_delta_y.has_value()) {
-    out_event->set_wheel_delta_y(*wheel_delta_y);
+  if (data_view.wheel_delta_y().has_value()) {
+    out_event->set_wheel_delta_y(data_view.wheel_delta_y().value());
   }
 
-  std::optional<float> wheel_ticks_x;
-  if (!data_view.ReadWheelTicksX(&wheel_ticks_x)) {
-    return false;
-  }
-  if (wheel_ticks_x.has_value()) {
-    out_event->set_wheel_ticks_x(*wheel_ticks_x);
+  if (data_view.wheel_ticks_x().has_value()) {
+    out_event->set_wheel_ticks_x(data_view.wheel_ticks_x().value());
   }
 
-  std::optional<float> wheel_ticks_y;
-  if (!data_view.ReadWheelTicksY(&wheel_ticks_y)) {
-    return false;
-  }
-  if (wheel_ticks_y.has_value()) {
-    out_event->set_wheel_ticks_y(*wheel_ticks_y);
+  if (data_view.wheel_ticks_y().has_value()) {
+    out_event->set_wheel_ticks_y(data_view.wheel_ticks_y().value());
   }
 
-  std::optional<int32_t> delta_x;
-  if (!data_view.ReadDeltaX(&delta_x)) {
-    return false;
-  }
-  if (delta_x.has_value()) {
-    out_event->set_delta_x(*delta_x);
+  if (data_view.delta_x().has_value()) {
+    out_event->set_delta_x(data_view.delta_x().value());
   }
 
-  std::optional<int32_t> delta_y;
-  if (!data_view.ReadDeltaY(&delta_y)) {
-    return false;
-  }
-  if (delta_y.has_value()) {
-    out_event->set_delta_y(*delta_y);
+  if (data_view.delta_y().has_value()) {
+    out_event->set_delta_y(data_view.delta_y().value());
   }
 
   return true;
