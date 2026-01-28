@@ -472,7 +472,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   if (IsCertificateError(result) && !trust_anchor_ids_for_retry_.has_value() &&
       base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
     std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
-        ssl_socket_->GetServerTrustAnchorIDsForRetry();
+        ssl_socket_->GetServerTrustAnchorIDs();
     SSLInfo ssl_info;
     CHECK(ssl_socket_->GetSSLInfo(&ssl_info));
     CHECK(ssl_info.cert.get());

@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
@@ -641,6 +642,16 @@ std::vector<std::vector<uint8_t>> ParseTlsTrustAnchorIDs(
     parsed_ids.emplace_back(base::ToVector(id));
   }
   return parsed_ids;
+}
+
+std::string TrustAnchorIDsToString(
+    const std::vector<std::vector<uint8_t>>& trust_anchor_ids) {
+  std::vector<std::string> oid_strings;
+  oid_strings.reserve(trust_anchor_ids.size());
+  for (const auto& id : trust_anchor_ids) {
+    oid_strings.emplace_back(RelativeOidToString(id));
+  }
+  return base::JoinString(oid_strings, ", ");
 }
 
 }  // namespace net::x509_util

@@ -897,4 +897,15 @@ TEST(X509UtilTest, ParseTlsTrustAnchorIDs) {
   }
 }
 
+TEST(X509UtilTest, TrustAnchorIDsToString) {
+  std::vector<std::vector<uint8_t>> trust_anchor_ids = {
+      // 44363.48.7 encoded as a relative OID
+      {0x82, 0xda, 0x4b, 0x30, 0x07},
+      // 44363.48.7.127 encoded as a relative OID
+      {0x82, 0xda, 0x4b, 0x30, 0x07, 0x7f},
+  };
+  EXPECT_EQ("44363.48.7, 44363.48.7.127",
+            TrustAnchorIDsToString(trust_anchor_ids));
+}
+
 }  // namespace net::x509_util

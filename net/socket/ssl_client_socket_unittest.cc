@@ -2740,7 +2740,8 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsTLSExtension) {
 // Tests that Trust Anchor IDs are sent when configured via SSLConfig.
 TEST_P(SSLClientSocketVersionTest, ConnectWithTrustAnchorIDs) {
   SSLConfig ssl_config;
-  ssl_config.trust_anchor_ids = std::vector<uint8_t>{0x03, 0x01, 0x02, 0x03};
+  ssl_config.trust_anchor_ids =
+      std::vector<uint8_t>{0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x05};
 
   bool ran_callback = false;
   SSLServerConfig server_config = GetServerConfig();
@@ -2772,6 +2773,12 @@ TEST_P(SSLClientSocketVersionTest, ConnectWithTrustAnchorIDs) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(ran_callback);
+
+  auto entries = log_observer_.GetEntriesWithType(
+      NetLogEventType::SSL_CLIENT_TRUST_ANCHOR_IDS_LIST);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(GetStringValueFromParams(entries[0], "trust_anchor_ids"),
+            "1.2.3, 4.5");
 }
 
 // Tests that an empty Trust Anchor ID list is sent when configured.
@@ -2820,14 +2827,18 @@ TEST_P(SSLClientSocketVersionTest, ConnectToServerWithTrustAnchorIDs) {
   tai_config.intermediate = EmbeddedTestServer::IntermediateType::kNone;
   tai_config.trust_anchor_id = {0x01, 0x02, 0x03};
 
+  EmbeddedTestServer::ServerCertificateConfig tai_config2;
+  tai_config2.intermediate = EmbeddedTestServer::IntermediateType::kNone;
+  tai_config2.trust_anchor_id = {0x04, 0x05};
+
   EmbeddedTestServer::ServerCertificateConfig default_config;
   default_config.intermediate =
       EmbeddedTestServer::IntermediateType::kInHandshake;
 
   SSLServerConfig server_config;
 
-  ASSERT_TRUE(
-      StartEmbeddedTestServer({tai_config, default_config}, server_config));
+  ASSERT_TRUE(StartEmbeddedTestServer({tai_config, tai_config2, default_config},
+                                      server_config));
 
   SSLConfig client_config;
 
@@ -2846,67 +2857,65 @@ TEST_P(SSLClientSocketVersionTest, ConnectToServerWithTrustAnchorIDs) {
   client_config.trust_anchor_ids = {0x03, 0x01, 0x01, 0x01, 0x02, 0x03, 0x03};
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
   EXPECT_THAT(rv, IsOk());
-  EXPECT_TRUE(sock_->GetServerTrustAnchorIDsForRetry().empty());
+  EXPECT_TRUE(sock_->GetServerTrustAnchorIDs().empty());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
   EXPECT_EQ(1u, ssl_info.unverified_cert->intermediate_buffers().size());
+  auto entries = log_observer_.GetEntriesWithType(
+      NetLogEventType::SSL_CLIENT_RECEIVED_TRUST_ANCHOR_IDS);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(GetStringValueFromParams(entries[0], "trust_anchor_ids"),
+            "1.2.3, 4.5");
 
   // If the client advertises the trust anchor ID corresponding to the server's
   // intermediate, then the server should omit the intermediate from the
   // connection.
   client_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03};
+  log_observer_.Clear();
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
   EXPECT_THAT(rv, IsOk());
-  EXPECT_TRUE(sock_->GetServerTrustAnchorIDsForRetry().empty());
+  EXPECT_TRUE(sock_->GetServerTrustAnchorIDs().empty());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
   EXPECT_EQ(0u, ssl_info.unverified_cert->intermediate_buffers().size());
+  entries = log_observer_.GetEntriesWithType(
+      NetLogEventType::SSL_CLIENT_RECEIVED_TRUST_ANCHOR_IDS);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(GetStringValueFromParams(entries[0], "trust_anchor_ids"),
+            "1.2.3, 4.5");
 
   // If the client advertises multiple trust anchor IDs including the one
   // corresponding to the server's intermediate, then the server should omit the
   // intermediate from the connection.
   client_config.trust_anchor_ids = {0x02, 0x01, 0x01, 0x03, 0x01, 0x02, 0x03};
+  log_observer_.Clear();
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
   EXPECT_THAT(rv, IsOk());
-  EXPECT_TRUE(sock_->GetServerTrustAnchorIDsForRetry().empty());
+  EXPECT_TRUE(sock_->GetServerTrustAnchorIDs().empty());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
   EXPECT_EQ(0u, ssl_info.unverified_cert->intermediate_buffers().size());
+  entries = log_observer_.GetEntriesWithType(
+      NetLogEventType::SSL_CLIENT_RECEIVED_TRUST_ANCHOR_IDS);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(GetStringValueFromParams(entries[0], "trust_anchor_ids"),
+            "1.2.3, 4.5");
 
   // If the client advertises the trust anchor ID corresponding to the server's
   // intermediate but gets an error, it should be able to access the trust
   // anchor IDs that the server advertised in the handshake.
   cert_verifier_->set_default_result(ERR_CERT_INVALID);
   client_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03};
+  log_observer_.Clear();
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
   EXPECT_THAT(rv, IsError(ERR_CERT_INVALID));
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
   EXPECT_EQ(0u, ssl_info.unverified_cert->intermediate_buffers().size());
-  EXPECT_EQ(sock_->GetServerTrustAnchorIDsForRetry(),
-            std::vector<std::vector<uint8_t>>({{0x01, 0x02, 0x03}}));
-}
-
-// Tests the method that parses the server's Trust Anchor IDs that it can
-// provide in the handshake.
-TEST_F(SSLClientSocketTest, ParseServerTrustAnchorIDs) {
-  struct TestCase {
-    const std::vector<uint8_t> server_trust_anchor_ids;
-    const std::vector<std::vector<uint8_t>> expected_parsed_trust_anchor_ids;
-  };
-  TestCase test_cases[] = {
-      // Two Trust Anchor IDs, correctly formed
-      {{0x03, 0x01, 0x02, 0x03, 0x02, 0x01, 0x01},
-       {{0x01, 0x02, 0x03}, {0x01, 0x01}}},
-      // Empty
-      {{}, {}},
-      // Malformed
-      {{0x02, 0x1}, {}},
-      {{0x00, 0x01, 0x02, 0x03}, {}},
-      {{0x00}, {}},
-  };
-
-  for (const auto& test : test_cases) {
-    base::SpanReader<const uint8_t> reader(test.server_trust_anchor_ids);
-    auto result = SSLClientSocketImpl::ParseServerTrustAnchorIDs(&reader);
-    EXPECT_EQ(result, test.expected_parsed_trust_anchor_ids);
-  }
+  EXPECT_EQ(
+      sock_->GetServerTrustAnchorIDs(),
+      std::vector<std::vector<uint8_t>>({{0x01, 0x02, 0x03}, {0x04, 0x05}}));
+  entries = log_observer_.GetEntriesWithType(
+      NetLogEventType::SSL_CLIENT_RECEIVED_TRUST_ANCHOR_IDS);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(GetStringValueFromParams(entries[0], "trust_anchor_ids"),
+            "1.2.3, 4.5");
 }
 
 // Tests that OCSP stapling is requested, as per Certificate Transparency (RFC

@@ -221,6 +221,11 @@ NET_EXPORT std::string RelativeOidToString(
 NET_EXPORT std::vector<std::vector<uint8_t>> ParseTlsTrustAnchorIDs(
     base::span<const uint8_t> wire_ids);
 
+// Returns a string representation of the provided trust anchor IDs by
+// stringifying each ID (using RelativeOidToString) and joining them with ", ".
+NET_EXPORT std::string TrustAnchorIDsToString(
+    const std::vector<std::vector<uint8_t>>& trust_anchor_ids);
+
 }  // namespace x509_util
 
 }  // namespace net

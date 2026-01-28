@@ -109,8 +109,7 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
   // the server provided in the handshake. The connection can be retried with
   // these new Trust Anchor IDs, overriding the Trust Anchor IDs that the server
   // advertised in DNS.
-  virtual std::vector<std::vector<uint8_t>>
-  GetServerTrustAnchorIDsForRetry() = 0;
+  virtual std::vector<std::vector<uint8_t>> GetServerTrustAnchorIDs() = 0;
 
   // Log SSL key material to |logger|. Must be called before any
   // SSLClientSockets are created.

@@ -275,7 +275,7 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
     CHECK(ssl_socket_);
 
     std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
-        ssl_socket_->GetServerTrustAnchorIDsForRetry();
+        ssl_socket_->GetServerTrustAnchorIDs();
     SSLInfo ssl_info;
     CHECK(ssl_socket_->GetSSLInfo(&ssl_info));
     CHECK(ssl_info.cert.get());

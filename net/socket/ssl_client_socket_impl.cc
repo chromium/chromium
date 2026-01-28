@@ -314,7 +314,7 @@ std::vector<uint8_t> SSLClientSocketImpl::GetECHRetryConfigs() {
 }
 
 std::vector<std::vector<uint8_t>>
-SSLClientSocketImpl::GetServerTrustAnchorIDsForRetry() {
+SSLClientSocketImpl::GetServerTrustAnchorIDs() {
   const uint8_t* available_trust_anchor_ids;
   size_t available_trust_anchor_ids_len;
   SSL_get0_peer_available_trust_anchors(ssl_.get(), &available_trust_anchor_ids,
@@ -324,10 +324,9 @@ SSLClientSocketImpl::GetServerTrustAnchorIDsForRetry() {
   // says `available_trust_anchor_ids` and `available_trust_anchor_ids_len`
   // define a buffer containing a list of Trust Anchor IDs in wire format
   // (length-prefixed non-empty strings);
-  base::SpanReader<const uint8_t> reader(
-      UNSAFE_BUFFERS(base::span<const uint8_t>(
-          available_trust_anchor_ids, available_trust_anchor_ids_len)));
-  return ParseServerTrustAnchorIDs(&reader);
+  base::span<const uint8_t> wire_ids(UNSAFE_BUFFERS(base::span<const uint8_t>(
+      available_trust_anchor_ids, available_trust_anchor_ids_len)));
+  return x509_util::ParseTlsTrustAnchorIDs(wire_ids);
 }
 
 int SSLClientSocketImpl::ExportKeyingMaterial(
@@ -847,11 +846,18 @@ int SSLClientSocketImpl::Init() {
   SSL_set_permute_extensions(ssl_.get(), 1);
 
   // Configure BoringSSL to send Trust Anchor IDs, if provided.
-  if (ssl_config_.trust_anchor_ids.has_value() &&
-      !SSL_set1_requested_trust_anchors(ssl_.get(),
-                                        ssl_config_.trust_anchor_ids->data(),
-                                        ssl_config_.trust_anchor_ids->size())) {
-    return ERR_UNEXPECTED;
+  if (ssl_config_.trust_anchor_ids.has_value()) {
+    if (!SSL_set1_requested_trust_anchors(
+            ssl_.get(), ssl_config_.trust_anchor_ids->data(),
+            ssl_config_.trust_anchor_ids->size())) {
+      return ERR_UNEXPECTED;
+    }
+    net_log_.AddEvent(NetLogEventType::SSL_CLIENT_TRUST_ANCHOR_IDS_LIST, [&] {
+      return base::Value::Dict().Set(
+          "trust_anchor_ids",
+          x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
+              *ssl_config_.trust_anchor_ids)));
+    });
   }
 
   // The compliance policy must be the last thing configured in order to have
@@ -1063,6 +1069,16 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
     return base::DictValue().Set("certificates",
                                  NetLogX509CertificateList(server_cert_.get()));
   });
+
+  auto server_trust_anchor_ids = GetServerTrustAnchorIDs();
+  if (!server_trust_anchor_ids.empty()) {
+    net_log_.AddEvent(
+        NetLogEventType::SSL_CLIENT_RECEIVED_TRUST_ANCHOR_IDS, [&] {
+          return base::Value::Dict().Set(
+              "trust_anchor_ids",
+              x509_util::TrustAnchorIDsToString(server_trust_anchor_ids));
+        });
+  }
 
   // If the certificate is bad and has been previously accepted, use
   // the previous status and bypass the error.
@@ -1489,25 +1505,6 @@ void SSLClientSocketImpl::RetryAllOperations() {
 
   if (rv_write != ERR_IO_PENDING)
     DoWriteCallback(rv_write);
-}
-
-// static
-std::vector<std::vector<uint8_t>>
-SSLClientSocketImpl::ParseServerTrustAnchorIDs(
-    base::SpanReader<const uint8_t>* reader) {
-  std::vector<std::vector<uint8_t>> trust_anchor_ids;
-  while (reader->remaining() > 0) {
-    uint8_t len;
-    if (!reader->ReadU8BigEndian(len) || len < 1u) {
-      return {};
-    }
-    std::optional<base::span<const uint8_t>> bytes = reader->Read(len);
-    if (!bytes) {
-      return {};
-    }
-    trust_anchor_ids.emplace_back(base::ToVector(*bytes));
-  }
-  return trust_anchor_ids;
 }
 
 int SSLClientSocketImpl::ClientCertRequestCallback(SSL* ssl) {

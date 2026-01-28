@@ -1285,7 +1285,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetry) {
   // the server can't provide a certificate chaining to a trust anchor that the
   // client signalled in the handshake, so it made its best guess, but it has
   // another certificate available that the client does actually trust.
-  ssl_fail.server_trust_anchor_ids_for_retry =
+  ssl_fail.server_trust_anchor_ids =
       std::vector<std::vector<uint8_t>>({{0x02, 0x02}, {0x05, 0x6}});
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
   // The second connection attempt and handshake succeed.
@@ -1402,7 +1402,7 @@ TEST_F(SSLConnectJobTest, NoRetryIfNoIntersectionWithServerTrustAnchorIDs) {
       std::vector<uint8_t>({0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04});
   // The server does not provide any Trust Anchor IDs in the handshake that the
   // client trusts, so there should be no retry.
-  ssl_fail.server_trust_anchor_ids_for_retry =
+  ssl_fail.server_trust_anchor_ids =
       std::vector<std::vector<uint8_t>>({{0x06, 0x06}, {0x07, 0x7}});
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
 
@@ -1447,7 +1447,7 @@ TEST_F(SSLConnectJobTest, NoRetryIfNotCertificateError) {
   SSLSocketDataProvider ssl_fail(ASYNC, ERR_SSL_KEY_USAGE_INCOMPATIBLE);
   ssl_fail.expected_trust_anchor_ids =
       std::vector<uint8_t>({0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04});
-  ssl_fail.server_trust_anchor_ids_for_retry =
+  ssl_fail.server_trust_anchor_ids =
       std::vector<std::vector<uint8_t>>({{0x02, 0x02}});
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
   // There should be no retry because the error was not certificate-related.
@@ -1503,7 +1503,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetryOnlyOnce) {
   // than were present in the DNS record, simulating e.g. stale data in DNS but
   // a certificate available on the server that the client might be able to
   // actually accept.
-  ssl_fail.server_trust_anchor_ids_for_retry =
+  ssl_fail.server_trust_anchor_ids =
       std::vector<std::vector<uint8_t>>({{0x02, 0x02}, {0x05, 0x6}});
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
   // The second connection attempt again fails with a (different) certificate
@@ -1517,7 +1517,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetryOnlyOnce) {
   ASSERT_TRUE(ssl_fail2.ssl_info.cert);
   ssl_fail2.expected_trust_anchor_ids =
       std::vector<uint8_t>({0x02, 0x02, 0x02});
-  ssl_fail2.server_trust_anchor_ids_for_retry =
+  ssl_fail2.server_trust_anchor_ids =
       std::vector<std::vector<uint8_t>>({{0x04, 0x04}, {0x05, 0x6}});
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail2);
   // There should be no third attempt.
@@ -1573,7 +1573,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetryUsesSameEndpoint) {
   ssl2.ssl_info.cert = GetTestClassicalCert();
   ASSERT_TRUE(ssl2.ssl_info.cert);
   ssl2.expected_trust_anchor_ids = std::vector<uint8_t>({0x02, 0x04, 0x04});
-  ssl2.server_trust_anchor_ids_for_retry = {{0x01, 0x02, 0x03}};
+  ssl2.server_trust_anchor_ids = {{0x01, 0x02, 0x03}};
   socket_factory_.AddSSLSocketDataProvider(&ssl2);
   // The third connection attempt should skip `endpoint1` and retry with only
   // `endpoint2`.
@@ -1628,7 +1628,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsNoDnsThenRetry) {
   ssl_fail.expected_trust_anchor_ids = std::vector<uint8_t>();
   // Simulate the server having non-default certificates available, which would
   // be acceptable.
-  ssl_fail.server_trust_anchor_ids_for_retry =
+  ssl_fail.server_trust_anchor_ids =
       std::vector<std::vector<uint8_t>>({{0x02, 0x02}, {0x05, 0x6}});
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
   // The second connection attempt should now request a trust anchor ID.
@@ -1691,7 +1691,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsMTCFallback) {
   // Simulate the server returning the MTC TAI and certificate.
   ssl_fail.ssl_info.cert = GetTestSignaturelessMTC();
   ASSERT_TRUE(ssl_fail.ssl_info.cert);
-  ssl_fail.server_trust_anchor_ids_for_retry =
+  ssl_fail.server_trust_anchor_ids =
       std::vector<std::vector<uint8_t>>({{0x04, 0x04}});
   socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
 
@@ -1707,7 +1707,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsMTCFallback) {
   // Simulate the server returning a default certificate, but still advertising
   // support for the MTC.
   ssl_success.ssl_info.cert = GetTestClassicalCert();
-  ssl_success.server_trust_anchor_ids_for_retry = {{0x04, 0x04}};
+  ssl_success.server_trust_anchor_ids = {{0x04, 0x04}};
   socket_factory_.AddSSLSocketDataProvider(&ssl_success);
 
   base::HistogramTester histogram_tester;

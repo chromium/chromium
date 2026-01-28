@@ -833,7 +833,7 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetry) {
   // the server can't provide a certificate chaining to a trust anchor that the
   // client signalled in the handshake, so it made its best guess, but it has
   // another certificate available that the client does actually trust.
-  ssl_fail.server_trust_anchor_ids_for_retry = {id2, id4};
+  ssl_fail.server_trust_anchor_ids = {id2, id4};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
   // The second connection attempt should send a new intersection. Configure it
@@ -941,7 +941,7 @@ TEST_F(TlsStreamAttemptTest, NoRetryIfNoIntersectionWithServerTrustAnchorIDs) {
   ssl_fail.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id1, id3});
   // The server does not provide any Trust Anchor IDs in the handshake that the
   // client trusts, so there should be no retry.
-  ssl_fail.server_trust_anchor_ids_for_retry = {id4, id5};
+  ssl_fail.server_trust_anchor_ids = {id4, id5};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
   base::HistogramTester histogram_tester;
@@ -980,7 +980,7 @@ TEST_F(TlsStreamAttemptTest, NoTrustAnchorIDsRetryIfNotCertificateError) {
   // but fail with a non-certificate error.
   SSLSocketDataProvider ssl_fail(ASYNC, ERR_SSL_KEY_USAGE_INCOMPATIBLE);
   ssl_fail.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id1, id3});
-  ssl_fail.server_trust_anchor_ids_for_retry = {id2};
+  ssl_fail.server_trust_anchor_ids = {id2};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
   // There should be no retry because the error was not certificate-related.
 
@@ -1032,7 +1032,7 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetryOnlyOnce) {
   // the server can't provide a certificate chaining to a trust anchor that the
   // client signalled in the handshake, so it made its best guess, but it has
   // another certificate available that the client does actually trust.
-  ssl_fail.server_trust_anchor_ids_for_retry = {id2, id4};
+  ssl_fail.server_trust_anchor_ids = {id2, id4};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
   // The second connection attempt should a new intersection. Configure it to
@@ -1043,7 +1043,7 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsRetryOnlyOnce) {
   retry_ssl.ssl_info.cert = GetTestClassicalCert();
   ASSERT_TRUE(retry_ssl.ssl_info.cert);
   retry_ssl.expected_trust_anchor_ids = EncodeTrustAnchorIDs({id2});
-  retry_ssl.server_trust_anchor_ids_for_retry = {id1, id2, id3};
+  retry_ssl.server_trust_anchor_ids = {id1, id2, id3};
   socket_factory().AddSSLSocketDataProvider(&retry_ssl);
   // There should be no third attempt.
 
@@ -1088,7 +1088,7 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsNoDnsThenRetry) {
   ssl_fail.expected_trust_anchor_ids = std::vector<uint8_t>{};
   // Simulate the server having non-default certificates available, which would
   // be acceptable.
-  ssl_fail.server_trust_anchor_ids_for_retry = {id2, id4};
+  ssl_fail.server_trust_anchor_ids = {id2, id4};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
   // The second connection attempt should now request a trust anchor ID.
@@ -1145,7 +1145,7 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsMTCFallback) {
   // Simulate the server returning the MTC TAI and certificate.
   ssl_fail.ssl_info.cert = GetTestSignaturelessMTC();
   ASSERT_TRUE(ssl_fail.ssl_info.cert);
-  ssl_fail.server_trust_anchor_ids_for_retry = {id3};
+  ssl_fail.server_trust_anchor_ids = {id3};
   socket_factory().AddSSLSocketDataProvider(&ssl_fail);
 
   // The second connection attempt should retry without requesting a trust
@@ -1159,7 +1159,7 @@ TEST_F(TlsStreamAttemptTest, TrustAnchorIDsMTCFallback) {
   // support for the MTC.
   retry_ssl.ssl_info.cert = GetTestClassicalCert();
   ASSERT_TRUE(retry_ssl.ssl_info.cert);
-  retry_ssl.server_trust_anchor_ids_for_retry = {id3};
+  retry_ssl.server_trust_anchor_ids = {id3};
   socket_factory().AddSSLSocketDataProvider(&retry_ssl);
 
   TlsStreamAttemptHelper helper(params(), SSLConfig(),

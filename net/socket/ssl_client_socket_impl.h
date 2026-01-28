@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE SSLClientSocketImpl
 
   // SSLClientSocket implementation.
   std::vector<uint8_t> GetECHRetryConfigs() override;
-  std::vector<std::vector<uint8_t>> GetServerTrustAnchorIDsForRetry() override;
+  std::vector<std::vector<uint8_t>> GetServerTrustAnchorIDs() override;
 
   // SSLSocket implementation.
   int ExportKeyingMaterial(std::string_view label,

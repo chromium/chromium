@@ -93,7 +93,7 @@ class FailingSSLClientSocket : public SSLClientSocket {
 
   // SSLClientSocket implementation:
   std::vector<uint8_t> GetECHRetryConfigs() override { NOTREACHED(); }
-  std::vector<std::vector<uint8_t>> GetServerTrustAnchorIDsForRetry() override {
+  std::vector<std::vector<uint8_t>> GetServerTrustAnchorIDs() override {
     NOTREACHED();
   }
 
