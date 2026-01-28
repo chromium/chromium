@@ -436,6 +436,7 @@ enum PreClassificationCheckResult {
 // This value must be kept in sync with those in
 // components/safe_browsing/content/common/safe_browsing.mojom. The enum
 // represents possible outcomes of the renderer-side classification.
+// LINT.IfChange(PhishingDetectorResult)
 enum PhishingDetectorResult {
   CLASSIFICATION_SUCCESS = 0;
   CLASSIFIER_NOT_READY = 1;
@@ -450,6 +451,7 @@ enum PhishingDetectorResult {
   VISUAL_EXTRACTION_FAILED = 10;
   CLASSIFICATION_SKIPPED = 11;
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:ClientSidePhishingResult)
 
 // The referring app info that launches Chrome. Only used on Android.
 // This information may be spoofed so do not rely solely on its correctness

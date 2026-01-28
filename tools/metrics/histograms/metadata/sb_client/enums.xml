@@ -120,6 +120,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Image embedding failed"/>
 </enum>
 
+<!-- LINT.IfChange(ClientSidePhishingResult) -->
+
 <enum name="ClientSidePhishingResult">
   <summary>
     Enumerates the possible results from the client side phishing detector.
@@ -136,6 +138,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Term extraction failed"/>
   <int value="10" label="Visual extraction failed"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/proto/csd.proto:PhishingDetectorResult) -->
 
 <enum name="CreditCardFormEvent">
   <summary>
