@@ -6,7 +6,6 @@
 
 #import <tuple>
 
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
@@ -26,17 +25,9 @@ namespace {
 // is modified.
 using ExpectedTabHelper = VoiceSearchNavigationTabHelper;
 
-// Represents state of the kCreateTabHelperOnlyForRealizedWebStates
-// feature for a test case.
-enum class FeatureState {
-  kEnabled,
-  kDisabled,
-};
-
 using BrowserWebStateListDelegateTestParam =
     std::tuple<BrowserWebStateListDelegate::InsertionPolicy,
-               BrowserWebStateListDelegate::ActivationPolicy,
-               FeatureState>;
+               BrowserWebStateListDelegate::ActivationPolicy>;
 
 // List all ContentWorlds. Necessary because calling SetWebFramesManager(...)
 // with a kAllContentWorlds is not enough with FakeWebState.
@@ -46,26 +37,12 @@ constexpr web::ContentWorld kContentWorlds[] = {
     web::ContentWorld::kIsolatedWorld,
 };
 
-// A class that initialize a ScopedFeatureList in its constructor.
-class ScopedFeatureListWrapper {
- public:
-  ScopedFeatureListWrapper(const base::Feature& feature, FeatureState state) {
-    feature_list_.InitWithFeatureState(feature,
-                                       state == FeatureState::kEnabled);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 }  // namespace
 
 class BrowserWebStateListDelegateTest
     : public testing::TestWithParam<BrowserWebStateListDelegateTestParam> {
  public:
-  BrowserWebStateListDelegateTest()
-      : feature_list_(web::features::kCreateTabHelperOnlyForRealizedWebStates,
-                      std::get<FeatureState>(GetParam())) {
+  BrowserWebStateListDelegateTest() {
     profile_ = TestProfileIOS::Builder().Build();
     profile_->CreateOffTheRecordProfileWithTestingFactories(
         {TestProfileIOS::TestingFactory{
@@ -91,7 +68,6 @@ class BrowserWebStateListDelegateTest
   ProfileIOS* profile() { return profile_.get(); }
 
  private:
-  ScopedFeatureListWrapper feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -106,8 +82,7 @@ INSTANTIATE_TEST_SUITE_P(
             BrowserWebStateListDelegate::InsertionPolicy::kAttachTabHelpers),
         ::testing::Values(
             BrowserWebStateListDelegate::ActivationPolicy::kDoNothing,
-            BrowserWebStateListDelegate::ActivationPolicy::kForceRealization),
-        ::testing::Values(FeatureState::kEnabled, FeatureState::kDisabled)));
+            BrowserWebStateListDelegate::ActivationPolicy::kForceRealization)));
 
 // Tests that BrowserWebStateListDelegateTest respects the InsertionPolicy
 // when a realized WebState is inserted.
