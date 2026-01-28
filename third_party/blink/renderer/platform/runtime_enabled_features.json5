@@ -2011,6 +2011,12 @@
       status: "stable",
     },
     {
+      // Disconnected <area> elements should not trigger navigation.
+      // This was added in M146, and can be removed in M148.
+      name: "DisallowDisconnectedAreaNavigation",
+      status: "stable",
+    },
+    {
       // `kHidden` and `kHiddenButPainting` visibility states are treated as
       // hidden in the sense of `document.visibilityState`.  However, they are
       // handled differently internally.  For example, video playback should

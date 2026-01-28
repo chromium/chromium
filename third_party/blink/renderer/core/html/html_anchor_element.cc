@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/html/anchor_element_utils.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -547,6 +548,12 @@ void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {
   if (!isConnected()) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kAnchorClickDispatchForNonConnectedNode);
+    // Disconnected <area> elements should not trigger navigation.
+    // https://html.spec.whatwg.org/multipage/links.html#cannot-navigate
+    if (RuntimeEnabledFeatures::DisallowDisconnectedAreaNavigationEnabled() &&
+        IsA<HTMLAreaElement>(this)) {
+      return;
+    }
   }
 
   if (auto* tracker = GetDocument().GetAnchorElementInteractionTracker()) {
