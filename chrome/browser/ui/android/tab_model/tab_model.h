@@ -50,6 +50,24 @@ class TabModel : public TabListInterface {
   static constexpr int kInvalidIndex = -1;
   // LINT.ThenChange(//chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java:INVALID_TAB_INDEX)
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tabmodel
+  enum class TabModelType {
+    // A standard tab model that contains tabs from a profile.
+    kStandard,
+    // An empty tab model that contains no tabs.
+    kEmpty,
+    // A tab model that contains archived tabs from the regular profile. These
+    // tabs will never have a WebContents unless restored to another tab model.
+    kArchived,
+    // Similar to a standard tab model, but used for a set of tabs that are not
+    // associated with any open window. The tabs in this model are intended to
+    // be "read-only" and cannot be navigated or have a WebContents. If the
+    // window associated with this tab model is opened the headless tab model
+    // will be destroyed and the tabs will be re-created in a standard tab
+    // model.
+    kHeadless,
+  };
+
   // LINT.IfChange(TabLaunchType)
   // Various ways tabs can be launched.
   // Values must be numbered from 0 and can't have gaps.
@@ -290,9 +308,12 @@ class TabModel : public TabListInterface {
                                               const base::Time& end_time) = 0;
 
   chrome::android::ActivityType activity_type() const { return activity_type_; }
+  TabModelType GetTabModelType() const { return tab_model_type_; }
 
  protected:
-  TabModel(Profile* profile, chrome::android::ActivityType activity_type);
+  TabModel(Profile* profile,
+           chrome::android::ActivityType activity_type,
+           TabModelType tab_model_type);
   ~TabModel() override;
 
   // Instructs the TabModel to broadcast a notification that all tabs are now
@@ -317,6 +338,7 @@ class TabModel : public TabListInterface {
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
   chrome::android::ActivityType activity_type_;
+  TabModelType tab_model_type_;
 
   // The LiveTabContext associated with TabModel.
   // Used to restore closed tabs through the TabRestoreService.

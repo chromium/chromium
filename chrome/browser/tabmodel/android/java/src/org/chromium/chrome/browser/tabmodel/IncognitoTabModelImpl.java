@@ -179,6 +179,12 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public @TabModelType int getTabModelType() {
+        // This may alternate between EMPTY and STANDARD depending on the delegate model.
+        return mDelegateModel.getTabModelType();
+    }
+
+    @Override
     public @Nullable Profile getProfile() {
         return mDelegateModel.getProfile();
     }

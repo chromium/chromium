@@ -38,7 +38,7 @@ class TabModelJniBridge : public TabModel {
                     const jni_zero::JavaRef<jobject>& jobj,
                     Profile* profile,
                     chrome::android::ActivityType activity_type,
-                    bool is_archived_tab_model);
+                    TabModelType tab_model_type);
   void Destroy(JNIEnv* env);
 
   TabModelJniBridge(const TabModelJniBridge&) = delete;

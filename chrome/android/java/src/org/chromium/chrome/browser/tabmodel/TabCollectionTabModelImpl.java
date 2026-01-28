@@ -304,7 +304,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // counterparts.
     private final Map<Integer, Tab> mTabIdToTabs = new HashMap<>();
 
-    private final boolean mIsArchivedTabModel;
+    private final @TabModelType int mTabModelType;
     private final TabCreator mRegularTabCreator;
     private final TabCreator mIncognitoTabCreator;
     private final TabModelOrderController mOrderController;
@@ -325,7 +325,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     /**
      * @param profile The {@link Profile} tabs in the tab collection tab model belongs to.
      * @param activityType The type of activity this tab collection tab model is for.
-     * @param isArchivedTabModel Whether the tab collection tab model stored archived tabs.
      * @param regularTabCreator The tab creator for regular tabs.
      * @param incognitoTabCreator The tab creator for incognito tabs.
      * @param orderController Controls logic for selecting and positioning tabs.
@@ -340,7 +339,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public TabCollectionTabModelImpl(
             Profile profile,
             @ActivityType int activityType,
-            boolean isArchivedTabModel,
+            @TabModelType int tabModelType,
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator,
             TabModelOrderController orderController,
@@ -353,7 +352,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             boolean supportUndo) {
         super(profile);
         assertOnUiThread();
-        mIsArchivedTabModel = isArchivedTabModel;
+        mTabModelType = tabModelType;
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
@@ -368,7 +367,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                     new PendingTabClosureManager(this, new PendingTabClosureDelegateImpl());
         }
 
-        initializeNative(activityType, isArchivedTabModel);
+        initializeNative(activityType, tabModelType);
     }
 
     @Override
@@ -418,7 +417,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public int index() {
         assertOnUiThread();
-        if (mIsArchivedTabModel) return TabList.INVALID_TAB_INDEX;
+        if (isArchivedTabModel()) return TabList.INVALID_TAB_INDEX;
         return indexOf(mCurrentTabSupplier.get());
     }
 
@@ -471,6 +470,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // TabModel overrides except those overridden by TabModelJniBridge.
 
     @Override
+    public @TabModelType int getTabModelType() {
+        return mTabModelType;
+    }
+
+    @Override
     public @Nullable Tab getTabById(@TabId int tabId) {
         return mTabIdToTabs.get(tabId);
     }
@@ -483,7 +487,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     @Override
     public @Nullable Tab getNextTabIfClosed(@TabId int id, boolean uponExit) {
-        if (mIsArchivedTabModel) return null;
+        if (isArchivedTabModel()) return null;
         assertOnUiThread();
         Tab tab = getTabById(id);
         if (tab == null) return mCurrentTabSupplier.get();
@@ -805,8 +809,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // TabModelJniBridge overrides.
 
     @Override
-    public void initializeNative(@ActivityType int activityType, boolean isArchivedTabModel) {
-        super.initializeNative(activityType, isArchivedTabModel);
+    public void initializeNative(@ActivityType int activityType, @TabModelType int tabModelType) {
+        super.initializeNative(activityType, tabModelType);
         assert mNativeTabCollectionTabModelImplPtr == 0;
         mNativeTabCollectionTabModelImplPtr =
                 TabCollectionTabModelImplJni.get().init(this, getProfile());
@@ -1808,7 +1812,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
     private void setIndexInternal(int i, @TabSelectionType int type) {
         // TODO(crbug.com/425344200): Prevent passing negative indices.
-        if (mIsArchivedTabModel) return;
+        if (isArchivedTabModel()) return;
         if (mNativeTabCollectionTabModelImplPtr == 0) return;
 
         // Batch service binding updates for the tabs becoming active and inactive. The activeness
@@ -1901,6 +1905,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     // Internal methods.
+
+    private boolean isArchivedTabModel() {
+        return mTabModelType == TabModelType.ARCHIVED;
+    }
 
     private boolean shouldGroupWithParent(Tab tab, @Nullable Tab parentTab) {
         if (parentTab == null) return false;

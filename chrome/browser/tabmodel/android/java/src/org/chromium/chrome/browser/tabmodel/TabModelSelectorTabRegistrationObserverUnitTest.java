@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -53,7 +52,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
     public void setUp() {
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridge);
         when(mTabModelJniBridge.init(
-                        any(TabModelJniBridge.class), any(Profile.class), anyInt(), anyBoolean()))
+                        any(TabModelJniBridge.class), any(Profile.class), anyInt(), anyInt()))
                 .thenReturn(FAKE_NATIVE_ADDRESS);
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);

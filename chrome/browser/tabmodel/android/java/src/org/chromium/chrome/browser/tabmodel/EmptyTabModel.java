@@ -58,6 +58,11 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
+    public @TabModelType int getTabModelType() {
+        return TabModelType.EMPTY;
+    }
+
+    @Override
     public @Nullable Profile getProfile() {
         return null;
     }

@@ -60,6 +60,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     // Type of the Activity for this tab model. Used by sync to determine how to handle restore
     // on cold start.
     private final @ActivityType int mActivityType;
+    private final @TabModelType int mTabModelType;
     private final TabModelOrderController mOrderController;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
@@ -97,6 +98,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             AsyncTabParamsManager asyncTabParamsManager,
             boolean supportUndo,
             @ActivityType int activityType,
+            @TabModelType int tabModelType,
             boolean startIncognito) {
         super(tabCreatorManager, startIncognito);
         mContext = context;
@@ -108,6 +110,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         mMultiInstanceManager = multiInstanceManager;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mActivityType = activityType;
+        mTabModelType = tabModelType;
     }
 
     @Override
@@ -170,7 +173,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         this,
                         regularTabRemover,
                         mIsUndoSupported,
-                        /* isArchivedTabModel= */ false,
+                        mTabModelType,
                         tabUngrouperFactory);
         if (regularTabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(normalModelHolder.tabModel);

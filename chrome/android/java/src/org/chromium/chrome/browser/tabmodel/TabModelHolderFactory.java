@@ -37,12 +37,12 @@ public class TabModelHolderFactory {
             TabModelDelegate modelDelegate,
             TabRemover tabRemover,
             boolean supportUndo,
-            boolean isArchivedTabModel,
+            @TabModelType int tabModelType,
             TabUngrouperFactory tabUngrouperFactory) {
         return createCollectionTabModelHolder(
                 profile,
                 activityType,
-                isArchivedTabModel,
+                tabModelType,
                 regularTabCreator,
                 incognitoTabCreator,
                 orderController,
@@ -94,7 +94,7 @@ public class TabModelHolderFactory {
     private static TabModelHolder createCollectionTabModelHolder(
             Profile profile,
             @ActivityType int activityType,
-            boolean isArchivedTabModel,
+            @TabModelType int tabModelType,
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator,
             TabModelOrderController orderController,
@@ -112,7 +112,7 @@ public class TabModelHolderFactory {
                 new TabCollectionTabModelImpl(
                         profile,
                         activityType,
-                        isArchivedTabModel,
+                        tabModelType,
                         regularTabCreator,
                         incognitoTabCreator,
                         orderController,

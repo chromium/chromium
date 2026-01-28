@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -48,6 +49,7 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
                 asyncTabParamsManager,
                 true,
                 ActivityType.TABBED,
+                TabModelType.STANDARD,
                 false);
     }
 

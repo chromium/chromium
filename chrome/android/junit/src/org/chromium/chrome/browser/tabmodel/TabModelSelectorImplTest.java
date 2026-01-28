@@ -125,6 +125,7 @@ public class TabModelSelectorImplTest {
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
+                        TabModelType.STANDARD,
                         /* startIncognito= */ false);
 
         TabRemover regularTabRemover =
@@ -419,6 +420,7 @@ public class TabModelSelectorImplTest {
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
+                        TabModelType.STANDARD,
                         /* startIncognito= */ false);
         MockTabModel regularTabModel = new MockTabModel(mProfile, null);
         TabGroupModelFilterInternal filter = mock(TabGroupModelFilterInternal.class);
@@ -489,6 +491,7 @@ public class TabModelSelectorImplTest {
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
+                        TabModelType.STANDARD,
                         /* startIncognito= */ false);
         when(regularModel.isActiveModel()).thenReturn(true);
         mTabModelSelector.initializeForTesting(
@@ -535,6 +538,7 @@ public class TabModelSelectorImplTest {
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
+                        TabModelType.STANDARD,
                         /* startIncognito= */ false);
         when(regularModel.isActiveModel()).thenReturn(true);
         mTabModelSelector.initializeForTesting(

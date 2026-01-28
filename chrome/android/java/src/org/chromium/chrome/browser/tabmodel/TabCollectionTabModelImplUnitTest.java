@@ -95,7 +95,7 @@ public class TabCollectionTabModelImplUnitTest {
                         any(TabModelJniBridge.class),
                         eq(mProfile),
                         eq(ActivityType.TABBED),
-                        /* isArchivedTabModel= */ eq(false)))
+                        eq(TabModelType.STANDARD)))
                 .thenReturn(TAB_MODEL_JNI_BRIDGE_PTR);
 
         TabCollectionTabModelImplJni.setInstanceForTesting(mTabCollectionTabModelImplJni);
@@ -109,7 +109,7 @@ public class TabCollectionTabModelImplUnitTest {
                 new TabCollectionTabModelImpl(
                         mProfile,
                         ActivityType.TABBED,
-                        /* isArchivedTabModel= */ false,
+                        TabModelType.STANDARD,
                         mRegularTabCreator,
                         mIncognitoTabCreator,
                         mOrderController,
@@ -388,7 +388,7 @@ public class TabCollectionTabModelImplUnitTest {
                 new TabCollectionTabModelImpl(
                         mOtrProfile,
                         ActivityType.TABBED,
-                        false,
+                        TabModelType.STANDARD,
                         mRegularTabCreator,
                         mIncognitoTabCreator,
                         mOrderController,
@@ -415,7 +415,7 @@ public class TabCollectionTabModelImplUnitTest {
                 new TabCollectionTabModelImpl(
                         mOtrProfile,
                         ActivityType.TABBED,
-                        false,
+                        TabModelType.STANDARD,
                         mRegularTabCreator,
                         mIncognitoTabCreator,
                         mOrderController,
@@ -470,7 +470,7 @@ public class TabCollectionTabModelImplUnitTest {
                 new TabCollectionTabModelImpl(
                         mOtrProfile,
                         ActivityType.TABBED,
-                        false,
+                        TabModelType.STANDARD,
                         mRegularTabCreator,
                         mIncognitoTabCreator,
                         mOrderController,
@@ -530,7 +530,7 @@ public class TabCollectionTabModelImplUnitTest {
         return new TabCollectionTabModelImpl(
                 profile,
                 ActivityType.CUSTOM_TAB,
-                false,
+                TabModelType.STANDARD,
                 null,
                 null,
                 null,

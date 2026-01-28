@@ -49,6 +49,10 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
         int GROUP = 3;
     }
 
+    /** Returns the {@link TabModelType} of this tab model. */
+    @TabModelType
+    int getTabModelType();
+
     /** Returns the profile associated with the current model. */
     @Nullable Profile getProfile();
 

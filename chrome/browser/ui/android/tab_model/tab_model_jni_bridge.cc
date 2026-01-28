@@ -104,13 +104,12 @@ TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
                                      const jni_zero::JavaRef<jobject>& jobj,
                                      Profile* profile,
                                      ActivityType activity_type,
-                                     bool is_archived_tab_model)
-    : TabModel(profile, activity_type),
-      java_object_(env, jobj),
-      is_archived_tab_model_(is_archived_tab_model) {
+                                     TabModelType tab_model_type)
+    : TabModel(profile, activity_type, tab_model_type),
+      java_object_(env, jobj) {
   // The archived tab model isn't tracked in native, except to comply with clear
   // browsing data.
-  if (is_archived_tab_model_) {
+  if (GetTabModelType() == TabModelType::kArchived) {
     TabModelList::SetArchivedTabModel(this);
   } else {
     TabModelList::AddTabModel(this);
@@ -432,7 +431,7 @@ void TabModelJniBridge::RemoveObserver(TabModelObserver* observer) {
 }
 
 void TabModelJniBridge::BroadcastSessionRestoreComplete(JNIEnv* env) {
-  if (!is_archived_tab_model_) {
+  if (GetTabModelType() != TabModelType::kArchived) {
     TabModel::BroadcastSessionRestoreComplete();
   }
 }
@@ -819,7 +818,7 @@ TabModelJniBridge::~TabModelJniBridge() {
     observer_bridge_->NotifyShutdown();
   }
 
-  if (is_archived_tab_model_) {
+  if (GetTabModelType() == TabModelType::kArchived) {
     TabModelList::SetArchivedTabModel(nullptr);
   } else {
     TabModelList::RemoveTabModel(this);
@@ -830,10 +829,10 @@ static int64_t JNI_TabModelJniBridge_Init(JNIEnv* env,
                                           const JavaRef<jobject>& obj,
                                           Profile* profile,
                                           int32_t j_activity_type,
-                                          unsigned char is_archived_tab_model) {
+                                          jint j_tab_model_type) {
   TabModel* tab_model = new TabModelJniBridge(
       env, obj, profile, static_cast<ActivityType>(j_activity_type),
-      is_archived_tab_model);
+      static_cast<TabModel::TabModelType>(j_tab_model_type));
   return reinterpret_cast<intptr_t>(tab_model);
 }
 

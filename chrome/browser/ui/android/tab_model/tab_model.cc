@@ -56,9 +56,12 @@ SessionID GetInitialSessionId() {
 
 DEFINE_USER_DATA(TabModel);
 
-TabModel::TabModel(Profile* profile, ActivityType activity_type)
+TabModel::TabModel(Profile* profile,
+                   ActivityType activity_type,
+                   TabModelType tab_model_type)
     : profile_(profile),
       activity_type_(activity_type),
+      tab_model_type_(tab_model_type),
       live_tab_context_(new AndroidLiveTabContext(this)),
       synced_window_delegate_(new browser_sync::SyncedWindowDelegateAndroid(
           this,

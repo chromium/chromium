@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
@@ -57,6 +58,7 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                         asyncTabParamsManager,
                         false,
                         activityType,
+                        TabModelType.STANDARD,
                         false);
 
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
