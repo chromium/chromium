@@ -49,6 +49,16 @@ COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<bool>
     kSafetyCheckUnusedSitePermissionsWithDelay;
 
+// When enabled, allows users to choose between approximate and precise location
+// in geolocation permission prompts.
+//
+// Enabling this feature will migrate geolocation permissions from
+// ContentSettingsType::GEOLOCATION to
+// ContentSettingsType::GEOLOCATION_WITH_OPTIONS. When the feature is enabled,
+// ContentSettingType::GEOLOCATION_WITH_OPTIONS should be used in place of
+// ContentSettingsType::GEOLOCATION. The correct ContentSettingsType for
+// geolocation can always be retrieved using
+// content_settings::GeolocationContentSettingsType().
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kApproximateGeolocationPermission);
 
