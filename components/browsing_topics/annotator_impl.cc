@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -102,7 +103,7 @@ LoadOverrideListFromFile(const base::FilePath& path) {
 // The full list of meaningless prefixes are:
 //   ^(www[0-9]*|web|ftp|wap|home)$
 //   ^(m|mobile|amp|w)$
-int MeaninglessPrefixLength(const std::string& host) {
+int MeaninglessPrefixLength(std::string_view host) {
   size_t len = host.size();
 
   int dots = std::ranges::count(host, '.');
@@ -122,13 +123,14 @@ int MeaninglessPrefixLength(const std::string& host) {
       }
     }
   } else {
-    static const auto* kMeaninglessPrefixesLenMap = new std::set<std::string>(
-        {"web", "ftp", "wap", "home", "m", "w", "amp", "mobile"});
+    static constexpr auto kMeaninglessPrefixesLenSet =
+        base::MakeFixedFlatSet<std::string_view>(
+            {"web", "ftp", "wap", "home", "m", "w", "amp", "mobile"});
 
     size_t prefix_len = host.find('.');
-    std::string prefix = host.substr(0, prefix_len);
-    const auto& it = kMeaninglessPrefixesLenMap->find(prefix);
-    if (it != kMeaninglessPrefixesLenMap->end() && len > it->size() + 1) {
+    std::string_view prefix = host.substr(0, prefix_len);
+    const auto& it = kMeaninglessPrefixesLenSet.find(prefix);
+    if (it != kMeaninglessPrefixesLenSet.end() && len > it->size() + 1) {
       return it->size() + 1;
     }
   }
