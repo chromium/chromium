@@ -52,6 +52,11 @@ public class AutocorrectManager {
 
     public void maybeAppendAutocorrectUnderlineSpan() {
         if (DEBUG_LOGS) Log.i(TAG, "maybeAppendAutocorrectUnderlineSpan");
+
+        // We expect a commitText() call to come immediately after commitCorrection()
+        // from the IME (observed in Gboard, SwiftKey and Yandex). We wait for that
+        // commitText to trigger this method so we can apply the underline span to
+        // the text that was just committed.
         if (mCorrectionInfo == null) {
             return;
         }
