@@ -41,16 +41,39 @@ export interface TabUpload {
 
 export type ContextualUpload = TabUpload|FileUpload;
 
+export function recordEnumerationValue(
+    metricName: string, value: number, enumSize: number) {
+  // In rare cases chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+  chrome.metricsPrivate.recordEnumerationValue(metricName, value, enumSize);
+}
+
+export function recordUserAction(metricName: string) {
+  // In rare cases chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+  chrome.metricsPrivate.recordUserAction(metricName);
+}
+
+export function recordBoolean(metricName: string, value: boolean) {
+  // In rare cases chrome.metricsPrivate is not available.
+  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
+  if (!chrome.metricsPrivate) {
+    return;
+  }
+  chrome.metricsPrivate.recordBoolean(metricName, value);
+}
+
 // TODO(crbug.com/468329884): Consider making this a new contextual entry
 // source so the realbox and composebox don't both get logged as NTP.
 export function recordContextAdditionMethod(
     additionMethod: ComposeboxContextAddedMethod, composeboxSource: string) {
-  // In rare cases chrome.metricsPrivate is not available.
-  if (!chrome.metricsPrivate) {
-    return;
-  }
-
-  chrome.metricsPrivate.recordEnumerationValue(
+  recordEnumerationValue(
       'ContextualSearch.ContextAdded.ContextAddedMethod.' + composeboxSource,
       additionMethod, ComposeboxContextAddedMethod.MAX_VALUE + 1);
 }

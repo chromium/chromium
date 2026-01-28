@@ -26,7 +26,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile, ContextualUpload} from './common.js';
-import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
+import {recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
 import {FileUploadErrorType, FileUploadStatus, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_menu_entrypoint.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
@@ -630,15 +630,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         e.detail.uuid === this.automaticActiveTabChipToken_ &&
         (e.detail.fromUserAction === true);
     if (fromAutoSuggestedChip) {
-      // In rare cases chrome.metricsPrivate is not available. See
-      // crbug.com/40162029.
-      if (chrome.metricsPrivate) {
-        const metricName =
-            'ContextualSearch.UserAction.DeleteAutoSuggestedTab.' +
-            this.composeboxSource_;
-        chrome.metricsPrivate.recordUserAction(metricName);
-        chrome.metricsPrivate.recordBoolean(metricName, true);
-      }
+      const metricName = 'ContextualSearch.UserAction.DeleteAutoSuggestedTab.' +
+          this.composeboxSource_;
+      recordUserAction(metricName);
+      recordBoolean(metricName, true);
       this.automaticActiveTabChipToken_ = null;
     }
 
@@ -857,11 +852,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   private recordFileValidationMetric_(
       enumValue: ComposeboxFileValidationError) {
-    // In rare cases chrome.metricsPrivate is not available.
-    if (!chrome.metricsPrivate) {
-      return;
-    }
-    chrome.metricsPrivate.recordEnumerationValue(
+    recordEnumerationValue(
         'ContextualSearch.File.WebUI.UploadAttemptFailure.' +
             this.composeboxSource_,
         enumValue, ComposeboxFileValidationError.MAX_VALUE + 1);
