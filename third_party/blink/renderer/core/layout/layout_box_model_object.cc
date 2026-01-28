@@ -657,26 +657,30 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
     std::optional<LayoutUnit> bottom =
         ResolveInset(style.Bottom(), available_size.height);
 
+    const WritingDirectionMode sticky_container_writing_direction =
+        sticky_container->StyleRef().GetWritingDirection();
+
     // Reduce the end inset if there is not enough space to honor both insets.
     if (left && right) {
       const LayoutUnit free_space =
           available_size.width - sticky_box_rect.Width() - *left - *right;
       if (free_space < LayoutUnit()) {
-        if (style.IsLeftToRightDirection()) {
-          *right += free_space;
-        } else {
+        if (sticky_container_writing_direction.IsFlippedX()) {
           *left += free_space;
+        } else {
+          *right += free_space;
         }
       }
     }
     if (top && bottom) {
-      // TODO(flackr): Exclude top or bottom edge offset depending on the
-      // writing mode when related sections are fixed in spec. See
-      // http://lists.w3.org/Archives/Public/www-style/2014May/0286.html
       const LayoutUnit free_space =
           available_size.height - sticky_box_rect.Height() - *top - *bottom;
       if (free_space < LayoutUnit()) {
-        *bottom += free_space;
+        if (sticky_container_writing_direction.IsFlippedY()) {
+          *top += free_space;
+        } else {
+          *bottom += free_space;
+        }
       }
     }
 

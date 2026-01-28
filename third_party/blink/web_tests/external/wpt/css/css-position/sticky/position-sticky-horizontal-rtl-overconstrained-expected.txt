@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] right before the in-flow position of the sticky box
-  assert_equals: expected 80 but got 180
-[FAIL] right after the in-flow position the sticky box
-  assert_equals: expected 120 but got 220
-Harness: the test ran to completion.
-
