@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/check_deref.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -238,7 +238,7 @@ std::string KioskArcvmAppService::GetAppId() {
   if (!app) {
     return std::string();
   }
-  std::unordered_set<std::string> app_ids =
+  absl::flat_hash_set<std::string> app_ids =
       ArcAppListPrefs::Get(profile_)->GetAppsForPackage(app->package_name());
   if (app_ids.empty()) {
     return std::string();
@@ -249,7 +249,7 @@ std::string KioskArcvmAppService::GetAppId() {
     return *app_ids.begin();
   }
   // Check that the app is registered for given package.
-  return app_ids.count(app->app_id()) ? app->app_id() : std::string();
+  return app_ids.contains(app->app_id()) ? app->app_id() : std::string();
 }
 
 void KioskArcvmAppService::ResetAppLauncher() {

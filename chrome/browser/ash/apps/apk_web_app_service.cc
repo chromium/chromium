@@ -35,6 +35,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -325,7 +326,7 @@ void ApkWebAppService::UpdateShelfPin(
     // replace the previous web app shortcut. For simplicity we will just use
     // the first one.
     DCHECK(arc_app_list_prefs_);
-    std::unordered_set<std::string> apps =
+    absl::flat_hash_set<std::string> apps =
         arc_app_list_prefs_->GetAppsForPackage(package_name);
     if (!apps.empty()) {
       new_app_id = *apps.begin();

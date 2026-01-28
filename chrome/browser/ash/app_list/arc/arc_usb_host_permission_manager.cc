@@ -15,6 +15,7 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/usb/usb_host_bridge.h"
 #include "extensions/browser/api/device_permissions_manager.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace arc {
 
@@ -36,7 +37,7 @@ std::string GetAppIdFromPackageName(const std::string& package_name,
   // for the requesting package. If there are multiple launchable activities
   // from the package, use the app icon from first found matching launchable
   // activity in the permission dialog.
-  std::unordered_set<std::string> app_ids =
+  absl::flat_hash_set<std::string> app_ids =
       arc_app_list_prefs->GetAppsForPackage(package_name);
   return app_ids.empty() ? std::string() : *app_ids.begin();
 }

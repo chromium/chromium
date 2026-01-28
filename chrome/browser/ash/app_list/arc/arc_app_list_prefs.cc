@@ -64,6 +64,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/icu/source/common/unicode/localebuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -1212,7 +1213,7 @@ void ArcAppListPrefs::SetLastLaunchTimeForTesting(const std::string& app_id,
 }
 
 void ArcAppListPrefs::DisableAllApps() {
-  std::unordered_set<std::string> old_ready_apps;
+  absl::flat_hash_set<std::string> old_ready_apps;
   old_ready_apps.swap(ready_apps_);
   for (auto& app_id : old_ready_apps)
     NotifyAppStatesChanged(app_id);
@@ -2230,7 +2231,7 @@ void ArcAppListPrefs::OnPackageAppListRefreshed(
     return;
   }
 
-  std::unordered_set<std::string> apps_to_remove =
+  absl::flat_hash_set<std::string> apps_to_remove =
       GetAppsAndShortcutsForPackage(package_name,
                                     true, /* include_only_launchable_apps */
                                     false /* include_shortcuts */);
@@ -2307,18 +2308,18 @@ void ArcAppListPrefs::OnUninstallShortcut(const std::string& package_name,
     RemoveApp(shortcut_id);
 }
 
-std::unordered_set<std::string> ArcAppListPrefs::GetAppsForPackage(
+absl::flat_hash_set<std::string> ArcAppListPrefs::GetAppsForPackage(
     const std::string& package_name) const {
   return GetAppsAndShortcutsForPackage(package_name,
                                        false, /* include_only_launchable_apps */
                                        false /* include_shortcuts */);
 }
 
-std::unordered_set<std::string> ArcAppListPrefs::GetAppsAndShortcutsForPackage(
+absl::flat_hash_set<std::string> ArcAppListPrefs::GetAppsAndShortcutsForPackage(
     const std::string& package_name,
     bool include_only_launchable_apps,
     bool include_shortcuts) const {
-  std::unordered_set<std::string> app_set;
+  absl::flat_hash_set<std::string> app_set;
   const base::DictValue& apps = prefs_->GetDict(arc::prefs::kArcApps);
   for (const auto app : apps) {
     if (!crx_file::id_util::IdIsValid(app.first))
@@ -2357,7 +2358,7 @@ std::unordered_set<std::string> ArcAppListPrefs::GetAppsAndShortcutsForPackage(
 
 void ArcAppListPrefs::HandlePackageRemoved(const std::string& package_name) {
   DCHECK(IsArcAndroidEnabledForProfile(profile_));
-  const std::unordered_set<std::string> apps_to_remove =
+  const absl::flat_hash_set<std::string> apps_to_remove =
       GetAppsAndShortcutsForPackage(package_name,
                                     false /* include_only_launchable_apps */,
                                     true /* include_shortcuts */);

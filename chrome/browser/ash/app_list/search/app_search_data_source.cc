@@ -29,6 +29,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using ::ash::string_matching::FuzzyTokenizedStringMatch;
 using ::ash::string_matching::TokenizedString;
@@ -84,7 +85,7 @@ void MaybeAddResult(SearchProvider::Results* results,
 
   seen_or_filtered_apps->insert(app_result->app_id());
 
-  std::unordered_set<std::string> duplicate_app_ids;
+  absl::flat_hash_set<std::string> duplicate_app_ids;
   if (!extensions::util::GetEquivalentInstalledArcApps(
           app_result->profile(), app_result->app_id(), &duplicate_app_ids)) {
     results->emplace_back(std::move(app_result));
@@ -92,7 +93,7 @@ void MaybeAddResult(SearchProvider::Results* results,
   }
 
   for (const auto& duplicate_app_id : duplicate_app_ids) {
-    if (seen_or_filtered_apps->count(duplicate_app_id)) {
+    if (seen_or_filtered_apps->contains(duplicate_app_id)) {
       return;
     }
   }
@@ -101,8 +102,9 @@ void MaybeAddResult(SearchProvider::Results* results,
 
   // Add duplicate ids in order to filter them if they appear down the
   // list.
-  seen_or_filtered_apps->insert(duplicate_app_ids.begin(),
-                                duplicate_app_ids.end());
+  seen_or_filtered_apps->insert(
+      std::make_move_iterator(duplicate_app_ids.begin()),
+      std::make_move_iterator(duplicate_app_ids.end()));
 }
 
 // Linearly maps |score| to the range [min, max].

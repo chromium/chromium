@@ -12,7 +12,6 @@
 #include <optional>
 #include <set>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -31,6 +30,7 @@
 #include "chromeos/ash/experiences/arc/net/arc_app_metadata_provider.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 class ArcDefaultAppList;
 class PrefService;
@@ -473,7 +473,7 @@ class ArcAppListPrefs : public KeyedService,
 
   // Returns set of ARC apps for provided package name, not including shortcuts,
   // associated with this package.
-  std::unordered_set<std::string> GetAppsForPackage(
+  absl::flat_hash_set<std::string> GetAppsForPackage(
       const std::string& package_name) const;
 
   // Gets Chrome prefs for given |package_name| and |key|.
@@ -605,7 +605,7 @@ class ArcAppListPrefs : public KeyedService,
   // If |include_only_launchable_apps| is set to true then only launchable apps
   // are included and runtime apps are ignored. Otherwise all apps are returned.
   // |include_shortcuts| specifies if shorcuts needs to be included.
-  std::unordered_set<std::string> GetAppsAndShortcutsForPackage(
+  absl::flat_hash_set<std::string> GetAppsAndShortcutsForPackage(
       const std::string& package_name,
       bool include_only_launchable_apps,
       bool include_shortcuts) const;
@@ -712,9 +712,9 @@ class ArcAppListPrefs : public KeyedService,
   // stored.
   base::FilePath base_path_;
   // Contains set of ARC apps that are currently ready.
-  std::unordered_set<std::string> ready_apps_;
+  absl::flat_hash_set<std::string> ready_apps_;
   // Contains set of ARC apps that are currently tracked.
-  std::unordered_set<std::string> tracked_apps_;
+  absl::flat_hash_set<std::string> tracked_apps_;
   // Contains number of ARC packages that are currently installing.
   int installing_packages_count_ = 0;
   // Keeps record for icon request. Each app may contain several requests for
@@ -746,9 +746,9 @@ class ArcAppListPrefs : public KeyedService,
   // should be started soon after initial app list refresh.
   base::OneShotTimer detect_default_app_availability_timeout_;
   // Set of currently installing apps_.
-  std::unordered_set<std::string> apps_installations_;
+  absl::flat_hash_set<std::string> apps_installations_;
   // Set of package names which are installed but not yet added to the prefs.
-  std::unordered_set<std::string> packages_to_be_added_;
+  absl::flat_hash_set<std::string> packages_to_be_added_;
   // To execute file operations in sequence.
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 

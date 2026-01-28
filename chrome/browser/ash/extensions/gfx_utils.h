@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_GFX_UTILS_H_
 
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "chrome/browser/extensions/chrome_app_icon.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace content {
 class BrowserContext;
@@ -32,7 +32,7 @@ bool HasEquivalentInstalledArcApp(content::BrowserContext* context,
 // |arc_apps| receives ids of Play Store apps.
 bool GetEquivalentInstalledArcApps(content::BrowserContext* context,
                                    const std::string& extension_id,
-                                   std::unordered_set<std::string>* arc_apps);
+                                   absl::flat_hash_set<std::string>* arc_apps);
 
 // Returns the equivalent app IDs that have been installed to the
 // Playstore app (identified by |arc_package_name|).
