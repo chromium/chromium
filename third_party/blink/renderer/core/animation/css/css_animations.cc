@@ -444,9 +444,14 @@ StringKeyframeVector ProcessKeyframesRule(
               MediaValues::CreateDynamicIfFrameExists(document.GetFrame());
           timing_function = CSSToStyleMap::MapAnimationTimingFunction(
               *media_values, value_list->Item(0));
-        } else {
-          DCHECK(value.IsCSSWideKeyword());
+        } else if (value.IsCSSWideKeyword()) {
           timing_function = CSSTimingData::InitialTimingFunction();
+        } else {
+          // Values like var() may be represented as unparsed at this stage and
+          // cannot be mapped to a TimingFunction yet; fall back to the default.
+          timing_function = default_timing_function
+                                ? default_timing_function
+                                : CSSTimingData::InitialTimingFunction();
         }
         keyframe->SetEasing(std::move(timing_function));
       } else if (!CSSAnimations::IsAnimationAffectingProperty(property)) {
