@@ -206,22 +206,23 @@ LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
     if (style_->GetPosition() == EPosition::kAbsolute)
       return ContainingBlockForAbsolutePosition(skip_info);
   }
-  LayoutObject* object;
+
   if (IsColumnSpanAll()) {
-    object = ContainerForColumnSpanner(skip_info);
-  } else {
-    object = Parent();
-    if (!object && IsLayoutCustomScrollbarPart()) {
-      object = To<LayoutCustomScrollbarPart>(this)
-                   ->GetScrollableArea()
-                   ->GetLayoutBox();
+    return DynamicTo<LayoutBlock>(ContainerForColumnSpanner(skip_info));
+  }
+
+  LayoutObject* object = Parent();
+  if (!object) {
+    if (const auto* part = DynamicTo<LayoutCustomScrollbarPart>(this)) {
+      object = part->GetScrollableArea()->GetLayoutBox();
     }
-    while (object && ((object->IsInline() && !object->IsAtomicInlineLevel()) ||
-                      !object->IsLayoutBlock())) {
-      if (skip_info)
-        skip_info->Update(*object);
-      object = object->Parent();
+  }
+
+  while (object && !object->IsLayoutBlock()) {
+    if (skip_info) {
+      skip_info->Update(*object);
     }
+    object = object->Parent();
   }
 
   return DynamicTo<LayoutBlock>(object);
