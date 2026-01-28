@@ -106,7 +106,6 @@ component("modules") {
     "//third_party/blink/renderer/modules/image_downloader",
     "//third_party/blink/renderer/modules/indexeddb",
     "//third_party/blink/renderer/modules/installation",
-    "//third_party/blink/renderer/modules/installedapp",
     "//third_party/blink/renderer/modules/keyboard",
     "//third_party/blink/renderer/modules/launch",
     "//third_party/blink/renderer/modules/locked_mode",
@@ -183,6 +182,12 @@ component("modules") {
   }
   if (!is_ios && !target_os_is_android) {
     sub_modules += [ "//third_party/blink/renderer/modules/awc" ]
+  }
+
+  # Installed App (getInstalledRelatedApps) is excluded on iOS because the
+  # webapp infrastructure required for this API is not yet implemented.
+  if (!is_ios) {
+    sub_modules += [ "//third_party/blink/renderer/modules/installedapp" ]
   }
 
   if (enable_compute_pressure) {
@@ -461,7 +466,6 @@ source_set("unit_tests") {
     "filesystem/file_writer_test.cc",
     "handwriting/handwriting_type_converters_unittest.cc",
     "imagecapture/image_capture_test.cc",
-    "installedapp/installed_app_controller_test.cc",
     "manifest/image_resource_type_converters_test.cc",
     "manifest/manifest_manager_unittest.cc",
     "manifest/manifest_parser_unittest.cc",
@@ -669,6 +673,11 @@ source_set("unit_tests") {
       # preventing meaningful testing.
       "mediastream/capture_controller_test.cc",
     ]
+  }
+
+  # Installed App is excluded on iOS (see sub_modules above).
+  if (!is_ios) {
+    sources += [ "installedapp/installed_app_controller_test.cc" ]
   }
 
   configs += [

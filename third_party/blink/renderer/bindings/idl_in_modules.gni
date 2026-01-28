@@ -394,8 +394,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/indexeddb/idb_version_change_event.idl",
   "//third_party/blink/renderer/modules/indexeddb/idb_version_change_event_init.idl",
   "//third_party/blink/renderer/modules/indexeddb/window_or_worker_global_scope_indexed_database.idl",
-  "//third_party/blink/renderer/modules/installedapp/navigator_installed_app.idl",
-  "//third_party/blink/renderer/modules/installedapp/related_application.idl",
   "//third_party/blink/renderer/modules/keyboard/keyboard.idl",
   "//third_party/blink/renderer/modules/keyboard/keyboard_layout_map.idl",
   "//third_party/blink/renderer/modules/keyboard/navigator_keyboard.idl",
@@ -1336,6 +1334,15 @@ if (!target_os_is_android) {
 # we need to compile in the same way as would happen when current_os="android".
 if (!target_os_is_android && !is_ios) {
   static_idl_files_in_modules += [ "//third_party/blink/renderer/modules/awc/additional_windowing_controls.idl" ]
+}
+
+# Installed App (getInstalledRelatedApps) is excluded on iOS because the
+# webapp infrastructure required for this API is not yet implemented.
+if (!is_ios) {
+  static_idl_files_in_modules += [
+    "//third_party/blink/renderer/modules/installedapp/navigator_installed_app.idl",
+    "//third_party/blink/renderer/modules/installedapp/related_application.idl",
+  ]
 }
 
 # Compute Pressure
