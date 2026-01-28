@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_HANDLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -22,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 namespace base {
 class TimeTicks;
@@ -66,6 +68,12 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
                         base::TimeTicks start_time,
                         history::QueryResults results);
 
+  // Returns true if chips retrieval should not occur in the current call.
+  // This method was introduced to address the issue of jittering experience
+  // when the user switches among multiple NTPs without a change in the most
+  // recent tab.
+  bool ShouldThrottleRetrieval(const GURL& current_url);
+
   mojo::Receiver<action_chips::mojom::ActionChipsHandler> receiver_;
   mojo::Remote<action_chips::mojom::Page> page_;
   raw_ptr<Profile> profile_;
@@ -75,6 +83,8 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
 
   // Task tracker for history requests.
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  std::optional<GURL> last_processed_url_;
 
   base::WeakPtrFactory<ActionChipsHandler> weak_factory_{this};
 };
