@@ -107,8 +107,9 @@ class DownloadManagerGetter : public DownloadManager::Observer {
   DownloadManagerGetter& operator=(const DownloadManagerGetter&) = delete;
 
   ~DownloadManagerGetter() override {
-    if (manager_)
+    if (manager_) {
       manager_->RemoveObserver(this);
+    }
   }
 
   void ManagerGoingDown(DownloadManager* manager) override {
@@ -123,11 +124,13 @@ class DownloadManagerGetter : public DownloadManager::Observer {
 
 void RemoveDownloadItem(std::unique_ptr<DownloadManagerGetter> getter,
                         const std::string& guid) {
-  if (!getter->manager())
+  if (!getter->manager()) {
     return;
+  }
   DownloadItem* item = getter->manager()->GetDownloadByGuid(guid);
-  if (item)
+  if (item) {
     item->Remove();
+  }
 }
 
 void ScheduleRemoveDownloadItem(download::DownloadItem* download) {
@@ -234,8 +237,9 @@ static void JNI_DownloadController_DownloadUrl(
 // static
 DownloadControllerBase* DownloadControllerBase::Get() {
   base::AutoLock lock(g_download_controller_lock_.Get());
-  if (!DownloadControllerBase::download_controller_)
+  if (!DownloadControllerBase::download_controller_) {
     download_controller_ = DownloadController::GetInstance();
+  }
   return DownloadControllerBase::download_controller_;
 }
 
@@ -249,8 +253,9 @@ void DownloadControllerBase::SetDownloadControllerBase(
 // static
 void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
                                          download::DownloadItem* download) {
-  if (!web_contents || !web_contents->GetController().IsInitialNavigation())
+  if (!web_contents || !web_contents->GetController().IsInitialNavigation()) {
     return;
+  }
 
   // If the download is dangerous, don't close the tab now. The dangerous
   // infobar needs to be shown.
@@ -260,8 +265,9 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
   }
 
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
-  if (!tab_model || tab_model->GetTabCount() == 1)
+  if (!tab_model || tab_model->GetTabCount() == 1) {
     return;
+  }
 
   if (!download) {
     web_contents->Close();
@@ -317,13 +323,6 @@ void DownloadController::StartAndroidDownload(
                                 std::string(),  // suggested_name
                                 info.original_mime_type, default_file_name_);
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  // Log the SBClientDownloadExtensions enum value for the Android download.
-  int64_t uma_value = safe_browsing::FileTypePolicies::GetInstance()
-                          ->UmaValueForUTF16FilenameUnsafe(file_name);
-  base::UmaHistogramSparse("Download.AndroidDownload.FileExtension", uma_value);
-#endif
-
   ScopedJavaLocalRef<jobject> jurl =
       url::GURLAndroid::FromNativeGURL(env, info.url);
   ScopedJavaLocalRef<jobject> jreferer =
@@ -369,12 +368,14 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
   download_item->RemoveObserver(this);
   download_item->AddObserver(this);
 
-  if (download::AutoResumptionHandler::Get())
+  if (download::AutoResumptionHandler::Get()) {
     download::AutoResumptionHandler::Get()->OnDownloadStarted(download_item);
+  }
 
   ProfileKey* profile_key = GetProfileKey(download_item);
-  if (!profile_key)
+  if (!profile_key) {
     return;
+  }
 
   DownloadOfflineContentProviderFactory::GetForKey(profile_key)
       ->OnDownloadStarted(download_item);
@@ -555,10 +556,11 @@ ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {
       content::DownloadItemUtils::GetBrowserContext(download_item));
 
   ProfileKey* profile_key;
-  if (profile)
+  if (profile) {
     profile_key = profile->GetProfileKey();
-  else
+  } else {
     profile_key = ProfileKeyStartupAccessor::GetInstance()->profile_key();
+  }
 
   return profile_key;
 }

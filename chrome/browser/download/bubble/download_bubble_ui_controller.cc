@@ -233,10 +233,7 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetMainView() {
   last_partial_view_shown_time_ = std::nullopt;
   last_primary_view_was_partial_ = false;
-  std::vector<DownloadUIModelPtr> list =
-      GetDownloadUIModels(/*is_main_view=*/true);
-  base::UmaHistogramCounts100("Download.Bubble.FullViewSize", list.size());
-  return list;
+  return GetDownloadUIModels(/*is_main_view=*/true);
 }
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
@@ -254,7 +251,6 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
     last_primary_view_was_partial_ = true;
     last_partial_view_shown_time_ = std::make_optional(now);
   }
-  base::UmaHistogramCounts100("Download.Bubble.PartialViewSize", list.size());
   return list;
 }
 
