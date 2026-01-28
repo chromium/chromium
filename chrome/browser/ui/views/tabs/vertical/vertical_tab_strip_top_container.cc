@@ -90,9 +90,17 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     // horizontally. The exact y-level of the buttons depends on if they can lay
     // on one line or not.
     int total_width = exclusion_width_;
+    int min_height = 0;
     for (views::LabelButton* container_button : container_buttons) {
-      total_width += container_button->GetPreferredSize().width();
+      const auto preferred = container_button->GetPreferredSize();
+      total_width += preferred.width();
+      min_height = std::max(min_height, preferred.height());
     }
+
+    // Guarantee that the height of the container is at least the height of the
+    // buttons plus padding.
+    min_height += 2 * padding;
+    host_size.SetToMax(gfx::Size(0, min_height));
 
     total_width += (container_buttons.size() - 1) * padding;
 
