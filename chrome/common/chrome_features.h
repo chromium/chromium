@@ -1377,6 +1377,11 @@ BASE_DECLARE_FEATURE(kInitialWebUIMetrics);
 // components.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebUIReloadButton);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kWebUIReloadButtonMaxCrashRecoveryTimes;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kWebUIReloadButtonCrashRecoverResetInterval;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(CHROME_FEATURES)

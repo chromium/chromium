@@ -821,6 +821,7 @@ Called by update_debug_scenarios.py.-->
   <int value="7" label="Launch failed"/>
   <int value="8" label="OOM"/>
   <int value="9" label="Integrity failure (Win)"/>
+  <int value="10" label="Browser reclaim memory"/>
 </enum>
 
 <enum name="UtilityProcessNameHash">

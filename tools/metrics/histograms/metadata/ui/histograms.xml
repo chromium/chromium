@@ -630,6 +630,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="InitialWebUI.Toolbar.RenderProcessGone"
+    enum="TerminationStatus" expires_after="2026-07-05">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the status when the Web UI Toolbar render process is terminated.
+
+    This is recorded every time when `WebUIToolbarWebView` receives
+    `PrimaryMainFrameRenderProcessGone()` signal, and when the status is not a
+    normal termination (i.e. every status except
+    `TERMINATION_STATUS_NORMAL_TERMINATION` and
+    `TERMINATION_STATUS_STILL_RUNNING`).
+  </summary>
+</histogram>
+
+<histogram name="InitialWebUI.Toolbar.RenderProcessGoneExceedingRecoveryLimit"
+    enum="Boolean" expires_after="2026-07-05">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Record the number of times that the Web UI Toolbar render process is
+    terminated abnormmaly and it exceeds the recovery limit.
+  </summary>
+</histogram>
+
 <histogram name="ListMenuUtils.SetupCallbacksRecursively.Duration"
     units="microseconds" expires_after="2026-10-01">
   <owner>jhimawan@google.com</owner>

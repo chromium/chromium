@@ -1855,6 +1855,18 @@ BASE_FEATURE(kInitialWebUIMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 // chrome://webui-toolbar.top-chrome will be loaded as the content.
 // crbug.com/444358999
 BASE_FEATURE(kWebUIReloadButton, base::FEATURE_DISABLED_BY_DEFAULT);
+// The following feature params control the crash recovery behavior of the Web
+// UI reload button. If the renderer crashes, we will try to recover it by
+// reloading the contents until the number of crashes reaches
+// `kWebUIReloadButtonMaxCrashRecoveryTimes`. If the maximum number of crash
+// counts is reached, no recovery will be attempted. The counter will reset if
+// there is no crash within `WebUIReloadButtonCrashRecoverResetInterval`.
+const base::FeatureParam<int> kWebUIReloadButtonMaxCrashRecoveryTimes{
+    &kWebUIReloadButton, "WebUIReloadButtonMaxCrashRecoveryTimes", 3};
+const base::FeatureParam<base::TimeDelta>
+    kWebUIReloadButtonCrashRecoverResetInterval{
+        &kWebUIReloadButton, "WebUIReloadButtonCrashRecoverResetInterval",
+        base::Seconds(10)};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables the User-Agent override fix for SearchPrefetch. This will work only
