@@ -10,13 +10,17 @@ https://crrev.com/1968213002.
 <html>
 <script>
 if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.dumpChildFrames();
+  testRunner.dumpAsText();
+  testRunner.dumpChildFrames();
+  testRunner.waitUntilDone();
+  window.onload = function() {
+    testRunner.notifyDone();
+  };
 }
 </script>
-<body>
 
 <iframe name="foo" srcdoc="
+  <script> /* Sync Point to help 'foo/bar' win the race */ </script>
   <iframe name='bar' srcdoc='
     <iframe></iframe>
     <iframe></iframe>
@@ -29,6 +33,3 @@ if (window.testRunner) {
     <iframe></iframe>
     <iframe></iframe>
 "></iframe>
-
-</body>
-</html>
