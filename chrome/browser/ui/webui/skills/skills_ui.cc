@@ -6,12 +6,14 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/ui/webui/skills/skills_dialog_handler.h"
 #include "chrome/browser/ui/webui/skills/skills_page_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/skills_resources.h"
 #include "chrome/grit/skills_resources_map.h"
 #include "components/skills/features.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
@@ -43,8 +45,13 @@ void SkillsUI::BindInterface(
 void SkillsUI::CreatePageHandler(
     mojo::PendingReceiver<skills::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<SkillsPageHandler>(
-      std::move(receiver), skills::SkillsServiceFactory::GetForProfile(
-                               Profile::FromWebUI(web_ui())));
+      std::move(receiver), web_ui()->GetWebContents());
+}
+
+void SkillsUI::CreateDialogHandler(
+    mojo::PendingReceiver<skills::mojom::DialogHandler> receiver) {
+  dialog_handler_ = std::make_unique<SkillsDialogHandler>(
+      std::move(receiver), web_ui()->GetWebContents());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)

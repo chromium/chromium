@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
-import type {PageHandlerInterface} from 'chrome://skills/skills.mojom-webui.js';
+import type {DialogHandlerInterface} from 'chrome://skills/skills.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestPageHandler extends TestBrowserProxy implements
-    PageHandlerInterface {
+export class TestDialogHandler extends TestBrowserProxy implements
+    DialogHandlerInterface {
   constructor() {
     super([
       'submitSkill',
@@ -25,9 +25,9 @@ export class TestPageHandler extends TestBrowserProxy implements
 }
 
 export class TestSkillsDialogBrowserProxy {
-  handler: TestPageHandler;
+  handler: TestDialogHandler;
 
   constructor() {
-    this.handler = new TestPageHandler();
+    this.handler = new TestDialogHandler();
   }
 }

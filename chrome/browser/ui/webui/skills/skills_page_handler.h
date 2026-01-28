@@ -7,29 +7,27 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
-#include "components/skills/public/skill.mojom-forward.h"
-#include "components/skills/public/skills_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace skills {
 
 class SkillsPageHandler : public skills::mojom::PageHandler {
  public:
   SkillsPageHandler(mojo::PendingReceiver<skills::mojom::PageHandler> receiver,
-                    skills::SkillsService* skills_service);
+                    content::WebContents* web_contents);
 
   SkillsPageHandler(const SkillsPageHandler&) = delete;
   SkillsPageHandler& operator=(const SkillsPageHandler&) = delete;
 
   ~SkillsPageHandler() override;
 
-  // skills::mojom::PageHandler:
-  void SubmitSkill(skills::mojom::SkillPtr skill) override;
-  void CloseDialog() override;
-
  private:
   mojo::Receiver<skills::mojom::PageHandler> receiver_;
-  raw_ptr<skills::SkillsService> skills_service_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 }  // namespace skills

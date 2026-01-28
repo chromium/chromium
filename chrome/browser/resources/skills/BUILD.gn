@@ -29,6 +29,7 @@ build_webui("build") {
     "skills_dialog_app.html.ts",
     "skills_dialog_app.ts",
     "skills_dialog_browser_proxy.ts",
+    "skills_page_browser_proxy.ts",
     "user_skills_page.html.ts",
     "user_skills_page.ts",
   ]

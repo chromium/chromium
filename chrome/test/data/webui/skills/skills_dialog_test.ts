@@ -8,21 +8,21 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import type {SkillsDialogAppElement} from 'chrome://skills/skills_dialog_app.js';
-import {SkillsDialogBrowserProxyImpl} from 'chrome://skills/skills_dialog_browser_proxy.js';
+import {SkillsDialogBrowserProxy} from 'chrome://skills/skills_dialog_browser_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import type {TestPageHandler} from './test_skills_dialog_browser_proxy.js';
+import type {TestDialogHandler} from './test_skills_dialog_browser_proxy.js';
 import {TestSkillsDialogBrowserProxy} from './test_skills_dialog_browser_proxy.js';
 
 suite('SkillsDialogAppPage', function() {
   let skillsDialogApp: SkillsDialogAppElement;
   let browserProxy: TestSkillsDialogBrowserProxy;
-  let pageHandler: TestPageHandler;
+  let dialogHandler: TestDialogHandler;
 
   setup(function() {
     browserProxy = new TestSkillsDialogBrowserProxy();
-    SkillsDialogBrowserProxyImpl.setInstance(browserProxy);
-    pageHandler = browserProxy.handler;
+    SkillsDialogBrowserProxy.setInstance(browserProxy);
+    dialogHandler = browserProxy.handler;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     skillsDialogApp = document.createElement('skills-dialog-app');
     document.body.appendChild(skillsDialogApp);
@@ -93,7 +93,7 @@ suite('SkillsDialogAppPage', function() {
 
     // Click the save button and verify the proxy call.
     saveButton.click();
-    const submittedSkill = await pageHandler.whenCalled('submitSkill');
+    const submittedSkill = await dialogHandler.whenCalled('submitSkill');
     assertEquals(testName, submittedSkill.name);
     assertEquals(testPrompt, submittedSkill.prompt);
   });

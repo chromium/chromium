@@ -2,28 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageHandlerInterface} from './skills.mojom-webui.js';
-import {PageHandlerFactory, PageHandlerRemote} from './skills.mojom-webui.js';
+import type {DialogHandlerInterface} from './skills.mojom-webui.js';
+import {DialogHandlerRemote, PageHandlerFactory} from './skills.mojom-webui.js';
 
-/**
- * A browser proxy for the skills dialog. This manages communication between the
- * skills dialog WebUI and the browser process.
- */
-export interface SkillsDialogBrowserProxy {
-  handler: PageHandlerInterface;
-}
-
-export class SkillsDialogBrowserProxyImpl implements SkillsDialogBrowserProxy {
-  handler: PageHandlerInterface;
+export class SkillsDialogBrowserProxy {
+  handler: DialogHandlerInterface;
 
   private constructor() {
-    this.handler = new PageHandlerRemote();
-    PageHandlerFactory.getRemote().createPageHandler(
-        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
+    this.handler = new DialogHandlerRemote();
+
+    PageHandlerFactory.getRemote().createDialogHandler(
+        (this.handler as DialogHandlerRemote).$.bindNewPipeAndPassReceiver());
   }
 
   static getInstance(): SkillsDialogBrowserProxy {
-    return instance || (instance = new SkillsDialogBrowserProxyImpl());
+    return instance || (instance = new SkillsDialogBrowserProxy());
   }
 
   static setInstance(obj: SkillsDialogBrowserProxy) {

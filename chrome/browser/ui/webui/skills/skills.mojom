@@ -8,13 +8,18 @@ import "components/skills/public/skill.mojom";
 
 // Used by the WebUI page for communication.
 interface PageHandlerFactory {
-  // The WebUI page's |BrowserProxy| singleton calls this method when the page
-  // is first initialized.
+  // The WebUI page's |SkillsPageBrowserProxy| singleton calls this method
+  // when the page is first initialized.
   CreatePageHandler(pending_receiver<PageHandler> handler);
+
+  // The dialog WebUI's |SkillsDialogBrowserProxy| singleton calls this method
+  // when the page is first initialized.
+  CreateDialogHandler(pending_receiver<DialogHandler> handler);
 };
 
-// Called from TS side of chrome://skills (Renderer -> Browser)
-interface PageHandler {
+// Called from TS side of chrome://skills/dialog (Renderer -> Browser)
+// Handler for the add/edit skill dialog.
+interface DialogHandler {
   // Called when the user clicks the "Save" button in the dialog.
   SubmitSkill(skills.mojom.Skill skill);
 
@@ -23,4 +28,9 @@ interface PageHandler {
 
   // TODO(marissashen): Add `GetInitialSkill` to pass in initial skill and
   // dialog state (add/edit).
+};
+
+// Called from TS side of chrome://skills (Renderer -> Browser)
+interface PageHandler {
+  // TODO(b/475599531): Implement this.
 };

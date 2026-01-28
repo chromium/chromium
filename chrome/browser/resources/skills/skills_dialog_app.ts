@@ -12,7 +12,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Skill} from './skill.mojom-webui.js';
 import {getCss} from './skills_dialog.css.js';
 import {getHtml} from './skills_dialog_app.html.js';
-import {SkillsDialogBrowserProxyImpl} from './skills_dialog_browser_proxy.js';
+import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
 
 export class SkillsDialogAppElement extends CrLitElement {
   static get is() {
@@ -54,15 +54,14 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   /** Submits skill and closes the dialog. */
-  protected async submitSkill_(): Promise<void> {
-    await SkillsDialogBrowserProxyImpl.getInstance().handler.submitSkill(
-        this.skill_);
+  protected submitSkill_(): void {
+    SkillsDialogBrowserProxy.getInstance().handler.submitSkill(this.skill_);
   }
 
   /** Click listener for the cancel button. */
   protected cancel_(e: Event) {
     e.preventDefault();
-    SkillsDialogBrowserProxyImpl.getInstance().handler.closeDialog();
+    SkillsDialogBrowserProxy.getInstance().handler.closeDialog();
   }
 }
 

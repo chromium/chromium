@@ -14,6 +14,7 @@
 namespace skills {
 
 class SkillsPageHandler;
+class SkillsDialogHandler;
 
 // MojoWebUIController for the chrome://skills page.
 class SkillsUI : public ui::MojoWebUIController,
@@ -34,7 +35,11 @@ class SkillsUI : public ui::MojoWebUIController,
   void CreatePageHandler(
       mojo::PendingReceiver<skills::mojom::PageHandler> receiver) override;
 
+  void CreateDialogHandler(
+      mojo::PendingReceiver<skills::mojom::DialogHandler> receiver) override;
+
   std::unique_ptr<SkillsPageHandler> page_handler_;
+  std::unique_ptr<SkillsDialogHandler> dialog_handler_;
 
   mojo::Receiver<skills::mojom::PageHandlerFactory> page_factory_receiver_{
       this};
