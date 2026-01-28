@@ -4,6 +4,8 @@
 
 INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
+INCLUDE PERFETTO MODULE chrome.chrome_scrolls_v4;
+
 INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
 
 INCLUDE PERFETTO MODULE time.conversion;

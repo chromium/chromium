@@ -6,6 +6,7 @@
 chrome_stdlib_sql_files = [
   "android_input.sql",
   "chrome_scrolls.sql",
+  "chrome_scrolls_v4.sql",
   "event_latency.sql",
   "event_latency_description.sql",
   "graphics_pipeline.sql",

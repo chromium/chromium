@@ -852,7 +852,7 @@ class ChromeScrollJankStdlib(TestSuite):
         trace=DataPath('scroll_m144.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank_v4;
-        INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
+        INCLUDE PERFETTO MODULE chrome.chrome_scrolls_v4;
 
         -- Select a cross-section of various frames from the trace, as
         -- categorized by the scroll jank v4 metric (damaging, non-damaging,
