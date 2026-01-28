@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -32,8 +33,10 @@
 #include "components/find_in_page/find_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/clipboard_types.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -502,6 +505,37 @@ void FindBarView::OnAfterPaste() {
   // a paste operation, even if the pasted text is the same as before.
   // See http://crbug.com/79002
   last_searched_text_.clear();
+}
+
+bool FindBarView::OnBeforeCutOrCopy(views::Textfield* sender,
+                                    std::u16string* copy_contents) {
+  CHECK(copy_contents);
+  CHECK(copy_contents->empty());
+
+  return enterprise_data_protection::ReplaceCopyFromFindBar(
+      sender->GetSelectedText(),
+      find_bar_host_->GetFindBarController()->web_contents(), copy_contents);
+}
+
+std::unique_ptr<ui::ScopedClipboardWriter>
+FindBarView::CreateClipboardWriter() {
+  content::WebContents* web_contents =
+      find_bar_host_->GetFindBarController()->web_contents();
+  std::unique_ptr<ui::DataTransferEndpoint> dte;
+  if (web_contents->GetLastCommittedURL().is_valid()) {
+    dte = std::make_unique<ui::DataTransferEndpoint>(
+        web_contents->GetLastCommittedURL(),
+        ui::DataTransferEndpointOptions{
+            .off_the_record =
+                web_contents->GetBrowserContext()->IsOffTheRecord(),
+        });
+  }
+  auto clipboard_writer = std::make_unique<ui::ScopedClipboardWriter>(
+      ui::ClipboardBuffer::kCopyPaste, std::move(dte));
+  content::AddSourceDataToClipboardWriter(*clipboard_writer,
+                                          *web_contents->GetPrimaryMainFrame());
+
+  return clipboard_writer;
 }
 
 void FindBarView::Find(std::u16string_view search_text) {

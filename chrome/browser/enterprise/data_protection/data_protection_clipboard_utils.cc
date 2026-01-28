@@ -464,6 +464,18 @@ void OnDlpRulesCheckDone(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+void GetCopyToOSClipboardReplacement(const content::ClipboardEndpoint& source,
+                                     std::u16string* replacement) {
+  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
+                     ->GetForBrowserContext(source.browser_context())
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
+
+  if (verdict.level() == data_controls::Rule::Level::kBlock) {
+    *replacement = l10n_util::GetStringUTF16(
+        IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
+  }
+}
+
 void IsCopyToOSClipboardRestricted(
     const content::ClipboardEndpoint& source,
     const ui::ClipboardMetadata& metadata,
@@ -474,20 +486,15 @@ void IsCopyToOSClipboardRestricted(
     return;
   }
 
-  auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
-                     ->GetForBrowserContext(source.browser_context())
-                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
-
-  if (verdict.level() == data_controls::Rule::Level::kBlock) {
+  std::u16string replacement;
+  GetCopyToOSClipboardReplacement(source, &replacement);
+  if (!replacement.empty()) {
     // Before calling `callback`, we remember `data` will correspond to the next
     // clipboard sequence number so that it can be potentially replaced again at
     // paste time.
     data_controls::LastReplacedClipboardDataObserver::GetInstance()
         ->AddDataToNextSeqno(data);
-    std::move(callback).Run(
-        metadata.format_type, data, /*replacement_data=*/
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
+    std::move(callback).Run(metadata.format_type, data, replacement);
 
     return;
   }
@@ -592,6 +599,30 @@ content::ClipboardEndpoint MakeClipboardEndpoint(
           },
           rfh->GetGlobalId()),
       *rfh);
+}
+
+std::optional<content::ClipboardEndpoint> GetValidURLEndpoint(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return std::nullopt;
+  }
+
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  auto url = rfh->GetMainFrame()->GetLastCommittedURL();
+  if (!url.is_valid()) {
+    return std::nullopt;
+  }
+
+  ui::DataTransferEndpoint dte(
+      url, {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
+
+  content::ClipboardEndpoint endpoint = MakeClipboardEndpoint(dte, rfh);
+
+  if (SkipDataControlOrContentAnalysisChecks(endpoint)) {
+    return std::nullopt;
+  }
+
+  return endpoint;
 }
 
 }  // namespace
@@ -756,28 +787,14 @@ void ReplaceSameTabClipboardDataIfRequiredByPolicy(
 }
 
 bool CanPopulateFindBarFromSelection(content::WebContents* web_contents) {
-  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-  if (!rfh) {
-    return true;
-  }
-
-  auto url = rfh->GetMainFrame()->GetLastCommittedURL();
-  if (!url.is_valid()) {
-    return true;
-  }
-
-  ui::DataTransferEndpoint dte(
-      url, {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
-
-  content::ClipboardEndpoint source = MakeClipboardEndpoint(dte, rfh);
-
-  if (SkipDataControlOrContentAnalysisChecks(source)) {
-    return true;
+  auto source = GetValidURLEndpoint(web_contents);
+  if (!source) {
+    return false;
   }
 
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
-                     ->GetForBrowserContext(source.browser_context())
-                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
+                     ->GetForBrowserContext(source->browser_context())
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source));
   return verdict.level() != data_controls::Rule::Level::kBlock;
 }
 
@@ -810,6 +827,29 @@ bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
   }
 
   return true;
+}
+
+bool ReplaceCopyFromFindBar(std::u16string_view selected_text,
+                            content::WebContents* web_contents,
+                            std::u16string* replacement) {
+  CHECK(replacement);
+  CHECK(replacement->empty());
+
+  auto source = GetValidURLEndpoint(web_contents);
+  if (!source) {
+    return false;
+  }
+
+  GetCopyToOSClipboardReplacement(*source, replacement);
+  if (!replacement->empty()) {
+    // Before returning, we persist the data that would have been copied so it
+    // can be potentially replaced again at paste time.
+    content::ClipboardPasteData data;
+    data.text = selected_text;
+    data_controls::LastReplacedClipboardDataObserver::GetInstance()
+        ->AddDataToNextSeqno(data);
+  }
+  return !replacement->empty();
 }
 
 }  // namespace enterprise_data_protection

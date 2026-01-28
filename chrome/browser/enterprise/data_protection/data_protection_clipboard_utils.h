@@ -94,6 +94,14 @@ void ReplaceSameTabClipboardDataIfRequiredByPolicy(
 // Returns true if populating the find bar is allowed, false otherwise.
 bool CanPopulateFindBarFromSelection(content::WebContents* web_contents);
 
+// Returns true if data copied from the find bar should be replaced before being
+// put in the clipboard due to the "DataControlsRules" policy. If that is the
+// case, the string put in `replacement` is what should instead by written to
+// the clipboard.
+bool ReplaceCopyFromFindBar(std::u16string_view selected_text,
+                            content::WebContents* web_contents,
+                            std::u16string* replacement);
+
 }  // namespace enterprise_data_protection
 
 #endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_CLIPBOARD_UTILS_H_

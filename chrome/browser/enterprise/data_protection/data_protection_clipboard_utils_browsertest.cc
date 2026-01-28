@@ -28,6 +28,7 @@
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -35,6 +36,7 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace enterprise_data_protection {
@@ -2087,28 +2089,68 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   EXPECT_EQ(paste_data->text, u"foo");
   run_loop_bypass.Run();
 }
-IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
-                       StartFindBarWithSelectedText_Allowed) {
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Allowed) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.ExpectNoReport();
 
+  // Without any restriction, selected text is allowed to reach the find bar.
   EXPECT_TRUE(CanPopulateFindBarFromSelection(contents()));
+
+  // Without any restriction, text in the find bar is allowed to be copied and
+  // isn't replaced.
+  const std::u16string kText = u"foo";
+  std::u16string replacement;
+  EXPECT_FALSE(ReplaceCopyFromFindBar(kText, contents(), &replacement));
+  EXPECT_TRUE(replacement.empty());
 }
 
-IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
-                       StartFindBarWithSelectedText_Blocked) {
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Blocked) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "block",
                                    "rule_id": "987",
-                                   "sources": {
-                                     "urls": ["*"]
+                                   "destinations": {
+                                     "os_clipboard": true
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "BLOCK"}
                                    ]
                                  })"},
                                  machine_scope());
+
+  // With a blocking Data Controls rule, selected text is not allowed to reach
+  // the find bar.
   EXPECT_FALSE(CanPopulateFindBarFromSelection(contents()));
+
+  // With a blocking Data Controls rule, text is not allowed to be copied from
+  // the find bar and is instead replaced by a warning message.
+  const std::u16string kText = u"foo";
+  std::u16string replacement;
+  EXPECT_TRUE(ReplaceCopyFromFindBar(kText, contents(), &replacement));
+  EXPECT_EQ(replacement,
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  // Since the current rules don't restrict pasting inside the browser, the
+  // original data is replaced back after pasting.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>>
+      paste_future;
+  PasteIfAllowedByPolicy(
+      CreateURLClipboardEndpoint("https://source.com/"),
+      CreateURLClipboardEndpoint("https://destination.com"),
+      {
+          .size = 1234,
+          .format_type = ui::ClipboardFormatType::PlainTextType(),
+          .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+              ui::ClipboardBuffer::kCopyPaste),
+      },
+      MakeClipboardPasteData("replacement", "", {}),
+      paste_future.GetCallback());
+  auto paste_data = paste_future.Get();
+  EXPECT_TRUE(paste_data);
+  EXPECT_EQ(paste_data->text, kText);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, DragAllowed) {

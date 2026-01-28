@@ -1259,3 +1259,46 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, BookmarkShortcutWithFindBarFocus) {
       // bubble would never appear.
       WaitForShow(kBookmarkNameFieldId));
 }
+
+IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, CopyBlockedByPolicy) {
+  const bool clipboard_restricted_by_policy = GetParam();
+  if (clipboard_restricted_by_policy) {
+    data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "rule_name",
+                                   "rule_id": "rule_id",
+                                   "destinations": {
+                                     "os_clipboard": true
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })"});
+  }
+  const std::string kExpectedText =
+      clipboard_restricted_by_policy
+          ? l10n_util::GetStringUTF8(
+                IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE)
+          : "text";
+
+  RunTestSequence(
+      Init(embedded_test_server()->GetURL("/a.html")),
+      WaitForWebContentsReady(kTabId), ShowFindBar(),
+      WaitForShow(FindBarView::kTextField),
+      EnterText(FindBarView::kTextField, u"some text"),
+      WithView(FindBarView::kTextField,
+               [](views::Textfield* textfield) {
+                 textfield->SelectWord();
+                 EXPECT_EQ(textfield->GetSelectedText(), u"text");
+                 textfield->ExecuteCommand(views::Textfield::kCopy, 0);
+               }),
+      PollState(
+          kTextCopiedState,
+          [&]() {
+            ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+            std::u16string clipboard_text;
+            clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                                /* data_dst = */ nullptr, &clipboard_text);
+            return base::EqualsASCII(clipboard_text, kExpectedText);
+          }),
+      WaitForState(kTextCopiedState, true));
+}
