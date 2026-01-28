@@ -14,6 +14,5 @@
     }
   ],
   "start_url": "index.html",
-  "display": "standalone",
-  "scope": "."
+  "display": "standalone"
 }

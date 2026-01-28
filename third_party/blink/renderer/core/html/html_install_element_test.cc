@@ -40,12 +40,15 @@ using MojoPermissionStatus = mojom::blink::PermissionStatus;
 namespace {
 
 constexpr char kInstallString[] = "Install";
+constexpr char kLaunchString[] = "Launch";
 constexpr char kExampleSite[] = "https://site.example/app.manifest";
 
 String ResourceIdToString(int resource_id) {
   switch (resource_id) {
     case IDS_PERMISSION_REQUEST_INSTALL:
       return kInstallString;
+    case IDS_PERMISSION_REQUEST_LAUNCH:
+      return kLaunchString;
     default:
       return "";
   }
@@ -71,6 +74,11 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
                              std::move(handle)));
   }
 
+  void IsInstalled(mojom::blink::InstallOptionsPtr options,
+                   IsInstalledCallback callback) override {
+    std::move(callback).Run(is_installed_);
+  }
+
   // mojom::blink::WebInstallService impl:
   void Install(mojom::blink::InstallOptionsPtr options,
                InstallCallback callback) override {
@@ -88,6 +96,8 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
 
   // Test helpers:
   void WaitForCall() { EXPECT_TRUE(called_.Wait()); }
+
+  void SetInstalledState(bool is_installed) { is_installed_ = is_installed; }
 
   void RespondWithSuccess() {
     CHECK(callback_);
@@ -109,6 +119,7 @@ class MockWebInstallService : public mojom::blink::WebInstallService {
   mojo::ReceiverSet<mojom::blink::WebInstallService> receivers_;
   mojom::blink::InstallOptionsPtr options_;
   InstallCallback callback_;
+  bool is_installed_ = false;
   base::test::TestFuture<void> called_;
 };
 
@@ -234,6 +245,35 @@ TEST_F(HTMLInstallElementTestBase, RenderedText) {
     // TODO(crbug.com/467103133): Update when site-specific information is
     // rendered.
     CheckInnerText(element, kInstallString);
+  }
+}
+
+TEST_F(HTMLInstallElementTestBase, RenderedTextWhenInstalled) {
+  web_install_service_.SetInstalledState(true);
+
+  {
+    HTMLInstallElement* element =
+        MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+
+    WaitForElementRegistration(element);
+
+    CheckInnerText(element, kLaunchString);
+    EXPECT_TRUE(element->show_as_launch());
+  }
+
+  {
+    HTMLInstallElement* element =
+        MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+
+    element->setAttribute(html_names::kInstallurlAttr,
+                          AtomicString(kExampleSite));
+
+    WaitForElementRegistration(element);
+
+    // TODO(crbug.com/467103133): Update when site-specific information is
+    // rendered.
+    CheckInnerText(element, kLaunchString);
+    EXPECT_TRUE(element->show_as_launch());
   }
 }
 

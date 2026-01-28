@@ -90,6 +90,8 @@ class WebInstallServiceImpl
       mojo::PendingReceiver<blink::mojom::WebInstallService> receiver);
 
   // blink::mojom::WebInstallService implementation:
+  void IsInstalled(blink::mojom::InstallOptionsPtr options,
+                   IsInstalledCallback callback) override;
   void Install(blink::mojom::InstallOptionsPtr options,
                InstallCallback callback) override;
   void InstallFromElement(blink::mojom::InstallOptionsPtr options,

@@ -126,7 +126,7 @@ class CORE_EXPORT HTMLPermissionElement
                                   const AtomicString& language_string);
   virtual void UpdateAppearance();
 
-  void UpdateIcon(mojom::blink::PermissionName permission);
+  virtual void UpdateIcon(mojom::blink::PermissionName permission);
 
   // Update permission statuses and appearance based on the current statuses.
   virtual void UpdatePermissionStatusAndAppearance();
@@ -141,6 +141,10 @@ class CORE_EXPORT HTMLPermissionElement
 
   HTMLSpanElement* permission_text_span() const {
     return permission_text_span_.Get();
+  }
+
+  HTMLPermissionIconElement* permission_internal_icon() const {
+    return permission_internal_icon_.Get();
   }
 
   void SetPreciseLocation(bool);

@@ -17,6 +17,14 @@ class Document;
 class KURL;
 class String;
 
+// Represents the <install> HTML element, which provides a mechanism to
+// install web applications. It has two optional attributes:
+// - installurl: URL of the web app to install. If not provided, the current
+//   document URL is used.
+// - manifestid: ID of the web app manifest. Only valid if installurl is also
+//   provided.
+// By default the element renders as an Install button, but may also show as
+// a Launch button.
 class CORE_EXPORT HTMLInstallElement : public HTMLPermissionElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -27,26 +35,34 @@ class CORE_EXPORT HTMLInstallElement : public HTMLPermissionElement {
   const String& ManifestId() const;
   void Trace(Visitor*) const override;
 
+  bool show_as_launch() const { return show_as_launch_; }
+
  private:
   // HTMLElement:
   bool IsURLAttribute(const Attribute&) const override;
 
   // HTMLPermissionElement:
   void UpdateAppearance() override;
+  void UpdateIcon(mojom::blink::PermissionName permission_name) override;
   mojom::blink::EmbeddedPermissionRequestDescriptorPtr
   CreateEmbeddedPermissionRequestDescriptor() override;
   void DefaultEventHandler(Event&) override;
 
-  void UpdateAppearanceTask();
+  void OnIsInstalledResult(bool is_installed);
+  void UpdateAppearanceTask(bool is_installed);
 
+  // Returned remote is not guaranteed to be bound.
   HeapMojoRemote<mojom::blink::WebInstallService>& WebInstallService();
   void OnConnectionError();
 
   void OnActivated();
+  mojom::blink::InstallOptionsPtr GetCheckedInstallOptions();
   void OnInstallResult(mojom::blink::WebInstallServiceResult,
                        const KURL& manifest_id);
 
   HeapMojoRemote<mojom::blink::WebInstallService> service_;
+  // Controls whether the element should render as a launch button.
+  bool show_as_launch_ = false;
 };
 
 }  // namespace blink

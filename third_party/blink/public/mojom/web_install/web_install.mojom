@@ -25,6 +25,9 @@ struct InstallOptions {
 // Allows installation of web apps from web content via JS API or <install>
 // element. Only bound on main frames that support web app installation.
 interface WebInstallService {
+  // Checks whether a site is already installed as a web app.
+  IsInstalled(InstallOptions? options) => (bool is_installed);
+
   // Installs a site as a web app via JS. The valid states of `InstallOptions`:
   // 1. `InstallOptions` is nullopt:
   //    Installs the current document as a web app if the site defines an 'id'

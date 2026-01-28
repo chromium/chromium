@@ -77,12 +77,9 @@ constexpr char kInstallTypeUma[] = "WebApp.WebInstallApi.InstallType";
 // recheck the app's state in the registrar, and fail gracefully if it's no
 // longer installed.
 std::optional<webapps::AppId> IsAppInstalled(
-    Profile* profile,
+    WebAppProvider& provider,
     const GURL& install_target,
     const std::optional<GURL>& manifest_id) {
-  auto* provider = WebAppProvider::GetForWebApps(profile);
-  CHECK(provider);
-
   // Only consider apps that launch in a standalone window, or were installed
   // by the user.
   WebAppFilter filter = WebAppFilter::LaunchableFromInstallApi();
@@ -94,8 +91,8 @@ std::optional<webapps::AppId> IsAppInstalled(
     webapps::AppId app_id_from_manifest_id =
         GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id.value()));
 
-    bool found_app = provider->registrar_unsafe().AppMatches(
-        app_id_from_manifest_id, filter);
+    bool found_app =
+        provider.registrar_unsafe().AppMatches(app_id_from_manifest_id, filter);
 
     return found_app ? std::optional<webapps::AppId>(app_id_from_manifest_id)
                      : std::nullopt;
@@ -103,8 +100,8 @@ std::optional<webapps::AppId> IsAppInstalled(
 
   // No `manifest_id` was provided. Check for the app by `install_target`. This
   // is less accurate and may result in another app being launched.
-  return provider->registrar_unsafe().FindBestAppWithUrlInScope(install_target,
-                                                                filter);
+  return provider.registrar_unsafe().FindBestAppWithUrlInScope(install_target,
+                                                               filter);
 }
 
 void CheckInstalledByAndMaybeUpdate(const base::Time& api_call_time,
@@ -155,6 +152,36 @@ void WebInstallServiceImpl::CreateIfAllowed(
   }
 
   new WebInstallServiceImpl(*render_frame_host, std::move(receiver));
+}
+
+void WebInstallServiceImpl::IsInstalled(blink::mojom::InstallOptionsPtr options,
+                                        IsInstalledCallback callback) {
+  GURL install_target;
+  std::optional<GURL> manifest_id;
+  if (options) {
+    install_target = GURL(options->install_url);
+    manifest_id = options->manifest_id;
+  } else {
+    install_target = last_committed_url_;
+  }
+
+  if (!install_target.is_valid() || !install_target.SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto* provider = WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
+  // `kWebAppInstallation` is guaranteed to be enabled at this point, however
+  // the provider may be null (e.g. Incognito).
+  if (!provider) {
+    std::move(callback).Run(false);
+    return;
+  }
+  std::optional<webapps::AppId> app_id =
+      IsAppInstalled(*provider, install_target, manifest_id);
+
+  std::move(callback).Run(app_id.has_value());
 }
 
 void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
@@ -569,7 +596,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
   // launch dialog instead of the install dialog. See definition for details
   // on how we check if the app is installed.
   std::optional<webapps::AppId> app_id = IsAppInstalled(
-      profile, install_options_->install_url, install_options_->manifest_id);
+      *provider, install_options_->install_url, install_options_->manifest_id);
   if (app_id) {
     // See `IsAppInstalled` for why this can be unsafe.
     const GURL& installed_manifest_id =

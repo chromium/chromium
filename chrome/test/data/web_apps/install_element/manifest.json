@@ -1,6 +1,6 @@
 {
   "name": "Web app install element test app with id",
-  "id": "my_id",
+  "id": "some_id",
   "icons": [
     {
       "src": "launcher-icon-1x.png",

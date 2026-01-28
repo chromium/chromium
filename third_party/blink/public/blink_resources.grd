@@ -59,6 +59,7 @@
       <include name="IDR_UASTYLE_JSON_DOCUMENT_CSS" file="../renderer/core/css/json-document.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_PERMISSION_ICON_CAMERA_SVG" file="../renderer/core/html/resources/images/permission_icon_camera.svg" type="BINDATA" compress="brotli"/>
       <include name="IDR_PERMISSION_ICON_INSTALL_SVG" file="../renderer/core/html/resources/images/permission_icon_install.svg" type="BINDATA" compress="brotli"/>
+      <include name="IDR_PERMISSION_ICON_INSTALL_LAUNCH_SVG" file="../renderer/core/html/resources/images/permission_icon_install_launch.svg" type="BINDATA" compress="brotli"/>
       <include name="IDR_PERMISSION_ICON_MICROPHONE_SVG" file="../renderer/core/html/resources/images/permission_icon_microphone.svg" type="BINDATA" compress="brotli"/>
       <include name="IDR_PERMISSION_ICON_LOCATION_SVG" file="../renderer/core/html/resources/images/permission_icon_location.svg" type="BINDATA" compress="brotli"/>
       <include name="IDR_PERMISSION_ICON_LOCATION_PRECISE_SVG" file="../renderer/core/html/resources/images/permission_icon_location_precise.svg" type="BINDATA" compress="brotli"/>

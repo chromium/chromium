@@ -57,6 +57,13 @@ const String& InstallIconSVG() {
   return kInstallIconSVG;
 }
 
+const String& LaunchIconSVG() {
+  DEFINE_STATIC_LOCAL(const String, kLaunchIconSVG,
+                      (UncompressResourceAsASCIIString(
+                          IDR_PERMISSION_ICON_INSTALL_LAUNCH_SVG)));
+  return kLaunchIconSVG;
+}
+
 }  // namespace
 
 HTMLPermissionIconElement::HTMLPermissionIconElement(Document& document)
@@ -99,6 +106,10 @@ void HTMLPermissionIconElement::SetIconImpl(PermissionIconType icon_type) {
     }
     case PermissionIconType::kInstall: {
       SetInnerHTMLWithoutTrustedTypes(InstallIconSVG());
+      break;
+    }
+    case PermissionIconType::kLaunch: {
+      SetInnerHTMLWithoutTrustedTypes(LaunchIconSVG());
       break;
     }
 

@@ -17,6 +17,8 @@ enum class PermissionIconType {
   kCamera = 3,
   kMicrophone = 4,
   kInstall = 5,
+  kLaunch = 6,
+  // TODO(crbug.com/475285741): Add Open in Chrome product icon.
 };
 
 // Internal element for the Permission element. This element holds the icon

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
+#include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
@@ -43,14 +44,21 @@ void HTMLInstallElement::Trace(Visitor* visitor) const {
 }
 
 void HTMLInstallElement::UpdateAppearance() {
-  // We'll update the text ourselves rather than invoking
-  // `HTMLPermissionElement::UpdateAppearance()` given the logic here. Like
-  // `HTMLGeolocationElement::UpdateAppearance()`, we'll punt the inner text
-  // change out to a task on the default task queue.
-  GetDocument()
-      .GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(FROM_HERE, BindOnce(&HTMLInstallElement::UpdateAppearanceTask,
-                                     WrapWeakPersistent(this)));
+  if (!WebInstallService().is_bound()) {
+    // Do nothing if the document's execution context is gone.
+    return;
+  }
+
+  // Empty if no attributes were provided, or those provided were invalid.
+  // TODO(crbug.com/477643920): Evaluate element behavior with illegal/invalid
+  // attributes. (Currently we fall back to checking/installing the current
+  // document. This should likely be changed to raise an error).
+  mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
+
+  // Query installation status to update button text ("Install" vs "Launch").
+  WebInstallService()->IsInstalled(
+      std::move(options), BindOnce(&HTMLInstallElement::OnIsInstalledResult,
+                                   WrapWeakPersistent(this)));
 }
 
 mojom::blink::EmbeddedPermissionRequestDescriptorPtr
@@ -67,15 +75,41 @@ HTMLInstallElement::CreateEmbeddedPermissionRequestDescriptor() {
   return descriptor;
 }
 
-void HTMLInstallElement::UpdateAppearanceTask() {
+void HTMLInstallElement::OnIsInstalledResult(bool is_installed) {
+  // If this element points to an app that is already installed in the browser
+  // process, the element will present itself as a launch button.
+  show_as_launch_ = is_installed;
+
+  // This is posted as a task, as similar code in
+  // `HTMLGeolocationElement::UpdateAppearance` would crash due to DCHECKs being
+  // hit for calling setInnerText during layout.
+  // TODO(crbug.com/477974745): If possible, bind the mojo pipe to a task runner
+  // that cannot be called during layout, to avoid this and simplify
+  // <geolocation> too.
+  GetDocument()
+      .GetTaskRunner(TaskType::kInternalDefault)
+      ->PostTask(FROM_HERE, BindOnce(&HTMLInstallElement::UpdateAppearanceTask,
+                                     WrapWeakPersistent(this), is_installed));
+}
+
+void HTMLInstallElement::UpdateAppearanceTask(bool is_installed) {
   // TODO(crbug.com/467103133): Render site-specific information.
-  uint16_t message_id = GetTranslatedMessageID(
-      IDS_PERMISSION_REQUEST_INSTALL, ComputeInheritedLanguage().LowerASCII());
+  uint16_t message_id =
+      GetTranslatedMessageID(is_installed ? IDS_PERMISSION_REQUEST_LAUNCH
+                                          : IDS_PERMISSION_REQUEST_INSTALL,
+                             ComputeInheritedLanguage().LowerASCII());
   String inner_text = GetLocale().QueryString(message_id);
   CHECK(message_id);
   permission_text_span()->setInnerText(inner_text);
 
   UpdateIcon(mojom::blink::PermissionName::WEB_APP_INSTALLATION);
+}
+
+void HTMLInstallElement::UpdateIcon(
+    mojom::blink::PermissionName permission_name) {
+  permission_internal_icon()->SetIcon(show_as_launch_
+                                          ? PermissionIconType::kLaunch
+                                          : PermissionIconType::kInstall);
 }
 
 bool HTMLInstallElement::IsURLAttribute(const Attribute& attr) const {
@@ -97,8 +131,13 @@ void HTMLInstallElement::DefaultEventHandler(Event& event) {
 
 HeapMojoRemote<mojom::blink::WebInstallService>&
 HTMLInstallElement::WebInstallService() {
+  // Can be nullptr. e.g. in unit tests, or after document Shutdown().
+  auto* context = GetDocument().GetExecutionContext();
+  if (!context) {
+    return service_;
+  }
+
   if (!service_.is_bound()) {
-    auto* context = GetDocument().GetExecutionContext();
     context->GetBrowserInterfaceBroker().GetInterface(
         service_.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
@@ -115,16 +154,28 @@ void HTMLInstallElement::OnConnectionError() {
 }
 
 void HTMLInstallElement::OnActivated() {
-  // Do some installation.
-  CHECK(WebInstallService());
+  if (!WebInstallService().is_bound()) {
+    // Do nothing if the document's execution context is gone.
+    return;
+  }
 
-  // Create the empty install data. If it remains empty, we attempt to install
-  // the current page.
+  // Empty if no attributes were provided, or those provided were invalid.
+  mojom::blink::InstallOptionsPtr options = GetCheckedInstallOptions();
+
+  WebInstallService()->InstallFromElement(
+      std::move(options),
+      BindOnce(&HTMLInstallElement::OnInstallResult, WrapWeakPersistent(this)));
+}
+
+mojom::blink::InstallOptionsPtr HTMLInstallElement::GetCheckedInstallOptions() {
   mojom::blink::InstallOptionsPtr options;
+
   KURL install_url = KURL(InstallUrl());
   if (install_url.IsValid()) {
     options = mojom::blink::InstallOptions::New();
     options->install_url = install_url;
+
+    // TODO(crbug.com/469940918): Evaluate whether to accept manifestid alone.
     // manifestid is only valid if installurl was also provided, as it's used
     // for data validation on the installurl.
     KURL manifest_id_url = KURL(ManifestId());
@@ -132,9 +183,7 @@ void HTMLInstallElement::OnActivated() {
       options->manifest_id = manifest_id_url;
     }
   }
-  WebInstallService()->InstallFromElement(
-      std::move(options),
-      BindOnce(&HTMLInstallElement::OnInstallResult, WrapWeakPersistent(this)));
+  return options;
 }
 
 void HTMLInstallElement::OnInstallResult(
