@@ -298,6 +298,10 @@ void AutofillClient::ShowEntityImportBubble(
     std::optional<EntityInstance> old_entity,
     EntityImportPromptResultCallback prompt_closed_callback) {}
 
+void AutofillClient::CloseEntityImportBubble() {
+  NOTIMPLEMENTED();
+}
+
 void AutofillClient::ShowEmailVerifiedToast() {
   NOTIMPLEMENTED();
 }

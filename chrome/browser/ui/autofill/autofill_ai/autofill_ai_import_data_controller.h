@@ -34,6 +34,9 @@ class AutofillAiImportDataController {
       content::WebContents* web_contents,
       const std::string& app_locale);
 
+  // Hides the Autofill AI import bubble if it is showing for `web_contents`.
+  static void Hide(content::WebContents& web_contents);
+
   // Shows a save or update Autofill AI data bubble which the user can accept or
   // decline. `old_entity` is used in the update case to give users an overview
   // of what was changed.

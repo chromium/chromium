@@ -685,6 +685,9 @@ class AutofillClient {
       std::optional<EntityInstance> old_entity,
       EntityImportPromptResultCallback prompt_result_callback);
 
+  // Hides the Autofill AI import bubble if it is currently showing.
+  virtual void CloseEntityImportBubble();
+
   virtual void ShowEmailVerifiedToast();
 
   // May return null on platforms where OTPs are not supported.

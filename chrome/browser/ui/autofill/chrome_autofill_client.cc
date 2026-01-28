@@ -1405,7 +1405,7 @@ void ChromeAutofillClient::ShowEntityImportBubble(
       new_entity, std::move(old_entity), std::move(prompt_result_callback));
 #else
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
-          &*web_contents(), GetAppLocale())) {
+          web_contents(), GetAppLocale())) {
     controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
                            std::move(prompt_result_callback));
   } else {
@@ -1413,6 +1413,12 @@ void ChromeAutofillClient::ShowEntityImportBubble(
         .Run(AutofillClient::AutofillAiBubbleResult::kUnknown);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void ChromeAutofillClient::CloseEntityImportBubble() {
+#if !BUILDFLAG(IS_ANDROID)
+  AutofillAiImportDataController::Hide(CHECK_DEREF(web_contents()));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

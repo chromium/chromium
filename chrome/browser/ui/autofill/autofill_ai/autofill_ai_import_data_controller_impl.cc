@@ -85,6 +85,14 @@ AutofillAiImportDataController* AutofillAiImportDataController::GetOrCreate(
   return AutofillAiImportDataControllerImpl::FromWebContents(web_contents);
 }
 
+// static
+void AutofillAiImportDataController::Hide(content::WebContents& web_contents) {
+  if (auto* controller =
+          AutofillAiImportDataControllerImpl::FromWebContents(&web_contents)) {
+    controller->HideBubble(/*initiated_by_bubble_manager=*/false);
+  }
+}
+
 void AutofillAiImportDataControllerImpl::ShowPrompt(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
