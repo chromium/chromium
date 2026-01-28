@@ -68,8 +68,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kSkipRedundantWillDraw, base::FEATURE_ENABLED_BY_DEFAULT);
-
 class FlushForImageListener {
   // With deferred rendering it's possible for a drawImage operation on a canvas
   // to trigger a copy-on-write if another canvas has a read reference to it.
@@ -876,20 +874,8 @@ CanvasResourceProviderSharedImage::GetSharedImageUsageFlags() const {
 
 void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) {
-  if (base::FeatureList::IsEnabled(blink::kSkipRedundantWillDraw)) {
-    cached_snapshot_.reset();
-    draw_callback(Canvas());
-  } else {
-    // TODO(crbug.com/40183122): Video frames don't work without this
-    // conditional WillDraw(), but we are getting memory leak on CreatePattern
-    // with it. There should be a better way to solve this.
-    if (cached_snapshot_ && !IsGpuContextLost()) {
-      auto access = WillDrawInternal();
-      EnsureWriteAccess();
-      draw_callback(Canvas());
-      resource()->EndAccess(std::move(access));
-    }
-  }
+  cached_snapshot_.reset();
+  draw_callback(Canvas());
 }
 
 scoped_refptr<StaticBitmapImage>
