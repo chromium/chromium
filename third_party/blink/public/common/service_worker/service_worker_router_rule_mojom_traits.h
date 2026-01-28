@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_RULE_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_RULE_MOJOM_TRAITS_H_
 
-#include "mojo/public/cpp/bindings/struct_traits.h"
+#include <optional>
 
+#include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -72,31 +73,14 @@ struct BLINK_COMMON_EXPORT
     return data.method;
   }
 
-  static bool has_mode(const blink::ServiceWorkerRouterRequestCondition& data) {
-    return data.mode.has_value();
+  static std::optional<network::mojom::RequestMode> mode(
+      const blink::ServiceWorkerRouterRequestCondition& data) {
+    return data.mode;
   }
 
-  static network::mojom::RequestMode mode(
+  static std::optional<network::mojom::RequestDestination> destination(
       const blink::ServiceWorkerRouterRequestCondition& data) {
-    if (!data.mode) {
-      // This value should not be used but returning the default value.
-      return network::mojom::RequestMode::kNoCors;
-    }
-    return *data.mode;
-  }
-
-  static bool has_destination(
-      const blink::ServiceWorkerRouterRequestCondition& data) {
-    return data.destination.has_value();
-  }
-
-  static network::mojom::RequestDestination destination(
-      const blink::ServiceWorkerRouterRequestCondition& data) {
-    if (!data.destination) {
-      // This value should not be used but returning the default value.
-      return network::mojom::RequestDestination::kEmpty;
-    }
-    return *data.destination;
+    return data.destination;
   }
 
   static bool Read(

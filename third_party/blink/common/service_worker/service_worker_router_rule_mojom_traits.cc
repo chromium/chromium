@@ -50,12 +50,8 @@ bool StructTraits<blink::mojom::ServiceWorkerRouterRequestConditionDataView,
   if (!data.ReadMethod(&out->method)) {
     return false;
   }
-  if (data.has_mode()) {
-    out->mode = data.mode();
-  }
-  if (data.has_destination()) {
-    out->destination = data.destination();
-  }
+  out->mode = data.mode();
+  out->destination = data.destination();
   return true;
 }
 

@@ -40,21 +40,13 @@ struct ServiceWorkerRouterRequestCondition {
   // See:
   // https://w3c.github.io/ServiceWorker/#dom-routercondition-requestmode
   // If it is not set, ServiceWorkerRouterEvaluator won't use it as condition.
-  // TODO(http://crbug.com/657632): implement this with optional enum.
-  // Since the code is used on Android, we need Java variant, which currently
-  // does not support an optional enum.
-  bool has_mode = false;
-  network.mojom.RequestMode mode;
+  network.mojom.RequestMode? mode;
 
   // RequestDestination
   // See:
   // https://w3c.github.io/ServiceWorker/#dom-routercondition-requestdestination
   // If it is not set, ServiceWorkerRouterEvaluator won't use it as condition.
-  // TODO(http://crbug.com/657632): implement this with optional enum.
-  // Since the code is used on Android, we need Java variant, which currently
-  // does not support an optional enum.
-  bool has_destination = false;
-  network.mojom.RequestDestination destination;
+  network.mojom.RequestDestination? destination;
 };
 
 // This represents a or condition to match.
