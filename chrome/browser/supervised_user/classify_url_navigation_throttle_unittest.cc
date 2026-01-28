@@ -494,8 +494,8 @@ class ClassifyUrlNavigationThrottleParallelizationTest
     CHECK_EQ(GetParam().redirect_chain.size(), 3U)
         << "Tests assume one request and two redirects";
     std::vector<GURL> urls;
-    for (const auto& redirect : GetParam().redirect_chain) {
-      urls.push_back(GURL(redirect));
+    for (const std::string& redirect : GetParam().redirect_chain) {
+      urls.emplace_back(redirect);
     }
     return urls;
   }
