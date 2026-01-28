@@ -667,11 +667,6 @@ BASE_FEATURE(kAutofillIgnoreCheckableElements,
 BASE_FEATURE(kAutofillImproveAddressFieldSwapping,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the autofill suggestion labels are more descriptive and
-// relevant.
-// TODO(crbug.com/380273791): Cleanup when launched.
-BASE_FEATURE(kAutofillImprovedLabels, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // TODO(crbug.com/346507576): Remove once the experiment is over.
 // When enabled, makes autocomplete label sensitive.
 BASE_FEATURE(kAutofillLabelSensitiveAutocomplete,

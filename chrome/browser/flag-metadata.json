@@ -928,11 +928,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "autofill-improved-labels",
-    "owners": ["brunobraga@chromium.org"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "autofill-manual-testing-data",
     "owners": ["fleimgruber@google.com", "chrome-autofill@google.com"],
     "expiry_milestone": 146

@@ -599,20 +599,11 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
       profiles, field_types, trigger_field_type, app_locale);
   FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
-  // If `features::kAutofillImprovedLabels` is enabled, name fields should have
-  // `NAME_FULL` as main text, unless in field by field filling mode.
-  FieldType main_text_field_type =
-      GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
-              !IsAlternativeNameType(trigger_field_type) &&
-              suggestion_type != SuggestionType::kAddressFieldByFieldFilling &&
-              base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)
-          ? NAME_FULL
-          : trigger_field_type;
   for (size_t i = 0; i < profiles.size(); ++i) {
     const AutofillProfile& profile = profiles[i];
     // Compute the main text to be displayed in the suggestion bubble.
     std::u16string main_text = GetProfileSuggestionMainText(
-        profile, app_locale, trigger_field, main_text_field_type);
+        profile, app_locale, trigger_field, trigger_field_type);
     if (trigger_field_type_group == FieldTypeGroup::kPhone) {
       main_text = GetFormattedPhoneNumber(
           profile, app_locale,

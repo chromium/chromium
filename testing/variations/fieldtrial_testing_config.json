@@ -2933,48 +2933,6 @@
             ]
         }
     ],
-    "AutofillImprovedLabels": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_WithDifferentiatingLabelsInFront",
-                    "params": {
-                        "autofill_improved_labels_with_differentiating_labels_in_front": "true",
-                        "autofill_improved_labels_without_main_text_changes": "false"
-                    },
-                    "enable_features": [
-                        "AutofillImprovedLabels"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "autofill_improved_labels_with_differentiating_labels_in_front": "false",
-                        "autofill_improved_labels_without_main_text_changes": "false"
-                    },
-                    "enable_features": [
-                        "AutofillImprovedLabels"
-                    ]
-                },
-                {
-                    "name": "Enabled_WithoutMainTextChanges",
-                    "params": {
-                        "autofill_improved_labels_with_differentiating_labels_in_front": "false",
-                        "autofill_improved_labels_without_main_text_changes": "true"
-                    },
-                    "enable_features": [
-                        "AutofillImprovedLabels"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillModelPredictions": [
         {
             "platforms": [

@@ -4055,27 +4055,6 @@ const FeatureEntry::FeatureVariation
          std::size(kVisitedURLRankingDomainDeduplicationIncludePathQueryParam),
          nullptr}};
 
-const FeatureEntry::FeatureParam
-    kAutofillImprovedLabelsWithoutMainTextChanges[] = {
-        {"autofill_improved_labels_without_main_text_changes", "true"},
-        {"autofill_improved_labels_with_differentiating_labels_in_front",
-         "false"}};
-
-const FeatureEntry::FeatureParam
-    kAutofillImprovedLabelsWithDifferentiatingLabelsInFront[] = {
-        {"autofill_improved_labels_without_main_text_changes", "false"},
-        {"autofill_improved_labels_with_differentiating_labels_in_front",
-         "true"}};
-
-const FeatureEntry::FeatureVariation kAutofillImprovedLabelsVariations[] = {
-    {"without main text changes", kAutofillImprovedLabelsWithoutMainTextChanges,
-     std::size(kAutofillImprovedLabelsWithoutMainTextChanges), nullptr},
-    {"with differentiating labels in front",
-     kAutofillImprovedLabelsWithDifferentiatingLabelsInFront,
-     std::size(kAutofillImprovedLabelsWithDifferentiatingLabelsInFront),
-     nullptr},
-};
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kExtensionAiDataInternalName[] =
     "enable-extension-ai-data-collection";
@@ -11486,12 +11465,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableSaveAndFillName,
      flag_descriptions::kAutofillEnableSaveAndFillDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSaveAndFill)},
-
-    {"autofill-improved-labels", flag_descriptions::kAutofillImprovedLabelsName,
-     flag_descriptions::kAutofillImprovedLabelsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillImprovedLabels,
-                                    kAutofillImprovedLabelsVariations,
-                                    "AutofillImprovedLabels")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-appearance-settings",

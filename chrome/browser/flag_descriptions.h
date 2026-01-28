@@ -949,12 +949,6 @@ inline constexpr char kAutofillEnableVcn3dsAuthenticationDescription[] =
     "card retrieval if a challenge is required, 3DS authentication is "
     "available for the card, and FIDO is not.";
 
-inline constexpr char kAutofillImprovedLabelsName[] =
-    "Autofill suggestions with improved labels";
-inline constexpr char kAutofillImprovedLabelsDescription[] =
-    "When enabled, the autofill suggestion labels are more more descriptive "
-    "and relevant.";
-
 inline constexpr char kAutofillManualTestingDataName[] =
     "Autofill manual testing data";
 inline constexpr char kAutofillManualTestingDataDescription[] =
