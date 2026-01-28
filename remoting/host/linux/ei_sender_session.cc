@@ -66,19 +66,6 @@
 // up-to-date layout, and for other devices it theoretically shouldn't matter.
 // We can always revisit if this approach turns out not to be ideal for some
 // EIS implementation.
-//
-// A final note about mouse button and scroll events: originally, libei included
-// button presses and scroll events as part of the relative pointer and absolute
-// pointer capabilities. Before reaching 1.0, the library and EI protocol were
-// updated to separate those events into their own button and scroll
-// capabilities. The demo app still assumes that a device with a pointer
-// capability will support injecting button and scroll events. Theoretically,
-// however, the button and scroll capabilities could now be provided by
-// different devices. EiSenderSession thus treats these capabilities like any
-// other: when it needs to inject a button or scroll event, it will use whatever
-// device providing the respective capability was most recently added. That
-// should be fine, since a seat only has one logical pointer and it shouldn't
-// matter what device is used to trigger a click on it.
 
 #include "remoting/host/linux/ei_sender_session.h"
 
@@ -267,10 +254,13 @@ void EiSenderSession::InjectButton(protocol::MouseEvent::MouseButton button,
   }
 
   // The button capability might appear on multiple pointer devices, or on a
-  // separate device altogether. Since each seat only has one logical pointer,
-  // it should be fine to inject buttons on any device that supports them, so
-  // just use the most recent one like with other devices.
-  auto& button_device = button_devices_.back();
+  // separate device altogether. To work around a GNOME/libEI issue
+  // (b/446025937), inject using the first received pointer device. Based on
+  // observation, the later devices (with the button capability) are absolute
+  // pointer devices which get removed and added by GNOME whenever the display
+  // is resized. This may cause buttons to become stuck when the device is
+  // removed.
+  auto& button_device = button_devices_.front();
 
   ei_device_button_button(button_device.get(), button_code, is_press);
   ei_device_frame(button_device.get(), ei_now(ei_.get()));
@@ -311,11 +301,8 @@ void EiSenderSession::InjectScrollDelta(double delta_x, double delta_y) {
     return;
   }
 
-  // The scroll capability might appear on multiple pointer devices, or on a
-  // separate device altogether. Since each seat only has one logical pointer,
-  // it should be fine to inject scroll events on any device that supports them,
-  // so just use the most recent one like with other devices.
-  auto& scroll_device = button_devices_.back();
+  // Use the first device, for consistency with button-injection.
+  auto& scroll_device = button_devices_.front();
 
   // This function takes values representing 120ths of a tick, so 120 would be
   // one wheel tick, 240 would be two ticks, and 60 would be half of a tick.
@@ -337,11 +324,8 @@ void EiSenderSession::InjectScrollDiscrete(float ticks_x, float ticks_y) {
   subtick_pixels_x_ = 0;
   subtick_pixels_y_ = 0;
 
-  // The scroll capability might appear on multiple pointer devices, or on a
-  // separate device altogether. Since each seat only has one logical pointer,
-  // it should be fine to inject scroll events on any device that supports them,
-  // so just use the most recent one like with other devices.
-  auto& scroll_device = button_devices_.back();
+  // Use the first device, for consistency with button-injection.
+  auto& scroll_device = button_devices_.front();
 
   // This function takes values representing 120ths of a tick, so 120 would be
   // one wheel tick, 240 would be two ticks, and 60 would be half of a tick.
@@ -499,6 +483,10 @@ void EiSenderSession::OnDeviceRemoved(EiDevicePtr device) {
                   [&device](auto& item) { return item == device; });
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_BUTTON)) {
+    if (!button_devices_.empty() && button_devices_.front() == device) {
+      LOG(WARNING) << "The first button device was removed. This may cause "
+                      "issues with button or scroll injection.";
+    }
     std::erase_if(button_devices_,
                   [&device](auto& item) { return item == device; });
   }
