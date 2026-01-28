@@ -329,6 +329,22 @@ TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsReady) {
             mojom::ProfileReadyState::kReady);
 }
 
+TEST_F(GlicEnablingTrustFirstOnboardingTest, Consented_ReturnsFalse) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+
+  EXPECT_FALSE(
+      GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile()));
+}
+
+TEST_F(GlicEnablingTrustFirstOnboardingTest, NotConsented_ReturnsTrue) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kIncomplete));
+
+  EXPECT_TRUE(GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile()));
+}
+
 TEST_F(GlicEnablingStandardFreTest, NotConsented_ReturnsIneligible) {
   profile()->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre,

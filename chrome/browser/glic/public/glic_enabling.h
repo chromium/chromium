@@ -151,7 +151,7 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   static bool IsUnifiedFreEnabled(Profile* profile);
 
   // Whether the Trust-First Onboarding flow should be shown.
-  static bool IsTrustFirstOnboardingEnabled();
+  static bool IsTrustFirstOnboardingEnabledForProfile(Profile* profile);
 
   // Whether the required feature flags for multi-instance - kGlicMultiInstance,
   // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled. When calling, be

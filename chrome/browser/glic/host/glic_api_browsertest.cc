@@ -3454,7 +3454,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
 
 class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
  public:
-  GlicGetHostCapabilityApiTest() {
+  GlicGetHostCapabilityApiTest()
+      : GlicApiTestWithOneTab(
+            {.fre_status = (GetParam().trust_first_onboarding_arm1 ||
+                            GetParam().trust_first_onboarding_arm2)
+                               ? prefs::FreStatus::kNotStarted
+                               : prefs::FreStatus::kCompleted}) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
