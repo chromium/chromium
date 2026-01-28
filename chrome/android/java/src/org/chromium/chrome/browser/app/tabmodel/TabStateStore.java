@@ -527,9 +527,7 @@ public class TabStateStore implements TabPersistentStore {
                 clearState();
                 sharedStoreData.onStoreRazed();
             } else {
-                // TODO(crbug.com/479152708): change this to clear only window data once lifecycle
-                // issues are resolved.
-                clearState();
+                mTabStateStorageService.clearWindow(mWindowTag);
             }
         }
     }

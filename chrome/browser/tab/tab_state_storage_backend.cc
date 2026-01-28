@@ -113,7 +113,8 @@ void TabStateStorageBackend::ClearAllNodes() {
 void TabStateStorageBackend::ClearWindow(std::string_view window_tag) {
   db_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearWindow,
-                                base::Unretained(database_.get()), window_tag));
+                                base::Unretained(database_.get()),
+                                std::string(window_tag)));
 }
 
 void TabStateStorageBackend::ClearNodesForWindowExcept(
