@@ -22,4 +22,5 @@ name3:4 false
 (anonymous) @ name3:4
 name3:5 null
 (anonymous) @ name3:5
+name3:1 undefined
 

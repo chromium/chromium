@@ -572,10 +572,6 @@ crbug.com/1377822 external/wpt/editing/crashtests/inserthorizontalrule-in-textar
 # This test depends on synchronous focus() which does not exist (anymore?).
 crbug.com/1074482 external/wpt/html/interaction/focus/the-autofocus-attribute/update-the-rendering.html [ Failure ]
 
-# These need to be rebaselined for a devtools change.
-crbug.com/457388389 http/tests/devtools/console/console-command-clear.js [ Failure Pass ]
-crbug.com/457388389 http/tests/devtools/console/console-link-to-snippet.js [ Failure Pass ]
-
 # This test has a bug in it that prevents it from being able to deal with order
 # differences it claims to support.
 crbug.com/1076129 external/wpt/service-workers/service-worker/clients-matchall-frozen.https.html [ Failure Pass ]
