@@ -152,7 +152,7 @@ class AuthenticationService : public KeyedService,
   bool SigninEnabled() const;
 
  private:
-  friend class AuthenticationServiceTestBase;
+  friend class AuthenticationServiceTest;
   friend class FakeAuthenticationService;
 
   // LINT.IfChange(IOSProfileInitializationOutcome)
