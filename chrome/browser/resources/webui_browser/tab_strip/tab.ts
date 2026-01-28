@@ -9,8 +9,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Tab as TabData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 
-import {getCss} from './tab_element.css.js';
-import {getHtml} from './tab_element.html.js';
+import {getCss} from './tab.css.js';
+import {getHtml} from './tab.html.js';
 import type {TabStrip} from './tab_strip.js';
 
 export class TabElement extends CrLitElement {

@@ -8,7 +8,7 @@ import './extensions_bar.js';
 import './icons.html.js';
 import './side_panel.js';
 import '/strings.m.js';
-import './tab_strip.js';
+import './tab_strip/tab_strip.js';
 import './webview.js';
 import 'chrome://resources/cr_components/searchbox/searchbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -29,9 +29,9 @@ import {FullscreenContext, PageHandlerFactory, SecurityIcon} from './browser.moj
 import {BrowserProxy} from './browser_proxy.js';
 import type {ContentRegion} from './content_region.js';
 import type {SidePanel} from './side_panel.js';
-import {TabStrip} from './tab_strip.js';
-import type {TabStripControllerDelegate} from './tab_strip_controller.js';
-import {TabStripController} from './tab_strip_controller.js';
+import {TabStrip} from './tab_strip/tab_strip.js';
+import type {TabStripControllerDelegate} from './tab_strip/tab_strip_controller.js';
+import {TabStripController} from './tab_strip/tab_strip_controller.js';
 
 export interface WebuiBrowserAppElement {
   $: {

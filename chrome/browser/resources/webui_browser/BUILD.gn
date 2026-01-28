@@ -27,11 +27,11 @@ build_webui("build") {
     "icons.html.ts",
     "side_panel.html.ts",
     "side_panel.ts",
-    "tab_element.html.ts",
-    "tab_element.ts",
-    "tab_strip.html.ts",
-    "tab_strip.ts",
-    "tab_strip_controller.ts",
+    "tab_strip/tab.html.ts",
+    "tab_strip/tab.ts",
+    "tab_strip/tab_strip.html.ts",
+    "tab_strip/tab_strip.ts",
+    "tab_strip/tab_strip_controller.ts",
     "webui_browser.ts",
     "webview.ts",
   ]
@@ -43,8 +43,8 @@ build_webui("build") {
     "extension_element.css",
     "extensions_bar.css",
     "side_panel.css",
-    "tab_element.css",
-    "tab_strip.css",
+    "tab_strip/tab.css",
+    "tab_strip/tab_strip.css",
     "webview.css",
   ]
 

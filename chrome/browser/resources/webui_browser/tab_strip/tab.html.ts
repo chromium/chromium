@@ -4,7 +4,7 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {TabElement} from './tab_element.js';
+import type {TabElement} from './tab.js';
 
 export function getHtml(this: TabElement) {
   // clang-format off

@@ -10,7 +10,8 @@ import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
 import type {TabStripObserver} from '/tab_strip_api/tab_strip_observer.js';
 
-import type {ContentRegion} from './content_region.js';
+import type {ContentRegion} from '../content_region.js';
+
 import type {TabStrip} from './tab_strip.js';
 
 export interface TabStripControllerDelegate {
