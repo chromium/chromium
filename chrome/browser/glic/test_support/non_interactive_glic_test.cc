@@ -30,15 +30,4 @@ NonInteractiveGlicTest::NonInteractiveGlicTest(
 
 NonInteractiveGlicTest::~NonInteractiveGlicTest() = default;
 
-void NonInteractiveGlicTest::SetUpOnMainThread() {
-  test::InteractiveGlicTestMixin<InteractiveBrowserTest>::SetUpOnMainThread();
-  browser_activator_.emplace();
-}
-
-void NonInteractiveGlicTest::TearDownOnMainThread() {
-  browser_activator_.reset();
-  test::InteractiveGlicTestMixin<
-      InteractiveBrowserTest>::TearDownOnMainThread();
-}
-
 }  // namespace glic

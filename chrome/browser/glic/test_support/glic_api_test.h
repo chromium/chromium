@@ -180,14 +180,14 @@ class GlicApiTestBase : public T {
     T::host_resolver()->AddRule("a.com", "127.0.0.1");
     T::host_resolver()->AddRule("b.com", "127.0.0.1");
     T::DisableWarming();
-    T::SetUpOnMainThread();
+    NonInteractiveGlicTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     if (!next_step_required_.empty()) {
       FAIL() << "Test not finished: call ContinueJsTest()";
     }
-    T::TearDownOnMainThread();
+    NonInteractiveGlicTest::TearDownOnMainThread();
   }
 
   GlicKeyedService* GetService() {

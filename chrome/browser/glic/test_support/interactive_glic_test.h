@@ -786,13 +786,6 @@ class InteractiveGlicTestMixin : public T {
         expected_count, "CheckTabCount");
   }
 
-  // Opens a new incognito browser to keep the test process alive, then closes
-  // the main browser.
-  void CloseMainBrowserWithIncognitoKeepAlive() {
-    T::CreateIncognitoBrowser();
-    T::CloseBrowserAsynchronously(T::browser());
-  }
-
   auto CheckPopupCount(int expected_count) {
     return Api::CheckResult(
         [] {

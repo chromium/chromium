@@ -11,12 +11,13 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/glic/widget/local_hotkey_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -24,10 +25,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#endif
 
 namespace glic {
 namespace {
@@ -40,20 +37,18 @@ GlicInstanceCoordinatorImpl& GetInstanceCoordinator(GlicKeyedService& service) {
 }  // namespace
 
 BrowserActivator::BrowserActivator() {
-  observation_.Observe(GlobalBrowserCollection::GetInstance());
-  if (auto* const browser =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
-    OnBrowserCreated(browser);
-  }
+  BrowserList::AddObserver(this);
 }
 
-BrowserActivator::~BrowserActivator() = default;
+BrowserActivator::~BrowserActivator() {
+  BrowserList::RemoveObserver(this);
+}
 
 void BrowserActivator::SetMode(Mode mode) {
   mode_ = mode;
 }
 
-void BrowserActivator::OnBrowserCreated(BrowserWindowInterface* browser) {
+void BrowserActivator::OnBrowserAdded(Browser* browser) {
   switch (mode_) {
     case Mode::kSingleBrowser:
       CHECK(!active_browser_) << "BrowserActivator::kSingleBrowser found "
@@ -71,29 +66,22 @@ void BrowserActivator::OnBrowserCreated(BrowserWindowInterface* browser) {
   SetActivePrivate(browser);
 }
 
-void BrowserActivator::OnBrowserClosed(BrowserWindowInterface* browser) {
-  if (active_browser_.get() == browser) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+void BrowserActivator::OnBrowserRemoved(Browser* browser) {
+  if (active_browser_.get() == browser || active_browser_.WasInvalidated()) {
     active_lock_.reset();
-#endif
-    active_browser_ = nullptr;
     if (mode_ == Mode::kFirst) {
-      if (auto* const replacement_browser =
+      if (auto* const browser_window_interface =
               GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
-        if (replacement_browser != browser) {
-          SetActivePrivate(replacement_browser);
-        }
+        SetActivePrivate(browser_window_interface);
       }
     }
   }
 }
 
-void BrowserActivator::SetActive(BrowserWindowInterface* browser) {
+void BrowserActivator::SetActive(Browser* browser) {
   mode_ = Mode::kManual;
   if (!browser) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
     active_lock_.reset();
-#endif
     active_browser_ = nullptr;
   } else {
     SetActivePrivate(browser);
@@ -103,23 +91,17 @@ void BrowserActivator::SetActive(BrowserWindowInterface* browser) {
 void BrowserActivator::SetActivePrivate(
     BrowserWindowInterface* browser_window_interface) {
   CHECK(browser_window_interface);
-#if !BUILDFLAG(IS_ANDROID)
   if (auto* const browser_view =
           BrowserView::GetBrowserViewForBrowser(browser_window_interface)) {
     active_lock_ = browser_view->GetWidget()->LockPaintAsActive();
-    active_browser_ = browser_window_interface;
+    active_browser_ = browser_window_interface->GetWeakPtr();
   }
-#else  // NEEDS_ANDROID_IMPL
-  active_browser_ = browser_window_interface;
-#endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 GlicInstanceTracker::GlicInstanceTracker(Profile* profile) {
   SetProfile(profile);
 }
 GlicInstanceTracker::~GlicInstanceTracker() = default;
-
 void GlicInstanceTracker::SetProfile(Profile* profile) {
   profile_ = profile ? profile->GetWeakPtr() : nullptr;
 }
@@ -153,7 +135,18 @@ GlicInstance* GlicInstanceTracker::GetGlicInstance() {
     return nullptr;
   }
   if (track_only_glic_instance_) {
-    return GetOnlyGlicInstance(profile_.get());
+    auto instances = service->window_controller().GetInstances();
+    // Ignore the warming instance.
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      auto iter = std::find(
+          instances.begin(), instances.end(),
+          GetInstanceCoordinator(*service).GetWarmedInstanceForTesting());
+      if (iter != instances.end()) {
+        instances.erase(iter);
+      }
+    }
+    CHECK_LT(instances.size(), 2u);
+    return instances.empty() ? nullptr : instances[0];
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
@@ -236,27 +229,6 @@ void GlicInstanceTracker::Clear() {
     }
     return instance->IsShowing();
   });
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-GlicInstance* GetOnlyGlicInstance(Profile* profile) {
-  auto* service = GlicKeyedService::Get(profile);
-  if (!service) {
-    return nullptr;
-  }
-  auto instances = service->window_controller().GetInstances();
-  // Ignore the warming instance.
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    auto iter = std::find(
-        instances.begin(), instances.end(),
-        GetInstanceCoordinator(*service).GetWarmedInstanceForTesting());
-    if (iter != instances.end()) {
-      instances.erase(iter);
-    }
-  }
-  CHECK_LT(instances.size(), 2u);
-  return instances.empty() ? nullptr : instances[0];
 }
 
 void ForceSigninAndGlicCapability(Profile* profile) {

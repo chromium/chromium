@@ -5,21 +5,13 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_UTIL_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_UTIL_H_
 
-#include <functional>
-
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_instance.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/tabs/public/tab_interface.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "ui/views/widget/widget.h"
-#endif
 
 class AccountCapabilitiesTestMutator;
 class BrowserWindowInterface;
@@ -33,7 +25,7 @@ enum class FreStatus;
 
 // Provides deterministic browser activation behavior.
 // Useful in browser tests where focus is not reliable.
-class BrowserActivator : public BrowserCollectionObserver {
+class BrowserActivator : public BrowserListObserver {
  public:
   // The different modes in which browser activation can be controlled.
   enum class Mode {
@@ -54,26 +46,20 @@ class BrowserActivator : public BrowserCollectionObserver {
   void SetMode(Mode mode);
 
   // Sets the active browser. Switches to `Mode::kManual`.
-  void SetActive(BrowserWindowInterface* browser);
+  void SetActive(Browser* browser);
 
-  // BrowserCollectionObserver impl.
-  void OnBrowserCreated(BrowserWindowInterface* browser) override;
-  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+  // BrowserListObserver impl.
+  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
 
  private:
   void SetActivePrivate(BrowserWindowInterface* browser_window_interface);
 
   Mode mode_ = Mode::kSingleBrowser;
-  raw_ptr<BrowserWindowInterface> active_browser_;
-  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
-      observation_{this};
-
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+  base::WeakPtr<BrowserWindowInterface> active_browser_;
   std::unique_ptr<views::Widget::PaintAsActiveLock> active_lock_;
-#endif
 };
 
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 // Tracks a glic instance. Always tracks glic instance associated with the first
 // browser. May track based on tab, instance id, or whether the instance is
 // floating.
@@ -155,11 +141,6 @@ class GlicInstanceTracker {
   bool track_floating_glic_instance_ = false;
   bool track_only_glic_instance_ = false;
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-// Returns the only glic instance for the given profile, or nullptr if none is
-// found. CHECK fails if there is ever more than one.
-GlicInstance* GetOnlyGlicInstance(Profile* profile);
 
 // Signs in a primary account, accepts the FRE, and enables the relevant
 // capability for that profile. browser_tests and interactive_ui_tests should
