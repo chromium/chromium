@@ -45,8 +45,9 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevToolsProtocolTest::SetUpCommandLine(command_line);
-    if (headless())
-      command_line->AppendSwitchASCII("headless", "chrome");
+    if (headless()) {
+      command_line->AppendSwitch("headless");
+    }
   }
 
   void PreRunTestOnMainThread() override {
@@ -75,25 +76,26 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
 
   void CreatePdfSpanFromResultStream() {
     std::string stream = *result()->FindString("stream");
-    ASSERT_GT(stream.length(), 0ul);
+    ASSERT_GT(stream.size(), 0u);
 
     pdf_data_.clear();
-    for (;;) {
+    while (true) {
       base::DictValue params;
       params.Set("handle", stream);
       params.Set("offset", static_cast<int>(pdf_data_.size()));
       const base::DictValue* result =
           SendCommandSync("IO.read", std::move(params));
       std::string data = *result->FindString("data");
-      if (result->FindBool("base64Encoded").value_or(false))
+      if (result->FindBool("base64Encoded").value_or(false)) {
         ASSERT_TRUE(base::Base64Decode(data, &data));
+      }
       pdf_data_.append(std::move(data));
-      if (result->FindBool("eof").value_or(false))
+      if (result->FindBool("eof").value_or(false)) {
         break;
+      }
     }
 
-    pdf_span_ = UNSAFE_TODO(base::span<const uint8_t>(
-        reinterpret_cast<const uint8_t*>(pdf_data_.data()), pdf_data_.size()));
+    pdf_span_ = base::as_byte_span(pdf_data_);
 
     ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span_, &pdf_num_pages_, nullptr));
     ASSERT_GE(pdf_num_pages_, 1);
@@ -112,19 +114,19 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
   void PrintToPdfAndRenderPage(base::DictValue params, int page_index) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultData();
-    ASSERT_TRUE(page_bitmap.Render(pdf_span_, page_index));
+    ASSERT_TRUE(page_bitmap_.Render(pdf_span_, page_index));
   }
 
   void PrintToPdfAsStreamAndRenderPage(base::DictValue params, int page_index) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultStream();
-    ASSERT_TRUE(page_bitmap.Render(pdf_span_, page_index));
+    ASSERT_TRUE(page_bitmap_.Render(pdf_span_, page_index));
   }
 
-  uint32_t GetPixelRGB(int x, int y) { return page_bitmap.GetPixelRGB(x, y); }
+  uint32_t GetPixelRGB(int x, int y) { return page_bitmap_.GetPixelRGB(x, y); }
 
-  int bitmap_width() { return page_bitmap.width(); }
-  int bitmap_height() { return page_bitmap.height(); }
+  int bitmap_width() { return page_bitmap_.width(); }
+  int bitmap_height() { return page_bitmap_.height(); }
 
   net::EmbeddedTestServer https_server_;
 
@@ -132,7 +134,7 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
   base::raw_span<const uint8_t, DanglingUntriaged> pdf_span_;
   int pdf_num_pages_ = 0;
 
-  headless::PDFPageBitmap page_bitmap;
+  headless::PDFPageBitmap page_bitmap_;
 };
 
 INSTANTIATE_TEST_SUITE_P(HeadfulOrHeadless,
@@ -556,7 +558,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, JpegCmykIccPrintToPdf) {
   EXPECT_LT(b, 0x10u);
 
   // Expect green rectangle on white background.
-  EXPECT_TRUE(page_bitmap.CheckColoredRect(c, background));
+  EXPECT_TRUE(page_bitmap_.CheckColoredRect(c, background));
 }
 
 }  // namespace
