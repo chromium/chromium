@@ -46,7 +46,9 @@ pub struct RawMojoMessage {
 /// to clean it up. Note that sending a message does not and should not drop it.
 impl Drop for RawMojoMessage {
     fn drop(&mut self) {
-        let result: MojoResult = mojo_ffi::MojoDestroyMessage(self.message_handle).into();
+        // SAFETY: The handle is still alive because we're in the middle of dropping it
+        let result: MojoResult =
+            unsafe { mojo_ffi::MojoDestroyMessage(self.message_handle).into() };
         debug_assert!(result == MojoResult::Okay);
     }
 }
@@ -57,7 +59,8 @@ impl RawMojoMessage {
         // SAFETY: MojoCreateMessage allows the first argument to be null.
         // Second argument is a pointer to a local variable on the stack.
         let result: MojoResult =
-            mojo_ffi::MojoCreateMessage(std::ptr::null(), &mut message_handle as *mut _).into();
+            unsafe { mojo_ffi::MojoCreateMessage(std::ptr::null(), &mut message_handle as *mut _) }
+                .into();
         assert_eq!(MojoResult::Okay, result);
         RawMojoMessage { message_handle, _phantom_unsync: std::marker::PhantomData }
     }
@@ -227,7 +230,9 @@ impl RawMojoMessage {
                 &mut num_handles as *mut _,
             )
         });
-        if result_prelim != MojoResult::Okay {
+        // ResourceExhausted indicates that there are still handles attached, which is
+        // expected because we didn't yet provide memory to copy them to.
+        if result_prelim != MojoResult::Okay && result_prelim != MojoResult::ResourceExhausted {
             return Err(result_prelim);
         }
 
@@ -236,17 +241,22 @@ impl RawMojoMessage {
         let mut handles: Vec<UntypedHandle> = Vec::with_capacity(num_handles as usize);
         if num_handles > 0 {
             // SAFETY: The options pointer may be null. `handles` has enough
-            // capacity to hold `num_handles` handles.
+            // capacity to hold `num_handles` handles, and its pointer is valid.
             let result = MojoResult::from_code(unsafe {
                 mojo_ffi::MojoGetMessageData(
                     self.message_handle,
                     ptr::null(), // Options pointer
                     &mut buffer as *mut _,
                     &mut num_bytes as *mut _,
-                    UntypedHandle::slice_as_mut_ptr(&mut handles),
+                    handles.as_mut_ptr() as *mut _,
                     &mut num_handles as *mut _,
                 )
             });
+
+            // SAFETY: The capacity is exactly `num_handles`, and `MojoGetMessageData`
+            // just initialized that many elements.
+            unsafe { handles.set_len(num_handles as usize) };
+
             if result != MojoResult::Okay {
                 return Err(result);
             }
@@ -312,6 +322,10 @@ impl Handle for MessageEndpoint {
     fn get_native_handle(&self) -> MojoHandle {
         self.handle.get_native_handle()
     }
+
+    fn from_untyped(handle: UntypedHandle) -> Self {
+        Self { handle }
+    }
 }
 
 impl Trappable for MessageEndpoint {}
@@ -329,18 +343,7 @@ bitflags::bitflags! {
 }
 
 impl MessageEndpoint {
-    /// Read the next message from the endpoint. Messages in Mojo
-    /// are some set of bytes plus a bunch of handles, so we
-    /// return both a vector of bytes and a vector of untyped handles.
-    ///
-    /// Because the handles are untyped, it is up to the user of this
-    /// library to know what type the handle actually is and to use
-    /// from_untyped in order to convert the handle to the correct type.
-    ///
-    /// // FOR_RELEASE: In the v1 version of the Mojo code, we should ensure
-    /// this is enforced by typing stronger than UntypedHandle (perhaps by
-    /// having the Mojo bindings generator handle this when deriving code
-    /// from a Mojom interface?).
+    /// Create a new pair of endpoints corresponding to a new mojo message pipe.
     pub fn create_pipe() -> Result<(MessageEndpoint, MessageEndpoint), MojoResult> {
         let mut handle0 = UntypedHandle::invalid();
         let mut handle1 = UntypedHandle::invalid();
@@ -362,6 +365,8 @@ impl MessageEndpoint {
         }
     }
 
+    /// Read the next message from the endpoint, if one exists.
+    /// FOR_RELEASE: Catalogue the possible MojoResults here.
     pub fn read(&self) -> Result<RawMojoMessage, MojoResult> {
         // Read the message, yielding a message object we can copy data from.
         let message_handle: mojo_ffi::types::MojoMessageHandle = {
@@ -411,12 +416,14 @@ impl MessageEndpoint {
 
         // Send the message. This transfers ownership of the message_handle
         // object to the receiving process.
-        let write_message_options = mojo_ffi::MojoWriteMessageOptions::new(0);
-        let result = MojoResult::from_code(mojo_ffi::MojoWriteMessage(
-            self.handle.get_native_handle(),
-            msg.message_handle,
-            write_message_options.as_ptr(),
-        ));
+        // SAFETY: All handles are alive; the options ptr may be null.
+        let result = MojoResult::from_code(unsafe {
+            mojo_ffi::MojoWriteMessage(
+                self.handle.get_native_handle(),
+                msg.message_handle,
+                std::ptr::null(), // Options ptr
+            )
+        });
 
         // This message was sent, so ownership of the handle has been transferred to the
         // recipient.

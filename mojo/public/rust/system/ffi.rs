@@ -46,6 +46,19 @@ pub mod types {
     pub type MojoResultCode = raw_ffi::MojoResult;
 }
 
+// FOR_RELEASE: Several functions have safety requirements that all handles are
+// either alive or invalid (in which case the function will (safely) error out),
+// all pointer are aligned, etc.
+// Several functions also take a useless options struct. We should consider
+// providing more direct wrappers that make use of the types and invariants we
+// define elsewhere. These could:
+// - Describe the function's behavior at higher levels (the current comments
+//   tend to be in terms of pointers and nullness and out-parameters)
+// - Remove unneeded option arguments
+// - Provide invariants (e.g. handles are alive as long as we have them)
+// - Detail the set of possible MojoResults
+// - Prune the set of possible MojoResults using invariants
+
 // SAFETY: The `num_bytes` argument to this function must not be null.
 // Additionally the `data` argument must have at least `num_bytes` of
 // valid memory. Additionally, for thread safety, one must have exclusive
@@ -59,39 +72,11 @@ pub use raw_ffi::MojoReadData;
 // is 0. The option and buffer pointers are always allowed to be null.
 pub use raw_ffi::MojoAppendMessageData;
 
-// FOR_RELEASE: These safe wrappers are good for users, but they prevent
-// rust-analyzer from seeing the comments on the original C function, which are
-// very useful :/
+// SAFETY: All handles must be alive or invalid.
+pub use raw_ffi::MojoWriteMessage;
 
-// Safe wrapper around MojoDestroyMessage
-pub fn MojoDestroyMessage(message: raw_ffi::MojoMessageHandle) -> raw_ffi::MojoResult {
-    // SAFETY: This function is safe to call (but bindgen doesn't know that)
-    // If any arguments are invalid, that will be reflected in the result.
-    unsafe { raw_ffi::MojoDestroyMessage(message) }
-}
-
-// Safe wrapper around MojoCreateMessage. Returns invalid_argument if `message`
-// is null.
-pub fn MojoCreateMessage(
-    options: *const raw_ffi::MojoCreateMessageOptions,
-    message: *mut types::MojoMessageHandle,
-) -> raw_ffi::MojoResult {
-    // SAFETY: This function is safe to call (but bindgen doesn't know that)
-    // If any arguments are invalid, that will be reflected in the result.
-    unsafe { raw_ffi::MojoCreateMessage(options, message) }
-}
-
-// Safe wrapper around MojoWriteMessage
-pub fn MojoWriteMessage(
-    message_pipe_handle: types::MojoHandle,
-    message: types::MojoMessageHandle,
-    options: *const raw_ffi::MojoWriteMessageOptions,
-) -> raw_ffi::MojoResult {
-    // SAFETY: This function is safe to call (but bindgen doesn't know that)
-    // If any arguments are invalid, that will be reflected in the result.
-    // In particular, `options` is explicitly allowed to be null.
-    unsafe { raw_ffi::MojoWriteMessage(message_pipe_handle, message, options) }
-}
+// SAFETY: The message handle must be alive or invalid.
+pub use raw_ffi::MojoDestroyMessage;
 
 // SAFETY: The `buffer` and `num_bytes` arguments must not be null.
 // The `options` and `num_handles` arguments may be null.
@@ -105,6 +90,7 @@ pub use raw_ffi::MojoAddTrigger;
 pub use raw_ffi::MojoArmTrap;
 pub use raw_ffi::MojoClose;
 pub use raw_ffi::MojoCreateDataPipe;
+pub use raw_ffi::MojoCreateMessage;
 pub use raw_ffi::MojoCreateMessagePipe;
 pub use raw_ffi::MojoCreateTrap;
 pub use raw_ffi::MojoGetTimeTicksNow;

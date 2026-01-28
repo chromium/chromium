@@ -11,6 +11,8 @@ chromium::import! {
     pub "//mojo/public/rust/test_support:test_util" as test_util;
 }
 
+use system::mojo_types::Handle;
+
 // Mimics the tests in //mojo/public/c/system/tests/core_api_unittests.cc,
 // but testing the Rust API's guarantees for that functionality rather
 // than the C++ API's.
@@ -28,13 +30,13 @@ fn test_basic_message_write_and_send() {
     // In the Rust API you should never directly touch an invalid MojoHandle.
     // The MojoHandles are created under the hood here.
     let (endpoint_a, endpoint_b) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
+    let (dummy_handle, _) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
 
-    // In the C API this looks like:
-    //   MojoMessageHandle message;
-    //   MojoResult result = MojoCreateMessage(nullptr, &message);
-    //   result = MojoWriteMessage(endpoint, message, nullptr);
-    // We simplify all this logic into the `write` function on the endpoint.
-    let hello = system::message_pipe::RawMojoMessage::new_with_bytes(b"hello").unwrap();
+    let hello = system::message_pipe::RawMojoMessage::new_with_data(
+        b"hello",
+        vec![dummy_handle.into_untyped()],
+    )
+    .unwrap();
     let write_result = endpoint_b.write(hello);
     expect_true!(write_result.is_ok());
 
@@ -45,7 +47,13 @@ fn test_basic_message_write_and_send() {
         Ok("hello".to_string())
     );
     // Call the other read function just so we have some coverage of it
+    // The function may only be called once per message, so the second call should
+    // fail.
     let (_, _) = hello_msg.read_data().unwrap();
+    expect_true!(hello_msg.read_data().is_err());
+    // Calling read_bytes is independent of read_data and can be done many times.
+    let _ = hello_msg.read_bytes().unwrap();
+    let _ = hello_msg.read_bytes().unwrap();
 
     // Additional C++ unit tests include:
     // * core
