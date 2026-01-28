@@ -13,6 +13,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -54,11 +55,17 @@
 #include "components/account_id/account_id.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/service/test_variations_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -194,6 +201,27 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
         {features::kSeaPenDemoMode, features::kFeatureManagementSeaPen}, {});
+
+    variations::TestVariationsService::RegisterPrefs(
+        local_state_pref_.registry());
+
+    constexpr std::string_view allowed_country_code = "us";
+    CHECK(ash::IsGenerativeAiAllowedForCountry(allowed_country_code));
+    local_state_pref_.SetString(variations::prefs::kVariationsCountry,
+                                allowed_country_code);
+
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        &local_state_pref_, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    test_variations_service_ =
+        std::make_unique<variations::TestVariationsService>(
+            &local_state_pref_, metrics_state_manager_.get());
+    test_variations_service_->OverrideStoredPermanentCountry(
+        std::string(allowed_country_code));
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        test_variations_service_.get());
   }
 
   PersonalizationAppSeaPenProviderImplTest(
@@ -201,7 +229,9 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   PersonalizationAppSeaPenProviderImplTest& operator=(
       const PersonalizationAppSeaPenProviderImplTest&) = delete;
 
-  ~PersonalizationAppSeaPenProviderImplTest() override = default;
+  ~PersonalizationAppSeaPenProviderImplTest() override {
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+  }
 
  protected:
   // testing::Test:
@@ -334,6 +364,11 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
+  TestingPrefServiceSimple local_state_pref_;
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
+      /*consent=*/false, /*enabled=*/false};
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
   TestWallpaperController test_wallpaper_controller_;
   SeaPenWallpaperManager sea_pen_wallpaper_manager_;
   content::TestWebUI web_ui_;

@@ -47,6 +47,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
+#include "components/variations/pref_names.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -154,6 +155,8 @@ class VideoConferenceIntegrationTest
   ~VideoConferenceIntegrationTest() override = default;
 
   void SetUpOnMainThread() override {
+    PrefService* local_state = g_browser_process->local_state();
+    local_state->SetString(variations::prefs::kVariationsCountry, "us");
     is_incognito_mode_ = std::get<0>(GetParam());
     is_guest_mode_ = std::get<1>(GetParam());
 

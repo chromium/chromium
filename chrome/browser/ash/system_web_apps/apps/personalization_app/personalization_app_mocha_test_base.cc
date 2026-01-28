@@ -16,12 +16,15 @@
 #include "base/files/file_util.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/manta/features.h"
+#include "components/variations/pref_names.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
@@ -71,6 +74,8 @@ void PersonalizationAppMochaTestBase::SetUpInProcessBrowserTestFixture() {
 }
 
 void PersonalizationAppMochaTestBase::SetUpOnMainThread() {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(variations::prefs::kVariationsCountry, "us");
   WallpaperControllerClientImpl::Get()->SetWallpaperFetcherDelegateForTesting(
       std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
   WebUIMochaBrowserTest::SetUpOnMainThread();

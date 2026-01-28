@@ -5,10 +5,13 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "base/base64.h"
 #include "base/containers/fixed_flat_set.h"
@@ -35,6 +38,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "components/variations/service/variations_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
 
@@ -56,6 +60,17 @@ constexpr auto kSeaPenTextInputSupportedLanguages =
     base::MakeFixedFlatSet<std::string_view>({"en", "fr", "de", "ja", "es",
                                               "nl", "it", "sv", "nb", "da",
                                               "fi", "pt"});
+
+// Returns country code in the format of lowercase ISO 3166-1 alpha-2.
+// Example: us, br, in.
+std::optional<std::string> GetCountryCode() {
+  if (g_browser_process == nullptr ||
+      g_browser_process->variations_service() == nullptr) {
+    return std::nullopt;
+  }
+  return g_browser_process->variations_service()->GetLatestCountry();
+}
+
 }  // namespace
 
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
@@ -137,6 +152,12 @@ bool IsSystemInSupportedLanguage() {
 
 bool IsEligibleForSeaPen(Profile* profile) {
   if (!IsAllowedToInstallSeaPen(profile)) {
+    return false;
+  }
+
+  std::optional<std::string> country_code = GetCountryCode();
+  if (!country_code.has_value() ||
+      !ash::IsGenerativeAiAllowedForCountry(country_code.value())) {
     return false;
   }
 

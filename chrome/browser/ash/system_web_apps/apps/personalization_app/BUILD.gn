@@ -111,6 +111,7 @@ static_library("personalization_app") {
     "//chromeos/strings",
     "//components/feedback",
     "//components/user_manager:common",
+    "//components/variations/service",
     "//google_apis",
     "//mojo/public/cpp/bindings:bindings_base",
     "//third_party/blink/public/mojom:mojom_platform_shared",

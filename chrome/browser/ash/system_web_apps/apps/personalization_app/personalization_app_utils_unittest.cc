@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/generative_ai_country_restrictions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -19,6 +20,9 @@
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -26,12 +30,18 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/service/test_variations_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::personalization_app {
 
 namespace {
+
+const std::string_view kAllowedCountryCode = "us";
+const std::string_view kBlockedCountryCode = "zz";
 
 void AddAndLoginUser(const AccountId& account_id,
                      const user_manager::UserType user_type) {
@@ -67,12 +77,34 @@ class PersonalizationAppUtilsTest : public testing::Test {
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
         {features::kSeaPenDemoMode, features::kFeatureManagementSeaPen}, {});
+
+    variations::TestVariationsService::RegisterPrefs(
+        local_state_pref_.registry());
+
+    CHECK(ash::IsGenerativeAiAllowedForCountry(kAllowedCountryCode));
+    SetCountryCode(kAllowedCountryCode);
+
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        &local_state_pref_, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    test_variations_service_ =
+        std::make_unique<variations::TestVariationsService>(
+            &local_state_pref_, metrics_state_manager_.get());
+    test_variations_service_->OverrideStoredPermanentCountry(
+        std::string(kAllowedCountryCode));
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        test_variations_service_.get());
   }
 
   PersonalizationAppUtilsTest(const PersonalizationAppUtilsTest&) = delete;
   PersonalizationAppUtilsTest& operator=(const PersonalizationAppUtilsTest&) =
       delete;
-  ~PersonalizationAppUtilsTest() override = default;
+
+  ~PersonalizationAppUtilsTest() override {
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+  }
 
   TestingProfileManager& profile_manager() { return profile_manager_; }
 
@@ -91,11 +123,21 @@ class PersonalizationAppUtilsTest : public testing::Test {
     testing::Test::TearDown();
   }
 
+  void SetCountryCode(std::string_view country_code) {
+    local_state_pref_.SetString(variations::prefs::kVariationsCountry,
+                                country_code);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
+  TestingPrefServiceSimple local_state_pref_;
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
+      /*consent=*/false, /*enabled=*/false};
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
 };
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenGuest) {
@@ -226,6 +268,18 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenRegular) {
                   user_manager::UserType::kRegular);
   ASSERT_TRUE(IsAllowedToInstallSeaPen(regular_profile));
   ASSERT_TRUE(IsEligibleForSeaPen(regular_profile));
+}
+
+TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPen_BlockedCountryCode) {
+  ASSERT_FALSE(ash::IsGenerativeAiAllowedForCountry(kBlockedCountryCode));
+  SetCountryCode(kBlockedCountryCode);
+
+  const std::string email = "user@example.com";
+  auto* regular_profile = profile_manager().CreateTestingProfile(email);
+  AddAndLoginUser(AccountId::FromUserEmail(email),
+                  user_manager::UserType::kRegular);
+  ASSERT_TRUE(IsAllowedToInstallSeaPen(regular_profile));
+  ASSERT_FALSE(IsEligibleForSeaPen(regular_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenPublicAccount) {
