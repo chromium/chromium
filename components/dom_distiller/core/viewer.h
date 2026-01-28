@@ -88,6 +88,9 @@ const std::string GetDistilledPageFontFamilyJs(mojom::FontFamily font);
 // Returns JavaScript corresponding to setting a specific theme.
 const std::string GetDistilledPageThemeJs(mojom::Theme theme);
 
+// Returns JavaScript corresponding to setting whether links are enabled.
+const std::string GetDistilledPageLinksEnabledJs(bool enabled);
+
 /**
  * Generates a JavaScript snippet to apply font scaling.
  *

@@ -64,6 +64,7 @@ class ReaderModeMetricsHelper
       dom_distiller::mojom::Theme theme,
       dom_distiller::ThemeSettingsUpdateSource source) override;
   void OnChangeFontScaling(float scaling) override;
+  void OnChangeLinksEnabled(bool enabled) override;
 
  private:
   // Records the distillation time for the web page and its result if the

@@ -40,6 +40,7 @@ class DistilledPagePrefs {
     virtual void OnChangeTheme(mojom::Theme theme,
                                ThemeSettingsUpdateSource source) = 0;
     virtual void OnChangeFontScaling(float scaling) = 0;
+    virtual void OnChangeLinksEnabled(bool enabled) = 0;
   };
 
   explicit DistilledPagePrefs(PrefService* pref_service);
@@ -87,6 +88,11 @@ class DistilledPagePrefs {
   // it will return the value of default_font_scaling_.
   float GetFontScaling();
 
+  // Sets whether links are enabled in distilled pages.
+  void SetLinksEnabled(bool enabled);
+  // Returns whether links are enabled in distilled pages.
+  bool GetLinksEnabled();
+
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
@@ -107,6 +113,8 @@ class DistilledPagePrefs {
   void NotifyOnChangeTheme();
   // Notifies all Observers of new font scaling.
   void NotifyOnChangeFontScaling();
+  // Notifies all Observers of new links enabled state.
+  void NotifyOnChangeLinksEnabled();
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;

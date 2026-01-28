@@ -241,6 +241,8 @@ void ReaderModeMetricsHelper::OnChangeFontScaling(float scaling) {
                            std::floor(scaling * 100));
 }
 
+void ReaderModeMetricsHelper::OnChangeLinksEnabled(bool enabled) {}
+
 void ReaderModeMetricsHelper::RecordDistillationTime(
     std::optional<ReaderModeDistillerResult> result) {
   if (!distiller_timer_) {

@@ -161,6 +161,12 @@ ol.distilled-content-list {
   padding-inline-start: 2.5em;
 }
 
+body.links-hidden a {
+  color: inherit;
+  pointer-events: none;
+  text-decoration: none;
+}
+
 /* Table styling. */
 
 /* Styles for scrollable containers, e.g., for wide tables. */

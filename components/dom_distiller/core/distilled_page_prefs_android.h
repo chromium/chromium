@@ -52,6 +52,7 @@ class DistilledPagePrefsObserverAndroid : public DistilledPagePrefs::Observer {
   void OnChangeTheme(mojom::Theme new_theme,
                      ThemeSettingsUpdateSource source) override;
   void OnChangeFontScaling(float scaling) override;
+  void OnChangeLinksEnabled(bool enabled) override;
 
   virtual void DestroyObserverAndroid(JNIEnv* env);
 

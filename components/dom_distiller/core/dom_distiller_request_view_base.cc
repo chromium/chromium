@@ -70,6 +70,8 @@ void DomDistillerRequestViewBase::OnArticleReady(
     SendJavaScript(viewer::GetUnsafeArticleContentJs(article_proto));
     SendJavaScript(viewer::GetDistilledPageFontScalingJs(
         distilled_page_prefs_->GetFontScaling(), /* restoreCenter= */ false));
+    SendJavaScript(viewer::GetDistilledPageLinksEnabledJs(
+        distilled_page_prefs_->GetLinksEnabled()));
   } else {
     // It's possible that we didn't get some incremental updates from the
     // distiller. Ensure all remaining pages are flushed to the viewer.
@@ -103,6 +105,8 @@ void DomDistillerRequestViewBase::OnArticleUpdated(
       SendJavaScript(viewer::GetSetTextDirectionJs(page.text_direction()));
       SendJavaScript(viewer::GetDistilledPageFontScalingJs(
           distilled_page_prefs_->GetFontScaling(), /* restoreCenter= */ false));
+      SendJavaScript(viewer::GetDistilledPageLinksEnabledJs(
+          distilled_page_prefs_->GetLinksEnabled()));
     }
   }
 }
@@ -123,6 +127,10 @@ void DomDistillerRequestViewBase::OnChangeFontScaling(float scaling) {
       scaling, /* restoreCenter= */ true));
 }
 
+void DomDistillerRequestViewBase::OnChangeLinksEnabled(bool enabled) {
+  SendJavaScript(viewer::GetDistilledPageLinksEnabledJs(enabled));
+}
+
 void DomDistillerRequestViewBase::TakeViewerHandle(
     std::unique_ptr<ViewerHandle> viewer_handle) {
   viewer_handle_ = std::move(viewer_handle);
@@ -136,6 +144,8 @@ void DomDistillerRequestViewBase::SendCommonJavaScript() {
   SendJavaScript(viewer::GetDistilledPageFontScalingJs(
       distilled_page_prefs_->GetFontScaling(), /* restoreCenter= */ false));
   SendJavaScript(viewer::SetDistilledPageBaseFontSize(GetBaseFontSize()));
+  SendJavaScript(viewer::GetDistilledPageLinksEnabledJs(
+      distilled_page_prefs_->GetLinksEnabled()));
 }
 
 }  // namespace dom_distiller

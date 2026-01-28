@@ -227,4 +227,35 @@ TEST_F(DomDistillerRequestViewTest, TestLoadingIndicator) {
   EXPECT_THAT(handle.GetJavaScriptBuffer(), HasSubstr(show_loader));
 }
 
+TEST_F(DomDistillerRequestViewTest, TestSetLinksEnabled) {
+  TestRequestViewHandle handle(distilled_page_prefs_.get());
+
+  // Test links disabled for distiller page.
+  {
+    distilled_page_prefs_->SetLinksEnabled(false);
+
+    std::unique_ptr<DistilledArticleProto> article_proto =
+        std::make_unique<DistilledArticleProto>();
+
+    handle.OnArticleReady(article_proto.get());
+
+    EXPECT_THAT(handle.GetJavaScriptBuffer(),
+                HasSubstr("setLinksEnabled(false)"));
+    handle.ClearJavaScriptBuffer();
+  }
+  // Test links enabled for distiller page.
+  {
+    distilled_page_prefs_->SetLinksEnabled(true);
+
+    std::unique_ptr<DistilledArticleProto> article_proto =
+        std::make_unique<DistilledArticleProto>();
+
+    handle.OnArticleReady(article_proto.get());
+
+    EXPECT_THAT(handle.GetJavaScriptBuffer(),
+                HasSubstr("setLinksEnabled(true)"));
+    handle.ClearJavaScriptBuffer();
+  }
+}
+
 }  // namespace dom_distiller

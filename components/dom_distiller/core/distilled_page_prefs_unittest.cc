@@ -31,6 +31,7 @@ class MockObserver : public DistilledPagePrefs::Observer {
               (mojom::Theme new_theme, ThemeSettingsUpdateSource source),
               (override));
   MOCK_METHOD(void, OnChangeFontScaling, (float new_scaling), (override));
+  MOCK_METHOD(void, OnChangeLinksEnabled, (bool enabled), (override));
 };
 
 class TestingObserver : public DistilledPagePrefs::Observer {
@@ -56,10 +57,15 @@ class TestingObserver : public DistilledPagePrefs::Observer {
 
   float GetFontScaling() { return scaling_; }
 
+  void OnChangeLinksEnabled(bool enabled) override { links_enabled_ = enabled; }
+
+  bool GetLinksEnabled() { return links_enabled_; }
+
  private:
   mojom::FontFamily font_ = mojom::FontFamily::kSansSerif;
   mojom::Theme theme_ = mojom::Theme::kLight;
   float scaling_{1.0f};
+  bool links_enabled_{true};
 };
 
 }  // namespace
@@ -395,6 +401,27 @@ TEST_F(DistilledPagePrefsTest, SetDefaultFontScalingWithUserPref) {
   run_loop2.Run();
   ASSERT_FLOAT_EQ(1.5f, obs.GetFontScaling());
   ASSERT_FLOAT_EQ(1.5f, distilled_page_prefs_->GetFontScaling());
+
+  distilled_page_prefs_->RemoveObserver(&obs);
+}
+
+TEST_F(DistilledPagePrefsTest, SetLinksEnabled) {
+  TestingObserver obs;
+  distilled_page_prefs_->AddObserver(&obs);
+
+  base::RunLoop run_loop1;
+  distilled_page_prefs_->SetLinksEnabled(true);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop1.QuitClosure());
+  run_loop1.Run();
+  ASSERT_TRUE(obs.GetLinksEnabled());
+
+  distilled_page_prefs_->SetLinksEnabled(false);
+  base::RunLoop run_loop2;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop2.QuitClosure());
+  run_loop2.Run();
+  ASSERT_FALSE(obs.GetLinksEnabled());
 
   distilled_page_prefs_->RemoveObserver(&obs);
 }

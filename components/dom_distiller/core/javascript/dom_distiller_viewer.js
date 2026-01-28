@@ -728,6 +728,10 @@ function useFontFamily(fontFamily) {
   settingsDialog.useFontFamily(fontFamily);
 }
 
+function setLinksEnabled(enabled) {
+  document.body.classList.toggle('links-hidden', !enabled);
+}
+
 function updateToolbarColor(theme) {
   let toolbarColor;
   if (theme === 'sepia') {

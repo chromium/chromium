@@ -117,6 +117,11 @@ void DistilledPagePrefsObserverAndroid::OnChangeFontScaling(float scaling) {
                                                              scaling);
 }
 
+void DistilledPagePrefsObserverAndroid::OnChangeLinksEnabled(bool enabled) {
+  // TODO(crbug.com/463918572): Implement enable/disable links behavior for
+  // the Android platform.
+}
+
 static int64_t JNI_DistilledPagePrefs_InitObserverAndroid(
     JNIEnv* env,
     const JavaRef<jobject>& obj) {

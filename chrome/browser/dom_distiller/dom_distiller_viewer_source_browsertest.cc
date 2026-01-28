@@ -108,6 +108,7 @@ class PrefChangeObserver : public DistilledPagePrefs::Observer {
     callback_.Run();
   }
   void OnChangeFontScaling(float scaling) override { callback_.Run(); }
+  void OnChangeLinksEnabled(bool enabled) override { callback_.Run(); }
 
  private:
   base::RepeatingClosure callback_;

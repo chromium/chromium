@@ -24,3 +24,7 @@ void DistilledPagePrefsObserverBridge::OnChangeTheme(
 void DistilledPagePrefsObserverBridge::OnChangeFontScaling(float scaling) {
   [observer_ onChangeFontScaling:scaling];
 }
+
+void DistilledPagePrefsObserverBridge::OnChangeLinksEnabled(bool enabled) {
+  [observer_ onChangeLinksEnabled:enabled];
+}

@@ -405,6 +405,10 @@ const std::string GetDistilledPageThemeJs(mojom::Theme theme) {
   return "useTheme('" + GetJsTheme(theme) + "');";
 }
 
+const std::string GetDistilledPageLinksEnabledJs(bool enabled) {
+  return "setLinksEnabled(" + base::ToString(enabled) + ");";
+}
+
 const std::string GetDistilledPageFontFamilyJs(mojom::FontFamily font_family) {
   return "useFontFamily('" + GetJsFontFamily(font_family) + "');";
 }

@@ -13,6 +13,8 @@ inline constexpr char kFont[] = "dom_distiller.font_family";
 inline constexpr char kTheme[] = "dom_distiller.theme";
 // Path to the float corresponding to user's preference font scaling.
 inline constexpr char kFontScale[] = "dom_distiller.font_scale";
+// Path to the boolean whether links are enabled in distilled pages.
+inline constexpr char kLinksEnabled[] = "dom_distiller.links_enabled";
 // Path to the boolean whether Reader Mode for Accessibility option is enabled.
 inline constexpr char kReaderForAccessibility[] =
     "dom_distiller.reader_for_accessibility";

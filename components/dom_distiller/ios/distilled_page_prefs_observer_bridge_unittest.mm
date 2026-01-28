@@ -13,6 +13,7 @@
     dom_distiller::mojom::FontFamily notifiedFontFamily;
 @property(nonatomic, assign) dom_distiller::mojom::Theme notifiedTheme;
 @property(nonatomic, assign) float notifiedFontScaling;
+@property(nonatomic, assign) BOOL notifiedLinksEnabled;
 @end
 
 @implementation FakeDistilledPagePrefsObserver
@@ -28,6 +29,11 @@
 - (void)onChangeFontScaling:(float)scaling {
   self.notifiedFontScaling = scaling;
 }
+
+- (void)onChangeLinksEnabled:(BOOL)enabled {
+  self.notifiedLinksEnabled = enabled;
+}
+
 @end
 
 // Test fixture for DistilledPagePrefsObserverBridge.
@@ -68,4 +74,13 @@ TEST_F(DistilledPagePrefsObserverBridgeTest, OnChangeSystemTheme) {
 TEST_F(DistilledPagePrefsObserverBridgeTest, OnChangeFontScaling) {
   observer_bridge_.OnChangeFontScaling(1.5f);
   EXPECT_EQ([observer_ notifiedFontScaling], 1.5f);
+}
+
+// Tests that the observer is notified of changes to enabling links.
+TEST_F(DistilledPagePrefsObserverBridgeTest, OnChangeLinksEnabled) {
+  observer_bridge_.OnChangeLinksEnabled(true);
+  EXPECT_TRUE([observer_ notifiedLinksEnabled]);
+
+  observer_bridge_.OnChangeLinksEnabled(false);
+  EXPECT_FALSE([observer_ notifiedLinksEnabled]);
 }
