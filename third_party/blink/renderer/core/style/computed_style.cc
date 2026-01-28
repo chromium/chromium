@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_li_element.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
@@ -3086,10 +3087,21 @@ bool ComputedStyle::GapRuleColorIsTransparent(
 }
 
 bool ComputedStyle::IsRenderedInTopLayer(const Element& element) const {
-  return StyleType() == kPseudoIdBackdrop ||
-         (element.IsInTopLayer() &&
-          (!RuntimeEnabledFeatures::OverlayPropertyEnabled() ||
-           Overlay() == EOverlay::kAuto));
+  if (RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
+    return (element.IsInTopLayer() && Overlay() == EOverlay::kAuto) ||
+           StyleType() == kPseudoIdBackdrop;
+  }
+
+  if (StyleType() == kPseudoIdBackdrop) {
+    return true;
+  }
+  if (!element.IsInTopLayer()) {
+    return false;
+  }
+  if (element.IsRenderedInTopLayer()) {
+    return true;
+  }
+  return false;
 }
 
 bool ComputedStyle::ApplyControlFixedSize(const Node* node) const {

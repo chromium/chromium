@@ -1685,11 +1685,13 @@ dialog:-internal-dialog-in-top-layer::backdrop {
     background-color: transparent;
 }
 
-/* The `overlay:auto` UA rule goes away as soon as the modal is requested to
-   close, or popover.hidePopover() is called. However, it can stay in the top
-   layer after this point, if developer CSS animates the `overlay` property. */
-dialog:modal, [popover]:popover-open {
-    overlay: auto !important;
+@supports blink-feature(OverlayProperty) {
+  /* The `overlay:auto` UA rule goes away as soon as the modal is requested to
+     close, or popover.hidePopover() is called. However, it can stay in the top
+     layer after this point, if developer CSS animates the `overlay` property. */
+  dialog:modal, [popover]:popover-open {
+      overlay: auto !important;
+  }
 }
 
 @supports blink-feature(MenuElements) {

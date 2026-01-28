@@ -3960,6 +3960,18 @@ void HTMLElement::OnRoleAttrChanged(const AttributeModificationParams& params) {
   }
 }
 
+bool HTMLElement::IsRenderedInTopLayer() const {
+  if (FastHasAttribute(html_names::kPopoverAttr) && popoverOpen()) {
+    return true;
+  }
+  if (auto* dialog = DynamicTo<HTMLDialogElement>(this)) {
+    if (dialog->IsModal()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace blink
 
 #ifndef NDEBUG

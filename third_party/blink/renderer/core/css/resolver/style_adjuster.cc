@@ -1087,7 +1087,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         !is_document_element && builder.Overlay() == EOverlay::kAuto;
   } else {
     is_in_top_layer =
-        !is_document_element && (element && element->IsInTopLayer());
+        !is_document_element && (element && element->IsRenderedInTopLayer());
   }
 
   if (builder.Display() != EDisplay::kNone) {

@@ -2008,6 +2008,15 @@ class CORE_EXPORT Element : public ContainerNode {
   void SetOverscrollContainer(Element*);
   void ClearOverscrollContainer();
 
+  // This method matches the logic of the following UA style rule, and is used
+  // in the case that the overlay property is not enabled. This is separate from
+  // the IsInTopLayer() method which stores a flag on this element and
+  // corresponds to the top layer list in the document.
+  // dialog:modal, [popover]:popover-open {
+  //     overlay: auto !important;
+  // }
+  virtual bool IsRenderedInTopLayer() const { return false; }
+
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }
   const ElementData* GetElementData() const { return element_data_.Get(); }

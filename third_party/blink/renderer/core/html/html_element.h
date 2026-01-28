@@ -391,6 +391,9 @@ class CORE_EXPORT HTMLElement : public Element {
   AtomicString writingSuggestions() const;
   void setWritingSuggestions(const AtomicString& value);
 
+  // See comment on this method in element.h
+  bool IsRenderedInTopLayer() const override;
+
  protected:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
