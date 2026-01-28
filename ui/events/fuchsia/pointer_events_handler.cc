@@ -350,8 +350,9 @@ void PointerEventsHandler::OnTouchSourceWatchResult(
 
       DCHECK(touch_view_parameters_.has_value()) << "API guarantee";
       auto draft = CreateTouchEventDraft(event, touch_view_parameters_.value());
-      if (touch_buffer_.count(interaction) > 0) {
-        touch_buffer_[interaction].emplace_back(std::move(draft));
+      if (auto it = touch_buffer_.find(interaction);
+          it != touch_buffer_.end()) {
+        it->second.emplace_back(std::move(draft));
       } else {
         event_callback_.Run(&draft);
       }
@@ -364,10 +365,12 @@ void PointerEventsHandler::OnTouchSourceWatchResult(
       const auto& result = event.interaction_result();
       const auto& interaction = result->interaction();
       if (result->status() ==
-              fuchsia_ui_pointer::TouchInteractionStatus::kGranted &&
-          touch_buffer_.count(interaction) > 0) {
-        for (auto& touch : touch_buffer_[interaction]) {
-          event_callback_.Run(&touch);
+          fuchsia_ui_pointer::TouchInteractionStatus::kGranted) {
+        if (auto it = touch_buffer_.find(interaction);
+            it != touch_buffer_.end()) {
+          for (auto& touch : it->second) {
+            event_callback_.Run(&touch);
+          }
         }
       }
       touch_buffer_.erase(interaction);  // Result seen, delete the buffer.
