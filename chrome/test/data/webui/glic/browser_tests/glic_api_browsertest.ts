@@ -2740,6 +2740,11 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     assertDefined(skill2);
     assertEquals('test_icon_2', skill2.icon);
   }
+
+  async testShowManageSkillsUi() {
+    assertDefined(this.host.showManageSkillsUi);
+    this.host.showManageSkillsUi();
+  }
 }
 
 type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize'|

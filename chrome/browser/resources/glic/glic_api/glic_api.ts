@@ -808,6 +808,11 @@ export declare interface GlicBrowserHost {
   updateSkill?(request: UpdateSkillRequest): Promise<void>;
 
   /**
+   * Requests that the browser open skill management UI.
+   */
+  showManageSkillsUi?(): void;
+
+  /**
    * Gets a skill by id. The web client should use this method to get the
    * full skill details including the prompt for display or run in the UI.
    * The promise will fail if the skill is not found.

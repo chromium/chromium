@@ -82,6 +82,7 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -1368,6 +1369,25 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     std::move(callback).Run(true);
 #else
     receiver_.ReportBadMessage("UpdateSkill isn't supported on Android.");
+#endif  //  !BUILDFLAG(IS_ANDROID)
+  }
+
+  void ShowManageSkillsUi() override {
+// NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
+// from Skills backend.
+#if !BUILDFLAG(IS_ANDROID)
+    if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+      receiver_.ReportBadMessage(
+          "ShowManageSkillsUi cannot be called without Skills enabled.");
+      return;
+    }
+    NavigateParams params(profile_, GURL(chrome::kChromeUISkillsURL),
+                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    params.disposition = WindowOpenDisposition::SINGLETON_TAB;
+    Navigate(&params);
+#else
+    receiver_.ReportBadMessage(
+        "ShowManageSkillsUi isn't supported on Android.");
 #endif  //  !BUILDFLAG(IS_ANDROID)
   }
 

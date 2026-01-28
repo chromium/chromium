@@ -3812,6 +3812,17 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testGetSkillPreviewsSuccess) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithSkills, testShowManageSkillsUi) {
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    tabs::TabInterface* tab =
+        InProcessBrowserTest::browser()->tab_strip_model()->GetActiveTab();
+    return tab &&
+           base::StartsWith(tab->GetContents()->GetLastCommittedURL().spec(),
+                            chrome::kChromeUISkillsURL);
+  }));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     GlicGetHostCapabilityApiTest,

@@ -498,6 +498,9 @@ export declare type HostRequestTypes = ValidateRequestMap<{
       modalOpened: boolean,
     },
   },
+  glicBrowserShowManageSkillsUi: {
+    backgroundAllowed: true,
+  },
   glicBrowserGetSkill: {
     request: {
       id: string,
@@ -934,6 +937,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         UpdateSkill: 83,
         GetSkill: 84,
         CancelActions: 85,
+        ShowManageSkillsUi: 86,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

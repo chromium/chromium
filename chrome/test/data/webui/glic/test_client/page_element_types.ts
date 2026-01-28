@@ -176,6 +176,7 @@ export interface PageElementTypes {
   createSkillBtn: HTMLButtonElement;
   updateSkillBtn: HTMLButtonElement;
   getSkillBtn: HTMLButtonElement;
+  manageSkillsBtn: HTMLButtonElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

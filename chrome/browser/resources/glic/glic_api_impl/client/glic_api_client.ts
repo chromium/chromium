@@ -650,6 +650,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableSkills) {
       this.createSkill = undefined;
       this.updateSkill = undefined;
+      this.showManageSkillsUi = undefined;
       this.getSkill = undefined;
     }
 
@@ -1179,6 +1180,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!result.modalOpened) {
       throw new Error('updateSkill: failed to open dialog');
     }
+  }
+
+  showManageSkillsUi?(): void {
+    this.sender.requestNoResponse('glicBrowserShowManageSkillsUi', undefined);
   }
 
   async getSkill?(id: string): Promise<Skill> {

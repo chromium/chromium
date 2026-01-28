@@ -42,3 +42,7 @@ $.getSkillBtn.addEventListener('click', async () => {
     logMessage(`getSkill failed: ${e}`);
   }
 });
+
+$.manageSkillsBtn.addEventListener('click', () => {
+  getBrowser()!.showManageSkillsUi!();
+});

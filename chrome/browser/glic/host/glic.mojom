@@ -836,6 +836,9 @@ interface WebClientHandler {
   // TODO(crbug.com/471796872): Add the actual c++ implementation.
   UpdateSkill(UpdateSkillRequest request) => (bool modal_opened);
 
+  // Requests that the browser show skill management UI.
+  ShowManageSkillsUi();
+
   // Gets a skill by its id. Returns null if the skill does not exist.
   GetSkill(string id) => (Skill? skill);
 
