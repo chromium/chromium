@@ -208,12 +208,9 @@ struct VideoEncodeOptions {
   // If True, next frame must be encoded as I-frame (random access point)
   bool force_keyframe;
 
-  // Quantizer(QP) value for encoding of the given frame.
-  // This value is only heeded if VEA configured with external rate control mode
-  // TODO(crbug.com/40489779): All negative values mean "ignore this field",
-  // we don't use proper optional field because Java bindgen doesn't support
-  // optional primitive types.
-  int32 quantizer;
+  // Quantizer(QP) value for encoding of the given frame. This value is only
+  // heeded if VEA configured with external rate control mode.
+  int32? quantizer;
 
   // The buffer ID to be updated after encoding.
   uint8? update_buffer;

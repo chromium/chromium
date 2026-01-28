@@ -4,6 +4,8 @@
 #ifndef MEDIA_MOJO_MOJOM_AUDIO_PROCESSING_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_AUDIO_PROCESSING_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "media/base/audio_processing.h"
 #include "media/base/audio_processor_controls.h"
 #include "media/mojo/mojom/audio_processing.mojom-shared.h"
@@ -15,20 +17,13 @@ template <>
 struct StructTraits<media::mojom::AudioProcessingStatsDataView,
                     media::AudioProcessingStats> {
  public:
-  static bool has_echo_return_loss(const media::AudioProcessingStats& input) {
-    return input.echo_return_loss.has_value();
-  }
-  static double echo_return_loss(const media::AudioProcessingStats& input) {
-    return input.echo_return_loss.value_or(0.0);
-  }
-
-  static bool has_echo_return_loss_enhancement(
+  static std::optional<double> echo_return_loss(
       const media::AudioProcessingStats& input) {
-    return input.echo_return_loss_enhancement.has_value();
+    return input.echo_return_loss;
   }
-  static double echo_return_loss_enhancement(
+  static std::optional<double> echo_return_loss_enhancement(
       const media::AudioProcessingStats& input) {
-    return input.echo_return_loss_enhancement.value_or(0.0);
+    return input.echo_return_loss_enhancement;
   }
 
   static bool Read(media::mojom::AudioProcessingStatsDataView input,

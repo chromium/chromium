@@ -5,6 +5,8 @@
 #ifndef MEDIA_MOJO_MOJOM_VIDEO_ENCODER_INFO_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_VIDEO_ENCODER_INFO_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "media/mojo/mojom/video_encoder_info.mojom-shared.h"
 #include "media/video/video_encoder_info.h"
@@ -52,21 +54,13 @@ class StructTraits<media::mojom::VideoEncoderInfoDataView,
       const media::VideoEncoderInfo& video_encoder_info) {
     return video_encoder_info.implementation_name;
   }
-  static bool has_frame_delay(
+  static std::optional<int32_t> frame_delay(
       const media::VideoEncoderInfo& video_encoder_info) {
-    return video_encoder_info.frame_delay.has_value();
+    return video_encoder_info.frame_delay;
   }
-  static int32_t frame_delay(
+  static std::optional<int32_t> input_capacity(
       const media::VideoEncoderInfo& video_encoder_info) {
-    return video_encoder_info.frame_delay.value_or(0);
-  }
-  static bool has_input_capacity(
-      const media::VideoEncoderInfo& video_encoder_info) {
-    return video_encoder_info.input_capacity.has_value();
-  }
-  static int32_t input_capacity(
-      const media::VideoEncoderInfo& video_encoder_info) {
-    return video_encoder_info.input_capacity.value_or(0);
+    return video_encoder_info.input_capacity;
   }
   static bool supports_native_handle(
       const media::VideoEncoderInfo& video_encoder_info) {

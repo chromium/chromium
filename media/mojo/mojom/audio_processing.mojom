@@ -8,14 +8,8 @@ module media.mojom;
 // request from the renderer, see AudioProcessorControls::GetStats() in this
 // file.
 struct AudioProcessingStats {
-
-  // TODO(crbug.com/40489779): Numeric values cannot be optional, so add
-  // flags for each of them.
-  bool has_echo_return_loss;
-  double echo_return_loss;
-
-  bool has_echo_return_loss_enhancement;
-  double echo_return_loss_enhancement;
+  double? echo_return_loss;
+  double? echo_return_loss_enhancement;
 };
 
 // Settings for the software audio processing performed in the audio service.

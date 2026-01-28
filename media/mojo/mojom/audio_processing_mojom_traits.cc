@@ -5,20 +5,15 @@
 #include "media/mojo/mojom/audio_processing_mojom_traits.h"
 
 namespace mojo {
-namespace {
-// Deserializes has_field and field into a std::optional.
-#define DESERIALIZE_INTO_OPT(field) \
-  if (input.has_##field())          \
-  out_stats->field = input.field()
-}  // namespace
 
 // static
 bool StructTraits<media::mojom::AudioProcessingStatsDataView,
                   media::AudioProcessingStats>::
     Read(media::mojom::AudioProcessingStatsDataView input,
          media::AudioProcessingStats* out_stats) {
-  DESERIALIZE_INTO_OPT(echo_return_loss);
-  DESERIALIZE_INTO_OPT(echo_return_loss_enhancement);
+  out_stats->echo_return_loss = input.echo_return_loss();
+  out_stats->echo_return_loss_enhancement =
+      input.echo_return_loss_enhancement();
   return true;
 }
 

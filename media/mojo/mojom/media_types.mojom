@@ -369,15 +369,13 @@ struct CaptureVersion {
 };
 
 // See media/base/video_frame_metadata.h for a description of fields.
-// TODO(crbug.com/40489779): Remove |has_*| values and use nullable types.
 struct VideoFrameMetadata {
   bool allow_overlay;
 
   mojo_base.mojom.TimeTicks? capture_begin_time;
   mojo_base.mojom.TimeTicks? capture_end_time;
 
-  bool has_capture_counter;
-  int32 capture_counter;
+  int32? capture_counter;
 
   gfx.mojom.Rect? capture_update_rect;
 
@@ -392,8 +390,7 @@ struct VideoFrameMetadata {
 
   mojo_base.mojom.TimeDelta? frame_duration;
 
-  bool has_frame_rate;
-  double frame_rate;
+  double? frame_rate;
 
   bool interactive_content;
 
@@ -419,28 +416,22 @@ struct VideoFrameMetadata {
 
   bool power_efficient;
 
-  bool has_device_scale_factor;
-  double device_scale_factor;
+  double? device_scale_factor;
 
-  bool has_page_scale_factor;
-  double page_scale_factor;
+  double? page_scale_factor;
 
-  bool has_root_scroll_offset_x;
-  double root_scroll_offset_x;
+  double? root_scroll_offset_x;
 
-  bool has_root_scroll_offset_y;
-  double root_scroll_offset_y;
+  double? root_scroll_offset_y;
 
-  bool has_top_controls_visible_height;
-  double top_controls_visible_height;
+  double? top_controls_visible_height;
 
   mojo_base.mojom.TimeTicks? decode_begin_time;
   mojo_base.mojom.TimeTicks? decode_end_time;
 
   mojo_base.mojom.TimeDelta? processing_time;
 
-  bool has_rtp_timestamp;
-  double rtp_timestamp;
+  double? rtp_timestamp;
 
   mojo_base.mojom.TimeTicks? receive_time;
 

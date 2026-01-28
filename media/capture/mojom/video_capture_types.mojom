@@ -356,12 +356,7 @@ struct VideoCaptureFeedback {
   // intermediate layer to help route the feedback accordingly.
   // This should usually be set to the same value as the |frame_feedback_id|
   // received with the frame (often from a received `ReadyFrameInBuffer`).
-  int32 frame_id = 0;
-
-  // Indicates whether or not the value in |frame_id| is valid.
-  // TODO(crbug.com/40489779): Remove this and replace frame_id with an
-  // optional type.
-  bool has_frame_id = false;
+  int32? frame_id;
 };
 
 // Contains one stride value per image plane. Stride means the number of bytes

@@ -179,12 +179,7 @@ bool StructTraits<media::mojom::VideoEncodeOptionsDataView,
     Read(media::mojom::VideoEncodeOptionsDataView data,
          media::VideoEncoder::EncodeOptions* out_options) {
   out_options->key_frame = data.force_keyframe();
-  int32_t quantizer = data.quantizer();
-  if (quantizer < 0) {
-    out_options->quantizer.reset();
-  } else {
-    out_options->quantizer = quantizer;
-  }
+  out_options->quantizer = data.quantizer();
 
   out_options->update_buffer = data.update_buffer();
   if (!data.ReadReferenceBuffers(&out_options->reference_buffers)) {

@@ -141,8 +141,9 @@ class StructTraits<media::mojom::VideoEncodeOptionsDataView,
     return options.key_frame;
   }
 
-  static int32_t quantizer(const media::VideoEncoder::EncodeOptions& options) {
-    return options.quantizer.value_or(-1);
+  static std::optional<int32_t> quantizer(
+      const media::VideoEncoder::EncodeOptions& options) {
+    return options.quantizer;
   }
 
   // Return the optional update_buffer.

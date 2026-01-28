@@ -5,6 +5,8 @@
 #ifndef MEDIA_CAPTURE_MOJOM_VIDEO_CAPTURE_TYPES_MOJOM_TRAITS_H_
 #define MEDIA_CAPTURE_MOJOM_VIDEO_CAPTURE_TYPES_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -288,12 +290,9 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     return std::vector<gfx::Size>();
   }
 
-  static bool has_frame_id(const media::VideoCaptureFeedback& feedback) {
-    return feedback.frame_id.has_value();
-  }
-
-  static int frame_id(const media::VideoCaptureFeedback& feedback) {
-    return feedback.frame_id.value_or(0);
+  static std::optional<int> frame_id(
+      const media::VideoCaptureFeedback& feedback) {
+    return feedback.frame_id;
   }
 
   static bool Read(media::mojom::VideoCaptureFeedbackDataView data,
