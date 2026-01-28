@@ -229,6 +229,9 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
   }
+#else
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
 #endif
 }
 

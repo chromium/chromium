@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -48,7 +49,7 @@ PageStabilityTest::PageStabilityTest() {
 PageStabilityTest::~PageStabilityTest() = default;
 
 void PageStabilityTest::SetUpOnMainThread() {
-  InProcessBrowserTest::SetUpOnMainThread();
+  PlatformBrowserTest::SetUpOnMainThread();
   fetch_response_ =
       std::make_unique<net::test_server::ControllableHttpResponse>(
           embedded_test_server(), kFetchPath);

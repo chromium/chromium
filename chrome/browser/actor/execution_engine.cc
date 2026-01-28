@@ -43,8 +43,10 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/glic/actor_form_filling_service_impl.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service_impl.h"
+#endif
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -119,6 +121,7 @@ url::Origin OriginOrPrecursorIfOpaque(const url::Origin& origin) {
 
 }  // namespace
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 ToolDelegate::CredentialWithPermission::CredentialWithPermission() = default;
 ToolDelegate::CredentialWithPermission::CredentialWithPermission(
     const actor_login::Credential& credential,
@@ -135,6 +138,7 @@ ToolDelegate::CredentialWithPermission&
 ToolDelegate::CredentialWithPermission::operator=(CredentialWithPermission&&) =
     default;
 ToolDelegate::CredentialWithPermission::~CredentialWithPermission() = default;
+#endif
 
 ExecutionEngine::ExecutionEngine(Profile* profile)
     : ExecutionEngine(
@@ -172,9 +176,11 @@ ExecutionEngine::~ExecutionEngine() {
 void ExecutionEngine::SetOwner(ActorTask* task) {
   task_ = task;
   TRACE_EVENT0("actor", "ExecutionEngine::SetOwner");
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   actor_login_service_ = std::make_unique<actor_login::ActorLoginServiceImpl>();
   actor_form_filling_service_ =
       std::make_unique<autofill::ActorFormFillingServiceImpl>();
+#endif
   tool_controller_ = std::make_unique<ToolController>(*task_, *this);
 }
 
@@ -961,15 +967,18 @@ AggregatedJournal& ExecutionEngine::GetJournal() {
   return *journal_;
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 actor_login::ActorLoginService& ExecutionEngine::GetActorLoginService() {
   return *actor_login_service_;
 }
+#endif
 
 autofill::ActorFormFillingService&
 ExecutionEngine::GetActorFormFillingService() {
   return *actor_form_filling_service_;
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 void ExecutionEngine::PromptToSelectCredential(
     const std::vector<actor_login::Credential>& credentials,
     const base::flat_map<std::string, gfx::Image>& icons,
@@ -1062,6 +1071,7 @@ ExecutionEngine::GetUserSelectedCredential(
   return std::nullopt;
 }
 
+#endif
 void ExecutionEngine::RequestToShowAutofillSuggestions(
     std::vector<autofill::ActorFormFillingRequest> requests,
     ExecutionEngine::AutofillSuggestionSelectedCallback callback) {

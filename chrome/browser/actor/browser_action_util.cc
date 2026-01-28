@@ -44,19 +44,23 @@
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
+
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#endif
 
 namespace actor {
 
@@ -1019,6 +1023,7 @@ void BuildActionsResultWithObservations(
     }
   }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   std::vector<Browser*> browsers =
       chrome::FindAllTabbedBrowsersWithProfile(profile);
 
@@ -1035,6 +1040,7 @@ void BuildActionsResultWithObservations(
       window_observation->add_tab_ids(tab->GetHandle().raw_value());
     }
   }
+#endif
 
   absl::flat_hash_map<tabs::TabInterface*, apc::TabObservation*> tabs_to_fetch;
 

@@ -9,6 +9,7 @@ namespace actor {
 ConvertToVariantFn::ConvertToVariantFn() = default;
 ConvertToVariantFn::~ConvertToVariantFn() = default;
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 void ConvertToVariantFn::Apply(const ActivateTabToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
@@ -18,12 +19,14 @@ void ConvertToVariantFn::Apply(const ActivateWindowToolRequest& tr) {
 void ConvertToVariantFn::Apply(const AttemptLoginToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+#endif
 void ConvertToVariantFn::Apply(const AttemptFormFillingToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
 void ConvertToVariantFn::Apply(const ClickToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 void ConvertToVariantFn::Apply(const CloseTabToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
@@ -36,6 +39,7 @@ void ConvertToVariantFn::Apply(const CreateTabToolRequest& tr) {
 void ConvertToVariantFn::Apply(const CreateWindowToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+#endif
 void ConvertToVariantFn::Apply(const DragAndReleaseToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }

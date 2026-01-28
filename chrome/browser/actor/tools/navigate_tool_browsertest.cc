@@ -27,7 +27,12 @@ class ActorNavigateToolBrowserTest : public ActorToolsTest {
  public:
   ActorNavigateToolBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/
+        {
+#if BUILDFLAG(IS_ANDROID)
+            kActorEnableAndroid
+#endif
+        },
         /*disabled_features=*/{kGlicCrossOriginNavigationGating});
   }
   ~ActorNavigateToolBrowserTest() override = default;
@@ -147,11 +152,20 @@ class ActorNavigateToolRequestBrowserTest
   ActorNavigateToolRequestBrowserTest() {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{kGlicNavigateToolUseOpaqueInitiator},
+          /*enabled_features=*/{kGlicNavigateToolUseOpaqueInitiator,
+#if BUILDFLAG(IS_ANDROID)
+                                kActorEnableAndroid
+#endif
+          },
           /*disabled_features=*/{kGlicCrossOriginNavigationGating});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
+          /*enabled_features=*/
+          {
+#if BUILDFLAG(IS_ANDROID)
+              kActorEnableAndroid
+#endif
+          },
           /*disabled_features=*/{kGlicNavigateToolUseOpaqueInitiator,
                                  kGlicCrossOriginNavigationGating});
     }

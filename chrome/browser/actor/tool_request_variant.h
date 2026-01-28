@@ -13,26 +13,31 @@ namespace actor {
 
 // LINT.IfChange(ToolRequestVariant)
 // Type safe union of ToolRequest types.
-using ToolRequestVariant = std::variant<ActivateTabToolRequest,
-                                        ActivateWindowToolRequest,
-                                        AttemptFormFillingToolRequest,
-                                        AttemptLoginToolRequest,
-                                        ClickToolRequest,
-                                        CloseTabToolRequest,
-                                        CloseWindowToolRequest,
-                                        CreateTabToolRequest,
-                                        CreateWindowToolRequest,
-                                        DragAndReleaseToolRequest,
-                                        HistoryToolRequest,
-                                        MediaControlToolRequest,
-                                        MoveMouseToolRequest,
-                                        NavigateToolRequest,
-                                        ScriptToolRequest,
-                                        ScrollToolRequest,
-                                        ScrollToToolRequest,
-                                        SelectToolRequest,
-                                        TypeToolRequest,
-                                        WaitToolRequest>;
+using ToolRequestVariant = std::variant<
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+    ActivateTabToolRequest,
+    ActivateWindowToolRequest,
+    AttemptLoginToolRequest,
+#endif
+    AttemptFormFillingToolRequest,
+    ClickToolRequest,
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+    CloseTabToolRequest,
+    CloseWindowToolRequest,
+    CreateTabToolRequest,
+    CreateWindowToolRequest,
+#endif
+    DragAndReleaseToolRequest,
+    HistoryToolRequest,
+    MediaControlToolRequest,
+    MoveMouseToolRequest,
+    NavigateToolRequest,
+    ScriptToolRequest,
+    ScrollToolRequest,
+    ScrollToToolRequest,
+    SelectToolRequest,
+    TypeToolRequest,
+    WaitToolRequest>;
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ToolRequest)
 
 // Functor for converting a polymorphic ToolRequest object to the proper
@@ -41,15 +46,19 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
  public:
   ConvertToVariantFn();
   ~ConvertToVariantFn();
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void Apply(const ActivateTabToolRequest&) override;
   void Apply(const ActivateWindowToolRequest&) override;
   void Apply(const AttemptLoginToolRequest&) override;
+#endif
   void Apply(const AttemptFormFillingToolRequest&) override;
   void Apply(const ClickToolRequest&) override;
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void Apply(const CloseTabToolRequest&) override;
   void Apply(const CloseWindowToolRequest&) override;
   void Apply(const CreateTabToolRequest&) override;
   void Apply(const CreateWindowToolRequest&) override;
+#endif
   void Apply(const DragAndReleaseToolRequest&) override;
   void Apply(const HistoryToolRequest&) override;
   void Apply(const MediaControlToolRequest&) override;

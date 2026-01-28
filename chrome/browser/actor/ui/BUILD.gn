@@ -129,38 +129,40 @@ if (!skip_android_unmigrated_actor_files) {
       "//chrome/test:test_support_ui",
     ]
   }
+}
 
-  source_set("test_support") {
-    sources = [
-      "test_support/fake_actor_overlay_page.cc",
-      "test_support/fake_actor_overlay_page.h",
-      "test_support/mock_actor_ui_state_manager.cc",
-      "test_support/mock_actor_ui_state_manager.h",
-      "test_support/mock_actor_ui_tab_controller.cc",
-      "test_support/mock_actor_ui_tab_controller.h",
-      "test_support/mock_event_dispatcher.cc",
-      "test_support/mock_event_dispatcher.h",
-      "test_support/mock_handoff_button_controller.cc",
-      "test_support/mock_handoff_button_controller.h",
-    ]
-    testonly = true
-    public_deps = [
-      "//base",
-      "//chrome/browser/ui:test_support",
-      "//components/tabs:test_support",
-      "//testing/gmock",
-    ]
-    deps = [
-      ":event_dispatcher",
-      ":ui",
-      "//chrome/browser/actor",
-    ]
+source_set("test_support") {
+  sources = [
+    "test_support/fake_actor_overlay_page.cc",
+    "test_support/fake_actor_overlay_page.h",
+    "test_support/mock_actor_ui_state_manager.cc",
+    "test_support/mock_actor_ui_state_manager.h",
+    "test_support/mock_actor_ui_tab_controller.cc",
+    "test_support/mock_actor_ui_tab_controller.h",
+    "test_support/mock_event_dispatcher.cc",
+    "test_support/mock_event_dispatcher.h",
+    "test_support/mock_handoff_button_controller.cc",
+    "test_support/mock_handoff_button_controller.h",
+  ]
+  testonly = true
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui:test_support",
+    "//components/tabs:test_support",
+    "//testing/gmock",
+  ]
+  deps = [
+    ":event_dispatcher",
+    ":ui",
+    "//chrome/browser/actor",
+  ]
 
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-  }
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
 
+if (!skip_android_unmigrated_actor_files) {
   source_set("browser_tests") {
     testonly = true
 

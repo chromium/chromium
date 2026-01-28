@@ -12,8 +12,11 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/buildflags.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#endif
 #include "url/gurl.h"
 
 class Profile;
@@ -49,9 +52,10 @@ class ToolDelegate {
   // Returns the journal so that tools may log information related to their
   // execution.
   virtual AggregatedJournal& GetJournal() = 0;
-
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   // Returns the login service associated with the task.
   virtual actor_login::ActorLoginService& GetActorLoginService() = 0;
+#endif
 
   // Returns the form filling service associated with the task.
   virtual autofill::ActorFormFillingService& GetActorFormFillingService() = 0;
@@ -65,6 +69,7 @@ class ToolDelegate {
       const GURL& url,
       DecisionCallbackWithReason callback) = 0;
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   // Prompts the user to select a credential from the list of credentials, and
   // with optional icons for each site or app that is associated with the
   // credential.
@@ -110,6 +115,7 @@ class ToolDelegate {
       base::OnceClosure affiliations_fetched) = 0;
   virtual const std::optional<CredentialWithPermission>
   GetUserSelectedCredential(const url::Origin& request_origin) const = 0;
+#endif
 
   // Prompts the user to select one of the autofill suggestion. Invokes the
   // callback with the chosen suggestion or empty if the prompt is closed.

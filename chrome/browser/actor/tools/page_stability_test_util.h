@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class GURL;
@@ -34,7 +35,7 @@ namespace actor {
 
 // TODO(linnan) - Update page_stability_browsertest.cc and
 // observation_delay_controller_browsertest.cc to use this test harness.
-class PageStabilityTest : public InProcessBrowserTest {
+class PageStabilityTest : public PlatformBrowserTest {
  public:
   PageStabilityTest();
   PageStabilityTest(const PageStabilityTest&) = delete;

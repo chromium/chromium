@@ -23,7 +23,9 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               (AsyncUiEvent event, UiCompleteCallback callback),
               (override));
   MOCK_METHOD(void, OnUiEvent, (SyncUiEvent event), (override));
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   MOCK_METHOD(void, MaybeShowToast, (BrowserWindowInterface * bwi), (override));
+#endif  // BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterActorTaskStateChange,
               (ActorTaskStateChangeCallback callback),

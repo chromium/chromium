@@ -1954,6 +1954,7 @@ if (is_android) {
       "//base",
       "//chrome:chrome_android_core",
       "//chrome/android:delegate_public_impl_java",
+      "//chrome/browser/actor:browser_tests",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
       "//chrome/browser/auxiliary_search:browser_tests",
