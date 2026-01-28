@@ -40,24 +40,14 @@ class SESSION_EXPORT SessionManager
   void SetSessionState(SessionState state);
 
   // Creates a session for the given user, hash and the type.
-  // This is used for common session starts, and recovery from crash
-  // for the secondary+ users. For the latter case, `has_active_session`
-  // is set true.
+  // On recovery from crash for the secondary+ users, this is called with
+  // `has_active_session` set to `true`. Note that for the primary user,
+  // this is called with `has_active_session` false even for crash recovery
+  // cases, similar to regular log-in.
   void CreateSession(const AccountId& user_account_id,
                      const std::string& username_hash,
                      bool new_user,
                      bool has_active_session);
-
-  // Similar to above, creates a session for the given user and hash,
-  // but for the primary user session on restarting chrome for crash recovering.
-  // (Note: for non primary user sessions, CreateSession() is called with
-  // `has_active_session == true`).
-  // For this case, we expect there already is a registered User, so in general
-  // the user type should be derived from the one. Though, there are edge
-  // cases. Please find UserManager::CalculateUserType() for details.
-  void CreateSessionForRestart(const AccountId& user_account_id,
-                               const std::string& user_id_hash,
-                               bool new_user);
 
   // Switches the active user session to the one specified by `account_id`.
   // The User has to be logged in already (i.e. CreateSession* needs to be
@@ -80,7 +70,7 @@ class SESSION_EXPORT SessionManager
   // Tests need to follow the same lifetime management.
   // TODO(b:332481586): Move this to the constructor by fixing initialization
   // order.
-  virtual void OnUserManagerCreated(user_manager::UserManager* user_manager);
+  void OnUserManagerCreated(user_manager::UserManager* user_manager);
 
   // Called when browser session is started i.e. after
   // browser_creator.LaunchBrowser(...) was called after user sign in.
@@ -88,7 +78,7 @@ class SESSION_EXPORT SessionManager
   // but IsSessionStarted() will return false. During the kiosk splash screen,
   // we perform additional initialization after the user is logged in but
   // before the session has been started.
-  virtual void SessionStarted();
+  void SessionStarted();
 
   // Returns true if the session for the given user was started.
   bool HasSessionForAccountId(const AccountId& user_account_id) const;
@@ -147,8 +137,7 @@ class SESSION_EXPORT SessionManager
  private:
   void CreateSessionInternal(const AccountId& user_account_id,
                              const std::string& username_hash,
-                             bool new_user,
-                             bool browser_restart);
+                             bool new_user);
 
   // Pointer to the existing SessionManager instance (if any).
   // Set in ctor, reset in dtor. Not owned since specific implementation of

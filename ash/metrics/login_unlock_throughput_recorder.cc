@@ -296,7 +296,7 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
     return;
   }
 
-  // On ash restart, `SessionManager::CreateSessionForRestart` should happen
+  // On ash restart, `SessionManager::CreateSession` should happen
   // and trigger `LoggedInStateChanged` here to set `user_logged_in_` flag
   // before `OnAshRestart` is called. So `is_ash_restart_` should never be true
   // here. Otherwise, we have unexpected sequence of events and login metrics

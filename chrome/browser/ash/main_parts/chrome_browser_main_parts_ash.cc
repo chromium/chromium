@@ -1152,7 +1152,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     std::string username_hash =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kLoginProfile);
-    session_manager.CreateSessionForRestart(account_id, username_hash, created);
+    session_manager.CreateSession(account_id, username_hash, created,
+                                  /*has_active_session=*/false);
 
     // If restarting demo session, mark demo session as started before primary
     // profile starts initialization so browser context keyed services created

@@ -63,15 +63,7 @@ void SessionManager::CreateSession(const AccountId& user_account_id,
   if (!has_active_session && !sessions_.empty()) {
     pending_active_account_id_ = user_account_id;
   }
-  CreateSessionInternal(user_account_id, username_hash, new_user,
-                        /*browser_restart=*/false);
-}
-
-void SessionManager::CreateSessionForRestart(const AccountId& user_account_id,
-                                             const std::string& username_hash,
-                                             bool new_user) {
-  CreateSessionInternal(user_account_id, username_hash, new_user,
-                        /*browser_restart=*/true);
+  CreateSessionInternal(user_account_id, username_hash, new_user);
 }
 
 void SessionManager::SwitchActiveSession(const AccountId& account_id) {
@@ -215,8 +207,7 @@ void SessionManager::SetInstance(SessionManager* session_manager) {
 
 void SessionManager::CreateSessionInternal(const AccountId& user_account_id,
                                            const std::string& username_hash,
-                                           bool new_user,
-                                           bool browser_restart) {
+                                           bool new_user) {
   CHECK(user_manager_);
   DCHECK(!HasSessionForAccountId(user_account_id));
 
