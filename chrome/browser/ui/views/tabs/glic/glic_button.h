@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_GLIC_BUTTON_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
@@ -85,6 +86,7 @@ class GlicButton : public TabStripNudgeButton,
       const views::SizeBounds& available_size) const override;
   void StateChanged(ButtonState old_state) override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -118,6 +120,10 @@ class GlicButton : public TabStripNudgeButton,
   // present.
   void SetSplitButtonCornerStyling();
   void ResetSplitButtonCornerStyling();
+
+  void OnBrowserWindowDidBecomeActive(BrowserWindowInterface* bwi);
+  void OnBrowserWindowDidBecomeInactive(BrowserWindowInterface* bwi);
+  void UpdateInkdropHoverColor(bool is_frame_active);
 
  private:
   // views::LabelButton:
@@ -177,6 +183,7 @@ class GlicButton : public TabStripNudgeButton,
   // Menu runner for the context menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
   // Profile corresponding to the browser that this button is on.
   raw_ptr<Profile> profile_;
 
@@ -216,6 +223,10 @@ class GlicButton : public TabStripNudgeButton,
 
   class WidthAnimationController;
   std::unique_ptr<WidthAnimationController> width_animation_controller_;
+
+  // Window active and inactive subscriptions for changing the hover color.
+  base::CallbackListSubscription window_did_become_active_subscription_;
+  base::CallbackListSubscription window_did_become_inactive_subscription_;
 
   base::WeakPtrFactory<GlicButton> weak_ptr_factory_{this};
 };
