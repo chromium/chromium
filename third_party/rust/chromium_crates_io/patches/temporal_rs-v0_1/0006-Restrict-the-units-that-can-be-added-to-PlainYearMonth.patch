@@ -1,0 +1,158 @@
+From f94a378eb1406a6344c51c14ca7538e1bc3c13b6 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Wed, 28 Jan 2026 18:20:42 +0000
+Subject: [PATCH] [temporal] Restrict the units that can be added to
+ PlainYearMonth
+
+Uplift of https://github.com/boa-dev/temporal/pull/671
+
+New spec change, with incoming tests.
+
+Change-Id: Ia236b9e72b2147cd7b21d2dd5fb610c8c7c1891d
+---
+ .../src/builtins/core/plain_year_month.rs     | 98 +++++++++----------
+ 1 file changed, 45 insertions(+), 53 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs
+index 943729f1ef7ee..b056f4704bf39 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs
+@@ -15,14 +15,11 @@ use crate::{
+     parsed_intermediates::ParsedDate,
+     parsers::{FormattableCalendar, FormattableDate, FormattableYearMonth},
+     provider::{NeverProvider, TimeZoneProvider},
+-    temporal_assert,
+     unix_time::EpochNanoseconds,
+-    Calendar, MonthCode, TemporalError, TemporalResult, TemporalUnwrap, TimeZone,
++    Calendar, MonthCode, TemporalError, TemporalResult, TimeZone,
+ };
+ 
+-use super::{
+-    duration::normalized::InternalDurationRecord, DateDuration, Duration, PlainDate, PlainDateTime,
+-};
++use super::{duration::normalized::InternalDurationRecord, Duration, PlainDate, PlainDateTime};
+ use writeable::Writeable;
+ 
+ /// A partial PlainYearMonth record
+@@ -190,70 +187,51 @@ impl PlainYearMonth {
+         // NOTE: The following operation has been moved to the caller.
+         //    MOVE: 2. If operation is subtract, set duration to CreateNegatedTemporalDuration(duration).
+ 
++        // 3. Let internalDuration be ToInternalDurationRecord(duration).
++        let internal_duration = duration.to_internal_duration_record();
++
++        // 4. Let durationToAdd be internalDuration.[[Date]].
++        let duration_to_add = internal_duration.date();
++
++        // 5. If durationToAdd.[[Weeks]] ≠ 0, or durationToAdd.[[Days]] ≠ 0, or internalDuration.[[Time]] ≠ 0,
++        // throw a RangeError exception.
++
++        if duration_to_add.weeks != 0
++            || duration_to_add.days != 0
++            || internal_duration.normalized_time_duration().0 != 0
++        {
++            return Err(TemporalError::range()
++                .with_message("Can only add years or months to PlainYearMonth."));
++        }
++
+         // NOTE: The following are engine specific:
+-        //    SKIP: 3. Let resolvedOptions be ? GetOptionsObject(options).
+-        //    SKIP: 4. Let overflow be ? GetTemporalOverflowOption(resolvedOptions).
++        //    SKIP: 6. Let resolvedOptions be ? GetOptionsObject(options).
++        //    SKIP: 7. Let overflow be ? GetTemporalOverflowOption(resolvedOptions).
+ 
+-        // 5. Let sign be DurationSign(duration).
+-        let sign = duration.sign();
+-
+-        // 6. Let calendar be yearMonth.[[Calendar]].
++        // 8. Let calendar be yearMonth.[[Calendar]].
+         let calendar = self.calendar();
+ 
+-        // 7. Let fields be ISODateToFields(calendar, yearMonth.[[ISODate]], year-month).
++        // 9. Let fields be ISODateToFields(calendar, yearMonth.[[ISODate]], year-month).
+         let fields = CalendarFields::from(YearMonthCalendarFields::try_from_year_month(self)?);
+ 
+-        // 8. Set fields.[[Day]] to 1.
++        // 10. Set fields.[[Day]] to 1.
+         let fields = fields.with_day(1);
+ 
+-        // 9. Let intermediateDate be ? CalendarDateFromFields(calendar, fields, constrain).
+-        let intermediate_date = calendar.date_from_fields(fields, overflow)?;
++        // 11. Let date be ? CalendarDateFromFields(calendar, fields, constrain).
++        let date = calendar.date_from_fields(fields, Overflow::Constrain)?;
+ 
+-        // 10. If sign < 0, then
+-        let date = if sign.as_sign_multiplier() < 0 {
+-            // a. Let oneMonthDuration be ! CreateDateDurationRecord(0, 1, 0, 0).
+-            let one_month_duration = DateDuration::new_unchecked(0, 1, 0, 0);
++        // 12. Let addedDate be ? CalendarDateAdd(calendar, date, durationToAdd, overflow).
++        let added_date = calendar.date_add(&date.iso, &duration_to_add, overflow)?;
+ 
+-            // b. Let nextMonth be ? CalendarDateAdd(calendar, intermediateDate, oneMonthDuration, constrain).
+-            let next_month = calendar.date_add(
+-                &intermediate_date.iso,
+-                &one_month_duration,
+-                Overflow::Constrain,
+-            )?;
+-            let next_month = next_month.iso;
+-
+-            // c. Let date be BalanceISODate(nextMonth.[[Year]], nextMonth.[[Month]], nextMonth.[[Day]] - 1).
+-            let date = IsoDate::balance(
+-                next_month.year,
+-                i32::from(next_month.month),
+-                i32::from(next_month.day).checked_sub(1).temporal_unwrap()?,
+-            );
+-
+-            // d. Assert: ISODateWithinLimits(date) is true.
+-            temporal_assert!(date.is_valid());
+-
+-            date
+-        } else {
+-            // 11. Else,
+-            //    a. Let date be intermediateDate.
+-            intermediate_date.iso
+-        };
+-
+-        // 12. Let durationToAdd be ToDateDurationRecordWithoutTime(duration).
+-        let duration_to_add = duration.to_date_duration_record_without_time()?;
+-
+-        // 13. Let addedDate be ? CalendarDateAdd(calendar, date, durationToAdd, overflow).
+-        let added_date = calendar.date_add(&date, &duration_to_add, overflow)?;
+-
+-        // 14. Let addedDateFields be ISODateToFields(calendar, addedDate, year-month).
++        // 13. Let addedDateFields be ISODateToFields(calendar, addedDate, year-month).
+         let added_date_fields = YearMonthCalendarFields::new()
+             .with_month_code(added_date.month_code())
+             .with_year(added_date.year());
+ 
+-        // 15. Let isoDate be ? CalendarYearMonthFromFields(calendar, addedDateFields, overflow).
++        // 14. Let isoDate be ? CalendarYearMonthFromFields(calendar, addedDateFields, overflow).
+         let iso_date = calendar.year_month_from_fields(added_date_fields, overflow)?;
+ 
+-        // 16. Return ! CreateTemporalYearMonth(isoDate, calendar).
++        // 15. Return ! CreateTemporalYearMonth(isoDate, calendar).
+         Ok(iso_date)
+     }
+ 
+@@ -1170,4 +1148,18 @@ mod tests {
+             "2001-12-15[u-ca=chinese]"
+         );
+     }
++
++    #[test]
++    /// Should be able to subtract years from a leap month
++    ///
++    /// Regression test for bugs fixed by <https://github.com/tc39/proposal-temporal/pull/3253/>
++    fn test_subtract_years_from_leap_month() {
++        let dangi_m03l_2012 = PlainYearMonth::from_str("2012-04-21[u-ca=dangi]").unwrap();
++        let minus_19y = Duration::from_str("-P19Y").unwrap();
++        let prev = dangi_m03l_2012.add(&minus_19y, Overflow::Reject).unwrap();
++        assert_eq!(
++            prev.to_ixdtf_string(Default::default()),
++            "1993-04-22[u-ca=dangi]"
++        );
++    }
+ }
+-- 
+2.53.0.rc1.217.geba53bf80e-goog
+
