@@ -80,6 +80,8 @@ class WebInstallFromUrlCommand
 
  protected:
   // WebAppCommand:
+  content::WebContents* GetInstallingWebContents(
+      base::PassKey<WebAppCommandManager>) override;
   void StartWithLock(std::unique_ptr<SharedWebContentsLock> lock) override;
 
  private:

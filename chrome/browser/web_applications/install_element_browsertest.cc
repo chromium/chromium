@@ -50,17 +50,6 @@ class InstallElementBrowserTest : public WebAppBrowserTestBase {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  bool NavigateToInstallElementPage(
-      const std::string& path = "/web_apps/install_element/index.html") {
-    VLOG(0) << https_server()->GetURL(path).spec();
-    // We must await installability checks to avoid race conditions with our
-    // WebInstallFromUrlCommand which also fetches the manifest.
-    // TODO(crbug.com/468047211): Change to ui_test_utils::NavigateToURL after
-    // WebInstallServiceImpl stops using InstallableManager.
-    return NavigateAndAwaitInstallabilityCheck(browser(),
-                                               https_server()->GetURL(path));
-  }
-
   void BlockWebInstallPermission(const GURL& url) {
     HostContentSettingsMap* settings_map =
         HostContentSettingsMapFactory::GetForProfile(profile());
@@ -128,11 +117,8 @@ class InstallElementBrowserTest : public WebAppBrowserTestBase {
 // Test installing current document (no attributes).
 // <install></install>
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install) {
-  // TODO(crbug.com/469831343): Fix race condition with <install></install>.
-  // Replace this with a basic `NavigateToURL`.
-  // Navigate to a page with <install> elements and wait for installability
-  // checks to complete.
-  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(
+  // Navigate to a page with <install> elements.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("/web_apps/install_element/"
                                         "index.html")));
 
@@ -262,15 +248,11 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
 // Test that current document install succeeds even when permission is denied,
 // since current document installs bypass permission.
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
-  // TODO(crbug.com/469831343): Fix race condition with <install></install>.
-  // Replace this with a basic `NavigateToURL`.
-  // Navigate to a page with <install> elements and wait for installability
-  // checks to complete.
+  // Navigate to a page with <install> elements.
   const GURL current_document_url = https_server()->GetURL(
       "/web_apps/install_element/"
       "index.html");
-  EXPECT_TRUE(
-      NavigateAndAwaitInstallabilityCheck(browser(), current_document_url));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), current_document_url));
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
 

@@ -9,10 +9,13 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/permission_result.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
 #include "url/gurl.h"
@@ -28,6 +31,7 @@ enum class InstallableStatusCode;
 namespace web_app {
 class AppLock;
 struct WebAppInstallInfo;
+class WebAppDataRetriever;
 class WebAppProvider;
 
 // Result codes for Web Install API results.
@@ -114,12 +118,12 @@ class WebInstallServiceImpl
       webapps::AppId app_id,
       bool user_chose_to_open);
 
-  void OnDidRetrieveManifestForCurrentDocumentInstall(
+  void OnGotManifestForCurrentDocumentInstall(
       InstallCallbackWithMetrics callback_with_metrics,
       WebAppProvider* provider,
-      blink::mojom::ManifestPtr opt_manifest,
-      bool valid_manifest_for_web_app,
-      webapps::InstallableStatusCode error_code);
+      base::WeakPtr<WebAppDataRetriever> data_retriever,
+      const base::expected<blink::mojom::ManifestPtr,
+                           blink::mojom::RequestManifestErrorPtr>& result);
 
   void RequestWebInstallPermission(
       base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
@@ -165,6 +169,10 @@ class WebInstallServiceImpl
   GURL last_committed_url_;
   // True if install was triggered from <install> element rather than JS API.
   bool triggered_from_element_ = false;
+  // Active data retrievers. They are destroyed when this service is destroyed
+  // or when their callback completes.
+  absl::flat_hash_set<std::unique_ptr<WebAppDataRetriever>> data_retrievers_;
+
   base::WeakPtrFactory<web_app::WebInstallServiceImpl> weak_ptr_factory_{this};
 };
 

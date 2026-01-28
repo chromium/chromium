@@ -81,6 +81,11 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
 
 WebInstallFromUrlCommand::~WebInstallFromUrlCommand() = default;
 
+content::WebContents* WebInstallFromUrlCommand::GetInstallingWebContents(
+    base::PassKey<WebAppCommandManager>) {
+  return web_contents_.get();
+}
+
 void WebInstallFromUrlCommand::StartWithLock(
     std::unique_ptr<SharedWebContentsLock> lock) {
   web_contents_lock_ = std::move(lock);

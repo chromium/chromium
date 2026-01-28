@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -118,7 +119,10 @@ class WebAppDataRetriever : content::WebContentsObserver {
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
-  void SetManifestWaitTimeoutForTesting(base::TimeDelta timeout);
+  [[nodiscard]] static base::AutoReset<int> SetManifestWaitTimeoutForTesting(
+      int timeout);
+
+  base::WeakPtr<WebAppDataRetriever> GetWeakPtr();
 
  private:
   bool HasPendingCall() const;
@@ -144,9 +148,6 @@ class WebAppDataRetriever : content::WebContentsObserver {
 
   CheckInstallabilityCallback check_installability_callback_;
 
-  static constexpr base::TimeDelta kSpecifiedManifestWaitTimeout =
-      base::Seconds(30);
-  base::TimeDelta manifest_wait_timeout_ = kSpecifiedManifestWaitTimeout;
   base::OneShotTimer get_specified_manifest_timeout_timer_;
   base::CallbackListSubscription get_specified_manifest_subscription_;
   ManifestCallbackList::CallbackType get_specified_manifest_callback_;

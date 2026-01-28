@@ -474,7 +474,8 @@ TEST_F(WebAppDataRetrieverTest, CheckTimeoutTriggers) {
       primary_manifest_future;
 
   WebAppDataRetriever retriever;
-  retriever.SetManifestWaitTimeoutForTesting(base::Seconds(0));
+  base::AutoReset<int> manifest_wait_timeout =
+      WebAppDataRetriever::SetManifestWaitTimeoutForTesting(0);
   retriever.GetPrimaryPageFirstSpecifiedManifest(
       *web_contents(), base::BindOnce(&CopyMojoExpectedConstRef)
                            .Then(primary_manifest_future.GetCallback()));

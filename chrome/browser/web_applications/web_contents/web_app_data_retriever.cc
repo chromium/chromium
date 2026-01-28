@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/not_fatal_until.h"
@@ -45,6 +46,11 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
+
+namespace {
+constexpr int kSpecifiedManifestWaitTimeoutSeconds = 30;
+int g_manifest_wait_timeout = kSpecifiedManifestWaitTimeoutSeconds;
+}  // namespace
 
 // static
 void WebAppDataRetriever::PopulateWebAppInfoFromMetadata(
@@ -203,7 +209,7 @@ void WebAppDataRetriever::GetPrimaryPageFirstSpecifiedManifest(
       base::BindOnce(&WebAppDataRetriever::OnGotDeveloperSpecifiedManifest,
                      weak_ptr_factory_.GetWeakPtr()));
   get_specified_manifest_timeout_timer_.Start(
-      FROM_HERE, manifest_wait_timeout_,
+      FROM_HERE, base::Seconds(g_manifest_wait_timeout),
       base::BindOnce(&WebAppDataRetriever::OnDeveloperSpecifiedManifestTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -256,9 +262,15 @@ void WebAppDataRetriever::PrimaryMainFrameRenderProcessGone(
   CallCallbackOnError(webapps::InstallableStatusCode::RENDERER_CANCELLED);
 }
 
-void WebAppDataRetriever::SetManifestWaitTimeoutForTesting(  // IN-TEST
-    base::TimeDelta timeout) {
-  manifest_wait_timeout_ = timeout;
+// static
+base::AutoReset<int>
+WebAppDataRetriever::SetManifestWaitTimeoutForTesting(  // IN-TEST
+    int timeout) {
+  return base::AutoReset<int>(&g_manifest_wait_timeout, timeout);
+}
+
+base::WeakPtr<WebAppDataRetriever> WebAppDataRetriever::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 bool WebAppDataRetriever::HasPendingCall() const {
@@ -367,7 +379,7 @@ void WebAppDataRetriever::OnDeveloperSpecifiedManifestTimeout() {
   std::vector<::blink::mojom::ManifestErrorPtr> error;
   error.push_back(::blink::mojom::ManifestError::New(
       base::StringPrintf("No manifest specified in first %d seconds",
-                         kSpecifiedManifestWaitTimeout.InSeconds()),
+                         g_manifest_wait_timeout),
       /*critical=*/true, 0u, 0u));
   std::move(get_specified_manifest_callback_)
       .Run(base::unexpected(blink::mojom::RequestManifestError::New(
