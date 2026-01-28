@@ -337,15 +337,14 @@ bool DocumentLoaderImpl::SaveBuffer(uint32_t input_size) {
   bool loading_pending_request = pending_requests_.Contains(chunk_.chunk_index);
   auto input = base::span(buffer_).first(input_size);
   while (!input.empty()) {
-    if (chunk_.data_size == 0)
+    if (!chunk_.chunk_data) {
+      DCHECK_EQ(chunk_.data_size, 0U);
       chunk_.chunk_data = std::make_unique<DataStream::ChunkData>();
+    }
 
-    const size_t new_chunk_data_len =
-        std::min(DataStream::kChunkSize - chunk_.data_size, input.size());
-    UNSAFE_TODO({
-      memcpy(chunk_.chunk_data->data() + chunk_.data_size, input.data(),
-             new_chunk_data_len);
-    });
+    auto remaining = base::span(*chunk_.chunk_data).subspan(chunk_.data_size);
+    const size_t new_chunk_data_len = std::min(remaining.size(), input.size());
+    remaining.copy_prefix_from(input.first(new_chunk_data_len));
     chunk_.data_size += new_chunk_data_len;
     if (chunk_.data_size == DataStream::kChunkSize ||
         (document_size > 0 && document_size <= EndOfCurrentChunk())) {
