@@ -38,7 +38,6 @@ void LineBoxFragmentBuilder::Reset() {
 
   has_floating_descendants_for_paint_ = false;
   has_descendant_that_depends_on_percentage_block_size_ = false;
-  has_block_fragmentation_ = false;
 }
 
 void LineBoxFragmentBuilder::SetIsEmptyLineBox() {

@@ -72,7 +72,7 @@ LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,
         builder->block_end_annotation_space_;
   }
 
-  if (builder->has_block_fragmentation_) {
+  if (builder->GetConstraintSpace().HasBlockFragmentation()) {
     RareData* rare_data = EnsureRareData();
 
     rare_data->block_size_for_fragmentation =

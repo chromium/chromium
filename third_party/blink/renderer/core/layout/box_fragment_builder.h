@@ -173,8 +173,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   }
   LayoutUnit FragmentsTotalBlockSize() const {
 #if DCHECK_IS_ON()
-    if (has_block_fragmentation_)
+    if (space_.HasBlockFragmentation()) {
       DCHECK(block_size_is_for_all_fragments_);
+    }
     DCHECK(size_.block_size != kIndefiniteSize);
 #endif
     return size_.block_size;
@@ -193,8 +194,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   LayoutUnit FragmentBlockSize() const {
 #if DCHECK_IS_ON()
-    DCHECK(!block_size_is_for_all_fragments_ || !has_block_fragmentation_ ||
-           IsInitialColumnBalancingPass());
+    DCHECK(!block_size_is_for_all_fragments_ ||
+           !space_.HasBlockFragmentation() ||
+           space_.IsInitialColumnBalancingPass());
     DCHECK(size_.block_size != kIndefiniteSize);
 #endif
     return size_.block_size;

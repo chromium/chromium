@@ -132,7 +132,7 @@ void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
     ClampBreakAppeal(*appeal);
   }
 
-  DCHECK(has_block_fragmentation_);
+  DCHECK(GetConstraintSpace().HasBlockFragmentation());
 
   if (!has_inflow_child_break_inside_)
     has_inflow_child_break_inside_ = !child.IsFloatingOrOutOfFlowPositioned();
@@ -192,7 +192,8 @@ void BoxFragmentBuilder::AddResult(
 
   if (!fragment.IsBox() && items_builder_) {
     if (const auto* line = DynamicTo<PhysicalLineBoxFragment>(&fragment)) {
-      if (line->IsBlockInInline() && has_block_fragmentation_) [[unlikely]] {
+      if (line->IsBlockInInline() &&
+          GetConstraintSpace().HasBlockFragmentation()) [[unlikely]] {
         // If this line box contains a block-in-inline, propagate break data
         // from the block-in-inline.
         const auto& line_items = items_builder_->GetLogicalLineItems(*line);
@@ -221,7 +222,7 @@ void BoxFragmentBuilder::AddResult(
     }
   }
 
-  if (has_block_fragmentation_) [[unlikely]] {
+  if (GetConstraintSpace().HasBlockFragmentation()) {
     PropagateBreakInfo(*result_for_propagation, offset);
   }
   if (GetConstraintSpace().ShouldPropagateChildBreakValues()) [[unlikely]] {
@@ -463,7 +464,7 @@ void BoxFragmentBuilder::MoveChildrenInDirection(LayoutUnit offset,
 void BoxFragmentBuilder::PropagateBreakInfo(
     const LayoutResult& child_layout_result,
     LogicalOffset offset) {
-  DCHECK(has_block_fragmentation_);
+  DCHECK(GetConstraintSpace().HasBlockFragmentation());
 
   // Include the bounds of this child (in the block direction).
   LayoutUnit block_end_in_container =
@@ -560,15 +561,16 @@ void BoxFragmentBuilder::PropagateBreakInfo(
     ClampBreakAppeal(appeal_inside);
   }
 
-  if (IsInitialColumnBalancingPass()) {
+  if (GetConstraintSpace().IsInitialColumnBalancingPass()) {
     PropagateTallestUnbreakableBlockSize(
         child_layout_result.TallestUnbreakableBlockSize());
   }
 
-  if (child_layout_result.HasForcedBreak())
+  if (child_layout_result.HasForcedBreak()) {
     SetHasForcedBreak();
-  else if (!IsInitialColumnBalancingPass())
+  } else if (!GetConstraintSpace().IsInitialColumnBalancingPass()) {
     PropagateSpaceShortage(child_layout_result.MinimalSpaceShortage());
+  }
 
   if (!child_box_fragment) {
     return;
@@ -672,7 +674,7 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
     SetIsBlockInInline();
   }
 
-  if (has_block_fragmentation_ && node_) [[unlikely]] {
+  if (GetConstraintSpace().HasBlockFragmentation() && node_) [[unlikely]] {
     if (PreviousBreakToken() && PreviousBreakToken()->IsAtBlockEnd()) {
       // Avoid trailing margin propagation from a node that just has overflowing
       // content here in the current fragmentainer. It's in a parallel flow. If

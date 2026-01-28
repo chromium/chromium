@@ -1094,7 +1094,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
         if (line_offset + block_end_overflow >
             FragmentainerSpaceLeftForChildren()) {
           if (GetConstraintSpace().IsInsideBalancedColumns() &&
-              !container_builder_.IsInitialColumnBalancingPass()) {
+              !GetConstraintSpace().IsInitialColumnBalancingPass()) {
             container_builder_.PropagateSpaceShortage(minimal_space_shortage);
           }
           if (!minimum_column_block_size &&
@@ -1230,8 +1230,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
         // If we're doing nested column balancing, propagate any space shortage
         // to the outer multicol container, so that the outer multicol container
         // can attempt to stretch, so that this inner one may fit as well.
-        if (!container_builder_.IsInitialColumnBalancingPass())
+        if (!GetConstraintSpace().IsInitialColumnBalancingPass()) {
           container_builder_.PropagateSpaceShortage(minimal_space_shortage);
+        }
       }
       break;
     }

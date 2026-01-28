@@ -392,9 +392,8 @@ void SetupFragmentBuilderForFragmentation(
     const BlockBreakToken* previous_break_token,
     BoxFragmentBuilder* builder) {
   // When resuming layout after a break, we may not be allowed to break again
-  // (because of clipped overflow). In such situations, we should not call
-  // SetHasBlockFragmentation(), but we still need to resume layout correctly,
-  // based on the previous break token.
+  // (because of clipped overflow). In such situations we still need to resume
+  // layout correctly, based on the previous break token.
   DCHECK(space.HasBlockFragmentation() || previous_break_token);
   // If the node itself is monolithic, we shouldn't be here.
   DCHECK(!node.IsMonolithic() || space.IsAnonymous());
@@ -413,12 +412,6 @@ void SetupFragmentBuilderForFragmentation(
   builder->SetIsMonolithic(!space.IsAnonymous() &&
                            space.IsBlockFragmentationForcedOff() &&
                            !IsBreakInside(previous_break_token));
-
-  if (space.HasBlockFragmentation())
-    builder->SetHasBlockFragmentation();
-
-  if (space.IsInitialColumnBalancingPass())
-    builder->SetIsInitialColumnBalancingPass();
 
   unsigned sequence_number = 0;
   if (previous_break_token && !previous_break_token->IsBreakBefore()) {
@@ -509,7 +502,7 @@ void SetupFragmentBuilderForFragmentation(
     }
   }
 
-  if (builder->IsInitialColumnBalancingPass()) {
+  if (space.IsInitialColumnBalancingPass()) {
     const BoxStrut& unbreakable = builder->BorderScrollbarPadding();
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_start);
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_end);

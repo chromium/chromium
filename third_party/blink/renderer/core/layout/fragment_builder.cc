@@ -425,8 +425,8 @@ void FragmentBuilder::PropagateFromFragment(
   // Collect any (block) break tokens, but skip break tokens for fragmentainers,
   // as they should only escape a fragmentation context at the discretion of the
   // fragmentation context. Also skip this if there's a pre-set break token.
-  if (has_block_fragmentation_ && !child.IsFragmentainerBox() &&
-      !break_token_) {
+  if (GetConstraintSpace().HasBlockFragmentation() &&
+      !child.IsFragmentainerBox() && !break_token_) {
     const BreakToken* child_break_token = child.GetBreakToken();
     switch (child.Type()) {
       case PhysicalFragment::kFragmentBox:
@@ -1107,7 +1107,7 @@ void FragmentBuilder::PropagateSpaceShortage(
   // in the initial column balancing pass, because then we have no
   // fragmentainer block-size at all, so who's to tell what's too short or
   // not?
-  DCHECK(!IsInitialColumnBalancingPass());
+  DCHECK(!GetConstraintSpace().IsInitialColumnBalancingPass());
   UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage_);
 }
 

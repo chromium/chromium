@@ -1299,7 +1299,7 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
 void OutOfFlowLayoutPart::LayoutCandidates(
     const HeapVector<LogicalOofPositionedNode>& candidates) {
   if (!should_add_outer_fragmentainer_children_ ||
-      container_builder_->IsInitialColumnBalancingPass()) {
+      GetConstraintSpace().IsInitialColumnBalancingPass()) {
     ComputeInlineContainingBlocks(candidates);
   }
   for (const LogicalOofPositionedNode& candidate : candidates) {
@@ -1311,7 +1311,7 @@ void OutOfFlowLayoutPart::LayoutCandidates(
       if (should_add_outer_fragmentainer_children_) {
         DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
         container_builder_->SetHasOutOfFlowInFragmentainerSubtree(true);
-        if (!container_builder_->IsInitialColumnBalancingPass()) {
+        if (!GetConstraintSpace().IsInitialColumnBalancingPass()) {
           LogicalOofNodeForFragmentation fragmentainer_descendant(candidate);
           container_builder_->AdjustFragmentainerDescendant(
               fragmentainer_descendant);
@@ -1366,7 +1366,7 @@ void OutOfFlowLayoutPart::LayoutCandidates(
           *result, result->OutOfFlowPositionedOffset(), margins,
           /* relative_offset */ std::nullopt, &candidate.inline_container);
       container_builder_->SetHasOutOfFlowFragmentChild(true);
-      if (container_builder_->IsInitialColumnBalancingPass()) {
+      if (GetConstraintSpace().IsInitialColumnBalancingPass()) {
         container_builder_->PropagateTallestUnbreakableBlockSize(
             result->TallestUnbreakableBlockSize());
       }
@@ -2595,7 +2595,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     builder.SetPercentageResolutionSize(container_rect.size);
     builder.SetIsHiddenForPaint(container_info.is_hidden_for_paint);
 
-    if (container_builder_->IsInitialColumnBalancingPass()) {
+    if (GetConstraintSpace().IsInitialColumnBalancingPass()) {
       // The |fragmentainer_offset_delta| will not make a difference in the
       // initial column balancing pass.
       SetupSpaceBuilderForFragmentation(
@@ -3052,7 +3052,7 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
         builder.DisableMonolithicOverflowPropagation();
       }
     }
-  } else if (container_builder_->IsInitialColumnBalancingPass()) {
+  } else if (GetConstraintSpace().IsInitialColumnBalancingPass()) {
     SetupSpaceBuilderForFragmentation(
         GetConstraintSpace(), node,
         GetConstraintSpace().FragmentainerOffset() + block_offset,
