@@ -1,12 +1,6 @@
 # crbug.com/446934111
 -org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManagerTest.*
 
-# crbug.com/376528174
-
-# crbug.com/394675204
--org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
--org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testShowOnSecureWebsiteDark
-
 # https://crbug.com/446934111
 # Aggressively disable failed tests to green the suite ASAP.
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
@@ -14,8 +8,3 @@
 -org.chromium.chrome.browser.media.ui.AutoplayMutedNotificationTest.testUnmutedPlaybackTakesAudioFocus
 -org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.*
 -org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusTrackerTest.*
--org.chromium.chrome.browser.ntp.MostVisitedTilesPTTest.testOpenItemInIncognitoTab
--org.chromium.chrome.browser.ntp.NewTabPageNavigationTest.testNavigateToTabSwitcherFromIncognitoNtp
--org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeader
--org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeaderForOneTimeGrant
--org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalsTest.*

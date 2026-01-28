@@ -42,6 +42,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for GeolocationHeader and GeolocationTracker. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -74,6 +75,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testConsistentHeader() {
         setPermission(ContentSetting.ALLOW);
         long now = setMockLocationNow();
@@ -102,6 +104,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testConsistentHeaderForOneTimeGrant() {
         setOneTimeGrant();
         long now = setMockLocationNow();

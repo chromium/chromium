@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
@@ -82,6 +83,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
 public class OmniboxPedalsTest {
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
