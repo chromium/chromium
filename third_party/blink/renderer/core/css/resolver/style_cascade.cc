@@ -295,7 +295,7 @@ void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
 
 void StyleCascade::Apply(CascadeFilter filter) {
   AnalyzeIfNeeded();
-  state_.UpdateLengthConversionData();
+  state_.InvalidateLengthConversionData();
 
   // For performance avoid stack initialization on this large object.
   STACK_UNINITIALIZED CascadeResolver resolver(filter, ++generation_);
