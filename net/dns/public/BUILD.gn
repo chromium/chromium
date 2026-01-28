@@ -88,6 +88,7 @@ source_set("tests") {
 
   deps = [
     "//net",
+    "//net/dns:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

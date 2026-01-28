@@ -1018,4 +1018,105 @@ bool MockHostResolverProc::HasBlockedRequests() const {
   return num_requests_waiting_ > num_slots_available_;
 }
 
+#if BUILDFLAG(IS_WIN)
+// CreateAdapterAddresses provides test data in a format that matches the output
+// from GetAdaptersAddresses. Specifically, it returns a pointer to an
+// IP_ADAPTER_ADDRESSES struct, which is a linked list containing pointers to
+// additional data. All elements of the linked list and data it points to is
+// stored in a single buffer passed to GetAdaptersAddresses, so to match the
+// semantics of that function, this function creates the necessary
+// IP_ADAPTER_ADDRESSES, IP_ADAPTER_DNS_SERVER_ADDRESS, and
+// sockaddr_storage structs in a single buffer.
+std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> CreateAdapterAddresses(
+    const std::vector<AdapterInfo>& infos) {
+  size_t num_adapters = 0;
+  size_t num_addresses = 0;
+  for (const auto& info : infos) {
+    ++num_adapters;
+    for (const auto& address : info.dns_server_addresses) {
+      if (address.empty()) {
+        break;
+      }
+      ++num_addresses;
+    }
+  }
+  // This is test-only code, so no need to check for overflow in `heap_size`
+  // computation.
+  size_t heap_size = num_adapters * sizeof(IP_ADAPTER_ADDRESSES) +
+                     num_addresses * (sizeof(IP_ADAPTER_DNS_SERVER_ADDRESS) +
+                                      sizeof(struct sockaddr_storage));
+  // `heap` layout:
+  // array of `num_adaptors` IP_ADAPTER_ADDRESSES's
+  // array of `num_addresses` IP_ADAPTER_DNS_SERVER_ADDRESS's
+  // array of `num_addresses` sockaddr_storage's.
+  std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> heap(
+      static_cast<IP_ADAPTER_ADDRESSES*>(malloc(heap_size)));
+
+  // SAFETY: `heap_size` bytes were allocated to heap.
+  auto buffer_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<uint8_t*>(heap.get()), heap_size));
+  std::ranges::fill(buffer_span, 0u);
+
+  const size_t adapters_bytes = num_adapters * sizeof(IP_ADAPTER_ADDRESSES);
+  const size_t addresses_bytes =
+      num_addresses * sizeof(IP_ADAPTER_DNS_SERVER_ADDRESS);
+  auto [adapter_bytes_span, rest1] = buffer_span.split_at(adapters_bytes);
+  auto [address_bytes_span, storage_bytes_span] =
+      rest1.split_at(addresses_bytes);
+  // SAFETY: `heap` starts with room for `num_addresses`
+  // IP_ADAPTER_DNS_SERVER_ADDRESS's.
+  auto adapters_span = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<IP_ADAPTER_ADDRESSES*>(adapter_bytes_span.data()),
+      num_adapters));
+  // SAFETY: In the middle is room for `num_addresses`
+  // IP_ADAPTER_DNS_SERVER_ADDRESS's.
+  auto addresses_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<IP_ADAPTER_DNS_SERVER_ADDRESS*>(
+                     address_bytes_span.data()),
+                 num_addresses));
+  // SAFETY: `heap` ends with room for `num_addresses` `sockaddr_storage`'s.
+  auto sockaddr_storage_span = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<struct sockaddr_storage*>(storage_bytes_span.data()),
+      num_addresses));
+  // This will get decremented before it is used each time an address is found.
+  size_t address_index = num_addresses;
+  for (size_t i = 0; i < num_adapters; ++i) {
+    const AdapterInfo& info = infos[i];
+    auto ports_span = base::span(info.ports);
+    auto server_address_span = base::span(info.dns_server_addresses);
+    IP_ADAPTER_ADDRESSES* adapter = &adapters_span[i];
+    if (i + 1 < num_adapters) {
+      adapter->Next = &adapters_span[i + 1];
+    }
+    adapter->IfType = info.if_type;
+    adapter->OperStatus = info.oper_status;
+    adapter->DnsSuffix = const_cast<PWCHAR>(info.dns_suffix);
+    IP_ADAPTER_DNS_SERVER_ADDRESS* address = nullptr;
+    for (size_t j = 0;
+         !server_address_span[j].empty() && j < server_address_span.size();
+         ++j) {
+      --address_index;
+      if (j == 0) {
+        address = adapter->FirstDnsServerAddress =
+            &addresses_span[address_index];
+      } else {
+        // Note that |address| is moving backwards.
+        address = address->Next = &addresses_span[address_index];
+      }
+      IPAddress ip;
+      CHECK(ip.AssignFromIPLiteral(server_address_span[j]));
+      IPEndPoint ipe = IPEndPoint(ip, ports_span[j]);
+      address->Address.lpSockaddr =
+          reinterpret_cast<LPSOCKADDR>(&sockaddr_storage_span[address_index]);
+      socklen_t length = sizeof(struct sockaddr_storage);
+      CHECK(ipe.ToSockAddr(address->Address.lpSockaddr, &length));
+      address->Address.iSockaddrLength = static_cast<int>(length);
+    }
+  }
+
+  return heap;
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace net

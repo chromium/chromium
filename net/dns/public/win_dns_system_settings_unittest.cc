@@ -4,96 +4,34 @@
 
 #include "net/dns/public/win_dns_system_settings.h"
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "net/dns/dns_test_util.h"
+#endif
 
 namespace net {
 
 namespace {
 
-struct AdapterInfo {
-  IFTYPE if_type;
-  IF_OPER_STATUS oper_status;
-  const WCHAR* dns_suffix;
-  std::string dns_server_addresses[4];  // Empty string indicates end.
-  uint16_t ports[4];
-};
-
-std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> CreateAdapterAddresses(
-    const AdapterInfo* infos) {
-  size_t num_adapters = 0;
-  size_t num_addresses = 0;
-  for (size_t i = 0; UNSAFE_TODO(infos[i]).if_type; ++i) {
-    ++num_adapters;
-    for (size_t j = 0; !UNSAFE_TODO(infos[i].dns_server_addresses[j]).empty();
-         ++j) {
-      ++num_addresses;
-    }
-  }
-
-  size_t heap_size = num_adapters * sizeof(IP_ADAPTER_ADDRESSES) +
-                     num_addresses * (sizeof(IP_ADAPTER_DNS_SERVER_ADDRESS) +
-                                      sizeof(struct sockaddr_storage));
-  std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> heap(
-      static_cast<IP_ADAPTER_ADDRESSES*>(malloc(heap_size)));
-  CHECK(heap.get());
-  UNSAFE_TODO(memset(heap.get(), 0, heap_size));
-
-  IP_ADAPTER_ADDRESSES* adapters = heap.get();
-  IP_ADAPTER_DNS_SERVER_ADDRESS* addresses =
-      reinterpret_cast<IP_ADAPTER_DNS_SERVER_ADDRESS*>(
-          UNSAFE_TODO(adapters + num_adapters));
-  struct sockaddr_storage* storage = reinterpret_cast<struct sockaddr_storage*>(
-      UNSAFE_TODO(addresses + num_addresses));
-
-  for (size_t i = 0; i < num_adapters; ++i) {
-    const AdapterInfo& info = UNSAFE_TODO(infos[i]);
-    IP_ADAPTER_ADDRESSES* adapter = UNSAFE_TODO(adapters + i);
-    if (i + 1 < num_adapters)
-      adapter->Next = UNSAFE_TODO(adapter + 1);
-    adapter->IfType = info.if_type;
-    adapter->OperStatus = info.oper_status;
-    adapter->DnsSuffix = const_cast<PWCHAR>(info.dns_suffix);
-    IP_ADAPTER_DNS_SERVER_ADDRESS* address = nullptr;
-    for (size_t j = 0; !UNSAFE_TODO(info.dns_server_addresses[j]).empty();
-         ++j) {
-      --num_addresses;
-      if (j == 0) {
-        address = adapter->FirstDnsServerAddress =
-            UNSAFE_TODO(addresses + num_addresses);
-      } else {
-        // Note that |address| is moving backwards.
-        address = address->Next = UNSAFE_TODO(address - 1);
-      }
-      IPAddress ip;
-      CHECK(ip.AssignFromIPLiteral(UNSAFE_TODO(info.dns_server_addresses[j])));
-      IPEndPoint ipe = IPEndPoint(ip, UNSAFE_TODO(info.ports[j]));
-      address->Address.lpSockaddr =
-          reinterpret_cast<LPSOCKADDR>(UNSAFE_TODO(storage + num_addresses));
-      socklen_t length = sizeof(struct sockaddr_storage);
-      CHECK(ipe.ToSockAddr(address->Address.lpSockaddr, &length));
-      address->Address.iSockaddrLength = static_cast<int>(length);
-    }
-  }
-
-  return heap;
-}
 
 TEST(WinDnsSystemSettings, GetAllNameServersEmpty) {
-  AdapterInfo infos[3] = {
-      {
-          .if_type = IF_TYPE_USB,
-          .oper_status = IfOperStatusUp,
-          .dns_suffix = L"example.com",
-          .dns_server_addresses = {},
-      },
-      {
-          .if_type = IF_TYPE_USB,
-          .oper_status = IfOperStatusUp,
-          .dns_suffix = L"foo.bar",
-          .dns_server_addresses = {},
-      },
-      {0}};
+  const std::vector<AdapterInfo> infos = {{
+                                              .if_type = IF_TYPE_USB,
+                                              .oper_status = IfOperStatusUp,
+                                              .dns_suffix = L"example.com",
+                                              .dns_server_addresses = {},
+                                          },
+                                          {
+                                              .if_type = IF_TYPE_USB,
+                                              .oper_status = IfOperStatusUp,
+                                              .dns_suffix = L"foo.bar",
+                                              .dns_server_addresses = {},
+                                          }};
 
   WinDnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
@@ -104,7 +42,7 @@ TEST(WinDnsSystemSettings, GetAllNameServersEmpty) {
 }
 
 TEST(WinDnsSystemSettings, GetAllNameServersStatelessDiscoveryAdresses) {
-  AdapterInfo infos[3] = {
+  const std::vector<AdapterInfo> infos = {
       {
           .if_type = IF_TYPE_USB,
           .oper_status = IfOperStatusUp,
@@ -116,8 +54,7 @@ TEST(WinDnsSystemSettings, GetAllNameServersStatelessDiscoveryAdresses) {
           .oper_status = IfOperStatusUp,
           .dns_suffix = L"foo.bar",
           .dns_server_addresses = {"fec0:0:0:ffff::3"},
-      },
-      {0}};
+      }};
 
   WinDnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
@@ -128,7 +65,7 @@ TEST(WinDnsSystemSettings, GetAllNameServersStatelessDiscoveryAdresses) {
 }
 
 TEST(WinDnsSystemSettings, GetAllNameServersValid) {
-  AdapterInfo infos[3] = {
+  const std::vector<AdapterInfo> infos = {
       {.if_type = IF_TYPE_USB,
        .oper_status = IfOperStatusUp,
        .dns_suffix = L"example.com",
@@ -139,8 +76,7 @@ TEST(WinDnsSystemSettings, GetAllNameServersValid) {
        .dns_suffix = L"foo.bar",
        .dns_server_addresses = {"2001:ffff::1111",
                                 "aaaa:bbbb:cccc:dddd:eeee:ffff:0:1"},
-       .ports = {33, 44}},
-      {0}};
+       .ports = {33, 44}}};
 
   WinDnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);

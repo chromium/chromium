@@ -499,7 +499,10 @@ source_set("tests") {
 }
 
 source_set("test_support") {
-  visibility = [ "//net:test_support" ]
+  visibility = [
+    "//net:test_support",
+    "//net/dns/public:tests",
+  ]
   testonly = true
   sources = [
     "dns_test_util.cc",

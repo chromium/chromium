@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -139,16 +138,17 @@ ReadAdapterDnsAddresses() {
   // Try up to three times.
   for (unsigned tries = 0; (tries < 3) && (rv == ERROR_BUFFER_OVERFLOW);
        tries++) {
-    out.reset(static_cast<PIP_ADAPTER_ADDRESSES>(malloc(len)));
-    UNSAFE_TODO(memset(out.get(), 0, len));
+    out.reset(static_cast<PIP_ADAPTER_ADDRESSES>(calloc(1, len)));
+    // SAFETY: `len` bytes were allocated to `out`.
     rv = GetAdaptersAddresses(AF_UNSPEC,
                               GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_UNICAST |
-                              GAA_FLAG_SKIP_MULTICAST |
-                              GAA_FLAG_SKIP_FRIENDLY_NAME,
+                                  GAA_FLAG_SKIP_MULTICAST |
+                                  GAA_FLAG_SKIP_FRIENDLY_NAME,
                               nullptr, out.get(), &len);
   }
-  if (rv != NO_ERROR)
+  if (rv != NO_ERROR) {
     out.reset();
+  }
   return out;
 }
 
