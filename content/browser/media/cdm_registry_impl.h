@@ -20,6 +20,7 @@
 #include "content/public/common/cdm_info.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/key_system_capability.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace content {
 
@@ -137,7 +138,7 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   void UpdateAndNotifyKeySystemCapabilities();
 
   // Returns the set of all registered key systems.
-  std::set<std::string> GetSupportedKeySystems() const;
+  absl::flat_hash_set<std::string> GetSupportedKeySystems() const;
 
   // Returns the capabailities for all registered key systems.
   KeySystemCapabilities GetKeySystemCapabilities();
