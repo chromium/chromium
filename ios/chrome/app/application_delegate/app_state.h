@@ -11,6 +11,7 @@
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
+#import "ios/chrome/app/task_orchestrator.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/portait_orientation_manager.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
@@ -79,6 +80,9 @@ enum class PostCrashAction {
 
 // Can be used to schedule deferred initialization tasks.
 @property(nonatomic, readonly) DeferredInitializationRunner* deferredRunner;
+
+// Can be used to schedule tasks received from the OS.
+@property(nonatomic, readonly) TaskOrchestrator* taskOrchestrator;
 
 // Returns the foreground and active scene, if there is one.
 - (SceneState*)foregroundActiveScene;
