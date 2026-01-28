@@ -112,7 +112,38 @@
 # Failures/Flakes #
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
-crbug.com/415954245 [ android ] WebRTC_Codec_Loopback_H265 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Encode_Loopback_H265 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Decode_Loopback_H265 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Encode_Loopback_H264 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Decode_Loopback_H264 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Encode_Loopback_VP8 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Decode_Loopback_VP8 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Encode_Loopback_VP9 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Decode_Loopback_VP9 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Encode_Loopback_AV1 [ Failure ]
+crbug.com/415954245 [ android ] WebRTC_Hardware_Decode_Loopback_AV1 [ Failure ]
+
+# gUM for Audio doesn't work on these mac bots.
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Encode_Loopback_H265 [ Failure ]
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Decode_Loopback_H265 [ Failure ]
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Encode_Loopback_H264 [ Failure ]
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Decode_Loopback_H264 [ Failure ]
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Encode_Loopback_VP8 [ Failure ]
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Decode_Loopback_VP8 [ Failure ]
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Encode_Loopback_VP9 [ Failure ]
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Decode_Loopback_VP9 [ Failure ]
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Encode_Loopback_AV1 [ Failure ]
+crbug.com/479096333 [ mac amd-0x7340 ] WebRTC_Hardware_Decode_Loopback_AV1 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Encode_Loopback_H265 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Decode_Loopback_H265 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Encode_Loopback_H264 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Decode_Loopback_H264 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Encode_Loopback_VP8 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Decode_Loopback_VP8 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Encode_Loopback_VP9 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Decode_Loopback_VP9 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Encode_Loopback_AV1 [ Failure ]
+crbug.com/479096333 [ mac amd-0x67ef ] WebRTC_Hardware_Decode_Loopback_AV1 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

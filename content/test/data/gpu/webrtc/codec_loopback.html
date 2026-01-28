@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <link rel="icon" href="data:;base64,="><!-- prevent request for favicon -->
 
@@ -9,10 +10,10 @@
 
     // Using canvas-based tracks over getUserMedia() is preferred due to the
     // capturer crashing on some bots.
-    function createCanvasTrack(width = 320, height = 180) {
+    function createCanvasTrack(width = 640, height = 360) {
       // Draws the color red at 30 fps.
       const canvas = Object.assign(
-          document.createElement('canvas'), {width, height});
+        document.createElement('canvas'), { width, height });
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = 'rgb(255,0,0)';
       const interval = setInterval(() => {
@@ -37,7 +38,7 @@
           for (const stats of report.values()) {
             if (condition(report, stats)) {
               clearTimeout(timeoutId);
-              resolve(report);
+              resolve({ report, stats });
               return;
             }
           }
@@ -57,7 +58,53 @@
     }
 
     async function main(arg) {
-      const preferredCodec = arg.codec;
+      const { codec: preferredCodec, requireHwEncoder, requireHwDecoder } = arg;
+      if (!requireHwDecoder && !requireHwEncoder) {
+        TEST.reportFailure('No hw encoder or decoder required. Check test configuration.');
+        return;
+      }
+
+      // MediaCapabilities check.
+      const config = {
+        type: 'webrtc',
+        video: {
+          contentType: preferredCodec,
+          width: 640,
+          height: 360,
+          bitrate: 2000000,
+          framerate: 30
+        }
+      };
+
+      // Get user media permission for audio to allow exposing hardware capabilities.
+      // This triggers IsCapturing() in Blink which is the condition for exposing these stats.
+      let stream = null;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        TEST.log('Acquired audio stream for hardware capability stats exposure.');
+        TEST.addCleanup(() => {
+          if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+          }
+        });
+      } catch (e) {
+        TEST.log('Failed to acquire audio stream: ' + e);
+        // We might continue but stats might be missing.
+      }
+
+      const encodingInfo = await navigator.mediaCapabilities.encodingInfo(config);
+      TEST.log('Encoding info: ' + JSON.stringify(encodingInfo));
+      if (requireHwEncoder && !encodingInfo.powerEfficient) {
+        TEST.skip('No power efficient encoder for ' + preferredCodec);
+        return;
+      }
+      const decodingInfo = await navigator.mediaCapabilities.decodingInfo(config);
+      TEST.log('Decoding info: ' + JSON.stringify(decodingInfo));
+      if (requireHwDecoder && !decodingInfo.powerEfficient) {
+        TEST.skip('No power efficient decoder for ' + preferredCodec);
+        return;
+      }
+
       const sendCodec =
         RTCRtpSender.getCapabilities('video').codecs.find(
           codec => codec.mimeType == preferredCodec);
@@ -87,21 +134,38 @@
       await pc1.setRemoteDescription(pc2.localDescription);
 
       // Wait for frames to be encoded and sent.
-      await pollGetStatsUntil(pc1, (report, stats) => {
+      const { report: encoderReport, stats: encoderStats } =
+          await pollGetStatsUntil(pc1, (report, stats) => {
         if (!isRtpWithCodec(report, stats, preferredCodec)) {
           return false;
         }
         TEST.assert_equals(stats.type, 'outbound-rtp');
         return stats.framesEncoded > 0 && stats.framesSent > 0;
       });
+      if (requireHwEncoder) {
+        TEST.assert(encoderStats.powerEfficientEncoder,
+          `Expected encoder to be power efficient for ${preferredCodec}. ` +
+          `Got powerEfficient=${encoderStats.powerEfficientEncoder}. ` +
+          `Codec implementation ${encoderStats.encoderImplementation}. ` +
+          `${JSON.stringify(encoderStats, undefined, 2)}`);
+      }
+
       // Wait for frames to be received and decoded.
-      await pollGetStatsUntil(pc2, (report, stats) => {
+      const { report: decoderReport, stats: decoderStats } =
+          await pollGetStatsUntil(pc2, (report, stats) => {
         if (!isRtpWithCodec(report, stats, preferredCodec)) {
           return false;
         }
         TEST.assert_equals(stats.type, 'inbound-rtp');
         return stats.framesReceived > 0 && stats.framesDecoded > 0;
       });
+      if (requireHwDecoder) {
+        TEST.assert(decoderStats.powerEfficientDecoder,
+          `Expected decoder to be power efficient for ${preferredCodec}. ` +
+          `Got powerEfficient=${decoderStats.powerEfficientDecoder}. ` +
+          `Codec implementation ${decoderStats.decoderImplementation}. ` +
+          `${JSON.stringify(decoderStats, undefined, 2)}`);
+      }
     }
   </script>
 </head>
