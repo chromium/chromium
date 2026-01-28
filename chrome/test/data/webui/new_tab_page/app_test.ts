@@ -102,6 +102,18 @@ suite('NewTabPageAppTest', () => {
       SearchboxBrowserProxy.getInstance().handler = mock;
     });
     searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
+    searchboxHandler.setPromiseResolveFor('getInputState', {
+      state: {
+        allowedModels: [],
+        allowedTools: [],
+        allowedInputTypes: [],
+        activeModel: 0,
+        activeTool: 0,
+        disabledModels: [],
+        disabledTools: [],
+        disabledInputTypes: [],
+      },
+    });
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
@@ -1434,6 +1446,18 @@ suite('NewTabPageAppTest', () => {
 
       test('Close by escape is disabled', async () => {
         searchboxHandler.reset();
+        searchboxHandler.setResultFor('getInputState', Promise.resolve({
+          state: {
+            allowedModels: [],
+            allowedTools: [],
+            allowedInputTypes: [],
+            activeModel: 0,
+            activeTool: 0,
+            disabledModels: [],
+            disabledTools: [],
+            disabledInputTypes: [],
+          },
+        }));
         assertEquals(
             searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
         ($$(app,
@@ -1458,6 +1482,18 @@ suite('NewTabPageAppTest', () => {
 
       test('Exit by click outside is disabled', async () => {
         searchboxHandler.reset();
+        searchboxHandler.setResultFor('getInputState', Promise.resolve({
+          state: {
+            allowedModels: [],
+            allowedTools: [],
+            allowedInputTypes: [],
+            activeModel: 0,
+            activeTool: 0,
+            disabledModels: [],
+            disabledTools: [],
+            disabledInputTypes: [],
+          },
+        }));
         assertEquals(
             searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
         ($$(app,

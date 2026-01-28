@@ -526,6 +526,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.onInputStateChangedListenerId_ =
         this.callbackRouter_.onInputStateChanged.addListener(
             this.onInputStateChanged_.bind(this));
+    this.inputState_ = (await this.pageHandler_.getInputState()).state;
 
     if (this.cyclingPlaceholders) {
       const {config} = await this.pageHandler_.getPlaceholderConfig();

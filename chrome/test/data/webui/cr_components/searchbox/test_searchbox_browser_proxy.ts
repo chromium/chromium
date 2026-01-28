@@ -49,6 +49,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'openLensSearch',
       'setActiveToolMode',
       'setActiveModelMode',
+      'getInputState',
     ]);
   }
 
@@ -158,6 +159,22 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   getTabPreview(tabId: number) {
     this.methodCalled('getTabPreview', {tabId});
     return Promise.resolve({previewDataUrl: ''});
+  }
+
+  getInputState() {
+    this.methodCalled('getInputState');
+    return Promise.resolve({
+      state: {
+        allowedModels: [],
+        allowedTools: [],
+        allowedInputTypes: [],
+        activeModel: 0,
+        activeTool: 0,
+        disabledModels: [],
+        disabledTools: [],
+        disabledInputTypes: [],
+      },
+    });
   }
 
   notifySessionStarted() {

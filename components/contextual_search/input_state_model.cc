@@ -19,6 +19,7 @@ namespace contextual_search {
 using omnibox::SearchboxConfig;
 
 InputState::InputState() = default;
+InputState::InputState(const InputState&) = default;
 InputState::~InputState() = default;
 
 namespace {

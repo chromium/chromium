@@ -121,6 +121,7 @@ class ContextualSearchboxHandler
                    bool shift_key) override;
   void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override;
+  void GetInputState(GetInputStateCallback callback) override;
 
   // Called from browser code (e.g., Views-based file selector) to add file
   // context.
@@ -249,6 +250,8 @@ class ContextualSearchboxHandler
   std::optional<lens::ContextualInputData> context_input_data_;
   // Callback for `InputStateModel` changes.
   void OnInputStateChanged(const contextual_search::InputState& state);
+
+  std::unique_ptr<contextual_search::InputState> input_state_;
 
   base::CallbackListSubscription input_state_subscription_;
 

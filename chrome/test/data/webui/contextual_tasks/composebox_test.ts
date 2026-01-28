@@ -296,6 +296,18 @@ suite('ContextualTasksComposeboxTest', () => {
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     mockSearchboxPageHandler.setResultFor(
         'getRecentTabs', Promise.resolve({tabs: []}));
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: {
+        allowedModels: [],
+        allowedTools: [],
+        allowedInputTypes: [],
+        activeModel: 0,
+        activeTool: 0,
+        disabledModels: [],
+        disabledTools: [],
+        disabledInputTypes: [],
+      },
+    }));
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
@@ -1605,6 +1617,18 @@ suite('ContextualTasksComposeboxTest', () => {
     // Clear the body and reset the mock to test a fresh instance.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     mockSearchboxPageHandler.reset();
+    mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+      state: {
+        allowedModels: [],
+        allowedTools: [],
+        allowedInputTypes: [],
+        activeModel: 0,
+        activeTool: 0,
+        disabledModels: [],
+        disabledTools: [],
+        disabledInputTypes: [],
+      },
+    }));
 
     loadTimeData.overrideValues({composeboxShowZps: false});
 
@@ -1623,6 +1647,18 @@ suite('ContextualTasksComposeboxTest', () => {
         // Clear the body and reset the mock to test a fresh instance.
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         mockSearchboxPageHandler.reset();
+        mockSearchboxPageHandler.setResultFor('getInputState', Promise.resolve({
+          state: {
+            allowedModels: [],
+            allowedTools: [],
+            allowedInputTypes: [],
+            activeModel: 0,
+            activeTool: 0,
+            disabledModels: [],
+            disabledTools: [],
+            disabledInputTypes: [],
+          },
+        }));
 
         loadTimeData.overrideValues({composeboxShowZps: false});
 

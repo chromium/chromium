@@ -1073,6 +1073,10 @@ void SearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   std::move(callback).Run({});
 }
 
+void SearchboxHandler::GetInputState(GetInputStateCallback callback) {
+  std::move(callback).Run({});
+}
+
 void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
                                        bool default_match_changed) {
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
