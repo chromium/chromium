@@ -5949,7 +5949,7 @@
       // https://chromestatus.com/feature/6436406437871616
       name: "WebGPUCompatibilityMode",
       origin_trial_feature_name: "WebGPUCompatibilityMode",
-      status: "experimental",
+      status: "stable",
       // Also enabled as part of all experimental WebGPU features.
       implied_by: ["WebGPUExperimentalFeatures"],
     },

@@ -843,7 +843,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxSampledTexturesPerShaderStage
 [Worker]     getter maxSamplersPerShaderStage
 [Worker]     getter maxStorageBufferBindingSize
+[Worker]     getter maxStorageBuffersInFragmentStage
+[Worker]     getter maxStorageBuffersInVertexStage
 [Worker]     getter maxStorageBuffersPerShaderStage
+[Worker]     getter maxStorageTexturesInFragmentStage
+[Worker]     getter maxStorageTexturesInVertexStage
 [Worker]     getter maxStorageTexturesPerShaderStage
 [Worker]     getter maxTextureArrayLayers
 [Worker]     getter maxTextureDimension1D
@@ -866,6 +870,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter label
 [Worker]     getter mipLevelCount
 [Worker]     getter sampleCount
+[Worker]     getter textureBindingViewDimension
 [Worker]     getter usage
 [Worker]     getter width
 [Worker]     method constructor
