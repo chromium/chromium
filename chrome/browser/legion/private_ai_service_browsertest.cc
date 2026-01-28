@@ -135,9 +135,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest, GetAuthToken) {
       future;
 
   // First call is async and starts the fetch.
-  token_manager->GetAuthToken(
-      legion::proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
-      future.GetCallback());
+  token_manager->GetAuthToken(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   // Wait for the async fetch to complete.
@@ -178,18 +176,14 @@ IN_PROC_BROWSER_TEST_F(PrivateAiServiceBrowserTest,
   // First call is async and starts the fetch.
   base::test::TestFuture<std::optional<legion::phosphor::BlindSignedAuthToken>>
       future;
-  token_manager->GetAuthToken(
-      legion::proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
-      future.GetCallback());
+  token_manager->GetAuthToken(future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
 
   // Second call should be async and return a token from the cache.
   base::test::TestFuture<std::optional<legion::phosphor::BlindSignedAuthToken>>
       future2;
-  token_manager->GetAuthToken(
-      legion::proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
-      future2.GetCallback());
+  token_manager->GetAuthToken(future2.GetCallback());
   EXPECT_FALSE(future2.IsReady());
   EXPECT_TRUE(future2.Get().has_value());
 }

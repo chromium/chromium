@@ -144,9 +144,7 @@ int32_t ClientImpl::CreateRequestId() {
 }
 
 void ClientImpl::TrySendClientAttestationRequest() {
-  // TODO(b/475513974): Make it possible to get a token without a feature name.
   token_manager_->GetAuthToken(
-      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
       base::BindOnce(&ClientImpl::OnGetAuthTokenForAttestation,
                      weak_factory_.GetWeakPtr()));
 }

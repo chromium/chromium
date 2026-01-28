@@ -22,14 +22,12 @@ class TokenManager {
 
   virtual ~TokenManager() = default;
 
-  // Gets a token for the given feature asynchronously.
-  virtual void GetAuthToken(proto::FeatureName feature_name,
-                            GetAuthTokenCallback callback) = 0;
+  // Gets a token asynchronously.
+  virtual void GetAuthToken(GetAuthTokenCallback callback) = 0;
 
-  // Ensures that tokens are available for the given feature, fetching them if
-  // necessary. This method is intended for pre-fetching and does not return a
-  // token.
-  virtual void PrefetchAuthTokens(proto::FeatureName feature_name) = 0;
+  // Ensures that tokens are available, fetching them if necessary. This method
+  // is intended for pre-fetching and does not return a token.
+  virtual void PrefetchAuthTokens() = 0;
 };
 
 }  // namespace legion::phosphor

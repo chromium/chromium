@@ -26,12 +26,11 @@ class FakeTokenManager : public phosphor::TokenManager {
   FakeTokenManager() = default;
   ~FakeTokenManager() override = default;
 
-  void GetAuthToken(proto::FeatureName feature_name,
-                    GetAuthTokenCallback callback) override {
+  void GetAuthToken(GetAuthTokenCallback callback) override {
     pending_callbacks_.push_back(std::move(callback));
   }
 
-  void PrefetchAuthTokens(proto::FeatureName feature_name) override {}
+  void PrefetchAuthTokens() override {}
 
   std::optional<phosphor::BlindSignedAuthToken> GetToken() {
     if (!return_token_) {

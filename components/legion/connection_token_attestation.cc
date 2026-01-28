@@ -69,9 +69,7 @@ void ConnectionTokenAttestation::Send(proto::LegionRequest request,
 
 void ConnectionTokenAttestation::FetchToken() {
   attestation_state_ = AttestationState::kFetchingToken;
-  // TODO(b/475513974): Make it possible to get a token without a feature name.
   token_manager_->GetAuthToken(
-      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
       base::BindOnce(&ConnectionTokenAttestation::OnTokenFetched,
                      weak_factory_.GetWeakPtr()));
 }

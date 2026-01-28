@@ -19,34 +19,21 @@ namespace legion::phosphor {
 TokenManagerImpl::TokenManagerImpl(std::unique_ptr<TokenFetcher> fetcher)
     : batch_size_(legion::kLegionAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(legion::kLegionAuthTokenCacheLowWaterMark.Get()),
-      fetcher_(std::move(fetcher)) {}
+      fetcher_(std::move(fetcher)) {
+  feature_token_manager_ = std::make_unique<internal::FeatureTokenManager>(
+      fetcher_.get(), batch_size_, cache_low_water_mark_);
+}
 
 TokenManagerImpl::~TokenManagerImpl() = default;
 
-internal::FeatureTokenManager* TokenManagerImpl::GetOrCreateFeatureManager(
-    proto::FeatureName feature_name) {
+void TokenManagerImpl::GetAuthToken(GetAuthTokenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = feature_managers_.find(feature_name);
-  if (it != feature_managers_.end()) {
-    return it->second.get();
-  }
-
-  auto new_manager = std::make_unique<internal::FeatureTokenManager>(
-      fetcher_.get(), batch_size_, cache_low_water_mark_);
-  auto* new_manager_ptr = new_manager.get();
-  feature_managers_[feature_name] = std::move(new_manager);
-  return new_manager_ptr;
+  feature_token_manager_->GetAuthToken(std::move(callback));
 }
 
-void TokenManagerImpl::GetAuthToken(proto::FeatureName feature_name,
-                                    GetAuthTokenCallback callback) {
+void TokenManagerImpl::PrefetchAuthTokens() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  GetOrCreateFeatureManager(feature_name)->GetAuthToken(std::move(callback));
-}
-
-void TokenManagerImpl::PrefetchAuthTokens(proto::FeatureName feature_name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  GetOrCreateFeatureManager(feature_name)->PrefetchAuthTokens();
+  feature_token_manager_->PrefetchAuthTokens();
 }
 
 }  // namespace legion::phosphor

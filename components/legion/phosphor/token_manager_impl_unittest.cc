@@ -125,55 +125,40 @@ class TokenManagerImplTest : public testing::Test {
   raw_ptr<MockTokenFetcher> mock_fetcher_;
 };
 
-TEST_F(TokenManagerImplTest, MultipleFeatures) {
-  // Request a token for feature 1.
+TEST_F(TokenManagerImplTest, GetAuthToken) {
+  // Request a token. This should trigger a fetch for a batch of tokens.
   mock_fetcher_->ExpectGetAuthnTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration));
 
   {
     base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
-    token_manager_->GetAuthToken(
-        proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT,
-        future.GetCallback());
+    token_manager_->GetAuthToken(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
     EXPECT_TRUE(future.Get().has_value());
   }
 
-  // Request a token for feature 2.
+  // The rest of the batch should be available from the cache. A prefetch will
+  // be triggered when the cache runs low.
   mock_fetcher_->ExpectGetAuthnTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration));
-  {
+  for (int i = 0; i < expected_batch_size_ - 1; ++i) {
     base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
-    token_manager_->GetAuthToken(
-        proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
-        future.GetCallback());
-    EXPECT_FALSE(future.IsReady());
-    ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
-    EXPECT_TRUE(future.Get().has_value());
-  }
-
-  // Tokens should be available for both.
-  // Take a token for feature 1.
-  {
-    base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
-    token_manager_->GetAuthToken(
-        proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT,
-        future.GetCallback());
+    token_manager_->GetAuthToken(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
     ASSERT_TRUE(future.Get().has_value());
   }
 
-  // A token should still be available for feature 2.
+  ASSERT_TRUE(mock_fetcher_->GotAllExpectedMockCalls());
+
+  // A token should be available from the new batch.
   {
     base::test::TestFuture<std::optional<BlindSignedAuthToken>> future;
-    token_manager_->GetAuthToken(
-        proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
-        future.GetCallback());
+    token_manager_->GetAuthToken(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
-    EXPECT_TRUE(future.Get().has_value());
+    ASSERT_TRUE(future.Get().has_value());
   }
 }
 

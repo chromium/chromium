@@ -158,8 +158,7 @@ class FakeTokenManager : public phosphor::TokenManager {
   FakeTokenManager() = default;
   ~FakeTokenManager() override = default;
 
-  void GetAuthToken(proto::FeatureName feature_name,
-                    GetAuthTokenCallback callback) override {
+  void GetAuthToken(GetAuthTokenCallback callback) override {
     if (!return_token_) {
       std::move(callback).Run(std::nullopt);
       return;
@@ -171,7 +170,7 @@ class FakeTokenManager : public phosphor::TokenManager {
             .expiration = base::Time::Now() + base::Minutes(1)}));
   }
 
-  void PrefetchAuthTokens(proto::FeatureName feature_name) override {}
+  void PrefetchAuthTokens() override {}
 
   void SetReturnToken(bool return_token) { return_token_ = return_token; }
 
