@@ -1935,7 +1935,7 @@ TEST_F(UkmServiceTest, PurgeLogsOnClonedInstallDetected) {
 
   // Store various logs.
   metrics::UnsentLogStore* test_log_store =
-      service.reporting_service_for_testing().ukm_log_store();
+      service.reporting_service()->ukm_log_store();
   test_log_store->StoreLog(
       "dummy log data", metrics::LogMetadata(),
       metrics::MetricsLogsEventManager::CreateReason::kUnknown);

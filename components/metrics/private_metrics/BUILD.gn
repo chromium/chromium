@@ -90,6 +90,7 @@ static_library("private_metrics") {
     ":private_metrics_features",
     "//base",
     "//build:buildflag_header_h",
+    "//components/background_task_scheduler",
     "//components/metrics",
     "//components/metrics:library_support",
     "//components/metrics:metrics_pref_names",

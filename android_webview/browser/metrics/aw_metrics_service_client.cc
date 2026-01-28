@@ -538,6 +538,17 @@ AwMetricsServiceClient::CreateUploader(
       on_upload_complete);
 }
 
+bool AwMetricsServiceClient::IsJobSchedulerSupported() const {
+  // The native wrapper to schedule tasks through JobScheduler is not currently
+  // supported on WebView (since tasks have to be mapped under //chrome in
+  // ChromeBackgroundTaskFactory). Thankfully, this is fine for our purposes.
+  // The reason we want to schedule jobs through JobScheduler is because since
+  // Android 15, JobScheduler is required make network requests while the app is
+  // in the background. However, on WebView, we do not make direct network
+  // requests -- the logs are simply forwarded to the Clearcut Client.
+  return false;
+}
+
 base::TimeDelta AwMetricsServiceClient::GetStandardUploadInterval() {
   // In AwMetricsServiceClients, metrics collection (when we batch up all
   // logged histograms into a ChromeUserMetricsExtension proto) and metrics

@@ -167,6 +167,10 @@ class DwaService {
 
   metrics::UnsentLogStore* unsent_log_store();
 
+  private_metrics::PrivateMetricsReportingService* reporting_service() {
+    return &reporting_service_;
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
+#include "components/background_task_scheduler/task_ids.h"
 #include "components/metrics/dwa/dwa_pref_names.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/metrics_service_client.h"
@@ -41,6 +42,16 @@ const char* GetLogDataPrefName(bool dwa_compatibility) {
   }
 }
 
+background_task::TaskIds GetBackgroundTaskId(
+    std::optional<bool> dwa_compatibility) {
+  bool dwa = IsDwaCompatiblityEnabled(dwa_compatibility);
+  if (dwa) {
+    return background_task::TaskIds::DWA_UPLOAD_JOB_ID;
+  } else {
+    return background_task::TaskIds::PUMA_UPLOAD_JOB_ID;
+  }
+}
+
 }  // namespace
 
 PrivateMetricsReportingService::PrivateMetricsReportingService(
@@ -51,7 +62,8 @@ PrivateMetricsReportingService::PrivateMetricsReportingService(
     : ReportingService(client,
                        local_state,
                        storage_limits.max_log_size_bytes,
-                       /*logs_event_manager=*/nullptr),
+                       /*logs_event_manager=*/nullptr,
+                       GetBackgroundTaskId(dwa_compatibility)),
       dwa_compatibility_(IsDwaCompatiblityEnabled(dwa_compatibility)),
       unsent_log_store_(std::make_unique<PrivateMetricsUnsentLogStoreMetrics>(),
                         local_state,
