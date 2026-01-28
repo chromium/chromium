@@ -1868,13 +1868,13 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle& style) const {
   }
 
   // https://www.w3.org/TR/css-transforms-1/#containing-block-for-all-descendants
-
   // For transform-style specifically, we want to consider the computed
   // value rather than the used value.
   if (style.HasTransformRelatedProperty() ||
       style.TransformStyle3D() == ETransformStyle3D::kPreserve3d) {
-    if (!IsInline() || IsAtomicInlineLevel())
+    if (IsBox()) {
       return true;
+    }
   }
   // https://www.w3.org/TR/css-contain-1/#containment-layout
   if (IsEligibleForPaintOrLayoutContainment() &&
@@ -2671,9 +2671,7 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
     case StyleVariant::kStandard:
       return StyleRef();
     case StyleVariant::kFirstLine:
-      if (IsInline() && IsAtomicInlineLevel())
-        return StyleRef();
-      return FirstLineStyleRef();
+      return IsAtomicInline() ? StyleRef() : FirstLineStyleRef();
     case StyleVariant::kStandardEllipsis:
       // The ellipsis is styled according to the line style.
       // https://www.w3.org/TR/css-overflow-3/#ellipsing-details
