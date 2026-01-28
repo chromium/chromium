@@ -2398,8 +2398,11 @@ public class ToolbarPhone extends ToolbarLayout
         // toolbar buttons are also hidden immediately) or restore it when omnibox focus is lost.
         // If the animation refactor is enabled, this will instead be handled by the refactored
         // flow's transitions.
+        // If fusebox is enabled, do not hide the optional button because it causes button alignment
+        // issues.
         if (animatingSuggestionsListOnNtp()
-                && !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+                && !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()
+                && !OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
             ButtonData copy = mButtonData;
             updateOptionalButton(hasFocus ? null : mButtonData);
             mButtonData = copy;
