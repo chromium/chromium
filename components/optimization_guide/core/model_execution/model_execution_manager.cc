@@ -103,6 +103,7 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kIosSmartTabGrouping:
     case ModelBasedCapabilityKey::kSkills:
     case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
       return 1;
     case ModelBasedCapabilityKey::kFormsClassifications:
       // Since there can be multiple forms on a single page, multiple parallel

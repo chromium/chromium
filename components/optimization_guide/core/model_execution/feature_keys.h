@@ -44,6 +44,8 @@ enum class ModelBasedCapabilityKey {
   kScamDetection =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
   kSkills = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SKILLS,
+  kGeminiAntiscamProtection = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_GEMINI_ANTISCAM_PROTECTION,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -79,6 +81,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "ScamDetection";
     case ModelBasedCapabilityKey::kSkills:
       return out << "Skills";
+    case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
+      return out << "GeminiAntiscamProtection";
   }
   return out;
 }
@@ -166,6 +170,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
           MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
     case ModelBasedCapabilityKey::kSkills:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SKILLS;
+    case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_GEMINI_ANTISCAM_PROTECTION;
   }
 }
 

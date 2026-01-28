@@ -354,6 +354,49 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kSkills:
       // TODO(crbug.com/476214530): Add network traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
+    case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
+      return net::DefineNetworkTrafficAnnotation(
+          "gemini_antiscam_protection_model_execution",
+          R"(
+    semantics {
+      sender: "Gemini Antiscam Protection"
+      description:
+        "Uses server-side AI model to learn more about the scamminess of a "
+        "page."
+      trigger:
+        "User navigates to a suspicious web page and force request client side "
+        "detection ping is triggered."
+      destination: GOOGLE_OWNED_SERVICE
+      data:
+        "The URL and visible text content of the suspicious page the user is "
+        "currently visiting."
+      internal {
+        contacts {
+          email: "skrakowi@chromium.org"
+        }
+        contacts {
+          email: "chrome-counter-abuse-alerts@google.com"
+        }
+      }
+      user_data {
+        type: SENSITIVE_URL
+        type: WEB_CONTENT
+        type: USER_CONTENT
+      }
+      last_reviewed: "2026-01-28"
+    }
+    policy {
+      cookies_allowed: NO
+      setting:
+        "Users can enable this feature via the enhanced protection setting "
+        "in Chrome Settings > Privacy and security > Security > Safe Browsing."
+        "This feature is disabled by default."
+      chrome_policy {
+        SafeBrowsingProtectionLevel {
+          SafeBrowsingProtectionLevel: 1
+        }
+      }
+    })");
   }
 }
 
@@ -395,6 +438,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
       return !base::FeatureList::IsEnabled(
           features::kOptimizationGuideBypassFormsClassificationAuth);
     case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
       return false;
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
       return !base::FeatureList::IsEnabled(

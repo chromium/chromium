@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 syntax = "proto2";
-option optimize_for = LITE_RUNTIME;
-option java_package = "org.chromium.components.optimization_guide.proto";
-option java_outer_classname = "ModelExecutionProto";
 
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/common_types.proto";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelExecutionProto";
 
 message ExecuteRequest {
   reserved 3;
@@ -84,4 +85,5 @@ enum ModelExecutionFeature {
   MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION = 29;
   MODEL_EXECUTION_FEATURE_IOS_SMART_TAB_GROUPING = 30;
   MODEL_EXECUTION_FEATURE_SKILLS = 31;
+  MODEL_EXECUTION_FEATURE_GEMINI_ANTISCAM_PROTECTION = 32;
 }

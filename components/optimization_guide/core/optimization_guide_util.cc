@@ -124,6 +124,9 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "IosSmartTabGrouping";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SKILLS:
       return "Skills";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_GEMINI_ANTISCAM_PROTECTION:
+      return "GeminiAntiscamProtection";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

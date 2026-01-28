@@ -48,6 +48,8 @@ chromium-metrics-reviews@google.com.
   <variant name="FormsAnnotations" summary="Forms Annotations"/>
   <variant name="FormsClassifications" summary="Forms Classifications"/>
   <variant name="FormsPredictions" summary="Forms Predictions"/>
+  <variant name="GeminiAntiscamProtection"
+      summary="Gemini Antiscam Protection"/>
   <variant name="HistoryAnswer" summary="History Answer"/>
   <variant name="HistoryQuery" summary="History Query"/>
   <variant name="HistoryQueryIntent" summary="History Query Intent"/>
