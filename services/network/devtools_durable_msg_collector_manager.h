@@ -8,6 +8,9 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/memory_pressure_listener.h"
+#include "base/time/time.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
@@ -16,13 +19,20 @@ namespace network {
 // DevtoolsDurableMessageCollectorManager class is responsible for managing
 // lifetime of self owned collector instances and associating each to
 // different DevTools Profiles.
-class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollectorManager {
+class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollectorManager
+    : public base::trace_event::MemoryDumpProvider {
  public:
   // Allow certain friendship to call back on OnCollector* protected methods.
   friend class DevtoolsDurableMessageCollector;
+  FRIEND_TEST_ALL_PREFIXES(DevtoolsDurableMessageCollectorManagerTest,
+                           ReportAggregateMemoryUsage);
 
   DevtoolsDurableMessageCollectorManager();
-  ~DevtoolsDurableMessageCollectorManager();
+  ~DevtoolsDurableMessageCollectorManager() override;
+
+  // base::trace_event::MemoryDumpProvider implementation:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Create a self-owned collector instance and bind it to the mojo pipe
   // provided. The collector and all data associated with it will be destroyed
@@ -50,6 +60,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollectorManager {
   // Callback by collector instances to inform of creation/destruction.
   void OnCollectorCreated(DevtoolsDurableMessageCollector* collector);
   void OnCollectorDestroyed(DevtoolsDurableMessageCollector* collector);
+  void OnCollectorAddedBytes(size_t delta);
+  void OnCollectorRemovedBytes(size_t delta);
+
+  // Keeps track of aggregate memory usage of all managed collectors, for
+  // reporting purposes.
+  size_t total_memory_usage_ = 0;
 
   // A set of collectors managed by this class.
   std::set<raw_ptr<DevtoolsDurableMessageCollector>>

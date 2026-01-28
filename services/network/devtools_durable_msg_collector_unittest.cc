@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "net/filter/filter_source_stream_test_util.h"
 #include "services/network/devtools_durable_msg_collector_manager.h"
@@ -18,6 +19,8 @@ namespace network {
 
 class DevtoolsDurableMessageCollectorTest : public testing::Test {
  protected:
+  void TearDown() override { RunUntilCollectorsEmpty(); }
+
   struct CollectorBundle {
     mojo::Remote<mojom::DurableMessageCollector> remote;
     raw_ptr<DevtoolsDurableMessageCollector> collector;
@@ -118,17 +121,24 @@ class DevtoolsDurableMessageCollectorTest : public testing::Test {
                         }));
   }
 
+  void RunUntilCollectorsEmpty() {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return manager_.GetCollectorsForTesting().empty(); }));
+  }
+
+  DevtoolsDurableMessageCollectorManager& manager() { return manager_; }
+
  private:
   base::test::TaskEnvironment task_environment_;
+  DevtoolsDurableMessageCollectorManager manager_;
   base::OnceClosure run_loop_quit_closure_;
   int event_count_ = 0;
   int event_count_expected_ = 0;
 };
 
 TEST_F(DevtoolsDurableMessageCollectorTest, CollectsMessageChunksCorrectly) {
-  DevtoolsDurableMessageCollectorManager manager;
   auto [collector_remote, collector] =
-      CreateAndConfigureCollector(manager, /*max_storage_size=*/1000);
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/1000);
 
   std::string request_id1 = "req1";
   auto msg1 = collector->CreateDurableMessage(request_id1);
@@ -153,9 +163,8 @@ TEST_F(DevtoolsDurableMessageCollectorTest, CollectsMessageChunksCorrectly) {
 }
 
 TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectChunksBeyondLimit) {
-  DevtoolsDurableMessageCollectorManager manager;
   auto [collector_remote, collector] =
-      CreateAndConfigureCollector(manager, /*max_storage_size=*/10);
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/10);
 
   std::string req_id = "req1";
   auto msg1 = collector->CreateDurableMessage(req_id);
@@ -176,9 +185,8 @@ TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectChunksBeyondLimit) {
 }
 
 TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectMessageBeyondLimit) {
-  DevtoolsDurableMessageCollectorManager manager;
   auto [collector_remote, collector] =
-      CreateAndConfigureCollector(manager, /*max_storage_size=*/10);
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/10);
 
   std::string req_id = "req1";
   auto msg1 = collector->CreateDurableMessage(req_id);
@@ -196,9 +204,8 @@ TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectMessageBeyondLimit) {
 }
 
 TEST_F(DevtoolsDurableMessageCollectorTest, CorrectlyEvictsInOrder) {
-  DevtoolsDurableMessageCollectorManager manager;
   auto [collector_remote, collector] =
-      CreateAndConfigureCollector(manager, /*max_storage_size=*/10);
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/10);
 
   std::string req_id_1 = "req1";
   std::string str_message_1 = "12345";
@@ -237,9 +244,8 @@ TEST_F(DevtoolsDurableMessageCollectorTest, CorrectlyEvictsInOrder) {
 
 TEST_F(DevtoolsDurableMessageCollectorTest,
        CorrectlyHandlesRequestIdOverwrite) {
-  DevtoolsDurableMessageCollectorManager manager;
   auto [collector_remote, collector] =
-      CreateAndConfigureCollector(manager, /*max_storage_size=*/10);
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/10);
 
   std::string req_id_overwrite = "req-overwrite";
   std::string first_message_body = "12345";
@@ -279,9 +285,8 @@ TEST_F(DevtoolsDurableMessageCollectorTest,
 }
 
 TEST_F(DevtoolsDurableMessageCollectorTest, RetrieveDecodesGzipBody) {
-  DevtoolsDurableMessageCollectorManager manager;
   auto [collector_remote, collector] =
-      CreateAndConfigureCollector(manager, /*max_storage_size=*/100);
+      CreateAndConfigureCollector(manager(), /*max_storage_size=*/100);
 
   const std::string devtools_request_id = "request1";
   auto msg1 = collector->CreateDurableMessage(devtools_request_id);

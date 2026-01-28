@@ -4,15 +4,34 @@
 
 #include "services/network/devtools_durable_msg_collector_manager.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace network {
 
-DevtoolsDurableMessageCollectorManager::
-    DevtoolsDurableMessageCollectorManager() = default;
+namespace {
+// The name of the dump provider.
+constexpr const char* kDumpProviderName =
+    "DevtoolsDurableMessageCollectorManager";
+}  // namespace
 
 DevtoolsDurableMessageCollectorManager::
-    ~DevtoolsDurableMessageCollectorManager() = default;
+    DevtoolsDurableMessageCollectorManager() {
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, kDumpProviderName,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+}
+
+DevtoolsDurableMessageCollectorManager::
+    ~DevtoolsDurableMessageCollectorManager() {
+  CHECK_EQ(total_memory_usage_, 0UL);
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+}
 
 void DevtoolsDurableMessageCollectorManager::AddCollector(
     mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver) {
@@ -39,6 +58,28 @@ void DevtoolsDurableMessageCollectorManager::OnCollectorDestroyed(
     }
   }
   managed_collectors_testing_.erase(collector);
+}
+
+void DevtoolsDurableMessageCollectorManager::OnCollectorAddedBytes(
+    size_t size) {
+  total_memory_usage_ += size;
+}
+
+void DevtoolsDurableMessageCollectorManager::OnCollectorRemovedBytes(
+    size_t size) {
+  DCHECK_GE(total_memory_usage_, size);
+  total_memory_usage_ -= size;
+}
+
+bool DevtoolsDurableMessageCollectorManager::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  base::trace_event::MemoryAllocatorDump* dump =
+      pmd->CreateAllocatorDump("devtools/durable_message_collectors");
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  total_memory_usage_);
+  return true;
 }
 
 std::vector<DevtoolsDurableMessageCollector*>

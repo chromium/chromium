@@ -4,8 +4,16 @@
 
 #include "services/network/devtools_durable_msg_collector_manager.h"
 
+#include "base/containers/span.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/memory_dump_request_args.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -18,8 +26,9 @@ using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
 class DevtoolsDurableMessageCollectorManagerTest : public testing::Test {
- private:
-  base::test::TaskEnvironment task_environment_;
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(DevtoolsDurableMessageCollectorManagerTest, AddCollector) {
@@ -137,6 +146,50 @@ TEST_F(DevtoolsDurableMessageCollectorManagerTest, MultipleProfiles) {
   }));
   EXPECT_THAT(manager.GetCollectorsEnabledForProfile(profile_id2),
               ElementsAre(collector2));
+}
+
+TEST_F(DevtoolsDurableMessageCollectorManagerTest, ReportAggregateMemoryUsage) {
+  using base::trace_event::MemoryAllocatorDump;
+  using testing::ByRef;
+  using testing::Contains;
+  using testing::Eq;
+
+  DevtoolsDurableMessageCollectorManager manager;
+  mojo::Remote<mojom::DurableMessageCollector> collector_remote;
+  manager.AddCollector(collector_remote.BindNewPipeAndPassReceiver());
+  auto collectors = manager.GetCollectorsForTesting();
+  ASSERT_EQ(collectors.size(), 1u);
+
+  auto collector = collectors.front();
+  collector->Configure(
+      mojom::NetworkDurableMessageConfig::New(10 * 1024 * 1024),
+      base::DoNothing());
+
+  auto durable_message = collector->CreateDurableMessage("request_id1");
+  const std::string message_str(5 * 1024 * 1024, 'a');
+  const auto message = base::as_byte_span(message_str);
+  durable_message->AddBytes(message, message.size());
+
+  base::trace_event::MemoryDumpArgs args = {
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
+  base::trace_event::ProcessMemoryDump pmd(args);
+  ASSERT_TRUE(manager.OnMemoryDump(args, &pmd));
+  auto* dump = pmd.GetAllocatorDump("devtools/durable_message_collectors");
+  ASSERT_NE(dump, nullptr);
+  MemoryAllocatorDump::Entry entry("size", "bytes", 5 * 1024 * 1024u);
+  EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(entry))));
+
+  collector_remote.reset();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return manager.GetCollectorsForTesting().empty(); }));
+
+  base::trace_event::ProcessMemoryDump pmd2(args);
+  ASSERT_TRUE(manager.OnMemoryDump(args, &pmd2));
+  auto* dump2 = pmd2.GetAllocatorDump("devtools/durable_message_collectors");
+  // Implementation creates dump always.
+  ASSERT_NE(dump2, nullptr);
+  MemoryAllocatorDump::Entry entry2("size", "bytes", 0u);
+  EXPECT_THAT(dump2->entries(), Contains(Eq(ByRef(entry2))));
 }
 
 }  // namespace network

@@ -19,6 +19,7 @@ DevtoolsDurableMessageCollector::~DevtoolsDurableMessageCollector() {
   // WillRemoveBytes(). Explicitly clear the map to avoid a destruction
   // ordering bug.
   request_id_to_message_map_.clear();
+  CHECK_EQ(cur_buffer_size_, 0);
   if (manager_) {
     manager_->OnCollectorDestroyed(this);
   }
@@ -80,7 +81,7 @@ void DevtoolsDurableMessageCollector::WillAddBytes(
       bool is_current_message_evicted = (evict_message.get() == &message);
       EvictMessage(*evict_message);
       if (is_current_message_evicted) {
-        // The message being callec with is now evicted, and remaining bytes
+        // The message being called with is now evicted, and remaining bytes
         // will not be stored.
         return;
       }
@@ -88,12 +89,19 @@ void DevtoolsDurableMessageCollector::WillAddBytes(
   }
 
   cur_buffer_size_ += size;
+  if (manager_) {
+    manager_->OnCollectorAddedBytes(size);
+  }
 }
 
 void DevtoolsDurableMessageCollector::WillRemoveBytes(
     DevtoolsDurableMessage& message) {
-  cur_buffer_size_ -= message.encoded_byte_size();
+  int64_t size = message.encoded_byte_size();
+  cur_buffer_size_ -= size;
   CHECK_GE(cur_buffer_size_, 0);
+  if (manager_) {
+    manager_->OnCollectorRemovedBytes(size);
+  }
 }
 
 void DevtoolsDurableMessageCollector::EvictMessage(
