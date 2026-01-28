@@ -396,6 +396,7 @@ after discussions on the right group.
       <annotation id="isolated_web_app_throttle"/>
       <annotation id="wallet_http_request"/>
       <annotation id="gemini_antiscam_protection_model_execution"/>
+      <annotation id="skills_service_loader"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

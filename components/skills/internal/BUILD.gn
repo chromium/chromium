@@ -10,6 +10,8 @@ source_set("internal") {
   ]
 
   sources = [
+    "skills_downloader.cc",
+    "skills_downloader.h",
     "skills_service_impl.cc",
     "skills_service_impl.h",
     "skills_sync_bridge.cc",
@@ -27,6 +29,8 @@ source_set("internal") {
     "//components/skills/proto",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//net",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -34,6 +38,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "skills_downloader_unittest.cc",
     "skills_service_impl_unittest.cc",
     "skills_sync_bridge_unittest.cc",
   ]

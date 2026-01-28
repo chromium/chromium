@@ -1,0 +1,9 @@
+include_rules = [
+  "+net/http",
+  "+net/base",
+  "+net/traffic_annotation",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+services/network/test",
+  "+mojo/public/cpp/bindings",
+]
