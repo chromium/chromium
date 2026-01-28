@@ -22,7 +22,11 @@ export function getHtml(this: UpdaterAppElement) {
     <updater-state></updater-state>
   </div>
   <div>
-    <h2>$i18n{eventListTitle}</h1>
+    <h2>$i18n{installedAppsTitle}</h2>
+    <app-list></app-list>
+  </div>
+  <div>
+    <h2>$i18n{eventListTitle}</h2>
     <event-list .messages="${this.messages}"></event-list>
   </div>
 </div>

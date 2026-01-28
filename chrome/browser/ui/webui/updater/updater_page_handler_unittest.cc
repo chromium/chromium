@@ -33,6 +33,7 @@
 
 using base::test::RunOnceCallback;
 using testing::_;
+using testing::AllOf;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::Field;
@@ -59,6 +60,15 @@ auto IsUpdaterState(std::string_view active_version,
       Field(&UpdaterState::policies, policies)));
 }
 
+auto IsAppState(std::string_view app_id,
+                std::string_view version,
+                std::optional<std::string_view> cohort) {
+  using updater_ui::mojom::AppState;
+  return Pointee(AllOf(Field(&AppState::app_id, app_id),
+                       Field(&AppState::version, version),
+                       Field(&AppState::cohort, cohort)));
+}
+
 class MockUpdaterPageHandlerDelegate : public UpdaterPageHandler::Delegate {
  public:
   MOCK_METHOD(std::optional<base::FilePath>,
@@ -82,6 +92,16 @@ class MockUpdaterPageHandlerDelegate : public UpdaterPageHandler::Delegate {
   MOCK_METHOD(void,
               GetUserPoliciesJson,
               (base::OnceCallback<void(const std::string&)> callback),
+              (const, override));
+  MOCK_METHOD(void,
+              GetSystemUpdaterAppStates,
+              (base::OnceCallback<
+                  void(const std::vector<updater::mojom::AppState>&)> callback),
+              (const, override));
+  MOCK_METHOD(void,
+              GetUserUpdaterAppStates,
+              (base::OnceCallback<
+                  void(const std::vector<updater::mojom::AppState>&)> callback),
               (const, override));
 
  private:
@@ -476,6 +496,65 @@ TEST_F(UpdaterPageHandlerTest, GetUpdaterStates_EmptyPolicyJsonBecomesNull) {
             std::move(result));
 
         EXPECT_FALSE(response->system);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(UpdaterPageHandlerTest, GetAppStates_Success) {
+  updater::mojom::AppState system_app;
+  system_app.app_id = "system_app";
+  system_app.version = "1.0";
+  system_app.cohort = "system_cohort";
+
+  updater::mojom::AppState user_app1;
+  user_app1.app_id = "user_app1";
+  user_app1.version = "2.0";
+  user_app1.cohort = std::nullopt;
+
+  updater::mojom::AppState user_app2;
+  user_app2.app_id = "user_app2";
+  user_app2.version = "3.0";
+  user_app2.cohort = "";
+
+  EXPECT_CALL(*mock_delegate_, GetSystemUpdaterAppStates(_))
+      .WillOnce(RunOnceCallback<0>(
+          std::vector<updater::mojom::AppState>{system_app}));
+  EXPECT_CALL(*mock_delegate_, GetUserUpdaterAppStates(_))
+      .WillOnce(RunOnceCallback<0>(
+          std::vector<updater::mojom::AppState>{user_app1, user_app2}));
+
+  base::RunLoop run_loop;
+  handler_->GetAppStates(base::BindLambdaForTesting(
+      [&](UpdaterPageHandler::GetAppStatesResult result) {
+        ASSERT_OK_AND_ASSIGN(
+            updater_ui::mojom::GetAppStatesResponsePtr response,
+            std::move(result));
+        EXPECT_THAT(
+            response->system_apps,
+            ElementsAre(IsAppState("system_app", "1.0", "system_cohort")));
+        EXPECT_THAT(response->user_apps,
+                    ElementsAre(IsAppState("user_app1", "2.0", std::nullopt),
+                                IsAppState("user_app2", "3.0", std::nullopt)));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(UpdaterPageHandlerTest, GetAppStates_Empty) {
+  EXPECT_CALL(*mock_delegate_, GetSystemUpdaterAppStates(_))
+      .WillOnce(RunOnceCallback<0>(std::vector<updater::mojom::AppState>{}));
+  EXPECT_CALL(*mock_delegate_, GetUserUpdaterAppStates(_))
+      .WillOnce(RunOnceCallback<0>(std::vector<updater::mojom::AppState>{}));
+
+  base::RunLoop run_loop;
+  handler_->GetAppStates(base::BindLambdaForTesting(
+      [&](UpdaterPageHandler::GetAppStatesResult result) {
+        ASSERT_OK_AND_ASSIGN(
+            updater_ui::mojom::GetAppStatesResponsePtr response,
+            std::move(result));
+        EXPECT_TRUE(response->system_apps.empty());
+        EXPECT_TRUE(response->user_apps.empty());
         run_loop.Quit();
       }));
   run_loop.Run();

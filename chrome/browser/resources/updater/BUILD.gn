@@ -18,6 +18,8 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "app_list/app_list.html.ts",
+    "app_list/app_list.ts",
     "browser_proxy.ts",
     "event_history.ts",
     "event_list/event_list.html.ts",
@@ -58,6 +60,7 @@ build_webui("build") {
   ]
   css_files = [
     "app.css",
+    "app_list/app_list.css",
     "event_list/event_list.css",
     "event_list/event_list_item.css",
     "event_list/filter_bar.css",

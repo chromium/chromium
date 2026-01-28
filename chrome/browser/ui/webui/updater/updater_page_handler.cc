@@ -16,12 +16,14 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -36,7 +38,8 @@
 
 namespace {
 
-class DefaultUpdaterPageHandlerDelegate : public UpdaterPageHandler::Delegate {
+class DefaultUpdaterPageHandlerDelegate final
+    : public UpdaterPageHandler::Delegate {
  public:
   std::optional<base::FilePath> GetInstallDirectory(
       updater::UpdaterScope scope) const override {
@@ -63,6 +66,18 @@ class DefaultUpdaterPageHandlerDelegate : public UpdaterPageHandler::Delegate {
   void GetUserPoliciesJson(
       base::OnceCallback<void(const std::string&)> callback) const override {
     updater::GetUserPoliciesJson(std::move(callback));
+  }
+
+  void GetSystemUpdaterAppStates(
+      base::OnceCallback<void(const std::vector<updater::mojom::AppState>&)>
+          callback) const override {
+    updater::GetSystemUpdaterAppStates(std::move(callback));
+  }
+
+  void GetUserUpdaterAppStates(
+      base::OnceCallback<void(const std::vector<updater::mojom::AppState>&)>
+          callback) const override {
+    updater::GetUserUpdaterAppStates(std::move(callback));
   }
 
  private:
@@ -174,6 +189,20 @@ updater_ui::mojom::UpdaterStatePtr ToUpdaterState(
     case updater_ui::mojom::UpdaterScope::kUser:
       return updater::UpdaterScope::kUser;
   }
+}
+
+void PopulateUiAppStates(
+    std::back_insert_iterator<std::vector<updater_ui::mojom::AppStatePtr>>
+        output_iter,
+    const std::vector<updater::mojom::AppState>& in_app_states) {
+  std::ranges::transform(in_app_states, output_iter,
+                         [](const updater::mojom::AppState& app_state) {
+                           return updater_ui::mojom::AppState::New(
+                               app_state.app_id, app_state.version,
+                               app_state.cohort && !app_state.cohort->empty()
+                                   ? app_state.cohort
+                                   : std::nullopt);
+                         });
 }
 
 }  // namespace
@@ -304,6 +333,26 @@ void UpdaterPageHandler::GetUpdaterStates(GetUpdaterStatesCallback callback) {
           },
           std::move(callback), delegate_, *system_install_dir,
           *user_install_dir));
+}
+
+void UpdaterPageHandler::GetAppStates(GetAppStatesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  updater_ui::mojom::GetAppStatesResponsePtr response =
+      updater_ui::mojom::GetAppStatesResponse::New();
+  updater_ui::mojom::GetAppStatesResponse* response_ptr = response.get();
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      2, base::BindOnce(base::BindPostTaskToCurrentDefault(std::move(callback)),
+                        std::move(response)));
+
+  delegate_->GetSystemUpdaterAppStates(
+      base::BindOnce(&PopulateUiAppStates,
+                     std::back_inserter(response_ptr->system_apps))
+          .Then(barrier_closure));
+  delegate_->GetUserUpdaterAppStates(
+      base::BindOnce(&PopulateUiAppStates,
+                     std::back_inserter(response_ptr->user_apps))
+          .Then(barrier_closure));
 }
 
 void UpdaterPageHandler::ShowUpdaterDirectory(

@@ -19852,11 +19852,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_APP" desc="In Title Case: Title of the chip which filters logs by application (e.g. 'Google Chrome').">
         App
       </message>
+      <message name="IDS_UPDATER_APP_COLUMN" desc="Title of a column in a table displaying the list of applications managed by Chrome's updater which displays the application's name or identifier string.">
+        Application
+      </message>
       <message name="IDS_UPDATER_APPLY" desc="Label on a button to apply the selected filters.">
         Apply
       </message>
       <message name="IDS_UPDATER_APP_NAME_OR_ID" desc="Placeholder text in a search box asking the user to enter an application name or identifier string.">
         App Name or ID
+      </message>
+      <message name="IDS_UPDATER_APP_STATES_QUERY_FAILED" desc="An error message indicating that the list of installed applications could not be retrieved from Chrome's updater.">
+        Failed to query installed applications.
       </message>
       <message name="IDS_UPDATER_CANCEL" desc="Label on a button to cancel the current action or close a menu.">
         Cancel
@@ -19966,6 +19972,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_INSTALL_SUMMARY" desc="Summary of an event in which software was installed, including the version.">
         Installed version <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
       </message>
+      <message name="IDS_UPDATER_INSTALLED_APPS_TITLE" desc="Title for a section of the chrome://updater page which displays a table of applications known to the updater on the user's system.">
+        Installed Applications
+      </message>
       <message name="IDS_UPDATER_INTERNAL" desc="Label used to indicate that a logged Chrome Updater event pertains to the updater itself and not an app managed by the updater (e.g. Google Chrome).">
         Internal
       </message>
@@ -19974,6 +19983,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_LAST_STARTED_LABEL" desc="A label for a timestamp indicating the last time the Chrome Updater performed its periodic tasks.">
         Last Periodic Task Run:
+      </message>
+      <message name="IDS_UPDATER_NO_APPS_FOUND" desc="A message indicating that Chrome's updater is not managing any applications on the user's system.">
+        No applications are installed.
       </message>
       <message name="IDS_UPDATER_NO_UPDATER_FOUND" desc="A message indicating that Chrome's updater does not appear to be installed on the user's machine.">
         No updater installations could be found.
@@ -20052,6 +20064,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_UPDATER_VERSION" desc="Label indicating the version of the updater itself.">
         Updater version: <ph name="VERSION">$1<ex>1.2.3.4</ex></ph>
+      </message>
+      <message name="IDS_UPDATER_VERSION_COLUMN" desc="Title of the column in a table presenting the list of applications installed and managed by Chrome's updater.">
+        Version
       </message>
       <message name="IDS_UPDATER_VERSION_LABEL" desc="A label for the version of the updater.">
         Version:

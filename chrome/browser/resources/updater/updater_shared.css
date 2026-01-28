@@ -9,6 +9,7 @@
  * #css_wrapper_metadata_end */
 
 html {
+  --card-background-color: var(--google-grey-100);
   --code-background-color: var(--google-grey-100);
   --error-icon-color: var(--google-red-700);
   --error-background-color: color-mix(in srgb, var(--google-red-500) 4%, white);
@@ -16,6 +17,7 @@ html {
 
 @media (prefers-color-scheme: dark) {
   html {
+    --card-background-color: color-mix(in srgb, white 4%, var(--google-grey-900));
     --code-background-color: var(--google-grey-800);
   }
 }

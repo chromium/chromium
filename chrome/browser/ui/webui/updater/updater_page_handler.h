@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -40,6 +41,12 @@ class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
         base::OnceCallback<void(const std::string&)> callback) const = 0;
     virtual void GetUserPoliciesJson(
         base::OnceCallback<void(const std::string&)> callback) const = 0;
+    virtual void GetSystemUpdaterAppStates(
+        base::OnceCallback<void(const std::vector<updater::mojom::AppState>&)>
+            callback) const = 0;
+    virtual void GetUserUpdaterAppStates(
+        base::OnceCallback<void(const std::vector<updater::mojom::AppState>&)>
+            callback) const = 0;
 
    protected:
     friend class base::RefCountedThreadSafe<Delegate>;
@@ -60,6 +67,7 @@ class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
 
   void GetAllUpdaterEvents(GetAllUpdaterEventsCallback callback) override;
   void GetUpdaterStates(GetUpdaterStatesCallback callback) override;
+  void GetAppStates(GetAppStatesCallback callback) override;
   void ShowUpdaterDirectory(updater_ui::mojom::UpdaterScope scope) override;
 
  private:

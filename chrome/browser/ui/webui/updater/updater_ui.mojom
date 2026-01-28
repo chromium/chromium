@@ -19,9 +19,11 @@ interface PageHandlerFactory {
 
 // A snapshot of an updater installation's state.
 struct UpdaterState {
-  // The active version of the updater.
+  // The active version of the updater, expected but not validated to be in the
+  // base::Version dotted format.
   string active_version;
-  // Any inactive versions of the updater present in this installation.
+  // Any inactive versions of the updater present in this installation, expected
+  // but not validated to be in the base::Version dotted format.
   array<string> inactive_versions;
   // The time at which the updater last performed an update check.
   mojo_base.mojom.JSTime? last_checked;
@@ -44,6 +46,27 @@ struct GetUpdaterStatesResponse {
 
 struct GetUpdaterStatesError {};
 
+struct AppState {
+  // The ASCII AppId of the application this state refers to, in the format
+  // defined by the Omaha protocol (see //docs/updater).
+  string app_id;
+  // The current installed version of the application from the updater's
+  // perspective, expected but not validated to be in the base::Version dotted
+  // format.
+  string version;
+  // A machine-readable string identifying the release cohort (channel) that the
+  // app belongs to. The format is described in more detail in the Omaha
+  // protocol specifications in //docs/updater.
+  string? cohort;
+};
+
+struct GetAppStatesResponse {
+  array<AppState> system_apps;
+  array<AppState> user_apps;
+};
+
+struct GetAppStatesError {};
+
 enum UpdaterScope {
   kSystem,
   kUser,
@@ -61,6 +84,10 @@ interface PageHandler {
   // updater installations present on the machine.
   GetUpdaterStates()
       => result<GetUpdaterStatesResponse, GetUpdaterStatesError>;
+
+  // Retrieves the states of applications managed by the per-user (for the
+  // current user) and per-system updater installations present on the machine.
+  GetAppStates() => result<GetAppStatesResponse, GetAppStatesError>;
 
   // Opens the directory containing the updater installation on the filesystem
   // at the requested scope. Fails silently if the directory does not exist.
