@@ -1,18 +1,20 @@
 include_rules = [
+  # keep-sorted start
   "+components/signin/internal/identity_manager/account_capabilities_constants.h",
   "+components/signin/public/base/signin_metrics.h",
   "+components/signin/public/identity_manager/account_info.h",
   "+components/sync/service/trusted_vault_client.h",
-  "+ios/chrome/browser/shared/model/browser/browser.h",
+  "+ios/chrome/browser/first_run/public/first_run_screen_delegate.h",
   "+ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h",
   "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
+  "+ios/chrome/browser/shared/model/browser/browser.h",
   "+ios/chrome/browser/signin/model/capabilities_dict.h",
   "+ios/chrome/browser/signin/model/capabilities_types.h",
   "+ios/chrome/browser/signin/model/system_identity.h",
   "+ios/chrome/browser/signin/model/system_identity_manager.h",
   "+ios/chrome/browser/signin/model/trusted_vault_client_backend.h",
   "+ios/chrome/browser/signin/model/trusted_vault_configuration.h",
-  "+ios/chrome/browser/first_run/public/first_run_screen_delegate.h",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

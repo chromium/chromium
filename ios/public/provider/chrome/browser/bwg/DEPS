@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+components/optimization_guide/proto/features/common_quality_data.pb.h",
   "+ios/chrome/browser/intelligence/bwg/model/bwg_service.h",
   "+services/network/public/cpp/resource_request.h",
+  # keep-sorted end
 ]

@@ -1,8 +1,10 @@
 include_rules = [
+  # keep-sorted start
   "+components/variations/variations_associated_data.h",
   "+ios/third_party/earl_grey2/src",
   "+ios/third_party/edo/src/Service/Sources",
   "+ios/web/common/uikit_ui_util.h",
   "+net",
   "+third_party/ocmock",
+  # keep-sorted end
 ]

@@ -1,3 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+components/optimization_guide/proto/features/enhanced_calendar.pb.h",
+  # keep-sorted end
 ]
