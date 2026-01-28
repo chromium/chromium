@@ -54,6 +54,11 @@ GeminiAntiscamProtectionServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  // Exclude enterprise users, who have a managed safe browsing policy.
+  if (safe_browsing::IsSafeBrowsingPolicyManaged(*profile->GetPrefs())) {
+    return nullptr;
+  }
+
   // The optimization guide keyed service must be instantiated.
   auto* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);

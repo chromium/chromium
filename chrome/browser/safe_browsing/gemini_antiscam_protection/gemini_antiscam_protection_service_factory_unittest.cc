@@ -13,8 +13,10 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -81,6 +83,22 @@ TEST_F(GeminiAntiscamProtectionServiceFactoryTest,
               base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
       });
   profile->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  EXPECT_EQ(nullptr,
+            GeminiAntiscamProtectionServiceFactory::GetForProfile(profile));
+}
+
+TEST_F(GeminiAntiscamProtectionServiceFactoryTest,
+       DisabledForEnterpriseSafeBrowsing) {
+  TestingProfile* profile = profile_manager_->CreateTestingProfile(
+      "profile",
+      {TestingProfile::TestingFactory{
+           OptimizationGuideKeyedServiceFactory::GetInstance(),
+           base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
+       TestingProfile::TestingFactory{
+           HistoryServiceFactory::GetInstance(),
+           base::BindRepeating(&BuildTestHistoryService)}});
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(true));
   EXPECT_EQ(nullptr,
             GeminiAntiscamProtectionServiceFactory::GetForProfile(profile));
 }
