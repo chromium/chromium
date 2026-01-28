@@ -31,7 +31,7 @@ void CreateAndAddWebXrInternalsHTMLSource(BrowserContext* browser_context) {
   // Add required resources.
   source->UseStringsJs();
   source->AddResourcePaths(kWebxrInternalsResources);
-  source->AddResourcePath("", IDR_WEBXR_INTERNALS_WEBXR_INTERNALS_HTML);
+  source->SetDefaultResource(IDR_WEBXR_INTERNALS_WEBXR_INTERNALS_HTML);
 }
 
 }  // namespace

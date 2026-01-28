@@ -115,7 +115,7 @@ IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
       "trusted-types static-types lit-html-desktop;");
   source->UseStringsJs();
   source->AddResourcePaths(kIndexedDbResources);
-  source->AddResourcePath("", IDR_INDEXED_DB_INDEXEDDB_INTERNALS_HTML);
+  source->SetDefaultResource(IDR_INDEXED_DB_INDEXEDDB_INTERNALS_HTML);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(IndexedDBInternalsUI)

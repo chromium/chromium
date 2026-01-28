@@ -82,7 +82,7 @@ void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
 
   source->UseStringsJs();
   source->AddResourcePaths(kGpuResources);
-  source->AddResourcePath("", IDR_GPU_GPU_INTERNALS_HTML);
+  source->SetDefaultResource(IDR_GPU_GPU_INTERNALS_HTML);
 }
 
 std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {

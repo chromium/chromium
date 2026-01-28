@@ -25,7 +25,7 @@ TracesInternalsUI::TracesInternalsUI(WebUI* web_ui, const GURL& url)
       web_ui->GetWebContents()->GetBrowserContext(), url.GetHost());
 
   source->AddResourcePaths(kTracesInternalsResources);
-  source->AddResourcePath("", IDR_TRACES_INTERNALS_TRACES_INTERNALS_HTML);
+  source->SetDefaultResource(IDR_TRACES_INTERNALS_TRACES_INTERNALS_HTML);
 
   // Add TrustedTypes policies necessary for using Polymer.
   source->OverrideContentSecurityPolicy(

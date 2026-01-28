@@ -34,7 +34,7 @@ SafeBrowsingUI::SafeBrowsingUI(
 
   // Add required resources.
   html_source->AddResourcePaths(kSafeBrowsingResources);
-  html_source->AddResourcePath("", IDR_SAFE_BROWSING_SAFE_BROWSING_HTML);
+  html_source->SetDefaultResource(IDR_SAFE_BROWSING_SAFE_BROWSING_HTML);
 
   // Static types
   html_source->OverrideContentSecurityPolicy(
