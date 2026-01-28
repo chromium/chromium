@@ -202,6 +202,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinatorFactory;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinatorFactory;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
@@ -312,6 +314,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final InactivityObserver mInactivityObserver;
     private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
     private final @NonNull CrossDeviceSettingImporter mCrossDeviceSettingImporter;
+    private @Nullable SideUiCoordinator mSideUiCoordinator;
     private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
     private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
@@ -810,6 +813,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mCrossDeviceSettingImporter.destroy();
 
+        if (mSideUiCoordinator != null) {
+            mSideUiCoordinator.destroy();
+            mSideUiCoordinator = null;
+        }
+
         if (mSidePanelContainerCoordinator != null) {
             mSidePanelContainerCoordinator.destroy();
             mSidePanelContainerCoordinator = null;
@@ -1056,6 +1064,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
 
+        mSideUiCoordinator = SideUiCoordinatorFactory.create();
         mSidePanelContainerCoordinator = SidePanelContainerCoordinatorFactory.create();
 
         initiateTabBottomSheetManagers();
