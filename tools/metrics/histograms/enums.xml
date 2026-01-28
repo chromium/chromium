@@ -15168,6 +15168,7 @@ from previous Chrome versions.
   <int value="290559997" label="LinkCapturingUiUpdate:disabled"/>
   <int value="291389947" label="PercentBasedScrolling:disabled"/>
   <int value="291482671" label="ExperimentalFlingAnimation:disabled"/>
+  <int value="291587400" label="CADisplayLinkInBrowser:disabled"/>
   <int value="291866104" label="WebAuthenticationPhoneSupport:enabled"/>
   <int value="291968978" label="HomepagePromoCard:enabled"/>
   <int value="291998717" label="AccessibilitySnapshotStressTests:disabled"/>
@@ -20578,6 +20579,7 @@ from previous Chrome versions.
   <int value="2135540885" label="PrintPreviewCrosApp:disabled"/>
   <int value="2135687747" label="DelayMediaSinkDiscovery:disabled"/>
   <int value="2135800674" label="ConchExpandTranscriptionLanguage:disabled"/>
+  <int value="2136307406" label="CADisplayLinkInBrowser:enabled"/>
   <int value="2137294324" label="zero-copy-video-capture"/>
   <int value="2137347307" label="enable-drive-apps-in-app-list"/>
   <int value="2137440054" label="SyncSessionOnVisibilityChanged:enabled"/>

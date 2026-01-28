@@ -7566,6 +7566,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kByDateHistoryInSidePanel)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+    {"ca-display-link-in-browser",
+     flag_descriptions::kCADisplayLinkInBrowserName,
+     flag_descriptions::kCADisplayLinkInBrowserDescription, kOsMac,
+     FEATURE_VALUE_TYPE(display::features::kCADisplayLinkInBrowser)},
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
     {"enable-share-custom-actions-in-cct",
      flag_descriptions::kShareCustomActionsInCCTName,
