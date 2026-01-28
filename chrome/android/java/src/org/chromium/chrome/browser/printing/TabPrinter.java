@@ -12,11 +12,14 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.printing.Printable;
 
@@ -74,11 +77,31 @@ public class TabPrinter implements Printable {
     @Override
     public boolean canPrint() {
         Tab tab = mTab.get();
-        if (tab == null || !tab.isInitialized() || tab.isHidden()) {
+        if (tab == null || !tab.isInitialized()) {
             // Tab.isInitialized() will be false if tab is in destroy process.
-            Log.d(TAG, "Tab is not avaliable for printing.");
+            Log.d(TAG, "Tab is not available for printing.");
             return false;
         }
+
+        if (tab.isHidden()) {
+            // A tab is not printable if it is hidden, which prevents background tabs from
+            // printing. However, some OS print UI flows can result in the Activity being stopped
+            // and therefore the tab being considered 'hidden'. During the OS print UI flows, users
+            // may invoke actions, like changing the print layout orientation, that cause this
+            // method to be invoked while the Tab is hidden. To allow printing to continue in these
+            // cases, we make an exception for the current tab.
+            MonotonicObservableSupplier<TabModelSelector> supplier =
+                    TabModelSelectorSupplier.from(tab.getWindowAndroid());
+            TabModelSelector selector = (supplier != null) ? supplier.get() : null;
+            if (selector == null || selector.getCurrentTab() != tab) {
+                Log.d(
+                        TAG,
+                        "Tab is not available for printing because it is hidden and not the"
+                                + " current tab.");
+                return false;
+            }
+        }
+
         return true;
     }
 

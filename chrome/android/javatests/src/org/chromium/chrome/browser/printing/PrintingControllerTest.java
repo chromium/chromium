@@ -36,6 +36,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -386,14 +387,29 @@ public class PrintingControllerTest {
         Tab currentTab =
                 ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().getTabAt(1));
 
-        // hidden (background) tab should not be allowed to print.
-        assertTrue("hiddenTab should be hidden.", hiddenTab.isHidden());
-        assertFalse(
-                "hiddenTab should not be allowed to print.", new TabPrinter(hiddenTab).canPrint());
+        // These asserts needs to be on the UI thread since they are inspecting tab
+        // state. (well... mainly canPrint() at the moment)
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // hidden (background) tab should not be allowed to print.
+                    assertTrue("hiddenTab should be hidden.", hiddenTab.isHidden());
+                    assertFalse(
+                            "hiddenTab should not be allowed to print.",
+                            new TabPrinter(hiddenTab).canPrint());
 
-        // current tab should be allowed to print.
-        assertFalse("currentTab should not be hidden.", currentTab.isHidden());
-        assertTrue("currentTab should be allowed to print.", new TabPrinter(currentTab).canPrint());
+                    // current tab should be allowed to print.
+                    assertFalse("currentTab should not be hidden.", currentTab.isHidden());
+                    assertTrue(
+                            "currentTab should be allowed to print.",
+                            new TabPrinter(currentTab).canPrint());
+
+                    // Hiding the current tab should still allow it to be printed.
+                    currentTab.hide(TabHidingType.ACTIVITY_HIDDEN);
+                    assertTrue("currentTab should be hidden.", currentTab.isHidden());
+                    assertTrue(
+                            "currentTab should be allowed to print even when hidden.",
+                            new TabPrinter(currentTab).canPrint());
+                });
     }
 
     /**

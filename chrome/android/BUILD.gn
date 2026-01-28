@@ -860,7 +860,10 @@ if (_is_default_toolchain) {
     if (enable_printing) {
       sources +=
           [ "java/src/org/chromium/chrome/browser/printing/TabPrinter.java" ]
-      deps += [ "//printing:printing_java" ]
+      deps += [
+        "//base:supplier_java",
+        "//printing:printing_java",
+      ]
     }
 
     # TODO(crbug.com/40167648): This is temporary to not break downstream targets.
