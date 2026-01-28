@@ -1539,15 +1539,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the custom passphrase is remembered per account, kept across signout,
 // and cleared when account is removed from device.
-// TODO(crbug.com/384646508): This test is flaky on the iPad simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testRememberCustomPassphraseAfterSignout \
-  FLAKY_testRememberCustomPassphraseAfterSignout
-#else
-#define MAYBE_testRememberCustomPassphraseAfterSignout \
-  testRememberCustomPassphraseAfterSignout
-#endif  // TARGET_OS_SIMULATOR
-- (void)MAYBE_testRememberCustomPassphraseAfterSignout {
+- (void)testRememberCustomPassphraseAfterSignout {
   // Enable custom passphrase.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
