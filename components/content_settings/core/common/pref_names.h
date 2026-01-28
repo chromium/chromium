@@ -215,6 +215,14 @@ inline constexpr char kManagedLocalNetworkAccessAllowedForUrls[] =
     "profile.managed_local_network_access_allowed_for_urls";
 inline constexpr char kManagedLocalNetworkAccessBlockedForUrls[] =
     "profile.managed_local_network_access_blocked_for_urls";
+inline constexpr char kManagedLocalNetworkAllowedForUrls[] =
+    "profile.managed_local_network_allowed_for_urls";
+inline constexpr char kManagedLocalNetworkBlockedForUrls[] =
+    "profile.managed_local_network_blocked_for_urls";
+inline constexpr char kManagedLoopbackNetworkAllowedForUrls[] =
+    "profile.managed_loopback_network_allowed_for_urls";
+inline constexpr char kManagedLoopbackNetworkBlockedForUrls[] =
+    "profile.managed_loopback_network_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests. This and kEnableNotificationCPSS can't both be true

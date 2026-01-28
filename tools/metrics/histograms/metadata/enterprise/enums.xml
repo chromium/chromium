@@ -2347,6 +2347,10 @@ chromium-metrics-reviews@google.com.
   <int value="1422" label="WebAppInstallByUserEnabled"/>
   <int value="1423" label="LocalNetworkAccessIpAddressSpaceOverrides"/>
   <int value="1424" label="RestrictPdfSaveToDriveAccountsToPattern"/>
+  <int value="1425" label="LocalNetworkAllowedForUrls"/>
+  <int value="1426" label="LocalNetworkBlockedForUrls"/>
+  <int value="1427" label="LoopbackNetworkAllowedForUrls"/>
+  <int value="1428" label="LoopbackNetworkBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

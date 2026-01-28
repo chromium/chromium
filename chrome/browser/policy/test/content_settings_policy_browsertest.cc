@@ -543,24 +543,50 @@ IN_PROC_BROWSER_TEST_F(WebPrintingPolicyTest, WebPrintingBlockedForUrls) {
 
 class LocalNetworkAccessPolicyTest : public PolicyTest {
  public:
-  ContentSetting GetLocalNetworkAccessDefaultContentSetting() {
+  ContentSetting GetLocalNetworkAccessDefaultContentSetting(
+      ContentSettingsType type) {
+    CHECK(type == ContentSettingsType::LOCAL_NETWORK_ACCESS ||
+          type == ContentSettingsType::LOCAL_NETWORK ||
+          type == ContentSettingsType::LOOPBACK_NETWORK);
     return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-        ->GetDefaultContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS,
-                                   /*provider_id=*/nullptr);
+        ->GetDefaultContentSetting(type, /*provider_id=*/nullptr);
   }
 
-  ContentSetting GetLocalNetworkAccessContentSetting(const GURL& url) {
+  ContentSetting GetLNAContentSetting(ContentSettingsType type,
+                                      const GURL& url) {
+    CHECK(type == ContentSettingsType::LOCAL_NETWORK_ACCESS ||
+          type == ContentSettingsType::LOCAL_NETWORK ||
+          type == ContentSettingsType::LOOPBACK_NETWORK);
     return HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-        ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
-                            ContentSettingsType::LOCAL_NETWORK_ACCESS);
+        ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url, type);
+  }
+
+  bool CheckAllLNAContentSettingsAre(ContentSetting content_setting,
+                                     const GURL& url) {
+    bool result = true;
+    result &=
+        content_setting ==
+        GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS, url);
+    result &= content_setting ==
+              GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK, url);
+    result &= content_setting ==
+              GetLNAContentSetting(ContentSettingsType::LOOPBACK_NETWORK, url);
+    return result;
   }
 };
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, Default) {
   // By default, we should be asking the user
   EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(GURL("http://bleep.com")));
-  EXPECT_EQ(CONTENT_SETTING_ASK, GetLocalNetworkAccessDefaultContentSetting());
+            GetLocalNetworkAccessDefaultContentSetting(
+                ContentSettingsType::LOCAL_NETWORK_ACCESS));
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetLocalNetworkAccessDefaultContentSetting(
+                                     ContentSettingsType::LOCAL_NETWORK));
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetLocalNetworkAccessDefaultContentSetting(
+                                     ContentSettingsType::LOOPBACK_NETWORK));
+
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ASK,
+                                            GURL("http://bleep.com")));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowByURL) {
@@ -574,39 +600,38 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowByURL) {
   UpdateProviderPolicy(policies);
 
   // Domain is not the in allowlist.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(GURL("http://default.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ASK,
+                                            GURL("http://default.com")));
 
   // Path does not matter, only the origin.
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            GetLocalNetworkAccessContentSetting(GURL("http://bleep.com/heyo")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ALLOW,
+                                            GURL("http://bleep.com/heyo")));
 
   // Scheme matters: https is not http.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(GURL("https://bleep.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ASK,
+                                            GURL("https://bleep.com")));
 
   // Subdomains not allowed for bleep.com
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(GURL("http://fez.bleep.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ASK,
+                                            GURL("http://fez.bleep.com")));
 
   // Subdomains are allowed for meep.com
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            GetLocalNetworkAccessContentSetting(GURL("http://fez.meep.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ALLOW,
+                                            GURL("http://fez.meep.com")));
 
   // Port is checked too.
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetLocalNetworkAccessContentSetting(GURL(
-                                       "http://woohoo.com:1234/index.html")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(
+      CONTENT_SETTING_ALLOW, GURL("http://woohoo.com:1234/index.html")));
 
   // The wrong port does not match (default is 80).
-  EXPECT_EQ(CONTENT_SETTING_ASK, GetLocalNetworkAccessContentSetting(
-                                     GURL("http://woohoo.com/index.html")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(
+      CONTENT_SETTING_ASK, GURL("http://woohoo.com/index.html")));
 
   // Opaque origins never match the allowlist.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(
-                url::Origin::Create(GURL("http://bleep.com"))
-                    .DeriveNewOpaqueOrigin()
-                    .GetURL()));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(
+      CONTENT_SETTING_ASK, url::Origin::Create(GURL("http://bleep.com"))
+                               .DeriveNewOpaqueOrigin()
+                               .GetURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowEverythingByURL) {
@@ -618,15 +643,14 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowEverythingByURL) {
   UpdateProviderPolicy(policies);
 
   // Everything is allowed!
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            GetLocalNetworkAccessContentSetting(GURL("https://default.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ALLOW,
+                                            GURL("https://default.com")));
 
   // Even opaque origins!
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            GetLocalNetworkAccessContentSetting(
-                url::Origin::Create(GURL("http://bleep.com"))
-                    .DeriveNewOpaqueOrigin()
-                    .GetURL()));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(
+      CONTENT_SETTING_ALLOW, url::Origin::Create(GURL("http://bleep.com"))
+                                 .DeriveNewOpaqueOrigin()
+                                 .GetURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockByURL) {
@@ -640,39 +664,38 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockByURL) {
   UpdateProviderPolicy(policies);
 
   // Domain is not the in allowlist.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(GURL("http://default.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ASK,
+                                            GURL("http://default.com")));
 
   // Path does not matter, only the origin.
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetLocalNetworkAccessContentSetting(GURL("http://bleep.com/heyo")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_BLOCK,
+                                            GURL("http://bleep.com/heyo")));
 
   // Scheme matters: https is not http.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(GURL("https://bleep.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ASK,
+                                            GURL("https://bleep.com")));
 
   // Subdomains not allowed for bleep.com
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(GURL("http://fez.bleep.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ASK,
+                                            GURL("http://fez.bleep.com")));
 
   // Subdomains are allowed for meep.com
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetLocalNetworkAccessContentSetting(GURL("http://fez.meep.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_BLOCK,
+                                            GURL("http://fez.meep.com")));
 
   // Port is checked too.
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetLocalNetworkAccessContentSetting(GURL(
-                                       "http://woohoo.com:1234/index.html")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(
+      CONTENT_SETTING_BLOCK, GURL("http://woohoo.com:1234/index.html")));
 
   // The wrong port does not match (default is 80).
-  EXPECT_EQ(CONTENT_SETTING_ASK, GetLocalNetworkAccessContentSetting(
-                                     GURL("http://woohoo.com/index.html")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(
+      CONTENT_SETTING_ASK, GURL("http://woohoo.com/index.html")));
 
   // Opaque origins never match the blocklist.
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(
-                url::Origin::Create(GURL("http://bleep.com"))
-                    .DeriveNewOpaqueOrigin()
-                    .GetURL()));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(
+      CONTENT_SETTING_ASK, url::Origin::Create(GURL("http://bleep.com"))
+                               .DeriveNewOpaqueOrigin()
+                               .GetURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockEverythingByUrl) {
@@ -684,15 +707,14 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockEverythingByUrl) {
   UpdateProviderPolicy(policies);
 
   // Everything is blocked!
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetLocalNetworkAccessContentSetting(GURL("https://default.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_BLOCK,
+                                            GURL("https://default.com")));
 
   // Even opaque origins!
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetLocalNetworkAccessContentSetting(
-                url::Origin::Create(GURL("http://bleep.com"))
-                    .DeriveNewOpaqueOrigin()
-                    .GetURL()));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(
+      CONTENT_SETTING_BLOCK, url::Origin::Create(GURL("http://bleep.com"))
+                                 .DeriveNewOpaqueOrigin()
+                                 .GetURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockOverridesAllow) {
@@ -705,11 +727,52 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockOverridesAllow) {
   allowlist.Append(base::Value("http://bleep.com"));
   SetPolicy(&policies, key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
+
+  base::Value::List local_blocklist;
+  local_blocklist.Append(base::Value("http://local.bleep.com"));
+  SetPolicy(&policies, key::kLocalNetworkBlockedForUrls,
+            base::Value(std::move(local_blocklist)));
+  base::Value::List local_allowlist;
+  local_allowlist.Append(base::Value("http://local.bleep.com"));
+  SetPolicy(&policies, key::kLocalNetworkAllowedForUrls,
+            base::Value(std::move(local_allowlist)));
+
+  base::Value::List loopback_blocklist;
+  loopback_blocklist.Append(base::Value("http://loopback.bleep.com"));
+  SetPolicy(&policies, key::kLoopbackNetworkBlockedForUrls,
+            base::Value(std::move(loopback_blocklist)));
+  base::Value::List loopback_allowlist;
+  loopback_allowlist.Append(base::Value("http://loopback.bleep.com"));
+  SetPolicy(&policies, key::kLoopbackNetworkAllowedForUrls,
+            base::Value(std::move(loopback_allowlist)));
+
   UpdateProviderPolicy(policies);
 
-  // http://bleep.com is blocked
+  // http://bleep.com is blocked for all
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_BLOCK,
+                                            GURL("http://bleep.com")));
+
+  // http://local.bleep.com is blocked for only LOCAL_NETWORK
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetLocalNetworkAccessContentSetting(GURL("http://bleep.com")));
+            GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK,
+                                 GURL("http://local.bleep.com")));
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS,
+                                 GURL("http://local.bleep.com")));
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetLNAContentSetting(ContentSettingsType::LOOPBACK_NETWORK,
+                                 GURL("http://local.bleep.com")));
+
+  // http://loopback.bleep.com is blocked for only LOOPBACK_NETWORK
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK,
+                                 GURL("http://loopback.bleep.com")));
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS,
+                                 GURL("http://loopback.bleep.com")));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            GetLNAContentSetting(ContentSettingsType::LOOPBACK_NETWORK,
+                                 GURL("http://loopback.bleep.com")));
 }
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, MixBlockAndAllowPolicies) {
@@ -725,16 +788,44 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, MixBlockAndAllowPolicies) {
   UpdateProviderPolicy(policies);
 
   // http://bleep.com is blocked
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetLocalNetworkAccessContentSetting(GURL("http://bleep.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_BLOCK,
+                                            GURL("http://bleep.com")));
 
   // http://reallysafe.bleep.com is allowed
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetLocalNetworkAccessContentSetting(
-                                       GURL("http://reallysafe.bleep.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(
+      CONTENT_SETTING_ALLOW, GURL("http://reallysafe.bleep.com")));
 
   // https://bleep.com isn't on either list
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            GetLocalNetworkAccessContentSetting(GURL("https://bleep.com")));
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ASK,
+                                            GURL("https://bleep.com")));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, SpecificPoliciesOverride) {
+  PolicyMap policies;
+  base::Value::List blocklist;
+  blocklist.Append(base::Value("http://[*.]bleep.com"));
+  SetPolicy(&policies, key::kLocalNetworkAccessBlockedForUrls,
+            base::Value(std::move(blocklist)));
+  base::Value::List local_allowlist;
+  local_allowlist.Append(base::Value("http://[*.]bleep.com"));
+  SetPolicy(&policies, key::kLocalNetworkAllowedForUrls,
+            base::Value(std::move(local_allowlist)));
+  UpdateProviderPolicy(policies);
+
+  // http://bleep.com is allowed, but only for LOCAL_NETWORK
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK,
+                                 GURL("http://localonly.bleep.com")));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            GetLNAContentSetting(ContentSettingsType::LOCAL_NETWORK_ACCESS,
+                                 GURL("http://localonly.bleep.com")));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            GetLNAContentSetting(ContentSettingsType::LOOPBACK_NETWORK,
+                                 GURL("http://localonly.bleep.com")));
+
+  // https://bleep.com isn't on either list
+  EXPECT_TRUE(CheckAllLNAContentSettingsAre(CONTENT_SETTING_ASK,
+                                            GURL("https://bleep.com")));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -1423,6 +1423,10 @@ policies:
   1422: WebAppInstallByUserEnabled
   1423: LocalNetworkAccessIpAddressSpaceOverrides
   1424: RestrictPdfSaveToGoogleDriveAccountsToPattern
+  1425: LocalNetworkAllowedForUrls
+  1426: LocalNetworkBlockedForUrls
+  1427: LoopbackNetworkAllowedForUrls
+  1428: LoopbackNetworkBlockedForUrls
 
 atomic_groups:
   1: Homepage

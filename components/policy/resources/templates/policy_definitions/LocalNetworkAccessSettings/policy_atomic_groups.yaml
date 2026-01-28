@@ -4,5 +4,9 @@ LocalNetworkAccessSettings:
   - LocalNetworkAccessAllowedForUrls
   - LocalNetworkAccessBlockedForUrls
   - LocalNetworkAccessIpAddressSpaceOverrides
+  - LocalNetworkAllowedForUrls
+  - LocalNetworkBlockedForUrls
   - LocalNetworkAccessRestrictionsEnabled
   - LocalNetworkAccessRestrictionsTemporaryOptOut
+  - LoopbackNetworkAllowedForUrls
+  - LoopbackNetworkBlockedForUrls

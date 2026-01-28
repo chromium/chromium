@@ -167,8 +167,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_BLOCK},
         // LocalNetworkAccess:
         // * Block takes precedence over Allow
-        // * Policies apply to all 3 LNA permissions while we migrate to
-        //   split permissions (see crbug.com/465491626).
+        // * LocalNetworkAccessAllowed/Blocked apply to all 3 LNA permissions
+        // * More specific permission (LocalNetworkAllowed/Blocked and
+        //   LoopbackNetworkAllowed/Blocked) take precedence over the more
+        //   general LocalNetworkAccessAllowed/Blocked policies
         {prefs::kManagedLocalNetworkAccessAllowedForUrls,
          ContentSettingsType::LOCAL_NETWORK_ACCESS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedLocalNetworkAccessBlockedForUrls,
@@ -181,6 +183,15 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::LOOPBACK_NETWORK, CONTENT_SETTING_ALLOW},
         {prefs::kManagedLocalNetworkAccessBlockedForUrls,
          ContentSettingsType::LOOPBACK_NETWORK, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedLocalNetworkAllowedForUrls,
+         ContentSettingsType::LOCAL_NETWORK, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedLocalNetworkBlockedForUrls,
+         ContentSettingsType::LOCAL_NETWORK, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedLoopbackNetworkAllowedForUrls,
+         ContentSettingsType::LOOPBACK_NETWORK, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedLoopbackNetworkBlockedForUrls,
+         ContentSettingsType::LOOPBACK_NETWORK, CONTENT_SETTING_BLOCK},
+
         {prefs::kManagedIdleDetectionAllowedForUrls,
          ContentSettingsType::IDLE_DETECTION, CONTENT_SETTING_ALLOW},
         {prefs::kManagedIdleDetectionBlockedForUrls,
@@ -219,6 +230,10 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedLegacyCookieScopeForDomains,
     prefs::kManagedLocalNetworkAccessAllowedForUrls,
     prefs::kManagedLocalNetworkAccessBlockedForUrls,
+    prefs::kManagedLocalNetworkAllowedForUrls,
+    prefs::kManagedLocalNetworkBlockedForUrls,
+    prefs::kManagedLoopbackNetworkAllowedForUrls,
+    prefs::kManagedLoopbackNetworkBlockedForUrls,
     prefs::kManagedNotificationsAllowedForUrls,
     prefs::kManagedNotificationsBlockedForUrls,
     prefs::kManagedPopupsAllowedForUrls,
