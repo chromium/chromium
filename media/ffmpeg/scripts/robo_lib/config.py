@@ -340,7 +340,8 @@ class RoboConfiguration:
         return shell.check_run(args, **kwargs)
 
     def CheckCall(self, *args, **kwargs):
-        if self.Call(*args, **kwargs):
+        fwd_kwargs = {k:v for k,v in kwargs.items() if k != "errmsg"}
+        if self.Call(*args, **fwd_kwargs):
             if "errmsg" in kwargs:
                 raise Exception(kwargs["errmsg"])
             arglist = list(args)
