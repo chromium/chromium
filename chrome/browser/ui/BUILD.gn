@@ -5632,10 +5632,12 @@ source_set("tab_search_feature") {
     ":ui_features",
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/glic",
     "//chrome/common:buildflags",
     "//components/variations/service",
   ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }
 
 source_set("browser_navigator_params_headers") {

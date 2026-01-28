@@ -7,11 +7,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
+#include "chrome/common/buildflags.h"
 #include "components/skills/public/skills_service.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/host/glic.mojom.h"
+#endif
 
 namespace tabs {
 class TabInterface;
