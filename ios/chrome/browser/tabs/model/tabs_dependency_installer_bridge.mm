@@ -10,10 +10,9 @@ TabsDependencyInstallerBridge::~TabsDependencyInstallerBridge() = default;
 
 void TabsDependencyInstallerBridge::StartObserving(
     id<TabsDependencyInstalling> installing,
-    Browser* browser,
-    Policy policy) {
+    Browser* browser) {
   installing_ = installing;
-  TabsDependencyInstaller::StartObserving(browser, policy);
+  TabsDependencyInstaller::StartObserving(browser);
 }
 
 void TabsDependencyInstallerBridge::StopObserving() {

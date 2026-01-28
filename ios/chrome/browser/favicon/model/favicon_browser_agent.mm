@@ -11,7 +11,7 @@
 
 FaviconBrowserAgent::FaviconBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
-  StartObserving(browser, TabsDependencyInstaller::Policy::kOnlyRealized);
+  StartObserving(browser);
 }
 
 FaviconBrowserAgent::~FaviconBrowserAgent() {

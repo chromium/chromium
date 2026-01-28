@@ -47,7 +47,7 @@ OverlayPresenterImpl* OverlayPresenterImpl::Container::PresenterForModality(
 OverlayPresenterImpl::OverlayPresenterImpl(Browser* browser,
                                            OverlayModality modality)
     : modality_(modality), web_state_list_(browser->GetWebStateList()) {
-  StartObserving(browser, Policy::kAccordingToFeature);
+  StartObserving(browser);
   DCHECK(web_state_list_);
   SetActiveWebState(web_state_list_->GetActiveWebState());
 }

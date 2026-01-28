@@ -51,8 +51,7 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _webStateList = browser->GetWebStateList();
-    _dependencyInstallerBridge.StartObserving(
-        self, browser, TabsDependencyInstaller::Policy::kAccordingToFeature);
+    _dependencyInstallerBridge.StartObserving(self, browser);
 
     // Initialize observations.
     _prefChangeRegistrar.Init(browser->GetProfile()->GetPrefs());

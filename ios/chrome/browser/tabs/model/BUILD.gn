@@ -216,7 +216,6 @@ source_set("dependency_installer") {
     "//base",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
   ]
@@ -275,7 +274,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/synced_sessions/model:test_support",
     "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/test:test_support",
-    "//ios/web/common:features",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

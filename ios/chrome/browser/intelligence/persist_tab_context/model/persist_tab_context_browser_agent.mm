@@ -376,7 +376,7 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
                 &PersistTabContextBrowserAgent::OnSceneActivationLevelChanged,
                 weak_factory_.GetWeakPtr())];
     [browser->GetSceneState() addObserver:persist_tab_context_state_agent_];
-    StartObserving(browser, Policy::kAccordingToFeature);
+    StartObserving(browser);
 
     PrefService* prefs = profile->GetPrefs();
     CHECK(prefs);

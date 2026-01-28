@@ -86,7 +86,7 @@ double kViewTransitionTime = 1.5;
 
 BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
   if (IsGeminiCopresenceEnabled()) {
-    StartObserving(browser_, TabsDependencyInstaller::Policy::kOnlyRealized);
+    StartObserving(browser_);
 
     pref_change_registrar_.Init(browser_->GetProfile()->GetPrefs());
     pref_change_registrar_.Add(

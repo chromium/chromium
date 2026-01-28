@@ -44,7 +44,7 @@ NSArray<SnapshotIDWrapper*>* GetSnapshotIDs(Browser* browser) {
 
 SnapshotBrowserAgent::SnapshotBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
-  StartObserving(browser, Policy::kAccordingToFeature);
+  StartObserving(browser);
 }
 
 SnapshotBrowserAgent::~SnapshotBrowserAgent() {

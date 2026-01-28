@@ -32,7 +32,7 @@ SyncedWindowDelegateBrowserAgent::SyncedWindowDelegateBrowserAgent(
     Browser* browser)
     : BrowserUserData(browser),
       session_id_(SessionID::NewUnique()) {
-  StartObserving(browser, Policy::kAccordingToFeature);
+  StartObserving(browser);
 }
 
 SyncedWindowDelegateBrowserAgent::~SyncedWindowDelegateBrowserAgent() {

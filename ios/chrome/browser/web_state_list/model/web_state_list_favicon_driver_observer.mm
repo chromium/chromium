@@ -10,7 +10,7 @@ WebStateListFaviconDriverObserver::WebStateListFaviconDriverObserver(
     Browser* browser,
     id<WebStateFaviconDriverObserver> observer)
     : favicon_observer_(observer) {
-  StartObserving(browser, Policy::kAccordingToFeature);
+  StartObserving(browser);
 }
 
 WebStateListFaviconDriverObserver::~WebStateListFaviconDriverObserver() {

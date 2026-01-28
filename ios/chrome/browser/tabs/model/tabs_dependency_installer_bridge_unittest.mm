@@ -67,8 +67,7 @@ class TabsDependencyInstallerBridgeTest : public PlatformTest {
 // Test that inserting and replacing web states calls the dependency installer
 // the expected number of times.
 TEST_F(TabsDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
-  bridge_.StartObserving(installer_, browser_.get(),
-                         TabsDependencyInstaller::Policy::kOnlyRealized);
+  bridge_.StartObserving(installer_, browser_.get());
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web_state_list_->InsertWebState(
       std::move(web_state_1),
@@ -82,8 +81,7 @@ TEST_F(TabsDependencyInstallerBridgeTest, InsertReplaceAndRemoveWebState) {
 
 // Tests that closing web states calls the dependency installed as expected.
 TEST_F(TabsDependencyInstallerBridgeTest, DeleteWebState) {
-  bridge_.StartObserving(installer_, browser_.get(),
-                         TabsDependencyInstaller::Policy::kOnlyRealized);
+  bridge_.StartObserving(installer_, browser_.get());
 
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state_list_->InsertWebState(
@@ -98,8 +96,7 @@ TEST_F(TabsDependencyInstallerBridgeTest, DeleteWebState) {
 // Tests that changing the active web states calls the dependency installer
 // as expected.
 TEST_F(TabsDependencyInstallerBridgeTest, ActivateWebState) {
-  bridge_.StartObserving(installer_, browser_.get(),
-                         TabsDependencyInstaller::Policy::kOnlyRealized);
+  bridge_.StartObserving(installer_, browser_.get());
 
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web_state_list_->InsertWebState(
@@ -123,8 +120,7 @@ TEST_F(TabsDependencyInstallerBridgeTest, ActivateWebState) {
 
 // Tests that stopping the observation removes all web states.
 TEST_F(TabsDependencyInstallerBridgeTest, RemoveOnBridgeDestruction) {
-  bridge_.StartObserving(installer_, browser_.get(),
-                         TabsDependencyInstaller::Policy::kOnlyRealized);
+  bridge_.StartObserving(installer_, browser_.get());
   auto web_state_1 = std::make_unique<web::FakeWebState>();
   web_state_list_->InsertWebState(
       std::move(web_state_1),

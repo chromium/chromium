@@ -89,7 +89,7 @@ bool UserActionRequiredToFixPasswordSyncError(ProfileIOS* profile) {
 
 SyncErrorBrowserAgent::SyncErrorBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
-  StartObserving(browser_, TabsDependencyInstaller::Policy::kOnlyRealized);
+  StartObserving(browser_);
   profile_state_observer_ = [[SyncErrorBrowserAgentProfileStateObserver alloc]
        initWithProfileState:browser_->GetSceneState().profileState
       syncErrorBrowserAgent:this];

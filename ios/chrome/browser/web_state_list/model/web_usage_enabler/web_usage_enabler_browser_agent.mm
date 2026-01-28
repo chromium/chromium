@@ -10,7 +10,7 @@
 
 WebUsageEnablerBrowserAgent::WebUsageEnablerBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
-  StartObserving(browser, Policy::kOnlyRealized);
+  StartObserving(browser);
 }
 
 WebUsageEnablerBrowserAgent::~WebUsageEnablerBrowserAgent() {

@@ -16,8 +16,7 @@
 StartSurfaceRecentTabBrowserAgent::StartSurfaceRecentTabBrowserAgent(
     Browser* browser)
     : BrowserUserData(browser) {
-  StartObserving(browser_,
-                 TabsDependencyInstaller::Policy::kAccordingToFeature);
+  StartObserving(browser_);
 }
 
 StartSurfaceRecentTabBrowserAgent::~StartSurfaceRecentTabBrowserAgent() {
