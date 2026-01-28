@@ -868,7 +868,7 @@ public class LocationBarCoordinator
     }
 
     private void onFuseboxStateChange(@FuseboxState int state) {
-        if (!mUrlCoordinator.hasFocus()) return;
+        if (mUrlCoordinator == null || !mUrlCoordinator.hasFocus()) return;
         View addButton = mLocationBarLayout.findViewById(R.id.location_bar_attachments_add);
         if (addButton == null) return;
 
