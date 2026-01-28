@@ -462,10 +462,12 @@ export class WhatsNewAppElement extends CrLitElement {
   static override get properties() {
     return {
       url_: {type: String},
+      isStaging_: {type: Boolean},
     };
   }
 
   protected accessor url_: string = '';
+  protected accessor isStaging_: boolean = loadTimeData.getBoolean('isStaging');
 
   private isAutoOpen_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
@@ -490,7 +492,7 @@ export class WhatsNewAppElement extends CrLitElement {
     super.connectedCallback();
 
     WhatsNewProxyImpl.getInstance()
-        .handler.getServerUrl(loadTimeData.getBoolean('isStaging'))
+        .handler.getServerUrl(this.isStaging_)
         .then(({url}: {url: Url}) => this.handleUrlResult_(url));
 
     // Beforeunload events are unreliable in iframes when the tab is closed

@@ -4,6 +4,7 @@
 
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -24,7 +25,9 @@ function getUrlForFixture(filename: string, query?: string): string {
 
 suite('WhatsNewAppTest', function() {
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.resetForTesting({isStaging: false});
+    document.body.innerHTML =
+        ((window.trustedTypes!.emptyHTML as any) as string);
   });
 
   test('with query parameters', async () => {
@@ -138,7 +141,7 @@ suite('WhatsNewAppTest', function() {
 
     let expanded = await proxy.handler.whenCalled('recordExploreMoreToggled');
     assertEquals(true, expanded);
-    await proxy.handler.resetResolver('recordExploreMoreToggled');
+    proxy.handler.resetResolver('recordExploreMoreToggled');
     expanded = await proxy.handler.whenCalled('recordExploreMoreToggled');
     assertEquals(false, expanded);
   });
@@ -245,7 +248,7 @@ suite('WhatsNewAppTest', function() {
 
     let expanded = await proxy.handler.whenCalled('recordQrCodeToggled');
     assertEquals(true, expanded);
-    await proxy.handler.resetResolver('recordQrCodeToggled');
+    proxy.handler.resetResolver('recordQrCodeToggled');
     expanded = await proxy.handler.whenCalled('recordQrCodeToggled');
     assertEquals(false, expanded);
   });
@@ -262,7 +265,7 @@ suite('WhatsNewAppTest', function() {
         await proxy.handler.whenCalled('recordExpandMediaToggled');
     assertEquals('ChromeFeature', expandedMedia[0]);
     assertEquals(true, expandedMedia[1]);
-    await proxy.handler.resetResolver('recordExpandMediaToggled');
+    proxy.handler.resetResolver('recordExpandMediaToggled');
     expandedMedia = await proxy.handler.whenCalled('recordExpandMediaToggled');
     assertEquals('ChromeFeature', expandedMedia[0]);
     assertEquals(false, expandedMedia[1]);
@@ -329,5 +332,29 @@ suite('WhatsNewAppTest', function() {
 
     await proxy.handler.whenCalled('recordCtaClick');
     assertEquals(1, proxy.handler.getCallCount('recordCtaClick'));
+  });
+
+  const testsForStaging = [true, false];
+  testsForStaging.forEach(isStagingEnabled => {
+    test(
+        `with staging environment set to enabled=${
+            isStagingEnabled.toString()}`,
+        async () => {
+          loadTimeData.overrideValues({isStaging: isStagingEnabled});
+
+          const proxy = new TestWhatsNewBrowserProxy(whatsNewURL);
+          WhatsNewProxyImpl.setInstance(proxy);
+          window.history.replaceState({}, '', '/');
+          const whatsNewApp = document.createElement('whats-new-app');
+          document.body.appendChild(whatsNewApp);
+
+          await proxy.handler.whenCalled('getServerUrl');
+          await microtasksFinished();
+
+          const stagingIndicator =
+              whatsNewApp.shadowRoot!.querySelector<HTMLIFrameElement>(
+                  '#staging-indicator');
+          assertEquals(Boolean(stagingIndicator), isStagingEnabled);
+        });
   });
 });
