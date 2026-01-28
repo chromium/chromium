@@ -55,6 +55,27 @@ constexpr char kType[] = "type";
 // JSON formatted extension input data.
 constexpr char kExtensions[] = "extensions";
 
+// Event keys and types.
+constexpr char kEvent[] = "event";
+constexpr char kHandleGetRequest[] = "handleGetRequest";
+constexpr char kHandleCreateRequest[] = "handleCreateRequest";
+constexpr char kLogGetRequest[] = "logGetRequest";
+constexpr char kLogCreateRequest[] = "logCreateRequest";
+constexpr char kLogGetResolved[] = "logGetResolved";
+constexpr char kLogCreateResolved[] = "logCreateResolved";
+
+// Parameter keys for logging.
+constexpr char kRpId[] = "rpId";
+constexpr char kCredentialId[] = "credentialId";
+constexpr char kIsGpm[] = "isGpm";
+
+// Test values.
+constexpr char kOtherKey[] = "other";
+constexpr char kValue[] = "value";
+constexpr char kUnknownEvent[] = "unknownEventString";
+constexpr char kExampleRpId[] = "example.com";
+constexpr char kExampleCredId[] = "cred123";
+
 // Creates a base 64 encoded string larger than the maximum PRF input size.
 std::string BuildLargeBase64String() {
   const std::string pattern64 = "eHh4";  // Base 64 encoding of "xxx".
@@ -278,6 +299,12 @@ void VerifyRequestInfoError(const base::DictValue& dict,
   auto request_info = BuildRequestInfo(dict);
   ASSERT_FALSE(request_info.has_value());
   ASSERT_EQ(request_info.error(), error);
+}
+
+// Helper function for parser tests that don't depend on the GPM check result
+// or expect a false result.
+bool IsGpmPasskey(const std::string&, const std::string&) {
+  return false;
 }
 
 }  // namespace
@@ -632,6 +659,113 @@ TEST_F(PasskeyRequestParserTest, ToAuthenticationExtensionsClientOutputsJSON) {
   ASSERT_TRUE(second);
   EXPECT_EQ(*first, Base64UrlEncode(base::span(prf_result_64).first(32u)));
   EXPECT_EQ(*second, Base64UrlEncode(base::span(prf_result_64).subspan(32u)));
+}
+
+// Tests that ParsePasskeyScriptEvent handles invalid or missing event data.
+TEST_F(PasskeyRequestParserTest, ParseInvalidEventData) {
+  // Test case 1: Empty dictionary.
+  base::Value::Dict dict;
+  EXPECT_FALSE(ParsePasskeyScriptEvent(dict, &IsGpmPasskey).has_value());
+
+  // Test case 2: Missing "event" key.
+  dict.Set(kOtherKey, kValue);
+  EXPECT_FALSE(ParsePasskeyScriptEvent(dict, &IsGpmPasskey).has_value());
+
+  // Test case 3: Unknown event string.
+  dict.Set(kEvent, kUnknownEvent);
+  EXPECT_FALSE(ParsePasskeyScriptEvent(dict, &IsGpmPasskey).has_value());
+}
+
+// Tests parsing of simple PasskeyScriptEvent types without additional
+// parameters.
+TEST_F(PasskeyRequestParserTest, ParseSimpleEventTypes) {
+  // Test case 1: Handle Get.
+  {
+    base::Value::Dict dict;
+    dict.Set(kEvent, kHandleGetRequest);
+    auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*result, PasskeyScriptEvent::kHandleGetRequest);
+  }
+
+  // Test case 2: Handle Create.
+  {
+    base::Value::Dict dict;
+    dict.Set(kEvent, kHandleCreateRequest);
+    auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*result, PasskeyScriptEvent::kHandleCreateRequest);
+  }
+
+  // Test case 3: Log Get.
+  {
+    base::Value::Dict dict;
+    dict.Set(kEvent, kLogGetRequest);
+    auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*result, PasskeyScriptEvent::kLogGetRequest);
+  }
+
+  // Test case 4: Log Create.
+  {
+    base::Value::Dict dict;
+    dict.Set(kEvent, kLogCreateRequest);
+    auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*result, PasskeyScriptEvent::kLogCreateRequest);
+  }
+}
+
+// Tests ParsePasskeyScriptEvent logic for "logGetResolved" based on GPM status.
+TEST_F(PasskeyRequestParserTest, ParseLogGetResolvedEvent) {
+  base::Value::Dict dict;
+  dict.Set(kEvent, kLogGetResolved);
+
+  // Test case 1: Missing required parameters (rpId, credentialId).
+  EXPECT_FALSE(ParsePasskeyScriptEvent(dict, &IsGpmPasskey).has_value());
+
+  dict.Set(kRpId, kExampleRpId);
+  dict.Set(kCredentialId, kExampleCredId);
+
+  // Test case 2: Lambda returns TRUE (Credential found in GPM).
+  auto result_gpm = ParsePasskeyScriptEvent(
+      dict, [](const std::string& rp, const std::string& id) {
+        EXPECT_EQ(rp, kExampleRpId);
+        EXPECT_EQ(id, kExampleCredId);
+        return true;
+      });
+  ASSERT_TRUE(result_gpm.has_value());
+  EXPECT_EQ(*result_gpm, PasskeyScriptEvent::kLogGetResolvedGpm);
+
+  // Test case 3: Lambda returns FALSE (Credential NOT found).
+  auto result_non_gpm = ParsePasskeyScriptEvent(
+      dict, [](const std::string&, const std::string&) { return false; });
+  ASSERT_TRUE(result_non_gpm.has_value());
+  EXPECT_EQ(*result_non_gpm, PasskeyScriptEvent::kLogGetResolvedNonGpm);
+}
+
+// Tests ParsePasskeyScriptEvent logic for "logCreateResolved" based on the
+// "isGpm" flag.
+TEST_F(PasskeyRequestParserTest, ParseEventLogCreateResolved) {
+  base::Value::Dict dict;
+  dict.Set(kEvent, kLogCreateResolved);
+
+  // Test case 1: Missing "isGpm" parameter.
+  EXPECT_FALSE(ParsePasskeyScriptEvent(dict, &IsGpmPasskey).has_value());
+
+  // Test case 2: isGpm = true.
+  dict.Set(kIsGpm, true);
+  auto result_gpm = ParsePasskeyScriptEvent(
+      dict, [](const std::string&, const std::string&) { return false; });
+  ASSERT_TRUE(result_gpm.has_value());
+  EXPECT_EQ(*result_gpm, PasskeyScriptEvent::kLogCreateResolvedGpm);
+
+  // Test case 3: isGpm = false.
+  dict.Set(kIsGpm, false);
+  auto result_non_gpm = ParsePasskeyScriptEvent(
+      dict, [](const std::string&, const std::string&) { return false; });
+  ASSERT_TRUE(result_non_gpm.has_value());
+  EXPECT_EQ(*result_non_gpm, PasskeyScriptEvent::kLogCreateResolvedNonGpm);
 }
 
 }  // namespace webauthn
