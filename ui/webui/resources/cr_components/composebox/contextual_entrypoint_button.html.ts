@@ -53,6 +53,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
       .fileNum="${this.fileNum}"
       .disabledTabIds="${this.disabledTabIds}"
       .tabSuggestions="${this.tabSuggestions}"
+      .inputState="${this.inputState}"
       @close="${this.onMenuClose_}">
   </cr-composebox-contextual-action-menu>
 <!--_html_template_end_-->`;

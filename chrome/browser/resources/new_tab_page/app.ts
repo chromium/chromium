@@ -19,7 +19,6 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {ContextualUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
-import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -34,6 +33,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {ActionChipsRetrievalState} from './action_chips/action_chips.js';
@@ -455,7 +455,8 @@ export class AppElement extends AppElementBase {
   private showWebstoreToastListenerId_: number|null = null;
   private pendingComposeboxContextFiles_: ContextualUpload[] = [];
   private pendingComposeboxText_: string = '';
-  private pendingComposeboxMode_: ComposeboxMode = ComposeboxMode.DEFAULT;
+  private pendingComposeboxMode_: ToolMode = ToolMode.kUnspecified;
+  private pendingComposeboxModel_: ModelMode = ModelMode.kUnspecified;
   private pendingAutoRemovalToasts_:
       Array<{message: string, undo: () => void}> = [];
 
@@ -865,20 +866,23 @@ export class AppElement extends AppElementBase {
 
   protected onComposeboxInitialized_(e: CustomEvent<{
     initializeComposeboxState:
-        (text: string, files: ContextualUpload[], mode: ComposeboxMode) => void,
+        (text: string, files: ContextualUpload[], mode: ToolMode,
+         model: number) => void,
   }>) {
     e.detail.initializeComposeboxState(
         this.pendingComposeboxText_, this.pendingComposeboxContextFiles_,
-        this.pendingComposeboxMode_);
+        this.pendingComposeboxMode_, this.pendingComposeboxModel_);
     this.pendingComposeboxContextFiles_ = [];
     this.pendingComposeboxText_ = '';
-    this.pendingComposeboxMode_ = ComposeboxMode.DEFAULT;
+    this.pendingComposeboxMode_ = ToolMode.kUnspecified;
+    this.pendingComposeboxModel_ = ModelMode.kUnspecified;
   }
 
   protected openComposebox_(e: CustomEvent<{
     searchboxText: string,
     contextFiles: ContextualUpload[],
-    mode: ComposeboxMode,
+    mode: ToolMode,
+    model: ModelMode,
   }>) {
     if (e.detail.searchboxText) {
       this.pendingComposeboxText_ = e.detail.searchboxText;
@@ -887,6 +891,7 @@ export class AppElement extends AppElementBase {
       this.pendingComposeboxContextFiles_ = e.detail.contextFiles;
     }
     this.pendingComposeboxMode_ = e.detail.mode;
+    this.pendingComposeboxModel_ = e.detail.model;
     this.toggleComposebox_();
   }
 

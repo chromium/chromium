@@ -40,18 +40,41 @@ export function getHtml(this: ContextualActionMenuElement) {
       `)}
       <hr/>
     `: ''}
-    <button id="imageUpload" class="dropdown-item"
-        @click="${this.openImageUpload_}"
-         ?disabled="${this.imageUploadDisabled_}">
-      <cr-icon icon="composebox:imageUpload"></cr-icon>
-      ${this.i18n('addImage')}
-    </button>
-    ${this.pdfUploadEnabled_ ? html`<button id="fileUpload" class="dropdown-item"
+    ${this.imageUploadAllowed_ ? html`
+      <button id="imageUpload" class="dropdown-item"
+          @click="${this.openImageUpload_}"
+          ?disabled="${this.imageUploadDisabled_}">
+        <cr-icon icon="composebox:imageUpload"></cr-icon>
+        ${this.i18n('addImage')}
+      </button>` : ''}
+    ${this.fileUploadAllowed_ ? html`<button id="fileUpload" class="dropdown-item"
         @click="${this.openFileUpload_}"
         ?disabled="${this.fileUploadDisabled_}">
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.i18n('uploadFile')}
     </button>`: ''}
+    ${Array.from(this.supportedTools_.keys()).some(mode => this.isToolAllowed_(mode)) ?
+        html`<hr/>` : ''}
+    ${Array.from(this.supportedTools_.entries()).map(([mode, tool]) => this.isToolAllowed_(mode) ? html`
+      <button id="${tool.id}" class="dropdown-item"
+          @click="${() => this.onToolClick_(mode)}"
+          ?disabled="${this.isToolDisabled_(mode)}">
+        <cr-icon icon="${tool.icon}"></cr-icon>
+        ${this.i18n(tool.id)}
+      </button>` : '')}
+    ${Array.from(this.supportedModels_.keys()).some(mode => this.isModelAllowed_(mode)) ? html`
+        <hr/>
+        <h4 id="modelHeader">${this.i18n('composeboxContextMenuGeminiModels')}</h4>` : ''}
+    ${Array.from(this.supportedModels_.entries()).map(([mode, model]) => this.isModelAllowed_(mode) ? html`
+      <button id="${model.id}" class="dropdown-item"
+          data-model="${mode}"
+          @click="${this.onModelClick_}"
+          ?disabled="${this.isModelDisabled_(mode)}">
+        <span>${this.i18n(model.id)}</span>
+        ${this.isModelActive_(mode) ? html`
+          <cr-icon class="multi-tab-icon"
+              icon="cr:check" id="model-check"></cr-icon>` : ''}
+      </button>` : '')}
   </cr-action-menu>
 <!--_html_template_end_-->`;
 }

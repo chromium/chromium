@@ -6,7 +6,7 @@ import type {SelectedFileInfo} from '//resources/mojo/components/omnibox/browser
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {FileUploadErrorType, FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {FileUploadErrorType, FileUploadStatus, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -874,12 +874,14 @@ suite('NewTabPageComposeboxTest', () => {
         assertFalse(composeboxElement.$.context['inputsDisabled_']);
 
         // Enter create image mode. `inputsDisabled` should be true.
-        composeboxElement.$.context['inCreateImageMode_'] = true;
+        composeboxElement.$.context['activeTool_'] =
+            ComposeboxToolMode.kImageGen;
         await composeboxElement.$.context.updateComplete;
         assertTrue(composeboxElement.$.context['inputsDisabled_']);
 
         // Exit create image mode. `inputsDisabled` should be false.
-        composeboxElement.$.context['inCreateImageMode_'] = false;
+        composeboxElement.$.context['activeTool_'] =
+            ComposeboxToolMode.kUnspecified;
         await composeboxElement.$.context.updateComplete;
         assertFalse(composeboxElement.$.context['inputsDisabled_']);
       });

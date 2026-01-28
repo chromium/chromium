@@ -26,7 +26,8 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {InputState, ModelMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -41,7 +42,6 @@ import {FileUploadStatus} from './composebox_query.mojom-webui.js';
 import type {FileUploadErrorType} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
-import {ComposeboxMode} from './contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from './error_scrim.js';
 
 export enum VoiceSearchAction {
@@ -152,6 +152,10 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      inCanvasMode_: {
+        reflect: true,
+        type: Boolean,
+      },
       /**
        * Feature flag for New Tab Page Realbox Next.
        */
@@ -255,6 +259,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
+  protected accessor inCanvasMode_: boolean = false;
   protected accessor errorScrimVisible_: boolean = false;
   protected accessor contextFilesSize_: number = 0;
   protected accessor transcript_: string = '';
@@ -534,7 +539,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected initializeState_(
       text: string = '', files: ContextualUpload[] = [],
-      mode: ComposeboxMode = ComposeboxMode.DEFAULT) {
+      mode: ToolMode = ToolMode.kUnspecified) {
     if (text) {
       this.input_ = text;
       this.lastQueriedInput_ = text;
@@ -545,7 +550,7 @@ export class ComposeboxElement extends I18nMixinLit
     if (files.length > 0) {
       this.$.context.setContextFiles(files);
     }
-    if (mode !== ComposeboxMode.DEFAULT) {
+    if (mode !== ToolMode.kUnspecified) {
       this.$.context.setInitialMode(mode);
     }
   }
@@ -925,6 +930,19 @@ export class ComposeboxElement extends I18nMixinLit
 
     await this.updateComplete;
     this.focusInput();
+  }
+
+  protected async setCanvasMode_(e: CustomEvent<{inCanvasMode: boolean}>) {
+    this.inCanvasMode_ = e.detail.inCanvasMode;
+    this.queryAutocomplete(/* clearMatches= */ true);
+
+    await this.updateComplete;
+    this.focusInput();
+  }
+
+  protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
+    // TODO(dhruvkathpalia): Set the active model based on the clicked model.
+    this.inputState_!.activeModel = e.detail.model;
   }
 
   protected onErrorScrimVisibilityChanged_(

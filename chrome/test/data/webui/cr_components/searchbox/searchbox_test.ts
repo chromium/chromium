@@ -13,6 +13,7 @@ import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/br
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -516,7 +517,7 @@ suite('NewTabPageRealboxTest', () => {
 
     // Assert.
     const event = await whenOpenComposeBox;
-    assertEquals('deep-search', event.detail.mode);
+    assertEquals(ToolMode.kDeepSearch, event.detail.mode);
     // Calling deep search should not be logged as context being added.
     assertEquals(
         0,
@@ -559,7 +560,7 @@ suite('NewTabPageRealboxTest', () => {
 
     // Assert.
     const event = await whenOpenComposeBox;
-    assertEquals('create-image', event.detail.mode);
+    assertEquals(ToolMode.kImageGen, event.detail.mode);
   });
 
   //============================================================================
