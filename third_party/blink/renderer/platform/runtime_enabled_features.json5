@@ -2168,6 +2168,12 @@
       name: "DOMPartsAPIMinimal",
     },
     {
+      // When enabled, retarget the relatedTarget attribute of drag events.
+      // This landed in M146 and can be removed in M148.
+      name: "DontLeakShadowTreesInDragEvents",
+      status: "stable",
+    },
+    {
       // Enable drag and drop delegation to child frames in HTMLPlugInElements
       // (object/embed elements). Fixes drag and drop from text inputs/textareas
       // to elements inside object frames.
