@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="ConfigureDisplays.External.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2026-07-05">
+    enum="BooleanSuccess" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -125,7 +125,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2026-07-05">
+    enum="BooleanSuccess" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2026-02-28">
+    enum="BooleanSuccess" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2026-02-28">
+    enum="BooleanSuccess" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.FinalTaskStatus"
-    enum="ConfigureDisplaysTaskStatus" expires_after="2026-07-05">
+    enum="ConfigureDisplaysTaskStatus" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysCount"
-    units="count" expires_after="2026-07-05">
+    units="count" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysPercentage"
-    units="%" expires_after="2026-07-05">
+    units="%" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ConfigureDisplays.Modeset.Test.DynamicCRTCs.{NumDisplays}.PermutationsAttempted"
-    units="fallbacks attempted" expires_after="2026-02-28">
+    units="fallbacks attempted" expires_after="2027-01-21">
   <owner>sukoo@google.com</owner>
   <owner>chromeos-gfx-compositor@google.com</owner>
   <summary>
@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.Test.{NumDisplays}.Outcome"
-    enum="TestOnlyModesetOutcome" expires_after="2026-07-05">
+    enum="TestOnlyModesetOutcome" expires_after="2027-01-21">
   <owner>sukoo@google.com</owner>
   <owner>chromeos-gfx-compositor@google.com</owner>
   <summary>
@@ -226,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.TotalExternalDisplaysCount"
-    units="count" expires_after="2026-07-05">
+    units="count" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -237,7 +237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.{Connection}.Modeset.Success.RefreshRate"
-    units="Hz" expires_after="2026-07-05">
+    units="Hz" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -251,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.{Connection}.Modeset.{Report}.Resolution"
-    enum="DisplayResolution" expires_after="2026-07-05">
+    enum="DisplayResolution" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>{Connection} {Report}</summary>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.External.BlockZeroSerialNumberType"
-    enum="BlockZeroSerialNumberType" expires_after="2026-02-28">
+    enum="BlockZeroSerialNumberType" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.External.NumOfSerialNumbersProvided" units="count"
-    expires_after="2026-02-28">
+    expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.External.ParseEdidOptionals" enum="ParseEdidOptionals"
-    expires_after="2026-07-05">
+    expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.MultipleDisplays.GenerateId.CollisionDetection"
-    enum="BooleanDisplayIdCollision" expires_after="2026-07-26">
+    enum="BooleanDisplayIdCollision" expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Display.ParseEdidFailure" enum="ParseEdidFailure"
-    expires_after="2026-02-28">
+    expires_after="2027-01-21">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
@@ -1937,7 +1937,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-04-26">
   <owner>fangzhoug@chromium.org</owner>
   <owner>petermcneeley@chromium.org</owner>
-  <owner>chromeos-gfx-display@google.com</owner>
+  <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
     Track usage of different code paths in Exo surface code. We should monitor
     and remove all deprecated code path if they have never been executed.
