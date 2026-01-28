@@ -7,6 +7,7 @@
 #include <optional>
 #include <unordered_set>
 
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,6 +42,48 @@ const network::mojom::PermissionsPolicyFeature kUnavailableFeature =
     network::mojom::PermissionsPolicyFeature::kNotFound;
 
 }  // namespace
+
+// Helper for initializing the feature flag for unload deprecation.
+void DisableDeprecateUnloadFeatures(
+    base::test::ScopedFeatureList& feature_list) {
+  feature_list.InitWithFeaturesAndParameters(
+      {}, {network::features::kDeprecateUnload});
+}
+
+// Helper for initializing the feature flags and parameters for unload
+// deprecation.
+void EnableDeprecateUnloadFeatures(
+    base::test::ScopedFeatureList& feature_list,
+    std::optional<int> percent,
+    std::optional<int> bucket,
+    std::optional<std::string> origin_allowlist) {
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+
+  base::FieldTrialParams main_params;
+  if (percent) {
+    main_params[network::features::kDeprecateUnloadPercent.name] =
+        base::StringPrintf("%d", percent.value());
+  }
+  if (bucket) {
+    main_params[network::features::kDeprecateUnloadBucket.name] =
+        base::StringPrintf("%d", bucket.value());
+  }
+  enabled_features.emplace_back(network::features::kDeprecateUnload,
+                                main_params);
+
+  if (origin_allowlist) {
+    enabled_features.push_back(
+        {network::features::kDeprecateUnloadByAllowList,
+         {{network::features::kDeprecateUnloadAllowlist.name,
+           origin_allowlist.value()}}});
+  } else {
+    disabled_features.push_back(network::features::kDeprecateUnloadByAllowList);
+  }
+
+  feature_list.InitWithFeaturesAndParameters(enabled_features,
+                                             disabled_features);
+}
 
 class PermissionsPolicyTest : public testing::Test {
  protected:
@@ -3321,12 +3364,11 @@ TEST_F(PermissionsPolicyTest, GetAllowlistForFeatureIfExists) {
               testing::ContainerEq(origins4));
 }
 
-// Tests that "unload"'s default is controlled by the deprecation flag.
-TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForAll) {
+// Tests that "unload"'s default is unchanged when the feature is disabled.
+TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForAllWhenFeatureDisabled) {
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({},
-                                         {network::features::kDeprecateUnload});
+    base::test::ScopedFeatureList feature_list;
+    DisableDeprecateUnloadFeatures(feature_list);
     std::unique_ptr<PermissionsPolicy> policy =
         CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
     EXPECT_EQ(network::PermissionsPolicyFeatureDefault::EnableForAll,
@@ -3336,12 +3378,14 @@ TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForAll) {
   }
 }
 
-// Tests that "unload"'s default is controlled by the deprecation flag.
-TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForNone) {
+// Tests that "unload"'s default is EnabledForNone when the feature is enabled
+// with no other parameters.
+TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForNoneWhenFeatureEnabled) {
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({network::features::kDeprecateUnload},
-                                  /*disabled_features=*/{});
+    EnableDeprecateUnloadFeatures(feature_list, /*percent=*/std::nullopt,
+                                  /*bucket=*/std::nullopt,
+                                  /*origin_allowlist=*/std::nullopt);
     std::unique_ptr<PermissionsPolicy> policy =
         CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
     EXPECT_EQ(network::PermissionsPolicyFeatureDefault::EnableForNone,
@@ -3370,13 +3414,8 @@ TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
     for (int bucket = 0; bucket < 100; bucket++) {
       SCOPED_TRACE(base::StringPrintf("bucket=%d", bucket));
       base::test::ScopedFeatureList feature_list;
-      feature_list.InitWithFeaturesAndParameters(
-          {{network::features::kDeprecateUnload,
-            {{network::features::kDeprecateUnloadPercent.name,
-              base::StringPrintf("%d", percent)},
-             {network::features::kDeprecateUnloadBucket.name,
-              base::StringPrintf("%d", bucket)}}}},
-          /*disabled_features=*/{});
+      EnableDeprecateUnloadFeatures(feature_list, percent, bucket,
+                                    /*origin_allowlist=*/std::nullopt);
       const network::PermissionsPolicyFeatureDefault unload_default =
           GetDefaultForUnload(origin);
       ASSERT_EQ(GetDefaultForUnload(origin.DeriveNewOpaqueOrigin()),
@@ -3428,11 +3467,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Empty) {
 // A simple list of hosts should be parsed correctly.
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Simple) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{network::features::kDeprecateUnloadByAllowList,
-        {{network::features::kDeprecateUnloadAllowlist.name,
-          "testing1,testing2"}}}},
-      /*disabled_features=*/{});
+  EnableDeprecateUnloadFeatures(feature_list, /*percent=*/std::nullopt,
+                                /*bucket=*/std::nullopt,
+                                /*origin_allowlist=*/"testing1,testing2");
 
   EXPECT_EQ(std::unordered_set<std::string>({"testing1", "testing2"}),
             network::UnloadDeprecationAllowedHosts());
@@ -3441,11 +3478,10 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Simple) {
 // A messy list of hosts should be parsed correctly.
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Messy) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{network::features::kDeprecateUnloadByAllowList,
-        {{network::features::kDeprecateUnloadAllowlist.name,
-          "testing1,, testing2,testing1"}}}},
-      /*disabled_features=*/{});
+  EnableDeprecateUnloadFeatures(
+      feature_list, /*percent=*/std::nullopt,
+      /*bucket=*/std::nullopt,
+      /*origin_allowlist=*/"testing1,, testing2,testing1");
 
   EXPECT_EQ(std::unordered_set<std::string>({"testing1", "testing2"}),
             network::UnloadDeprecationAllowedHosts());
@@ -3455,10 +3491,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedHosts_Messy) {
 // allowlist.
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForHost_EmptyAllowList) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{network::features::kDeprecateUnloadByAllowList,
-        {{network::features::kDeprecateUnloadAllowlist.name, ""}}}},
-      /*disabled_features=*/{});
+  EnableDeprecateUnloadFeatures(feature_list, /*percent=*/std::nullopt,
+                                /*bucket=*/std::nullopt,
+                                /*origin_allowlist=*/"");
   const auto hosts = network::UnloadDeprecationAllowedHosts();
   // With no allowlist, every origin is allowed.
   EXPECT_TRUE(
@@ -3481,11 +3516,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForHost_NonEmptyAllowList) {
   // Now set an allowlist and check that only the allowed domains see
   // deprecation.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{network::features::kDeprecateUnloadByAllowList,
-        {{network::features::kDeprecateUnloadAllowlist.name,
-          "testing1,testing2"}}}},
-      /*disabled_features=*/{});
+  EnableDeprecateUnloadFeatures(feature_list, /*percent=*/std::nullopt,
+                                /*bucket=*/std::nullopt,
+                                /*origin_allowlist=*/"testing1,testing2");
 
   const auto hosts = network::UnloadDeprecationAllowedHosts();
   EXPECT_TRUE(
@@ -3506,11 +3539,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForHost_NonEmptyAllowList) {
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
   // Set to 100% deprecation.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{network::features::kDeprecateUnload,
-        {{network::features::kDeprecateUnloadPercent.name, "100"},
-         {network::features::kDeprecateUnloadBucket.name, "0"}}}},
-      /*disabled_features=*/{});
+  EnableDeprecateUnloadFeatures(feature_list, /*percent=*/100,
+                                /*bucket=*/0,
+                                /*origin_allowlist=*/std::nullopt);
   const url::Origin chrome_origin =
       url::Origin::Create(GURL("chrome://settings"));
   EXPECT_FALSE(network::UnloadDeprecationAllowedForOrigin(chrome_origin));
@@ -3521,11 +3552,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
 // When the rollout is at 0%, no host should be allowed.
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_0Percent) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{network::features::kDeprecateUnload,
-        {{network::features::kDeprecateUnloadPercent.name, "0"},
-         {network::features::kDeprecateUnloadBucket.name, "0"}}}},
-      /*disabled_features=*/{});
+  EnableDeprecateUnloadFeatures(feature_list, /*percent=*/0,
+                                /*bucket=*/0,
+                                /*origin_allowlist=*/std::nullopt);
   EXPECT_FALSE(network::UnloadDeprecationAllowedForOrigin(http_origin1_));
   EXPECT_FALSE(network::UnloadDeprecationAllowedForOrigin(
       http_origin1_.DeriveNewOpaqueOrigin()));
@@ -3534,11 +3563,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_0Percent) {
 // When the rollout is at 100% all hosts should be allowed.
 TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_100Percent) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{network::features::kDeprecateUnload,
-        {{network::features::kDeprecateUnloadPercent.name, "100"},
-         {network::features::kDeprecateUnloadBucket.name, "0"}}}},
-      /*disabled_features=*/{});
+  EnableDeprecateUnloadFeatures(feature_list, /*percent=*/100,
+                                /*bucket=*/0,
+                                /*origin_allowlist=*/std::nullopt);
   EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(http_origin1_));
   EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(
       http_origin1_.DeriveNewOpaqueOrigin()));
@@ -3549,14 +3576,9 @@ TEST_F(DeprecateUnloadTest, UnloadDeprecationAllowedForOrigin_100Percent) {
 TEST_F(DeprecateUnloadTest,
        UnloadDeprecationAllowedForOrigin_0PercentAndAllowList) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{network::features::kDeprecateUnload,
-        {{network::features::kDeprecateUnloadPercent.name, "0"},
-         {network::features::kDeprecateUnloadBucket.name, "0"}}},
-       {network::features::kDeprecateUnloadByAllowList,
-        {{network::features::kDeprecateUnloadAllowlist.name,
-          http_origin1_.host()}}}},
-      /*disabled_features=*/{});
+  EnableDeprecateUnloadFeatures(feature_list, /*percent=*/0,
+                                /*bucket=*/0,
+                                /*origin_allowlist=*/http_origin1_.host());
   EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(http_origin1_));
   EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(
       http_origin1_.DeriveNewOpaqueOrigin()));
@@ -3569,14 +3591,9 @@ TEST_F(DeprecateUnloadTest,
 TEST_F(DeprecateUnloadTest,
        UnloadDeprecationAllowedForOrigin_100PercentAndAllowList) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{network::features::kDeprecateUnload,
-        {{network::features::kDeprecateUnloadPercent.name, "100"},
-         {network::features::kDeprecateUnloadBucket.name, "0"}}},
-       {network::features::kDeprecateUnloadByAllowList,
-        {{network::features::kDeprecateUnloadAllowlist.name,
-          http_origin1_.host()}}}},
-      /*disabled_features=*/{});
+  EnableDeprecateUnloadFeatures(feature_list, /*percent=*/100,
+                                /*bucket=*/0,
+                                /*origin_allowlist=*/http_origin1_.host());
   EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(http_origin1_));
   EXPECT_TRUE(network::UnloadDeprecationAllowedForOrigin(
       http_origin1_.DeriveNewOpaqueOrigin()));
