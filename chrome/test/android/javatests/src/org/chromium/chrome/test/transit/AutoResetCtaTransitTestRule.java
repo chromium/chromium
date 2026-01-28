@@ -70,7 +70,7 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implemen
             Log.i(TAG, "Keep first window at %s", activeStations.get(0));
             for (Station<?> station : activeStations.subList(1, numWindows)) {
                 Log.i(TAG, "Close window at %s", station);
-                station.getActivity().finish();
+                finishActivityWithCleanup(station.getActivity());
             }
         }
 

@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.test.transit;
 
+import android.app.Activity;
 import android.os.Build;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -26,6 +29,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -220,5 +224,20 @@ public class BaseCtaTransitTestRule {
     /** Enables IPH again for one test case. */
     public void reenableIph() {
         mActivityTestRule.reenableIph();
+    }
+
+    protected static void finishActivityWithCleanup(Activity activity) {
+        if (activity instanceof ChromeTabbedActivity cta) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        MultiInstanceManager mim = cta.getMultiInstanceMangerForTesting();
+                        mim.closeWindows(
+                                Collections.singletonList(cta.getWindowIdForTesting()),
+                                MultiInstanceManager.CloseWindowAppSource.OTHER);
+                    });
+            // closeWindow() already called finishAndRemoveTask().
+        } else {
+            activity.finishAndRemoveTask();
+        }
     }
 }
