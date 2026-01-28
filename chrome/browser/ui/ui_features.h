@@ -365,8 +365,6 @@ BASE_DECLARE_FEATURE(kLaunchedTabSearchToolbarButton);
 
 BASE_DECLARE_FEATURE_PARAM(bool, kTabSearchToolbarButton);
 
-bool HasTabSearchToolbarButton();
-
 #if !BUILDFLAG(IS_ANDROID)
 // Controls whether to add new tabs to active tab group or to the end of the
 // tab strip.

@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/promos/ios_promo_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/sync/browser_synced_window_delegate.h"
+#include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"

@@ -4776,6 +4776,7 @@ static_library("ui") {
       # c/b/ui/browser.h, browser_finder.h, browser_window.h.
       # c/b/ui/passwords/passwords_model_delegate.h, passwords_client_ui_delegate.h.
       "//chrome/browser/actor/ui",
+      "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui/views/zoom",
       "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/webauthn:impl",
@@ -5619,6 +5620,21 @@ source_set("ui_features") {
     "//components/webui/flags",
     "//content/public/common",
     "//ui/base:features",
+  ]
+}
+
+source_set("tab_search_feature") {
+  sources = [
+    "tab_search_feature.cc",
+    "tab_search_feature.h",
+  ]
+  deps = [
+    ":ui_features",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/glic",
+    "//chrome/common:buildflags",
+    "//components/variations/service",
   ]
 }
 

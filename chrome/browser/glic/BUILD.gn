@@ -320,6 +320,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:tab_search_feature",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/passwords",
     "//chrome/browser/ui/profiles",

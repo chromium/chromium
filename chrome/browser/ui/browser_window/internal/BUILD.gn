@@ -67,6 +67,7 @@ source_set("internal") {
       "//chrome/browser/prefs",
       "//chrome/browser/skills:ui",
       "//chrome/browser/tab_group_sync:factories",
+      "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/commerce",

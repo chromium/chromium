@@ -40,6 +40,7 @@ source_set("impl") {
     deps = [
       "//chrome/browser:primitives",
       "//chrome/browser/translate",
+      "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",
@@ -58,6 +59,7 @@ if (!is_android) {
     sources = [ "pinned_toolbar_actions_model_browsertest.cc" ]
     deps = [
       ":pinned_toolbar",
+      "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/toolbar",

@@ -155,6 +155,7 @@ source_set("interactive_ui_tests") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:tab_search_feature",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common:chrome_features",
