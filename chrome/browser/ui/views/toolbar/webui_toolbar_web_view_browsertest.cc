@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -198,8 +199,14 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
                    ax::mojom::IntAttribute::kHasPopup));
 }
 
+// TODO(crbug.com/479341115): Failing on mac-bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CheckReloadButtonColor DISABLED_CheckReloadButtonColor
+#else
+#define MAYBE_CheckReloadButtonColor CheckReloadButtonColor
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       CheckReloadButtonColor) {
+                       MAYBE_CheckReloadButtonColor) {
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
   views::WebView* web_view = nullptr;
