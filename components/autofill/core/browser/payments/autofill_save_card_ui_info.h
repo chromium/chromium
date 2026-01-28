@@ -79,7 +79,7 @@ struct AutofillSaveCardUiInfo {
 
   // Create the ui info for a server save prompt.
   //
-  // This function allows specifying whether google pay branding is enabled.
+  // This function allows specifying whether Chrome branding is enabled.
   // Requires `options.card_save_type` not equal to
   // `payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly`.
   static AutofillSaveCardUiInfo CreateForUploadSave(
