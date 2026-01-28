@@ -121,6 +121,9 @@ target(tracing_lib_type, "cpp") {
         "stack_sampling/loader_lock_sampling_thread_win.cc",
         "stack_sampling/loader_lock_sampling_thread_win.h",
       ]
+
+      # For LdrLockLoaderLock & LdrUnLockLoaderLock
+      libs = [ "ntdll.lib" ]
     }
 
     public_deps += [
