@@ -185,6 +185,10 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
                             FullscreenAnimatorStyle style) override;
   void FullscreenControllerWillShutDown(
       FullscreenController* controller) override;
+  void FullscreenViewportInsetRangeChanged(
+      FullscreenController* controller,
+      UIEdgeInsets min_viewport_insets,
+      UIEdgeInsets max_viewport_insets) override;
 
   // Returns true if the user has completed the FRE.
   bool HasCompletedFirstRun();

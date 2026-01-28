@@ -620,6 +620,13 @@ void BwgBrowserAgent::FullscreenControllerWillShutDown(
   fullscreen_controller_ = nullptr;
 }
 
+void BwgBrowserAgent::FullscreenViewportInsetRangeChanged(
+    FullscreenController* controller,
+    UIEdgeInsets min_viewport_insets,
+    UIEdgeInsets max_viewport_insets) {
+  FullscreenProgressUpdated(controller, controller->GetProgress());
+}
+
 #pragma mark - Private
 
 void BwgBrowserAgent::PresentFloatyWithState(
