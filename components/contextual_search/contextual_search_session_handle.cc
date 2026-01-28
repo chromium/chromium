@@ -306,7 +306,14 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
       create_client_to_aim_request_info->file_tokens.begin(),
       create_client_to_aim_request_info->file_tokens.end());
 
-  // TODO(crbug.com/463705266): Add metrics recording.
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    metrics_recorder->NotifySessionStateChanged(
+        contextual_search::SessionState::kQuerySubmitted);
+    std::string query_text = create_client_to_aim_request_info->query_text;
+    metrics_recorder->RecordQueryMetrics(
+        query_text.size(),
+        create_client_to_aim_request_info->file_tokens.size());
+  }
 
   return context_controller->CreateClientToAimRequest(
       std::move(create_client_to_aim_request_info));
