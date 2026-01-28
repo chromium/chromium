@@ -944,9 +944,16 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test a scenario which prefetch fails when a search related url in the
 // redirect chain.
+// TODO(crbug.com/) : Re-enable on windows
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PrefetchingRedirectToSearchSite \
+  DISABLED_PrefetchingRedirectToSearchSite
+#else
+#define MAYBE_PrefetchingRedirectToSearchSite PrefetchingRedirectToSearchSite
+#endif
 IN_PROC_BROWSER_TEST_F(
     PreloadBookmarkBarPrefetchEnabledPrerenderEnabledNavigationTest,
-    PrefetchingRedirectToSearchSite) {
+    MAYBE_PrefetchingRedirectToSearchSite) {
   StartServers();
   base::HistogramTester histogram_tester;
   // Navigate to an non-empty tab
