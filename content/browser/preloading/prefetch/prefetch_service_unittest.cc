@@ -163,6 +163,14 @@ class ScopedPrefetchServiceContentBrowserClient
         browser_context, site);
   }
 
+  bool ShouldAllowPrefetchRedirection(
+      content::BrowserContext& browser_context,
+      const GURL& url,
+      const std::string& embedder_histogram_suffix) override {
+    // Block any URL with "blocked" in it to simulate the behavior.
+    return url.spec().find("blocked") == std::string::npos;
+  }
+
  private:
   raw_ptr<ContentBrowserClient> old_browser_client_;
   std::unique_ptr<MockPrefetchServiceDelegate> mock_prefetch_service_delegate_;
@@ -8870,6 +8878,29 @@ TEST_P(
       "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Prerender."
       "NotServed.SpeculationRule_Immediate2",
       0);
+}
+
+// Verifies that certain embedder and url pattern will be blocked upon
+// redirection.
+TEST_P(PrefetchServiceTest, BlockCertainEmbedderPrefetchOnRedirectToSearch) {
+  base::HistogramTester histogram_tester;
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/std::nullopt));
+  const PrefetchType prefetch_type = PrefetchType(
+      PreloadingTriggerType::kEmbedder, /*use_prefetch_proxy=*/false);
+  auto handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com"), prefetch_type,
+      /*referrer=*/blink::mojom::Referrer(), /*referring_origin=*/std::nullopt);
+  task_environment()->RunUntilIdle();
+  // The prefetch request is still allowed before the redirect.
+  VerifyCommonRequestStateForWebContentsPrefetch(GURL("https://example.com"),
+                                                 {.use_prefetch_proxy = false});
+
+  MakeSingleRedirectAndWait(GURL("https://www.google.co.jp/search?q=blocked"));
+  histogram_tester.ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchFailedInvalidRedirect, 1);
 }
 
 }  // namespace

@@ -242,6 +242,7 @@
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/google/core/common/google_util.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -8948,4 +8949,27 @@ std::string ChromeContentBrowserClient::GetDnsTxtResolverUrlPrefix() {
   static constexpr char kGoogleDnsResolverUrl[] =
       "https://dns.google/resolve?type=txt&do=1&name=";
   return kGoogleDnsResolverUrl;
+}
+
+bool ChromeContentBrowserClient::ShouldAllowPrefetchRedirection(
+    content::BrowserContext& browser_context,
+    const GURL& url,
+    const std::string& embedder_histogram_suffix) {
+  // TODO(crbug.com/413259638): Use the constant in `preloading_utils` once it
+  // is created, currently this is set to be the same constant in
+  // c/b/p/b_p/bookmarkbar_preload_pipeline.cc.
+  // This function is only interested in specific triggers. The related triggers
+  // don't generate parameters to be identified by search results providers, so
+  // the triggering search related urls is avoided. See crbug.com/40282403 for
+  // more details.
+  if (embedder_histogram_suffix != "BookmarkBar") {
+    return true;
+  }
+  auto* profile = Profile::FromBrowserContext(&browser_context);
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  return !((template_url_service &&
+            template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+                url)) ||
+           google_util::IsGoogleSearchUrl(url));
 }

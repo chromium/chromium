@@ -2013,4 +2013,11 @@ std::string ContentBrowserClient::GetDnsTxtResolverUrlPrefix() {
   return std::string();
 }
 
+bool ContentBrowserClient::ShouldAllowPrefetchRedirection(
+    content::BrowserContext& browser_context,
+    const GURL& url,
+    const std::string& embedder_histogram_suffix) {
+  return true;
+}
+
 }  // namespace content

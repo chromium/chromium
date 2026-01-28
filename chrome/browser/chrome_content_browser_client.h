@@ -1204,6 +1204,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   std::string GetDnsTxtResolverUrlPrefix() override;
 
+  bool ShouldAllowPrefetchRedirection(
+      content::BrowserContext& browser_context,
+      const GURL& url,
+      const std::string& embedder_histogram_suffix) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

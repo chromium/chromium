@@ -1797,6 +1797,18 @@ void PrefetchService::OnPrefetchRedirect(
     // The new referrer policy is not sufficiently strict to allow cross-site
     // redirects.
     failure = PrefetchRedirectResult::kFailedInsufficientReferrerPolicy;
+  } else if (prefetch_container->request().GetBrowserInitiatorInfo() &&
+             !content::GetContentClient()
+                  ->browser()
+                  ->ShouldAllowPrefetchRedirection(
+                      *prefetch_container->request().browser_context(),
+                      redirect_info.new_url,
+                      prefetch_container->request()
+                          .GetBrowserInitiatorInfo()
+                          ->embedder_histogram_suffix())) {
+    // TODO(crbug.com/413259638): If a finer granularity of metrics is
+    // required, introduce a new type of `PrefetchRedirectResult`.
+    failure = PrefetchRedirectResult::kFailedIneligible;
   }
 
   if (failure) {
