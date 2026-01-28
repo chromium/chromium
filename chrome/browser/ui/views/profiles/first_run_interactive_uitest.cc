@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -68,32 +69,13 @@
 
 namespace {
 
+using Step = ::ProfileManagementFlowController::Step;
+using DeepQuery = ::WebContentsInteractionTestUtil::DeepQuery;
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonEnabled);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonDisabled);
-
-using Step = ProfileManagementFlowController::Step;
-
-using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
-const DeepQuery kSignInButton{"intro-app", "sign-in-promo",
-                              "#acceptSignInButton"};
-const DeepQuery kDontSignInButton{"intro-app", "sign-in-promo",
-                                  "#declineSignInButton"};
-const DeepQuery kDeclineManagementButton{"managed-user-profile-notice-app",
-                                         "#cancel-button"};
-const DeepQuery kOptInSyncButton{"sync-confirmation-app", "#confirmButton"};
-const DeepQuery kDontSyncButton{"sync-confirmation-app", "#notNowButton"};
-const DeepQuery kSettingsButton{"sync-confirmation-app", "#settingsButton"};
-const DeepQuery kConfirmDefaultBrowserButton{"default-browser-app",
-                                             "#confirmButton"};
-const DeepQuery kSearchEngineChoiceActionButton{"search-engine-choice-app",
-                                                "#actionButton"};
-
-const DeepQuery kOptInSyncHistoryButton{"history-sync-optin-app",
-                                        "#acceptButton"};
-const DeepQuery kDontSyncHistoryButton{"history-sync-optin-app",
-                                       "#rejectButton"};
 
 enum class SyncButtonsFeatureConfig : int {
   // Deprecated: kDisabled = 0,
@@ -106,6 +88,66 @@ enum class SyncButtonsFeatureConfig : int {
   // User interacts with the UI before capabilities are loaded.
   kButtonsStillLoading = 4,
 };
+
+const DeepQuery& GetSignInButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kSignInButton(
+      {"intro-app", "sign-in-promo", "#acceptSignInButton"});
+  return *kSignInButton;
+}
+
+const DeepQuery& GetDontSignInButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kDontSignInButton(
+      {"intro-app", "sign-in-promo", "#declineSignInButton"});
+  return *kDontSignInButton;
+}
+
+const DeepQuery& GetDeclineManagementButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kDeclineManagementButton(
+      {"managed-user-profile-notice-app", "#cancel-button"});
+  return *kDeclineManagementButton;
+}
+
+const DeepQuery& GetOptInSyncButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kOptInSyncButton(
+      {"sync-confirmation-app", "#confirmButton"});
+  return *kOptInSyncButton;
+}
+
+const DeepQuery& GetDontSyncButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kDontSyncButton(
+      {"sync-confirmation-app", "#notNowButton"});
+  return *kDontSyncButton;
+}
+
+const DeepQuery& GetSettingsButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kSettingsButton(
+      {"sync-confirmation-app", "#settingsButton"});
+  return *kSettingsButton;
+}
+
+const DeepQuery& GetConfirmDefaultBrowserButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kConfirmDefaultBrowserButton(
+      {"default-browser-app", "#confirmButton"});
+  return *kConfirmDefaultBrowserButton;
+}
+
+const DeepQuery& GetSearchEngineChoiceActionButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kSearchEngineChoiceActionButton(
+      {"search-engine-choice-app", "#actionButton"});
+  return *kSearchEngineChoiceActionButton;
+}
+
+const DeepQuery& GetOptInSyncHistoryButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kOptInSyncHistoryButton(
+      {"history-sync-optin-app", "#acceptButton"});
+  return *kOptInSyncHistoryButton;
+}
+
+const DeepQuery& GetDontSyncHistoryButtonQuery() {
+  static const base::NoDestructor<DeepQuery> kDontSyncHistoryButton(
+      {"history-sync-optin-app", "#rejectButton"});
+  return *kDontSyncHistoryButton;
+}
 
 struct TestParam {
   std::string test_suffix;
@@ -272,7 +314,8 @@ class FirstRunInteractiveUiTest
   // Waits for the intro buttons to be shown and presses to proceed according
   // to the value of `sign_in`.
   auto CompleteIntroStep(bool sign_in) {
-    const DeepQuery& button = sign_in ? kSignInButton : kDontSignInButton;
+    const DeepQuery& button =
+        sign_in ? GetSignInButtonQuery() : GetDontSignInButtonQuery();
     return Steps(
         WaitForWebContentsReady(kWebContentsId,
                                 GURL(chrome::kChromeUIIntroURL)),
@@ -452,9 +495,9 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, MAYBE_SignIn) {
         // Web Contents already instrumented in the previous sequence.
         WaitForWebContentsNavigation(kWebContentsId, history_page_url),
         // Button is visible once capabilities are loaded or defaulted.
-        WaitForButtonVisible(kWebContentsId, kDontSyncHistoryButton),
-        EnsurePresent(kWebContentsId, kDontSyncHistoryButton),
-        PressJsButton(kWebContentsId, kDontSyncHistoryButton)
+        WaitForButtonVisible(kWebContentsId, GetDontSyncHistoryButtonQuery()),
+        EnsurePresent(kWebContentsId, GetDontSyncHistoryButtonQuery()),
+        PressJsButton(kWebContentsId, GetDontSyncHistoryButtonQuery())
             .SetMustRemainVisible(false));
   } else {
     GURL sync_page_url = AppendSyncConfirmationQueryParams(
@@ -465,9 +508,9 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, MAYBE_SignIn) {
         // Web Contents already instrumented in the previous sequence.
         WaitForWebContentsNavigation(kWebContentsId, sync_page_url),
         // Button is visible once capabilities are loaded or defaulted.
-        WaitForButtonVisible(kWebContentsId, kDontSyncButton),
-        EnsurePresent(kWebContentsId, kDontSyncButton),
-        PressJsButton(kWebContentsId, kDontSyncButton)
+        WaitForButtonVisible(kWebContentsId, GetDontSyncButtonQuery()),
+        EnsurePresent(kWebContentsId, GetDontSyncButtonQuery()),
+        PressJsButton(kWebContentsId, GetDontSyncButtonQuery())
             .SetMustRemainVisible(false));
   }
 
@@ -611,20 +654,23 @@ class FirstRunParameterizedInteractiveUiTest
                     1);
         }),
         // Click on "More" to scroll to the bottom of the search engine list.
-        PressJsButton(kWebContentsId, kSearchEngineChoiceActionButton),
+        PressJsButton(kWebContentsId, GetSearchEngineChoiceActionButtonQuery()),
         // The button should become disabled because we didn't make a choice.
-        WaitForButtonDisabled(kWebContentsId, kSearchEngineChoiceActionButton),
+        WaitForButtonDisabled(kWebContentsId,
+                              GetSearchEngineChoiceActionButtonQuery()),
         PressJsButton(kWebContentsId, first_search_engine),
-        WaitForButtonEnabled(kWebContentsId, kSearchEngineChoiceActionButton),
-        PressJsButton(kWebContentsId, kSearchEngineChoiceActionButton));
+        WaitForButtonEnabled(kWebContentsId,
+                             GetSearchEngineChoiceActionButtonQuery()),
+        PressJsButton(kWebContentsId,
+                      GetSearchEngineChoiceActionButtonQuery()));
   }
 
   auto CompleteDefaultBrowserStep() {
     return Steps(
         WaitForWebContentsNavigation(
             kWebContentsId, GURL(chrome::kChromeUIIntroDefaultBrowserURL)),
-        EnsurePresent(kWebContentsId, kConfirmDefaultBrowserButton),
-        PressJsButton(kWebContentsId, kConfirmDefaultBrowserButton));
+        EnsurePresent(kWebContentsId, GetConfirmDefaultBrowserButtonQuery()),
+        PressJsButton(kWebContentsId, GetConfirmDefaultBrowserButtonQuery()));
   }
 
  private:
@@ -743,7 +789,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
 
       // Waiting for the animation to complete so we can start interacting with
       // the button.
-      WaitForStateChange(kWebContentsId, IsVisible(kSignInButton)),
+      WaitForStateChange(kWebContentsId, IsVisible(GetSignInButtonQuery())),
 
       Do([&] {
         EXPECT_FALSE(GetFirstRunFinishedPrefValue());
@@ -756,7 +802,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       // Note: the button should be disabled after this, but there is no good
       // way to verify it in this sequence. It is verified by unit tests in
       // chrome/test/data/webui/intro/sign_in_promo_test.ts
-      PressJsButton(kWebContentsId, kSignInButton),
+      PressJsButton(kWebContentsId, GetSignInButtonQuery()),
       // Wait for switch to the Gaia sign-in page to complete.
       // Note: kPickerWebContentsId now points to the new profile's WebContents.
       WaitForWebContentsNavigation(kWebContentsId,
@@ -789,10 +835,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
               signin_metrics::AccessPoint::kForYouFre, 1);
         }),
         // Button is visible once capabilities are loaded or defaulted.
-        WaitForButtonVisible(kWebContentsId, kOptInSyncHistoryButton),
+        WaitForButtonVisible(kWebContentsId, GetOptInSyncHistoryButtonQuery()),
 
-        EnsurePresent(kWebContentsId, kOptInSyncHistoryButton),
-        PressJsButton(kWebContentsId, kOptInSyncHistoryButton)
+        EnsurePresent(kWebContentsId, GetOptInSyncHistoryButtonQuery()),
+        PressJsButton(kWebContentsId, GetOptInSyncHistoryButtonQuery())
             .SetMustRemainVisible(false),
 
         CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
@@ -812,10 +858,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
         }),
 
         // Button is visible once capabilities are loaded or defaulted.
-        WaitForButtonVisible(kWebContentsId, kOptInSyncButton),
+        WaitForButtonVisible(kWebContentsId, GetOptInSyncButtonQuery()),
 
-        EnsurePresent(kWebContentsId, kOptInSyncButton),
-        PressJsButton(kWebContentsId, kOptInSyncButton)
+        EnsurePresent(kWebContentsId, GetOptInSyncButtonQuery()),
+        PressJsButton(kWebContentsId, GetOptInSyncButtonQuery())
             .SetMustRemainVisible(false),
 
         CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
@@ -943,10 +989,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
         WaitForWebContentsNavigation(kWebContentsId, history_page_url),
 
         // Button is visible once capabilities are loaded or defaulted.
-        WaitForButtonVisible(kWebContentsId, kDontSyncHistoryButton),
+        WaitForButtonVisible(kWebContentsId, GetDontSyncHistoryButtonQuery()),
 
-        EnsurePresent(kWebContentsId, kDontSyncHistoryButton),
-        PressJsButton(kWebContentsId, kDontSyncHistoryButton),
+        EnsurePresent(kWebContentsId, GetDontSyncHistoryButtonQuery()),
+        PressJsButton(kWebContentsId, GetDontSyncHistoryButtonQuery()),
 
         CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
   } else {
@@ -959,10 +1005,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
                                          /*is_sync_promo=*/true)),
 
         // Button is visible once capabilities are loaded or defaulted.
-        WaitForButtonVisible(kWebContentsId, kDontSyncButton),
+        WaitForButtonVisible(kWebContentsId, GetDontSyncButtonQuery()),
 
-        EnsurePresent(kWebContentsId, kDontSyncButton),
-        PressJsButton(kWebContentsId, kDontSyncButton),
+        EnsurePresent(kWebContentsId, GetDontSyncButtonQuery()),
+        PressJsButton(kWebContentsId, GetDontSyncButtonQuery()),
 
         CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
   }
@@ -1048,11 +1094,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
             return SyncButtonsFeatureConfig() !=
                    SyncButtonsFeatureConfig::kButtonsStillLoading;
           },
-          Then(WaitForButtonVisible(kWebContentsId, kOptInSyncButton))),
+          Then(
+              WaitForButtonVisible(kWebContentsId, GetOptInSyncButtonQuery()))),
 
       // Click "Settings" to proceed to the browser.
-      EnsurePresent(kWebContentsId, kSettingsButton),
-      PressJsButton(kWebContentsId, kSettingsButton));
+      EnsurePresent(kWebContentsId, GetSettingsButtonQuery()),
+      PressJsButton(kWebContentsId, GetSettingsButtonQuery()));
 
   // Wait for the picker to be closed and deleted.
   WaitForPickerClosed();
@@ -1135,10 +1182,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
                                    GURL(chrome::kChromeUIIntroURL)),
 
       // The buttons should be enabled so we can interact with them.
-      EnsurePresent(kWebContentsId, kDontSignInButton),
-      CheckJsResultAt(kWebContentsId, kSignInButton, "(e) => !e.disabled"),
-      CheckJsResultAt(kWebContentsId, kDontSignInButton, "(e) => !e.disabled"),
-      PressJsButton(kWebContentsId, kDontSignInButton),
+      EnsurePresent(kWebContentsId, GetDontSignInButtonQuery()),
+      CheckJsResultAt(kWebContentsId, GetSignInButtonQuery(),
+                      "(e) => !e.disabled"),
+      CheckJsResultAt(kWebContentsId, GetDontSignInButtonQuery(),
+                      "(e) => !e.disabled"),
+      PressJsButton(kWebContentsId, GetDontSignInButtonQuery()),
 
       CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
 
@@ -1235,8 +1284,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
       // is managed and requiring to show the enterprise management opt-in.
       WaitForWebContentsNavigation(
           kWebContentsId, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)),
-      EnsurePresent(kWebContentsId, kDeclineManagementButton),
-      PressJsButton(kWebContentsId, kDeclineManagementButton),
+      EnsurePresent(kWebContentsId, GetDeclineManagementButtonQuery()),
+      PressJsButton(kWebContentsId, GetDeclineManagementButtonQuery()),
 
       CompleteSearchEngineChoiceStep(), CompleteDefaultBrowserStep());
 
