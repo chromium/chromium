@@ -361,6 +361,7 @@ void WebContentsViewMac::ShowContextMenu(RenderFrameHost& render_frame_host,
     DLOG(ERROR) << "Cannot show context menus without a delegate.";
 }
 
+#if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 void WebContentsViewMac::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
@@ -377,6 +378,7 @@ void WebContentsViewMac::ShowPopupMenu(
                                     allow_multiple_selection);
   // Note: |this| may be deleted here.
 }
+#endif
 
 void WebContentsViewMac::OnMenuClosed() {
   popup_menu_helper_.reset();
