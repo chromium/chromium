@@ -100,11 +100,11 @@ class Deque {
 
   T& front() {
     DCHECK_NE(start_, end_);
-    return UNSAFE_TODO(buffer_.Buffer()[start_]);
+    return buffer_[start_];
   }
   const T& front() const {
     DCHECK_NE(start_, end_);
-    return UNSAFE_TODO(buffer_.Buffer()[start_]);
+    return buffer_[start_];
   }
   T TakeFirst();
 
@@ -121,14 +121,12 @@ class Deque {
   T& at(wtf_size_t i) {
     CHECK_LT(i, size());
     wtf_size_t right = buffer_.capacity() - start_;
-    return i < right ? UNSAFE_TODO(buffer_.Buffer()[start_ + i])
-                     : UNSAFE_TODO(buffer_.Buffer()[i - right]);
+    return i < right ? buffer_[start_ + i] : buffer_[i - right];
   }
   const T& at(wtf_size_t i) const {
     CHECK_LT(i, size());
     wtf_size_t right = buffer_.capacity() - start_;
-    return i < right ? UNSAFE_TODO(buffer_.Buffer()[start_ + i])
-                     : UNSAFE_TODO(buffer_.Buffer()[i - right]);
+    return i < right ? buffer_[start_ + i] : buffer_[i - right];
   }
 
   T& operator[](wtf_size_t i) { return at(i); }
@@ -176,6 +174,14 @@ class Deque {
     BackingBuffer& operator=(const BackingBuffer&) = delete;
 
     void SetSize(wtf_size_t size) { size_ = size; }
+    inline T& operator[](wtf_size_t index) {
+      // SAFETY: Call sites must ensure `index` is valid.
+      return UNSAFE_BUFFERS(Base::Buffer()[index]);
+    }
+    inline const T& operator[](wtf_size_t index) const {
+      // SAFETY: Call sites must ensure `index` is valid.
+      return UNSAFE_BUFFERS(Base::Buffer()[index]);
+    }
   };
 
   typedef VectorTypeOperations<T, Allocator> TypeOperations;
@@ -573,7 +579,7 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
 inline void Deque<T, InlineCapacity, Allocator>::push_back(U&& value) {
   ExpandCapacityIfNeeded();
-  T* new_element = &UNSAFE_TODO(buffer_.Buffer()[end_]);
+  T* new_element = &buffer_[end_];
   if (end_ == buffer_.capacity() - 1)
     end_ = 0;
   else
@@ -591,14 +597,14 @@ inline void Deque<T, InlineCapacity, Allocator>::push_front(U&& value) {
   else
     --start_;
   ConstructTraits<T, VectorTraits<T>, Allocator>::ConstructAndNotifyElement(
-      &UNSAFE_TODO(buffer_.Buffer()[start_]), std::forward<U>(value));
+      &buffer_[start_], std::forward<U>(value));
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename... Args>
 inline void Deque<T, InlineCapacity, Allocator>::emplace_back(Args&&... args) {
   ExpandCapacityIfNeeded();
-  T* new_element = &UNSAFE_TODO(buffer_.Buffer()[end_]);
+  T* new_element = &buffer_[end_];
   if (end_ == buffer_.capacity() - 1)
     end_ = 0;
   else
@@ -616,13 +622,13 @@ inline void Deque<T, InlineCapacity, Allocator>::emplace_front(Args&&... args) {
   else
     --start_;
   ConstructTraits<T, VectorTraits<T>, Allocator>::ConstructAndNotifyElement(
-      &UNSAFE_TODO(buffer_.Buffer()[start_]), std::forward<Args>(args)...);
+      &buffer_[start_], std::forward<Args>(args)...);
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 inline void Deque<T, InlineCapacity, Allocator>::pop_front() {
   DCHECK(!empty());
-  T* begin = UNSAFE_TODO(buffer_.Buffer() + start_);
+  T* begin = &buffer_[start_];
   T* end = UNSAFE_TODO(begin + 1);
   TypeOperations::Destruct(begin, end);
   buffer_.ClearUnusedSlots(begin, end);
@@ -639,7 +645,7 @@ inline void Deque<T, InlineCapacity, Allocator>::pop_back() {
     end_ = buffer_.capacity() - 1;
   else
     --end_;
-  T* begin = UNSAFE_TODO(buffer_.Buffer() + end_);
+  T* begin = &buffer_[end_];
   T* end = UNSAFE_TODO(begin + 1);
   TypeOperations::Destruct(begin, end);
   buffer_.ClearUnusedSlots(begin, end);
@@ -739,15 +745,15 @@ inline void DequeIteratorBase<T, InlineCapacity, Allocator>::Decrement() {
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 inline T* DequeIteratorBase<T, InlineCapacity, Allocator>::After() const {
   CHECK_NE(index_, deque_->end_);
-  return &UNSAFE_TODO(deque_->buffer_.Buffer()[index_]);
+  return &deque_->buffer_[index_];
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 inline T* DequeIteratorBase<T, InlineCapacity, Allocator>::Before() const {
   CHECK_NE(index_, deque_->start_);
   if (!index_)
-    return &deque_->buffer_.buffer()[deque_->buffer_.capacity() - 1];
-  return &deque_->buffer_.buffer()[index_ - 1];
+    return &deque_->buffer_[deque_->buffer_.capacity() - 1];
+  return &deque_->buffer_[index_ - 1];
 }
 
 // This is only defined if the allocator is a HeapAllocator. It is used when
