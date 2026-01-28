@@ -148,7 +148,7 @@ async function test_boundary_allows_inner(scrollGesture) {
 async function test_boundary_on_nonscrollable_prevents_x(scrollGesture) {
   non_scrollable.style.overscrollBehaviorX = 'none';
   non_scrollable.style.overscrollBehaviorY = 'auto';
-  await waitForCompositorCommit;
+  await waitForCompositorCommit();
   await waitForScrollReset(document.scrollingElement);
 
   await scrollGesture(non_scrollable, startPositionBottom, scrollRight);
@@ -164,7 +164,7 @@ async function test_boundary_on_nonscrollable_prevents_x(scrollGesture) {
 async function test_boundary_on_nonscrollable_prevents_y(scrollGesture) {
   non_scrollable.style.overscrollBehaviorX = 'auto';
   non_scrollable.style.overscrollBehaviorY = 'none';
-  await waitForCompositorCommit;
+  await waitForCompositorCommit();
   await waitForScrollReset(document.scrollingElement);
 
   await scrollGesture(non_scrollable, startPositionBottom, scrollRight,

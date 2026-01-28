@@ -6744,8 +6744,6 @@ crbug.com/1309756 [ Mac13-arm64 ] http/tests/images/force-reload.html [ Crash Fa
 crbug.com/1309756 [ Mac12-arm64 Release ] http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
 
 # Scroll Unification known issues (go/su-web-tests) for enabling in test:
-crbug.com/1311431 [ Debug Mac13-arm64 ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
-crbug.com/1311431 [ Mac Release ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
 
 # These tests fail on SwiftShader FEMU due to a change in log/exp implementation.
 crbug.com/1311456 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit.html [ Crash Failure Pass Timeout ]
@@ -7725,7 +7723,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/overrides/can-edit-iframe-html.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-Blob.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scroll-behavior/no-erroneous-auto-scroll-pinch-zoom.html [ Skip Timeout ]
-[ Debug Mac13 ] fast/scroll-behavior/overscroll-behavior.html [ Failure ]
 # Will uncomment after crrev.com/c/5440693 lands
 #[ Debug Mac13 ] http/tests/devtools/elements/inspect-limited-children.js [ Skip Timeout ]
 [ Debug Mac13 ] accessibility/inline-text-word-boundary-causes-crash.html [ Skip Timeout ]
