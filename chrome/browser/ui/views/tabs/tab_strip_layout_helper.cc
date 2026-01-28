@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_layout_state.h"
@@ -48,7 +49,9 @@ TabStripLayoutHelper::TabStripLayoutHelper(
     GetTabsCallback get_tabs_callback)
     : controller_(controller),
       get_tabs_callback_(get_tabs_callback),
-      tab_strip_layout_domain_(LayoutDomain::kInactiveWidthEqualsActiveWidth) {}
+      tab_strip_layout_domain_(LayoutDomain::kInactiveWidthEqualsActiveWidth),
+      show_pinned_tabs_in_focused_groups_(
+          features::kTabGroupsFocusingPinnedTabs.Get()) {}
 
 TabStripLayoutHelper::~TabStripLayoutHelper() = default;
 
@@ -424,6 +427,12 @@ bool TabStripLayoutHelper::SlotIsCollapsedTab(int i) const {
   // If a group is focused, all other tabs and group headers should be
   // collapsed.
   if (focused_group.has_value()) {
+    // When the pinned feature is enabled, pinned tabs should not be collapsed.
+    if (show_pinned_tabs_in_focused_groups_ &&
+        slots_[i].state.pinned() == TabPinned::kPinned) {
+      return false;
+    }
+
     const std::optional<tab_groups::TabGroupId> id = slots_[i].view->group();
     return !id.has_value() || id.value() != focused_group.value();
   }

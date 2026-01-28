@@ -162,6 +162,8 @@ class TabStripLayoutHelper {
   std::map<tab_groups::TabGroupId, gfx::Rect> group_header_ideal_bounds_;
 
   LayoutDomain tab_strip_layout_domain_;
+
+  const bool show_pinned_tabs_in_focused_groups_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_HELPER_H_
