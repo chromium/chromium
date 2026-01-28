@@ -40,6 +40,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Verifies the main user journeys for supervised users. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -91,6 +92,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void incognitoModeIsUnavailableFromAppMenu() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -109,6 +111,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @Test
     @LargeTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41485872")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void incognitoModeIsUnavailableFromTabSwitcherActionMenu() {
         onView(withId(R.id.tab_switcher_button)).perform(longClick());
         int incognitoMenuItemStringId =

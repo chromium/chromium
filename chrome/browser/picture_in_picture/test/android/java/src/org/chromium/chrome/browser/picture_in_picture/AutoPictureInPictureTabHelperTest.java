@@ -239,6 +239,7 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testBackToTabFromAutoPip() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         assertTrue(
@@ -436,6 +437,7 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testQuickDismissalIncrementsDismissCount() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         String url = mActivityTestRule.getTestServer().getURL(AUTO_PIP_VIDEO_PAGE);
@@ -466,6 +468,7 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testSwitchingBackToTabDoesNotIncrementDismissCount() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         String url = mActivityTestRule.getTestServer().getURL(AUTO_PIP_VIDEO_PAGE);
@@ -497,6 +500,7 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testClosingAfterTimerExpiresDoesNotIncrementDismissCount() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         String url = mActivityTestRule.getTestServer().getURL(AUTO_PIP_VIDEO_PAGE);

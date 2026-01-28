@@ -14,7 +14,6 @@
 -org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManagerTest.*
 
 # crbug.com/376528174
--org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
 
 # crbug.com/394675204
 -org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
@@ -37,13 +36,3 @@
 -org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeader
 -org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderTest.testConsistentHeaderForOneTimeGrant
 -org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalsTest.*
--org.chromium.chrome.browser.permissions.RuntimePermissionTest.testAllowRuntimeLocationIncognito
--org.chromium.chrome.browser.permissions.RuntimePermissionTest.testRuntimeMediaPromptHistogram
--org.chromium.chrome.browser.picture_in_picture.AutoPictureInPictureTabHelperTest.testBackToTabFromAutoPip
--org.chromium.chrome.browser.picture_in_picture.AutoPictureInPictureTabHelperTest.testClosingAfterTimerExpiresDoesNotIncrementDismissCount
--org.chromium.chrome.browser.picture_in_picture.AutoPictureInPictureTabHelperTest.testQuickDismissalIncrementsDismissCount
--org.chromium.chrome.browser.picture_in_picture.AutoPictureInPictureTabHelperTest.testSwitchingBackToTabDoesNotIncrementDismissCount
--org.chromium.chrome.browser.sensitive_content.SensitiveContentTest.testIncognitoTabSwitcherBecomesSensitive
--org.chromium.chrome.browser.sensitive_content.SensitiveContentTest.testSensitiveContentIsRestoredFromTabState
--org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromAppMenu
--org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromTabSwitcherActionMenu

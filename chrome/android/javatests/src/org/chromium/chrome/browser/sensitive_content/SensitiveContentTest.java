@@ -44,6 +44,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -282,6 +283,7 @@ public class SensitiveContentTest {
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testIncognitoTabSwitcherBecomesSensitive() {
         final String histogram =
                 "SensitiveContent.TabSwitching.IncognitoTabSwitcherPane.Sensitivity";
@@ -591,6 +593,7 @@ public class SensitiveContentTest {
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testSensitiveContentIsRestoredFromTabState() {
         // Create a new tab.
         CtaPageStation page = mPage.openNewTabFast();

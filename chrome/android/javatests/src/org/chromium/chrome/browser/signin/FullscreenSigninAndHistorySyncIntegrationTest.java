@@ -81,6 +81,7 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
@@ -490,6 +491,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376528174
     public void testScreenRotation() {
         when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
 
