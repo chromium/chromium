@@ -1740,18 +1740,15 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
     if (isPrimaryToolbar && !CanShowTabStrip(self)) {
       self.primaryToolbarOffsetConstraint.constant = yOrigin;
     }
-
-    if (header.view == self.tabStripView) {
-      self.tabStripTopConstraint.constant = yOrigin;
-      [self setNeedsStatusBarAppearanceUpdate];
-    } else {
-      CGRect frame = [header.view frame];
-      frame.origin.y = yOrigin;
-      [header.view setFrame:frame];
+    CGRect frame = [header.view frame];
+    frame.origin.y = yOrigin;
+    [header.view setFrame:frame];
+    if (header.behaviour != Overlap) {
+      height += CGRectGetHeight(frame);
     }
 
-    if (header.behaviour != Overlap) {
-      height += CGRectGetHeight(header.view.frame);
+    if (header.view == self.tabStripView) {
+      [self setNeedsStatusBarAppearanceUpdate];
     }
   }
 }
