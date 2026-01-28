@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -110,8 +111,9 @@ class TestStateStoreObserver : public StateStore::TestObserver {
 
   void WillSetExtensionValue(const ExtensionId& extension_id,
                              const std::string& key) override {
-    if (extension_id == extension_id_)
+    if (extension_id == extension_id_) {
       ++updated_values_[key];
+    }
   }
 
   int CountForKey(const std::string& key) const {
@@ -257,8 +259,9 @@ class MultiActionAPITest
 
   // Ensures the |action| is enabled on the tab with the given |tab_id|.
   void EnsureActionIsEnabledOnTab(ExtensionAction* action, int tab_id) {
-    if (action->GetIsVisible(tab_id))
+    if (action->GetIsVisible(tab_id)) {
       return;
+    }
     action->SetIsVisible(tab_id, true);
     // Just setting the state on the action doesn't update the UI. Ensure
     // observers are notified.
@@ -446,11 +449,8 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, TitleLocalization) {
             action->GetTitle(ExtensionAction::kDefaultTabId));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests dispatching the onClicked event to listeners when the extension action
 // in the toolbar is pressed.
-// TODO(crbug.com/441364082): Enable on Android when we implement
-// ExtensionActionTestHelper without Browser.
 IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
   constexpr char kManifestTemplate[] =
       R"({
@@ -483,17 +483,14 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
                      base::StringPrintf(kBackgroundJsTemplate,
                                         GetAPINameForActionType(GetParam())));
 
-  // Though this says "ExtensionActionTestHelper", it's actually used for all
-  // toolbar actions.
-  // TODO(devlin): Rename it to ToolbarActionTestUtil.
-  std::unique_ptr<ExtensionActionTestHelper> toolbar_helper =
-      ExtensionActionTestHelper::Create(browser());
-  EXPECT_EQ(0, toolbar_helper->NumberOfBrowserActions());
+  ExtensionsContainer* extensions_container =
+      ExtensionsContainer::From(*browser_window_interface());
+  EXPECT_FALSE(extensions_container->HasAnyExtensions());
 
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
-  ASSERT_EQ(1, toolbar_helper->NumberOfBrowserActions());
-  EXPECT_TRUE(toolbar_helper->HasAction(extension->id()));
+  EXPECT_TRUE(extensions_container->HasAnyExtensions());
+  EXPECT_TRUE(extensions_container->GetActionForId(extension->id()));
 
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -504,14 +501,23 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
   EXPECT_FALSE(action->HasPopup(tab_id));
 
   ResultCatcher result_catcher;
-  toolbar_helper->Press(extension->id());
+  ToolbarActionViewModel* model =
+      extensions_container->GetActionForId(extension->id());
+  ASSERT_TRUE(model);
+  model->ExecuteUserAction(
+      ToolbarActionViewModel::InvocationSource::kToolbarButton);
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 // Tests the creation of a popup when one is specified in the manifest.
-// TODO(crbug.com/441364082): Enable on Android when we implement
-// ExtensionActionTestHelper without Browser.
-IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
+// TODO(crbug.com/478717514): Enable on Android when we support triggering a
+// popup of an unpinned extension.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PopupCreation DISABLED_PopupCreation
+#else
+#define MAYBE_PopupCreation PopupCreation
+#endif
+IN_PROC_BROWSER_TEST_P(MultiActionAPITest, MAYBE_PopupCreation) {
   constexpr char kManifestTemplate[] =
       R"({
            "name": "Test Clicking",
@@ -540,8 +546,8 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  std::unique_ptr<ExtensionActionTestHelper> toolbar_helper =
-      ExtensionActionTestHelper::Create(browser());
+  ExtensionsContainer* extensions_container =
+      ExtensionsContainer::From(*browser_window_interface());
 
   ExtensionAction* action = GetExtensionAction(*extension);
   ASSERT_TRUE(action);
@@ -552,7 +558,11 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
   EXPECT_TRUE(action->HasPopup(tab_id));
 
   ResultCatcher result_catcher;
-  toolbar_helper->Press(extension->id());
+  ToolbarActionViewModel* model =
+      extensions_container->GetActionForId(extension->id());
+  ASSERT_TRUE(model);
+  model->ExecuteUserAction(
+      ToolbarActionViewModel::InvocationSource::kToolbarButton);
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
   ProcessManager* process_manager = ProcessManager::Get(profile());
@@ -634,10 +644,10 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupToEmptyString) {
 
 // Tests that sessionStorage does not persist between closing and opening of a
 // popup.
-// TODO(crbug.com/441364082): Enable on Android when we implement
-// ExtensionActionTestHelper without Browser.
+// TODO(crbug.com/478717514): Enable on Android when we support triggering a
+// popup of an unpinned extension.
 // TODO(crbug.com/40795982): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_SessionStorageDoesNotPersistBetweenOpenings \
   DISABLED_SessionStorageDoesNotPersistBetweenOpenings
 #else
@@ -683,7 +693,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   ASSERT_TRUE(extension);
 
   ExtensionsContainer* extensions_container =
-      ExtensionsContainer::From(*browser());
+      ExtensionsContainer::From(*browser_window_interface());
   ASSERT_TRUE(extensions_container);
   ToolbarActionViewModel* model =
       extensions_container->GetActionForId(extension->id());
@@ -742,7 +752,6 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   EXPECT_NE(session_storage_id1, session_storage_id2);
   EXPECT_EQ("1", content::EvalJs(popup_contents, "sessionStorage.foo"));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 using ActionAndBrowserActionAPITest = MultiActionAPITest;
 
@@ -1374,10 +1383,11 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
         auto check_value = [action, &value_getter, &test_helper](
                                const ValuePair& expected_value, int tab_id) {
           EXPECT_EQ(expected_value.cpp, value_getter.Run(action, tab_id));
-          if (tab_id == ExtensionAction::kDefaultTabId)
+          if (tab_id == ExtensionAction::kDefaultTabId) {
             test_helper.CheckDefaultValue(expected_value.js.c_str());
-          else
+          } else {
             test_helper.CheckValueForTab(expected_value.js.c_str(), tab_id);
+          }
         };
 
         // Page actions don't support setting a default value (because they are
@@ -1385,8 +1395,9 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
         bool supports_default = GetParam() != ActionInfo::Type::kPage;
 
         // Check the initial state. These should start at the defaults.
-        if (supports_default)
+        if (supports_default) {
           check_value(default_value, ExtensionAction::kDefaultTabId);
+        }
         check_value(default_value, first_tab_id);
         check_value(default_value, second_tab_id);
 
@@ -1396,8 +1407,9 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
         // The first tab should have the custom value, while the second tab
         // (and the default tab, if supported) should still have the default
         // value.
-        if (supports_default)
+        if (supports_default) {
           check_value(default_value, ExtensionAction::kDefaultTabId);
+        }
         check_value(custom_value1, first_tab_id);
         check_value(default_value, second_tab_id);
 
@@ -1635,10 +1647,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, EnableAndDisable) {
   }
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that the check for enabled and disabled status are correctly reported.
-// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
-// is supported.
 IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabled) {
   ASSERT_TRUE(RunExtensionTest("extension_action/is_enabled")) << message_;
 }
@@ -1717,11 +1726,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, IsEnabledIgnoreDeclarative) {
       BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
   EXPECT_FALSE(script_result.GetBool());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 using ActionAPITest = ExtensionApiTest;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
   constexpr char kManifest[] =
       R"({
@@ -1754,13 +1761,15 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
       ToolbarActionsModel::Get(profile());
   EXPECT_FALSE(toolbar_model->IsActionPinned(extension->id()));
 
-  std::unique_ptr<ExtensionActionTestHelper> toolbar_helper =
-      ExtensionActionTestHelper::Create(browser());
+  ExtensionsContainer* extensions_container =
+      ExtensionsContainer::From(*browser_window_interface());
 
-  auto get_response = [extension, toolbar_helper = toolbar_helper.get()]() {
+  auto get_response = [extension, extensions_container]() {
     ExtensionTestMessageListener listener;
     listener.set_extension_id(extension->id());
-    toolbar_helper->Press(extension->id());
+    extensions_container->GetActionForId(extension->id())
+        ->ExecuteUserAction(
+            ToolbarActionViewModel::InvocationSource::kToolbarButton);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     return listener.message();
   };
@@ -1772,7 +1781,6 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
 
   EXPECT_EQ(R"({"isOnToolbar":true})", get_response());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests dispatching the onUserSettingsChanged event to listeners when the user
 // pins or unpins the extension action.
