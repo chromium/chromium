@@ -4,6 +4,7 @@
 
 #import "ios/web/navigation/crw_web_view_navigation_observer.h"
 
+#import "base/check.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -23,6 +24,11 @@
 #import "net/base/apple/http_response_headers_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
+
+// TODO(crbug.com/477899998): Remove when the investigation is over.
+#import "base/not_fatal_until.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 
 using web::NavigationManagerImpl;
 
@@ -98,6 +104,31 @@ using web::NavigationManagerImpl;
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
+  // According to https://crbug.com/477494757, WebKit may end up calling this
+  // method on a background thread. WebState is not thread-safe and must only
+  // be accessed on the main thread. Thus being called on a background thread
+  // can lead to concurrent access of the same object on multiple threads and
+  // is likely to mess things up. As a band-aid until a proper fix is written
+  // perform a thread hop to the main thread here if necessary.
+  //
+  // TODO(crbug.com/477899998): Remove when the investigation is over.
+  if (!web::WebThread::CurrentlyOn(web::WebThread::UI)) {
+    __weak __typeof(self) weakSelf = self;
+    web::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf observeValueForKeyPath:keyPath
+                                  ofObject:object
+                                    change:change
+                                   context:context];
+        }));
+
+    return;
+  }
+
+  // TODO(crbug.com/477899998): Remove when the investigation is over.
+  CHECK(web::WebThread::CurrentlyOn(web::WebThread::UI),
+        base::NotFatalUntil::M146);
+
   DCHECK(!self.beingDestroyed);
   NSString* dispatcherSelectorName = self.WKWebViewObservers[keyPath];
   DCHECK(dispatcherSelectorName);
