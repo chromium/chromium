@@ -2375,7 +2375,7 @@ void LensOverlayController::ShowPreselectionBubble() {
     // Setup the preselection widget.
     preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<lens::LensPreselectionBubble>(
-            weak_factory_.GetWeakPtr(), preselection_widget_anchor_,
+            tab_->GetHandle(), preselection_widget_anchor_,
             net::NetworkChangeNotifier::IsOffline(),
             /*exit_clicked_callback=*/
             base::BindRepeating(
