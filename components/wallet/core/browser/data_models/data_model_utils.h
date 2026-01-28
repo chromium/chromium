@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 
 namespace wallet {
 

@@ -12,8 +12,11 @@ static_library("browser") {
     "data_models/data_model_utils.cc",
     "data_models/data_model_utils.h",
     "data_models/wallet_barcode.h",
-    "data_models/walletable_pass.cc",
-    "data_models/walletable_pass.h",
+    "data_models/wallet_pass.cc",
+    "data_models/wallet_pass.h",
+    "ingestion/walletable_pass_client.h",
+    "ingestion/walletable_pass_ingestion_controller.cc",
+    "ingestion/walletable_pass_ingestion_controller.h",
     "metrics/wallet_metrics.cc",
     "metrics/wallet_metrics.h",
     "network/wallet_http_client.h",
@@ -22,9 +25,6 @@ static_library("browser") {
     "strike_databases/walletable_pass_consent_strike_database.h",
     "strike_databases/walletable_pass_save_strike_database_by_host.cc",
     "strike_databases/walletable_pass_save_strike_database_by_host.h",
-    "ingestion/walletable_pass_client.h",
-    "ingestion/walletable_pass_ingestion_controller.cc",
-    "ingestion/walletable_pass_ingestion_controller.h",
     "walletable_permission_utils.cc",
     "walletable_permission_utils.h",
   ]
@@ -59,7 +59,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "data_models/boarding_pass_unittest.cc",
-    "data_models/walletable_pass_unittest.cc",
+    "data_models/wallet_pass_unittest.cc",
     "network/wallet_http_client_impl_unittest.cc",
     "walletable_permission_utils_unittest.cc",
   ]

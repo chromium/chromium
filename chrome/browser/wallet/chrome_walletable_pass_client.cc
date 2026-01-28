@@ -96,7 +96,7 @@ void ChromeWalletablePassClient::ShowWalletablePassConsentBubble(
 }
 
 void ChromeWalletablePassClient::ShowWalletablePassSaveBubble(
-    WalletablePass pass,
+    WalletPass pass,
     WalletablePassBubbleResultCallback callback) {
   if (!save_bubble_controller_) {
     save_bubble_controller_ =

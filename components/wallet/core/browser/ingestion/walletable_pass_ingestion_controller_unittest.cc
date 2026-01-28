@@ -54,7 +54,7 @@ class MockWalletHttpClient : public WalletHttpClient {
   MockWalletHttpClient() = default;
   MOCK_METHOD(void,
               SavePass,
-              (const WalletablePass& pass, SavePassCallback callback),
+              (const WalletPass& pass, SavePassCallback callback),
               (override));
 };
 
@@ -77,7 +77,7 @@ class MockWalletablePassClient : public WalletablePassClient {
   MOCK_METHOD(
       void,
       ShowWalletablePassSaveBubble,
-      (WalletablePass pass,
+      (WalletPass pass,
        WalletablePassClient::WalletablePassBubbleResultCallback callback),
       (override));
   MOCK_METHOD(strike_database::StrikeDatabaseBase*,
@@ -160,9 +160,9 @@ class WalletablePassIngestionControllerTest : public testing::Test {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  WalletablePass CreateLoyaltyCard(
+  WalletPass CreateLoyaltyCard(
       const std::string& member_id = "test_member_id") {
-    WalletablePass walletable_pass;
+    WalletPass walletable_pass;
     LoyaltyCard loyalty_card;
     loyalty_card.member_id = member_id;
     walletable_pass.pass_data = std::move(loyalty_card);
@@ -170,7 +170,7 @@ class WalletablePassIngestionControllerTest : public testing::Test {
   }
 
   void ExpectSaveBubbleOnClient(
-      const WalletablePass& expected_pass,
+      const WalletPass& expected_pass,
       WalletablePassClient::WalletablePassBubbleResultCallback* out_callback) {
     EXPECT_CALL(mock_client(),
                 ShowWalletablePassSaveBubble(Eq(expected_pass), _))
@@ -773,7 +773,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        ShowSaveBubble_Accept_ClearsStrikes) {
   GURL url("https://example.com");
-  WalletablePass walletable_pass = CreateLoyaltyCard();
+  WalletPass walletable_pass = CreateLoyaltyCard();
   test_strike_database().SetStrikeData(
       "WalletablePassSaveByHost__LoyaltyCard;example.com", 2);
 
@@ -802,7 +802,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        ShowSaveBubble_Reject_AddsStrikes) {
   GURL url("https://example.com");
-  WalletablePass walletable_pass = CreateLoyaltyCard();
+  WalletPass walletable_pass = CreateLoyaltyCard();
   test_strike_database().SetStrikeData(
       "WalletablePassSaveByHost__LoyaltyCard;example.com", 1);
 
@@ -830,7 +830,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        ShowSaveBubble_UnintendedClose_StrikesUnchanged) {
   GURL url("https://example.com");
-  WalletablePass walletable_pass = CreateLoyaltyCard();
+  WalletPass walletable_pass = CreateLoyaltyCard();
   test_strike_database().SetStrikeData(
       "WalletablePassSaveByHost__LoyaltyCard;example.com", 1);
 
@@ -858,7 +858,7 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        ShowSaveBubble_Closed_AddsStrikes) {
   GURL url("https://example.com");
-  WalletablePass walletable_pass = CreateLoyaltyCard();
+  WalletPass walletable_pass = CreateLoyaltyCard();
   test_strike_database().SetStrikeData(
       "WalletablePassSaveByHost__LoyaltyCard;example.com", 1);
 
@@ -998,7 +998,7 @@ TEST_F(WalletablePassIngestionControllerTest,
                 nullptr);
           }));
   WalletablePassClient::WalletablePassBubbleResultCallback save_bubble_callback;
-  WalletablePass expected_pass = CreateLoyaltyCard("Member ID");
+  WalletPass expected_pass = CreateLoyaltyCard("Member ID");
   // Set additional fields to match the response from the model executor.
   auto& loyalty_card = std::get<LoyaltyCard>(expected_pass.pass_data);
   loyalty_card.plan_name = "Program Name";
@@ -1161,7 +1161,7 @@ TEST_F(WalletablePassIngestionControllerTest,
           }));
 
   // Expect ShowSaveBubble with merged barcode.
-  WalletablePass expected_pass = CreateLoyaltyCard("test_member_id");
+  WalletPass expected_pass = CreateLoyaltyCard("test_member_id");
   std::get<LoyaltyCard>(expected_pass.pass_data).barcode = barcode;
 
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
@@ -1221,7 +1221,7 @@ TEST_F(WalletablePassIngestionControllerTest,
           }));
 
   // Expect ShowSaveBubble with pass (no barcode).
-  WalletablePass expected_pass = CreateLoyaltyCard("test_member_id");
+  WalletPass expected_pass = CreateLoyaltyCard("test_member_id");
   // barcode remains empty/default.
 
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
@@ -1370,7 +1370,7 @@ TEST_F(WalletablePassIngestionControllerTest,
   EXPECT_CALL(mock_client(), ShowWalletablePassSaveBubble(_, _))
       .WillOnce(WithArgs<0, 1>(
           [&barcode2, &bubble_callback](
-              WalletablePass pass,
+              WalletPass pass,
               WalletablePassClient::WalletablePassBubbleResultCallback
                   callback) {
             bubble_callback = std::move(callback);

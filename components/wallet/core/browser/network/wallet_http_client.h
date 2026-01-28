@@ -10,7 +10,7 @@
 
 namespace wallet {
 
-struct WalletablePass;
+struct WalletPass;
 
 // WalletHttpClient issues requests to the Wallet backend.
 class WalletHttpClient {
@@ -29,8 +29,7 @@ class WalletHttpClient {
   virtual ~WalletHttpClient() = default;
 
   // Save a pass to the Wallet backend.
-  virtual void SavePass(const WalletablePass& pass,
-                        SavePassCallback callback) = 0;
+  virtual void SavePass(const WalletPass& pass, SavePassCallback callback) = 0;
 };
 
 }  // namespace wallet

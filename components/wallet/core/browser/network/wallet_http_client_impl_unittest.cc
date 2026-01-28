@@ -13,7 +13,7 @@
 #include "base/uuid.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/version_info/version_info.h"
-#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
@@ -80,7 +80,7 @@ class WalletHttpClientImplTest : public testing::Test {
 // Tests that SavePass successfully triggers a network request and invokes the
 // callback with a success result when the server responds with success.
 TEST_F(WalletHttpClientImplTest, SavePass_Success) {
-  WalletablePass pass;
+  WalletPass pass;
   SavePassCallback save_pass_callback;
   client()->SavePass(pass, save_pass_callback.GetCallback());
 
@@ -111,7 +111,7 @@ TEST_F(WalletHttpClientImplTest, SavePass_TokenFetchError) {
   loyalty_card.issuer_name = "Issuer Name";
   loyalty_card.member_id = "Member ID";
 
-  WalletablePass pass;
+  WalletPass pass;
   pass.pass_data = loyalty_card;
 
   SavePassCallback save_pass_callback;
@@ -127,7 +127,7 @@ TEST_F(WalletHttpClientImplTest, SavePass_TokenFetchError) {
 }
 
 TEST_F(WalletHttpClientImplTest, SavePass_Failure) {
-  WalletablePass pass;
+  WalletPass pass;
   SavePassCallback save_pass_callback;
   client()->SavePass(pass, save_pass_callback.GetCallback());
 
@@ -149,12 +149,12 @@ TEST_F(WalletHttpClientImplTest, SavePass_Failure) {
 // Tests that multiple SavePass requests can be in-flight simultaneously and all
 // callbacks are invoked correctly upon completion.
 TEST_F(WalletHttpClientImplTest, SavePass_ConcurrentRequests) {
-  WalletablePass pass1;
+  WalletPass pass1;
   LoyaltyCard loyalty_card1;
   loyalty_card1.plan_name = "p1";
   pass1.pass_data = loyalty_card1;
 
-  WalletablePass pass2;
+  WalletPass pass2;
   LoyaltyCard loyalty_card2;
   loyalty_card2.plan_name = "p2";
   pass2.pass_data = loyalty_card2;
@@ -190,7 +190,7 @@ TEST_F(WalletHttpClientImplTest, SavePass_LoyaltyCard_RequestStructure) {
   loyalty_card.issuer_name = "i1";
   loyalty_card.member_id = "m1";
 
-  WalletablePass pass;
+  WalletPass pass;
   pass.pass_data = loyalty_card;
 
   SavePassCallback save_pass_callback;

@@ -15,11 +15,11 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
-#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_client.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/browser/strike_databases/walletable_pass_consent_strike_database.h"
 #include "components/wallet/core/browser/strike_databases/walletable_pass_save_strike_database_by_host.h"
-#include "components/wallet/core/browser/ingestion/walletable_pass_client.h"
 
 class GURL;
 
@@ -87,7 +87,7 @@ class WalletablePassIngestionController {
 
   // Shows the "Save" bubble to the user, allowing them to save the provided
   // pass.
-  void ShowSaveBubble(const GURL& url, WalletablePass walletable_pass);
+  void ShowSaveBubble(const GURL& url, WalletPass walletable_pass);
 
  private:
   friend class WalletablePassIngestionControllerTestApi;
@@ -99,7 +99,7 @@ class WalletablePassIngestionController {
     ProcessingState& operator=(const ProcessingState&);
 
     std::vector<WalletBarcode> detected_barcodes;
-    std::optional<WalletablePass> extracted_pass;
+    std::optional<WalletPass> extracted_pass;
   };
 
   // Extracts a walletable pass from the provided page content. This method
@@ -151,7 +151,7 @@ class WalletablePassIngestionController {
   // accepts, declines, or dismisses).
   void OnGetSaveBubbleResult(
       const GURL& url,
-      WalletablePass walletable_pass,
+      WalletPass walletable_pass,
       WalletablePassClient::WalletablePassBubbleResult result);
 
   // Callback invoked when the pass is saved successfully or fails.

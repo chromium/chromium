@@ -6,9 +6,8 @@
 #define COMPONENTS_WALLET_CORE_BROWSER_INGESTION_WALLETABLE_PASS_CLIENT_H_
 
 #include "base/functional/callback.h"
-#include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/wallet/core/browser/data_models/country_type.h"
-#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 
 class PrefService;
 
@@ -19,9 +18,6 @@ class IdentityManager;
 namespace optimization_guide {
 class OptimizationGuideDecider;
 class RemoteModelExecutor;
-namespace proto {
-class WalletablePass;
-}  // namespace proto
 }  // namespace optimization_guide
 
 namespace strike_database {
@@ -77,7 +73,7 @@ class WalletablePassClient {
       WalletablePassBubbleResultCallback callback) = 0;
 
   virtual void ShowWalletablePassSaveBubble(
-      WalletablePass pass,
+      WalletPass pass,
       WalletablePassBubbleResultCallback callback) = 0;
 };
 

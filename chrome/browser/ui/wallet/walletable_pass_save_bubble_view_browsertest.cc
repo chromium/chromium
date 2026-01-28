@@ -124,7 +124,7 @@ class WalletablePassSaveBubbleViewBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, LoyaltyCard) {
-  wallet::WalletablePass pass;
+  wallet::WalletPass pass;
   wallet::LoyaltyCard loyalty_card;
   loyalty_card.plan_name = "Walgreens Rewards";
   loyalty_card.issuer_name = "Walgreens";
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, LoyaltyCard) {
 }
 
 IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, EventTicket) {
-  wallet::WalletablePass pass;
+  wallet::WalletPass pass;
   wallet::EventPass event_pass;
   event_pass.event_name = "LA Dodgers at SF Giants";
   event_pass.event_start_date = "2020-01-01";
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, EventTicket) {
 }
 
 IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, TransitTicket) {
-  wallet::WalletablePass pass;
+  wallet::WalletPass pass;
   wallet::TransitTicket transit_ticket;
   transit_ticket.agency_name = "Metro Transit";
   transit_ticket.origin = "KGX";
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, TransitTicket) {
 }
 
 IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, BoardingPass) {
-  wallet::WalletablePass pass;
+  wallet::WalletPass pass;
   wallet::BoardingPass boarding_pass;
   boarding_pass.airline = "United Airlines";
   boarding_pass.flight_code = "UA123";

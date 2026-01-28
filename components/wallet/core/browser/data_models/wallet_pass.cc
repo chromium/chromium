@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -89,27 +89,33 @@ TransitTicket::TransitTicket(TransitTicket&&) = default;
 TransitTicket& TransitTicket::operator=(TransitTicket&&) = default;
 TransitTicket::~TransitTicket() = default;
 
+WalletPass::WalletPass() = default;
+WalletPass::WalletPass(const WalletPass&) = default;
+WalletPass& WalletPass::operator=(const WalletPass&) = default;
+WalletPass::WalletPass(WalletPass&&) = default;
+WalletPass& WalletPass::operator=(WalletPass&&) = default;
+WalletPass::~WalletPass() = default;
 
 // static
-std::optional<WalletablePass> WalletablePass::FromProto(
+std::optional<WalletPass> WalletPass::FromProto(
     const optimization_guide::proto::WalletablePass& proto,
     std::optional<WalletBarcode> barcode) {
   if (proto.has_loyalty_card()) {
     LoyaltyCard card =
         LoyaltyCard::FromProto(proto.loyalty_card(), std::move(barcode));
-    WalletablePass pass;
+    WalletPass pass;
     pass.pass_data = std::move(card);
     return pass;
   } else if (proto.has_event_pass()) {
     EventPass event =
         EventPass::FromProto(proto.event_pass(), std::move(barcode));
-    WalletablePass pass;
+    WalletPass pass;
     pass.pass_data = std::move(event);
     return pass;
   } else if (proto.has_transit_ticket()) {
     TransitTicket ticket =
         TransitTicket::FromProto(proto.transit_ticket(), std::move(barcode));
-    WalletablePass pass;
+    WalletPass pass;
     pass.pass_data = std::move(ticket);
     return pass;
   }
@@ -117,26 +123,19 @@ std::optional<WalletablePass> WalletablePass::FromProto(
 }
 
 // static
-std::optional<WalletablePass> WalletablePass::CreateBoardingPass(
+std::optional<WalletPass> WalletPass::CreateBoardingPass(
     const WalletBarcode& barcode) {
   std::optional<BoardingPass> boarding_pass =
       BoardingPass::FromBarcode(barcode);
   if (boarding_pass) {
-    WalletablePass pass;
+    WalletPass pass;
     pass.pass_data = std::move(*boarding_pass);
     return pass;
   }
   return std::nullopt;
 }
 
-WalletablePass::WalletablePass() = default;
-WalletablePass::WalletablePass(const WalletablePass&) = default;
-WalletablePass& WalletablePass::operator=(const WalletablePass&) = default;
-WalletablePass::WalletablePass(WalletablePass&&) = default;
-WalletablePass& WalletablePass::operator=(WalletablePass&&) = default;
-WalletablePass::~WalletablePass() = default;
-
-PassCategory WalletablePass::GetPassCategory() const {
+PassCategory WalletPass::GetPassCategory() const {
   return std::visit(
       absl::Overload(
           [](const LoyaltyCard&) { return PassCategory::kLoyaltyCard; },

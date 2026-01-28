@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_WALLETABLE_PASS_H_
-#define COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_WALLETABLE_PASS_H_
+#ifndef COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_WALLET_PASS_H_
+#define COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_WALLET_PASS_H_
 
 #include <optional>
 #include <string>
@@ -121,25 +121,27 @@ struct TransitTicket {
   std::optional<WalletBarcode> barcode;
 };
 
-// Represents a generic walletable pass, which can be either a LoyaltyCard or an
-// EventPass or a BoardingPass.
-struct WalletablePass {
-  static std::optional<WalletablePass> FromProto(
+// Represents a generic Google Wallet pass.
+struct WalletPass {
+  WalletPass();
+  WalletPass(const WalletPass&);
+  WalletPass& operator=(const WalletPass&);
+  WalletPass(WalletPass&&);
+  WalletPass& operator=(WalletPass&&);
+  ~WalletPass();
+
+  bool operator==(const WalletPass& other) const = default;
+
+  // TODO(crbug.com/478783796): Move closer to where it's used.
+  static std::optional<WalletPass> FromProto(
       const optimization_guide::proto::WalletablePass& proto,
       std::optional<WalletBarcode> barcode = std::nullopt);
-  static std::optional<WalletablePass> CreateBoardingPass(
+
+  // TODO(crbug.com/478783796): Move to the BoardingPass class.
+  static std::optional<WalletPass> CreateBoardingPass(
       const WalletBarcode& barcode);
 
-  WalletablePass();
-  WalletablePass(const WalletablePass&);
-  WalletablePass& operator=(const WalletablePass&);
-  WalletablePass(WalletablePass&&);
-  WalletablePass& operator=(WalletablePass&&);
-  ~WalletablePass();
-
-  bool operator==(const WalletablePass& other) const = default;
-
-  // Returns the pass category of the walletable pass.
+  // Returns the pass category of the Google Wallet pass.
   PassCategory GetPassCategory() const;
 
   std::variant<LoyaltyCard, EventPass, BoardingPass, TransitTicket> pass_data;
@@ -147,4 +149,4 @@ struct WalletablePass {
 
 }  // namespace wallet
 
-#endif  // COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_WALLETABLE_PASS_H_
+#endif  // COMPONENTS_WALLET_CORE_BROWSER_DATA_MODELS_WALLET_PASS_H_

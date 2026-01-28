@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
-#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace wallet {

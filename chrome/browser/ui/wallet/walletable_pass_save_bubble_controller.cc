@@ -16,9 +16,9 @@
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/wallet/core/browser/data_models/walletable_pass.h"
-#include "components/wallet/core/browser/metrics/wallet_metrics.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/browser/ingestion/walletable_pass_client.h"
+#include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "content/public/browser/web_contents.h"
 
 namespace wallet {
@@ -40,14 +40,14 @@ void WalletablePassSaveBubbleController::ShowBubble() {
 }
 
 void WalletablePassSaveBubbleController::SetUpAndShowSaveBubble(
-    WalletablePass pass,
+    WalletPass pass,
     WalletablePassClient::WalletablePassBubbleResultCallback callback) {
   pass_ = std::move(pass);
   SetCallback(std::move(callback));
   QueueOrShowBubble();
 }
 
-const WalletablePass& WalletablePassSaveBubbleController::pass() const {
+const WalletPass& WalletablePassSaveBubbleController::pass() const {
   CHECK(pass_.has_value());
   return *pass_;
 }

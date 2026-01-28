@@ -143,7 +143,7 @@ TEST_F(WalletablePassSaveBubbleControllerTest, Accepted) {
 TEST_F(WalletablePassSaveBubbleControllerTest, GoToWalletClicked) {
   base::HistogramTester histogram_tester;
   // Set up a pass with a specific category (e.g., LoyaltyCard).
-  WalletablePass pass;
+  WalletPass pass;
   LoyaltyCard loyalty_card;
   pass.pass_data = std::move(loyalty_card);
 

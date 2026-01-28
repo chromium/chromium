@@ -50,7 +50,7 @@ class WalletablePassIngestionControllerTestApi {
     controller_->ShowConsentBubble(url, pass_category);
   }
 
-  void ShowSaveBubble(const GURL& url, WalletablePass walletable_pass) {
+  void ShowSaveBubble(const GURL& url, WalletPass walletable_pass) {
     controller_->ShowSaveBubble(url, std::move(walletable_pass));
   }
 

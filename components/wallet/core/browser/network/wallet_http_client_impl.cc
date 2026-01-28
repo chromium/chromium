@@ -18,7 +18,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/version_info/version_info.h"
-#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_request_headers.h"
@@ -86,7 +86,7 @@ std::string BuildTransitTicketRequest(const TransitTicket& ticket) {
   return std::string();
 }
 
-std::string BuildSavePassRequest(const WalletablePass& pass) {
+std::string BuildSavePassRequest(const WalletPass& pass) {
   return std::visit(
       absl::Overload{
           [](const LoyaltyCard& card) { return BuildLoyaltyCardRequest(card); },
@@ -109,7 +109,7 @@ WalletHttpClientImpl::WalletHttpClientImpl(
 
 WalletHttpClientImpl::~WalletHttpClientImpl() = default;
 
-void WalletHttpClientImpl::SavePass(const WalletablePass& pass,
+void WalletHttpClientImpl::SavePass(const WalletPass& pass,
                                     SavePassCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SendRequest(

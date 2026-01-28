@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(WalletablePassBubbleControllerBrowserTest,
                        ReshowSaveBubbleOnTabActivationAfterGoToWallet) {
   auto controller = std::make_unique<WalletablePassSaveBubbleController>(
       browser()->tab_strip_model()->GetTabAtIndex(0));
-  wallet::WalletablePass pass;
+  wallet::WalletPass pass;
   wallet::LoyaltyCard loyalty_card;
   loyalty_card.plan_name = "Test Plan";
   loyalty_card.issuer_name = "Test Issuer";
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(
     ShouldNotReshowSaveBubbleOnTabActivation) {
   auto controller = std::make_unique<WalletablePassSaveBubbleController>(
       browser()->tab_strip_model()->GetTabAtIndex(0));
-  wallet::WalletablePass pass;
+  wallet::WalletPass pass;
   wallet::LoyaltyCard loyalty_card;
   loyalty_card.plan_name = "Test Plan";
   loyalty_card.issuer_name = "Test Issuer";

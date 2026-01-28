@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_controller_base.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 
 namespace tabs {
 class TabInterface;
@@ -38,10 +39,10 @@ class WalletablePassSaveBubbleController
   // Shows the save bubble. `callback` will be run when the user makes a
   // decision.
   void SetUpAndShowSaveBubble(
-      WalletablePass pass,
+      WalletPass pass,
       WalletablePassClient::WalletablePassBubbleResultCallback callback);
 
-  const WalletablePass& pass() const;
+  const WalletPass& pass() const;
 
   // Returns the primary account email of the user.
   std::u16string GetPrimaryAccountEmail();
@@ -54,7 +55,7 @@ class WalletablePassSaveBubbleController
   void ShowBubble() override;
 
  private:
-  std::optional<WalletablePass> pass_;
+  std::optional<WalletPass> pass_;
 
   base::WeakPtrFactory<WalletablePassSaveBubbleController> weak_ptr_factory_{
       this};

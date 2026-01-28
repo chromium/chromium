@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_WALLET_CORE_BROWSER_METRICS_WALLET_METRICS_H_
 #define COMPONENTS_WALLET_CORE_BROWSER_METRICS_WALLET_METRICS_H_
 
-#include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/data_models/wallet_pass.h"
 
 namespace wallet::metrics {
 

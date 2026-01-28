@@ -39,7 +39,7 @@ class WalletHttpClientImpl : public WalletHttpClient {
   WalletHttpClientImpl& operator=(const WalletHttpClientImpl&) = delete;
 
   // WalletHttpClient:
-  void SavePass(const WalletablePass& pass, SavePassCallback callback) override;
+  void SavePass(const WalletPass& pass, SavePassCallback callback) override;
 
  private:
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
