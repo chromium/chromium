@@ -13,13 +13,13 @@ namespace tabs_api {
 
 class TabWalker {
  public:
-  TabWalker(const TabStripModel* model, const tabs::TabInterface* tab);
+  TabWalker(const TabStripModel* model, tabs::TabInterface* tab);
 
   mojom::ContainerPtr Walk();
 
  private:
   raw_ptr<const TabStripModel> model_;
-  raw_ptr<const tabs::TabInterface> target_;
+  raw_ptr<tabs::TabInterface> target_;
 };
 
 }  // namespace tabs_api

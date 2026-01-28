@@ -47,7 +47,8 @@ std::vector<tabs::TabHandle> TabStripModelAdapterImpl::GetTabs() const {
 }
 
 TabRendererData TabStripModelAdapterImpl::GetTabRendererData(int index) const {
-  return TabRendererData::FromTabInModel(tab_strip_model_, index);
+  return TabRendererData::FromTabInterface(
+      tab_strip_model_->GetTabAtIndex(index));
 }
 
 converters::TabStates TabStripModelAdapterImpl::GetTabStates(

@@ -1421,8 +1421,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_data->pinned = tab->IsPinned();
   tab_data->split = tab->IsSplit();
 
-  TabRendererData tab_renderer_data =
-      TabRendererData::FromTabInModel(tab_strip_model, index);
+  const TabRendererData tab_renderer_data =
+      TabRendererData::FromTabInterface(tab);
   tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
   const auto& last_committed_url = tab_renderer_data.last_committed_url;
   // A visible URL is used when the a new tab is still loading.

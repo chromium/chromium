@@ -67,9 +67,7 @@ bool IsNTP(const GURL& url) {
 }  // namespace
 
 // static
-TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
-                                                int index) {
-  tabs::TabInterface* const tab = model->GetTabAtIndex(index);
+TabRendererData TabRendererData::FromTabInterface(tabs::TabInterface* tab) {
   CHECK(tab);
   content::WebContents* const contents = tab->GetContents();
   CHECK(contents);
@@ -99,6 +97,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
 
   // Note that in unit tests, this may be null.
   if (bwi) {
+    const int index = bwi->GetTabStripModel()->GetIndexOfTab(tab);
     // Tabbed web apps should use the app icon on the home tab.
     if (auto* const app_controller =
             web_app::WebAppBrowserController::From(bwi);

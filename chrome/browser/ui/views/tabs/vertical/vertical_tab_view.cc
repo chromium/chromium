@@ -567,7 +567,8 @@ void VerticalTabView::OnDataChanged() {
   selected_ = tab->IsSelected();
   split_ = tab->IsSplit();
   pinned_ = tab->IsPinned();
-  tab_data_ = TabRendererData::FromTabInModel(tab_strip_model, index);
+  tab_data_ =
+      TabRendererData::FromTabInterface(const_cast<tabs::TabInterface*>(tab));
 
   icon_->SetData(tab_data_);
   icon_->SetActiveState(tab->IsActivated());

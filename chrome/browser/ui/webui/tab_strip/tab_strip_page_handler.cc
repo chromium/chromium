@@ -510,7 +510,7 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   }
 
   TabRendererData tab_renderer_data =
-      TabRendererData::FromTabInModel(browser_->tab_strip_model(), index);
+      TabRendererData::FromTabInterface(const_cast<tabs::TabInterface*>(tab));
   tab_data->pinned = tab_renderer_data.pinned;
   tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
   tab_data->url = tab_renderer_data.visible_url;

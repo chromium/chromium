@@ -215,9 +215,7 @@ void MultiContentsViewMiniToolbar::OnTabChangedAt(tabs::TabInterface* tab,
   if (!web_contents_ || tab->GetContents() != web_contents_) {
     return;
   }
-  TabStripModel* model = browser_view_->browser()->tab_strip_model();
-  TabRendererData tab_data = TabRendererData::FromTabInModel(model, index);
-  UpdateContents(tab_data);
+  UpdateContents(TabRendererData::FromTabInterface(tab));
 }
 
 void MultiContentsViewMiniToolbar::OnPaint(gfx::Canvas* canvas) {
@@ -270,12 +268,17 @@ std::optional<TabRendererData> MultiContentsViewMiniToolbar::GetTabData() {
   if (!web_contents_) {
     return std::nullopt;
   }
-  TabStripModel* model = browser_view_->browser()->tab_strip_model();
-  int tab_index = model->GetIndexOfWebContents(web_contents_);
+
+  TabStripModel* const model = browser_view_->browser()->tab_strip_model();
+  const int tab_index = model->GetIndexOfWebContents(web_contents_);
   if (tab_index == TabStripModel::kNoTab) {
     return std::nullopt;
   }
-  return TabRendererData::FromTabInModel(model, tab_index);
+
+  tabs::TabInterface* const tab_interface = GetTabInterface(web_contents_);
+  return tab_interface ? std::make_optional(
+                             TabRendererData::FromTabInterface(tab_interface))
+                       : std::nullopt;
 }
 
 void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {

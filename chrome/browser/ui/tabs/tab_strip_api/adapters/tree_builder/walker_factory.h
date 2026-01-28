@@ -20,7 +20,7 @@ class WalkerFactory {
   WalkerFactory(const TabStripModel* model,
                 base::PassKey<MojoTreeBuilder> pass_key);
 
-  TabWalker WalkerForTab(const tabs::TabInterface* tab) const;
+  TabWalker WalkerForTab(tabs::TabInterface* tab) const;
   TabCollectionWalker WalkerForCollection(
       const tabs::TabCollection* collection) const;
 

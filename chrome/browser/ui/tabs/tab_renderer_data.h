@@ -14,7 +14,6 @@
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
-class TabStripModel;
 class TabResourceUsage;
 class ThumbnailImage;
 
@@ -24,11 +23,12 @@ class CollaborationMessagingTabData;
 
 namespace tabs {
 enum class TabAlert;
+class TabInterface;
 }  // namespace tabs
 
 // Wraps the state needed by the renderers.
 struct TabRendererData {
-  static TabRendererData FromTabInModel(const TabStripModel* model, int index);
+  static TabRendererData FromTabInterface(tabs::TabInterface* tab);
 
   TabRendererData();
   TabRendererData(const TabRendererData& other);
