@@ -348,14 +348,16 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   // COMMANDS_ISSUED queries are sufficient.
   GLenum query_target = GL_NONE;
 
+  // If CPU/GPU synchronization is supported, by default CPU access must wait
+  // until GPU processing of commands is completed as SharedImages
+  // backed by GPU memory can be accessed by the GPU until the commands are
+  // finished (and not just issued).
   if (worker_context_provider_->ContextCapabilities().sync_query) {
-    // Use GL_COMMANDS_COMPLETED_CHROMIUM when supported because native
-    // GpuMemoryBuffers can be accessed by the GPU after commands are issued
-    // until GPU reads are done.
     query_target = GL_COMMANDS_COMPLETED_CHROMIUM;
   }
 
-  // COMMANDS_ISSUED is sufficient for shared memory resources.
+  // However, if the SharedImage is backed by shared memory, waiting for the
+  // commands to be issued is sufficient.
   if (staging_buffer->is_shared_memory) {
     query_target = GL_COMMANDS_ISSUED_CHROMIUM;
   }

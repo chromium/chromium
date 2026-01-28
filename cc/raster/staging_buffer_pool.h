@@ -64,8 +64,8 @@ struct StagingBuffer {
   gpu::SyncToken sync_token;
 
   // Id of command buffer query that tracks use of this staging buffer by the
-  // GPU.  In general, GPU synchronization is necessary for native
-  // GpuMemoryBuffers.
+  // GPU. In general, GPU synchronization is necessary for SharedImages backed
+  // by native GPU memory.
   GLuint query_id = 0;
 
   // Id of the content that's rastered into this staging buffer.  Used to
