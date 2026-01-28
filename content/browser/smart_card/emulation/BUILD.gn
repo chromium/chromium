@@ -12,6 +12,8 @@ source_set("emulation") {
     "emulated_smart_card_context.h",
     "emulated_smart_card_context_factory.cc",
     "emulated_smart_card_context_factory.h",
+    "emulated_smart_card_transaction.cc",
+    "emulated_smart_card_transaction.h",
     "smart_card_emulation_manager.h",
   ]
 

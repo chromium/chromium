@@ -73,6 +73,7 @@ void EmulatedSmartCardConnection::SetAttrib(uint32_t id,
         SmartCardError::kServiceStopped));
     return;
   }
+  manager_->OnSetAttrib(handle_, id, data, std::move(callback));
 }
 
 void EmulatedSmartCardConnection::Status(StatusCallback callback) {
@@ -81,6 +82,7 @@ void EmulatedSmartCardConnection::Status(StatusCallback callback) {
         SmartCardError::kServiceStopped));
     return;
   }
+  manager_->OnStatus(handle_, std::move(callback));
 }
 
 void EmulatedSmartCardConnection::BeginTransaction(
@@ -90,6 +92,7 @@ void EmulatedSmartCardConnection::BeginTransaction(
         SmartCardError::kServiceStopped));
     return;
   }
+  manager_->OnBeginTransaction(handle_, std::move(callback));
 }
 
 }  // namespace content
