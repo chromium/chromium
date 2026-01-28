@@ -42,6 +42,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
@@ -1556,9 +1557,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // an experiment to understand their session's impact on Chrome's
   // special cookie handling for these sites.
   network_context_params->device_bound_sessions_restricted_sites =
-      std::vector<net::SchemefulSite>{
-          net::SchemefulSite(GURL("https://google.com")),
-          net::SchemefulSite(GURL("https://youtube.com"))};
+      signin_util::GetDeviceBoundSessionRestrictedSites();
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions) &&

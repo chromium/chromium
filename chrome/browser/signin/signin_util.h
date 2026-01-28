@@ -247,7 +247,12 @@ bool ShouldShowAvatarSyncPromo(Profile* profile);
 // Show a simple error message with an "OK" button to the user, displaying
 // `error_message_id`.
 void ShowErrorDialogWithMessage(Browser* browser, int error_message_id);
+
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
+
+// Returns the list of sites that register Device Bound Sessions that
+// are of interest to signin code.
+std::vector<net::SchemefulSite> GetDeviceBoundSessionRestrictedSites();
 
 }  // namespace signin_util
 

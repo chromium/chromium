@@ -633,6 +633,12 @@ void ShowErrorDialogWithMessage(Browser* browser, int error_message_id) {
 
   chrome::ShowBrowserModal(browser, std::move(dialog_model));
 }
+
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
+
+std::vector<net::SchemefulSite> GetDeviceBoundSessionRestrictedSites() {
+  return {net::SchemefulSite(GURL("https://google.com")),
+          net::SchemefulSite(GURL("https://youtube.com"))};
+}
 
 }  // namespace signin_util
