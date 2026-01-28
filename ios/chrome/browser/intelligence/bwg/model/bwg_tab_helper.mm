@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_snapshot_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -727,7 +727,7 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
   }
 
   UIImage* badge_image =
-      [BWGUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
+      [GeminiUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
   NSString* cue_label =
       l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_CUE_LABEL);
   LocationBarBadgeConfiguration* badge_config =

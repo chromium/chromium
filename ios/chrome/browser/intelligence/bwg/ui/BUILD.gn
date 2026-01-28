@@ -13,8 +13,8 @@ source_set("ui") {
     "bwg_promo_view_controller.h",
     "bwg_promo_view_controller.mm",
     "bwg_promo_view_controller_delegate.h",
-    "bwg_ui_utils.h",
-    "bwg_ui_utils.mm",
+    "gemini_ui_utils.h",
+    "gemini_ui_utils.mm",
   ]
   deps = [
     "//base",
