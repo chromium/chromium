@@ -523,7 +523,7 @@ base::DictValue ToAuthenticationExtensionsClientOutputsJSON(
 }
 
 std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     IsGpmPasskeyFunc is_gpm_passkey_func) {
   const std::string* event_string = dict.FindString(kEvent);
   if (!event_string || event_string->empty()) {

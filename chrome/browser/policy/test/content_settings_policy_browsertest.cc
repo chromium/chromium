@@ -728,20 +728,20 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockOverridesAllow) {
   SetPolicy(&policies, key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
 
-  base::Value::List local_blocklist;
+  base::ListValue local_blocklist;
   local_blocklist.Append(base::Value("http://local.bleep.com"));
   SetPolicy(&policies, key::kLocalNetworkBlockedForUrls,
             base::Value(std::move(local_blocklist)));
-  base::Value::List local_allowlist;
+  base::ListValue local_allowlist;
   local_allowlist.Append(base::Value("http://local.bleep.com"));
   SetPolicy(&policies, key::kLocalNetworkAllowedForUrls,
             base::Value(std::move(local_allowlist)));
 
-  base::Value::List loopback_blocklist;
+  base::ListValue loopback_blocklist;
   loopback_blocklist.Append(base::Value("http://loopback.bleep.com"));
   SetPolicy(&policies, key::kLoopbackNetworkBlockedForUrls,
             base::Value(std::move(loopback_blocklist)));
-  base::Value::List loopback_allowlist;
+  base::ListValue loopback_allowlist;
   loopback_allowlist.Append(base::Value("http://loopback.bleep.com"));
   SetPolicy(&policies, key::kLoopbackNetworkAllowedForUrls,
             base::Value(std::move(loopback_allowlist)));
@@ -802,11 +802,11 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, MixBlockAndAllowPolicies) {
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, SpecificPoliciesOverride) {
   PolicyMap policies;
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(base::Value("http://[*.]bleep.com"));
   SetPolicy(&policies, key::kLocalNetworkAccessBlockedForUrls,
             base::Value(std::move(blocklist)));
-  base::Value::List local_allowlist;
+  base::ListValue local_allowlist;
   local_allowlist.Append(base::Value("http://[*.]bleep.com"));
   SetPolicy(&policies, key::kLocalNetworkAllowedForUrls,
             base::Value(std::move(local_allowlist)));

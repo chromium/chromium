@@ -242,7 +242,7 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict& dict = body->GetDict();
+  const base::DictValue& dict = body->GetDict();
 
   std::optional<PasskeyScriptEvent> event = ParsePasskeyScriptEvent(
       dict, [passkey_tab_helper](const std::string& rp_id,

@@ -172,7 +172,7 @@ base::Value MemoryMapsAsValue(
     // byte stats
     region_dict.Set(
         "bs",
-        base::Value::Dict()
+        base::DictValue()
             .Set("pss", base::StringPrintf(
                             kHexFmt, region->byte_stats_proportional_resident))
             .Set("pd", base::StringPrintf(

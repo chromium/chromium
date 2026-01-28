@@ -402,7 +402,7 @@ TEST(ProtoValueConversionsTest, GeminiThreadSpecificsToValue) {
   gemini_specifics.set_conversation_id("my_id");
   gemini_specifics.set_title("my_title");
 
-  base::Value::Dict value =
+  base::DictValue value =
       GeminiThreadSpecificsToValue(gemini_specifics).TakeDict();
   EXPECT_FALSE(value.empty());
   EXPECT_THAT(value.FindString("conversation_id"),

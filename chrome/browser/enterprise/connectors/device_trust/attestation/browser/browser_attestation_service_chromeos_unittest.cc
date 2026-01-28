@@ -159,7 +159,7 @@ TEST_F(BrowserAttestationServiceChromeOSTest, BuildChallengeResponse_Managed) {
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      GetSerializedSignedChallenge(), base::Value::Dict(), levels,
+      GetSerializedSignedChallenge(), base::DictValue(), levels,
       future.GetCallback());
 
   const auto& response = future.Get();
@@ -177,7 +177,7 @@ TEST_F(BrowserAttestationServiceChromeOSTest,
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      GetSerializedSignedChallenge(), base::Value::Dict(), levels,
+      GetSerializedSignedChallenge(), base::DictValue(), levels,
       future.GetCallback());
 
   const auto& response = future.Get();

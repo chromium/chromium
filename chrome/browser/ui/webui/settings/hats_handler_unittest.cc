@@ -279,11 +279,11 @@ TEST_F(HatsHandlerTest, HandleSecurityPageHatsRequest_SafeBrowsingInteraction) {
                            expected_product_specific_data, _, _))
       .Times(1);
 
-  base::Value::List interactions;
+  base::ListValue interactions;
   interactions.Append(static_cast<int>(
       HatsHandler::SecurityPageV2Interaction::SAFE_BROWSING_TOGGLE_CLICK));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(interactions));
   args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
   args.Append(20000);
@@ -325,7 +325,7 @@ TEST_F(HatsHandlerTest, HandleSecurityPageHatsRequest_SecureDnsV2Interaction) {
                            expected_product_specific_data, _, _))
       .Times(1);
 
-  base::Value::List interactions;
+  base::ListValue interactions;
   interactions.Append(static_cast<int>(
       HatsHandler::SecurityPageV2Interaction::SECURE_DNS_V2_ROW_EXPANDED));
   interactions.Append(
@@ -340,7 +340,7 @@ TEST_F(HatsHandlerTest, HandleSecurityPageHatsRequest_SecureDnsV2Interaction) {
   interactions.Append(static_cast<int>(
       HatsHandler::SecurityPageV2Interaction::SECURE_DNS_V2_TOGGLE_CLICK));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(interactions));
   args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
   args.Append(20000);
@@ -381,7 +381,7 @@ TEST_F(HatsHandlerTest,
                            expected_product_specific_data, _, _))
       .Times(1);
 
-  base::Value::List interactions;
+  base::ListValue interactions;
   interactions.Append(static_cast<int>(
       HatsHandler::SecurityPageV2Interaction::HTTPS_FIRST_MODE_TOGGLE_CLICK));
   interactions.Append(
@@ -391,7 +391,7 @@ TEST_F(HatsHandlerTest,
       static_cast<int>(HatsHandler::SecurityPageV2Interaction::
                            STRICT_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(interactions));
   args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
   args.Append(20000);
@@ -428,12 +428,12 @@ TEST_F(HatsHandlerTest, HandleSecurityPageHatsRequest_PasswordLeakInteraction) {
                            expected_product_specific_data, _, _))
       .Times(1);
 
-  base::Value::List interactions;
+  base::ListValue interactions;
   interactions.Append(
       static_cast<int>(HatsHandler::SecurityPageV2Interaction::
                            PASSWORD_LEAK_DETECTION_TOGGLE_CLICK));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(interactions));
   args.Append(static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
   args.Append(20000);

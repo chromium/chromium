@@ -664,7 +664,7 @@ TEST_F(PasskeyRequestParserTest, ToAuthenticationExtensionsClientOutputsJSON) {
 // Tests that ParsePasskeyScriptEvent handles invalid or missing event data.
 TEST_F(PasskeyRequestParserTest, ParseInvalidEventData) {
   // Test case 1: Empty dictionary.
-  base::Value::Dict dict;
+  base::DictValue dict;
   EXPECT_FALSE(ParsePasskeyScriptEvent(dict, &IsGpmPasskey).has_value());
 
   // Test case 2: Missing "event" key.
@@ -681,7 +681,7 @@ TEST_F(PasskeyRequestParserTest, ParseInvalidEventData) {
 TEST_F(PasskeyRequestParserTest, ParseSimpleEventTypes) {
   // Test case 1: Handle Get.
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kEvent, kHandleGetRequest);
     auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
     ASSERT_TRUE(result.has_value());
@@ -690,7 +690,7 @@ TEST_F(PasskeyRequestParserTest, ParseSimpleEventTypes) {
 
   // Test case 2: Handle Create.
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kEvent, kHandleCreateRequest);
     auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
     ASSERT_TRUE(result.has_value());
@@ -699,7 +699,7 @@ TEST_F(PasskeyRequestParserTest, ParseSimpleEventTypes) {
 
   // Test case 3: Log Get.
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kEvent, kLogGetRequest);
     auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
     ASSERT_TRUE(result.has_value());
@@ -708,7 +708,7 @@ TEST_F(PasskeyRequestParserTest, ParseSimpleEventTypes) {
 
   // Test case 4: Log Create.
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kEvent, kLogCreateRequest);
     auto result = ParsePasskeyScriptEvent(dict, &IsGpmPasskey);
     ASSERT_TRUE(result.has_value());
@@ -718,7 +718,7 @@ TEST_F(PasskeyRequestParserTest, ParseSimpleEventTypes) {
 
 // Tests ParsePasskeyScriptEvent logic for "logGetResolved" based on GPM status.
 TEST_F(PasskeyRequestParserTest, ParseLogGetResolvedEvent) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kEvent, kLogGetResolved);
 
   // Test case 1: Missing required parameters (rpId, credentialId).
@@ -747,7 +747,7 @@ TEST_F(PasskeyRequestParserTest, ParseLogGetResolvedEvent) {
 // Tests ParsePasskeyScriptEvent logic for "logCreateResolved" based on the
 // "isGpm" flag.
 TEST_F(PasskeyRequestParserTest, ParseEventLogCreateResolved) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kEvent, kLogCreateResolved);
 
   // Test case 1: Missing "isGpm" parameter.

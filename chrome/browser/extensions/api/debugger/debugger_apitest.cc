@@ -104,7 +104,7 @@ std::vector<std::string> GetTargetUrlsWithoutPorts(
 // This method also filters out targets with "chrome://" URLs, such as the
 // internal WebUI toolbar, to ensure tests are robust against the presence of
 // these internal targets.
-base::Value::List RunGetTargets(
+base::ListValue RunGetTargets(
     content::BrowserContext* context,
     api_test_utils::FunctionMode mode = api_test_utils::FunctionMode::kNone) {
   auto get_targets_function =
@@ -114,7 +114,7 @@ base::Value::List RunGetTargets(
           get_targets_function.get(), "[]", context, mode);
   EXPECT_THAT(
       value, testing::Optional(testing::Property(&base::Value::is_list, true)));
-  base::Value::List targets = std::move(*value).TakeList();
+  base::ListValue targets = std::move(*value).TakeList();
   targets.EraseIf([](const base::Value& target) {
     const std::string* url = target.GetDict().FindString("url");
     return url && GURL(*url).SchemeIs(content::kChromeUIScheme);
@@ -722,13 +722,13 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
       embedded_test_server()->GetURL("/simple.html?off_the_record"));
 
   {
-    base::Value::List targets = RunGetTargets(profile());
+    base::ListValue targets = RunGetTargets(profile());
     EXPECT_THAT(targets, ElementsAre(base::test::DictionaryHasValue(
                              "url", base::Value("about:blank"))));
   }
 
   {
-    const base::Value::List targets =
+    const base::ListValue targets =
         RunGetTargets(profile(), api_test_utils::FunctionMode::kIncognito);
     std::vector<std::string> urls = GetTargetUrlsWithoutPorts(targets);
     EXPECT_THAT(urls, testing::UnorderedElementsAre(
@@ -945,7 +945,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
       web_contents->GetPrimaryMainFrame()));
 
   // Get targets.
-  base::Value::List targets = RunGetTargets(profile());
+  base::ListValue targets = RunGetTargets(profile());
 
   // Verify that the inner PDF frames aren't targets in the list. Only the PDF
   // embedder frame (the main frame) should be a target.

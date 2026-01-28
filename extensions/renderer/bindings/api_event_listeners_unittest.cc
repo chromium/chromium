@@ -666,7 +666,7 @@ TEST_F(APIEventListenersTest, FilteredListenersOptionSpoofing) {
           .As<v8::Object>();
 
   // The _options key should be stripped.
-  const base::Value::Dict expected_dict =
+  const base::DictValue expected_dict =
       base::test::ParseJsonDict(R"({"url": [{"pathContains": "foo"}]})");
 
   std::string error;

@@ -853,7 +853,7 @@ int SSLClientSocketImpl::Init() {
       return ERR_UNEXPECTED;
     }
     net_log_.AddEvent(NetLogEventType::SSL_CLIENT_TRUST_ANCHOR_IDS_LIST, [&] {
-      return base::Value::Dict().Set(
+      return base::DictValue().Set(
           "trust_anchor_ids",
           x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
               *ssl_config_.trust_anchor_ids)));
@@ -1074,7 +1074,7 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
   if (!server_trust_anchor_ids.empty()) {
     net_log_.AddEvent(
         NetLogEventType::SSL_CLIENT_RECEIVED_TRUST_ANCHOR_IDS, [&] {
-          return base::Value::Dict().Set(
+          return base::DictValue().Set(
               "trust_anchor_ids",
               x509_util::TrustAnchorIDsToString(server_trust_anchor_ids));
         });

@@ -33,7 +33,7 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
 
 void ChromeGuestViewManagerDelegate::DispatchEvent(
     const std::string& event_name,
-    base::Value::Dict args,
+    base::DictValue args,
     guest_view::GuestViewBase* guest,
     int instance_id) {
   // TODO(crbug.com/460804848): Implement event dispatching.

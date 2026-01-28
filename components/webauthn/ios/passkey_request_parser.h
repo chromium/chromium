@@ -90,7 +90,7 @@ base::DictValue ToAuthenticationExtensionsClientOutputsJSON(
 
 // Parses the event string into a strongly typed enum.
 std::optional<PasskeyScriptEvent> ParsePasskeyScriptEvent(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     IsGpmPasskeyFunc is_gpm_passkey_func);
 
 }  // namespace webauthn

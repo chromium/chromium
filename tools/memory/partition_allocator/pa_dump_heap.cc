@@ -376,10 +376,10 @@ class HeapDumper {
   }
 #endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
-  base::Value::List DumpBuckets() {
-    base::Value::List ret;
+  base::ListValue DumpBuckets() {
+    base::ListValue ret;
     for (const auto& bucket : root_.get()->buckets_) {
-      base::Value::Dict bucket_value;
+      base::DictValue bucket_value;
       bucket_value.Set("slot_size", static_cast<int>(bucket.slot_size));
       ret.Append(std::move(bucket_value));
     }

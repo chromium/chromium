@@ -711,13 +711,13 @@ struct EventListenerInfo {
   EventListenerInfo(const std::string& event_name,
                     const ExtensionId& extension_id,
                     const GURL& listener_url,
-                    const base::Value::Dict* filter,
+                    const base::DictValue* filter,
                     content::BrowserContext* browser_context);
 
   EventListenerInfo(const std::string& event_name,
                     const ExtensionId& extension_id,
                     const GURL& listener_url,
-                    const base::Value::Dict* filter,
+                    const base::DictValue* filter,
                     content::BrowserContext* browser_context,
                     int render_process_id,
                     int worker_thread_id,
@@ -731,7 +731,7 @@ struct EventListenerInfo {
   const std::string event_name;
   const ExtensionId extension_id;
   const GURL listener_url;
-  const std::optional<base::Value::Dict> filter;
+  const std::optional<base::DictValue> filter;
   const raw_ptr<content::BrowserContext> browser_context;
   const int render_process_id;
   const int worker_thread_id;
