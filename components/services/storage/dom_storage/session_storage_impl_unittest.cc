@@ -897,19 +897,19 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   const DomStorageDatabase::MapLocator& map_locator = *storage_key_it->second;
   std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> map_entries;
   ASSERT_NO_FATAL_FAILURE(
-      ReadMapKeyValuesSync(*session_storage_impl()->DatabaseForTesting(),
+      ReadMapKeyValuesSync(*session_storage_impl()->GetDatabaseForTesting(),
                            map_locator.Clone(), &map_entries));
   EXPECT_EQ(map_entries.size(), 1u);
   EXPECT_EQ(map_entries[key], value);
 
   // Delete the key/value pair from the database.
-  FakeCommitter committer(session_storage_impl()->DatabaseForTesting(),
+  FakeCommitter committer(session_storage_impl()->GetDatabaseForTesting(),
                           map_locator.Clone());
   committer.ClearMapSync();
 
   // Verify the key/value pair no longer exists in the database.
   ASSERT_NO_FATAL_FAILURE(
-      ReadMapKeyValuesSync(*session_storage_impl()->DatabaseForTesting(),
+      ReadMapKeyValuesSync(*session_storage_impl()->GetDatabaseForTesting(),
                            map_locator.Clone(), &map_entries));
   EXPECT_EQ(map_entries.size(), 0u);
 

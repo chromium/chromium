@@ -539,10 +539,6 @@ const base::FilePath& SessionStorageImpl::GetStoragePartitionDirectory() const {
   return storage_partition_directory_;
 }
 
-void SessionStorageImpl::PretendToConnectForTesting() {
-  OnDatabaseOpened(DbStatus::OK());
-}
-
 void SessionStorageImpl::FlushAreaForTesting(
     const std::string& namespace_id,
     const blink::StorageKey& storage_key) {

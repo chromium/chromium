@@ -104,10 +104,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   const base::FilePath& GetStoragePartitionDirectory() const;
 
-  void PretendToConnectForTesting();
-
-  AsyncDomStorageDatabase* DatabaseForTesting() { return database_.get(); }
-
   void FlushAreaForTesting(const std::string& namespace_id,
                            const blink::StorageKey& storage_key);
 
@@ -194,7 +190,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   SessionStorageMetadata metadata_;
 
   BackingMode backing_mode_;
-  std::string database_name_;
 
   enum ConnectionState {
     NO_CONNECTION,
