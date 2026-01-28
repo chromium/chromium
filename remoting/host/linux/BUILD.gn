@@ -191,6 +191,8 @@ source_set("platform_impls") {
     "keyboard_layout_monitor_linux.cc",
     "keyboard_layout_monitor_utils.cc",
     "keyboard_layout_monitor_utils.h",
+    "login_session_manager.cc",
+    "login_session_manager.h",
     "pipewire_capture_stream.cc",
     "pipewire_capture_stream.h",
     "pipewire_desktop_capturer.cc",
