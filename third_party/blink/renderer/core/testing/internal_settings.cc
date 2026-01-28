@@ -181,12 +181,11 @@ void InternalSettings::setAvailablePointerTypes(
     ExceptionState& exception_state) {
   // Allow setting multiple pointer types by passing comma seperated list
   // ("coarse,fine").
-  Vector<String> tokens;
-  pointers.Split(",", false, tokens);
+  Vector<StringView> tokens = StringView(pointers).SplitSkippingEmpty(',');
 
   int pointer_types = 0;
-  for (const String& split_token : tokens) {
-    String token = split_token.StripWhiteSpace();
+  for (const StringView& split_token : tokens) {
+    StringView token = split_token.StripWhiteSpace();
 
     if (token == "coarse") {
       pointer_types |= static_cast<int>(PointerType::kPointerCoarseType);
@@ -197,7 +196,7 @@ void InternalSettings::setAvailablePointerTypes(
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          "The pointer type token ('" + token + ")' is invalid.");
+          StrCat({"The pointer type token ('", token, ")' is invalid."}));
       return;
     }
   }
@@ -255,12 +254,11 @@ void InternalSettings::setAvailableHoverTypes(const String& types,
                                               ExceptionState& exception_state) {
   // Allow setting multiple hover types by passing comma seperated list
   // ("on-demand,none").
-  Vector<String> tokens;
-  types.Split(",", false, tokens);
+  Vector<StringView> tokens = StringView(types).SplitSkippingEmpty(',');
 
   int hover_types = 0;
-  for (const String& split_token : tokens) {
-    String token = split_token.StripWhiteSpace();
+  for (const StringView& split_token : tokens) {
+    StringView token = split_token.StripWhiteSpace();
     if (token == "none") {
       hover_types |= static_cast<int>(HoverType::kHoverNone);
     } else if (token == "hover") {
@@ -268,7 +266,7 @@ void InternalSettings::setAvailableHoverTypes(const String& types,
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          "The hover type token ('" + token + ")' is invalid.");
+          StrCat({"The hover type token ('", token, ")' is invalid."}));
       return;
     }
   }

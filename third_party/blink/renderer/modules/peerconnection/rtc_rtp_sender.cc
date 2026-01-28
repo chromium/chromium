@@ -503,11 +503,11 @@ webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec) {
     webrtc_codec.num_channels = codec->channels();
   }
   if (codec->hasSdpFmtpLine()) {
-    Vector<String> fmtp_splits;
-    codec->sdpFmtpLine().Split(";", true, fmtp_splits);
+    String fmtp_line = codec->sdpFmtpLine();
+    Vector<StringView> fmtp_splits = StringView(fmtp_line).Split(';');
     for (const auto& fmtp_split : fmtp_splits) {
-      String parameter = fmtp_split.StripWhiteSpace();
-      auto equal_index = parameter.Find("=");
+      StringView parameter = fmtp_split.StripWhiteSpace();
+      auto equal_index = parameter.find('=');
       std::string name, value;
       if (equal_index == kNotFound) {
         // Handle parameters without any equal signs, such as RED "111/111"
@@ -515,8 +515,8 @@ webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec) {
         value = parameter.Utf8();
       } else {
         // Handle parameters with an equal sign "foo=bar"
-        name = parameter.Substring(0, equal_index).Utf8();
-        value = parameter.Substring(equal_index + 1).Utf8();
+        name = parameter.substr(0, equal_index).Utf8();
+        value = parameter.substr(equal_index + 1).Utf8();
       }
       webrtc_codec.parameters[name] = value;
     }

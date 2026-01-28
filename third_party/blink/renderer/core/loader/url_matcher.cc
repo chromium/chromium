@@ -45,19 +45,19 @@ bool UrlMatcher::Match(const KURL& url) const {
 
 void UrlMatcher::ParseFieldTrialParam(
     const std::string_view& encoded_url_list_string) {
-  Vector<String> parsed_strings;
-  String::FromUTF8(encoded_url_list_string)
-      .Split(",", /*allow_empty_entries=*/false, parsed_strings);
-  Vector<String> site_info;
+  String url_list_string = String::FromUTF8(encoded_url_list_string);
+  Vector<StringView> parsed_strings =
+      StringView(url_list_string).SplitSkippingEmpty(',');
   for (const auto& it : parsed_strings) {
-    it.Split("|", /*allow_empty_entries=*/false, site_info);
+    Vector<StringView> site_info = it.SplitSkippingEmpty('|');
     DCHECK_LE(site_info.size(), 2u)
         << "Got unexpected format that UrlMatcher cannot handle: " << it;
     std::optional<String> match_string;
     if (site_info.size() == 2u)
-      match_string = site_info[1];
+      match_string = site_info[1].ToString();
     url_list_.push_back(std::make_pair(
-        SecurityOrigin::CreateFromString(site_info[0]), match_string));
+        SecurityOrigin::CreateFromString(site_info[0].ToString()),
+        match_string));
   }
 }
 }  // namespace blink
