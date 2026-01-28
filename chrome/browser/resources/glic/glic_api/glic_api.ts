@@ -2373,6 +2373,9 @@ export enum CreateTaskErrorReason {
   UNKNOWN = 0,
   // The host does not support the actor task system.
   TASK_SYSTEM_UNAVAILABLE = 1,
+  // The host already has an existing task in progress. The client must stop it
+  // before requesting a new task.
+  EXISTING_ACTIVE_TASK = 2,
 }
 
 ///////////////////////////////////////////////

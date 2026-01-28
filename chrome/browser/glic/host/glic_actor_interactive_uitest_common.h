@@ -37,6 +37,8 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
                                            mojom::PerformActionsErrorReason>;
   using ExpectedResumeResult =
       std::variant<std::monostate, actor::mojom::ActionResultCode, bool>;
+  using ExpectedCreateTaskResult =
+      std::variant<std::monostate, mojom::CreateTaskErrorReason>;
 
   static constexpr int32_t kNonExistentContentNodeId =
       std::numeric_limits<int32_t>::max();
@@ -78,7 +80,9 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   MultiStep ExecuteInGlic(
       base::OnceCallback<void(content::WebContents*)> callback);
 
-  MultiStep CreateTask(actor::TaskId& out_task, std::string_view title);
+  MultiStep CreateTask(actor::TaskId& out_task,
+                       std::string_view title,
+                       ExpectedCreateTaskResult expected_result = {});
 
   // Note: In all the Create*Action functions below, parameters that are
   // expected to be created as a result of test steps (task_id, tab_handle,
@@ -157,8 +161,10 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   // client and host to make sure the call has made it to the browser.
   MultiStep RoundTrip(actor::TaskId& task_id);
 
-  // Stops a running task by calling the glic StopActorTask API.
+  // Stops a running task by calling the glic StopActorTask API. Stops the
+  // default task in task_id_ if none is provided.
   MultiStep StopActorTask();
+  MultiStep StopActorTask(actor::TaskId& task_id);
 
   // Pauses a running task by calling the glic PauseActorTask API.
   MultiStep PauseActorTask();
@@ -174,9 +180,13 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
 
   MultiStep WaitForActorTaskState(mojom::ActorTaskState expected_state);
 
+  // Like StopActorTask but also waits until the task notifies transition to a
+  // stopped state.
+  MultiStep StopActorTaskAndWait(actor::TaskId& task_id);
+
   // Gets a reference to a state observable for use in
-  // WaitForActorTaskStateToStopped.
-  MultiStep PrepareForStopStateChange();
+  // WaitForActorTaskStateChangeToStopped.
+  MultiStep PrepareForStopStateChange(actor::TaskId& task_id);
 
   // Uses the state observable from PrepareForStopStateChange to await a state
   // change to stopped.
@@ -215,6 +225,9 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   MultiStep CheckIsWebContentsCaptured(ui::ElementIdentifier tab,
                                        bool expected);
 
+  MultiStep CheckActorTaskState(actor::TaskId& task_id,
+                                actor::ActorTask::State state);
+
   // Waits for the specified tab to render a frame. Unlike
   // `WaitForWebContentsPainted` this does not require the frame to have
   // non-trivial contents or for the paint to have non-failed feedback.
@@ -236,6 +249,10 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   tabs::TabHandle tab_handle_;
 
  protected:
+  actor::ActorKeyedService* actor_service() {
+    return actor::ActorKeyedService::Get(browser()->GetProfile());
+  }
+
   void EnableScreenshotsInContext() { include_screenshot_ = true; }
 
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>

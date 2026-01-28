@@ -897,6 +897,7 @@ class EvalJsResult {
     return is_ok() && value()->is_string();
   }
   [[nodiscard]] bool is_bool() const { return is_ok() && value()->is_bool(); }
+  [[nodiscard]] bool is_int() const { return is_ok() && value()->is_int(); }
   [[nodiscard]] bool is_list() const { return is_ok() && value()->is_list(); }
   [[nodiscard]] bool is_dict() const { return is_ok() && value()->is_dict(); }
 

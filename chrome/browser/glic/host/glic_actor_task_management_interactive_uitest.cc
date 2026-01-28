@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, StopActorTaskOnTabClose) {
     InitializeWithOpenGlicWindow(),
     StartActorTaskInNewTab(task_url, kNewActorTabId),
     CheckIsActingOnTab(kNewActorTabId, true),
-    PrepareForStopStateChange(),
+    PrepareForStopStateChange(task_id_),
     CloseTab(kNewActorTabId),
     WaitForActorTaskStateChangeToStopped());
   // clang-format on

@@ -432,6 +432,32 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
+                       CreateMultipleTasksInSingleInstanceFails) {
+  actor::TaskId first_task_id;
+  actor::TaskId second_task_id;
+  // clang-format off
+  RunTestSequence(
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
+      CreateTask(first_task_id, ""),
+
+      // Attempting to create a second task should fail and it shouldn't affect
+      // the existing task.
+      CreateTask(second_task_id, "",
+        mojom::CreateTaskErrorReason::kExistingActiveTask),
+      Check([&](){return second_task_id.is_null();}),
+      CheckActorTaskState(first_task_id, actor::ActorTask::State::kCreated),
+
+      // Stop the actor task.
+      StopActorTaskAndWait(first_task_id),
+
+      // Creating a new task now should succeed.
+      CreateTask(second_task_id, ""),
+      Check([&](){return !second_task_id.is_null();})
+    );
+  // clang-format on
+}
+
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateActorTabForeground) {
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");

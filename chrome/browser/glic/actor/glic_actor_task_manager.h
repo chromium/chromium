@@ -5,16 +5,18 @@
 #ifndef CHROME_BROWSER_GLIC_ACTOR_GLIC_ACTOR_TASK_MANAGER_H_
 #define CHROME_BROWSER_GLIC_ACTOR_GLIC_ACTOR_TASK_MANAGER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
-#include "chrome/browser/actor/tools/observation_delay_controller.h"
-#include "chrome/common/actor.mojom-forward.h"
 
 class Profile;
 
@@ -95,7 +97,8 @@ class GlicActorTaskManager {
   void ReloadObserverDone(tabs::TabHandle tab_handle,
                           base::OnceClosure callback,
                           actor::ObservationDelayController::Result result);
-  void ResetTaskState();
+  void NotifyActorTaskStateChanged(actor::TaskId task_id,
+                                   actor::ActorTask::State task_state);
 
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
@@ -110,6 +113,9 @@ class GlicActorTaskManager {
   bool attempted_observation_retry_ = false;
   std::unique_ptr<actor::ObservationDelayController> reload_observer_;
 #endif
+
+  std::optional<base::CallbackListSubscription>
+      actor_task_state_changed_subscription_;
 
   base::WeakPtrFactory<GlicActorTaskManager> weak_ptr_factory_{this};
 };

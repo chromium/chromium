@@ -91,10 +91,22 @@ void GlicActorTaskManager::CreateTask(
     return;
   }
 
-  CancelTask();
+  if (!current_task_id_.is_null()) {
+    std::move(callback).Run(
+        base::unexpected(mojom::CreateTaskErrorReason::kExistingActiveTask));
+    return;
+  }
 
   current_task_id_ = actor_keyed_service_->CreateTaskWithOptions(
       std::move(options), std::move(delegate));
+
+  if (!current_task_id_.is_null()) {
+    actor_task_state_changed_subscription_ =
+        actor_keyed_service_->AddTaskStateChangedCallback(base::BindRepeating(
+            &GlicActorTaskManager::NotifyActorTaskStateChanged,
+            base::Unretained(this)));
+  }
+
   std::move(callback).Run(current_task_id_.value());
 }
 
@@ -114,11 +126,9 @@ void GlicActorTaskManager::PerformActionsFinished(
           .Add("result_code", base::ToString(result_code))
           .Build());
 
-  // Task has disappeared, clear the current task id.
   // TODO(b/470985724): Reply at the time the task is stopped/canceled instead
   // of here.
   if (!task) {
-    ResetTaskState();
     optimization_guide::proto::ActionsResult response =
         actor::BuildErrorActionsResult(
             actor::mojom::ActionResultCode::kTaskWentAway, std::nullopt);
@@ -338,10 +348,6 @@ void GlicActorTaskManager::CancelActions(
 void GlicActorTaskManager::StopActorTask(
     actor::TaskId task_id,
     mojom::ActorTaskStopReason stop_reason) {
-  if (current_task_id_ == task_id) {
-    ResetTaskState();
-  }
-
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
   if (!task || task->IsCompleted()) {
     actor_keyed_service_->GetJournal().Log(
@@ -620,10 +626,20 @@ void GlicActorTaskManager::CancelTask() {
   }
 }
 
-void GlicActorTaskManager::ResetTaskState() {
-  current_task_id_ = actor::TaskId();
-  attempted_reload_after_crash_ = false;
-  reload_observer_.reset();
+void GlicActorTaskManager::NotifyActorTaskStateChanged(
+    actor::TaskId task_id,
+    actor::ActorTask::State task_state) {
+  CHECK(!task_id.is_null());
+  if (current_task_id_ != task_id) {
+    return;
+  }
+
+  if (actor::ActorTask::IsCompletedState(task_state)) {
+    current_task_id_ = actor::TaskId();
+    attempted_reload_after_crash_ = false;
+    reload_observer_.reset();
+    actor_task_state_changed_subscription_.reset();
+  }
 }
 
 base::WeakPtr<GlicActorTaskManager> GlicActorTaskManager::GetWeakPtr() {

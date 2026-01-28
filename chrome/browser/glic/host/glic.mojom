@@ -265,6 +265,10 @@ enum CreateTaskErrorReason {
 
   // The host does not support the actor task system.
   kTaskSystemUnavailable = 1,
+
+  // The host already has an existing task in progress. The client must stop it
+  // before requesting a new task.
+  [MinVersion=1] kExistingActiveTask = 2,
 };
 
 // @generate glic_api
