@@ -106,6 +106,20 @@ class CrostiniInstallerTest : public testing::Test {
   }
 
   void SetUp() override {
+    ash::ChunneldClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
+    SetOSRelease();
+
+    // The ownership is managed by ConciergeClient's static methods.
+    // I.e., it's deleted by ConciergeClient::Shutdown.
+    waiting_fake_concierge_client_ =
+        new WaitingFakeConciergeClient(ash::FakeCiceroneClient::Get());
+
+    ash::DebugDaemonClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
+    ash::FakeSpacedClient::InitializeFake();
+    ash::SeneschalClient::InitializeFake();
+
     component_manager_ =
         base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
     component_manager_->set_supported_components({"cros-termina"});
@@ -116,25 +130,21 @@ class CrostiniInstallerTest : public testing::Test {
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
     browser_part_.InitializeComponentManager(component_manager_);
 
-    ash::DlcserviceClient::InitializeFake();
-    ash::ChunneldClient::InitializeFake();
-    ash::CiceroneClient::InitializeFake();
-    ash::DebugDaemonClient::InitializeFake();
-    ash::FakeSpacedClient::InitializeFake();
-
-    SetOSRelease();
-    waiting_fake_concierge_client_ =
-        new WaitingFakeConciergeClient(ash::FakeCiceroneClient::Get());
-
-    ash::SeneschalClient::InitializeFake();
-
     disk_mount_manager_mock_ = new ash::disks::MockDiskMountManager;
     ash::disks::DiskMountManager::InitializeForTesting(
         disk_mount_manager_mock_);
 
+    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+        std::make_unique<SystemNotificationHelper>());
+
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeSchedulerConfigurationManager();
+
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
         TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
     ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
@@ -152,31 +162,31 @@ class CrostiniInstallerTest : public testing::Test {
 
     crostini_installer_ = std::make_unique<CrostiniInstaller>(profile_.get());
     crostini_installer_->set_skip_launching_terminal_for_testing();
-
-    g_browser_process->platform_part()
-        ->InitializeSchedulerConfigurationManager();
-    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-        std::make_unique<SystemNotificationHelper>());
   }
 
   void TearDown() override {
-    g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
     crostini_installer_->Shutdown();
     crostini_installer_.reset();
     crostini_test_helper_.reset();
     profile_.reset();
     user_manager_.Reset();
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->ShutdownSchedulerConfigurationManager();
+    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(nullptr);
+    disk_mount_manager_mock_ = nullptr;
     ash::disks::MockDiskMountManager::Shutdown();
+    browser_part_.ShutdownComponentManager();
+    component_manager_.reset();
+
     ash::SeneschalClient::Shutdown();
+    ash::FakeSpacedClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     ash::DebugDaemonClient::Shutdown();
+    waiting_fake_concierge_client_ = nullptr;
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
-    ash::DlcserviceClient::Shutdown();
-    ash::FakeSpacedClient::Shutdown();
-
-    browser_part_.ShutdownComponentManager();
-    component_manager_.reset();
   }
 
   void Install() {
@@ -203,11 +213,9 @@ class CrostiniInstallerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   // Owned by DiskMountManager
-  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged>
-      disk_mount_manager_mock_ = nullptr;
+  raw_ptr<ash::disks::MockDiskMountManager> disk_mount_manager_mock_ = nullptr;
 
-  raw_ptr<WaitingFakeConciergeClient, DanglingUntriaged>
-      waiting_fake_concierge_client_ = nullptr;
+  raw_ptr<WaitingFakeConciergeClient> waiting_fake_concierge_client_ = nullptr;
 
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;

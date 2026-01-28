@@ -44,29 +44,20 @@ class CrostiniUtilTest : public testing::Test {
   CrostiniUtilTest()
       : app_id_(crostini::CrostiniTestHelper::GenerateAppId(kDesktopFileId)),
         task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        browser_part_(g_browser_process->platform_part()) {
-    ash::ChunneldClient::InitializeFake();
-    ash::CiceroneClient::InitializeFake();
-    ash::ConciergeClient::InitializeFake();
-    ash::DebugDaemonClient::InitializeFake();
-    ash::SeneschalClient::InitializeFake();
+        browser_part_(g_browser_process->platform_part()) {}
 
-    fake_concierge_client_ = ash::FakeConciergeClient::Get();
-  }
-
-  ~CrostiniUtilTest() override {
-    ash::SeneschalClient::Shutdown();
-    ash::DebugDaemonClient::Shutdown();
-    ash::ConciergeClient::Shutdown();
-    ash::CiceroneClient::Shutdown();
-    ash::ChunneldClient::Shutdown();
-  }
+  ~CrostiniUtilTest() override = default;
 
   CrostiniUtilTest(const CrostiniUtilTest&) = delete;
   CrostiniUtilTest& operator=(const CrostiniUtilTest&) = delete;
 
   void SetUp() override {
+    ash::ChunneldClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
+    ash::DebugDaemonClient::InitializeFake();
     ash::DlcserviceClient::InitializeFake();
+    ash::SeneschalClient::InitializeFake();
 
     component_manager_ =
         base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
@@ -78,9 +69,14 @@ class CrostiniUtilTest : public testing::Test {
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
     browser_part_.InitializeComponentManager(component_manager_);
 
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeSchedulerConfigurationManager();
+
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
         TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
     ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
@@ -90,25 +86,30 @@ class CrostiniUtilTest : public testing::Test {
 
     profile_ = std::make_unique<TestingProfile>();
     ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+
     test_helper_ = std::make_unique<CrostiniTestHelper>(profile_.get());
     test_helper_->SetupDummyApps();
-    g_browser_process->platform_part()
-        ->InitializeSchedulerConfigurationManager();
   }
 
   void TearDown() override {
-    g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
     test_helper_.reset();
     profile_.reset();
     user_manager_.Reset();
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->ShutdownSchedulerConfigurationManager();
     browser_part_.ShutdownComponentManager();
     component_manager_.reset();
+
+    ash::SeneschalClient::Shutdown();
     ash::DlcserviceClient::Shutdown();
+    ash::DebugDaemonClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
   }
 
  protected:
-  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
-
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
@@ -122,7 +123,7 @@ class CrostiniUtilTest : public testing::Test {
 
 TEST_F(CrostiniUtilTest, LaunchCallbackRunsOnRestartError) {
   // Set Restart to fail.
-  fake_concierge_client_->set_start_vm_response({});
+  ash::FakeConciergeClient::Get()->set_start_vm_response({});
 
   base::test::TestFuture<bool, const std::string&> result_future;
   // Launch should fail and invoke callback.

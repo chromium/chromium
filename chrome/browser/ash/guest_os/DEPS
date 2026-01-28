@@ -38,4 +38,8 @@ specific_include_rules = {
   "guest_os_share_path_unittest\\.cc": [
     "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
   ],
+
+  "guest_os_stability_monitor_unittest\\.cc": [
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
 }

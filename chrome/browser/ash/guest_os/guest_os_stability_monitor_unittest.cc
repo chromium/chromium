@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/chunneld/fake_chunneld_client.h"
@@ -21,6 +23,7 @@
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -34,12 +37,20 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
+    ash::DebugDaemonClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
+
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeSchedulerConfigurationManager();
 
     // CrostiniManager will create a GuestOsStabilityMonitor for us.
     profile_ = std::make_unique<TestingProfile>();
-    crostini_manager_ =
-        std::make_unique<crostini::CrostiniManager>(profile_.get());
+    crostini_manager_ = std::make_unique<crostini::CrostiniManager>(
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->scheduler_configuration_manager(),
+        profile_.get());
     crostini::CrostiniTestHelper::EnableCrostini(profile_.get());
 
     // When CrostiniStabilityMonitor is initialized, it waits for the DBus
@@ -56,7 +67,13 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     crostini::CrostiniTestHelper::DisableCrostini(profile_.get());
     crostini_manager_.reset();
     profile_.reset();
+
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->ShutdownSchedulerConfigurationManager();
+
     ash::SeneschalClient::Shutdown();
+    ash::DebugDaemonClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();

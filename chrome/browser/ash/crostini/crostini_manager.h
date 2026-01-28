@@ -50,6 +50,7 @@ class Profile;
 namespace ash {
 class NetworkState;
 class NetworkStateHandler;
+class SchedulerConfigurationManager;
 }  // namespace ash
 
 namespace guest_os {
@@ -187,7 +188,11 @@ class CrostiniManager : public KeyedService,
 
   static CrostiniManager* GetForProfile(Profile* profile);
 
-  explicit CrostiniManager(Profile* profile);
+  // `scheduler_configuration_manager` must outlive `this`, but may be null in
+  // unit tests.
+  explicit CrostiniManager(
+      ash::SchedulerConfigurationManager* scheduler_configuration_manager,
+      Profile* profile);
 
   CrostiniManager(const CrostiniManager&) = delete;
   CrostiniManager& operator=(const CrostiniManager&) = delete;
@@ -764,6 +769,9 @@ class CrostiniManager : public KeyedService,
   void MountCrostiniFilesBackground(guest_os::GuestInfo info);
 
   bool ShouldWarnAboutExpiredVersion(const guest_os::GuestId& container_id);
+
+  const raw_ptr<ash::SchedulerConfigurationManager>
+      scheduler_configuration_manager_;
 
   raw_ptr<Profile> profile_;
   std::string owner_id_;

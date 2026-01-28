@@ -151,32 +151,28 @@ class CrostiniManagerTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         browser_part_(g_browser_process->platform_part()) {
+    scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
+  }
+
+  CrostiniManagerTest(const CrostiniManagerTest&) = delete;
+  CrostiniManagerTest& operator=(const CrostiniManagerTest&) = delete;
+
+  ~CrostiniManagerTest() override = default;
+
+  void SetUp() override {
     ash::AnomalyDetectorClient::InitializeFake();
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::DebugDaemonClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
     fake_concierge_client_ = ash::FakeConciergeClient::Get();
     fake_anomaly_detector_client_ =
         static_cast<ash::FakeAnomalyDetectorClient*>(
             ash::AnomalyDetectorClient::Get());
-  }
 
-  CrostiniManagerTest(const CrostiniManagerTest&) = delete;
-  CrostiniManagerTest& operator=(const CrostiniManagerTest&) = delete;
-
-  ~CrostiniManagerTest() override {
-    ash::AnomalyDetectorClient::Shutdown();
-    ash::SeneschalClient::Shutdown();
-    ash::DebugDaemonClient::Shutdown();
-    ash::ConciergeClient::Shutdown();
-    ash::CiceroneClient::Shutdown();
-    ash::ChunneldClient::Shutdown();
-  }
-
-  void SetUp() override {
     component_manager_ =
         base::MakeRefCounted<component_updater::FakeComponentManagerAsh>();
     component_manager_->set_supported_components({"cros-termina"});
@@ -186,28 +182,28 @@ class CrostiniManagerTest : public testing::Test {
             component_updater::ComponentManagerAsh::Error::NONE,
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
     browser_part_.InitializeComponentManager(component_manager_);
-    ash::DlcserviceClient::InitializeFake();
 
-    scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
+    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+        std::make_unique<SystemNotificationHelper>());
+
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeSchedulerConfigurationManager();
+
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    profile_ = std::make_unique<TestingProfile>();
-    crostini_manager_ = CrostiniManager::GetForProfile(profile_.get());
 
     // Login user for crostini, link gaia for DriveFS.
-    AccountId account_id = AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), GaiaId("12345"));
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId("user@test", GaiaId("12345"));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
+
+    profile_ = std::make_unique<TestingProfile>();
+    crostini_manager_ = CrostiniManager::GetForProfile(profile_.get());
 
     mojo::Remote<device::mojom::UsbDeviceManager> fake_usb_manager;
     fake_usb_manager_.AddReceiver(
         fake_usb_manager.BindNewPipeAndPassReceiver());
-
-    g_browser_process->platform_part()
-        ->InitializeSchedulerConfigurationManager();
-
-    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-        std::make_unique<SystemNotificationHelper>());
 
     vm_tools::cicerone::OsRelease os_release;
     base::HistogramTester histogram_tester{};
@@ -218,13 +214,22 @@ class CrostiniManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
     crostini_manager_->Shutdown();
     profile_.reset();
     fake_user_manager_.Reset();
-    ash::DlcserviceClient::Shutdown();
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->ShutdownSchedulerConfigurationManager();
     browser_part_.ShutdownComponentManager();
     component_manager_.reset();
+
+    ash::SeneschalClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
+    ash::DebugDaemonClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
+    ash::AnomalyDetectorClient::Shutdown();
   }
 
  protected:
