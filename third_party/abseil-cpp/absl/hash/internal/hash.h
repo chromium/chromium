@@ -1131,6 +1131,11 @@ inline uint64_t CombineContiguousImpl(
   return CombineLargeContiguousImplOn32BitLengthGt8(state, first, len);
 }
 
+// TODO: crbug.com/475029685 - Remove this #undef once Abseil has fixed the
+// policy about inline functions with different implementations based on
+// target CPU flags since this risks ODR violations (see bug).
+#undef ABSL_HASH_INTERNAL_HAS_CRC32
+
 #ifdef ABSL_HASH_INTERNAL_HAS_CRC32
 inline uint64_t CombineContiguousImpl(
     uint64_t state, const unsigned char* first, size_t len,
