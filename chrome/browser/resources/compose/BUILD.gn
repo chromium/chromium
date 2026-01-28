@@ -10,18 +10,21 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "result_text.ts",
-    "textarea.ts",
   ]
   ts_files = [
     "animations/animator.ts",
     "animations/app_animator.ts",
     "animations/textarea_animator.ts",
     "compose_api_proxy.ts",
+    "textarea.html.ts",
+    "textarea.ts",
     "word_streamer.ts",
   ]
+  css_files = [ "textarea.css" ]
   icons_html_files = [ "icons.html" ]
   ts_composite = true
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

@@ -538,7 +538,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onEditedInputChanged_() {
+  private onEditedInputChanged_(current: string, previous: string|undefined) {
+    if (current === '' && previous === undefined) {
+      // Ignore initialization.
+      return;
+    }
     this.userHasModifiedState_ = true;
     if (!this.isEditSubmitEnabled_) {
       this.isEditSubmitEnabled_ = this.$.editTextarea.validate();
@@ -608,7 +612,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
     });
   }
 
-  private onInputChanged_() {
+  private onInputChanged_(current: string, previous: string|undefined) {
+    if (current === '' && previous === undefined) {
+      // Ignore initialization.
+      return;
+    }
     this.userHasModifiedState_ = true;
     if (!this.isSubmitEnabled_) {
       this.isSubmitEnabled_ = this.$.textarea.validate();

@@ -4,15 +4,15 @@
 
 import './icons.html.js';
 import '/strings.m.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ComposeTextareaAnimator} from './animations/textarea_animator.js';
 import type {ConfigurableParams} from './compose.mojom-webui.js';
-import {getTemplate} from './textarea.html.js';
+import {getCss} from './textarea.css.js';
+import {getHtml} from './textarea.html.js';
 
 export interface ComposeTextareaElement {
   $: {
@@ -25,41 +25,36 @@ export interface ComposeTextareaElement {
   };
 }
 
-export class ComposeTextareaElement extends PolymerElement {
+export class ComposeTextareaElement extends CrLitElement {
   static get is() {
     return 'compose-textarea';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       allowExitingReadonlyMode: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
-      inputParams: Object,
+      inputParams: {type: Object},
       readonly: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
       invalidInput_: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
-      tooLong_: {
-        type: Boolean,
-        value: false,
-      },
-      tooShort_: {
-        type: Boolean,
-        value: false,
-      },
+      tooLong_: {type: Boolean},
+      tooShort_: {type: Boolean},
       value: {
         type: String,
         notify: true,
@@ -67,15 +62,16 @@ export class ComposeTextareaElement extends PolymerElement {
     };
   }
 
-  declare allowExitingReadonlyMode: boolean;
+  accessor allowExitingReadonlyMode: boolean = false;
+  accessor inputParams: ConfigurableParams;
+  accessor readonly: boolean = false;
+  protected accessor invalidInput_: boolean = false;
+  protected accessor tooLong_: boolean = false;
+  protected accessor tooShort_: boolean = false;
+  accessor value: string = '';
+
   private animator_: ComposeTextareaAnimator;
-  declare inputParams: ConfigurableParams;
-  declare readonly: boolean;
-  declare private invalidInput_: boolean;
-  declare private tooLong_: boolean;
-  declare private tooShort_: boolean;
-  private placeholderText_: string;
-  declare value: string;
+  private placeholderText_: string = '';
 
   constructor() {
     super();
@@ -83,20 +79,23 @@ export class ComposeTextareaElement extends PolymerElement {
         this, loadTimeData.getBoolean('enableAnimations'));
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.placeholderText_ = this.$.input.placeholder;
   }
 
   focusInput() {
-    this.$.input.focus();
+    // Wait for update to complete, since clients may call this immediately
+    // after updating state.
+    this.updateComplete.then(() => this.$.input.focus());
   }
 
   focusEditButton() {
-    this.$.editButton.focus();
+    // Wait for update to complete, since clients may call this immediately
+    // after updating state.
+    this.updateComplete.then(() => this.$.editButton.focus());
   }
 
-  private onEditClick_() {
+  protected onEditClick_() {
     this.dispatchEvent(
         new CustomEvent('edit-click', {bubbles: true, composed: true}));
   }
@@ -105,11 +104,15 @@ export class ComposeTextareaElement extends PolymerElement {
     this.$.input.scrollTop = 0;
   }
 
-  private shouldShowEditIcon_(): boolean {
+  protected shouldShowEditIcon_(): boolean {
     return this.allowExitingReadonlyMode && this.readonly;
   }
 
-  private onChangeTextArea_() {
+  protected onInput_() {
+    this.value = this.$.input.value;
+  }
+
+  protected onChangeTextArea_() {
     if (this.$.input.value === '') {
       this.$.input.placeholder = this.placeholderText_;
     } else {
@@ -134,6 +137,8 @@ export class ComposeTextareaElement extends PolymerElement {
   }
 
   validate() {
+    // Ensure that any changes to |value| have propagated to the native input.
+    this.performUpdate();
     const value = this.$.input.value;
     const wordCount = value.match(/\S+/g)?.length || 0;
     this.tooLong_ = value.length > this.inputParams.maxCharacterLimit ||

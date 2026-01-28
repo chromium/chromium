@@ -13,7 +13,7 @@ import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.
 import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestComposeApiProxy} from './test_compose_api_proxy.js';
 
@@ -30,11 +30,12 @@ suite('ComposeApp', () => {
     document.body.appendChild(app);
 
     await testProxy.whenCalled('requestInitialState');
-    return flushTasks();
+    await flushTasks();
   });
 
-  function mockInput(input: string) {
+  async function mockInput(input: string) {
     app.$.textarea.value = input;
+    await microtasksFinished();
     app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
   }
 
@@ -84,19 +85,20 @@ suite('ComposeApp', () => {
     assertFalse(isVisible(app.$.acceptButton));
 
     // Invalid input keeps submit enabled and error is not visible.
-    mockInput('Short');
+    await mockInput('Short');
     assertFalse(app.$.submitButton.disabled);
     assertFalse(isVisible(app.$.textarea.$.tooShortError));
     assertFalse(isVisible(app.$.textarea.$.tooLongError));
 
     // Clicking on submit shows error.
     app.$.submitButton.click();
+    await microtasksFinished();
     assertTrue(app.$.submitButton.disabled);
     assertTrue(isVisible(app.$.textarea.$.tooShortError));
     assertFalse(isVisible(app.$.textarea.$.tooLongError));
 
     // Inputting valid text enables submit.
-    mockInput('Here is my input.');
+    await mockInput('Here is my input.');
     assertFalse(app.$.submitButton.disabled);
 
     // Clicking on submit gets results.
@@ -119,9 +121,10 @@ suite('ComposeApp', () => {
     await testProxy.whenCalled('acceptComposeResult');
   });
 
-  test('OnlyOneErrorShows', () => {
-    mockInput('x'.repeat(2501));
+  test('OnlyOneErrorShows', async () => {
+    await mockInput('x'.repeat(2501));
     app.$.submitButton.click();
+    await microtasksFinished();
     assertTrue(app.$.submitButton.disabled);
     assertTrue(isVisible(app.$.textarea.$.tooLongError));
     assertFalse(isVisible(app.$.textarea.$.tooShortError));
@@ -388,7 +391,13 @@ suite('ComposeApp', () => {
       testProxy.resetResolver('saveWebuiState');
     }
 
-    mockInput('Here is my input');
+    await mockInput('Here is my input');
+    // Changing the input also saves the state with the initial mode.
+    // Since mockInput() is async, there is time for the debouncer to fire.
+    const initialMode = loadTimeData.getBoolean('enableUpfrontInputModes') ?
+        InputMode.kPolish :
+        InputMode.kUnset;
+    await assertSavedState({input: 'Here is my input', inputMode: initialMode});
     // Changing the mode saves state.
     app.$.elaborateChip.click();
     await assertSavedState(
@@ -429,7 +438,7 @@ suite('ComposeApp', () => {
     });
 
     // Mock a filtered error response that enables the go back button.
-    mockInput('Initial input.');
+    await mockInput('Initial input.');
     app.$.submitButton.click();
     const errorMessage = `filtered error message`;
     loadTimeData.overrideValues({['errorFiltered']: errorMessage});
@@ -455,7 +464,7 @@ suite('ComposeApp', () => {
       const errorMessage = `some error ${stringKey}`;
       loadTimeData.overrideValues({[stringKey]: errorMessage});
 
-      mockInput('Here is my input.');
+      await mockInput('Here is my input.');
       app.$.submitButton.click();
       await testProxy.whenCalled('compose');
       await mockResponse('', status);
@@ -483,7 +492,7 @@ suite('ComposeApp', () => {
     const errorMessage = `some error ${'errorUnsupportedLanguage'}`;
     loadTimeData.overrideValues({['errorUnsupportedLanguage']: errorMessage});
 
-    mockInput('Here is my input.');
+    await mockInput('Here is my input.');
     app.$.submitButton.click();
     await testProxy.whenCalled('compose');
     await mockResponse('', ComposeStatus.kUnsupportedLanguage);
@@ -499,7 +508,7 @@ suite('ComposeApp', () => {
     const errorMessage = `some error ${'errorPermissionDenied'}`;
     loadTimeData.overrideValues({['errorPermissionDenied']: errorMessage});
 
-    mockInput('Here is my input.');
+    await mockInput('Here is my input.');
     app.$.submitButton.click();
     await testProxy.whenCalled('compose');
     await mockResponse('', ComposeStatus.kPermissionDenied);
@@ -516,7 +525,7 @@ suite('ComposeApp', () => {
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
     assertTrue(isVisible(app.$.editTextarea));
 
-    mockInput('Initial input.');
+    await mockInput('Initial input.');
     app.$.submitButton.click();
     await testProxy.whenCalled('compose');
     await flushTasks();
@@ -531,6 +540,7 @@ suite('ComposeApp', () => {
     // Mock updating input and cancelling.
     assertEquals('Initial input.', app.$.editTextarea.value);
     app.$.editTextarea.value = 'Here is a better input.';
+    await microtasksFinished();
     app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     app.$.cancelEditButton.click();
     await testProxy.whenCalled('logCancelEdit');
@@ -541,6 +551,7 @@ suite('ComposeApp', () => {
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
     app.$.editTextarea.value = 'Here is an even better input.';
+    await microtasksFinished();
     app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     app.$.submitEditButton.click();
     assertFalse(isVisible(app.$.editTextarea));
@@ -682,7 +693,7 @@ suite('ComposeApp', () => {
       }
     };
 
-    mockInput('Some fake input.');
+    await mockInput('Some fake input.');
     app.$.submitButton.click();
     await testProxy.whenCalled('compose');
 
@@ -711,7 +722,7 @@ suite('ComposeApp', () => {
 
   test('RefreshesResult', async () => {
     // Submit the input once so that modifier menu is visible.
-    mockInput('Input to retry.');
+    await mockInput('Input to retry.');
     app.$.submitButton.click();
     await mockResponse();
 
@@ -722,6 +733,7 @@ suite('ComposeApp', () => {
     // Select the retry option from the modifier menu and assert compose is
     // called with the same args.
     app.$.modifierMenu.value = `${StyleModifier.kRetry}`;
+    await microtasksFinished();
     app.$.modifierMenu.dispatchEvent(new CustomEvent('change'));
     assertTrue(
         isVisible(app.$.loading), 'Loading indicator should be visible.');
@@ -742,7 +754,7 @@ suite('ComposeApp', () => {
 
   test('ComposeWithModifierResult', async () => {
     // Submit the input once so that modifier menu is visible.
-    mockInput('Input to refresh.');
+    await mockInput('Input to refresh.');
     app.$.submitButton.click();
     await mockResponse();
 
@@ -755,6 +767,7 @@ suite('ComposeApp', () => {
         app.$.modifierMenu.querySelectorAll('option:not([disabled])').length);
 
     app.$.modifierMenu.value = `${StyleModifier.kShorter}`;
+    await microtasksFinished();
     app.$.modifierMenu.dispatchEvent(new CustomEvent('change'));
 
     const args = await testProxy.whenCalled('rewrite');
@@ -786,8 +799,9 @@ suite('ComposeAppLegacyUi', () => {
     return flushTasks();
   });
 
-  function mockInput(input: string) {
+  async function mockInput(input: string) {
     app.$.textarea.value = input;
+    await microtasksFinished();
     app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
   }
 
@@ -801,7 +815,7 @@ suite('ComposeAppLegacyUi', () => {
     }
 
     // Changing input saves state.
-    mockInput('Here is my input');
+    await mockInput('Here is my input');
     await assertSavedState(
         {input: 'Here is my input', inputMode: InputMode.kUnset});
 
@@ -829,6 +843,7 @@ suite('ComposeAppLegacyUi', () => {
 
     // Updating edit textarea saves state.
     app.$.editTextarea.value = 'Here is my new input';
+    await microtasksFinished();
     app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     await assertSavedState({
       editedInput: 'Here is my new input',
@@ -846,6 +861,7 @@ suite('ComposeAppLegacyUi', () => {
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
     app.$.editTextarea.value = 'Here is my new input!!!!';
+    await microtasksFinished();
     app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     testProxy.resetResolver('saveWebuiState');
     app.$.submitEditButton.click();
@@ -854,8 +870,14 @@ suite('ComposeAppLegacyUi', () => {
   });
 
   test('DebouncesSavingState', async () => {
-    mockInput('Here is my input');
-    mockInput('Here is my input 2');
+    app.$.textarea.value = 'Here is my input';
+    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
+    // Intentionally not calling microtasksFinished() here to allow value to
+    // propagate through the UI, since this test is trying to validate that if
+    // 2 inputs are received within a microtask, only the second is registered.
+    app.$.textarea.value = 'Here is my input 2';
+    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
+    await microtasksFinished();
     await flushTasks();
     const savedState = await testProxy.whenCalled('saveWebuiState');
     assertEquals(1, testProxy.getCallCount('saveWebuiState'));
@@ -888,8 +910,9 @@ suite('ComposeAppLegacyInputModesUi', () => {
     return flushTasks();
   });
 
-  function mockInput(input: string) {
+  async function mockInput(input: string) {
     app.$.textarea.value = input;
+    await microtasksFinished();
     app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
   }
 
@@ -903,7 +926,7 @@ suite('ComposeAppLegacyInputModesUi', () => {
     }
 
     // Changing input saves state.
-    mockInput('Here is my input');
+    await mockInput('Here is my input');
     await assertSavedState(
         {input: 'Here is my input', inputMode: InputMode.kPolish});
 
@@ -931,6 +954,7 @@ suite('ComposeAppLegacyInputModesUi', () => {
 
     // Updating edit textarea saves state.
     app.$.editTextarea.value = 'Here is my new input';
+    await microtasksFinished();
     app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     await assertSavedState({
       editedInput: 'Here is my new input',
@@ -948,6 +972,7 @@ suite('ComposeAppLegacyInputModesUi', () => {
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
     app.$.editTextarea.value = 'Here is my new input!!!!';
+    await microtasksFinished();
     app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     testProxy.resetResolver('saveWebuiState');
     app.$.submitEditButton.click();
@@ -956,8 +981,14 @@ suite('ComposeAppLegacyInputModesUi', () => {
   });
 
   test('DebouncesSavingState', async () => {
-    mockInput('Here is my input');
-    mockInput('Here is my input 2');
+    app.$.textarea.value = 'Here is my input';
+    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
+    // Intentionally not calling microtasksFinished() here to allow value to
+    // propagate through the UI, since this test is trying to validate that if
+    // 2 inputs are received within a microtask, only the second is registered.
+    app.$.textarea.value = 'Here is my input 2';
+    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
+    await microtasksFinished();
     await flushTasks();
     const savedState = await testProxy.whenCalled('saveWebuiState');
     assertEquals(1, testProxy.getCallCount('saveWebuiState'));

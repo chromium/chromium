@@ -10,6 +10,7 @@ import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.
 import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestComposeApiProxy} from './test_compose_api_proxy.js';
 
@@ -47,6 +48,7 @@ suite('ComposeApp', function() {
   test('RefocusesInputOnInvalidate', async () => {
     const app = await createApp();
     app.$.textarea.value = 'short';
+    await microtasksFinished();
     app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
     app.$.submitButton.focus();
     app.$.submitButton.click();
@@ -68,10 +70,12 @@ suite('ComposeApp', function() {
   test('FocusesEditInputAfterSubmitInput', async () => {
     const app = await createApp();
     app.$.textarea.value = 'test value one';
+    await microtasksFinished();
     app.$.submitButton.click();
 
     await testProxy.whenCalled('compose');
     await mockResponse();
+    await microtasksFinished();
 
     assertEquals(app.$.textarea, app.shadowRoot!.activeElement);
   });

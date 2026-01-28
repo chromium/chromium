@@ -6,7 +6,7 @@ import 'chrome-untrusted://compose/textarea.js';
 
 import type {ComposeTextareaElement} from 'chrome-untrusted://compose/textarea.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 suite('ComposeTextarea', () => {
   let textarea: ComposeTextareaElement;
@@ -22,23 +22,27 @@ suite('ComposeTextarea', () => {
     document.body.appendChild(textarea);
   });
 
-  test('TogglesModes', () => {
+  test('TogglesModes', async () => {
     assertTrue(isVisible(textarea.$.input));
     textarea.value = 'Some text';  // Text to make sure elements are not empty.
+    await microtasksFinished();
 
     textarea.readonly = true;
+    await microtasksFinished();
     assertFalse(isVisible(textarea.$.input));
     assertTrue(isVisible(textarea.$.readonlyText));
     assertFalse(isVisible(textarea.$.editButtonContainer));
 
     textarea.allowExitingReadonlyMode = true;
+    await microtasksFinished();
     assertFalse(isVisible(textarea.$.input));
     assertTrue(isVisible(textarea.$.readonlyText));
     assertTrue(isVisible(textarea.$.editButtonContainer));
   });
 
-  test('PassesInValue', () => {
+  test('PassesInValue', async () => {
     textarea.value = 'Here is my value.';
+    await microtasksFinished();
     assertEquals('Here is my value.', textarea.$.input.value);
     assertEquals(
         'Here is my value.', textarea.$.readonlyText.textContent.trim());
@@ -52,31 +56,40 @@ suite('ComposeTextarea', () => {
     assertEquals('My new value', textarea.value);
   });
 
-  test('Validates', () => {
+  test('Validates', async () => {
     // No input yet, so should be invalid.
     assertFalse(textarea.validate());
 
     // Has at least 5 words, should be valid.
     textarea.$.input.value = 'Here is some input with more than 5 words.';
+    await microtasksFinished();
     assertTrue(textarea.validate());
 
     // Too short of an input, should be invalid and display an error.
     textarea.$.input.value = 'Short';
+    await microtasksFinished();
     assertFalse(textarea.validate());
+    await microtasksFinished();
     assertTrue(isVisible(textarea.$.tooShortError));
 
     // Too many characters, should show error.
     textarea.$.input.value = Array(101).fill('a').join('');
+    await microtasksFinished();
     assertFalse(textarea.validate());
+    await microtasksFinished();
     assertTrue(isVisible(textarea.$.tooLongError));
 
     // Should revalidate when value becomes valid.
     textarea.$.input.value = 'Here is another input with more than 5 words.';
+    await microtasksFinished();
     assertTrue(textarea.validate());
+    await microtasksFinished();
 
     // Too many words, should show error.
     textarea.$.input.value = Array(51).fill('a').join(' ');
+    await microtasksFinished();
     assertFalse(textarea.validate());
+    await microtasksFinished();
     assertTrue(isVisible(textarea.$.tooLongError));
   });
 });
