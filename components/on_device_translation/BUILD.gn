@@ -87,6 +87,5 @@ static_library("test_support") {
     ":public",
     "//base",
     "//base/test:test_support",
-    "//components/prefs",
   ]
 }

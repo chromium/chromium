@@ -7,30 +7,25 @@
 #include "base/test/gmock_callback_support.h"
 #include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/language_pack.h"
-#include "components/on_device_translation/public/pref_names.h"
-#include "components/prefs/pref_service.h"
 
 namespace on_device_translation {
 
 FakeOnDeviceTranslationInstaller::~FakeOnDeviceTranslationInstaller() = default;
 FakeOnDeviceTranslationInstaller::FakeOnDeviceTranslationInstaller() = default;
 
-bool FakeOnDeviceTranslationInstaller::IsInit(PrefService* prefs) const {
+bool FakeOnDeviceTranslationInstaller::IsInit() const {
   return is_init_;
 }
 std::set<LanguagePackKey>
-FakeOnDeviceTranslationInstaller::RegisteredLanguagePacks(
-    PrefService* prefs) const {
+FakeOnDeviceTranslationInstaller::RegisteredLanguagePacks() const {
   return registered_lang_packs_;
 }
 std::set<LanguagePackKey>
-FakeOnDeviceTranslationInstaller::InstalledLanguagePacks(
-    PrefService* prefs) const {
+FakeOnDeviceTranslationInstaller::InstalledLanguagePacks() const {
   return installed_lang_packs_;
 }
 
 void FakeOnDeviceTranslationInstaller::Init(
-    PrefService* pref_service,
     base::RepeatingClosure on_ready_callback) {
   if (is_init_) {
     on_ready_callback.Run();
@@ -49,15 +44,13 @@ void FakeOnDeviceTranslationInstaller::InitNow(
     on_ready_callback.Run();
   }
 }
-bool FakeOnDeviceTranslationInstaller::InstallLanguagePack(
-    LanguagePackKey language_pack,
-    PrefService* pref_service) {
+void FakeOnDeviceTranslationInstaller::InstallLanguagePack(
+    LanguagePackKey language_pack) {
   registered_lang_packs_.insert(language_pack);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeOnDeviceTranslationInstaller::InstallLanguagePackNow,
                      weak_ptr_factory_.GetWeakPtr(), language_pack));
-  return true;
 }
 void FakeOnDeviceTranslationInstaller::InstallLanguagePackNow(
     LanguagePackKey language_pack) {
@@ -67,12 +60,10 @@ void FakeOnDeviceTranslationInstaller::InstallLanguagePackNow(
     observer.OnLanguagePackInstalled(language_pack);
   }
 }
-bool FakeOnDeviceTranslationInstaller::UnInstallLanguagePack(
-    LanguagePackKey language_pack,
-    PrefService* pref_service) {
+void FakeOnDeviceTranslationInstaller::UnInstallLanguagePack(
+    LanguagePackKey language_pack) {
   registered_lang_packs_.erase(language_pack);
   installed_lang_packs_.erase(language_pack);
-  return true;
 }
 
 void FakeOnDeviceTranslationInstaller::AddOserver(Observer* observer) {

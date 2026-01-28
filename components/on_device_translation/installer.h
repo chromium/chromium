@@ -45,28 +45,23 @@ class OnDeviceTranslationInstaller {
   static OnDeviceTranslationInstaller* GetInstance();
 
   // Returns whether the OnDeviceTranslation has completed initialization.
-  virtual bool IsInit(PrefService* prefs) const = 0;
+  virtual bool IsInit() const = 0;
   // Returns the set of registered language packs.
-  virtual std::set<LanguagePackKey> RegisteredLanguagePacks(
-      PrefService* prefs) const = 0;
+  virtual std::set<LanguagePackKey> RegisteredLanguagePacks() const = 0;
   // Returns the set of installed language packs.
-  virtual std::set<LanguagePackKey> InstalledLanguagePacks(
-      PrefService* prefs) const = 0;
+  virtual std::set<LanguagePackKey> InstalledLanguagePacks() const = 0;
 
   // Start initialization. When initialization is finished, the
   // `on_ready_callback` is called.
-  virtual void Init(PrefService* pref_service,
-                    base::RepeatingClosure on_ready_callback) = 0;
+  virtual void Init(base::RepeatingClosure on_ready_callback) = 0;
   // Start installation of a language pack. The callback is supposed to be
   // called once the registration for installation is finished (not the
   // installation itself). A bool is returned for quick failure.
-  virtual bool InstallLanguagePack(LanguagePackKey language_pack,
-                                   PrefService* pref_service) = 0;
+  virtual void InstallLanguagePack(LanguagePackKey language_pack) = 0;
   // Start uninstallation of a language pack. The callback is supposed to be
   // called once the uninstallation is registered to happen. A bool is returned
   // for quick failures.
-  virtual bool UnInstallLanguagePack(LanguagePackKey language_pack,
-                                     PrefService* pref_service) = 0;
+  virtual void UnInstallLanguagePack(LanguagePackKey language_pack) = 0;
 
   // Subscribes a new observer to be notified of events.
   virtual void AddOserver(Observer* observer) = 0;

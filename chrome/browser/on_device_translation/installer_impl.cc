@@ -41,19 +41,15 @@ base::FilePath GetTranslateKitLibraryPath(PrefService* prefs) {
 
 }  // namespace
 
-OnDeviceTranslationInstallerImpl::OnDeviceTranslationInstallerImpl(
-    component_updater::ComponentUpdateService* cus)
-    : cus_(cus) {
-  DCHECK(cus_);
-}
+OnDeviceTranslationInstallerImpl::OnDeviceTranslationInstallerImpl() = default;
 OnDeviceTranslationInstallerImpl::~OnDeviceTranslationInstallerImpl() = default;
 
 std::set<LanguagePackKey>
-OnDeviceTranslationInstallerImpl::InstalledLanguagePacks(
-    PrefService* prefs) const {
+OnDeviceTranslationInstallerImpl::InstalledLanguagePacks() const {
   std::set<LanguagePackKey> installed_pack_keys;
   for (const auto& it : kLanguagePackComponentConfigMap) {
-    if (!GetFilePathFromGlobalPrefs(prefs, GetComponentPathPrefName(*it.second))
+    if (!GetFilePathFromGlobalPrefs(g_browser_process->local_state(),
+                                    GetComponentPathPrefName(*it.second))
              .empty()) {
       installed_pack_keys.insert(it.first);
     }
@@ -62,62 +58,60 @@ OnDeviceTranslationInstallerImpl::InstalledLanguagePacks(
 }
 
 std::set<LanguagePackKey>
-OnDeviceTranslationInstallerImpl::RegisteredLanguagePacks(
-    PrefService* prefs) const {
+OnDeviceTranslationInstallerImpl::RegisteredLanguagePacks() const {
   std::set<LanguagePackKey> registered_pack_keys;
   for (const auto& it : kLanguagePackComponentConfigMap) {
-    if (prefs->GetBoolean(GetRegisteredFlagPrefName(*it.second))) {
+    if (g_browser_process->local_state()->GetBoolean(
+            GetRegisteredFlagPrefName(*it.second))) {
       registered_pack_keys.insert(it.first);
     }
   }
   return registered_pack_keys;
 }
 
-bool OnDeviceTranslationInstallerImpl::IsInit(PrefService* prefs) const {
-  return !GetTranslateKitLibraryPath(prefs).empty();
+bool OnDeviceTranslationInstallerImpl::IsInit() const {
+  return !GetTranslateKitLibraryPath(g_browser_process->local_state()).empty();
 }
 
 void OnDeviceTranslationInstallerImpl::Init(
-    PrefService* pref_service,
     base::RepeatingClosure on_ready_callback) {
   component_updater::RegisterTranslateKitComponent(
-      cus_, pref_service,
+      g_browser_process->component_updater(), g_browser_process->local_state(),
       /*force_install=*/true,
       /*registered_callback=*/
       base::BindOnce(&component_updater::TranslateKitComponentInstallerPolicy::
                          UpdateComponentOnDemand,
-                     base::Unretained(cus_)),
+                     base::Unretained(g_browser_process->component_updater())),
       /*on_ready_callback=*/
       std::move(on_ready_callback));
 }
 
-bool OnDeviceTranslationInstallerImpl::InstallLanguagePack(
-    LanguagePackKey language_pack,
-    PrefService* pref_service) {
-  if (!IsInit(pref_service)) {
-    return false;
+void OnDeviceTranslationInstallerImpl::InstallLanguagePack(
+    LanguagePackKey language_pack) {
+  if (!IsInit()) {
+    return;
   }
 
   // Registers the TranslateKit language pack component.
   component_updater::RegisterTranslateKitLanguagePackComponent(
-      cus_, pref_service, language_pack,
+      g_browser_process->component_updater(), g_browser_process->local_state(),
+      language_pack,
       base::BindOnce(
           &component_updater::TranslateKitLanguagePackComponentInstallerPolicy::
               UpdateComponentOnDemand,
-          base::Unretained(cus_), language_pack),
+          base::Unretained(g_browser_process->component_updater()),
+          language_pack),
       base::BindRepeating(
           &OnDeviceTranslationInstallerImpl::OnLanguagePackInstalled,
           weak_ptr_factory_.GetWeakPtr(), language_pack));
-  return true;
 }
 
-bool OnDeviceTranslationInstallerImpl::UnInstallLanguagePack(
-    LanguagePackKey language_pack,
-    PrefService* pref_service) {
+void OnDeviceTranslationInstallerImpl::UnInstallLanguagePack(
+    LanguagePackKey language_pack) {
   // Uninstalls the TranslateKit language pack component.
   component_updater::UninstallTranslateKitLanguagePackComponent(
-      cus_, pref_service, language_pack);
-  return true;
+      g_browser_process->component_updater(), g_browser_process->local_state(),
+      language_pack);
 }
 
 void OnDeviceTranslationInstallerImpl::AddOserver(Observer* observer) {
@@ -126,7 +120,6 @@ void OnDeviceTranslationInstallerImpl::AddOserver(Observer* observer) {
 
 void OnDeviceTranslationInstallerImpl::OnLanguagePackInstalled(
     LanguagePackKey language_pack) {
-  installed_language_packs_.insert(language_pack);
   for (Observer& observer : observers_) {
     observer.OnLanguagePackInstalled(language_pack);
   }
