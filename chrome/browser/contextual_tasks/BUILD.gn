@@ -29,6 +29,7 @@ source_set("contextual_tasks") {
   ]
 
   public_deps = [
+    ":mojo_bindings",
     "//chrome/browser/profiles:profile",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
@@ -36,7 +37,6 @@ source_set("contextual_tasks") {
   ]
   if (!is_android) {
     public_deps += [
-      ":mojo_bindings",
       "//chrome/browser/passage_embeddings",
       "//components/passage_embeddings/core:passage_embeddings_types",
     ]
@@ -201,20 +201,19 @@ if (!is_android) {
       "//url",
     ]
   }
+}
 
-  mojom("mojo_bindings") {
-    sources = [
-      "contextual_tasks.mojom",
-      "contextual_tasks_internals.mojom",
-      "contextual_tasks_types.mojom",
-    ]
-    webui_module_path = "/"
-    public_deps = [
-      "//mojo/public/mojom/base",
-      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
-      "//url/mojom:url_mojom_gurl",
-    ]
-  }
+mojom("mojo_bindings") {
+  sources = [
+    "contextual_tasks.mojom",
+    "contextual_tasks_internals.mojom",
+    "contextual_tasks_types.mojom",
+  ]
+  webui_module_path = "/"
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }
 
 if (!is_android) {
