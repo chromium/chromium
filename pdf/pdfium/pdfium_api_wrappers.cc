@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -298,8 +297,7 @@ bool RenderPageToDC(FPDF_PAGE page,
     FPDF_RenderPageBitmap(bitmap.get(), page, 0, 0, dest.width(), dest.height(),
                           rotate, flags);
     int stride = FPDFBitmap_GetStride(bitmap.get());
-    BITMAPINFO bmi;
-    UNSAFE_TODO(memset(&bmi, 0, sizeof(bmi)));
+    BITMAPINFO bmi = {};
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bmi.bmiHeader.biWidth = dest.width();
     bmi.bmiHeader.biHeight = -dest.height();  // top-down image
