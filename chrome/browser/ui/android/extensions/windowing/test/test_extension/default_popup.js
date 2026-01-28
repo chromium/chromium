@@ -173,10 +173,12 @@ document.getElementById("create_window_button").onclick = async () => {
                 .checked;
 
         createOptions.type =
-            document.getElementById("create_window_type_select").value;
+            document.querySelector(
+                'input[name="create_window_type_value"]:checked').value;
 
         const state =
-            document.getElementById("create_window_state_select").value;
+            document.querySelector(
+                'input[name="create_window_state_value"]:checked').value;
         createOptions.state = state;
 
         createOptions.left = parseInt(

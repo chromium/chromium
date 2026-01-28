@@ -84,31 +84,35 @@
         <label><input type="checkbox" id="create_window_incognito_checkbox">incognito</label>
         <label><input type="checkbox" id="create_window_set_self_as_opener_checkbox">setSelfAsOpener</label>
       </li>
-      <li style="padding: 5px 0;">
-        <label>type:</label>
-        <select id="create_window_type_select">
-          <option value="normal" selected>normal</option>
-          <option value="popup">popup</option>
-          <option value="panel">panel</option>
-        </select>
-      </li>
-      <li style="padding: 5px 0;">
-        <label>state:</label>
-        <select id="create_window_state_select">
-          <option value="normal" selected>normal</option>
-          <option value="minimized">minimized</option>
-          <option value="maximized">maximized</option>
-          <option value="fullscreen">fullscreen</option>
-        </select>
-      </li>
-      <li style="padding: 5px 0;">
-        <label>left:<input type="number" id="create_window_left_input" value="0" style="width: 8ch;"></label>
-        <label>top:<input type="number" id="create_window_top_input" value="0" style="width: 8ch;"></label>
-      </li>
-      <li style="padding: 5px 0;">
-        <label>width:<input type="number" id="create_window_width_input" value="800" style="width: 8ch;"></label>
-        <label>height:<input type="number" id="create_window_height_input" value="600" style="width: 8ch;"></label>
-      </li>
+      <details>
+        <summary>type:</summary>
+        <div id="create_window_type_radio_group" style="padding-left: 20px;">
+          <label><input type="radio" name="create_window_type_value" value="normal" checked>normal</label><br>
+          <label><input type="radio" name="create_window_type_value" value="popup">popup</label><br>
+          <label><input type="radio" name="create_window_type_value" value="panel">panel</label>
+        </div>
+      </details>
+      <details>
+        <summary>state:</summary>
+        <div id="create_window_state_radio_group" style="padding-left: 20px;">
+          <label><input type="radio" name="create_window_state_value" value="normal" checked>normal</label><br>
+          <label><input type="radio" name="create_window_state_value" value="minimized">minimized</label><br>
+          <label><input type="radio" name="create_window_state_value" value="maximized">maximized</label><br>
+          <label><input type="radio" name="create_window_state_value" value="fullscreen">fullscreen</label>
+        </div>
+      </details>
+      <details>
+        <summary>position:</summary>
+        <div style="padding-left: 20px;">
+          <label>left:<input type="number" id="create_window_left_input" value="0" style="width: 8ch;"></label>
+          <label>top:<input type="number" id="create_window_top_input" value="0" style="width: 8ch;"></label>
+        </div>
+        <div style="padding-left: 20px;">
+          <label>width:<input type="number" id="create_window_width_input" value="800" style="width: 8ch;"></label>
+          <label>height:<input type="number" id="create_window_height_input" value="600" style="width: 8ch;"></label>
+        </div>
+      </details>
+
       <li style="padding: 5px 0;">
         <label>url:</label>
         <input type="text" id="create_window_url_input" placeholder="e.g., https://www.google.com" style="width: 200px;">
