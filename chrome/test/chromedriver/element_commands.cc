@@ -8,11 +8,10 @@
 
 #include <cmath>
 #include <memory>
-#include <set>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -36,62 +35,62 @@
 #include "third_party/selenium-atoms/atoms.h"
 
 const int kFlickTouchEventsPerSecond = 30;
-const std::set<std::string> kTextControlTypes = {"text", "search", "tel", "url",
-                                                 "password"};
-const std::set<std::string> kInputControlTypes = {
-    "text",           "search", "url",   "tel",   "email",
-    "password",       "date",   "month", "week",  "time",
-    "datetime-local", "number", "range", "color", "file"};
+constexpr auto kTextControlTypes = base::MakeFixedFlatSet<std::string_view>(
+    {"text", "search", "tel", "url", "password"});
+constexpr auto kInputControlTypes = base::MakeFixedFlatSet<std::string_view>(
+    {"text", "search", "url", "tel", "email", "password", "date", "month",
+     "week", "time", "datetime-local", "number", "range", "color", "file"});
 
-const std::set<std::string> kNontypeableControlTypes = {"color"};
+constexpr auto kNontypeableControlTypes =
+    base::MakeFixedFlatSet<std::string_view>({"color"});
 
-const std::unordered_set<std::string> kBooleanAttributes = {
-    "allowfullscreen",
-    "allowpaymentrequest",
-    "allowusermedia",
-    "async",
-    "autofocus",
-    "autoplay",
-    "checked",
-    "compact",
-    "complete",
-    "controls",
-    "declare",
-    "default",
-    "defaultchecked",
-    "defaultselected",
-    "defer",
-    "disabled",
-    "ended",
-    "formnovalidate",
-    "hidden",
-    "indeterminate",
-    "iscontenteditable",
-    "ismap",
-    "itemscope",
-    "loop",
-    "multiple",
-    "muted",
-    "nohref",
-    "nomodule",
-    "noresize",
-    "noshade",
-    "novalidate",
-    "nowrap",
-    "open",
-    "paused",
-    "playsinline",
-    "pubdate",
-    "readonly",
-    "required",
-    "reversed",
-    "scoped",
-    "seamless",
-    "seeking",
-    "selected",
-    "truespeed",
-    "typemustmatch",
-    "willvalidate"};
+constexpr auto kBooleanAttributes =
+    base::MakeFixedFlatSet<std::string_view>({"allowfullscreen",
+                                              "allowpaymentrequest",
+                                              "allowusermedia",
+                                              "async",
+                                              "autofocus",
+                                              "autoplay",
+                                              "checked",
+                                              "compact",
+                                              "complete",
+                                              "controls",
+                                              "declare",
+                                              "default",
+                                              "defaultchecked",
+                                              "defaultselected",
+                                              "defer",
+                                              "disabled",
+                                              "ended",
+                                              "formnovalidate",
+                                              "hidden",
+                                              "indeterminate",
+                                              "iscontenteditable",
+                                              "ismap",
+                                              "itemscope",
+                                              "loop",
+                                              "multiple",
+                                              "muted",
+                                              "nohref",
+                                              "nomodule",
+                                              "noresize",
+                                              "noshade",
+                                              "novalidate",
+                                              "nowrap",
+                                              "open",
+                                              "paused",
+                                              "playsinline",
+                                              "pubdate",
+                                              "readonly",
+                                              "required",
+                                              "reversed",
+                                              "scoped",
+                                              "seamless",
+                                              "seeking",
+                                              "selected",
+                                              "truespeed",
+                                              "typemustmatch",
+                                              "willvalidate"});
 
 namespace {
 
@@ -480,8 +479,7 @@ Status ExecuteClearElement(Session* session,
     if (get_element_type->is_string())
       element_type = base::ToLowerASCII(get_element_type->GetString());
 
-    is_input_control =
-        kInputControlTypes.find(element_type) != kInputControlTypes.end();
+    is_input_control = kInputControlTypes.contains(element_type);
   }
 
   bool is_text = tag_name == "textarea";
@@ -580,8 +578,7 @@ Status ExecuteSendKeysToElement(Session* session,
   if (get_element_type->is_string())
     element_type = base::ToLowerASCII(get_element_type->GetString());
   bool is_file = element_type == "file";
-  bool is_nontypeable = kNontypeableControlTypes.find(element_type) !=
-                        kNontypeableControlTypes.end();
+  bool is_nontypeable = kNontypeableControlTypes.contains(element_type);
 
   if (is_input && is_file) {
     if (session->strict_file_interactability) {
@@ -667,8 +664,7 @@ Status ExecuteSendKeysToElement(Session* session,
 
   // If element_type is in kTextControlTypes, sendKeys should append
   bool is_text_control_type =
-      is_input &&
-      kTextControlTypes.find(element_type) != kTextControlTypes.end();
+      is_input && kTextControlTypes.contains(element_type);
   // If the element is a textarea, sendKeys should also append
   bool is_textarea = false;
   status = IsElementAttributeEqualToIgnoreCase(
@@ -1046,7 +1042,7 @@ Status ExecuteGetElementAttribute(Session* session,
   args.Append(*attribute_name);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
-      kBooleanAttributes.count(base::ToLowerASCII(*attribute_name))
+      kBooleanAttributes.contains(base::ToLowerASCII(*attribute_name))
           ? "(elem, attribute) => elem.hasAttribute(attribute) ? 'true' : null"
           : "(elem, attribute) => elem.getAttribute(attribute)",
       args, value);
