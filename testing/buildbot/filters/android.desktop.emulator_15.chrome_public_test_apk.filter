@@ -3,13 +3,6 @@
 # crbug.com/375710620
 -org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
 
-# crbug.com/376100658
--org.chromium.chrome.browser.payments.PaymentRequestShowPromiseEmptyListsTest.*
--org.chromium.chrome.browser.payments.PaymentRequestShowPromiseEmptyTest.*
--org.chromium.chrome.browser.payments.PaymentRequestShowPromiseInvalidDetailsTest.*
--org.chromium.chrome.browser.payments.PaymentRequestShowPromiseRejectTest.*
--org.chromium.chrome.browser.payments.PaymentRequestShowPromiseSingleOptionShippingDelayTest.*
-
 # crbug.com/446934111
 -org.chromium.chrome.browser.ntp.IncognitoNtpOmniboxAutofocusManagerTest.*
 
