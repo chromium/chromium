@@ -117,6 +117,10 @@ AddressComponent::AddressComponent(FieldType storage_type,
   }
 }
 
+AddressComponent::AddressComponent(FieldType storage_type,
+                                   SubcomponentsList subcomponents)
+    : AddressComponent(storage_type, subcomponents, MergeMode::kNone) {}
+
 AddressComponent::~AddressComponent() = default;
 
 FieldType AddressComponent::GetStorageType() const {

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 
 #include <map>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -1886,6 +1888,106 @@ TEST_F(AutofillStructuredAddressAddressComponent, TestFillTreeGapsParsing) {
   name.CompleteFullTree();
   VerifyTestValues(&name, expectation);
 }
+
+class PerCountryAutofillStructuredAddressAddressComponentTest
+    : public AutofillStructuredAddressAddressComponent,
+      public testing::WithParamInterface<std::string_view> {};
+
+struct TypesByProperties {
+  std::set<std::string> types_with_defined_recursive_merge_mode;
+  std::set<std::string> types_accessible_recursively;
+};
+
+// Given an `AddressComponentStore`, returns which types in the hierarchy it
+// represents:
+// 1. have defined merge modes
+// 2. are accessible recursively.
+TypesByProperties GetTypesByProperties(
+    const AddressComponentsStore& address_component_store) {
+  std::queue<AddressComponent*> components_queue;
+  std::set<AddressComponent*> components_with_defined_merge_mode;
+  std::set<AddressComponent*> components_accessible_recursively;
+
+  components_accessible_recursively.insert(address_component_store.Root());
+  components_queue.push(address_component_store.Root());
+  while (!components_queue.empty()) {
+    AddressComponentTestApi current_component(*components_queue.front());
+    if (current_component.GetMergeMode() != 0) {
+      components_with_defined_merge_mode.insert(components_queue.front());
+    }
+    if (current_component.GetMergeMode() & kMergeChildrenAndReformatIfNeeded) {
+      components_accessible_recursively.insert_range(
+          components_queue.front()->Subcomponents());
+    }
+    components_queue.push_range(components_queue.front()->Subcomponents());
+    components_queue.pop();
+  }
+
+  auto address_component_pointer_set_to_string_set =
+      [](std::set<AddressComponent*> address_component_set)
+      -> std::set<std::string> {
+    std::set<std::string> result;
+    for (AddressComponent* address_component : address_component_set) {
+      result.insert(address_component->GetStorageTypeName());
+    }
+    return result;
+  };
+
+  return {.types_with_defined_recursive_merge_mode =
+              address_component_pointer_set_to_string_set(
+                  components_with_defined_merge_mode),
+          .types_accessible_recursively =
+              address_component_pointer_set_to_string_set(
+                  components_accessible_recursively)};
+}
+
+// Currently a merge mode is effective for a type node if and only if all
+// parents of this type node up to the root node have
+// `kMergeChildrenAndReformatIfNeeded` in their merge modes. It is technically
+// possible to define merge modes for types in which they will never be
+// effective - or have nodes without merge mode. This is unexpected by the
+// reader and as such should be treated as misconfiguration - this test guards
+// against that.
+TEST_P(PerCountryAutofillStructuredAddressAddressComponentTest,
+       MergeModesDefinedExactlyWhereNeeded) {
+  AddressComponentsStore address_component_store =
+      i18n_model_definition::CreateAddressComponentModel(
+          autofill::AddressCountryCode(std::string(GetParam())));
+
+  TypesByProperties types_by_properties =
+      GetTypesByProperties(address_component_store);
+
+  // In all the hierarchies that have ADDRESS_HOME_DEPENDENT_LOCALITY it is a
+  // direct descendant of ADDRESS_HOME_ADDRESS - except for India, where it is a
+  // leaf of a multi layer tree. This is a bit unfortunate, let's have an
+  // exception for that.
+  if (GetParam() == "IN") {
+    types_by_properties.types_with_defined_recursive_merge_mode.erase(
+        "ADDRESS_HOME_DEPENDENT_LOCALITY");
+  }
+
+  // 1) If there were types with merge mode defined that aren't accessible
+  // recursively, it would mean that the reader might get wrong assumptions.
+  // 2) If there were types accessible recursively that don't have merge modes
+  // defined, it would mean that at times, only SameAs() based equivalence is a
+  // valid reason to merge, which isn't what anyone expects.
+  EXPECT_THAT(
+      types_by_properties.types_with_defined_recursive_merge_mode,
+      testing::ContainerEq(types_by_properties.types_accessible_recursively));
+}
+
+std::set<std::string_view> GetAllAutofillCountriesWithHierarchy() {
+  std::set<std::string_view> result;
+  for (const auto& [country, _] : i18n_model_definition::kAutofillModelRules) {
+    result.insert(country);
+  }
+  return result;
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Instantiation,
+    PerCountryAutofillStructuredAddressAddressComponentTest,
+    testing::ValuesIn(GetAllAutofillCountriesWithHierarchy()));
 
 }  // namespace
 }  // namespace autofill

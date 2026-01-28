@@ -28,28 +28,20 @@
 namespace autofill {
 
 StreetNameNode::StreetNameNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_STREET_NAME,
-                       std::move(children),
-                       MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_STREET_NAME, std::move(children)) {}
 
 StreetNameNode::~StreetNameNode() = default;
 
 StreetLocationNode::StreetLocationNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_STREET_LOCATION,
-                       std::move(children),
-                       base::FeatureList::IsEnabled(
-                           features::kAutofillUseChildrenAndReformatMergeMode)
-                           ? (MergeMode::kReplaceEmpty |
-                              MergeMode::kMergeChildrenAndReformatIfNeeded |
-                              MergeMode::kDefault)
-                           : MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_STREET_LOCATION, std::move(children)) {}
 
 StreetLocationNode::~StreetLocationNode() = default;
 
 HouseNumberNode::HouseNumberNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_HOUSE_NUMBER,
-                       std::move(children),
-                       MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_HOUSE_NUMBER, std::move(children)) {}
 
 HouseNumberNode::~HouseNumberNode() = default;
 
@@ -67,47 +59,33 @@ std::u16string HouseNumberNode::GetValueForComparison(
 
 HouseNumberAndApartmentNode::HouseNumberAndApartmentNode(
     SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
-                       std::move(children),
-                       base::FeatureList::IsEnabled(
-                           features::kAutofillUseChildrenAndReformatMergeMode)
-                           ? (MergeMode::kReplaceEmpty |
-                              MergeMode::kMergeChildrenAndReformatIfNeeded |
-                              MergeMode::kDefault)
-                           : MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_HOUSE_NUMBER_AND_APT, std::move(children)) {
+}
 
 HouseNumberAndApartmentNode::~HouseNumberAndApartmentNode() = default;
 
 FloorNode::FloorNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_FLOOR,
-                       std::move(children),
-                       MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_FLOOR, std::move(children)) {}
 
 FloorNode::~FloorNode() = default;
 
 ApartmentNode::ApartmentNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_APT,
-                       std::move(children),
-                       base::FeatureList::IsEnabled(
-                           features::kAutofillUseChildrenAndReformatMergeMode)
-                           ? (MergeMode::kReplaceEmpty |
-                              MergeMode::kMergeChildrenAndReformatIfNeeded |
-                              MergeMode::kDefault)
-                           : MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_APT, std::move(children)) {}
 
 ApartmentNode::~ApartmentNode() = default;
 
 ApartmentNumNode::ApartmentNumNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_APT_NUM,
-                       std::move(children),
-                       MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_APT_NUM, std::move(children)) {}
 
 ApartmentNumNode::~ApartmentNumNode() = default;
 
 SubPremiseNode::SubPremiseNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_SUBPREMISE,
-                       std::move(children),
-                       MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_SUBPREMISE, std::move(children)) {}
 
 SubPremiseNode::~SubPremiseNode() = default;
 
@@ -294,6 +272,7 @@ CountryCodeNode::~CountryCodeNode() = default;
 
 // DependentLocalities are mergeable when the tokens of one is a subset of the
 // other one. Take the longer one.
+// Exception: India, where the merge mode doesn't matter.
 DependentLocalityNode::DependentLocalityNode(SubcomponentsList children)
     : AddressComponent(ADDRESS_HOME_DEPENDENT_LOCALITY,
                        std::move(children),
@@ -371,30 +350,28 @@ SortingCodeNode::SortingCodeNode(SubcomponentsList children)
 SortingCodeNode::~SortingCodeNode() = default;
 
 LandmarkNode::LandmarkNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_LANDMARK,
-                       std::move(children),
-                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    // TODO(crbug.com/447111009) Restore `kReplaceEmpty` | `kReplaceSubset`
+    // merge mode.
+    : AddressComponent(ADDRESS_HOME_LANDMARK, std::move(children)) {}
 
 LandmarkNode::~LandmarkNode() = default;
 
 BetweenStreetsNode::BetweenStreetsNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS,
-                       std::move(children),
-                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    // TODO(crbug.com/447111009) Restore `kReplaceEmpty` | `kReplaceSubset`
+    // merge mode.
+    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS, std::move(children)) {}
 
 BetweenStreetsNode::~BetweenStreetsNode() = default;
 
 BetweenStreets1Node::BetweenStreets1Node(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS_1,
-                       std::move(children),
-                       MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS_1, std::move(children)) {}
 
 BetweenStreets1Node::~BetweenStreets1Node() = default;
 
 BetweenStreets2Node::BetweenStreets2Node(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS_2,
-                       std::move(children),
-                       MergeMode::kDefault) {}
+    // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS_2, std::move(children)) {}
 
 BetweenStreets2Node::~BetweenStreets2Node() = default;
 
@@ -406,25 +383,27 @@ AdminLevel2Node::AdminLevel2Node(SubcomponentsList children)
 AdminLevel2Node::~AdminLevel2Node() = default;
 
 AddressOverflowNode::AddressOverflowNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_OVERFLOW,
-                       std::move(children),
-                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+    // TODO(crbug.com/447111009) Restore `kReplaceEmpty` | `kReplaceSubset`
+    // merge mode.
+    : AddressComponent(ADDRESS_HOME_OVERFLOW, std::move(children)) {}
 
 AddressOverflowNode::~AddressOverflowNode() = default;
 
 AddressOverflowAndLandmarkNode::AddressOverflowAndLandmarkNode(
     SubcomponentsList children)
+    // TODO(crbug.com/447111009) Restore `kReplaceEmpty` | `kReplaceSubset`
+    // merge mode.
     : AddressComponent(ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-                       std::move(children),
-                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+                       std::move(children)) {}
 
 AddressOverflowAndLandmarkNode::~AddressOverflowAndLandmarkNode() = default;
 
 BetweenStreetsOrLandmarkNode::BetweenStreetsOrLandmarkNode(
     SubcomponentsList children)
+    // TODO(crbug.com/447111009) Restore `kReplaceEmpty` | `kReplaceSubset`
+    // merge mode.
     : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-                       std::move(children),
-                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+                       std::move(children)) {}
 
 BetweenStreetsOrLandmarkNode::~BetweenStreetsOrLandmarkNode() = default;
 

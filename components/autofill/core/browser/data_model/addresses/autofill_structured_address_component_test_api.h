@@ -57,6 +57,9 @@ class AddressComponentTestApi {
     return component_->GetNodeForType(field_type);
   }
 
+  // Return the int representation of the merge mode for the component.
+  int GetMergeMode() const { return component_->merge_mode_; }
+
  private:
   raw_ref<AddressComponent> component_;
 };

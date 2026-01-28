@@ -168,8 +168,8 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_ZIP_PREFIX:
     case ADDRESS_HOME_ZIP_SUFFIX:
     case DELIVERY_INSTRUCTIONS:
-      return std::make_unique<AddressComponent>(type, std::move(children),
-                                                MergeMode::kDefault);
+      // TODO(crbug.com/447111009) Restore `kDefault` merge mode.
+      return std::make_unique<AddressComponent>(type, std::move(children));
     case NO_SERVER_DATA:
     case UNKNOWN_TYPE:
     case EMPTY_TYPE:
