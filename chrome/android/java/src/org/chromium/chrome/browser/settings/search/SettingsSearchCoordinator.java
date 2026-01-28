@@ -666,20 +666,28 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
             mHandler.post(this::updateSingleColumnSearchUiWidth);
             return;
         }
-        int appBarWidth = mActivity.findViewById(R.id.app_bar_layout).getWidth();
-        View searchBox = mActivity.findViewById(R.id.search_box);
-        View query = mActivity.findViewById(R.id.search_query_container);
 
-        int minWidePadding = getPixelSize(R.dimen.settings_wide_display_min_padding);
-        int padding =
-                ViewResizerUtil.computePaddingForWideDisplay(mActivity, searchBox, minWidePadding);
-        int settingsMargin = padding;
-        if (padding > minWidePadding) settingsMargin += getPixelSize(R.dimen.settings_item_margin);
+        View appBar = mActivity.findViewById(R.id.app_bar_layout);
+        appBar.post(
+                () -> {
+                    int appBarWidth = appBar.getWidth();
+                    View searchBox = mActivity.findViewById(R.id.search_box);
+                    View query = mActivity.findViewById(R.id.search_query_container);
 
-        int searchBoxWidth = appBarWidth - settingsMargin * 2;
-        int queryWidth = searchBoxWidth - menuView.getWidth();
-        updateView(searchBox, settingsMargin, settingsMargin, searchBoxWidth);
-        updateView(query, settingsMargin, settingsMargin, queryWidth);
+                    int minWidePadding = getPixelSize(R.dimen.settings_wide_display_min_padding);
+                    int padding =
+                            ViewResizerUtil.computePaddingForWideDisplay(
+                                    mActivity, searchBox, minWidePadding);
+                    int settingsMargin = padding;
+                    if (padding > minWidePadding) {
+                        settingsMargin += getPixelSize(R.dimen.settings_item_margin);
+                    }
+
+                    int searchBoxWidth = appBarWidth - settingsMargin * 2;
+                    int queryWidth = searchBoxWidth - menuView.getWidth();
+                    updateView(searchBox, settingsMargin, settingsMargin, searchBoxWidth);
+                    updateView(query, settingsMargin, settingsMargin, queryWidth);
+                });
     }
 
     /** Show/hide search bar UI. */
