@@ -45,6 +45,7 @@
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -98,6 +99,29 @@ std::vector<std::string> GetTargetUrlsWithoutPorts(
                : "<missing field>";
   });
 }
+
+// Gets all targets as a list from the context.
+// This method also filters out targets with "chrome://" URLs, such as the
+// internal WebUI toolbar, to ensure tests are robust against the presence of
+// these internal targets.
+base::Value::List RunGetTargets(
+    content::BrowserContext* context,
+    api_test_utils::FunctionMode mode = api_test_utils::FunctionMode::kNone) {
+  auto get_targets_function =
+      base::MakeRefCounted<DebuggerGetTargetsFunction>();
+  std::optional<base::Value> value =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          get_targets_function.get(), "[]", context, mode);
+  EXPECT_THAT(
+      value, testing::Optional(testing::Property(&base::Value::is_list, true)));
+  base::Value::List targets = std::move(*value).TakeList();
+  targets.EraseIf([](const base::Value& target) {
+    const std::string* url = target.GetDict().FindString("url");
+    return url && GURL(*url).SchemeIs(content::kChromeUIScheme);
+  });
+  return targets;
+}
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
@@ -698,28 +722,14 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
       embedded_test_server()->GetURL("/simple.html?off_the_record"));
 
   {
-    auto get_targets_function =
-        base::MakeRefCounted<DebuggerGetTargetsFunction>();
-    base::Value value =
-        std::move(*api_test_utils::RunFunctionAndReturnSingleResult(
-            get_targets_function.get(), "[]", profile()));
-
-    ASSERT_TRUE(value.is_list());
-    EXPECT_THAT(std::move(value).TakeList(),
-                ElementsAre(base::test::DictionaryHasValue(
-                    "url", base::Value("about:blank"))));
+    base::Value::List targets = RunGetTargets(profile());
+    EXPECT_THAT(targets, ElementsAre(base::test::DictionaryHasValue(
+                             "url", base::Value("about:blank"))));
   }
 
   {
-    auto get_targets_function =
-        base::MakeRefCounted<DebuggerGetTargetsFunction>();
-    base::Value value =
-        std::move(*api_test_utils::RunFunctionAndReturnSingleResult(
-            get_targets_function.get(), "[]", profile(),
-            api_test_utils::FunctionMode::kIncognito));
-
-    ASSERT_TRUE(value.is_list());
-    const base::ListValue targets = std::move(value).TakeList();
+    const base::Value::List targets =
+        RunGetTargets(profile(), api_test_utils::FunctionMode::kIncognito);
     std::vector<std::string> urls = GetTargetUrlsWithoutPorts(targets);
     EXPECT_THAT(urls, testing::UnorderedElementsAre(
                           "about:blank",
@@ -935,16 +945,10 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
       web_contents->GetPrimaryMainFrame()));
 
   // Get targets.
-  auto get_targets_function =
-      base::MakeRefCounted<DebuggerGetTargetsFunction>();
-  base::Value get_targets_result =
-      std::move(*api_test_utils::RunFunctionAndReturnSingleResult(
-          get_targets_function.get(), "[]", profile()));
-  ASSERT_TRUE(get_targets_result.is_list());
+  base::Value::List targets = RunGetTargets(profile());
 
   // Verify that the inner PDF frames aren't targets in the list. Only the PDF
   // embedder frame (the main frame) should be a target.
-  const base::ListValue targets = std::move(get_targets_result).TakeList();
   ASSERT_THAT(targets, testing::SizeIs(1));
 
   // Verify that the target is the PDF embedder frame.
