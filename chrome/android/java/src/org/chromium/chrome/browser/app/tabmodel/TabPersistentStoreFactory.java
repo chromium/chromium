@@ -9,6 +9,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
@@ -27,6 +29,22 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
  */
 @NullMarked
 public class TabPersistentStoreFactory {
+    // A migration manager which always assumes no migration is required.
+    private static final PersistentStoreMigrationManager sDefaultManager =
+            new PersistentStoreMigrationManager() {
+                @Override
+                public @StoreType int getAuthoritativeStoreType() {
+                    return StoreType.LEGACY;
+                }
+
+                @Override
+                public @StoreType int getShadowStoreType() {
+                    return TabStateStorageFlagHelper.isTabStorageEnabled()
+                            ? StoreType.TAB_STATE_STORE
+                            : StoreType.INVALID;
+                }
+            };
+
     /**
      * Builds an authoritative {@link TabPersistentStore}.
      *
@@ -34,29 +52,49 @@ public class TabPersistentStoreFactory {
      * writing to the disk for the associated {@link TabModelSelector}.
      *
      * @param clientTag The client tag used to record metrics for this specific store instance.
+     * @param migrationManager Determines which implementation of {@link TabPersistentStore} to
+     *     return. If null, use fallback logic.
      * @param tabPersistencePolicy The {@link TabPersistencePolicy} to use for the window.
      * @param tabModelSelector The selector to observe and manage persistence for.
      * @param tabCreatorManager Used to create new tabs during state restoration.
      * @param tabWindowManager Used to coordinate tab state across multiple windows.
+     * @param windowTag The unique identifier for the window instance.
      * @param cipherFactory Used for encrypting and decrypting tab state files.
      * @param recordLegacyTabCountMetrics Whether to record legacy metrics regarding tab counts.
      */
     public static TabPersistentStore buildAuthoritativeStore(
             String clientTag,
+            @Nullable PersistentStoreMigrationManager migrationManager,
             TabPersistencePolicy tabPersistencePolicy,
             TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
             TabWindowManager tabWindowManager,
+            String windowTag,
             CipherFactory cipherFactory,
             boolean recordLegacyTabCountMetrics) {
-        return new TabPersistentStoreImpl(
-                clientTag,
-                tabPersistencePolicy,
-                tabModelSelector,
-                tabCreatorManager,
-                tabWindowManager,
-                cipherFactory,
-                recordLegacyTabCountMetrics);
+        if (migrationManager == null) migrationManager = sDefaultManager;
+
+        @StoreType int storeType = migrationManager.getAuthoritativeStoreType();
+        if (storeType == StoreType.LEGACY) {
+            return new TabPersistentStoreImpl(
+                    clientTag,
+                    tabPersistencePolicy,
+                    tabModelSelector,
+                    tabCreatorManager,
+                    tabWindowManager,
+                    cipherFactory,
+                    recordLegacyTabCountMetrics);
+        } else if (storeType == StoreType.TAB_STATE_STORE) {
+            assert TabStateStorageFlagHelper.isTabStorageEnabled();
+            assert TabStateStorageFlagHelper.isStorageAuthoritative();
+            return new TabStateStore(
+                    tabModelSelector,
+                    windowTag,
+                    tabCreatorManager,
+                    tabPersistencePolicy,
+                    cipherFactory);
+        }
+        throw new IllegalStateException();
     }
 
     /**
@@ -70,6 +108,8 @@ public class TabPersistentStoreFactory {
      * updated post-native, which may result in stale flag data being used to determine which
      * implementation to use.
      *
+     * @param migrationManager Determines which implementation of {@link TabPersistentStore} to
+     *     return. If null, use fallback logic.
      * @param regularShadowTabCreator The accumulator for regular tabs loaded by the shadow store.
      * @param incognitoShadowTabCreator The accumulator for incognito tabs loaded by the shadow
      *     store.
@@ -83,6 +123,7 @@ public class TabPersistentStoreFactory {
      *     is for.
      */
     public static @Nullable TabPersistentStore buildShadowStore(
+            @Nullable PersistentStoreMigrationManager migrationManager,
             AccumulatingTabCreator regularShadowTabCreator,
             AccumulatingTabCreator incognitoShadowTabCreator,
             TabModelSelector selector,
@@ -95,6 +136,7 @@ public class TabPersistentStoreFactory {
                 incognito -> incognito ? incognitoShadowTabCreator : regularShadowTabCreator;
 
         return buildShadowStoreInternal(
+                migrationManager,
                 shadowTabCreatorManager,
                 selector,
                 tabPersistencePolicy,
@@ -117,6 +159,8 @@ public class TabPersistentStoreFactory {
      * updated post-native, which may result in stale flag data being used to determine which
      * implementation to use.
      *
+     * @param migrationManager Determines which implementation of {@link TabPersistentStore} to
+     *     return. If null, use fallback logic.
      * @param regularShadowTabCreator The accumulator for regular tabs loaded by the shadow store.
      * @param selector The selector associated with the store.
      * @param tabPersistencePolicy The tab persistence to use for the shadow store.
@@ -127,6 +171,7 @@ public class TabPersistentStoreFactory {
      *     is for.
      */
     public static @Nullable TabPersistentStore buildNonOtrShadowStore(
+            @Nullable PersistentStoreMigrationManager migrationManager,
             AccumulatingTabCreator regularShadowTabCreator,
             TabModelSelector selector,
             TabPersistencePolicy tabPersistencePolicy,
@@ -140,6 +185,7 @@ public class TabPersistentStoreFactory {
                 };
 
         return buildShadowStoreInternal(
+                migrationManager,
                 shadowTabCreatorManager,
                 selector,
                 tabPersistencePolicy,
@@ -151,6 +197,7 @@ public class TabPersistentStoreFactory {
     }
 
     private static @Nullable TabPersistentStore buildShadowStoreInternal(
+            @Nullable PersistentStoreMigrationManager migrationManager,
             TabCreatorManager shadowTabCreatorManager,
             TabModelSelector selector,
             TabPersistencePolicy tabPersistencePolicy,
@@ -159,7 +206,9 @@ public class TabPersistentStoreFactory {
             @Nullable CipherFactory cipherFactory,
             AccumulatingTabCreator regularShadowTabCreator,
             String orchestratorTag) {
-        if (!TabStateStorageFlagHelper.isTabStorageEnabled()) return null;
+        if (migrationManager == null) migrationManager = sDefaultManager;
+        if (migrationManager.getShadowStoreType() != StoreType.TAB_STATE_STORE) return null;
+        assert TabStateStorageFlagHelper.isTabStorageEnabled();
 
         TabPersistentStore shadowTabPersistentStore =
                 new TabStateStore(

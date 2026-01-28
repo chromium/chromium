@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -411,13 +412,20 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         // Intentional no-op.
                     }
                 };
+
+        PersistentStoreMigrationManager migrationManager =
+                mTabWindowManager.getArchivedPersistentStoreMigrationManager();
+        assert migrationManager != null;
+
         mTabPersistentStore =
                 buildAuthoritativeStore(
                         TabPersistentStoreImpl.CLIENT_TAG_ARCHIVED,
+                        migrationManager,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         mArchivedTabCreatorManager,
                         mTabWindowManager,
+                        ARCHIVED_WINDOW_TAG,
                         cipherFactory,
                         /* recordLegacyTabCountMetrics= */ false);
 
@@ -578,8 +586,13 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         mTabGroupSyncService);
         mTabArchiver.addObserver(mTabArchiverObserver);
 
+        PersistentStoreMigrationManager migrationManager =
+                mTabWindowManager.getArchivedPersistentStoreMigrationManager();
+        assert migrationManager != null;
+
         mShadowTabPersistentStore =
                 buildNonOtrShadowStore(
+                        migrationManager,
                         mShadowTabCreator,
                         mTabModelSelector,
                         mTabPersistencePolicy,

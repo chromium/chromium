@@ -254,12 +254,15 @@ public class TabWindowManagerImpl implements TabWindowManager {
             return mWindowIdToDeps.get(windowId).selector;
         }
 
+        PersistentStoreMigrationManager migrationManager =
+                new PersistentStoreMigrationManagerImpl(String.valueOf(windowId));
+
         Pair<TabModelSelector, Destroyable> pair =
-                mSelectorFactory.buildHeadlessSelector(windowId, profile);
+                mSelectorFactory.buildHeadlessSelector(windowId, profile, migrationManager);
         TabModelSelector selector = pair.first;
         mHeadlessAssignments.put(selector, pair.second);
         mSelectorsToWindowId.put(selector, windowId);
-        addDepForWindow(windowId, selector);
+        mWindowIdToDeps.put(windowId, new WindowDeps(migrationManager, selector));
 
         for (Observer obs : mObservers) obs.onTabModelSelectorAdded(selector);
         return selector;
@@ -539,6 +542,18 @@ public class TabWindowManagerImpl implements TabWindowManager {
     public @Nullable TabModelSelector getTabModelSelectorById(@WindowId int windowId) {
         WindowDeps windowDeps = mWindowIdToDeps.get(windowId);
         return windowDeps == null ? null : windowDeps.selector;
+    }
+
+    @Override
+    public @Nullable PersistentStoreMigrationManager getPersistentStoreMigrationManagerById(
+            @WindowId int windowId) {
+        WindowDeps windowDeps = mWindowIdToDeps.get(windowId);
+        return windowDeps == null ? null : windowDeps.manager;
+    }
+
+    @Override
+    public @Nullable PersistentStoreMigrationManager getArchivedPersistentStoreMigrationManager() {
+        return mArchivedTabModelDeps == null ? null : mArchivedTabModelDeps.manager;
     }
 
     @Override

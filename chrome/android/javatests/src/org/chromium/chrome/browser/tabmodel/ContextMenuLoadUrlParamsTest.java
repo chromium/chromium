@@ -144,7 +144,9 @@ public class ContextMenuLoadUrlParamsTest {
 
                     @Override
                     public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                            @WindowId int windowId, Profile profile) {
+                            @WindowId int windowId,
+                            Profile profile,
+                            PersistentStoreMigrationManager migrationManager) {
                         return Pair.create(null, null);
                     }
                 });

@@ -106,6 +106,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -507,7 +508,9 @@ public class MultiInstanceManagerApi31UnitTest {
 
                     @Override
                     public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                            @WindowId int windowId, Profile profile) {
+                            @WindowId int windowId,
+                            Profile profile,
+                            PersistentStoreMigrationManager migrationManager) {
                         return Pair.create(
                                 new MockTabModelSelector(
                                         mProfile,

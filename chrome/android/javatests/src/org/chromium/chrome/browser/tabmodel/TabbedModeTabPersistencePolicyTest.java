@@ -110,7 +110,9 @@ public class TabbedModeTabPersistencePolicyTest {
 
                     @Override
                     public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                            @WindowId int windowId, Profile profile) {
+                            @WindowId int windowId,
+                            Profile profile,
+                            PersistentStoreMigrationManager migrationManager) {
                         return Pair.create(null, null);
                     }
                 });

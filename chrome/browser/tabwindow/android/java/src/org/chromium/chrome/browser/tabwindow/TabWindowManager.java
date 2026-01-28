@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -189,6 +190,22 @@ public interface TabWindowManager {
      * @return Specified {@link TabModelSelector} or {@code null} if not found.
      */
     @Nullable TabModelSelector getTabModelSelectorById(@WindowId int windowId);
+
+    /**
+     * Finds the {@link PersistentStoreMigrationManager} bound to an Activity instance of a given
+     * id.
+     *
+     * @param windowId The window id of {@link PersistentStoreMigrationManager} to get.
+     * @return Specified {@link PersistentStoreMigrationManager} or {@code null} if not found.
+     */
+    @Nullable PersistentStoreMigrationManager getPersistentStoreMigrationManagerById(
+            @WindowId int windowId);
+
+    /**
+     * Get the {@link PersistentStoreMigrationManager} associated with the archived {@link
+     * TabModelSelector}.
+     */
+    @Nullable PersistentStoreMigrationManager getArchivedPersistentStoreMigrationManager();
 
     /**
      * Finds the Window ID associated with a {@link TabModelSelector}. If it is not associated with

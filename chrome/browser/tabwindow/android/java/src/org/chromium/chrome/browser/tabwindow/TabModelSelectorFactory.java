@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -46,8 +47,11 @@ public interface TabModelSelectorFactory {
      *
      * @param windowId Used to decide what files to load.
      * @param profile The current regular profile.
+     * @param migrationManager The migration manager for the window.
      * @return The created tab model selector and a mechanism to shut it down.
      */
     Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-            @WindowId int windowId, Profile profile);
+            @WindowId int windowId,
+            Profile profile,
+            PersistentStoreMigrationManager migrationManager);
 }

@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator.CUSTOM_WINDOW_PREFIX;
+import static org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator.getCustomTabsWindowTag;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_TASK_ID;
 
@@ -91,7 +91,7 @@ public class TabStoragePackager {
         public static TabModelInfo createForCustomTabModel(
                 int taskId, boolean isOffTheRecord, Supplier<@Nullable Tab> activeTabSupplier) {
             return new TabModelInfo(
-                    CUSTOM_WINDOW_PREFIX + taskId,
+                    getCustomTabsWindowTag(taskId),
                     isOffTheRecord,
                     TabModelType.CUSTOM,
                     activeTabSupplier);
