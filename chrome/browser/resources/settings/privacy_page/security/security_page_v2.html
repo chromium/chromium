@@ -421,6 +421,10 @@
         sub-label="$i18n{securityPasswordsLeakDetectionDesc}"
         on-change="onPasswordsLeakToggleChange_">
     </settings-toggle-button>
+    <template is="dom-if" if="[[!enableBundledSecuritySettingsSecureDnsV2_]]">
+      <settings-secure-dns id="secureDnsRow" prefs="{{prefs}}" class="no-hr">
+      </settings-secure-dns>
+    </template>
     <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
       <cr-link-row id="securityKeysSubpageTrigger"
           label="$i18n{securityKeysTitle}" sub-label="$i18n{securityKeysDesc}"

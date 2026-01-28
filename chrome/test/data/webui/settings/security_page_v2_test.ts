@@ -444,10 +444,13 @@ suite('Main', function() {
   });
 
   test('SecureDnsV2HiddenWhenFlagDisabled', function() {
-    // Secure DNS V2 is hidden.
+    // Secure DNS V2 row is hidden.
     assertFalse(
         loadTimeData.getBoolean('enableBundledSecuritySettingsSecureDnsV2'));
     assertFalse(isChildVisible(page, '#secureDnsV2Row'));
+
+    // Old Secure DNS row is visible.
+    assertTrue(isChildVisible(page, '#secureDnsRow'));
   });
 
   test('SecureDnsV2VisibleWhenFlagEnabled', async function() {
@@ -457,10 +460,13 @@ suite('Main', function() {
     resetRouterForTesting();
 
     await setUpPage();
-    // Secure DNS V2 is visible.
+    // Secure DNS V2 row is visible.
     assertTrue(
         loadTimeData.getBoolean('enableBundledSecuritySettingsSecureDnsV2'));
     assertTrue(isChildVisible(page, '#secureDnsV2Row'));
+
+    // Old Secure DNS row is hidden.
+    assertFalse(isChildVisible(page, '#secureDnsRow'));
   });
 });
 

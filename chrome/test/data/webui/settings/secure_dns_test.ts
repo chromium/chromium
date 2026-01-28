@@ -12,7 +12,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SecureDnsInputElement, SettingsSecureDnsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement, SecureDnsInputElement, SettingsSecureDnsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
 import {SecureDnsResolverType} from 'chrome://settings/lazy_load.js';
 import type {ResolverOption} from 'chrome://settings/settings.js';
 import {PrivacyPageBrowserProxyImpl, loadTimeData, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
@@ -174,9 +174,9 @@ suite('SettingsSecureDns', function() {
     testElement.remove();
   });
 
-  function getResolverOptions(): HTMLElement {
-    const options =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#resolverOptions');
+  function getResolverOptions(): CrCollapseElement {
+    const options = testElement.shadowRoot!.querySelector<CrCollapseElement>(
+        '#resolverOptions');
     assertTrue(!!options);
     return options;
   }
@@ -190,7 +190,7 @@ suite('SettingsSecureDns', function() {
     flush();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
     assertFalse(secureDnsToggle.$.control.disabled);
-    assertTrue(getResolverOptions().hidden);
+    assertFalse(getResolverOptions().opened);
     assertEquals(
         'none',
         getComputedStyle(testElement.$.secureDnsInputContainer).display);
@@ -237,7 +237,7 @@ suite('SettingsSecureDns', function() {
     flush();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
     assertTrue(secureDnsToggle.$.control.disabled);
-    assertTrue(getResolverOptions().hidden);
+    assertFalse(getResolverOptions().opened);
     assertEquals(managedEnvironmentDescription, secureDnsToggle.subLabel);
     assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
@@ -255,7 +255,7 @@ suite('SettingsSecureDns', function() {
     flush();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
     assertTrue(secureDnsToggle.$.control.disabled);
-    assertTrue(getResolverOptions().hidden);
+    assertFalse(getResolverOptions().opened);
     assertEquals(parentalControlDescription, secureDnsToggle.subLabel);
     assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
@@ -278,7 +278,7 @@ suite('SettingsSecureDns', function() {
     flush();
     assertTrue(secureDnsToggle.hasAttribute('checked'));
     assertTrue(secureDnsToggle.$.control.disabled);
-    assertTrue(getResolverOptions().hidden);
+    assertFalse(getResolverOptions().opened);
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
     assertTrue(!!secureDnsToggle.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));

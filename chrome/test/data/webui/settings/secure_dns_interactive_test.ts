@@ -12,7 +12,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SecureDnsInputElement, SettingsSecureDnsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
+import type {CrCollapseElement, SecureDnsInputElement, SettingsSecureDnsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
 import {SecureDnsResolverType} from 'chrome://settings/lazy_load.js';
 import type {ResolverOption} from 'chrome://settings/settings.js';
 import {loadTimeData, PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
@@ -85,9 +85,9 @@ suite('SettingsSecureDnsInteractive', function() {
     return secureDnsToggle;
   }
 
-  function getResolverOptions(): HTMLElement {
-    const options =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#resolverOptions');
+  function getResolverOptions(): CrCollapseElement {
+    const options = testElement.shadowRoot!.querySelector<CrCollapseElement>(
+        '#resolverOptions');
     assertTrue(!!options);
     return options;
   }
@@ -134,14 +134,14 @@ suite('SettingsSecureDnsInteractive', function() {
     secureDnsToggle.click();
     assertEquals(
         SecureDnsMode.OFF, testElement.prefs.dns_over_https.mode.value);
-    assertTrue(getResolverOptions().hidden);
+    assertFalse(getResolverOptions().opened);
 
     // Click on the secure dns toggle to go back to automatic mode.
     secureDnsToggle.click();
     assertEquals(
         SecureDnsMode.AUTOMATIC, testElement.prefs.dns_over_https.mode.value);
 
-    assertFalse(getResolverOptions().hidden);
+    assertTrue(getResolverOptions().opened);
     assertFalse(focused(testElement.$.secureDnsInput));
     assertTrue(testElement.$.secureDnsInputContainer.hidden);
 
@@ -174,12 +174,12 @@ suite('SettingsSecureDnsInteractive', function() {
     assertEquals(
         SecureDnsMode.OFF, testElement.prefs.dns_over_https.mode.value);
     assertFalse(focused(testElement.$.secureDnsInput));
-    assertTrue(getResolverOptions().hidden);
+    assertFalse(getResolverOptions().opened);
 
     // Click on the secure dns toggle. Focus should be on the custom text field
     // and the mode pref should remain 'off' until the text field is blurred.
     secureDnsToggle.click();
-    assertFalse(getResolverOptions().hidden);
+    assertTrue(getResolverOptions().opened);
     assertTrue(focused(testElement.$.secureDnsInput));
     assertEquals(
         SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
@@ -321,7 +321,7 @@ suite('SettingsSecureDnsInteractive', function() {
 
     // Click on the secure dns toggle to disable secure dns.
     secureDnsToggle.click();
-    assertTrue(getResolverOptions().hidden);
+    assertFalse(getResolverOptions().opened);
     assertEquals(
         SecureDnsMode.OFF, testElement.prefs.dns_over_https.mode.value);
     assertEquals('', testElement.prefs.dns_over_https.templates.value);
@@ -333,7 +333,7 @@ suite('SettingsSecureDnsInteractive', function() {
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
-    assertFalse(getResolverOptions().hidden);
+    assertTrue(getResolverOptions().opened);
     assertEquals(SecureDnsResolverType.AUTOMATIC, dropdownMenu.value);
     assertEquals(
         'block', getComputedStyle(testElement.$.privacyPolicy).display);
