@@ -399,6 +399,117 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Startup.Android.Cold.WithPersistentState.TimeToFirstContentfulPaint3.{StartActivityType}"
+    units="ms" expires_after="2026-06-07">
+  <owner>pasko@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
+  <owner>clhager@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from activity creation on a cold start to FirstContentfulPaint
+    happening in this activity. Cold start is determined by whether the process
+    creation reason is Activity.
+
+    Recorded only for tabbed activity when persistent state is being restored
+    and on cold starts. Therefore it cannot be recorded more than once in the
+    application lifetime.
+
+    Similarly to Startup.Android.Cold.TimeToFirstVisibleContent2 omits recording
+    a sample:
+
+    1. when the first Activity is a CCT/WebAPK/TWA,
+
+    2. when an error page is committed,
+
+    3. for non-http(s) pages,
+
+    4. for downloads,
+
+    5. when another activity was shown and hidden before the first navigation
+    committed,
+
+    6. when the first navigation was preceded by showing a NTP (New Tab Page).
+
+    This v3 metric uses ColdStartTracker and is a rename for
+    Startup.Android.Experimental.FirstContentfulPaint.Tabbed. It otherwise
+    preserves the same semantics and aims to replace the original v1 metric as
+    well.
+
+    NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
+    due to an issue with the recording of BrowserProcessCreationReason affecting
+    ColdStartTracker downstream. {StartActivityType}
+  </summary>
+</histogram>
+
+<histogram
+    name="Startup.Android.Cold.WithPersistentState.TimeToFirstVisibleContent4"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>yfriedman@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>nafisabedin@google.com</owner>
+  <owner>clhager@google.com</owner>
+  <owner>chrome-ds@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from the first Chrome tabbed activity creation to the moment Chrome
+    first appears ready to the user, if the activity was launched by the system
+    with persistent state to be restored.
+
+    This metric captures when the omnibox is painted and either a navigation has
+    committed or a Paint Preview is shown. The intent is to reflect Clank's
+    perceived cold start performance regardless of different launch paths, while
+    controlling for the factors that we have the most direct influence over and
+    minimizing external factors. Note that network connectivity is mostly but
+    not entirely omitted as it does impact the initial response time for a site
+    which impacts the omnibox UX and loading metric.
+
+    This metric captures the value of the first emitted metric out of the
+    'Startup.Android.Cold.TimeToFirstNavigationCommit3.Tabbed' and
+    'Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap' metrics and emits the
+    value, skipping the record when both are missing.
+
+    This metric is only recorded once per application lifetime, and only for the
+    cold starts. An important requirement for the startup to be Cold is that the
+    Tabbed Activity has to be the process creation Reason. See histogram
+    Startup.Android.BrowserProcessCreationReason and code in ColdStartTracker.
+    Determining the process creation reason is only reliable starting at Android
+    P.
+
+    Specifically, it is recorded for the first foreground committed http(s) URL
+    in the primary frame if that first navigation is not: an error,
+    same-document navigation, or fragment navigation.
+
+    This metric is not recorded:
+
+    - If another navigation occurs before the first navigation commit and the
+    Paint Preview show.
+
+    - If the navigation is pre-warmed, is a background navigation, or fails to
+    be committed (e.g. cancelled, network error, or error due to lack of
+    connectivity).
+
+    - If the activity was ever backgrounded between activity creation and this
+    metric reporting.
+
+    - If the app opens to the Chrome Start page.
+
+    - For WebApps, PWAs or WebApks.
+
+    - For NTP.
+
+    This metric is expected be stable from milestone to milestone. Updating
+    Chrome or the Android system image on the device are expected to result in a
+    noticeable slowdown on the first cold startup after.
+
+    This histogram is of special interest to the chrome-ds@. Do not change its
+    semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.Cold.{FirstDrawSurface}.TimeToFirstDraw"
     units="ms" expires_after="2026-05-24">
   <owner>nafisabedin@google.com</owner>

@@ -37,6 +37,8 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
+import java.util.function.Supplier;
+
 /**
  * Records UMA page load metrics for the first navigation on a cold start.
  *
@@ -137,6 +139,7 @@ public class StartupMetricsTracker {
     // The time of the activity onCreate(). All metrics (such as time to first visible content) are
     // reported in uptimeMillis relative to this value.
     private final long mActivityStartTimeMs;
+    private Supplier<Boolean> mIsRestoringPersistentStateSupplier;
     private boolean mFirstVisibleContentRecorded;
     private boolean mTimeToStartupFcpOrPaintPreviewRecorded;
     private @Nullable TabModelSelectorTabObserver mTabObserver;
@@ -154,8 +157,11 @@ public class StartupMetricsTracker {
     private volatile long mFirstSafeBrowsingResponseTimeMicros;
     private boolean mFirstSafeBrowsingResponseTimeRecorded;
 
-    public StartupMetricsTracker(ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+    public StartupMetricsTracker(
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<Boolean> isRestoringPersistentStateSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
+        mIsRestoringPersistentStateSupplier = isRestoringPersistentStateSupplier;
         tabModelSelectorSupplier.addObserver(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
                 this::updateSafeBrowsingCheckTime);
@@ -264,6 +270,7 @@ public class StartupMetricsTracker {
                 });
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mShouldTrack = false;
         mShouldTrackTimeToFirstDraw = false;
@@ -274,6 +281,9 @@ public class StartupMetricsTracker {
         if (mPageObserver != null) {
             PageLoadMetrics.removeObserver(mPageObserver);
             mPageObserver = null;
+        }
+        if (mIsRestoringPersistentStateSupplier != null) {
+            mIsRestoringPersistentStateSupplier = null;
         }
     }
 
@@ -320,17 +330,33 @@ public class StartupMetricsTracker {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
             recordExperimentalHistogram("FirstContentfulPaint", firstFcpMs);
-            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                    "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
+            if (mIsRestoringPersistentStateSupplier != null
+                    && mIsRestoringPersistentStateSupplier.get()) {
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                        "Startup.Android.Cold.WithPersistentState."
+                                + "TimeToFirstContentfulPaint3.Tabbed",
+                        firstFcpMs);
+            } else {
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                        "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
+            }
             recordTimeToStartupFcpOrPaintPreview(firstFcpMs);
         }
     }
 
     private void recordTimeToFirstVisibleContent(long durationMs) {
         if (mFirstVisibleContentRecorded) return;
+
         mFirstVisibleContentRecorded = true;
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Startup.Android.Cold.TimeToFirstVisibleContent4", durationMs);
+        if (mIsRestoringPersistentStateSupplier != null
+                && mIsRestoringPersistentStateSupplier.get()) {
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                    "Startup.Android.Cold.WithPersistentState.TimeToFirstVisibleContent4",
+                    durationMs);
+        } else {
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                    "Startup.Android.Cold.TimeToFirstVisibleContent4", durationMs);
+        }
     }
 
     private void recordFirstSafeBrowsingResponseTime() {
