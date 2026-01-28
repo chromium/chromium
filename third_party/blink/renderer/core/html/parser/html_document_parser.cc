@@ -1385,6 +1385,8 @@ void HTMLDocumentParser::ParseDocumentFragment(
       parts_allowed = DOMPartsAllowed::kAlways;
     }
     parser->tree_builder_->SetDOMPartsAllowedState(parts_allowed);
+    parser->tokenizer_.SetShouldAllowDOMParts(parts_allowed !=
+                                              DOMPartsAllowed::kNever);
   }
 
   parser->Append(source);
