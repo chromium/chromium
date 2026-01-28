@@ -591,8 +591,9 @@ void HttpStreamPool::AttemptManager::CancelJobs(
 
 void HttpStreamPool::AttemptManager::CompleteQuicAttempt(
     int result,
-    base::optional_ref<NetErrorDetails> net_error_details) {
-  if (quic_attempt_result_.has_value()) {
+    base::optional_ref<NetErrorDetails> net_error_details,
+    bool overwrite_old_result) {
+  if (quic_attempt_result_.has_value() && !overwrite_old_result) {
     CHECK(!quic_attempt_);
     CHECK_NE(result, OK)
         << "QUIC attempt should not be completed with OK more than once";
@@ -1182,7 +1183,8 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
         "Net.HttpStreamPool.ExistingQuicSessionFoundTime",
         base::TimeTicks::Now() - dns_resolution_start_time_);
 
-    CompleteQuicAttempt(OK);
+    CompleteQuicAttempt(OK, /*net_error_details=*/std::nullopt,
+                        /*overwrite_old_result=*/true);
     HandleQuicSessionReady(quic_session,
                            StreamSocketCloseReason::kUsingExistingQuicSession);
 

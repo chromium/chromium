@@ -5085,6 +5085,93 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailNoRemainingJobs) {
   EXPECT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
 }
 
+// Test the case where a QUIC attempt initially fails, but then an existing
+// matching QUIC session is found, when a AAAA record trickles in.
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailThenFindMatchingSession) {
+  constexpr std::string_view kAltDestination = "https://alt.example.org";
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  // Set up an alt-service QUIC session to kCommonEndPoint.
+
+  AddQuicData();
+
+  // Make the TCP attempt stalled forever.
+  SequencedSocketData tcp_data;
+  tcp_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  EXPECT_THAT(requester1.WaitForResult(), IsOk());
+  EXPECT_EQ(requester1.negotiated_protocol(), NextProto::kProtoQUIC);
+
+  // Set up another request that gets a QUIC HTTPS DNS record, the QUIC
+  // connection to which fails, but then later gets a AAAA record that allows
+  // reusing the initial QUIC session.
+
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request2 =
+      resolver()->AddFakeRequest();
+
+  StreamRequester requester2;
+  requester2.set_destination(kAltDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester2.result().has_value());
+
+  // HTTPS record received.
+  endpoint_request2
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v4("127.0.0.1")
+                         .set_alpn(quic_version())
+                         .endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  // QUIC attempt fails.
+  quic_completer.WaitForConnectAndComplete(ERR_CONNECTION_REFUSED);
+  // Run all PostTasks, except delayed ones/timers. This is so that the QUIC
+  // layer can process all tasks related to the network error, and pass the
+  // error up to the AttemptManager.
+  FastForwardBy(base::Milliseconds(1));
+  ASSERT_FALSE(requester2.result().has_value());
+
+  // AAAA record received, which allows aliasing to the QUIC session created by
+  // the initial request.
+  endpoint_request2
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  EXPECT_THAT(requester2.WaitForResult(), IsOk());
+  EXPECT_EQ(requester2.negotiated_protocol(), NextProto::kProtoQUIC);
+
+  // Check that both QUIC keys correspond to the same session.
+  QuicSessionAliasKey quic_key1 =
+      requester1.GetStreamKey().CalculateQuicSessionAliasKey();
+  QuicSessionAliasKey quic_key2 =
+      requester2.GetStreamKey().CalculateQuicSessionAliasKey();
+  ASSERT_EQ(quic_session_pool()->FindExistingSession(quic_key1.session_key(),
+                                                     quic_key1.destination()),
+            quic_session_pool()->FindExistingSession(quic_key2.session_key(),
+                                                     quic_key2.destination()));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicFailNonBrokenErrors) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
