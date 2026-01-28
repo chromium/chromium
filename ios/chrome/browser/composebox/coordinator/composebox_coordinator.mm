@@ -112,6 +112,14 @@
   _navigationMediator.consumer = _viewController;
   _navigationMediator.delegate = self;
 
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    _debuggerCoordinator = [[ComposeboxDebuggerCoordinator alloc]
+        initWithBaseViewController:_viewController
+                           browser:self.browser];
+    _debuggerCoordinator.delegate = self;
+    [_debuggerCoordinator start];
+  }
+
   _aimComposeboxCoordinator = [[ComposeboxInputPlateCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -121,6 +129,7 @@
                            theme:[self createTheme]
                       modeHolder:_modeHolder];
   _aimComposeboxCoordinator.omniboxPopupPresenterDelegate = _viewController;
+  _aimComposeboxCoordinator.debugLogger = _debuggerCoordinator;
   [_aimComposeboxCoordinator start];
 
   [_viewController
@@ -130,14 +139,10 @@
     [self checkClipboardContent];
   }
 
-  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
-    _debuggerCoordinator = [[ComposeboxDebuggerCoordinator alloc]
-        initWithBaseViewController:_viewController
-                           browser:self.browser];
-    _debuggerCoordinator.delegate = self;
-    [_debuggerCoordinator start];
-  }
-
+  [_debuggerCoordinator
+      logEvent:[ComposeboxDebuggerEvent
+                   composeboxGeneralEvent:composebox_debugger::event::
+                                              Composebox::kOpened]];
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
@@ -170,6 +175,12 @@
 
 - (void)cleanup {
   _viewController = nil;
+
+  [_debuggerCoordinator
+      logEvent:[ComposeboxDebuggerEvent
+                   composeboxGeneralEvent:composebox_debugger::event::
+                                              Composebox::kClosed]];
+  [_debuggerCoordinator stop];
 
   [_aimComposeboxCoordinator stop];
   _aimComposeboxCoordinator = nil;

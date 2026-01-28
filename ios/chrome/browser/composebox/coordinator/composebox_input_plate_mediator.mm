@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
+#import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
@@ -202,6 +203,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL _isIncognito;
   // Whether the mediator is currently updating the compact mode.
   BOOL _isUpdatingCompactMode;
+  // Whether it is in compact mode.
+  BOOL _compact;
   // Whether the omnibox has text inputted.
   BOOL _hasText;
   // Whether a successful navigation has started.
@@ -337,8 +340,18 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - ComposeboxInputPlateMutator
 
+// Removes an item from the collection.
 - (void)removeItem:(ComposeboxInputItem*)item {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  [self.debugLogger
+      logEvent:[ComposeboxDebuggerEvent
+                   queryAttachmentEvent:composebox_debugger::event::
+                                            QueryAttachment::kRemoved
+                               withType:[self attachmentEventTypeForItem:item]
+                                  title:[self
+                                            attachmentEventTitleForItem:item]]];
+
   [_items removeItem:item];
 
   if (_contextualSearchSession) {
@@ -422,7 +435,7 @@ CreateInputDataFromAnnotatedPageContent(
                                           kComposeboxInputItemTypeFile
                               assetID:assetID];
   item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
-  [_items addItem:item];
+  [self addItem:item];
   base::UnguessableToken identifier = item.identifier;
 
   // Read the data in the background then call `onDataReadForItem`.
@@ -457,7 +470,7 @@ CreateInputDataFromAnnotatedPageContent(
       initWithComposeboxInputItemType:ComposeboxInputItemType::
                                           kComposeboxInputItemTypeImage
                               assetID:assetID];
-  [_items addItem:item];
+  [self addItem:item];
   __block base::UnguessableToken identifier = item.identifier;
 
   __weak __typeof(self) weakSelf = self;
@@ -616,7 +629,7 @@ CreateInputDataFromAnnotatedPageContent(
   base::UnguessableToken identifier = item.identifier;
   _latestTabSelectionMapping[identifier] = webState->GetUniqueIdentifier();
 
-  [_items addItem:item];
+  [self addItem:item];
 
   if (_faviconLoader) {
     __weak __typeof(self) weakSelf = self;
@@ -821,7 +834,7 @@ CreateInputDataFromAnnotatedPageContent(
 
   switch (fileUploadStatus) {
     case contextual_search::FileUploadStatus::kUploadSuccessful:
-      item.state = ComposeboxInputItemState::kLoaded;
+      [self setState:ComposeboxInputItemState::kLoaded onItem:item];
       break;
     case contextual_search::FileUploadStatus::kUploadFailed:
     case contextual_search::FileUploadStatus::kValidationFailed:
@@ -842,6 +855,65 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - Private
+
+// Adds an item to the collection.
+- (void)addItem:(ComposeboxInputItem*)item {
+  [self.debugLogger
+      logEvent:[ComposeboxDebuggerEvent
+                   queryAttachmentEvent:composebox_debugger::event::
+                                            QueryAttachment::kAdded
+                               withType:[self attachmentEventTypeForItem:item]
+                                  title:[self
+                                            attachmentEventTitleForItem:item]]];
+  [_items addItem:item];
+}
+
+// Sets the state for a given item.
+- (void)setState:(ComposeboxInputItemState)state
+          onItem:(ComposeboxInputItem*)item {
+  item.state = state;
+
+  composebox_debugger::event::QueryAttachment eventType;
+  switch (state) {
+    case ComposeboxInputItemState::kUploading:
+      eventType = composebox_debugger::event::QueryAttachment::kAdded;
+      break;
+    case ComposeboxInputItemState::kLoaded:
+      eventType = composebox_debugger::event::QueryAttachment::
+          kUploadCompletedSuccessfully;
+      break;
+    case ComposeboxInputItemState::kError:
+      eventType = composebox_debugger::event::QueryAttachment::kUploadFailed;
+      break;
+    default:
+      return;
+  }
+
+  [self.debugLogger
+      logEvent:[ComposeboxDebuggerEvent
+                   queryAttachmentEvent:eventType
+                               withType:[self attachmentEventTypeForItem:item]
+                                  title:[self
+                                            attachmentEventTitleForItem:item]]];
+}
+
+// Returns the attachment evewnt title for a given item.
+- (NSString*)attachmentEventTitleForItem:(ComposeboxInputItem*)item {
+  return base::SysUTF8ToNSString(item.identifier.ToString());
+}
+
+// Returns the attachment type for a given item.
+- (composebox_debugger::AttachmentType)attachmentEventTypeForItem:
+    (ComposeboxInputItem*)item {
+  switch (item.type) {
+    case ComposeboxInputItemType::kComposeboxInputItemTypeImage:
+      return composebox_debugger::AttachmentType::kImage;
+    case ComposeboxInputItemType::kComposeboxInputItemTypeFile:
+      return composebox_debugger::AttachmentType::kFile;
+    case ComposeboxInputItemType::kComposeboxInputItemTypeTab:
+      return composebox_debugger::AttachmentType::kTab;
+  }
+}
 
 // Helper for `-attachSelectedTabsWithWebStateIDs:cachedWebStateIDs:`. Attaches
 // the selected tabs. `cachedWebStateIDs` contains the IDs of the tabs that have
@@ -1081,7 +1153,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   if (!image) {
-    item.state = ComposeboxInputItemState::kError;
+    [self setState:ComposeboxInputItemState::kError onItem:item];
     [self.consumer updateState:item.state
          forItemWithIdentifier:item.identifier];
     return;
@@ -1106,7 +1178,7 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
 
-  item.state = ComposeboxInputItemState::kUploading;
+  [self setState:ComposeboxInputItemState::kUploading onItem:item];
   [self.consumer updateState:item.state forItemWithIdentifier:item.identifier];
 
   if (!item.previewImage) {
@@ -1221,14 +1293,14 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   if (!data) {
-    item.state = ComposeboxInputItemState::kError;
+    [self setState:ComposeboxInputItemState::kError onItem:item];
     [self.consumer updateState:item.state
          forItemWithIdentifier:item.identifier];
     return;
   }
 
   // Start the file upload immediately.
-  item.state = ComposeboxInputItemState::kUploading;
+  [self setState:ComposeboxInputItemState::kUploading onItem:item];
   [self.consumer updateState:item.state forItemWithIdentifier:item.identifier];
 
   if (_contextualSearchSession) {
@@ -1425,7 +1497,16 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)handleFailedAttachment:(base::UnguessableToken)identifier {
   [self.delegate showSnackbarForItemUploadDidFail];
-  [self removeItem:[_items itemForIdentifier:identifier]];
+  ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
+  [self.debugLogger
+      logEvent:[ComposeboxDebuggerEvent
+                   queryAttachmentEvent:composebox_debugger::event::
+                                            QueryAttachment::kUploadFailed
+                               withType:[self attachmentEventTypeForItem:item]
+                                  title:[self
+                                            attachmentEventTitleForItem:item]]];
+
+  [self removeItem:item];
 }
 
 - (void)updateButtonsVisibility {
@@ -1568,7 +1649,18 @@ CreateInputDataFromAnnotatedPageContent(
 /// Updates the consumer whether to show in compact mode.
 - (void)updateCompactMode {
   BOOL compact = [self compactModeRequired];
+  if (compact != _compact) {
+    [self.debugLogger
+        logEvent:[ComposeboxDebuggerEvent
+                     composeboxGeneralEvent:
+                         compact ? composebox_debugger::event::Composebox::
+                                       kCompactModeEnabled
+                                 : composebox_debugger::event::Composebox::
+                                       kCompactModeDisabled]];
+  }
+
   [self.consumer setCompact:compact];
+  _compact = compact;
 }
 
 // Pushes the batched UI updates to the consumer.

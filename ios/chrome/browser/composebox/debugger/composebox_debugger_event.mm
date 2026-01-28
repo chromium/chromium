@@ -102,6 +102,8 @@ NSString* GetEventDescription(composebox_debugger::event::Composebox event) {
       return @"Composebox view compact mode disabled";
     case kTabPickerShown:
       return @"Tab picker shown to user";
+    case kTabPickerHidden:
+      return @"Tab picker was hidden";
     case kCameraViewFinderShown:
       return @"Camera view finder shown to user";
     case kTabPickerSwipeDismiss:

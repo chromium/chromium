@@ -10,6 +10,7 @@ source_set("debugger") {
     "composebox_debugger_coordinator.mm",
     "composebox_debugger_event.h",
     "composebox_debugger_event.mm",
+    "composebox_debugger_logger.h",
   ]
   deps = [
     "//base",

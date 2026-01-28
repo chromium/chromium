@@ -64,6 +64,7 @@ enum class Composebox {
   kCompactModeEnabled,
   kCompactModeDisabled,
   kTabPickerShown,
+  kTabPickerHidden,
   kCameraViewFinderShown,
   kTabPickerSwipeDismiss,
 };

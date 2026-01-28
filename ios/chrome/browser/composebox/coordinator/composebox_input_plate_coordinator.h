@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/composebox_tab_picker_commands.h"
 
+@protocol ComposeboxDebuggerLogger;
 @class ComposeboxInputPlateViewController;
 enum class ComposeboxEntrypoint;
 @class ComposeboxModeHolder;
@@ -27,6 +28,9 @@ class Browser;
 // Delegate for positioning the omnibox popup.
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     omniboxPopupPresenterDelegate;
+
+// Delegate for logging events.
+@property(nonatomic, weak) id<ComposeboxDebuggerLogger> debugLogger;
 
 /// Init the composebox opened from `entrypoint` with an optional `query` in
 /// the omnibox.

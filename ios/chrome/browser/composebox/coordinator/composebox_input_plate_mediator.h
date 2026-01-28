@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 
+@protocol ComposeboxDebuggerLogger;
 @class ComposeboxMetricsRecorder;
 @protocol ComposeboxURLLoader;
 class AimEligibilityService;
@@ -59,6 +60,8 @@ class ContextualSearchSessionHandle;
 @property(nonatomic, weak) id<ComposeboxInputPlateMediatorDelegate> delegate;
 // The metrics recorder of the composebox.
 @property(nonatomic, weak) ComposeboxMetricsRecorder* metricsRecorder;
+// Delegate for logging events.
+@property(nonatomic, weak) id<ComposeboxDebuggerLogger> debugLogger;
 
 - (instancetype)
     initWithContextualSearchSession:

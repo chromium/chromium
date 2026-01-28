@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
+#import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
@@ -183,7 +184,7 @@ const CGFloat kSnackbarBottomMargin = 10;
                 aimEligibilityService:IOSChromeAimEligibilityServiceFactory::
                                           GetForProfile(self.profile)
                           prefService:self.profile->GetPrefs()];
-
+  _mediator.debugLogger = self.debugLogger;
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
@@ -597,6 +598,7 @@ const CGFloat kSnackbarBottomMargin = 10;
       initWithBaseViewController:_viewController
                          browser:self.browser
                            theme:_theme];
+  _tabPickerCoordinator.debugLogger = self.debugLogger;
   _tabPickerCoordinator.delegate = _mediator;
   _tabPickerCoordinator.composeboxTabPickerHandler = self;
   [_tabPickerCoordinator start];

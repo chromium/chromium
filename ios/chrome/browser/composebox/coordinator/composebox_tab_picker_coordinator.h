@@ -12,6 +12,7 @@
 #import "ios/web/public/web_state.h"
 
 @protocol ComposeboxTabPickerCommands;
+@protocol ComposeboxDebuggerLogger;
 @class ComposeboxTheme;
 
 // Responsible for processing the selection of tab picker.
@@ -50,6 +51,9 @@
 
 // Delegate for tab selection actions.
 @property(nonatomic, weak) id<ComposeboxTabPickerSelectionDelegate> delegate;
+
+// Delegate for logging events
+@property(nonatomic, weak) id<ComposeboxDebuggerLogger> debugLogger;
 
 // Handler for composebox tab picker commands.
 @property(nonatomic, weak) id<ComposeboxTabPickerCommands>
