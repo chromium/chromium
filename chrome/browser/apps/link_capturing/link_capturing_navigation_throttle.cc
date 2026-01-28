@@ -78,19 +78,6 @@ bool IsNavigateFromNonFormNonContextMenuLink(
          !navigation_handle->WasStartedFromContextMenu();
 }
 
-bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
-  switch (handle->GetNavigationInitiatorActivationAndAdStatus()) {
-    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kDidNotStartWithTransientActivation:
-      return false;
-    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kStartedWithTransientActivationFromNonAd:
-    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kStartedWithTransientActivationFromAd:
-      return true;
-  }
-}
-
 }  // namespace
 
 bool LinkCapturingNavigationThrottle::IsCapturableLinkNavigation(
@@ -149,7 +136,7 @@ bool LinkCapturingNavigationThrottle::
          // This can be used for user clicked buttons as well as redirects.
          // Check whether the action was in the context of a user activation to
          // distinguish redirects from click event handlers.
-         !IsNavigationUserInitiated(handle);
+         !handle->StartedWithTransientActivation();
 }
 
 LinkCapturingNavigationThrottle::Delegate::~Delegate() = default;

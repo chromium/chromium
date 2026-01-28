@@ -1220,9 +1220,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       extra_headers, frame_entry, entry, is_form_submission,
       std::move(navigation_ui_data), impression,
-      blink::mojom::NavigationInitiatorActivationAndAdStatus::
-          kDidNotStartWithTransientActivation,
-      is_pdf, is_embedder_initiated_fenced_frame_navigation,
+      /*started_with_transient_activation=*/false,
+      /*started_by_ad=*/false, is_pdf,
+      is_embedder_initiated_fenced_frame_navigation,
       /*is_container_initiated=*/false, /*has_rel_opener=*/false,
       net::StorageAccessApiStatus::kNone, embedder_shared_storage_context);
   // It is only possible for a null NavigationRequest to be returned if an
@@ -1246,8 +1246,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     bool is_form_submission,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     const std::optional<blink::Impression>& impression,
-    blink::mojom::NavigationInitiatorActivationAndAdStatus
-        initiator_activation_and_ad_status,
+    bool started_with_transient_activation,
+    bool started_by_ad,
     bool is_pdf,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_container_initiated,
@@ -1275,7 +1275,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       base::TimeTicks() /* renderer_before_unload_end */,
       base::TimeTicks() /* before_unload_dialog_opened */,
       base::TimeTicks() /* before_unload_dialog_closed */,
-      initiator_activation_and_ad_status, is_container_initiated,
+      started_with_transient_activation, started_by_ad, is_container_initiated,
       storage_access_api_status, has_rel_opener);
 
   // Shift-Reload forces bypassing caches and service workers.
@@ -9541,11 +9541,6 @@ bool NavigationRequest::IsRendererInitiated() {
   return !commit_params_->is_browser_initiated;
 }
 
-blink::mojom::NavigationInitiatorActivationAndAdStatus
-NavigationRequest::GetNavigationInitiatorActivationAndAdStatus() {
-  return begin_params_->initiator_activation_and_ad_status;
-}
-
 bool NavigationRequest::IsSameOrigin() {
   DCHECK(HasCommitted());
   return same_origin_;
@@ -9592,6 +9587,14 @@ void NavigationRequest::SetReferrer(blink::mojom::ReferrerPtr referrer) {
 
 bool NavigationRequest::HasUserGesture() {
   return common_params().has_possibly_filtered_user_gesture;
+}
+
+bool NavigationRequest::StartedWithTransientActivation() {
+  return begin_params_->started_with_transient_activation;
+}
+
+bool NavigationRequest::StartedByAd() {
+  return begin_params_->started_by_ad;
 }
 
 ui::PageTransition NavigationRequest::GetPageTransition() {

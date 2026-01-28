@@ -5217,10 +5217,7 @@ void RenderFrameHostImpl::DidNavigate(
   if (!was_within_same_document) {
     last_cross_document_navigation_started_by_user_ =
         !navigation_request->IsRendererInitiated() ||
-        (navigation_request->begin_params()
-             .initiator_activation_and_ad_status !=
-         blink::mojom::NavigationInitiatorActivationAndAdStatus::
-             kDidNotStartWithTransientActivation);
+        navigation_request->StartedWithTransientActivation();
   }
 
   // Navigations that activate an existing bfcached or prerendered document do
@@ -9765,7 +9762,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     blink::NavigationDownloadPolicy download_policy;
 
     MaybeRecordAdClickMainFrameNavigationMetrics(
-        /*initiator_frame=*/this, params->initiator_activation_and_ad_status);
+        /*initiator_frame=*/this, params->user_gesture, params->started_by_ad);
 
     target_frame->frame_tree_node()->navigator().NavigateFromFrameProxy(
         target_frame, validated_params_url,
@@ -9776,9 +9773,8 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
         "GET",
         /*post_body=*/nullptr, params->extra_headers,
         /*blob_url_loader_factory=*/nullptr,
-        network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
-        params->is_form_submission, params->impression,
-        params->initiator_activation_and_ad_status,
+        network::mojom::SourceLocation::New(), params->user_gesture,
+        params->is_form_submission, params->impression, params->started_by_ad,
         params->actual_navigation_start,
         /*navigation_start_time=*/base::TimeTicks::Now(),
         /*is_embedder_initiated_fenced_frame_navigation=*/false,
@@ -9800,7 +9796,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     if (params->disposition != WindowOpenDisposition::CURRENT_TAB ||
         IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
-          initiator_frame, params->initiator_activation_and_ad_status);
+          initiator_frame, params->user_gesture, params->started_by_ad);
     }
   }
 
@@ -10084,7 +10080,8 @@ void RenderFrameHostImpl::CreateNewWindow(
   transient_allow_popup_.Deactivate();
 
   MaybeRecordAdClickMainFrameNavigationMetrics(
-      /*initiator_frame=*/this, params->initiator_activation_and_ad_status);
+      /*initiator_frame=*/this, params->started_with_transient_activation,
+      params->started_by_ad);
 
   if (is_new_browsing_instance || !new_frame_tree) {
     // Opener suppressed, Javascript access disabled, or delegate did not
@@ -10579,9 +10576,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
   // It is safe to check both values at once. If one is not properly set, it
   // will always be set to a false negative and not a false positive, so there
   // is no way for that to cause an accidental beacon to be sent.
-  if (navigation_request.GetNavigationInitiatorActivationAndAdStatus() ==
-          blink::mojom::NavigationInitiatorActivationAndAdStatus::
-              kDidNotStartWithTransientActivation &&
+  if (!navigation_request.StartedWithTransientActivation() &&
       !navigation_request.common_params().has_possibly_filtered_user_gesture) {
     RecordAutomaticBeaconOutcome(
         blink::AutomaticBeaconOutcome::kNoUserActivation);
@@ -11401,7 +11396,8 @@ void RenderFrameHostImpl::BeginNavigation(
   if (begin_params->initiator_frame_token) {
     if (IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
-          initiator_frame, begin_params->initiator_activation_and_ad_status);
+          initiator_frame, begin_params->started_with_transient_activation,
+          begin_params->started_by_ad);
     }
   }
 

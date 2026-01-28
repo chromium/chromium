@@ -71,9 +71,7 @@ void BrowsingTopicsRedirectObserver::ReadyToCommitNavigation(
     return;
   }
 
-  if (navigation_handle->GetNavigationInitiatorActivationAndAdStatus() !=
-      blink::mojom::NavigationInitiatorActivationAndAdStatus::
-          kDidNotStartWithTransientActivation) {
+  if (navigation_handle->StartedWithTransientActivation()) {
     return;
   }
 

@@ -78,11 +78,6 @@ class MockNavigationHandle : public NavigationHandle {
   }
   // By default, MockNavigationHandles are renderer-initiated navigations.
   bool IsRendererInitiated() override { return is_renderer_initiated_; }
-  blink::mojom::NavigationInitiatorActivationAndAdStatus
-  GetNavigationInitiatorActivationAndAdStatus() override {
-    return blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kDidNotStartWithTransientActivation;
-  }
   bool IsSameOrigin() override {
     NOTIMPLEMENTED();
     return false;
@@ -138,6 +133,8 @@ class MockNavigationHandle : public NavigationHandle {
     referrer_ = *referrer;
   }
   MOCK_METHOD0(HasUserGesture, bool());
+  bool StartedWithTransientActivation() override { return false; }
+  bool StartedByAd() override { return false; }
   ui::PageTransition GetPageTransition() override { return page_transition_; }
   MOCK_METHOD0(GetNavigationUIData, NavigationUIData*());
   MOCK_METHOD0(IsExternalProtocol, bool());

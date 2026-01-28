@@ -14,15 +14,13 @@ namespace content {
 
 void MaybeRecordAdClickMainFrameNavigationMetrics(
     RenderFrameHostImpl* initiator_frame,
-    blink::mojom::NavigationInitiatorActivationAndAdStatus
-        initiator_activation_and_ad_status) {
+    bool started_with_transient_activation,
+    bool started_by_ad) {
   if (!initiator_frame) {
     return;
   }
 
-  if (initiator_activation_and_ad_status ==
-      blink::mojom::NavigationInitiatorActivationAndAdStatus::
-          kStartedWithTransientActivationFromAd) {
+  if (started_with_transient_activation && started_by_ad) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         initiator_frame, blink::mojom::WebFeature::kAdClickMainFrameNavigation);
 

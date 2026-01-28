@@ -148,19 +148,10 @@ void RecordPageLoadInitiatorForAdTaggingUkm(
   ukm::builders::PageLoadInitiatorForAdTagging builder(
       navigation_handle->GetRenderFrameHost()->GetPageUkmSourceId());
 
-  bool renderer_initiated = navigation_handle->IsRendererInitiated();
-  bool renderer_initiated_with_user_activation =
-      (navigation_handle->GetNavigationInitiatorActivationAndAdStatus() !=
-       blink::mojom::NavigationInitiatorActivationAndAdStatus::
-           kDidNotStartWithTransientActivation);
-  bool renderer_initiated_with_user_activation_from_ad =
-      (navigation_handle->GetNavigationInitiatorActivationAndAdStatus() ==
-       blink::mojom::NavigationInitiatorActivationAndAdStatus::
-           kStartedWithTransientActivationFromAd);
-
-  builder.SetFromUser(!renderer_initiated ||
-                      renderer_initiated_with_user_activation);
-  builder.SetFromAdClick(renderer_initiated_with_user_activation_from_ad);
+  builder.SetFromUser(!navigation_handle->IsRendererInitiated() ||
+                      navigation_handle->StartedWithTransientActivation());
+  builder.SetFromAdClick(navigation_handle->StartedWithTransientActivation() &&
+                         navigation_handle->StartedByAd());
 
   builder.Record(ukm_recorder->Get());
 }
@@ -337,13 +328,9 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
 
   RecordPageLoadInitiatorForAdTaggingUkm(navigation_handle);
 
-  // When NavigationInitiatorActivationAndAdStatus is
-  // kStartedWithTransientActivationFromAd, the navigation activated from a user
-  // ad click gesture.
-  if (history_service_ &&
-      navigation_handle->GetNavigationInitiatorActivationAndAdStatus() ==
-          blink::mojom::NavigationInitiatorActivationAndAdStatus::
-              kStartedWithTransientActivationFromAd) {
+  // The navigation activated from a user ad click gesture.
+  if (history_service_ && navigation_handle->StartedWithTransientActivation() &&
+      navigation_handle->StartedByAd()) {
     // Check the frequency of the navigation URL in history.
     QueryAdUrlFrequencyInHistory(
         history_service_.get(), navigation_handle->GetURL(),

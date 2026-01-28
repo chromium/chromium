@@ -39,7 +39,6 @@
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom-forward.h"
-#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
@@ -189,10 +188,6 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   //  * any other "explicit" URL navigations, e.g. bookmarks
   virtual bool IsRendererInitiated() = 0;
 
-  // The navigation initiator's user activation and ad status.
-  virtual blink::mojom::NavigationInitiatorActivationAndAdStatus
-  GetNavigationInitiatorActivationAndAdStatus() = 0;
-
   // Whether the previous document in this frame was same-origin with the new
   // one created by this navigation.
   //
@@ -282,9 +277,22 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Whether the navigation was initiated by a user gesture.
   //
-  // Note: This gesture is filtered out during proxy navigations, to prevent it
-  // from being exposed to the committed document in the renderer.
+  // Differences from `StartedWithTransientActivation()`:
+  // 1. This returns `true` for browser-initiated navigations.
+  // 2. For renderer-initiated navigations, this is filtered out during proxy
+  //    navigations, to prevent it from being exposed to the committed document.
   virtual bool HasUserGesture() = 0;
+
+  // Whether the navigation started with a transient user activation.
+  //
+  // Differences from `HasUserGesture()`:
+  // 1. This returns `false` for browser-initiated navigations.
+  // 2. For renderer-initiated navigations, this provides the raw, unfiltered
+  //    initiator state.
+  virtual bool StartedWithTransientActivation() = 0;
+
+  // Whether the (renderer initiated) navigation was started by an ad.
+  virtual bool StartedByAd() = 0;
 
   // Returns the page transition type.
   virtual ui::PageTransition GetPageTransition() = 0;
@@ -794,9 +802,8 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Allows the embedder to mark whether this navigation handle is being used
   // for advertising purposes. This is expected to be best-effort, and may be
-  // inaccurate. Notably, this defers from the status from
-  // `GetNavigationInitiatorActivationAndAdStatus()` as it can include other
-  // signals outside of the initiator.
+  // inaccurate. Notably, this defers from the status from `StartedByAd()` as it
+  // can include other signals outside of the initiator.
   virtual void SetIsAdTagged() = 0;
 
   // If the navigation is discarded without committing, returns the reason for

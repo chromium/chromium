@@ -267,9 +267,8 @@ void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
     }
 
     is_last_navigation_ad_tagged_ =
-        navigation_handle->GetNavigationInitiatorActivationAndAdStatus() ==
-        blink::mojom::NavigationInitiatorActivationAndAdStatus::
-            kStartedWithTransientActivationFromAd;
+        navigation_handle->StartedWithTransientActivation() &&
+        navigation_handle->StartedByAd();
 
     EmitPastInteractionIfReady();
   }

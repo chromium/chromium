@@ -280,8 +280,9 @@ void TestNavigationObserver::OnDidFinishNavigation(
   last_initiator_process_id_ = navigation_handle->GetInitiatorProcessId();
   last_navigation_succeeded_ =
       navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
-  last_navigation_initiator_activation_and_ad_status_ =
-      navigation_handle->GetNavigationInitiatorActivationAndAdStatus();
+  last_navigation_started_with_transient_activation_ =
+      navigation_handle->StartedWithTransientActivation();
+  last_navigation_started_by_ad_ = navigation_handle->StartedByAd();
   last_net_error_code_ = navigation_handle->GetNetErrorCode();
   if (auto* headers = navigation_handle->GetResponseHeaders(); !!headers) {
     last_http_response_code_ =

@@ -1946,9 +1946,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       render_frame_host_->must_be_replaced_for_crash();
 
   bool from_ad_click =
-      (request->GetNavigationInitiatorActivationAndAdStatus() ==
-       blink::mojom::NavigationInitiatorActivationAndAdStatus::
-           kStartedWithTransientActivationFromAd);
+      request->StartedWithTransientActivation() && request->StartedByAd();
+
   // Record whether a speculative RFH previously created for this navigation
   // (if any) will be wasted because we change the RFH associated with this
   // navigation this time.

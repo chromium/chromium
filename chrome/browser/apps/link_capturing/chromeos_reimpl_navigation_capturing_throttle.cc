@@ -133,19 +133,6 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
   }
 }
 
-bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
-  switch (handle->GetNavigationInitiatorActivationAndAdStatus()) {
-    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kDidNotStartWithTransientActivation:
-      return false;
-    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kStartedWithTransientActivationFromNonAd:
-    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kStartedWithTransientActivationFromAd:
-      return true;
-  }
-}
-
 void LaunchApp(base::WeakPtr<AppServiceProxy> proxy,
                const std::string& app_id,
                int32_t event_flags,
@@ -635,7 +622,7 @@ bool ChromeOsReimplNavigationCapturingThrottle::
          // This can be used for user clicked buttons as well as redirects.
          // Check whether the action was in the context of a user activation to
          // distinguish redirects from click event handlers.
-         !IsNavigationUserInitiated(navigation_handle());
+         !navigation_handle()->StartedWithTransientActivation();
 }
 
 }  // namespace apps

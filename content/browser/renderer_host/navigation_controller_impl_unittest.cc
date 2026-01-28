@@ -4069,9 +4069,7 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
       network::mojom::SourceLocation::New(), nullptr,
       false /* is_form_submission */, std::nullopt,
-      false /* has_user_gesture */,
-      blink::mojom::NavigationInitiatorActivationAndAdStatus::
-          kDidNotStartWithTransientActivation,
+      false /* has_user_gesture */, false /* started_by_ad */,
       base::TimeTicks::Now() /* actual_navigation_start_time */,
       base::TimeTicks::Now() /* navigation_start_time */);
 
@@ -4115,9 +4113,7 @@ TEST_F(NavigationControllerTest,
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
       network::mojom::SourceLocation::New(), nullptr,
       false /* is_form_submission */, std::nullopt,
-      false /* has_user_gesture */,
-      blink::mojom::NavigationInitiatorActivationAndAdStatus::
-          kDidNotStartWithTransientActivation,
+      false /* has_user_gesture */, false /* started_by_ad */,
       base::TimeTicks::Now() /* actual_navigation_start_time */,
       base::TimeTicks::Now() /* navigation_start_time */);
   NavigationRequest* request = node->navigation_request();
@@ -4503,9 +4499,7 @@ TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
       network::mojom::SourceLocation::New(), nullptr,
       false /* is_form_submission */, std::nullopt,
-      false /* has_user_gesture */,
-      blink::mojom::NavigationInitiatorActivationAndAdStatus::
-          kDidNotStartWithTransientActivation,
+      false /* has_user_gesture */, false /* started_by_ad */,
       base::TimeTicks::Now() /* actual_navigation_start_time */,
       base::TimeTicks::Now() /* navigation_start_time */);
 

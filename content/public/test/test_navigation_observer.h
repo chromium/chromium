@@ -17,7 +17,6 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
-#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -112,9 +111,16 @@ class TestNavigationObserver {
   bool last_navigation_succeeded() const { return last_navigation_succeeded_; }
 
   // The last navigation initiator's user activation and ad status.
-  blink::mojom::NavigationInitiatorActivationAndAdStatus
-  last_navigation_initiator_activation_and_ad_status() const {
-    return last_navigation_initiator_activation_and_ad_status_;
+
+  // Returns whether the last navigation started with a transient user
+  // activation.
+  bool last_navigation_started_with_transient_activation() const {
+    return last_navigation_started_with_transient_activation_;
+  }
+
+  // Returns whether the last navigation was started by an ad.
+  bool last_navigation_started_by_ad() const {
+    return last_navigation_started_by_ad_;
   }
 
   // Returns the initiator origin of the last finished navigation (that matched
@@ -270,11 +276,11 @@ class TestNavigationObserver {
   // True if the last navigation succeeded.
   bool last_navigation_succeeded_;
 
-  // The last navigation initiator's user activation and ad status.
-  blink::mojom::NavigationInitiatorActivationAndAdStatus
-      last_navigation_initiator_activation_and_ad_status_ =
-          blink::mojom::NavigationInitiatorActivationAndAdStatus::
-              kDidNotStartWithTransientActivation;
+  // Whether the last navigation started with a transient user activation.
+  bool last_navigation_started_with_transient_activation_ = false;
+
+  // Whether the last navigation was started by an ad.
+  bool last_navigation_started_by_ad_ = false;
 
   // True if we have called EventTriggered following wait. This is used for
   // internal checks-- we expect certain conditions to be valid until we call

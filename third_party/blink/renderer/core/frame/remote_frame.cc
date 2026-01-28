@@ -312,11 +312,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       initiator_frame_has_download_sandbox_flag,
       initiator_frame_is_ad);
 
-  params->initiator_activation_and_ad_status =
-      GetNavigationInitiatorActivationAndAdStatus(request.HasUserGesture(),
-                                                  initiator_frame_is_ad,
-                                                  is_ad_script_in_stack);
-
+  params->started_by_ad = initiator_frame_is_ad || is_ad_script_in_stack;
   params->is_container_initiated = frame_request.IsContainerInitiated();
   params->has_rel_opener = frame_request.GetWindowFeatures().explicit_opener;
 

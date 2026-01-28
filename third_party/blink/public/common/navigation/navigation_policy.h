@@ -9,7 +9,6 @@
 
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/navigation/resource_intercept_policy.h"
-#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 
 // A centralized file for base helper methods and policy decisions about
 // navigations.
@@ -86,14 +85,6 @@ struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
   // a download, the download should be dropped.
   NavigationDownloadTypes disallowed_types;
 };
-
-// Construct a `NavigationInitiatorActivationAndAdStatus` based on the user
-// activation and ad status.
-BLINK_COMMON_EXPORT
-blink::mojom::NavigationInitiatorActivationAndAdStatus
-GetNavigationInitiatorActivationAndAdStatus(bool has_user_activation,
-                                            bool initiator_frame_is_ad,
-                                            bool is_ad_script_in_stack);
 
 }  // namespace blink
 

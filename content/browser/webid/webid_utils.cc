@@ -475,9 +475,7 @@ bool DidNavigationHandleHaveActivation(NavigationHandle* handle) {
   // requirement outside of agentic mode. The following criteria [1] isn't
   // working as we expected, specifically when redirects are happening inside
   // of pop-up windows.
-  // [1] handle->GetNavigationInitiatorActivationAndAdStatus() !=
-  //       blink::mojom::NavigationInitiatorActivationAndAdStatus::
-  //           kDidNotStartWithTransientActivation;
+  // [1] handle->StartedWithTransientActivation()
 }
 
 perfetto::NamedTrack CreatePerfettoTrackForFedCM(void* class_pointer) {

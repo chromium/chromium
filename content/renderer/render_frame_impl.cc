@@ -5934,11 +5934,8 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
           frame_->GetSecurityOrigin()),
       has_download_sandbox_flag, from_ad);
 
-  params->initiator_activation_and_ad_status =
-      blink::GetNavigationInitiatorActivationAndAdStatus(
-          info->url_request.HasUserGesture(), info->initiator_frame_is_ad,
-          info->is_ad_script_in_stack);
-
+  params->started_by_ad =
+      info->initiator_frame_is_ad || info->is_ad_script_in_stack;
   params->has_rel_opener = info->has_rel_opener;
 
   GetFrameHost()->OpenURL(std::move(params));
@@ -6226,12 +6223,6 @@ void RenderFrameImpl::BeginNavigationInternal(
     }
   }
 
-  blink::mojom::NavigationInitiatorActivationAndAdStatus
-      initiator_activation_and_ad_status =
-          blink::GetNavigationInitiatorActivationAndAdStatus(
-              info->url_request.HasUserGesture(), info->initiator_frame_is_ad,
-              info->is_ad_script_in_stack);
-
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New(
           info->initiator_frame_token,
@@ -6248,7 +6239,11 @@ void RenderFrameImpl::BeginNavigationInternal(
               : nullptr,
           info->impression, renderer_before_unload_start,
           renderer_before_unload_end, before_unload_dialog_opened,
-          before_unload_dialog_closed, initiator_activation_and_ad_status,
+          before_unload_dialog_closed,
+          /*started_with_transient_activation=*/
+          info->url_request.HasUserGesture(),
+          /*started_by_ad=*/
+          (info->initiator_frame_is_ad || info->is_ad_script_in_stack),
           info->is_container_initiated, info->storage_access_api_status,
           info->has_rel_opener);
 
@@ -6820,10 +6815,9 @@ WebView* RenderFrameImpl::CreateNewWindow(
       /*openee_can_access_opener_origin=*/true,
       !GetWebFrame()->IsAllowedToDownload(), GetWebFrame()->IsAdFrame());
 
-  params->initiator_activation_and_ad_status =
-      blink::GetNavigationInitiatorActivationAndAdStatus(
-          request.HasUserGesture(), GetWebFrame()->IsAdFrame(),
-          GetWebFrame()->IsAdScriptInStack());
+  params->started_with_transient_activation = request.HasUserGesture();
+  params->started_by_ad =
+      GetWebFrame()->IsAdFrame() || GetWebFrame()->IsAdScriptInStack();
 
   // We preserve this information before sending the message since |params| is
   // moved on send.

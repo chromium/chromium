@@ -19,7 +19,6 @@
 #include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
-#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -164,8 +163,7 @@ class CONTENT_EXPORT Navigator {
       bool has_user_gesture,
       bool is_form_submission,
       const std::optional<blink::Impression>& impression,
-      blink::mojom::NavigationInitiatorActivationAndAdStatus
-          initiator_activation_and_ad_status,
+      bool started_by_ad,
       base::TimeTicks actual_navigation_start_time,
       base::TimeTicks navigation_start_time,
       bool is_embedder_initiated_fenced_frame_navigation = false,

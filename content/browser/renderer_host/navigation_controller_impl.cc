@@ -3075,8 +3075,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     bool is_form_submission,
     const std::optional<blink::Impression>& impression,
     bool has_user_gesture,
-    blink::mojom::NavigationInitiatorActivationAndAdStatus
-        initiator_activation_and_ad_status,
+    bool started_by_ad,
     base::TimeTicks actual_navigation_start_time,
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
@@ -3203,8 +3202,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   params.impression = impression;
   params.download_policy = std::move(download_policy);
   params.is_form_submission = is_form_submission;
-  params.initiator_activation_and_ad_status =
-      initiator_activation_and_ad_status;
+  params.started_by_ad = started_by_ad;
   params.has_rel_opener = has_rel_opener;
 
   std::unique_ptr<NavigationRequest> request =
@@ -4516,15 +4514,19 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   std::string extra_headers_crlf;
   base::ReplaceChars(params.extra_headers, "\n", "\r\n", &extra_headers_crlf);
 
+  bool started_with_transient_activation =
+      params.is_renderer_initiated && params.has_user_gesture;
+
   auto navigation_request = NavigationRequest::Create(
       node, std::move(common_params), std::move(commit_params),
       !params.is_renderer_initiated, params.was_opener_suppressed,
       params.initiator_frame_token, params.initiator_process_id,
       extra_headers_crlf, frame_entry, entry, params.is_form_submission,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
-      params.impression, params.initiator_activation_and_ad_status,
-      params.is_pdf, is_embedder_initiated_fenced_frame_navigation,
-      is_container_initiated, params.has_rel_opener, storage_access_api_status,
+      params.impression, started_with_transient_activation,
+      params.started_by_ad, params.is_pdf,
+      is_embedder_initiated_fenced_frame_navigation, is_container_initiated,
+      params.has_rel_opener, storage_access_api_status,
       embedder_shared_storage_context);
 
   if (!navigation_request) {
@@ -4658,8 +4660,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       initiator_frame_token, initiator_process_id, entry->extra_headers(),
       frame_entry, entry, is_form_submission, nullptr /* navigation_ui_data */,
       std::nullopt /* impression */,
-      blink::mojom::NavigationInitiatorActivationAndAdStatus::
-          kDidNotStartWithTransientActivation,
+      false /* started_with_transient_activation */, false /* started_by_ad */,
       false /* is_pdf */);
 
   request->set_remove_extra_headers_on_cross_origin_redirect(

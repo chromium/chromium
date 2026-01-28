@@ -76,16 +76,7 @@ bool IsNavigationUserInitiated(content::NavigationThrottleRegistry& registry) {
     return true;
   }
 
-  switch (handle.GetNavigationInitiatorActivationAndAdStatus()) {
-    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kDidNotStartWithTransientActivation:
-      return false;
-    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kStartedWithTransientActivationFromNonAd:
-    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kStartedWithTransientActivationFromAd:
-      return true;
-  }
+  return handle.StartedWithTransientActivation();
 }
 
 }  // namespace

@@ -77,18 +77,4 @@ void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
   }
 }
 
-blink::mojom::NavigationInitiatorActivationAndAdStatus
-GetNavigationInitiatorActivationAndAdStatus(bool has_user_activation,
-                                            bool initiator_frame_is_ad,
-                                            bool is_ad_script_in_stack) {
-  return has_user_activation
-             ? ((initiator_frame_is_ad || is_ad_script_in_stack)
-                    ? blink::mojom::NavigationInitiatorActivationAndAdStatus::
-                          kStartedWithTransientActivationFromAd
-                    : blink::mojom::NavigationInitiatorActivationAndAdStatus::
-                          kStartedWithTransientActivationFromNonAd)
-             : blink::mojom::NavigationInitiatorActivationAndAdStatus::
-                   kDidNotStartWithTransientActivation;
-}
-
 }  // namespace blink

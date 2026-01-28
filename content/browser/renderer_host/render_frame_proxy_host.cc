@@ -49,7 +49,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
-#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -790,7 +789,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
         GetProcess()->GetDeprecatedID(), params->initiator_frame_token.value());
     if (current_rfh->IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
-          initiator_frame, params->initiator_activation_and_ad_status);
+          initiator_frame, params->user_gesture, params->started_by_ad);
     }
   }
 
@@ -837,8 +836,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->post_body ? "POST" : "GET", params->post_body,
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
-      params->is_form_submission, params->impression,
-      params->initiator_activation_and_ad_status,
+      params->is_form_submission, params->impression, params->started_by_ad,
       params->actual_navigation_start, navigation_start_time,
       /*is_embedder_initiated_fenced_frame_navigation=*/false,
       /*is_unfenced_top_navigation=*/false,

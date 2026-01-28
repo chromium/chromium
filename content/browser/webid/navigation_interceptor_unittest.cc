@@ -39,11 +39,7 @@ class InterceptorMockNavigationHandle : public MockNavigationHandle {
   explicit InterceptorMockNavigationHandle(WebContents* web_contents)
       : MockNavigationHandle(web_contents) {}
 
-  blink::mojom::NavigationInitiatorActivationAndAdStatus
-  GetNavigationInitiatorActivationAndAdStatus() override {
-    return blink::mojom::NavigationInitiatorActivationAndAdStatus::
-        kStartedWithTransientActivationFromNonAd;
-  }
+  bool StartedWithTransientActivation() override { return true; }
 };
 
 class MockFederatedAuthRequest : public RequestService {

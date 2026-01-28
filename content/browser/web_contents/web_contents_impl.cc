@@ -5522,8 +5522,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
             ? NavigationController::UA_OVERRIDE_TRUE
             : NavigationController::UA_OVERRIDE_FALSE;
     load_params->download_policy = params.download_policy;
-    load_params->initiator_activation_and_ad_status =
-        params.initiator_activation_and_ad_status;
+    load_params->started_by_ad = params.started_by_ad;
 
     if (delegate_ && !is_guest &&
         !delegate_->ShouldResumeRequestsForCreatedWindow()) {
