@@ -259,6 +259,7 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
@@ -3831,6 +3832,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     }
     ClassAttributeChanged(params.new_value);
     UpdateClassList(params.old_value, params.new_value);
+    SoftNavigationHeuristics::ModifiedAttribute(this, name);
   } else if (name == html_names::kNameAttr) {
     SetHasName(!params.new_value.IsNull());
   } else if (HasTagName(html_names::kATag) && name == html_names::kHrefAttr) {
@@ -3895,6 +3897,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
         return;
       }
       StyleAttributeChanged(params.new_value, params.reason);
+      SoftNavigationHeuristics::ModifiedAttribute(this, name);
     } else if (IsPresentationAttribute(name)) {
       if (name == html_names::kAnchorAttr) {
         if (RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
@@ -12455,6 +12458,7 @@ void Element::InvalidateStyleAttribute(
                           style_change_reason::kInlineCSSStyleMutated));
   GetDocument().GetStyleEngine().AttributeChangedForElement(
       html_names::kStyleAttr, *this);
+  SoftNavigationHeuristics::ModifiedAttribute(this, html_names::kStyleAttr);
 }
 
 void Element::UpdateTransitionPseudoElements(

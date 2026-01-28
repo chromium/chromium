@@ -75,13 +75,6 @@ class CORE_EXPORT SoftNavigationPaintAttributionTracker
 
   // Initializes paint tracking for the given node, such that contentful paints
   // to it or its descendants will be associated with the given context.
-  //
-  // TODO(crbug.com/328783345): This method is currently only called for a small
-  // set of DOM modifications (anything that appends), and in particular style
-  // changes are not attributed. This means that nodes that might become visible
-  // through class changes or inline style changes are not handled, and images
-  // that are painted due to a style change that updates the background image
-  // are not considered.
   void MarkNodeAsDirectlyModified(Node*, SoftNavigationContext*);
 
   // Returns the `SoftNavigationContext` associated with `node`, if any.

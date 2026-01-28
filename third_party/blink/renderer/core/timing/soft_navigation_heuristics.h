@@ -21,8 +21,10 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
+class Element;
 class InteractionEffectsMonitor;
 class HTMLVideoElement;
+class QualifiedName;
 class SoftNavigationContext;
 class SoftNavigationPaintAttributionTracker;
 
@@ -86,6 +88,12 @@ class CORE_EXPORT SoftNavigationHeuristics
   // `SoftNavigationContext` and connected to the DOM, in which case this
   // returns true.
   static bool ModifiedNode(Node* node);
+
+  // Inform `SoftNavigationHeuristics` that the `attribute` for the given
+  // `Element` changed. Sets up paint tracking if the modification is
+  // attributable to a `SoftNavigationContext`, the node is connected to the
+  // DOM, and the attribute is part of the heuristic.
+  static void ModifiedAttribute(Element*, const QualifiedName& attribute);
 
   // Inform `SoftNavigationHeuristics` that the "src" attribute for the video
   // element changed. Sets up paint tracking if the modification is attributable
