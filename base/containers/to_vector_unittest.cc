@@ -123,6 +123,14 @@ TEST(ToVectorTest, CustomTypeWithArray) {
   EXPECT_THAT(vec, ElementsAre("foo", "bar", "baz"));
 }
 
+TEST(ToVectorTest, ConstexprTest) {
+  static constexpr int a[] = {1, 2, 3};
+  static_assert(base::ToVector(a) == std::vector{1, 2, 3});
+  static_assert(base::ToVector(a, [](int x) { return x + 1; }) ==
+                std::vector{2, 3, 4});
+  static_assert(base::ToVector({1, 2, 3}) == std::vector{1, 2, 3});
+}
+
 }  // namespace
 
 }  // namespace base::test

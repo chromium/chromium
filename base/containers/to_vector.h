@@ -29,7 +29,7 @@ template <typename U = void,
                                           std::ranges::range_value_t<Range>,
                                           U>>
   requires(std::ranges::input_range<Range>)
-std::vector<T> ToVector(Range&& range) {
+constexpr std::vector<T> ToVector(Range&& range) {
   return {std::from_range, std::forward<Range>(range)};
 }
 
@@ -51,7 +51,7 @@ template <typename U = void,
               U>>
   requires std::ranges::sized_range<Range> && std::ranges::input_range<Range> &&
            std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>>
-auto ToVector(Range&& range, Proj proj) {
+constexpr auto ToVector(Range&& range, Proj proj) {
   std::vector<ProjectedType> container;
   container.reserve(std::ranges::size(range));
   std::ranges::transform(std::forward<Range>(range),
@@ -86,7 +86,7 @@ template <typename U = void,
           size_t N,
           typename ResultType = std::conditional_t<std::is_void_v<U>, T, U>>
   requires(std::move_constructible<T>)
-std::vector<ResultType> ToVector(T (&&array)[N]) {
+constexpr std::vector<ResultType> ToVector(T (&&array)[N]) {
   return {
       std::make_move_iterator(std::begin(array)),
       std::make_move_iterator(std::end(array)),
