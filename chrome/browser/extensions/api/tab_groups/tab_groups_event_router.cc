@@ -62,14 +62,17 @@ class TabGroupsEventRouter::PlatformDelegate : public TabModelListObserver,
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* model) override {
     // We only want to observe tab models (i.e. windows) associated with this
-    // PlatformDelegate's profile. For example, imagine a regular window with a
-    // regular profile. It has one TabModelEventRouter associated with the
-    // profile and one PlatformDelegate. If we then create an incognito profile
-    // and window, we get a second TabModelEventRouter and PlatformDelegate. But
-    // we only want to observe the TabModel associated with the incognito
-    // profile, not the regular profile, otherwise we'll see event notifications
-    // twice (once per observer). See TestTabGroupEventsAcrossProfiles.
-    if (profile_ != model->GetProfile()) {
+    // PlatformDelegate's profile. We should also ignore tab models that are
+    // non-standard as they have tabs that will never have WebContents. For
+    // example, imagine a regular window with a regular profile. It has one
+    // TabModelEventRouter associated with the profile and one PlatformDelegate.
+    // If we then create an incognito profile and window, we get a second
+    // TabModelEventRouter and PlatformDelegate. But we only want to observe the
+    // TabModel associated with the incognito profile, not the regular profile,
+    // otherwise we'll see event notifications twice (once per observer). See
+    // TestTabGroupEventsAcrossProfiles.
+    if (profile_ != model->GetProfile() ||
+        model->GetTabModelType() != TabModel::TabModelType::kStandard) {
       return;
     }
     tab_model_observations_.AddObservation(model);

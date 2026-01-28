@@ -37,6 +37,11 @@ TabsEventRouterPlatformDelegate::~TabsEventRouterPlatformDelegate() {
 }
 
 void TabsEventRouterPlatformDelegate::OnTabModelAdded(TabModel* tab_model) {
+  // Ignore non-standard tab models which have tabs that cannot load and don't
+  // have WebContents.
+  if (tab_model->GetTabModelType() != TabModel::TabModelType::kStandard) {
+    return;
+  }
   if (profile_->IsSameOrParent(tab_model->GetProfile())) {
     tab_model_observations_.AddObservation(tab_model);
     router_->TrackTabList(*tab_model);

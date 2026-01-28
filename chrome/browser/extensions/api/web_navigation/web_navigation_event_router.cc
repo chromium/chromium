@@ -114,7 +114,10 @@ class WebNavigationEventRouter::TabHelper : public TabModelListObserver,
  private:
   // Returns true if we should track tabs in this model (window).
   bool ShouldTrackModel(TabModel* model) const {
-    return profile_->IsSameOrParent(model->GetProfile());
+    // Only track tabs in the profile we're observing. Only observe standard
+    // tab models, which should always have tabs with WebContents.
+    return profile_->IsSameOrParent(model->GetProfile()) &&
+           model->GetTabModelType() == TabModel::TabModelType::kStandard;
   }
 
   raw_ptr<WebNavigationEventRouter> router_;
