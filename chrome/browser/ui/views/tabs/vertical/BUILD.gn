@@ -72,6 +72,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:utils",
+    "//chrome/browser/ui/tabs/projects:impl",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
