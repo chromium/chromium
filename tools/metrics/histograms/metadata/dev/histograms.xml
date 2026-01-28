@@ -228,13 +228,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.Insights.TeaserChunkToEndMedium" units="ms"
+    expires_after="2027-01-26">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time from first character generated to full response for
+    console insights teasers (maximum 3 minutes).
+  </summary>
+</histogram>
+
 <histogram name="DevTools.Insights.TeaserFirstChunkGenerationTime" units="ms"
     expires_after="2026-11-10">
   <owner>wolfi@google.com</owner>
   <owner>alexrudenko@google.com</owner>
   <summary>
     Measures the time it takes to generate the first chunk of a console insight
-    teaser.
+    teaser (maximum 10 seconds).
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Insights.TeaserFirstChunkGenerationTimeMedium"
+    units="ms" expires_after="2027-01-26">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time it takes to generate the first chunk of a console insight
+    teaser (maximum 3 minutes).
   </summary>
 </histogram>
 
@@ -243,7 +263,18 @@ chromium-metrics-reviews@google.com.
   <owner>wolfi@google.com</owner>
   <owner>alexrudenko@google.com</owner>
   <summary>
-    Measures the time it takes to generate a console insight teaser.
+    Measures the time it takes to generate a console insight teaser (maximum 10
+    seconds).
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Insights.TeaserGenerationTimeMedium" units="ms"
+    expires_after="2027-01-26">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time it takes to generate a console insight teaser (maximum 3
+    minutes).
   </summary>
 </histogram>
 
