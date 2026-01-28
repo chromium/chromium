@@ -86,23 +86,32 @@ TEST(FileInputTypeTest, createFileList) {
 #if BUILDFLAG(IS_ANDROID)
 TEST(FileInputTypeTest, createFileListContentUri) {
   test::TaskEnvironment task_environment;
-  FileChooserFileInfoList files;
 
-  files.push_back(CreateFileChooserFileInfoNative(
-      "content://authority/id-123", "display-name",
-      Vector<String>({"base", "subdir"})));
+  for (const bool virtual_document_path : {false, true}) {
+    const std::string_view base_dir = virtual_document_path
+                                          ? "/SAF/authority/tree/id-base"
+                                          : "content://authority/id-base";
+    const String path = virtual_document_path
+                            ? "/SAF/authority/tree/id-base/123"
+                            : "content://authority/id-123";
 
-  ScopedNullExecutionContext execution_context;
-  FileList* list = FileInputType::CreateFileList(
-      execution_context.GetExecutionContext(), files,
-      base::FilePath("content://authority/id-base"));
-  ASSERT_TRUE(list);
-  ASSERT_EQ(1u, list->length());
+    FileChooserFileInfoList files;
 
-  EXPECT_EQ("content://authority/id-123", list->item(0)->GetPath());
-  EXPECT_EQ("display-name", list->item(0)->name());
-  EXPECT_EQ("base/subdir/display-name", list->item(0)->webkitRelativePath());
-  EXPECT_TRUE(list->item(0)->FileSystemURL().IsEmpty());
+    files.push_back(CreateFileChooserFileInfoNative(
+        path, "display-name", Vector<String>({"base", "subdir"})));
+
+    ScopedNullExecutionContext execution_context;
+    FileList* list =
+        FileInputType::CreateFileList(execution_context.GetExecutionContext(),
+                                      files, base::FilePath(base_dir));
+    ASSERT_TRUE(list);
+    ASSERT_EQ(1u, list->length());
+
+    EXPECT_EQ(path, list->item(0)->GetPath());
+    EXPECT_EQ("display-name", list->item(0)->name());
+    EXPECT_EQ("base/subdir/display-name", list->item(0)->webkitRelativePath());
+    EXPECT_TRUE(list->item(0)->FileSystemURL().IsEmpty());
+  }
 }
 #endif
 
