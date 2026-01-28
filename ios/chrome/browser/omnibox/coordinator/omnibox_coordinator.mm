@@ -300,6 +300,9 @@
 }
 
 - (void)focusOmnibox {
+  if (!IsOmniboxCrashFixKillSwitchEnabled()) {
+    [self updateOmniboxState];
+  }
   [_omniboxTextController focusOmnibox];
 }
 

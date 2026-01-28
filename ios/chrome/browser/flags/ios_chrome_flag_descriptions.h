@@ -672,6 +672,9 @@ extern const char kNtpAlphaBackgroundCollectionsDescription[];
 extern const char kNtpComposeboxUsesChromeComposeClientName[];
 extern const char kNtpComposeboxUsesChromeComposeClientDescription[];
 
+extern const char kOmniboxCrashFixKillSwitchName[];
+extern const char kOmniboxCrashFixKillSwitchDescription[];
+
 extern const char kOmniboxDRSPrototypeName[];
 extern const char kOmniboxDRSPrototypeDescription[];
 

@@ -6875,6 +6875,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "omnibox-crash-fix-kill-switch",
+    "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "omnibox-diagnostics",
     "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
     // Provides a way to turn on various diagnostic facilities in the Omnibox component.

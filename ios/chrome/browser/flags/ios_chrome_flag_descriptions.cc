@@ -1103,6 +1103,10 @@ const char kNtpComposeboxUsesChromeComposeClientDescription[] =
     "When enabled, the composebox will use the suggest chrome compose client "
     "when AIM is enabled";
 
+const char kOmniboxCrashFixKillSwitchName[] = "OmniboxCrashFixKillSwitch";
+const char kOmniboxCrashFixKillSwitchDescription[] =
+    "Enables the OmniboxCrashFixKillSwitch feature.";
+
 const char kOmniboxDRSPrototypeName[] = "Enable the Omnibox DRS prototype";
 const char kOmniboxDRSPrototypeDescription[] =
     "Enables the omnibox dynamic response system prototype";

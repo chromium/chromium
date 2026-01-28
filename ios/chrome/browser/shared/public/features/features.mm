@@ -960,6 +960,12 @@ bool IsTabGroupColorOnSurfaceEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupColorOnSurface);
 }
 
+BASE_FEATURE(kOmniboxCrashFixKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsOmniboxCrashFixKillSwitchEnabled() {
+  return base::FeatureList::IsEnabled(kOmniboxCrashFixKillSwitch);
+}
+
 BASE_FEATURE(kAIMEligibilityServiceStartWithProfile,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -848,6 +848,12 @@ BASE_DECLARE_FEATURE(kTabGroupColorOnSurface);
 // Returns true if the TabGroupColorOnSurface feature is enabled.
 bool IsTabGroupColorOnSurfaceEnabled();
 
+// Enables the OmniboxCrashFixKillSwitch feature.
+BASE_DECLARE_FEATURE(kOmniboxCrashFixKillSwitch);
+
+// Returns true if the OmniboxCrashFixKillSwitch feature is enabled.
+bool IsOmniboxCrashFixKillSwitchEnabled();
+
 // Enables the AIMEligibilityServiceStartWithProfile feature.
 BASE_DECLARE_FEATURE(kAIMEligibilityServiceStartWithProfile);
 

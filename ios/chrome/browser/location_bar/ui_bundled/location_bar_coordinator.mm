@@ -746,7 +746,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 #pragma mark - LocationBarSteadyViewConsumer
 
 - (void)updateLocationText:(NSString*)text clipTail:(BOOL)clipTail {
-  [self.omniboxCoordinator updateOmniboxState];
+  if (IsOmniboxCrashFixKillSwitchEnabled()) {
+    [self.omniboxCoordinator updateOmniboxState];
+  }
   [self.viewController updateLocationText:text clipTail:clipTail];
   [self.viewController updateForNTP:NO];
   [self.mediator locationUpdated];
