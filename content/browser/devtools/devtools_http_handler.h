@@ -81,7 +81,7 @@ class DevToolsHttpHandler {
                          DevToolsAgentHost::List agent_hosts,
                          bool for_tab);
   void OnDiscoveryPageRequest(int connection_id);
-  void OnFrontendResourceRequest(int connection_id, const std::string& path);
+  void OnFrontendResourceRequest(int connection_id, std::string_view path);
   void OnWebSocketRequest(int connection_id,
                           const net::HttpServerRequestInfo& info);
   void OnWebSocketMessage(int connection_id, std::string data);
@@ -95,10 +95,10 @@ class DevToolsHttpHandler {
   void SendJson(int connection_id,
                 net::HttpStatusCode status_code,
                 std::optional<base::ValueView> value,
-                const std::string& message);
+                std::string_view message);
   void Send200(int connection_id,
-               const std::string& data,
-               const std::string& mime_type);
+               std::string_view data,
+               std::string_view mime_type);
   void Send404(int connection_id);
   void Send403(int connection_id, const std::string& message);
   void Send500(int connection_id,

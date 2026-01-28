@@ -85,7 +85,7 @@ void DevToolsFrontendHost::SetupExtensionsAPI(
 
 // static
 scoped_refptr<base::RefCountedMemory>
-DevToolsFrontendHost::GetFrontendResourceBytes(const std::string& path) {
+DevToolsFrontendHost::GetFrontendResourceBytes(std::string_view path) {
   for (const auto& [resource_path, id, filepath] : kDevtoolsResources) {
     if (path == resource_path) {
       return GetContentClient()->GetDataResourceBytes(id);
@@ -95,7 +95,7 @@ DevToolsFrontendHost::GetFrontendResourceBytes(const std::string& path) {
 }
 
 // static
-std::string DevToolsFrontendHost::GetFrontendResource(const std::string& path) {
+std::string DevToolsFrontendHost::GetFrontendResource(std::string_view path) {
   scoped_refptr<base::RefCountedMemory> bytes = GetFrontendResourceBytes(path);
   if (!bytes)
     return std::string();
@@ -110,8 +110,8 @@ DevToolsFrontendHostImpl::DevToolsFrontendHostImpl(
   mojo::AssociatedRemote<blink::mojom::DevToolsFrontend> frontend;
   frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&frontend);
   std::string api_script =
-      content::DevToolsFrontendHost::GetFrontendResource(kCompatibilityScript) +
-      kCompatibilityScriptSourceURL;
+      base::StrCat({GetFrontendResource(kCompatibilityScript),
+                    kCompatibilityScriptSourceURL});
   frontend->SetupDevToolsFrontend(api_script,
                                   receiver_.BindNewEndpointAndPassRemote());
 }

@@ -47,11 +47,10 @@ class DevToolsFrontendHost {
   // Returns bundled DevTools frontend resource by |path|. Returns null if
   // |path| does not correspond to any frontend resource.
   CONTENT_EXPORT static scoped_refptr<base::RefCountedMemory>
-  GetFrontendResourceBytes(const std::string& path);
+  GetFrontendResourceBytes(std::string_view path);
 
   // Convenience wrapper to return GetFrontendResourceBytes() as a string.
-  CONTENT_EXPORT static std::string GetFrontendResource(
-      const std::string& path);
+  CONTENT_EXPORT static std::string GetFrontendResource(std::string_view path);
 };
 
 }  // namespace content

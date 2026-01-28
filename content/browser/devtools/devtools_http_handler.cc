@@ -152,8 +152,8 @@ class ServerWrapper : net::HttpServer::Delegate {
   void SendResponse(int connection_id,
                     const net::HttpServerResponseInfo& response);
   void Send200(int connection_id,
-               const std::string& data,
-               const std::string& mime_type);
+               std::string_view data,
+               std::string_view mime_type);
   void Send404(int connection_id);
   void Send500(int connection_id, const std::string& message);
   void Close(int connection_id);
@@ -209,8 +209,8 @@ void ServerWrapper::SendResponse(int connection_id,
 }
 
 void ServerWrapper::Send200(int connection_id,
-                            const std::string& data,
-                            const std::string& mime_type) {
+                            std::string_view data,
+                            std::string_view mime_type) {
   server_->Send200(connection_id, data, mime_type,
                    kDevtoolsHttpHandlerTrafficAnnotation);
 }
@@ -417,14 +417,15 @@ DevToolsHttpHandler::~DevToolsHttpHandler() {
   delegate_ = nullptr;
 }
 
-static std::string PathWithoutParams(const std::string& path) {
+static std::string_view PathWithoutParams(std::string_view path) {
   size_t query_position = path.find('?');
-  if (query_position != std::string::npos)
+  if (query_position != std::string_view::npos) {
     return path.substr(0, query_position);
+  }
   return path;
 }
 
-static std::string GetMimeType(const std::string& filename) {
+static std::string_view GetMimeType(std::string_view filename) {
   if (base::EndsWith(filename, ".html", base::CompareCase::INSENSITIVE_ASCII)) {
     return "text/html";
   } else if (base::EndsWith(filename, ".css",
@@ -488,13 +489,14 @@ void ServerWrapper::OnHttpRequest(int connection_id,
     return;
   }
 
-  std::string filename = PathWithoutParams(info.path.substr(10));
-  std::string mime_type = GetMimeType(filename);
+  std::string_view filename =
+      PathWithoutParams(std::string_view(info.path).substr(10));
+  std::string_view mime_type = GetMimeType(filename);
 
   if (!debug_frontend_dir_.empty()) {
-    base::FilePath path = debug_frontend_dir_.AppendASCII(filename);
+    base::FilePath filepath = debug_frontend_dir_.AppendASCII(filename);
     std::string data;
-    base::ReadFileToString(path, &data);
+    base::ReadFileToString(filepath, &data);
     server_->Send200(connection_id, data, mime_type,
                      kDevtoolsHttpHandlerTrafficAnnotation);
     return;
@@ -504,7 +506,7 @@ void ServerWrapper::OnHttpRequest(int connection_id,
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&DevToolsHttpHandler::OnFrontendResourceRequest,
-                       handler_, connection_id, filename));
+                       handler_, connection_id, std::string(filename)));
     return;
   }
   server_->Send404(connection_id, kDevtoolsHttpHandlerTrafficAnnotation);
@@ -583,19 +585,20 @@ void DevToolsHttpHandler::OnJsonRequest(
     return;
   }
   // Trim /json
-  std::string path = info.path.substr(5);
+  std::string_view path = std::string_view(info.path).substr(5);
 
   // Trim fragment and query
-  std::string query;
+  std::string_view query;
   size_t query_pos = path.find('?');
-  if (query_pos != std::string::npos) {
+  if (query_pos != std::string_view::npos) {
     query = path.substr(query_pos + 1);
     path = path.substr(0, query_pos);
   }
 
   size_t fragment_pos = path.find('#');
-  if (fragment_pos != std::string::npos)
+  if (fragment_pos != std::string_view::npos) {
     path = path.substr(0, fragment_pos);
+  }
 
   std::string command;
   std::string target_id;
@@ -620,7 +623,7 @@ void DevToolsHttpHandler::OnJsonRequest(
     version.Set("Android-Package",
                 base::android::apk_info::host_package_name());
 #endif
-    SendJson(connection_id, net::HTTP_OK, version, std::string());
+    SendJson(connection_id, net::HTTP_OK, version, "");
     return;
   }
 
@@ -676,7 +679,7 @@ void DevToolsHttpHandler::OnJsonRequest(
     }
     std::string host = info.GetHeaderValue("host");
     base::DictValue descriptor = SerializeDescriptor(agent_host, host);
-    SendJson(connection_id, net::HTTP_OK, descriptor, std::string());
+    SendJson(connection_id, net::HTTP_OK, descriptor, "");
     return;
   }
 
@@ -721,7 +724,7 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
   CHECK(bytes) << "Could not load protocol";
 
   net::HttpServerResponseInfo response(net::HTTP_OK);
-  response.SetBody(std::string(base::as_string_view(*bytes)),
+  response.SetBody(base::as_string_view(*bytes),
                    "application/json; charset=UTF-8");
 
   thread_->task_runner()->PostTask(
@@ -745,7 +748,7 @@ void DevToolsHttpHandler::RespondToJsonList(int connection_id,
       list_value.Append(SerializeDescriptor(agent_host, host));
     }
   }
-  SendJson(connection_id, net::HTTP_OK, list_value, std::string());
+  SendJson(connection_id, net::HTTP_OK, list_value, "");
 }
 
 void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
@@ -765,8 +768,8 @@ void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
                                 connection_id, response));
 }
 
-void DevToolsHttpHandler::OnFrontendResourceRequest(
-    int connection_id, const std::string& path) {
+void DevToolsHttpHandler::OnFrontendResourceRequest(int connection_id,
+                                                    std::string_view path) {
   if (mode_ ==
       DevToolsAgentHost::RemoteDebuggingServerMode::kWithApprovalOnly) {
     Send404(connection_id);
@@ -940,7 +943,7 @@ void DevToolsHttpHandler::ServerStarted(
 void DevToolsHttpHandler::SendJson(int connection_id,
                                    net::HttpStatusCode status_code,
                                    std::optional<base::ValueView> value,
-                                   const std::string& message) {
+                                   std::string_view message) {
   if (!thread_)
     return;
 
@@ -954,7 +957,8 @@ void DevToolsHttpHandler::SendJson(int connection_id,
 
   net::HttpServerResponseInfo response(status_code);
   response.AddHeader("Content-Security-Policy", "frame-ancestors 'none'");
-  response.SetBody(json_value + message, "application/json; charset=UTF-8");
+  response.SetBody(base::StrCat({json_value, message}),
+                   "application/json; charset=UTF-8");
 
   thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
@@ -963,14 +967,15 @@ void DevToolsHttpHandler::SendJson(int connection_id,
 }
 
 void DevToolsHttpHandler::Send200(int connection_id,
-                                  const std::string& data,
-                                  const std::string& mime_type) {
+                                  std::string_view data,
+                                  std::string_view mime_type) {
   if (!thread_)
     return;
   thread_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&ServerWrapper::Send200,
-                                base::Unretained(server_wrapper_.get()),
-                                connection_id, data, mime_type));
+      FROM_HERE,
+      base::BindOnce(&ServerWrapper::Send200,
+                     base::Unretained(server_wrapper_.get()), connection_id,
+                     std::string(data), std::string(mime_type)));
 }
 
 void DevToolsHttpHandler::Send404(int connection_id) {
