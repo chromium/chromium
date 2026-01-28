@@ -145,6 +145,10 @@ struct LogicalLineItem {
   bool IsFloating() const {
     return layout_result && layout_result->GetPhysicalFragment().IsFloating();
   }
+  bool IsAtomicInline() const {
+    return layout_result &&
+           layout_result->GetPhysicalFragment().IsAtomicInline();
+  }
   bool IsInitialLetterBox() const {
     return layout_result &&
            layout_result->GetPhysicalFragment().IsInitialLetterBox();

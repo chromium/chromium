@@ -98,15 +98,17 @@ FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
   if (const auto& layout_result = line_item.layout_result) {
     const auto& fragment = layout_result->GetPhysicalFragment();
     const auto& style = fragment.Style();
-    LogicalSize logical_size =
-        LogicalFragment(style.GetWritingDirection(), fragment).Size();
-    const LayoutBox* box = DynamicTo<LayoutBox>(line_item.GetLayoutObject());
-    if (logical_size.inline_size && box && box->IsAtomicInlineLevel()) {
+    const LayoutUnit inline_size =
+        LogicalFragment(style.GetWritingDirection(), fragment)
+            .Size()
+            .inline_size;
+    if (inline_size && fragment.IsAtomicInline()) {
       LogicalRect overflow =
           WritingModeConverter(
               {ToLineWritingMode(style.GetWritingMode()), style.Direction()},
               fragment.Size())
-              .ToLogical(box->ScrollableOverflowRect());
+              .ToLogical(
+                  To<PhysicalBoxFragment>(fragment).ScrollableOverflow());
       // Assume 0 is the baseline.  BlockOffset() is always negative.
       return FontHeight(-overflow.offset.block_offset - line_item.BlockOffset(),
                         overflow.BlockEndOffset() + line_item.BlockOffset());
@@ -420,10 +422,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
             item_over, item_under, *style, *item.shape_result);
       }
     } else {
-      const LayoutBox* box = DynamicTo<LayoutBox>(item.GetLayoutObject());
-      const auto* fragment = item.GetPhysicalFragment();
-      if (fragment && box && box->IsAtomicInlineLevel() &&
-          !box->IsInitialLetterBox()) {
+      if (item.IsAtomicInline() && !item.IsInitialLetterBox()) {
         item_under = ComputeEmHeight(item).LineHeight();
       } else if (item.IsInlineBox()) {
         continue;
