@@ -224,7 +224,7 @@
 
 #composebox[show-file-carousel_]::part(carousel-container) {
   /* Give room for the close button in the top right. */
-  --context-carousel-inline-end-spacing: 52px;
+  --context-carousel-inline-end-spacing: 62px;
 }
 
 #composebox:not([expanding_])[show-file-carousel_]::part(cr-composebox-file-carousel) {

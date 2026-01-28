@@ -13,12 +13,13 @@
   box-sizing: border-box;
   margin-bottom: 12px;
   margin-top: 4px;
-  padding-inline-end: var(--context-carousel-inline-end-spacing, 50px);
-  padding-inline-start: var(--context-carousel-inline-start-spacing, 50px);
+  margin-inline-end: var(--context-carousel-inline-end-spacing, 50px);
+  margin-inline-start: var(--context-carousel-inline-start-spacing, 50px);
 }
 
 #carousel.top {
-  margin: 0;
+  margin-bottom: 0;
+  margin-top: 0;
   position: absolute;
   top: 14px;
   width: auto;
