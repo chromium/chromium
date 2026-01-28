@@ -87,9 +87,8 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
   // With the feature enabled, the accessibility tree for Views is built using
-  // the `BrowserAccessibilityManager` owned by the `BrowserViewsAXManager`.
-  // ViewAccessibility is only used to managed the current accessibility state
-  // for a view.
+  // the WidgetAXManager. ViewAccessibility is only used to manage the current
+  // accessibility state for a view.
   if (IsViewsAccessibilityTreeEnabled()) {
     // Cannot use std::make_unique because constructor is protected.
     return base::WrapUnique(new ViewAccessibility(view));

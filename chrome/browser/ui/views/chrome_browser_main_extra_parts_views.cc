@@ -78,10 +78,6 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
     views_delegate_ = std::make_unique<ChromeViewsDelegate>();
   }
 
-  // Set our raw pointer to the views delegate. This should never be nullptr.
-  views_delegate_ptr_ = views::ViewsDelegate::GetInstance();
-  CHECK(views_delegate_ptr_);
-
   SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
 
 #if defined(USE_AURA)
@@ -93,10 +89,6 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
   if (!views::LayoutProvider::Get()) {
     layout_provider_ = ChromeLayoutProvider::CreateLayoutProvider();
   }
-}
-
-void ChromeBrowserMainExtraPartsViews::PostCreateMainMessageLoop() {
-  views_delegate_ptr_->InitializeViewsAXManager();
 }
 
 void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
