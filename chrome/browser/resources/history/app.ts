@@ -213,7 +213,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     info: null,
     value: [],
   };
-  protected accessor sessionList_: ForeignSession[] = [];
+  protected accessor sessionList_: ForeignSession[]|null = null;
   protected accessor queryState_: QueryState = {
     incremental: false,
     querying: false,
