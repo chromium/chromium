@@ -7051,3 +7051,55 @@ TEST_P(TabStripModelTest, TabStripUIWasSetResetOnObserverRemoval) {
   tabstrip()->SetTabStripUI(&observer2);
   tabstrip()->RemoveObserver(&observer2);
 }
+
+TEST_P(TabStripModelTest, ReinsertSplitCollectionVerifyListSelectionModel) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count*/ 5,
+                                  /*pinned_count*/ 0,
+                                  /*selected_tabs*/ {0, 2, 3, 4});
+
+  // Make a split and then remove it.
+  split_tabs::SplitTabId split_id = tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabstrip()->ForgetAllOpeners();
+
+  std::unique_ptr<DetachedTabCollection> detached_split =
+      tabstrip()->DetachSplitTabForInsertion(split_id);
+
+  EXPECT_EQ(tabstrip()->active_index(), 0);
+
+  EXPECT_EQ("active=0 anchor=0 selection=0 1 2",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
+
+  // Reinsert the split collection and make sure our list selection model
+  // got updated.
+  tabstrip()->InsertDetachedSplitTabAt(std::move(detached_split), 0, false);
+
+  // Active tab became the split tab
+  EXPECT_EQ("active=0 anchor=0 selection=0 1",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
+}
+
+TEST_P(TabStripModelTest, ReinsertTabGroupCollectionVerifyListSelectionModel) {
+  PrepareTabstripForSelectionTest(tabstrip(), /*tab_count*/ 5,
+                                  /*pinned_count*/ 0,
+                                  /*selected_tabs*/ {0, 2, 4});
+
+  // Make a group and then remove it.
+  tab_groups::TabGroupId group_id =
+      tabstrip()->AddToNewGroup(std::vector<int>{1, 2});
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      tabstrip()->DetachTabGroupForInsertion(group_id);
+
+  EXPECT_EQ(tabstrip()->active_index(), 0);
+
+  EXPECT_EQ("active=0 anchor=0 selection=0 2",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
+
+  // Reinsert the tab group collection and make sure our list selection model
+  // got updated.
+  tabstrip()->InsertDetachedTabGroupAt(std::move(detached_group), 0);
+  // Note the active and anchor did not change.
+  EXPECT_EQ("active=2 anchor=2 selection=2 4",
+            tabstrip()->selection_model().GetListSelectionModel().ToString());
+}
