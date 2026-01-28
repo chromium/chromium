@@ -2655,6 +2655,7 @@ public class StripLayoutHelper
             return;
         }
 
+        finishAnimations();
         mReorderDelegate.startReorderMode(
                 mStripViews,
                 mStripTabs,
