@@ -124,6 +124,7 @@ class ReportingService {
   virtual void LogSuccessLogSize(size_t log_size) {}
   virtual void LogSuccessMetadata(const std::string& staged_log) {}
   virtual void LogLargeRejection(size_t log_size) {}
+  virtual void LogBackgroundUploadTaskPendingTime(base::TimeDelta time) {}
 
   // Uploads the next completed log from the log manager when possible. On
   // Android, this means scheduling the upload to the OS through a JobScheduler,
@@ -210,8 +211,16 @@ class ReportingService {
 
   // The background task ID that will be posted to the JobScheduler to schedule
   // a log upload (see `metrics::BackgroundUploadTask`). Used only on Android
-  // (not including WebView).
+  // (not including WebView). This is intentionally not surrounded by a
+  // BUILDFLAG for the sake of making the constructor cleaner.
   [[maybe_unused]] const background_task::TaskIds background_upload_task_id_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // The time a background upload task was scheduled/posted to the JobScheduler.
+  // Used to track the time taken between the task being scheduled and the time
+  // the task actually runs.
+  base::TimeTicks background_upload_task_scheduled_time_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);
 

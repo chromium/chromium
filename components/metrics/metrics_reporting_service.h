@@ -65,6 +65,7 @@ class MetricsReportingService : public ReportingService {
   void LogSuccessLogSize(size_t log_size) override;
   void LogSuccessMetadata(const std::string& staged_log) override;
   void LogLargeRejection(size_t log_size) override;
+  void LogBackgroundUploadTaskPendingTime(base::TimeDelta time) override;
 
   MetricsLogStore metrics_log_store_;
 };

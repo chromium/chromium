@@ -51,6 +51,7 @@ class StructuredMetricsReportingService : public metrics::ReportingService {
                               bool was_https) override;
   void LogSuccessLogSize(size_t log_size) override;
   void LogLargeRejection(size_t log_size) override;
+  void LogBackgroundUploadTaskPendingTime(base::TimeDelta time) override;
 
   metrics::UnsentLogStore log_store_;
 };

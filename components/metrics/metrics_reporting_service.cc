@@ -99,4 +99,9 @@ void MetricsReportingService::LogSuccessMetadata(
 
 void MetricsReportingService::LogLargeRejection(size_t log_size) {}
 
+void MetricsReportingService::LogBackgroundUploadTaskPendingTime(
+    base::TimeDelta time) {
+  base::UmaHistogramLongTimes("UMA.LogBackgroundUploadTaskPendingTime", time);
+}
+
 }  // namespace metrics

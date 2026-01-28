@@ -168,4 +168,9 @@ void UkmReportingService::LogSuccessMetadata(const std::string& staged_log) {
 
 void UkmReportingService::LogLargeRejection(size_t log_size) {}
 
+void UkmReportingService::LogBackgroundUploadTaskPendingTime(
+    base::TimeDelta time) {
+  base::UmaHistogramLongTimes("UKM.LogBackgroundUploadTaskPendingTime", time);
+}
+
 }  // namespace ukm

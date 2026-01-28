@@ -157,4 +157,14 @@ void PrivateMetricsReportingService::LogSuccessMetadata(
 
 void PrivateMetricsReportingService::LogLargeRejection(size_t log_size) {}
 
+void PrivateMetricsReportingService::LogBackgroundUploadTaskPendingTime(
+    base::TimeDelta time) {
+  if (dwa_compatibility_) {
+    base::UmaHistogramLongTimes("DWA.LogBackgroundUploadTaskPendingTime", time);
+  } else {
+    base::UmaHistogramLongTimes(
+        "PrivateMetrics.LogBackgroundUploadTaskPendingTime", time);
+  }
+}
+
 }  // namespace metrics::private_metrics

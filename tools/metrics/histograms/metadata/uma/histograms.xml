@@ -1156,6 +1156,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="{MetricType}.LogBackgroundUploadTaskPendingTime" units="ms"
+    expires_after="2027-01-27">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The time between when a background upload task was scheduled/posted to the
+    JobScheduler and when it started running. Emitted only on Android (not
+    including WebView).
+  </summary>
+  <token key="MetricType">
+    <variant name="DWA"/>
+    <variant name="PrivateMetrics"/>
+    <variant name="StructuredMetrics"/>
+    <variant name="UKM"/>
+    <variant name="UMA"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

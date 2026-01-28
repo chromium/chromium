@@ -98,6 +98,12 @@ void StructuredMetricsReportingService::LogLargeRejection(size_t log_size) {
                              log_size);
 }
 
+void StructuredMetricsReportingService::LogBackgroundUploadTaskPendingTime(
+    base::TimeDelta time) {
+  base::UmaHistogramLongTimes(
+      "StructuredMetrics.LogBackgroundUploadTaskPendingTime", time);
+}
+
 // static:
 void StructuredMetricsReportingService::RegisterPrefs(
     PrefRegistrySimple* registry) {

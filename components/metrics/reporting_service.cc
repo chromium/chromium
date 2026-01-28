@@ -105,6 +105,10 @@ void ReportingService::DisableReporting() {
 #if BUILDFLAG(IS_ANDROID)
 void ReportingService::SendNextLogNow(base::PassKey<BackgroundUploadTask>,
                                       base::OnceClosure done_callback) {
+  CHECK(!background_upload_task_scheduled_time_.is_null());
+  LogBackgroundUploadTaskPendingTime(base::TimeTicks::Now() -
+                                     background_upload_task_scheduled_time_);
+  background_upload_task_scheduled_time_ = base::TimeTicks();
   SendNextLogImpl(std::move(done_callback));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -189,6 +193,11 @@ void ReportingService::SendNextLogWhenPossible() {
     background_task::TaskInfo task_info(background_upload_task_id_, one_off);
     background_task::BackgroundTaskSchedulerFactory::GetScheduler()->Schedule(
         task_info);
+
+    // There should not be two upload tasks scheduled simultaneously.
+    CHECK(background_upload_task_scheduled_time_.is_null());
+    background_upload_task_scheduled_time_ = base::TimeTicks::Now();
+
     return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

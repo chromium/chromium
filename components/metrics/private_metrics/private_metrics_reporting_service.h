@@ -67,6 +67,7 @@ class PrivateMetricsReportingService : public metrics::ReportingService {
   void LogSuccessLogSize(size_t log_size) override;
   void LogSuccessMetadata(const std::string& staged_log) override;
   void LogLargeRejection(size_t log_size) override;
+  void LogBackgroundUploadTaskPendingTime(base::TimeDelta time) override;
 
   // If true, this service works in a compatibility mode with old DWA
   // implementation.
