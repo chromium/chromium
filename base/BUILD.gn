@@ -117,6 +117,10 @@ if (is_fuchsia) {
 
 _build_date_header = "$target_gen_dir/generated_build_date.h"
 
+_enable_code_ordering = is_android && !is_component_build &&
+                        (current_cpu == "arm" || current_cpu == "arm64" ||
+                         current_cpu == "x86" || current_cpu == "x64")
+
 if (is_win) {
   # This is in a separate config so the flags can be applied to dependents.
   # ldflags in GN aren't automatically inherited.
@@ -1339,7 +1343,9 @@ component("base") {
 
     # This is actually a linker script, but it can be added to the link in the
     # same way as a library.
-    libs += [ "android/library_loader/anchor_functions.lds" ]
+    if (_enable_code_ordering) {
+      libs += [ "android/library_loader/anchor_functions.lds" ]
+    }
   }  # is_android
 
   if (build_allocation_stack_trace_recorder) {
@@ -2784,13 +2790,10 @@ buildflag_header("synchronization_buildflags") {
 buildflag_header("anchor_functions_buildflags") {
   header = "anchor_functions_buildflags.h"
   header_dir = "base/android/library_loader"
-  _supports_code_ordering =
-      is_android && (current_cpu == "arm" || current_cpu == "arm64" ||
-                     current_cpu == "x86" || current_cpu == "x64")
 
   flags = [
     "USE_LLD=$use_lld",
-    "SUPPORTS_CODE_ORDERING=$_supports_code_ordering",
+    "SUPPORTS_CODE_ORDERING=$_enable_code_ordering",
   ]
 }
 

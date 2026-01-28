@@ -28,7 +28,12 @@
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64) && \
     BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#include "base/android/library_loader/anchor_functions_buildflags.h"
+#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
 #define ANDROID_ARM64_UNWINDING_SUPPORTED 1
+#else
+#define ANDROID_ARM64_UNWINDING_SUPPORTED 0
+#endif
 #else
 #define ANDROID_ARM64_UNWINDING_SUPPORTED 0
 #endif
