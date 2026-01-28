@@ -96,17 +96,17 @@ bool DomStorageDatabase::KeyValuePair::operator==(
   return std::tie(key, value) == std::tie(rhs.key, rhs.value);
 }
 
-DomStorageDatabase::MapLocator::MapLocator(std::string source_session_id,
-                                           blink::StorageKey source_storage_key)
-    : storage_key_(source_storage_key) {
-  session_ids_.push_back(std::move(source_session_id));
+DomStorageDatabase::MapLocator::MapLocator(std::string session_id,
+                                           blink::StorageKey storage_key)
+    : storage_key_(storage_key) {
+  session_ids_.push_back(std::move(session_id));
 }
 
-DomStorageDatabase::MapLocator::MapLocator(std::string source_session_id,
-                                           blink::StorageKey source_storage_key,
-                                           int64_t source_map_id)
-    : storage_key_(source_storage_key), map_id_(source_map_id) {
-  session_ids_.push_back(std::move(source_session_id));
+DomStorageDatabase::MapLocator::MapLocator(std::string session_id,
+                                           blink::StorageKey storage_key,
+                                           int64_t map_id)
+    : storage_key_(storage_key), map_id_(map_id) {
+  session_ids_.push_back(std::move(session_id));
 }
 
 DomStorageDatabase::MapLocator::~MapLocator() = default;
