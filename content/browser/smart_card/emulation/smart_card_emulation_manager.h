@@ -45,6 +45,23 @@ class SmartCardEmulationManager {
       uint32_t connection_id,
       device::mojom::SmartCardDisposition disposition,
       device::mojom::SmartCardConnection::DisconnectCallback callback) = 0;
+
+  virtual void OnControl(
+      uint32_t connection_id,
+      uint32_t control_code,
+      const std::vector<uint8_t>& data,
+      device::mojom::SmartCardConnection::ControlCallback callback) = 0;
+
+  virtual void OnGetAttrib(
+      uint32_t connection_id,
+      uint32_t id,
+      device::mojom::SmartCardConnection::GetAttribCallback callback) = 0;
+
+  virtual void OnTransmit(
+      uint32_t connection_id,
+      device::mojom::SmartCardProtocol protocol,
+      const std::vector<uint8_t>& data,
+      device::mojom::SmartCardConnection::TransmitCallback callback) = 0;
 };
 
 }  // namespace content

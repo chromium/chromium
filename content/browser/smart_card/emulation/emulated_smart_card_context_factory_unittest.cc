@@ -67,6 +67,29 @@ class MockSmartCardEmulationManager : public SmartCardEmulationManager {
                device::mojom::SmartCardConnection::DisconnectCallback),
               (override));
 
+  MOCK_METHOD(void,
+              OnControl,
+              (uint32_t,
+               uint32_t,
+               const std::vector<uint8_t>&,
+               device::mojom::SmartCardConnection::ControlCallback),
+              (override));
+
+  MOCK_METHOD(void,
+              OnGetAttrib,
+              (uint32_t,
+               uint32_t,
+               device::mojom::SmartCardConnection::GetAttribCallback),
+              (override));
+
+  MOCK_METHOD(void,
+              OnTransmit,
+              (uint32_t,
+               device::mojom::SmartCardProtocol,
+               const std::vector<uint8_t>&,
+               device::mojom::SmartCardConnection::TransmitCallback),
+              (override));
+
   base::WeakPtr<MockSmartCardEmulationManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -439,6 +462,171 @@ TEST_F(EmulatedSmartCardConnectionTest, Disconnect_NoService) {
   auto result = future.Take();
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->is_success());
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, Control_Success) {
+  const uint32_t kConnectionId = 555;
+  const uint32_t kControlCode = 42;
+  const std::vector<uint8_t> kInData = {1, 2, 3};
+  const std::vector<uint8_t> kOutData = {4, 5, 6};
+
+  EXPECT_CALL(*manager(), OnControl(kConnectionId, kControlCode, kInData, _))
+      .WillOnce(
+          [&](uint32_t, uint32_t, const std::vector<uint8_t>&, auto callback) {
+            std::move(callback).Run(
+                device::mojom::SmartCardDataResult::NewData(kOutData));
+          });
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> future;
+  connection_->Control(kControlCode, kInData, future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_data());
+  EXPECT_EQ(result->get_data(), kOutData);
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, Control_Failure) {
+  const uint32_t kConnectionId = 555;
+
+  EXPECT_CALL(*manager(), OnControl(kConnectionId, _, _, _))
+      .WillOnce([](auto, auto, auto, auto callback) {
+        std::move(callback).Run(device::mojom::SmartCardDataResult::NewError(
+            device::mojom::SmartCardError::kInvalidParameter));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> future;
+  connection_->Control(123, {}, future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(),
+            device::mojom::SmartCardError::kInvalidParameter);
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, Control_NoService) {
+  // Destroy the factory and manager to simulate DevTools closing.
+  factory_.reset();
+  mock_manager_.reset();
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> future;
+  connection_->Control(0xCAFE, {1, 2}, future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(),
+            device::mojom::SmartCardError::kServiceStopped);
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, GetAttrib_Success) {
+  const uint32_t kConnectionId = 555;
+  const uint32_t kAttrId = 1001;
+  const std::vector<uint8_t> kAttrValue = {'F', 'a', 'k', 'e'};
+
+  EXPECT_CALL(*manager(), OnGetAttrib(kConnectionId, kAttrId, _))
+      .WillOnce([&](uint32_t, uint32_t, auto callback) {
+        std::move(callback).Run(
+            device::mojom::SmartCardDataResult::NewData(kAttrValue));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> future;
+  connection_->GetAttrib(kAttrId, future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_data());
+  EXPECT_EQ(result->get_data(), kAttrValue);
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, GetAttrib_Failure) {
+  const uint32_t kConnectionId = 555;
+
+  EXPECT_CALL(*manager(), OnGetAttrib(kConnectionId, _, _))
+      .WillOnce([](auto, auto, auto callback) {
+        std::move(callback).Run(device::mojom::SmartCardDataResult::NewError(
+            device::mojom::SmartCardError::kUnknownReader));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> future;
+  connection_->GetAttrib(999, future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kUnknownReader);
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, GetAttrib_NoService) {
+  // Destroy the factory and manager to simulate DevTools closing.
+  factory_.reset();
+  mock_manager_.reset();
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> future;
+  connection_->GetAttrib(1234, future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(),
+            device::mojom::SmartCardError::kServiceStopped);
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, Transmit_Success) {
+  const uint32_t kConnectionId = 555;
+  const auto kProtocol = device::mojom::SmartCardProtocol::kT1;
+  const std::vector<uint8_t> kApdu = {0x01, 0x02, 0x03, 0x04};
+  const std::vector<uint8_t> kResponse = {0x90, 0x00};
+
+  EXPECT_CALL(*manager(), OnTransmit(kConnectionId, kProtocol, kApdu, _))
+      .WillOnce([&](uint32_t, auto, auto, auto callback) {
+        std::move(callback).Run(
+            device::mojom::SmartCardDataResult::NewData(kResponse));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> future;
+  connection_->Transmit(kProtocol, kApdu, future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_data());
+  EXPECT_EQ(result->get_data(), kResponse);
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, Transmit_Failure) {
+  const uint32_t kConnectionId = 555;
+
+  EXPECT_CALL(*manager(), OnTransmit(kConnectionId, _, _, _))
+      .WillOnce([](auto, auto, auto, auto callback) {
+        std::move(callback).Run(device::mojom::SmartCardDataResult::NewError(
+            device::mojom::SmartCardError::kProtoMismatch));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> future;
+  connection_->Transmit(device::mojom::SmartCardProtocol::kT0, {},
+                        future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kProtoMismatch);
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, Transmit_NoService) {
+  // Destroy the factory and manager to simulate DevTools closing.
+  factory_.reset();
+  mock_manager_.reset();
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> future;
+  connection_->Transmit(device::mojom::SmartCardProtocol::kT1, {1, 2, 3},
+                        future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(),
+            device::mojom::SmartCardError::kServiceStopped);
 }
 
 }  // namespace
