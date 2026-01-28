@@ -32,6 +32,8 @@ WebUIReloadControl::WebUIReloadControl(
 WebUIReloadControl::~WebUIReloadControl() = default;
 
 void WebUIReloadControl::Init() {
+  CHECK(!is_initialized_);
+  is_initialized_ = true;
   SetReloadButtonUIState();
 }
 
@@ -92,7 +94,8 @@ void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void WebUIReloadControl::SetReloadButtonUIState() {
-  CHECK(webui_toolbar_web_view_->webui_toolbar_ui());
-  webui_toolbar_web_view_->webui_toolbar_ui()->SetReloadButtonState(
+  auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
+  CHECK(webui_toolbar_ui);
+  webui_toolbar_ui->SetReloadButtonState(
       /*is_loading=*/mode_ == ReloadControl::Mode::kStop, is_menu_enabled_);
 }

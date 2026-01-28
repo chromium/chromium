@@ -60,18 +60,14 @@ WebUIToolbarWebView::~WebUIToolbarWebView() = default;
 
 void WebUIToolbarWebView::AddedToWidget() {
   CHECK(web_view_);
-  if (webui_toolbar_ui_) {
+  if (reload_control_.is_initialized()) {
     return;
   }
+
   // Ensure the browser window interface is associated with the WebContents
   // before the WebUI acts on it.
   webui::SetBrowserWindowInterface(web_view_->GetWebContents(), browser_);
   web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
-  webui_toolbar_ui_ = web_view_->GetWebContents()
-                          ->GetWebUI()
-                          ->GetController()
-                          ->GetAs<WebUIToolbarUI>()
-                          ->GetWeakPtr();
   reload_control_.Init();
 }
 
@@ -114,6 +110,13 @@ void WebUIToolbarWebView::SetDidFirstNonEmptyPaintCallbackForTesting(
     return;
   }
   did_first_non_empty_paint_callback_ = std::move(callback);
+}
+
+WebUIToolbarUI* WebUIToolbarWebView::GetWebUIToolbarUI() {
+  return web_view_->GetWebContents()
+      ->GetWebUI()
+      ->GetController()
+      ->GetAs<WebUIToolbarUI>();
 }
 
 BEGIN_METADATA(WebUIToolbarWebView)
