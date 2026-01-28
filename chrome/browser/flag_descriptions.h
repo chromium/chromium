@@ -2148,6 +2148,10 @@ inline constexpr char kFedCmIdPRegistrationName[] =
 inline constexpr char kFedCmIdPRegistrationDescription[] =
     "Enables RPs to get identity credentials from registered IdPs.";
 
+inline constexpr char kFedCmInAuthenticatorName[] = "FedCM in Authenticator";
+inline constexpr char kFedCmInAuthenticatorDescription[] =
+    "Enables support for FedCM requests through the Authenticator interface.";
+
 inline constexpr char kFedCmLightweightModeName[] = "FedCmLightweightMode";
 inline constexpr char kFedCmLightweightModeDescription[] =
     "Enables IdPs to store user profile information using the login status "

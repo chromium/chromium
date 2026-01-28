@@ -8073,6 +8073,7 @@ from previous Chrome versions.
   <int value="-2140371146" label="DrawCutoutEdgeToEdge:disabled"/>
   <int value="-2140007754" label="HomepageSettingsUIConversion:disabled"/>
   <int value="-2139889252" label="AllowCrossDeviceFeatureSuite:disabled"/>
+  <int value="-2139768690" label="FedCmInAuthenticator:enabled"/>
   <int value="-2139379065" label="StoragePressureUI:enabled"/>
   <int value="-2139096597" label="HubBackButton:enabled"/>
   <int value="-2138883960" label="AutofillRejectCompanyBirthyearName:disabled"/>
@@ -8658,6 +8659,7 @@ from previous Chrome versions.
   <int value="-1957328398" label="MacSystemShareMenu:disabled"/>
   <int value="-1956747298" label="LayeredAPI:enabled"/>
   <int value="-1956656203" label="ShowForceRespectUiGainsToggle:disabled"/>
+  <int value="-1956530654" label="FedCmInAuthenticator:disabled"/>
   <int value="-1956349722" label="disable-smooth-scrolling"/>
   <int value="-1956231275" label="ForceSpectreVariant2Mitigation:enabled"/>
   <int value="-1955923385" label="EnableGamepadButtonAxisEvents:enabled"/>
@@ -12434,6 +12436,7 @@ from previous Chrome versions.
       label="AutofillEnableSaveCardInfoBarAccountIndicationFooter:disabled"/>
   <int value="-662064703" label="MediaSessionService:enabled"/>
   <int value="-661978438" label="enable-data-reduction-proxy-lo-fi"/>
+  <int value="-660611514" label="fedcm-in-authenticator:enabled"/>
   <int value="-660569428"
       label="ProfileCreationFrictionReductionExperimentSkipCustomizeProfile:enabled"/>
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
@@ -15323,6 +15326,7 @@ from previous Chrome versions.
   <int value="346406287" label="EnableWebAppUninstallFromOsSettings:disabled"/>
   <int value="346430505" label="SidePanel:enabled"/>
   <int value="346711293" label="enable-save-password-bubble"/>
+  <int value="347273804" label="fedcm-in-authenticator:disabled"/>
   <int value="347577245" label="WebBluetoothConfirmPairingSupport:enabled"/>
   <int value="347807274" label="UseSharedImageInOOPVDProcess:enabled"/>
   <int value="347948074" label="WebFeedSort:disabled"/>

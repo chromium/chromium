@@ -4576,6 +4576,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "fedcm-in-authenticator",
+    "owners": [ "derinel@google.com", "kenrb@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "fedcm-lightweight-mode",
     "owners": ["ekovac@google.com", "web-identity-eng@google.com"],
     "expiry_milestone": 155

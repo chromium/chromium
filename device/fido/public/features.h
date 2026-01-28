@@ -185,6 +185,10 @@ BASE_DECLARE_FEATURE(kWebAuthnEnableRefreshingStateOfGpmEnclaveController);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnHmacSecretMcExtension);
 
+// Enables support for FedCM requests through the Authenticator interface.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kFedCmInAuthenticator);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_
