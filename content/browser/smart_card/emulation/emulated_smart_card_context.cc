@@ -46,6 +46,8 @@ void EmulatedSmartCardContext::Connect(
         SmartCardConnectResult::NewError(SmartCardError::kNoService));
     return;
   }
+  manager_->OnConnect(id_, reader, share_mode, std::move(preferred_protocols),
+                      std::move(watcher), std::move(callback));
 }
 
 void EmulatedSmartCardContext::GetStatusChange(

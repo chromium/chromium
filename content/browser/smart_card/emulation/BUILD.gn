@@ -6,6 +6,8 @@ import("//build/config/compiler/compiler.gni")
 
 source_set("emulation") {
   sources = [
+    "emulated_smart_card_connection.cc",
+    "emulated_smart_card_connection.h",
     "emulated_smart_card_context.cc",
     "emulated_smart_card_context.h",
     "emulated_smart_card_context_factory.cc",

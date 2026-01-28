@@ -32,6 +32,19 @@ class SmartCardEmulationManager {
   virtual void OnCancel(
       uint32_t context_id,
       device::mojom::SmartCardContext::CancelCallback callback) = 0;
+
+  virtual void OnConnect(
+      uint32_t context_id,
+      const std::string& reader,
+      device::mojom::SmartCardShareMode share_mode,
+      device::mojom::SmartCardProtocolsPtr preferred_protocols,
+      mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher> watcher,
+      device::mojom::SmartCardContext::ConnectCallback callback) = 0;
+
+  virtual void OnDisconnect(
+      uint32_t connection_id,
+      device::mojom::SmartCardDisposition disposition,
+      device::mojom::SmartCardConnection::DisconnectCallback callback) = 0;
 };
 
 }  // namespace content

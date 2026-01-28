@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "content/browser/smart_card/emulation/emulated_smart_card_connection.h"
 #include "content/browser/smart_card/emulation/emulated_smart_card_context.h"
 #include "content/browser/smart_card/emulation/smart_card_emulation_manager.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
@@ -46,6 +48,23 @@ class MockSmartCardEmulationManager : public SmartCardEmulationManager {
   MOCK_METHOD(void,
               OnCancel,
               (uint32_t, device::mojom::SmartCardContext::CancelCallback),
+              (override));
+
+  MOCK_METHOD(void,
+              OnConnect,
+              (uint32_t,
+               const std::string&,
+               device::mojom::SmartCardShareMode,
+               device::mojom::SmartCardProtocolsPtr,
+               mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher>,
+               device::mojom::SmartCardContext::ConnectCallback),
+              (override));
+
+  MOCK_METHOD(void,
+              OnDisconnect,
+              (uint32_t,
+               device::mojom::SmartCardDisposition,
+               device::mojom::SmartCardConnection::DisconnectCallback),
               (override));
 
   base::WeakPtr<MockSmartCardEmulationManager> GetWeakPtr() {
@@ -287,6 +306,139 @@ TEST_F(EmulatedSmartCardContextTest, Cancel_NoService) {
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kNoService);
+}
+
+TEST_F(EmulatedSmartCardContextTest, Connect_Success) {
+  const uint32_t kContextId = 123;
+  std::string reader_name = "Reader A";
+  auto share_mode = device::mojom::SmartCardShareMode::kShared;
+  auto protocols = device::mojom::SmartCardProtocols::New(true, true, false);
+
+  mojo::PendingRemote<device::mojom::SmartCardConnectionWatcher> watcher_remote;
+  std::ignore = watcher_remote.InitWithNewPipeAndPassReceiver();
+
+  mojo::PendingRemote<device::mojom::SmartCardConnection> connection_remote;
+  mojo::PendingReceiver<device::mojom::SmartCardConnection>
+      connection_receiver = connection_remote.InitWithNewPipeAndPassReceiver();
+
+  auto success_result = device::mojom::SmartCardConnectResult::NewSuccess(
+      device::mojom::SmartCardConnectSuccess::New(
+          std::move(connection_remote), device::mojom::SmartCardProtocol::kT1));
+
+  EXPECT_CALL(*manager(),
+              OnConnect(kContextId, reader_name, share_mode, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<5>(std::move(success_result)));
+
+  base::test::TestFuture<device::mojom::SmartCardConnectResultPtr> future;
+  context_->Connect(reader_name, share_mode, std::move(protocols),
+                    std::move(watcher_remote), future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_success());
+  EXPECT_EQ(result->get_success()->active_protocol,
+            device::mojom::SmartCardProtocol::kT1);
+
+  EXPECT_TRUE(result->get_success()->connection.is_valid());
+}
+
+TEST_F(EmulatedSmartCardContextTest, Connect_Failure) {
+  const uint32_t kContextId = 123;
+
+  EXPECT_CALL(*manager(), OnConnect(kContextId, _, _, _, _, _))
+      .WillOnce([](uint32_t, auto, auto, auto, auto, auto callback) {
+        std::move(callback).Run(device::mojom::SmartCardConnectResult::NewError(
+            device::mojom::SmartCardError::kNoSmartcard));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardConnectResultPtr> future;
+  context_->Connect("Reader A", device::mojom::SmartCardShareMode::kShared,
+                    device::mojom::SmartCardProtocols::New(true, false, false),
+                    mojo::NullRemote(), future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kNoSmartcard);
+}
+
+TEST_F(EmulatedSmartCardContextTest, Connect_NoService) {
+  // Destroy the factory and manager to simulate DevTools closing.
+  factory_.reset();
+  mock_manager_.reset();
+
+  base::test::TestFuture<device::mojom::SmartCardConnectResultPtr> future;
+  context_->Connect("Reader A", device::mojom::SmartCardShareMode::kShared,
+                    device::mojom::SmartCardProtocols::New(true, false, false),
+                    mojo::NullRemote(), future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kNoService);
+}
+
+class EmulatedSmartCardConnectionTest
+    : public EmulatedSmartCardContextFactoryTest {
+ public:
+  void SetUp() override {
+    connection_ = std::make_unique<EmulatedSmartCardConnection>(
+        manager()->GetWeakPtr(), 555);
+  }
+
+ protected:
+  std::unique_ptr<EmulatedSmartCardConnection> connection_;
+};
+
+TEST_F(EmulatedSmartCardConnectionTest, Disconnect_Success) {
+  const uint32_t kConnectionId = 555;
+  const auto kDisposition = device::mojom::SmartCardDisposition::kEject;
+
+  EXPECT_CALL(*manager(), OnDisconnect(kConnectionId, kDisposition, _))
+      .WillOnce([](uint32_t, auto, auto callback) {
+        std::move(callback).Run(device::mojom::SmartCardResult::NewSuccess(
+            device::mojom::SmartCardSuccess::kOk));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> future;
+  connection_->Disconnect(kDisposition, future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_success());
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, Disconnect_Failure) {
+  const uint32_t kConnectionId = 555;
+
+  EXPECT_CALL(*manager(), OnDisconnect(kConnectionId, _, _))
+      .WillOnce([](uint32_t, auto, auto callback) {
+        std::move(callback).Run(device::mojom::SmartCardResult::NewError(
+            device::mojom::SmartCardError::kInvalidHandle));
+      });
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> future;
+  connection_->Disconnect(device::mojom::SmartCardDisposition::kLeave,
+                          future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), device::mojom::SmartCardError::kInvalidHandle);
+}
+
+TEST_F(EmulatedSmartCardConnectionTest, Disconnect_NoService) {
+  // Destroy the factory and manager to simulate DevTools closing.
+  factory_.reset();
+  mock_manager_.reset();
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> future;
+  connection_->Disconnect(device::mojom::SmartCardDisposition::kLeave,
+                          future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_success());
 }
 
 }  // namespace
