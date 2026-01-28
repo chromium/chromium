@@ -45,6 +45,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
@@ -360,7 +361,7 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginPerSiteLimit(
 
   const std::string serialized_reporting_origin =
       source.common_info().reporting_origin().Serialize();
-  std::set<std::string> reporting_origins;
+  absl::flat_hash_set<std::string> reporting_origins;
   while (statement.Step()) {
     std::string_view origin = statement.ColumnStringView(0);
 
@@ -368,9 +369,7 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginPerSiteLimit(
       return RateLimitResult::kAllowed;
     }
 
-    // Note: In C++23 this can be `insert(origin)` instead to avoid copying the
-    // string when the value is already contained.
-    reporting_origins.insert(std::string(origin));
+    reporting_origins.emplace(origin);
     if (reporting_origins.size() == max_origins) {
       return RateLimitResult::kNotAllowed;
     }
@@ -731,9 +730,7 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
         break;
       }
 
-      // Note: In C++23 this can be `insert(origin)` instead to avoid copying
-      // the string when the value is already contained.
-      reporting_origins.insert(std::string(reporting_origin));
+      reporting_origins.emplace(reporting_origin);
 
       if (reporting_origins.size() == static_cast<size_t>(max)) {
         return RateLimitResult::kNotAllowed;
