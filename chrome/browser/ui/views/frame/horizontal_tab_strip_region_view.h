@@ -114,7 +114,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   bool IsTabStripEditable() const override;
-  void DisableTabStripEditingForTesting() const override;
+  void DisableTabStripEditingForTesting() override;
   bool IsTabStripCloseable() const override;
   bool IsAnimating() const override;
   void StopAnimating() override;

@@ -32,7 +32,7 @@ class TabStripRegionView : public views::AccessiblePaneView,
 
   // -- View State Queries --
   virtual bool IsTabStripEditable() const = 0;
-  virtual void DisableTabStripEditingForTesting() const = 0;
+  virtual void DisableTabStripEditingForTesting() = 0;
   virtual bool IsTabStripCloseable() const = 0;
   virtual bool IsAnimating() const = 0;
   virtual void StopAnimating() = 0;

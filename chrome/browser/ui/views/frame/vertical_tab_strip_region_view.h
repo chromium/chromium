@@ -111,7 +111,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void InitializeTabStrip() override;
   void ResetTabStrip() override;
   bool IsTabStripEditable() const override;
-  void DisableTabStripEditingForTesting() const override;
+  void DisableTabStripEditingForTesting() override;
   bool IsTabStripCloseable() const override;
   bool IsAnimating() const override;
   void StopAnimating() override;

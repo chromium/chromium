@@ -244,9 +244,8 @@ bool VerticalTabStripRegionView::IsTabStripEditable() const {
           !drag_handler_->GetDragContext()->GetDragController());
 }
 
-void VerticalTabStripRegionView::DisableTabStripEditingForTesting() const {
-  const_cast<VerticalTabStripRegionView*>(this)
-      ->tab_strip_editable_for_testing_ = false;
+void VerticalTabStripRegionView::DisableTabStripEditingForTesting() {
+  tab_strip_editable_for_testing_ = false;
 }
 
 bool VerticalTabStripRegionView::IsTabStripCloseable() const {
