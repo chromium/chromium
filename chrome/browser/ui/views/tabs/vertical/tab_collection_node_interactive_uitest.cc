@@ -34,8 +34,14 @@ class TabCollectionNodeInteractiveUiTest
   }
 };
 
+// TODO(crbug.com/474498475): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ValidateViewFocusOrder DISABLED_ValidateViewFocusOrder
+#else
+#define MAYBE_ValidateViewFocusOrder ValidateViewFocusOrder
+#endif
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeInteractiveUiTest,
-                       ValidateViewFocusOrder) {
+                       MAYBE_ValidateViewFocusOrder) {
   // Initial Order: [A, B, C, D, E, F].
   for (size_t i = 0; i < 5; i++) {
     ui_test_utils::NavigateToURLWithDisposition(
