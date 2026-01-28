@@ -4,9 +4,7 @@
 
 syntax = "proto3";
 
-package enterprise_reporting;
-
-import "google/protobuf/timestamp.proto";
+package chrome.cros.reporting.proto;
 
 option optimize_for = LITE_RUNTIME;
 
@@ -37,10 +35,10 @@ message SaasDomainMetrics {
   // The encryption protocols used to access the SaaS site.
   repeated string encryption_protocols = 3;
 
-  // Timestamp of when the first event occurred.
-  google.protobuf.Timestamp start_time = 4;
+  // Timestamp of when the first event occurred in milliseconds since epoch.
+  int64 start_time_millis = 4;
 
-  // Timestamp of when the last event occurred.
-  google.protobuf.Timestamp end_time = 5;
+  // Timestamp of when the last event occurred in milliseconds since epoch.
+  int64 end_time_millis = 5;
 
 }

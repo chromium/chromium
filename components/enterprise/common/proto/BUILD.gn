@@ -81,6 +81,17 @@ proto_extras("policy_validation_report_extras") {
   protobuf_full_support = true
 }
 
+fuzzable_proto_library("saas_usage_report_event") {
+  proto_in_dir = "//"
+  sources = [ "synced/saas_usage_report_event.proto" ]
+}
+
+proto_extras("saas_usage_report_event_extras") {
+  sources = [ "synced/saas_usage_report_event.proto" ]
+  deps = [ ":saas_usage_report_event" ]
+  protobuf_full_support = true
+}
+
 # Google3_protos that are not available in the Chromium repository.
 fuzzable_proto_library("google3_protos") {
   proto_in_dir = "//"
@@ -101,6 +112,7 @@ fuzzable_proto_library("chrome_reporting_entity") {
     ":extension_install_events",
     ":google3_protos",
     ":policy_validation_report",
+    ":saas_usage_report_event",
     "//components/reporting/proto:record_proto",
   ]
 }
@@ -113,6 +125,7 @@ proto_extras("chrome_reporting_entity_extras") {
     ":extension_install_events",
     ":google3_protos",
     ":policy_validation_report",
+    ":saas_usage_report_event",
     "//components/reporting/proto:record_proto",
   ]
   extras_deps = [
@@ -120,6 +133,7 @@ proto_extras("chrome_reporting_entity_extras") {
     ":extension_install_events_extras",
     ":google3_protos_extras",
     ":policy_validation_report_extras",
+    ":saas_usage_report_event_extras",
     "//components/reporting/proto:record_proto_extras",
   ]
   protobuf_full_support = true
